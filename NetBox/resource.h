@@ -13,5 +13,5 @@
 #endif
 #endif
 
-#define PLUGIN_VERSION_NUM 1,13,0,0
-#define PLUGIN_VERSION_TXT "1.13"
+#define PLUGIN_VERSION_NUM 1,14,0,0
+#define PLUGIN_VERSION_TXT "1.14"
