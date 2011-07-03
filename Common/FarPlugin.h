@@ -46,6 +46,33 @@
 
 using namespace std;
 
+#define NETBOX_DEBUG
+
+#ifdef NETBOX_DEBUG
+	#define DEBUG_OUTPUT(msg) OutputDebugStringW(msg.c_str());
+#else
+	#define DEBUG_OUTPUT(msg) (void)msg;
+#endif
+
+inline int __cdecl dprintf(const wchar_t *format, ...)
+{
+	int len = 0;
+#ifdef NBDEBUG
+	wchar_t szBuff[1024];
+	va_list args;
+	va_start(args, format);
+	len = _vscwprintf(format, args) + 1; // last NULL
+	if (len <= 1)
+		return 0;
+	wstring buf(len, 0);
+	vswprintf_s(&buf[0], buf.size(), format, args);
+	buf.erase(buf.length() - 1); // Trim last NULL
+	va_end(args);
+	DEBUG_OUTPUT(buf);
+#endif
+	return len;
+}
+
 class CFarPlugin
 {
 public:
