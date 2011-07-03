@@ -15,11 +15,11 @@
 "Password (user/private key):"
 "Prompt for password upon connection"
 "Show password"
-"Pablic and private key file:"
+"Public and private key file:"
 "URL can not be empty"
 "Invalid URL"
 "The session name can not be empty"
-"The session name contain restricted symbols (<>:\"/\\|?*)"
+"The session name contains restricted symbols (<>:\"/\\|?*)"
 
 "Add to the panels plugin menu"
 "Add to the disk menu"
