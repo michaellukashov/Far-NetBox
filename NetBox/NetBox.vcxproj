@@ -65,22 +65,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Far2_x86\Plugins\NetBox\</OutDir>
-    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\$(Platform)\</IntDir>
+    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Far2_x64\Plugins\NetBox\</OutDir>
-    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\$(Platform)\</IntDir>
+    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\x64\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Far2_x86\Plugins\NetBox\</OutDir>
-    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\$(Platform)\</IntDir>
+    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Far2_x64\Plugins\NetBox\</OutDir>
-    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\$(Platform)\</IntDir>
+    <IntDir>..\Temp\$(SolutionName)\$(Configuration)\x64\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
