@@ -1,8 +1,10 @@
 .svn/
 *.log
 Temp/
-Far_x86/
-Far_x64/
+Far2_x86/
+Far2_x64/
+Far3_x86/
+Far3_x64/
 res.txt
 svn.log
 ipch/
