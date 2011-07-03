@@ -143,14 +143,26 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring& errorInfo)
 
 	dprintf(L"CSFTP::Connect: before OpenSSHSession");
 	if (OpenSSHSession(hostName.c_str(), port, errorInfo)) {
-		dprintf(L"CSFTP::Connect: after OpenSSHSession 1: errorInfo = %s", errorInfo);
-		_SFTPSession = libssh2_sftp_init(_SSHSession);
+		dprintf(L"CSFTP::Connect: before libssh2_sftp_init: errorInfo = %s", errorInfo.c_str());
+		libssh2_session_set_blocking(_SSHSession, 0);
+		// _SFTPSession = libssh2_sftp_init(_SSHSession);
+		while (!(_SFTPSession = libssh2_sftp_init(_SSHSession))) {
+			int last_errno = libssh2_session_last_errno(_SSHSession);
+			if (last_errno != LIBSSH2SFTP_EAGAIN) {
+				dprintf(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
+				break;
+			}
+			// if (WaitForSingleObject(_AbortEvent, 0) == WAIT_OBJECT_0)
+				// return false;
+			Sleep(100);
+		}
+		dprintf(L"CSFTP::Connect: after libssh2_sftp_init");
 		if (_SFTPSession != NULL)
 			libssh2_session_set_blocking(_SSHSession, 1);
 		else
 			errorInfo = FormatSSHLastErrorDescription();
 	}
-	dprintf(L"CSFTP::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo);
+	dprintf(L"CSFTP::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo.c_str());
 
 	if (_SFTPSession == NULL) {
 		Close();
