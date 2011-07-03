@@ -142,12 +142,24 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring& errorInfo)
 	ParseURL(_Session.GetURL(), NULL, &hostName, &port, &path, NULL, NULL, NULL);
 
 	if (OpenSSHSession(hostName.c_str(), port, errorInfo)) {
-		_SFTPSession = libssh2_sftp_init(_SSHSession);
+		libssh2_session_set_blocking(_SSHSession, 0);
+		while (!(_SFTPSession = libssh2_sftp_init(_SSHSession))) {
+			int last_errno = libssh2_session_last_errno(_SSHSession);
+			if (last_errno != LIBSSH2SFTP_EAGAIN) {
+				// dprintf(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
+				break;
+			}
+			CFarPlugin::CheckAbortEvent(&_AbortEvent);
+			if (WaitForSingleObject(_AbortEvent, 0) == WAIT_OBJECT_0)
+				break;
+			Sleep(100);
+		}
 		if (_SFTPSession != NULL)
 			libssh2_session_set_blocking(_SSHSession, 1);
 		else
 			errorInfo = FormatSSHLastErrorDescription();
 	}
+	// dprintf(L"CSFTP::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo.c_str());
 
 	if (_SFTPSession == NULL) {
 		Close();

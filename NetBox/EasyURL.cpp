@@ -258,17 +258,7 @@ int CEasyURL::InternalProgress(void* userData, double dltotal, double dlnow, dou
 	Progress* prg = static_cast<Progress*>(userData);
 	assert(prg);
 
-	{
-		//Very-very bad architecture... TODO!
-		static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
-		INPUT_RECORD rec;
-		DWORD readCount = 0;
-		while (prg->AbortEvent && PeekConsoleInput(stdIn, &rec, 1, &readCount) && readCount != 0) {
-			ReadConsoleInput(stdIn, &rec, 1, &readCount);
-			if (rec.EventType == KEY_EVENT && rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE && rec.Event.KeyEvent.bKeyDown)
-				SetEvent(prg->AbortEvent);
-		}
-	}
+	CFarPlugin::CheckAbortEvent(&prg->AbortEvent);
 
 	if (prg->AbortEvent && WaitForSingleObject(prg->AbortEvent, 0) == WAIT_OBJECT_0)
 		return CURLE_ABORTED_BY_CALLBACK;

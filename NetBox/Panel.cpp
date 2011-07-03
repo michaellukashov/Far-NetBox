@@ -60,7 +60,8 @@ bool CPanel::OpenConnection(IProtocol* protoImpl)
 	else {
 		const wstring connectURL = _ProtoClient->GetURL();
 
-		CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgConnect, connectURL.c_str()).c_str());
+		CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle),
+			CFarPlugin::GetFormattedString(StringPrgConnect, connectURL.c_str()).c_str());
 		notifyWnd.Show();
 
 		wstring errorMsg;

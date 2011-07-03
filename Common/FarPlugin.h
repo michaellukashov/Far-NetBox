@@ -46,6 +46,32 @@
 
 using namespace std;
 
+#define NETBOX_DEBUG
+
+#ifdef NETBOX_DEBUG
+	#define DEBUG_OUTPUT(msg) OutputDebugStringW(msg.c_str());
+#else
+	#define DEBUG_OUTPUT(msg) (void)msg;
+#endif
+
+inline int __cdecl dprintf(const wchar_t *format, ...)
+{
+	int len = 0;
+#ifdef NETBOX_DEBUG
+	va_list args;
+	va_start(args, format);
+	len = _vscwprintf(format, args) + 1; // last NULL
+	if (len <= 1)
+		return 0;
+	wstring buf(len, 0);
+	vswprintf_s(&buf[0], buf.size(), format, args);
+	buf.erase(buf.length() - 1); // Trim last NULL
+	va_end(args);
+	DEBUG_OUTPUT(buf);
+#endif
+	return len;
+}
+
 class CFarPlugin
 {
 public:
@@ -246,6 +272,19 @@ public:
 	{
 		assert(AccessPSI(NULL));
 		return AccessPSI(NULL);
+	}
+
+	static void CheckAbortEvent(HANDLE *AbortEvent)
+	{
+		//Very-very bad architecture... TODO!
+		static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
+		INPUT_RECORD rec;
+		DWORD readCount = 0;
+		while (*AbortEvent && PeekConsoleInput(stdIn, &rec, 1, &readCount) && readCount != 0) {
+			ReadConsoleInput(stdIn, &rec, 1, &readCount);
+			if (rec.EventType == KEY_EVENT && rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE && rec.Event.KeyEvent.bKeyDown)
+				SetEvent(*AbortEvent);
+		}
 	}
 
 private:
