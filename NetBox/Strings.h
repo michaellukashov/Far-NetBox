@@ -99,4 +99,6 @@ enum PluginString {
 	StringErrRenameMove,	
 	StringErrDeleteFile,
 	StringErrDeleteDir,
+
+	StringOperationCanceledByUser,
 };

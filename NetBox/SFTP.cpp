@@ -142,6 +142,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring& errorInfo)
 	ParseURL(_Session.GetURL(), NULL, &hostName, &port, &path, NULL, NULL, NULL);
 
 	if (OpenSSHSession(hostName.c_str(), port, errorInfo)) {
+		bool aborted = false;
 		libssh2_session_set_blocking(_SSHSession, 0);
 		while (!(_SFTPSession = libssh2_sftp_init(_SSHSession))) {
 			int last_errno = libssh2_session_last_errno(_SSHSession);
@@ -151,11 +152,16 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring& errorInfo)
 			}
 			CFarPlugin::CheckAbortEvent(&_AbortEvent);
 			if (WaitForSingleObject(_AbortEvent, 0) == WAIT_OBJECT_0)
+			{
+				aborted = true;
 				break;
+			}
 			Sleep(100);
 		}
 		if (_SFTPSession != NULL)
 			libssh2_session_set_blocking(_SSHSession, 1);
+		else if (aborted)
+			errorInfo = CFarPlugin::GetString(StringOperationCanceledByUser);
 		else
 			errorInfo = FormatSSHLastErrorDescription();
 	}
