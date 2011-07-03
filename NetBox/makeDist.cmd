@@ -34,6 +34,7 @@ if "%PLUGINARCH%" equ "src"	(
 	mkdir %PKGDIR%\tinyXML
 	copy tinyXML %PKGDIR%\tinyXML > NUL
 ) else (
+	copy openssl\%PLUGINARCH%\out32dll\*.dll %PKGDIR% > NUL
 	copy ..\Far_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
 )
 :: Make archive
