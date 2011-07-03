@@ -141,13 +141,16 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring& errorInfo)
 	unsigned short port = 0;
 	ParseURL(_Session.GetURL(), NULL, &hostName, &port, &path, NULL, NULL, NULL);
 
+	dprintf(L"CSFTP::Connect: before OpenSSHSession");
 	if (OpenSSHSession(hostName.c_str(), port, errorInfo)) {
+		dprintf(L"CSFTP::Connect: after OpenSSHSession 1: errorInfo = %s", errorInfo);
 		_SFTPSession = libssh2_sftp_init(_SSHSession);
 		if (_SFTPSession != NULL)
 			libssh2_session_set_blocking(_SSHSession, 1);
 		else
 			errorInfo = FormatSSHLastErrorDescription();
 	}
+	dprintf(L"CSFTP::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo);
 
 	if (_SFTPSession == NULL) {
 		Close();
