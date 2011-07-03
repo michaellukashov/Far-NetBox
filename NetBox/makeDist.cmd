@@ -9,6 +9,7 @@
 set PLUGINNAME=NetBox
 set PLUGINARCH=%1
 if "%PLUGINARCH%" equ "" set PLUGINARCH=src
+set FARVER=Far2
 
 :: Get plugin version from resource
 for /F "tokens=2,3 skip=14" %%i in (resource.h) do set %%i=%%~j
@@ -16,7 +17,7 @@ if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
 set PLUGINVER=%PLUGIN_VERSION_TXT%
 
 :: Package name
-set PKGNAME=Far%PLUGINNAME%_%PLUGINVER%_%PLUGINARCH%.7z
+set PKGNAME=Far%PLUGINNAME%_%PLUGINVER%_%FARVER%_%PLUGINARCH%.7z
 if exist %PKGNAME% del %PKGNAME%
 
 :: Create temp directory
