@@ -25,79 +25,81 @@
 class CProgressWindow : public CFarDialog
 {
 public:
-	//! Operation types
-	enum OperationType {
-		Copy,
-		Move
-	};
+    //! Operation types
+    enum OperationType
+    {
+        Copy,
+        Move
+    };
 
-	//! Derection types
-	enum DerectionType {
-		Send,
-		Receive
-	};
+    //! Derection types
+    enum DerectionType
+    {
+        Send,
+        Receive
+    };
 
-	CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol* impl);
-	~CProgressWindow();
+    CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl);
+    ~CProgressWindow();
 
-	/**
-	 * Show progress window
-	 */
-	void Show();
-	
-	/**
-	 * Hide and destroy window
-	 */
-	void Destroy();
-	
-	/**
-	 * Update window info
-	 * \param srcFileName source file name
-	 * \param dstFileName destination file name
-	 * \return 
-	 */
-	void SetFileNames(const wchar_t* srcFileName, const wchar_t* dstFileName);
+    /**
+     * Show progress window
+     */
+    void Show();
 
-private:
-	//From CFarDialog
-	LONG_PTR DialogMessageProc(int msg, int param1, LONG_PTR param2);
+    /**
+     * Hide and destroy window
+     */
+    void Destroy();
 
-	//! Window processing thread entry
-	static DWORD WINAPI WindowThread(LPVOID param);
+    /**
+     * Update window info
+     * \param srcFileName source file name
+     * \param dstFileName destination file name
+     * \return
+     */
+    void SetFileNames(const wchar_t *srcFileName, const wchar_t *dstFileName);
 
 private:
-	HANDLE			_AbortEvent;
-	HANDLE			_WndThread;
-	OperationType	_Operation;
-	DerectionType	_Direction;
-	size_t			_FileCount;
-	IProtocol*		_ProtoImpl;
+    //From CFarDialog
+    LONG_PTR DialogMessageProc(int msg, int param1, LONG_PTR param2);
 
-	int		_IdSrcFileName;
-	int		_IdDstFileName;
-	int		_IdTotalProgress;
-	int		_IdCurrentProgress;
-	int		_IdBtnCancel;
+    //! Window processing thread entry
+    static DWORD WINAPI WindowThread(LPVOID param);
+
+private:
+    HANDLE          _AbortEvent;
+    HANDLE          _WndThread;
+    OperationType   _Operation;
+    DerectionType   _Direction;
+    size_t          _FileCount;
+    IProtocol      *_ProtoImpl;
+
+    int     _IdSrcFileName;
+    int     _IdDstFileName;
+    int     _IdTotalProgress;
+    int     _IdCurrentProgress;
+    int     _IdBtnCancel;
 };
 
 
 class CNotificationWindow
 {
 public:
-	CNotificationWindow(const wchar_t* title, const wchar_t* text);
-	virtual ~CNotificationWindow();
+    CNotificationWindow(const wchar_t *title, const wchar_t *text);
+    virtual ~CNotificationWindow();
 
-	/**
-	 * Show progress window
-	 */
-	virtual void Show() const;
+    /**
+     * Show progress window
+     */
+    virtual void Show() const;
 
-	/**
-	 * Hide progress window
-	 */
-	virtual void Hide() const;
+    /**
+     * Hide progress window
+     */
+    virtual void Hide() const;
 
 protected:
-	wstring _Title;
-	wstring _Text;
+    wstring _Title;
+    wstring _Text;
 };

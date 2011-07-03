@@ -27,616 +27,777 @@
 
 PSessionEditor CSessionWebDAV::CreateEditorInstance()
 {
-	return PSessionEditor(new CSessionEditorWebDAV(this));
+    return PSessionEditor(new CSessionEditorWebDAV(this));
 }
 
 
 PProtocol CSessionWebDAV::CreateClientInstance() const
 {
-	return PProtocol(new CWebDAV(this));
+    return PProtocol(new CWebDAV(this));
 }
 
 
-CWebDAV::CWebDAV(const CSession* session)
-	: CProtocolBase(session)
+CWebDAV::CWebDAV(const CSession *session)
+    : CProtocolBase(session)
 {
 }
 
 
 CWebDAV::~CWebDAV()
 {
-	Close();
+    Close();
 }
 
 
-bool CWebDAV::Connect(HANDLE abortEvent, wstring& errorInfo)
+bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
-	assert(abortEvent);
+    assert(abortEvent);
 
-	//Initialize curl
-	_CURL.Initialize(_Session.GetURL(), _Session.GetUserName(), _Session.GetPassword());
-	_CURL.SetAbortEvent(abortEvent);
+    //Initialize curl
+    _CURL.Initialize(_Session.GetURL(), _Session.GetUserName(), _Session.GetPassword());
+    _CURL.SetAbortEvent(abortEvent);
 
-	//Check initial path existing
-	wstring path;
-	ParseURL(_Session.GetURL(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
-	bool dirExist = false;
-	if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
-		return false;
-	_CurrentDirectory = path;
-	while(_CurrentDirectory.size() > 1 && _CurrentDirectory[_CurrentDirectory.length() - 1] == L'/')
-		_CurrentDirectory.erase(_CurrentDirectory.length() - 1);
-	return true;
+    //Check initial path existing
+    wstring path;
+    ParseURL(_Session.GetURL(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    bool dirExist = false;
+    if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
+    {
+        return false;
+    }
+    _CurrentDirectory = path;
+    while(_CurrentDirectory.size() > 1 && _CurrentDirectory[_CurrentDirectory.length() - 1] == L'/')
+    {
+        _CurrentDirectory.erase(_CurrentDirectory.length() - 1);
+    }
+    return true;
 }
 
 
 void CWebDAV::Close()
 {
-	_CURL.Close();
+    _CURL.Close();
 }
 
 
-bool CWebDAV::CheckExisting(const wchar_t* path, const ItemType type, bool& isExist, wstring& errorInfo)
+bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
-	assert(type == ItemDirectory);
+    assert(type == ItemDirectory);
 
-	string responseDummy;
-	isExist = SendPropFindRequest(path, responseDummy, errorInfo);
-	return true;
+    string responseDummy;
+    isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    return true;
 }
 
 
-bool CWebDAV::MakeDirectory(const wchar_t* path, wstring& errorInfo)
+bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
-	const string webDavPath = EscapeUTF8URL(path);
+    const string webDavPath = EscapeUTF8URL(path);
 
-	CURLcode urlCode = _CURL.Prepare(webDavPath.c_str());
-	CSlistURL slist;
-	slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
-	slist.Append("Content-Length: 0");
-	slist.Append("Connection: Keep-Alive");
-	CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "MKCOL"));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
-	CHECK_CUCALL(urlCode, _CURL.Perform());
-	if (urlCode != CURLE_OK) {
-		errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-		return false;
-	}
+    CURLcode urlCode = _CURL.Prepare(webDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "MKCOL"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CUCALL(urlCode, _CURL.Perform());
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
 
-	return CheckResponseCode(HTTP_STATUS_CREATED, errorInfo);
+    return CheckResponseCode(HTTP_STATUS_CREATED, errorInfo);
 }
 
 
-bool CWebDAV::GetList(PluginPanelItem** items, int* itemsNum, wstring& errorInfo)
+bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
-	assert(items);
-	assert(itemsNum);
+    assert(items);
+    assert(itemsNum);
 
-	string response;
-	if (!SendPropFindRequest(_CurrentDirectory.c_str(), response, errorInfo))
-		return false;
+    string response;
+    if (!SendPropFindRequest(_CurrentDirectory.c_str(), response, errorInfo))
+    {
+        return false;
+    }
 
-	//Erase slashes (to compare in xml parse)
-	wstring currentPath(_CurrentDirectory);
-	while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
-		currentPath.erase(currentPath.length() - 1);
-	while (!currentPath.empty() && currentPath[0] == L'/')
-		currentPath.erase(0, 1);
+    //Erase slashes (to compare in xml parse)
+    wstring currentPath(_CurrentDirectory);
+    while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
+    {
+        currentPath.erase(currentPath.length() - 1);
+    }
+    while (!currentPath.empty() && currentPath[0] == L'/')
+    {
+        currentPath.erase(0, 1);
+    }
 
-	const string decodedResp = DecodeHex(response);
+    const string decodedResp = DecodeHex(response);
 
 #ifdef _DEBUG
-	//////////////////////////////////////////////////////////////////////////
-	//CFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
-	//CFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
-	//////////////////////////////////////////////////////////////////////////
-#endif	//_DEBUG
+    //////////////////////////////////////////////////////////////////////////
+    //CFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
+    //CFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
+    //////////////////////////////////////////////////////////////////////////
+#endif  //_DEBUG
 
-	//! WebDAV item description
-	struct WebDAVItem {
-		WebDAVItem() : Attributes(0), Size(0) { LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0; }
-		wstring				Name;
-		DWORD				Attributes;
-		FILETIME			Created;
-		FILETIME			Modified;
-		FILETIME			LastAccess;
-		unsigned __int64	Size;
-	};
-	vector<WebDAVItem> wdavItems;
+    //! WebDAV item description
+    struct WebDAVItem
+    {
+        WebDAVItem() : Attributes(0), Size(0)
+        {
+            LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
+        }
+        wstring             Name;
+        DWORD               Attributes;
+        FILETIME            Created;
+        FILETIME            Modified;
+        FILETIME            LastAccess;
+        unsigned __int64    Size;
+    };
+    vector<WebDAVItem> wdavItems;
 
-	TiXmlDocument xmlDoc;
-	xmlDoc.Parse(decodedResp.c_str());
-	if (xmlDoc.Error()) {
-		errorInfo = L"Error parsing response xml:\n[";
-		wchar_t errNum[16];
-		_itow_s(xmlDoc.ErrorId(), errNum, 10);
-		errorInfo += errNum;
-		errorInfo += L"]: ";
-		errorInfo += CFarPlugin::MB2W(xmlDoc.ErrorDesc());
-		return false;
-	}
+    TiXmlDocument xmlDoc;
+    xmlDoc.Parse(decodedResp.c_str());
+    if (xmlDoc.Error())
+    {
+        errorInfo = L"Error parsing response xml:\n[";
+        wchar_t errNum[16];
+        _itow_s(xmlDoc.ErrorId(), errNum, 10);
+        errorInfo += errNum;
+        errorInfo += L"]: ";
+        errorInfo += CFarPlugin::MB2W(xmlDoc.ErrorDesc());
+        return false;
+    }
 
-	const TiXmlElement* xmlRoot = xmlDoc.RootElement();
+    const TiXmlElement *xmlRoot = xmlDoc.RootElement();
 
-	//Determine global namespace
-	const string glDavNs = GetNamespace(xmlRoot, "DAV:", "D:");
-	const string glMsNs = GetNamespace(xmlRoot, "urn:schemas-microsoft-com:", "Z:");
+    //Determine global namespace
+    const string glDavNs = GetNamespace(xmlRoot, "DAV:", "D:");
+    const string glMsNs = GetNamespace(xmlRoot, "urn:schemas-microsoft-com:", "Z:");
 
-	const TiXmlNode* xmlRespNode = NULL;
-	while ((xmlRespNode = xmlRoot->IterateChildren((glDavNs + "response").c_str(), xmlRespNode)) != NULL) {
-		WebDAVItem item;
+    const TiXmlNode *xmlRespNode = NULL;
+    while ((xmlRespNode = xmlRoot->IterateChildren((glDavNs + "response").c_str(), xmlRespNode)) != NULL)
+    {
+        WebDAVItem item;
 
-		const TiXmlElement* xmlRespElem = xmlRespNode->ToElement();
-		const string davNamespace = GetNamespace(xmlRespElem, "DAV:", glDavNs.c_str());
-		const string msNamespace = GetNamespace(xmlRespElem, "urn:schemas-microsoft-com:", glMsNs.c_str());
-		const TiXmlElement* xmlHref = xmlRespNode->FirstChildElement((glDavNs + "href").c_str());
-		if (!xmlHref || !xmlHref->GetText())
-			continue;
+        const TiXmlElement *xmlRespElem = xmlRespNode->ToElement();
+        const string davNamespace = GetNamespace(xmlRespElem, "DAV:", glDavNs.c_str());
+        const string msNamespace = GetNamespace(xmlRespElem, "urn:schemas-microsoft-com:", glMsNs.c_str());
+        const TiXmlElement *xmlHref = xmlRespNode->FirstChildElement((glDavNs + "href").c_str());
+        if (!xmlHref || !xmlHref->GetText())
+        {
+            continue;
+        }
 
-		const wstring href = CFarPlugin::MB2W(xmlHref->GetText(), CP_UTF8);
-		wstring path;
-		ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
-		if (path.empty())
-			path = href;
-		while (!path.empty() && path[path.length() - 1] == L'/')
-			path.erase(path.length() - 1);
-		while (!path.empty() && path[0] == L'/')
-			path.erase(0, 1);
+        const wstring href = CFarPlugin::MB2W(xmlHref->GetText(), CP_UTF8);
+        wstring path;
+        ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
+        if (path.empty())
+        {
+            path = href;
+        }
+        while (!path.empty() && path[path.length() - 1] == L'/')
+        {
+            path.erase(path.length() - 1);
+        }
+        while (!path.empty() && path[0] == L'/')
+        {
+            path.erase(0, 1);
+        }
 
-		//Check for self-link (compare paths)
-		if (_wcsicmp(path.c_str(), currentPath.c_str()) == 0)
-			continue;
+        //Check for self-link (compare paths)
+        if (_wcsicmp(path.c_str(), currentPath.c_str()) == 0)
+        {
+            continue;
+        }
 
-		//name
-		item.Name = path;
-		const size_t nameDelim = item.Name.rfind(L'/');	//Save only name without full path
-		if (nameDelim != string::npos)
-			item.Name.erase(0, nameDelim + 1);
+        //name
+        item.Name = path;
+        const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
+        if (nameDelim != string::npos)
+        {
+            item.Name.erase(0, nameDelim + 1);
+        }
 
-		//Find correct 'propstat' node (with HTTP 200 OK status)
-		const TiXmlElement* xmlProps = NULL;
-		const TiXmlNode* xmlPropsNode = NULL;
-		while (xmlProps == NULL && (xmlPropsNode = xmlRespNode->IterateChildren((glDavNs + "propstat").c_str(), xmlPropsNode)) != NULL) {
-			const TiXmlElement* xmlStatus = xmlPropsNode->FirstChildElement((glDavNs + "status").c_str());
-			if (xmlStatus && strstr(xmlStatus->GetText(), "200"))
-				xmlProps = xmlPropsNode->FirstChildElement((glDavNs + "prop").c_str());
-		}
-		if (xmlProps) {
-			/************************************************************************/
-			/* WebDAV [D:] (DAV:)
-			/************************************************************************/
-			//attributes
-			const TiXmlElement* xmlResType = xmlProps->FirstChildElement((davNamespace + "resourcetype").c_str());
-			if (xmlResType && xmlResType->FirstChildElement((glDavNs + "collection").c_str()))
-				item.Attributes = FILE_ATTRIBUTE_DIRECTORY;
+        //Find correct 'propstat' node (with HTTP 200 OK status)
+        const TiXmlElement *xmlProps = NULL;
+        const TiXmlNode *xmlPropsNode = NULL;
+        while (xmlProps == NULL && (xmlPropsNode = xmlRespNode->IterateChildren((glDavNs + "propstat").c_str(), xmlPropsNode)) != NULL)
+        {
+            const TiXmlElement *xmlStatus = xmlPropsNode->FirstChildElement((glDavNs + "status").c_str());
+            if (xmlStatus && strstr(xmlStatus->GetText(), "200"))
+            {
+                xmlProps = xmlPropsNode->FirstChildElement((glDavNs + "prop").c_str());
+            }
+        }
+        if (xmlProps)
+        {
+            /************************************************************************/
+            /* WebDAV [D:] (DAV:)
+            /************************************************************************/
+            //attributes
+            const TiXmlElement *xmlResType = xmlProps->FirstChildElement((davNamespace + "resourcetype").c_str());
+            if (xmlResType && xmlResType->FirstChildElement((glDavNs + "collection").c_str()))
+            {
+                item.Attributes = FILE_ATTRIBUTE_DIRECTORY;
+            }
 
-			//size
-			const TiXmlElement* xmlSize = xmlProps->FirstChildElement((davNamespace + "getcontentlength").c_str());
-			if (xmlSize && xmlSize->GetText())
-				item.Size = _atoi64(xmlSize->GetText());
+            //size
+            const TiXmlElement *xmlSize = xmlProps->FirstChildElement((davNamespace + "getcontentlength").c_str());
+            if (xmlSize && xmlSize->GetText())
+            {
+                item.Size = _atoi64(xmlSize->GetText());
+            }
 
-			//creation datetime
-			const TiXmlElement* xmlCrDate = xmlProps->FirstChildElement((davNamespace + "creationdate").c_str());
-			if (xmlCrDate && xmlCrDate->GetText())
-				item.Created = ParseDateTime(xmlCrDate->GetText());
+            //creation datetime
+            const TiXmlElement *xmlCrDate = xmlProps->FirstChildElement((davNamespace + "creationdate").c_str());
+            if (xmlCrDate && xmlCrDate->GetText())
+            {
+                item.Created = ParseDateTime(xmlCrDate->GetText());
+            }
 
-			//last modified datetime
-			const TiXmlElement* xmlLmDate = xmlProps->FirstChildElement((davNamespace + "getlastmodified").c_str());
-			if (xmlLmDate && xmlLmDate->GetText())
-				item.Modified = ParseDateTime(xmlLmDate->GetText());
-			
-			/************************************************************************/
-			/* Win32 [Z:] (urn:schemas-microsoft-com)
-			/************************************************************************/
-			//last access datetime
-			const TiXmlElement* xmlLaDate = xmlProps->FirstChildElement((msNamespace + "Win32LastAccessTime").c_str());
-			if (xmlLaDate && xmlLaDate->GetText())
-				item.LastAccess = ParseDateTime(xmlLaDate->GetText());
+            //last modified datetime
+            const TiXmlElement *xmlLmDate = xmlProps->FirstChildElement((davNamespace + "getlastmodified").c_str());
+            if (xmlLmDate && xmlLmDate->GetText())
+            {
+                item.Modified = ParseDateTime(xmlLmDate->GetText());
+            }
 
-			//attributes
-			const TiXmlElement* xmlAttr = xmlProps->FirstChildElement((msNamespace + "Win32FileAttributes").c_str());
-			if (xmlAttr && xmlAttr->GetText()) {
-				DWORD attr = 0;
-				sscanf_s(xmlAttr->GetText(), "%x", &attr);
-				item.Attributes |= attr;
-			}
-		}
-		wdavItems.push_back(item);
-	}
+            /************************************************************************/
+            /* Win32 [Z:] (urn:schemas-microsoft-com)
+            /************************************************************************/
+            //last access datetime
+            const TiXmlElement *xmlLaDate = xmlProps->FirstChildElement((msNamespace + "Win32LastAccessTime").c_str());
+            if (xmlLaDate && xmlLaDate->GetText())
+            {
+                item.LastAccess = ParseDateTime(xmlLaDate->GetText());
+            }
 
-	*itemsNum = static_cast<int>(wdavItems.size());
-	if (*itemsNum) {
-		*items = new PluginPanelItem[*itemsNum];
-		ZeroMemory(*items, sizeof(PluginPanelItem) * (*itemsNum));
-		for (int i = 0; i < *itemsNum; ++i) {
-			PluginPanelItem& farItem = (*items)[i];
-			const size_t nameSize = wdavItems[i].Name.length() + 1;
-			wchar_t* name = new wchar_t[nameSize];
-			wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
-			farItem.FindData.lpwszFileName = name;
-			farItem.FindData.dwFileAttributes = wdavItems[i].Attributes;
-			if ((farItem.FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
-				farItem.FindData.nFileSize = wdavItems[i].Size;
-			farItem.FindData.ftCreationTime = wdavItems[i].Created;
-			farItem.FindData.ftLastWriteTime = wdavItems[i].Modified;
-			farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
-		}
-	}
+            //attributes
+            const TiXmlElement *xmlAttr = xmlProps->FirstChildElement((msNamespace + "Win32FileAttributes").c_str());
+            if (xmlAttr && xmlAttr->GetText())
+            {
+                DWORD attr = 0;
+                sscanf_s(xmlAttr->GetText(), "%x", &attr);
+                item.Attributes |= attr;
+            }
+        }
+        wdavItems.push_back(item);
+    }
 
-	return true;
+    *itemsNum = static_cast<int>(wdavItems.size());
+    if (*itemsNum)
+    {
+        *items = new PluginPanelItem[*itemsNum];
+        ZeroMemory(*items, sizeof(PluginPanelItem) * (*itemsNum));
+        for (int i = 0; i < *itemsNum; ++i)
+        {
+            PluginPanelItem &farItem = (*items)[i];
+            const size_t nameSize = wdavItems[i].Name.length() + 1;
+            wchar_t *name = new wchar_t[nameSize];
+            wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
+            farItem.FindData.lpwszFileName = name;
+            farItem.FindData.dwFileAttributes = wdavItems[i].Attributes;
+            if ((farItem.FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+            {
+                farItem.FindData.nFileSize = wdavItems[i].Size;
+            }
+            farItem.FindData.ftCreationTime = wdavItems[i].Created;
+            farItem.FindData.ftLastWriteTime = wdavItems[i].Modified;
+            farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
+        }
+    }
+
+    return true;
 }
 
 
-bool CWebDAV::GetFile(const wchar_t* remotePath, const wchar_t* localPath, const unsigned __int64 /*fileSize*/, wstring& errorInfo)
+bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
-	assert(localPath && *localPath);
+    assert(localPath && *localPath);
 
-	CFile outFile;
-	if (!outFile.OpenWrite(localPath)) {
-		errorInfo = FormatErrorDescription(outFile.LastError());
-		return false;
-	}
+    CFile outFile;
+    if (!outFile.OpenWrite(localPath))
+    {
+        errorInfo = FormatErrorDescription(outFile.LastError());
+        return false;
+    }
 
-	const string webDavPath = EscapeUTF8URL(remotePath);
+    const string webDavPath = EscapeUTF8URL(remotePath);
 
-	CURLcode urlCode = _CURL.Prepare(webDavPath.c_str(), false);
-	CSlistURL slist;
-	slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
-	slist.Append("Content-Length: 0");
-	slist.Append("Connection: Keep-Alive");
-	CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
-	CHECK_CUCALL(urlCode, _CURL.SetOutput(&outFile, &_ProgressPercent));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
-	CHECK_CUCALL(urlCode, _CURL.Perform());
-	
-	outFile.Close();
-	_ProgressPercent = -1;
+    CURLcode urlCode = _CURL.Prepare(webDavPath.c_str(), false);
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
+    CHECK_CUCALL(urlCode, _CURL.SetOutput(&outFile, &_ProgressPercent));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CUCALL(urlCode, _CURL.Perform());
 
-	if (urlCode != CURLE_OK) {
-		errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-		return false;
-	}
+    outFile.Close();
+    _ProgressPercent = -1;
 
-	return CheckResponseCode(HTTP_STATUS_OK, errorInfo);
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_OK, errorInfo);
 }
 
 
-bool CWebDAV::PutFile(const wchar_t* remotePath, const wchar_t* localPath, const unsigned __int64 /*fileSize*/, wstring& errorInfo)
+bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
-	assert(localPath && *localPath);
+    assert(localPath && *localPath);
 
-	CFile inFile;
-	if (!inFile.OpenRead(localPath)) {
-		errorInfo = FormatErrorDescription(inFile.LastError());
-		return false;
-	}
+    CFile inFile;
+    if (!inFile.OpenRead(localPath))
+    {
+        errorInfo = FormatErrorDescription(inFile.LastError());
+        return false;
+    }
 
-	const string webDavPath = EscapeUTF8URL(remotePath);
-	CURLcode urlCode = _CURL.Prepare(webDavPath.c_str(), false);
-	CSlistURL slist;
-	slist.Append("Expect:");	//Expect: 100-continue is not wanted
-	slist.Append("Connection: Keep-Alive");
-	CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
-	CHECK_CUCALL(urlCode, _CURL.SetInput(&inFile, &_ProgressPercent));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
-	CHECK_CUCALL(urlCode, _CURL.Perform());
+    const string webDavPath = EscapeUTF8URL(remotePath);
+    CURLcode urlCode = _CURL.Prepare(webDavPath.c_str(), false);
+    CSlistURL slist;
+    slist.Append("Expect:");    //Expect: 100-continue is not wanted
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
+    CHECK_CUCALL(urlCode, _CURL.SetInput(&inFile, &_ProgressPercent));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CUCALL(urlCode, _CURL.Perform());
 
-	inFile.Close();
-	_ProgressPercent = -1;
+    inFile.Close();
+    _ProgressPercent = -1;
 
-	if (urlCode != CURLE_OK) {
-		errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-		return false;
-	}
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
 
-	return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
 }
 
 
-bool CWebDAV::Rename(const wchar_t* srcPath, const wchar_t* dstPath, const ItemType /*type*/, wstring& errorInfo)
+bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
 {
-	const string srcWebDavPath = EscapeUTF8URL(srcPath);
-	const string dstWebDavPath = EscapeUTF8URL(dstPath);
+    const string srcWebDavPath = EscapeUTF8URL(srcPath);
+    const string dstWebDavPath = EscapeUTF8URL(dstPath);
 
-	CURLcode urlCode = _CURL.Prepare(srcWebDavPath.c_str());
-	CSlistURL slist;
-	slist.Append("Depth: infinity");
-	slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
-	slist.Append("Content-Length: 0");
-	string dstParam = "Destination: ";
-	dstParam += _CURL.GetTopURL();
-	dstParam += dstWebDavPath;
-	slist.Append(dstParam.c_str());
-	slist.Append("Connection: Keep-Alive");
-	CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "MOVE"));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
-	CHECK_CUCALL(urlCode, _CURL.Perform());
+    CURLcode urlCode = _CURL.Prepare(srcWebDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Depth: infinity");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    string dstParam = "Destination: ";
+    dstParam += _CURL.GetTopURL();
+    dstParam += dstWebDavPath;
+    slist.Append(dstParam.c_str());
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "MOVE"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CUCALL(urlCode, _CURL.Perform());
 
-	if (urlCode != CURLE_OK) {
-		errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-		return false;
-	}
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
 
-	return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
 }
 
 
-bool CWebDAV::Delete(const wchar_t* path, const ItemType /*type*/, wstring& errorInfo)
+bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &errorInfo)
 {
-	const string webDavPath = EscapeUTF8URL(path);
-	
-	CURLcode urlCode = _CURL.Prepare(webDavPath.c_str());
-	CSlistURL slist;
-	slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
-	slist.Append("Content-Length: 0");
-	slist.Append("Connection: Keep-Alive");
-	CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "DELETE"));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
-	CHECK_CUCALL(urlCode, _CURL.Perform());
+    const string webDavPath = EscapeUTF8URL(path);
 
-	if (urlCode != CURLE_OK) {
-		errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-		return false;
-	}
+    CURLcode urlCode = _CURL.Prepare(webDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "DELETE"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CUCALL(urlCode, _CURL.Perform());
 
-	return CheckResponseCode(HTTP_STATUS_NO_CONTENT, errorInfo);
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_NO_CONTENT, errorInfo);
 }
 
 
-bool CWebDAV::SendPropFindRequest(const wchar_t* dir, string& response, wstring& errInfo)
+bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
-	const string webDavPath = EscapeUTF8URL(dir);
+    const string webDavPath = EscapeUTF8URL(dir);
 
-	response.clear();
+    response.clear();
 
-	static const char* requestData =
-		"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-		"<D:propfind xmlns:D=\"DAV:\">"
-			"<D:prop xmlns:Z=\"urn:schemas-microsoft-com:\">"
-				"<D:resourcetype/>"
-				"<D:getcontentlength/>"
-				"<D:creationdate/>"
-				"<D:getlastmodified/>"
-				"<Z:Win32LastAccessTime/>"
-				"<Z:Win32FileAttributes/>"
-			"</D:prop>"
-		"</D:propfind>";
+    static const char *requestData =
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        "<D:propfind xmlns:D=\"DAV:\">"
+        "<D:prop xmlns:Z=\"urn:schemas-microsoft-com:\">"
+        "<D:resourcetype/>"
+        "<D:getcontentlength/>"
+        "<D:creationdate/>"
+        "<D:getlastmodified/>"
+        "<Z:Win32LastAccessTime/>"
+        "<Z:Win32FileAttributes/>"
+        "</D:prop>"
+        "</D:propfind>";
 
-	static const size_t requestDataLen = strlen(requestData);
+    static const size_t requestDataLen = strlen(requestData);
 
-	CURLcode urlCode = _CURL.Prepare(webDavPath.c_str());
-	CHECK_CUCALL(urlCode, _CURL.SetOutput(&response, &_ProgressPercent));
+    CURLcode urlCode = _CURL.Prepare(webDavPath.c_str());
+    CHECK_CUCALL(urlCode, _CURL.SetOutput(&response, &_ProgressPercent));
 
-	CSlistURL slist;
-	slist.Append("Depth: 1");
-	slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
-	char contentLength[64];
-	sprintf_s(contentLength, "Content-Length: %d", requestDataLen);
-	slist.Append(contentLength);
-	slist.Append("Connection: Keep-Alive");
+    CSlistURL slist;
+    slist.Append("Depth: 1");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    char contentLength[64];
+    sprintf_s(contentLength, "Content-Length: %d", requestDataLen);
+    slist.Append(contentLength);
+    slist.Append("Connection: Keep-Alive");
 
-	CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "PROPFIND"));	
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_FOLLOWLOCATION, 1));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_MAXREDIRS, 5));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_POSTFIELDS, requestData));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_POSTFIELDSIZE, requestDataLen));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-	CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
-	CHECK_CUCALL(urlCode, _CURL.Perform());
-	if (urlCode != CURLE_OK) {
-		errInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-		return false;
-	}
+    CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_CUSTOMREQUEST, "PROPFIND"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_MAXREDIRS, 5));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_POSTFIELDS, requestData));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_POSTFIELDSIZE, requestDataLen));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CUCALL(urlCode, _CURL.Perform());
+    if (urlCode != CURLE_OK)
+    {
+        errInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
 
-	if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
-		return false;
+    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
+    {
+        return false;
+    }
 
-	if (response.empty()) {
-		errInfo = L"Server return empty response";
-		return false;
-	}
+    if (response.empty())
+    {
+        errInfo = L"Server return empty response";
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 
-bool CWebDAV::CheckResponseCode(const long expect, wstring& errInfo)
+bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
 {
-	long responseCode = 0;
-	if (curl_easy_getinfo(_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK) {
-		if (responseCode != expect) {
-			errInfo = GetBadResponseInfo(responseCode);
-			return false;
-		}
-	}
-	return true;
+    long responseCode = 0;
+    if (curl_easy_getinfo(_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            return false;
+        }
+    }
+    return true;
 }
 
 
-bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, wstring& errInfo)
+bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, wstring &errInfo)
 {
-	long responseCode = 0;
-	if (curl_easy_getinfo(_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK) {
-		if (responseCode != expect1 && responseCode != expect2) {
-			errInfo = GetBadResponseInfo(responseCode);
-			return false;
-		}
-	}
-	return true;
+    long responseCode = 0;
+    if (curl_easy_getinfo(_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect1 && responseCode != expect2)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            return false;
+        }
+    }
+    return true;
 }
 
 
 wstring CWebDAV::GetBadResponseInfo(const int code) const
 {
-	const wchar_t* descr = NULL;
-	switch (code) {
-		case HTTP_STATUS_CONTINUE           : descr = L"OK to continue with request"; break;
-		case HTTP_STATUS_SWITCH_PROTOCOLS   : descr = L"Server has switched protocols in upgrade header"; break;
-		case HTTP_STATUS_OK                 : descr = L"Request completed"; break;
-		case HTTP_STATUS_CREATED            : descr = L"Object created, reason = new URI"; break;
-		case HTTP_STATUS_ACCEPTED           : descr = L"Async completion (TBS)"; break;
-		case HTTP_STATUS_PARTIAL            : descr = L"Partial completion"; break;
-		case HTTP_STATUS_NO_CONTENT         : descr = L"No info to return"; break;
-		case HTTP_STATUS_RESET_CONTENT      : descr = L"Request completed, but clear form"; break;
-		case HTTP_STATUS_PARTIAL_CONTENT    : descr = L"Partial GET furfilled"; break;
-		case HTTP_STATUS_WEBDAV_MULTI_STATUS: descr = L"WebDAV Multi-Status"; break;
-		case HTTP_STATUS_AMBIGUOUS          : descr = L"Server couldn't decide what to return"; break;
-		case HTTP_STATUS_MOVED              : descr = L"Object permanently moved"; break;
-		case HTTP_STATUS_REDIRECT           : descr = L"Object temporarily moved"; break;
-		case HTTP_STATUS_REDIRECT_METHOD    : descr = L"Redirection w/ new access method"; break;
-		case HTTP_STATUS_NOT_MODIFIED       : descr = L"If-modified-since was not modified"; break;
-		case HTTP_STATUS_USE_PROXY          : descr = L"Redirection to proxy, location header specifies proxy to use"; break;
-		case HTTP_STATUS_REDIRECT_KEEP_VERB : descr = L"HTTP/1.1: keep same verb"; break;
-		case HTTP_STATUS_BAD_REQUEST        : descr = L"Invalid syntax"; break;
-		case HTTP_STATUS_DENIED             : descr = L"Access denied"; break;
-		case HTTP_STATUS_PAYMENT_REQ        : descr = L"Payment required"; break;
-		case HTTP_STATUS_FORBIDDEN          : descr = L"Request forbidden"; break;
-		case HTTP_STATUS_NOT_FOUND          : descr = L"Object not found"; break;
-		case HTTP_STATUS_BAD_METHOD         : descr = L"Method is not allowed"; break;
-		case HTTP_STATUS_NONE_ACCEPTABLE    : descr = L"No response acceptable to client found"; break;
-		case HTTP_STATUS_PROXY_AUTH_REQ     : descr = L"Proxy authentication required"; break;
-		case HTTP_STATUS_REQUEST_TIMEOUT    : descr = L"Server timed out waiting for request"; break;
-		case HTTP_STATUS_CONFLICT           : descr = L"User should resubmit with more info"; break;
-		case HTTP_STATUS_GONE               : descr = L"The resource is no longer available"; break;
-		case HTTP_STATUS_LENGTH_REQUIRED    : descr = L"The server refused to accept request w/o a length"; break;
-		case HTTP_STATUS_PRECOND_FAILED     : descr = L"Precondition given in request failed"; break;
-		case HTTP_STATUS_REQUEST_TOO_LARGE  : descr = L"Request entity was too large"; break;
-		case HTTP_STATUS_URI_TOO_LONG       : descr = L"Request URI too long"; break;
-		case HTTP_STATUS_UNSUPPORTED_MEDIA  : descr = L"Unsupported media type"; break;
-		case 416                            : descr = L"Requested Range Not Satisfiable"; break;
-		case 417                            : descr = L"Expectation Failed"; break;
-		case HTTP_STATUS_RETRY_WITH         : descr = L"Retry after doing the appropriate action"; break;
-		case HTTP_STATUS_SERVER_ERROR       : descr = L"Internal server error"; break;
-		case HTTP_STATUS_NOT_SUPPORTED      : descr = L"Required not supported"; break;
-		case HTTP_STATUS_BAD_GATEWAY        : descr = L"Error response received from gateway"; break;
-		case HTTP_STATUS_SERVICE_UNAVAIL    : descr = L"Temporarily overloaded"; break;
-		case HTTP_STATUS_GATEWAY_TIMEOUT    : descr = L"Timed out waiting for gateway"; break;
-		case HTTP_STATUS_VERSION_NOT_SUP    : descr = L"HTTP version not supported"; break;
-	}
+    const wchar_t *descr = NULL;
+    switch (code)
+    {
+    case HTTP_STATUS_CONTINUE           :
+        descr = L"OK to continue with request";
+        break;
+    case HTTP_STATUS_SWITCH_PROTOCOLS   :
+        descr = L"Server has switched protocols in upgrade header";
+        break;
+    case HTTP_STATUS_OK                 :
+        descr = L"Request completed";
+        break;
+    case HTTP_STATUS_CREATED            :
+        descr = L"Object created, reason = new URI";
+        break;
+    case HTTP_STATUS_ACCEPTED           :
+        descr = L"Async completion (TBS)";
+        break;
+    case HTTP_STATUS_PARTIAL            :
+        descr = L"Partial completion";
+        break;
+    case HTTP_STATUS_NO_CONTENT         :
+        descr = L"No info to return";
+        break;
+    case HTTP_STATUS_RESET_CONTENT      :
+        descr = L"Request completed, but clear form";
+        break;
+    case HTTP_STATUS_PARTIAL_CONTENT    :
+        descr = L"Partial GET furfilled";
+        break;
+    case HTTP_STATUS_WEBDAV_MULTI_STATUS:
+        descr = L"WebDAV Multi-Status";
+        break;
+    case HTTP_STATUS_AMBIGUOUS          :
+        descr = L"Server couldn't decide what to return";
+        break;
+    case HTTP_STATUS_MOVED              :
+        descr = L"Object permanently moved";
+        break;
+    case HTTP_STATUS_REDIRECT           :
+        descr = L"Object temporarily moved";
+        break;
+    case HTTP_STATUS_REDIRECT_METHOD    :
+        descr = L"Redirection w/ new access method";
+        break;
+    case HTTP_STATUS_NOT_MODIFIED       :
+        descr = L"If-modified-since was not modified";
+        break;
+    case HTTP_STATUS_USE_PROXY          :
+        descr = L"Redirection to proxy, location header specifies proxy to use";
+        break;
+    case HTTP_STATUS_REDIRECT_KEEP_VERB :
+        descr = L"HTTP/1.1: keep same verb";
+        break;
+    case HTTP_STATUS_BAD_REQUEST        :
+        descr = L"Invalid syntax";
+        break;
+    case HTTP_STATUS_DENIED             :
+        descr = L"Access denied";
+        break;
+    case HTTP_STATUS_PAYMENT_REQ        :
+        descr = L"Payment required";
+        break;
+    case HTTP_STATUS_FORBIDDEN          :
+        descr = L"Request forbidden";
+        break;
+    case HTTP_STATUS_NOT_FOUND          :
+        descr = L"Object not found";
+        break;
+    case HTTP_STATUS_BAD_METHOD         :
+        descr = L"Method is not allowed";
+        break;
+    case HTTP_STATUS_NONE_ACCEPTABLE    :
+        descr = L"No response acceptable to client found";
+        break;
+    case HTTP_STATUS_PROXY_AUTH_REQ     :
+        descr = L"Proxy authentication required";
+        break;
+    case HTTP_STATUS_REQUEST_TIMEOUT    :
+        descr = L"Server timed out waiting for request";
+        break;
+    case HTTP_STATUS_CONFLICT           :
+        descr = L"User should resubmit with more info";
+        break;
+    case HTTP_STATUS_GONE               :
+        descr = L"The resource is no longer available";
+        break;
+    case HTTP_STATUS_LENGTH_REQUIRED    :
+        descr = L"The server refused to accept request w/o a length";
+        break;
+    case HTTP_STATUS_PRECOND_FAILED     :
+        descr = L"Precondition given in request failed";
+        break;
+    case HTTP_STATUS_REQUEST_TOO_LARGE  :
+        descr = L"Request entity was too large";
+        break;
+    case HTTP_STATUS_URI_TOO_LONG       :
+        descr = L"Request URI too long";
+        break;
+    case HTTP_STATUS_UNSUPPORTED_MEDIA  :
+        descr = L"Unsupported media type";
+        break;
+    case 416                            :
+        descr = L"Requested Range Not Satisfiable";
+        break;
+    case 417                            :
+        descr = L"Expectation Failed";
+        break;
+    case HTTP_STATUS_RETRY_WITH         :
+        descr = L"Retry after doing the appropriate action";
+        break;
+    case HTTP_STATUS_SERVER_ERROR       :
+        descr = L"Internal server error";
+        break;
+    case HTTP_STATUS_NOT_SUPPORTED      :
+        descr = L"Required not supported";
+        break;
+    case HTTP_STATUS_BAD_GATEWAY        :
+        descr = L"Error response received from gateway";
+        break;
+    case HTTP_STATUS_SERVICE_UNAVAIL    :
+        descr = L"Temporarily overloaded";
+        break;
+    case HTTP_STATUS_GATEWAY_TIMEOUT    :
+        descr = L"Timed out waiting for gateway";
+        break;
+    case HTTP_STATUS_VERSION_NOT_SUP    :
+        descr = L"HTTP version not supported";
+        break;
+    }
 
-	wstring errInfo = L"Incorrect response code: ";
+    wstring errInfo = L"Incorrect response code: ";
 
-	wchar_t codeText[16];
-	_itow_s(code, codeText, 10);
-	errInfo += codeText;
+    wchar_t codeText[16];
+    _itow_s(code, codeText, 10);
+    errInfo += codeText;
 
-	if (descr) {
-		errInfo += L' ';
-		errInfo += descr;
-	}
+    if (descr)
+    {
+        errInfo += L' ';
+        errInfo += descr;
+    }
 
-	return errInfo;
+    return errInfo;
 }
 
 
-string CWebDAV::GetNamespace(const TiXmlElement* element, const char* name, const char* defaultVal) const
+string CWebDAV::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
 {
-	assert(element);
-	assert(name);
-	assert(defaultVal);
+    assert(element);
+    assert(name);
+    assert(defaultVal);
 
-	string ns = defaultVal;
-	const TiXmlAttribute* attr = element->FirstAttribute();
-	while (attr) {
-		if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0) {
-			ns = attr->Name();
-			ns.erase(0, ns.find(':') + 1);
-			ns += ':';
-			break;
-		}
-		attr = attr->Next();
-	}
-	return ns;
+    string ns = defaultVal;
+    const TiXmlAttribute *attr = element->FirstAttribute();
+    while (attr)
+    {
+        if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
+        {
+            ns = attr->Name();
+            ns.erase(0, ns.find(':') + 1);
+            ns += ':';
+            break;
+        }
+        attr = attr->Next();
+    }
+    return ns;
 }
 
 
-FILETIME CWebDAV::ParseDateTime(const char* dt) const
+FILETIME CWebDAV::ParseDateTime(const char *dt) const
 {
-	assert(dt);
+    assert(dt);
 
-	FILETIME ft;
-	ZeroMemory(&ft, sizeof(ft));
-	SYSTEMTIME st;
-	ZeroMemory(&st, sizeof(st));
+    FILETIME ft;
+    ZeroMemory(&ft, sizeof(ft));
+    SYSTEMTIME st;
+    ZeroMemory(&st, sizeof(st));
 
-	if (WinHttpTimeToSystemTime(CFarPlugin::MB2W(dt).c_str(), &st))
-		SystemTimeToFileTime(&st, &ft);
-	else if (strlen(dt) > 18) {
-		//rfc 3339 date-time
-		st.wYear =   static_cast<WORD>(atoi(dt +  0));
-		st.wMonth =  static_cast<WORD>(atoi(dt +  5));
-		st.wDay =    static_cast<WORD>(atoi(dt +  8));
-		st.wHour =   static_cast<WORD>(atoi(dt + 11));
-		st.wMinute = static_cast<WORD>(atoi(dt + 14));
-		st.wSecond = static_cast<WORD>(atoi(dt + 17));
-		SystemTimeToFileTime(&st, &ft);
-	}
+    if (WinHttpTimeToSystemTime(CFarPlugin::MB2W(dt).c_str(), &st))
+    {
+        SystemTimeToFileTime(&st, &ft);
+    }
+    else if (strlen(dt) > 18)
+    {
+        //rfc 3339 date-time
+        st.wYear =   static_cast<WORD>(atoi(dt +  0));
+        st.wMonth =  static_cast<WORD>(atoi(dt +  5));
+        st.wDay =    static_cast<WORD>(atoi(dt +  8));
+        st.wHour =   static_cast<WORD>(atoi(dt + 11));
+        st.wMinute = static_cast<WORD>(atoi(dt + 14));
+        st.wSecond = static_cast<WORD>(atoi(dt + 17));
+        SystemTimeToFileTime(&st, &ft);
+    }
 
-	return ft;
+    return ft;
 }
 
 
-string CWebDAV::DecodeHex(const string& src) const
+string CWebDAV::DecodeHex(const string &src) const
 {
-	const size_t cntLength = src.length();
-	string result;
-	result.reserve(cntLength);
+    const size_t cntLength = src.length();
+    string result;
+    result.reserve(cntLength);
 
-	for (size_t i = 0; i < cntLength; ++i) {
-		const char chkChar = src[i];
-		if (chkChar != L'%' || (i + 2 >= cntLength) || !IsHexadecimal(src[i + 1]) || !IsHexadecimal(src[i + 2]))
-			result += chkChar;
-		else {
-			const char ch1 = src[i + 1];
-			const char ch2 = src[i + 2];			
-			const char encChar = (((ch1 & 0xf) + ((ch1 >= 'A') ? 9 : 0)) << 4) | ((ch2 & 0xf) + ((ch2 >= 'A') ? 9 : 0));
-			result += encChar;
-			i += 2;
-		}
-	}
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = src[i];
+        if (chkChar != L'%' || (i + 2 >= cntLength) || !IsHexadecimal(src[i + 1]) || !IsHexadecimal(src[i + 2]))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            const char ch1 = src[i + 1];
+            const char ch2 = src[i + 2];
+            const char encChar = (((ch1 & 0xf) + ((ch1 >= 'A') ? 9 : 0)) << 4) | ((ch2 & 0xf) + ((ch2 >= 'A') ? 9 : 0));
+            result += encChar;
+            i += 2;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 
-string CWebDAV::EscapeUTF8URL(const wchar_t* src) const
+string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
 {
-	assert(src && src[0] == L'/');
+    assert(src && src[0] == L'/');
 
-	string plainText = CFarPlugin::W2MB(src, CP_UTF8);
-	const size_t cntLength = plainText.length();
+    string plainText = CFarPlugin::W2MB(src, CP_UTF8);
+    const size_t cntLength = plainText.length();
 
-	string result;
-	result.reserve(cntLength);
+    string result;
+    result.reserve(cntLength);
 
-	static const char permitSymbols[] = "/;@&=+$,-_.!~'()#%{}^[]`";
+    static const char permitSymbols[] = "/;@&=+$,-_.!~'()#%{}^[]`";
 
-	for (size_t i = 0; i < cntLength; ++i) {
-		const char chkChar = plainText[i];
-		if (*find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
-			(chkChar >= 'a' && chkChar <= 'z') ||
-			(chkChar >= 'A' && chkChar <= 'Z') ||
-			(chkChar >= '0' && chkChar <= '9'))
-			result += chkChar;
-		else {
-			char encChar[4];
-			sprintf_s(encChar, "%%%02X", static_cast<unsigned char>(chkChar));
-			result += encChar;
-		}
-	}
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = plainText[i];
+        if (*find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
+                (chkChar >= 'a' && chkChar <= 'z') ||
+                (chkChar >= 'A' && chkChar <= 'Z') ||
+                (chkChar >= '0' && chkChar <= '9'))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            char encChar[4];
+            sprintf_s(encChar, "%%%02X", static_cast<unsigned char>(chkChar));
+            result += encChar;
+        }
+    }
 
-	return result;
+    return result;
 }

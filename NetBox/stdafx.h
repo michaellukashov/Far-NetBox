@@ -48,7 +48,7 @@ wstring GetSystemErrorMessage(const DWORD errCode);
  * \param userName user name
  * \param password password
  */
-void ParseURL(const wchar_t* url, wstring* scheme, wstring* hostName, unsigned short* port, wstring* path, wstring* query, wstring* userName, wstring* password);
+void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned short *port, wstring *path, wstring *query, wstring *userName, wstring *password);
 
 /**
  * Convert unix time to file time

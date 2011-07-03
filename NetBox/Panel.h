@@ -28,130 +28,136 @@
 class CPanel
 {
 public:
-	CPanel(const bool exitToSessionMgr);
-	~CPanel();
+    CPanel(const bool exitToSessionMgr);
+    ~CPanel();
 
-	/**
-	 * Open connection
-	 * \param protoImpl client's protocol implementation
-	 * \return false if error
-	 */
-	bool OpenConnection(IProtocol* protoImpl);
+    /**
+     * Open connection
+     * \param protoImpl client's protocol implementation
+     * \return false if error
+     */
+    bool OpenConnection(IProtocol *protoImpl);
 
-	/**
-	 * Close connection
-	 */
-	void CloseConnection();
+    /**
+     * Close connection
+     */
+    void CloseConnection();
 
-	/**
-	 * Get open plugin (panel) info
-	 * \param pluginInfo pointer to info structure
-	 */
-	void GetOpenPluginInfo(OpenPluginInfo* pluginInfo);
+    /**
+     * Get open plugin (panel) info
+     * \param pluginInfo pointer to info structure
+     */
+    void GetOpenPluginInfo(OpenPluginInfo *pluginInfo);
 
-	/**
-	 * Process key press event
-	 * \param key key code
-	 * \param controlState keyboard control state
-	 * \return FAR's return code for ProcessKeyW
-	 */
-	int ProcessKey(const int key, const unsigned int controlState);
+    /**
+     * Process key press event
+     * \param key key code
+     * \param controlState keyboard control state
+     * \return FAR's return code for ProcessKeyW
+     */
+    int ProcessKey(const int key, const unsigned int controlState);
 
-	/**
-	 * Change directory
-	 * \param dir new directory
-	 * \param opMode operation mode
-	 * \return FAR's return code for SetDirectoryW
-	 */
-	int ChangeDirectory(const wchar_t* dir, const int opMode);
+    /**
+     * Change directory
+     * \param dir new directory
+     * \param opMode operation mode
+     * \return FAR's return code for SetDirectoryW
+     */
+    int ChangeDirectory(const wchar_t *dir, const int opMode);
 
-	/**
-	 * Make directory
-	 * \param name initial directory name
-	 * \param opMode operation mode
-	 * \return FAR's return code for MakeDirectoryW
-	 */
-	int MakeDirectory(const wchar_t** name, const int opMode);
+    /**
+     * Make directory
+     * \param name initial directory name
+     * \param opMode operation mode
+     * \return FAR's return code for MakeDirectoryW
+     */
+    int MakeDirectory(const wchar_t **name, const int opMode);
 
-	/**
-	 * Get FAR panel item list
-	 * \param panelItem pointer to panel items
-	 * \param itemsNumber pinter to items counter
-	 * \param opMode operation mode
-	 * \return FAR's return code for GetFindDataW
-	 */
-	int GetItemList(PluginPanelItem** panelItem, int* itemsNumber, const int opMode);
-	
-	/**
-	 * Free FAR panel item list
-	 * \param panelItem pointer to panel items
-	 * \param itemsNumber items counter
-	 */
-	void FreeItemList(PluginPanelItem* panelItem, int itemsNumber);
+    /**
+     * Get FAR panel item list
+     * \param panelItem pointer to panel items
+     * \param itemsNumber pinter to items counter
+     * \param opMode operation mode
+     * \return FAR's return code for GetFindDataW
+     */
+    int GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int opMode);
 
-	/**
-	 * Get files
-	 * \param panelItem pointer to panel items
-	 * \param itemsNumber items counter
-	 * \param dstPath destination path to file save
-	 * \param deleteSource delete source files flag (move mode)
-	 * \param opMode operation mode
-	 * \return FAR's return code for GetFilesW
-	 */
-	int GetFiles(PluginPanelItem* panelItem, const int itemsNumber, const wchar_t** destPath, const bool deleteSource, const int opMode);
+    /**
+     * Free FAR panel item list
+     * \param panelItem pointer to panel items
+     * \param itemsNumber items counter
+     */
+    void FreeItemList(PluginPanelItem *panelItem, int itemsNumber);
 
-	/**
-	 * Put files
-	 * \param sourcePath source path
-	 * \param panelItem pointer to panel items
-	 * \param itemsNumber items counter
-	 * \param deleteSource delete source files flag (move mode)
-	 * \param opMode operation mode
-	 * \return FAR's return code for PutFilesW
-	 */
-	int PutFiles(const wchar_t* sourcePath, PluginPanelItem* panelItem, const int itemsNumber, const bool deleteSource, const int opMode);
+    /**
+     * Get files
+     * \param panelItem pointer to panel items
+     * \param itemsNumber items counter
+     * \param dstPath destination path to file save
+     * \param deleteSource delete source files flag (move mode)
+     * \param opMode operation mode
+     * \return FAR's return code for GetFilesW
+     */
+    int GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wchar_t **destPath, const bool deleteSource, const int opMode);
 
-	/**
-	 * Delete files
-	 * \param panelItem pointer to panel items
-	 * \param itemsNumber items counter
-	 * \param opMode operation mode
-	 * \return FAR's return code for DeleteFilesW
-	 */
-	int DeleteFiles(PluginPanelItem* panelItem, int itemsNumber, const int opMode);
+    /**
+     * Put files
+     * \param sourcePath source path
+     * \param panelItem pointer to panel items
+     * \param itemsNumber items counter
+     * \param deleteSource delete source files flag (move mode)
+     * \param opMode operation mode
+     * \return FAR's return code for PutFilesW
+     */
+    int PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, const int itemsNumber, const bool deleteSource, const int opMode);
 
-	/**
-	 * Get panel title
-	 * \return panel title
-	 */
-	const wchar_t* GetTitle() const { return _Title.c_str(); };
+    /**
+     * Delete files
+     * \param panelItem pointer to panel items
+     * \param itemsNumber items counter
+     * \param opMode operation mode
+     * \return FAR's return code for DeleteFilesW
+     */
+    int DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int opMode);
 
-private:
-	/**
-	 * Update panel's title
-	 */
-	void UpdateTitle();
-
-	/**
-	 * Check for session manager panel active
-	 * \return true if session manager panel active
-	 */
-	inline bool IsSessionManager() const { return _ProtoClient && (typeid(CSessionManager) == typeid(*_ProtoClient)); }
-
-	/**
-	 * Show dialog with error information
-	 * \param errCode system error code
-	 * \param title error title
-	 * \param info additional info
-	 */
-	void ShowErrorDialog(const DWORD errCode, const wstring& title, const wchar_t* info = NULL) const;
+    /**
+     * Get panel title
+     * \return panel title
+     */
+    const wchar_t *GetTitle() const
+    {
+        return _Title.c_str();
+    };
 
 private:
-	IProtocol*	_ProtoClient;		///< Client's protocol implementation
-	wstring		_LastDirName;		///< Last created/copyed directory name (used as buffer)
-	wstring		_Title;				///< Panel title
+    /**
+     * Update panel's title
+     */
+    void UpdateTitle();
 
-	bool		_ExitToSessionMgr;	///< True to exit from top folder to session manager, false to close plugin
+    /**
+     * Check for session manager panel active
+     * \return true if session manager panel active
+     */
+    inline bool IsSessionManager() const
+    {
+        return _ProtoClient && (typeid(CSessionManager) == typeid(*_ProtoClient));
+    }
 
-	HANDLE		_AbortTask;			///< Abort task event
+    /**
+     * Show dialog with error information
+     * \param errCode system error code
+     * \param title error title
+     * \param info additional info
+     */
+    void ShowErrorDialog(const DWORD errCode, const wstring &title, const wchar_t *info = NULL) const;
+
+private:
+    IProtocol  *_ProtoClient;       ///< Client's protocol implementation
+    wstring     _LastDirName;       ///< Last created/copyed directory name (used as buffer)
+    wstring     _Title;             ///< Panel title
+
+    bool        _ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
+
+    HANDLE      _AbortTask;         ///< Abort task event
 };

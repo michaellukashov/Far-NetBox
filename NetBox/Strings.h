@@ -21,85 +21,86 @@
 
 
 //! Plugin strings
-enum PluginString {
-	StringTitle = 0,
+enum PluginString
+{
+    StringTitle = 0,
 
-	StringOK,
-	StringCancel,
+    StringOK,
+    StringCancel,
 
-	//Edit link dialog
-	StringEdCrtTitle,
-	StringEdEdtTitle,
-	StringEdName,
-	StringEdURL,
-	StringEdCP,
-	StringEdAuth,
-	StringEdAuthUser,
-	StringEdAuthPsw,
-	StringEdAuthPromtpPsw,
-	StringEdAuthShowPsw,
-	StringEdAuthCert,
-	StringEdErrURLEmpty,
-	StringEdErrURLInvalid,
-	StringEdErrNameEmpty,
-	StringEdErrNameInvalid,
+    //Edit link dialog
+    StringEdCrtTitle,
+    StringEdEdtTitle,
+    StringEdName,
+    StringEdURL,
+    StringEdCP,
+    StringEdAuth,
+    StringEdAuthUser,
+    StringEdAuthPsw,
+    StringEdAuthPromtpPsw,
+    StringEdAuthShowPsw,
+    StringEdAuthCert,
+    StringEdErrURLEmpty,
+    StringEdErrURLInvalid,
+    StringEdErrNameEmpty,
+    StringEdErrNameInvalid,
 
-	//Configure dialog
-	StringCfgAddToPM,
-	StringCfgAddToDM,
-	StringCfgUseOwnKey,
-	StringCfgPrefix,
-	StringCfgAltPrefixes,
-	StringCfgTimeout,
-	StringCfgSessionsPath,
+    //Configure dialog
+    StringCfgAddToPM,
+    StringCfgAddToDM,
+    StringCfgUseOwnKey,
+    StringCfgPrefix,
+    StringCfgAltPrefixes,
+    StringCfgTimeout,
+    StringCfgSessionsPath,
 
-	//Prompt to crypto key
-	StringSessionPwd,
+    //Prompt to crypto key
+    StringSessionPwd,
 
-	//Create directory dialog
-	StringMKDirTitle,
-	StringMKDirName,
+    //Create directory dialog
+    StringMKDirTitle,
+    StringMKDirName,
 
-	//Delete items dialog
-	StringDelTitle,
-	StringDelQuestion,
-	StringDelQuestSession,
-	StringDelQuestFolder,
-	StringDelQuestFile,
-	StringDelSelected,
-	StringDelBtnDelete,
+    //Delete items dialog
+    StringDelTitle,
+    StringDelQuestion,
+    StringDelQuestSession,
+    StringDelQuestFolder,
+    StringDelQuestFile,
+    StringDelSelected,
+    StringDelBtnDelete,
 
-	//Copy dialog
-	StringCopyTitle,
-	StringCopyPath,
-	StringCopySelected,
-	StringCopyBtnCopy,
+    //Copy dialog
+    StringCopyTitle,
+    StringCopyPath,
+    StringCopySelected,
+    StringCopyBtnCopy,
 
-	//Move dialog
-	StringMoveTitle,
-	StringMovePath,
-	StringMoveSelected,
-	StringMoveBtnCopy,
+    //Move dialog
+    StringMoveTitle,
+    StringMovePath,
+    StringMoveSelected,
+    StringMoveBtnCopy,
 
-	//Progress titles
-	StringPrgConnect,
-	StringPrgChangeDir,
-	StringPrgGetList,
-	StringPrgRcvFile,
-	StringPrgSendFile,
-	StringPrgTo,
-	StringPrgDelete,
+    //Progress titles
+    StringPrgConnect,
+    StringPrgChangeDir,
+    StringPrgGetList,
+    StringPrgRcvFile,
+    StringPrgSendFile,
+    StringPrgTo,
+    StringPrgDelete,
 
-	//Error messages
-	StringErrKeyFile,
-	StringErrEstablish,
-	StringErrCreateDir,
-	StringErrChangeDir,
-	StringErrListDir,
-	StringErrCopyFile,	
-	StringErrRenameMove,	
-	StringErrDeleteFile,
-	StringErrDeleteDir,
+    //Error messages
+    StringErrKeyFile,
+    StringErrEstablish,
+    StringErrCreateDir,
+    StringErrChangeDir,
+    StringErrListDir,
+    StringErrCopyFile,
+    StringErrRenameMove,
+    StringErrDeleteFile,
+    StringErrDeleteDir,
 
-	StringOperationCanceledByUser,
+    StringOperationCanceledByUser,
 };
