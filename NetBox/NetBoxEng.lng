@@ -69,3 +69,5 @@
 "Unable to rename/move\n%s\nto\n%s"
 "Unable to delete file\n%s"
 "Unable to delete directory\n%s"
+
+"Operation canceled by user"
