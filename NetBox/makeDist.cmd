@@ -16,7 +16,7 @@ if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
 set PLUGINVER=%PLUGIN_VERSION_TXT%
 
 :: Package name
-set PKGNAME=Far%PLUGINNAME%_%PLUGINVER%_%PLUGINARCH%.zip
+set PKGNAME=Far%PLUGINNAME%_%PLUGINVER%_%PLUGINARCH%.7z
 if exist %PKGNAME% del %PKGNAME%
 
 :: Create temp directory
@@ -38,7 +38,7 @@ if "%PLUGINARCH%" equ "src"	(
 	copy ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
 )
 :: Make archive
-call "C:\Program Files\7-Zip\7z.exe" a -tzip -r %PKGNAME% %PKGDIR% > NUL
+call "C:\Program Files\7-Zip\7z.exe" a -t7z -r %PKGNAME% %PKGDIR% > NUL
 if errorlevel 1 echo Error creating archive & exit 1 /b
 
 rmdir /S /Q %PKGDIR%
