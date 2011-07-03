@@ -54,3 +54,5 @@ FTP/SFTP/WebDAV клиент для Far.
 
 Артём Сеничев (artemsen@gmail.com)
               http://code.google.com/p/farplugs
+Михаил Лукашов (michael.lukashov@gmail.com)
+               https://github.com/michaellukashov/Far-NetBox
