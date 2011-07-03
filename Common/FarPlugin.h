@@ -57,8 +57,7 @@ using namespace std;
 inline int __cdecl dprintf(const wchar_t *format, ...)
 {
 	int len = 0;
-#ifdef NBDEBUG
-	wchar_t szBuff[1024];
+#ifdef NETBOX_DEBUG
 	va_list args;
 	va_start(args, format);
 	len = _vscwprintf(format, args) + 1; // last NULL
