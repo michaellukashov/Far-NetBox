@@ -21,3 +21,4 @@ ipch/
 *.vcxproj.user
 *.zip
 *.7z
+*.orig

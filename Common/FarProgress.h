@@ -27,76 +27,79 @@
 class CFarProgress
 {
 public:
-	/**
-	 * Constructor
-	 * \param minValue minimal value
-	 * \param maxValue maximal value
-	 */
-	CFarProgress(const __int64 minValue, const __int64 maxValue)
-		: _MinValue(minValue), _MaxValue(maxValue), _CurrValue(maxValue > minValue ? minValue : maxValue)
-	{
-		CFarPlugin::AdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void*>(PS_INDETERMINATE));
-	}
+    /**
+     * Constructor
+     * \param minValue minimal value
+     * \param maxValue maximal value
+     */
+    CFarProgress(const __int64 minValue, const __int64 maxValue)
+        : _MinValue(minValue), _MaxValue(maxValue), _CurrValue(maxValue > minValue ? minValue : maxValue)
+    {
+        CFarPlugin::AdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void *>(PS_INDETERMINATE));
+    }
 
-	~CFarProgress()
-	{
-		Close();
-	}
+    ~CFarProgress()
+    {
+        Close();
+    }
 
-	/**
-	 * Show progress window
-	 * \param newValue new value
-	 * \return true if Esc key was pressed
-	 */
-	bool Show(const __int64 /*newValue*/)
-	{
-		//assert(newValue >= (_MaxValue < _MinValue ? _MaxValue : _MinValue) && newValue <= (_MaxValue > _MinValue ? _MaxValue : _MinValue));
+    /**
+     * Show progress window
+     * \param newValue new value
+     * \return true if Esc key was pressed
+     */
+    bool Show(const __int64 /*newValue*/)
+    {
+        //assert(newValue >= (_MaxValue < _MinValue ? _MaxValue : _MinValue) && newValue <= (_MaxValue > _MinValue ? _MaxValue : _MinValue));
 
-// 		if (_CurrValue != newValue) {
-// 			_CurrValue = newValue;
-// 
-// 			const size_t percent = static_cast<size_t>(((_CurrValue - _MinValue) * 100) / (_MaxValue - _MinValue));
-// 			wstring fillBuff(percent * 32 /*progress bar length*/ / 100, L'\x2588');
-// 			CFarPlugin::GetPSI()->Text(_WndPosCol + 4 , _WndPosRow + 3, 0x70, fillBuff.c_str());
-// 			CFarPlugin::GetPSI()->Text(0, 0, 0, NULL);	 //Reset screen buffer
-// 
-// 			PROGRESSVALUE pv;
-// 			pv.Completed = percent;
-// 			pv.Total = 100;
-// 			CFarPlugin::AdvControl(ACTL_SETPROGRESSVALUE, &pv);
-// 		}
+//      if (_CurrValue != newValue) {
+//          _CurrValue = newValue;
+//
+//          const size_t percent = static_cast<size_t>(((_CurrValue - _MinValue) * 100) / (_MaxValue - _MinValue));
+//          wstring fillBuff(percent * 32 /*progress bar length*/ / 100, L'\x2588');
+//          CFarPlugin::GetPSI()->Text(_WndPosCol + 4 , _WndPosRow + 3, 0x70, fillBuff.c_str());
+//          CFarPlugin::GetPSI()->Text(0, 0, 0, NULL);   //Reset screen buffer
+//
+//          PROGRESSVALUE pv;
+//          pv.Completed = percent;
+//          pv.Total = 100;
+//          CFarPlugin::AdvControl(ACTL_SETPROGRESSVALUE, &pv);
+//      }
 
-		return IsEscPressed();
-	}
+        return IsEscPressed();
+    }
 
-	void Close()
-	{
-		CFarPlugin::AdvControl(ACTL_PROGRESSNOTIFY, 0);
-		CFarPlugin::AdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void*>(PS_NOPROGRESS));
-	}
+    void Close()
+    {
+        CFarPlugin::AdvControl(ACTL_PROGRESSNOTIFY, 0);
+        CFarPlugin::AdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void *>(PS_NOPROGRESS));
+    }
 
-	/**
-	 * Check for Esc key event
-	 * \return true if Esc key was pressed
-	 */
-	static bool IsEscPressed()
-	{
-		static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
-		INPUT_RECORD rec;
-		DWORD readCount = 0;
-		while (PeekConsoleInput(stdIn, &rec, 1, &readCount) && readCount != 0) {
-			ReadConsoleInput(stdIn, &rec, 1, &readCount);
-			if (rec.EventType == KEY_EVENT && rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE && rec.Event.KeyEvent.bKeyDown)
-				return true;
-		}
-		return false;
-	}
+    /**
+     * Check for Esc key event
+     * \return true if Esc key was pressed
+     */
+    static bool IsEscPressed()
+    {
+        static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
+        INPUT_RECORD rec;
+        DWORD readCount = 0;
+        while (PeekConsoleInput(stdIn, &rec, 1, &readCount) && readCount != 0)
+        {
+            ReadConsoleInput(stdIn, &rec, 1, &readCount);
+            if (rec.EventType == KEY_EVENT && rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE && rec.Event.KeyEvent.bKeyDown)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
 private:
-	__int64	_MinValue;
-	__int64	_MaxValue;
-	__int64	_CurrValue;
-	const wchar_t*	_Title;
-	int	_WndPosCol;
-	int	_WndPosRow;
+    __int64 _MinValue;
+    __int64 _MaxValue;
+    __int64 _CurrValue;
+    const wchar_t  *_Title;
+    int _WndPosCol;
+    int _WndPosRow;
 };

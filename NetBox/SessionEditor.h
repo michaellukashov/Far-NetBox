@@ -28,65 +28,68 @@ class CSession;
 class CSessionEditor : protected CFarDialog
 {
 protected:
-	CSessionEditor(CSession* session, const int width, const int height);
+    CSessionEditor(CSession *session, const int width, const int height);
 
 public:
-	/**
-	 * Show session editort dialog
-	 * \return false if edition was canceled by user
-	 */
-	bool EditSession();
+    /**
+     * Show session editort dialog
+     * \return false if edition was canceled by user
+     */
+    bool EditSession();
 
 protected:
-	/**
-	 * Create Codepage control
-	 * \param topPos top position in dialog
-	 * \param current current cp value
-	 * \return created item's id
-	 */
-	int CreateCodePageControl(const int topPos, const UINT current);
+    /**
+     * Create Codepage control
+     * \param topPos top position in dialog
+     * \param current current cp value
+     * \return created item's id
+     */
+    int CreateCodePageControl(const int topPos, const UINT current);
 
-	//From CFarDialog
-	virtual LONG_PTR DialogMessageProc(int msg, int param1, LONG_PTR param2);
+    //From CFarDialog
+    virtual LONG_PTR DialogMessageProc(int msg, int param1, LONG_PTR param2);
 
-	/**
-	 * Prepare dialog
-	 */
-	virtual void OnPrepareDialog() {}
+    /**
+     * Prepare dialog
+     */
+    virtual void OnPrepareDialog() {}
 
-	/**
-	 * Check fill data for correct form
-	 * \return false if edited data has incorrect format
-	 */
-	virtual bool OnValidate() const { return true; }
+    /**
+     * Check fill data for correct form
+     * \return false if edited data has incorrect format
+     */
+    virtual bool OnValidate() const
+    {
+        return true;
+    }
 
-	/**
-	 * Save settings from dialog
-	 */
-	virtual void OnSave() {}
+    /**
+     * Save settings from dialog
+     */
+    virtual void OnSave() {}
 
 private:
-	/**
-	 * Check fill data for correct form
-	 * \return false if edited data has incorrect format
-	 */
-	bool Validate() const;
+    /**
+     * Check fill data for correct form
+     * \return false if edited data has incorrect format
+     */
+    bool Validate() const;
 
 protected:
-	int _IdEditName;
-	int _IdEditURL;
-	int _IdEditUser;
-	int _IdEditPswHide;
-	int _IdEditPswShow;
-	int _IdChBxPromtpPsw;
-	int _IdChBxShowPsw;
-	int _IdBtnOK;
-	int _IdBtnCancel;
+    int _IdEditName;
+    int _IdEditURL;
+    int _IdEditUser;
+    int _IdEditPswHide;
+    int _IdEditPswShow;
+    int _IdChBxPromtpPsw;
+    int _IdChBxShowPsw;
+    int _IdBtnOK;
+    int _IdBtnCancel;
 
-	bool	_EditMode;
-	wstring	_Title;
+    bool    _EditMode;
+    wstring _Title;
 
-	CSession* _Session;
+    CSession *_Session;
 };
 
 typedef auto_ptr<CSessionEditor> PSessionEditor;

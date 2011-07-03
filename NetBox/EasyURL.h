@@ -30,12 +30,25 @@
 class CSlistURL
 {
 public:
-	CSlistURL() : _SList(NULL) {}
-	~CSlistURL() { if (_SList) curl_slist_free_all(_SList); }
-	inline void Append(const char* val) { assert(val); _SList = curl_slist_append(_SList, val); }
-	operator curl_slist* () { return _SList; }
+    CSlistURL() : _SList(NULL) {}
+    ~CSlistURL()
+    {
+        if (_SList)
+        {
+            curl_slist_free_all(_SList);
+        }
+    }
+    inline void Append(const char *val)
+    {
+        assert(val);
+        _SList = curl_slist_append(_SList, val);
+    }
+    operator curl_slist *()
+    {
+        return _SList;
+    }
 private:
-	curl_slist* _SList;
+    curl_slist *_SList;
 };
 
 
@@ -45,140 +58,152 @@ private:
 class CEasyURL
 {
 public:
-	CEasyURL();
-	~CEasyURL();	
+    CEasyURL();
+    ~CEasyURL();
 
-	/**
-	 * Initialize easy curl
-	 * \param url URL to connect
-	 * \param userName user name
-	 * \param password password
-	 * \return false if error
-	 */
-	bool Initialize(const wchar_t* url, const wchar_t* userName, const wchar_t* password);
+    /**
+     * Initialize easy curl
+     * \param url URL to connect
+     * \param userName user name
+     * \param password password
+     * \return false if error
+     */
+    bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password);
 
-	/**
-	 * Close curl
-	 */
-	void Close();
+    /**
+     * Close curl
+     */
+    void Close();
 
-	/**
-	 * Prepare easy curl state
-	 * \param path reauested path
-	 * \param handleTimeout true to handle timeout
-	 * \return curl status
-	 */
-	CURLcode Prepare(const char* path, const bool handleTimeout = true);
+    /**
+     * Prepare easy curl state
+     * \param path reauested path
+     * \param handleTimeout true to handle timeout
+     * \return curl status
+     */
+    CURLcode Prepare(const char *path, const bool handleTimeout = true);
 
-	/**
-	 * Set slist
-	 * \param slist slist object
-	 * \return curl status
-	 */
-	CURLcode SetSlist(CSlistURL& slist);
+    /**
+     * Set slist
+     * \param slist slist object
+     * \return curl status
+     */
+    CURLcode SetSlist(CSlistURL &slist);
 
-	/**
-	 * Set output as string buffer
-	 * \param out output string buffer
-	 * \param progress pointer to variable to save progress percent of the current operation
-	 * \return curl status
-	 */
-	CURLcode SetOutput(string* out, int* progress);
+    /**
+     * Set output as string buffer
+     * \param out output string buffer
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    CURLcode SetOutput(string *out, int *progress);
 
-	/**
-	 * Set output as file
-	 * \param out output file
-	 * \param progress pointer to variable to save progress percent of the current operation
-	 * \return curl status
-	 */
-	CURLcode SetOutput(CFile* out, int* progress);
+    /**
+     * Set output as file
+     * \param out output file
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    CURLcode SetOutput(CFile *out, int *progress);
 
-	/**
-	 * Set input as file (upload operations)
-	 * \param in input file 
-	 * \param progress pointer to variable to save progress percent of the current operation
-	 * \return curl status
-	 */
-	CURLcode SetInput(CFile* in, int* progress);
+    /**
+     * Set input as file (upload operations)
+     * \param in input file
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    CURLcode SetInput(CFile *in, int *progress);
 
-	/**
-	 * Set abort event handle
-	 * \param event abort event handle
-	 */
-	void SetAbortEvent(HANDLE event);
+    /**
+     * Set abort event handle
+     * \param event abort event handle
+     */
+    void SetAbortEvent(HANDLE event);
 
-	/**
-	 * Perform request
-	 * \return curl status
-	 */
-	CURLcode Perform();
+    /**
+     * Perform request
+     * \return curl status
+     */
+    CURLcode Perform();
 
-	/**
-	 * Execute FTP command
-	 * \param cmd command string
-	 * \return curl status
-	 */
-	CURLcode ExecuteFtpCommand(const char* cmd);
+    /**
+     * Execute FTP command
+     * \param cmd command string
+     * \return curl status
+     */
+    CURLcode ExecuteFtpCommand(const char *cmd);
 
-	/**
-	 * Get top URL
-	 * \return top URL
-	 */
-	inline const char* GetTopURL() const { return _TopURL.c_str(); }
+    /**
+     * Get top URL
+     * \return top URL
+     */
+    inline const char *GetTopURL() const
+    {
+        return _TopURL.c_str();
+    }
 
-	operator CURL* () { return _CURL; }
-
-private:
-	//Internal reader callback (see libcurl docs)
-	static size_t InternalReader(void* buffer, size_t size, size_t nmemb, void* userData);
-
-	//Internal writer callback (see libcurl docs)
-	static size_t InternalWriter(void* buffer, size_t size, size_t nmemb, void* userData);
-
-	//Internal progress counter callback (see libcurl docs)
-	static int InternalProgress(void *userData, double dltotal, double dlnow, double ultotal, double ulnow);
+    operator CURL *()
+    {
+        return _CURL;
+    }
 
 private:
-	CURL*	_CURL;		///< CURL
-	bool	_Prepared;	///< Preapre statement flag
+    //Internal reader callback (see libcurl docs)
+    static size_t InternalReader(void *buffer, size_t size, size_t nmemb, void *userData);
 
-	string _TopURL;		///< Top URL (ftp://host:21)
-	string _UserName;	///< User name
-	string _Password;	///< Password
+    //Internal writer callback (see libcurl docs)
+    static size_t InternalWriter(void *buffer, size_t size, size_t nmemb, void *userData);
 
-	//! Output writer description
-	struct OutputWriter {
-		enum OutputWriterType {
-			None,
-			TypeString,
-			TypeFile
-		} Type;
-		union {
-			string* String;
-			CFile*  File;
-		};
-		HANDLE AbortEvent;
-	};
-	OutputWriter _Output;
+    //Internal progress counter callback (see libcurl docs)
+    static int InternalProgress(void *userData, double dltotal, double dlnow, double ultotal, double ulnow);
 
-	//! Input reader description
-	struct InputReader {
-		enum InputReaderType {
-			None,
-			TypeFile
-		} Type;
-		CFile*	File;
-		int*	Progress;
-		unsigned __int64 Current;
-		unsigned __int64 Total;
-		HANDLE AbortEvent;
-	};
-	InputReader _Input;
+private:
+    CURL   *_CURL;      ///< CURL
+    bool    _Prepared;  ///< Preapre statement flag
 
-	//! Progress description
-	struct Progress {
-		int*	ProgressPtr;
-		HANDLE	AbortEvent;
-	};
-	Progress _Progress;
+    string _TopURL;     ///< Top URL (ftp://host:21)
+    string _UserName;   ///< User name
+    string _Password;   ///< Password
+
+    //! Output writer description
+    struct OutputWriter
+    {
+        enum OutputWriterType
+        {
+            None,
+            TypeString,
+            TypeFile
+        } Type;
+        union
+        {
+            string *String;
+            CFile  *File;
+        };
+        HANDLE AbortEvent;
+    };
+    OutputWriter _Output;
+
+    //! Input reader description
+    struct InputReader
+    {
+        enum InputReaderType
+        {
+            None,
+            TypeFile
+        } Type;
+        CFile  *File;
+        int    *Progress;
+        unsigned __int64 Current;
+        unsigned __int64 Total;
+        HANDLE AbortEvent;
+    };
+    InputReader _Input;
+
+    //! Progress description
+    struct Progress
+    {
+        int    *ProgressPtr;
+        HANDLE  AbortEvent;
+    };
+    Progress _Progress;
 };

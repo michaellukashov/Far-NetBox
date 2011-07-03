@@ -26,129 +26,130 @@
 class IProtocol
 {
 public:
-	//! Item types
-	enum ItemType {
-		ItemDirectory,
-		ItemFile,
-	};
+    //! Item types
+    enum ItemType
+    {
+        ItemDirectory,
+        ItemFile,
+    };
 
-	/**
-	 * Connect to remote host
-	 * \param abortEvent abort task event
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool Connect(HANDLE abortEvent, wstring& errorInfo) = 0;
+    /**
+     * Connect to remote host
+     * \param abortEvent abort task event
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool Connect(HANDLE abortEvent, wstring &errorInfo) = 0;
 
-	/**
-	 * Close connection
-	 */
-	virtual void Close() = 0;
-	
-	/**
-	 * Check for file/directory existing
-	 * \param path checked path
-	 * \param type checked item type
-	 * \param isExist existing flag
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool CheckExisting(const wchar_t* path, const ItemType type, bool& isExist, wstring& errorInfo) = 0;
+    /**
+     * Close connection
+     */
+    virtual void Close() = 0;
 
-	/**
-	 * Change directory directory
-	 * \param name directory name (relative by current directory)
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool ChangeDirectory(const wchar_t* name, wstring& errorInfo) = 0;
+    /**
+     * Check for file/directory existing
+     * \param path checked path
+     * \param type checked item type
+     * \param isExist existing flag
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo) = 0;
 
-	/**
-	 * Get current directory
-	 * \return current directory path
-	 */
-	virtual const wchar_t* GetCurrentDirectory() = 0;
+    /**
+     * Change directory directory
+     * \param name directory name (relative by current directory)
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo) = 0;
 
-	/**
-	 * Make directory
-	 * \param path new directory path
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool MakeDirectory(const wchar_t* path, wstring& errorInfo) = 0;
-		
-	/**
-	 * Get current directory listing
-	 * \param items items array
-	 * \param itemsNum items quantity
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool GetList(PluginPanelItem** items, int* itemsNum, wstring& errorInfo) = 0;
+    /**
+     * Get current directory
+     * \return current directory path
+     */
+    virtual const wchar_t *GetCurrentDirectory() = 0;
 
-	/**
-	 * Free directory listing
-	 * \param items items array
-	 * \param itemsNum items quantity
-	 */
-	virtual void FreeList(PluginPanelItem* items, int itemsNum) = 0;
+    /**
+     * Make directory
+     * \param path new directory path
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo) = 0;
 
-	/**
-	 * Copy remote to local file
-	 * \param param remote file path
-	 * \param param local file path
-	 * \param param remote file size
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool GetFile(const wchar_t* remotePath, const wchar_t* localPath, const unsigned __int64 fileSize, wstring& errorInfo) = 0;
-	
-	/**
-	 * Copy local to remote file
-	 * \param param remote file path
-	 * \param param local file path
-	 * \param param remote file size
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool PutFile(const wchar_t* remotePath, const wchar_t* localPath, const unsigned __int64 fileSize, wstring& errorInfo) = 0;
+    /**
+     * Get current directory listing
+     * \param items items array
+     * \param itemsNum items quantity
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo) = 0;
 
-	/**
-	 * Rename remote file/directory
-	 * \param param task parameters
-	 * \return false if error
-	 */
-	/**
-	 * Rename remote file/directory
-	 * \param srcPath source remote path
-	 * \param dstPath destination remote file path
-	 * \param type item type
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool Rename(const wchar_t* srcPath, const wchar_t* dstPath, const ItemType type, wstring& errorInfo) = 0;
+    /**
+     * Free directory listing
+     * \param items items array
+     * \param itemsNum items quantity
+     */
+    virtual void FreeList(PluginPanelItem *items, int itemsNum) = 0;
 
-	/**
-	 * Delete remote file/directory
-	 * \param path remote path
-	 * \param type item type
-	 * \param errorInfo error description
-	 * \return false if error
-	 */
-	virtual bool Delete(const wchar_t* path, const ItemType type, wstring& errorInfo) = 0;
+    /**
+     * Copy remote to local file
+     * \param param remote file path
+     * \param param local file path
+     * \param param remote file size
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo) = 0;
 
-	/**
-	 * Get current URL (without path)
-	 * \param includeUser include user's name/password info
-	 * \return current URL
-	 */
-	virtual wstring GetURL(const bool includeUser = false) = 0;
+    /**
+     * Copy local to remote file
+     * \param param remote file path
+     * \param param local file path
+     * \param param remote file size
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo) = 0;
 
-	/**
-	 * Get progress in percent of currently processing operation
-	 * \return progress in percent or -1 if percent unknown
-	 */
-	virtual int GetProgress() = 0;
+    /**
+     * Rename remote file/directory
+     * \param param task parameters
+     * \return false if error
+     */
+    /**
+     * Rename remote file/directory
+     * \param srcPath source remote path
+     * \param dstPath destination remote file path
+     * \param type item type
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo) = 0;
+
+    /**
+     * Delete remote file/directory
+     * \param path remote path
+     * \param type item type
+     * \param errorInfo error description
+     * \return false if error
+     */
+    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo) = 0;
+
+    /**
+     * Get current URL (without path)
+     * \param includeUser include user's name/password info
+     * \return current URL
+     */
+    virtual wstring GetURL(const bool includeUser = false) = 0;
+
+    /**
+     * Get progress in percent of currently processing operation
+     * \return progress in percent or -1 if percent unknown
+     */
+    virtual int GetProgress() = 0;
 };
 
 typedef auto_ptr<IProtocol> PProtocol;
