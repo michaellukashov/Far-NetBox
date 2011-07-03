@@ -35,7 +35,7 @@ if "%PLUGINARCH%" equ "src"	(
 	copy tinyXML %PKGDIR%\tinyXML > NUL
 ) else (
 	copy openssl\%PLUGINARCH%\out32dll\*.dll %PKGDIR% > NUL
-	copy ..\Far_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
+	copy ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
 )
 :: Make archive
 call "C:\Program Files\7-Zip\7z.exe" a -tzip -r %PKGNAME% %PKGDIR% > NUL
