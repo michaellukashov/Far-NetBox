@@ -35,7 +35,7 @@ copy Sessions %PKGDIR%\Sessions > NUL
 if "%PLUGINARCH%" equ "src"	(
 	call ..\Common\makeCopySources.cmd %~d0%~p0 %PKGDIR%
 	mkdir %PKGDIR%\tinyXML
-	copy tinyXML %PKGDIR%\tinyXML > NUL
+	copy ..\libs\tinyXML %PKGDIR%\tinyXML > NUL
 ) else (
 	copy ..\libs\openssl\%PLUGINARCH%\out32dll\*.dll %PKGDIR% > NUL
 	copy ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
