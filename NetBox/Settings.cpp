@@ -104,8 +104,8 @@ void CSettings::Configure()
     CFarDialog dlg(54, 17, CFarPlugin::GetString(StringTitle));
     int topPos = dlg.GetTop();
 
-    const int idAddPM = dlg.CreateCheckBox(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringCfgAddToPM), _AddToPanelMenu);
-    const int idAddDM = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgAddToDM), _AddToDiskMenu);
+    const int idAddDM = dlg.CreateCheckBox(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringCfgAddToDM), _AddToDiskMenu);
+    const int idAddPM = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgAddToPM), _AddToPanelMenu);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgPrefix));
 
