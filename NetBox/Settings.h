@@ -24,47 +24,68 @@
 class CSettings
 {
 public:
-	CSettings();
+    CSettings();
 
-	/**
-	 * Load settings
-	 */
-	void Load();
+    /**
+     * Load settings
+     */
+    void Load();
 
-	/**
-	 * Configure settings
-	 */
-	void Configure();
-	
-	//Accessors
-	bool AddToPanelMenu() const			{ return _AddToPanelMenu; }
-	bool AddToDiskMenu() const			{ return _AddToDiskMenu; }
-	const wchar_t* CmdPrefix() const	{ return _CmdPrefix.c_str(); }
-	bool AltPrefix() const				{ return _AltPrefix; }
-	bool UseOwnKey() const				{ return _UseOwnKey; }
-	unsigned long Timeout() const		{ return _Timeout; }
-	const wchar_t* SessionPath() const	{ return _SessionPath.c_str(); }
+    /**
+     * Configure settings
+     */
+    void Configure();
 
-	/**
-	 * Get session path
-	 * \return session path
-	 */
-	wstring GetSessionPath() const;
+    //Accessors
+    bool AddToPanelMenu() const
+    {
+        return _AddToPanelMenu;
+    }
+    bool AddToDiskMenu() const
+    {
+        return _AddToDiskMenu;
+    }
+    const wchar_t *CmdPrefix() const
+    {
+        return _CmdPrefix.c_str();
+    }
+    bool AltPrefix() const
+    {
+        return _AltPrefix;
+    }
+    bool UseOwnKey() const
+    {
+        return _UseOwnKey;
+    }
+    unsigned long Timeout() const
+    {
+        return _Timeout;
+    }
+    const wchar_t *SessionPath() const
+    {
+        return _SessionPath.c_str();
+    }
+
+    /**
+     * Get session path
+     * \return session path
+     */
+    wstring GetSessionPath() const;
 private:
-	/**
-	 * Save settings
-	 */
-	void Save() const;
+    /**
+     * Save settings
+     */
+    void Save() const;
 
 private:
-	//Settings variables
-	bool			_AddToPanelMenu;	///< Add plugin to the panel plugin menu flag
-	bool			_AddToDiskMenu;		///< Add plugin to the disk menu flag
-	wstring			_CmdPrefix;			///< Plugin command prefix
-	bool			_AltPrefix;			///< Hande additional preffix flag (ftp, sftp etc)
-	bool			_UseOwnKey;			///< Use own encryption key flag
-	unsigned long	_Timeout;			///< Default timeout in seconds
-	wstring			_SessionPath;		///< Session folder path
+    //Settings variables
+    bool            _AddToPanelMenu;    ///< Add plugin to the panel plugin menu flag
+    bool            _AddToDiskMenu;     ///< Add plugin to the disk menu flag
+    wstring         _CmdPrefix;         ///< Plugin command prefix
+    bool            _AltPrefix;         ///< Hande additional preffix flag (ftp, sftp etc)
+    bool            _UseOwnKey;         ///< Use own encryption key flag
+    unsigned long   _Timeout;           ///< Default timeout in seconds
+    wstring         _SessionPath;       ///< Session folder path
 };
 
 extern CSettings _Settings;
