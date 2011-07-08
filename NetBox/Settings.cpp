@@ -143,6 +143,16 @@ void CSettings::Configure()
             MainConfigure();
             break;
         }
+        case LoggingSettingsMenuId:
+        {
+            LoggingConfigure();
+            break;
+        }
+        case AboutMenuId:
+        {
+            ShowAbout();
+            break;
+        }
         default:
         {
             return;
@@ -204,6 +214,13 @@ void CSettings::MainConfigure()
     }
 }
 
+void CSettings::LoggingConfigure()
+{
+}
+
+void CSettings::ShowAbout()
+{
+}
 
 wstring CSettings::GetSessionPath() const
 {

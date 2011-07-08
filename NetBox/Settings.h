@@ -76,9 +76,14 @@ private:
     void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId, int itemId);
 
     /**
-     * Main configure settings
+     * Main settings
      */
     void MainConfigure();
+    /**
+     * Logging settings
+     */
+    void LoggingConfigure();
+    void ShowAbout();
     /**
      * Save settings
      */
