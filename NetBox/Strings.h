@@ -60,6 +60,16 @@ enum PluginString
     StringCfgTimeout,
     StringCfgSessionsPath,
 
+    //Logging configure dialog
+    StringLoggingDialogTitle,
+    StringLoggingDialogEnableLogging,
+    StringLoggingOptionsSeparatorTitle,
+    StringLoggingOptionsLevel,
+    StringLoggingOptionsLevelItem1,
+    StringLoggingOptionsLevelItem2,
+    StringLoggingDialogLogToFile,
+    StringLogFileName,
+
     //Prompt to crypto key
     StringSessionPwd,
 

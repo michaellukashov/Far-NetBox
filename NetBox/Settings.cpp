@@ -33,17 +33,20 @@ static const wchar_t *RegAltPrefix =    L"AltPrefix";
 static const wchar_t *RegTimeout =      L"Timeout";
 static const wchar_t *RegSessionsPath = L"SessionsPath";
 
+static const wchar_t *RegEnableLogging = L"EnableLogging";
+
 CSettings _Settings;
 
 
-CSettings::CSettings()
-    : _AddToPanelMenu(false),
+CSettings::CSettings() : 
       _AddToDiskMenu(true),
+      _AddToPanelMenu(false),
       _CmdPrefix(L"NetBox"),
       _AltPrefix(true),
       _UseOwnKey(false),
       _Timeout(60),
-      _SessionPath()
+      _SessionPath(),
+      _EnableLogging(false)
 {
 }
 
@@ -54,13 +57,13 @@ void CSettings::Load()
     if (settings.Open(RegPluginName, true))
     {
         DWORD regVal;
-        if (settings.GetNumber(RegAddToPM, regVal))
-        {
-            _AddToPanelMenu = (regVal != 0);
-        }
         if (settings.GetNumber(RegAddToDM, regVal))
         {
             _AddToDiskMenu = (regVal != 0);
+        }
+        if (settings.GetNumber(RegAddToPM, regVal))
+        {
+            _AddToPanelMenu = (regVal != 0);
         }
         settings.GetString(RegPrefix, _CmdPrefix);
         if (settings.GetNumber(RegAltPrefix, regVal))
@@ -76,6 +79,10 @@ void CSettings::Load()
             _Timeout = regVal;
         }
         settings.GetString(RegSessionsPath, _SessionPath);
+        if (settings.GetNumber(RegEnableLogging, regVal))
+        {
+            _EnableLogging = (regVal != 0);
+        }
     }
 }
 
@@ -199,8 +206,8 @@ void CSettings::MainConfigure()
     const int retCode = dlg.DoModal();
     if (retCode >= 0 && retCode != idBtnCancel)
     {
-        _AddToPanelMenu = dlg.GetCheckState(idAddPM);
         _AddToDiskMenu = dlg.GetCheckState(idAddDM);
+        _AddToPanelMenu = dlg.GetCheckState(idAddPM);
         _UseOwnKey = dlg.GetCheckState(idUseOwnKey);
         _CmdPrefix = dlg.GetText(idPrefix);
         _AltPrefix = dlg.GetCheckState(idAltPrefix);
@@ -216,6 +223,64 @@ void CSettings::MainConfigure()
 
 void CSettings::LoggingConfigure()
 {
+    CFarDialog dlg(54, 14, CFarPlugin::GetString(StringLoggingDialogTitle));
+    int topPos = dlg.GetTop();
+
+    // Логирование включено/выключено
+    const int idEnableLogging = dlg.CreateCheckBox(dlg.GetLeft(), topPos,
+        CFarPlugin::GetString(StringLoggingDialogEnableLogging), _EnableLogging);
+    dlg.CreateSeparator(++topPos, CFarPlugin::GetString(StringLoggingOptionsSeparatorTitle));
+    dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringLoggingOptionsLevel));
+
+    // Уровень логирования
+    FarDialogItem *itemLevelComboBox;
+    const int idLevelComboBox = dlg.CreateDlgItem(DI_COMBOBOX, dlg.GetLeft() +
+        static_cast<int>(wcslen(CFarPlugin::GetString(StringLoggingOptionsLevel))) + 1,
+        dlg.GetWidth(), ++topPos, topPos, NULL, DIF_LISTWRAPMODE, &itemLevelComboBox);
+
+    FarList levelsList;
+    vector<FarListItem> levelsListItems;
+    size_t levelsCount = 2;
+    levelsListItems.resize(levelsCount);
+    ZeroMemory(&levelsListItems[0], levelsCount * sizeof(FarListItem));
+    for (size_t i = 0; i < levelsCount; ++i)
+    {
+        if (i == 0)
+        {
+            levelsListItems[i].Flags = LIF_SELECTED;
+        }
+        levelsListItems[i].Text = CFarPlugin::GetString(StringLoggingOptionsLevelItem1 + i);
+    }
+    levelsList.Items = &levelsListItems.front();
+    levelsList.ItemsNumber = static_cast<int>(levelsListItems.size());
+    itemLevelComboBox->ListItems = &levelsList;
+
+    // Логирование в файл
+    dlg.CreateSeparator(++topPos);
+    const int idLogToFile = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos,
+        CFarPlugin::GetString(StringLoggingDialogLogToFile), _LogToFile);
+    _LogFileName = CFarPlugin::GetString(StringLogFileName);
+    const int idLogFileName = dlg.CreateEdit(dlg.GetLeft() + 4,
+        ++topPos, MAX_SIZE, _LogFileName.c_str());
+
+    // Кнопки OK Cancel
+    dlg.CreateSeparator(dlg.GetHeight() - 2);
+    FarDialogItem *itemFocusBtn;
+    dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
+    itemFocusBtn->Focus = 1;
+    const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
+
+    // Показываем диалог
+    const int retCode = dlg.DoModal();
+    if (retCode >= 0 && retCode != idBtnCancel)
+    {
+        _EnableLogging = dlg.GetCheckState(idEnableLogging);
+        // _LoggingLevel = itemLevelComboBox->Selected;
+        // dprintf(L"_LoggingLevel = %d", _LoggingLevel);
+        _LogToFile = dlg.GetCheckState(idLogToFile);
+        _LogFileName = dlg.GetText(idLogFileName);
+        Save();
+    }
 }
 
 void CSettings::ShowAbout()

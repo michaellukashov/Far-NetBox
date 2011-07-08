@@ -34,6 +34,15 @@
 "Default timeout (sec):"
 "Saved sessions directory:"
 
+"NetBox - Logging settings"
+"Enable logging"
+"Logging options"
+"Logging level:"
+"Debug 1"
+"Debug 2"
+"Log to file:"
+"C:\NetBox.log"
+
 "Enter password for read saved sessions:"
 
 "Create directory"

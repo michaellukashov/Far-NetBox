@@ -231,7 +231,9 @@ public:
      * \param dlgItem registered dialog item
      * \return dialog created dialogs item id
      */
-    inline int CreateDlgItem(const int type, const int colBegin, const int colEnd, const int rowBegin, const int rowEnd, const wchar_t *ptrData = NULL, const DWORD flags = 0, FarDialogItem **dlgItem = NULL)
+    inline int CreateDlgItem(const int type, const int colBegin, const int colEnd,
+        const int rowBegin, const int rowEnd, const wchar_t *ptrData = NULL,
+        const DWORD flags = 0, FarDialogItem **dlgItem = NULL)
     {
         FarDialogItem item;
         ZeroMemory(&item, sizeof(item));
