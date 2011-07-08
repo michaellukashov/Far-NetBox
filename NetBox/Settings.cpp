@@ -98,8 +98,12 @@ void CSettings::Save() const
     }
 }
 
-
 void CSettings::Configure()
+{
+    MainConfigure();
+}
+
+void CSettings::MainConfigure()
 {
     CFarDialog dlg(54, 17, CFarPlugin::GetString(StringTitle));
     int topPos = dlg.GetTop();

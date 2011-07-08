@@ -73,6 +73,10 @@ public:
     wstring GetSessionPath() const;
 private:
     /**
+     * Main configure settings
+     */
+    void MainConfigure();
+    /**
      * Save settings
      */
     void Save() const;
