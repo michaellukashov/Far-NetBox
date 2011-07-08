@@ -39,6 +39,7 @@ if "%PLUGINARCH%" equ "src"	(
 ) else (
 	copy ..\libs\openssl\%PLUGINARCH%\out32dll\*.dll %PKGDIR% > NUL
 	copy ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
+    call ..\Common\makeCopyCommon.cmd %~d0%~p0 ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
 )
 :: Make archive
 call "C:\Program Files\7-Zip\7z.exe" a -t7z -r %PKGNAME% %PKGDIR% > NUL
