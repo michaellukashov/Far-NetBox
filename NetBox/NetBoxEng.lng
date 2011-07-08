@@ -21,8 +21,8 @@
 "The session name can not be empty"
 "The session name contains restricted symbols (<>:\"/\\|?*)"
 
-"Add to panels plugin menu"
 "Add to disk menu"
+"Add to panels plugin menu"
 "Use own encryption key"
 "Prefix:"
 "Handle prefixes ftp, http, ..."

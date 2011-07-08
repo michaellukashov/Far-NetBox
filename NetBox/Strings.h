@@ -46,8 +46,8 @@ enum PluginString
     StringEdErrNameInvalid,
 
     //Configure dialog
-    StringCfgAddToPM,
     StringCfgAddToDM,
+    StringCfgAddToPM,
     StringCfgUseOwnKey,
     StringCfgPrefix,
     StringCfgAltPrefixes,
