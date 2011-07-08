@@ -21,6 +21,11 @@
 "The session name can not be empty"
 "The session name contains restricted symbols (<>:\"/\\|?*)"
 
+"NetBox - settings"
+"Main settings"
+"Logging settings"
+"About"
+
 "Add to disk menu"
 "Add to panels plugin menu"
 "Use own encryption key"

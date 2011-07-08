@@ -45,7 +45,13 @@ enum PluginString
     StringEdErrNameEmpty,
     StringEdErrNameInvalid,
 
-    //Configure dialog
+    //Configure menu
+    StringSettingsMenuTitle,
+    StringMainSettingsMenuTitle,
+    StringLoggingSettingsMenuTitle,
+    StringAboutMenuTitle,
+
+    //Main configure dialog
     StringCfgAddToDM,
     StringCfgAddToPM,
     StringCfgUseOwnKey,

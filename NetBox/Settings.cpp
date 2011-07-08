@@ -98,9 +98,56 @@ void CSettings::Save() const
     }
 }
 
+void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId, int itemId)
+{
+    {
+        FarMenuItemEx item = {0};
+        if (!(flags & MIF_SEPARATOR))
+        {
+            item.Text = CFarPlugin::GetString(titleId);
+        }
+        item.Flags = flags;
+        item.UserData = itemId;
+        items.push_back(item);
+    }
+}
+
 void CSettings::Configure()
 {
-    MainConfigure();
+    // Создаем меню с настройками:
+    // Main settings
+    // Logging settings
+    // About
+    enum SettingsMenuIds
+    {
+        MainSettingsMenuId,
+        LoggingSettingsMenuId,
+        AboutMenuId,
+    };
+    vector<FarMenuItemEx> items;
+    AddMenuItem(items, MIF_SELECTED, StringMainSettingsMenuTitle, MainSettingsMenuId);
+    AddMenuItem(items, 0, StringLoggingSettingsMenuTitle, LoggingSettingsMenuId);
+    AddMenuItem(items, MIF_SEPARATOR, 0, 0);
+    AddMenuItem(items, 0, StringAboutMenuTitle, AboutMenuId);
+
+    const int retCode = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
+        -1, -1, 0, FMENU_AUTOHIGHLIGHT | FMENU_WRAPMODE | FMENU_USEEXT,
+        CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
+        reinterpret_cast<FarMenuItem *>(&items.front()),
+        static_cast<int>(items.size()));
+    dprintf(L"retCode = %d", retCode);
+    switch (retCode)
+    {
+        case MainSettingsMenuId:
+        {
+            MainConfigure();
+            break;
+        }
+        default:
+        {
+            return;
+        }
+    }
 }
 
 void CSettings::MainConfigure()

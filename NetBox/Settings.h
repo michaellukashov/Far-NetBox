@@ -71,7 +71,10 @@ public:
      * \return session path
      */
     wstring GetSessionPath() const;
+
 private:
+    void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId, int itemId);
+
     /**
      * Main configure settings
      */
