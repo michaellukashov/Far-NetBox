@@ -24,7 +24,9 @@
 #include "SFTP.h"
 #include "FTP.h"
 #include "Settings.h"
+#include "Logging.h"
 #include "Strings.h"
+#include "resource.h"
 
 #define MIN_FAR_VERMAJOR 2
 #define MIN_FAR_VERMINOR 0
@@ -45,10 +47,10 @@ void WINAPI _export SetStartupInfoW(const PluginStartupInfo *psi)
     CFarPlugin::Initialize(psi);
 
     _Settings.Load();
-    // logging: "Far Navigator (ProxyFtp) plugin (1.9.b4) started."
-    // CFarLogger::Initialize(_Settings.EnableLogging(), _Settings.LoggingLevel(),
-        // _Settings.LogToFile(), _Settings.LogFileName());
-    // _Logger.Log("NetBox plugin version %s started.", PLUGIN_VERSION_TXT);
+    CLogger::Initialize(_Settings.EnableLogging(), _Settings.LoggingLevel(),
+        _Settings.LogToFile(), _Settings.LogFileName());
+    wstring ver = PLUGIN_VERSION_TXT;
+    _Logger.Log(L"NetBox plugin version %s started.", ver.c_str());
 
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -58,7 +60,6 @@ void WINAPI _export SetStartupInfoW(const PluginStartupInfo *psi)
     CSession::RegisterProtocolClient(0, L"FTP", CSession::SessionCreator<CSessionFTP>, L"ftp");
     CSession::RegisterProtocolClient(1, L"SFTP", CSession::SessionCreator<CSessionSFTP>, L"sftp");
     CSession::RegisterProtocolClient(2, L"WebDAV", CSession::SessionCreator<CSessionWebDAV>, L"http", L"https");
-
 }
 
 
