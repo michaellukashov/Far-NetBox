@@ -19,7 +19,6 @@
 
 #pragma once
 
-
 //! logging
 class CLogger
 {
@@ -29,9 +28,21 @@ public:
     /**
      * Initialize logger
      */
-    static void Initialize();
+    static void Initialize(bool enableLogging, int loggingLevel,
+        bool logToFile, const wstring &logFileName);
+    static void Shutdown();
+
+    void Log(const wchar_t *format, ...);
 
 private:
+    bool _initialized;
+    FILE *_f;
+    bool _first;
+
+    bool _enableLogging;
+    int _loggingLevel;
+    bool _logToFile;
+    wstring _logFileName;
 };
 
 extern CLogger _Logger;

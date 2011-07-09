@@ -24,10 +24,37 @@
 
 CLogger _Logger;
 
-CLogger::CLogger()
+CLogger::CLogger() :
+    _initialized(false),
+    _f(NULL),
+	_first(true),
+    _enableLogging(false),
+    _loggingLevel(0),
+    _logToFile(false),
+    _logFileName(L"C:\\log.log")
 {
 }
 
-void CLogger::Initialize()
+void CLogger::Initialize(bool enableLogging, int loggingLevel,
+    bool logToFile, const wstring &logFileName)
+{
+    CLogger::Shutdown();
+    // _Logger._f = fopen(_logFileName.c_str(), first ? "w" : "a");
+    _Logger._enableLogging = enableLogging;
+    _Logger._loggingLevel = loggingLevel;
+    _Logger._logToFile = logToFile;
+    _Logger._logFileName = logFileName;
+}
+
+void CLogger::Shutdown()
+{
+    if (_Logger._initialized)
+    {
+        // fclose(_Logger._f);
+    }
+}
+
+void CLogger::Log(const wchar_t *format, ...)
 {
 }
+
