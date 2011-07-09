@@ -25,9 +25,7 @@
 CLogger _Logger;
 
 CLogger::CLogger() :
-    _initialized(false),
-    _f(NULL),
-	_first(true),
+    _first(true),
     _enableLogging(false),
     _loggingLevel(0),
     _logToFile(false),
@@ -47,10 +45,6 @@ void CLogger::Initialize(bool enableLogging, int loggingLevel,
 
 void CLogger::Shutdown()
 {
-    if (_Logger._initialized)
-    {
-        // fclose(_Logger._f);
-    }
 }
 
 void CLogger::Log(const wchar_t *format, ...)
@@ -83,5 +77,6 @@ void CLogger::Log(const wchar_t *format, ...)
     // EOL
     fprintf(f,"\n");
     fclose(f);
+    _first = false;
 }
 

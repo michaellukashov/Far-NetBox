@@ -35,8 +35,6 @@ public:
     void Log(const wchar_t *format, ...);
 
 private:
-    bool _initialized;
-    FILE *_f;
     bool _first;
 
     bool _enableLogging;
