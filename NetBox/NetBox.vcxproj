@@ -185,6 +185,7 @@
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="SFTP.cpp" />
+    <ClCompile Include="Logging.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -216,6 +217,7 @@
     <ClInclude Include="SessionManager.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="SFTP.h" />
+    <ClInclude Include="Logging.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Strings.h" />
     <ClInclude Include="..\libs\tinyXML\tinystr.h" />
