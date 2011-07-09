@@ -159,7 +159,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
             int last_errno = libssh2_session_last_errno(_SSHSession);
             if (last_errno != LIBSSH2SFTP_EAGAIN)
             {
-                // dprintf(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
+                // DEBUG_PRINTF(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
                 break;
             }
             CFarPlugin::CheckAbortEvent(&_AbortEvent);
@@ -183,7 +183,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
             errorInfo = FormatSSHLastErrorDescription();
         }
     }
-    // dprintf(L"CSFTP::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo.c_str());
+    // DEBUG_PRINTF(L"CSFTP::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo.c_str());
 
     if (_SFTPSession == NULL)
     {
