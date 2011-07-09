@@ -107,16 +107,14 @@ void CSettings::Save() const
 
 void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId, int itemId)
 {
+    FarMenuItemEx item = {0};
+    if (!(flags & MIF_SEPARATOR))
     {
-        FarMenuItemEx item = {0};
-        if (!(flags & MIF_SEPARATOR))
-        {
-            item.Text = CFarPlugin::GetString(titleId);
-        }
-        item.Flags = flags;
-        item.UserData = itemId;
-        items.push_back(item);
+        item.Text = CFarPlugin::GetString(titleId);
     }
+    item.Flags = flags;
+    item.UserData = itemId;
+    items.push_back(item);
 }
 
 void CSettings::Configure()
