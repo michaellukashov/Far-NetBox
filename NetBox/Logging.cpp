@@ -39,7 +39,6 @@ void CLogger::Initialize(bool enableLogging, int loggingLevel,
     bool logToFile, const wstring &logFileName)
 {
     CLogger::Shutdown();
-    // _Logger._f = fopen(_logFileName.c_str(), first ? "w" : "a");
     _Logger._enableLogging = enableLogging;
     _Logger._loggingLevel = loggingLevel;
     _Logger._logToFile = logToFile;
@@ -56,5 +55,38 @@ void CLogger::Shutdown()
 
 void CLogger::Log(const wchar_t *format, ...)
 {
+    if (!format)
+        return;
+    string fn(wcslen(_logFileName.c_str()) + 1, 0);
+    wcstombs((char *)fn.c_str(), _logFileName.c_str(), _logFileName.size());
+    // DEBUG_PRINTF(L"NetBox: fn = %s", (wchar_t *)fn.c_str());
+    FILE *f = !fn.empty() ? fopen(fn.c_str(), _first ? "w" : "a") : NULL;
+    if (f)
+    {
+        // Time
+        SYSTEMTIME st;
+        GetLocalTime(&st);
+        fprintf(f,"%4d.%02d.%02d %02d:%02d:%02d:%04d ",
+                st.wYear, st.wMonth,  st.wDay,
+                st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+        // Log
+        // va_list args;
+        // va_start(args, format);
+        // fwprintf(f, format, args);
+        // va_end(args);
+        va_list args;
+        va_start(args, format);
+        int len = _vscwprintf(format, args) + 1;
+        if (len <= 1)
+            return;
+        wstring buf(len, 0);
+        vswprintf_s(&buf[0], buf.size(), format, args);
+        va_end(args);
+        buf.erase(buf.size() - 1);
+        fwprintf(f, buf.c_str());
+        // EOL
+        fprintf(f,"\n");
+        fclose(f);
+    }
 }
 
