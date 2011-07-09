@@ -90,25 +90,18 @@ public:
 private:
     void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
 
-    /**
-     * Main settings
-     */
     void MainConfigure();
-    /**
-     * Logging settings
-     */
+    void ProxyConfigure();
     void LoggingConfigure();
     void ShowAbout();
-    /**
-     * Save settings
-     */
+
     void Save() const;
 
 private:
     int _SettingsMenuIdx;
     //Settings variables
-    bool            _AddToDiskMenu;     ///< Add plugin to the disk menu flag
-    bool            _AddToPanelMenu;    ///< Add plugin to the panel plugin menu flag
+    bool            _AddToDiskMenu;     ///< Add plugin to disk menu flag
+    bool            _AddToPanelMenu;    ///< Add plugin to panel plugin menu flag
     wstring         _CmdPrefix;         ///< Plugin command prefix
     bool            _AltPrefix;         ///< Hande additional preffix flag (ftp, sftp etc)
     bool            _UseOwnKey;         ///< Use own encryption key flag

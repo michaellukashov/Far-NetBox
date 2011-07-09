@@ -48,6 +48,7 @@ enum PluginString
     //Configure menu
     StringSettingsMenuTitle,
     StringMainSettingsMenuTitle,
+    StringProxySettingsMenuTitle,
     StringLoggingSettingsMenuTitle,
     StringAboutMenuTitle,
 

@@ -152,9 +152,13 @@ void CSettings::Configure()
     // Main settings
     int MainSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringMainSettingsMenuTitle);
+    // Proxy settings
+    int ProxySettingsMenuIdx = items.size();
+    AddMenuItem(items, 0, StringProxySettingsMenuTitle);
     // Logging settings
     int LoggingSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
+    //
     AddMenuItem(items, MIF_SEPARATOR, 0);
     // About
     int AboutMenuIdx = items.size();
@@ -169,6 +173,10 @@ void CSettings::Configure()
     if (menuIdx == MainSettingsMenuIdx)
     {
         MainConfigure();
+    }
+    else if (menuIdx == ProxySettingsMenuIdx)
+    {
+        ProxyConfigure();
     }
     else if (menuIdx == LoggingSettingsMenuIdx)
     {
@@ -239,6 +247,12 @@ void CSettings::MainConfigure()
         }
         Save();
     }
+}
+
+void CSettings::ProxyConfigure()
+{
+    CFarDialog dlg(54, 17, CFarPlugin::GetString(StringTitle));
+    int topPos = dlg.GetTop();
 }
 
 void CSettings::LoggingConfigure()
