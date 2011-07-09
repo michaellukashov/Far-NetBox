@@ -43,6 +43,13 @@ int WINAPI _export GetMinFarVersionW()
 void WINAPI _export SetStartupInfoW(const PluginStartupInfo *psi)
 {
     CFarPlugin::Initialize(psi);
+
+    _Settings.Load();
+    // logging: "Far Navigator (ProxyFtp) plugin (1.9.b4) started."
+    // CFarLogger::Initialize(_Settings.EnableLogging(), _Settings.LoggingLevel(),
+        // _Settings.LogToFile(), _Settings.LogFileName());
+    // _Logger.Log("NetBox plugin version %s started.", PLUGIN_VERSION_TXT);
+
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
     curl_global_init(CURL_GLOBAL_ALL);
@@ -52,7 +59,6 @@ void WINAPI _export SetStartupInfoW(const PluginStartupInfo *psi)
     CSession::RegisterProtocolClient(1, L"SFTP", CSession::SessionCreator<CSessionSFTP>, L"sftp");
     CSession::RegisterProtocolClient(2, L"WebDAV", CSession::SessionCreator<CSessionWebDAV>, L"http", L"https");
 
-    _Settings.Load();
 }
 
 
