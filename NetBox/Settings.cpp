@@ -35,6 +35,7 @@ static const wchar_t *RegSessionsPath = L"SessionsPath";
 
 static const wchar_t *RegEnableLogging = L"EnableLogging";
 static const wchar_t *RegLoggingLevel = L"LoggingLevel";
+static const wchar_t *RegLogToFile = L"LogToFile";
 
 CSettings _Settings;
 
@@ -48,7 +49,8 @@ CSettings::CSettings() :
       _Timeout(60),
       _SessionPath(),
       _EnableLogging(false),
-      _LoggingLevel(0)
+      _LoggingLevel(0),
+      _LogToFile(false)
 {
 }
 
@@ -81,6 +83,7 @@ void CSettings::Load()
             _Timeout = regVal;
         }
         settings.GetString(RegSessionsPath, _SessionPath);
+        // Логирование
         if (settings.GetNumber(RegEnableLogging, regVal))
         {
             _EnableLogging = (regVal != 0);
@@ -88,6 +91,10 @@ void CSettings::Load()
         if (settings.GetNumber(RegLoggingLevel, regVal))
         {
             _LoggingLevel = (regVal != 0);
+        }
+        if (settings.GetNumber(RegLogToFile, regVal))
+        {
+            _LogToFile = (regVal != 0);
         }
     }
 }
@@ -111,6 +118,7 @@ void CSettings::Save() const
         // Настройки логирования
         settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
         settings.SetNumber(RegLoggingLevel, _LoggingLevel);
+        settings.SetNumber(RegLogToFile, _LogToFile ? 1 : 0);
     }
 }
 
