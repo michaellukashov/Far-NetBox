@@ -65,6 +65,12 @@ public:
     {
         return _SessionPath.c_str();
     }
+    /**
+     * Get session path
+     * \return session path
+     */
+    wstring GetSessionPath() const;
+
     bool EnableLogging() const
     {
         return _EnableLogging;
@@ -81,12 +87,6 @@ public:
     {
         return _LogFileName.c_str();
     }
-
-    /**
-     * Get session path
-     * \return session path
-     */
-    wstring GetSessionPath() const;
 
 private:
     void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
