@@ -34,6 +34,7 @@ static const wchar_t *RegTimeout =      L"Timeout";
 static const wchar_t *RegSessionsPath = L"SessionsPath";
 
 static const wchar_t *RegEnableLogging = L"EnableLogging";
+static const wchar_t *RegLoggingLevel = L"LoggingLevel";
 
 CSettings _Settings;
 
@@ -46,7 +47,8 @@ CSettings::CSettings() :
       _UseOwnKey(false),
       _Timeout(60),
       _SessionPath(),
-      _EnableLogging(false)
+      _EnableLogging(false),
+      _LoggingLevel(0)
 {
 }
 
@@ -83,6 +85,10 @@ void CSettings::Load()
         {
             _EnableLogging = (regVal != 0);
         }
+        if (settings.GetNumber(RegLoggingLevel, regVal))
+        {
+            _LoggingLevel = (regVal != 0);
+        }
     }
 }
 
@@ -102,6 +108,9 @@ void CSettings::Save() const
         settings.SetNumber(RegAltPrefix, _AltPrefix ? 1 : 0);
         settings.SetNumber(RegTimeout, _Timeout);
         settings.SetString(RegSessionsPath, _SessionPath.c_str());
+        // Настройки логирования
+        settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
+        settings.SetNumber(RegLoggingLevel, _LoggingLevel);
     }
 }
 
@@ -221,29 +230,32 @@ void CSettings::MainConfigure()
 
 void CSettings::LoggingConfigure()
 {
-    CFarDialog dlg(54, 14, CFarPlugin::GetString(StringLoggingDialogTitle));
+    CFarDialog dlg(54, 12, CFarPlugin::GetString(StringLoggingDialogTitle));
     int topPos = dlg.GetTop();
 
     // Логирование включено/выключено
+    FarDialogItem *dlgItemEnableLogging;
     const int idEnableLogging = dlg.CreateCheckBox(dlg.GetLeft(), topPos,
-        CFarPlugin::GetString(StringLoggingDialogEnableLogging), _EnableLogging);
+        CFarPlugin::GetString(StringLoggingDialogEnableLogging),
+        _EnableLogging, 0L, &dlgItemEnableLogging);
+    // Сепаратор
     dlg.CreateSeparator(++topPos, CFarPlugin::GetString(StringLoggingOptionsSeparatorTitle));
+    // Уровень логирования
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringLoggingOptionsLevel));
 
-    // Уровень логирования
     FarDialogItem *itemLevelComboBox;
     const int idLevelComboBox = dlg.CreateDlgItem(DI_COMBOBOX, dlg.GetLeft() +
         static_cast<int>(wcslen(CFarPlugin::GetString(StringLoggingOptionsLevel))) + 1,
-        dlg.GetWidth(), ++topPos, topPos, NULL, DIF_LISTWRAPMODE, &itemLevelComboBox);
+        dlg.GetWidth(), topPos, topPos, NULL, DIF_LISTWRAPMODE, &itemLevelComboBox);
 
     FarList levelsList;
     vector<FarListItem> levelsListItems;
-    size_t levelsCount = 2;
+    int levelsCount = 2;
     levelsListItems.resize(levelsCount);
     ZeroMemory(&levelsListItems[0], levelsCount * sizeof(FarListItem));
-    for (size_t i = 0; i < levelsCount; ++i)
+    for (int i = 0; i < levelsCount; ++i)
     {
-        if (i == 0)
+        if (_LoggingLevel == 0)
         {
             levelsListItems[i].Flags = LIF_SELECTED;
         }
@@ -265,16 +277,30 @@ void CSettings::LoggingConfigure()
     dlg.CreateSeparator(dlg.GetHeight() - 2);
     FarDialogItem *itemFocusBtn;
     dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
-    itemFocusBtn->Focus = 1;
+    // itemFocusBtn->Focus = 1;
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
+    // Установка значений
+    dprintf(L"idEnableLogging = %d, idBtnCancel = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
+    // dlg.SetCheckState(idEnableLogging, _EnableLogging);
+    dlgItemEnableLogging->Focus = 1;
+    
     // Показываем диалог
     const int retCode = dlg.DoModal();
     if (retCode >= 0 && retCode != idBtnCancel)
     {
+        // Сохраняем опции
         _EnableLogging = dlg.GetCheckState(idEnableLogging);
         // _LoggingLevel = itemLevelComboBox->Selected;
-        // dprintf(L"_LoggingLevel = %d", _LoggingLevel);
+        for (int i = 0; i < levelsCount; ++i)
+        {
+            if (levelsListItems[i].Flags | LIF_SELECTED)
+            {
+                _LoggingLevel = i;
+                break;
+            }
+        }
+        dprintf(L"_LoggingLevel = %d", _LoggingLevel);
         _LogToFile = dlg.GetCheckState(idLogToFile);
         _LogFileName = dlg.GetText(idLogFileName);
         Save();
