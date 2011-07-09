@@ -48,31 +48,34 @@ using namespace std;
 
 #define NETBOX_DEBUG
 
-#ifdef NETBOX_DEBUG
-#define DEBUG_OUTPUT(msg) OutputDebugStringW(msg.c_str());
-#else
-#define DEBUG_OUTPUT(msg) (void)msg;
-#endif
-
-inline int __cdecl dprintf(const wchar_t *format, ...)
+inline int __cdecl debug_printf(const char *funcname, const wchar_t *format, ...)
 {
     int len = 0;
 #ifdef NETBOX_DEBUG
     va_list args;
     va_start(args, format);
-    len = _vscwprintf(format, args) + 1; // last NULL
+    len = _vscwprintf(format, args) + 1;
     if (len <= 1)
     {
         return 0;
     }
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    buf.erase(buf.length() - 1); // Trim last NULL
+    // vswprintf_s(&buf[0], buf.size(), "%s: %s\n", funcname, buf.c_str());
+    wstring buf2(len + 4 + strlen(funcname), 0);
+    swprintf_s(&buf2[0], buf2.size(), L"%s: %s\n", (wchar_t *)funcname, buf.c_str());
+    buf.erase(buf2.size() - 1); // Trim last NULL
     va_end(args);
-    DEBUG_OUTPUT(buf);
+    OutputDebugStringW(buf2.c_str());
 #endif
     return len;
 }
+
+#ifdef NETBOX_DEBUG
+    #define DEBUG_PRINTF(format, ...) debug_printf(__FUNCTION__, format, __VA_ARGS__);
+#else
+    #define DEBUG_PRINTF(format, ...)
+#endif
 
 class CFarPlugin
 {
