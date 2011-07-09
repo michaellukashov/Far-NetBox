@@ -36,6 +36,11 @@
 "Saved sessions directory:"
 
 "NetBox - Proxy settings"
+"Proxy type:"
+"None"
+"SOCKS4"
+"SOCKS5"
+"HTTP"
 
 "NetBox - Logging settings"
 "Enable logging"

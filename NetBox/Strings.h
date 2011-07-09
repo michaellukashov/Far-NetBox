@@ -63,6 +63,11 @@ enum PluginString
 
     //Proxy configure dialog
     StringProxySettingsDialogTitle,
+    StringProxySettingsProxyType,
+    proxyTypeItem1,
+    proxyTypeItem2,
+    proxyTypeItem3,
+    proxyTypeItem4,
 
     //Logging configure dialog
     StringLoggingDialogTitle,

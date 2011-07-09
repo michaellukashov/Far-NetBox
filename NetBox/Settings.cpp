@@ -44,7 +44,7 @@ static const wchar_t *RegLogFileName = L"LogFileName";
 CSettings _Settings;
 
 
-CSettings::CSettings() : 
+CSettings::CSettings() :
     _SettingsMenuIdx(0),
     _AddToDiskMenu(true),
     _AddToPanelMenu(false),
@@ -253,7 +253,36 @@ void CSettings::ProxyConfigure()
 {
     CFarDialog dlg(54, 17, CFarPlugin::GetString(StringProxySettingsDialogTitle));
     int topPos = dlg.GetTop();
+    // Тип прокси
+    dlg.CreateText(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringProxySettingsProxyType));
 
+    FarDialogItem *proxyTypeComboBox;
+    {
+        int left = dlg.GetLeft() +
+            static_cast<int>(wcslen(CFarPlugin::GetString(StringProxySettingsProxyType))) + 1;
+        const int idProxyTypeComboBox = dlg.CreateDlgItem(DI_COMBOBOX, left,
+            left + 12, topPos, topPos, NULL, DIF_LISTWRAPMODE, &proxyTypeComboBox);
+    }
+    FarList proxyTypeList;
+    vector<FarListItem> proxyTypeListItems;
+    int proxyTypeCount = 4;
+    proxyTypeListItems.resize(proxyTypeCount);
+    ZeroMemory(&proxyTypeListItems[0], proxyTypeCount * sizeof(FarListItem));
+    for (int i = 0; i < proxyTypeCount; ++i)
+    {
+        // if (_ProxyType == i)
+        {
+            proxyTypeListItems[i].Flags = LIF_SELECTED;
+        }
+        proxyTypeListItems[i].Text = CFarPlugin::GetString(proxyTypeItem1 + i);
+    }
+    proxyTypeList.Items = &proxyTypeListItems.front();
+    proxyTypeList.ItemsNumber = static_cast<int>(proxyTypeListItems.size());
+    proxyTypeComboBox->ListItems = &proxyTypeList;
+
+    dlg.CreateSeparator(++topPos);
+
+    // Кнопки OK Cancel
     dlg.CreateSeparator(dlg.GetHeight() - 2);
     FarDialogItem *itemFocusBtn;
     dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
@@ -320,7 +349,7 @@ void CSettings::LoggingConfigure()
     // Установка состояния элементов диалога
     // DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
     dlgItemEnableLogging->Focus = 1;
-    
+
     // Показываем диалог
     const int itemIdx = dlg.DoModal();
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
