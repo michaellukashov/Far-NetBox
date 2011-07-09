@@ -45,14 +45,30 @@ enum PluginString
     StringEdErrNameEmpty,
     StringEdErrNameInvalid,
 
-    //Configure dialog
-    StringCfgAddToPM,
+    //Configure menu
+    StringSettingsMenuTitle,
+    StringMainSettingsMenuTitle,
+    StringLoggingSettingsMenuTitle,
+    StringAboutMenuTitle,
+
+    //Main configure dialog
     StringCfgAddToDM,
+    StringCfgAddToPM,
     StringCfgUseOwnKey,
     StringCfgPrefix,
     StringCfgAltPrefixes,
     StringCfgTimeout,
     StringCfgSessionsPath,
+
+    //Logging configure dialog
+    StringLoggingDialogTitle,
+    StringLoggingDialogEnableLogging,
+    StringLoggingOptionsSeparatorTitle,
+    StringLoggingOptionsLevel,
+    StringLoggingOptionsLevelItem1,
+    StringLoggingOptionsLevelItem2,
+    StringLoggingDialogLogToFile,
+    StringLogFileName,
 
     //Prompt to crypto key
     StringSessionPwd,

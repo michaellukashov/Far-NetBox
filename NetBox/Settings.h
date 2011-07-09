@@ -37,13 +37,13 @@ public:
     void Configure();
 
     //Accessors
-    bool AddToPanelMenu() const
-    {
-        return _AddToPanelMenu;
-    }
     bool AddToDiskMenu() const
     {
         return _AddToDiskMenu;
+    }
+    bool AddToPanelMenu() const
+    {
+        return _AddToPanelMenu;
     }
     const wchar_t *CmdPrefix() const
     {
@@ -65,27 +65,60 @@ public:
     {
         return _SessionPath.c_str();
     }
+    bool EnableLogging() const
+    {
+        return _EnableLogging;
+    }
+    int LoggingLevel() const
+    {
+        return _LoggingLevel;
+    }
+    bool LogToFile() const
+    {
+        return _LogToFile;
+    }
+    const wchar_t *LogFileName() const
+    {
+        return _LogFileName.c_str();
+    }
 
     /**
      * Get session path
      * \return session path
      */
     wstring GetSessionPath() const;
+
 private:
+    void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
+
+    /**
+     * Main settings
+     */
+    void MainConfigure();
+    /**
+     * Logging settings
+     */
+    void LoggingConfigure();
+    void ShowAbout();
     /**
      * Save settings
      */
     void Save() const;
 
 private:
+    int _SettingsMenuIdx;
     //Settings variables
-    bool            _AddToPanelMenu;    ///< Add plugin to the panel plugin menu flag
     bool            _AddToDiskMenu;     ///< Add plugin to the disk menu flag
+    bool            _AddToPanelMenu;    ///< Add plugin to the panel plugin menu flag
     wstring         _CmdPrefix;         ///< Plugin command prefix
     bool            _AltPrefix;         ///< Hande additional preffix flag (ftp, sftp etc)
     bool            _UseOwnKey;         ///< Use own encryption key flag
     unsigned long   _Timeout;           ///< Default timeout in seconds
     wstring         _SessionPath;       ///< Session folder path
+    bool            _EnableLogging;     ///< Enable logging flag
+    int             _LoggingLevel;
+    bool            _LogToFile;
+    wstring         _LogFileName;
 };
 
 extern CSettings _Settings;

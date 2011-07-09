@@ -21,13 +21,27 @@
 "The session name can not be empty"
 "The session name contains restricted symbols (<>:\"/\\|?*)"
 
-"Add to panels plugin menu"
+"NetBox - settings"
+"Main settings"
+"Logging settings"
+"About"
+
 "Add to disk menu"
+"Add to panels plugin menu"
 "Use own encryption key"
 "Prefix:"
 "Handle prefixes ftp, http, ..."
 "Default timeout (sec):"
 "Saved sessions directory:"
+
+"NetBox - Logging settings"
+"Enable logging"
+"Logging options"
+"Logging level:"
+"Debug 1"
+"Debug 2"
+"Log to file:"
+"C:\NetBox.log"
 
 "Enter password for read saved sessions:"
 
