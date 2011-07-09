@@ -253,7 +253,6 @@ void CSettings::LoggingConfigure()
     int levelsCount = 2;
     levelsListItems.resize(levelsCount);
     ZeroMemory(&levelsListItems[0], levelsCount * sizeof(FarListItem));
-    dprintf(L"_LoggingLevel 1 = %d", _LoggingLevel);
     for (int i = 0; i < levelsCount; ++i)
     {
         if (_LoggingLevel == i)
@@ -292,16 +291,7 @@ void CSettings::LoggingConfigure()
     {
         // Сохраняем опции
         _EnableLogging = dlg.GetCheckState(idEnableLogging);
-        // _LoggingLevel = itemLevelComboBox->Selected;
         _LoggingLevel = dlg.GetSelectonIndex(idLevelComboBox);
-        // for (int i = 0; i < levelsCount; ++i)
-        // {
-            // if (levelsListItems[i].Flags & LIF_SELECTED)
-            // {
-                // _LoggingLevel = i;
-                // break;
-            // }
-        // }
         dprintf(L"_LoggingLevel = %d", _LoggingLevel);
         _LogToFile = dlg.GetCheckState(idLogToFile);
         _LogFileName = dlg.GetText(idLogFileName);
