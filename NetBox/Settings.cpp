@@ -251,7 +251,7 @@ void CSettings::MainConfigure()
 
 void CSettings::ProxyConfigure()
 {
-    CFarDialog dlg(54, 17, CFarPlugin::GetString(StringProxySettingsDialogTitle));
+    CFarDialog dlg(54, 14, CFarPlugin::GetString(StringProxySettingsDialogTitle));
     int topPos = dlg.GetTop();
     // Тип прокси
     dlg.CreateText(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringProxySettingsProxyType));
@@ -281,6 +281,26 @@ void CSettings::ProxyConfigure()
     proxyTypeComboBox->ListItems = &proxyTypeList;
 
     dlg.CreateSeparator(++topPos);
+
+    // Прокси адрес, порт, логин/пароль
+    dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringProxySettingsProxyHost));
+    int left = dlg.GetLeft();
+    const int idProxyHost = dlg.CreateEdit(left, topPos + 1, 30,
+        L""); // _ProxyHost.c_str());
+    left = dlg.GetWidth() - 10;
+    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
+    const int idProxyPort = dlg.CreateEdit(left, topPos + 1, 10,
+        L""); // _ProxyPort.c_str());
+
+    topPos += 2;
+    left = dlg.GetLeft();
+    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyLogin));
+    const int idProxyLogin = dlg.CreateEdit(left, topPos + 1, 20,
+        L""); // _ProxyLogin.c_str());
+    left = dlg.GetWidth() - 20;
+    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPassword));
+    const int idProxyPassword = dlg.CreateEdit(left, topPos + 1, 20,
+        L""); // _ProxyPassword.c_str());
 
     // Кнопки OK Cancel
     dlg.CreateSeparator(dlg.GetHeight() - 2);

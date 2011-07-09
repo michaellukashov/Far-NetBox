@@ -42,6 +42,11 @@
 "SOCKS5"
 "HTTP"
 
+"Proxy host name:"
+"Port number:"
+"User name:"
+"Password:"
+
 "NetBox - Logging settings"
 "Enable logging"
 "Logging options"
