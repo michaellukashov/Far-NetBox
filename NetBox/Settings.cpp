@@ -293,7 +293,7 @@ void CSettings::LoggingConfigure()
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
     // Установка состояния элементов диалога
-    DEBUG_PRINTF(L"idEnableLogging = %d, idBtnCancel = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
+    DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, idBtnCancel = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
     // dlg.SetCheckState(idEnableLogging, _EnableLogging);
     dlgItemEnableLogging->Focus = 1;
     
