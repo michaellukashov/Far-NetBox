@@ -50,7 +50,17 @@ void CLogger::Shutdown()
 void CLogger::Log(const wchar_t *format, ...)
 {
     if (!format)
+    {
         return;
+    }
+    if (!_enableLogging)
+    {
+        return;
+    }
+    if (!_logToFile)
+    {
+        return;
+    }
     string fn(wcslen(_logFileName.c_str()) + 1, 0);
     wcstombs((char *)fn.c_str(), _logFileName.c_str(), _logFileName.size());
     // DEBUG_PRINTF(L"NetBox: fn = %s", (wchar_t *)fn.c_str());
