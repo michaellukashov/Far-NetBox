@@ -253,9 +253,10 @@ void CSettings::LoggingConfigure()
     int levelsCount = 2;
     levelsListItems.resize(levelsCount);
     ZeroMemory(&levelsListItems[0], levelsCount * sizeof(FarListItem));
+    dprintf(L"_LoggingLevel 1 = %d", _LoggingLevel);
     for (int i = 0; i < levelsCount; ++i)
     {
-        if (_LoggingLevel == 0)
+        if (_LoggingLevel == i)
         {
             levelsListItems[i].Flags = LIF_SELECTED;
         }
@@ -280,7 +281,7 @@ void CSettings::LoggingConfigure()
     // itemFocusBtn->Focus = 1;
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
-    // Установка значений
+    // Установка состояния элементов диалога
     dprintf(L"idEnableLogging = %d, idBtnCancel = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
     // dlg.SetCheckState(idEnableLogging, _EnableLogging);
     dlgItemEnableLogging->Focus = 1;
@@ -292,14 +293,15 @@ void CSettings::LoggingConfigure()
         // Сохраняем опции
         _EnableLogging = dlg.GetCheckState(idEnableLogging);
         // _LoggingLevel = itemLevelComboBox->Selected;
-        for (int i = 0; i < levelsCount; ++i)
-        {
-            if (levelsListItems[i].Flags | LIF_SELECTED)
-            {
-                _LoggingLevel = i;
-                break;
-            }
-        }
+        _LoggingLevel = dlg.GetSelectonIndex(idLevelComboBox);
+        // for (int i = 0; i < levelsCount; ++i)
+        // {
+            // if (levelsListItems[i].Flags & LIF_SELECTED)
+            // {
+                // _LoggingLevel = i;
+                // break;
+            // }
+        // }
         dprintf(L"_LoggingLevel = %d", _LoggingLevel);
         _LogToFile = dlg.GetCheckState(idLogToFile);
         _LogFileName = dlg.GetText(idLogFileName);
