@@ -55,7 +55,7 @@ CSettings::CSettings() :
     _LogToFile(false),
     _LogFileName(L"C:\\NetBox.log")
 {
-    dprintf(L"CSettings::CSettings");
+    // dprintf(L"CSettings::CSettings");
 }
 
 
@@ -145,33 +145,19 @@ void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int title
 
 void CSettings::Configure()
 {
-    // Создаем меню с настройками:
-    // Main settings
-    // Logging settings
-    // About
-    // enum SettingsMenuIds
-    // {
-        // MainSettingsMenuId,
-        // LoggingSettingsMenuId,
-        // AboutMenuId,
-    // };
-
-    // typedef struct SettingsMenuElements
-    // {
-        // int elemId;
-        // DWORD flags;
-    // };
-    // DWORD flags;
-
+    // Создаем меню с настройками
     vector<FarMenuItemEx> items;
+    // Main settings
     int MainSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringMainSettingsMenuTitle);
+    // Logging settings
     int LoggingSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
     AddMenuItem(items, MIF_SEPARATOR, 0);
+    // About
     int AboutMenuIdx = items.size();
     AddMenuItem(items, 0, StringAboutMenuTitle);
-    dprintf(L"Configure: _SettingsMenuIdx = %d", _SettingsMenuIdx);
+    // dprintf(L"Configure: _SettingsMenuIdx = %d", _SettingsMenuIdx);
     items[_SettingsMenuIdx].Flags |= MIF_SELECTED;
 
     const int menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
@@ -179,7 +165,7 @@ void CSettings::Configure()
         CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
         reinterpret_cast<FarMenuItem *>(&items.front()),
         static_cast<int>(items.size()));
-    dprintf(L"menuIdx = %d", menuIdx);
+    // dprintf(L"menuIdx = %d", menuIdx);
     if (menuIdx == MainSettingsMenuIdx)
     {
         MainConfigure();
@@ -198,15 +184,7 @@ void CSettings::Configure()
     }
     // Сохраняем индекс выбранного элемента меню
     _SettingsMenuIdx = menuIdx;
-    // for (int i = 0; i < items.size(); i++)
-    // {
-        // if (items[i].UserData == menuIdx)
-        // {
-            // _SettingsMenuIdx = i;
-            // break;
-        // }
-    // }
-    dprintf(L"new _SettingsMenuIdx = %d" , _SettingsMenuIdx);
+    // dprintf(L"new _SettingsMenuIdx = %d", _SettingsMenuIdx);
 }
 
 void CSettings::MainConfigure()
