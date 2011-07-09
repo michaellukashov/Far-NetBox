@@ -69,6 +69,18 @@ public:
     {
         return _EnableLogging;
     }
+    int LoggingLevel() const
+    {
+        return _LoggingLevel;
+    }
+    bool LogToFile() const
+    {
+        return _LogToFile;
+    }
+    const wchar_t *LogFileName() const
+    {
+        return _LogFileName.c_str();
+    }
 
     /**
      * Get session path
