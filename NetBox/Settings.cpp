@@ -231,8 +231,8 @@ void CSettings::MainConfigure()
     itemFocusBtn->Focus = 1;
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
-    const int menuIdx = dlg.DoModal();
-    if (menuIdx >= 0 && menuIdx != idBtnCancel)
+    const int itemIdx = dlg.DoModal();
+    if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         _AddToDiskMenu = dlg.GetCheckState(idAddDM);
         _AddToPanelMenu = dlg.GetCheckState(idAddPM);
@@ -251,8 +251,20 @@ void CSettings::MainConfigure()
 
 void CSettings::ProxyConfigure()
 {
-    CFarDialog dlg(54, 17, CFarPlugin::GetString(StringTitle));
+    CFarDialog dlg(54, 17, CFarPlugin::GetString(StringProxySettingsDialogTitle));
     int topPos = dlg.GetTop();
+
+    dlg.CreateSeparator(dlg.GetHeight() - 2);
+    FarDialogItem *itemFocusBtn;
+    dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
+    itemFocusBtn->Focus = 1;
+    const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
+
+    const int itemIdx = dlg.DoModal();
+    if (itemIdx >= 0 && itemIdx != idBtnCancel)
+    {
+        Save();
+    }
 }
 
 void CSettings::LoggingConfigure()
@@ -310,8 +322,8 @@ void CSettings::LoggingConfigure()
     dlgItemEnableLogging->Focus = 1;
     
     // Показываем диалог
-    const int menuIdx = dlg.DoModal();
-    if (menuIdx >= 0 && menuIdx != idBtnCancel)
+    const int itemIdx = dlg.DoModal();
+    if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции
         _EnableLogging = dlg.GetCheckState(idEnableLogging);

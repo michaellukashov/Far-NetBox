@@ -35,6 +35,8 @@
 "Default timeout (sec):"
 "Saved sessions directory:"
 
+"NetBox - Proxy settings"
+
 "NetBox - Logging settings"
 "Enable logging"
 "Logging options"

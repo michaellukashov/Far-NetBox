@@ -61,6 +61,9 @@ enum PluginString
     StringCfgTimeout,
     StringCfgSessionsPath,
 
+    //Proxy configure dialog
+    StringProxySettingsDialogTitle,
+
     //Logging configure dialog
     StringLoggingDialogTitle,
     StringLoggingDialogEnableLogging,
