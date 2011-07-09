@@ -37,13 +37,13 @@ public:
     void Configure();
 
     //Accessors
-    bool AddToPanelMenu() const
-    {
-        return _AddToPanelMenu;
-    }
     bool AddToDiskMenu() const
     {
         return _AddToDiskMenu;
+    }
+    bool AddToPanelMenu() const
+    {
+        return _AddToPanelMenu;
     }
     const wchar_t *CmdPrefix() const
     {

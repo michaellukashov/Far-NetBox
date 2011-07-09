@@ -108,8 +108,8 @@ void CSettings::Save() const
     CFarSettings settings;
     if (settings.Open(RegPluginName, false))
     {
-        settings.SetNumber(RegAddToPM, _AddToPanelMenu ? 1 : 0);
         settings.SetNumber(RegAddToDM, _AddToDiskMenu ? 1 : 0);
+        settings.SetNumber(RegAddToPM, _AddToPanelMenu ? 1 : 0);
         settings.SetNumber(RegUseOwnKey, _UseOwnKey ? 1 : 0);
         if (!_CmdPrefix.empty())
         {
