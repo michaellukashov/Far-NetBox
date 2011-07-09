@@ -22,6 +22,7 @@
 #include "Session.h"
 #include "SessionManager.h"
 #include "Strings.h"
+#include "resource.h"
 
 //Registry settings names
 static const wchar_t *RegPluginName =   L"NetBox";
@@ -55,6 +56,7 @@ CSettings::CSettings() :
     _LogToFile(false),
     _LogFileName(L"C:\\NetBox.log")
 {
+    // _LogFileName = CFarPlugin::GetString(StringLogFileName);
 }
 
 
@@ -307,6 +309,20 @@ void CSettings::LoggingConfigure()
 
 void CSettings::ShowAbout()
 {
+    CFarDialog dlg(54, 12, CFarPlugin::GetString(StringAboutDialogTitle));
+    int topPos = dlg.GetTop();
+    dlg.CreateText(dlg.GetLeft() + 5, ++topPos, CFarPlugin::GetString(StringPluginDescriptionText));
+    ++topPos;
+    wstring ver = PLUGIN_VERSION_TXT;
+    wstring version = CFarPlugin::GetFormattedString(StringPluginVersion, ver.c_str());
+    // DEBUG_PRINTF(L"NetBox: version = %s", version.c_str());
+    dlg.CreateText(dlg.GetLeft() + 16, ++topPos, version.c_str());
+
+    FarDialogItem *itemCloseBtn;
+    dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringPluginDescriptionClose), DIF_CENTERGROUP, &itemCloseBtn);
+    itemCloseBtn->Focus = 1;
+
+    dlg.DoModal();
 }
 
 wstring CSettings::GetSessionPath() const

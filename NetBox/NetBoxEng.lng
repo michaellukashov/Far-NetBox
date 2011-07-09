@@ -43,6 +43,11 @@
 "Log to file:"
 "C:\NetBox.log"
 
+"NetBox - About"
+"FTP/SFTP/WebDAV client for Far 2.0"
+"Version %s"
+"Close"
+
 "Enter password for read saved sessions:"
 
 "Create directory"

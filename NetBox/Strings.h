@@ -69,6 +69,12 @@ enum PluginString
     StringLoggingOptionsLevelItem2,
     StringLoggingDialogLogToFile,
     StringLogFileName,
+    
+    //About menu
+    StringAboutDialogTitle,
+    StringPluginDescriptionText,
+    StringPluginVersion,
+    StringPluginDescriptionClose,
 
     //Prompt to crypto key
     StringSessionPwd,
