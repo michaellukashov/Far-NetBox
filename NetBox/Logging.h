@@ -43,4 +43,4 @@ private:
     wstring _logFileName;
 };
 
-extern CLogger _Logger;
+void Log(const wchar_t *format, ...);

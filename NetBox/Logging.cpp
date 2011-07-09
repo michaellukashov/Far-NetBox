@@ -90,3 +90,11 @@ void CLogger::Log(const wchar_t *format, ...)
     _first = false;
 }
 
+void Log(const wchar_t *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    _Logger.Log(format, args);
+    va_end(args);
+}
+
