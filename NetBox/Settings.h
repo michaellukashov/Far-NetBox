@@ -111,6 +111,12 @@ private:
     int             _LoggingLevel;
     bool            _LogToFile;
     wstring         _LogFileName;
+    
+    int _ProxyType;
+    wstring _ProxyHost;
+    wstring _ProxyPort;
+    wstring _ProxyLogin;
+    wstring _ProxyPassword;
 };
 
 extern CSettings _Settings;
