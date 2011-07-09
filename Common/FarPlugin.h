@@ -52,6 +52,8 @@ inline int __cdecl debug_printf(const char *funcname, const wchar_t *format, ...
 {
     int len = 0;
 #ifdef NETBOX_DEBUG
+    // OutputDebugStringW(L"debug_printf: funcname");
+    // OutputDebugStringW((wchar_t *)funcname);
     va_list args;
     va_start(args, format);
     len = _vscwprintf(format, args) + 1;
@@ -61,11 +63,13 @@ inline int __cdecl debug_printf(const char *funcname, const wchar_t *format, ...
     }
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    // vswprintf_s(&buf[0], buf.size(), "%s: %s\n", funcname, buf.c_str());
-    wstring buf2(len + 4 + strlen(funcname), 0);
-    swprintf_s(&buf2[0], buf2.size(), L"%s: %s\n", (wchar_t *)funcname, buf.c_str());
-    buf.erase(buf2.size() - 1); // Trim last NULL
     va_end(args);
+    OutputDebugStringW(L"debug_printf: 1");
+    wstring buf2(len + 10 + strlen(funcname), 0);
+    swprintf_s(&buf2[0], buf2.size(), L"%s: %s\n", (wchar_t *)funcname, buf.c_str());
+    OutputDebugStringW(L"debug_printf: 2");
+    // buf2.erase(buf2.size() - 1); // Trim last NULL
+    OutputDebugStringW(L"debug_printf: 3");
     OutputDebugStringW(buf2.c_str());
 #endif
     return len;
