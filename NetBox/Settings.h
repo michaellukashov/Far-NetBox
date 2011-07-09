@@ -89,7 +89,7 @@ public:
     wstring GetSessionPath() const;
 
 private:
-    void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId, int itemId);
+    void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
 
     /**
      * Main settings
@@ -106,6 +106,7 @@ private:
     void Save() const;
 
 private:
+    int _SettingsMenuIdx;
     //Settings variables
     bool            _AddToDiskMenu;     ///< Add plugin to the disk menu flag
     bool            _AddToPanelMenu;    ///< Add plugin to the panel plugin menu flag

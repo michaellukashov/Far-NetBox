@@ -42,18 +42,20 @@ CSettings _Settings;
 
 
 CSettings::CSettings() : 
-      _AddToDiskMenu(true),
-      _AddToPanelMenu(false),
-      _CmdPrefix(L"NetBox"),
-      _AltPrefix(true),
-      _UseOwnKey(false),
-      _Timeout(60),
-      _SessionPath(),
-      _EnableLogging(false),
-      _LoggingLevel(0),
-      _LogToFile(false),
-      _LogFileName(L"C:\\NetBox.log")
+    _SettingsMenuIdx(0),
+    _AddToDiskMenu(true),
+    _AddToPanelMenu(false),
+    _CmdPrefix(L"NetBox"),
+    _AltPrefix(true),
+    _UseOwnKey(false),
+    _Timeout(60),
+    _SessionPath(),
+    _EnableLogging(false),
+    _LoggingLevel(0),
+    _LogToFile(false),
+    _LogFileName(L"C:\\NetBox.log")
 {
+    dprintf(L"CSettings::CSettings");
 }
 
 
@@ -129,7 +131,7 @@ void CSettings::Save() const
     }
 }
 
-void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId, int itemId)
+void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId)
 {
     FarMenuItemEx item = {0};
     if (!(flags & MIF_SEPARATOR))
@@ -137,7 +139,7 @@ void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int title
         item.Text = CFarPlugin::GetString(titleId);
     }
     item.Flags = flags;
-    item.UserData = itemId;
+    // item.UserData = itemId;
     items.push_back(item);
 }
 
@@ -147,46 +149,64 @@ void CSettings::Configure()
     // Main settings
     // Logging settings
     // About
-    enum SettingsMenuIds
-    {
-        MainSettingsMenuId,
-        LoggingSettingsMenuId,
-        AboutMenuId,
-    };
-    vector<FarMenuItemEx> items;
-    AddMenuItem(items, MIF_SELECTED, StringMainSettingsMenuTitle, MainSettingsMenuId);
-    AddMenuItem(items, 0, StringLoggingSettingsMenuTitle, LoggingSettingsMenuId);
-    AddMenuItem(items, MIF_SEPARATOR, 0, 0);
-    AddMenuItem(items, 0, StringAboutMenuTitle, AboutMenuId);
+    // enum SettingsMenuIds
+    // {
+        // MainSettingsMenuId,
+        // LoggingSettingsMenuId,
+        // AboutMenuId,
+    // };
 
-    const int retCode = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
+    // typedef struct SettingsMenuElements
+    // {
+        // int elemId;
+        // DWORD flags;
+    // };
+    // DWORD flags;
+
+    vector<FarMenuItemEx> items;
+    int MainSettingsMenuIdx = items.size();
+    AddMenuItem(items, 0, StringMainSettingsMenuTitle);
+    int LoggingSettingsMenuIdx = items.size();
+    AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
+    AddMenuItem(items, MIF_SEPARATOR, 0);
+    int AboutMenuIdx = items.size();
+    AddMenuItem(items, 0, StringAboutMenuTitle);
+    dprintf(L"Configure: _SettingsMenuIdx = %d", _SettingsMenuIdx);
+    items[_SettingsMenuIdx].Flags |= MIF_SELECTED;
+
+    const int menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
         -1, -1, 0, FMENU_AUTOHIGHLIGHT | FMENU_WRAPMODE | FMENU_USEEXT,
         CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
         reinterpret_cast<FarMenuItem *>(&items.front()),
         static_cast<int>(items.size()));
-    dprintf(L"retCode = %d", retCode);
-    switch (retCode)
+    dprintf(L"menuIdx = %d", menuIdx);
+    if (menuIdx == MainSettingsMenuIdx)
     {
-        case MainSettingsMenuId:
-        {
-            MainConfigure();
-            break;
-        }
-        case LoggingSettingsMenuId:
-        {
-            LoggingConfigure();
-            break;
-        }
-        case AboutMenuId:
-        {
-            ShowAbout();
-            break;
-        }
-        default:
-        {
-            return;
-        }
+        MainConfigure();
     }
+    else if (menuIdx == LoggingSettingsMenuIdx)
+    {
+        LoggingConfigure();
+    }
+    else if (menuIdx == AboutMenuIdx)
+    {
+        ShowAbout();
+    }
+    else
+    {
+        return;
+    }
+    // Сохраняем индекс выбранного элемента меню
+    _SettingsMenuIdx = menuIdx;
+    // for (int i = 0; i < items.size(); i++)
+    // {
+        // if (items[i].UserData == menuIdx)
+        // {
+            // _SettingsMenuIdx = i;
+            // break;
+        // }
+    // }
+    dprintf(L"new _SettingsMenuIdx = %d" , _SettingsMenuIdx);
 }
 
 void CSettings::MainConfigure()
@@ -225,8 +245,8 @@ void CSettings::MainConfigure()
     itemFocusBtn->Focus = 1;
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
-    const int retCode = dlg.DoModal();
-    if (retCode >= 0 && retCode != idBtnCancel)
+    const int menuIdx = dlg.DoModal();
+    if (menuIdx >= 0 && menuIdx != idBtnCancel)
     {
         _AddToDiskMenu = dlg.GetCheckState(idAddDM);
         _AddToPanelMenu = dlg.GetCheckState(idAddPM);
@@ -300,8 +320,8 @@ void CSettings::LoggingConfigure()
     dlgItemEnableLogging->Focus = 1;
     
     // Показываем диалог
-    const int retCode = dlg.DoModal();
-    if (retCode >= 0 && retCode != idBtnCancel)
+    const int menuIdx = dlg.DoModal();
+    if (menuIdx >= 0 && menuIdx != idBtnCancel)
     {
         // Сохраняем опции
         _EnableLogging = dlg.GetCheckState(idEnableLogging);
