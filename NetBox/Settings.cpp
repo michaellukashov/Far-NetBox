@@ -55,7 +55,6 @@ CSettings::CSettings() :
     _LogToFile(false),
     _LogFileName(L"C:\\NetBox.log")
 {
-    // DEBUG_PRINTF(L"CSettings::CSettings");
 }
 
 
@@ -139,7 +138,6 @@ void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int title
         item.Text = CFarPlugin::GetString(titleId);
     }
     item.Flags = flags;
-    // item.UserData = itemId;
     items.push_back(item);
 }
 
@@ -157,7 +155,6 @@ void CSettings::Configure()
     // About
     int AboutMenuIdx = items.size();
     AddMenuItem(items, 0, StringAboutMenuTitle);
-    // DEBUG_PRINTF(L"Configure: _SettingsMenuIdx = %d", _SettingsMenuIdx);
     items[_SettingsMenuIdx].Flags |= MIF_SELECTED;
 
     const int menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
@@ -165,7 +162,6 @@ void CSettings::Configure()
         CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
         reinterpret_cast<FarMenuItem *>(&items.front()),
         static_cast<int>(items.size()));
-    // DEBUG_PRINTF(L"menuIdx = %d", menuIdx);
     if (menuIdx == MainSettingsMenuIdx)
     {
         MainConfigure();
@@ -289,12 +285,10 @@ void CSettings::LoggingConfigure()
     dlg.CreateSeparator(dlg.GetHeight() - 2);
     FarDialogItem *itemFocusBtn;
     dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
-    // itemFocusBtn->Focus = 1;
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
     // Установка состояния элементов диалога
-    DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, idBtnCancel = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
-    // dlg.SetCheckState(idEnableLogging, _EnableLogging);
+    // DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
     dlgItemEnableLogging->Focus = 1;
     
     // Показываем диалог
@@ -304,7 +298,7 @@ void CSettings::LoggingConfigure()
         // Сохраняем опции
         _EnableLogging = dlg.GetCheckState(idEnableLogging);
         _LoggingLevel = dlg.GetSelectonIndex(idLevelComboBox);
-        DEBUG_PRINTF(L"_LoggingLevel = %d", _LoggingLevel);
+        // DEBUG_PRINTF(L"_LoggingLevel = %d", _LoggingLevel);
         _LogToFile = dlg.GetCheckState(idLogToFile);
         _LogFileName = dlg.GetText(idLogFileName);
         Save();
