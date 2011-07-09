@@ -70,10 +70,6 @@ void CLogger::Log(const wchar_t *format, ...)
                 st.wYear, st.wMonth,  st.wDay,
                 st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
         // Log
-        // va_list args;
-        // va_start(args, format);
-        // fwprintf(f, format, args);
-        // va_end(args);
         va_list args;
         va_start(args, format);
         int len = _vscwprintf(format, args) + 1;
