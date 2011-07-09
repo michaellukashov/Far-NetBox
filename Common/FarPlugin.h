@@ -50,6 +50,7 @@ using namespace std;
 
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
+    (void)format;
     int len = 0;
 #ifdef NETBOX_DEBUG
     va_list args;
@@ -64,13 +65,6 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
     va_end(args);
     buf.erase(buf.size() - 1); // Trim last NULL
     OutputDebugStringW(buf.c_str());
-    // OutputDebugStringW(L"debug_printf: 1");
-    // wstring buf2(len + 10 + strlen(funcname), 0);
-    // swprintf_s(&buf2[0], buf2.size(), L"%s: %s\n", (wchar_t *)funcname, buf.c_str());
-    // OutputDebugStringW(L"debug_printf: 2");
-    // buf2.erase(buf2.size() - 1); // Trim last NULL
-    // OutputDebugStringW(L"debug_printf: 3");
-    // OutputDebugStringW(buf2.c_str());
 #endif
     return len;
 }
