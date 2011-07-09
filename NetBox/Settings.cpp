@@ -36,6 +36,7 @@ static const wchar_t *RegSessionsPath = L"SessionsPath";
 static const wchar_t *RegEnableLogging = L"EnableLogging";
 static const wchar_t *RegLoggingLevel = L"LoggingLevel";
 static const wchar_t *RegLogToFile = L"LogToFile";
+static const wchar_t *RegLogFileName = L"LogFileName";
 
 CSettings _Settings;
 
@@ -50,7 +51,8 @@ CSettings::CSettings() :
       _SessionPath(),
       _EnableLogging(false),
       _LoggingLevel(0),
-      _LogToFile(false)
+      _LogToFile(false),
+      _LogFileName(L"C:\\NetBox.log")
 {
 }
 
@@ -96,6 +98,7 @@ void CSettings::Load()
         {
             _LogToFile = (regVal != 0);
         }
+        settings.GetString(RegLogFileName, _LogFileName);
     }
 }
 
@@ -119,6 +122,10 @@ void CSettings::Save() const
         settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
         settings.SetNumber(RegLoggingLevel, _LoggingLevel);
         settings.SetNumber(RegLogToFile, _LogToFile ? 1 : 0);
+        if (!_LogFileName.empty())
+        {
+            settings.SetString(RegLogFileName, _LogFileName.c_str());
+        }
     }
 }
 
@@ -277,7 +284,6 @@ void CSettings::LoggingConfigure()
     dlg.CreateSeparator(++topPos);
     const int idLogToFile = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos,
         CFarPlugin::GetString(StringLoggingDialogLogToFile), _LogToFile);
-    _LogFileName = CFarPlugin::GetString(StringLogFileName);
     const int idLogFileName = dlg.CreateEdit(dlg.GetLeft() + 4,
         ++topPos, MAX_SIZE, _LogFileName.c_str());
 
