@@ -119,6 +119,35 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_USERNAME, _UserName.c_str()));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PASSWORD, _Password.c_str()));
     }
+    if (_Settings.ProxyType() != PROXY_NONE)
+    {
+        int proxy_type = CURLPROXY_HTTP;
+        switch (_Settings.ProxyType())
+        {
+            case PROXY_HTTP:
+            {
+                proxy_type = CURLPROXY_HTTP;
+                break;
+            }
+            case PROXY_SOCKS4:
+            {
+                proxy_type = CURLPROXY_SOCKS4;
+                break;
+            }
+            case PROXY_SOCKS5:
+            {
+                proxy_type = CURLPROXY_SOCKS5;
+                break;
+            }
+            default:
+                return CURLE_UNSUPPORTED_PROTOCOL;
+        }
+        string proxy = CFarPlugin::W2MB(_Settings.ProxyHost().c_str());
+        unsigned long port = _Settings.ProxyPort();
+        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXY, proxy.c_str()));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYTYPE, proxy_type));
+    }
 
     _Prepared = (urlCode == CURLE_OK);
     return urlCode;
