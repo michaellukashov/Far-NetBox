@@ -24,8 +24,8 @@
 
 enum LoggingLevel
 {
-    LEVEL_DEBUG1,
-    LEVEL_DEBUG2,
+    LEVEL_DEBUG1 = 0,
+    LEVEL_DEBUG2 = 1,
 };
 
 CLogger _Logger;
