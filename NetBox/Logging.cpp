@@ -22,6 +22,12 @@
 #include "Logging.h"
 #include "resource.h"
 
+enum LoggingLevel
+{
+    LEVEL_DEBUG1,
+    LEVEL_DEBUG2,
+};
+
 CLogger _Logger;
 
 CLogger::CLogger() :
@@ -47,9 +53,9 @@ void CLogger::Shutdown()
 {
 }
 
-void CLogger::Log(int level, const wchar_t *format, ...)
+void CLogger::Log(int level, const wchar_t *format, va_list args)
 {
-    DEBUG_PRINTF(L"NetBox: level = %d, _loggingLevel = %d", level, _loggingLevel);
+    // DEBUG_PRINTF(L"NetBox: level = %d, _loggingLevel = %d", level, _loggingLevel);
     if (!_enableLogging)
     {
         return;
@@ -67,30 +73,31 @@ void CLogger::Log(int level, const wchar_t *format, ...)
         return;
     }
     string fn(wcslen(_logFileName.c_str()) + 1, 0);
-    wcstombs((char *)fn.c_str(), _logFileName.c_str(), _logFileName.size());
-    // DEBUG_PRINTF(L"NetBox: fn = %s", (wchar_t *)fn.c_str());
-    FILE *f = !fn.empty() ? fopen(fn.c_str(), _first ? "w" : "a") : NULL;
+    size_t sz = 0;
+    wcstombs_s(&sz, (char *)fn.c_str(), fn.size(), _logFileName.c_str(), _logFileName.size());
+    if (fn.empty())
+        return;
+    FILE *f = NULL;
+    fopen_s(&f, fn.c_str(), _first ? "w" : "a");
     if (!f)
         return;
     // Time
     SYSTEMTIME st;
     GetLocalTime(&st);
-    fprintf(f,"%4d.%02d.%02d %02d:%02d:%02d:%04d ",
-            st.wYear, st.wMonth,  st.wDay,
+    fprintf(f, "%02d.%02d.%4d %02d:%02d:%02d:%04d ",
+            st.wDay, st.wMonth, st.wYear,
             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
     // Log
-    va_list args;
-    va_start(args, format);
     int len = _vscwprintf(format, args) + 1;
     if (len <= 1)
         return;
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    va_end(args);
+    // DEBUG_PRINTF(L"NetBox: buf = %s", buf.c_str());
     buf.erase(buf.size() - 1);
     fwprintf(f, buf.c_str());
     // EOL
-    fprintf(f,"\n");
+    fprintf(f, "\n");
     fclose(f);
     _first = false;
 }
