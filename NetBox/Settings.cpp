@@ -62,9 +62,9 @@ CSettings::CSettings() :
     _LoggingLevel(0),
     _LogToFile(false),
     _LogFileName(L"C:\\NetBox.log"),
-    _ProxyType(PROXY_NONE),
-    _ProxyHost(L""),
-    _ProxyPort(0),
+    _ProxyType(PROXY_SOCKS5),
+    _ProxyHost(L"127.0.0.1"),
+    _ProxyPort(1080),
     _ProxyLogin(L""),
     _ProxyPassword(L"")
 {
@@ -78,6 +78,7 @@ void CSettings::Load()
     if (settings.Open(RegPluginName, true))
     {
         DWORD regVal;
+        wstring regStrVal;
         if (settings.GetNumber(RegAddToDM, regVal))
         {
             _AddToDiskMenu = (regVal != 0);
@@ -106,13 +107,22 @@ void CSettings::Load()
         {
             _ProxyType = regVal;
         }
-        settings.GetString(RegProxyHost, _ProxyHost);
+        if (settings.GetString(RegProxyHost, regStrVal))
+        {
+            _ProxyHost = regStrVal;
+        }
         if (settings.GetNumber(RegProxyPort, regVal))
         {
             _ProxyPort = regVal;
         }
-        settings.GetString(RegProxyLogin, _ProxyLogin);
-        settings.GetString(RegProxyPassword, _ProxyPassword);
+        if (settings.GetString(RegProxyLogin, regStrVal))
+        {
+            _ProxyLogin = regStrVal;
+        }
+        if (settings.GetString(RegProxyPassword, regStrVal))
+        {
+            _ProxyPassword = regStrVal;
+        }
         // DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
 
         // Логирование
@@ -128,7 +138,10 @@ void CSettings::Load()
         {
             _LogToFile = (regVal != 0);
         }
-        settings.GetString(RegLogFileName, _LogFileName);
+        if (settings.GetString(RegLogFileName, regStrVal))
+        {
+            _LogFileName = regStrVal;
+        }
     }
 }
 
