@@ -287,7 +287,7 @@ void CSettings::MainConfigure()
         _UseOwnKey = dlg.GetCheckState(idUseOwnKey);
         _CmdPrefix = dlg.GetText(idPrefix);
         _AltPrefix = dlg.GetCheckState(idAltPrefix);
-        _Timeout = static_cast<unsigned long>(_wtoi(dlg.GetText(idTimeout).c_str()));
+        _Timeout = TextToNumber(dlg.GetText(idTimeout));
         _SessionPath = dlg.GetText(idSessPath);
         if (!_SessionPath.empty() && _SessionPath[_SessionPath.length() - 1] != L'/' && _SessionPath[_SessionPath.length() - 1] != L'\\')
         {
@@ -370,7 +370,7 @@ void CSettings::ProxyConfigure()
         // Сохраняем опции
         _ProxyType = dlg.GetSelectonIndex(idProxyTypeComboBox);
         _ProxyHost = dlg.GetText(idProxyHost);
-        _ProxyPort = static_cast<unsigned long>(_wtoi(dlg.GetText(idProxyPort).c_str()));
+        _ProxyPort = TextToNumber(dlg.GetText(idProxyPort));
         _ProxyLogin = dlg.GetText(idProxyLogin);
         _ProxyPassword = dlg.GetText(idProxyPassword);
         Save();
