@@ -78,7 +78,7 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
     // string fn = CFarPlugin::W2MB(_logFileName.c_str());
     if (_logFileName.empty())
         return;
-    FILE *f = _wfsopen(_logFileName.c_str(), _first ? L"w+t" : L"a+t", SH_DENYWR);
+    FILE *f = _wfsopen(_logFileName.c_str(), _first ? L"w" : L"a", SH_DENYWR);
     if (!f)
         return;
     // Time
@@ -93,12 +93,9 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
         return;
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    DEBUG_PRINTF(L"NetBox: buf = %s", buf.c_str());
-    // DEBUG_PRINTF(L"NetBox: buf.size = %d", buf.size());
-    // buf.erase(buf.size() - 1);
+    // DEBUG_PRINTF(L"NetBox: buf = %s", buf.c_str());
     // fwprintf_s(f, L"%s\n", CFarPlugin::W2MB(buf.c_str()).c_str());
-    // _ftprintf_s(f, L"%s\n", buf.c_str());
-    fwprintf_s(f, L"%s\n", buf.c_str());
+    fprintf_s(f, "%s\n", (char *)CFarPlugin::W2MB(buf.c_str()).c_str());
     // fprintf(f, "\n"); // EOL
     if (0)
     {
