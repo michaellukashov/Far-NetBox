@@ -21,7 +21,6 @@
 
 enum LoggingLevel
 {
-    LEVEL_NONE,
     LEVEL_DEBUG1,
     LEVEL_DEBUG2,
 };

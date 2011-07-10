@@ -49,6 +49,7 @@ void CLogger::Shutdown()
 
 void CLogger::Log(int level, const wchar_t *format, ...)
 {
+    DEBUG_PRINTF(L"NetBox: level = %d, _loggingLevel = %d", level, _loggingLevel);
     if (!_enableLogging)
     {
         return;
