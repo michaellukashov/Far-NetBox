@@ -24,8 +24,8 @@
 
 enum LoggingLevel
 {
-    LEVEL_DEBUG1,
-    LEVEL_DEBUG2,
+    LEVEL_DEBUG1 = 0,
+    LEVEL_DEBUG2 = 1,
 };
 
 CLogger _Logger;
@@ -72,13 +72,13 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
     {
         return;
     }
-    string fn(wcslen(_logFileName.c_str()) + 1, 0);
-    size_t sz = 0;
-    wcstombs_s(&sz, (char *)fn.c_str(), fn.size(), _logFileName.c_str(), _logFileName.size());
-    if (fn.empty())
+    // string fn(wcslen(_logFileName.c_str()) + 1, 0);
+    // size_t sz = 0;
+    // wcstombs_s(&sz, (char *)fn.c_str(), fn.size(), _logFileName.c_str(), _logFileName.size());
+    // string fn = CFarPlugin::W2MB(_logFileName.c_str());
+    if (_logFileName.empty())
         return;
-    FILE *f = NULL;
-    fopen_s(&f, fn.c_str(), _first ? "w" : "a");
+    FILE *f = _wfsopen(_logFileName.c_str(), _first ? L"w" : L"a", SH_DENYWR);
     if (!f)
         return;
     // Time
@@ -93,12 +93,14 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
         return;
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    // DEBUG_PRINTF(L"NetBox: buf = %s", buf.c_str());
-    buf.erase(buf.size() - 1);
-    fwprintf(f, buf.c_str());
-    // EOL
-    fprintf(f, "\n");
-    fclose(f);
+    // fwprintf_s(f, L"%s\n", CFarPlugin::W2MB(buf.c_str()).c_str());
+    fprintf_s(f, "%s\n", (char *)CFarPlugin::W2MB(buf.c_str()).c_str());
+    fflush(f);
+    if (fclose(f) == EOF)
+    {
+        clearerr(f);
+        fclose(f);
+    }
     _first = false;
 }
 
