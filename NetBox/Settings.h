@@ -114,7 +114,7 @@ private:
     
     int _ProxyType;
     wstring _ProxyHost;
-    wstring _ProxyPort;
+    unsigned long _ProxyPort;
     wstring _ProxyLogin;
     wstring _ProxyPassword;
 };

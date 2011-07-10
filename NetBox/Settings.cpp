@@ -72,7 +72,7 @@ CSettings::CSettings() :
     _LogFileName(L"C:\\NetBox.log"),
     _ProxyType(PROXY_NONE),
     _ProxyHost(L""),
-    _ProxyPort(L""),
+    _ProxyPort(0),
     _ProxyLogin(L""),
     _ProxyPassword(L"")
 {
@@ -115,7 +115,11 @@ void CSettings::Load()
             _ProxyType = (regVal != 0);
         }
         settings.GetString(RegProxyHost, _ProxyHost);
-        settings.GetString(RegProxyPort, _ProxyPort);
+        // settings.GetString(RegProxyPort, _ProxyPort);
+        if (settings.GetNumber(RegProxyPort, regVal))
+        {
+            _ProxyPort = regVal;
+        }
         settings.GetString(RegProxyPassword, _ProxyPassword);
 
         // Логирование
@@ -157,10 +161,7 @@ void CSettings::Save() const
         {
             settings.SetString(RegProxyHost, _ProxyHost.c_str());
         }
-        if (!_ProxyPort.empty())
-        {
-            settings.SetString(RegProxyPort, _ProxyPort.c_str());
-        }
+        settings.SetNumber(RegProxyPort, _ProxyPort);
         if (!_ProxyLogin.empty())
         {
             settings.SetString(RegProxyLogin, _ProxyLogin.c_str());
@@ -328,16 +329,21 @@ void CSettings::ProxyConfigure()
 
     dlg.CreateSeparator(++topPos);
 
+    //
     // Прокси адрес, порт, логин/пароль
+    //
+    // Адрес прокси сервера
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringProxySettingsProxyHost));
     left = dlg.GetLeft();
-    const int idProxyHost = dlg.CreateEdit(left, topPos + 1, 30,
-        _ProxyHost.c_str());
+    const int idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, _ProxyHost.c_str());
+    // Порт
+    wchar_t toText[16];
+    _itow_s(_ProxyPort, toText, 10);
     left = dlg.GetWidth() - 10;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
     FarDialogItem *itemPortEdit;
     const int idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
-        topPos + 1, topPos + 1, _ProxyPort.c_str(), DIF_MASKEDIT, &itemPortEdit);
+        topPos + 1, topPos + 1, toText, DIF_MASKEDIT, &itemPortEdit);
     itemPortEdit->Mask = L"99999999";
 
     topPos += 2;
@@ -364,7 +370,7 @@ void CSettings::ProxyConfigure()
         // Сохраняем опции
         _ProxyType = dlg.GetSelectonIndex(idProxyTypeComboBox);
         _ProxyHost = dlg.GetText(idProxyHost);
-        _ProxyPort = dlg.GetText(idProxyPort);
+        _ProxyPort = static_cast<unsigned long>(_wtoi(dlg.GetText(idProxyPort).c_str()));
         _ProxyLogin = dlg.GetText(idProxyLogin);
         _ProxyPassword = dlg.GetText(idProxyPassword);
         Save();
