@@ -120,7 +120,7 @@ void CSettings::Load()
             _ProxyPort = regVal;
         }
         settings.GetString(RegProxyPassword, _ProxyPassword);
-        DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
+        // DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
 
         // Логирование
         if (settings.GetNumber(RegEnableLogging, regVal))
@@ -161,7 +161,7 @@ void CSettings::Save() const
         settings.SetNumber(RegProxyPort, _ProxyPort);
         settings.SetString(RegProxyLogin, _ProxyLogin.c_str());
         settings.SetString(RegProxyPassword, _ProxyPassword.c_str());
-        DEBUG_PRINTF(L"NetBox: Save: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
+        // DEBUG_PRINTF(L"NetBox: Save: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
         // Настройки логирования
         settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
         settings.SetNumber(RegLoggingLevel, _LoggingLevel);
