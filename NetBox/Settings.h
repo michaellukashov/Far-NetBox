@@ -70,6 +70,33 @@ public:
      */
     wstring GetSessionPath() const;
 
+    //
+    // Proxy
+    //
+    int ProxyType() const
+    {
+        return _ProxyType;
+    }
+    wstring ProxyHost() const
+    {
+        return _ProxyHost;
+    }
+    unsigned long ProxyPort() const
+    {
+        return _ProxyPort;
+    }
+    wstring ProxyLogin() const
+    {
+        return _ProxyLogin;
+    }
+    wstring ProxyPassword() const
+    {
+        return _ProxyPassword;
+    }
+
+    //
+    // Logging
+    //
     bool EnableLogging() const
     {
         return _EnableLogging;
