@@ -19,6 +19,13 @@
 
 #pragma once
 
+enum LoggingLevel
+{
+    LEVEL_NONE,
+    LEVEL_DEBUG1,
+    LEVEL_DEBUG2,
+};
+
 //! logging
 class CLogger
 {
@@ -32,7 +39,7 @@ public:
         bool logToFile, const wstring &logFileName);
     static void Shutdown();
 
-    void Log(const wchar_t *format, ...);
+    void Log(int level, const wchar_t *format, ...);
 
 private:
     bool _first;
@@ -43,4 +50,5 @@ private:
     wstring _logFileName;
 };
 
-void Log(const wchar_t *format, ...);
+void Log1(const wchar_t *format, ...);
+void Log2(const wchar_t *format, ...);

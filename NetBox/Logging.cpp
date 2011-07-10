@@ -47,17 +47,21 @@ void CLogger::Shutdown()
 {
 }
 
-void CLogger::Log(const wchar_t *format, ...)
+void CLogger::Log(int level, const wchar_t *format, ...)
 {
-    if (!format)
-    {
-        return;
-    }
     if (!_enableLogging)
     {
         return;
     }
     if (!_logToFile)
+    {
+        return;
+    }
+    if (!format)
+    {
+        return;
+    }
+    if (level > _loggingLevel)
     {
         return;
     }
@@ -90,11 +94,19 @@ void CLogger::Log(const wchar_t *format, ...)
     _first = false;
 }
 
-void Log(const wchar_t *format, ...)
+void Log1(const wchar_t *format, ...)
 {
     va_list args;
     va_start(args, format);
-    _Logger.Log(format, args);
+    _Logger.Log(LEVEL_DEBUG1, format, args);
+    va_end(args);
+}
+
+void Log2(const wchar_t *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    _Logger.Log(LEVEL_DEBUG2, format, args);
     va_end(args);
 }
 

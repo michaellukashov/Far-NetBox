@@ -19,7 +19,6 @@
 
 #pragma once
 
-
 //! Plugin settings
 class CSettings
 {

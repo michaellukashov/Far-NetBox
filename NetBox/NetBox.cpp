@@ -50,7 +50,7 @@ void WINAPI _export SetStartupInfoW(const PluginStartupInfo *psi)
     CLogger::Initialize(_Settings.EnableLogging(), _Settings.LoggingLevel(),
         _Settings.LogToFile(), _Settings.LogFileName());
     wstring ver = PLUGIN_VERSION_WTXT;
-    Log(L"NetBox plugin version %s started.", ver.c_str());
+    Log1(L"NetBox plugin version %s started.", ver.c_str());
 
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
