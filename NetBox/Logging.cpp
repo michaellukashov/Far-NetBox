@@ -72,13 +72,13 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
     {
         return;
     }
-    string fn(wcslen(_logFileName.c_str()) + 1, 0);
-    size_t sz = 0;
-    wcstombs_s(&sz, (char *)fn.c_str(), fn.size(), _logFileName.c_str(), _logFileName.size());
-    if (fn.empty())
+    // string fn(wcslen(_logFileName.c_str()) + 1, 0);
+    // size_t sz = 0;
+    // wcstombs_s(&sz, (char *)fn.c_str(), fn.size(), _logFileName.c_str(), _logFileName.size());
+    // string fn = CFarPlugin::W2MB(_logFileName.c_str());
+    if (_logFileName.empty())
         return;
-    FILE *f = NULL;
-    fopen_s(&f, fn.c_str(), _first ? "w" : "a");
+    FILE *f = _wfsopen(_logFileName.c_str(), _first ? L"w+t" : L"a+t", SH_DENYWR);
     if (!f)
         return;
     // Time
@@ -93,12 +93,28 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
         return;
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    // DEBUG_PRINTF(L"NetBox: buf = %s", buf.c_str());
-    buf.erase(buf.size() - 1);
-    fwprintf(f, buf.c_str());
-    // EOL
-    fprintf(f, "\n");
-    fclose(f);
+    DEBUG_PRINTF(L"NetBox: buf = %s", buf.c_str());
+    // DEBUG_PRINTF(L"NetBox: buf.size = %d", buf.size());
+    // buf.erase(buf.size() - 1);
+    // fwprintf_s(f, L"%s\n", CFarPlugin::W2MB(buf.c_str()).c_str());
+    // _ftprintf_s(f, L"%s\n", buf.c_str());
+    fwprintf_s(f, L"%s\n", buf.c_str());
+    // fprintf(f, "\n"); // EOL
+    if (0)
+    {
+        static const int MAX_LOG_LINE = 1000;
+        LPWSTR msg = new WCHAR[MAX_LOG_LINE];
+        _vsnwprintf_s(msg, MAX_LOG_LINE, MAX_LOG_LINE, format, args);
+        fwprintf_s(f, msg);
+        fprintf(f, "\n"); // EOL
+        delete[] msg;
+    }
+    fflush(f);
+    if (fclose(f) == EOF)
+    {
+        clearerr(f);
+        fclose(f);
+    }
     _first = false;
 }
 
