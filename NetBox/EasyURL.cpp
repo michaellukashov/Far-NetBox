@@ -161,6 +161,16 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_VERBOSE, 1));
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HEADER, 1));
         // DEBUG_PRINTF(L"NetBox: urlCode = %u, buf = %s", urlCode, buf);
+        string login = CFarPlugin::W2MB(_Settings.ProxyLogin().c_str());
+        string password = CFarPlugin::W2MB(_Settings.ProxyPassword().c_str());
+        if (!login.empty())
+        {
+            CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
+            if (!password.empty())
+            {
+                CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPASSWORD, password.c_str()));
+            }
+        }
     }
 
     _Prepared = (urlCode == CURLE_OK);
