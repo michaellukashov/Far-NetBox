@@ -19,6 +19,14 @@
 
 #pragma once
 
+enum ProxyTypes
+{
+    PROXY_NONE = 0,
+    PROXY_SOCKS4,
+    PROXY_SOCKS5,
+    PROXY_HTTP,
+};
+
 //! Plugin settings
 class CSettings
 {
@@ -70,6 +78,33 @@ public:
      */
     wstring GetSessionPath() const;
 
+    //
+    // Proxy
+    //
+    int ProxyType() const
+    {
+        return _ProxyType;
+    }
+    wstring ProxyHost() const
+    {
+        return _ProxyHost;
+    }
+    unsigned long ProxyPort() const
+    {
+        return _ProxyPort;
+    }
+    wstring ProxyLogin() const
+    {
+        return _ProxyLogin;
+    }
+    wstring ProxyPassword() const
+    {
+        return _ProxyPassword;
+    }
+
+    //
+    // Logging
+    //
     bool EnableLogging() const
     {
         return _EnableLogging;
@@ -89,26 +124,29 @@ public:
 
 private:
     void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
+    unsigned long TextToNumber(const wstring &text) const
+    {
+        return static_cast<unsigned long>(_wtoi(text.c_str()));
+    }
+    wstring NumberToText(unsigned long number) const
+    {
+        wchar_t toText[16];
+        _itow_s(number, toText, 10);
+        return wstring(toText);
+    }
 
-    /**
-     * Main settings
-     */
     void MainConfigure();
-    /**
-     * Logging settings
-     */
+    void ProxyConfigure();
     void LoggingConfigure();
     void ShowAbout();
-    /**
-     * Save settings
-     */
+
     void Save() const;
 
 private:
     int _SettingsMenuIdx;
     //Settings variables
-    bool            _AddToDiskMenu;     ///< Add plugin to the disk menu flag
-    bool            _AddToPanelMenu;    ///< Add plugin to the panel plugin menu flag
+    bool            _AddToDiskMenu;     ///< Add plugin to disk menu flag
+    bool            _AddToPanelMenu;    ///< Add plugin to panel plugin menu flag
     wstring         _CmdPrefix;         ///< Plugin command prefix
     bool            _AltPrefix;         ///< Hande additional preffix flag (ftp, sftp etc)
     bool            _UseOwnKey;         ///< Use own encryption key flag
@@ -118,6 +156,12 @@ private:
     int             _LoggingLevel;
     bool            _LogToFile;
     wstring         _LogFileName;
+    
+    int _ProxyType;
+    wstring _ProxyHost;
+    unsigned long _ProxyPort;
+    wstring _ProxyLogin;
+    wstring _ProxyPassword;
 };
 
 extern CSettings _Settings;

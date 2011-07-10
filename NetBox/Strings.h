@@ -48,6 +48,7 @@ enum PluginString
     //Configure menu
     StringSettingsMenuTitle,
     StringMainSettingsMenuTitle,
+    StringProxySettingsMenuTitle,
     StringLoggingSettingsMenuTitle,
     StringAboutMenuTitle,
 
@@ -59,6 +60,19 @@ enum PluginString
     StringCfgAltPrefixes,
     StringCfgTimeout,
     StringCfgSessionsPath,
+
+    //Proxy configure dialog
+    StringProxySettingsDialogTitle,
+    StringProxySettingsProxyType,
+    proxyTypeItem1,
+    proxyTypeItem2,
+    proxyTypeItem3,
+    proxyTypeItem4,
+
+    StringProxySettingsProxyHost,
+    StringProxySettingsProxyPort,
+    StringProxySettingsProxyLogin,
+    StringProxySettingsProxyPassword,
 
     //Logging configure dialog
     StringLoggingDialogTitle,

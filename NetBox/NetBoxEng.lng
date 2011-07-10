@@ -23,6 +23,7 @@
 
 "NetBox - settings"
 "Main settings"
+"Proxy settings"
 "Logging settings"
 "About"
 
@@ -33,6 +34,18 @@
 "Handle prefixes ftp, http, ..."
 "Default timeout (sec):"
 "Saved sessions directory:"
+
+"NetBox - Proxy settings"
+"Proxy type:"
+"None"
+"SOCKS4"
+"SOCKS5"
+"HTTP"
+
+"Proxy host name:"
+"Port number:"
+"User name:"
+"Password:"
 
 "NetBox - Logging settings"
 "Enable logging"

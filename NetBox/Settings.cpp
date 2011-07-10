@@ -36,6 +36,12 @@ static const wchar_t *RegAltPrefix =    L"AltPrefix";
 static const wchar_t *RegTimeout =      L"Timeout";
 static const wchar_t *RegSessionsPath = L"SessionsPath";
 
+static const wchar_t *RegProxyType = L"ProxyType";
+static const wchar_t *RegProxyHost = L"ProxyHost";
+static const wchar_t *RegProxyPort = L"ProxyPort";
+static const wchar_t *RegProxyLogin = L"ProxyLogin";
+static const wchar_t *RegProxyPassword = L"ProxyPassword";
+
 static const wchar_t *RegEnableLogging = L"EnableLogging";
 static const wchar_t *RegLoggingLevel = L"LoggingLevel";
 static const wchar_t *RegLogToFile = L"LogToFile";
@@ -43,8 +49,7 @@ static const wchar_t *RegLogFileName = L"LogFileName";
 
 CSettings _Settings;
 
-
-CSettings::CSettings() : 
+CSettings::CSettings() :
     _SettingsMenuIdx(0),
     _AddToDiskMenu(true),
     _AddToPanelMenu(false),
@@ -56,7 +61,12 @@ CSettings::CSettings() :
     _EnableLogging(false),
     _LoggingLevel(0),
     _LogToFile(false),
-    _LogFileName(L"C:\\NetBox.log")
+    _LogFileName(L"C:\\NetBox.log"),
+    _ProxyType(PROXY_SOCKS5),
+    _ProxyHost(L"127.0.0.1"),
+    _ProxyPort(1080),
+    _ProxyLogin(L""),
+    _ProxyPassword(L"")
 {
     // _LogFileName = CFarPlugin::GetString(StringLogFileName);
 }
@@ -68,6 +78,7 @@ void CSettings::Load()
     if (settings.Open(RegPluginName, true))
     {
         DWORD regVal;
+        wstring regStrVal;
         if (settings.GetNumber(RegAddToDM, regVal))
         {
             _AddToDiskMenu = (regVal != 0);
@@ -90,6 +101,30 @@ void CSettings::Load()
             _Timeout = regVal;
         }
         settings.GetString(RegSessionsPath, _SessionPath);
+
+        // Прокси
+        if (settings.GetNumber(RegProxyType, regVal))
+        {
+            _ProxyType = regVal;
+        }
+        if (settings.GetString(RegProxyHost, regStrVal))
+        {
+            _ProxyHost = regStrVal;
+        }
+        if (settings.GetNumber(RegProxyPort, regVal))
+        {
+            _ProxyPort = regVal;
+        }
+        if (settings.GetString(RegProxyLogin, regStrVal))
+        {
+            _ProxyLogin = regStrVal;
+        }
+        if (settings.GetString(RegProxyPassword, regStrVal))
+        {
+            _ProxyPassword = regStrVal;
+        }
+        // DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
+
         // Логирование
         if (settings.GetNumber(RegEnableLogging, regVal))
         {
@@ -103,7 +138,10 @@ void CSettings::Load()
         {
             _LogToFile = (regVal != 0);
         }
-        settings.GetString(RegLogFileName, _LogFileName);
+        if (settings.GetString(RegLogFileName, regStrVal))
+        {
+            _LogFileName = regStrVal;
+        }
     }
 }
 
@@ -123,14 +161,18 @@ void CSettings::Save() const
         settings.SetNumber(RegAltPrefix, _AltPrefix ? 1 : 0);
         settings.SetNumber(RegTimeout, _Timeout);
         settings.SetString(RegSessionsPath, _SessionPath.c_str());
+        // Настройки прокси
+        settings.SetNumber(RegProxyType, _ProxyType);
+        settings.SetString(RegProxyHost, _ProxyHost.c_str());
+        settings.SetNumber(RegProxyPort, _ProxyPort);
+        settings.SetString(RegProxyLogin, _ProxyLogin.c_str());
+        settings.SetString(RegProxyPassword, _ProxyPassword.c_str());
+        // DEBUG_PRINTF(L"NetBox: Save: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
         // Настройки логирования
         settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
         settings.SetNumber(RegLoggingLevel, _LoggingLevel);
         settings.SetNumber(RegLogToFile, _LogToFile ? 1 : 0);
-        if (!_LogFileName.empty())
-        {
-            settings.SetString(RegLogFileName, _LogFileName.c_str());
-        }
+        settings.SetString(RegLogFileName, _LogFileName.c_str());
     }
 }
 
@@ -152,9 +194,13 @@ void CSettings::Configure()
     // Main settings
     int MainSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringMainSettingsMenuTitle);
+    // Proxy settings
+    int ProxySettingsMenuIdx = items.size();
+    AddMenuItem(items, 0, StringProxySettingsMenuTitle);
     // Logging settings
     int LoggingSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
+    //
     AddMenuItem(items, MIF_SEPARATOR, 0);
     // About
     int AboutMenuIdx = items.size();
@@ -169,6 +215,10 @@ void CSettings::Configure()
     if (menuIdx == MainSettingsMenuIdx)
     {
         MainConfigure();
+    }
+    else if (menuIdx == ProxySettingsMenuIdx)
+    {
+        ProxyConfigure();
     }
     else if (menuIdx == LoggingSettingsMenuIdx)
     {
@@ -207,10 +257,10 @@ void CSettings::MainConfigure()
     dlg.CreateSeparator(++topPos);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgTimeout));
-    wchar_t toText[16];
-    _itow_s(_Timeout, toText, 10);
+    wstring timeoutStr = NumberToText(_Timeout);
     FarDialogItem *itemEdit;
-    const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1, dlg.GetWidth(), topPos, topPos, toText, DIF_MASKEDIT, &itemEdit);
+    const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1,
+        dlg.GetWidth(), topPos, topPos, timeoutStr.c_str(), DIF_MASKEDIT, &itemEdit);
     itemEdit->Mask = L"99999999";
 
     dlg.CreateSeparator(++topPos);
@@ -223,20 +273,99 @@ void CSettings::MainConfigure()
     itemFocusBtn->Focus = 1;
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
-    const int menuIdx = dlg.DoModal();
-    if (menuIdx >= 0 && menuIdx != idBtnCancel)
+    const int itemIdx = dlg.DoModal();
+    if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         _AddToDiskMenu = dlg.GetCheckState(idAddDM);
         _AddToPanelMenu = dlg.GetCheckState(idAddPM);
         _UseOwnKey = dlg.GetCheckState(idUseOwnKey);
         _CmdPrefix = dlg.GetText(idPrefix);
         _AltPrefix = dlg.GetCheckState(idAltPrefix);
-        _Timeout = static_cast<unsigned long>(_wtoi(dlg.GetText(idTimeout).c_str()));
+        _Timeout = TextToNumber(dlg.GetText(idTimeout));
         _SessionPath = dlg.GetText(idSessPath);
         if (!_SessionPath.empty() && _SessionPath[_SessionPath.length() - 1] != L'/' && _SessionPath[_SessionPath.length() - 1] != L'\\')
         {
             _SessionPath += L'\\';
         }
+        Save();
+    }
+}
+
+void CSettings::ProxyConfigure()
+{
+    CFarDialog dlg(54, 14, CFarPlugin::GetString(StringProxySettingsDialogTitle));
+    int topPos = dlg.GetTop();
+    // Тип прокси
+    dlg.CreateText(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringProxySettingsProxyType));
+
+    FarDialogItem *proxyTypeComboBox;
+    int left = dlg.GetLeft() +
+        static_cast<int>(wcslen(CFarPlugin::GetString(StringProxySettingsProxyType))) + 1;
+    const int idProxyTypeComboBox = dlg.CreateDlgItem(DI_COMBOBOX, left,
+        left + 12, topPos, topPos, NULL, DIF_LISTWRAPMODE, &proxyTypeComboBox);
+
+    FarList proxyTypeList;
+    vector<FarListItem> proxyTypeListItems;
+    int proxyTypeCount = 4;
+    proxyTypeListItems.resize(proxyTypeCount);
+    ZeroMemory(&proxyTypeListItems[0], proxyTypeCount * sizeof(FarListItem));
+    for (int i = 0; i < proxyTypeCount; ++i)
+    {
+        if (_ProxyType == i)
+        {
+            proxyTypeListItems[i].Flags = LIF_SELECTED;
+        }
+        proxyTypeListItems[i].Text = CFarPlugin::GetString(proxyTypeItem1 + i);
+    }
+    proxyTypeList.Items = &proxyTypeListItems.front();
+    proxyTypeList.ItemsNumber = static_cast<int>(proxyTypeListItems.size());
+    proxyTypeComboBox->ListItems = &proxyTypeList;
+
+    dlg.CreateSeparator(++topPos);
+
+    //
+    // Прокси адрес, порт, логин/пароль
+    //
+    // Адрес прокси сервера
+    dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringProxySettingsProxyHost));
+    left = dlg.GetLeft();
+    const int idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, _ProxyHost.c_str());
+    // Порт
+    wstring proxyPortStr = NumberToText(_ProxyPort);
+    left = dlg.GetWidth() - 10;
+    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
+    FarDialogItem *itemPortEdit;
+    const int idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
+        topPos + 1, topPos + 1, proxyPortStr.c_str(), DIF_MASKEDIT, &itemPortEdit);
+    itemPortEdit->Mask = L"99999999";
+
+    topPos += 2;
+    left = dlg.GetLeft();
+    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyLogin));
+    const int idProxyLogin = dlg.CreateEdit(left, topPos + 1, 20,
+        _ProxyLogin.c_str());
+    left = dlg.GetWidth() - 20;
+    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPassword));
+    const int idProxyPassword = dlg.CreateDlgItem(DI_PSWEDIT, left, left + 20,
+        topPos + 1, topPos + 1, _ProxyPassword.c_str());
+
+    // Кнопки OK Cancel
+    dlg.CreateSeparator(dlg.GetHeight() - 2);
+    FarDialogItem *itemFocusBtn;
+    dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
+    const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
+
+    proxyTypeComboBox->Focus = 1;
+
+    const int itemIdx = dlg.DoModal();
+    if (itemIdx >= 0 && itemIdx != idBtnCancel)
+    {
+        // Сохраняем опции
+        _ProxyType = dlg.GetSelectonIndex(idProxyTypeComboBox);
+        _ProxyHost = dlg.GetText(idProxyHost);
+        _ProxyPort = TextToNumber(dlg.GetText(idProxyPort));
+        _ProxyLogin = dlg.GetText(idProxyLogin);
+        _ProxyPassword = dlg.GetText(idProxyPassword);
         Save();
     }
 }
@@ -294,10 +423,10 @@ void CSettings::LoggingConfigure()
     // Установка состояния элементов диалога
     // DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
     dlgItemEnableLogging->Focus = 1;
-    
+
     // Показываем диалог
-    const int menuIdx = dlg.DoModal();
-    if (menuIdx >= 0 && menuIdx != idBtnCancel)
+    const int itemIdx = dlg.DoModal();
+    if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции
         _EnableLogging = dlg.GetCheckState(idEnableLogging);
