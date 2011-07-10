@@ -497,6 +497,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
     CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, _CURL.Perform());
+    // DEBUG_PRINTF(L"NetBox: urlCode = %d", urlCode);
     if (urlCode != CURLE_OK)
     {
         errInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
@@ -505,6 +506,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
 
     if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
     {
+        // DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
         return false;
     }
 

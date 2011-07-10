@@ -147,6 +147,11 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXY, proxy.c_str()));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYTYPE, proxy_type));
+        // char buf[1024];
+        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_ERRORBUFFER, buf));
+        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_VERBOSE, 1));
+        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HEADER, 1));
+        // DEBUG_PRINTF(L"NetBox: urlCode = %u, buf = %s", urlCode, buf);
     }
 
     _Prepared = (urlCode == CURLE_OK);
