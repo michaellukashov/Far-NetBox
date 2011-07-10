@@ -18,10 +18,12 @@
  **************************************************************************/
 
 #include "stdafx.h"
+
 #include "Settings.h"
 #include "Session.h"
 #include "SessionManager.h"
 #include "Strings.h"
+#include "Logging.h"
 #include "resource.h"
 
 //Registry settings names
@@ -304,6 +306,7 @@ void CSettings::LoggingConfigure()
         _LogToFile = dlg.GetCheckState(idLogToFile);
         _LogFileName = dlg.GetText(idLogFileName);
         Save();
+        CLogger::Initialize(EnableLogging(), LoggingLevel(), LogToFile(), LogFileName());
     }
 }
 
