@@ -62,7 +62,7 @@ CSettings::CSettings() :
     _LoggingLevel(0),
     _LogToFile(false),
     _LogFileName(L"C:\\NetBox.log"),
-    _ProxyType(PROXY_SOCKS5),
+    _ProxyType(PROXY_NONE),
     _ProxyHost(L"127.0.0.1"),
     _ProxyPort(1080),
     _ProxyLogin(L""),
