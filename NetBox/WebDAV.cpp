@@ -18,11 +18,14 @@
  **************************************************************************/
 
 #include "stdafx.h"
-#include "WebDAV.h"
-#include "Strings.h"
-#include "Settings.h"
+
 #include "tinyXML\tinyxml.h"
 #include <Winhttp.h>
+
+#include "Strings.h"
+#include "Settings.h"
+#include "Logging.h"
+#include "WebDAV.h"
 
 
 PSessionEditor CSessionWebDAV::CreateEditorInstance()
@@ -53,16 +56,20 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
     assert(abortEvent);
 
+    const wchar_t *url = _Session.GetURL();
+    Log2(L"WebDAV: connecting to %s", url);
     //Initialize curl
-    _CURL.Initialize(_Session.GetURL(), _Session.GetUserName(), _Session.GetPassword());
+    _CURL.Initialize(url, _Session.GetUserName(), _Session.GetPassword());
     _CURL.SetAbortEvent(abortEvent);
 
     //Check initial path existing
     wstring path;
-    ParseURL(_Session.GetURL(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
+    // DEBUG_PRINTF(L"NetBox: path = %s", path.c_str());
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
+        Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
         return false;
     }
     _CurrentDirectory = path;

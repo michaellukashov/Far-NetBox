@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include "Panel.h"
 #include "ProgressWindow.h"
+#include "Logging.h"
 
 #define IS_SILENT(op) (op & (OPM_SILENT | OPM_FIND))
 
@@ -72,6 +73,7 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
                                       CFarPlugin::GetFormattedString(StringPrgConnect, connectURL.c_str()).c_str());
         notifyWnd.Show();
 
+        Log1(L"connecting to %s", connectURL.c_str());
         wstring errorMsg;
         while (!_ProtoClient->Connect(_AbortTask, errorMsg))
         {
@@ -79,6 +81,7 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
             wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrEstablish, connectURL.c_str());
             taskErrorMsg += L'\n';
             taskErrorMsg += errorMsg;
+            Log1(L"error: %s", errorMsg.c_str());
             const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_RETRYCANCEL | FMSG_WARNING);
             errorMsg.clear();
             _ProtoClient->Close();
