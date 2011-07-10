@@ -346,8 +346,6 @@ void CSettings::ProxyConfigure()
         _ProxyLogin.c_str());
     left = dlg.GetWidth() - 20;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPassword));
-    // const int idProxyPassword = dlg.CreateEdit(left, topPos + 1, 20,
-        // _ProxyPassword.c_str());
     const int idProxyPassword = dlg.CreateDlgItem(DI_PSWEDIT, left, left + 20,
         topPos + 1, topPos + 1, _ProxyPassword.c_str());
 
