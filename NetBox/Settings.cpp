@@ -313,7 +313,7 @@ void CSettings::ShowAbout()
     int topPos = dlg.GetTop();
     dlg.CreateText(dlg.GetLeft() + 5, ++topPos, CFarPlugin::GetString(StringPluginDescriptionText));
     ++topPos;
-    wstring ver = PLUGIN_VERSION_TXT;
+    wstring ver = PLUGIN_VERSION_WTXT;
     wstring version = CFarPlugin::GetFormattedString(StringPluginVersion, ver.c_str());
     // DEBUG_PRINTF(L"NetBox: version = %s", version.c_str());
     dlg.CreateText(dlg.GetLeft() + 16, ++topPos, version.c_str());
