@@ -144,7 +144,6 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         }
         string proxy = CFarPlugin::W2MB(_Settings.ProxyHost().c_str());
         unsigned long port = _Settings.ProxyPort();
-        // DEBUG_PRINTF(L"NetBox: port = %d", port);
         if (port)
         {
             char portTxt[8];
@@ -152,15 +151,10 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
             proxy += ":";
             proxy += portTxt;
         }
-        // DEBUG_PRINTF(L"NetBox: proxy = %s", CFarPlugin::MB2W(proxy.c_str()).c_str());
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXY, proxy.c_str()));
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYTYPE, proxy_type));
-        // char buf[1024];
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_ERRORBUFFER, buf));
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_VERBOSE, 1));
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HEADER, 1));
-        // DEBUG_PRINTF(L"NetBox: urlCode = %u, buf = %s", urlCode, buf);
         string login = CFarPlugin::W2MB(_Settings.ProxyLogin().c_str());
         string password = CFarPlugin::W2MB(_Settings.ProxyPassword().c_str());
         if (!login.empty())
