@@ -263,10 +263,10 @@ void CSettings::MainConfigure()
     dlg.CreateSeparator(++topPos);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgTimeout));
-    wchar_t toText[16];
-    _itow_s(_Timeout, toText, 10);
+    wstring timeoutStr = NumberToText(_Timeout);
     FarDialogItem *itemEdit;
-    const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1, dlg.GetWidth(), topPos, topPos, toText, DIF_MASKEDIT, &itemEdit);
+    const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1,
+        dlg.GetWidth(), topPos, topPos, timeoutStr.c_str(), DIF_MASKEDIT, &itemEdit);
     itemEdit->Mask = L"99999999";
 
     dlg.CreateSeparator(++topPos);
@@ -337,13 +337,12 @@ void CSettings::ProxyConfigure()
     left = dlg.GetLeft();
     const int idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, _ProxyHost.c_str());
     // Порт
-    wchar_t toText[16];
-    _itow_s(_ProxyPort, toText, 10);
+    wstring proxyPortStr = NumberToText(_ProxyPort);
     left = dlg.GetWidth() - 10;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
     FarDialogItem *itemPortEdit;
     const int idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
-        topPos + 1, topPos + 1, toText, DIF_MASKEDIT, &itemPortEdit);
+        topPos + 1, topPos + 1, proxyPortStr.c_str(), DIF_MASKEDIT, &itemPortEdit);
     itemPortEdit->Mask = L"99999999";
 
     topPos += 2;
