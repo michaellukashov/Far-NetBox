@@ -335,8 +335,10 @@ void CSettings::ProxyConfigure()
         _ProxyHost.c_str());
     left = dlg.GetWidth() - 10;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
-    const int idProxyPort = dlg.CreateEdit(left, topPos + 1, 10,
-        _ProxyPort.c_str());
+    FarDialogItem *itemPortEdit;
+    const int idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
+        topPos + 1, topPos + 1, _ProxyPort.c_str(), DIF_MASKEDIT, &itemPortEdit);
+    itemPortEdit->Mask = L"99999999";
 
     topPos += 2;
     left = dlg.GetLeft();
