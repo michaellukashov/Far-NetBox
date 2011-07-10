@@ -126,7 +126,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         {
             case PROXY_HTTP:
             {
-                proxy_type = CURLPROXY_HTTP;
+                proxy_type = CURLPROXY_HTTP; // CURLPROXY_HTTP;
                 break;
             }
             case PROXY_SOCKS4:
@@ -144,8 +144,17 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         }
         string proxy = CFarPlugin::W2MB(_Settings.ProxyHost().c_str());
         unsigned long port = _Settings.ProxyPort();
+        // DEBUG_PRINTF(L"NetBox: port = %d", port);
+        if (port)
+        {
+            char portTxt[8];
+            _itoa_s(port, portTxt, 10);
+            proxy += ":";
+            proxy += portTxt;
+        }
+        // DEBUG_PRINTF(L"NetBox: proxy = %s", CFarPlugin::MB2W(proxy.c_str()).c_str());
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXY, proxy.c_str()));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
+        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYTYPE, proxy_type));
         // char buf[1024];
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_ERRORBUFFER, buf));
