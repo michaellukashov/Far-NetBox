@@ -93,19 +93,8 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
         return;
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    // DEBUG_PRINTF(L"NetBox: buf = %s", buf.c_str());
     // fwprintf_s(f, L"%s\n", CFarPlugin::W2MB(buf.c_str()).c_str());
     fprintf_s(f, "%s\n", (char *)CFarPlugin::W2MB(buf.c_str()).c_str());
-    // fprintf(f, "\n"); // EOL
-    if (0)
-    {
-        static const int MAX_LOG_LINE = 1000;
-        LPWSTR msg = new WCHAR[MAX_LOG_LINE];
-        _vsnwprintf_s(msg, MAX_LOG_LINE, MAX_LOG_LINE, format, args);
-        fwprintf_s(f, msg);
-        fprintf(f, "\n"); // EOL
-        delete[] msg;
-    }
     fflush(f);
     if (fclose(f) == EOF)
     {
