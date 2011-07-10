@@ -51,7 +51,7 @@ CSettings _Settings;
 
 enum ProxyTypes
 {
-    PROXY_NONE,
+    PROXY_NONE = 0,
     PROXY_SOCKS4,
     PROXY_SOCKS5,
     PROXY_HTTP,
@@ -112,15 +112,15 @@ void CSettings::Load()
         // Прокси
         if (settings.GetNumber(RegProxyType, regVal))
         {
-            _ProxyType = (regVal != 0);
+            _ProxyType = regVal;
         }
         settings.GetString(RegProxyHost, _ProxyHost);
-        // settings.GetString(RegProxyPort, _ProxyPort);
         if (settings.GetNumber(RegProxyPort, regVal))
         {
             _ProxyPort = regVal;
         }
         settings.GetString(RegProxyPassword, _ProxyPassword);
+        DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
 
         // Логирование
         if (settings.GetNumber(RegEnableLogging, regVal))
@@ -157,28 +157,16 @@ void CSettings::Save() const
         settings.SetString(RegSessionsPath, _SessionPath.c_str());
         // Настройки прокси
         settings.SetNumber(RegProxyType, _ProxyType);
-        if (!_ProxyHost.empty())
-        {
-            settings.SetString(RegProxyHost, _ProxyHost.c_str());
-        }
+        settings.SetString(RegProxyHost, _ProxyHost.c_str());
         settings.SetNumber(RegProxyPort, _ProxyPort);
-        if (!_ProxyLogin.empty())
-        {
-            settings.SetString(RegProxyLogin, _ProxyLogin.c_str());
-        }
-        if (!_ProxyPassword.empty())
-        {
-            settings.SetString(RegProxyPassword, _ProxyPassword.c_str());
-        }
-
+        settings.SetString(RegProxyLogin, _ProxyLogin.c_str());
+        settings.SetString(RegProxyPassword, _ProxyPassword.c_str());
+        DEBUG_PRINTF(L"NetBox: Save: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
         // Настройки логирования
         settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
         settings.SetNumber(RegLoggingLevel, _LoggingLevel);
         settings.SetNumber(RegLogToFile, _LogToFile ? 1 : 0);
-        if (!_LogFileName.empty())
-        {
-            settings.SetString(RegLogFileName, _LogFileName.c_str());
-        }
+        settings.SetString(RegLogFileName, _LogFileName.c_str());
     }
 }
 
