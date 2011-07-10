@@ -111,6 +111,7 @@ void CSettings::Load()
         {
             _ProxyPort = regVal;
         }
+        settings.GetString(RegProxyLogin, _ProxyLogin);
         settings.GetString(RegProxyPassword, _ProxyPassword);
         // DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
 
