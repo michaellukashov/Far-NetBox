@@ -49,14 +49,6 @@ static const wchar_t *RegLogFileName = L"LogFileName";
 
 CSettings _Settings;
 
-enum ProxyTypes
-{
-    PROXY_NONE = 0,
-    PROXY_SOCKS4,
-    PROXY_SOCKS5,
-    PROXY_HTTP,
-};
-
 CSettings::CSettings() :
     _SettingsMenuIdx(0),
     _AddToDiskMenu(true),

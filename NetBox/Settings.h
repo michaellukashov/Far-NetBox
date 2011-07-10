@@ -19,6 +19,14 @@
 
 #pragma once
 
+enum ProxyTypes
+{
+    PROXY_NONE = 0,
+    PROXY_SOCKS4,
+    PROXY_SOCKS5,
+    PROXY_HTTP,
+};
+
 //! Plugin settings
 class CSettings
 {
