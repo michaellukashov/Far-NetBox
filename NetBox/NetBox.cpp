@@ -34,15 +34,15 @@
 
 vector<CPanel *> _PanelInstances;   ///< Array of active panels instances
 
-//FAR API Callback
-int WINAPI _export GetMinFarVersionW()
+extern "C"
+{
+
+int WINAPI GetMinFarVersionW()
 {
     return MAKEFARVERSION(MIN_FAR_VERMAJOR, MIN_FAR_VERMINOR, MIN_FAR_BUILD);
 }
 
-
-//FAR API Callback
-void WINAPI _export SetStartupInfoW(const PluginStartupInfo *psi)
+void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
 {
     CFarPlugin::Initialize(psi);
 
@@ -62,9 +62,7 @@ void WINAPI _export SetStartupInfoW(const PluginStartupInfo *psi)
     CSession::RegisterProtocolClient(2, L"WebDAV", CSession::SessionCreator<CSessionWebDAV>, L"http", L"https");
 }
 
-
-//FAR API Callback
-void WINAPI _export GetPluginInfoW(PluginInfo *pi)
+void WINAPI GetPluginInfoW(PluginInfo *pi)
 {
     pi->StructSize = sizeof(PluginInfo);
     pi->Flags = PF_FULLCMDLINE;
@@ -105,9 +103,7 @@ void WINAPI _export GetPluginInfoW(PluginInfo *pi)
     }
 }
 
-
-//FAR API Callback
-void WINAPI _export ExitFARW()
+void WINAPI ExitFARW()
 {
     for (vector<CPanel *>::const_iterator it = _PanelInstances.begin(); it != _PanelInstances.end(); ++it)
     {
@@ -119,9 +115,7 @@ void WINAPI _export ExitFARW()
     WSACleanup();
 }
 
-
-//FAR API Callback
-void WINAPI _export ClosePluginW(HANDLE plugin)
+void WINAPI ClosePluginW(HANDLE plugin)
 {
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     assert(panelInstance);
@@ -132,9 +126,7 @@ void WINAPI _export ClosePluginW(HANDLE plugin)
     _PanelInstances.erase(it);
 }
 
-
-//FAR API Callback
-HANDLE WINAPI _export OpenPluginW(int openFrom, INT_PTR item)
+HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
     //Export sessions from registry to local folder
     // !!!! this functionality will be removed in next release !!!!
@@ -177,9 +169,7 @@ HANDLE WINAPI _export OpenPluginW(int openFrom, INT_PTR item)
     return INVALID_HANDLE_VALUE;
 }
 
-
-//FAR API Callback
-HANDLE WINAPI _export OpenFilePluginW(const wchar_t *fileName, const unsigned char *fileHeader, int fileHeaderSize, int /*opMode*/)
+HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *fileHeader, int fileHeaderSize, int /*opMode*/)
 {
     if (!fileName)
     {
@@ -216,93 +206,75 @@ HANDLE WINAPI _export OpenFilePluginW(const wchar_t *fileName, const unsigned ch
     return reinterpret_cast<HANDLE>(-2);
 }
 
-
-//FAR API Callback
-void WINAPI _export GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
+void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->GetOpenPluginInfo(pluginInfo);
 }
 
-
-//FAR API Callback
-int WINAPI _export SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
+int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->ChangeDirectory(dir, opMode);
 }
 
-
-//FAR API Callback
-int WINAPI _export GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t **destPath, int opMode)
+int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t **destPath, int opMode)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->GetFiles(panelItem, itemsNumber, destPath, move != 0, opMode);
 }
 
-
-//FAR API Callback
-int WINAPI _export GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNumber, int opMode)
+int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNumber, int opMode)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->GetItemList(panelItem, itemsNumber, opMode);
 }
 
-
-//FAR API Callback
-void WINAPI _export FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
+void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->FreeItemList(panelItem, itemsNumber);
 }
 
-
-//FAR API Callback
-int WINAPI _export MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
+int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->MakeDirectory(name, opMode);
 }
 
-
-//FAR API Callback
-int WINAPI _export DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
+int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->DeleteFiles(panelItem, itemsNumber, opMode);
 }
 
-
-//FAR API Callback
-int WINAPI _export PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
+int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->PutFiles(srcPath, panelItem, itemsNumber, move != 0, opMode);
 }
 
-
-//FAR API Callback
-int WINAPI _export ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
+int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->ProcessKey(key, controlState);
 }
 
-
-//FAR API Callback
-int WINAPI _export ConfigureW(int /*itemNumber*/)
+int WINAPI ConfigureW(int /*itemNumber*/)
 {
-        DEBUG_PRINTF(L"NetBox: ConfigureW: begin");
+    // DEBUG_PRINTF(L"NetBox: ConfigureW: begin");
     _Settings.Configure();
-        DEBUG_PRINTF(L"NetBox: ConfigureW: end");
+    // DEBUG_PRINTF(L"NetBox: ConfigureW: end");
     return FALSE;
+}
+
 }
