@@ -301,6 +301,8 @@ int WINAPI _export ProcessKeyW(HANDLE plugin, int key, unsigned int controlState
 //FAR API Callback
 int WINAPI _export ConfigureW(int /*itemNumber*/)
 {
+        DEBUG_PRINTF(L"NetBox: ConfigureW: begin");
     _Settings.Configure();
+        DEBUG_PRINTF(L"NetBox: ConfigureW: end");
     return FALSE;
 }
