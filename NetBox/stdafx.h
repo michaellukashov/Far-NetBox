@@ -56,3 +56,10 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
  * \return file time
  */
 FILETIME UnixTimeToFileTime(const time_t t);
+
+/**
+ * Convert int to string
+ * \param number number
+ * \return string result
+ */
+string NumberToText(int number);

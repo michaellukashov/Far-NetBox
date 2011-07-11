@@ -610,9 +610,7 @@ wstring CSFTP::FormatSSHLastErrorDescription() const
     char *sshErrMsg = NULL;
     const int errCode = libssh2_session_last_error(_SSHSession, &sshErrMsg, NULL, 0);
 
-    char codeText[16];
-    _itoa_s(errCode, codeText, 10);
-    errorMessage += codeText;
+    errorMessage += NumberToText(errCode);
     errorMessage += ": ";
 
     if (sshErrMsg)

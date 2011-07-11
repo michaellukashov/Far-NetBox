@@ -475,9 +475,7 @@ bool CSession::Save(const wchar_t *fileName) const
 
     TiXmlElement *xmlNode;
     xmlNode = new TiXmlElement(ParamProtoId);
-    char protoId[16];
-    _itoa_s(_ProtoId, protoId, 10);
-    xmlNode->LinkEndChild(new TiXmlText(protoId));
+    xmlNode->LinkEndChild(new TiXmlText(NumberToText(_ProtoId).c_str()));
     xmlRoot->LinkEndChild(xmlNode);
 
     for (vector<Property>::const_iterator it = _Properties.begin(); it != _Properties.end(); ++it)

@@ -150,3 +150,10 @@ FILETIME UnixTimeToFileTime(const time_t t)
     ft.dwHighDateTime = ll >> 32;
     return ft;
 }
+
+string NumberToText(int number)
+{
+    char codeText[16];
+    _itoa_s(number, codeText, 10);
+    return string(codeText);
+}

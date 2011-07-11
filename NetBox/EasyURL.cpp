@@ -59,10 +59,8 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
     _TopURL  += CFarPlugin::W2MB(hostName.c_str());
     if (port)
     {
-        char portTxt[8];
-        _itoa_s(port, portTxt, 10);
         _TopURL += ':';
-        _TopURL += portTxt;
+        _TopURL += NumberToText(port);
     }
 
     if (userName)
@@ -146,10 +144,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         unsigned long port = _Settings.ProxyPort();
         if (port)
         {
-            char portTxt[8];
-            _itoa_s(port, portTxt, 10);
             proxy += ":";
-            proxy += portTxt;
+            proxy += NumberToText(port);
         }
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXY, proxy.c_str()));
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
