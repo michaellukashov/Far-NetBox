@@ -14,7 +14,7 @@ if "%PLUGINARCH%" equ "" set PLUGINARCH=src
 set FARVER=Far2
 
 :: Get plugin version from resource
-for /F "tokens=2,3 skip=14" %%i in (resource.h) do set %%i=%%~j
+for /F "tokens=2,3 skip=2" %%i in (resource.h) do set %%i=%%~j
 if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
 set PLUGINVER=%PLUGIN_VERSION_TXT%
 
