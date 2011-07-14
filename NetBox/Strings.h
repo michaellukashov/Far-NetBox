@@ -28,6 +28,8 @@ enum PluginString
     StringOK,
     StringCancel,
 
+    StringProxy,
+
     //Edit link dialog
     StringEdCrtTitle,
     StringEdEdtTitle,
