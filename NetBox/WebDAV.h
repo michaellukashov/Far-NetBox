@@ -43,7 +43,8 @@ protected:
 class CSessionEditorWebDAV : public CSessionEditor
 {
 public:
-    CSessionEditorWebDAV(CSession *session) : CSessionEditor(session, 50, 17) {}
+    CSessionEditorWebDAV(CSession *session) : CSessionEditor(session, 50, 19)
+    {}
 };
 
 
