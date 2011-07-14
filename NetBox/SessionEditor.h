@@ -32,7 +32,7 @@ protected:
 
 public:
     /**
-     * Show session editort dialog
+     * Show session editor dialog
      * \return false if edition was canceled by user
      */
     bool EditSession();
