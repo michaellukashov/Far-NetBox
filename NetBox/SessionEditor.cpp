@@ -48,20 +48,22 @@ bool CSessionEditor::EditSession()
         url += L"://";
     }
 
-    CreateText(GetLeft(), GetTop() + 0, CFarPlugin::GetString(StringEdName));
-    _IdEditName = CreateEdit(GetLeft(), GetTop() + 1, MAX_SIZE, _Session->GetSessionName());
-    CreateText(GetLeft(), GetTop() + 2, CFarPlugin::GetString(StringEdURL));
-    _IdEditURL = CreateEdit(GetLeft(), GetTop() + 3, MAX_SIZE, url.c_str());
+    int top = GetTop() + 2;
+    CreateSeparator(top - 1);
+    CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
+    _IdEditName = CreateEdit(GetLeft(), top + 1, MAX_SIZE, _Session->GetSessionName());
+    CreateText(GetLeft(), top + 2, CFarPlugin::GetString(StringEdURL));
+    _IdEditURL = CreateEdit(GetLeft(), top + 3, MAX_SIZE, url.c_str());
 
-    CreateSeparator(GetTop() + 4, CFarPlugin::GetString(StringEdAuth));
-    CreateText(GetLeft(), GetTop() + 5, CFarPlugin::GetString(StringEdAuthUser));
-    _IdEditUser = CreateEdit(GetLeft(), GetTop() + 6, MAX_SIZE, _Session->GetUserName());
-    CreateText(GetLeft(), GetTop() + 7, CFarPlugin::GetString(StringEdAuthPsw));
-    _IdEditPswShow = CreateEdit(GetLeft(), GetTop() + 8, MAX_SIZE, _Session->GetPassword());
-    _IdEditPswHide = CreateDlgItem(DI_PSWEDIT, GetLeft(), GetWidth(), GetTop() + 8, GetTop() + 8, _Session->GetPassword());
+    CreateSeparator(top + 4, CFarPlugin::GetString(StringEdAuth));
+    CreateText(GetLeft(), top + 5, CFarPlugin::GetString(StringEdAuthUser));
+    _IdEditUser = CreateEdit(GetLeft(), top + 6, MAX_SIZE, _Session->GetUserName());
+    CreateText(GetLeft(), top + 7, CFarPlugin::GetString(StringEdAuthPsw));
+    _IdEditPswShow = CreateEdit(GetLeft(), top + 8, MAX_SIZE, _Session->GetPassword());
+    _IdEditPswHide = CreateDlgItem(DI_PSWEDIT, GetLeft(), GetWidth(), top + 8, top + 8, _Session->GetPassword());
 
-    _IdChBxPromtpPsw = CreateCheckBox(GetLeft(), GetTop() + 9, CFarPlugin::GetString(StringEdAuthPromtpPsw), _Session->GetPromptPwd());
-    _IdChBxShowPsw = CreateCheckBox(GetLeft(), GetTop() + 10, CFarPlugin::GetString(StringEdAuthShowPsw), false);
+    _IdChBxPromtpPsw = CreateCheckBox(GetLeft(), top + 9, CFarPlugin::GetString(StringEdAuthPromtpPsw), _Session->GetPromptPwd());
+    _IdChBxShowPsw = CreateCheckBox(GetLeft(), top + 10, CFarPlugin::GetString(StringEdAuthShowPsw), false);
 
     OnPrepareDialog();
 
