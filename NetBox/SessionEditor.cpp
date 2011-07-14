@@ -49,7 +49,10 @@ bool CSessionEditor::EditSession()
     }
 
     int top = GetTop() + 2;
+    // Создаем кнопку для вызова настроек прокси
+    int _IdBtnProxy = CreateButton(GetLeft(), top - 2, CFarPlugin::GetString(StringProxy), DIF_NOBRACKETS);
     CreateSeparator(top - 1);
+
     CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
     _IdEditName = CreateEdit(GetLeft(), top + 1, MAX_SIZE, _Session->GetSessionName());
     CreateText(GetLeft(), top + 2, CFarPlugin::GetString(StringEdURL));
@@ -68,7 +71,9 @@ bool CSessionEditor::EditSession()
     OnPrepareDialog();
 
     CreateSeparator(GetHeight() - 2);
-    _IdBtnOK = CreateButton(0, GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP);
+    FarDialogItem *itemOKBtn;
+    _IdBtnOK = CreateButton(0, GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemOKBtn);
+    itemOKBtn->Focus = 1;
     _IdBtnCancel = CreateButton(0, GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
     const int ret = DoModal();
