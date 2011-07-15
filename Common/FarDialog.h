@@ -396,7 +396,7 @@ public:
     /**
      * Show/hide dialog item
      * \param dlgItemId dialog item id
-     * \param show true to show, flase to hide
+     * \param show true to show, false to hide
      */
     inline void ShowDlgItem(const int dlgItemId, const bool show)
     {
