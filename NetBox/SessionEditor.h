@@ -76,6 +76,7 @@ private:
     bool Validate() const;
 
 protected:
+    int _IdBtnProxy;
     int _IdEditName;
     int _IdEditURL;
     int _IdEditUser;

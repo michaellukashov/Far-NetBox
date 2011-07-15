@@ -50,7 +50,7 @@ bool CSessionEditor::EditSession()
 
     int top = GetTop() + 2;
     // Создаем кнопку для вызова настроек прокси
-    int _IdBtnProxy = CreateButton(GetLeft(), top - 2, CFarPlugin::GetString(StringProxy), DIF_NOBRACKETS);
+    _IdBtnProxy = CreateButton(GetLeft(), top - 2, CFarPlugin::GetString(StringProxy), DIF_NOBRACKETS);
     CreateSeparator(top - 1);
 
     CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
@@ -177,6 +177,11 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         const bool showPwd = (param2 == 1);
         ShowDlgItem(_IdEditPswShow, showPwd);
         ShowDlgItem(_IdEditPswHide, !showPwd);
+    }
+    else if (msg == DN_BTNCLICK && param1 == _IdBtnProxy)
+    {
+        DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
+        return TRUE;
     }
     else if (msg == DN_EDITCHANGE && (param1 == _IdEditPswHide || param1 == _IdEditPswShow))
     {
