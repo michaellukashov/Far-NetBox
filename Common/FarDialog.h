@@ -488,6 +488,7 @@ protected:
      */
     virtual LONG_PTR DialogMessageProc(int msg, int param1, LONG_PTR param2)
     {
+        // DEBUG_PRINTF(L"NetBox: msg = %u, DN_BTNCLICK = %u, param1 = %u", msg, DN_BTNCLICK, param1);
         return CFarPlugin::GetPSI()->DefDlgProc(_Dlg, msg, param1, param2);
     }
 
