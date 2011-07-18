@@ -181,7 +181,7 @@ public:
         {
             assert(!_DlgItems.empty());
             _Dlg = CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
-            // _DlgItems.clear();  //Non actual for now
+            _DlgItems.clear();  //Non actual for now
             if (_Dlg == INVALID_HANDLE_VALUE)
             {
                 return -2;
