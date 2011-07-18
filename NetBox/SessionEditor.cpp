@@ -181,6 +181,8 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     else if (msg == DN_BTNCLICK && param1 == _IdBtnProxy)
     {
         DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
+        // Прячем элементы диалога
+        HideDlgItems();
         // Инициализируем настройки прокси
         return TRUE;
     }
@@ -202,6 +204,16 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     return CFarDialog::DialogMessageProc(msg, param1, param2);
 }
 
+void CSessionEditor::HideDlgItems()
+{
+    ShowDlgItem(_IdEditName, false);
+    ShowDlgItem(_IdEditURL, false);
+    ShowDlgItem(_IdEditUser, false);
+    ShowDlgItem(_IdEditPswHide, false);
+    ShowDlgItem(_IdEditPswShow, false);
+    ShowDlgItem(_IdChBxPromtpPsw, false);
+    ShowDlgItem(_IdChBxShowPsw, false);
+}
 
 bool CSessionEditor::Validate() const
 {

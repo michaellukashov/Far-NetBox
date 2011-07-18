@@ -68,6 +68,8 @@ protected:
      */
     virtual void OnSave() {}
 
+    virtual void HideDlgItems();
+
 private:
     /**
      * Check fill data for correct form
