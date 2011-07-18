@@ -183,24 +183,24 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
     params.idProxyTypeComboBox = dlg.CreateDlgItem(DI_COMBOBOX, left,
         left + 12, topPos, topPos, NULL, DIF_LISTWRAPMODE, &params.proxyTypeComboBox);
     DEBUG_PRINTF(L"NetBox: 1");
-    FarList *proxyTypeList = new FarList;
-    vector<FarListItem> *proxyTypeListItems = new vector<FarListItem>;
+    // FarList *proxyTypeList = new FarList;
+    // vector<FarListItem> *proxyTypeListItems = new vector<FarListItem>;
     int proxyTypeCount = 4;
-    proxyTypeListItems->resize(proxyTypeCount);
-    ZeroMemory(&(*proxyTypeListItems)[0], proxyTypeCount * sizeof(FarListItem));
+    params.proxyTypeListItems.resize(proxyTypeCount);
+    ZeroMemory(&params.proxyTypeListItems[0], proxyTypeCount * sizeof(FarListItem));
     DEBUG_PRINTF(L"NetBox: 3");
     for (int i = 0; i < proxyTypeCount; ++i)
     {
         if (proxyType == i)
         {
-            (*proxyTypeListItems)[i].Flags = LIF_SELECTED;
+            params.proxyTypeListItems[i].Flags = LIF_SELECTED;
         }
-        (*proxyTypeListItems)[i].Text = CFarPlugin::GetString(proxyTypeItem1 + i);
+        params.proxyTypeListItems[i].Text = CFarPlugin::GetString(proxyTypeItem1 + i);
     }
     DEBUG_PRINTF(L"NetBox: 4");
-    proxyTypeList->Items = &proxyTypeListItems->front();
-    proxyTypeList->ItemsNumber = static_cast<int>(proxyTypeListItems->size());
-    params.proxyTypeComboBox->ListItems = proxyTypeList;
+    params.proxyTypeList.Items = &params.proxyTypeListItems.front();
+    params.proxyTypeList.ItemsNumber = static_cast<int>(params.proxyTypeListItems.size());
+    params.proxyTypeComboBox->ListItems = &params.proxyTypeList;
 
     dlg.CreateSeparator(++topPos);
     DEBUG_PRINTF(L"NetBox: 5");

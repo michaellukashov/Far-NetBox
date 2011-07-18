@@ -332,8 +332,6 @@ void CSettings::ProxyConfigure()
         _ProxyPassword = dlg.GetText(params.idProxyPassword);
         Save();
     }
-    //TODO: release params.proxyTypeComboBox->ListItems->List
-    //TODO: release params.proxyTypeComboBox->ListItems
 }
 
 void CSettings::LoggingConfigure()

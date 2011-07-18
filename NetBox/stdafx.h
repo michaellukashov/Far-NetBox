@@ -69,6 +69,8 @@ wstring NumberToWString(unsigned long number);
 struct ProxySettingsDialogParams
 {
     FarDialogItem *proxyTypeComboBox;
+    FarList proxyTypeList;
+    vector<FarListItem> proxyTypeListItems;
     int idProxyTypeComboBox;
     int idProxyHost;
     int idProxyPort;
