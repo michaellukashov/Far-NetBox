@@ -296,11 +296,6 @@ void CSettings::ProxyConfigure()
     CFarDialog dlg(54, 14, CFarPlugin::GetString(StringProxySettingsDialogTitle));
     int topPos = dlg.GetTop();
     ProxySettingsDialogParams params;
-        // int ProxyType;
-        // wstring ProxyHost;
-        // unsigned long ProxyPort;
-        // wstring ProxyLogin;
-        // wstring ProxyPassword;
     ::InitProxySettingsDialog(dlg, topPos,
         _ProxyType,
         _ProxyHost,

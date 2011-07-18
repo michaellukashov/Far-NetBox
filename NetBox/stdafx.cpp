@@ -205,7 +205,7 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
     params.idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, proxyHost.c_str());
     // Порт
     params.proxyPortStr = NumberToWString(proxyPort);
-    DEBUG_PRINTF(L"NetBox: proxyPort = %u, proxyPortStr = %s", proxyPort, params.proxyPortStr.c_str());
+    // DEBUG_PRINTF(L"NetBox: proxyPort = %u, proxyPortStr = %s", proxyPort, params.proxyPortStr.c_str());
     left = dlg.GetWidth() - 10;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
     params.idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
