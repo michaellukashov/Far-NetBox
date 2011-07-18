@@ -69,6 +69,7 @@ protected:
     virtual void OnSave() {}
 
     virtual void HideDlgItems();
+    virtual void ShowProxyDlgItems(ProxySettingsDialogParams &params);
 
 private:
     /**

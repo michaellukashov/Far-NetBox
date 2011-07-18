@@ -214,8 +214,9 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
             _ProxyPassword,
             params
         );
-        // CFarPlugin::GetPSI()->DialogRun(_Dlg);
-
+        DEBUG_PRINTF(L"NetBox: _IdTextEditName = %u, params.idProxyTypeComboBox = %u", _IdTextEditName, params.idProxyTypeComboBox);
+        // Показываем элементы настроек прокси
+        ShowProxyDlgItems(params);
         return TRUE;
     }
     else if (msg == DN_EDITCHANGE && (param1 == _IdEditPswHide || param1 == _IdEditPswShow))
@@ -250,6 +251,15 @@ void CSessionEditor::HideDlgItems()
     ShowDlgItem(_IdEditPswHide, false);
     ShowDlgItem(_IdChBxPromtpPsw, false);
     ShowDlgItem(_IdChBxShowPsw, false);
+}
+
+void CSessionEditor::ShowProxyDlgItems(ProxySettingsDialogParams &params)
+{
+    ShowDlgItem(params.idProxyTypeComboBox, true);
+    ShowDlgItem(params.idProxyHost, true);
+    ShowDlgItem(params.idProxyPort, true);
+    ShowDlgItem(params.idProxyLogin, true);
+    ShowDlgItem(params.idProxyPassword, true);
 }
 
 bool CSessionEditor::Validate() const
