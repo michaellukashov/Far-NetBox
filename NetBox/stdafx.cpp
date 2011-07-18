@@ -167,64 +167,68 @@ wstring NumberToWString(unsigned long number)
 }
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
-    int &_ProxyType,
-    wstring &_ProxyHost,
-    unsigned long &_ProxyPort,
-    wstring &_ProxyLogin,
-    wstring &_ProxyPassword,
+    int &proxyType,
+    wstring &proxyHost,
+    unsigned long &proxyPort,
+    wstring &proxyLogin,
+    wstring &proxyPassword,
     ProxySettingsDialogParams &params)
 {
     // Тип прокси
     dlg.CreateText(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringProxySettingsProxyType));
-
+    DEBUG_PRINTF(L"NetBox: 1");
     // FarDialogItem *proxyTypeComboBox;
     int left = dlg.GetLeft() +
         static_cast<int>(wcslen(CFarPlugin::GetString(StringProxySettingsProxyType))) + 1;
     params.idProxyTypeComboBox = dlg.CreateDlgItem(DI_COMBOBOX, left,
         left + 12, topPos, topPos, NULL, DIF_LISTWRAPMODE, &params.proxyTypeComboBox);
-
+    DEBUG_PRINTF(L"NetBox: 1");
     FarList proxyTypeList;
     vector<FarListItem> proxyTypeListItems;
     int proxyTypeCount = 4;
     proxyTypeListItems.resize(proxyTypeCount);
     ZeroMemory(&proxyTypeListItems[0], proxyTypeCount * sizeof(FarListItem));
+    DEBUG_PRINTF(L"NetBox: 3");
     for (int i = 0; i < proxyTypeCount; ++i)
     {
-        if (_ProxyType == i)
+        if (proxyType == i)
         {
             proxyTypeListItems[i].Flags = LIF_SELECTED;
         }
         proxyTypeListItems[i].Text = CFarPlugin::GetString(proxyTypeItem1 + i);
     }
+    DEBUG_PRINTF(L"NetBox: 4");
     proxyTypeList.Items = &proxyTypeListItems.front();
     proxyTypeList.ItemsNumber = static_cast<int>(proxyTypeListItems.size());
     params.proxyTypeComboBox->ListItems = &proxyTypeList;
 
     dlg.CreateSeparator(++topPos);
-
+    DEBUG_PRINTF(L"NetBox: 5");
     //
     // Прокси адрес, порт, логин/пароль
     //
     // Адрес прокси сервера
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringProxySettingsProxyHost));
     left = dlg.GetLeft();
-    params.idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, _ProxyHost.c_str());
+    params.idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, proxyHost.c_str());
     // Порт
-    wstring proxyPortStr = NumberToWString(_ProxyPort);
+    wstring proxyPortStr = NumberToWString(proxyPort);
     left = dlg.GetWidth() - 10;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
     FarDialogItem *itemPortEdit;
     params.idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
         topPos + 1, topPos + 1, proxyPortStr.c_str(), DIF_MASKEDIT, &itemPortEdit);
     itemPortEdit->Mask = L"99999999";
+    DEBUG_PRINTF(L"NetBox: 6");
 
     topPos += 2;
     left = dlg.GetLeft();
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyLogin));
     params.idProxyLogin = dlg.CreateEdit(left, topPos + 1, 20,
-        _ProxyLogin.c_str());
+        proxyLogin.c_str());
     left = dlg.GetWidth() - 20;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPassword));
     params.idProxyPassword = dlg.CreateDlgItem(DI_PSWEDIT, left, left + 20,
-        topPos + 1, topPos + 1, _ProxyPassword.c_str());
+        topPos + 1, topPos + 1, proxyPassword.c_str());
+    DEBUG_PRINTF(L"NetBox: 7");
 }

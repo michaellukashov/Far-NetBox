@@ -296,6 +296,11 @@ void CSettings::ProxyConfigure()
     CFarDialog dlg(54, 14, CFarPlugin::GetString(StringProxySettingsDialogTitle));
     int topPos = dlg.GetTop();
     ProxySettingsDialogParams params;
+        // int ProxyType;
+        // wstring ProxyHost;
+        // unsigned long ProxyPort;
+        // wstring ProxyLogin;
+        // wstring ProxyPassword;
     InitProxySettingsDialog(dlg, topPos,
         _ProxyType,
         _ProxyHost,
@@ -307,13 +312,15 @@ void CSettings::ProxyConfigure()
 
     // Кнопки OK Cancel
     dlg.CreateSeparator(dlg.GetHeight() - 2);
+    DEBUG_PRINTF(L"NetBox: 1");
     FarDialogItem *itemFocusBtn;
     dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
     params.proxyTypeComboBox->Focus = 1;
-
+    DEBUG_PRINTF(L"NetBox: 2");
     const int itemIdx = dlg.DoModal();
+    DEBUG_PRINTF(L"NetBox: 3");
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции

@@ -214,6 +214,7 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
             _ProxyPassword,
             params
         );
+        // CFarPlugin::GetPSI()->DialogRun(_Dlg);
 
         return TRUE;
     }
