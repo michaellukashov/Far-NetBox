@@ -217,6 +217,9 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         DEBUG_PRINTF(L"NetBox: _IdTextEditName = %u, params.idProxyTypeComboBox = %u", _IdTextEditName, params.idProxyTypeComboBox);
         // Показываем элементы настроек прокси
         ShowProxyDlgItems(params);
+        // CFarPlugin::GetPSI()->DialogRun(_Dlg);
+        // CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
+        CFarDialog::DialogMessageProc(DM_REDRAW, 0, 0);
         return TRUE;
     }
     else if (msg == DN_EDITCHANGE && (param1 == _IdEditPswHide || param1 == _IdEditPswShow))
