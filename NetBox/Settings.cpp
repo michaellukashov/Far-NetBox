@@ -257,7 +257,7 @@ void CSettings::MainConfigure()
     dlg.CreateSeparator(++topPos);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgTimeout));
-    wstring timeoutStr = NumberToText(_Timeout);
+    wstring timeoutStr = NumberToWString(_Timeout);
     FarDialogItem *itemEdit;
     const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1,
         dlg.GetWidth(), topPos, topPos, timeoutStr.c_str(), DIF_MASKEDIT, &itemEdit);
@@ -295,59 +295,15 @@ void CSettings::ProxyConfigure()
 {
     CFarDialog dlg(54, 14, CFarPlugin::GetString(StringProxySettingsDialogTitle));
     int topPos = dlg.GetTop();
-    // Тип прокси
-    dlg.CreateText(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringProxySettingsProxyType));
-
-    FarDialogItem *proxyTypeComboBox;
-    int left = dlg.GetLeft() +
-        static_cast<int>(wcslen(CFarPlugin::GetString(StringProxySettingsProxyType))) + 1;
-    const int idProxyTypeComboBox = dlg.CreateDlgItem(DI_COMBOBOX, left,
-        left + 12, topPos, topPos, NULL, DIF_LISTWRAPMODE, &proxyTypeComboBox);
-
-    FarList proxyTypeList;
-    vector<FarListItem> proxyTypeListItems;
-    int proxyTypeCount = 4;
-    proxyTypeListItems.resize(proxyTypeCount);
-    ZeroMemory(&proxyTypeListItems[0], proxyTypeCount * sizeof(FarListItem));
-    for (int i = 0; i < proxyTypeCount; ++i)
-    {
-        if (_ProxyType == i)
-        {
-            proxyTypeListItems[i].Flags = LIF_SELECTED;
-        }
-        proxyTypeListItems[i].Text = CFarPlugin::GetString(proxyTypeItem1 + i);
-    }
-    proxyTypeList.Items = &proxyTypeListItems.front();
-    proxyTypeList.ItemsNumber = static_cast<int>(proxyTypeListItems.size());
-    proxyTypeComboBox->ListItems = &proxyTypeList;
-
-    dlg.CreateSeparator(++topPos);
-
-    //
-    // Прокси адрес, порт, логин/пароль
-    //
-    // Адрес прокси сервера
-    dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringProxySettingsProxyHost));
-    left = dlg.GetLeft();
-    const int idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, _ProxyHost.c_str());
-    // Порт
-    wstring proxyPortStr = NumberToText(_ProxyPort);
-    left = dlg.GetWidth() - 10;
-    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
-    FarDialogItem *itemPortEdit;
-    const int idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
-        topPos + 1, topPos + 1, proxyPortStr.c_str(), DIF_MASKEDIT, &itemPortEdit);
-    itemPortEdit->Mask = L"99999999";
-
-    topPos += 2;
-    left = dlg.GetLeft();
-    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyLogin));
-    const int idProxyLogin = dlg.CreateEdit(left, topPos + 1, 20,
-        _ProxyLogin.c_str());
-    left = dlg.GetWidth() - 20;
-    dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPassword));
-    const int idProxyPassword = dlg.CreateDlgItem(DI_PSWEDIT, left, left + 20,
-        topPos + 1, topPos + 1, _ProxyPassword.c_str());
+    ProxySettingsDialogParams params;
+    InitProxySettingsDialog(dlg, topPos,
+        _ProxyType,
+        _ProxyHost,
+        _ProxyPort,
+        _ProxyLogin,
+        _ProxyPassword,
+        params
+    );
 
     // Кнопки OK Cancel
     dlg.CreateSeparator(dlg.GetHeight() - 2);
@@ -355,17 +311,17 @@ void CSettings::ProxyConfigure()
     dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
-    proxyTypeComboBox->Focus = 1;
+    params.proxyTypeComboBox->Focus = 1;
 
     const int itemIdx = dlg.DoModal();
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции
-        _ProxyType = dlg.GetSelectonIndex(idProxyTypeComboBox);
-        _ProxyHost = dlg.GetText(idProxyHost);
-        _ProxyPort = TextToNumber(dlg.GetText(idProxyPort));
-        _ProxyLogin = dlg.GetText(idProxyLogin);
-        _ProxyPassword = dlg.GetText(idProxyPassword);
+        _ProxyType = dlg.GetSelectonIndex(params.idProxyTypeComboBox);
+        _ProxyHost = dlg.GetText(params.idProxyHost);
+        _ProxyPort = TextToNumber(dlg.GetText(params.idProxyPort));
+        _ProxyLogin = dlg.GetText(params.idProxyLogin);
+        _ProxyPassword = dlg.GetText(params.idProxyPassword);
         Save();
     }
 }
