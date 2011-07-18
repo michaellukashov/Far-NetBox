@@ -79,11 +79,16 @@ private:
 
 protected:
     int _IdBtnProxy;
+    int _IdTextEditName;
     int _IdEditName;
+    int _IdTextEditURL;
     int _IdEditURL;
+    int _IdSeparator;
+    int _IdTextEditUser;
     int _IdEditUser;
-    int _IdEditPswHide;
+    int _IdTextEditPswShow;
     int _IdEditPswShow;
+    int _IdEditPswHide;
     int _IdChBxPromtpPsw;
     int _IdChBxShowPsw;
     int _IdBtnOK;

@@ -25,8 +25,23 @@
 
 CSessionEditor::CSessionEditor(CSession *session, const int width, const int height)
     : CFarDialog(width, height),
-      _IdEditName(0), _IdEditURL(0), _IdEditUser(0), _IdEditPswHide(0), _IdEditPswShow(0), _IdChBxPromtpPsw(0), _IdChBxShowPsw(0), _IdBtnOK(0), _IdBtnCancel(0),
-      _EditMode(false), _Session(session)
+      _IdBtnProxy(0),
+      _IdTextEditName(0),
+      _IdEditName(0),
+      _IdTextEditURL(0),
+      _IdEditURL(0),
+      _IdSeparator(0),
+      _IdTextEditUser(0),
+      _IdEditUser(0),
+      _IdEditPswHide(0),
+      _IdTextEditPswShow(0),
+      _IdEditPswShow(0),
+      _IdChBxPromtpPsw(0),
+      _IdChBxShowPsw(0),
+      _IdBtnOK(0),
+      _IdBtnCancel(0),
+      _EditMode(false),
+      _Session(session)
 {
     assert(_Session);
 }
@@ -53,15 +68,15 @@ bool CSessionEditor::EditSession()
     _IdBtnProxy = CreateButton(GetLeft(), top - 2, CFarPlugin::GetString(StringProxy), DIF_NOBRACKETS);
     CreateSeparator(top - 1);
 
-    CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
+    _IdTextEditName = CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
     _IdEditName = CreateEdit(GetLeft(), top + 1, MAX_SIZE, _Session->GetSessionName());
-    CreateText(GetLeft(), top + 2, CFarPlugin::GetString(StringEdURL));
+    _IdTextEditURL = CreateText(GetLeft(), top + 2, CFarPlugin::GetString(StringEdURL));
     _IdEditURL = CreateEdit(GetLeft(), top + 3, MAX_SIZE, url.c_str());
 
-    CreateSeparator(top + 4, CFarPlugin::GetString(StringEdAuth));
-    CreateText(GetLeft(), top + 5, CFarPlugin::GetString(StringEdAuthUser));
+    _IdSeparator = CreateSeparator(top + 4, CFarPlugin::GetString(StringEdAuth));
+    _IdTextEditUser = CreateText(GetLeft(), top + 5, CFarPlugin::GetString(StringEdAuthUser));
     _IdEditUser = CreateEdit(GetLeft(), top + 6, MAX_SIZE, _Session->GetUserName());
-    CreateText(GetLeft(), top + 7, CFarPlugin::GetString(StringEdAuthPsw));
+    _IdTextEditPswShow = CreateText(GetLeft(), top + 7, CFarPlugin::GetString(StringEdAuthPsw));
     _IdEditPswShow = CreateEdit(GetLeft(), top + 8, MAX_SIZE, _Session->GetPassword());
     _IdEditPswHide = CreateDlgItem(DI_PSWEDIT, GetLeft(), GetWidth(), top + 8, top + 8, _Session->GetPassword());
 
@@ -206,11 +221,16 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
 
 void CSessionEditor::HideDlgItems()
 {
+    ShowDlgItem(_IdTextEditName, false);
     ShowDlgItem(_IdEditName, false);
+    ShowDlgItem(_IdTextEditURL, false);
     ShowDlgItem(_IdEditURL, false);
+    ShowDlgItem(_IdSeparator, false);
+    ShowDlgItem(_IdTextEditUser, false);
     ShowDlgItem(_IdEditUser, false);
-    ShowDlgItem(_IdEditPswHide, false);
+    ShowDlgItem(_IdTextEditPswShow, false);
     ShowDlgItem(_IdEditPswShow, false);
+    ShowDlgItem(_IdEditPswHide, false);
     ShowDlgItem(_IdChBxPromtpPsw, false);
     ShowDlgItem(_IdChBxShowPsw, false);
 }
