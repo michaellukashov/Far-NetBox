@@ -301,7 +301,7 @@ void CSettings::ProxyConfigure()
         // unsigned long ProxyPort;
         // wstring ProxyLogin;
         // wstring ProxyPassword;
-    InitProxySettingsDialog(dlg, topPos,
+    ::InitProxySettingsDialog(dlg, topPos,
         _ProxyType,
         _ProxyHost,
         _ProxyPort,
@@ -327,10 +327,13 @@ void CSettings::ProxyConfigure()
         _ProxyType = dlg.GetSelectonIndex(params.idProxyTypeComboBox);
         _ProxyHost = dlg.GetText(params.idProxyHost);
         _ProxyPort = TextToNumber(dlg.GetText(params.idProxyPort));
+        DEBUG_PRINTF(L"NetBox: _ProxyPort = %u", _ProxyPort);
         _ProxyLogin = dlg.GetText(params.idProxyLogin);
         _ProxyPassword = dlg.GetText(params.idProxyPassword);
         Save();
     }
+    //TODO: release params.proxyTypeComboBox->ListItems->List
+    //TODO: release params.proxyTypeComboBox->ListItems
 }
 
 void CSettings::LoggingConfigure()

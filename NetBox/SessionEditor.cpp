@@ -206,7 +206,7 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         wstring _ProxyLogin;
         wstring _ProxyPassword;
         int topPos = GetTop() + 2;
-        InitProxySettingsDialog(*this, topPos,
+        ::InitProxySettingsDialog(*this, topPos,
             _ProxyType,
             _ProxyHost,
             _ProxyPort,
