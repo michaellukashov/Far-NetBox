@@ -199,6 +199,22 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         // Прячем элементы диалога
         HideDlgItems();
         // Инициализируем настройки прокси
+        ProxySettingsDialogParams params;
+        int _ProxyType;
+        wstring _ProxyHost;
+        unsigned long _ProxyPort;
+        wstring _ProxyLogin;
+        wstring _ProxyPassword;
+        int topPos = GetTop() + 2;
+        InitProxySettingsDialog(*this, topPos,
+            _ProxyType,
+            _ProxyHost,
+            _ProxyPort,
+            _ProxyLogin,
+            _ProxyPassword,
+            params
+        );
+
         return TRUE;
     }
     else if (msg == DN_EDITCHANGE && (param1 == _IdEditPswHide || param1 == _IdEditPswShow))
