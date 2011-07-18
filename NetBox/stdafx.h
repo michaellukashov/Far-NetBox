@@ -71,6 +71,8 @@ struct ProxySettingsDialogParams
     FarDialogItem *proxyTypeComboBox;
     FarList proxyTypeList;
     vector<FarListItem> proxyTypeListItems;
+    wstring proxyPortStr;
+    FarDialogItem *itemPortEdit;
     int idProxyTypeComboBox;
     int idProxyHost;
     int idProxyPort;
