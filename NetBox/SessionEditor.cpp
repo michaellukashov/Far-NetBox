@@ -219,7 +219,10 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         ShowProxyDlgItems(params);
         // CFarPlugin::GetPSI()->DialogRun(_Dlg);
         // CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
-        CFarDialog::DialogMessageProc(DM_REDRAW, 0, 0);
+        // CFarDialog::DialogMessageProc(DM_REDRAW, 0, 0);
+        _Dlg = INVALID_HANDLE_VALUE;
+        DoModal();
+        // CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
         return TRUE;
     }
     else if (msg == DN_EDITCHANGE && (param1 == _IdEditPswHide || param1 == _IdEditPswShow))
