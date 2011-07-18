@@ -63,3 +63,24 @@ FILETIME UnixTimeToFileTime(const time_t t);
  * \return string result
  */
 string NumberToText(int number);
+
+wstring NumberToWString(unsigned long number);
+
+struct ProxySettingsDialogParams
+{
+    FarDialogItem *proxyTypeComboBox;
+    int idProxyTypeComboBox;
+    int idProxyHost;
+    int idProxyPort;
+    int idProxyLogin;
+    int idProxyPassword;
+};
+
+void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
+    int &_ProxyType,
+    wstring &_ProxyHost,
+    unsigned long &_ProxyPort,
+    wstring &_ProxyLogin,
+    wstring &_ProxyPassword,
+    ProxySettingsDialogParams &params
+);

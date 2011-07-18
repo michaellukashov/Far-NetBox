@@ -128,12 +128,6 @@ private:
     {
         return static_cast<unsigned long>(_wtoi(text.c_str()));
     }
-    wstring NumberToText(unsigned long number) const
-    {
-        wchar_t toText[16];
-        _itow_s(number, toText, 10);
-        return wstring(toText);
-    }
 
     void MainConfigure();
     void ProxyConfigure();
