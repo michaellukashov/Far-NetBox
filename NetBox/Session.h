@@ -71,6 +71,8 @@ public:
      */
     static wstring GetSupportedPrefixes();
 
+    struct ProxySettings &GetProxySettings() { return _proxySettings; }
+
     /**
      * Create new session
      * \return pointer to created session (NULL if error)
@@ -145,6 +147,7 @@ public:
     void SetPassword(const wchar_t *val);
     bool GetPromptPwd() const;
     void SetPromptPwd(const bool val);
+    void SetProxySettings(const struct ProxySettings &proxySettings);
 
 protected:
     /**
@@ -244,6 +247,7 @@ private:
     int                 _ProtoId;           ///< Unique protocol id
     wstring             _SessionName;       ///< Session name
     vector<Property>    _Properties;        ///< Session's properties
+    struct ProxySettings _proxySettings;
 
     static string       _CryptKey;          ///< Crypt key
     static vector<ProtoImplInfo> _Factory;  ///< Client protocol implementation factory

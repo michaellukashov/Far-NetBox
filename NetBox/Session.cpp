@@ -644,6 +644,10 @@ void CSession::SetPromptPwd(const bool val)
     SetProperty(ParamPromptPsw, val ? 1 : 0);
 }
 
+void CSession::SetProxySettings(const struct ProxySettings &proxySettings)
+{
+    // SetProperty(ParamPromptPsw, val ? 1 : 0);
+}
 
 const wchar_t *CSession::GetProperty(const char *name, const wchar_t *defaultVal /*= NULL*/) const
 {
