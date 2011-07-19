@@ -257,7 +257,7 @@ void CSettings::MainConfigure()
     dlg.CreateSeparator(++topPos);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgTimeout));
-    wstring timeoutStr = NumberToWString(_Timeout);
+    wstring timeoutStr = ::NumberToWString(_Timeout);
     FarDialogItem *itemEdit;
     const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1,
         dlg.GetWidth(), topPos, topPos, timeoutStr.c_str(), DIF_MASKEDIT, &itemEdit);

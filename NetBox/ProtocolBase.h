@@ -130,10 +130,8 @@ public:
         ret += hostName;
         if (port)
         {
-            wchar_t portTxt[8];
-            _itow_s(port, portTxt, 10);
             ret += L':';
-            ret += portTxt;
+            ret += ::NumberToWString(port);
         }
 
         return ret;

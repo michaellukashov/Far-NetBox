@@ -175,9 +175,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
     if (xmlDoc.Error())
     {
         errorInfo = L"Error parsing response xml:\n[";
-        wchar_t errNum[16];
-        _itow_s(xmlDoc.ErrorId(), errNum, 10);
-        errorInfo += errNum;
+        errorInfo += ::NumberToWString(xmlDoc.ErrorId());
         errorInfo += L"]: ";
         errorInfo += CFarPlugin::MB2W(xmlDoc.ErrorDesc());
         return false;
@@ -686,9 +684,7 @@ wstring CWebDAV::GetBadResponseInfo(const int code) const
 
     wstring errInfo = L"Incorrect response code: ";
 
-    wchar_t codeText[16];
-    _itow_s(code, codeText, 10);
-    errInfo += codeText;
+    errInfo += ::NumberToWString(code);
 
     if (descr)
     {

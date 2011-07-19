@@ -184,9 +184,7 @@ void CSessionEditor::CreateCodePageControl(const int topPos, const UINT current,
 
     if (!cpFound)
     {
-        static wchar_t num[32];
-        _itow_s(current, num, 10);
-        dlgItemidCPList->PtrData = num;
+        dlgItemidCPList->PtrData = ::NumberToWString(current);
     }
 }
 

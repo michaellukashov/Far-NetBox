@@ -213,7 +213,7 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
     params.idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, ps.proxyHost.c_str(),
         NULL, flags, &params.proxyHostItem);
     // Порт
-    params.proxyPortStr = NumberToWString(ps.proxyPort);
+    params.proxyPortStr = ::NumberToWString(ps.proxyPort);
     // DEBUG_PRINTF(L"NetBox: proxyPort = %u, proxyPortStr = %s", ps.proxyPort, params.proxyPortStr.c_str());
     left = dlg.GetWidth() - 10;
     params.idProxyPortText = dlg.CreateText(left, topPos,
