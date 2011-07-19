@@ -151,7 +151,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
 
     //Check path existing
     bool dirExist = false;
-    DEBUG_PRINTF(L"NetBox: newPath = %s", newPath.c_str());
+    // DEBUG_PRINTF(L"NetBox: newPath = %s", newPath.c_str());
     if (!CheckExisting(newPath.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
         return false;

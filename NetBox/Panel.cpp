@@ -455,7 +455,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 }
                 const IProtocol::ItemType itemType = (panelItem->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? IProtocol::ItemDirectory : IProtocol::ItemFile;
                 bool isExist = false;
-                DEBUG_PRINTF(L"NetBox: GetFiles: dstPath = %s", dstPath.c_str());
+                // DEBUG_PRINTF(L"NetBox: GetFiles: dstPath = %s", dstPath.c_str());
                 if (_ProtoClient->CheckExisting(dstPath.c_str(), IProtocol::ItemDirectory, isExist, errInfo) && isExist)
                 {
                     //Move
@@ -782,7 +782,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 //Create destination directory
                 bool dirExist = false;
                 wstring errInfo;
-                DEBUG_PRINTF(L"NetBox: PutFiles: remotePath = %s", remotePath.c_str());
+                // DEBUG_PRINTF(L"NetBox: PutFiles: remotePath = %s", remotePath.c_str());
                 if (!_ProtoClient->CheckExisting(remotePath.c_str(), IProtocol::ItemDirectory, dirExist, errInfo))
                 {
                     return -1;

@@ -232,7 +232,7 @@ int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNu
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int res = panelInstance->GetItemList(panelItem, itemsNumber, opMode);
-    DEBUG_PRINTF(L"NetBox: GetFindDataW: itemsNumber = %u", *itemsNumber);
+    // DEBUG_PRINTF(L"NetBox: GetFindDataW: itemsNumber = %u", *itemsNumber);
     return res;
 }
 

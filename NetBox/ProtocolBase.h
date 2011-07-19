@@ -41,7 +41,7 @@ public:
     virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     {
         assert(name && *name);
-        DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, _CurrentDirectory = %s", name, _CurrentDirectory.c_str());
+        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, _CurrentDirectory = %s", name, _CurrentDirectory.c_str());
 
         const bool moveUp = (wcscmp(L"..", name) == 0);
         const bool topDirectory = (_CurrentDirectory.compare(L"/") == 0);
@@ -73,7 +73,7 @@ public:
 
         //Check path existing
         bool dirExist = false;
-        DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, newPath = %s", name, newPath.c_str());
+        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, newPath = %s", name, newPath.c_str());
         if (!CheckExisting(newPath.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
         {
             return false;

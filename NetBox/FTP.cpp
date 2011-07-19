@@ -102,7 +102,6 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     //Check initial path existing
     wstring path;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
-    DEBUG_PRINTF(L"NetBox: before CheckExisting: url = %s, path = %s", url, path.c_str());
     bool dirExist = false;
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
@@ -126,7 +125,6 @@ void CFTP::Close()
 bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
-    DEBUG_PRINTF(L"NetBox: CheckExisting: path = %s", path);
 
     string ftpPath = LocalToFtpCP(path);
     // DEBUG_PRINTF(L"NetBox: FTP: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
@@ -168,14 +166,14 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
-    DEBUG_PRINTF(L"NetBox: GetList: _CurrentDirectory = %s", _CurrentDirectory.c_str());
+    // DEBUG_PRINTF(L"NetBox: GetList: _CurrentDirectory = %s", _CurrentDirectory.c_str());
 
     string ftpPath = LocalToFtpCP(_CurrentDirectory.c_str(), true);
     if (ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';
     }
-    DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
 
     CURLcode urlCode = _CURL.Prepare(ftpPath.c_str());
     string response;
@@ -225,7 +223,6 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             wchar_t *name = new wchar_t[nameSize];
             wcscpy_s(name, nameSize, ftpList[i].Name.c_str());
             farItem.FindData.lpwszFileName = name;
-            DEBUG_PRINTF(L"NetBox: GetList: 4: name = %s, ftpList[%d].Type = %d", name, i, ftpList[i].Type);
             switch (ftpList[i].Type)
             {
             case FTPItem::File:
@@ -241,7 +238,6 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
                 wstring errDummy;
                 wstring chkPath = FtpToLocalCP(ftpPath.c_str());
                 chkPath += ftpList[i].LinkPath;
-                DEBUG_PRINTF(L"NetBox: GetList: chkPath = %s", chkPath.c_str());
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     farItem.FindData.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
@@ -269,7 +265,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 {
     assert(remotePath && remotePath[0] == L'/');
     assert(localPath && *localPath);
-    DEBUG_PRINTF(L"NetBox: GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    // DEBUG_PRINTF(L"NetBox: GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
 
     CFile outFile;
     if (!outFile.OpenWrite(localPath))
@@ -300,7 +296,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 {
     assert(remotePath && remotePath[0] == L'/');
     assert(localPath && *localPath);
-    DEBUG_PRINTF(L"NetBox: PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    // DEBUG_PRINTF(L"NetBox: PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
 
     CFile inFile;
     if (!inFile.OpenRead(localPath))
@@ -378,7 +374,7 @@ string CFTP::LocalToFtpCP(const wchar_t *src, bool replace) const
             r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
         }
     }
-    DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
     return r;
 }
 
