@@ -63,7 +63,7 @@ PProtocol CSessionSFTP::CreateClientInstance() const
 
 
 CSessionEditorSFTP::CSessionEditorSFTP(CSession *session)
-    : CSessionEditor(session, 52, 23), _IdKeyFile(0)
+    : CSessionEditor(session, 54, 23), _IdKeyFile(0)
 {
 }
 

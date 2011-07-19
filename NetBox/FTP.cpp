@@ -50,7 +50,7 @@ PProtocol CSessionFTP::CreateClientInstance() const
 
 
 CSessionEditorFTP::CSessionEditorFTP(CSession *session)
-    : CSessionEditor(session, 50, 20), _IdCP(0)
+    : CSessionEditor(session, 54, 20), _IdCP(0)
 {
 
 }
