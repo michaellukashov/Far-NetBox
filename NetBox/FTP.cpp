@@ -305,7 +305,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
         return false;
     }
 
-    const string ftpFileName = LocalToFtpCP(remotePath);
+    const string ftpFileName = LocalToFtpCP(remotePath, true);
     CURLcode urlCode = _CURL.Prepare(ftpFileName.c_str(), false);
     CHECK_CUCALL(urlCode, _CURL.SetInput(&inFile, &_ProgressPercent));
     CHECK_CUCALL(urlCode, _CURL.Perform());
