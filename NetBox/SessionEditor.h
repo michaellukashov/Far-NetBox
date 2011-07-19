@@ -68,7 +68,7 @@ protected:
      */
     virtual void OnSave() {}
 
-    virtual void ShowDlgItems(bool visible);
+    virtual void ShowSessionDlgItems(bool visible);
     virtual void ShowProxyDlgItems(const ProxySettingsDialogParams &params, bool visible);
 
 private:
@@ -80,11 +80,12 @@ private:
 
 protected:
     int _IdBtnProxy;
+    int _IdPagesSeparator;
     int _IdTextEditName;
     int _IdEditName;
     int _IdTextEditURL;
     int _IdEditURL;
-    int _IdSeparator;
+    int _IdAuthSeparator;
     int _IdTextEditUser;
     int _IdEditUser;
     int _IdTextEditPswShow;

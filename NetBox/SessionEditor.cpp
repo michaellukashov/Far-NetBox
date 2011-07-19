@@ -25,11 +25,12 @@
 CSessionEditor::CSessionEditor(CSession *session, const int width, const int height)
     : CFarDialog(width, height),
       _IdBtnProxy(0),
+      _IdPagesSeparator(0),
       _IdTextEditName(0),
       _IdEditName(0),
       _IdTextEditURL(0),
       _IdEditURL(0),
-      _IdSeparator(0),
+      _IdAuthSeparator(0),
       _IdTextEditUser(0),
       _IdEditUser(0),
       _IdEditPswHide(0),
@@ -65,14 +66,14 @@ bool CSessionEditor::EditSession()
     int top = GetTop() + 2;
     // Создаем кнопку для вызова настроек прокси
     _IdBtnProxy = CreateButton(GetLeft(), top - 2, CFarPlugin::GetString(StringProxy), DIF_NOBRACKETS);
-    CreateSeparator(top - 1);
+    _IdPagesSeparator = CreateSeparator(top - 1);
 
     _IdTextEditName = CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
     _IdEditName = CreateEdit(GetLeft(), top + 1, MAX_SIZE, _Session->GetSessionName());
     _IdTextEditURL = CreateText(GetLeft(), top + 2, CFarPlugin::GetString(StringEdURL));
     _IdEditURL = CreateEdit(GetLeft(), top + 3, MAX_SIZE, url.c_str());
 
-    _IdSeparator = CreateSeparator(top + 4, CFarPlugin::GetString(StringEdAuth));
+    _IdAuthSeparator = CreateSeparator(top + 4, CFarPlugin::GetString(StringEdAuth));
     _IdTextEditUser = CreateText(GetLeft(), top + 5, CFarPlugin::GetString(StringEdAuthUser));
     _IdEditUser = CreateEdit(GetLeft(), top + 6, MAX_SIZE, _Session->GetUserName());
     _IdTextEditPswShow = CreateText(GetLeft(), top + 7, CFarPlugin::GetString(StringEdAuthPsw));
@@ -208,7 +209,7 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     {
         DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
         // Прячем элементы диалога
-        ShowDlgItems(false);
+        ShowSessionDlgItems(false);
         // DEBUG_PRINTF(L"NetBox: _IdTextEditName = %u, _params.idProxyTypeComboBox = %u", _IdTextEditName, _params.idProxyTypeComboBox);
         // Показываем элементы настроек прокси
         ShowProxyDlgItems(_params, true);
@@ -236,13 +237,13 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     return CFarDialog::DialogMessageProc(msg, param1, param2);
 }
 
-void CSessionEditor::ShowDlgItems(bool visible)
+void CSessionEditor::ShowSessionDlgItems(bool visible)
 {
     ShowDlgItem(_IdTextEditName, visible);
     ShowDlgItem(_IdEditName, visible);
     ShowDlgItem(_IdTextEditURL, visible);
     ShowDlgItem(_IdEditURL, visible);
-    ShowDlgItem(_IdSeparator, visible);
+    ShowDlgItem(_IdAuthSeparator, visible);
     ShowDlgItem(_IdTextEditUser, visible);
     ShowDlgItem(_IdEditUser, visible);
     ShowDlgItem(_IdTextEditPswShow, visible);
