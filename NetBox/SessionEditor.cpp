@@ -198,6 +198,7 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     {
         ShowDlgItem(_IdEditPswShow, false);
         ShowDlgItem(_IdEditPswHide, true);
+        DlgItem_SetFocus((*CFarPlugin::GetPSI()), _Dlg, _IdEditName);
     }
     else if (msg == DN_CLOSE && param1 >= 0 && param1 != _IdBtnCancel && !Validate())
     {
