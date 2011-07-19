@@ -152,6 +152,11 @@ FILETIME UnixTimeToFileTime(const time_t t)
     return ft;
 }
 
+unsigned long TextToNumber(const wstring &text)
+{
+    return static_cast<unsigned long>(_wtoi(text.c_str()));
+}
+
 string NumberToText(int number)
 {
     char codeText[16];

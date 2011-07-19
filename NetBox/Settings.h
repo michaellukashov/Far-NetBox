@@ -124,10 +124,6 @@ public:
 
 private:
     void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
-    unsigned long TextToNumber(const wstring &text) const
-    {
-        return static_cast<unsigned long>(_wtoi(text.c_str()));
-    }
 
     void MainConfigure();
     void ProxyConfigure();

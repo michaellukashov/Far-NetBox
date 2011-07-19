@@ -57,6 +57,8 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
  */
 FILETIME UnixTimeToFileTime(const time_t t);
 
+unsigned long TextToNumber(const wstring &text);
+
 /**
  * Convert int to string
  * \param number number
