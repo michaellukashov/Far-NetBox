@@ -50,7 +50,7 @@ PProtocol CSessionFTP::CreateClientInstance() const
 
 
 CSessionEditorFTP::CSessionEditorFTP(CSession *session)
-    : CSessionEditor(session, 54, 20), _IdCP(0)
+    : CSessionEditor(session, 54, 22), _IdCP(0)
 {
 
 }
@@ -58,8 +58,8 @@ CSessionEditorFTP::CSessionEditorFTP(CSession *session)
 
 void CSessionEditorFTP::OnPrepareDialog()
 {
-    CreateSeparator(GetTop() + 11);
-    _IdCP = CreateCodePageControl(GetTop() + 12, static_cast<CSessionFTP *>(_Session)->GetCodePage());
+    CreateSeparator(GetHeight() - 5);
+    _IdCP = CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTP *>(_Session)->GetCodePage());
 }
 
 
@@ -85,7 +85,9 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
     assert(abortEvent);
 
-    _CURL.Initialize(_Session.GetURL(), _Session.GetUserName(), _Session.GetPassword(),
+    const wchar_t *url = _Session.GetURL();
+    DEBUG_PRINTF(L"NetBox: FTP: connecting to %s", url);
+    _CURL.Initialize(url, _Session.GetUserName(), _Session.GetPassword(),
         _Session.GetProxySettings());
     _CURL.SetAbortEvent(abortEvent);
 

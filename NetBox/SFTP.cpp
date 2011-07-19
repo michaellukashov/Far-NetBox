@@ -63,18 +63,18 @@ PProtocol CSessionSFTP::CreateClientInstance() const
 
 
 CSessionEditorSFTP::CSessionEditorSFTP(CSession *session)
-    : CSessionEditor(session, 54, 23), _IdKeyFile(0)
+    : CSessionEditor(session, 54, 24), _IdKeyFile(0)
 {
 }
 
 
 void CSessionEditorSFTP::OnPrepareDialog()
 {
-    CreateText(GetLeft(), GetTop() + 12, CFarPlugin::GetString(StringEdAuthCert));
-    _IdKeyFile = CreateEdit(GetLeft(), GetTop() + 13, MAX_SIZE, static_cast<CSessionSFTP *>(_Session)->GetKeyFile());
+    CreateText(GetLeft(), GetHeight() - 7, CFarPlugin::GetString(StringEdAuthCert));
+    _IdKeyFile = CreateEdit(GetLeft(), GetHeight() - 6, MAX_SIZE, static_cast<CSessionSFTP *>(_Session)->GetKeyFile());
 
-    CreateSeparator(GetTop() + 14);
-    _IdCP = CreateCodePageControl(GetTop() + 15, static_cast<CSessionSFTP *>(_Session)->GetCodePage());
+    CreateSeparator(GetHeight() - 5);
+    _IdCP = CreateCodePageControl(GetHeight() - 4, static_cast<CSessionSFTP *>(_Session)->GetCodePage());
 }
 
 
