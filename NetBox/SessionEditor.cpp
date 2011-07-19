@@ -22,7 +22,6 @@
 #include "Session.h"
 #include "Strings.h"
 
-
 CSessionEditor::CSessionEditor(CSession *session, const int width, const int height)
     : CFarDialog(width, height),
       _IdBtnProxy(0),
@@ -84,9 +83,10 @@ bool CSessionEditor::EditSession()
     _IdChBxShowPsw = CreateCheckBox(GetLeft(), top + 10, CFarPlugin::GetString(StringEdAuthShowPsw), false);
 
     // Инициализируем настройки прокси
+    ProxySettings proxySettings = _Session->GetProxySettings();
     int topPos = GetTop() + 2;
     ::InitProxySettingsDialog(*this, topPos,
-        _proxySettings,
+        proxySettings,
         _params,
         false
     );
@@ -110,7 +110,7 @@ bool CSessionEditor::EditSession()
     _Session->SetUserName(GetText(_IdEditUser).c_str());
     _Session->SetPassword(GetText(_IdEditPswHide).c_str());
     _Session->SetPromptPwd(GetCheckState(_IdChBxPromtpPsw));
-    _Session->SetProxySettings(_proxySettings);
+    _Session->SetProxySettings(proxySettings);
 
     OnSave();
     return true;
