@@ -151,7 +151,7 @@ bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
 
-    const string ftpCommand = "MKD " + LocalToFtpCP(path, true);
+    const string ftpCommand = "MKD " + LocalToFtpCP(path);
     const CURLcode urlCode = _CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
