@@ -68,8 +68,8 @@ protected:
      */
     virtual void OnSave() {}
 
-    virtual void HideDlgItems();
-    virtual void ShowProxyDlgItems(ProxySettingsDialogParams &params);
+    virtual void ShowDlgItems(bool visible);
+    virtual void ShowProxyDlgItems(const ProxySettingsDialogParams &params, bool visible);
 
 private:
     /**
@@ -99,6 +99,9 @@ protected:
     wstring _Title;
 
     CSession *_Session;
+
+    ProxySettingsDialogParams _params;
+    ProxySettings _proxysettings;
 };
 
 typedef auto_ptr<CSessionEditor> PSessionEditor;

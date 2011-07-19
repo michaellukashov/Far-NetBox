@@ -83,6 +83,15 @@ bool CSessionEditor::EditSession()
     _IdChBxPromtpPsw = CreateCheckBox(GetLeft(), top + 9, CFarPlugin::GetString(StringEdAuthPromtpPsw), _Session->GetPromptPwd());
     _IdChBxShowPsw = CreateCheckBox(GetLeft(), top + 10, CFarPlugin::GetString(StringEdAuthShowPsw), false);
 
+    // ShowDlgItems(true);
+    // Инициализируем настройки прокси
+    int topPos = GetTop() + 2;
+    ::InitProxySettingsDialog(*this, topPos,
+        _proxysettings,
+        _params
+    );
+    // ShowProxyDlgItems(_params, false);
+
     OnPrepareDialog();
 
     CreateSeparator(GetHeight() - 2);
@@ -197,23 +206,13 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     {
         DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
         // Прячем элементы диалога
-        HideDlgItems();
-        // Инициализируем настройки прокси
-        ProxySettingsDialogParams params;
-        ProxySettings ps;
-        int topPos = GetTop() + 2;
-        ::InitProxySettingsDialog(*this, topPos,
-            ps,
-            params
-        );
-        DEBUG_PRINTF(L"NetBox: _IdTextEditName = %u, params.idProxyTypeComboBox = %u", _IdTextEditName, params.idProxyTypeComboBox);
+        ShowDlgItems(false);
+        // DEBUG_PRINTF(L"NetBox: _IdTextEditName = %u, _params.idProxyTypeComboBox = %u", _IdTextEditName, _params.idProxyTypeComboBox);
         // Показываем элементы настроек прокси
-        ShowProxyDlgItems(params);
+        ShowProxyDlgItems(_params, true);
         // CFarPlugin::GetPSI()->DialogRun(_Dlg);
-        // CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
+        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
         // CFarDialog::DialogMessageProc(DM_REDRAW, 0, 0);
-        _Dlg = INVALID_HANDLE_VALUE;
-        DoModal();
         // CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
         return TRUE;
     }
@@ -235,29 +234,29 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     return CFarDialog::DialogMessageProc(msg, param1, param2);
 }
 
-void CSessionEditor::HideDlgItems()
+void CSessionEditor::ShowDlgItems(bool visible)
 {
-    ShowDlgItem(_IdTextEditName, false);
-    ShowDlgItem(_IdEditName, false);
-    ShowDlgItem(_IdTextEditURL, false);
-    ShowDlgItem(_IdEditURL, false);
-    ShowDlgItem(_IdSeparator, false);
-    ShowDlgItem(_IdTextEditUser, false);
-    ShowDlgItem(_IdEditUser, false);
-    ShowDlgItem(_IdTextEditPswShow, false);
-    ShowDlgItem(_IdEditPswShow, false);
-    ShowDlgItem(_IdEditPswHide, false);
-    ShowDlgItem(_IdChBxPromtpPsw, false);
-    ShowDlgItem(_IdChBxShowPsw, false);
+    ShowDlgItem(_IdTextEditName, visible);
+    ShowDlgItem(_IdEditName, visible);
+    ShowDlgItem(_IdTextEditURL, visible);
+    ShowDlgItem(_IdEditURL, visible);
+    ShowDlgItem(_IdSeparator, visible);
+    ShowDlgItem(_IdTextEditUser, visible);
+    ShowDlgItem(_IdEditUser, visible);
+    ShowDlgItem(_IdTextEditPswShow, visible);
+    ShowDlgItem(_IdEditPswShow, visible);
+    ShowDlgItem(_IdEditPswHide, visible);
+    ShowDlgItem(_IdChBxPromtpPsw, visible);
+    ShowDlgItem(_IdChBxShowPsw, visible);
 }
 
-void CSessionEditor::ShowProxyDlgItems(ProxySettingsDialogParams &params)
+void CSessionEditor::ShowProxyDlgItems(const ProxySettingsDialogParams &params, bool visible)
 {
-    ShowDlgItem(params.idProxyTypeComboBox, true);
-    ShowDlgItem(params.idProxyHost, true);
-    ShowDlgItem(params.idProxyPort, true);
-    ShowDlgItem(params.idProxyLogin, true);
-    ShowDlgItem(params.idProxyPassword, true);
+    ShowDlgItem(params.idProxyTypeComboBox, visible);
+    ShowDlgItem(params.idProxyHost, visible);
+    ShowDlgItem(params.idProxyPort, visible);
+    ShowDlgItem(params.idProxyLogin, visible);
+    ShowDlgItem(params.idProxyPassword, visible);
 }
 
 bool CSessionEditor::Validate() const
