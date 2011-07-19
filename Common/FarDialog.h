@@ -260,9 +260,9 @@ public:
      * \param title separator title
      * \return dialog created dialogs item id
      */
-    inline int CreateSeparator(const int row, const wchar_t *title = NULL, FarDialogItem **dlgItem = NULL)
+    inline int CreateSeparator(const int row, const wchar_t *title = NULL, const DWORD flags = 0, FarDialogItem **dlgItem = NULL)
     {
-        return CreateDlgItem(DI_TEXT, 0, GetWidth(), row, row, title, DIF_SEPARATOR, dlgItem);
+        return CreateDlgItem(DI_TEXT, 0, GetWidth(), row, row, title, DIF_SEPARATOR | flags, dlgItem);
     }
 
     /**
@@ -272,9 +272,9 @@ public:
      * \param text dialog item text
      * \return dialog created dialogs item id
      */
-    inline int CreateText(const int col, const int row, const wchar_t *text, FarDialogItem **dlgItem = NULL)
+    inline int CreateText(const int col, const int row, const wchar_t *text, const DWORD flags = 0, FarDialogItem **dlgItem = NULL)
     {
-        return CreateDlgItem(DI_TEXT, col, col + lstrlen(text) - 1, row, row, text, 0, dlgItem);
+        return CreateDlgItem(DI_TEXT, col, col + lstrlen(text) - 1, row, row, text, flags, dlgItem);
     }
 
     /**
@@ -300,10 +300,13 @@ public:
      * \param dlgItem registered dialog item
      * \return dialog created dialogs item id
      */
-    inline int CreateEdit(const int col, const int row, const int width, const wchar_t *text = NULL, const wchar_t *history = NULL, FarDialogItem **dlgItem = NULL)
+    inline int CreateEdit(const int col, const int row, const int width,
+        const wchar_t *text = NULL, const wchar_t *history = NULL,
+        const DWORD flags = 0, FarDialogItem **dlgItem = NULL)
     {
         FarDialogItem *dlgItemEdit;
-        const int itemId = CreateDlgItem(DI_EDIT, col, width == MAX_SIZE ? GetWidth() : col + width, row, row, text, history ? DIF_HISTORY : 0, &dlgItemEdit);
+        const int itemId = CreateDlgItem(DI_EDIT, col, width == MAX_SIZE ? GetWidth() : col + width,
+            row, row, text, (history ? DIF_HISTORY : 0) | flags, &dlgItemEdit);
         if (history)
         {
             dlgItemEdit->History = history;
