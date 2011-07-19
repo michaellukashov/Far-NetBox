@@ -155,8 +155,6 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_VERBOSE, 1));
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_RETURNTRANSFER, 1));
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_FTPASCII, 1));
 
         string login = CFarPlugin::W2MB(_proxySettings.proxyLogin.c_str());
         string password = CFarPlugin::W2MB(_proxySettings.proxyPassword.c_str());
