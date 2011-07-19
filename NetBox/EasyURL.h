@@ -207,4 +207,5 @@ private:
         HANDLE  AbortEvent;
     };
     Progress _Progress;
+    struct ProxySettings _proxySettings;
 };

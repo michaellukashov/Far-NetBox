@@ -72,7 +72,7 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
     {
         _Password = CFarPlugin::W2MB(password);
     }
-
+    _proxySettings = proxySettings;
     return true;
 }
 
@@ -118,10 +118,10 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_USERNAME, _UserName.c_str()));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PASSWORD, _Password.c_str()));
     }
-    if (_Settings.ProxyType() != PROXY_NONE)
+    if (_proxySettings.proxyType != PROXY_NONE)
     {
         int proxy_type = CURLPROXY_HTTP;
-        switch (_Settings.ProxyType())
+        switch (_proxySettings.proxyType)
         {
             case PROXY_HTTP:
             {
@@ -141,8 +141,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
             default:
                 return CURLE_UNSUPPORTED_PROTOCOL;
         }
-        string proxy = CFarPlugin::W2MB(_Settings.ProxyHost().c_str());
-        unsigned long port = _Settings.ProxyPort();
+        string proxy = CFarPlugin::W2MB(_proxySettings.proxyHost.c_str());
+        unsigned long port = _proxySettings.proxyPort;
         if (port)
         {
             proxy += ":";
@@ -152,8 +152,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYTYPE, proxy_type));
         // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_VERBOSE, 1));
-        string login = CFarPlugin::W2MB(_Settings.ProxyLogin().c_str());
-        string password = CFarPlugin::W2MB(_Settings.ProxyPassword().c_str());
+        string login = CFarPlugin::W2MB(_proxySettings.proxyLogin.c_str());
+        string password = CFarPlugin::W2MB(_proxySettings.proxyPassword.c_str());
         if (!login.empty())
         {
             CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
