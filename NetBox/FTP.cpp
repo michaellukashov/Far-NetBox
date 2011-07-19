@@ -170,7 +170,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     assert(itemsNum);
     DEBUG_PRINTF(L"NetBox: GetList: _CurrentDirectory = %s", _CurrentDirectory.c_str());
 
-    string ftpPath = LocalToFtpCP(_CurrentDirectory.c_str());
+    string ftpPath = LocalToFtpCP(_CurrentDirectory.c_str(), true);
     if (ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';
@@ -181,7 +181,6 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     string response;
     CHECK_CUCALL(urlCode, _CURL.SetOutput(&response, &_ProgressPercent));
     CHECK_CUCALL(urlCode, _CURL.Perform());
-    DEBUG_PRINTF(L"NetBox: GetList: 1");
     if (urlCode != CURLE_OK && urlCode != CURLE_REMOTE_FILE_NOT_FOUND)
     {
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
@@ -194,7 +193,6 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     static const char *delimiters = "\r\n";
     size_t lastPos = response.find_first_not_of(delimiters, 0);
     size_t nextPos = response.find_first_of(delimiters, lastPos);
-    DEBUG_PRINTF(L"NetBox: GetList: 2");
     while (string::npos != nextPos || string::npos != lastPos)
     {
         const string singleString = response.substr(lastPos, nextPos - lastPos);
@@ -214,7 +212,6 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
         lastPos = response.find_first_not_of(delimiters, nextPos);
         nextPos = response.find_first_of(delimiters, lastPos);
     }
-    DEBUG_PRINTF(L"NetBox: GetList: 3");
 
     *itemsNum = static_cast<int>(ftpList.size());
     if (*itemsNum)
@@ -370,14 +367,17 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     return true;
 }
 
-string CFTP::LocalToFtpCP(const wchar_t *src) const
+string CFTP::LocalToFtpCP(const wchar_t *src, bool replace) const
 {
     assert(src && src[0] == L'/');
     string r = CFarPlugin::W2MB(src, _Session.GetCodePage());
-    // while (r.find(L'#') != string::npos)
-    // {
-        // r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
-    // }
+    if (replace)
+    {
+        while (r.find(L'#') != string::npos)
+        {
+            r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
+        }
+    }
     DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
     return r;
 }

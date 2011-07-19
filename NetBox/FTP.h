@@ -113,7 +113,7 @@ private:
      * \param src source path
      * \return path in ftp codepage
      */
-    string LocalToFtpCP(const wchar_t *src) const;
+    string LocalToFtpCP(const wchar_t *src, bool replace = false) const;
 
     /**
      * Convert ftp charset to local (unicode) codepage
