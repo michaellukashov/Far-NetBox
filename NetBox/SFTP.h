@@ -62,6 +62,7 @@ private:
     int _IdText;
     int _IdKeyFile;
     int _IdSeparator;
+    int _IdCPText;
     int _IdCP;
 };
 

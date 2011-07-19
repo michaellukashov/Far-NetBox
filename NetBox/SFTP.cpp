@@ -74,7 +74,8 @@ void CSessionEditorSFTP::OnPrepareDialog()
     _IdKeyFile = CreateEdit(GetLeft(), GetHeight() - 6, MAX_SIZE, static_cast<CSessionSFTP *>(_Session)->GetKeyFile());
 
     _IdSeparator = CreateSeparator(GetHeight() - 5);
-    _IdCP = CreateCodePageControl(GetHeight() - 4, static_cast<CSessionSFTP *>(_Session)->GetCodePage());
+    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionSFTP *>(_Session)->GetCodePage(),
+        _IdCPText, _IdCP);
 }
 
 
@@ -90,6 +91,7 @@ void CSessionEditorSFTP::ShowSessionDlgItems(bool visible)
     ShowDlgItem(_IdText, visible);
     ShowDlgItem(_IdKeyFile, visible);
     ShowDlgItem(_IdSeparator, visible);
+    ShowDlgItem(_IdCPText, visible);
     ShowDlgItem(_IdCP, visible);
 }
 

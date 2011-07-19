@@ -124,9 +124,10 @@ bool CSessionEditor::EditSession()
 }
 
 
-int CSessionEditor::CreateCodePageControl(const int topPos, const UINT current)
+void CSessionEditor::CreateCodePageControl(const int topPos, const UINT current,
+    int &idCPText, int &idCP)
 {
-    CreateText(GetLeft(), topPos, CFarPlugin::GetString(StringEdCP));
+    idCPText = CreateText(GetLeft(), topPos, CFarPlugin::GetString(StringEdCP));
 
     //Avialable codepages
     static vector<wstring> codePages;
@@ -178,7 +179,7 @@ int CSessionEditor::CreateCodePageControl(const int topPos, const UINT current)
     }
 
     FarDialogItem *dlgItemidCPList;
-    const int id = CreateDlgItem(DI_COMBOBOX, GetLeft(), GetWidth() - 1, topPos + 1, topPos + 1, NULL, DIF_LISTWRAPMODE, &dlgItemidCPList);
+    idCP = CreateDlgItem(DI_COMBOBOX, GetLeft(), GetWidth() - 1, topPos + 1, topPos + 1, NULL, DIF_LISTWRAPMODE, &dlgItemidCPList);
     dlgItemidCPList->ListItems = &farList;
 
     if (!cpFound)
@@ -187,8 +188,6 @@ int CSessionEditor::CreateCodePageControl(const int topPos, const UINT current)
         _itow_s(current, num, 10);
         dlgItemidCPList->PtrData = num;
     }
-
-    return id;
 }
 
 

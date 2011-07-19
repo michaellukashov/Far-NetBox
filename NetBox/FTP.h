@@ -57,6 +57,7 @@ protected:
 
 private:
     int _IdSeparator;
+    int _IdCPText;
     int _IdCP;
 };
 

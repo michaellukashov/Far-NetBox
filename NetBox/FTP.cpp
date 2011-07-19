@@ -59,7 +59,8 @@ CSessionEditorFTP::CSessionEditorFTP(CSession *session)
 void CSessionEditorFTP::OnPrepareDialog()
 {
     _IdSeparator = CreateSeparator(GetHeight() - 5);
-    _IdCP = CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTP *>(_Session)->GetCodePage());
+    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTP *>(_Session)->GetCodePage(),
+        _IdCPText, _IdCP);
 }
 
 
@@ -72,6 +73,7 @@ void CSessionEditorFTP::ShowSessionDlgItems(bool visible)
 {
     CSessionEditor::ShowSessionDlgItems(visible);
     ShowDlgItem(_IdSeparator, visible);
+    ShowDlgItem(_IdCPText, visible);
     ShowDlgItem(_IdCP, visible);
 }
 

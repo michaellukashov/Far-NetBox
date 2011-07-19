@@ -42,9 +42,11 @@ protected:
      * Create Codepage control
      * \param topPos top position in dialog
      * \param current current cp value
-     * \return created item's id
+     * \param idCPText created text item's id
+     * \param idCP created item's id
      */
-    int CreateCodePageControl(const int topPos, const UINT current);
+    void CreateCodePageControl(const int topPos, const UINT current,
+        int &idCPText, int &idCP);
 
     //From CFarDialog
     virtual LONG_PTR DialogMessageProc(int msg, int param1, LONG_PTR param2);
