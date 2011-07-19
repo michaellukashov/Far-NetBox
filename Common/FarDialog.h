@@ -260,9 +260,9 @@ public:
      * \param title separator title
      * \return dialog created dialogs item id
      */
-    inline int CreateSeparator(const int row, const wchar_t *title = NULL)
+    inline int CreateSeparator(const int row, const wchar_t *title = NULL, FarDialogItem **dlgItem = NULL)
     {
-        return CreateDlgItem(DI_TEXT, 0, GetWidth(), row, row, title, DIF_SEPARATOR);
+        return CreateDlgItem(DI_TEXT, 0, GetWidth(), row, row, title, DIF_SEPARATOR, dlgItem);
     }
 
     /**
