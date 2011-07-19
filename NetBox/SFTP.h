@@ -55,8 +55,13 @@ public:
     void OnPrepareDialog();
     void OnSave();
 
+protected:
+    virtual void ShowSessionDlgItems(bool visible);
+
 private:
+    int _IdText;
     int _IdKeyFile;
+    int _IdSeparator;
     int _IdCP;
 };
 

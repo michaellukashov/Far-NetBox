@@ -52,7 +52,11 @@ public:
     void OnPrepareDialog();
     void OnSave();
 
+protected:
+    virtual void ShowSessionDlgItems(bool visible);
+
 private:
+    int _IdSeparator;
     int _IdCP;
 };
 

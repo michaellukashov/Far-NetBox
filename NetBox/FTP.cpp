@@ -58,7 +58,7 @@ CSessionEditorFTP::CSessionEditorFTP(CSession *session)
 
 void CSessionEditorFTP::OnPrepareDialog()
 {
-    CreateSeparator(GetHeight() - 5);
+    _IdSeparator = CreateSeparator(GetHeight() - 5);
     _IdCP = CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTP *>(_Session)->GetCodePage());
 }
 
@@ -68,6 +68,12 @@ void CSessionEditorFTP::OnSave()
     static_cast<CSessionFTP *>(_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(_IdCP).c_str())));
 }
 
+void CSessionEditorFTP::ShowSessionDlgItems(bool visible)
+{
+    CSessionEditor::ShowSessionDlgItems(visible);
+    ShowDlgItem(_IdSeparator, visible);
+    ShowDlgItem(_IdCP, visible);
+}
 
 CFTP::CFTP(const CSession *session)
     : CProtocolBase(session)
@@ -348,7 +354,6 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     }
     return true;
 }
-
 
 string CFTP::LocalToFtpCP(const wchar_t *src) const
 {

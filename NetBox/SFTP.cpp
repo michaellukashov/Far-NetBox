@@ -70,10 +70,10 @@ CSessionEditorSFTP::CSessionEditorSFTP(CSession *session)
 
 void CSessionEditorSFTP::OnPrepareDialog()
 {
-    CreateText(GetLeft(), GetHeight() - 7, CFarPlugin::GetString(StringEdAuthCert));
+    _IdText = CreateText(GetLeft(), GetHeight() - 7, CFarPlugin::GetString(StringEdAuthCert));
     _IdKeyFile = CreateEdit(GetLeft(), GetHeight() - 6, MAX_SIZE, static_cast<CSessionSFTP *>(_Session)->GetKeyFile());
 
-    CreateSeparator(GetHeight() - 5);
+    _IdSeparator = CreateSeparator(GetHeight() - 5);
     _IdCP = CreateCodePageControl(GetHeight() - 4, static_cast<CSessionSFTP *>(_Session)->GetCodePage());
 }
 
@@ -84,6 +84,14 @@ void CSessionEditorSFTP::OnSave()
     static_cast<CSessionSFTP *>(_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(_IdCP).c_str())));
 }
 
+void CSessionEditorSFTP::ShowSessionDlgItems(bool visible)
+{
+    CSessionEditor::ShowSessionDlgItems(visible);
+    ShowDlgItem(_IdText, visible);
+    ShowDlgItem(_IdKeyFile, visible);
+    ShowDlgItem(_IdSeparator, visible);
+    ShowDlgItem(_IdCP, visible);
+}
 
 /**
  * libssh2 file handle wrapper
