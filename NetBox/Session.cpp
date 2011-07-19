@@ -656,6 +656,7 @@ void CSession::SetPromptPwd(const bool val)
 void CSession::SetProxySettings(const struct ProxySettings &proxySettings)
 {
     // SetProperty(ParamPromptPsw, val ? 1 : 0);
+    _proxySettings = proxySettings;
     SetProperty(ProxyType, _proxySettings.proxyType);
     SetProperty(ProxyHost, _proxySettings.proxyHost.c_str());
     SetProperty(ProxyPort, _proxySettings.proxyPort);
