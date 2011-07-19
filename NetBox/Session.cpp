@@ -44,20 +44,20 @@ static const char *ParamUserName =  "UserName";
 static const char *ParamPassword =  "Password";
 static const char *ParamPromptPsw = "PromptPsw";
 
-static const char *ProxyType = "ProxyType";
-static const char *ProxyHost = "ProxyHost";
-static const char *ProxyPort = "ProxyPort";
-static const char *ProxyLogin = "ProxyLogin";
-static const char *ProxyPassword = "ProxyPassword";
+static const char *ParamProxyType = "ProxyType";
+static const char *ParamProxyHost = "ProxyHost";
+static const char *ParamProxyPort = "ProxyPort";
+static const char *ParamProxyLogin = "ProxyLogin";
+static const char *ParamProxyPassword = "ProxyPassword";
 
 CSession::CSession() : _ProtoId(-1)
 {
     // Инициализируем _proxySettings
-    _proxySettings.proxyType = static_cast<int>(GetPropertyNumeric(ProxyType, _Settings.ProxyType()));
-    _proxySettings.proxyHost = GetProperty(ProxyHost, _Settings.ProxyHost().c_str());
-    _proxySettings.proxyPort = static_cast<int>(GetPropertyNumeric(ProxyPort, _Settings.ProxyPort()));
-    _proxySettings.proxyLogin = GetProperty(ProxyLogin, _Settings.ProxyLogin().c_str());
-    _proxySettings.proxyPassword = GetProperty(ProxyPassword, _Settings.ProxyPassword().c_str());
+    _proxySettings.proxyType = static_cast<int>(GetPropertyNumeric(ParamProxyType, _Settings.ProxyType()));
+    _proxySettings.proxyHost = GetProperty(ParamProxyHost, _Settings.ProxyHost().c_str());
+    _proxySettings.proxyPort = static_cast<int>(GetPropertyNumeric(ParamProxyPort, _Settings.ProxyPort()));
+    _proxySettings.proxyLogin = GetProperty(ParamProxyLogin, _Settings.ProxyLogin().c_str());
+    _proxySettings.proxyPassword = GetProperty(ParamProxyPassword, _Settings.ProxyPassword().c_str());
 }
 
 void CSession::RegisterProtocolClient(const int id, const wchar_t *name, CreateSessionFx fx, const wchar_t *scheme1, const wchar_t *scheme2 /*= NULL*/)
@@ -657,11 +657,11 @@ void CSession::SetProxySettings(const struct ProxySettings &proxySettings)
 {
     // SetProperty(ParamPromptPsw, val ? 1 : 0);
     _proxySettings = proxySettings;
-    SetProperty(ProxyType, _proxySettings.proxyType);
-    SetProperty(ProxyHost, _proxySettings.proxyHost.c_str());
-    SetProperty(ProxyPort, _proxySettings.proxyPort);
-    SetProperty(ProxyLogin, _proxySettings.proxyLogin.c_str());
-    SetProperty(ProxyPassword, _proxySettings.proxyPassword.c_str(), true);
+    SetProperty(ParamProxyType, _proxySettings.proxyType);
+    SetProperty(ParamProxyHost, _proxySettings.proxyHost.c_str());
+    SetProperty(ParamProxyPort, _proxySettings.proxyPort);
+    SetProperty(ParamProxyLogin, _proxySettings.proxyLogin.c_str());
+    SetProperty(ParamProxyPassword, _proxySettings.proxyPassword.c_str(), true);
 }
 
 const wchar_t *CSession::GetProperty(const char *name, const wchar_t *defaultVal /*= NULL*/) const
