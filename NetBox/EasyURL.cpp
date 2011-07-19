@@ -93,7 +93,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     assert(_CURL);
     assert(!_Prepared);
     assert(!path || path[0] == L'/');
-
+    DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: path = %s", CFarPlugin::MB2W(path));
     curl_easy_reset(_CURL);
     _Output.Type = OutputWriter::None;
     _Input.Type = InputReader::None;
@@ -118,6 +118,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_USERNAME, _UserName.c_str()));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PASSWORD, _Password.c_str()));
     }
+    DEBUG_PRINTF(L"NetBox: proxy type = %u, host = %s", _proxySettings.proxyType, _proxySettings.proxyHost.c_str());
     if (_proxySettings.proxyType != PROXY_NONE)
     {
         int proxy_type = CURLPROXY_HTTP;
