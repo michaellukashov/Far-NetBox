@@ -167,11 +167,6 @@ wstring NumberToWString(unsigned long number)
 }
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
-    // int &proxyType,
-    // wstring &proxyHost,
-    // unsigned long &proxyPort,
-    // wstring &proxyLogin,
-    // wstring &proxyPassword,
     ProxySettings &ps,
     ProxySettingsDialogParams &params)
 {

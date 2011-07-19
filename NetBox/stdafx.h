@@ -90,11 +90,6 @@ struct ProxySettingsDialogParams
 };
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
-    // int &_ProxyType,
-    // wstring &_ProxyHost,
-    // unsigned long &_ProxyPort,
-    // wstring &_ProxyLogin,
-    // wstring &_ProxyPassword,
     ProxySettings &ps,
     ProxySettingsDialogParams &params
 );

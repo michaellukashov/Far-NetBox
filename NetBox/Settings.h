@@ -151,11 +151,6 @@ private:
     bool            _LogToFile;
     wstring         _LogFileName;
     
-    // int _ProxyType;
-    // wstring _ProxyHost;
-    // unsigned long _ProxyPort;
-    // wstring _ProxyLogin;
-    // wstring _ProxyPassword;
     ProxySettings _proxysettings;
 };
 

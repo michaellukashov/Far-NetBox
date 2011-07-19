@@ -297,11 +297,6 @@ void CSettings::ProxyConfigure()
     int topPos = dlg.GetTop();
     ProxySettingsDialogParams params;
     ::InitProxySettingsDialog(dlg, topPos,
-        // _ProxyType,
-        // _ProxyHost,
-        // _ProxyPort,
-        // _ProxyLogin,
-        // _ProxyPassword,
         _proxysettings,
         params
     );
