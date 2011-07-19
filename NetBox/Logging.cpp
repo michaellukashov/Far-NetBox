@@ -72,13 +72,9 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
     {
         return;
     }
-    // string fn(wcslen(_logFileName.c_str()) + 1, 0);
-    // size_t sz = 0;
-    // wcstombs_s(&sz, (char *)fn.c_str(), fn.size(), _logFileName.c_str(), _logFileName.size());
-    // string fn = CFarPlugin::W2MB(_logFileName.c_str());
     if (_logFileName.empty())
         return;
-    FILE *f = _wfsopen(_logFileName.c_str(), _first ? L"w" : L"a", SH_DENYWR);
+    FILE *f = _wfsopen(_logFileName.c_str(), _first ? L"a" : L"a", SH_DENYWR);
     if (!f)
         return;
     // Time
@@ -93,7 +89,6 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
         return;
     wstring buf(len, 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
-    // fwprintf_s(f, L"%s\n", CFarPlugin::W2MB(buf.c_str()).c_str());
     fprintf_s(f, "%s\n", (char *)CFarPlugin::W2MB(buf.c_str()).c_str());
     fflush(f);
     if (fclose(f) == EOF)
