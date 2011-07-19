@@ -231,7 +231,9 @@ int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNu
 {
     assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
-    return panelInstance->GetItemList(panelItem, itemsNumber, opMode);
+    int res = panelInstance->GetItemList(panelItem, itemsNumber, opMode);
+    DEBUG_PRINTF(L"NetBox: GetFindDataW: itemsNumber = %u", *itemsNumber);
+    return res;
 }
 
 void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
