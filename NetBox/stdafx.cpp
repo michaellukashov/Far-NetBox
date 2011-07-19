@@ -242,7 +242,7 @@ void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogPar
     proxySettings.proxyType = dlg.GetSelectonIndex(params.idProxyTypeComboBox);
     proxySettings.proxyHost = dlg.GetText(params.idProxyHost);
     proxySettings.proxyPort = TextToNumber(dlg.GetText(params.idProxyPort));
-    // DEBUG_PRINTF(L"NetBox: proxyPort = %u", _proxySettings.proxyPort);
+    DEBUG_PRINTF(L"NetBox: proxyPort = %u", proxySettings.proxyPort);
     proxySettings.proxyLogin = dlg.GetText(params.idProxyLogin);
     proxySettings.proxyPassword = dlg.GetText(params.idProxyPassword);
 }

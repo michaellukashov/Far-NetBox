@@ -111,6 +111,7 @@ bool CSessionEditor::EditSession()
     _Session->SetPassword(GetText(_IdEditPswHide).c_str());
     _Session->SetPromptPwd(GetCheckState(_IdChBxPromtpPsw));
     ::GetProxySettings(*this, _params, proxySettings);
+    DEBUG_PRINTF(L"NetBox: proxySettings.proxyType = %u, host = %s", proxySettings.proxyType, proxySettings.proxyHost.c_str());
     _Session->SetProxySettings(proxySettings);
 
     OnSave();
