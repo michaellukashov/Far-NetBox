@@ -88,7 +88,8 @@ bool CSessionEditor::EditSession()
     int topPos = GetTop() + 2;
     ::InitProxySettingsDialog(*this, topPos,
         _proxysettings,
-        _params
+        _params,
+        false
     );
     // ShowProxyDlgItems(_params, false);
 

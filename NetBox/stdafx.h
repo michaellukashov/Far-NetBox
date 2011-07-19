@@ -107,5 +107,6 @@ struct ProxySettingsDialogParams
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
     ProxySettings &ps,
-    ProxySettingsDialogParams &params
+    ProxySettingsDialogParams &params,
+    bool visible
 );

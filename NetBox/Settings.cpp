@@ -298,7 +298,8 @@ void CSettings::ProxyConfigure()
     ProxySettingsDialogParams params;
     ::InitProxySettingsDialog(dlg, topPos,
         _proxysettings,
-        params
+        params,
+        true
     );
 
     // Кнопки OK Cancel
