@@ -167,11 +167,12 @@ wstring NumberToWString(unsigned long number)
 }
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
-    int &proxyType,
-    wstring &proxyHost,
-    unsigned long &proxyPort,
-    wstring &proxyLogin,
-    wstring &proxyPassword,
+    // int &proxyType,
+    // wstring &proxyHost,
+    // unsigned long &proxyPort,
+    // wstring &proxyLogin,
+    // wstring &proxyPassword,
+    ProxySettings &ps,
     ProxySettingsDialogParams &params)
 {
     // Тип прокси
@@ -180,12 +181,12 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
         static_cast<int>(wcslen(CFarPlugin::GetString(StringProxySettingsProxyType))) + 1;
     params.idProxyTypeComboBox = dlg.CreateDlgItem(DI_COMBOBOX, left,
         left + 12, topPos, topPos, NULL, DIF_LISTWRAPMODE, &params.proxyTypeComboBox);
-    int proxyTypeCount = 4;
+    static int proxyTypeCount = 4;
     params.proxyTypeListItems.resize(proxyTypeCount);
     ZeroMemory(&params.proxyTypeListItems[0], proxyTypeCount * sizeof(FarListItem));
     for (int i = 0; i < proxyTypeCount; ++i)
     {
-        if (proxyType == i)
+        if (ps.proxyType == i)
         {
             params.proxyTypeListItems[i].Flags = LIF_SELECTED;
         }
@@ -202,10 +203,10 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
     // Адрес прокси сервера
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringProxySettingsProxyHost));
     left = dlg.GetLeft();
-    params.idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, proxyHost.c_str());
+    params.idProxyHost = dlg.CreateEdit(left, topPos + 1, 30, ps.proxyHost.c_str());
     // Порт
-    params.proxyPortStr = NumberToWString(proxyPort);
-    // DEBUG_PRINTF(L"NetBox: proxyPort = %u, proxyPortStr = %s", proxyPort, params.proxyPortStr.c_str());
+    params.proxyPortStr = NumberToWString(ps.proxyPort);
+    // DEBUG_PRINTF(L"NetBox: proxyPort = %u, proxyPortStr = %s", ps.proxyPort, params.proxyPortStr.c_str());
     left = dlg.GetWidth() - 10;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPort));
     params.idProxyPort = dlg.CreateDlgItem(DI_FIXEDIT, left, left + 10,
@@ -216,9 +217,9 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
     left = dlg.GetLeft();
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyLogin));
     params.idProxyLogin = dlg.CreateEdit(left, topPos + 1, 20,
-        proxyLogin.c_str());
+        ps.proxyLogin.c_str());
     left = dlg.GetWidth() - 20;
     dlg.CreateText(left, topPos, CFarPlugin::GetString(StringProxySettingsProxyPassword));
     params.idProxyPassword = dlg.CreateDlgItem(DI_PSWEDIT, left, left + 20,
-        topPos + 1, topPos + 1, proxyPassword.c_str());
+        topPos + 1, topPos + 1, ps.proxyPassword.c_str());
 }

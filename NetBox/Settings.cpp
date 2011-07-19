@@ -61,14 +61,14 @@ CSettings::CSettings() :
     _EnableLogging(false),
     _LoggingLevel(0),
     _LogToFile(false),
-    _LogFileName(L"C:\\NetBox.log"),
-    _ProxyType(PROXY_NONE),
-    _ProxyHost(L"127.0.0.1"),
-    _ProxyPort(1080),
-    _ProxyLogin(L""),
-    _ProxyPassword(L"")
+    _LogFileName(L"C:\\NetBox.log")
 {
     // _LogFileName = CFarPlugin::GetString(StringLogFileName);
+    _proxysettings.proxyType = PROXY_NONE;
+    _proxysettings.proxyHost = L"127.0.0.1";
+    _proxysettings.proxyPort = 1080;
+    _proxysettings.proxyLogin = L"";
+    _proxysettings.proxyPassword = L"";
 }
 
 
@@ -105,23 +105,23 @@ void CSettings::Load()
         // Прокси
         if (settings.GetNumber(RegProxyType, regVal))
         {
-            _ProxyType = regVal;
+            _proxysettings.proxyType = regVal;
         }
         if (settings.GetString(RegProxyHost, regStrVal))
         {
-            _ProxyHost = regStrVal;
+            _proxysettings.proxyHost = regStrVal;
         }
         if (settings.GetNumber(RegProxyPort, regVal))
         {
-            _ProxyPort = regVal;
+            _proxysettings.proxyPort = regVal;
         }
         if (settings.GetString(RegProxyLogin, regStrVal))
         {
-            _ProxyLogin = regStrVal;
+            _proxysettings.proxyLogin = regStrVal;
         }
         if (settings.GetString(RegProxyPassword, regStrVal))
         {
-            _ProxyPassword = regStrVal;
+            _proxysettings.proxyPassword = regStrVal;
         }
         // DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
 
@@ -162,12 +162,12 @@ void CSettings::Save() const
         settings.SetNumber(RegTimeout, _Timeout);
         settings.SetString(RegSessionsPath, _SessionPath.c_str());
         // Настройки прокси
-        settings.SetNumber(RegProxyType, _ProxyType);
-        settings.SetString(RegProxyHost, _ProxyHost.c_str());
-        settings.SetNumber(RegProxyPort, _ProxyPort);
-        settings.SetString(RegProxyLogin, _ProxyLogin.c_str());
-        settings.SetString(RegProxyPassword, _ProxyPassword.c_str());
-        // DEBUG_PRINTF(L"NetBox: Save: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
+        settings.SetNumber(RegProxyType, _proxysettings.proxyType);
+        settings.SetString(RegProxyHost, _proxysettings.proxyHost.c_str());
+        settings.SetNumber(RegProxyPort, _proxysettings.proxyPort);
+        settings.SetString(RegProxyLogin, _proxysettings.proxyLogin.c_str());
+        settings.SetString(RegProxyPassword, _proxysettings.proxyPassword.c_str());
+        // DEBUG_PRINTF(L"NetBox: Save: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _proxysettings.proxyType, _proxysettings.proxyPort, _proxysettings.proxyPassword.c_str());
         // Настройки логирования
         settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
         settings.SetNumber(RegLoggingLevel, _LoggingLevel);
@@ -192,22 +192,22 @@ void CSettings::Configure()
     // Создаем меню с настройками
     vector<FarMenuItemEx> items;
     // Main settings
-    int MainSettingsMenuIdx = items.size();
+    size_t MainSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringMainSettingsMenuTitle);
     // Proxy settings
-    int ProxySettingsMenuIdx = items.size();
+    size_t ProxySettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringProxySettingsMenuTitle);
     // Logging settings
-    int LoggingSettingsMenuIdx = items.size();
+    size_t LoggingSettingsMenuIdx = items.size();
     AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
     //
     AddMenuItem(items, MIF_SEPARATOR, 0);
     // About
-    int AboutMenuIdx = items.size();
+    size_t AboutMenuIdx = items.size();
     AddMenuItem(items, 0, StringAboutMenuTitle);
     items[_SettingsMenuIdx].Flags |= MIF_SELECTED;
 
-    const int menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
+    const size_t menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
         -1, -1, 0, FMENU_AUTOHIGHLIGHT | FMENU_WRAPMODE | FMENU_USEEXT,
         CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
         reinterpret_cast<FarMenuItem *>(&items.front()),
@@ -297,11 +297,12 @@ void CSettings::ProxyConfigure()
     int topPos = dlg.GetTop();
     ProxySettingsDialogParams params;
     ::InitProxySettingsDialog(dlg, topPos,
-        _ProxyType,
-        _ProxyHost,
-        _ProxyPort,
-        _ProxyLogin,
-        _ProxyPassword,
+        // _ProxyType,
+        // _ProxyHost,
+        // _ProxyPort,
+        // _ProxyLogin,
+        // _ProxyPassword,
+        _proxysettings,
         params
     );
 
@@ -316,12 +317,12 @@ void CSettings::ProxyConfigure()
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции
-        _ProxyType = dlg.GetSelectonIndex(params.idProxyTypeComboBox);
-        _ProxyHost = dlg.GetText(params.idProxyHost);
-        _ProxyPort = TextToNumber(dlg.GetText(params.idProxyPort));
-        DEBUG_PRINTF(L"NetBox: _ProxyPort = %u", _ProxyPort);
-        _ProxyLogin = dlg.GetText(params.idProxyLogin);
-        _ProxyPassword = dlg.GetText(params.idProxyPassword);
+        _proxysettings.proxyType = dlg.GetSelectonIndex(params.idProxyTypeComboBox);
+        _proxysettings.proxyHost = dlg.GetText(params.idProxyHost);
+        _proxysettings.proxyPort = TextToNumber(dlg.GetText(params.idProxyPort));
+        // DEBUG_PRINTF(L"NetBox: proxyPort = %u", _proxysettings.proxyPort);
+        _proxysettings.proxyLogin = dlg.GetText(params.idProxyLogin);
+        _proxysettings.proxyPassword = dlg.GetText(params.idProxyPassword);
         Save();
     }
 }

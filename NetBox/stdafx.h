@@ -66,6 +66,15 @@ string NumberToText(int number);
 
 wstring NumberToWString(unsigned long number);
 
+struct ProxySettings
+{
+    int proxyType;
+    wstring proxyHost;
+    unsigned long proxyPort;
+    wstring proxyLogin;
+    wstring proxyPassword;
+};
+
 struct ProxySettingsDialogParams
 {
     FarDialogItem *proxyTypeComboBox;
@@ -81,10 +90,11 @@ struct ProxySettingsDialogParams
 };
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
-    int &_ProxyType,
-    wstring &_ProxyHost,
-    unsigned long &_ProxyPort,
-    wstring &_ProxyLogin,
-    wstring &_ProxyPassword,
+    // int &_ProxyType,
+    // wstring &_ProxyHost,
+    // unsigned long &_ProxyPort,
+    // wstring &_ProxyLogin,
+    // wstring &_ProxyPassword,
+    ProxySettings &ps,
     ProxySettingsDialogParams &params
 );
