@@ -52,12 +52,12 @@ static const char *ParamProxyPassword = "ProxyPassword";
 
 CSession::CSession() : _ProtoId(-1)
 {
-    // Инициализируем _proxySettings
-    _proxySettings.proxyType = static_cast<int>(GetPropertyNumeric(ParamProxyType, _Settings.ProxyType()));
-    _proxySettings.proxyHost = GetProperty(ParamProxyHost, _Settings.ProxyHost().c_str());
-    _proxySettings.proxyPort = static_cast<int>(GetPropertyNumeric(ParamProxyPort, _Settings.ProxyPort()));
-    _proxySettings.proxyLogin = GetProperty(ParamProxyLogin, _Settings.ProxyLogin().c_str());
-    _proxySettings.proxyPassword = GetProperty(ParamProxyPassword, _Settings.ProxyPassword().c_str());
+    // Инициализируем _proxySettings значениями по умолчанию
+    _proxySettings.proxyType = _Settings.ProxyType();
+    _proxySettings.proxyHost = _Settings.ProxyHost();
+    _proxySettings.proxyPort = _Settings.ProxyPort();
+    _proxySettings.proxyLogin = _Settings.ProxyLogin();
+    _proxySettings.proxyPassword = _Settings.ProxyPassword();
 }
 
 void CSession::RegisterProtocolClient(const int id, const wchar_t *name, CreateSessionFx fx, const wchar_t *scheme1, const wchar_t *scheme2 /*= NULL*/)
@@ -299,6 +299,14 @@ PSession CSession::Load(const wchar_t *fileName)
         session->SetProperty(key, val.c_str(), crypt != NULL);
     }
 
+    // Инициализируем _proxySettings
+    struct ProxySettings proxySettings;
+    proxySettings.proxyType = static_cast<int>(session->GetPropertyNumeric(ParamProxyType, _Settings.ProxyType()));
+    proxySettings.proxyHost = session->GetProperty(ParamProxyHost, _Settings.ProxyHost().c_str());
+    proxySettings.proxyPort = static_cast<int>(session->GetPropertyNumeric(ParamProxyPort, _Settings.ProxyPort()));
+    proxySettings.proxyLogin = session->GetProperty(ParamProxyLogin, _Settings.ProxyLogin().c_str());
+    proxySettings.proxyPassword = session->GetProperty(ParamProxyPassword, _Settings.ProxyPassword().c_str());
+    session->SetProxySettings(proxySettings);
     return session;
 }
 
