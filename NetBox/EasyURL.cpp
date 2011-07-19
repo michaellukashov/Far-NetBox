@@ -250,6 +250,7 @@ CURLcode CEasyURL::Perform()
 CURLcode CEasyURL::ExecuteFtpCommand(const char *cmd)
 {
     assert(cmd);
+    // DEBUG_PRINTF(L"NetBox: ExecuteFtpCommand: cmd = %s", CFarPlugin::MB2W(cmd).c_str());
 
     CSlistURL slist;
     slist.Append(cmd);

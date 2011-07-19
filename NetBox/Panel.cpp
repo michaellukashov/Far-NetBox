@@ -346,6 +346,7 @@ void CPanel::FreeItemList(PluginPanelItem *panelItem, int itemsNumber)
 
 int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wchar_t **destPath, const bool deleteSource, const int opMode)
 {
+    // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
     assert(_ProtoClient);
     assert(!IsSessionManager());
 
@@ -661,9 +662,12 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     //Free content
     for (vector< pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
-        CFarPlugin::GetPSI()->FreePluginDirList(it->second, it->first);
+        if (it->first > 0)
+        {
+            // CFarPlugin::GetPSI()->FreePluginDirList(it->second, it->first);
+        }
     }
-
+    // DEBUG_PRINTF(L"NetBox: GetFiles: end");
     return 1;
 }
 
@@ -902,7 +906,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
 int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int opMode)
 {
     assert(_ProtoClient);
-
+    // DEBUG_PRINTF(L"NetBox: DeleteFiles: begin");
     if (itemsNumber == 1 && wcscmp(panelItem->FindData.lpwszFileName, L"..") == 0)
     {
         return 0;
@@ -1022,9 +1026,12 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     //Free content
     for (vector< pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
-        CFarPlugin::GetPSI()->FreePluginDirList(it->second, it->first);
+        if (it->first > 0)
+        {
+            // CFarPlugin::GetPSI()->FreePluginDirList(it->second, it->first);
+        }
     }
-
+    // DEBUG_PRINTF(L"NetBox: DeleteFiles: end");
     return 1;
 }
 
