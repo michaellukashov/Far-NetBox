@@ -24,6 +24,7 @@
 
 CSessionEditor::CSessionEditor(CSession *session, const int width, const int height)
     : CFarDialog(width, height),
+      _IdBtnSession(0),
       _IdBtnProxy(0),
       _IdPagesSeparator(0),
       _IdTextEditName(0),
@@ -64,9 +65,12 @@ bool CSessionEditor::EditSession()
     }
 
     int top = GetTop() + 2;
-    // Создаем кнопку для вызова настроек прокси
-    _IdBtnProxy = CreateButton(GetLeft(), top - 2, CFarPlugin::GetString(StringProxy), DIF_NOBRACKETS);
-    _IdPagesSeparator = CreateSeparator(top - 1);
+    // Создаем кнопку для перехода на настройки сессии
+    _IdBtnSession = CreateButton(GetLeft(), top - 2, CFarPlugin::GetString(StringSession), DIF_NOBRACKETS);
+    // Создаем кнопку для перехода на настройки прокси
+    _IdBtnProxy = CreateButton(GetLeft() + wcslen(CFarPlugin::GetString(StringSession)) + 1,
+        top - 2, CFarPlugin::GetString(StringProxy), DIF_NOBRACKETS);
+    _IdPagesSeparator = CreateSeparator(top - 1, CFarPlugin::GetString(StringSession));
 
     _IdTextEditName = CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
     _IdEditName = CreateEdit(GetLeft(), top + 1, MAX_SIZE, _Session->GetSessionName());
@@ -205,6 +209,16 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         ShowDlgItem(_IdEditPswShow, showPwd);
         ShowDlgItem(_IdEditPswHide, !showPwd);
     }
+    else if (msg == DN_BTNCLICK && param1 == _IdBtnSession)
+    {
+        ShowSessionDlgItems(true);
+        ShowProxyDlgItems(_params, false);
+        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
+        // FarDialogItem *pagesSeparator = GetDlgItem(_IdPagesSeparator);
+        // SetDlgItem(_IdPagesSeparator, *pagesSeparator);
+        SetText(_IdPagesSeparator, CFarPlugin::GetString(StringSession));
+        return TRUE;
+    }
     else if (msg == DN_BTNCLICK && param1 == _IdBtnProxy)
     {
         DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
@@ -217,6 +231,9 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
         // CFarDialog::DialogMessageProc(DM_REDRAW, 0, 0);
         // CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
+        // FarDialogItem *pagesSeparator = GetDlgItem(_IdPagesSeparator);
+        // SetDlgItem(_IdPagesSeparator, *pagesSeparator);
+        SetText(_IdPagesSeparator, CFarPlugin::GetString(StringProxy));
         return TRUE;
     }
     else if (msg == DN_EDITCHANGE && (param1 == _IdEditPswHide || param1 == _IdEditPswShow))

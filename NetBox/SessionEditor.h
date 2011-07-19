@@ -79,6 +79,7 @@ private:
     bool Validate() const;
 
 protected:
+    int _IdBtnSession;
     int _IdBtnProxy;
     int _IdPagesSeparator;
     int _IdTextEditName;
