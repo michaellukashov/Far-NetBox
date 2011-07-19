@@ -272,9 +272,9 @@ public:
      * \param text dialog item text
      * \return dialog created dialogs item id
      */
-    inline int CreateText(const int col, const int row, const wchar_t *text)
+    inline int CreateText(const int col, const int row, const wchar_t *text, FarDialogItem **dlgItem = NULL)
     {
-        return CreateDlgItem(DI_TEXT, col, col + lstrlen(text) - 1, row, row, text);
+        return CreateDlgItem(DI_TEXT, col, col + lstrlen(text) - 1, row, row, text, 0, dlgItem);
     }
 
     /**
