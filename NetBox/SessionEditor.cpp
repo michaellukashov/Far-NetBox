@@ -83,7 +83,6 @@ bool CSessionEditor::EditSession()
     _IdChBxPromtpPsw = CreateCheckBox(GetLeft(), top + 9, CFarPlugin::GetString(StringEdAuthPromtpPsw), _Session->GetPromptPwd());
     _IdChBxShowPsw = CreateCheckBox(GetLeft(), top + 10, CFarPlugin::GetString(StringEdAuthShowPsw), false);
 
-    // ShowDlgItems(true);
     // Инициализируем настройки прокси
     int topPos = GetTop() + 2;
     ::InitProxySettingsDialog(*this, topPos,
@@ -91,7 +90,6 @@ bool CSessionEditor::EditSession()
         _params,
         false
     );
-    // ShowProxyDlgItems(_params, false);
 
     OnPrepareDialog();
 
@@ -253,10 +251,16 @@ void CSessionEditor::ShowDlgItems(bool visible)
 
 void CSessionEditor::ShowProxyDlgItems(const ProxySettingsDialogParams &params, bool visible)
 {
+    ShowDlgItem(params.idProxyTypeText, visible);
     ShowDlgItem(params.idProxyTypeComboBox, visible);
+    ShowDlgItem(params.idSeparatorItem, visible);
+    ShowDlgItem(params.idProxyHostText, visible);
     ShowDlgItem(params.idProxyHost, visible);
+    ShowDlgItem(params.idProxyPortText, visible);
     ShowDlgItem(params.idProxyPort, visible);
+    ShowDlgItem(params.idProxyLoginText, visible);
     ShowDlgItem(params.idProxyLogin, visible);
+    ShowDlgItem(params.idProxyPasswordText, visible);
     ShowDlgItem(params.idProxyPassword, visible);
 }
 
