@@ -83,23 +83,23 @@ public:
     //
     int ProxyType() const
     {
-        return _proxysettings.proxyType;
+        return _proxySettings.proxyType;
     }
     wstring ProxyHost() const
     {
-        return _proxysettings.proxyHost;
+        return _proxySettings.proxyHost;
     }
     unsigned long ProxyPort() const
     {
-        return _proxysettings.proxyPort;
+        return _proxySettings.proxyPort;
     }
     wstring ProxyLogin() const
     {
-        return _proxysettings.proxyLogin;
+        return _proxySettings.proxyLogin;
     }
     wstring ProxyPassword() const
     {
-        return _proxysettings.proxyPassword;
+        return _proxySettings.proxyPassword;
     }
 
     //
@@ -151,7 +151,7 @@ private:
     bool            _LogToFile;
     wstring         _LogFileName;
     
-    ProxySettings _proxysettings;
+    ProxySettings _proxySettings;
 };
 
 extern CSettings _Settings;
