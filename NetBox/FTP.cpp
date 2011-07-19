@@ -349,7 +349,7 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
 
-    const string ftpCommand = (type == ItemDirectory ? "RMD " : "DELE ") + path; // LocalToFtpCP(path);
+    const string ftpCommand = (type == ItemDirectory ? "RMD " : "DELE ") + CFarPlugin::W2MB(path); // LocalToFtpCP(path); // 
     DEBUG_PRINTF(L"NetBox: Delete: ftpCommand = %s", CFarPlugin::MB2W(ftpCommand.c_str()).c_str());
     const CURLcode urlCode = _CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
