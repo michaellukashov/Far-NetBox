@@ -85,7 +85,8 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
     assert(abortEvent);
 
-    _CURL.Initialize(_Session.GetURL(), _Session.GetUserName(), _Session.GetPassword());
+    _CURL.Initialize(_Session.GetURL(), _Session.GetUserName(), _Session.GetPassword(),
+        _Session.GetProxySettings());
     _CURL.SetAbortEvent(abortEvent);
 
     //Check initial path existing

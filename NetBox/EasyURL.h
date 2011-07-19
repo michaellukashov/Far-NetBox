@@ -68,7 +68,8 @@ public:
      * \param password password
      * \return false if error
      */
-    bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password);
+    bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
+        const struct ProxySettings &proxySettings);
 
     /**
      * Close curl

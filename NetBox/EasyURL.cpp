@@ -38,7 +38,8 @@ CEasyURL::~CEasyURL()
 }
 
 
-bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password)
+bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
+    const struct ProxySettings &proxySettings)
 {
     assert(_CURL == NULL);
     assert(url && *url);
