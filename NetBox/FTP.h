@@ -74,13 +74,13 @@ public:
     //From IProtocol
     bool Connect(HANDLE abortEvent, wstring &errorInfo);
     void Close();
-    bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-    bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
-    bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
-    bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
-    bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
+    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
+    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
+    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
+    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
 
 private:
     //!FTP item description
