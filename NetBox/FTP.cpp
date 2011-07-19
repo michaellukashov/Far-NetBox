@@ -101,7 +101,8 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
 
     //Check initial path existing
     wstring path;
-    ParseURL(_Session.GetURL(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    DEBUG_PRINTF(L"NetBox: path = %s", path.c_str());
     bool dirExist = false;
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
