@@ -110,6 +110,7 @@ bool CSessionEditor::EditSession()
     _Session->SetUserName(GetText(_IdEditUser).c_str());
     _Session->SetPassword(GetText(_IdEditPswHide).c_str());
     _Session->SetPromptPwd(GetCheckState(_IdChBxPromtpPsw));
+    ::GetProxySettings(*this, _params, proxySettings);
     _Session->SetProxySettings(proxySettings);
 
     OnSave();

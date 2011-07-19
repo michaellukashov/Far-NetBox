@@ -112,3 +112,6 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
     ProxySettingsDialogParams &params,
     bool visible
 );
+
+void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogParams &params,
+    struct ProxySettings &proxySettings);

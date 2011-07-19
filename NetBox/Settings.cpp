@@ -313,12 +313,7 @@ void CSettings::ProxyConfigure()
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции
-        _proxySettings.proxyType = dlg.GetSelectonIndex(params.idProxyTypeComboBox);
-        _proxySettings.proxyHost = dlg.GetText(params.idProxyHost);
-        _proxySettings.proxyPort = TextToNumber(dlg.GetText(params.idProxyPort));
-        // DEBUG_PRINTF(L"NetBox: proxyPort = %u", _proxySettings.proxyPort);
-        _proxySettings.proxyLogin = dlg.GetText(params.idProxyLogin);
-        _proxySettings.proxyPassword = dlg.GetText(params.idProxyPassword);
+        ::GetProxySettings(dlg, params, _proxySettings);
         Save();
     }
 }
