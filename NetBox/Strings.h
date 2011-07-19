@@ -28,6 +28,7 @@ enum PluginString
     StringOK,
     StringCancel,
 
+    StringSession,
     StringProxy,
 
     //Edit link dialog
