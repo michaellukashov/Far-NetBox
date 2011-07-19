@@ -321,13 +321,13 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
     if (!_ProtoClient->GetList(panelItem, itemsNumber, errInfo))
     {
         notifyWnd.Hide();
-        ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, _ProtoClient->GetCurrentDirectory()), errInfo.c_str());
         if (IsSessionManager())
         {
             return 0;
         }
         else
         {
+            ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, _ProtoClient->GetCurrentDirectory()), errInfo.c_str());
             OpenConnection(new CSessionManager); //Return to session manager panel
             return GetItemList(panelItem, itemsNumber, opMode);
         }
