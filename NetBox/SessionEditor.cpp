@@ -73,7 +73,8 @@ bool CSessionEditor::EditSession()
     _IdPagesSeparator = CreateSeparator(top - 1, CFarPlugin::GetString(StringSession));
 
     _IdTextEditName = CreateText(GetLeft(), top + 0, CFarPlugin::GetString(StringEdName));
-    _IdEditName = CreateEdit(GetLeft(), top + 1, MAX_SIZE, _Session->GetSessionName());
+    FarDialogItem *editNameItem;
+    _IdEditName = CreateEdit(GetLeft(), top + 1, MAX_SIZE, _Session->GetSessionName(), NULL, 0, &editNameItem);
     _IdTextEditURL = CreateText(GetLeft(), top + 2, CFarPlugin::GetString(StringEdURL));
     _IdEditURL = CreateEdit(GetLeft(), top + 3, MAX_SIZE, url.c_str());
 
@@ -103,7 +104,6 @@ bool CSessionEditor::EditSession()
     _IdBtnOK = CreateButton(0, GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemOKBtn);
     itemOKBtn->Focus = 1;
     _IdBtnCancel = CreateButton(0, GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
-
     const int ret = DoModal();
     if (ret < 0 || ret == _IdBtnCancel)
     {
@@ -213,10 +213,13 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     {
         ShowSessionDlgItems(true);
         ShowProxyDlgItems(_params, false);
+        // FarDialogItem *focusedItem = GetDlgItem(_IdEditName);
+        // focusedItem->Focus = 1;
+        DlgItem_SetFocus((*CFarPlugin::GetPSI()), _Dlg, _IdEditName);
+        SetText(_IdPagesSeparator, CFarPlugin::GetString(StringSession));
         CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
         // FarDialogItem *pagesSeparator = GetDlgItem(_IdPagesSeparator);
         // SetDlgItem(_IdPagesSeparator, *pagesSeparator);
-        SetText(_IdPagesSeparator, CFarPlugin::GetString(StringSession));
         return TRUE;
     }
     else if (msg == DN_BTNCLICK && param1 == _IdBtnProxy)
@@ -228,12 +231,15 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
         // Показываем элементы настроек прокси
         ShowProxyDlgItems(_params, true);
         // CFarPlugin::GetPSI()->DialogRun(_Dlg);
+        // FarDialogItem *focusedItem = GetDlgItem(_params.idProxyTypeComboBox);
+        // focusedItem->Focus = 1;
+        DlgItem_SetFocus((*CFarPlugin::GetPSI()), _Dlg, _params.idProxyTypeComboBox);
+        SetText(_IdPagesSeparator, CFarPlugin::GetString(StringProxy));
         CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0);
         // CFarDialog::DialogMessageProc(DM_REDRAW, 0, 0);
         // CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
         // FarDialogItem *pagesSeparator = GetDlgItem(_IdPagesSeparator);
         // SetDlgItem(_IdPagesSeparator, *pagesSeparator);
-        SetText(_IdPagesSeparator, CFarPlugin::GetString(StringProxy));
         return TRUE;
     }
     else if (msg == DN_EDITCHANGE && (param1 == _IdEditPswHide || param1 == _IdEditPswShow))
