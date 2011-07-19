@@ -98,7 +98,8 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
 
     if (connectionEstablished)
     {
-        Log1(L"connected to %s", connectURL.c_str());
+        if (!connectURL.empty())
+            Log1(L"connected to %s", connectURL.c_str());
         UpdateTitle();
     }
     return connectionEstablished;
