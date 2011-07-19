@@ -99,7 +99,7 @@
 "Unable to establish connection with host\n%s"
 "Unable to create directory\n%s"
 "Unable to change directory to\n%s"
-"Unable to directory listing\n%s"
+"Unable to get directory listing\n%s"
 "Unable to copy file from\n%s\nto\n%s"
 "Unable to rename/move\n%s\nto\n%s"
 "Unable to delete file\n%s"
