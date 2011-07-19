@@ -86,7 +86,7 @@ bool CSessionEditor::EditSession()
     // Инициализируем настройки прокси
     int topPos = GetTop() + 2;
     ::InitProxySettingsDialog(*this, topPos,
-        _proxysettings,
+        _proxySettings,
         _params,
         false
     );
@@ -110,6 +110,7 @@ bool CSessionEditor::EditSession()
     _Session->SetUserName(GetText(_IdEditUser).c_str());
     _Session->SetPassword(GetText(_IdEditPswHide).c_str());
     _Session->SetPromptPwd(GetCheckState(_IdChBxPromtpPsw));
+    _Session->SetProxySettings(_proxySettings);
 
     OnSave();
     return true;

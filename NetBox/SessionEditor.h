@@ -101,7 +101,7 @@ protected:
     CSession *_Session;
 
     ProxySettingsDialogParams _params;
-    ProxySettings _proxysettings;
+    ProxySettings _proxySettings;
 };
 
 typedef auto_ptr<CSessionEditor> PSessionEditor;
