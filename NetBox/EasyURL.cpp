@@ -73,6 +73,7 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
         _Password = CFarPlugin::W2MB(password);
     }
     _proxySettings = proxySettings;
+    DEBUG_PRINTF(L"NetBox: CEasyURL::Initialize: proxy type = %u, adress = %s", _proxySettings.proxyType, _proxySettings.proxyHost.c_str());
     return true;
 }
 
@@ -118,7 +119,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_USERNAME, _UserName.c_str()));
         CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PASSWORD, _Password.c_str()));
     }
-    DEBUG_PRINTF(L"NetBox: proxy type = %u, host = %s", _proxySettings.proxyType, _proxySettings.proxyHost.c_str());
+    DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: proxy type = %u, host = %s", _proxySettings.proxyType, _proxySettings.proxyHost.c_str());
     if (_proxySettings.proxyType != PROXY_NONE)
     {
         int proxy_type = CURLPROXY_HTTP;
