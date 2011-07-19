@@ -307,7 +307,7 @@ void CSettings::ProxyConfigure()
     dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringOK), DIF_CENTERGROUP, &itemFocusBtn);
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
-    params.proxyTypeComboBox->Focus = 1;
+    params.proxyTypeComboBoxItem->Focus = 1;
     const int itemIdx = dlg.DoModal();
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {

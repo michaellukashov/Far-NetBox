@@ -77,15 +77,31 @@ struct ProxySettings
 
 struct ProxySettingsDialogParams
 {
-    FarDialogItem *proxyTypeComboBox;
+    FarDialogItem *proxyTypeTextItem;
+    FarDialogItem *proxyTypeComboBoxItem;
     FarList proxyTypeList;
     vector<FarListItem> proxyTypeListItems;
+    FarDialogItem *separatorItem;
+    FarDialogItem *proxyHostTextItem;
+    FarDialogItem *proxyHostItem;
+    FarDialogItem *proxyPortTextItem;
+    FarDialogItem *proxyPortItem;
+    FarDialogItem *proxyLoginTextItem;
+    FarDialogItem *proxyLoginItem;
+    FarDialogItem *proxyPasswordTextItem;
+    FarDialogItem *proxyPasswordItem;
     wstring proxyPortStr;
-    FarDialogItem *itemPortEdit;
+
+    int idProxyTypeText;
     int idProxyTypeComboBox;
+    int idSeparatorItem;
+    int idProxyHostText;
     int idProxyHost;
+    int idProxyPortText;
     int idProxyPort;
+    int idProxyLoginText;
     int idProxyLogin;
+    int idProxyPasswordText;
     int idProxyPassword;
 };
 
