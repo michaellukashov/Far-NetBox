@@ -173,7 +173,6 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
 {
     // Настраиваем видимость элементов
     const DWORD flags = visible ? 0 : DIF_HIDDEN;
-    // SetHidden(params.proxyTypeTextItem, visible);
 
     // Тип прокси
     params.idProxyTypeText = dlg.CreateText(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringProxySettingsProxyType),
