@@ -57,7 +57,7 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
     assert(abortEvent);
 
     const wchar_t *url = _Session.GetURL();
-    Log2(L"WebDAV: connecting to %s", url);
+    DEBUG_PRINTF(L"NetBox: WebDAV: connecting to %s", url);
     //Initialize curl
     _CURL.Initialize(url, _Session.GetUserName(), _Session.GetPassword(),
         _Session.GetProxySettings());
