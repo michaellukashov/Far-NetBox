@@ -102,7 +102,7 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     //Check initial path existing
     wstring path;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
-    DEBUG_PRINTF(L"NetBox: path = %s", path.c_str());
+    // DEBUG_PRINTF(L"NetBox: FTP: path = %s", path.c_str());
     bool dirExist = false;
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
@@ -128,6 +128,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     assert(path && path[0] == L'/');
 
     string ftpPath = LocalToFtpCP(path);
+    // DEBUG_PRINTF(L"NetBox: FTP: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
     if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';

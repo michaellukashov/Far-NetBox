@@ -691,6 +691,7 @@ __int64 CSession::GetPropertyNumeric(const char *name, const __int64 defaultVal 
 {
     assert(name);
     const wchar_t *val = GetProperty(name);
+    // DEBUG_PRINTF(L"NetBox: GetPropertyNumeric: val = %s", val);
     return (val ? _wtoi64(val) : defaultVal);
 }
 

@@ -93,7 +93,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     assert(_CURL);
     assert(!_Prepared);
     assert(!path || path[0] == L'/');
-    DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: path = %s", CFarPlugin::MB2W(path));
+    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: path = %s", CFarPlugin::MB2W(path).c_str());
     curl_easy_reset(_CURL);
     _Output.Type = OutputWriter::None;
     _Input.Type = InputReader::None;
