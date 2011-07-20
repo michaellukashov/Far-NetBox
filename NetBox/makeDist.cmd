@@ -42,7 +42,7 @@ if "%PLUGINARCH%" equ "src"	(
     call ..\Common\makeCopyCommon.cmd %~d0%~p0 ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
 )
 :: Make archive
-call "C:\Program Files\7-Zip\7z.exe" a -mx=9 -t7z -r %PKGNAME% %PKGDIR% > NUL
+call "C:\Program Files\7-Zip\7z.exe" a -t7z -r %PKGNAME% %PKGDIR% > NUL
 if errorlevel 1 echo Error creating archive & exit 1 /b
 
 rmdir /S /Q %PKGDIR%
