@@ -46,7 +46,7 @@
 
 using namespace std;
 
-#define NETBOX_DEBUG
+#undef NETBOX_DEBUG
 
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
