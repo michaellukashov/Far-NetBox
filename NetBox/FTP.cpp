@@ -166,14 +166,11 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
-    // DEBUG_PRINTF(L"NetBox: GetList: _CurrentDirectory = %s", _CurrentDirectory.c_str());
+    DEBUG_PRINTF(L"NetBox: GetList: _CurrentDirectory = %s", _CurrentDirectory.c_str());
 
     string ftpPath = LocalToFtpCP(_CurrentDirectory.c_str(), true);
-    if (ftpPath[ftpPath.length() - 1] != '/')
-    {
-        ftpPath += '/';
-    }
-    // DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    ::AppendChar(ftpPath, '/');
+    DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
 
     CURLcode urlCode = _CURL.Prepare(ftpPath.c_str());
     string response;

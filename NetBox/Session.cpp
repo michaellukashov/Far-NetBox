@@ -526,7 +526,7 @@ bool CSession::Save(const wchar_t *path, const bool overwrite) const
     assert(path && *path);
 
     wstring savePath = path;
-    ::AppendPathDelimiter(savePath);
+    ::AppendPathDelimiterW(savePath);
 
     wstring fileName = savePath;
     fileName += GetSessionName();

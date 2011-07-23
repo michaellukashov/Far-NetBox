@@ -247,7 +247,7 @@ void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogPar
     proxySettings.proxyPassword = dlg.GetText(params.idProxyPassword);
 }
 
-void AppendChar(wstring &str, const wchar_t ch)
+void AppendWChar(wstring &str, const wchar_t ch)
 {
     if (!str.empty() && str[str.length() - 1] != ch)
     {
@@ -255,11 +255,27 @@ void AppendChar(wstring &str, const wchar_t ch)
     }
 }
 
-void AppendPathDelimiter(wstring &str)
+void AppendChar(string &str, const char ch)
+{
+    if (!str.empty() && str[str.length() - 1] != ch)
+    {
+        str += ch;
+    }
+}
+
+void AppendPathDelimiterW(wstring &str)
 {
     if (!str.empty() && str[str.length() - 1] != L'/' && str[str.length() - 1] != L'\\')
     {
         str += L"\\";;
+    }
+}
+
+void AppendPathDelimiterA(string &str)
+{
+    if (!str.empty() && str[str.length() - 1] != '/' && str[str.length() - 1] != '\\')
+    {
+        str += "\\";;
     }
 }
 

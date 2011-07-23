@@ -116,5 +116,8 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
 void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogParams &params,
     struct ProxySettings &proxySettings);
 
-void AppendChar(wstring &str, const wchar_t ch);
-void AppendPathDelimiter(wstring &str);
+void AppendWChar(wstring &str, const wchar_t ch);
+void AppendChar(string &str, const char ch);
+
+void AppendPathDelimiterW(wstring &str);
+void AppendPathDelimiterA(string &str);
