@@ -213,10 +213,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         assert(_ProtoClient);
         wstring cbData = _ProtoClient->GetURL((controlState & PKF_CONTROL) && !(controlState & PKF_SHIFT));
         cbData += _ProtoClient->GetCurrentDirectory();
-        if (!cbData.empty() && cbData[cbData.length() - 1] != L'/')
-        {
-            cbData += L'/';
-        }
+        ::AppendChar(cbData, L'/');
         cbData += ppi->FindData.lpwszFileName;
 
         CFarPlugin::GetPSI()->FSF->CopyToClipboard(cbData.c_str());
@@ -417,10 +414,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                         }
                         dstPath += *destPath;
                     }
-                    if (dstPath[dstPath.length() - 1] != '/')
-                    {
-                        dstPath += '/';
-                    }
+                    ::AppendChar(dstPath, L'/');
                     dstPath += pi->FindData.lpwszFileName;
                     wstring errInfo;
                     if (!_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
@@ -459,10 +453,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 if (_ProtoClient->CheckExisting(dstPath.c_str(), IProtocol::ItemDirectory, isExist, errInfo) && isExist)
                 {
                     //Move
-                    if (dstPath[dstPath.length() - 1] != '/')
-                    {
-                        dstPath += '/';
-                    }
+                    ::AppendChar(dstPath, L'/');
                     dstPath += panelItem->FindData.lpwszFileName;
                 }
                 if (!_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), itemType, errInfo))
@@ -526,10 +517,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             const bool isDirectory = (pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
             wstring localPath = *destPath;
-            if (!localPath.empty() && localPath[localPath.length() - 1] != '\\')
-            {
-                localPath += L'\\';
-            }
+            ::AppendChar(localPath, L'\\');
             localPath += pi->FindData.lpwszFileName;
 
             wstring remotePath = _ProtoClient->GetCurrentDirectory();
@@ -703,10 +691,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
             FAR_FIND_DATA *subItems = NULL;
             int subItemsNum = 0;
             wstring localPath = sourcePath;
-            if (!localPath.empty() && localPath[localPath.length() - 1] != '\\')
-            {
-                localPath += L'\\';
-            }
+            ::AppendChar(localPath, L'\\');
             localPath += pi->FindData.lpwszFileName;
             if (!CFarPlugin::GetPSI()->GetDirList(localPath.c_str(), &subItems, &subItemsNum))
             {
@@ -733,10 +718,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     }
 
     wstring localRelativePath = sourcePath;
-    if (!localRelativePath.empty() && localRelativePath[localRelativePath.length() - 1] != '\\')
-    {
-        localRelativePath += L'\\';
-    }
+    ::AppendChar(localRelativePath, L'\\');
 
     //Directory to remove list
     vector<wstring> dirsToRemove;

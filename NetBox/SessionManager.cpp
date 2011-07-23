@@ -183,11 +183,8 @@ bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &e
 {
     wstring findMask = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str());
     // DEBUG_PRINTF(L"NetBox: findMask = %s", findMask.c_str());
-    if (findMask[findMask.length() - 1] != L'\\')
-    {
-        findMask += L'\\';
-    }
-    findMask += L'*';
+    ::AppendChar(findMask, L'\\');
+    ::AppendChar(findMask, L'*');
 
     WIN32_FIND_DATA findFileData;
     HANDLE findHandle = FindFirstFile(findMask.c_str(), &findFileData);
@@ -346,10 +343,7 @@ wstring CSessionManager::ConvertPath(const wchar_t *pathBase, const wchar_t *sub
     wstring ret(pathBase);
     if (sub && *sub)
     {
-        if (!ret.empty() && ret[ret.length() - 1] != L'\\' && ret[ret.length() - 1] != L'/')
-        {
-            ret += L'\\';
-        }
+        ::AppendPathDelimiter(ret);
         ret += (sub[0] == L'\\' || sub[0] == L'/' ? ++sub : sub);
     }
 

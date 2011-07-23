@@ -526,10 +526,7 @@ bool CSession::Save(const wchar_t *path, const bool overwrite) const
     assert(path && *path);
 
     wstring savePath = path;
-    if (savePath[savePath.length() - 1] != L'\\' && savePath[savePath.length() - 1] != L'/')
-    {
-        savePath += L'\\';
-    }
+    ::AppendPathDelimiter(savePath);
 
     wstring fileName = savePath;
     fileName += GetSessionName();

@@ -246,3 +246,20 @@ void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogPar
     proxySettings.proxyLogin = dlg.GetText(params.idProxyLogin);
     proxySettings.proxyPassword = dlg.GetText(params.idProxyPassword);
 }
+
+void AppendChar(wstring &str, const wchar_t ch)
+{
+    if (!str.empty() && str[str.length() - 1] != ch)
+    {
+        str += ch;
+    }
+}
+
+void AppendPathDelimiter(wstring &str)
+{
+    if (!str.empty() && str[str.length() - 1] != L'/' && str[str.length() - 1] != L'\\')
+    {
+        str += L"\\";;
+    }
+}
+

@@ -286,10 +286,7 @@ void CSettings::MainConfigure()
         _AltPrefix = dlg.GetCheckState(idAltPrefix);
         _Timeout = TextToNumber(dlg.GetText(idTimeout));
         _SessionPath = dlg.GetText(idSessPath);
-        if (!_SessionPath.empty() && _SessionPath[_SessionPath.length() - 1] != L'/' && _SessionPath[_SessionPath.length() - 1] != L'\\')
-        {
-            _SessionPath += L'\\';
-        }
+        ::AppendPathDelimiter(_SessionPath);
         Save();
     }
 }
