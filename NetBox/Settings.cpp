@@ -56,7 +56,7 @@ CSettings::CSettings() :
     _CmdPrefix(L"NetBox"),
     _AltPrefix(true),
     _UseOwnKey(false),
-    _Timeout(60),
+    _Timeout(10),
     _SessionPath(),
     _EnableLogging(false),
     _LoggingLevel(0),
