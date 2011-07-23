@@ -133,7 +133,7 @@ private:
     void Save() const;
 
 private:
-    int _SettingsMenuIdx;
+    size_t _SettingsMenuIdx;
     //Settings variables
     bool            _AddToDiskMenu;     ///< Add plugin to disk menu flag
     bool            _AddToPanelMenu;    ///< Add plugin to panel plugin menu flag
