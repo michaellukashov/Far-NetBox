@@ -165,6 +165,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
 bool CSessionManager::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
     const wstring dirPath = ConvertPath(_Settings.GetSessionPath().c_str(), path);
+    // DEBUG_PRINTF(L"NetBox: dirPath = %s", dirPath.c_str());
     if (!CreateDirectory(dirPath.c_str(), NULL))
     {
         const int errCode = GetLastError();
@@ -181,6 +182,7 @@ bool CSessionManager::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     wstring findMask = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str());
+    // DEBUG_PRINTF(L"NetBox: findMask = %s", findMask.c_str());
     if (findMask[findMask.length() - 1] != L'\\')
     {
         findMask += L'\\';
@@ -191,9 +193,13 @@ bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &e
     HANDLE findHandle = FindFirstFile(findMask.c_str(), &findFileData);
     if (findHandle == INVALID_HANDLE_VALUE)
     {
-        errorInfo = GetSystemErrorMessage(GetLastError());
-        _CurrentDirectory = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str()); //To show full error message
-        return false;
+        // Попытаемся создать каталог Sessions
+        if (!CreateDirectory(_Settings.GetSessionPath().c_str(), NULL))
+        {
+            errorInfo = GetSystemErrorMessage(GetLastError());
+            _CurrentDirectory = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str()); //To show full error message
+            return false;
+        }
     }
 
     //! Session item description
