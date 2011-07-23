@@ -86,7 +86,7 @@ enum PluginString
     StringLoggingOptionsLevelItem2,
     StringLoggingDialogLogToFile,
     StringLogFileName,
-    
+
     //About menu
     StringAboutDialogTitle,
     StringPluginDescriptionText,
@@ -142,4 +142,6 @@ enum PluginString
     StringErrDeleteDir,
 
     StringOperationCanceledByUser,
+
+    StringCreateNewSessionItem,
 };

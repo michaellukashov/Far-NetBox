@@ -244,6 +244,13 @@ bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &e
         }
     }
     while (retCode == ERROR_SUCCESS && FindNextFile(findHandle, &findFileData));
+    // Если в каталоге нет ни одного элемента, добавляем подсказку
+    if (sessionItems.size() == 0)
+    {
+        SessionItem item;
+        item.Name = CFarPlugin::GetString(StringCreateNewSessionItem);
+        sessionItems.push_back(item);
+    }
 
     FindClose(findHandle);
 
