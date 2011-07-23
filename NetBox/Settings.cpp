@@ -189,52 +189,55 @@ void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int title
 
 void CSettings::Configure()
 {
-    // Создаем меню с настройками
-    vector<FarMenuItemEx> items;
-    // Main settings
-    size_t MainSettingsMenuIdx = items.size();
-    AddMenuItem(items, 0, StringMainSettingsMenuTitle);
-    // Proxy settings
-    size_t ProxySettingsMenuIdx = items.size();
-    AddMenuItem(items, 0, StringProxySettingsMenuTitle);
-    // Logging settings
-    size_t LoggingSettingsMenuIdx = items.size();
-    AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
-    //
-    AddMenuItem(items, MIF_SEPARATOR, 0);
-    // About
-    size_t AboutMenuIdx = items.size();
-    AddMenuItem(items, 0, StringAboutMenuTitle);
-    items[_SettingsMenuIdx].Flags |= MIF_SELECTED;
+    for (;;)
+    {
+        // Создаем меню с настройками
+        vector<FarMenuItemEx> items;
+        // Main settings
+        size_t MainSettingsMenuIdx = items.size();
+        AddMenuItem(items, 0, StringMainSettingsMenuTitle);
+        // Proxy settings
+        size_t ProxySettingsMenuIdx = items.size();
+        AddMenuItem(items, 0, StringProxySettingsMenuTitle);
+        // Logging settings
+        size_t LoggingSettingsMenuIdx = items.size();
+        AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
+        //
+        AddMenuItem(items, MIF_SEPARATOR, 0);
+        // About
+        size_t AboutMenuIdx = items.size();
+        AddMenuItem(items, 0, StringAboutMenuTitle);
+        items[_SettingsMenuIdx].Flags |= MIF_SELECTED;
 
-    const size_t menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
-        -1, -1, 0, FMENU_AUTOHIGHLIGHT | FMENU_WRAPMODE | FMENU_USEEXT,
-        CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
-        reinterpret_cast<FarMenuItem *>(&items.front()),
-        static_cast<int>(items.size()));
-    if (menuIdx == MainSettingsMenuIdx)
-    {
-        MainConfigure();
+        const size_t menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
+            -1, -1, 0, FMENU_AUTOHIGHLIGHT | FMENU_WRAPMODE | FMENU_USEEXT,
+            CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
+            reinterpret_cast<FarMenuItem *>(&items.front()),
+            static_cast<int>(items.size()));
+        if (menuIdx == MainSettingsMenuIdx)
+        {
+            MainConfigure();
+        }
+        else if (menuIdx == ProxySettingsMenuIdx)
+        {
+            ProxyConfigure();
+        }
+        else if (menuIdx == LoggingSettingsMenuIdx)
+        {
+            LoggingConfigure();
+        }
+        else if (menuIdx == AboutMenuIdx)
+        {
+            ShowAbout();
+        }
+        else
+        {
+            return;
+        }
+        // Сохраняем индекс выбранного элемента меню
+        _SettingsMenuIdx = menuIdx;
+        // DEBUG_PRINTF(L"new _SettingsMenuIdx = %d", _SettingsMenuIdx);
     }
-    else if (menuIdx == ProxySettingsMenuIdx)
-    {
-        ProxyConfigure();
-    }
-    else if (menuIdx == LoggingSettingsMenuIdx)
-    {
-        LoggingConfigure();
-    }
-    else if (menuIdx == AboutMenuIdx)
-    {
-        ShowAbout();
-    }
-    else
-    {
-        return;
-    }
-    // Сохраняем индекс выбранного элемента меню
-    _SettingsMenuIdx = menuIdx;
-    // DEBUG_PRINTF(L"new _SettingsMenuIdx = %d", _SettingsMenuIdx);
 }
 
 void CSettings::MainConfigure()
