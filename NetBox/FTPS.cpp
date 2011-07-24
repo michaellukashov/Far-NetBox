@@ -559,7 +559,8 @@ bool CFTPS::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
     sockaddr_in sockAddr;
     ZeroMemory(&sockAddr, sizeof(sockAddr));
     sockAddr.sin_family = AF_INET;
-    sockAddr.sin_port = htons(port ? port : 22);
+    DEBUG_PRINTF(L"NetBox: port = %u", port);
+    sockAddr.sin_port = htons(port ? port : 990);
     sockAddr.sin_addr.s_addr = address;
 
     //Establish network connection
