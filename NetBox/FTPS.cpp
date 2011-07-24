@@ -155,7 +155,6 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 
     _AbortEvent = abortEvent;
 
-    unsigned short port = 0;
     const wchar_t *url = _Session.GetURL();
     DEBUG_PRINTF(L"NetBox: FTPS::Connect: connecting to %s", url);
     //Initialize curl
@@ -163,9 +162,8 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
         _Session.GetProxySettings());
     _CURL.SetAbortEvent(abortEvent);
 
-    wstring hostName;
     wstring path;
-    ParseURL(url, NULL, &hostName, &port, &path, NULL, NULL, NULL);
+    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
     DEBUG_PRINTF(L"NetBox: FTPS::Connect: path = %s", path.c_str());
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
@@ -187,24 +185,33 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 
 void CFTPS::Close()
 {
+    _CURL.Close();
 }
 
 
 bool CFTPS::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
-    assert(type == ItemDirectory);
-/*     assert(_FTPSSession);
+    assert(path && path[0] == L'/');
 
-    CFTPSFileHandle dirHandle(_FTPSSession, LocalToSftpCP(path).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
-    if (!dirHandle)
+    string ftpPath = LocalToFtpCP(path);
+    DEBUG_PRINTF(L"NetBox: CheckExisting: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
     {
-        // errorInfo = FormatSSHLastErrorDescription();
+        ftpPath += '/';
     }
-    isExist = (dirHandle != NULL);
- */
+
+    isExist = true;
+
+    CURLcode urlCode = _CURL.Prepare(ftpPath.c_str());
+    CHECK_CUCALL(urlCode, _CURL.Perform());
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        isExist = false;
+    }
+
     return true;
 }
-
 
 bool CFTPS::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
