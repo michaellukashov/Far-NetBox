@@ -19,9 +19,11 @@
 
 #pragma once
 
-#include "ProtocolBase.h"
 #include <libssh2.h>
 #include <libssh2_sftp.h>
+
+#include "ProtocolBase.h"
+#include "EasyURL.h"
 
 
 /**
@@ -90,21 +92,6 @@ public:
 
 private:
     /**
-     * Open SSH session
-     * \param hostName remote host name
-     * \param port remote host port
-     * \param errInfo buffer to save error message
-     * \return false if error
-     */
-    bool OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo);
-
-    /**
-     * Format error description from SSH last error
-     * \return error description
-     */
-    wstring FormatSSHLastErrorDescription() const;
-
-    /**
      * Convert local (unicode) charset to ftp codepage
      * \param src source path
      * \return path in ftp codepage
@@ -127,7 +114,7 @@ private:
 
 private:
     SOCKET              _Socket;        ///< Session socket
-    LIBSSH2_SESSION    *_SSHSession;    ///< SSH2 session
-    LIBSSH2_SFTP       *_FTPSSession;   ///< FTPS session
     HANDLE              _AbortEvent;    ///< Abort event
+
+    CEasyURL _CURL;         ///< CURL easy
 };

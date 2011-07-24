@@ -19,6 +19,7 @@
 
 #include "stdafx.h"
 #include "FTPS.h"
+#include "Logging.h"
 #include "Strings.h"
 
 static const char *ParamCodePage = "CodePage";
@@ -137,7 +138,7 @@ protected:
 
 
 CFTPS::CFTPS(const CSession *session)
-    : CProtocolBase(session), _Socket(INVALID_SOCKET), _SSHSession(NULL), _FTPSSession(NULL), _AbortEvent(NULL)
+    : CProtocolBase(session), _Socket(INVALID_SOCKET), _AbortEvent(NULL)
 {
 }
 
@@ -155,95 +156,44 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 
     _AbortEvent = abortEvent;
 
+    unsigned short port = 0;
+    const wchar_t *url = _Session.GetURL();
+    DEBUG_PRINTF(L"NetBox: FTPS::Connect: connecting to %s", url);
+    //Initialize curl
+    _CURL.Initialize(url, _Session.GetUserName(), _Session.GetPassword(),
+        _Session.GetProxySettings());
+    _CURL.SetAbortEvent(abortEvent);
+
     wstring hostName;
     wstring path;
-    unsigned short port = 0;
-    ParseURL(_Session.GetURL(), NULL, &hostName, &port, &path, NULL, NULL, NULL);
-
-    if (OpenSSHSession(hostName.c_str(), port, errorInfo))
+    ParseURL(url, NULL, &hostName, &port, &path, NULL, NULL, NULL);
+    bool dirExist = false;
+    DEBUG_PRINTF(L"NetBox: FTPS::Connect: path = %s", path.c_str());
+    if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
-        bool aborted = false;
-        libssh2_session_set_blocking(_SSHSession, 0);
-        while (!(_FTPSSession = libssh2_sftp_init(_SSHSession)))
-        {
-            int last_errno = libssh2_session_last_errno(_SSHSession);
-            if (last_errno != LIBSSH2SFTP_EAGAIN)
-            {
-                // DEBUG_PRINTF(L"CFTPS::Connect: libssh2_sftp_init failed: %d", last_errno);
-                break;
-            }
-            CFarPlugin::CheckAbortEvent(&_AbortEvent);
-            if (WaitForSingleObject(_AbortEvent, 0) == WAIT_OBJECT_0)
-            {
-                aborted = true;
-                break;
-            }
-            Sleep(100);
-        }
-        if (_FTPSSession != NULL)
-        {
-            libssh2_session_set_blocking(_SSHSession, 1);
-        }
-        else if (aborted)
-        {
-            errorInfo = CFarPlugin::GetString(StringOperationCanceledByUser);
-        }
-        else
-        {
-            errorInfo = FormatSSHLastErrorDescription();
-        }
+        Log2(L"WebDAV: FTPS::Connect: error: path %s does not exist.", path.c_str());
+        return false;
     }
-    // DEBUG_PRINTF(L"CFTPS::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo.c_str());
-
-    if (_FTPSSession == NULL)
-    {
-        Close();
-    }
-    else
-    {
-
-        if (path.compare(L"/") != 0)
-        {
-            //Check initial path existing
-            bool dirExist = false;
-            if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
-            {
-                return false;
-            }
-            _CurrentDirectory = path;
-        }
-        else
-        {
-            char realPath[256];
-            int res = libssh2_sftp_symlink_ex(_FTPSSession, NULL, 0, realPath, static_cast<unsigned int>(sizeof(realPath)), LIBSSH2_SFTP_REALPATH);
-            _CurrentDirectory = res >= 0 ? CFarPlugin::MB2W(realPath, CP_UTF8) : L"/";
-        }
-    }
-
+    _CurrentDirectory = path;
+    DEBUG_PRINTF(L"NetBox: FTPS::Connect: _CurrentDirectory1 = %s", _CurrentDirectory.c_str());
     while(_CurrentDirectory.size() > 1 && _CurrentDirectory[_CurrentDirectory.length() - 1] == L'/')
     {
         _CurrentDirectory.erase(_CurrentDirectory.length() - 1);
     }
-
-    return (_FTPSSession != NULL);
+    DEBUG_PRINTF(L"NetBox: FTPS::Connect: _CurrentDirectory2 = %s", _CurrentDirectory.c_str());
+    DEBUG_PRINTF(L"NetBox: Connect: end");
+    return true;
 }
 
 
 void CFTPS::Close()
 {
-    if (_FTPSSession)
+/*     if (_FTPSSession)
     {
         libssh2_sftp_shutdown(_FTPSSession);
         _FTPSSession = NULL;
     }
-
-    if (_SSHSession)
-    {
-        libssh2_session_disconnect(_SSHSession, "Normal shutdown");
-        libssh2_session_free(_SSHSession);
-        _SSHSession = NULL;
-    }
-
+ */
     if (_Socket != INVALID_SOCKET)
     {
         shutdown(_Socket, SD_BOTH);
@@ -256,28 +206,31 @@ void CFTPS::Close()
 bool CFTPS::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
     assert(type == ItemDirectory);
-    assert(_FTPSSession);
+/*     assert(_FTPSSession);
 
     CFTPSFileHandle dirHandle(_FTPSSession, LocalToSftpCP(path).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
     if (!dirHandle)
     {
-        errorInfo = FormatSSHLastErrorDescription();
+        // errorInfo = FormatSSHLastErrorDescription();
     }
     isExist = (dirHandle != NULL);
+ */
     return true;
 }
 
 
 bool CFTPS::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
-    assert(_FTPSSession);
+    bool retStatus = false;
+/*    assert(_FTPSSession);
 
     const string sftpPath = LocalToSftpCP(path);
-    const bool retStatus = (libssh2_sftp_mkdir_ex(_FTPSSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length()), LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH | LIBSSH2_SFTP_S_IXOTH) == LIBSSH2_ERROR_NONE);
+    retStatus = (libssh2_sftp_mkdir_ex(_FTPSSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length()), LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH | LIBSSH2_SFTP_S_IXOTH) == LIBSSH2_ERROR_NONE);
     if (!retStatus)
     {
-        errorInfo = FormatSSHLastErrorDescription();
+        // errorInfo = FormatSSHLastErrorDescription();
     }
+ */
     return retStatus;
 }
 
@@ -286,12 +239,12 @@ bool CFTPS::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
-    assert(_FTPSSession);
+/*     assert(_FTPSSession);
 
     CFTPSFileHandle dirHandle(_FTPSSession, LocalToSftpCP(_CurrentDirectory.c_str()).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
     if (!dirHandle)
     {
-        errorInfo = FormatSSHLastErrorDescription();
+        // errorInfo = FormatSSHLastErrorDescription();
         return false;
     }
 
@@ -355,7 +308,7 @@ bool CFTPS::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             farItem.FindData.ftLastWriteTime = sftpItems[i].Modified;
             farItem.FindData.ftLastAccessTime = sftpItems[i].LastAccess;
         }
-    }
+    } */
 
     return true;
 }
@@ -364,13 +317,13 @@ bool CFTPS::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 bool CFTPS::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
 {
     assert(localPath && *localPath);
-    assert(_FTPSSession);
+/*     assert(_FTPSSession);
 
     //Open source file
     CFTPSFileHandle sftpFile(_FTPSSession, LocalToSftpCP(remotePath).c_str(), LIBSSH2_FXF_READ, 0, LIBSSH2_SFTP_OPENFILE);
     if (!sftpFile)
     {
-        errorInfo = FormatSSHLastErrorDescription();
+        // errorInfo = FormatSSHLastErrorDescription();
         return false;
     }
 
@@ -410,7 +363,7 @@ bool CFTPS::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
     }
 
     outFile.Close();
-    _ProgressPercent = -1;
+    _ProgressPercent = -1; */
 
     return true;
 }
@@ -419,7 +372,7 @@ bool CFTPS::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 bool CFTPS::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
 {
     assert(localPath && *localPath);
-    assert(_FTPSSession);
+/*     assert(_FTPSSession);
 
     //Destination (FTPS) file
     CFTPSFileHandle sftpFile(_FTPSSession, LocalToSftpCP(remotePath).c_str(),
@@ -428,7 +381,7 @@ bool CFTPS::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
                              LIBSSH2_SFTP_OPENFILE);
     if (!sftpFile)
     {
-        errorInfo = FormatSSHLastErrorDescription();
+        // errorInfo = FormatSSHLastErrorDescription();
         return false;
     }
 
@@ -466,7 +419,7 @@ bool CFTPS::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
             ssize_t res = libssh2_sftp_write(sftpFile, &buff[sent], readSize - sent);
             if (res < 0)
             {
-                errorInfo = FormatSSHLastErrorDescription();
+                // errorInfo = FormatSSHLastErrorDescription();
                 return false;
             }
             sent += res;
@@ -478,7 +431,7 @@ bool CFTPS::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
     }
 
     inFile.Close();
-    _ProgressPercent = -1;
+    _ProgressPercent = -1; */
 
     return true;
 }
@@ -486,12 +439,13 @@ bool CFTPS::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 
 bool CFTPS::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
 {
-    assert(_FTPSSession);
+    bool retStatus = false;
+/*     assert(_FTPSSession);
 
     const string srcSftpPath = LocalToSftpCP(srcPath);
     const string dstSftpPath = LocalToSftpCP(dstPath);
 
-    const bool retStatus = (libssh2_sftp_rename_ex(_FTPSSession, srcSftpPath.c_str(),
+    retStatus = (libssh2_sftp_rename_ex(_FTPSSession, srcSftpPath.c_str(),
                             static_cast<unsigned int>(srcSftpPath.length()), dstSftpPath.c_str(),
                             static_cast<unsigned int>(dstSftpPath.length()),
                             LIBSSH2_SFTP_RENAME_OVERWRITE | LIBSSH2_SFTP_RENAME_ATOMIC | LIBSSH2_SFTP_RENAME_NATIVE
@@ -499,18 +453,18 @@ bool CFTPS::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemTyp
 
     if (!retStatus)
     {
-        errorInfo = FormatSSHLastErrorDescription();
+        // errorInfo = FormatSSHLastErrorDescription();
     }
-
+ */
     return retStatus;
 }
 
 
 bool CFTPS::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 {
-    assert(_FTPSSession);
-
     bool retStatus = false;
+/*     assert(_FTPSSession);
+
 
     const string sftpPath = LocalToSftpCP(path);
 
@@ -525,113 +479,9 @@ bool CFTPS::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 
     if (!retStatus)
     {
-        errorInfo = FormatSSHLastErrorDescription();
-    }
+        // errorInfo = FormatSSHLastErrorDescription();
+    } */
 
     return retStatus;
 }
 
-
-bool CFTPS::OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo)
-{
-    assert(_Socket == INVALID_SOCKET);
-
-    //Check private key file existing (libssh2 doesn't do it)
-    const wchar_t *keyFileName = _Session.GetKeyFile();
-    if (*keyFileName == 0)
-    {
-        keyFileName = NULL;
-    }
-    if (keyFileName && GetFileAttributes(keyFileName) == INVALID_FILE_ATTRIBUTES)
-    {
-        errInfo = FormatErrorDescription(GetLastError(), CFarPlugin::GetFormattedString(StringErrKeyFile, keyFileName).c_str());
-        return false;
-    }
-
-    const hostent *remoteHost = gethostbyname(CFarPlugin::W2MB(hostName).c_str());
-    if (!remoteHost)
-    {
-        errInfo = FormatErrorDescription(WSAGetLastError());
-        return false;
-    }
-    const unsigned long address = *reinterpret_cast<unsigned long *>(remoteHost->h_addr_list[0]);
-
-    sockaddr_in sockAddr;
-    ZeroMemory(&sockAddr, sizeof(sockAddr));
-    sockAddr.sin_family = AF_INET;
-    DEBUG_PRINTF(L"NetBox: port = %u", port);
-    sockAddr.sin_port = htons(port ? port : 990);
-    sockAddr.sin_addr.s_addr = address;
-
-    //Establish network connection
-    _Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    if (_Socket == INVALID_SOCKET || connect(_Socket, reinterpret_cast<sockaddr *>(&sockAddr), sizeof(sockAddr)) != 0)
-    {
-        errInfo = FormatErrorDescription(WSAGetLastError());
-        return false;
-    }
-
-    //Open SSH2 session
-    _SSHSession = libssh2_session_init();
-    if (!_SSHSession)
-    {
-        errInfo = L"Unable to initialize ssh session";
-        return false;
-    }
-
-    if (libssh2_session_startup(_SSHSession, static_cast<int>(_Socket)) != LIBSSH2_ERROR_NONE)
-    {
-        errInfo = FormatSSHLastErrorDescription();
-        return false;
-    }
-
-    //Authenticate
-    const string userName = CFarPlugin::W2MB(_Session.GetUserName(), CP_UTF8);
-    const string password = CFarPlugin::W2MB(_Session.GetPassword(), CP_UTF8);
-    if (keyFileName)
-    {
-        //By key
-        const string keyPlaneFileName = CFarPlugin::W2MB(keyFileName);
-        if (libssh2_userauth_publickey_fromfile_ex(_SSHSession, userName.c_str(), static_cast<unsigned int>(userName.length()), NULL, keyPlaneFileName.c_str(), password.c_str()))
-        {
-            errInfo = FormatSSHLastErrorDescription();
-            return false;
-        }
-    }
-    else
-    {
-        //By password
-        if (libssh2_userauth_password_ex(_SSHSession, userName.c_str(), static_cast<unsigned int>(userName.length()), password.c_str(), static_cast<unsigned int>(password.length()), NULL))
-        {
-            errInfo = FormatSSHLastErrorDescription();
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
-wstring CFTPS::FormatSSHLastErrorDescription() const
-{
-    assert(_SSHSession);
-
-    string errorMessage = "SSH session error (libssh2)\n";
-
-    char *sshErrMsg = NULL;
-    const int errCode = libssh2_session_last_error(_SSHSession, &sshErrMsg, NULL, 0);
-
-    errorMessage += NumberToText(errCode);
-    errorMessage += ": ";
-
-    if (sshErrMsg)
-    {
-        errorMessage += sshErrMsg;
-    }
-    else
-    {
-        errorMessage += "Unknown error";
-    }
-
-    return CFarPlugin::MB2W(errorMessage.c_str());
-}
