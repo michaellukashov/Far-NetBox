@@ -138,7 +138,7 @@ protected:
 
 
 CFTPS::CFTPS(const CSession *session)
-    : CProtocolBase(session), _Socket(INVALID_SOCKET), _AbortEvent(NULL)
+    : CProtocolBase(session), _AbortEvent(NULL)
 {
 }
 
@@ -152,7 +152,6 @@ CFTPS::~CFTPS()
 bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
     assert(abortEvent);
-    assert(_Socket == INVALID_SOCKET);
 
     _AbortEvent = abortEvent;
 
@@ -188,18 +187,6 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 
 void CFTPS::Close()
 {
-/*     if (_FTPSSession)
-    {
-        libssh2_sftp_shutdown(_FTPSSession);
-        _FTPSSession = NULL;
-    }
- */
-    if (_Socket != INVALID_SOCKET)
-    {
-        shutdown(_Socket, SD_BOTH);
-        closesocket(_Socket);
-        _Socket = INVALID_SOCKET;
-    }
 }
 
 

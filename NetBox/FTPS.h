@@ -113,8 +113,6 @@ private:
     }
 
 private:
-    SOCKET              _Socket;        ///< Session socket
-    HANDLE              _AbortEvent;    ///< Abort event
-
-    CEasyURL _CURL;         ///< CURL easy
+    HANDLE _AbortEvent; ///< Abort event
+    CEasyURL _CURL; ///< CURL easy
 };
