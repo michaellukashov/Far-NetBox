@@ -25,9 +25,9 @@
 
 
 /**
- * SFTP saved session
+ * FTPS saved session
  */
-class CSessionSFTP : public CSession
+class CSessionFTPS : public CSession
 {
 public:
     //Accessors
@@ -44,12 +44,12 @@ protected:
 
 
 /**
- * SFTP session editor dialog
+ * FTPS session editor dialog
  */
-class CSessionEditorSFTP : public CSessionEditor
+class CSessionEditorFTPS : public CSessionEditor
 {
 public:
-    CSessionEditorSFTP(CSession *session);
+    CSessionEditorFTPS(CSession *session);
 
     //From CSessionEditDlg
     void OnPrepareDialog();
@@ -68,13 +68,13 @@ private:
 
 
 /**
- * SFTP client implementation
+ * FTPS client implementation
  */
-class CSFTP : public CProtocolBase<CSessionSFTP>
+class CFTPS : public CProtocolBase<CSessionFTPS>
 {
 public:
-    CSFTP(const CSession *session);
-    ~CSFTP();
+    CFTPS(const CSession *session);
+    ~CFTPS();
 
     //From IProtocol
     bool Connect(HANDLE abortEvent, wstring &errorInfo);
@@ -128,6 +128,6 @@ private:
 private:
     SOCKET              _Socket;        ///< Session socket
     LIBSSH2_SESSION    *_SSHSession;    ///< SSH2 session
-    LIBSSH2_SFTP       *_SFTPSession;   ///< SFTP session
+    LIBSSH2_SFTP       *_FTPSSession;   ///< FTPS session
     HANDLE              _AbortEvent;    ///< Abort event
 };

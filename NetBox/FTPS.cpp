@@ -18,74 +18,74 @@
  **************************************************************************/
 
 #include "stdafx.h"
-#include "SFTP.h"
+#include "FTPS.h"
 #include "Strings.h"
 
 static const char *ParamCodePage = "CodePage";
 static const char *ParamKeyFile =  "KeyFile";
 
 
-UINT CSessionSFTP::GetCodePage() const
+UINT CSessionFTPS::GetCodePage() const
 {
     return static_cast<UINT>(GetPropertyNumeric(ParamCodePage, CP_UTF8));
 }
 
 
-void CSessionSFTP::SetCodePage(const UINT cp)
+void CSessionFTPS::SetCodePage(const UINT cp)
 {
     SetProperty(ParamCodePage, static_cast<__int64>(cp));
 }
 
 
-const wchar_t *CSessionSFTP::GetKeyFile() const
+const wchar_t *CSessionFTPS::GetKeyFile() const
 {
     return GetProperty(ParamKeyFile, L"");
 }
 
 
-void CSessionSFTP::SetKeyFile(const wchar_t *fileName)
+void CSessionFTPS::SetKeyFile(const wchar_t *fileName)
 {
     assert(fileName);
     SetProperty(ParamKeyFile, fileName);
 }
 
 
-PSessionEditor CSessionSFTP::CreateEditorInstance()
+PSessionEditor CSessionFTPS::CreateEditorInstance()
 {
-    return PSessionEditor(new CSessionEditorSFTP(this));
+    return PSessionEditor(new CSessionEditorFTPS(this));
 }
 
 
-PProtocol CSessionSFTP::CreateClientInstance() const
+PProtocol CSessionFTPS::CreateClientInstance() const
 {
-    return PProtocol(new CSFTP(this));
+    return PProtocol(new CFTPS(this));
 }
 
 
-CSessionEditorSFTP::CSessionEditorSFTP(CSession *session)
+CSessionEditorFTPS::CSessionEditorFTPS(CSession *session)
     : CSessionEditor(session, 54, 24), _IdKeyFile(0)
 {
 }
 
 
-void CSessionEditorSFTP::OnPrepareDialog()
+void CSessionEditorFTPS::OnPrepareDialog()
 {
     _IdText = CreateText(GetLeft(), GetHeight() - 7, CFarPlugin::GetString(StringEdAuthCert));
-    _IdKeyFile = CreateEdit(GetLeft(), GetHeight() - 6, MAX_SIZE, static_cast<CSessionSFTP *>(_Session)->GetKeyFile());
+    _IdKeyFile = CreateEdit(GetLeft(), GetHeight() - 6, MAX_SIZE, static_cast<CSessionFTPS *>(_Session)->GetKeyFile());
 
     _IdSeparator = CreateSeparator(GetHeight() - 5);
-    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionSFTP *>(_Session)->GetCodePage(),
+    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTPS *>(_Session)->GetCodePage(),
         _IdCPText, _IdCP);
 }
 
 
-void CSessionEditorSFTP::OnSave()
+void CSessionEditorFTPS::OnSave()
 {
-    static_cast<CSessionSFTP *>(_Session)->SetKeyFile(GetText(_IdKeyFile).c_str());
-    static_cast<CSessionSFTP *>(_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(_IdCP).c_str())));
+    static_cast<CSessionFTPS *>(_Session)->SetKeyFile(GetText(_IdKeyFile).c_str());
+    static_cast<CSessionFTPS *>(_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(_IdCP).c_str())));
 }
 
-void CSessionEditorSFTP::ShowSessionDlgItems(bool visible)
+void CSessionEditorFTPS::ShowSessionDlgItems(bool visible)
 {
     CSessionEditor::ShowSessionDlgItems(visible);
     ShowDlgItem(_IdText, visible);
@@ -98,15 +98,15 @@ void CSessionEditorSFTP::ShowSessionDlgItems(bool visible)
 /**
  * libssh2 file handle wrapper
  */
-class CSFTPFileHandle
+class CFTPSFileHandle
 {
 public:
-    CSFTPFileHandle(LIBSSH2_SFTP_HANDLE *h)
+    CFTPSFileHandle(LIBSSH2_SFTP_HANDLE *h)
     {
         _Object = h;
     }
 
-    CSFTPFileHandle(LIBSSH2_SFTP *sftp, const char *path, const unsigned long flags, const long mode, const int type)
+    CFTPSFileHandle(LIBSSH2_SFTP *sftp, const char *path, const unsigned long flags, const long mode, const int type)
     {
         assert(sftp);
         assert(path && path[0] == L'/');
@@ -114,7 +114,7 @@ public:
         _Object = libssh2_sftp_open_ex(sftp, path, static_cast<unsigned int>(strlen(path)), flags, mode, type);
     }
 
-    ~CSFTPFileHandle()
+    ~CFTPSFileHandle()
     {
         if (_Object)
         {
@@ -136,19 +136,19 @@ protected:
 };
 
 
-CSFTP::CSFTP(const CSession *session)
-    : CProtocolBase(session), _Socket(INVALID_SOCKET), _SSHSession(NULL), _SFTPSession(NULL), _AbortEvent(NULL)
+CFTPS::CFTPS(const CSession *session)
+    : CProtocolBase(session), _Socket(INVALID_SOCKET), _SSHSession(NULL), _FTPSSession(NULL), _AbortEvent(NULL)
 {
 }
 
 
-CSFTP::~CSFTP()
+CFTPS::~CFTPS()
 {
     Close();
 }
 
 
-bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
+bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
     assert(abortEvent);
     assert(_Socket == INVALID_SOCKET);
@@ -164,12 +164,12 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     {
         bool aborted = false;
         libssh2_session_set_blocking(_SSHSession, 0);
-        while (!(_SFTPSession = libssh2_sftp_init(_SSHSession)))
+        while (!(_FTPSSession = libssh2_sftp_init(_SSHSession)))
         {
             int last_errno = libssh2_session_last_errno(_SSHSession);
             if (last_errno != LIBSSH2SFTP_EAGAIN)
             {
-                // DEBUG_PRINTF(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
+                // DEBUG_PRINTF(L"CFTPS::Connect: libssh2_sftp_init failed: %d", last_errno);
                 break;
             }
             CFarPlugin::CheckAbortEvent(&_AbortEvent);
@@ -180,7 +180,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
             }
             Sleep(100);
         }
-        if (_SFTPSession != NULL)
+        if (_FTPSSession != NULL)
         {
             libssh2_session_set_blocking(_SSHSession, 1);
         }
@@ -193,9 +193,9 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
             errorInfo = FormatSSHLastErrorDescription();
         }
     }
-    // DEBUG_PRINTF(L"CSFTP::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo.c_str());
+    // DEBUG_PRINTF(L"CFTPS::Connect: after OpenSSHSession 2: errorInfo = %s", errorInfo.c_str());
 
-    if (_SFTPSession == NULL)
+    if (_FTPSSession == NULL)
     {
         Close();
     }
@@ -215,7 +215,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
         else
         {
             char realPath[256];
-            int res = libssh2_sftp_symlink_ex(_SFTPSession, NULL, 0, realPath, static_cast<unsigned int>(sizeof(realPath)), LIBSSH2_SFTP_REALPATH);
+            int res = libssh2_sftp_symlink_ex(_FTPSSession, NULL, 0, realPath, static_cast<unsigned int>(sizeof(realPath)), LIBSSH2_SFTP_REALPATH);
             _CurrentDirectory = res >= 0 ? CFarPlugin::MB2W(realPath, CP_UTF8) : L"/";
         }
     }
@@ -225,16 +225,16 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
         _CurrentDirectory.erase(_CurrentDirectory.length() - 1);
     }
 
-    return (_SFTPSession != NULL);
+    return (_FTPSSession != NULL);
 }
 
 
-void CSFTP::Close()
+void CFTPS::Close()
 {
-    if (_SFTPSession)
+    if (_FTPSSession)
     {
-        libssh2_sftp_shutdown(_SFTPSession);
-        _SFTPSession = NULL;
+        libssh2_sftp_shutdown(_FTPSSession);
+        _FTPSSession = NULL;
     }
 
     if (_SSHSession)
@@ -253,12 +253,12 @@ void CSFTP::Close()
 }
 
 
-bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+bool CFTPS::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
     assert(type == ItemDirectory);
-    assert(_SFTPSession);
+    assert(_FTPSSession);
 
-    CSFTPFileHandle dirHandle(_SFTPSession, LocalToSftpCP(path).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
+    CFTPSFileHandle dirHandle(_FTPSSession, LocalToSftpCP(path).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
     if (!dirHandle)
     {
         errorInfo = FormatSSHLastErrorDescription();
@@ -268,12 +268,12 @@ bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExis
 }
 
 
-bool CSFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CFTPS::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
-    assert(_SFTPSession);
+    assert(_FTPSSession);
 
     const string sftpPath = LocalToSftpCP(path);
-    const bool retStatus = (libssh2_sftp_mkdir_ex(_SFTPSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length()), LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH | LIBSSH2_SFTP_S_IXOTH) == LIBSSH2_ERROR_NONE);
+    const bool retStatus = (libssh2_sftp_mkdir_ex(_FTPSSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length()), LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH | LIBSSH2_SFTP_S_IXOTH) == LIBSSH2_ERROR_NONE);
     if (!retStatus)
     {
         errorInfo = FormatSSHLastErrorDescription();
@@ -282,23 +282,23 @@ bool CSFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CFTPS::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
-    assert(_SFTPSession);
+    assert(_FTPSSession);
 
-    CSFTPFileHandle dirHandle(_SFTPSession, LocalToSftpCP(_CurrentDirectory.c_str()).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
+    CFTPSFileHandle dirHandle(_FTPSSession, LocalToSftpCP(_CurrentDirectory.c_str()).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
     if (!dirHandle)
     {
         errorInfo = FormatSSHLastErrorDescription();
         return false;
     }
 
-    //!SFTP item description
-    struct SFTPItem
+    //!FTPS item description
+    struct FTPSItem
     {
-        SFTPItem() : Attributes(0), Size(0)
+        FTPSItem() : Attributes(0), Size(0)
         {
             Modified.dwLowDateTime = Modified.dwHighDateTime = LastAccess.dwLowDateTime = LastAccess.dwHighDateTime =0;
         }
@@ -308,7 +308,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
         FILETIME            LastAccess;
         unsigned __int64    Size;
     };
-    vector<SFTPItem> sftpItems;
+    vector<FTPSItem> sftpItems;
 
     //Read directory content
     char fileName[512];
@@ -319,7 +319,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
         {
             continue;
         }
-        SFTPItem sftpItem;
+        FTPSItem sftpItem;
         sftpItem.Name = SftpToLocalCP(fileName);
         if (LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions))
         {
@@ -361,13 +361,13 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 }
 
 
-bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
+bool CFTPS::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
 {
     assert(localPath && *localPath);
-    assert(_SFTPSession);
+    assert(_FTPSSession);
 
     //Open source file
-    CSFTPFileHandle sftpFile(_SFTPSession, LocalToSftpCP(remotePath).c_str(), LIBSSH2_FXF_READ, 0, LIBSSH2_SFTP_OPENFILE);
+    CFTPSFileHandle sftpFile(_FTPSSession, LocalToSftpCP(remotePath).c_str(), LIBSSH2_FXF_READ, 0, LIBSSH2_SFTP_OPENFILE);
     if (!sftpFile)
     {
         errorInfo = FormatSSHLastErrorDescription();
@@ -416,13 +416,13 @@ bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 }
 
 
-bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
+bool CFTPS::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
 {
     assert(localPath && *localPath);
-    assert(_SFTPSession);
+    assert(_FTPSSession);
 
-    //Destination (SFTP) file
-    CSFTPFileHandle sftpFile(_SFTPSession, LocalToSftpCP(remotePath).c_str(),
+    //Destination (FTPS) file
+    CFTPSFileHandle sftpFile(_FTPSSession, LocalToSftpCP(remotePath).c_str(),
                              LIBSSH2_FXF_WRITE |  LIBSSH2_FXF_CREAT | LIBSSH2_FXF_TRUNC,
                              LIBSSH2_SFTP_S_IRUSR | LIBSSH2_SFTP_S_IWUSR | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IWGRP | LIBSSH2_SFTP_S_IROTH | LIBSSH2_SFTP_S_IWOTH,
                              LIBSSH2_SFTP_OPENFILE);
@@ -484,14 +484,14 @@ bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 }
 
 
-bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
+bool CFTPS::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
 {
-    assert(_SFTPSession);
+    assert(_FTPSSession);
 
     const string srcSftpPath = LocalToSftpCP(srcPath);
     const string dstSftpPath = LocalToSftpCP(dstPath);
 
-    const bool retStatus = (libssh2_sftp_rename_ex(_SFTPSession, srcSftpPath.c_str(),
+    const bool retStatus = (libssh2_sftp_rename_ex(_FTPSSession, srcSftpPath.c_str(),
                             static_cast<unsigned int>(srcSftpPath.length()), dstSftpPath.c_str(),
                             static_cast<unsigned int>(dstSftpPath.length()),
                             LIBSSH2_SFTP_RENAME_OVERWRITE | LIBSSH2_SFTP_RENAME_ATOMIC | LIBSSH2_SFTP_RENAME_NATIVE
@@ -506,9 +506,9 @@ bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemTyp
 }
 
 
-bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
+bool CFTPS::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 {
-    assert(_SFTPSession);
+    assert(_FTPSSession);
 
     bool retStatus = false;
 
@@ -516,11 +516,11 @@ bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 
     if (type == ItemDirectory)
     {
-        retStatus = (libssh2_sftp_rmdir_ex(_SFTPSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length())) == LIBSSH2_ERROR_NONE);
+        retStatus = (libssh2_sftp_rmdir_ex(_FTPSSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length())) == LIBSSH2_ERROR_NONE);
     }
     else
     {
-        retStatus = (libssh2_sftp_unlink_ex(_SFTPSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length())) == LIBSSH2_ERROR_NONE);
+        retStatus = (libssh2_sftp_unlink_ex(_FTPSSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length())) == LIBSSH2_ERROR_NONE);
     }
 
     if (!retStatus)
@@ -532,7 +532,7 @@ bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 }
 
 
-bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo)
+bool CFTPS::OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo)
 {
     assert(_Socket == INVALID_SOCKET);
 
@@ -611,7 +611,7 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
 }
 
 
-wstring CSFTP::FormatSSHLastErrorDescription() const
+wstring CFTPS::FormatSSHLastErrorDescription() const
 {
     assert(_SSHSession);
 
