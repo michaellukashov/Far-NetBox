@@ -166,6 +166,37 @@ protected:
         return errDescr;
     }
 
+    /**
+     * Convert local (unicode) charset to ftp codepage
+     * \param src source path
+     * \return path in ftp codepage
+     */
+    string LocalToFtpCP(const wchar_t *src, bool replace = false) const
+    {
+        assert(src && src[0] == L'/');
+        string r = CFarPlugin::W2MB(src, _Session.GetCodePage());
+        if (replace)
+        {
+            while (r.find(L'#') != string::npos)
+            {
+                r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
+            }
+        }
+        // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
+        return r;
+    }
+
+    /**
+     * Convert ftp charset to local (unicode) codepage
+     * \param src source path
+     * \return path in local (unicode) codepage
+     */
+    inline wstring FtpToLocalCP(const char *src) const
+    {
+        return CFarPlugin::MB2W(src, _Session.GetCodePage());
+    }
+
+
 protected:
     T       _Session;           ///< Session description
     int     _ProgressPercent;   ///< Progress percent value

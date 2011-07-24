@@ -360,22 +360,6 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     return true;
 }
 
-string CFTP::LocalToFtpCP(const wchar_t *src, bool replace) const
-{
-    assert(src && src[0] == L'/');
-    string r = CFarPlugin::W2MB(src, _Session.GetCodePage());
-    if (replace)
-    {
-        while (r.find(L'#') != string::npos)
-        {
-            r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
-        }
-    }
-    // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
-    return r;
-}
-
-
 WORD CFTP::GetMonth(const char *name) const
 {
     static const char *months[] = { "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
@@ -503,9 +487,9 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     }
     else if (sscanf_s(text, "%c%s %*d %s %s %I64d %s %d %d %[^\n]", &typeSymb, sizeof(typeSymb), permission, sizeof(permission), owner, sizeof(owner), group, sizeof(group), &size, monthName, sizeof(monthName), &day, &year, name, sizeof(name)) == 9)
     {
-        st.wMonth =  GetMonth(monthName);
-        st.wDay =    static_cast<WORD>(day);
-        st.wYear =   static_cast<WORD>(year);
+        st.wMonth = GetMonth(monthName);
+        st.wDay = static_cast<WORD>(day);
+        st.wYear = static_cast<WORD>(year);
         item.Owner = FtpToLocalCP(owner);
         item.Group = FtpToLocalCP(group);
         item.Name = FtpToLocalCP(name);

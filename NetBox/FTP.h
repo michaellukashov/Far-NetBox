@@ -109,23 +109,6 @@ private:
     };
 
     /**
-     * Convert local (unicode) charset to ftp codepage
-     * \param src source path
-     * \return path in ftp codepage
-     */
-    string LocalToFtpCP(const wchar_t *src, bool replace = false) const;
-
-    /**
-     * Convert ftp charset to local (unicode) codepage
-     * \param src source path
-     * \return path in local (unicode) codepage
-     */
-    inline wstring FtpToLocalCP(const char *src) const
-    {
-        return CFarPlugin::MB2W(src, _Session.GetCodePage());
-    }
-
-    /**
      * Get month number by name
      * \param name month's name
      * \return month number or 0 if name is incorrect
@@ -148,5 +131,5 @@ private:
     bool ParseFtpList(const char *text, FTPItem &item) const;
 
 private:
-    CEasyURL        _CURL;      ///< CURL easy
+    CEasyURL _CURL; ///< CURL easy
 };
