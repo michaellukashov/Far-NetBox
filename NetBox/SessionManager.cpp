@@ -68,7 +68,7 @@ BOOL CSessionManager::ProcessKey(HANDLE plugin, const int key, const unsigned in
         PSession session = CSession::Create();
         if (session.get())
         {
-            const wstring savePath = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str());
+            const wstring savePath = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
             session->Save(savePath.c_str(), false);
             CFarPlugin::GetPSI()->Control(plugin, FCTL_UPDATEPANEL, 0, NULL);
             CFarPlugin::GetPSI()->Control(plugin, FCTL_REDRAWPANEL, 0, NULL);
@@ -94,7 +94,7 @@ BOOL CSessionManager::ProcessKey(HANDLE plugin, const int key, const unsigned in
             return 1;
         }
 
-        const wstring sessionPath = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str());
+        const wstring sessionPath = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
         wstring sessionFileName = ConvertPath(sessionPath.c_str(), ppi->FindData.lpwszFileName);
         sessionFileName += L".netbox";
 
@@ -117,7 +117,7 @@ BOOL CSessionManager::ProcessKey(HANDLE plugin, const int key, const unsigned in
 
 bool CSessionManager::CheckExisting(const wchar_t *path, const ItemType /*type*/, bool &isExist, wstring & /*errorInfo*/)
 {
-    isExist = (GetFileAttributes(ConvertPath(_Settings.GetSessionPath().c_str(), path).c_str()) != INVALID_FILE_ATTRIBUTES);
+    isExist = (GetFileAttributes(ConvertPath(m_Settings.GetSessionPath().c_str(), path).c_str()) != INVALID_FILE_ATTRIBUTES);
     return true;
 }
 
@@ -127,11 +127,11 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     assert(name && *name);
 
     const bool moveUp = (wcscmp(L"..", name) == 0);
-    const bool topDirectory = _CurrentDirectory.empty();
+    const bool topDirectory = m_CurrentDirectory.empty();
 
     assert(!moveUp || !topDirectory);   //Must be handled in CPanel (exit from session)
 
-    wstring newPath = _CurrentDirectory;
+    wstring newPath = m_CurrentDirectory;
     if (!moveUp)
     {
         newPath = ConvertPath(newPath.c_str(), name);
@@ -156,7 +156,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     {
         return false;
     }
-    _CurrentDirectory = newPath;
+    m_CurrentDirectory = newPath;
     return true;
 
 }
@@ -164,7 +164,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
 
 bool CSessionManager::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
-    const wstring dirPath = ConvertPath(_Settings.GetSessionPath().c_str(), path);
+    const wstring dirPath = ConvertPath(m_Settings.GetSessionPath().c_str(), path);
     // DEBUG_PRINTF(L"NetBox: dirPath = %s", dirPath.c_str());
     if (!CreateDirectory(dirPath.c_str(), NULL))
     {
@@ -181,7 +181,7 @@ bool CSessionManager::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 
 bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
-    wstring findMask = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str());
+    wstring findMask = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
     DEBUG_PRINTF(L"NetBox: findMask = %s", findMask.c_str());
     ::AppendWChar(findMask, L'\\');
     ::AppendWChar(findMask, L'*');
@@ -191,10 +191,10 @@ bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &e
     if (findHandle == INVALID_HANDLE_VALUE)
     {
         // Попытаемся создать каталог Sessions
-        if (!CreateDirectory(_Settings.GetSessionPath().c_str(), NULL))
+        if (!CreateDirectory(m_Settings.GetSessionPath().c_str(), NULL))
         {
             errorInfo = GetSystemErrorMessage(GetLastError());
-            _CurrentDirectory = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str()); //To show full error message
+            m_CurrentDirectory = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str()); //To show full error message
             return false;
         }
     }
@@ -293,7 +293,7 @@ bool CSessionManager::PutFile(const wchar_t *remotePath, const wchar_t *localPat
         errorInfo = L"Unsupported format";
         return false;
     }
-    wstring savePath = ConvertPath(_Settings.GetSessionPath().c_str(), remotePath);
+    wstring savePath = ConvertPath(m_Settings.GetSessionPath().c_str(), remotePath);
     if (savePath.rfind(L'\\') != string::npos)
     {
         savePath.erase(savePath.rfind(L'\\'));
@@ -304,7 +304,7 @@ bool CSessionManager::PutFile(const wchar_t *remotePath, const wchar_t *localPat
 
 bool CSessionManager::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 {
-    wstring delPath = ConvertPath(_Settings.GetSessionPath().c_str(), path);
+    wstring delPath = ConvertPath(m_Settings.GetSessionPath().c_str(), path);
     if (type == ItemFile)
     {
         delPath += L".netbox";
@@ -328,7 +328,7 @@ PSession CSessionManager::LoadSession(const wchar_t *name)
 {
     assert(name && *name);
 
-    wstring sessionFileName = ConvertPath(_Settings.GetSessionPath().c_str(), _CurrentDirectory.c_str());
+    wstring sessionFileName = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
     sessionFileName = ConvertPath(sessionFileName.c_str(), name);
     sessionFileName += L".netbox";
 

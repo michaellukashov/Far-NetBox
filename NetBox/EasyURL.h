@@ -30,25 +30,25 @@
 class CSlistURL
 {
 public:
-    CSlistURL() : _SList(NULL) {}
+    CSlistURL() : m_SList(NULL) {}
     ~CSlistURL()
     {
-        if (_SList)
+        if (m_SList)
         {
-            curl_slist_free_all(_SList);
+            curl_slist_free_all(m_SList);
         }
     }
     inline void Append(const char *val)
     {
         assert(val);
-        _SList = curl_slist_append(_SList, val);
+        m_SList = curl_slist_append(m_SList, val);
     }
     operator curl_slist *()
     {
-        return _SList;
+        return m_SList;
     }
 private:
-    curl_slist *_SList;
+    curl_slist *m_SList;
 };
 
 
@@ -140,12 +140,12 @@ public:
      */
     inline const char *GetTopURL() const
     {
-        return _TopURL.c_str();
+        return m_TopURL.c_str();
     }
 
     operator CURL *()
     {
-        return _CURL;
+        return m_CURL;
     }
 
 private:
@@ -159,12 +159,12 @@ private:
     static int InternalProgress(void *userData, double dltotal, double dlnow, double ultotal, double ulnow);
 
 private:
-    CURL   *_CURL;      ///< CURL
-    bool    _Prepared;  ///< Preapre statement flag
+    CURL   *m_CURL;      ///< CURL
+    bool    m_Prepared;  ///< Preapre statement flag
 
-    string _TopURL;     ///< Top URL (ftp://host:21)
-    string _UserName;   ///< User name
-    string _Password;   ///< Password
+    string m_TopURL;     ///< Top URL (ftp://host:21)
+    string m_UserName;   ///< User name
+    string m_Password;   ///< Password
 
     //! Output writer description
     struct OutputWriter
@@ -182,7 +182,7 @@ private:
         };
         HANDLE AbortEvent;
     };
-    OutputWriter _Output;
+    OutputWriter m_Output;
 
     //! Input reader description
     struct InputReader
@@ -198,7 +198,7 @@ private:
         unsigned __int64 Total;
         HANDLE AbortEvent;
     };
-    InputReader _Input;
+    InputReader m_Input;
 
     //! Progress description
     struct Progress
@@ -206,6 +206,6 @@ private:
         int    *ProgressPtr;
         HANDLE  AbortEvent;
     };
-    Progress _Progress;
-    struct ProxySettings _proxySettings;
+    Progress m_Progress;
+    struct ProxySettings m_proxySettings;
 };

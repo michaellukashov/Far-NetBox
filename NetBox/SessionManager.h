@@ -40,7 +40,7 @@ public:
     bool ChangeDirectory(const wchar_t *name, wstring &errorInfo);
     const wchar_t *GetCurrentDirectory()
     {
-        return _CurrentDirectory.c_str();
+        return m_CurrentDirectory.c_str();
     }
     bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
     bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
@@ -98,5 +98,5 @@ private:
     wstring ConvertPath(const wchar_t *pathBase, const wchar_t *sub = NULL) const;
 
 private:
-    wstring _CurrentDirectory;  ///< Current directory name
+    wstring m_CurrentDirectory;  ///< Current directory name
 };

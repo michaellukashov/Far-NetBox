@@ -126,7 +126,7 @@ public:
      */
     const wchar_t *GetTitle() const
     {
-        return _Title.c_str();
+        return m_Title.c_str();
     };
 
 private:
@@ -141,7 +141,7 @@ private:
      */
     inline bool IsSessionManager() const
     {
-        return _ProtoClient && (typeid(CSessionManager) == typeid(*_ProtoClient));
+        return m_ProtoClient && (typeid(CSessionManager) == typeid(*m_ProtoClient));
     }
 
     /**
@@ -153,11 +153,11 @@ private:
     void ShowErrorDialog(const DWORD errCode, const wstring &title, const wchar_t *info = NULL) const;
 
 private:
-    IProtocol  *_ProtoClient;       ///< Client's protocol implementation
-    wstring     _LastDirName;       ///< Last created/copyed directory name (used as buffer)
-    wstring     _Title;             ///< Panel title
+    IProtocol  *m_ProtoClient;       ///< Client's protocol implementation
+    wstring     m_LastDirName;       ///< Last created/copyed directory name (used as buffer)
+    wstring     m_Title;             ///< Panel title
 
-    bool        _ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
+    bool        m_ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
 
-    HANDLE      _AbortTask;         ///< Abort task event
+    HANDLE      m_AbortTask;         ///< Abort task event
 };

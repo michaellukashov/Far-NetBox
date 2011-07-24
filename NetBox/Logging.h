@@ -35,12 +35,12 @@ public:
     void Log(int level, const wchar_t *format, va_list args);
 
 private:
-    bool _first;
+    bool m_first;
 
-    bool _enableLogging;
-    int _loggingLevel;
-    bool _logToFile;
-    wstring _logFileName;
+    bool m_enableLogging;
+    int m_loggingLevel;
+    bool m_logToFile;
+    wstring m_logFileName;
 };
 
 void Log1(const wchar_t *format, ...);
