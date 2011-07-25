@@ -56,9 +56,9 @@ protected:
     virtual void ShowSessionDlgItems(bool visible);
 
 private:
-    int _IdSeparator;
-    int _IdCPText;
-    int _IdCP;
+    int m_IdSeparator;
+    int m_IdCPText;
+    int m_IdCP;
 };
 
 
@@ -122,7 +122,7 @@ private:
      */
     inline wstring FtpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, _Session.GetCodePage());
+        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
     }
 
     /**
@@ -148,5 +148,5 @@ private:
     bool ParseFtpList(const char *text, FTPItem &item) const;
 
 private:
-    CEasyURL        _CURL;      ///< CURL easy
+    CEasyURL        m_CURL;      ///< CURL easy
 };
