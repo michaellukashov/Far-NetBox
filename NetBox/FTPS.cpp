@@ -72,18 +72,18 @@ CSessionEditorFTPS::CSessionEditorFTPS(CSession *session)
 void CSessionEditorFTPS::OnPrepareDialog()
 {
     _IdText = CreateText(GetLeft(), GetHeight() - 7, CFarPlugin::GetString(StringEdAuthCert));
-    _IdKeyFile = CreateEdit(GetLeft(), GetHeight() - 6, MAX_SIZE, static_cast<CSessionFTPS *>(_Session)->GetKeyFile());
+    _IdKeyFile = CreateEdit(GetLeft(), GetHeight() - 6, MAX_SIZE, static_cast<CSessionFTPS *>(m_Session)->GetKeyFile());
 
     _IdSeparator = CreateSeparator(GetHeight() - 5);
-    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTPS *>(_Session)->GetCodePage(),
+    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTPS *>(m_Session)->GetCodePage(),
         _IdCPText, _IdCP);
 }
 
 
 void CSessionEditorFTPS::OnSave()
 {
-    static_cast<CSessionFTPS *>(_Session)->SetKeyFile(GetText(_IdKeyFile).c_str());
-    static_cast<CSessionFTPS *>(_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(_IdCP).c_str())));
+    static_cast<CSessionFTPS *>(m_Session)->SetKeyFile(GetText(_IdKeyFile).c_str());
+    static_cast<CSessionFTPS *>(m_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(_IdCP).c_str())));
 }
 
 void CSessionEditorFTPS::ShowSessionDlgItems(bool visible)
@@ -138,7 +138,7 @@ protected:
 
 
 CFTPS::CFTPS(const CSession *session)
-    : CProtocolBase(session), _AbortEvent(NULL)
+    : CProtocolBase(session), m_AbortEvent(NULL)
 {
 }
 
@@ -153,14 +153,14 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
     assert(abortEvent);
 
-    _AbortEvent = abortEvent;
+    m_AbortEvent = abortEvent;
 
-    const wchar_t *url = _Session.GetURL();
+    const wchar_t *url = m_Session.GetURL();
     DEBUG_PRINTF(L"NetBox: FTPS::Connect: connecting to %s", url);
     //Initialize curl
-    _CURL.Initialize(url, _Session.GetUserName(), _Session.GetPassword(),
-        _Session.GetProxySettings());
-    _CURL.SetAbortEvent(abortEvent);
+    m_CURL.Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
+        m_Session.GetProxySettings());
+    m_CURL.SetAbortEvent(abortEvent);
 
     wstring path;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
@@ -171,13 +171,13 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
         Log2(L"WebDAV: FTPS::Connect: error: path %s does not exist.", path.c_str());
         return false;
     }
-    _CurrentDirectory = path;
-    DEBUG_PRINTF(L"NetBox: FTPS::Connect: _CurrentDirectory1 = %s", _CurrentDirectory.c_str());
-    while(_CurrentDirectory.size() > 1 && _CurrentDirectory[_CurrentDirectory.length() - 1] == L'/')
+    m_CurrentDirectory = path;
+    DEBUG_PRINTF(L"NetBox: FTPS::Connect: _CurrentDirectory1 = %s", m_CurrentDirectory.c_str());
+    while(m_CurrentDirectory.size() > 1 && m_CurrentDirectory[m_CurrentDirectory.length() - 1] == L'/')
     {
-        _CurrentDirectory.erase(_CurrentDirectory.length() - 1);
+        m_CurrentDirectory.erase(m_CurrentDirectory.length() - 1);
     }
-    DEBUG_PRINTF(L"NetBox: FTPS::Connect: _CurrentDirectory2 = %s", _CurrentDirectory.c_str());
+    DEBUG_PRINTF(L"NetBox: FTPS::Connect: _CurrentDirectory2 = %s", m_CurrentDirectory.c_str());
     DEBUG_PRINTF(L"NetBox: Connect: end");
     return true;
 }
@@ -185,7 +185,7 @@ bool CFTPS::Connect(HANDLE abortEvent, wstring &errorInfo)
 
 void CFTPS::Close()
 {
-    _CURL.Close();
+    m_CURL.Close();
 }
 
 
@@ -202,8 +202,8 @@ bool CFTPS::CheckExisting(const wchar_t *path, const ItemType type, bool &isExis
 
     isExist = true;
 
-    CURLcode urlCode = _CURL.Prepare(ftpPath.c_str());
-    CHECK_CUCALL(urlCode, _CURL.Perform());
+    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
+    CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK)
     {
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
@@ -235,7 +235,7 @@ bool CFTPS::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     assert(itemsNum);
 /*     assert(_FTPSSession);
 
-    CFTPSFileHandle dirHandle(_FTPSSession, LocalToSftpCP(_CurrentDirectory.c_str()).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
+    CFTPSFileHandle dirHandle(_FTPSSession, LocalToSftpCP(m_CurrentDirectory.c_str()).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
     if (!dirHandle)
     {
         // errorInfo = FormatSSHLastErrorDescription();

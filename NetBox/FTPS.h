@@ -99,7 +99,7 @@ private:
     inline string LocalToSftpCP(const wchar_t *src) const
     {
         assert(src && src[0] == L'/');
-        return CFarPlugin::W2MB(src, _Session.GetCodePage());
+        return CFarPlugin::W2MB(src, m_Session.GetCodePage());
     }
 
     /**
@@ -109,10 +109,11 @@ private:
      */
     inline wstring SftpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, _Session.GetCodePage());
+        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
+        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
     }
 
 private:
-    HANDLE _AbortEvent; ///< Abort event
-    CEasyURL _CURL; ///< CURL easy
+    HANDLE m_AbortEvent; ///< Abort event
+    CEasyURL m_CURL; ///< CURL easy
 };

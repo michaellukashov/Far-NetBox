@@ -131,5 +131,5 @@ private:
     bool ParseFtpList(const char *text, FTPItem &item) const;
 
 private:
-    CEasyURL _CURL; ///< CURL easy
+    CEasyURL m_CURL; ///< CURL easy
 };

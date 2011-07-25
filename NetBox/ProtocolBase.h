@@ -174,7 +174,7 @@ protected:
     string LocalToFtpCP(const wchar_t *src, bool replace = false) const
     {
         assert(src && src[0] == L'/');
-        string r = CFarPlugin::W2MB(src, _Session.GetCodePage());
+        string r = CFarPlugin::W2MB(src, m_Session.GetCodePage());
         if (replace)
         {
             while (r.find(L'#') != string::npos)
@@ -193,7 +193,7 @@ protected:
      */
     inline wstring FtpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, _Session.GetCodePage());
+        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
     }
 
 
