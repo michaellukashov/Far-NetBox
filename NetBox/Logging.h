@@ -19,7 +19,12 @@
 
 #pragma once
 
-//! logging
+enum LoggingLevel
+{
+    LEVEL_DEBUG1 = 0,
+    LEVEL_DEBUG2 = 1,
+};
+
 class CLogger
 {
 public:
@@ -33,6 +38,7 @@ public:
     static void Shutdown();
 
     void Log(int level, const wchar_t *format, va_list args);
+    void Log(int level, const char *str);
 
 private:
     bool m_first;
@@ -45,3 +51,4 @@ private:
 
 void Log1(const wchar_t *format, ...);
 void Log2(const wchar_t *format, ...);
+void Log2(const char *str);
