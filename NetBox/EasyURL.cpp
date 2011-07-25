@@ -369,8 +369,7 @@ int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
 {
     CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
     assert(instance != NULL);
-    DEBUG_PRINTF(L"NetBox: InternalDebug: data = %s", CFarPlugin::MB2W(data).c_str());
-    // Log2(CFarPlugin::MB2W(data).c_str());
+    // DEBUG_PRINTF(L"NetBox: InternalDebug: data = %s", CFarPlugin::MB2W(data).c_str());
     Log2(data);
     return 0;
 }
