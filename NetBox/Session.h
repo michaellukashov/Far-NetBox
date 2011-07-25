@@ -71,7 +71,7 @@ public:
      */
     static wstring GetSupportedPrefixes();
 
-    struct ProxySettings &GetProxySettings() { return _proxySettings; }
+    struct ProxySettings &GetProxySettings() { return m_proxySettings; }
 
     /**
      * Create new session
@@ -135,7 +135,7 @@ public:
     //Accessors
     inline int GetProtocolId() const
     {
-        return _ProtoId;
+        return m_ProtoId;
     }
     const wchar_t *GetSessionName() const;
     void SetSessionName(const wchar_t *val);
@@ -244,11 +244,11 @@ private:
     };
 
 private:
-    int                 _ProtoId;           ///< Unique protocol id
-    wstring             _SessionName;       ///< Session name
-    vector<Property>    _Properties;        ///< Session's properties
-    struct ProxySettings _proxySettings;
+    int                 m_ProtoId;           ///< Unique protocol id
+    wstring             m_SessionName;       ///< Session name
+    vector<Property>    m_Properties;        ///< Session's properties
+    struct ProxySettings m_proxySettings;
 
-    static string       _CryptKey;          ///< Crypt key
-    static vector<ProtoImplInfo> _Factory;  ///< Client protocol implementation factory
+    static string       m_CryptKey;          ///< Crypt key
+    static vector<ProtoImplInfo> m_Factory;  ///< Client protocol implementation factory
 };

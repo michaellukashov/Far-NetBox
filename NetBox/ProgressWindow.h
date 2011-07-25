@@ -68,18 +68,18 @@ private:
     static DWORD WINAPI WindowThread(LPVOID param);
 
 private:
-    HANDLE          _AbortEvent;
-    HANDLE          _WndThread;
-    OperationType   _Operation;
-    DerectionType   _Direction;
-    size_t          _FileCount;
-    IProtocol      *_ProtoImpl;
+    HANDLE          m_AbortEvent;
+    HANDLE          m_WndThread;
+    OperationType   m_Operation;
+    DerectionType   m_Direction;
+    size_t          m_FileCount;
+    IProtocol      *m_ProtoImpl;
 
-    int     _IdSrcFileName;
-    int     _IdDstFileName;
-    int     _IdTotalProgress;
-    int     _IdCurrentProgress;
-    int     _IdBtnCancel;
+    int     m_IdSrcFileName;
+    int     m_IdDstFileName;
+    int     m_IdTotalProgress;
+    int     m_IdCurrentProgress;
+    int     m_IdBtnCancel;
 };
 
 
@@ -100,6 +100,6 @@ public:
     virtual void Hide() const;
 
 protected:
-    wstring _Title;
-    wstring _Text;
+    wstring m_Title;
+    wstring m_Text;
 };

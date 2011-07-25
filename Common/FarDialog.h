@@ -35,7 +35,7 @@ public:
      * \param height dialog height
      */
     CFarDialog(const int width, const int height)
-        : _Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(false)
+        : m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(false)
     {
     }
 
@@ -46,7 +46,7 @@ public:
      * \param title dialog title
      */
     CFarDialog(const int width, const int height, const wchar_t *title)
-        : _Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(true)
+        : m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(true)
     {
         SetTitle(title);
     }
@@ -56,9 +56,9 @@ public:
      */
     virtual ~CFarDialog()
     {
-        if (_Dlg != INVALID_HANDLE_VALUE)
+        if (m_Dlg != INVALID_HANDLE_VALUE)
         {
-            CFarPlugin::GetPSI()->DialogFree(_Dlg);
+            CFarPlugin::GetPSI()->DialogFree(m_Dlg);
         }
     }
 
@@ -162,13 +162,13 @@ public:
      */
     inline void ResizeDialog(const int width, const int height)
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
         _Width = width;
         _Height = height;
         COORD newSize;
         newSize.X = static_cast<SHORT>(width);
         newSize.Y = static_cast<SHORT>(height);
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_RESIZEDIALOG, 0, reinterpret_cast<LONG_PTR>(&newSize));
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_RESIZEDIALOG, 0, reinterpret_cast<LONG_PTR>(&newSize));
     }
 
     /**
@@ -177,20 +177,20 @@ public:
      */
     inline int DoModal()
     {
-        if (_Dlg == INVALID_HANDLE_VALUE)
+        if (m_Dlg == INVALID_HANDLE_VALUE)
         {
             assert(!_DlgItems.empty());
-            _Dlg = CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
+            m_Dlg = CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
             _DlgItems.clear();  //Non actual for now
-            if (_Dlg == INVALID_HANDLE_VALUE)
+            if (m_Dlg == INVALID_HANDLE_VALUE)
             {
                 return -2;
             }
         }
 
-        AccessDlgInstances(_Dlg, this);
-        const int retCode = CFarPlugin::GetPSI()->DialogRun(_Dlg);
-        AccessDlgInstances(_Dlg, this, true);
+        AccessDlgInstances(m_Dlg, this);
+        const int retCode = CFarPlugin::GetPSI()->DialogRun(m_Dlg);
+        AccessDlgInstances(m_Dlg, this, true);
 
         return retCode;
     }
@@ -200,8 +200,8 @@ public:
      */
     inline void Redraw()
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_REDRAW, 0, 0L);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_REDRAW, 0, 0L);
     }
 
     /**
@@ -212,11 +212,11 @@ public:
      */
     inline void MoveCursor(const int dlgItemId, const int col, const int row)
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
         COORD coord;
         coord.Y = static_cast<SHORT>(row);
         coord.X = static_cast<SHORT>(col);
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_SETCURSORPOS, dlgItemId, reinterpret_cast<LONG_PTR>(&coord));
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_SETCURSORPOS, dlgItemId, reinterpret_cast<LONG_PTR>(&coord));
     }
 
     /**
@@ -376,12 +376,12 @@ public:
      */
     inline FarDialogItem *GetDlgItem(const int dlgItemId)
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
 
-        const size_t sz = CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_GETDLGITEM, dlgItemId, 0L);
+        const size_t sz = CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_GETDLGITEM, dlgItemId, 0L);
         assert(sz);
         FarDialogItem *item = reinterpret_cast<FarDialogItem *>(new unsigned char[sz]);
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_GETDLGITEM, dlgItemId, reinterpret_cast<LONG_PTR>(item));
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_GETDLGITEM, dlgItemId, reinterpret_cast<LONG_PTR>(item));
         return item;
     }
 
@@ -392,8 +392,8 @@ public:
      */
     inline void SetDlgItem(const int dlgItemId, const FarDialogItem &dlgItem)
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_SETDLGITEM, dlgItemId, reinterpret_cast<LONG_PTR>(&dlgItem));
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_SETDLGITEM, dlgItemId, reinterpret_cast<LONG_PTR>(&dlgItem));
     }
 
     /**
@@ -403,8 +403,8 @@ public:
      */
     inline void ShowDlgItem(const int dlgItemId, const bool show)
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_SHOWITEM, dlgItemId, show ? 1 : 0);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_SHOWITEM, dlgItemId, show ? 1 : 0);
     }
 
     /**
@@ -414,8 +414,8 @@ public:
      */
     inline int GetSelectonIndex(const int dlgItemId) const
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
-        return static_cast<int>(CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_LISTGETCURPOS, dlgItemId, 0));
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
+        return static_cast<int>(CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_LISTGETCURPOS, dlgItemId, 0));
     }
 
     /**
@@ -425,8 +425,8 @@ public:
      */
     bool GetCheckState(const int dlgItemId) const
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
-        return CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_GETCHECK, dlgItemId, 0) == BSTATE_CHECKED;
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
+        return CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_GETCHECK, dlgItemId, 0) == BSTATE_CHECKED;
     }
 
 
@@ -437,8 +437,8 @@ public:
      */
     void SetCheckState(const int dlgItemId, const bool check) const
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_SETCHECK, dlgItemId, check ? BSTATE_CHECKED : BSTATE_UNCHECKED);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_SETCHECK, dlgItemId, check ? BSTATE_CHECKED : BSTATE_UNCHECKED);
     }
 
     /**
@@ -448,18 +448,18 @@ public:
      */
     inline wstring GetText(const int dlgItemId) const
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
 
         wstring itemText;
 
-        const LONG_PTR itemTextLen = CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_GETTEXTLENGTH, dlgItemId, 0);
+        const LONG_PTR itemTextLen = CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_GETTEXTLENGTH, dlgItemId, 0);
         if (itemTextLen != 0)
         {
             itemText.resize(itemTextLen);
             FarDialogItemData item;
             item.PtrLength = itemTextLen;
             item.PtrData = &itemText[0];
-            CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_GETTEXT, dlgItemId, reinterpret_cast<LONG_PTR>(&item));
+            CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_GETTEXT, dlgItemId, reinterpret_cast<LONG_PTR>(&item));
         }
 
         return itemText;
@@ -472,13 +472,13 @@ public:
      */
     inline void SetText(const int dlgItemId, const wchar_t *text) const
     {
-        assert(_Dlg != INVALID_HANDLE_VALUE);
+        assert(m_Dlg != INVALID_HANDLE_VALUE);
 
         FarDialogItemData item;
         item.PtrLength = wcslen(text);
         item.PtrData = const_cast<wchar_t *>(text);
 
-        CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_SETTEXT, dlgItemId, reinterpret_cast<LONG_PTR>(&item));
+        CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_SETTEXT, dlgItemId, reinterpret_cast<LONG_PTR>(&item));
     }
 
 protected:
@@ -492,7 +492,7 @@ protected:
     virtual LONG_PTR DialogMessageProc(int msg, int param1, LONG_PTR param2)
     {
         // DEBUG_PRINTF(L"NetBox: msg = %u, DN_BTNCLICK = %u, param1 = %u", msg, DN_BTNCLICK, param1);
-        return CFarPlugin::GetPSI()->DefDlgProc(_Dlg, msg, param1, param2);
+        return CFarPlugin::GetPSI()->DefDlgProc(m_Dlg, msg, param1, param2);
     }
 
 private:
@@ -531,7 +531,7 @@ private:
     }
 
 protected:
-    HANDLE                  _Dlg;       ///< Dialog descriptor
+    HANDLE                  m_Dlg;       ///< Dialog descriptor
     int                     _Width;     ///< Dialog width
     int                     _Height;    ///< Dialog height
     vector<FarDialogItem>   _DlgItems;  ///< Dialog items array

@@ -143,5 +143,5 @@ private:
     string EscapeUTF8URL(const wchar_t *src) const;
 
 private:
-    CEasyURL _CURL;         ///< CURL easy
+    CEasyURL m_CURL;         ///< CURL easy
 };
