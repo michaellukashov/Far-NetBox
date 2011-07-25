@@ -29,26 +29,26 @@
 template<class T> class CProtocolBase : public IProtocol
 {
 public:
-    CProtocolBase<T>(const CSession *session) : _Session(*static_cast<const T *>(session)), _ProgressPercent(-1) {}
+    CProtocolBase<T>(const CSession *session) : m_Session(*static_cast<const T *>(session)), m_ProgressPercent(-1) {}
 
     //From IProtocol
     virtual int GetProgress()
     {
-        return _ProgressPercent;
+        return m_ProgressPercent;
     }
 
     //From IProtocol
     virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     {
         assert(name && *name);
-        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, _CurrentDirectory = %s", name, _CurrentDirectory.c_str());
+        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
 
         const bool moveUp = (wcscmp(L"..", name) == 0);
-        const bool topDirectory = (_CurrentDirectory.compare(L"/") == 0);
+        const bool topDirectory = (m_CurrentDirectory.compare(L"/") == 0);
 
         assert(!moveUp || !topDirectory);   //Must be handled in CPanel (exit from session)
 
-        wstring newPath = _CurrentDirectory;
+        wstring newPath = m_CurrentDirectory;
         if (moveUp)
         {
             const size_t lastSlash = newPath.rfind(L'/');
@@ -78,14 +78,14 @@ public:
         {
             return false;
         }
-        _CurrentDirectory = newPath;
+        m_CurrentDirectory = newPath;
         return true;
     }
 
     //From IProtocol
     virtual const wchar_t *GetCurrentDirectory()
     {
-        return _CurrentDirectory.c_str();
+        return m_CurrentDirectory.c_str();
     }
 
     //From IProtocol
@@ -110,7 +110,7 @@ public:
         wstring schemeName;
         wstring hostName;
         wstring path;
-        ParseURL(_Session.GetURL(), &schemeName, &hostName, &port, &path, NULL, NULL, NULL);
+        ParseURL(m_Session.GetURL(), &schemeName, &hostName, &port, &path, NULL, NULL, NULL);
 
         wstring ret;
         ret += schemeName;
@@ -118,8 +118,8 @@ public:
 
         if (includeUser)
         {
-            const wstring userName = _Session.GetUserName();
-            const wstring password = _Session.GetPassword();
+            const wstring userName = m_Session.GetUserName();
+            const wstring password = m_Session.GetPassword();
             if (!userName.empty() || !password.empty())
             {
                 ret += userName;
@@ -198,7 +198,7 @@ protected:
 
 
 protected:
-    T       _Session;           ///< Session description
-    int     _ProgressPercent;   ///< Progress percent value
-    wstring _CurrentDirectory;  ///< Current directory name
+    T       m_Session;           ///< Session description
+    int     m_ProgressPercent;   ///< Progress percent value
+    wstring m_CurrentDirectory;  ///< Current directory name
 };

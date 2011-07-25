@@ -56,9 +56,9 @@ protected:
     virtual void ShowSessionDlgItems(bool visible);
 
 private:
-    int _IdSeparator;
-    int _IdCPText;
-    int _IdCP;
+    int m_IdSeparator;
+    int m_IdCPText;
+    int m_IdCP;
 };
 
 

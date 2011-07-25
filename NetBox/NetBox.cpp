@@ -33,7 +33,7 @@
 #define MIN_FAR_VERMINOR 0
 #define MIN_FAR_BUILD    0
 
-vector<CPanel *> _PanelInstances;   ///< Array of active panels instances
+vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 
 extern "C"
 {
@@ -47,9 +47,9 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
 {
     CFarPlugin::Initialize(psi);
 
-    _Settings.Load();
-    CLogger::Initialize(_Settings.EnableLogging(), _Settings.LoggingLevel(),
-        _Settings.LogToFile(), _Settings.LogFileName());
+    m_Settings.Load();
+    CLogger::Initialize(m_Settings.EnableLogging(), m_Settings.LoggingLevel(),
+        m_Settings.LogToFile(), m_Settings.LogFileName());
     wstring ver = PLUGIN_VERSION_WTXT;
     Log1(L"NetBox plugin version %s started.", ver.c_str());
 
@@ -68,7 +68,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
 {
     pi->StructSize = sizeof(PluginInfo);
     pi->Flags = PF_FULLCMDLINE;
-    if (!_Settings.AddToPanelMenu())
+    if (!m_Settings.AddToPanelMenu())
     {
         pi->Flags |= PF_DISABLEPANELS;
     }
@@ -78,20 +78,20 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
     pi->PluginConfigStrings = menuStrings;
     pi->PluginConfigStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
 
-    if (_Settings.AddToPanelMenu())
+    if (m_Settings.AddToPanelMenu())
     {
         pi->PluginMenuStrings = menuStrings;
         pi->PluginMenuStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
     }
-    if (_Settings.AddToDiskMenu())
+    if (m_Settings.AddToDiskMenu())
     {
         pi->DiskMenuStrings = menuStrings;
         pi->DiskMenuStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
     }
 
     static wstring cmdPreffix;
-    cmdPreffix = _Settings.CmdPrefix();
-    if (_Settings.AltPrefix())
+    cmdPreffix = m_Settings.CmdPrefix();
+    if (m_Settings.AltPrefix())
     {
         if (!cmdPreffix.empty())
         {
@@ -107,11 +107,11 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
 
 void WINAPI ExitFARW()
 {
-    for (vector<CPanel *>::const_iterator it = _PanelInstances.begin(); it != _PanelInstances.end(); ++it)
+    for (vector<CPanel *>::const_iterator it = m_PanelInstances.begin(); it != m_PanelInstances.end(); ++it)
     {
         delete *it;
     }
-    _PanelInstances.clear();
+    m_PanelInstances.clear();
 
     curl_global_cleanup();
     WSACleanup();
@@ -123,9 +123,9 @@ void WINAPI ClosePluginW(HANDLE plugin)
     assert(panelInstance);
     delete panelInstance;
 
-    vector<CPanel *>::iterator it = find(_PanelInstances.begin(), _PanelInstances.end(), plugin);
-    assert(it != _PanelInstances.end());
-    _PanelInstances.erase(it);
+    vector<CPanel *>::iterator it = find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin);
+    assert(it != m_PanelInstances.end());
+    m_PanelInstances.erase(it);
 }
 
 HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
@@ -139,7 +139,7 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
         CPanel *panelInstance = new CPanel(true);
         if (panelInstance->OpenConnection(new CSessionManager))
         {
-            _PanelInstances.push_back(panelInstance);
+            m_PanelInstances.push_back(panelInstance);
             return panelInstance;
         }
         delete panelInstance;
@@ -164,7 +164,7 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
     if (panelInstance->OpenConnection(proto.get()))
     {
         proto.release();
-        _PanelInstances.push_back(panelInstance);
+        m_PanelInstances.push_back(panelInstance);
         return panelInstance;
     }
     delete panelInstance;
@@ -202,7 +202,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
     if (panelInstance->OpenConnection(proto.get()))
     {
         proto.release();
-        _PanelInstances.push_back(panelInstance);
+        m_PanelInstances.push_back(panelInstance);
         return panelInstance;
     }
     return reinterpret_cast<HANDLE>(-2);
@@ -210,28 +210,28 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
 
 void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->GetOpenPluginInfo(pluginInfo);
 }
 
 int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->ChangeDirectory(dir, opMode);
 }
 
 int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t **destPath, int opMode)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->GetFiles(panelItem, itemsNumber, destPath, move != 0, opMode);
 }
 
 int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNumber, int opMode)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int res = panelInstance->GetItemList(panelItem, itemsNumber, opMode);
     // DEBUG_PRINTF(L"NetBox: GetFindDataW: itemsNumber = %u", *itemsNumber);
@@ -240,35 +240,35 @@ int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNu
 
 void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->FreeItemList(panelItem, itemsNumber);
 }
 
 int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->MakeDirectory(name, opMode);
 }
 
 int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->DeleteFiles(panelItem, itemsNumber, opMode);
 }
 
 int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->PutFiles(srcPath, panelItem, itemsNumber, move != 0, opMode);
 }
 
 int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 {
-    assert(find(_PanelInstances.begin(), _PanelInstances.end(), plugin) != _PanelInstances.end());
+    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->ProcessKey(key, controlState);
 }
@@ -276,7 +276,7 @@ int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 int WINAPI ConfigureW(int /*itemNumber*/)
 {
     // DEBUG_PRINTF(L"NetBox: ConfigureW: begin");
-    _Settings.Configure();
+    m_Settings.Configure();
     // DEBUG_PRINTF(L"NetBox: ConfigureW: end");
     return FALSE;
 }

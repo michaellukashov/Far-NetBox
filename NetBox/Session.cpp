@@ -33,8 +33,8 @@
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
 
-string CSession::_CryptKey = "NetBox";
-vector<CSession::ProtoImplInfo> CSession::_Factory;
+string CSession::m_CryptKey = "NetBox";
+vector<CSession::ProtoImplInfo> CSession::m_Factory;
 
 static const char *ParamRoot =      "NetBox";
 static const char *ParamCrypt =     "crypt";
@@ -50,14 +50,14 @@ static const char *ParamProxyPort = "ProxyPort";
 static const char *ParamProxyLogin = "ProxyLogin";
 static const char *ParamProxyPassword = "ProxyPassword";
 
-CSession::CSession() : _ProtoId(-1)
+CSession::CSession() : m_ProtoId(-1)
 {
-    // Инициализируем _proxySettings значениями по умолчанию
-    _proxySettings.proxyType = _Settings.ProxyType();
-    _proxySettings.proxyHost = _Settings.ProxyHost();
-    _proxySettings.proxyPort = _Settings.ProxyPort();
-    _proxySettings.proxyLogin = _Settings.ProxyLogin();
-    _proxySettings.proxyPassword = _Settings.ProxyPassword();
+    // Инициализируем m_proxySettings значениями по умолчанию
+    m_proxySettings.proxyType = m_Settings.ProxyType();
+    m_proxySettings.proxyHost = m_Settings.ProxyHost();
+    m_proxySettings.proxyPort = m_Settings.ProxyPort();
+    m_proxySettings.proxyLogin = m_Settings.ProxyLogin();
+    m_proxySettings.proxyPassword = m_Settings.ProxyPassword();
 }
 
 void CSession::RegisterProtocolClient(const int id, const wchar_t *name, CreateSessionFx fx, const wchar_t *scheme1, const wchar_t *scheme2 /*= NULL*/)
@@ -73,7 +73,7 @@ void CSession::RegisterProtocolClient(const int id, const wchar_t *name, CreateS
     impl.Schemes[0] = scheme1;
     impl.Schemes[1] = scheme2;
     impl.CreateSession = fx;
-    _Factory.push_back(impl);
+    m_Factory.push_back(impl);
 }
 
 
@@ -96,7 +96,7 @@ const wchar_t *CSession::GetDefaultScheme(const int protoId)
 wstring CSession::GetSupportedPrefixes()
 {
     wstring prefixes;
-    for (vector<ProtoImplInfo>::const_iterator it = _Factory.begin(); it != _Factory.end(); ++it)
+    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         if (!prefixes.empty())
         {
@@ -116,7 +116,7 @@ wstring CSession::GetSupportedPrefixes()
 PSession CSession::Create()
 {
     vector<FarMenuItemEx> protos;
-    for (vector<ProtoImplInfo>::const_iterator it = _Factory.begin(); it != _Factory.end(); ++it)
+    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         FarMenuItemEx item;
         ZeroMemory(&item, sizeof(item));
@@ -135,7 +135,7 @@ PSession CSession::Create()
     assert(pii);
     PSession session = pii->CreateSession();
     assert(session.get());
-    session->_ProtoId = static_cast<int>(protos[retCode].UserData);
+    session->m_ProtoId = static_cast<int>(protos[retCode].UserData);
     return (session->Edit() ? session : PSession());
 }
 
@@ -171,7 +171,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     //Search protocol by scheme
     const ProtoImplInfo *impl = NULL;
-    for (vector<ProtoImplInfo>::const_iterator it = _Factory.begin(); !impl && it != _Factory.end(); ++it)
+    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !impl && it != m_Factory.end(); ++it)
     {
         if ((it->Schemes[0] && _wcsicmp(it->Schemes[0], protoScheme.c_str()) == 0) ||
                 (it->Schemes[1] && _wcsicmp(it->Schemes[1], protoScheme.c_str()) == 0))
@@ -186,7 +186,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     PSession session = impl->CreateSession();
     assert(session.get());
-    session->_ProtoId = impl->ProtoId;
+    session->m_ProtoId = impl->ProtoId;
     session->SetURL(prefixCmd.c_str());
     return session;
 }
@@ -202,7 +202,7 @@ PSession CSession::Create(const int protoId)
 
     PSession session = impl->CreateSession();
     assert(session.get());
-    session->_ProtoId = protoId;
+    session->m_ProtoId = protoId;
     return session;
 }
 
@@ -299,13 +299,13 @@ PSession CSession::Load(const wchar_t *fileName)
         session->SetProperty(key, val.c_str(), crypt != NULL);
     }
 
-    // Инициализируем _proxySettings
+    // Инициализируем m_proxySettings
     struct ProxySettings proxySettings;
-    proxySettings.proxyType = static_cast<int>(session->GetPropertyNumeric(ParamProxyType, _Settings.ProxyType()));
-    proxySettings.proxyHost = session->GetProperty(ParamProxyHost, _Settings.ProxyHost().c_str());
-    proxySettings.proxyPort = static_cast<int>(session->GetPropertyNumeric(ParamProxyPort, _Settings.ProxyPort()));
-    proxySettings.proxyLogin = session->GetProperty(ParamProxyLogin, _Settings.ProxyLogin().c_str());
-    proxySettings.proxyPassword = session->GetProperty(ParamProxyPassword, _Settings.ProxyPassword().c_str());
+    proxySettings.proxyType = static_cast<int>(session->GetPropertyNumeric(ParamProxyType, m_Settings.ProxyType()));
+    proxySettings.proxyHost = session->GetProperty(ParamProxyHost, m_Settings.ProxyHost().c_str());
+    proxySettings.proxyPort = static_cast<int>(session->GetPropertyNumeric(ParamProxyPort, m_Settings.ProxyPort()));
+    proxySettings.proxyLogin = session->GetProperty(ParamProxyLogin, m_Settings.ProxyLogin().c_str());
+    proxySettings.proxyPassword = session->GetProperty(ParamProxyPassword, m_Settings.ProxyPassword().c_str());
     session->SetProxySettings(proxySettings);
     return session;
 }
@@ -409,7 +409,7 @@ void CSession::ExportFromRegistry()
                 }
                 PSession session = pii->CreateSession();
                 assert(session.get());
-                session->_ProtoId = protoId;
+                session->m_ProtoId = protoId;
 
                 wstring sessionName, URL, userName, password, keyFile;
                 bool promptPwd = false, useKeyFile = false;
@@ -459,7 +459,7 @@ void CSession::ExportFromRegistry()
                 }
                 session->SetSessionName(sessionName.c_str());
 
-                wstring savePath = _Settings.GetSessionPath();
+                wstring savePath = m_Settings.GetSessionPath();
                 CreateDirectory(savePath.c_str(), NULL);
 
                 if (session->Save(savePath.c_str(), false))
@@ -492,10 +492,10 @@ bool CSession::Save(const wchar_t *fileName) const
 
     TiXmlElement *xmlNode;
     xmlNode = new TiXmlElement(ParamProtoId);
-    xmlNode->LinkEndChild(new TiXmlText(NumberToText(_ProtoId).c_str()));
+    xmlNode->LinkEndChild(new TiXmlText(NumberToText(m_ProtoId).c_str()));
     xmlRoot->LinkEndChild(xmlNode);
 
-    for (vector<Property>::const_iterator it = _Properties.begin(); it != _Properties.end(); ++it)
+    for (vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         xmlNode = new TiXmlElement(it->Name.c_str());
         const string val = CFarPlugin::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
@@ -597,7 +597,7 @@ PProtocol CSession::CreateClient()
 
 const wchar_t *CSession::GetSessionName() const
 {
-    return _SessionName.c_str();
+    return m_SessionName.c_str();
 }
 
 
@@ -622,7 +622,7 @@ const wchar_t *CSession::GetPassword() const
 void CSession::SetSessionName(const wchar_t *val)
 {
     assert(val);
-    _SessionName = val;
+    m_SessionName = val;
 }
 
 
@@ -661,19 +661,19 @@ void CSession::SetPromptPwd(const bool val)
 void CSession::SetProxySettings(const struct ProxySettings &proxySettings)
 {
     // SetProperty(ParamPromptPsw, val ? 1 : 0);
-    _proxySettings = proxySettings;
-    SetProperty(ParamProxyType, _proxySettings.proxyType);
-    SetProperty(ParamProxyHost, _proxySettings.proxyHost.c_str());
-    SetProperty(ParamProxyPort, _proxySettings.proxyPort);
-    SetProperty(ParamProxyLogin, _proxySettings.proxyLogin.c_str());
-    SetProperty(ParamProxyPassword, _proxySettings.proxyPassword.c_str(), true);
+    m_proxySettings = proxySettings;
+    SetProperty(ParamProxyType, m_proxySettings.proxyType);
+    SetProperty(ParamProxyHost, m_proxySettings.proxyHost.c_str());
+    SetProperty(ParamProxyPort, m_proxySettings.proxyPort);
+    SetProperty(ParamProxyLogin, m_proxySettings.proxyLogin.c_str());
+    SetProperty(ParamProxyPassword, m_proxySettings.proxyPassword.c_str(), true);
 }
 
 const wchar_t *CSession::GetProperty(const char *name, const wchar_t *defaultVal /*= NULL*/) const
 {
     assert(name);
 
-    for (vector<Property>::const_iterator it = _Properties.begin(); it != _Properties.end(); ++it)
+    for (vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         if (strcmp(name, it->Name.c_str()) == 0)
         {
@@ -699,7 +699,7 @@ void CSession::SetProperty(const char *name, const wchar_t *val, const bool need
     assert(val);
 
     Property *prop = NULL;
-    for (vector<Property>::iterator it = _Properties.begin(); !prop && it != _Properties.end(); ++it)
+    for (vector<Property>::iterator it = m_Properties.begin(); !prop && it != m_Properties.end(); ++it)
     {
         if (strcmp(name, it->Name.c_str()) == 0)
         {
@@ -717,7 +717,7 @@ void CSession::SetProperty(const char *name, const wchar_t *val, const bool need
     prop->NeedCrypt = needCrypt;
     if (createNew)
     {
-        _Properties.push_back(*prop);
+        m_Properties.push_back(*prop);
     }
 }
 
@@ -738,7 +738,7 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
         return wstring();
     }
 
-    if (_Settings.UseOwnKey())
+    if (m_Settings.UseOwnKey())
     {
         static bool sessionPasswordPromted = false;
         if (!sessionPasswordPromted)
@@ -746,7 +746,7 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
             wchar_t pwd[256];
             if (CFarPlugin::GetPSI()->InputBox(CFarPlugin::GetString(StringTitle), CFarPlugin::GetString(StringSessionPwd), NULL, NULL, pwd, sizeof(pwd) / sizeof(wchar_t), NULL, FIB_ENABLEEMPTY | FIB_PASSWORD))
             {
-                _CryptKey = CFarPlugin::W2MB(pwd);
+                m_CryptKey = CFarPlugin::W2MB(pwd);
                 sessionPasswordPromted = true;
             }
         }
@@ -757,7 +757,7 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
     EVP_CIPHER_CTX ctx;
 
     unsigned char key[32], iv[32];
-    EVP_BytesToKey(cipher, EVP_sha1(), NULL, reinterpret_cast<const unsigned char *>(_CryptKey.c_str()), static_cast<int>(_CryptKey.length()), 5, key, iv);
+    EVP_BytesToKey(cipher, EVP_sha1(), NULL, reinterpret_cast<const unsigned char *>(m_CryptKey.c_str()), static_cast<int>(m_CryptKey.length()), 5, key, iv);
 
     EVP_CIPHER_CTX_init(&ctx);
     BIO *b64 = BIO_new(BIO_f_base64());
@@ -822,7 +822,7 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
 const CSession::ProtoImplInfo *CSession::GetProtoImplInfo(const int protoId)
 {
     const ProtoImplInfo *res = NULL;
-    for (vector<ProtoImplInfo>::const_iterator it = _Factory.begin(); !res && it != _Factory.end(); ++it)
+    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !res && it != m_Factory.end(); ++it)
     {
         if (protoId == it->ProtoId)
         {

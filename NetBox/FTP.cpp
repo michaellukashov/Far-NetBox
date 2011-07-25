@@ -50,7 +50,7 @@ PProtocol CSessionFTP::CreateClientInstance() const
 
 
 CSessionEditorFTP::CSessionEditorFTP(CSession *session)
-    : CSessionEditor(session, 54, 22), _IdCP(0)
+    : CSessionEditor(session, 54, 22), m_IdCP(0)
 {
 
 }
@@ -58,23 +58,23 @@ CSessionEditorFTP::CSessionEditorFTP(CSession *session)
 
 void CSessionEditorFTP::OnPrepareDialog()
 {
-    _IdSeparator = CreateSeparator(GetHeight() - 5);
-    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTP *>(_Session)->GetCodePage(),
-        _IdCPText, _IdCP);
+    m_IdSeparator = CreateSeparator(GetHeight() - 5);
+    CreateCodePageControl(GetHeight() - 4, static_cast<CSessionFTP *>(m_Session)->GetCodePage(),
+        m_IdCPText, m_IdCP);
 }
 
 
 void CSessionEditorFTP::OnSave()
 {
-    static_cast<CSessionFTP *>(_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(_IdCP).c_str())));
+    static_cast<CSessionFTP *>(m_Session)->SetCodePage(static_cast<UINT>(_wtoi(GetText(m_IdCP).c_str())));
 }
 
 void CSessionEditorFTP::ShowSessionDlgItems(bool visible)
 {
     CSessionEditor::ShowSessionDlgItems(visible);
-    ShowDlgItem(_IdSeparator, visible);
-    ShowDlgItem(_IdCPText, visible);
-    ShowDlgItem(_IdCP, visible);
+    ShowDlgItem(m_IdSeparator, visible);
+    ShowDlgItem(m_IdCPText, visible);
+    ShowDlgItem(m_IdCP, visible);
 }
 
 CFTP::CFTP(const CSession *session)
@@ -93,11 +93,11 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
 {
     assert(abortEvent);
 
-    const wchar_t *url = _Session.GetURL();
+    const wchar_t *url = m_Session.GetURL();
     DEBUG_PRINTF(L"NetBox: FTP: connecting to %s", url);
-    _CURL.Initialize(url, _Session.GetUserName(), _Session.GetPassword(),
-        _Session.GetProxySettings());
-    _CURL.SetAbortEvent(abortEvent);
+    m_CURL.Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
+        m_Session.GetProxySettings());
+    m_CURL.SetAbortEvent(abortEvent);
 
     //Check initial path existing
     wstring path;
@@ -107,10 +107,10 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     {
         return false;
     }
-    _CurrentDirectory = path;
-    while(_CurrentDirectory.size() > 1 && _CurrentDirectory[_CurrentDirectory.length() - 1] == L'/')
+    m_CurrentDirectory = path;
+    while(m_CurrentDirectory.size() > 1 && m_CurrentDirectory[m_CurrentDirectory.length() - 1] == L'/')
     {
-        _CurrentDirectory.erase(_CurrentDirectory.length() - 1);
+        m_CurrentDirectory.erase(m_CurrentDirectory.length() - 1);
     }
     return true;
 }
@@ -118,7 +118,7 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
 
 void CFTP::Close()
 {
-    _CURL.Close();
+    m_CURL.Close();
 }
 
 
@@ -135,8 +135,8 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 
     isExist = true;
 
-    CURLcode urlCode = _CURL.Prepare(ftpPath.c_str());
-    CHECK_CUCALL(urlCode, _CURL.Perform());
+    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
+    CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK)
     {
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
@@ -152,7 +152,7 @@ bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     assert(path && path[0] == L'/');
 
     const string ftpCommand = "MKD " + LocalToFtpCP(path);
-    const CURLcode urlCode = _CURL.ExecuteFtpCommand(ftpCommand.c_str());
+    const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
@@ -166,16 +166,16 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
-    DEBUG_PRINTF(L"NetBox: GetList: _CurrentDirectory = %s", _CurrentDirectory.c_str());
+    DEBUG_PRINTF(L"NetBox: GetList: m_CurrentDirectory = %s", m_CurrentDirectory.c_str());
 
-    string ftpPath = LocalToFtpCP(_CurrentDirectory.c_str(), true);
+    string ftpPath = LocalToFtpCP(m_CurrentDirectory.c_str(), true);
     ::AppendChar(ftpPath, '/');
     DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
 
-    CURLcode urlCode = _CURL.Prepare(ftpPath.c_str());
+    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
     string response;
-    CHECK_CUCALL(urlCode, _CURL.SetOutput(&response, &_ProgressPercent));
-    CHECK_CUCALL(urlCode, _CURL.Perform());
+    CHECK_CUCALL(urlCode, m_CURL.SetOutput(&response, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK && urlCode != CURLE_REMOTE_FILE_NOT_FOUND)
     {
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
@@ -272,12 +272,12 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     }
 
     const string ftpFileName = LocalToFtpCP(remotePath);
-    CURLcode urlCode = _CURL.Prepare(ftpFileName.c_str(), false);
-    CHECK_CUCALL(urlCode, _CURL.SetOutput(&outFile, &_ProgressPercent));
-    CHECK_CUCALL(urlCode, _CURL.Perform());
+    CURLcode urlCode = m_CURL.Prepare(ftpFileName.c_str(), false);
+    CHECK_CUCALL(urlCode, m_CURL.SetOutput(&outFile, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     outFile.Close();
-    _ProgressPercent = -1;
+    m_ProgressPercent = -1;
 
     if (urlCode != CURLE_OK)
     {
@@ -303,12 +303,12 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     }
 
     const string ftpFileName = LocalToFtpCP(remotePath, true);
-    CURLcode urlCode = _CURL.Prepare(ftpFileName.c_str(), false);
-    CHECK_CUCALL(urlCode, _CURL.SetInput(&inFile, &_ProgressPercent));
-    CHECK_CUCALL(urlCode, _CURL.Perform());
+    CURLcode urlCode = m_CURL.Prepare(ftpFileName.c_str(), false);
+    CHECK_CUCALL(urlCode, m_CURL.SetInput(&inFile, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     inFile.Close();
-    _ProgressPercent = -1;
+    m_ProgressPercent = -1;
 
     if (urlCode != CURLE_OK)
     {
@@ -331,9 +331,9 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
     slist.Append(cmd1.c_str());
     slist.Append(cmd2.c_str());
 
-    CURLcode urlCode = _CURL.Prepare(NULL);
-    CHECK_CUCALL(urlCode, _CURL.SetSlist(slist));
-    CHECK_CUCALL(urlCode, _CURL.Perform());
+    CURLcode urlCode = m_CURL.Prepare(NULL);
+    CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
+    CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     if (urlCode != CURLE_OK)
     {
@@ -351,7 +351,7 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
 
     const string ftpCommand = (type == ItemDirectory ? "RMD " : "DELE ") + LocalToFtpCP(path);
     // DEBUG_PRINTF(L"NetBox: Delete: ftpCommand = %s", CFarPlugin::MB2W(ftpCommand.c_str()).c_str());
-    const CURLcode urlCode = _CURL.ExecuteFtpCommand(ftpCommand.c_str());
+    const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));

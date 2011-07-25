@@ -81,30 +81,30 @@ private:
     bool Validate() const;
 
 protected:
-    int _IdBtnSession;
-    int _IdBtnProxy;
-    int _IdPagesSeparator;
-    int _IdTextEditName;
-    int _IdEditName;
-    int _IdTextEditURL;
-    int _IdEditURL;
-    int _IdAuthSeparator;
-    int _IdTextEditUser;
-    int _IdEditUser;
-    int _IdTextEditPswShow;
-    int _IdEditPswShow;
-    int _IdEditPswHide;
-    int _IdChBxPromtpPsw;
-    int _IdChBxShowPsw;
-    int _IdBtnOK;
-    int _IdBtnCancel;
+    int m_IdBtnSession;
+    int m_IdBtnProxy;
+    int m_IdPagesSeparator;
+    int m_IdTextEditName;
+    int m_IdEditName;
+    int m_IdTextEditURL;
+    int m_IdEditURL;
+    int m_IdAuthSeparator;
+    int m_IdTextEditUser;
+    int m_IdEditUser;
+    int m_IdTextEditPswShow;
+    int m_IdEditPswShow;
+    int m_IdEditPswHide;
+    int m_IdChBxPromtpPsw;
+    int m_IdChBxShowPsw;
+    int m_IdBtnOK;
+    int m_IdBtnCancel;
 
-    bool    _EditMode;
-    wstring _Title;
+    bool    m_EditMode;
+    wstring m_Title;
 
-    CSession *_Session;
+    CSession *m_Session;
 
-    ProxySettingsDialogParams _params;
+    ProxySettingsDialogParams m_params;
 };
 
 typedef auto_ptr<CSessionEditor> PSessionEditor;

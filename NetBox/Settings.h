@@ -46,31 +46,31 @@ public:
     //Accessors
     bool AddToDiskMenu() const
     {
-        return _AddToDiskMenu;
+        return m_AddToDiskMenu;
     }
     bool AddToPanelMenu() const
     {
-        return _AddToPanelMenu;
+        return m_AddToPanelMenu;
     }
     const wchar_t *CmdPrefix() const
     {
-        return _CmdPrefix.c_str();
+        return m_CmdPrefix.c_str();
     }
     bool AltPrefix() const
     {
-        return _AltPrefix;
+        return m_AltPrefix;
     }
     bool UseOwnKey() const
     {
-        return _UseOwnKey;
+        return m_UseOwnKey;
     }
     unsigned long Timeout() const
     {
-        return _Timeout;
+        return m_Timeout;
     }
     const wchar_t *SessionPath() const
     {
-        return _SessionPath.c_str();
+        return m_SessionPath.c_str();
     }
     /**
      * Get session path
@@ -83,23 +83,23 @@ public:
     //
     int ProxyType() const
     {
-        return _proxySettings.proxyType;
+        return m_proxySettings.proxyType;
     }
     wstring ProxyHost() const
     {
-        return _proxySettings.proxyHost;
+        return m_proxySettings.proxyHost;
     }
     unsigned long ProxyPort() const
     {
-        return _proxySettings.proxyPort;
+        return m_proxySettings.proxyPort;
     }
     wstring ProxyLogin() const
     {
-        return _proxySettings.proxyLogin;
+        return m_proxySettings.proxyLogin;
     }
     wstring ProxyPassword() const
     {
-        return _proxySettings.proxyPassword;
+        return m_proxySettings.proxyPassword;
     }
 
     //
@@ -107,19 +107,19 @@ public:
     //
     bool EnableLogging() const
     {
-        return _EnableLogging;
+        return m_EnableLogging;
     }
     int LoggingLevel() const
     {
-        return _LoggingLevel;
+        return m_LoggingLevel;
     }
     bool LogToFile() const
     {
-        return _LogToFile;
+        return m_LogToFile;
     }
     const wchar_t *LogFileName() const
     {
-        return _LogFileName.c_str();
+        return m_LogFileName.c_str();
     }
 
 private:
@@ -133,21 +133,21 @@ private:
     void Save() const;
 
 private:
-    size_t _SettingsMenuIdx;
+    size_t m_SettingsMenuIdx;
     //Settings variables
-    bool            _AddToDiskMenu;     ///< Add plugin to disk menu flag
-    bool            _AddToPanelMenu;    ///< Add plugin to panel plugin menu flag
-    wstring         _CmdPrefix;         ///< Plugin command prefix
-    bool            _AltPrefix;         ///< Hande additional preffix flag (ftp, sftp etc)
-    bool            _UseOwnKey;         ///< Use own encryption key flag
-    unsigned long   _Timeout;           ///< Default timeout in seconds
-    wstring         _SessionPath;       ///< Session folder path
-    bool            _EnableLogging;     ///< Enable logging flag
-    int             _LoggingLevel;
-    bool            _LogToFile;
-    wstring         _LogFileName;
+    bool            m_AddToDiskMenu;     ///< Add plugin to disk menu flag
+    bool            m_AddToPanelMenu;    ///< Add plugin to panel plugin menu flag
+    wstring         m_CmdPrefix;         ///< Plugin command prefix
+    bool            m_AltPrefix;         ///< Hande additional preffix flag (ftp, sftp etc)
+    bool            m_UseOwnKey;         ///< Use own encryption key flag
+    unsigned long   m_Timeout;           ///< Default timeout in seconds
+    wstring         m_SessionPath;       ///< Session folder path
+    bool            m_EnableLogging;     ///< Enable logging flag
+    int             m_LoggingLevel;
+    bool            m_LogToFile;
+    wstring         m_LogFileName;
     
-    ProxySettings _proxySettings;
+    ProxySettings m_proxySettings;
 };
 
-extern CSettings _Settings;
+extern CSettings m_Settings;
