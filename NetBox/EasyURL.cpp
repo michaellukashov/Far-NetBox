@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include "EasyURL.h"
 #include "Settings.h"
+#include "Logging.h"
 
 
 CEasyURL::CEasyURL()
@@ -114,9 +115,12 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
 
-    DEBUG_PRINTF(L"NetBox: before CURLOPT_DEBUGFUNCTION");
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
+    if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
+    {
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
+    }
 
     if (!m_UserName.empty() || !m_Password.empty())
     {
@@ -157,8 +161,6 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXY, proxy.c_str()));
         // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
-
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, 1));
 
         string login = CFarPlugin::W2MB(m_proxySettings.proxyLogin.c_str());
         string password = CFarPlugin::W2MB(m_proxySettings.proxyPassword.c_str());
