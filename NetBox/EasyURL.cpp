@@ -114,6 +114,10 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
 
+    DEBUG_PRINTF(L"NetBox: before CURLOPT_DEBUGFUNCTION");
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
+
     if (!m_UserName.empty() || !m_Password.empty())
     {
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
@@ -355,4 +359,14 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
         *prg->ProgressPtr = static_cast<int>(percent);
     }
     return CURLE_OK;
+}
+
+int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
+                 char *data, size_t size,
+                 void *userp)
+{
+    CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
+    assert(instance != NULL);
+    DEBUG_PRINTF(L"NetBox: InternalDebug: data = %s", CFarPlugin::MB2W(data).c_str());
+    return 0;
 }
