@@ -19,7 +19,12 @@
 
 #pragma once
 
-//! logging
+enum LoggingLevel
+{
+    LEVEL_DEBUG1 = 0,
+    LEVEL_DEBUG2 = 1,
+};
+
 class CLogger
 {
 public:

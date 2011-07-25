@@ -22,12 +22,6 @@
 #include "Logging.h"
 #include "resource.h"
 
-enum LoggingLevel
-{
-    LEVEL_DEBUG1 = 0,
-    LEVEL_DEBUG2 = 1,
-};
-
 CLogger m_Logger;
 
 CLogger::CLogger() :
