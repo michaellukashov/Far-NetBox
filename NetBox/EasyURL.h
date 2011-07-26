@@ -158,6 +158,10 @@ private:
     //Internal progress counter callback (see libcurl docs)
     static int InternalProgress(void *userData, double dltotal, double dlnow, double ultotal, double ulnow);
 
+    static int InternalDebug(CURL *handle, curl_infotype type,
+                 char *data, size_t size,
+                 void *userp);
+
 private:
     CURL   *m_CURL;      ///< CURL
     bool    m_Prepared;  ///< Preapre statement flag

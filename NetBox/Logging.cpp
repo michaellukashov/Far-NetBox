@@ -22,12 +22,6 @@
 #include "Logging.h"
 #include "resource.h"
 
-enum LoggingLevel
-{
-    LEVEL_DEBUG1 = 0,
-    LEVEL_DEBUG2 = 1,
-};
-
 CLogger m_Logger;
 
 CLogger::CLogger() :
@@ -99,6 +93,50 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
     m_first = false;
 }
 
+void CLogger::Log(int level, const char *str)
+{
+    // DEBUG_PRINTF(L"NetBox: level = %d, m_loggingLevel = %d", level, m_loggingLevel);
+    if (!m_enableLogging)
+    {
+        return;
+    }
+    if (!m_logToFile)
+    {
+        return;
+    }
+    if (!str)
+    {
+        return;
+    }
+    if (level > m_loggingLevel)
+    {
+        return;
+    }
+    if (m_logFileName.empty())
+        return;
+    FILE *f = _wfsopen(m_logFileName.c_str(), m_first ? L"a" : L"a", SH_DENYWR);
+    if (!f)
+        return;
+    // Time
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    fprintf(f, "%02d.%02d.%4d %02d:%02d:%02d:%04d ",
+            st.wDay, st.wMonth, st.wYear,
+            st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+    // Log
+    int len = strlen(str) + 1;
+    if (len <= 1)
+        return;
+    fprintf_s(f, "%s\n", str);
+    fflush(f);
+    if (fclose(f) == EOF)
+    {
+        clearerr(f);
+        fclose(f);
+    }
+    m_first = false;
+}
+
 void Log1(const wchar_t *format, ...)
 {
     va_list args;
@@ -113,5 +151,10 @@ void Log2(const wchar_t *format, ...)
     va_start(args, format);
     m_Logger.Log(LEVEL_DEBUG2, format, args);
     va_end(args);
+}
+
+void Log2(const char *str)
+{
+    m_Logger.Log(LEVEL_DEBUG2, str);
 }
 
