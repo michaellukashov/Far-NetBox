@@ -110,6 +110,9 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "MKCOL"));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -414,6 +417,9 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "MOVE"));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -440,6 +446,9 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "DELETE"));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -488,11 +497,13 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
 
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "PROPFIND"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_MAXREDIRS, 5));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTFIELDS, requestData));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTFIELDSIZE, requestDataLen));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -527,6 +538,7 @@ bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
         if (responseCode != expect)
         {
             errInfo = GetBadResponseInfo(responseCode);
+            DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
             return false;
         }
     }
@@ -804,6 +816,5 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
             result += encChar;
         }
     }
-
     return result;
 }

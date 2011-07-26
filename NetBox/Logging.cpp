@@ -78,12 +78,11 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
             st.wDay, st.wMonth, st.wYear,
             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
     // Log
-    int len = _vscwprintf(format, args) + 1;
-    if (len <= 1)
-        return;
-    wstring buf(len, 0);
+    int len = _vscwprintf(format, args);
+    wstring buf(len + sizeof(wchar_t), 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
     fprintf_s(f, "%s\n", (char *)CFarPlugin::W2MB(buf.c_str()).c_str());
+
     fflush(f);
     if (fclose(f) == EOF)
     {
@@ -124,9 +123,6 @@ void CLogger::Log(int level, const char *str)
             st.wDay, st.wMonth, st.wYear,
             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
     // Log
-    int len = strlen(str) + 1;
-    if (len <= 1)
-        return;
     fprintf_s(f, "%s\n", str);
     fflush(f);
     if (fclose(f) == EOF)
