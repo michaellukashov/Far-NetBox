@@ -367,8 +367,12 @@ int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
                  char *data, size_t size,
                  void *userp)
 {
-    CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
-    assert(instance != NULL);
+    // CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
+    // assert(instance != NULL);
+    (void)handle;
+    (void)type;
+    (void)size;
+    (void)userp;
     // DEBUG_PRINTF(L"NetBox: InternalDebug: data = %s", CFarPlugin::MB2W(data).c_str());
     Log2(CFarPlugin::MB2W(data).c_str());
     return 0;
