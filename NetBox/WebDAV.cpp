@@ -65,9 +65,14 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
 
     //Check initial path existing
     wstring path;
-    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    wstring query;
+    ParseURL(url, NULL, NULL, NULL, &path, &query, NULL, NULL);
     bool dirExist = false;
-    // DEBUG_PRINTF(L"NetBox: path = %s", path.c_str());
+    DEBUG_PRINTF(L"NetBox: path = %s, query = %s", path.c_str(), query.c_str());
+    if (!query.empty())
+    {
+        path += query;
+    }
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
         Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
@@ -466,6 +471,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
+    DEBUG_PRINTF(L"NetBox: webDavPath = %s", CFarPlugin::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
@@ -797,7 +803,7 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
     string result;
     result.reserve(cntLength);
 
-    static const char permitSymbols[] = "/;@&=+$,-_.!~'()#%{}^[]`";
+    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()#%{}^[]`";
 
     for (size_t i = 0; i < cntLength; ++i)
     {
