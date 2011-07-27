@@ -23,19 +23,41 @@
 #include "Logging.h"
 
 
-CEasyURL::CEasyURL()
-    : m_CURL(NULL), m_Prepared(false)
+CEasyURL::CEasyURL() :
+    m_CURL(NULL),
+    m_Prepared(false),
+    m_regex(INVALID_HANDLE_VALUE),
+    m_match(NULL),
+    m_brackets(0)
+    
 {
     m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
     m_Output.Type = OutputWriter::None;
     m_Progress.ProgressPtr = NULL;
+    // init regex
+    if (CFarPlugin::GetPSI()->RegExpControl(0, RECTL_CREATE, reinterpret_cast<LONG_PTR>(&m_regex)))
+    {
+        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_COMPILE, reinterpret_cast<LONG_PTR>(L"/PASS(.*)/")))
+        {
+            m_brackets = CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_BRACKETSCOUNT, 0);
+            if (m_brackets == 2)
+            {
+                m_match = reinterpret_cast<RegExpMatch *>(malloc(m_brackets * sizeof(RegExpMatch)));
+            }
+        }
+    }
 }
 
 
 CEasyURL::~CEasyURL()
 {
     Close();
+    free(m_match);
+    if (m_regex != INVALID_HANDLE_VALUE)
+    {
+        CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_FREE, 0);
+    }
 }
 
 
@@ -363,48 +385,39 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
     return CURLE_OK;
 }
 
+int CEasyURL::DebugOutput(const char *data, size_t size)
+{
+    // PASS *****
+    if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
+    {
+        // DEBUG_PRINTF(L"NetBox: data = %s", CFarPlugin::MB2W(data).c_str());
+        wstring dataw = CFarPlugin::MB2W(data);
+        RegExpSearch search = {
+            dataw.c_str(),
+            0,
+            dataw.size(),
+            m_match,
+            m_brackets,
+            0
+        };
+        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
+        {
+            // DEBUG_PRINTF(L"NetBox: PASS ****");
+            Log2("PASS ****");
+            return 0;
+        }
+    }
+    Log2(data);
+    return 0;
+}
+
 int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
                  char *data, size_t size,
                  void *userp)
 {
-    // CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
-    // assert(instance != NULL);
+    CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
+    assert(instance != NULL);
     (void)handle;
     (void)type;
-    (void)size;
-    (void)userp;
-    // PASS *****
-    HANDLE m_regex;
-    if (CFarPlugin::GetPSI()->RegExpControl(0, RECTL_CREATE, reinterpret_cast<LONG_PTR>(&m_regex)))
-    {
-        // DEBUG_PRINTF(L"NetBox: data = %s", CFarPlugin::MB2W(data).c_str());
-        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_COMPILE, reinterpret_cast<LONG_PTR>(L"/PASS(.*)/")))
-        {
-            int brackets = CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_BRACKETSCOUNT, 0);
-            if (brackets == 2)
-            {
-                RegExpMatch *match = reinterpret_cast<RegExpMatch *>(malloc(brackets * sizeof(RegExpMatch)));
-                wstring dataw = CFarPlugin::MB2W(data);
-                RegExpSearch search = {
-                    dataw.c_str(),
-                    0,
-                    dataw.size(),
-                    match,
-                    brackets,
-                    0
-                };
-                if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
-                {
-                    DEBUG_PRINTF(L"NetBox: PASS ****");
-                    Log2("PASS ****");
-                    free(match);
-                    return 0;
-                }
-                free(match);
-            }
-        }
-        CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_FREE, 0);
-    }
-    Log2(data);
-    return 0;
+    return instance->DebugOutput(data, size);
 }

@@ -149,6 +149,9 @@ public:
     }
 
 private:
+    int DebugOutput(const char *data, size_t size);
+
+private:
     //Internal reader callback (see libcurl docs)
     static size_t InternalReader(void *buffer, size_t size, size_t nmemb, void *userData);
 
@@ -212,4 +215,7 @@ private:
     };
     Progress m_Progress;
     struct ProxySettings m_proxySettings;
+    HANDLE m_regex;
+    RegExpMatch *m_match;
+    int m_brackets;
 };
