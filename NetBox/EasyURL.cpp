@@ -373,6 +373,38 @@ int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
     (void)type;
     (void)size;
     (void)userp;
+    // PASS *****
+    HANDLE m_regex;
+    if (CFarPlugin::GetPSI()->RegExpControl(0, RECTL_CREATE, reinterpret_cast<LONG_PTR>(&m_regex)))
+    {
+        // DEBUG_PRINTF(L"NetBox: data = %s", CFarPlugin::MB2W(data).c_str());
+        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_COMPILE, reinterpret_cast<LONG_PTR>(L"/PASS(.*)/")))
+        {
+            int brackets = CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_BRACKETSCOUNT, 0);
+            if (brackets == 2)
+            {
+                RegExpMatch *match = reinterpret_cast<RegExpMatch *>(malloc(brackets * sizeof(RegExpMatch)));
+                wstring dataw = CFarPlugin::MB2W(data);
+                RegExpSearch search = {
+                    dataw.c_str(),
+                    0,
+                    dataw.size(),
+                    match,
+                    brackets,
+                    0
+                };
+                if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
+                {
+                    DEBUG_PRINTF(L"NetBox: PASS ****");
+                    Log2("PASS ****");
+                    free(match);
+                    return 0;
+                }
+                free(match);
+            }
+        }
+        CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_FREE, 0);
+    }
     Log2(data);
     return 0;
 }
