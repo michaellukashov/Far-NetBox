@@ -115,10 +115,10 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
     if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
     {
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
     }
 
@@ -367,9 +367,12 @@ int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
                  char *data, size_t size,
                  void *userp)
 {
-    CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
-    assert(instance != NULL);
-    // DEBUG_PRINTF(L"NetBox: InternalDebug: data = %s", CFarPlugin::MB2W(data).c_str());
-    Log2(CFarPlugin::MB2W(data).c_str());
+    // CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
+    // assert(instance != NULL);
+    (void)handle;
+    (void)type;
+    (void)size;
+    (void)userp;
+    Log2(data);
     return 0;
 }
