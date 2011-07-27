@@ -26,7 +26,7 @@
 
 
 CPanel::CPanel(const bool exitToSessionMgr)
-    : _ProtoClient(NULL), _Title(CFarPlugin::GetString(StringTitle)), _ExitToSessionMgr(exitToSessionMgr), _AbortTask(NULL)
+    : m_ProtoClient(NULL), m_Title(CFarPlugin::GetString(StringTitle)), m_ExitToSessionMgr(exitToSessionMgr), m_AbortTask(NULL)
 {
 }
 
@@ -34,9 +34,9 @@ CPanel::CPanel(const bool exitToSessionMgr)
 CPanel::~CPanel()
 {
     CloseConnection();
-    if (_AbortTask)
+    if (m_AbortTask)
     {
-        CloseHandle(_AbortTask);
+        CloseHandle(m_AbortTask);
     }
 }
 
@@ -46,21 +46,21 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
     assert(protoImpl);
 
     CloseConnection();
-    _ProtoClient = protoImpl;
+    m_ProtoClient = protoImpl;
 
-    if (!_AbortTask)
+    if (!m_AbortTask)
     {
-        _AbortTask = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (!_AbortTask)
+        m_AbortTask = CreateEvent(NULL, TRUE, FALSE, NULL);
+        if (!m_AbortTask)
         {
             ShowErrorDialog(GetLastError(), L"Create event failed");
             return false;
         }
     }
-    ResetEvent(_AbortTask);
+    ResetEvent(m_AbortTask);
 
     bool connectionEstablished = false;
-    const wstring connectURL = _ProtoClient->GetURL();
+    const wstring connectURL = m_ProtoClient->GetURL();
 
     if (IsSessionManager())
     {
@@ -74,7 +74,7 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
 
         Log1(L"connecting to %s", connectURL.c_str());
         wstring errorMsg;
-        while (!_ProtoClient->Connect(_AbortTask, errorMsg))
+        while (!m_ProtoClient->Connect(m_AbortTask, errorMsg))
         {
             notifyWnd.Hide();
             wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrEstablish, connectURL.c_str());
@@ -83,17 +83,17 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
             Log1(L"error: %s", errorMsg.c_str());
             const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_RETRYCANCEL | FMSG_WARNING);
             errorMsg.clear();
-            _ProtoClient->Close();
+            m_ProtoClient->Close();
             if (retCode != 0)
             {
                 //I am not owner of the protoImpl, so don't delete it
-                _ProtoClient = NULL;
+                m_ProtoClient = NULL;
                 break;
             }
             notifyWnd.Show();
-            ResetEvent(_AbortTask);
+            ResetEvent(m_AbortTask);
         }
-        connectionEstablished = (_ProtoClient != NULL);
+        connectionEstablished = (m_ProtoClient != NULL);
     }
 
     if (connectionEstablished)
@@ -108,11 +108,11 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
 
 void CPanel::CloseConnection()
 {
-    if (_ProtoClient)
+    if (m_ProtoClient)
     {
-        _ProtoClient->Close();
-        delete _ProtoClient;
-        _ProtoClient = NULL;
+        m_ProtoClient->Close();
+        delete m_ProtoClient;
+        m_ProtoClient = NULL;
     }
     UpdateTitle();
 }
@@ -125,12 +125,12 @@ void CPanel::GetOpenPluginInfo(OpenPluginInfo *pluginInfo)
     pluginInfo->StructSize = sizeof(OpenPluginInfo);
     pluginInfo->PanelTitle = GetTitle();
     pluginInfo->Format = CFarPlugin::GetString(StringTitle);
-    pluginInfo->CurDir = _ProtoClient ? _ProtoClient->GetCurrentDirectory() : NULL;
+    pluginInfo->CurDir = m_ProtoClient ? m_ProtoClient->GetCurrentDirectory() : NULL;
     pluginInfo->Flags = OPIF_USEHIGHLIGHTING | OPIF_USEFILTER | OPIF_USESORTGROUPS | OPIF_ADDDOTS;
 
     if (IsSessionManager())
     {
-        static_cast<CSessionManager *>(_ProtoClient)->GetOpenPluginInfo(pluginInfo);
+        static_cast<CSessionManager *>(m_ProtoClient)->GetOpenPluginInfo(pluginInfo);
     }
 }
 
@@ -160,7 +160,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             }
             if ((ppi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
             {
-                PSession session = static_cast<CSessionManager *>(_ProtoClient)->LoadSession(ppi->FindData.lpwszFileName);
+                PSession session = static_cast<CSessionManager *>(m_ProtoClient)->LoadSession(ppi->FindData.lpwszFileName);
                 if (!session.get())
                 {
                     return 1;
@@ -168,7 +168,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
                 PProtocol proto = session->CreateClient();
 
                 //TODO: Save current session manager path - may be we fail on next operation
-                const wstring smPath = _ProtoClient->GetCurrentDirectory();
+                const wstring smPath = m_ProtoClient->GetCurrentDirectory();
                 if (proto.get() && OpenConnection(proto.get()))
                 {
                     proto.release();    //From now we are the only owner!
@@ -184,7 +184,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             }
         }
 
-        return static_cast<CSessionManager *>(_ProtoClient)->ProcessKey(this, key, controlState);
+        return static_cast<CSessionManager *>(m_ProtoClient)->ProcessKey(this, key, controlState);
     }
 
 
@@ -210,13 +210,10 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             return 0;
         }
 
-        assert(_ProtoClient);
-        wstring cbData = _ProtoClient->GetURL((controlState & PKF_CONTROL) && !(controlState & PKF_SHIFT));
-        cbData += _ProtoClient->GetCurrentDirectory();
-        if (!cbData.empty() && cbData[cbData.length() - 1] != L'/')
-        {
-            cbData += L'/';
-        }
+        assert(m_ProtoClient);
+        wstring cbData = m_ProtoClient->GetURL((controlState & PKF_CONTROL) && !(controlState & PKF_SHIFT));
+        cbData += m_ProtoClient->GetCurrentDirectory();
+        ::AppendWChar(cbData, L'/');
         cbData += ppi->FindData.lpwszFileName;
 
         CFarPlugin::GetPSI()->FSF->CopyToClipboard(cbData.c_str());
@@ -230,9 +227,9 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
 int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 {
     assert(dir);
-    assert(_ProtoClient);
+    assert(m_ProtoClient);
 
-    const bool topDirectory = (wcscmp(L"/", _ProtoClient->GetCurrentDirectory()) == 0);
+    const bool topDirectory = (wcscmp(L"/", m_ProtoClient->GetCurrentDirectory()) == 0);
     const bool moveUp = (wcscmp(L"..", dir) == 0);
 
     wstring errInfo;
@@ -240,7 +237,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 
     if (topDirectory && moveUp)
     {
-        if (!_ExitToSessionMgr)
+        if (!m_ExitToSessionMgr)
         {
             CFarPlugin::GetPSI()->Control(this, FCTL_CLOSEPLUGIN, NULL, NULL);
             return 0;
@@ -252,7 +249,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
     {
         CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgChangeDir, dir).c_str());
         notifyWnd.Show();
-        retStatus = _ProtoClient->ChangeDirectory(dir, errInfo);
+        retStatus = m_ProtoClient->ChangeDirectory(dir, errInfo);
     }
 
     if (!retStatus)
@@ -270,7 +267,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 
 int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
 {
-    assert(_ProtoClient);
+    assert(m_ProtoClient);
 
     if (!IS_SILENT(opMode))
     {
@@ -285,11 +282,11 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
         {
             return -1;
         }
-        _LastDirName = dlg.GetText(idName);
-        *name = _LastDirName.c_str();
+        m_LastDirName = dlg.GetText(idName);
+        *name = m_LastDirName.c_str();
     }
 
-    wstring path(_ProtoClient->GetCurrentDirectory());
+    wstring path(m_ProtoClient->GetCurrentDirectory());
     if (path.compare(L"/") != 0)
     {
         path += L'/';
@@ -297,7 +294,7 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
     path += *name;
 
     wstring errInfo;
-    if (!_ProtoClient->MakeDirectory(path.c_str(), errInfo))
+    if (!m_ProtoClient->MakeDirectory(path.c_str(), errInfo))
     {
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrCreateDir, *name), errInfo.c_str());
         return -1;
@@ -309,19 +306,19 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
 
 int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int opMode)
 {
-    assert(_ProtoClient);
+    assert(m_ProtoClient);
 
-    CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, _ProtoClient->GetCurrentDirectory()).c_str());
+    CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
     if (!IsSessionManager())
     {
         notifyWnd.Show();
     }
 
     wstring errInfo;
-    if (!_ProtoClient->GetList(panelItem, itemsNumber, errInfo))
+    if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo))
     {
         notifyWnd.Hide();
-        ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, _ProtoClient->GetCurrentDirectory()), errInfo.c_str());
+        ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, m_ProtoClient->GetCurrentDirectory()), errInfo.c_str());
         if (IsSessionManager())
         {
             return 0;
@@ -329,6 +326,7 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
         else
         {
             OpenConnection(new CSessionManager); //Return to session manager panel
+            DEBUG_PRINTF(L"NetBox: before CPanel::GetItemList");
             return GetItemList(panelItem, itemsNumber, opMode);
         }
     }
@@ -339,15 +337,15 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
 
 void CPanel::FreeItemList(PluginPanelItem *panelItem, int itemsNumber)
 {
-    assert(_ProtoClient);
-    _ProtoClient->FreeList(panelItem, itemsNumber);
+    assert(m_ProtoClient);
+    m_ProtoClient->FreeList(panelItem, itemsNumber);
 }
 
 
 int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wchar_t **destPath, const bool deleteSource, const int opMode)
 {
     // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
-    assert(_ProtoClient);
+    assert(m_ProtoClient);
     assert(!IsSessionManager());
 
     if (itemsNumber == 1 && wcscmp(panelItem->FindData.lpwszFileName, L"..") == 0)
@@ -380,8 +378,8 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         {
             return -1;
         }
-        _LastDirName = dlg.GetText(idPath);
-        *destPath = _LastDirName.c_str();
+        m_LastDirName = dlg.GetText(idPath);
+        *destPath = m_LastDirName.c_str();
     }
 
     if (deleteSource)
@@ -396,7 +394,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 for (int i = 0; i < itemsNumber; ++i)
                 {
                     PluginPanelItem *pi = &panelItem[i];
-                    wstring srcPath = _ProtoClient->GetCurrentDirectory();
+                    wstring srcPath = m_ProtoClient->GetCurrentDirectory();
                     if (srcPath.compare(L"/") != 0)
                     {
                         srcPath += L'/';
@@ -410,20 +408,17 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     }
                     else
                     {
-                        dstPath = _ProtoClient->GetCurrentDirectory();
+                        dstPath = m_ProtoClient->GetCurrentDirectory();
                         if (dstPath.compare(L"/") != 0)
                         {
                             dstPath += L'/';
                         }
                         dstPath += *destPath;
                     }
-                    if (dstPath[dstPath.length() - 1] != '/')
-                    {
-                        dstPath += '/';
-                    }
+                    ::AppendWChar(dstPath, L'/');
                     dstPath += pi->FindData.lpwszFileName;
                     wstring errInfo;
-                    if (!_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
+                    if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
                     {
                         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrRenameMove, srcPath.c_str(), dstPath.c_str()), errInfo.c_str());
                         return 0;
@@ -433,7 +428,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             else
             {
                 //Move/rename opration
-                wstring srcPath = _ProtoClient->GetCurrentDirectory();
+                wstring srcPath = m_ProtoClient->GetCurrentDirectory();
                 if (srcPath.compare(L"/") != 0)
                 {
                     srcPath += L'/';
@@ -446,7 +441,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 }
                 else
                 {
-                    dstPath = _ProtoClient->GetCurrentDirectory();
+                    dstPath = m_ProtoClient->GetCurrentDirectory();
                     if (dstPath.compare(L"/") != 0)
                     {
                         dstPath += L'/';
@@ -456,16 +451,13 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 const IProtocol::ItemType itemType = (panelItem->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? IProtocol::ItemDirectory : IProtocol::ItemFile;
                 bool isExist = false;
                 // DEBUG_PRINTF(L"NetBox: GetFiles: dstPath = %s", dstPath.c_str());
-                if (_ProtoClient->CheckExisting(dstPath.c_str(), IProtocol::ItemDirectory, isExist, errInfo) && isExist)
+                if (m_ProtoClient->CheckExisting(dstPath.c_str(), IProtocol::ItemDirectory, isExist, errInfo) && isExist)
                 {
                     //Move
-                    if (dstPath[dstPath.length() - 1] != '/')
-                    {
-                        dstPath += '/';
-                    }
+                    ::AppendWChar(dstPath, L'/');
                     dstPath += panelItem->FindData.lpwszFileName;
                 }
-                if (!_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), itemType, errInfo))
+                if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), itemType, errInfo))
                 {
                     ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrRenameMove, srcPath.c_str(), dstPath.c_str()), errInfo.c_str());
                     return 0;
@@ -514,7 +506,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     //Directory to remove list
     vector<wstring> dirsToRemove;
 
-    CProgressWindow progressWnd(_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Receive, 1, _ProtoClient);
+    CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Receive, 1, m_ProtoClient);
     progressWnd.Show();
 
     //Copy content
@@ -526,13 +518,10 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             const bool isDirectory = (pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
             wstring localPath = *destPath;
-            if (!localPath.empty() && localPath[localPath.length() - 1] != '\\')
-            {
-                localPath += L'\\';
-            }
+            ::AppendWChar(localPath, L'\\');
             localPath += pi->FindData.lpwszFileName;
 
-            wstring remotePath = _ProtoClient->GetCurrentDirectory();
+            wstring remotePath = m_ProtoClient->GetCurrentDirectory();
             if (remotePath.compare(L"/") != 0)
             {
                 remotePath += L'/';
@@ -569,9 +558,9 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 //Copy file
                 progressWnd.SetFileNames(remotePath.c_str(), localPath.c_str());
                 wstring errInfo;
-                while (!_ProtoClient->GetFile(remotePath.c_str(), localPath.c_str(), pi->FindData.nFileSize, errInfo))
+                while (!m_ProtoClient->GetFile(remotePath.c_str(), localPath.c_str(), pi->FindData.nFileSize, errInfo))
                 {
-                    if (WaitForSingleObject(_AbortTask, 0) == WAIT_OBJECT_0)
+                    if (WaitForSingleObject(m_AbortTask, 0) == WAIT_OBJECT_0)
                     {
                         return -1;
                     }
@@ -606,7 +595,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     progressWndDel.Show();
 
                     wstring errInfo;
-                    while (!_ProtoClient->Delete(remotePath.c_str(), IProtocol::ItemFile, errInfo))
+                    while (!m_ProtoClient->Delete(remotePath.c_str(), IProtocol::ItemFile, errInfo))
                     {
                         progressWndDel.Hide();
                         wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteFile, remotePath.c_str());
@@ -641,7 +630,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     {
         wstring errInfo;
         progressWndDel.Show();
-        while (!_ProtoClient->Delete(it->c_str(), IProtocol::ItemDirectory, errInfo))
+        while (!m_ProtoClient->Delete(it->c_str(), IProtocol::ItemDirectory, errInfo))
         {
             progressWndDel.Hide();
             wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteDir, it->c_str());
@@ -675,7 +664,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
 
 int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, const int itemsNumber, const bool deleteSource, const int /*opMode*/)
 {
-    assert(_ProtoClient);
+    assert(m_ProtoClient);
 
     if (itemsNumber == 1 && wcscmp(panelItem->FindData.lpwszFileName, L"..") == 0)
     {
@@ -703,10 +692,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
             FAR_FIND_DATA *subItems = NULL;
             int subItemsNum = 0;
             wstring localPath = sourcePath;
-            if (!localPath.empty() && localPath[localPath.length() - 1] != '\\')
-            {
-                localPath += L'\\';
-            }
+            ::AppendWChar(localPath, L'\\');
             localPath += pi->FindData.lpwszFileName;
             if (!CFarPlugin::GetPSI()->GetDirList(localPath.c_str(), &subItems, &subItemsNum))
             {
@@ -733,15 +719,12 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     }
 
     wstring localRelativePath = sourcePath;
-    if (!localRelativePath.empty() && localRelativePath[localRelativePath.length() - 1] != '\\')
-    {
-        localRelativePath += L'\\';
-    }
+    ::AppendWChar(localRelativePath, L'\\');
 
     //Directory to remove list
     vector<wstring> dirsToRemove;
 
-    CProgressWindow progressWnd(_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Send, 1, _ProtoClient);
+    CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Send, 1, m_ProtoClient);
     progressWnd.Show();
 
     //Copy content
@@ -763,7 +746,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 localPath += fd->lpwszFileName;
             }
 
-            wstring remotePath = _ProtoClient->GetCurrentDirectory();
+            wstring remotePath = m_ProtoClient->GetCurrentDirectory();
             if (remotePath.compare(L"/") != 0)
             {
                 remotePath += L'/';
@@ -783,13 +766,13 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 bool dirExist = false;
                 wstring errInfo;
                 // DEBUG_PRINTF(L"NetBox: PutFiles: remotePath = %s", remotePath.c_str());
-                if (!_ProtoClient->CheckExisting(remotePath.c_str(), IProtocol::ItemDirectory, dirExist, errInfo))
+                if (!m_ProtoClient->CheckExisting(remotePath.c_str(), IProtocol::ItemDirectory, dirExist, errInfo))
                 {
                     return -1;
                 }
                 if (!dirExist)
                 {
-                    while (!_ProtoClient->MakeDirectory(remotePath.c_str(), errInfo))
+                    while (!m_ProtoClient->MakeDirectory(remotePath.c_str(), errInfo))
                     {
                         wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCreateDir, remotePath.c_str());
                         taskErrorMsg += L'\n';
@@ -807,9 +790,9 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 //Copy file
                 progressWnd.SetFileNames(localPath.c_str(), remotePath.c_str());
                 wstring errInfo;
-                while (!_ProtoClient->PutFile(remotePath.c_str(), localPath.c_str(), fd->nFileSize, errInfo))
+                while (!m_ProtoClient->PutFile(remotePath.c_str(), localPath.c_str(), fd->nFileSize, errInfo))
                 {
-                    if (WaitForSingleObject(_AbortTask, 0) == WAIT_OBJECT_0)
+                    if (WaitForSingleObject(m_AbortTask, 0) == WAIT_OBJECT_0)
                     {
                         return -1;
                     }
@@ -907,7 +890,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
 
 int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int opMode)
 {
-    assert(_ProtoClient);
+    assert(m_ProtoClient);
     // DEBUG_PRINTF(L"NetBox: DeleteFiles: begin");
     if (itemsNumber == 1 && wcscmp(panelItem->FindData.lpwszFileName, L"..") == 0)
     {
@@ -982,7 +965,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
         {
             PluginPanelItem *pi = &it->second[i];
 
-            wstring remotePath = _ProtoClient->GetCurrentDirectory();
+            wstring remotePath = m_ProtoClient->GetCurrentDirectory();
             if (remotePath.compare(L"/") != 0)
             {
                 remotePath += L'/';
@@ -998,7 +981,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
 
             bool removed = true;
             wstring errInfo;
-            while (!_ProtoClient->Delete(remotePath.c_str(), isDirectory ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
+            while (!m_ProtoClient->Delete(remotePath.c_str(), isDirectory ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
             {
                 progressWnd.Hide();
                 removed = false;
@@ -1040,12 +1023,12 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
 
 void CPanel::UpdateTitle()
 {
-    _Title = CFarPlugin::GetString(StringTitle);
-    if (_ProtoClient)
+    m_Title = CFarPlugin::GetString(StringTitle);
+    if (m_ProtoClient)
     {
-        _Title += L": ";
-        _Title += _ProtoClient->GetURL();
-        _Title += _ProtoClient->GetCurrentDirectory();
+        m_Title += L": ";
+        m_Title += m_ProtoClient->GetURL();
+        m_Title += m_ProtoClient->GetCurrentDirectory();
     }
 }
 

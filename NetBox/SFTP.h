@@ -59,11 +59,11 @@ protected:
     virtual void ShowSessionDlgItems(bool visible);
 
 private:
-    int _IdText;
-    int _IdKeyFile;
-    int _IdSeparator;
-    int _IdCPText;
-    int _IdCP;
+    int m_IdText;
+    int m_IdKeyFile;
+    int m_IdSeparator;
+    int m_IdCPText;
+    int m_IdCP;
 };
 
 
@@ -112,7 +112,7 @@ private:
     inline string LocalToSftpCP(const wchar_t *src) const
     {
         assert(src && src[0] == L'/');
-        return CFarPlugin::W2MB(src, _Session.GetCodePage());
+        return CFarPlugin::W2MB(src, m_Session.GetCodePage());
     }
 
     /**
@@ -122,12 +122,12 @@ private:
      */
     inline wstring SftpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, _Session.GetCodePage());
+        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
     }
 
 private:
-    SOCKET              _Socket;        ///< Session socket
-    LIBSSH2_SESSION    *_SSHSession;    ///< SSH2 session
-    LIBSSH2_SFTP       *_SFTPSession;   ///< SFTP session
-    HANDLE              _AbortEvent;    ///< Abort event
+    SOCKET              m_Socket;        ///< Session socket
+    LIBSSH2_SESSION    *m_SSHSession;    ///< SSH2 session
+    LIBSSH2_SFTP       *m_SFTPSession;   ///< SFTP session
+    HANDLE              m_AbortEvent;    ///< Abort event
 };

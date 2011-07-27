@@ -47,28 +47,28 @@ static const wchar_t *RegLoggingLevel = L"LoggingLevel";
 static const wchar_t *RegLogToFile = L"LogToFile";
 static const wchar_t *RegLogFileName = L"LogFileName";
 
-CSettings _Settings;
+CSettings m_Settings;
 
 CSettings::CSettings() :
-    _SettingsMenuIdx(0),
-    _AddToDiskMenu(true),
-    _AddToPanelMenu(false),
-    _CmdPrefix(L"NetBox"),
-    _AltPrefix(true),
-    _UseOwnKey(false),
-    _Timeout(60),
-    _SessionPath(),
-    _EnableLogging(false),
-    _LoggingLevel(0),
-    _LogToFile(false),
-    _LogFileName(L"C:\\NetBox.log")
+    m_SettingsMenuIdx(0),
+    m_AddToDiskMenu(true),
+    m_AddToPanelMenu(false),
+    m_CmdPrefix(L"NetBox"),
+    m_AltPrefix(true),
+    m_UseOwnKey(false),
+    m_Timeout(10),
+    m_SessionPath(),
+    m_EnableLogging(false),
+    m_LoggingLevel(0),
+    m_LogToFile(false),
+    m_LogFileName(L"C:\\NetBox.log")
 {
-    // _LogFileName = CFarPlugin::GetString(StringLogFileName);
-    _proxySettings.proxyType = PROXY_NONE;
-    _proxySettings.proxyHost = L"127.0.0.1";
-    _proxySettings.proxyPort = 1080;
-    _proxySettings.proxyLogin = L"";
-    _proxySettings.proxyPassword = L"";
+    // m_LogFileName = CFarPlugin::GetString(StringLogFileName);
+    m_proxySettings.proxyType = PROXY_NONE;
+    m_proxySettings.proxyHost = L"127.0.0.1";
+    m_proxySettings.proxyPort = 1080;
+    m_proxySettings.proxyLogin = L"";
+    m_proxySettings.proxyPassword = L"";
 }
 
 
@@ -81,66 +81,66 @@ void CSettings::Load()
         wstring regStrVal;
         if (settings.GetNumber(RegAddToDM, regVal))
         {
-            _AddToDiskMenu = (regVal != 0);
+            m_AddToDiskMenu = (regVal != 0);
         }
         if (settings.GetNumber(RegAddToPM, regVal))
         {
-            _AddToPanelMenu = (regVal != 0);
+            m_AddToPanelMenu = (regVal != 0);
         }
-        settings.GetString(RegPrefix, _CmdPrefix);
+        settings.GetString(RegPrefix, m_CmdPrefix);
         if (settings.GetNumber(RegAltPrefix, regVal))
         {
-            _AltPrefix = (regVal != 0);
+            m_AltPrefix = (regVal != 0);
         }
         if (settings.GetNumber(RegUseOwnKey, regVal))
         {
-            _UseOwnKey = (regVal != 0);
+            m_UseOwnKey = (regVal != 0);
         }
         if (settings.GetNumber(RegTimeout, regVal))
         {
-            _Timeout = regVal;
+            m_Timeout = regVal;
         }
-        settings.GetString(RegSessionsPath, _SessionPath);
+        settings.GetString(RegSessionsPath, m_SessionPath);
 
         // Прокси
         if (settings.GetNumber(RegProxyType, regVal))
         {
-            _proxySettings.proxyType = regVal;
+            m_proxySettings.proxyType = regVal;
         }
         if (settings.GetString(RegProxyHost, regStrVal))
         {
-            _proxySettings.proxyHost = regStrVal;
+            m_proxySettings.proxyHost = regStrVal;
         }
         if (settings.GetNumber(RegProxyPort, regVal))
         {
-            _proxySettings.proxyPort = regVal;
+            m_proxySettings.proxyPort = regVal;
         }
         if (settings.GetString(RegProxyLogin, regStrVal))
         {
-            _proxySettings.proxyLogin = regStrVal;
+            m_proxySettings.proxyLogin = regStrVal;
         }
         if (settings.GetString(RegProxyPassword, regStrVal))
         {
-            _proxySettings.proxyPassword = regStrVal;
+            m_proxySettings.proxyPassword = regStrVal;
         }
-        // DEBUG_PRINTF(L"NetBox: Load: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _ProxyType, _ProxyPort, _ProxyPassword.c_str());
+        // DEBUG_PRINTF(L"NetBox: Load: m_ProxyType = %d, m_ProxyPort = %u, m_ProxyPassword = %s", m_ProxyType, m_ProxyPort, m_ProxyPassword.c_str());
 
         // Логирование
         if (settings.GetNumber(RegEnableLogging, regVal))
         {
-            _EnableLogging = (regVal != 0);
+            m_EnableLogging = (regVal != 0);
         }
         if (settings.GetNumber(RegLoggingLevel, regVal))
         {
-            _LoggingLevel = (regVal != 0);
+            m_LoggingLevel = (regVal != 0);
         }
         if (settings.GetNumber(RegLogToFile, regVal))
         {
-            _LogToFile = (regVal != 0);
+            m_LogToFile = (regVal != 0);
         }
         if (settings.GetString(RegLogFileName, regStrVal))
         {
-            _LogFileName = regStrVal;
+            m_LogFileName = regStrVal;
         }
     }
 }
@@ -151,28 +151,28 @@ void CSettings::Save() const
     CFarSettings settings;
     if (settings.Open(RegPluginName, false))
     {
-        settings.SetNumber(RegAddToDM, _AddToDiskMenu ? 1 : 0);
-        settings.SetNumber(RegAddToPM, _AddToPanelMenu ? 1 : 0);
-        settings.SetNumber(RegUseOwnKey, _UseOwnKey ? 1 : 0);
-        if (!_CmdPrefix.empty())
+        settings.SetNumber(RegAddToDM, m_AddToDiskMenu ? 1 : 0);
+        settings.SetNumber(RegAddToPM, m_AddToPanelMenu ? 1 : 0);
+        settings.SetNumber(RegUseOwnKey, m_UseOwnKey ? 1 : 0);
+        if (!m_CmdPrefix.empty())
         {
-            settings.SetString(RegPrefix, _CmdPrefix.c_str());
+            settings.SetString(RegPrefix, m_CmdPrefix.c_str());
         }
-        settings.SetNumber(RegAltPrefix, _AltPrefix ? 1 : 0);
-        settings.SetNumber(RegTimeout, _Timeout);
-        settings.SetString(RegSessionsPath, _SessionPath.c_str());
+        settings.SetNumber(RegAltPrefix, m_AltPrefix ? 1 : 0);
+        settings.SetNumber(RegTimeout, m_Timeout);
+        settings.SetString(RegSessionsPath, m_SessionPath.c_str());
         // Настройки прокси
-        settings.SetNumber(RegProxyType, _proxySettings.proxyType);
-        settings.SetString(RegProxyHost, _proxySettings.proxyHost.c_str());
-        settings.SetNumber(RegProxyPort, _proxySettings.proxyPort);
-        settings.SetString(RegProxyLogin, _proxySettings.proxyLogin.c_str());
-        settings.SetString(RegProxyPassword, _proxySettings.proxyPassword.c_str());
-        // DEBUG_PRINTF(L"NetBox: Save: _ProxyType = %d, _ProxyPort = %u, _ProxyPassword = %s", _proxySettings.proxyType, _proxySettings.proxyPort, _proxySettings.proxyPassword.c_str());
+        settings.SetNumber(RegProxyType, m_proxySettings.proxyType);
+        settings.SetString(RegProxyHost, m_proxySettings.proxyHost.c_str());
+        settings.SetNumber(RegProxyPort, m_proxySettings.proxyPort);
+        settings.SetString(RegProxyLogin, m_proxySettings.proxyLogin.c_str());
+        settings.SetString(RegProxyPassword, m_proxySettings.proxyPassword.c_str());
+        // DEBUG_PRINTF(L"NetBox: Save: m_ProxyType = %d, m_ProxyPort = %u, m_ProxyPassword = %s", m_proxySettings.proxyType, m_proxySettings.proxyPort, m_proxySettings.proxyPassword.c_str());
         // Настройки логирования
-        settings.SetNumber(RegEnableLogging, _EnableLogging ? 1 : 0);
-        settings.SetNumber(RegLoggingLevel, _LoggingLevel);
-        settings.SetNumber(RegLogToFile, _LogToFile ? 1 : 0);
-        settings.SetString(RegLogFileName, _LogFileName.c_str());
+        settings.SetNumber(RegEnableLogging, m_EnableLogging ? 1 : 0);
+        settings.SetNumber(RegLoggingLevel, m_LoggingLevel);
+        settings.SetNumber(RegLogToFile, m_LogToFile ? 1 : 0);
+        settings.SetString(RegLogFileName, m_LogFileName.c_str());
     }
 }
 
@@ -189,52 +189,55 @@ void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int title
 
 void CSettings::Configure()
 {
-    // Создаем меню с настройками
-    vector<FarMenuItemEx> items;
-    // Main settings
-    size_t MainSettingsMenuIdx = items.size();
-    AddMenuItem(items, 0, StringMainSettingsMenuTitle);
-    // Proxy settings
-    size_t ProxySettingsMenuIdx = items.size();
-    AddMenuItem(items, 0, StringProxySettingsMenuTitle);
-    // Logging settings
-    size_t LoggingSettingsMenuIdx = items.size();
-    AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
-    //
-    AddMenuItem(items, MIF_SEPARATOR, 0);
-    // About
-    size_t AboutMenuIdx = items.size();
-    AddMenuItem(items, 0, StringAboutMenuTitle);
-    items[_SettingsMenuIdx].Flags |= MIF_SELECTED;
+    for (;;)
+    {
+        // Создаем меню с настройками
+        vector<FarMenuItemEx> items;
+        // Main settings
+        size_t MainSettingsMenuIdx = items.size();
+        AddMenuItem(items, 0, StringMainSettingsMenuTitle);
+        // Proxy settings
+        size_t ProxySettingsMenuIdx = items.size();
+        AddMenuItem(items, 0, StringProxySettingsMenuTitle);
+        // Logging settings
+        size_t LoggingSettingsMenuIdx = items.size();
+        AddMenuItem(items, 0, StringLoggingSettingsMenuTitle);
+        //
+        AddMenuItem(items, MIF_SEPARATOR, 0);
+        // About
+        size_t AboutMenuIdx = items.size();
+        AddMenuItem(items, 0, StringAboutMenuTitle);
+        items[m_SettingsMenuIdx].Flags |= MIF_SELECTED;
 
-    const size_t menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
-        -1, -1, 0, FMENU_AUTOHIGHLIGHT | FMENU_WRAPMODE | FMENU_USEEXT,
-        CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
-        reinterpret_cast<FarMenuItem *>(&items.front()),
-        static_cast<int>(items.size()));
-    if (menuIdx == MainSettingsMenuIdx)
-    {
-        MainConfigure();
+        const size_t menuIdx = CFarPlugin::GetPSI()->Menu(CFarPlugin::GetPSI()->ModuleNumber,
+            -1, -1, 0, FMENU_AUTOHIGHLIGHT | FMENU_WRAPMODE | FMENU_USEEXT,
+            CFarPlugin::GetString(StringSettingsMenuTitle), NULL, NULL, NULL, NULL,
+            reinterpret_cast<FarMenuItem *>(&items.front()),
+            static_cast<int>(items.size()));
+        if (menuIdx == MainSettingsMenuIdx)
+        {
+            MainConfigure();
+        }
+        else if (menuIdx == ProxySettingsMenuIdx)
+        {
+            ProxyConfigure();
+        }
+        else if (menuIdx == LoggingSettingsMenuIdx)
+        {
+            LoggingConfigure();
+        }
+        else if (menuIdx == AboutMenuIdx)
+        {
+            ShowAbout();
+        }
+        else
+        {
+            return;
+        }
+        // Сохраняем индекс выбранного элемента меню
+        m_SettingsMenuIdx = menuIdx;
+        // DEBUG_PRINTF(L"new m_SettingsMenuIdx = %d", m_SettingsMenuIdx);
     }
-    else if (menuIdx == ProxySettingsMenuIdx)
-    {
-        ProxyConfigure();
-    }
-    else if (menuIdx == LoggingSettingsMenuIdx)
-    {
-        LoggingConfigure();
-    }
-    else if (menuIdx == AboutMenuIdx)
-    {
-        ShowAbout();
-    }
-    else
-    {
-        return;
-    }
-    // Сохраняем индекс выбранного элемента меню
-    _SettingsMenuIdx = menuIdx;
-    // DEBUG_PRINTF(L"new _SettingsMenuIdx = %d", _SettingsMenuIdx);
 }
 
 void CSettings::MainConfigure()
@@ -242,22 +245,22 @@ void CSettings::MainConfigure()
     CFarDialog dlg(54, 17, CFarPlugin::GetString(StringTitle));
     int topPos = dlg.GetTop();
 
-    const int idAddDM = dlg.CreateCheckBox(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringCfgAddToDM), _AddToDiskMenu);
-    const int idAddPM = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgAddToPM), _AddToPanelMenu);
+    const int idAddDM = dlg.CreateCheckBox(dlg.GetLeft(), topPos, CFarPlugin::GetString(StringCfgAddToDM), m_AddToDiskMenu);
+    const int idAddPM = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgAddToPM), m_AddToPanelMenu);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgPrefix));
 
-    const int idPrefix = dlg.CreateEdit(dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgPrefix))) + 1, topPos, MAX_SIZE, _CmdPrefix.c_str());
-    const int idAltPrefix = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgAltPrefixes), _AltPrefix);
+    const int idPrefix = dlg.CreateEdit(dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgPrefix))) + 1, topPos, MAX_SIZE, m_CmdPrefix.c_str());
+    const int idAltPrefix = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgAltPrefixes), m_AltPrefix);
 
     dlg.CreateSeparator(++topPos);
 
-    const int idUseOwnKey = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgUseOwnKey), _UseOwnKey);
+    const int idUseOwnKey = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgUseOwnKey), m_UseOwnKey);
 
     dlg.CreateSeparator(++topPos);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgTimeout));
-    wstring timeoutStr = ::NumberToWString(_Timeout);
+    wstring timeoutStr = ::NumberToWString(m_Timeout);
     FarDialogItem *itemEdit;
     const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1,
         dlg.GetWidth(), topPos, topPos, timeoutStr.c_str(), DIF_MASKEDIT, &itemEdit);
@@ -265,7 +268,7 @@ void CSettings::MainConfigure()
 
     dlg.CreateSeparator(++topPos);
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgSessionsPath));
-    const int idSessPath = dlg.CreateEdit(dlg.GetLeft(), ++topPos, MAX_SIZE, _SessionPath.c_str());
+    const int idSessPath = dlg.CreateEdit(dlg.GetLeft(), ++topPos, MAX_SIZE, m_SessionPath.c_str());
 
     dlg.CreateSeparator(dlg.GetHeight() - 2);
     FarDialogItem *itemFocusBtn;
@@ -276,17 +279,14 @@ void CSettings::MainConfigure()
     const int itemIdx = dlg.DoModal();
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
-        _AddToDiskMenu = dlg.GetCheckState(idAddDM);
-        _AddToPanelMenu = dlg.GetCheckState(idAddPM);
-        _UseOwnKey = dlg.GetCheckState(idUseOwnKey);
-        _CmdPrefix = dlg.GetText(idPrefix);
-        _AltPrefix = dlg.GetCheckState(idAltPrefix);
-        _Timeout = TextToNumber(dlg.GetText(idTimeout));
-        _SessionPath = dlg.GetText(idSessPath);
-        if (!_SessionPath.empty() && _SessionPath[_SessionPath.length() - 1] != L'/' && _SessionPath[_SessionPath.length() - 1] != L'\\')
-        {
-            _SessionPath += L'\\';
-        }
+        m_AddToDiskMenu = dlg.GetCheckState(idAddDM);
+        m_AddToPanelMenu = dlg.GetCheckState(idAddPM);
+        m_UseOwnKey = dlg.GetCheckState(idUseOwnKey);
+        m_CmdPrefix = dlg.GetText(idPrefix);
+        m_AltPrefix = dlg.GetCheckState(idAltPrefix);
+        m_Timeout = TextToNumber(dlg.GetText(idTimeout));
+        m_SessionPath = dlg.GetText(idSessPath);
+        ::AppendPathDelimiterW(m_SessionPath);
         Save();
     }
 }
@@ -297,7 +297,7 @@ void CSettings::ProxyConfigure()
     int topPos = dlg.GetTop();
     ProxySettingsDialogParams params;
     ::InitProxySettingsDialog(dlg, topPos,
-        _proxySettings,
+        m_proxySettings,
         params,
         true
     );
@@ -313,7 +313,7 @@ void CSettings::ProxyConfigure()
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции
-        ::GetProxySettings(dlg, params, _proxySettings);
+        ::GetProxySettings(dlg, params, m_proxySettings);
         Save();
     }
 }
@@ -327,7 +327,7 @@ void CSettings::LoggingConfigure()
     FarDialogItem *dlgItemEnableLogging;
     const int idEnableLogging = dlg.CreateCheckBox(dlg.GetLeft(), topPos,
         CFarPlugin::GetString(StringLoggingDialogEnableLogging),
-        _EnableLogging, 0L, &dlgItemEnableLogging);
+        m_EnableLogging, 0L, &dlgItemEnableLogging);
     // Сепаратор
     dlg.CreateSeparator(++topPos, CFarPlugin::GetString(StringLoggingOptionsSeparatorTitle));
     // Уровень логирования
@@ -345,7 +345,7 @@ void CSettings::LoggingConfigure()
     ZeroMemory(&levelsListItems[0], levelsCount * sizeof(FarListItem));
     for (int i = 0; i < levelsCount; ++i)
     {
-        if (_LoggingLevel == i)
+        if (m_LoggingLevel == i)
         {
             levelsListItems[i].Flags = LIF_SELECTED;
         }
@@ -358,9 +358,9 @@ void CSettings::LoggingConfigure()
     // Логирование в файл
     dlg.CreateSeparator(++topPos);
     const int idLogToFile = dlg.CreateCheckBox(dlg.GetLeft(), ++topPos,
-        CFarPlugin::GetString(StringLoggingDialogLogToFile), _LogToFile);
+        CFarPlugin::GetString(StringLoggingDialogLogToFile), m_LogToFile);
     const int idLogFileName = dlg.CreateEdit(dlg.GetLeft() + 4,
-        ++topPos, MAX_SIZE, _LogFileName.c_str());
+        ++topPos, MAX_SIZE, m_LogFileName.c_str());
 
     // Кнопки OK Cancel
     dlg.CreateSeparator(dlg.GetHeight() - 2);
@@ -369,7 +369,7 @@ void CSettings::LoggingConfigure()
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
     // Установка состояния элементов диалога
-    // DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, _EnableLogging = %d", idEnableLogging, idBtnCancel, _EnableLogging);
+    // DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, m_EnableLogging = %d", idEnableLogging, idBtnCancel, m_EnableLogging);
     dlgItemEnableLogging->Focus = 1;
 
     // Показываем диалог
@@ -377,11 +377,11 @@ void CSettings::LoggingConfigure()
     if (itemIdx >= 0 && itemIdx != idBtnCancel)
     {
         // Сохраняем опции
-        _EnableLogging = dlg.GetCheckState(idEnableLogging);
-        _LoggingLevel = dlg.GetSelectonIndex(idLevelComboBox);
-        // DEBUG_PRINTF(L"_LoggingLevel = %d", _LoggingLevel);
-        _LogToFile = dlg.GetCheckState(idLogToFile);
-        _LogFileName = dlg.GetText(idLogFileName);
+        m_EnableLogging = dlg.GetCheckState(idEnableLogging);
+        m_LoggingLevel = dlg.GetSelectonIndex(idLevelComboBox);
+        // DEBUG_PRINTF(L"m_LoggingLevel = %d", m_LoggingLevel);
+        m_LogToFile = dlg.GetCheckState(idLogToFile);
+        m_LogFileName = dlg.GetText(idLogFileName);
         Save();
         CLogger::Initialize(EnableLogging(), LoggingLevel(), LogToFile(), LogFileName());
     }

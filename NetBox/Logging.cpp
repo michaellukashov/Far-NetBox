@@ -22,20 +22,14 @@
 #include "Logging.h"
 #include "resource.h"
 
-enum LoggingLevel
-{
-    LEVEL_DEBUG1 = 0,
-    LEVEL_DEBUG2 = 1,
-};
-
-CLogger _Logger;
+CLogger m_Logger;
 
 CLogger::CLogger() :
-    _first(true),
-    _enableLogging(false),
-    _loggingLevel(0),
-    _logToFile(false),
-    _logFileName(L"C:\\log.log")
+    m_first(true),
+    m_enableLogging(false),
+    m_loggingLevel(0),
+    m_logToFile(false),
+    m_logFileName(L"C:\\log.log")
 {
 }
 
@@ -43,10 +37,10 @@ void CLogger::Initialize(bool enableLogging, int loggingLevel,
     bool logToFile, const wstring &logFileName)
 {
     CLogger::Shutdown();
-    _Logger._enableLogging = enableLogging;
-    _Logger._loggingLevel = loggingLevel;
-    _Logger._logToFile = logToFile;
-    _Logger._logFileName = logFileName;
+    m_Logger.m_enableLogging = enableLogging;
+    m_Logger.m_loggingLevel = loggingLevel;
+    m_Logger.m_logToFile = logToFile;
+    m_Logger.m_logFileName = logFileName;
 }
 
 void CLogger::Shutdown()
@@ -55,12 +49,12 @@ void CLogger::Shutdown()
 
 void CLogger::Log(int level, const wchar_t *format, va_list args)
 {
-    // DEBUG_PRINTF(L"NetBox: level = %d, _loggingLevel = %d", level, _loggingLevel);
-    if (!_enableLogging)
+    // DEBUG_PRINTF(L"NetBox: level = %d, m_loggingLevel = %d", level, m_loggingLevel);
+    if (!m_enableLogging)
     {
         return;
     }
-    if (!_logToFile)
+    if (!m_logToFile)
     {
         return;
     }
@@ -68,13 +62,13 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
     {
         return;
     }
-    if (level > _loggingLevel)
+    if (level > m_loggingLevel)
     {
         return;
     }
-    if (_logFileName.empty())
+    if (m_logFileName.empty())
         return;
-    FILE *f = _wfsopen(_logFileName.c_str(), _first ? L"a" : L"a", SH_DENYWR);
+    FILE *f = _wfsopen(m_logFileName.c_str(), m_first ? L"a" : L"a", SH_DENYWR);
     if (!f)
         return;
     // Time
@@ -84,26 +78,66 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
             st.wDay, st.wMonth, st.wYear,
             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
     // Log
-    int len = _vscwprintf(format, args) + 1;
-    if (len <= 1)
-        return;
-    wstring buf(len, 0);
+    int len = _vscwprintf(format, args);
+    wstring buf(len + sizeof(wchar_t), 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
     fprintf_s(f, "%s\n", (char *)CFarPlugin::W2MB(buf.c_str()).c_str());
+
     fflush(f);
     if (fclose(f) == EOF)
     {
         clearerr(f);
         fclose(f);
     }
-    _first = false;
+    m_first = false;
+}
+
+void CLogger::Log(int level, const char *str)
+{
+    // DEBUG_PRINTF(L"NetBox: level = %d, m_loggingLevel = %d", level, m_loggingLevel);
+    if (!m_enableLogging)
+    {
+        return;
+    }
+    if (!m_logToFile)
+    {
+        return;
+    }
+    if (!str)
+    {
+        return;
+    }
+    if (level > m_loggingLevel)
+    {
+        return;
+    }
+    if (m_logFileName.empty())
+        return;
+    FILE *f = _wfsopen(m_logFileName.c_str(), m_first ? L"a" : L"a", SH_DENYWR);
+    if (!f)
+        return;
+    // Time
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    fprintf(f, "%02d.%02d.%4d %02d:%02d:%02d:%04d ",
+            st.wDay, st.wMonth, st.wYear,
+            st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
+    // Log
+    fprintf_s(f, "%s\n", str);
+    fflush(f);
+    if (fclose(f) == EOF)
+    {
+        clearerr(f);
+        fclose(f);
+    }
+    m_first = false;
 }
 
 void Log1(const wchar_t *format, ...)
 {
     va_list args;
     va_start(args, format);
-    _Logger.Log(LEVEL_DEBUG1, format, args);
+    m_Logger.Log(LEVEL_DEBUG1, format, args);
     va_end(args);
 }
 
@@ -111,7 +145,12 @@ void Log2(const wchar_t *format, ...)
 {
     va_list args;
     va_start(args, format);
-    _Logger.Log(LEVEL_DEBUG2, format, args);
+    m_Logger.Log(LEVEL_DEBUG2, format, args);
     va_end(args);
+}
+
+void Log2(const char *str)
+{
+    m_Logger.Log(LEVEL_DEBUG2, str);
 }
 

@@ -106,3 +106,5 @@
 "Unable to delete directory\n%s"
 
 "Operation canceled by user"
+
+"Press Shift-F4 to create new session item"

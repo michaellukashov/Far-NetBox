@@ -25,46 +25,46 @@
 
 CProgressWindow::CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl)
     : CFarDialog(WND_WIDTH + 10, num > 1 ? 11 : 11, CFarPlugin::GetString(oper == Copy ? StringCopyTitle : StringMoveTitle)),
-      _AbortEvent(abortEvent), _WndThread(NULL), _Operation(oper), _Direction(direction), _FileCount(num), _ProtoImpl(impl),
-      _IdSrcFileName(0), _IdDstFileName(0), _IdTotalProgress(0), _IdCurrentProgress(0), _IdBtnCancel(0)
+      m_AbortEvent(abortEvent), m_WndThread(NULL), m_Operation(oper), m_Direction(direction), m_FileCount(num), m_ProtoImpl(impl),
+      m_IdSrcFileName(0), m_IdDstFileName(0), m_IdTotalProgress(0), m_IdCurrentProgress(0), m_IdBtnCancel(0)
 {
-    assert(_AbortEvent);
-    assert(_FileCount > 0);
-    assert(_ProtoImpl);
+    assert(m_AbortEvent);
+    assert(m_FileCount > 0);
+    assert(m_ProtoImpl);
 }
 
 
 CProgressWindow::~CProgressWindow()
 {
     Destroy();
-    ResetEvent(_AbortEvent);
+    ResetEvent(m_AbortEvent);
 }
 
 
 void CProgressWindow::Show()
 {
-    ResetEvent(_AbortEvent);
+    ResetEvent(m_AbortEvent);
 
     int topPos = GetTop();
 
-    CreateText(GetLeft(), topPos, CFarPlugin::GetString(_Direction == Send ? StringPrgSendFile : StringPrgRcvFile));
-    _IdSrcFileName = CreateText(GetLeft(), ++topPos, L"");
+    CreateText(GetLeft(), topPos, CFarPlugin::GetString(m_Direction == Send ? StringPrgSendFile : StringPrgRcvFile));
+    m_IdSrcFileName = CreateText(GetLeft(), ++topPos, L"");
     CreateText(GetLeft(), ++topPos, CFarPlugin::GetString(StringPrgTo));
-    _IdDstFileName = CreateText(GetLeft(), ++topPos, L"");
+    m_IdDstFileName = CreateText(GetLeft(), ++topPos, L"");
 
     wstring prgBar(WND_WIDTH - 5, L'\x2591');
     prgBar += L"   0%";
-    _IdCurrentProgress = CreateText(GetLeft(), ++topPos, prgBar.c_str());
+    m_IdCurrentProgress = CreateText(GetLeft(), ++topPos, prgBar.c_str());
 
     CreateSeparator(GetHeight() - 2);
-    _IdBtnCancel = CreateButton(0, GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
+    m_IdBtnCancel = CreateButton(0, GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
-    _WndThread = CreateThread(NULL, 0, WindowThread, this, 0, NULL);
-    assert(_WndThread);
+    m_WndThread = CreateThread(NULL, 0, WindowThread, this, 0, NULL);
+    assert(m_WndThread);
 
     //Wait for dialog initilization complete
     int tryCount = 100;
-    while (--tryCount && _Dlg == INVALID_HANDLE_VALUE)
+    while (--tryCount && m_Dlg == INVALID_HANDLE_VALUE)
     {
         Sleep(100);
     }
@@ -99,24 +99,24 @@ void CProgressWindow::SetFileNames(const wchar_t *srcFileName, const wchar_t *ds
     }
     trimmedDstFileName.resize(WND_WIDTH, L' ');
 
-    SetText(_IdSrcFileName, trimmedSrcFileName.c_str());
-    SetText(_IdDstFileName, trimmedDstFileName.c_str());
+    SetText(m_IdSrcFileName, trimmedSrcFileName.c_str());
+    SetText(m_IdDstFileName, trimmedDstFileName.c_str());
 }
 
 
 void CProgressWindow::Destroy()
 {
-    CFarPlugin::GetPSI()->SendDlgMessage(_Dlg, DM_CLOSE, 0, 0);
+    CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_CLOSE, 0, 0);
 
-    if (_WndThread && WaitForSingleObject(_WndThread, 3000) == WAIT_TIMEOUT)
+    if (m_WndThread && WaitForSingleObject(m_WndThread, 3000) == WAIT_TIMEOUT)
     {
         DWORD exitCode = 0;
-        GetExitCodeThread(_WndThread, &exitCode);
+        GetExitCodeThread(m_WndThread, &exitCode);
         if (exitCode == STILL_ACTIVE)
         {
-            TerminateThread(_WndThread, exitCode);
+            TerminateThread(m_WndThread, exitCode);
         }
-        CloseHandle(_WndThread);
+        CloseHandle(m_WndThread);
     }
 
     CFarPlugin::AdvControl(ACTL_PROGRESSNOTIFY, 0);
@@ -128,11 +128,11 @@ LONG_PTR CProgressWindow::DialogMessageProc(int msg, int param1, LONG_PTR param2
 {
     if (msg == DN_CLOSE)
     {
-        SetEvent(_AbortEvent);
+        SetEvent(m_AbortEvent);
     }
     else if (msg == DN_ENTERIDLE)
     {
-        const int percent = _ProtoImpl->GetProgress();
+        const int percent = m_ProtoImpl->GetProgress();
         if (percent >= 0 && percent <= 100)
         {
             wstring prgBar(WND_WIDTH - 5, L'\x2591');
@@ -152,7 +152,7 @@ LONG_PTR CProgressWindow::DialogMessageProc(int msg, int param1, LONG_PTR param2
             prgBar += L' ';
             prgBar += procTxt;
 
-            SetText(_IdCurrentProgress, prgBar.c_str());
+            SetText(m_IdCurrentProgress, prgBar.c_str());
 
             PROGRESSVALUE pv;
             pv.Completed = percent;
@@ -173,7 +173,7 @@ DWORD WINAPI CProgressWindow::WindowThread(LPVOID param)
 
 
 CNotificationWindow::CNotificationWindow(const wchar_t *title, const wchar_t *text)
-    : _Title(title), _Text(text)
+    : m_Title(title), m_Text(text)
 {
 }
 
@@ -187,7 +187,7 @@ CNotificationWindow::~CNotificationWindow()
 void CNotificationWindow::Show() const
 {
     CFarPlugin::AdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void *>(PS_INDETERMINATE));
-    const wchar_t *wndText[] = { _Title.c_str(), _Text.c_str() };
+    const wchar_t *wndText[] = { m_Title.c_str(), m_Text.c_str() };
     CFarPlugin::GetPSI()->Message(CFarPlugin::GetPSI()->ModuleNumber, 0, NULL, wndText, sizeof(wndText) / sizeof(wndText[0]), 0);
 }
 

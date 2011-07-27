@@ -55,15 +55,11 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
 #ifdef NETBOX_DEBUG
     va_list args;
     va_start(args, format);
-    len = _vscwprintf(format, args) + 1;
-    if (len <= 1)
-    {
-        return 0;
-    }
-    wstring buf(len, 0);
+    len = _vscwprintf(format, args);
+    wstring buf(len + sizeof(wchar_t), 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
+
     va_end(args);
-    buf.erase(buf.size() - 1); // Trim last NULL
     OutputDebugStringW(buf.c_str());
 #endif
     return len;

@@ -20,32 +20,55 @@
 #include "stdafx.h"
 #include "EasyURL.h"
 #include "Settings.h"
+#include "Logging.h"
 
 
-CEasyURL::CEasyURL()
-    : _CURL(NULL), _Prepared(false)
+CEasyURL::CEasyURL() :
+    m_CURL(NULL),
+    m_Prepared(false),
+    m_regex(INVALID_HANDLE_VALUE),
+    m_match(NULL),
+    m_brackets(0)
+    
 {
-    _Input.AbortEvent = _Output.AbortEvent = _Progress.AbortEvent = NULL;
-    _Input.Type = InputReader::None;
-    _Output.Type = OutputWriter::None;
-    _Progress.ProgressPtr = NULL;
+    m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
+    m_Input.Type = InputReader::None;
+    m_Output.Type = OutputWriter::None;
+    m_Progress.ProgressPtr = NULL;
+    // init regex
+    if (CFarPlugin::GetPSI()->RegExpControl(0, RECTL_CREATE, reinterpret_cast<LONG_PTR>(&m_regex)))
+    {
+        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_COMPILE, reinterpret_cast<LONG_PTR>(L"/PASS(.*)/")))
+        {
+            m_brackets = CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_BRACKETSCOUNT, 0);
+            if (m_brackets == 2)
+            {
+                m_match = reinterpret_cast<RegExpMatch *>(malloc(m_brackets * sizeof(RegExpMatch)));
+            }
+        }
+    }
 }
 
 
 CEasyURL::~CEasyURL()
 {
     Close();
+    free(m_match);
+    if (m_regex != INVALID_HANDLE_VALUE)
+    {
+        CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_FREE, 0);
+    }
 }
 
 
 bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
     const struct ProxySettings &proxySettings)
 {
-    assert(_CURL == NULL);
+    assert(m_CURL == NULL);
     assert(url && *url);
 
-    _CURL = curl_easy_init();
-    if (!_CURL)
+    m_CURL = curl_easy_init();
+    if (!m_CURL)
     {
         return false;
     }
@@ -55,75 +78,82 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
     unsigned short port = 0;
     ParseURL(url, &scheme, &hostName, &port, NULL, NULL, NULL, NULL);
 
-    _TopURL   = CFarPlugin::W2MB(scheme.c_str());
-    _TopURL  += "://";
-    _TopURL  += CFarPlugin::W2MB(hostName.c_str());
+    m_TopURL   = CFarPlugin::W2MB(scheme.c_str());
+    m_TopURL  += "://";
+    m_TopURL  += CFarPlugin::W2MB(hostName.c_str());
     if (port)
     {
-        _TopURL += ':';
-        _TopURL += NumberToText(port);
+        m_TopURL += ':';
+        m_TopURL += NumberToText(port);
     }
 
     if (userName)
     {
-        _UserName = CFarPlugin::W2MB(userName);
+        m_UserName = CFarPlugin::W2MB(userName);
     }
     if (password)
     {
-        _Password = CFarPlugin::W2MB(password);
+        m_Password = CFarPlugin::W2MB(password);
     }
-    _proxySettings = proxySettings;
-    DEBUG_PRINTF(L"NetBox: CEasyURL::Initialize: proxy type = %u, adress = %s", _proxySettings.proxyType, _proxySettings.proxyHost.c_str());
+    m_proxySettings = proxySettings;
+    DEBUG_PRINTF(L"NetBox: CEasyURL::Initialize: proxy type = %u, adress = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
     return true;
 }
 
 
 void CEasyURL::Close()
 {
-    if (_CURL)
+    if (m_CURL)
     {
-        curl_easy_cleanup(_CURL);
+        curl_easy_cleanup(m_CURL);
     }
-    _CURL = NULL;
+    m_CURL = NULL;
 
 }
 
 
 CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/)
 {
-    assert(_CURL);
-    assert(!_Prepared);
+    assert(m_CURL);
+    assert(!m_Prepared);
     assert(!path || path[0] == L'/');
     // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: path = %s", CFarPlugin::MB2W(path).c_str());
-    curl_easy_reset(_CURL);
-    _Output.Type = OutputWriter::None;
-    _Input.Type = InputReader::None;
-    _Progress.ProgressPtr = NULL;
+    curl_easy_reset(m_CURL);
+    m_Output.Type = OutputWriter::None;
+    m_Input.Type = InputReader::None;
+    m_Progress.ProgressPtr = NULL;
 
     CURLcode urlCode = CURLE_OK;
 
-    const string url = _TopURL + (path ? path : "");
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_URL, url.c_str()));
+    const string url = m_TopURL + (path ? path : "");
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
     if (handleTimeout)
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_TIMEOUT, _Settings.Timeout()));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_TIMEOUT, m_Settings.Timeout()));
     }
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_WRITEFUNCTION, CEasyURL::InternalWriter));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_WRITEDATA, &_Output));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_NOPROGRESS, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROGRESSDATA, &_Progress));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEFUNCTION, CEasyURL::InternalWriter));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEDATA, &m_Output));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_NOPROGRESS, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
 
-    if (!_UserName.empty() || !_Password.empty())
+    if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_USERNAME, _UserName.c_str()));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PASSWORD, _Password.c_str()));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
     }
-    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: proxy type = %u, host = %s", _proxySettings.proxyType, _proxySettings.proxyHost.c_str());
-    if (_proxySettings.proxyType != PROXY_NONE)
+
+    if (!m_UserName.empty() || !m_Password.empty())
+    {
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
+    }
+    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: proxy type = %u, host = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
+    if (m_proxySettings.proxyType != PROXY_NONE)
     {
         int proxy_type = CURLPROXY_HTTP;
-        switch (_proxySettings.proxyType)
+        switch (m_proxySettings.proxyType)
         {
             case PROXY_HTTP:
             {
@@ -143,32 +173,30 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
             default:
                 return CURLE_UNSUPPORTED_PROTOCOL;
         }
-        string proxy = CFarPlugin::W2MB(_proxySettings.proxyHost.c_str());
-        unsigned long port = _proxySettings.proxyPort;
+        string proxy = CFarPlugin::W2MB(m_proxySettings.proxyHost.c_str());
+        unsigned long port = m_proxySettings.proxyPort;
         if (port)
         {
             proxy += ":";
             proxy += NumberToText(port);
         }
-        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXY, proxy.c_str()));
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPORT, port));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYTYPE, proxy_type));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXY, proxy.c_str()));
+        // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
-        // CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_VERBOSE, 1));
-
-        string login = CFarPlugin::W2MB(_proxySettings.proxyLogin.c_str());
-        string password = CFarPlugin::W2MB(_proxySettings.proxyPassword.c_str());
+        string login = CFarPlugin::W2MB(m_proxySettings.proxyLogin.c_str());
+        string password = CFarPlugin::W2MB(m_proxySettings.proxyPassword.c_str());
         if (!login.empty())
         {
-            CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
+            CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
             if (!password.empty())
             {
-                CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_PROXYPASSWORD, password.c_str()));
+                CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPASSWORD, password.c_str()));
             }
         }
     }
 
-    _Prepared = (urlCode == CURLE_OK);
+    m_Prepared = (urlCode == CURLE_OK);
     return urlCode;
 }
 
@@ -176,21 +204,21 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
 CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 {
     CURLcode urlCode = CURLE_OK;
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_POSTQUOTE, static_cast<curl_slist *>(slist)));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_HTTPHEADER, static_cast<curl_slist *>(slist)));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTQUOTE, static_cast<curl_slist *>(slist)));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPHEADER, static_cast<curl_slist *>(slist)));
     return urlCode;
 }
 
 
 CURLcode CEasyURL::SetOutput(string *out, int *progress)
 {
-    assert(_Prepared);
+    assert(m_Prepared);
     assert(out);
     assert(progress);
 
-    _Output.Type = OutputWriter::TypeString;
-    _Output.String = out;
-    _Progress.ProgressPtr = progress;
+    m_Output.Type = OutputWriter::TypeString;
+    m_Output.String = out;
+    m_Progress.ProgressPtr = progress;
 
     return CURLE_OK;
 }
@@ -198,13 +226,13 @@ CURLcode CEasyURL::SetOutput(string *out, int *progress)
 
 CURLcode CEasyURL::SetOutput(CFile *out, int *progress)
 {
-    assert(_Prepared);
+    assert(m_Prepared);
     assert(out);
     assert(progress);
 
-    _Output.Type = OutputWriter::TypeFile;
-    _Output.File = out;
-    _Progress.ProgressPtr = progress;
+    m_Output.Type = OutputWriter::TypeFile;
+    m_Output.File = out;
+    m_Progress.ProgressPtr = progress;
 
     return CURLE_OK;
 }
@@ -212,38 +240,38 @@ CURLcode CEasyURL::SetOutput(CFile *out, int *progress)
 
 CURLcode CEasyURL::SetInput(CFile *in, int *progress)
 {
-    assert(_Prepared);
+    assert(m_Prepared);
     assert(in);
     assert(progress);
 
-    _Input.Type = InputReader::TypeFile;
-    _Input.File = in;
-    _Input.Progress = progress;
-    _Input.Current = 0;
-    _Input.Total = in->GetFileSize();
+    m_Input.Type = InputReader::TypeFile;
+    m_Input.File = in;
+    m_Input.Progress = progress;
+    m_Input.Current = 0;
+    m_Input.Total = in->GetFileSize();
 
     CURLcode urlCode = CURLE_OK;
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_UPLOAD, 1L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_READFUNCTION, CEasyURL::InternalReader));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_READDATA, &_Input));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(_CURL, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(in->GetFileSize())));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_UPLOAD, 1L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READFUNCTION, CEasyURL::InternalReader));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_READDATA, &m_Input));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(in->GetFileSize())));
     return urlCode;
 }
 
 
 void CEasyURL::SetAbortEvent(HANDLE event)
 {
-    _Input.AbortEvent = _Output.AbortEvent = _Progress.AbortEvent = event;
+    m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = event;
 }
 
 
 CURLcode CEasyURL::Perform()
 {
-    assert(_CURL);
-    assert(_Prepared);
+    assert(m_CURL);
+    assert(m_Prepared);
 
-    _Prepared = false;
-    return curl_easy_perform(_CURL);
+    m_Prepared = false;
+    return curl_easy_perform(m_CURL);
 }
 
 
@@ -262,7 +290,7 @@ CURLcode CEasyURL::ExecuteFtpCommand(const char *cmd)
     }
     if (errCode == CURLE_OK)
     {
-        errCode = curl_easy_setopt(_CURL, CURLOPT_QUOTE, slist);
+        errCode = curl_easy_setopt(m_CURL, CURLOPT_QUOTE, slist);
     }
     if (errCode == CURLE_OK)
     {
@@ -355,4 +383,41 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
         *prg->ProgressPtr = static_cast<int>(percent);
     }
     return CURLE_OK;
+}
+
+int CEasyURL::DebugOutput(const char *data, size_t size)
+{
+    // PASS *****
+    if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
+    {
+        // DEBUG_PRINTF(L"NetBox: data = %s", CFarPlugin::MB2W(data).c_str());
+        wstring dataw = CFarPlugin::MB2W(data);
+        RegExpSearch search = {
+            dataw.c_str(),
+            0,
+            dataw.size(),
+            m_match,
+            m_brackets,
+            0
+        };
+        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
+        {
+            // DEBUG_PRINTF(L"NetBox: PASS ****");
+            Log2("PASS ****");
+            return 0;
+        }
+    }
+    Log2(data);
+    return 0;
+}
+
+int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
+                 char *data, size_t size,
+                 void *userp)
+{
+    CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
+    assert(instance != NULL);
+    (void)handle;
+    (void)type;
+    return instance->DebugOutput(data, size);
 }
