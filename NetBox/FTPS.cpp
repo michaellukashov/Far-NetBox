@@ -33,8 +33,9 @@ PProtocol CSessionFTPS::CreateClientInstance() const
 }
 
 
-CFTPS::CFTPS(const CSession *session)
-    : CFTP(session)
+CFTPS::CFTPS(const CSession *session) :
+    CFTP(session),
+    m_SSL_VERIFYPEER(TRUE)
 {
 }
 
@@ -45,7 +46,7 @@ CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tr
     {
         // DEBUG_PRINTF(L"NetBox: CFTPS::CURLPrepare: path = %s", ftpPath);
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT));
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, FALSE));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, m_SSL_VERIFYPEER));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 1));
 
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USE_SSL, CURLUSESSL_CONTROL));
@@ -53,3 +54,22 @@ CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tr
     return urlCode;
 }
 
+bool CFTPS::TryToResolveConnectionProblem()
+{
+    if (m_lastErrorCurlCode == CURLE_SSL_CACERT)
+    {
+        // Показываем предупреждение о сертификате
+        DEBUG_PRINTF(L"NetBox: TryToResolveConnectionProblem: errorCode: %u", m_lastErrorCurlCode);
+        wstring errorInfo = CFarPlugin::MB2W(curl_easy_strerror(m_lastErrorCurlCode));
+        // wstring info = "SSL error: %s\nContinue anyway?"
+        wstring msg = CFarPlugin::GetFormattedString(StringSSLErrorContinue, errorInfo.c_str());
+        const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), msg.c_str(), FMSG_MB_YESNO | FMSG_WARNING);
+        if (retCode == 0) // Yes
+        {
+            m_SSL_VERIFYPEER = FALSE;
+            m_lastErrorCurlCode = CURLE_OK;
+            return true;
+        }
+    }
+    return false;
+}

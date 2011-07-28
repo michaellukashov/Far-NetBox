@@ -55,8 +55,11 @@ public:
     explicit CFTPS(const CSession *session);
     ~CFTPS();
 
+    virtual bool TryToResolveConnectionProblem();
+
 protected:
     virtual CURLcode CURLPrepare(const char *ftpPath, const bool handleTimeout = true);
 
 private:
+    long m_SSL_VERIFYPEER;
 };

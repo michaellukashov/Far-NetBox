@@ -144,4 +144,6 @@ enum PluginString
     StringOperationCanceledByUser,
 
     StringCreateNewSessionItem,
+
+    StringSSLErrorContinue,
 };
