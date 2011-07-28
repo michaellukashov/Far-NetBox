@@ -45,7 +45,7 @@ CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tr
     {
         return urlCode;
     }
-    DEBUG_PRINTF(L"NetBox: CFTPS::CURLPrepare: path = %s", ftpPath);
+    // DEBUG_PRINTF(L"NetBox: CFTPS::CURLPrepare: path = %s", ftpPath);
     CURL *curl = m_CURL;
     CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT));
     CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE));
