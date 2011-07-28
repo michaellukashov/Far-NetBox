@@ -611,7 +611,8 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
     if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
     {
         DEBUG_PRINTF(L"NetBox: before libssh2_session_callback_set");
-        libssh2_session_callback_set(m_SSHSession, LIBSSH2_CALLBACK_DEBUG, ssh_debug_func);
+        // libssh2_session_callback_set(m_SSHSession, LIBSSH2_CALLBACK_DEBUG, (void *)CSFTP::ssh_debug_func);
+        libssh2_trace_sethandler(m_SSHSession, NULL, CSFTP::libssh2_trace_handler_func);
     }
 
     return true;
@@ -622,6 +623,14 @@ void CSFTP::ssh_debug_func(LIBSSH2_SESSION *session, int always_display, const c
            void **abstract)
 {
     DEBUG_PRINTF(L"NetBox: CSFTP::ssh_debug_func: message = %s", CFarPlugin::MB2W(message).c_str());
+}
+
+void CSFTP::libssh2_trace_handler_func(LIBSSH2_SESSION *,
+   void *,
+   const char *,
+   size_t)
+{
+    DEBUG_PRINTF(L"NetBox: CSFTP::libssh2_trace_handler_func");
 }
 
 wstring CSFTP::FormatSSHLastErrorDescription() const
