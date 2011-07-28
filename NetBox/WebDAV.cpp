@@ -65,9 +65,14 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
 
     //Check initial path existing
     wstring path;
-    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    wstring query;
+    ParseURL(url, NULL, NULL, NULL, &path, &query, NULL, NULL);
     bool dirExist = false;
-    // DEBUG_PRINTF(L"NetBox: path = %s", path.c_str());
+    DEBUG_PRINTF(L"NetBox: path = %s, query = %s", path.c_str(), query.c_str());
+    if (!query.empty())
+    {
+        path += query;
+    }
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
         Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
@@ -110,6 +115,9 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "MKCOL"));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -414,6 +422,9 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "MOVE"));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -440,6 +451,9 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "DELETE"));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -457,6 +471,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
+    DEBUG_PRINTF(L"NetBox: webDavPath = %s", CFarPlugin::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
@@ -488,11 +503,13 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
 
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "PROPFIND"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_MAXREDIRS, 5));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTFIELDS, requestData));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTFIELDSIZE, requestDataLen));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -527,6 +544,7 @@ bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
         if (responseCode != expect)
         {
             errInfo = GetBadResponseInfo(responseCode);
+            DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
             return false;
         }
     }
@@ -785,7 +803,7 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
     string result;
     result.reserve(cntLength);
 
-    static const char permitSymbols[] = "/;@&=+$,-_.!~'()#%{}^[]`";
+    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()#%{}^[]`";
 
     for (size_t i = 0; i < cntLength; ++i)
     {
@@ -804,6 +822,5 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
             result += encChar;
         }
     }
-
     return result;
 }

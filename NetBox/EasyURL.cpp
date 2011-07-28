@@ -23,19 +23,41 @@
 #include "Logging.h"
 
 
-CEasyURL::CEasyURL()
-    : m_CURL(NULL), m_Prepared(false)
+CEasyURL::CEasyURL() :
+    m_CURL(NULL),
+    m_Prepared(false),
+    m_regex(INVALID_HANDLE_VALUE),
+    m_match(NULL),
+    m_brackets(0)
+    
 {
     m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
     m_Output.Type = OutputWriter::None;
     m_Progress.ProgressPtr = NULL;
+    // init regex
+    if (CFarPlugin::GetPSI()->RegExpControl(0, RECTL_CREATE, reinterpret_cast<LONG_PTR>(&m_regex)))
+    {
+        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_COMPILE, reinterpret_cast<LONG_PTR>(L"/PASS(.*)/")))
+        {
+            m_brackets = CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_BRACKETSCOUNT, 0);
+            if (m_brackets == 2)
+            {
+                m_match = reinterpret_cast<RegExpMatch *>(malloc(m_brackets * sizeof(RegExpMatch)));
+            }
+        }
+    }
 }
 
 
 CEasyURL::~CEasyURL()
 {
     Close();
+    free(m_match);
+    if (m_regex != INVALID_HANDLE_VALUE)
+    {
+        CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_FREE, 0);
+    }
 }
 
 
@@ -115,10 +137,10 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
     if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
     {
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_VERBOSE, TRUE));
     }
 
@@ -363,13 +385,39 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
     return CURLE_OK;
 }
 
+int CEasyURL::DebugOutput(const char *data, size_t size)
+{
+    // PASS *****
+    if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
+    {
+        // DEBUG_PRINTF(L"NetBox: data = %s", CFarPlugin::MB2W(data).c_str());
+        wstring dataw = CFarPlugin::MB2W(data);
+        RegExpSearch search = {
+            dataw.c_str(),
+            0,
+            dataw.size(),
+            m_match,
+            m_brackets,
+            0
+        };
+        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
+        {
+            // DEBUG_PRINTF(L"NetBox: PASS ****");
+            Log2("PASS ****");
+            return 0;
+        }
+    }
+    Log2(data);
+    return 0;
+}
+
 int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
                  char *data, size_t size,
                  void *userp)
 {
     CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
     assert(instance != NULL);
-    // DEBUG_PRINTF(L"NetBox: InternalDebug: data = %s", CFarPlugin::MB2W(data).c_str());
-    Log2(CFarPlugin::MB2W(data).c_str());
-    return 0;
+    (void)handle;
+    (void)type;
+    return instance->DebugOutput(data, size);
 }
