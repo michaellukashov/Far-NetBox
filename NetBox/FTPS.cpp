@@ -206,6 +206,8 @@ bool CFTPS::CheckExisting(const wchar_t *path, const ItemType type, bool &isExis
 
     CURL *curl = m_CURL;
     CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1));
 
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK)
