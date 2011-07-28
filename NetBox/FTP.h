@@ -131,5 +131,8 @@ protected:
     bool ParseFtpList(const char *text, FTPItem &item) const;
 
 protected:
+    virtual CURLcode CURLPrepare(const char *ftpPath, const bool handleTimeout = true);
+
+protected:
     CEasyURL m_CURL; ///< CURL easy
 };

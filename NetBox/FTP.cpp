@@ -122,6 +122,12 @@ void CFTP::Close()
 }
 
 
+CURLcode CFTP::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= true*/)
+{
+    CURLcode urlCode = m_CURL.Prepare(ftpPath, handleTimeout);
+    return urlCode;
+}
+
 bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
@@ -135,8 +141,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 
     isExist = true;
 
-    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
-    DEBUG_PRINTF(L"NetBox: CFTP:::CheckExisting: path = %s", path);
+    CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK)
     {
@@ -173,7 +178,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     ::AppendChar(ftpPath, '/');
     DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
 
-    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
+    CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     string response;
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(&response, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -273,7 +278,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     }
 
     const string ftpFileName = LocalToFtpCP(remotePath);
-    CURLcode urlCode = m_CURL.Prepare(ftpFileName.c_str(), false);
+    CURLcode urlCode = CURLPrepare(ftpFileName.c_str(), false);
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(&outFile, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
@@ -304,7 +309,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     }
 
     const string ftpFileName = LocalToFtpCP(remotePath, true);
-    CURLcode urlCode = m_CURL.Prepare(ftpFileName.c_str(), false);
+    CURLcode urlCode = CURLPrepare(ftpFileName.c_str(), false);
     CHECK_CUCALL(urlCode, m_CURL.SetInput(&inFile, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
@@ -332,7 +337,7 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
     slist.Append(cmd1.c_str());
     slist.Append(cmd2.c_str());
 
-    CURLcode urlCode = m_CURL.Prepare(NULL);
+    CURLcode urlCode = CURLPrepare(NULL);
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
