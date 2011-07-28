@@ -126,6 +126,10 @@ private:
     }
 
 private:
+    static void ssh_debug_func(LIBSSH2_SESSION *session, int always_display, const char *message, \
+               int message_len, const char *language, int language_len, \
+               void **abstract);
+private:
     SOCKET              m_Socket;        ///< Session socket
     LIBSSH2_SESSION    *m_SSHSession;    ///< SSH2 session
     LIBSSH2_SFTP       *m_SFTPSession;   ///< SFTP session

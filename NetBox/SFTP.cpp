@@ -19,6 +19,8 @@
 
 #include "stdafx.h"
 #include "SFTP.h"
+#include "Settings.h"
+#include "Logging.h"
 #include "Strings.h"
 
 static const char *ParamCodePage = "CodePage";
@@ -606,10 +608,21 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
             return false;
         }
     }
+    if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
+    {
+        DEBUG_PRINTF(L"NetBox: before libssh2_session_callback_set");
+        libssh2_session_callback_set(m_SSHSession, LIBSSH2_CALLBACK_DEBUG, ssh_debug_func);
+    }
 
     return true;
 }
 
+void CSFTP::ssh_debug_func(LIBSSH2_SESSION *session, int always_display, const char *message,
+           int message_len, const char *language, int language_len,
+           void **abstract)
+{
+    DEBUG_PRINTF(L"NetBox: CSFTP::ssh_debug_func: message = %s", CFarPlugin::MB2W(message).c_str());
+}
 
 wstring CSFTP::FormatSSHLastErrorDescription() const
 {
