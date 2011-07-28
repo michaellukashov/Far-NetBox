@@ -127,7 +127,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     assert(path && path[0] == L'/');
 
     string ftpPath = LocalToFtpCP(path);
-    // DEBUG_PRINTF(L"NetBox: FTP: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
     if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';
@@ -136,6 +136,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     isExist = true;
 
     CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
+    DEBUG_PRINTF(L"NetBox: CFTP:::CheckExisting: path = %s", path);
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK)
     {

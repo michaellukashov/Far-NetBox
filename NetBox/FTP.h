@@ -35,8 +35,8 @@ public:
 
 protected:
     //From CSession
-    PSessionEditor CreateEditorInstance();
-    PProtocol CreateClientInstance() const;
+    virtual PSessionEditor CreateEditorInstance();
+    virtual PProtocol CreateClientInstance() const;
 };
 
 
@@ -46,7 +46,7 @@ protected:
 class CSessionEditorFTP : public CSessionEditor
 {
 public:
-    CSessionEditorFTP(CSession *session);
+    explicit CSessionEditorFTP(CSession *session);
 
     //From CSessionEditDlg
     void OnPrepareDialog();
@@ -68,12 +68,12 @@ private:
 class CFTP : public CProtocolBase<CSessionFTP>
 {
 public:
-    CFTP(const CSession *session);
+    explicit CFTP(const CSession *session);
     ~CFTP();
 
     //From IProtocol
-    bool Connect(HANDLE abortEvent, wstring &errorInfo);
-    void Close();
+    virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);
+    virtual void Close();
     virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
     virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
     virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
@@ -82,7 +82,7 @@ public:
     virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
     virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
 
-private:
+protected:
     //!FTP item description
     struct FTPItem
     {
@@ -130,6 +130,6 @@ private:
      */
     bool ParseFtpList(const char *text, FTPItem &item) const;
 
-private:
+protected:
     CEasyURL m_CURL; ///< CURL easy
 };

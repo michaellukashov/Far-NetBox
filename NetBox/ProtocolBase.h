@@ -104,7 +104,7 @@ public:
     }
 
     //From IProtocol
-    wstring GetURL(const bool includeUser = false)
+    virtual wstring GetURL(const bool includeUser = false)
     {
         unsigned short port = 0;
         wstring schemeName;
