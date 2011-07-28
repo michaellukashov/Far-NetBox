@@ -41,15 +41,13 @@ CFTPS::CFTPS(const CSession *session)
 CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= true*/)
 {
     CURLcode urlCode = CFTP::CURLPrepare(ftpPath, handleTimeout);
-    if (urlCode != CURLE_OK)
+    if (urlCode == CURLE_OK)
     {
-        return urlCode;
+        // DEBUG_PRINTF(L"NetBox: CFTPS::CURLPrepare: path = %s", ftpPath);
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, FALSE));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 1));
     }
-    // DEBUG_PRINTF(L"NetBox: CFTPS::CURLPrepare: path = %s", ftpPath);
-    CURL *curl = m_CURL;
-    CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1));
     return urlCode;
 }
 
