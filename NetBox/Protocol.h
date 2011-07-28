@@ -150,6 +150,8 @@ public:
      * \return progress in percent or -1 if percent unknown
      */
     virtual int GetProgress() = 0;
+
+    virtual bool TryToResolveConnectionProblem() = 0;
 };
 
 typedef auto_ptr<IProtocol> PProtocol;

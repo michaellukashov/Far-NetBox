@@ -135,4 +135,5 @@ protected:
 
 protected:
     CEasyURL m_CURL; ///< CURL easy
+    CURLcode m_lastErrorCurlCode;
 };

@@ -49,8 +49,8 @@ PProtocol CSessionFTP::CreateClientInstance() const
 }
 
 
-CSessionEditorFTP::CSessionEditorFTP(CSession *session)
-    : CSessionEditor(session, 54, 22), m_IdCP(0)
+CSessionEditorFTP::CSessionEditorFTP(CSession *session) :
+    CSessionEditor(session, 54, 22), m_IdCP(0)
 {
 
 }
@@ -78,7 +78,8 @@ void CSessionEditorFTP::ShowSessionDlgItems(bool visible)
 }
 
 CFTP::CFTP(const CSession *session)
-    : CProtocolBase(session)
+    : CProtocolBase(session),
+      m_lastErrorCurlCode(CURLE_OK)
 {
 }
 
@@ -143,9 +144,12 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 
     CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     CHECK_CUCALL(urlCode, m_CURL.Perform());
+
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode = %u, errorInfo = %s", urlCode, errorInfo.c_str());
         isExist = false;
     }
 
@@ -161,6 +165,7 @@ bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -184,6 +189,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK && urlCode != CURLE_REMOTE_FILE_NOT_FOUND)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -287,6 +293,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -318,6 +325,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -343,6 +351,7 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
 
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -360,6 +369,7 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }

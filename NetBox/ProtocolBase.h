@@ -139,6 +139,11 @@ public:
         return ret;
     }
 
+    virtual bool TryToResolveConnectionProblem()
+    {
+        return false;
+    }
+
 protected:
     /**
      * Format error description

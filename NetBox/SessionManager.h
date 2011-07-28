@@ -66,6 +66,11 @@ public:
         return -1;
     }
 
+    virtual bool TryToResolveConnectionProblem()
+    {
+        return false;
+    }
+
 public:
     /**
      * Get open plugin (panel) info
