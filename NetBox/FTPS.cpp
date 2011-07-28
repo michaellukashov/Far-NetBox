@@ -59,9 +59,8 @@ bool CFTPS::TryToResolveConnectionProblem()
     if (m_lastErrorCurlCode == CURLE_SSL_CACERT)
     {
         // Показываем предупреждение о сертификате
-        DEBUG_PRINTF(L"NetBox: TryToResolveConnectionProblem: errorCode: %u", m_lastErrorCurlCode);
+        // DEBUG_PRINTF(L"NetBox: TryToResolveConnectionProblem: errorCode: %u", m_lastErrorCurlCode);
         wstring errorInfo = CFarPlugin::MB2W(curl_easy_strerror(m_lastErrorCurlCode));
-        // wstring info = "SSL error: %s\nContinue anyway?"
         wstring msg = CFarPlugin::GetFormattedString(StringSSLErrorContinue, errorInfo.c_str());
         const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), msg.c_str(), FMSG_MB_YESNO | FMSG_WARNING);
         if (retCode == 0) // Yes
@@ -70,6 +69,7 @@ bool CFTPS::TryToResolveConnectionProblem()
             m_lastErrorCurlCode = CURLE_OK;
             return true;
         }
+        m_SSL_VERIFYPEER = TRUE;
     }
     return false;
 }
