@@ -65,14 +65,14 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
 
     //Check initial path existing
     wstring path;
-    wstring query;
-    ParseURL(url, NULL, NULL, NULL, &path, &query, NULL, NULL);
+    // wstring query;
+    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
-    DEBUG_PRINTF(L"NetBox: path = %s, query = %s", path.c_str(), query.c_str());
-    if (!query.empty())
-    {
-        path += query;
-    }
+    // DEBUG_PRINTF(L"NetBox: path = %s, query = %s", path.c_str(), query.c_str());
+    // if (!query.empty())
+    // {
+        // path += query;
+    // }
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
         Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
