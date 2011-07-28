@@ -19,9 +19,6 @@
 
 #pragma once
 
-#include <libssh2.h>
-#include <libssh2_sftp.h>
-
 #include "ProtocolBase.h"
 #include "EasyURL.h"
 
