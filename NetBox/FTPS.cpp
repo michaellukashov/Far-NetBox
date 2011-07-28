@@ -38,34 +38,18 @@ CFTPS::CFTPS(const CSession *session)
 {
 }
 
-bool CFTPS::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= true*/)
 {
-    assert(path && path[0] == L'/');
-
-    string ftpPath = LocalToFtpCP(path);
-    DEBUG_PRINTF(L"NetBox: CFTPS::CheckExisting: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
-    if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
+    CURLcode urlCode = CFTP::CURLPrepare(ftpPath, handleTimeout);
+    if (urlCode != CURLE_OK)
     {
-        ftpPath += '/';
+        return urlCode;
     }
-
-    isExist = true;
-
-    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
-
-    DEBUG_PRINTF(L"NetBox: CFTPS::CheckExisting: path = %s", path);
+    DEBUG_PRINTF(L"NetBox: CFTPS::CURLPrepare: path = %s", ftpPath);
     CURL *curl = m_CURL;
     CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT));
     CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, FALSE));
     CHECK_CUCALL(urlCode, curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1));
-
-    CHECK_CUCALL(urlCode, m_CURL.Perform());
-    if (urlCode != CURLE_OK)
-    {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-        isExist = false;
-    }
-
-    return true;
+    return urlCode;
 }
 

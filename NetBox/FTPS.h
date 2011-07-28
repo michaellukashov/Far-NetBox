@@ -55,9 +55,8 @@ public:
     explicit CFTPS(const CSession *session);
     ~CFTPS();
 
-    //From IProtocol
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-
 protected:
+    virtual CURLcode CURLPrepare(const char *ftpPath, const bool handleTimeout = true);
+
 private:
 };
