@@ -78,4 +78,9 @@ void _libssh2_htonu32(unsigned char *buf, uint32_t val);
 void _libssh2_store_u32(unsigned char **buf, uint32_t value);
 void _libssh2_store_str(unsigned char **buf, const char *str, size_t len);
 
+#ifndef HAVE_GETTIMEOFDAY
+int __cdecl gettimeofday(struct timeval *tp,
+                         void *tzp);
+#endif
+
 #endif /* _LIBSSH2_MISC_H */
