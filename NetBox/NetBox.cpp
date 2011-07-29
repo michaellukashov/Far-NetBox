@@ -21,8 +21,9 @@
 #include "SessionManager.h"
 #include "Panel.h"
 #include "WebDAV.h"
-#include "SFTP.h"
 #include "FTP.h"
+#include "SFTP.h"
+#include "FTPS.h"
 #include "Settings.h"
 #include "Logging.h"
 #include "Strings.h"
@@ -60,6 +61,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
     CSession::RegisterProtocolClient(0, L"FTP", CSession::SessionCreator<CSessionFTP>, L"ftp");
     CSession::RegisterProtocolClient(1, L"SFTP", CSession::SessionCreator<CSessionSFTP>, L"sftp");
     CSession::RegisterProtocolClient(2, L"WebDAV", CSession::SessionCreator<CSessionWebDAV>, L"http", L"https");
+    CSession::RegisterProtocolClient(3, L"FTPS", CSession::SessionCreator<CSessionFTPS>, L"ftps");
 }
 
 void WINAPI GetPluginInfoW(PluginInfo *pi)

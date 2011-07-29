@@ -420,4 +420,5 @@ int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
     (void)handle;
     (void)type;
     return instance->DebugOutput(data, size);
+
 }

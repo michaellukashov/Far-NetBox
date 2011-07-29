@@ -1,10 +1,10 @@
 Плагин "NetBox" для Far Manager 2.0
 ***********************************
 
-FTP/SFTP/WebDAV клиент для Far.
+FTP/FTPS/SFTP/WebDAV клиент для Far.
 
 1. Общие сведения о плагине
-   Плагин реализует клиентскую часть протоколов FTP, SFTP и WebDAV.
+   Плагин реализует клиентскую часть протоколов FTP, FTPS, SFTP и WebDAV.
    FTP и WebDAV базируется на библиотеке libcurl (http://curl.haxx.se).
    SFTP реализован на базе библиотеки libssh2 (http://www.libssh2.org).
    Парсер xml работает через библиотеку TinyXML
@@ -15,7 +15,7 @@ FTP/SFTP/WebDAV клиент для Far.
    сессий, так и через префикс.
    Возможны два варианта использования префикса:
      a. NetBox:Protocol://[[User]:[Password]@]HostName[:Port][/Path]
-        где Protocol - имя протокола (ftp/sftp/http/https)
+        где Protocol - имя протокола (ftp/ftps/sftp/http/https)
             User - имя пользователя
             Password - пароль пользователя
             HostName - имя хоста

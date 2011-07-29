@@ -176,7 +176,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EasyURL.cpp" />
-    <ClCompile Include="FTP.cpp" />
     <ClCompile Include="NetBox.cpp" />
     <ClCompile Include="Panel.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />
@@ -184,7 +183,9 @@
     <ClCompile Include="SessionEditor.cpp" />
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="Settings.cpp" />
+    <ClCompile Include="FTP.cpp" />
     <ClCompile Include="SFTP.cpp" />
+    <ClCompile Include="FTPS.cpp" />
     <ClCompile Include="Logging.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

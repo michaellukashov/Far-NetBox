@@ -1,7 +1,7 @@
 Plug-in "NetBox" for Far Manager 2.0
 ************************************
 
-FTP/SFTP/WebDAV client for Far.
+FTP/FTPS/SFTP/WebDAV client for Far.
 
 Installation:
    Unpack the archive in the plugin directory Far (... Far \ Plugins).
