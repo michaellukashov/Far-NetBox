@@ -317,7 +317,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     LIBSSH2_SFTP_ATTRIBUTES sftpAttrs;
     while (libssh2_sftp_readdir_ex(dirHandle, fileName, sizeof(fileName), NULL, 0, &sftpAttrs) > 0)
     {
-        DEBUG_PRINTF(L"NetBox: fileName = %s, isdir = %u, islink = %u", CFarPlugin::MB2W(fileName).c_str(), LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions), LIBSSH2_SFTP_S_ISLNK(sftpAttrs.permissions));
+        // DEBUG_PRINTF(L"NetBox: fileName = %s, isdir = %u, islink = %u", CFarPlugin::MB2W(fileName).c_str(), LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions), LIBSSH2_SFTP_S_ISLNK(sftpAttrs.permissions));
         if (LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions) && (strcmp(fileName, ".") == 0 || strcmp(fileName, "..") == 0))
         {
             continue;
@@ -330,7 +330,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             char target[512];
             int rc = libssh2_sftp_symlink_ex(m_SFTPSession, fileName, strlen(fileName),
                 target, sizeof(target), LIBSSH2_SFTP_REALPATH);
-            DEBUG_PRINTF(L"NetBox: rc = %u, target = %s", rc, CFarPlugin::MB2W(target));
+            // DEBUG_PRINTF(L"NetBox: rc = %u, target = %s", rc, CFarPlugin::MB2W(target));
             if (rc > 0)
             {
                 CSFTPFileHandle sftpDir(m_SFTPSession, target, LIBSSH2_FXF_READ, 0, LIBSSH2_SFTP_OPENDIR);
@@ -650,6 +650,7 @@ void CSFTP::libssh2_trace_handler_func(LIBSSH2_SESSION *session,
    size_t len)
 {
     // DEBUG_PRINTF(L"NetBox: %s", CFarPlugin::MB2W(message).c_str());
+    Log2(message);
 }
 
 wstring CSFTP::FormatSSHLastErrorDescription() const
