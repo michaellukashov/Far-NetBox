@@ -77,18 +77,21 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
         while (!m_ProtoClient->Connect(m_AbortTask, errorMsg))
         {
             notifyWnd.Hide();
-            wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrEstablish, connectURL.c_str());
-            taskErrorMsg += L'\n';
-            taskErrorMsg += errorMsg;
-            Log1(L"error: %s", errorMsg.c_str());
-            const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_RETRYCANCEL | FMSG_WARNING);
-            errorMsg.clear();
-            m_ProtoClient->Close();
-            if (retCode != 0)
+            if (!m_ProtoClient->TryToResolveConnectionProblem())
             {
-                //I am not owner of the protoImpl, so don't delete it
-                m_ProtoClient = NULL;
-                break;
+                wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrEstablish, connectURL.c_str());
+                taskErrorMsg += L'\n';
+                taskErrorMsg += errorMsg;
+                Log1(L"error: %s", errorMsg.c_str());
+                const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_RETRYCANCEL | FMSG_WARNING);
+                errorMsg.clear();
+                m_ProtoClient->Close();
+                if (retCode != 0)
+                {
+                    //I am not owner of the protoImpl, so don't delete it
+                    m_ProtoClient = NULL;
+                    break;
+                }
             }
             notifyWnd.Show();
             ResetEvent(m_AbortTask);

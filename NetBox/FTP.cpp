@@ -49,8 +49,8 @@ PProtocol CSessionFTP::CreateClientInstance() const
 }
 
 
-CSessionEditorFTP::CSessionEditorFTP(CSession *session)
-    : CSessionEditor(session, 54, 22), m_IdCP(0)
+CSessionEditorFTP::CSessionEditorFTP(CSession *session) :
+    CSessionEditor(session, 54, 22), m_IdCP(0)
 {
 
 }
@@ -78,7 +78,8 @@ void CSessionEditorFTP::ShowSessionDlgItems(bool visible)
 }
 
 CFTP::CFTP(const CSession *session)
-    : CProtocolBase(session)
+    : CProtocolBase(session),
+      m_lastErrorCurlCode(CURLE_OK)
 {
 }
 
@@ -122,12 +123,18 @@ void CFTP::Close()
 }
 
 
+CURLcode CFTP::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= true*/)
+{
+    CURLcode urlCode = m_CURL.Prepare(ftpPath, handleTimeout);
+    return urlCode;
+}
+
 bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
 
     string ftpPath = LocalToFtpCP(path);
-    // DEBUG_PRINTF(L"NetBox: FTP: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
     if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';
@@ -135,11 +142,14 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 
     isExist = true;
 
-    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
+    CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     CHECK_CUCALL(urlCode, m_CURL.Perform());
+
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode = %u, errorInfo = %s", urlCode, errorInfo.c_str());
         isExist = false;
     }
 
@@ -155,6 +165,7 @@ bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -172,12 +183,13 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     ::AppendChar(ftpPath, '/');
     DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
 
-    CURLcode urlCode = m_CURL.Prepare(ftpPath.c_str());
+    CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     string response;
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(&response, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK && urlCode != CURLE_REMOTE_FILE_NOT_FOUND)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -272,7 +284,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     }
 
     const string ftpFileName = LocalToFtpCP(remotePath);
-    CURLcode urlCode = m_CURL.Prepare(ftpFileName.c_str(), false);
+    CURLcode urlCode = CURLPrepare(ftpFileName.c_str(), false);
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(&outFile, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
@@ -281,6 +293,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -303,7 +316,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     }
 
     const string ftpFileName = LocalToFtpCP(remotePath, true);
-    CURLcode urlCode = m_CURL.Prepare(ftpFileName.c_str(), false);
+    CURLcode urlCode = CURLPrepare(ftpFileName.c_str(), false);
     CHECK_CUCALL(urlCode, m_CURL.SetInput(&inFile, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
@@ -312,6 +325,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -331,12 +345,13 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
     slist.Append(cmd1.c_str());
     slist.Append(cmd2.c_str());
 
-    CURLcode urlCode = m_CURL.Prepare(NULL);
+    CURLcode urlCode = CURLPrepare(NULL);
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
@@ -354,27 +369,12 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
+        m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
     return true;
 }
-
-string CFTP::LocalToFtpCP(const wchar_t *src, bool replace) const
-{
-    assert(src && src[0] == L'/');
-    string r = CFarPlugin::W2MB(src, m_Session.GetCodePage());
-    if (replace)
-    {
-        while (r.find(L'#') != string::npos)
-        {
-            r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
-        }
-    }
-    // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
-    return r;
-}
-
 
 WORD CFTP::GetMonth(const char *name) const
 {
@@ -503,9 +503,9 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     }
     else if (sscanf_s(text, "%c%s %*d %s %s %I64d %s %d %d %[^\n]", &typeSymb, sizeof(typeSymb), permission, sizeof(permission), owner, sizeof(owner), group, sizeof(group), &size, monthName, sizeof(monthName), &day, &year, name, sizeof(name)) == 9)
     {
-        st.wMonth =  GetMonth(monthName);
-        st.wDay =    static_cast<WORD>(day);
-        st.wYear =   static_cast<WORD>(year);
+        st.wMonth = GetMonth(monthName);
+        st.wDay = static_cast<WORD>(day);
+        st.wYear = static_cast<WORD>(year);
         item.Owner = FtpToLocalCP(owner);
         item.Group = FtpToLocalCP(group);
         item.Name = FtpToLocalCP(name);

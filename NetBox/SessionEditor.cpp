@@ -221,7 +221,7 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     }
     else if (msg == DN_BTNCLICK && param1 == m_IdBtnProxy)
     {
-        DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
+        // DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
         // Прячем элементы диалога
         ShowSessionDlgItems(false);
         // Показываем элементы настроек прокси

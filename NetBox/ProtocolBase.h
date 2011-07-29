@@ -104,7 +104,7 @@ public:
     }
 
     //From IProtocol
-    wstring GetURL(const bool includeUser = false)
+    virtual wstring GetURL(const bool includeUser = false)
     {
         unsigned short port = 0;
         wstring schemeName;
@@ -139,6 +139,11 @@ public:
         return ret;
     }
 
+    virtual bool TryToResolveConnectionProblem()
+    {
+        return false;
+    }
+
 protected:
     /**
      * Format error description
@@ -165,6 +170,37 @@ protected:
         }
         return errDescr;
     }
+
+    /**
+     * Convert local (unicode) charset to ftp codepage
+     * \param src source path
+     * \return path in ftp codepage
+     */
+    string LocalToFtpCP(const wchar_t *src, bool replace = false) const
+    {
+        assert(src && src[0] == L'/');
+        string r = CFarPlugin::W2MB(src, m_Session.GetCodePage());
+        if (replace)
+        {
+            while (r.find(L'#') != string::npos)
+            {
+                r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
+            }
+        }
+        // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
+        return r;
+    }
+
+    /**
+     * Convert ftp charset to local (unicode) codepage
+     * \param src source path
+     * \return path in local (unicode) codepage
+     */
+    inline wstring FtpToLocalCP(const char *src) const
+    {
+        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
+    }
+
 
 protected:
     T       m_Session;           ///< Session description
