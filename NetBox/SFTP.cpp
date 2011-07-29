@@ -630,8 +630,8 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
         DEBUG_PRINTF(L"NetBox: before libssh2_session_callback_set");
         // libssh2_session_callback_set(m_SSHSession, LIBSSH2_CALLBACK_DEBUG, ssh_debug_func);
         libssh2_trace_sethandler(m_SSHSession, this, libssh2_trace_handler_func);
-        // libssh2_trace(m_SSHSession, LIBSSH2_TRACE_AUTH | LIBSSH2_TRACE_CONN | LIBSSH2_TRACE_SFTP | LIBSSH2_TRACE_ERROR);
-        libssh2_trace(m_SSHSession, LIBSSH2_TRACE_AUTH | LIBSSH2_TRACE_SCP | LIBSSH2_TRACE_SFTP);
+        libssh2_trace(m_SSHSession, LIBSSH2_TRACE_AUTH | LIBSSH2_TRACE_CONN | LIBSSH2_TRACE_SFTP | LIBSSH2_TRACE_ERROR);
+        // libssh2_trace(m_SSHSession, LIBSSH2_TRACE_AUTH | LIBSSH2_TRACE_SCP | LIBSSH2_TRACE_SFTP);
     }
 
     return true;
