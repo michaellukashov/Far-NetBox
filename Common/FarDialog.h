@@ -34,8 +34,8 @@ public:
      * \param width dialog width
      * \param height dialog height
      */
-    CFarDialog(const int width, const int height)
-        : m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(false)
+    explicit CFarDialog(const int width, const int height) :
+        m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(false)
     {
     }
 
@@ -45,8 +45,8 @@ public:
      * \param height dialog height
      * \param title dialog title
      */
-    CFarDialog(const int width, const int height, const wchar_t *title)
-        : m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(true)
+    explicit CFarDialog(const int width, const int height, const wchar_t *title) :
+        m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(true)
     {
         SetTitle(title);
     }

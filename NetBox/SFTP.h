@@ -49,7 +49,7 @@ protected:
 class CSessionEditorSFTP : public CSessionEditor
 {
 public:
-    CSessionEditorSFTP(CSession *session);
+    explicit CSessionEditorSFTP(CSession *session);
 
     //From CSessionEditDlg
     void OnPrepareDialog();
@@ -73,8 +73,8 @@ private:
 class CSFTP : public CProtocolBase<CSessionSFTP>
 {
 public:
-    CSFTP(const CSession *session);
-    ~CSFTP();
+    explicit CSFTP(const CSession *session);
+    virtual ~CSFTP();
 
     //From IProtocol
     virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);

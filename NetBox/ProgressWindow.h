@@ -39,8 +39,8 @@ public:
         Receive
     };
 
-    CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl);
-    ~CProgressWindow();
+    explicit CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl);
+    virtual ~CProgressWindow();
 
     /**
      * Show progress window

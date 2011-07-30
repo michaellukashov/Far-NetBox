@@ -43,7 +43,7 @@ protected:
 class CSessionEditorWebDAV : public CSessionEditor
 {
 public:
-    CSessionEditorWebDAV(CSession *session) : CSessionEditor(session, 54, 19)
+    explicit CSessionEditorWebDAV(CSession *session) : CSessionEditor(session, 54, 19)
     {}
 };
 
@@ -54,8 +54,8 @@ public:
 class CWebDAV : public CProtocolBase<CSessionWebDAV>
 {
 public:
-    CWebDAV(const CSession *session);
-    ~CWebDAV();
+    explicit CWebDAV(const CSession *session);
+    virtual ~CWebDAV();
 
     //From IProtocol
     bool Connect(HANDLE abortEvent, wstring &errorInfo);

@@ -29,7 +29,7 @@
 template<class T> class CProtocolBase : public IProtocol
 {
 public:
-    CProtocolBase<T>(const CSession *session) : m_Session(*static_cast<const T *>(session)), m_ProgressPercent(-1) {}
+    explicit CProtocolBase<T>(const CSession *session) : m_Session(*static_cast<const T *>(session)), m_ProgressPercent(-1) {}
 
     //From IProtocol
     virtual int GetProgress()

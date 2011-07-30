@@ -53,7 +53,7 @@ class CFTPS : public CFTP
 {
 public:
     explicit CFTPS(const CSession *session);
-    ~CFTPS();
+    virtual ~CFTPS();
 
     virtual bool TryToResolveConnectionProblem();
 

@@ -69,7 +69,7 @@ class CFTP : public CProtocolBase<CSessionFTP>
 {
 public:
     explicit CFTP(const CSession *session);
-    ~CFTP();
+    virtual ~CFTP();
 
     //From IProtocol
     virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);

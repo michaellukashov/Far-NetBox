@@ -103,12 +103,12 @@ void CSessionEditorSFTP::ShowSessionDlgItems(bool visible)
 class CSFTPFileHandle
 {
 public:
-    CSFTPFileHandle(LIBSSH2_SFTP_HANDLE *h)
+    explicit  CSFTPFileHandle(LIBSSH2_SFTP_HANDLE *h)
     {
         m_Object = h;
     }
 
-    CSFTPFileHandle(LIBSSH2_SFTP *sftp, const char *path, const unsigned long flags, const long mode, const int type)
+    explicit CSFTPFileHandle(LIBSSH2_SFTP *sftp, const char *path, const unsigned long flags, const long mode, const int type)
     {
         assert(sftp);
         assert(path && path[0] == L'/');
