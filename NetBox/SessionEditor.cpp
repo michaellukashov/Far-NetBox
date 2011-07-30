@@ -22,27 +22,27 @@
 #include "Session.h"
 #include "Strings.h"
 
-CSessionEditor::CSessionEditor(CSession *session, const int width, const int height)
-    : CFarDialog(width, height),
-      m_IdBtnSession(0),
-      m_IdBtnProxy(0),
-      m_IdPagesSeparator(0),
-      m_IdTextEditName(0),
-      m_IdEditName(0),
-      m_IdTextEditURL(0),
-      m_IdEditURL(0),
-      m_IdAuthSeparator(0),
-      m_IdTextEditUser(0),
-      m_IdEditUser(0),
-      m_IdEditPswHide(0),
-      m_IdTextEditPswShow(0),
-      m_IdEditPswShow(0),
-      m_IdChBxPromtpPsw(0),
-      m_IdChBxShowPsw(0),
-      m_IdBtnOK(0),
-      m_IdBtnCancel(0),
-      m_EditMode(false),
-      m_Session(session)
+CSessionEditor::CSessionEditor(CSession *session, const int width, const int height) :
+    CFarDialog(width, height),
+    m_IdBtnSession(0),
+    m_IdBtnProxy(0),
+    m_IdPagesSeparator(0),
+    m_IdTextEditName(0),
+    m_IdEditName(0),
+    m_IdTextEditURL(0),
+    m_IdEditURL(0),
+    m_IdAuthSeparator(0),
+    m_IdTextEditUser(0),
+    m_IdEditUser(0),
+    m_IdEditPswHide(0),
+    m_IdTextEditPswShow(0),
+    m_IdEditPswShow(0),
+    m_IdChBxPromtpPsw(0),
+    m_IdChBxShowPsw(0),
+    m_IdBtnOK(0),
+    m_IdBtnCancel(0),
+    m_EditMode(false),
+    m_Session(session)
 {
     assert(m_Session);
 }

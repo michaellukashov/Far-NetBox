@@ -28,7 +28,7 @@ class CSession;
 class CSessionEditor : protected CFarDialog
 {
 protected:
-    CSessionEditor(CSession *session, const int width, const int height);
+    explicit CSessionEditor(CSession *session, const int width, const int height);
 
 public:
     /**
@@ -99,7 +99,7 @@ protected:
     int m_IdBtnOK;
     int m_IdBtnCancel;
 
-    bool    m_EditMode;
+    bool m_EditMode;
     wstring m_Title;
 
     CSession *m_Session;

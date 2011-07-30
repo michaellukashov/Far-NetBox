@@ -550,6 +550,10 @@ bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     return retStatus;
 }
 
+wstring CSFTP::GetURL()
+{
+    return CProtocolBase<CSessionSFTP>::GetURL();
+}
 
 bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo)
 {

@@ -39,6 +39,10 @@ CFTPS::CFTPS(const CSession *session) :
 {
 }
 
+CFTPS::~CFTPS()
+{
+}
+
 CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= true*/)
 {
     CURLcode urlCode = CFTP::CURLPrepare(ftpPath, handleTimeout);
