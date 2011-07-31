@@ -82,6 +82,8 @@ private:
     int m_IdTotalProgress;
     int m_IdCurrentProgress;
     int m_IdBtnCancel;
+
+    bool m_Show;
 };
 
 
