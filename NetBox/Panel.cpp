@@ -311,16 +311,19 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
 {
     assert(m_ProtoClient);
 
-    CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
+    // CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
+    CProgressWindow progressWnd(m_AbortTask, CProgressWindow::Scan, CProgressWindow::List, 1, m_ProtoClient);
     if (!IsSessionManager())
     {
-        notifyWnd.Show();
+        progressWnd.Show();
+        // notifyWnd.Show();
     }
 
     wstring errInfo;
     if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo))
     {
-        notifyWnd.Hide();
+        progressWnd.Destroy();
+        // notifyWnd.Hide();
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, m_ProtoClient->GetCurrentDirectory()), errInfo.c_str());
         if (IsSessionManager())
         {
@@ -333,7 +336,7 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
             return GetItemList(panelItem, itemsNumber, opMode);
         }
     }
-
+    // progressWnd.Destroy();
     return 1;
 }
 
