@@ -32,8 +32,8 @@ public:
      * \param minValue minimal value
      * \param maxValue maximal value
      */
-    CFarProgress(const __int64 minValue, const __int64 maxValue)
-        : _MinValue(minValue), _MaxValue(maxValue), _CurrValue(maxValue > minValue ? minValue : maxValue)
+    CFarProgress(const __int64 minValue, const __int64 maxValue) :
+        m_MinValue(minValue), m_MaxValue(maxValue), m_CurrValue(maxValue > minValue ? minValue : maxValue)
     {
         CFarPlugin::AdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void *>(PS_INDETERMINATE));
     }
@@ -96,10 +96,10 @@ public:
     }
 
 private:
-    __int64 _MinValue;
-    __int64 _MaxValue;
-    __int64 _CurrValue;
-    const wchar_t  *_Title;
-    int _WndPosCol;
-    int _WndPosRow;
+    __int64 m_MinValue;
+    __int64 m_MaxValue;
+    __int64 m_CurrValue;
+    const wchar_t  *m_Title;
+    int m_WndPosCol;
+    int m_WndPosRow;
 };

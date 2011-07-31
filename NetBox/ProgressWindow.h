@@ -68,18 +68,18 @@ private:
     static DWORD WINAPI WindowThread(LPVOID param);
 
 private:
-    HANDLE          m_AbortEvent;
-    HANDLE          m_WndThread;
-    OperationType   m_Operation;
-    DerectionType   m_Direction;
-    size_t          m_FileCount;
-    IProtocol      *m_ProtoImpl;
+    HANDLE m_AbortEvent;
+    HANDLE m_WndThread;
+    OperationType m_Operation;
+    DerectionType m_Direction;
+    size_t m_FileCount;
+    IProtocol *m_ProtoImpl;
 
-    int     m_IdSrcFileName;
-    int     m_IdDstFileName;
-    int     m_IdTotalProgress;
-    int     m_IdCurrentProgress;
-    int     m_IdBtnCancel;
+    int m_IdSrcFileName;
+    int m_IdDstFileName;
+    int m_IdTotalProgress;
+    int m_IdCurrentProgress;
+    int m_IdBtnCancel;
 };
 
 
