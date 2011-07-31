@@ -33,13 +33,13 @@ public:
     };
 
     //! Derection types
-    enum DerectionType
+    enum DirectionType
     {
         Send,
         Receive
     };
 
-    explicit CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl);
+    explicit CProgressWindow(HANDLE abortEvent, const OperationType oper, const DirectionType direction, const size_t num, IProtocol *impl);
     virtual ~CProgressWindow();
 
     /**
@@ -71,7 +71,7 @@ private:
     HANDLE m_AbortEvent;
     HANDLE m_WndThread;
     OperationType m_Operation;
-    DerectionType m_Direction;
+    DirectionType m_Direction;
     size_t m_FileCount;
     IProtocol *m_ProtoImpl;
 
