@@ -19,14 +19,15 @@
 
 #include "stdafx.h"
 #include "Panel.h"
-#include "ProgressWindow.h"
 #include "Logging.h"
 
 #define IS_SILENT(op) (op & (OPM_SILENT | OPM_FIND))
 
 
-CPanel::CPanel(const bool exitToSessionMgr)
-    : m_ProtoClient(NULL), m_Title(CFarPlugin::GetString(StringTitle)), m_ExitToSessionMgr(exitToSessionMgr), m_AbortTask(NULL)
+CPanel::CPanel(const bool exitToSessionMgr) :
+    m_ProtoClient(NULL), m_Title(CFarPlugin::GetString(StringTitle)),
+    m_ExitToSessionMgr(exitToSessionMgr), m_AbortTask(NULL),
+    m_progressWnd(NULL), m_callcount(0)
 {
 }
 
@@ -250,8 +251,8 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
     }
     else
     {
-        CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgChangeDir, dir).c_str());
-        notifyWnd.Show();
+        // CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgChangeDir, dir).c_str());
+        // notifyWnd.Show();
         retStatus = m_ProtoClient->ChangeDirectory(dir, errInfo);
     }
 
@@ -310,21 +311,29 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
 int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int opMode)
 {
     assert(m_ProtoClient);
-    DEBUG_PRINTF(L"NetBox: GetItemList: begin");
+    assert(m_callcount >= 0);
+    DEBUG_PRINTF(L"NetBox: GetItemList: begin: m_callcount = %u", m_callcount);
 
     // CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
-    CProgressWindow progressWnd(m_AbortTask, CProgressWindow::Scan, CProgressWindow::List, 1, m_ProtoClient);
-    if (!IsSessionManager())
+    // if (!m_progressWnd && !m_callcount)
+    // {
+        // m_progressWnd = new CProgressWindow(m_AbortTask, CProgressWindow::Scan, CProgressWindow::List, 1, m_ProtoClient);
+    // }
+    if (!IsSessionManager() && !m_callcount)
     {
-        progressWnd.Show();
+        // m_progressWnd->Show();
         // notifyWnd.Show();
     }
+    m_callcount++;
 
     wstring errInfo;
     if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo))
     {
-        progressWnd.Destroy();
         // notifyWnd.Hide();
+        // m_progressWnd->Destroy();
+        // delete m_progressWnd;
+        // m_progressWnd = NULL;
+        m_callcount = 0;
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, m_ProtoClient->GetCurrentDirectory()), errInfo.c_str());
         if (IsSessionManager())
         {
@@ -337,8 +346,14 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
             return GetItemList(panelItem, itemsNumber, opMode);
         }
     }
-    // progressWnd.Destroy();
-    DEBUG_PRINTF(L"NetBox: GetItemList: end");
+    m_callcount--;
+    if (!m_callcount)
+    {
+        // m_progressWnd->Destroy();
+        // delete m_progressWnd;
+        // m_progressWnd = NULL;
+    }
+    DEBUG_PRINTF(L"NetBox: GetItemList: end: m_callcount = %u", m_callcount);
     return 1;
 }
 
