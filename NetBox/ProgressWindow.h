@@ -86,7 +86,7 @@ private:
 class CNotificationWindow
 {
 public:
-    CNotificationWindow(const wchar_t *title, const wchar_t *text);
+    explicit CNotificationWindow(const wchar_t *title, const wchar_t *text);
     virtual ~CNotificationWindow();
 
     /**
