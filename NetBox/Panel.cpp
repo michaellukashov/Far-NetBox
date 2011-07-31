@@ -310,6 +310,7 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
 int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int opMode)
 {
     assert(m_ProtoClient);
+    DEBUG_PRINTF(L"NetBox: GetItemList: begin");
 
     // CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
     CProgressWindow progressWnd(m_AbortTask, CProgressWindow::Scan, CProgressWindow::List, 1, m_ProtoClient);
@@ -337,6 +338,7 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
         }
     }
     // progressWnd.Destroy();
+    DEBUG_PRINTF(L"NetBox: GetItemList: end");
     return 1;
 }
 
