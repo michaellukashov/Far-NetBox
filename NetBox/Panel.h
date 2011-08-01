@@ -21,7 +21,6 @@
 #include "Protocol.h"
 #include "Strings.h"
 #include "SessionManager.h"
-#include "ProgressWindow.h"
 
 #pragma once
 
@@ -161,6 +160,4 @@ private:
     bool        m_ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
 
     HANDLE      m_AbortTask;         ///< Abort task event
-    CProgressWindow *m_progressWnd;
-    int m_callcount;
 };
