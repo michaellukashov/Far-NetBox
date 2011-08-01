@@ -149,7 +149,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     {
         m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-        DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode = %u, errorInfo = %s", urlCode, errorInfo.c_str());
+        // DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode = %u, errorInfo = %s", urlCode, errorInfo.c_str());
         isExist = false;
     }
 
