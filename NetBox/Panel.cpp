@@ -232,6 +232,8 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 {
     assert(dir);
     assert(m_ProtoClient);
+    DEBUG_PRINTF(L"NetBox: ChangeDirectory: dir = %s, opMode = %u", dir, opMode);
+    DEBUG_PRINTF(L"NetBox: ChangeDirectory: m_ProtoClient->GetCurrentDirectory = %s", m_ProtoClient->GetCurrentDirectory());
 
     const bool topDirectory = (wcscmp(L"/", m_ProtoClient->GetCurrentDirectory()) == 0);
     const bool moveUp = (wcscmp(L"..", dir) == 0);

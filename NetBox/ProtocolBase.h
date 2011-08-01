@@ -41,7 +41,7 @@ public:
     virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     {
         assert(name && *name);
-        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
+        DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
 
         const bool moveUp = (wcscmp(L"..", name) == 0);
         const bool topDirectory = (m_CurrentDirectory.compare(L"/") == 0);
