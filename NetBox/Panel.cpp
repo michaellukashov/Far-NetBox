@@ -232,6 +232,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 {
     assert(dir);
     assert(m_ProtoClient);
+    m_callcount++;
 
     const bool topDirectory = (wcscmp(L"/", m_ProtoClient->GetCurrentDirectory()) == 0);
     const bool moveUp = (wcscmp(L"..", dir) == 0);
@@ -256,8 +257,9 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
         retStatus = m_ProtoClient->ChangeDirectory(dir, errInfo);
     }
 
-    if (!retStatus)
+    if (!retStatus && !IS_SILENT(opMode))
     {
+        DEBUG_PRINTF(L"NetBox: m_callcount = %u, dir = %s, OpMode = %u", m_callcount, dir, opMode);
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrChangeDir, dir), errInfo.c_str());
     }
     else if (!IS_SILENT(opMode))
@@ -265,6 +267,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
         UpdateTitle();
     }
 
+    m_callcount--;
     return retStatus ? 1 : 0;
 }
 
@@ -298,7 +301,7 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
     path += *name;
 
     wstring errInfo;
-    if (!m_ProtoClient->MakeDirectory(path.c_str(), errInfo))
+    if (!m_ProtoClient->MakeDirectory(path.c_str(), errInfo) && !IS_SILENT(opMode))
     {
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrCreateDir, *name), errInfo.c_str());
         return -1;
@@ -324,16 +327,16 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
         // m_progressWnd->Show();
         // notifyWnd.Show();
     }
-    m_callcount++;
+    // m_callcount++;
 
     wstring errInfo;
-    if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo))
+    if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo) && !IS_SILENT(opMode))
     {
         // notifyWnd.Hide();
         // m_progressWnd->Destroy();
         // delete m_progressWnd;
         // m_progressWnd = NULL;
-        m_callcount = 0;
+        // m_callcount = 0;
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, m_ProtoClient->GetCurrentDirectory()), errInfo.c_str());
         if (IsSessionManager())
         {
@@ -346,8 +349,8 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
             return GetItemList(panelItem, itemsNumber, opMode);
         }
     }
-    m_callcount--;
-    if (!m_callcount)
+    // m_callcount--;
+    // if (!m_callcount)
     {
         // m_progressWnd->Destroy();
         // delete m_progressWnd;
@@ -441,7 +444,10 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += pi->FindData.lpwszFileName;
                     wstring errInfo;
-                    if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
+                    if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
+                        pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ?
+                            IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo)
+                                && !IS_SILENT(opMode))
                     {
                         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrRenameMove, srcPath.c_str(), dstPath.c_str()), errInfo.c_str());
                         return 0;
@@ -480,7 +486,8 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += panelItem->FindData.lpwszFileName;
                 }
-                if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), itemType, errInfo))
+                if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
+                    itemType, errInfo) && !IS_SILENT(opMode))
                 {
                     ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrRenameMove, srcPath.c_str(), dstPath.c_str()), errInfo.c_str());
                     return 0;
