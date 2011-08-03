@@ -71,6 +71,11 @@ public:
         return false;
     }
 
+    virtual bool Aborted() const
+    {
+        return false;
+    }
+
 public:
     /**
      * Get open plugin (panel) info

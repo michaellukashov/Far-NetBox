@@ -153,6 +153,11 @@ public:
         return false;
     }
 
+    virtual bool Aborted() const
+    {
+        return false;
+    }
+
 protected:
     /**
      * Format error description
