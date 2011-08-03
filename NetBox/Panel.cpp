@@ -19,14 +19,15 @@
 
 #include "stdafx.h"
 #include "Panel.h"
-#include "ProgressWindow.h"
 #include "Logging.h"
+#include "ProgressWindow.h"
 
 #define IS_SILENT(op) (op & (OPM_SILENT | OPM_FIND))
 
 
-CPanel::CPanel(const bool exitToSessionMgr)
-    : m_ProtoClient(NULL), m_Title(CFarPlugin::GetString(StringTitle)), m_ExitToSessionMgr(exitToSessionMgr), m_AbortTask(NULL)
+CPanel::CPanel(const bool exitToSessionMgr) :
+    m_ProtoClient(NULL), m_Title(CFarPlugin::GetString(StringTitle)),
+    m_ExitToSessionMgr(exitToSessionMgr), m_AbortTask(NULL)
 {
 }
 

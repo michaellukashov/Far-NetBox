@@ -28,7 +28,7 @@
 class CPanel
 {
 public:
-    CPanel(const bool exitToSessionMgr);
+    explicit CPanel(const bool exitToSessionMgr);
     ~CPanel();
 
     /**
