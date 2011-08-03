@@ -126,9 +126,6 @@ private:
     }
 
 private:
-    static void ssh_debug_func(LIBSSH2_SESSION *session, int always_display, const char *message, \
-               int message_len, const char *language, int language_len, \
-               void **abstract);
     static void libssh2_trace_handler_func(LIBSSH2_SESSION *,
        void *,
        const char *,
