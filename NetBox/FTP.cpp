@@ -77,9 +77,9 @@ void CSessionEditorFTP::ShowSessionDlgItems(bool visible)
     ShowDlgItem(m_IdCP, visible);
 }
 
-CFTP::CFTP(const CSession *session)
-    : CProtocolBase(session),
-      m_lastErrorCurlCode(CURLE_OK)
+CFTP::CFTP(const CSession *session) :
+    CProtocolBase(session),
+    m_lastErrorCurlCode(CURLE_OK)
 {
 }
 

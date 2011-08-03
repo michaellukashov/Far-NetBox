@@ -166,8 +166,8 @@ private:
                  void *userp);
 
 private:
-    CURL   *m_CURL;      ///< CURL
-    bool    m_Prepared;  ///< Preapre statement flag
+    CURL *m_CURL;      ///< CURL
+    bool m_Prepared;  ///< Preapre statement flag
 
     string m_TopURL;     ///< Top URL (ftp://host:21)
     string m_UserName;   ///< User name
