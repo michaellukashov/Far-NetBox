@@ -22,19 +22,18 @@
 #include "Settings.h"
 #include "Logging.h"
 
-
 CEasyURL::CEasyURL() :
     m_CURL(NULL),
     m_Prepared(false),
     m_regex(INVALID_HANDLE_VALUE),
     m_match(NULL),
     m_brackets(0)
-    
 {
     m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
     m_Output.Type = OutputWriter::None;
     m_Progress.ProgressPtr = NULL;
+    m_Progress.Aborted = false;
     // init regex
     if (CFarPlugin::GetPSI()->RegExpControl(0, RECTL_CREATE, reinterpret_cast<LONG_PTR>(&m_regex)))
     {
@@ -117,7 +116,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     assert(m_CURL);
     assert(!m_Prepared);
     assert(!path || path[0] == L'/');
-    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: path = %s", CFarPlugin::MB2W(path).c_str());
+    DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: m_TopURL = %s, path = %s", CFarPlugin::MB2W(m_TopURL.c_str()).c_str(), CFarPlugin::MB2W(path).c_str());
     curl_easy_reset(m_CURL);
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
@@ -197,6 +196,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     }
 
     m_Prepared = (urlCode == CURLE_OK);
+    DEBUG_PRINTF(L"NetBox: Prepare: m_Prepared = %u", m_Prepared);
     return urlCode;
 }
 
@@ -262,6 +262,7 @@ CURLcode CEasyURL::SetInput(CFile *in, int *progress)
 void CEasyURL::SetAbortEvent(HANDLE event)
 {
     m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = event;
+    m_Progress.Aborted = false;
 }
 
 
@@ -374,6 +375,7 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
 
     if (prg->AbortEvent && WaitForSingleObject(prg->AbortEvent, 0) == WAIT_OBJECT_0)
     {
+        prg->Aborted = true;
         return CURLE_ABORTED_BY_CALLBACK;
     }
 

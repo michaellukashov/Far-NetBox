@@ -41,39 +41,48 @@ public:
     virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     {
         assert(name && *name);
-        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
+        DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
 
         const bool moveUp = (wcscmp(L"..", name) == 0);
-        const bool topDirectory = (m_CurrentDirectory.compare(L"/") == 0);
-
-        assert(!moveUp || !topDirectory);   //Must be handled in CPanel (exit from session)
-
-        wstring newPath = m_CurrentDirectory;
-        if (moveUp)
+        wstring newPath;
+        if (name && (L'/' == name[0]))
         {
-            const size_t lastSlash = newPath.rfind(L'/');
-            assert(lastSlash != string::npos);
-            if (lastSlash != string::npos && lastSlash != 0)
-            {
-                newPath.erase(lastSlash);
-            }
-            else
-            {
-                newPath = L'/';
-            }
+            m_CurrentDirectory = name;
+            newPath = m_CurrentDirectory;
         }
         else
         {
-            if (!topDirectory)
+            const bool topDirectory = (m_CurrentDirectory.compare(L"/") == 0);
+
+            assert(!moveUp || !topDirectory);   //Must be handled in CPanel (exit from session)
+
+            newPath = m_CurrentDirectory;
+            if (moveUp)
             {
-                newPath += L'/';
+                const size_t lastSlash = newPath.rfind(L'/');
+                assert(lastSlash != string::npos);
+                if (lastSlash != string::npos && lastSlash != 0)
+                {
+                    newPath.erase(lastSlash);
+                }
+                else
+                {
+                    newPath = L'/';
+                }
             }
-            newPath += name;
+            else
+            {
+                if (!topDirectory)
+                {
+                    newPath += L'/';
+                }
+                newPath += name;
+            }
         }
 
         //Check path existing
         bool dirExist = false;
-        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, newPath = %s", name, newPath.c_str());
+        DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, newPath = %s", name, newPath.c_str());
         if (!CheckExisting(newPath.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
         {
             return false;
@@ -140,6 +149,11 @@ public:
     }
 
     virtual bool TryToResolveConnectionProblem()
+    {
+        return false;
+    }
+
+    virtual bool Aborted() const
     {
         return false;
     }

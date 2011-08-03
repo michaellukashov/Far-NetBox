@@ -27,7 +27,6 @@
 #include "..\Common\FarPlugin.h"
 #include "..\Common\FarSettings.h"
 #include "..\Common\FarDialog.h"
-#include "..\Common\FarProgress.h"
 #include "..\Common\FarUtil.h"
 
 /**

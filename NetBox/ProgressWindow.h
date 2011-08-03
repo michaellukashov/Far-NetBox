@@ -29,17 +29,19 @@ public:
     enum OperationType
     {
         Copy,
-        Move
+        Move,
+        Scan
     };
 
     //! Derection types
-    enum DerectionType
+    enum DirectionType
     {
         Send,
-        Receive
+        Receive,
+        List
     };
 
-    explicit CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl);
+    explicit CProgressWindow(HANDLE abortEvent, const OperationType oper, const DirectionType direction, const size_t num, IProtocol *impl);
     virtual ~CProgressWindow();
 
     /**

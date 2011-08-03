@@ -49,16 +49,7 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
     CloseConnection();
     m_ProtoClient = protoImpl;
 
-    if (!m_AbortTask)
-    {
-        m_AbortTask = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (!m_AbortTask)
-        {
-            ShowErrorDialog(GetLastError(), L"Create event failed");
-            return false;
-        }
-    }
-    ResetEvent(m_AbortTask);
+    ResetAbortTask();
 
     bool connectionEstablished = false;
     const wstring connectURL = m_ProtoClient->GetURL();
@@ -232,6 +223,8 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 {
     assert(dir);
     assert(m_ProtoClient);
+    DEBUG_PRINTF(L"NetBox: ChangeDirectory: dir = %s, opMode = %u", dir, opMode);
+    DEBUG_PRINTF(L"NetBox: ChangeDirectory: m_ProtoClient->GetCurrentDirectory = %s", m_ProtoClient->GetCurrentDirectory());
 
     const bool topDirectory = (wcscmp(L"/", m_ProtoClient->GetCurrentDirectory()) == 0);
     const bool moveUp = (wcscmp(L"..", dir) == 0);
@@ -251,13 +244,21 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
     }
     else
     {
-        CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgChangeDir, dir).c_str());
-        notifyWnd.Show();
+        if (!IS_SILENT(opMode))
+        {
+            CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgChangeDir, dir).c_str());
+            notifyWnd.Show();
+        }
+        if (m_ProtoClient->Aborted())
+        {
+            ResetAbortTask();
+        }
         retStatus = m_ProtoClient->ChangeDirectory(dir, errInfo);
     }
 
-    if (!retStatus)
+    if (!retStatus && !IS_SILENT(opMode))
     {
+        DEBUG_PRINTF(L"NetBox: dir = %s, OpMode = %u", dir, opMode);
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrChangeDir, dir), errInfo.c_str());
     }
     else if (!IS_SILENT(opMode))
@@ -298,7 +299,7 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
     path += *name;
 
     wstring errInfo;
-    if (!m_ProtoClient->MakeDirectory(path.c_str(), errInfo))
+    if (!m_ProtoClient->MakeDirectory(path.c_str(), errInfo) && !IS_SILENT(opMode))
     {
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrCreateDir, *name), errInfo.c_str());
         return -1;
@@ -311,17 +312,21 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
 int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int opMode)
 {
     assert(m_ProtoClient);
+    DEBUG_PRINTF(L"NetBox: GetItemList: begin");
 
-    CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
-    if (!IsSessionManager())
+    // CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
+    // CProgressWindow progressWnd(m_AbortTask, CProgressWindow::Scan, CProgressWindow::List, 1, m_ProtoClient);
+    if (!IsSessionManager() && !IS_SILENT(opMode))
     {
-        notifyWnd.Show();
+        // progressWnd.Show();
+        // notifyWnd.Show();
     }
 
     wstring errInfo;
-    if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo))
+    if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo) && !IS_SILENT(opMode))
     {
-        notifyWnd.Hide();
+        // progressWnd.Destroy();
+        // notifyWnd.Hide();
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrListDir, m_ProtoClient->GetCurrentDirectory()), errInfo.c_str());
         if (IsSessionManager())
         {
@@ -334,7 +339,8 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
             return GetItemList(panelItem, itemsNumber, opMode);
         }
     }
-
+    // progressWnd.Destroy();
+    DEBUG_PRINTF(L"NetBox: GetItemList: end");
     return 1;
 }
 
@@ -422,7 +428,10 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += pi->FindData.lpwszFileName;
                     wstring errInfo;
-                    if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
+                    if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
+                        pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ?
+                            IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo)
+                                && !IS_SILENT(opMode))
                     {
                         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrRenameMove, srcPath.c_str(), dstPath.c_str()), errInfo.c_str());
                         return 0;
@@ -461,7 +470,8 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += panelItem->FindData.lpwszFileName;
                 }
-                if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(), itemType, errInfo))
+                if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
+                    itemType, errInfo) && !IS_SILENT(opMode))
                 {
                     ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrRenameMove, srcPath.c_str(), dstPath.c_str()), errInfo.c_str());
                     return 0;
@@ -1071,4 +1081,17 @@ void CPanel::ShowErrorDialog(const DWORD errCode, const wstring &title, const wc
     }
 
     CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), errInfo.c_str(), FMSG_MB_OK | FMSG_WARNING);
+}
+
+void CPanel::ResetAbortTask()
+{
+    if (!m_AbortTask)
+    {
+        m_AbortTask = CreateEvent(NULL, TRUE, FALSE, NULL);
+        if (!m_AbortTask)
+        {
+            ShowErrorDialog(GetLastError(), L"Create event failed");
+        }
+    }
+    ResetEvent(m_AbortTask);
 }

@@ -166,7 +166,8 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     {
         bool aborted = false;
         libssh2_session_set_blocking(m_SSHSession, 0);
-        while (!(m_SFTPSession = libssh2_sftp_init(m_SSHSession)))
+        m_SFTPSession = libssh2_sftp_init(m_SSHSession);
+        while (!m_SFTPSession)
         {
             int last_errno = libssh2_session_last_errno(m_SSHSession);
             if (last_errno != LIBSSH2SFTP_EAGAIN)
@@ -181,6 +182,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
                 break;
             }
             Sleep(100);
+            m_SFTPSession = libssh2_sftp_init(m_SSHSession);
         }
         if (m_SFTPSession != NULL)
         {
@@ -647,6 +649,9 @@ void CSFTP::libssh2_trace_handler_func(LIBSSH2_SESSION *session,
    size_t len)
 {
     // DEBUG_PRINTF(L"NetBox: %s", CFarPlugin::MB2W(message).c_str());
+    (void)session;
+    (void)context;
+    (void)len;
     Log2(message);
 }
 

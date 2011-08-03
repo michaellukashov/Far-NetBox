@@ -148,6 +148,11 @@ public:
         return m_CURL;
     }
 
+    bool Aborted() const
+    {
+        return m_Progress.Aborted;
+    }
+
 private:
     int DebugOutput(const char *data, size_t size);
 
@@ -220,3 +225,4 @@ private:
     RegExpMatch *m_match;
     int m_brackets;
 };
+

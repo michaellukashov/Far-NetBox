@@ -152,6 +152,7 @@ private:
      */
     void ShowErrorDialog(const DWORD errCode, const wstring &title, const wchar_t *info = NULL) const;
 
+    void ResetAbortTask();
 private:
     IProtocol  *m_ProtoClient;       ///< Client's protocol implementation
     wstring     m_LastDirName;       ///< Last created/copyed directory name (used as buffer)

@@ -76,6 +76,7 @@ void CProgressWindow::Show()
     }
 
     CFarPlugin::AdvControl(ACTL_SETPROGRESSSTATE, reinterpret_cast<void *>(PS_INDETERMINATE));
+    m_Show = true;
 }
 
 
@@ -107,6 +108,10 @@ void CProgressWindow::SetFileNames(const wchar_t *srcFileName, const wchar_t *ds
 
 void CProgressWindow::Destroy()
 {
+    if (!m_Show)
+    {
+        return;
+    }
     CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_CLOSE, 0, 0);
 
     if (m_WndThread && WaitForSingleObject(m_WndThread, 3000) == WAIT_TIMEOUT)

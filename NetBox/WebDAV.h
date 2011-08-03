@@ -68,6 +68,10 @@ public:
     bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
     bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
     bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
+    virtual bool Aborted() const
+    {
+        return m_CURL.Aborted();
+    }
 
 private:
     /**
