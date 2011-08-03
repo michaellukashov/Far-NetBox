@@ -219,3 +219,6 @@ private:
     RegExpMatch *m_match;
     int m_brackets;
 };
+
+extern bool CURL_Aborted;
+

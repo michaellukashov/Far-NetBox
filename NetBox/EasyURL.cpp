@@ -22,6 +22,7 @@
 #include "Settings.h"
 #include "Logging.h"
 
+bool CURL_Aborted = false;
 
 CEasyURL::CEasyURL() :
     m_CURL(NULL),
@@ -29,7 +30,6 @@ CEasyURL::CEasyURL() :
     m_regex(INVALID_HANDLE_VALUE),
     m_match(NULL),
     m_brackets(0)
-    
 {
     m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
@@ -47,6 +47,7 @@ CEasyURL::CEasyURL() :
             }
         }
     }
+    CURL_Aborted = false;
 }
 
 
@@ -375,6 +376,7 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
 
     if (prg->AbortEvent && WaitForSingleObject(prg->AbortEvent, 0) == WAIT_OBJECT_0)
     {
+        CURL_Aborted = true;
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
