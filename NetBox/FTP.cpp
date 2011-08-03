@@ -134,7 +134,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 {
     assert(path && path[0] == L'/');
     isExist = false;
-    if (CURL_Aborted)
+    if (m_CURL.Aborted())
     {
         m_AbortEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
         if (!m_AbortEvent)
@@ -144,7 +144,6 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
         }
         ResetEvent(m_AbortEvent);
         m_CURL.SetAbortEvent(m_AbortEvent);
-        // CURL_Aborted = false;
     }
 
     string ftpPath = LocalToFtpCP(path);

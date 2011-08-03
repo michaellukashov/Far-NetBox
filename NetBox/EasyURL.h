@@ -148,6 +148,11 @@ public:
         return m_CURL;
     }
 
+    bool Aborted() const
+    {
+        return m_Progress.Aborted;
+    }
+
 private:
     int DebugOutput(const char *data, size_t size);
 
@@ -210,7 +215,8 @@ private:
     //! Progress description
     struct Progress
     {
-        int    *ProgressPtr;
+        int *ProgressPtr;
+        bool Aborted;
         HANDLE  AbortEvent;
     };
     Progress m_Progress;
@@ -219,6 +225,4 @@ private:
     RegExpMatch *m_match;
     int m_brackets;
 };
-
-extern bool CURL_Aborted;
 
