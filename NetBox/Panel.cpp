@@ -223,8 +223,8 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 {
     assert(dir);
     assert(m_ProtoClient);
-    DEBUG_PRINTF(L"NetBox: ChangeDirectory: dir = %s, opMode = %u", dir, opMode);
-    DEBUG_PRINTF(L"NetBox: ChangeDirectory: m_ProtoClient->GetCurrentDirectory = %s", m_ProtoClient->GetCurrentDirectory());
+    // DEBUG_PRINTF(L"NetBox: ChangeDirectory: dir = %s, opMode = %u", dir, opMode);
+    // DEBUG_PRINTF(L"NetBox: ChangeDirectory: m_ProtoClient->GetCurrentDirectory = %s", m_ProtoClient->GetCurrentDirectory());
 
     const bool topDirectory = (wcscmp(L"/", m_ProtoClient->GetCurrentDirectory()) == 0);
     const bool moveUp = (wcscmp(L"..", dir) == 0);
@@ -258,7 +258,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
 
     if (!retStatus && !IS_SILENT(opMode))
     {
-        DEBUG_PRINTF(L"NetBox: dir = %s, OpMode = %u", dir, opMode);
+        // DEBUG_PRINTF(L"NetBox: dir = %s, OpMode = %u", dir, opMode);
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrChangeDir, dir), errInfo.c_str());
     }
     else if (!IS_SILENT(opMode))
@@ -312,7 +312,7 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
 int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int opMode)
 {
     assert(m_ProtoClient);
-    DEBUG_PRINTF(L"NetBox: GetItemList: begin");
+    // DEBUG_PRINTF(L"NetBox: GetItemList: begin");
 
     // CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgGetList, m_ProtoClient->GetCurrentDirectory()).c_str());
     // CProgressWindow progressWnd(m_AbortTask, CProgressWindow::Scan, CProgressWindow::List, 1, m_ProtoClient);
@@ -335,12 +335,12 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
         else
         {
             OpenConnection(new CSessionManager); //Return to session manager panel
-            DEBUG_PRINTF(L"NetBox: before CPanel::GetItemList");
+            // DEBUG_PRINTF(L"NetBox: before CPanel::GetItemList");
             return GetItemList(panelItem, itemsNumber, opMode);
         }
     }
     // progressWnd.Destroy();
-    DEBUG_PRINTF(L"NetBox: GetItemList: end");
+    // DEBUG_PRINTF(L"NetBox: GetItemList: end");
     return 1;
 }
 

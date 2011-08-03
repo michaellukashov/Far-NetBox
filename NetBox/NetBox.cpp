@@ -218,30 +218,30 @@ void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
 int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
     assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
-    DEBUG_PRINTF(L"NetBox: SetDirectoryW: begin");
+    // DEBUG_PRINTF(L"NetBox: SetDirectoryW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->ChangeDirectory(dir, opMode);
-    DEBUG_PRINTF(L"NetBox: SetDirectoryW: result = %u", result);
+    // DEBUG_PRINTF(L"NetBox: SetDirectoryW: result = %u", result);
     return result;
 }
 
 int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t **destPath, int opMode)
 {
     assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
-    DEBUG_PRINTF(L"NetBox: GetFiles: begin");
+    // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetFiles(panelItem, itemsNumber, destPath, move != 0, opMode);
-    DEBUG_PRINTF(L"NetBox: GetFilesW: result = %u", result);
+    // DEBUG_PRINTF(L"NetBox: GetFilesW: result = %u", result);
     return result;
 }
 
 int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNumber, int opMode)
 {
     assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
-    DEBUG_PRINTF(L"NetBox: GetFindDataW: begin");
+    // DEBUG_PRINTF(L"NetBox: GetFindDataW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetItemList(panelItem, itemsNumber, opMode);
-    DEBUG_PRINTF(L"NetBox: GetFindDataW: itemsNumber = %u", *itemsNumber);
+    // DEBUG_PRINTF(L"NetBox: GetFindDataW: itemsNumber = %u", *itemsNumber);
     return result;
 }
 
