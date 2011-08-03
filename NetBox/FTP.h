@@ -97,15 +97,15 @@ protected:
         {
             Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
         }
-        wstring             Name;
-        wstring             LinkPath;
-        wstring             Owner;
-        wstring             Group;
-        wstring             FullText;
-        ItemType            Type;
-        unsigned __int64    Size;
-        unsigned short      Permission;
-        FILETIME            Modified;
+        wstring Name;
+        wstring LinkPath;
+        wstring Owner;
+        wstring Group;
+        wstring FullText;
+        ItemType Type;
+        unsigned __int64 Size;
+        unsigned short Permission;
+        FILETIME Modified;
     };
 
     /**
