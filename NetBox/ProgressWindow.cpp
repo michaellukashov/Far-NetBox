@@ -23,10 +23,12 @@
 
 #define WND_WIDTH 60
 
-CProgressWindow::CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl)
-    : CFarDialog(WND_WIDTH + 10, num > 1 ? 11 : 11, CFarPlugin::GetString(oper == Copy ? StringCopyTitle : StringMoveTitle)),
-      m_AbortEvent(abortEvent), m_WndThread(NULL), m_Operation(oper), m_Direction(direction), m_FileCount(num), m_ProtoImpl(impl),
-      m_IdSrcFileName(0), m_IdDstFileName(0), m_IdTotalProgress(0), m_IdCurrentProgress(0), m_IdBtnCancel(0)
+CProgressWindow::CProgressWindow(HANDLE abortEvent, const OperationType oper,
+    const DirectionType direction, const size_t num, IProtocol *impl) :
+    CFarDialog(WND_WIDTH + 10, num > 1 ? 11 : 11, CFarPlugin::GetString(oper == Copy ? StringCopyTitle : StringMoveTitle)),
+    m_AbortEvent(abortEvent), m_WndThread(NULL), m_Operation(oper), m_Direction(direction), m_FileCount(num), m_ProtoImpl(impl),
+    m_IdSrcFileName(0), m_IdDstFileName(0), m_IdTotalProgress(0), m_IdCurrentProgress(0), m_IdBtnCancel(0),
+    m_Show(false)
 {
     assert(m_AbortEvent);
     assert(m_FileCount > 0);
@@ -44,7 +46,6 @@ CProgressWindow::~CProgressWindow()
 void CProgressWindow::Show()
 {
     ResetEvent(m_AbortEvent);
-
     int topPos = GetTop();
 
     CreateText(GetLeft(), topPos, CFarPlugin::GetString(m_Direction == Send ? StringPrgSendFile : StringPrgRcvFile));
