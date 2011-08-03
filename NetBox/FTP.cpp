@@ -133,6 +133,7 @@ CURLcode CFTP::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tru
 bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
+    isExist = false;
     if (CURL_Aborted)
     {
         m_AbortEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -143,7 +144,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
         }
         ResetEvent(m_AbortEvent);
         m_CURL.SetAbortEvent(m_AbortEvent);
-        CURL_Aborted = false;
+        // CURL_Aborted = false;
     }
 
     string ftpPath = LocalToFtpCP(path);
