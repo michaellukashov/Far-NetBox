@@ -249,6 +249,10 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
             CNotificationWindow notifyWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetFormattedString(StringPrgChangeDir, dir).c_str());
             notifyWnd.Show();
         }
+        if (m_ProtoClient->Aborted())
+        {
+            ResetAbortTask();
+        }
         retStatus = m_ProtoClient->ChangeDirectory(dir, errInfo);
     }
 
