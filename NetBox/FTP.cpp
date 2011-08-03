@@ -134,17 +134,6 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 {
     assert(path && path[0] == L'/');
     isExist = false;
-    if (m_CURL.Aborted())
-    {
-        m_AbortEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (!m_AbortEvent)
-        {
-            // ShowErrorDialog(GetLastError(), L"Create event failed");
-            return false;
-        }
-        ResetEvent(m_AbortEvent);
-        m_CURL.SetAbortEvent(m_AbortEvent);
-    }
 
     string ftpPath = LocalToFtpCP(path);
     DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
