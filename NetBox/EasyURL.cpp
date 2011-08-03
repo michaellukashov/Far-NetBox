@@ -117,7 +117,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     assert(m_CURL);
     assert(!m_Prepared);
     assert(!path || path[0] == L'/');
-    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: path = %s", CFarPlugin::MB2W(path).c_str());
+    DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: m_TopURL = %s, path = %s", CFarPlugin::MB2W(m_TopURL.c_str()).c_str(), CFarPlugin::MB2W(path).c_str());
     curl_easy_reset(m_CURL);
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
@@ -197,6 +197,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     }
 
     m_Prepared = (urlCode == CURLE_OK);
+    DEBUG_PRINTF(L"NetBox: Prepare: m_Prepared = %u", m_Prepared);
     return urlCode;
 }
 

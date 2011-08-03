@@ -95,7 +95,7 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     assert(abortEvent);
 
     const wchar_t *url = m_Session.GetURL();
-    DEBUG_PRINTF(L"NetBox: FTP: connecting to %s", url);
+    DEBUG_PRINTF(L"NetBox: CFTP::Connect: connecting to %s", url);
     m_CURL.Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
         m_Session.GetProxySettings());
     m_CURL.SetAbortEvent(abortEvent);
@@ -113,6 +113,7 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     {
         m_CurrentDirectory.erase(m_CurrentDirectory.length() - 1);
     }
+    DEBUG_PRINTF(L"NetBox: CFTP::Connect: end");
     return true;
 }
 
@@ -134,7 +135,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     assert(path && path[0] == L'/');
 
     string ftpPath = LocalToFtpCP(path);
-    // DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
     if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';
@@ -143,13 +144,15 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     isExist = true;
 
     CURLcode urlCode = CURLPrepare(ftpPath.c_str());
+    DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode 1 = %u", urlCode);
     CHECK_CUCALL(urlCode, m_CURL.Perform());
+    DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode 2 = %u", urlCode);
 
     if (urlCode != CURLE_OK)
     {
         m_lastErrorCurlCode = urlCode;
         errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
-        // DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode = %u, errorInfo = %s", urlCode, errorInfo.c_str());
+        DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode = %u, errorInfo = %s", urlCode, errorInfo.c_str());
         isExist = false;
     }
 
