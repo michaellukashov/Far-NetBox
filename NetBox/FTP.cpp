@@ -133,6 +133,18 @@ CURLcode CFTP::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tru
 bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
+    if (CURL_Aborted)
+    {
+        m_AbortEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+        if (!m_AbortEvent)
+        {
+            // ShowErrorDialog(GetLastError(), L"Create event failed");
+            return false;
+        }
+        ResetEvent(m_AbortEvent);
+        m_CURL.SetAbortEvent(m_AbortEvent);
+        CURL_Aborted = false;
+    }
 
     string ftpPath = LocalToFtpCP(path);
     DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
