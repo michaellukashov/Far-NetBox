@@ -49,16 +49,7 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
     CloseConnection();
     m_ProtoClient = protoImpl;
 
-    if (!m_AbortTask)
-    {
-        m_AbortTask = CreateEvent(NULL, TRUE, FALSE, NULL);
-        if (!m_AbortTask)
-        {
-            ShowErrorDialog(GetLastError(), L"Create event failed");
-            return false;
-        }
-    }
-    ResetEvent(m_AbortTask);
+    ResetAbortTask();
 
     bool connectionEstablished = false;
     const wstring connectURL = m_ProtoClient->GetURL();
@@ -1086,4 +1077,17 @@ void CPanel::ShowErrorDialog(const DWORD errCode, const wstring &title, const wc
     }
 
     CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), errInfo.c_str(), FMSG_MB_OK | FMSG_WARNING);
+}
+
+void CPanel::ResetAbortTask()
+{
+    if (!m_AbortTask)
+    {
+        m_AbortTask = CreateEvent(NULL, TRUE, FALSE, NULL);
+        if (!m_AbortTask)
+        {
+            ShowErrorDialog(GetLastError(), L"Create event failed");
+        }
+    }
+    ResetEvent(m_AbortTask);
 }
