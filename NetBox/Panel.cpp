@@ -252,6 +252,12 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
         if (m_ProtoClient->Aborted())
         {
             ResetAbortTask();
+            // CloseConnection();
+            // wstring errorMsg;
+            // if (!m_ProtoClient->Connect(m_AbortTask, errorMsg))
+            // {
+                // return FALSE;
+            // }
         }
         retStatus = m_ProtoClient->ChangeDirectory(dir, errInfo);
     }
@@ -266,7 +272,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
         UpdateTitle();
     }
 
-    return retStatus ? 1 : 0;
+    return retStatus ? TRUE : FALSE;
 }
 
 
