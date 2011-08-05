@@ -215,8 +215,33 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             if (ftpItem.Name.empty())   //Parse error?
             {
                 ftpItem.Name = L"***->" + ftpItem.FullText;
+                ftpItem.Type = FTPItem::Undefined;
             }
-            if (ftpItem.Name.compare(L".") != 0 && ftpItem.Name.compare(L"..") != 0)
+            if (ftpItem.Type == FTPItem::Link)
+            {
+                bool dirExist = true;
+                bool fileExist = true;
+                wstring errDummy;
+                // wstring chkPath = FtpToLocalCP(ftpPath.c_str());
+                // chkPath += ftpItem.LinkPath;
+                wstring chkPath = ftpItem.LinkPath;
+                DEBUG_PRINTF(L"NetBox: chkPath = %s", chkPath.c_str());
+                // chkPath = L"/~/ftptests/dir1/";
+                if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
+                {
+                    ftpItem.Type = FTPItem::Directory;
+                }
+                else if (CheckExisting(chkPath.c_str(), ItemFile, fileExist, errDummy) && fileExist)
+                {
+                    ftpItem.Type = FTPItem::File;
+                }
+                else
+                {
+                    ftpItem.Type = FTPItem::Undefined;
+                }
+            }
+            if ((ftpItem.Type != FTPItem::Undefined) && (ftpItem.Name.compare(L".") != 0) &&
+                (ftpItem.Name.compare(L"..") != 0))
             {
                 ftpList.push_back(ftpItem);
             }
@@ -247,14 +272,14 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
                 break;
             case FTPItem::Link:
             {
-                DEBUG_PRINTF(L"NetBox: ftpItem.Name 2 = %s", ftpList[i].Name.c_str());
+                // DEBUG_PRINTF(L"NetBox: ftpItem.Name 2 = %s", ftpList[i].Name.c_str());
                 //Check link for file/dir
                 bool dirExist = true;
                 wstring errDummy;
                 // wstring chkPath = FtpToLocalCP(ftpPath.c_str());
                 // chkPath += ftpList[i].LinkPath;
                 wstring chkPath = ftpList[i].LinkPath;
-                DEBUG_PRINTF(L"NetBox: chkPath = %s", chkPath.c_str());
+                // DEBUG_PRINTF(L"NetBox: chkPath = %s", chkPath.c_str());
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     farItem.FindData.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
