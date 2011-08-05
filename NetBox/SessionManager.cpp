@@ -127,9 +127,8 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     assert(name && *name);
 
     const bool moveUp = (wcscmp(L"..", name) == 0);
-    const bool topDirectory = m_CurrentDirectory.empty();
 
-    assert(!moveUp || !topDirectory);   //Must be handled in CPanel (exit from session)
+    assert(!moveUp || !m_CurrentDirectory.empty());   //Must be handled in CPanel (exit from session)
 
     wstring newPath = m_CurrentDirectory;
     if (!moveUp)
