@@ -181,11 +181,11 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
-    DEBUG_PRINTF(L"NetBox: GetList: m_CurrentDirectory = %s", m_CurrentDirectory.c_str());
+    // DEBUG_PRINTF(L"NetBox: GetList: m_CurrentDirectory = %s", m_CurrentDirectory.c_str());
 
     string ftpPath = LocalToFtpCP(m_CurrentDirectory.c_str(), true);
     ::AppendChar(ftpPath, '/');
-    DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", ::MB2W(ftpPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", ::MB2W(ftpPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     string response;
@@ -211,7 +211,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
         {
             FTPItem ftpItem;
             ParseFtpList(singleString.c_str(), ftpItem);
-            DEBUG_PRINTF(L"NetBox: ftpItem.Name = %s, FullText = %s", ftpItem.Name.c_str(), ftpItem.FullText.c_str());
+            // DEBUG_PRINTF(L"NetBox: ftpItem.Name = %s, FullText = %s", ftpItem.Name.c_str(), ftpItem.FullText.c_str());
             if (ftpItem.Name.empty())   //Parse error?
             {
                 ftpItem.Name = L"***->" + ftpItem.FullText;
@@ -222,11 +222,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
                 bool dirExist = true;
                 bool fileExist = true;
                 wstring errDummy;
-                // wstring chkPath = FtpToLocalCP(ftpPath.c_str());
-                // chkPath += ftpItem.LinkPath;
                 wstring chkPath = ftpItem.LinkPath;
-                DEBUG_PRINTF(L"NetBox: chkPath = %s", chkPath.c_str());
-                // chkPath = L"/~/ftptests/dir1/";
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     ftpItem.Type = FTPItem::Directory;
@@ -272,14 +268,10 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
                 break;
             case FTPItem::Link:
             {
-                // DEBUG_PRINTF(L"NetBox: ftpItem.Name 2 = %s", ftpList[i].Name.c_str());
                 //Check link for file/dir
                 bool dirExist = true;
                 wstring errDummy;
-                // wstring chkPath = FtpToLocalCP(ftpPath.c_str());
-                // chkPath += ftpList[i].LinkPath;
                 wstring chkPath = ftpList[i].LinkPath;
-                // DEBUG_PRINTF(L"NetBox: chkPath = %s", chkPath.c_str());
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     farItem.FindData.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
@@ -506,7 +498,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     //d---------   1 owner    group               0 May  9 19:45 Softlib
     if (sscanf_s(text, "%c%s %*d %s %s %I64d %s %d %d:%d %[^\n]", &typeSymb, sizeof(typeSymb), permission, sizeof(permission), owner, sizeof(owner), group, sizeof(group), &size, monthName, sizeof(monthName), &day, &hours, &minutes, name, sizeof(name)) == 10)
     {
-        DEBUG_PRINTF(L"NetBox: ParseFtpList: 1");
+        // DEBUG_PRINTF(L"NetBox: ParseFtpList: 1");
         st.wMonth =  GetMonth(monthName);
         st.wDay =    static_cast<WORD>(day);
         st.wHour =   static_cast<WORD>(hours);
@@ -514,7 +506,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         item.Owner = FtpToLocalCP(owner);
         item.Group = FtpToLocalCP(group);
         item.Name = FtpToLocalCP(name);
-        DEBUG_PRINTF(L"NetBox: typeSymb = %c", typeSymb);
+        // DEBUG_PRINTF(L"NetBox: typeSymb = %c", typeSymb);
         if (typeSymb == 'l')
         {
             item.Type = FTPItem::Link;
@@ -538,7 +530,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     }
     else if (sscanf_s(text, "%c%s %*d %s %s %I64d %s %d %d %[^\n]", &typeSymb, sizeof(typeSymb), permission, sizeof(permission), owner, sizeof(owner), group, sizeof(group), &size, monthName, sizeof(monthName), &day, &year, name, sizeof(name)) == 9)
     {
-        DEBUG_PRINTF(L"NetBox: ParseFtpList: 2");
+        // DEBUG_PRINTF(L"NetBox: ParseFtpList: 2");
         st.wMonth = GetMonth(monthName);
         st.wDay = static_cast<WORD>(day);
         st.wYear = static_cast<WORD>(year);
@@ -571,7 +563,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     //04-14-00  03:47PM                  589 readme.htm
     else if (sscanf_s(text, "%d-%d-%d %d:%d%2s %s %[^\n]", &month, &day, &year, &hours, &minutes, dayPart, sizeof(dayPart), msdosStr, sizeof(msdosStr), name, sizeof(name)) == 8)
     {
-        DEBUG_PRINTF(L"NetBox: ParseFtpList: 3");
+        // DEBUG_PRINTF(L"NetBox: ParseFtpList: 3");
         st.wDay =    static_cast<WORD>(day);
         st.wMonth =  static_cast<WORD>(month);
         st.wYear =   static_cast<WORD>(year);
@@ -602,7 +594,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     //CII-MANUAL.TEX;1  213/216  29-JAN-1996 03:33:12  [ANONYMOU,ANONYMOUS]   (RWED,RWED,,)
     else if (sscanf_s(text, "%s %*s %d-%3s-%d %d:%d", name, sizeof(name), &day, monthName, sizeof(monthName), &year, &hours, &minutes) == 6)
     {
-        DEBUG_PRINTF(L"NetBox: ParseFtpList: 4");
+        // DEBUG_PRINTF(L"NetBox: ParseFtpList: 4");
         st.wMonth = GetMonth(monthName);
         st.wDay =   static_cast<WORD>(day);
         st.wYear =  static_cast<WORD>(year);
@@ -621,7 +613,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     //- [R----F--] rhesus             214059       Oct 20 15:27    cx.exe
     else if (sscanf_s(text, "%c %*s %s %I64d %s %d %d:%d %[^\n]", &typeSymb, sizeof(typeSymb), owner, sizeof(owner), &size,  monthName, sizeof(monthName), &day, &hours, &minutes, name, sizeof(name)) == 8)
     {
-        DEBUG_PRINTF(L"NetBox: ParseFtpList: 5");
+        // DEBUG_PRINTF(L"NetBox: ParseFtpList: 5");
         st.wMonth = GetMonth(monthName);
         st.wDay =   static_cast<WORD>(day);
         st.wHour =   static_cast<WORD>(hours);
@@ -640,7 +632,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     //drwxrwxr-x               folder        2 May 10  1996 network
     else if (sscanf_s(text, "%c%s %I64d %*s %*s %s %d %d %[^\n]", &typeSymb, sizeof(typeSymb), permission, sizeof(permission), &size, monthName, sizeof(monthName), &day, &year, name, sizeof(name)) == 7)
     {
-        DEBUG_PRINTF(L"NetBox: ParseFtpList: 6");
+        // DEBUG_PRINTF(L"NetBox: ParseFtpList: 6");
         st.wMonth = GetMonth(monthName);
         st.wDay =   static_cast<WORD>(day);
         st.wYear =  static_cast<WORD>(year);
@@ -651,7 +643,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
     }
     else if (sscanf_s(text, "%c%s folder %*s %s %d %d %[^\n]", &typeSymb, sizeof(typeSymb), permission, sizeof(permission), monthName, sizeof(monthName), &day, &year, name, sizeof(name)) == 6)
     {
-        DEBUG_PRINTF(L"NetBox: ParseFtpList: 7");
+        // DEBUG_PRINTF(L"NetBox: ParseFtpList: 7");
         st.wMonth = GetMonth(monthName);
         st.wDay =   static_cast<WORD>(day);
         st.wYear =  static_cast<WORD>(year);
