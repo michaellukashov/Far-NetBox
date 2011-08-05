@@ -210,14 +210,13 @@ CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 }
 
 
-CURLcode CEasyURL::SetOutput(string *out, int *progress)
+CURLcode CEasyURL::SetOutput(string &out, int *progress)
 {
     assert(m_Prepared);
-    assert(out);
     assert(progress);
 
     m_Output.Type = OutputWriter::TypeString;
-    m_Output.String = out;
+    m_Output.String = &out;
     m_Progress.ProgressPtr = progress;
 
     return CURLE_OK;

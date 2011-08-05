@@ -187,7 +187,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 
     CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     string response;
-    CHECK_CUCALL(urlCode, m_CURL.SetOutput(&response, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, m_CURL.SetOutput(response, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK && urlCode != CURLE_REMOTE_FILE_NOT_FOUND)
     {

@@ -491,7 +491,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
     static const size_t requestDataLen = strlen(requestData);
 
     CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str());
-    CHECK_CUCALL(urlCode, m_CURL.SetOutput(&response, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, m_CURL.SetOutput(response, &m_ProgressPercent));
 
     CSlistURL slist;
     slist.Append("Depth: 1");
