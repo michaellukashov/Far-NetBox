@@ -251,22 +251,6 @@ public:
         return AccessPSI(NULL);
     }
 
-    static void CheckAbortEvent(HANDLE *AbortEvent)
-    {
-        //Very-very bad architecture... TODO!
-        static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
-        INPUT_RECORD rec;
-        DWORD readCount = 0;
-        while (*AbortEvent && PeekConsoleInput(stdIn, &rec, 1, &readCount) && readCount != 0)
-        {
-            ReadConsoleInput(stdIn, &rec, 1, &readCount);
-            if (rec.EventType == KEY_EVENT && rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE && rec.Event.KeyEvent.bKeyDown)
-            {
-                SetEvent(*AbortEvent);
-            }
-        }
-    }
-
 private:
     /**
      * Access to internal static plugin startup info

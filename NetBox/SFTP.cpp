@@ -175,7 +175,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
                 // DEBUG_PRINTF(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
                 break;
             }
-            CFarPlugin::CheckAbortEvent(&m_AbortEvent);
+            ::CheckAbortEvent(&m_AbortEvent);
             if (WaitForSingleObject(m_AbortEvent, 0) == WAIT_OBJECT_0)
             {
                 aborted = true;

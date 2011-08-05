@@ -124,3 +124,4 @@ void AppendPathDelimiterA(string &str);
 wstring MB2W(const char *src, const UINT cp = CP_ACP);
 string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 
+void CheckAbortEvent(HANDLE *AbortEvent);

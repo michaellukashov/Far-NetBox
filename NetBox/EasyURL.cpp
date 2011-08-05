@@ -371,7 +371,7 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
     Progress *prg = static_cast<Progress *>(userData);
     assert(prg);
 
-    CFarPlugin::CheckAbortEvent(&prg->AbortEvent);
+    ::CheckAbortEvent(&prg->AbortEvent);
 
     if (prg->AbortEvent && WaitForSingleObject(prg->AbortEvent, 0) == WAIT_OBJECT_0)
     {
