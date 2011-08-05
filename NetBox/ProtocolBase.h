@@ -193,7 +193,7 @@ protected:
     string LocalToFtpCP(const wchar_t *src, bool replace = false) const
     {
         assert(src && src[0] == L'/');
-        string r = CFarPlugin::W2MB(src, m_Session.GetCodePage());
+        string r = ::W2MB(src, m_Session.GetCodePage());
         if (replace)
         {
             while (r.find(L'#') != string::npos)
@@ -201,7 +201,7 @@ protected:
                 r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
             }
         }
-        // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
+        // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", ::MB2W(r.c_str()).c_str());
         return r;
     }
 
@@ -212,7 +212,7 @@ protected:
      */
     inline wstring FtpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
+        return ::MB2W(src, m_Session.GetCodePage());
     }
 
 

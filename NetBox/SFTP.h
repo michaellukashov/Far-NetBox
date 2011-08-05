@@ -112,7 +112,7 @@ private:
     inline string LocalToSftpCP(const wchar_t *src) const
     {
         assert(src && src[0] == L'/');
-        return CFarPlugin::W2MB(src, m_Session.GetCodePage());
+        return ::W2MB(src, m_Session.GetCodePage());
     }
 
     /**
@@ -122,7 +122,7 @@ private:
      */
     inline wstring SftpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
+        return ::MB2W(src, m_Session.GetCodePage());
     }
 
 private:

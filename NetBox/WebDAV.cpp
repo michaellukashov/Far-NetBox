@@ -123,7 +123,7 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -185,7 +185,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
         errorInfo = L"Error parsing response xml:\n[";
         errorInfo += ::NumberToWString(xmlDoc.ErrorId());
         errorInfo += L"]: ";
-        errorInfo += CFarPlugin::MB2W(xmlDoc.ErrorDesc());
+        errorInfo += ::MB2W(xmlDoc.ErrorDesc());
         return false;
     }
 
@@ -209,7 +209,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
             continue;
         }
 
-        const wstring href = CFarPlugin::MB2W(xmlHref->GetText(), CP_UTF8);
+        const wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
         wstring path;
         ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
         if (path.empty())
@@ -361,7 +361,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -396,7 +396,7 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -431,7 +431,7 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -460,7 +460,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -471,7 +471,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
-    DEBUG_PRINTF(L"NetBox: webDavPath = %s", CFarPlugin::MB2W(webDavPath.c_str()).c_str());
+    DEBUG_PRINTF(L"NetBox: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
@@ -516,7 +516,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
     // DEBUG_PRINTF(L"NetBox: urlCode = %d", urlCode);
     if (urlCode != CURLE_OK)
     {
-        errInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -746,7 +746,7 @@ FILETIME CWebDAV::ParseDateTime(const char *dt) const
     SYSTEMTIME st;
     ZeroMemory(&st, sizeof(st));
 
-    if (WinHttpTimeToSystemTime(CFarPlugin::MB2W(dt).c_str(), &st))
+    if (WinHttpTimeToSystemTime(::MB2W(dt).c_str(), &st))
     {
         SystemTimeToFileTime(&st, &ft);
     }
@@ -797,7 +797,7 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
 {
     assert(src && src[0] == L'/');
 
-    string plainText = CFarPlugin::W2MB(src, CP_UTF8);
+    string plainText = ::W2MB(src, CP_UTF8);
     const size_t cntLength = plainText.length();
 
     string result;

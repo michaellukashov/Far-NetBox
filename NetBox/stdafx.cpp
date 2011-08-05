@@ -279,3 +279,45 @@ void AppendPathDelimiterA(string &str)
     }
 }
 
+/**
+ * Encoding multibyte to wide string
+ * \param src source string
+ * \param cp code page
+ * \return wide string
+ */
+wstring MB2W(const char *src, const UINT cp)
+{
+	assert(src);
+
+	wstring wide;
+	const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
+	if (reqLength)
+	{
+		wide.resize(static_cast<size_t>(reqLength));
+		MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
+		wide.erase(wide.length() - 1);  //remove NULL character
+	}
+	return wide;
+}
+
+/**
+ * Encoding wide to multibyte string
+ * \param src source string
+ * \param cp code page
+ * \return multibyte string
+ */
+string W2MB(const wchar_t *src, const UINT cp)
+{
+	assert(src);
+
+	string mb;
+	const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
+	if (reqLength)
+	{
+		mb.resize(static_cast<size_t>(reqLength));
+		WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
+		mb.erase(mb.length() - 1);  //remove NULL character
+	}
+	return mb;
+}
+
