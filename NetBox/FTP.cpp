@@ -136,7 +136,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     isExist = false;
 
     string ftpPath = LocalToFtpCP(path);
-    // DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: CFTP::ftpPath = %s", ::MB2W(ftpPath.c_str()).c_str());
     if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';
@@ -150,7 +150,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
     if (urlCode != CURLE_OK)
     {
         m_lastErrorCurlCode = urlCode;
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         // DEBUG_PRINTF(L"NetBox: CheckExisting: urlCode = %u, errorInfo = %s", urlCode, errorInfo.c_str());
         isExist = false;
     }
@@ -168,7 +168,7 @@ bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     if (urlCode != CURLE_OK)
     {
         m_lastErrorCurlCode = urlCode;
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
     return true;
@@ -183,7 +183,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 
     string ftpPath = LocalToFtpCP(m_CurrentDirectory.c_str(), true);
     ::AppendChar(ftpPath, '/');
-    DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", CFarPlugin::MB2W(ftpPath.c_str()).c_str());
+    DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", ::MB2W(ftpPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(ftpPath.c_str());
     string response;
@@ -192,7 +192,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     if (urlCode != CURLE_OK && urlCode != CURLE_REMOTE_FILE_NOT_FOUND)
     {
         m_lastErrorCurlCode = urlCode;
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -296,7 +296,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     if (urlCode != CURLE_OK)
     {
         m_lastErrorCurlCode = urlCode;
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -328,7 +328,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     if (urlCode != CURLE_OK)
     {
         m_lastErrorCurlCode = urlCode;
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -354,7 +354,7 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
     if (urlCode != CURLE_OK)
     {
         m_lastErrorCurlCode = urlCode;
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -367,12 +367,12 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     assert(path && path[0] == L'/');
 
     const string ftpCommand = (type == ItemDirectory ? "RMD " : "DELE ") + LocalToFtpCP(path);
-    // DEBUG_PRINTF(L"NetBox: Delete: ftpCommand = %s", CFarPlugin::MB2W(ftpCommand.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: Delete: ftpCommand = %s", ::MB2W(ftpCommand.c_str()).c_str());
     const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
         m_lastErrorCurlCode = urlCode;
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
     return true;

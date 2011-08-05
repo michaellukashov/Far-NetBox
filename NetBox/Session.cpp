@@ -289,7 +289,7 @@ PSession CSession::Load(const wchar_t *fileName)
         const char *key = xmlNode->Value();
         const char *plainVal = xmlEl->GetText();
 
-        wstring val = plainVal ? CFarPlugin::MB2W(plainVal, CP_UTF8) : wstring();
+        wstring val = plainVal ? ::MB2W(plainVal, CP_UTF8) : wstring();
         const char *crypt = xmlEl->Attribute(ParamCrypt);
         if (crypt)
         {
@@ -342,7 +342,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     //Decode password
     if (iniPwdVal.size() > 4 && iniPwdVal.substr(0, 4).compare(L"hex:") == 0)
     {
-        const string plainHexPwd = CFarPlugin::W2MB(iniPwdVal.substr(4).c_str());
+        const string plainHexPwd = ::W2MB(iniPwdVal.substr(4).c_str());
         vector<char> unhexPwd;
         for (size_t i = 0; i < plainHexPwd.size(); i += 2)
         {
@@ -363,7 +363,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
             }
             decodedPwd += pwdSymb;
         }
-        session->SetPassword(CFarPlugin::MB2W(decodedPwd.c_str()).c_str());
+        session->SetPassword(::MB2W(decodedPwd.c_str()).c_str());
     }
     session->SetPromptPwd(iniPrPwd != 0);
 
@@ -498,7 +498,7 @@ bool CSession::Save(const wchar_t *fileName) const
     for (vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         xmlNode = new TiXmlElement(it->Name.c_str());
-        const string val = CFarPlugin::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
+        const string val = ::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
         xmlNode->LinkEndChild(new TiXmlText(val.c_str()));
         if (it->NeedCrypt)
         {
@@ -746,7 +746,7 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
             wchar_t pwd[256];
             if (CFarPlugin::GetPSI()->InputBox(CFarPlugin::GetString(StringTitle), CFarPlugin::GetString(StringSessionPwd), NULL, NULL, pwd, sizeof(pwd) / sizeof(wchar_t), NULL, FIB_ENABLEEMPTY | FIB_PASSWORD))
             {
-                m_CryptKey = CFarPlugin::W2MB(pwd);
+                m_CryptKey = ::W2MB(pwd);
                 sessionPasswordPromted = true;
             }
         }
@@ -783,14 +783,14 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
             BUF_MEM *bptr;
             if (BIO_get_mem_ptr(b64, &bptr))
             {
-                encodedVal = CFarPlugin::MB2W(string(static_cast<const char *>(bptr->data), bptr->length).c_str());
+                encodedVal = ::MB2W(string(static_cast<const char *>(bptr->data), bptr->length).c_str());
             }
         }
     }
     else
     {
         //Base64 decode
-        string base64Value = CFarPlugin::W2MB(src.c_str());
+        string base64Value = ::W2MB(src.c_str());
         BIO *bmem = BIO_new_mem_buf(&base64Value[0], static_cast<int>(base64Value.length()));
         bmem = BIO_push(b64, bmem);
 

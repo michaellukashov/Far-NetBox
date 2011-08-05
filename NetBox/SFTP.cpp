@@ -175,7 +175,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
                 // DEBUG_PRINTF(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
                 break;
             }
-            CFarPlugin::CheckAbortEvent(&m_AbortEvent);
+            ::CheckAbortEvent(&m_AbortEvent);
             if (WaitForSingleObject(m_AbortEvent, 0) == WAIT_OBJECT_0)
             {
                 aborted = true;
@@ -220,7 +220,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
         {
             char realPath[256];
             int res = libssh2_sftp_symlink_ex(m_SFTPSession, NULL, 0, realPath, static_cast<unsigned int>(sizeof(realPath)), LIBSSH2_SFTP_REALPATH);
-            m_CurrentDirectory = res >= 0 ? CFarPlugin::MB2W(realPath, CP_UTF8) : L"/";
+            m_CurrentDirectory = res >= 0 ? ::MB2W(realPath, CP_UTF8) : L"/";
         }
     }
 
@@ -320,7 +320,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     LIBSSH2_SFTP_ATTRIBUTES sftpAttrs;
     while (libssh2_sftp_readdir_ex(dirHandle, fileName, sizeof(fileName), NULL, 0, &sftpAttrs) > 0)
     {
-        // DEBUG_PRINTF(L"NetBox: fileName = %s, isdir = %u, islink = %u", CFarPlugin::MB2W(fileName).c_str(), LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions), LIBSSH2_SFTP_S_ISLNK(sftpAttrs.permissions));
+        // DEBUG_PRINTF(L"NetBox: fileName = %s, isdir = %u, islink = %u", ::MB2W(fileName).c_str(), LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions), LIBSSH2_SFTP_S_ISLNK(sftpAttrs.permissions));
         if (LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions) && (strcmp(fileName, ".") == 0 || strcmp(fileName, "..") == 0))
         {
             continue;
@@ -333,7 +333,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             char target[512];
             int rc = libssh2_sftp_symlink_ex(m_SFTPSession, fileName, strlen(fileName),
                 target, sizeof(target), LIBSSH2_SFTP_REALPATH);
-            // DEBUG_PRINTF(L"NetBox: rc = %u, target = %s", rc, CFarPlugin::MB2W(target));
+            // DEBUG_PRINTF(L"NetBox: rc = %u, target = %s", rc, ::MB2W(target));
             if (rc > 0)
             {
                 CSFTPFileHandle sftpDir(m_SFTPSession, target, LIBSSH2_FXF_READ, 0, LIBSSH2_SFTP_OPENDIR);
@@ -574,7 +574,7 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
         return false;
     }
 
-    const hostent *remoteHost = gethostbyname(CFarPlugin::W2MB(hostName).c_str());
+    const hostent *remoteHost = gethostbyname(::W2MB(hostName).c_str());
     if (!remoteHost)
     {
         errInfo = FormatErrorDescription(WSAGetLastError());
@@ -611,12 +611,12 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
     }
 
     //Authenticate
-    const string userName = CFarPlugin::W2MB(m_Session.GetUserName(), CP_UTF8);
-    const string password = CFarPlugin::W2MB(m_Session.GetPassword(), CP_UTF8);
+    const string userName = ::W2MB(m_Session.GetUserName(), CP_UTF8);
+    const string password = ::W2MB(m_Session.GetPassword(), CP_UTF8);
     if (keyFileName)
     {
         //By key
-        const string keyPlaneFileName = CFarPlugin::W2MB(keyFileName);
+        const string keyPlaneFileName = ::W2MB(keyFileName);
         if (libssh2_userauth_publickey_fromfile_ex(m_SSHSession, userName.c_str(), static_cast<unsigned int>(userName.length()), NULL, keyPlaneFileName.c_str(), password.c_str()))
         {
             errInfo = FormatSSHLastErrorDescription();
@@ -648,7 +648,7 @@ void CSFTP::libssh2_trace_handler_func(LIBSSH2_SESSION *session,
    const char *message,
    size_t len)
 {
-    // DEBUG_PRINTF(L"NetBox: %s", CFarPlugin::MB2W(message).c_str());
+    // DEBUG_PRINTF(L"NetBox: %s", ::MB2W(message).c_str());
     (void)session;
     (void)context;
     (void)len;
@@ -676,5 +676,5 @@ wstring CSFTP::FormatSSHLastErrorDescription() const
         errorMessage += "Unknown error";
     }
 
-    return CFarPlugin::MB2W(errorMessage.c_str());
+    return ::MB2W(errorMessage.c_str());
 }

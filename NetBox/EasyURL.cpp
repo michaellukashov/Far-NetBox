@@ -77,9 +77,9 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
     unsigned short port = 0;
     ParseURL(url, &scheme, &hostName, &port, NULL, NULL, NULL, NULL);
 
-    m_TopURL   = CFarPlugin::W2MB(scheme.c_str());
+    m_TopURL   = ::W2MB(scheme.c_str());
     m_TopURL  += "://";
-    m_TopURL  += CFarPlugin::W2MB(hostName.c_str());
+    m_TopURL  += ::W2MB(hostName.c_str());
     if (port)
     {
         m_TopURL += ':';
@@ -88,11 +88,11 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
 
     if (userName)
     {
-        m_UserName = CFarPlugin::W2MB(userName);
+        m_UserName = ::W2MB(userName);
     }
     if (password)
     {
-        m_Password = CFarPlugin::W2MB(password);
+        m_Password = ::W2MB(password);
     }
     m_proxySettings = proxySettings;
     // DEBUG_PRINTF(L"NetBox: CEasyURL::Initialize: proxy type = %u, adress = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
@@ -116,7 +116,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     assert(m_CURL);
     assert(!m_Prepared);
     assert(!path || path[0] == L'/');
-    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: m_TopURL = %s, path = %s", CFarPlugin::MB2W(m_TopURL.c_str()).c_str(), CFarPlugin::MB2W(path).c_str());
+    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: m_TopURL = %s, path = %s", ::MB2W(m_TopURL.c_str()).c_str(), ::MB2W(path).c_str());
     curl_easy_reset(m_CURL);
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
@@ -172,7 +172,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
             default:
                 return CURLE_UNSUPPORTED_PROTOCOL;
         }
-        string proxy = CFarPlugin::W2MB(m_proxySettings.proxyHost.c_str());
+        string proxy = ::W2MB(m_proxySettings.proxyHost.c_str());
         unsigned long port = m_proxySettings.proxyPort;
         if (port)
         {
@@ -183,8 +183,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
-        string login = CFarPlugin::W2MB(m_proxySettings.proxyLogin.c_str());
-        string password = CFarPlugin::W2MB(m_proxySettings.proxyPassword.c_str());
+        string login = ::W2MB(m_proxySettings.proxyLogin.c_str());
+        string password = ::W2MB(m_proxySettings.proxyPassword.c_str());
         if (!login.empty())
         {
             CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
@@ -279,7 +279,7 @@ CURLcode CEasyURL::Perform()
 CURLcode CEasyURL::ExecuteFtpCommand(const char *cmd)
 {
     assert(cmd);
-    // DEBUG_PRINTF(L"NetBox: ExecuteFtpCommand: cmd = %s", CFarPlugin::MB2W(cmd).c_str());
+    // DEBUG_PRINTF(L"NetBox: ExecuteFtpCommand: cmd = %s", ::MB2W(cmd).c_str());
 
     CSlistURL slist;
     slist.Append(cmd);
@@ -371,7 +371,7 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
     Progress *prg = static_cast<Progress *>(userData);
     assert(prg);
 
-    CFarPlugin::CheckAbortEvent(&prg->AbortEvent);
+    ::CheckAbortEvent(&prg->AbortEvent);
 
     if (prg->AbortEvent && WaitForSingleObject(prg->AbortEvent, 0) == WAIT_OBJECT_0)
     {
@@ -392,8 +392,8 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
     // PASS *****
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {
-        // DEBUG_PRINTF(L"NetBox: data = %s", CFarPlugin::MB2W(data).c_str());
-        wstring dataw = CFarPlugin::MB2W(data);
+        // DEBUG_PRINTF(L"NetBox: data = %s", ::MB2W(data).c_str());
+        wstring dataw = ::MB2W(data);
         RegExpSearch search = {
             dataw.c_str(),
             0,
