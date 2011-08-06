@@ -186,6 +186,7 @@
     <ClCompile Include="FTP.cpp" />
     <ClCompile Include="SFTP.cpp" />
     <ClCompile Include="FTPS.cpp" />
+    <ClCompile Include="SCP.cpp" />
     <ClCompile Include="Logging.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
