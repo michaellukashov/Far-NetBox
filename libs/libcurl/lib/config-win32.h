@@ -612,4 +612,11 @@
 #  define ENABLE_IPV6 1
 #endif
 
+#define USE_LIBSSH2 1
+#define USE_SSH 1
+#define HAVE_LIBSSH2 1
+#define HAVE_LIBSSH2_H 1
+#define LIBSSH2_WIN32 1
+#define LIBSSH2_LIBRARY 1
+
 #endif /* __LIB_CONFIG_WIN32_H */
