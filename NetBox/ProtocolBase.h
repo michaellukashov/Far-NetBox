@@ -37,7 +37,6 @@ public:
         return m_ProgressPercent;
     }
 
-    //From IProtocol
     virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     {
         assert(name && *name);
@@ -91,13 +90,11 @@ public:
         return true;
     }
 
-    //From IProtocol
     virtual const wchar_t *GetCurrentDirectory()
     {
         return m_CurrentDirectory.c_str();
     }
 
-    //From IProtocol
     virtual void FreeList(PluginPanelItem *items, int itemsNum)
     {
         if (itemsNum)
@@ -112,7 +109,6 @@ public:
         }
     }
 
-    //From IProtocol
     virtual wstring GetURL(const bool includeUser = false)
     {
         unsigned short port = 0;
