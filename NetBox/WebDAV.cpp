@@ -824,3 +824,9 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
     }
     return result;
 }
+
+CURLcode CWebDAV::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
+{
+    CURLcode urlCode = m_CURL.Prepare(webDavPath, handleTimeout);
+    return urlCode;
+}

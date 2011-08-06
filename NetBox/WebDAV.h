@@ -147,6 +147,9 @@ private:
      */
     string EscapeUTF8URL(const wchar_t *src) const;
 
+protected:
+    CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);
+
 private:
     CEasyURL m_CURL;         ///< CURL easy
 };
