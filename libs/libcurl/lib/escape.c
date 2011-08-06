@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -31,10 +31,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "curl_memory.h"
-/* urldata.h and easyif.h are included for Curl_convert_... prototypes */
 #include "urldata.h"
-#include "easyif.h"
 #include "warnless.h"
+#include "non-ascii.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -90,11 +89,8 @@ char *curl_easy_escape(CURL *handle, const char *string, int inlength)
   size_t newlen = alloc;
   int strindex=0;
   size_t length;
+  CURLcode res;
 
-#ifndef CURL_DOES_CONVERSIONS
-  /* avoid compiler warnings */
-  (void)handle;
-#endif
   ns = malloc(alloc);
   if(!ns)
     return NULL;
@@ -103,10 +99,9 @@ char *curl_easy_escape(CURL *handle, const char *string, int inlength)
   while(length--) {
     in = *string;
 
-    if (Curl_isunreserved(in)) {
+    if(Curl_isunreserved(in))
       /* just copy this */
       ns[strindex++]=in;
-    }
     else {
       /* encode it */
       newlen += 2; /* the size grows with two, since this'll become a %XX */
@@ -122,15 +117,12 @@ char *curl_easy_escape(CURL *handle, const char *string, int inlength)
         }
       }
 
-#ifdef CURL_DOES_CONVERSIONS
-/* escape sequences are always in ASCII so convert them on non-ASCII hosts */
-      if(!handle ||
-          (Curl_convert_to_network(handle, &in, 1) != CURLE_OK)) {
+      res = Curl_convert_to_network(handle, &in, 1);
+      if(res) {
         /* Curl_convert_to_network calls failf if unsuccessful */
         free(ns);
         return NULL;
       }
-#endif /* CURL_DOES_CONVERSIONS */
 
       snprintf(&ns[strindex], 4, "%%%02X", in);
 
@@ -156,12 +148,9 @@ char *curl_easy_unescape(CURL *handle, const char *string, int length,
   unsigned char in;
   int strindex=0;
   unsigned long hex;
+  CURLcode res;
 
-#ifndef CURL_DOES_CONVERSIONS
-  /* avoid compiler warnings */
-  (void)handle;
-#endif
-  if( !ns )
+  if(!ns)
     return NULL;
 
   while(--alloc > 0) {
@@ -178,15 +167,12 @@ char *curl_easy_unescape(CURL *handle, const char *string, int length,
 
       in = curlx_ultouc(hex); /* this long is never bigger than 255 anyway */
 
-#ifdef CURL_DOES_CONVERSIONS
-/* escape sequences are always in ASCII so convert them on non-ASCII hosts */
-      if(!handle ||
-          (Curl_convert_from_network(handle, &in, 1) != CURLE_OK)) {
+      res = Curl_convert_from_network(handle, &in, 1);
+      if(res) {
         /* Curl_convert_from_network calls failf if unsuccessful */
         free(ns);
         return NULL;
       }
-#endif /* CURL_DOES_CONVERSIONS */
 
       string+=2;
       alloc-=2;

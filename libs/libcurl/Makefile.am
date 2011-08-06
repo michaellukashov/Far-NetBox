@@ -40,8 +40,8 @@ EXTRA_DIST = CHANGES COPYING maketgz Makefile.dist curl-config.in	\
 
 bin_SCRIPTS = curl-config
 
-SUBDIRS = lib src
-DIST_SUBDIRS = $(SUBDIRS) tests include packages docs
+SUBDIRS = lib src include
+DIST_SUBDIRS = $(SUBDIRS) tests packages docs
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libcurl.pc
@@ -155,3 +155,7 @@ ca-bundle: lib/mk-ca-bundle.pl
 ca-firefox: lib/firefox-db2pem.sh
 	@echo "generate a fresh ca-bundle.crt"
 	./lib/firefox-db2pem.sh lib/ca-bundle.crt
+
+checksrc:
+	cd lib && $(MAKE) checksrc
+	cd src && $(MAKE) checksrc
