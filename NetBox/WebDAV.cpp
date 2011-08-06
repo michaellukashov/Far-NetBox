@@ -107,7 +107,7 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
     const string webDavPath = EscapeUTF8URL(path);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str());
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     CSlistURL slist;
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
@@ -345,7 +345,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
 
     const string webDavPath = EscapeUTF8URL(remotePath);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str(), false);
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
@@ -381,7 +381,7 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
     }
 
     const string webDavPath = EscapeUTF8URL(remotePath);
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str(), false);
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Expect:");    //Expect: 100-continue is not wanted
     slist.Append("Connection: Keep-Alive");
@@ -409,7 +409,7 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
     const string srcWebDavPath = EscapeUTF8URL(srcPath);
     const string dstWebDavPath = EscapeUTF8URL(dstPath);
 
-    CURLcode urlCode = m_CURL.Prepare(srcWebDavPath.c_str());
+    CURLcode urlCode = CURLPrepare(srcWebDavPath.c_str());
     CSlistURL slist;
     slist.Append("Depth: infinity");
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
@@ -443,7 +443,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 {
     const string webDavPath = EscapeUTF8URL(path);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str());
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     CSlistURL slist;
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
@@ -490,7 +490,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
 
     static const size_t requestDataLen = strlen(requestData);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str());
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(response, &m_ProgressPercent));
 
     CSlistURL slist;
