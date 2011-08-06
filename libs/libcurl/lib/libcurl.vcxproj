@@ -99,7 +99,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>.;..\include;..\..\openssl\x86\inc32;..\..\zlib\src;..\..\libssh2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_SSH;HAVE_LIBSSH2_H;NDEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_LIBSSH2;USE_SSH;HAVE_LIBSSH2;HAVE_LIBSSH2_H;LIBSSH2_WIN32;LIBSSH2_LIBRARY;NDEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -131,7 +131,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>.;..\include;..\..\openssl\x64\inc32;..\..\zlib\src;..\..\libssh2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_SSH;HAVE_LIBSSH2_H;NDEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_LIBSSH2;USE_SSH;HAVE_LIBSSH2;HAVE_LIBSSH2_H;LIBSSH2_WIN32;LIBSSH2_LIBRARY;NDEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -163,7 +163,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;..\include;..\..\openssl\x86\inc32;..\..\zlib\src;..\..\libssh2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_SSH;HAVE_LIBSSH2_H;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_LIBSSH2;USE_SSH;HAVE_LIBSSH2;HAVE_LIBSSH2_H;LIBSSH2_WIN32;LIBSSH2_LIBRARY;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -194,7 +194,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;..\include;..\..\openssl\x64\inc32;..\..\zlib\src;..\..\libssh2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_SSH;HAVE_LIBSSH2_H;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;CURL_DISABLE_LDAP;USE_SSLEAY;USE_OPENSSL;HAVE_ZLIB_H;HAVE_ZLIB;HAVE_LIBZ;USE_LIBSSH2;USE_SSH;HAVE_LIBSSH2;HAVE_LIBSSH2_H;LIBSSH2_WIN32;LIBSSH2_LIBRARY;_DEBUG;_WINDOWS;_USRDLL;BUILDING_LIBCURL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>
