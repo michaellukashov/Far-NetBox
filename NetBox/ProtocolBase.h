@@ -213,7 +213,7 @@ protected:
 
 
 protected:
-    T       m_Session;           ///< Session description
-    int     m_ProgressPercent;   ///< Progress percent value
-    wstring m_CurrentDirectory;  ///< Current directory name
+    T m_Session; ///< Session description
+    int m_ProgressPercent; ///< Progress percent value
+    wstring m_CurrentDirectory; ///< Current directory name
 };

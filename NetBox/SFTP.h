@@ -131,8 +131,8 @@ private:
        const char *,
        size_t);
 private:
-    SOCKET              m_Socket;        ///< Session socket
-    LIBSSH2_SESSION    *m_SSHSession;    ///< SSH2 session
-    LIBSSH2_SFTP       *m_SFTPSession;   ///< SFTP session
-    HANDLE              m_AbortEvent;    ///< Abort event
+    SOCKET m_Socket; ///< Session socket
+    LIBSSH2_SESSION *m_SSHSession; ///< SSH2 session
+    LIBSSH2_SFTP *m_SFTPSession; ///< SFTP session
+    HANDLE m_AbortEvent; ///< Abort event
 };

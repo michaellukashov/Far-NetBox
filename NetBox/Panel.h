@@ -154,11 +154,11 @@ private:
 
     void ResetAbortTask();
 private:
-    IProtocol  *m_ProtoClient;       ///< Client's protocol implementation
-    wstring     m_LastDirName;       ///< Last created/copyed directory name (used as buffer)
-    wstring     m_Title;             ///< Panel title
+    IProtocol *m_ProtoClient; ///< Client's protocol implementation
+    wstring m_LastDirName; ///< Last created/copyed directory name (used as buffer)
+    wstring m_Title; ///< Panel title
 
-    bool        m_ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
+    bool m_ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
 
-    HANDLE      m_AbortTask;         ///< Abort task event
+    HANDLE m_AbortTask; ///< Abort task event
 };

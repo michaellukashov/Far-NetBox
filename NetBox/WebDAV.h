@@ -151,5 +151,5 @@ protected:
     CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);
 
 private:
-    CEasyURL m_CURL;         ///< CURL easy
+    CEasyURL m_CURL; ///< CURL easy
 };
