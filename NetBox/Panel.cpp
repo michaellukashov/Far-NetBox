@@ -214,6 +214,49 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         CFarPlugin::GetPSI()->FSF->CopyToClipboard(cbData.c_str());
         return 1;
     }
+    if (!IsSessionManager() && (key == VK_F6) && (controlState & PKF_SHIFT))
+    {
+        // Переименование на сервере
+        DEBUG_PRINTF(L"NetBox: ProcessKey: ShiftF6");
+        // TransferFiles(Key == VK_F6);
+        // PluginPanelItem *panelItem = NULL;
+        // const int itemsNumber = 0;
+        const wchar_t *destPath = m_ProtoClient->GetCurrentDirectory();
+        DEBUG_PRINTF(L"NetBox: ProcessKey: destPath = %s", destPath);
+        const bool deleteSource = true;
+        const int opMode = OPM_TOPLEVEL;
+        HANDLE plugin = reinterpret_cast<HANDLE>(this);
+
+        const size_t ppiBufferLength = CFarPlugin::GetPSI()->Control(plugin, FCTL_GETCURRENTPANELITEM, 0, static_cast<LONG_PTR>(NULL));
+        if (!ppiBufferLength)
+        {
+            // DEBUG_PRINTF(L"NetBox: ProcessKey: 1: ppiBufferLength = %d", ppiBufferLength);
+            return 0;
+        }
+        vector<unsigned char> ppiBuffer(ppiBufferLength);
+        PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
+        if (!CFarPlugin::GetPSI()->Control(plugin, FCTL_GETCURRENTPANELITEM, 0, reinterpret_cast<LONG_PTR>(ppi)))
+        {
+            // DEBUG_PRINTF(L"NetBox: ProcessKey: 2");
+            return 0;
+        }
+        // DEBUG_PRINTF(L"NetBox: ppi->FindData.lpwszFileName = %s", ppi->FindData.lpwszFileName);
+        GetFiles(ppi, 1, &destPath, deleteSource, opMode);
+
+        // Перерисовываем панель
+        PanelInfo pi;
+        if (!CFarPlugin::GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELINFO, sizeof(pi), reinterpret_cast<LONG_PTR>(&pi)))
+        {
+            // DEBUG_PRINTF(L"NetBox: ProcessKey: 3");
+            return 0;
+        }
+        CFarPlugin::GetPSI()->Control(this, FCTL_UPDATEPANEL, 0, NULL);
+        PanelRedrawInfo pri;
+        pri.CurrentItem = pi.CurrentItem;
+        pri.TopPanelItem = pi.TopPanelItem;
+        CFarPlugin::GetPSI()->Control(this, FCTL_REDRAWPANEL, 0, reinterpret_cast<LONG_PTR>(&pri));
+        return 1;
+    }
 
     return 0;
 }
@@ -360,7 +403,7 @@ void CPanel::FreeItemList(PluginPanelItem *panelItem, int itemsNumber)
 
 int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wchar_t **destPath, const bool deleteSource, const int opMode)
 {
-    DEBUG_PRINTF(L"NetBox: GetFiles: begin");
+    DEBUG_PRINTF(L"NetBox: GetFiles: begin: destPath = %s, deleteSource = %d, opMode = %d", *destPath, deleteSource, opMode);
     assert(m_ProtoClient);
     assert(!IsSessionManager());
 
@@ -374,7 +417,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         return 0;
     }
 
-    if (!IS_SILENT(opMode))
+    if (!IS_SILENT(opMode) && panelItem)
     {
         CFarDialog dlg(70, 8, CFarPlugin::GetString(deleteSource ? StringMoveTitle : StringCopyTitle));
         wstring fileName = panelItem->FindData.lpwszFileName;
@@ -402,7 +445,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     if (deleteSource)
     {
         //Check for rename/move inside server command
-        if (!((wcslen(*destPath) > 2) && (*destPath)[1] == L':'))
+        if (!(*destPath && (wcslen(*destPath) > 2) && (*destPath)[1] == L':'))
         {
             DEBUG_PRINTF(L"NetBox: 1");
             wstring errInfo;
@@ -448,10 +491,10 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     }
                 }
             }
-            else
+            else if (itemsNumber == 1)
             {
                 DEBUG_PRINTF(L"NetBox: 3");
-                //Move/rename opration
+                //Move/rename operation
                 wstring srcPath = m_ProtoClient->GetCurrentDirectory();
                 if (srcPath.compare(L"/") != 0)
                 {
