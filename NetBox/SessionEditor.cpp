@@ -110,10 +110,45 @@ bool CSessionEditor::EditSession()
         return false;
     }
 
-    m_Session->SetSessionName(GetText(m_IdEditName).c_str());
-    m_Session->SetURL(GetText(m_IdEditURL).c_str());
-    m_Session->SetUserName(GetText(m_IdEditUser).c_str());
-    m_Session->SetPassword(GetText(m_IdEditPswHide).c_str());
+    // Парсим строку URL
+    wstring scheme;
+    wstring hostName;
+    unsigned short port;
+    wstring path;
+    wstring query;
+    wstring userName;
+    wstring password;
+    ::ParseURL(GetText(m_IdEditURL).c_str(), &scheme, &hostName, &port, &path, &query, &userName, &password);
+
+    wstring sessionName = GetText(m_IdEditName);
+    if (sessionName.empty())
+    {
+        sessionName = hostName;
+    }
+    m_Session->SetSessionName(sessionName.c_str());
+
+    wstring sessionUserName = GetText(m_IdEditUser);
+    if (sessionUserName.empty())
+    {
+        sessionUserName = userName;
+    }
+    m_Session->SetUserName(sessionUserName.c_str());
+
+    wstring sessionPassword = GetText(m_IdEditPswHide);
+    if (sessionPassword.empty())
+    {
+        sessionPassword = password;
+    }
+    m_Session->SetPassword(sessionPassword.c_str());
+
+    wstring sessionURL = GetText(m_IdEditURL);
+    if (!sessionUserName.empty() && !sessionPassword.empty())
+    {
+        sessionURL = scheme + L"://" + hostName + L":" + ::NumberToWString(port) + path + query;
+    }
+    DEBUG_PRINTF(L"NetBox: sessionURL = %s", sessionURL.c_str());
+    m_Session->SetURL(sessionURL.c_str());
+
     m_Session->SetPromptPwd(GetCheckState(m_IdChBxPromtpPsw));
     ::GetProxySettings(*this, m_params, proxySettings);
     // DEBUG_PRINTF(L"NetBox: proxySettings.proxyType = %u, host = %s", proxySettings.proxyType, proxySettings.proxyHost.c_str());
