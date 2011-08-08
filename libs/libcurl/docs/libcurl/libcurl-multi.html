@@ -1,6 +1,8 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <title>libcurl-multi man page</title>
-<meta name="generator" content="roffit 0.7">
+<meta name="generator" content="roffit">
 <STYLE type="text/css">
 P.level0 {
  padding-left: 2em;
@@ -66,17 +68,8 @@ p.roffit {
 <p class="level0">Since 7.16.0, the <a class="emphasis" href="./curl_multi_socket_action.html">curl_multi_socket_action(3)</a> function offers a way for applications to not only avoid being forced to use select(), but it also offers a much more high-performance API that will make a significant difference for applications using large numbers of simultaneous connections. 
 <p class="level0"><a class="emphasis" href="./curl_multi_socket_action.html">curl_multi_socket_action(3)</a> is then used instead of <a class="emphasis" href="./curl_multi_perform.html">curl_multi_perform(3)</a>. <a name="BLOCKING"></a><h2 class="nroffsh">BLOCKING</h2>
 <p class="level0">A few areas in the code are still using blocking code, even when used from the multi interface. While we certainly want and intend for these to get fixed in the future, you should be aware of the following current restrictions: 
-<p class="level0"><pre>
-<p class="level0">&nbsp;- Name resolves on non-windows unless c-ares is used
- &nbsp;- GnuTLS SSL connections
- &nbsp;- NSS SSL connections
- &nbsp;- Active FTP connections
- &nbsp;- HTTP proxy CONNECT operations
- &nbsp;- SOCKS proxy handshakes
- &nbsp;- file:// transfers
- &nbsp;- TELNET transfers
- </pre>
-
+<p class="level0">
+<p class="level0">&nbsp;- Name resolves on non-windows unless c-ares is used &nbsp;- GnuTLS SSL connections &nbsp;- NSS SSL connections &nbsp;- Active FTP connections &nbsp;- HTTP proxy CONNECT operations &nbsp;- SOCKS proxy handshakes &nbsp;- file:// transfers &nbsp;- TELNET transfers 
 <p class="level0"><p class="roffit">
  This HTML page was made with <a href="http://daniel.haxx.se/projects/roffit/">roffit</a>.
 </body></html>

@@ -1,6 +1,8 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+ "http://www.w3.org/TR/html4/loose.dtd">
 <html><head>
 <title>libcurl-errors man page</title>
-<meta name="generator" content="roffit 0.7">
+<meta name="generator" content="roffit">
 <STYLE type="text/css">
 P.level0 {
  padding-left: 2em;
@@ -53,9 +55,11 @@ p.roffit {
 <p class="level0"><a name="CURLEUNSUPPORTEDPROTOCOL"></a><span class="nroffip">CURLE_UNSUPPORTED_PROTOCOL (1)</span> 
 <p class="level1">The URL you passed to libcurl used a protocol that this libcurl does not support. The support might be a compile-time option that you didn't use, it can be a misspelled protocol string or just a protocol libcurl has no code for. 
 <p class="level0"><a name="CURLEFAILEDINIT"></a><span class="nroffip">CURLE_FAILED_INIT (2)</span> 
-<p class="level1">Very early initialization code failed. This is likely to be an internal error or problem. 
+<p class="level1">Very early initialization code failed. This is likely to be an internal error or problem, or a resource problem where something fundamental couldn't get done at init time. 
 <p class="level0"><a name="CURLEURLMALFORMAT"></a><span class="nroffip">CURLE_URL_MALFORMAT (3)</span> 
 <p class="level1">The URL was not properly formatted. 
+<p class="level0"><a name="CURLENOTBUILTIN"></a><span class="nroffip">CURLE_NOT_BUILT_IN (4)</span> 
+<p class="level1">A requested feature, protocol or option was not found built-in in this libcurl due to a build-time decision. This means that a feature or option was not enabled or explicitly disabled when libcurl was built and in order to get it to function you have to get a rebuilt libcurl. 
 <p class="level0"><a name="CURLECOULDNTRESOLVEPROXY"></a><span class="nroffip">CURLE_COULDNT_RESOLVE_PROXY (5)</span> 
 <p class="level1">Couldn't resolve proxy. The given proxy host could not be resolved. 
 <p class="level0"><a name="CURLECOULDNTRESOLVEHOST"></a><span class="nroffip">CURLE_COULDNT_RESOLVE_HOST (6)</span> 
@@ -124,8 +128,8 @@ p.roffit {
 <p class="level1">Interface error. A specified outgoing interface could not be used. Set which interface to use for outgoing connections' source IP address with CURLOPT_INTERFACE. 
 <p class="level0"><a name="CURLETOOMANYREDIRECTS"></a><span class="nroffip">CURLE_TOO_MANY_REDIRECTS (47)</span> 
 <p class="level1">Too many redirects. When following redirects, libcurl hit the maximum amount. Set your limit with CURLOPT_MAXREDIRS. 
-<p class="level0"><a name="CURLEUNKNOWNTELNETOPTION"></a><span class="nroffip">CURLE_UNKNOWN_TELNET_OPTION (48)</span> 
-<p class="level1">An option set with CURLOPT_TELNETOPTIONS was not recognized/known. Refer to the appropriate documentation. 
+<p class="level0"><a name="CURLEUNKNOWNOPTION"></a><span class="nroffip">CURLE_UNKNOWN_OPTION (48)</span> 
+<p class="level1">An option passed to libcurl is not recognized/known. Refer to the appropriate documentation. This is most likely a problem in the program that uses libcurl. The error buffer might contain more specific information about which exact option it concerns. 
 <p class="level0"><a name="CURLETELNETOPTIONSYNTAX"></a><span class="nroffip">CURLE_TELNET_OPTION_SYNTAX (49)</span> 
 <p class="level1">A telnet option string was Illegally formatted. 
 <p class="level0"><a name="CURLEPEERFAILEDVERIFICATION"></a><span class="nroffip">CURLE_PEER_FAILED_VERIFICATION (51)</span> 

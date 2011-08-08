@@ -29,7 +29,7 @@
 template<class T> class CProtocolBase : public IProtocol
 {
 public:
-    CProtocolBase<T>(const CSession *session) : m_Session(*static_cast<const T *>(session)), m_ProgressPercent(-1) {}
+    explicit CProtocolBase<T>(const CSession *session) : m_Session(*static_cast<const T *>(session)), m_ProgressPercent(-1) {}
 
     //From IProtocol
     virtual int GetProgress()
@@ -37,38 +37,46 @@ public:
         return m_ProgressPercent;
     }
 
-    //From IProtocol
     virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo)
     {
         assert(name && *name);
         // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
 
         const bool moveUp = (wcscmp(L"..", name) == 0);
-        const bool topDirectory = (m_CurrentDirectory.compare(L"/") == 0);
-
-        assert(!moveUp || !topDirectory);   //Must be handled in CPanel (exit from session)
-
-        wstring newPath = m_CurrentDirectory;
-        if (moveUp)
+        wstring newPath;
+        if (name && (L'/' == name[0]))
         {
-            const size_t lastSlash = newPath.rfind(L'/');
-            assert(lastSlash != string::npos);
-            if (lastSlash != string::npos && lastSlash != 0)
-            {
-                newPath.erase(lastSlash);
-            }
-            else
-            {
-                newPath = L'/';
-            }
+            m_CurrentDirectory = name;
+            newPath = m_CurrentDirectory;
         }
         else
         {
-            if (!topDirectory)
+            const bool topDirectory = (m_CurrentDirectory.compare(L"/") == 0);
+
+            assert(!moveUp || !topDirectory);   //Must be handled in CPanel (exit from session)
+
+            newPath = m_CurrentDirectory;
+            if (moveUp)
             {
-                newPath += L'/';
+                const size_t lastSlash = newPath.rfind(L'/');
+                assert(lastSlash != string::npos);
+                if (lastSlash != string::npos && lastSlash != 0)
+                {
+                    newPath.erase(lastSlash);
+                }
+                else
+                {
+                    newPath = L'/';
+                }
             }
-            newPath += name;
+            else
+            {
+                if (!topDirectory)
+                {
+                    newPath += L'/';
+                }
+                newPath += name;
+            }
         }
 
         //Check path existing
@@ -82,13 +90,11 @@ public:
         return true;
     }
 
-    //From IProtocol
     virtual const wchar_t *GetCurrentDirectory()
     {
         return m_CurrentDirectory.c_str();
     }
 
-    //From IProtocol
     virtual void FreeList(PluginPanelItem *items, int itemsNum)
     {
         if (itemsNum)
@@ -103,7 +109,6 @@ public:
         }
     }
 
-    //From IProtocol
     virtual wstring GetURL(const bool includeUser = false)
     {
         unsigned short port = 0;
@@ -144,6 +149,11 @@ public:
         return false;
     }
 
+    virtual bool Aborted() const
+    {
+        return false;
+    }
+
 protected:
     /**
      * Format error description
@@ -179,7 +189,7 @@ protected:
     string LocalToFtpCP(const wchar_t *src, bool replace = false) const
     {
         assert(src && src[0] == L'/');
-        string r = CFarPlugin::W2MB(src, m_Session.GetCodePage());
+        string r = ::W2MB(src, m_Session.GetCodePage());
         if (replace)
         {
             while (r.find(L'#') != string::npos)
@@ -187,7 +197,7 @@ protected:
                 r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
             }
         }
-        // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", CFarPlugin::MB2W(r.c_str()).c_str());
+        // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", ::MB2W(r.c_str()).c_str());
         return r;
     }
 
@@ -198,12 +208,12 @@ protected:
      */
     inline wstring FtpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
+        return ::MB2W(src, m_Session.GetCodePage());
     }
 
 
 protected:
-    T       m_Session;           ///< Session description
-    int     m_ProgressPercent;   ///< Progress percent value
-    wstring m_CurrentDirectory;  ///< Current directory name
+    T m_Session; ///< Session description
+    int m_ProgressPercent; ///< Progress percent value
+    wstring m_CurrentDirectory; ///< Current directory name
 };

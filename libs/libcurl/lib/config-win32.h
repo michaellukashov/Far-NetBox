@@ -1,5 +1,26 @@
 #ifndef __LIB_CONFIG_WIN32_H
 #define __LIB_CONFIG_WIN32_H
+/***************************************************************************
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
+ *                             \___|\___/|_| \_\_____|
+ *
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ *
+ * This software is licensed as described in the file COPYING, which
+ * you should have received as part of this distribution. The terms
+ * are also available at http://curl.haxx.se/docs/copyright.html.
+ *
+ * You may opt to use, copy, modify, merge, publish, distribute and/or sell
+ * copies of the Software, and permit persons to whom the Software is
+ * furnished to do so, under the terms of the COPYING file.
+ *
+ * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+ * KIND, either express or implied.
+ *
+ ***************************************************************************/
 
 /* ================================================================ */
 /*    lib/config-win32.h - Hand crafted config file for Windows     */
@@ -590,5 +611,12 @@
 #if defined(__POCC__) || (USE_IPV6)
 #  define ENABLE_IPV6 1
 #endif
+
+#define USE_LIBSSH2 1
+#define USE_SSH 1
+#define HAVE_LIBSSH2 1
+#define HAVE_LIBSSH2_H 1
+#define LIBSSH2_WIN32 1
+#define LIBSSH2_LIBRARY 1
 
 #endif /* __LIB_CONFIG_WIN32_H */

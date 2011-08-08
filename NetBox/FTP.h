@@ -69,7 +69,7 @@ class CFTP : public CProtocolBase<CSessionFTP>
 {
 public:
     explicit CFTP(const CSession *session);
-    ~CFTP();
+    virtual ~CFTP();
 
     //From IProtocol
     virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);
@@ -81,6 +81,10 @@ public:
     virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
     virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
     virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
+    virtual bool Aborted() const
+    {
+        return m_CURL.Aborted();
+    }
 
 protected:
     //!FTP item description
@@ -97,15 +101,15 @@ protected:
         {
             Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
         }
-        wstring             Name;
-        wstring             LinkPath;
-        wstring             Owner;
-        wstring             Group;
-        wstring             FullText;
-        ItemType            Type;
-        unsigned __int64    Size;
-        unsigned short      Permission;
-        FILETIME            Modified;
+        wstring Name;
+        wstring LinkPath;
+        wstring Owner;
+        wstring Group;
+        wstring FullText;
+        ItemType Type;
+        unsigned __int64 Size;
+        unsigned short Permission;
+        FILETIME Modified;
     };
 
     /**

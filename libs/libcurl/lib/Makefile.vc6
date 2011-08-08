@@ -5,7 +5,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 1999 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 1999 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -101,7 +101,7 @@ CCNODBG    = cl.exe /O2 /DNDEBUG
 CCDEBUG    = cl.exe /Od /Gm /Zi /D_DEBUG /GZ
 CFLAGSSSL  = /DUSE_SSLEAY /I "$(OPENSSL_PATH)/inc32" /I "$(OPENSSL_PATH)/inc32/openssl"
 CFLAGSZLIB = /DHAVE_ZLIB_H /DHAVE_ZLIB /DHAVE_LIBZ /I "$(ZLIB_PATH)"
-CFLAGS     = /I. /I../include /nologo /W3 /GX /DWIN32 /YX /FD /c /DBUILDING_LIBCURL
+CFLAGS     = /I. /I../include /nologo /W3 /GX /DWIN32 /YX /FD /c /DBUILDING_LIBCURL /D_BIND_TO_CURRENT_VCLIBS_VERSION=1
 CFLAGSLIB  = /DCURL_STATICLIB
 LNKDLL     = link.exe /DLL
 LNKLIB     = link.exe /lib
@@ -457,6 +457,8 @@ clean:
 # A config was provided, so the library can be built.
 #
 X_OBJS= \
+	$(DIROBJ)\asyn-ares.obj \
+	$(DIROBJ)\asyn-thread.obj \
 	$(DIROBJ)\base64.obj \
 	$(DIROBJ)\connect.obj \
 	$(DIROBJ)\content_encoding.obj \
@@ -479,22 +481,22 @@ X_OBJS= \
 	$(DIROBJ)\ftp.obj \
 	$(DIROBJ)\getenv.obj \
 	$(DIROBJ)\getinfo.obj \
-	$(DIROBJ)\gtls.obj \
 	$(DIROBJ)\gopher.obj \
+	$(DIROBJ)\gtls.obj \
 	$(DIROBJ)\hash.obj \
 	$(DIROBJ)\hmac.obj \
-	$(DIROBJ)\hostares.obj \
 	$(DIROBJ)\hostasyn.obj \
 	$(DIROBJ)\hostip4.obj \
 	$(DIROBJ)\hostip6.obj \
 	$(DIROBJ)\hostip.obj \
 	$(DIROBJ)\hostsyn.obj \
-	$(DIROBJ)\hostthre.obj \
 	$(DIROBJ)\http_chunks.obj \
 	$(DIROBJ)\http_digest.obj \
 	$(DIROBJ)\http_negotiate.obj \
+        $(DIROBJ)\http_negotiate_sspi.obj \
 	$(DIROBJ)\http_ntlm.obj \
 	$(DIROBJ)\http.obj \
+	$(DIROBJ)\http_proxy.obj \
 	$(DIROBJ)\if2ip.obj \
 	$(DIROBJ)\imap.obj \
 	$(DIROBJ)\inet_ntop.obj \

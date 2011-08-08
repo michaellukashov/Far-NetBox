@@ -27,7 +27,6 @@
 #include "..\Common\FarPlugin.h"
 #include "..\Common\FarSettings.h"
 #include "..\Common\FarDialog.h"
-#include "..\Common\FarProgress.h"
 #include "..\Common\FarUtil.h"
 
 /**
@@ -121,3 +120,8 @@ void AppendChar(string &str, const char ch);
 
 void AppendPathDelimiterW(wstring &str);
 void AppendPathDelimiterA(string &str);
+
+wstring MB2W(const char *src, const UINT cp = CP_ACP);
+string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
+
+void CheckAbortEvent(HANDLE *AbortEvent);

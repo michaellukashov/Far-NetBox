@@ -49,7 +49,7 @@ protected:
 class CSessionEditorSFTP : public CSessionEditor
 {
 public:
-    CSessionEditorSFTP(CSession *session);
+    explicit CSessionEditorSFTP(CSession *session);
 
     //From CSessionEditDlg
     void OnPrepareDialog();
@@ -73,20 +73,20 @@ private:
 class CSFTP : public CProtocolBase<CSessionSFTP>
 {
 public:
-    CSFTP(const CSession *session);
-    ~CSFTP();
+    explicit CSFTP(const CSession *session);
+    virtual ~CSFTP();
 
     //From IProtocol
-    bool Connect(HANDLE abortEvent, wstring &errorInfo);
-    void Close();
-    bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-    bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
-    bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
-    bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
-    bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
-    wstring GetURL();
+    virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);
+    virtual void Close();
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
+    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
+    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
+    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
+    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
+    virtual wstring GetURL();
 
 private:
     /**
@@ -112,7 +112,7 @@ private:
     inline string LocalToSftpCP(const wchar_t *src) const
     {
         assert(src && src[0] == L'/');
-        return CFarPlugin::W2MB(src, m_Session.GetCodePage());
+        return ::W2MB(src, m_Session.GetCodePage());
     }
 
     /**
@@ -122,20 +122,17 @@ private:
      */
     inline wstring SftpToLocalCP(const char *src) const
     {
-        return CFarPlugin::MB2W(src, m_Session.GetCodePage());
+        return ::MB2W(src, m_Session.GetCodePage());
     }
 
 private:
-    static void ssh_debug_func(LIBSSH2_SESSION *session, int always_display, const char *message, \
-               int message_len, const char *language, int language_len, \
-               void **abstract);
     static void libssh2_trace_handler_func(LIBSSH2_SESSION *,
        void *,
        const char *,
        size_t);
 private:
-    SOCKET              m_Socket;        ///< Session socket
-    LIBSSH2_SESSION    *m_SSHSession;    ///< SSH2 session
-    LIBSSH2_SFTP       *m_SFTPSession;   ///< SFTP session
-    HANDLE              m_AbortEvent;    ///< Abort event
+    SOCKET m_Socket; ///< Session socket
+    LIBSSH2_SESSION *m_SSHSession; ///< SSH2 session
+    LIBSSH2_SFTP *m_SFTPSession; ///< SFTP session
+    HANDLE m_AbortEvent; ///< Abort event
 };

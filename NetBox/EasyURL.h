@@ -97,7 +97,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetOutput(string *out, int *progress);
+    CURLcode SetOutput(string &out, int *progress);
 
     /**
      * Set output as file
@@ -148,6 +148,11 @@ public:
         return m_CURL;
     }
 
+    bool Aborted() const
+    {
+        return m_Progress.Aborted;
+    }
+
 private:
     int DebugOutput(const char *data, size_t size);
 
@@ -166,12 +171,12 @@ private:
                  void *userp);
 
 private:
-    CURL   *m_CURL;      ///< CURL
-    bool    m_Prepared;  ///< Preapre statement flag
+    CURL *m_CURL; ///< CURL
+    bool m_Prepared; ///< Preapre statement flag
 
-    string m_TopURL;     ///< Top URL (ftp://host:21)
-    string m_UserName;   ///< User name
-    string m_Password;   ///< Password
+    string m_TopURL; ///< Top URL (ftp://host:21)
+    string m_UserName; ///< User name
+    string m_Password; ///< Password
 
     //! Output writer description
     struct OutputWriter
@@ -210,7 +215,8 @@ private:
     //! Progress description
     struct Progress
     {
-        int    *ProgressPtr;
+        int *ProgressPtr;
+        bool Aborted;
         HANDLE  AbortEvent;
     };
     Progress m_Progress;
@@ -219,3 +225,4 @@ private:
     RegExpMatch *m_match;
     int m_brackets;
 };
+

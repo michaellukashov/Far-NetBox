@@ -107,23 +107,18 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
     const string webDavPath = EscapeUTF8URL(path);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str());
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     CSlistURL slist;
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "MKCOL"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -185,7 +180,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
         errorInfo = L"Error parsing response xml:\n[";
         errorInfo += ::NumberToWString(xmlDoc.ErrorId());
         errorInfo += L"]: ";
-        errorInfo += CFarPlugin::MB2W(xmlDoc.ErrorDesc());
+        errorInfo += ::MB2W(xmlDoc.ErrorDesc());
         return false;
     }
 
@@ -209,7 +204,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
             continue;
         }
 
-        const wstring href = CFarPlugin::MB2W(xmlHref->GetText(), CP_UTF8);
+        const wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
         wstring path;
         ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
         if (path.empty())
@@ -345,7 +340,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
 
     const string webDavPath = EscapeUTF8URL(remotePath);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str(), false);
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
@@ -361,7 +356,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -381,7 +376,7 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
     }
 
     const string webDavPath = EscapeUTF8URL(remotePath);
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str(), false);
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Expect:");    //Expect: 100-continue is not wanted
     slist.Append("Connection: Keep-Alive");
@@ -396,7 +391,7 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -409,7 +404,7 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
     const string srcWebDavPath = EscapeUTF8URL(srcPath);
     const string dstWebDavPath = EscapeUTF8URL(dstPath);
 
-    CURLcode urlCode = m_CURL.Prepare(srcWebDavPath.c_str());
+    CURLcode urlCode = CURLPrepare(srcWebDavPath.c_str());
     CSlistURL slist;
     slist.Append("Depth: infinity");
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
@@ -421,17 +416,12 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "MOVE"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -443,24 +433,19 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 {
     const string webDavPath = EscapeUTF8URL(path);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str());
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     CSlistURL slist;
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "DELETE"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     if (urlCode != CURLE_OK)
     {
-        errorInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -471,7 +456,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
-    DEBUG_PRINTF(L"NetBox: webDavPath = %s", CFarPlugin::MB2W(webDavPath.c_str()).c_str());
+    DEBUG_PRINTF(L"NetBox: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
@@ -490,8 +475,8 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
 
     static const size_t requestDataLen = strlen(requestData);
 
-    CURLcode urlCode = m_CURL.Prepare(webDavPath.c_str());
-    CHECK_CUCALL(urlCode, m_CURL.SetOutput(&response, &m_ProgressPercent));
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    CHECK_CUCALL(urlCode, m_CURL.SetOutput(response, &m_ProgressPercent));
 
     CSlistURL slist;
     slist.Append("Depth: 1");
@@ -506,17 +491,12 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_MAXREDIRS, 5));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTFIELDS, requestData));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTFIELDSIZE, requestDataLen));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     // DEBUG_PRINTF(L"NetBox: urlCode = %d", urlCode);
     if (urlCode != CURLE_OK)
     {
-        errInfo = CFarPlugin::MB2W(curl_easy_strerror(urlCode));
+        errInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
@@ -746,7 +726,7 @@ FILETIME CWebDAV::ParseDateTime(const char *dt) const
     SYSTEMTIME st;
     ZeroMemory(&st, sizeof(st));
 
-    if (WinHttpTimeToSystemTime(CFarPlugin::MB2W(dt).c_str(), &st))
+    if (WinHttpTimeToSystemTime(::MB2W(dt).c_str(), &st))
     {
         SystemTimeToFileTime(&st, &ft);
     }
@@ -797,7 +777,7 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
 {
     assert(src && src[0] == L'/');
 
-    string plainText = CFarPlugin::W2MB(src, CP_UTF8);
+    string plainText = ::W2MB(src, CP_UTF8);
     const size_t cntLength = plainText.length();
 
     string result;
@@ -823,4 +803,16 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
         }
     }
     return result;
+}
+
+CURLcode CWebDAV::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
+{
+    CURLcode urlCode = m_CURL.Prepare(webDavPath, handleTimeout);
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POST301, 1));
+
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
+    return urlCode;
 }

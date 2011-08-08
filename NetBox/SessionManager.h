@@ -30,43 +30,48 @@ class CSessionManager : public IProtocol
 {
 public:
     //From IProtocol
-    bool Connect(HANDLE, wstring &)
+    virtual bool Connect(HANDLE, wstring &)
     {
         assert(NULL);
         return false;
     }
-    void Close()                    {}
-    bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-    bool ChangeDirectory(const wchar_t *name, wstring &errorInfo);
-    const wchar_t *GetCurrentDirectory()
+    virtual void Close()                    {}
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
+    virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo);
+    virtual const wchar_t *GetCurrentDirectory()
     {
         return m_CurrentDirectory.c_str();
     }
-    bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
-    bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
-    void FreeList(PluginPanelItem *items, int itemsNum);
-    bool GetFile(const wchar_t *, const wchar_t *, const unsigned __int64, wstring &)
+    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
+    virtual void FreeList(PluginPanelItem *items, int itemsNum);
+    virtual bool GetFile(const wchar_t *, const wchar_t *, const unsigned __int64, wstring &)
     {
         assert(NULL);
         return false;
     }
-    bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    bool Rename(const wchar_t *, const wchar_t *, const ItemType, wstring &)
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
+    virtual bool Rename(const wchar_t *, const wchar_t *, const ItemType, wstring &)
     {
         assert(NULL);
         return false;
     }
-    bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
-    wstring GetURL(const bool)
+    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
+    virtual wstring GetURL(const bool)
     {
         return wstring();
     }
-    int GetProgress()
+    virtual int GetProgress()
     {
         return -1;
     }
 
     virtual bool TryToResolveConnectionProblem()
+    {
+        return false;
+    }
+
+    virtual bool Aborted() const
     {
         return false;
     }

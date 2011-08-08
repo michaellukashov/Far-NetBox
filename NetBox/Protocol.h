@@ -152,6 +152,7 @@ public:
     virtual int GetProgress() = 0;
 
     virtual bool TryToResolveConnectionProblem() = 0;
+    virtual bool Aborted() const = 0;
 };
 
 typedef auto_ptr<IProtocol> PProtocol;

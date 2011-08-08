@@ -150,6 +150,14 @@ LIB32=link.exe -lib
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\asyn-ares.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\asyn-thread.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\axtls.c
 # End Source File
 # Begin Source File
@@ -199,6 +207,10 @@ SOURCE=.\curl_sspi.c
 # Begin Source File
 
 SOURCE=.\curl_threads.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\cyassl.c
 # End Source File
 # Begin Source File
 
@@ -258,10 +270,6 @@ SOURCE=.\hmac.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\hostares.c
-# End Source File
-# Begin Source File
-
 SOURCE=.\hostasyn.c
 # End Source File
 # Begin Source File
@@ -279,10 +287,6 @@ SOURCE=.\hostip.c
 # Begin Source File
 
 SOURCE=.\hostsyn.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\hostthre.c
 # End Source File
 # Begin Source File
 
@@ -307,6 +311,10 @@ SOURCE=.\http_negotiate_sspi.c
 # Begin Source File
 
 SOURCE=.\http_ntlm.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\http_proxy.c
 # End Source File
 # Begin Source File
 
@@ -367,6 +375,10 @@ SOURCE=.\multi.c
 # Begin Source File
 
 SOURCE=.\netrc.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\non-ascii.c
 # End Source File
 # Begin Source File
 
@@ -530,6 +542,10 @@ SOURCE=.\arpa_telnet.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\asyn.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\axtls.h
 # End Source File
 # Begin Source File
@@ -610,6 +626,10 @@ SOURCE=.\curlx.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\cyassl.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\dict.h
 # End Source File
 # Begin Source File
@@ -682,6 +702,10 @@ SOURCE=.\http_ntlm.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\http_proxy.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\if2ip.h
 # End Source File
 # Begin Source File
@@ -715,6 +739,10 @@ SOURCE=.\multiif.h
 # Begin Source File
 
 SOURCE=.\netrc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\non-ascii.h
 # End Source File
 # Begin Source File
 

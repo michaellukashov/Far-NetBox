@@ -103,12 +103,12 @@ void CSessionEditorSFTP::ShowSessionDlgItems(bool visible)
 class CSFTPFileHandle
 {
 public:
-    CSFTPFileHandle(LIBSSH2_SFTP_HANDLE *h)
+    explicit  CSFTPFileHandle(LIBSSH2_SFTP_HANDLE *h)
     {
         m_Object = h;
     }
 
-    CSFTPFileHandle(LIBSSH2_SFTP *sftp, const char *path, const unsigned long flags, const long mode, const int type)
+    explicit CSFTPFileHandle(LIBSSH2_SFTP *sftp, const char *path, const unsigned long flags, const long mode, const int type)
     {
         assert(sftp);
         assert(path && path[0] == L'/');
@@ -166,7 +166,8 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     {
         bool aborted = false;
         libssh2_session_set_blocking(m_SSHSession, 0);
-        while (!(m_SFTPSession = libssh2_sftp_init(m_SSHSession)))
+        m_SFTPSession = libssh2_sftp_init(m_SSHSession);
+        while (!m_SFTPSession)
         {
             int last_errno = libssh2_session_last_errno(m_SSHSession);
             if (last_errno != LIBSSH2SFTP_EAGAIN)
@@ -174,13 +175,14 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
                 // DEBUG_PRINTF(L"CSFTP::Connect: libssh2_sftp_init failed: %d", last_errno);
                 break;
             }
-            CFarPlugin::CheckAbortEvent(&m_AbortEvent);
+            ::CheckAbortEvent(&m_AbortEvent);
             if (WaitForSingleObject(m_AbortEvent, 0) == WAIT_OBJECT_0)
             {
                 aborted = true;
                 break;
             }
             Sleep(100);
+            m_SFTPSession = libssh2_sftp_init(m_SSHSession);
         }
         if (m_SFTPSession != NULL)
         {
@@ -218,7 +220,7 @@ bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
         {
             char realPath[256];
             int res = libssh2_sftp_symlink_ex(m_SFTPSession, NULL, 0, realPath, static_cast<unsigned int>(sizeof(realPath)), LIBSSH2_SFTP_REALPATH);
-            m_CurrentDirectory = res >= 0 ? CFarPlugin::MB2W(realPath, CP_UTF8) : L"/";
+            m_CurrentDirectory = res >= 0 ? ::MB2W(realPath, CP_UTF8) : L"/";
         }
     }
 
@@ -259,6 +261,7 @@ bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExis
 {
     assert(type == ItemDirectory);
     assert(m_SFTPSession);
+    (void)type;
 
     CSFTPFileHandle dirHandle(m_SFTPSession, LocalToSftpCP(path).c_str(), 0, 0, LIBSSH2_SFTP_OPENDIR);
     if (!dirHandle)
@@ -317,7 +320,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
     LIBSSH2_SFTP_ATTRIBUTES sftpAttrs;
     while (libssh2_sftp_readdir_ex(dirHandle, fileName, sizeof(fileName), NULL, 0, &sftpAttrs) > 0)
     {
-        // DEBUG_PRINTF(L"NetBox: fileName = %s, isdir = %u, islink = %u", CFarPlugin::MB2W(fileName).c_str(), LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions), LIBSSH2_SFTP_S_ISLNK(sftpAttrs.permissions));
+        // DEBUG_PRINTF(L"NetBox: fileName = %s, isdir = %u, islink = %u", ::MB2W(fileName).c_str(), LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions), LIBSSH2_SFTP_S_ISLNK(sftpAttrs.permissions));
         if (LIBSSH2_SFTP_S_ISDIR(sftpAttrs.permissions) && (strcmp(fileName, ".") == 0 || strcmp(fileName, "..") == 0))
         {
             continue;
@@ -330,7 +333,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             char target[512];
             int rc = libssh2_sftp_symlink_ex(m_SFTPSession, fileName, strlen(fileName),
                 target, sizeof(target), LIBSSH2_SFTP_REALPATH);
-            // DEBUG_PRINTF(L"NetBox: rc = %u, target = %s", rc, CFarPlugin::MB2W(target));
+            // DEBUG_PRINTF(L"NetBox: rc = %u, target = %s", rc, ::MB2W(target));
             if (rc > 0)
             {
                 CSFTPFileHandle sftpDir(m_SFTPSession, target, LIBSSH2_FXF_READ, 0, LIBSSH2_SFTP_OPENDIR);
@@ -550,6 +553,10 @@ bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     return retStatus;
 }
 
+wstring CSFTP::GetURL()
+{
+    return CProtocolBase<CSessionSFTP>::GetURL();
+}
 
 bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo)
 {
@@ -567,7 +574,7 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
         return false;
     }
 
-    const hostent *remoteHost = gethostbyname(CFarPlugin::W2MB(hostName).c_str());
+    const hostent *remoteHost = gethostbyname(::W2MB(hostName).c_str());
     if (!remoteHost)
     {
         errInfo = FormatErrorDescription(WSAGetLastError());
@@ -604,12 +611,12 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
     }
 
     //Authenticate
-    const string userName = CFarPlugin::W2MB(m_Session.GetUserName(), CP_UTF8);
-    const string password = CFarPlugin::W2MB(m_Session.GetPassword(), CP_UTF8);
+    const string userName = ::W2MB(m_Session.GetUserName(), CP_UTF8);
+    const string password = ::W2MB(m_Session.GetPassword(), CP_UTF8);
     if (keyFileName)
     {
         //By key
-        const string keyPlaneFileName = CFarPlugin::W2MB(keyFileName);
+        const string keyPlaneFileName = ::W2MB(keyFileName);
         if (libssh2_userauth_publickey_fromfile_ex(m_SSHSession, userName.c_str(), static_cast<unsigned int>(userName.length()), NULL, keyPlaneFileName.c_str(), password.c_str()))
         {
             errInfo = FormatSSHLastErrorDescription();
@@ -628,7 +635,6 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
     if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
     {
         DEBUG_PRINTF(L"NetBox: before libssh2_session_callback_set");
-        // libssh2_session_callback_set(m_SSHSession, LIBSSH2_CALLBACK_DEBUG, ssh_debug_func);
         libssh2_trace_sethandler(m_SSHSession, this, libssh2_trace_handler_func);
         libssh2_trace(m_SSHSession, LIBSSH2_TRACE_AUTH | LIBSSH2_TRACE_CONN | LIBSSH2_TRACE_SFTP | LIBSSH2_TRACE_ERROR);
         // libssh2_trace(m_SSHSession, LIBSSH2_TRACE_AUTH | LIBSSH2_TRACE_SCP | LIBSSH2_TRACE_SFTP);
@@ -637,19 +643,15 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
     return true;
 }
 
-void CSFTP::ssh_debug_func(LIBSSH2_SESSION *session, int always_display, const char *message,
-           int message_len, const char *language, int language_len,
-           void **abstract)
-{
-    DEBUG_PRINTF(L"NetBox: CSFTP::ssh_debug_func: message = %s", CFarPlugin::MB2W(message).c_str());
-}
-
 void CSFTP::libssh2_trace_handler_func(LIBSSH2_SESSION *session,
    void *context,
    const char *message,
    size_t len)
 {
-    // DEBUG_PRINTF(L"NetBox: %s", CFarPlugin::MB2W(message).c_str());
+    // DEBUG_PRINTF(L"NetBox: %s", ::MB2W(message).c_str());
+    (void)session;
+    (void)context;
+    (void)len;
     Log2(message);
 }
 
@@ -674,5 +676,5 @@ wstring CSFTP::FormatSSHLastErrorDescription() const
         errorMessage += "Unknown error";
     }
 
-    return CFarPlugin::MB2W(errorMessage.c_str());
+    return ::MB2W(errorMessage.c_str());
 }

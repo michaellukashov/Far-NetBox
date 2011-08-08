@@ -279,3 +279,60 @@ void AppendPathDelimiterA(string &str)
     }
 }
 
+/**
+ * Encoding multibyte to wide string
+ * \param src source string
+ * \param cp code page
+ * \return wide string
+ */
+wstring MB2W(const char *src, const UINT cp)
+{
+	assert(src);
+
+	wstring wide;
+	const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
+	if (reqLength)
+	{
+		wide.resize(static_cast<size_t>(reqLength));
+		MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
+		wide.erase(wide.length() - 1);  //remove NULL character
+	}
+	return wide;
+}
+
+/**
+ * Encoding wide to multibyte string
+ * \param src source string
+ * \param cp code page
+ * \return multibyte string
+ */
+string W2MB(const wchar_t *src, const UINT cp)
+{
+	assert(src);
+
+	string mb;
+	const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
+	if (reqLength)
+	{
+		mb.resize(static_cast<size_t>(reqLength));
+		WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
+		mb.erase(mb.length() - 1);  //remove NULL character
+	}
+	return mb;
+}
+
+void CheckAbortEvent(HANDLE *AbortEvent)
+{
+	//Very-very bad architecture... TODO!
+	static HANDLE stdIn = GetStdHandle(STD_INPUT_HANDLE);
+	INPUT_RECORD rec;
+	DWORD readCount = 0;
+	while (*AbortEvent && PeekConsoleInput(stdIn, &rec, 1, &readCount) && readCount != 0)
+	{
+		ReadConsoleInput(stdIn, &rec, 1, &readCount);
+		if (rec.EventType == KEY_EVENT && rec.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE && rec.Event.KeyEvent.bKeyDown)
+		{
+			SetEvent(*AbortEvent);
+		}
+	}
+}

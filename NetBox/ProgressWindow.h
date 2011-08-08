@@ -29,18 +29,20 @@ public:
     enum OperationType
     {
         Copy,
-        Move
+        Move,
+        Scan
     };
 
     //! Derection types
-    enum DerectionType
+    enum DirectionType
     {
         Send,
-        Receive
+        Receive,
+        List
     };
 
-    CProgressWindow(HANDLE abortEvent, const OperationType oper, const DerectionType direction, const size_t num, IProtocol *impl);
-    ~CProgressWindow();
+    explicit CProgressWindow(HANDLE abortEvent, const OperationType oper, const DirectionType direction, const size_t num, IProtocol *impl);
+    virtual ~CProgressWindow();
 
     /**
      * Show progress window
@@ -68,25 +70,27 @@ private:
     static DWORD WINAPI WindowThread(LPVOID param);
 
 private:
-    HANDLE          m_AbortEvent;
-    HANDLE          m_WndThread;
-    OperationType   m_Operation;
-    DerectionType   m_Direction;
-    size_t          m_FileCount;
-    IProtocol      *m_ProtoImpl;
+    HANDLE m_AbortEvent;
+    HANDLE m_WndThread;
+    OperationType m_Operation;
+    DirectionType m_Direction;
+    size_t m_FileCount;
+    IProtocol *m_ProtoImpl;
 
-    int     m_IdSrcFileName;
-    int     m_IdDstFileName;
-    int     m_IdTotalProgress;
-    int     m_IdCurrentProgress;
-    int     m_IdBtnCancel;
+    int m_IdSrcFileName;
+    int m_IdDstFileName;
+    int m_IdTotalProgress;
+    int m_IdCurrentProgress;
+    int m_IdBtnCancel;
+
+    bool m_Show;
 };
 
 
 class CNotificationWindow
 {
 public:
-    CNotificationWindow(const wchar_t *title, const wchar_t *text);
+    explicit CNotificationWindow(const wchar_t *title, const wchar_t *text);
     virtual ~CNotificationWindow();
 
     /**

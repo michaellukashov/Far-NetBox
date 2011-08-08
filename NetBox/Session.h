@@ -220,10 +220,10 @@ private:
     //! Client's protocol implementation
     struct ProtoImplInfo
     {
-        int             ProtoId;            ///< Unique protocol Id
-        const wchar_t  *Name;               ///< Protocol name
-        const wchar_t  *Schemes[2];         ///< Supported scheme names
-        CreateSessionFx CreateSession;      ///< Create new session function
+        int ProtoId; ///< Unique protocol Id
+        const wchar_t *Name; ///< Protocol name
+        const wchar_t *Schemes[2]; ///< Supported scheme names
+        CreateSessionFx CreateSession; ///< Create new session function
     };
 
     /**
@@ -237,18 +237,19 @@ private:
     //! Session property description
     struct Property
     {
-        Property() : NeedCrypt(false) {}
-        string  Name;           ///< Property name
-        wstring Value;          ///< Property value
-        bool    NeedCrypt;      ///< Crypt value flag
+        Property() : NeedCrypt(false)
+        {}
+        string Name; ///< Property name
+        wstring Value; ///< Property value
+        bool NeedCrypt; ///< Crypt value flag
     };
 
 private:
-    int                 m_ProtoId;           ///< Unique protocol id
-    wstring             m_SessionName;       ///< Session name
-    vector<Property>    m_Properties;        ///< Session's properties
+    int m_ProtoId; ///< Unique protocol id
+    wstring m_SessionName; ///< Session name
+    vector<Property> m_Properties; ///< Session's properties
     struct ProxySettings m_proxySettings;
 
-    static string       m_CryptKey;          ///< Crypt key
-    static vector<ProtoImplInfo> m_Factory;  ///< Client protocol implementation factory
+    static string m_CryptKey; ///< Crypt key
+    static vector<ProtoImplInfo> m_Factory; ///< Client protocol implementation factory
 };

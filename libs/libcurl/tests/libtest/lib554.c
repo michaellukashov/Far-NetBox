@@ -1,12 +1,24 @@
-/*****************************************************************************
+/***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
  *                             / __| | | | |_) | |
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- */
-
+ * Copyright (C) 1998 - 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+ *
+ * This software is licensed as described in the file COPYING, which
+ * you should have received as part of this distribution. The terms
+ * are also available at http://curl.haxx.se/docs/copyright.html.
+ *
+ * You may opt to use, copy, modify, merge, publish, distribute and/or sell
+ * copies of the Software, and permit persons to whom the Software is
+ * furnished to do so, under the terms of the COPYING file.
+ *
+ * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+ * KIND, either express or implied.
+ *
+ ***************************************************************************/
 #include "test.h"
 
 #include "memdebug.h"
@@ -52,6 +64,7 @@ int test(char *URL)
   struct curl_httppost *formpost=NULL;
   struct curl_httppost *lastptr=NULL;
   struct WriteThis pooh;
+  struct WriteThis pooh2;
 
   if (curl_global_init(CURL_GLOBAL_ALL) != CURLE_OK) {
     fprintf(stderr, "curl_global_init() failed\n");
@@ -68,6 +81,23 @@ int test(char *URL)
                         CURLFORM_STREAM, &pooh,
                         CURLFORM_CONTENTSLENGTH, pooh.sizeleft,
                         CURLFORM_FILENAME, "postit2.c",
+                        CURLFORM_END);
+
+  if(formrc)
+    printf("curl_formadd(1) = %d\n", (int)formrc);
+
+  /* Now add the same data with another name and make it not look like
+     a file upload but still using the callback */
+
+  pooh2.readptr = data;
+  pooh2.sizeleft = strlen(data);
+
+  /* Fill in the file upload field */
+  formrc = curl_formadd(&formpost,
+                        &lastptr,
+                        CURLFORM_COPYNAME, "callbackdata",
+                        CURLFORM_STREAM, &pooh2,
+                        CURLFORM_CONTENTSLENGTH, pooh2.sizeleft,
                         CURLFORM_END);
 
   if(formrc)

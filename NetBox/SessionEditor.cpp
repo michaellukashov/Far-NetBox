@@ -22,27 +22,27 @@
 #include "Session.h"
 #include "Strings.h"
 
-CSessionEditor::CSessionEditor(CSession *session, const int width, const int height)
-    : CFarDialog(width, height),
-      m_IdBtnSession(0),
-      m_IdBtnProxy(0),
-      m_IdPagesSeparator(0),
-      m_IdTextEditName(0),
-      m_IdEditName(0),
-      m_IdTextEditURL(0),
-      m_IdEditURL(0),
-      m_IdAuthSeparator(0),
-      m_IdTextEditUser(0),
-      m_IdEditUser(0),
-      m_IdEditPswHide(0),
-      m_IdTextEditPswShow(0),
-      m_IdEditPswShow(0),
-      m_IdChBxPromtpPsw(0),
-      m_IdChBxShowPsw(0),
-      m_IdBtnOK(0),
-      m_IdBtnCancel(0),
-      m_EditMode(false),
-      m_Session(session)
+CSessionEditor::CSessionEditor(CSession *session, const int width, const int height) :
+    CFarDialog(width, height),
+    m_IdBtnSession(0),
+    m_IdBtnProxy(0),
+    m_IdPagesSeparator(0),
+    m_IdTextEditName(0),
+    m_IdEditName(0),
+    m_IdTextEditURL(0),
+    m_IdEditURL(0),
+    m_IdAuthSeparator(0),
+    m_IdTextEditUser(0),
+    m_IdEditUser(0),
+    m_IdEditPswHide(0),
+    m_IdTextEditPswShow(0),
+    m_IdEditPswShow(0),
+    m_IdChBxPromtpPsw(0),
+    m_IdChBxShowPsw(0),
+    m_IdBtnOK(0),
+    m_IdBtnCancel(0),
+    m_EditMode(false),
+    m_Session(session)
 {
     assert(m_Session);
 }
@@ -110,10 +110,45 @@ bool CSessionEditor::EditSession()
         return false;
     }
 
-    m_Session->SetSessionName(GetText(m_IdEditName).c_str());
-    m_Session->SetURL(GetText(m_IdEditURL).c_str());
-    m_Session->SetUserName(GetText(m_IdEditUser).c_str());
-    m_Session->SetPassword(GetText(m_IdEditPswHide).c_str());
+    // Парсим строку URL
+    wstring scheme;
+    wstring hostName;
+    unsigned short port;
+    wstring path;
+    wstring query;
+    wstring userName;
+    wstring password;
+    ::ParseURL(GetText(m_IdEditURL).c_str(), &scheme, &hostName, &port, &path, &query, &userName, &password);
+
+    wstring sessionName = GetText(m_IdEditName);
+    if (sessionName.empty())
+    {
+        sessionName = hostName;
+    }
+    m_Session->SetSessionName(sessionName.c_str());
+
+    wstring sessionUserName = GetText(m_IdEditUser);
+    if (sessionUserName.empty())
+    {
+        sessionUserName = userName;
+    }
+    m_Session->SetUserName(sessionUserName.c_str());
+
+    wstring sessionPassword = GetText(m_IdEditPswHide);
+    if (sessionPassword.empty())
+    {
+        sessionPassword = password;
+    }
+    m_Session->SetPassword(sessionPassword.c_str());
+
+    wstring sessionURL = GetText(m_IdEditURL);
+    if (!sessionUserName.empty() && !sessionPassword.empty())
+    {
+        sessionURL = scheme + L"://" + hostName + L":" + ::NumberToWString(port) + path + query;
+    }
+    DEBUG_PRINTF(L"NetBox: sessionURL = %s", sessionURL.c_str());
+    m_Session->SetURL(sessionURL.c_str());
+
     m_Session->SetPromptPwd(GetCheckState(m_IdChBxPromtpPsw));
     ::GetProxySettings(*this, m_params, proxySettings);
     // DEBUG_PRINTF(L"NetBox: proxySettings.proxyType = %u, host = %s", proxySettings.proxyType, proxySettings.proxyHost.c_str());

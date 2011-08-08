@@ -100,6 +100,24 @@ struct tzinfo {
   int offset; /* +/- in minutes */
 };
 
+/*
+ * parsedate()
+ *
+ * Returns:
+ *
+ * PARSEDATE_OK     - a fine conversion
+ * PARSEDATE_FAIL   - failed to convert
+ * PARSEDATE_LATER  - time overflow at the far end of time_t
+ * PARSEDATE_SOONER - time underflow at the low end of time_t
+ */
+
+static int parsedate(const char *date, time_t *output);
+
+#define PARSEDATE_OK     0
+#define PARSEDATE_FAIL   -1
+#define PARSEDATE_LATER  1
+#define PARSEDATE_SOONER 2
+
 /* Here's a bunch of frequently used time zone names. These were supported
    by the old getdate parser. */
 #define tDAYZONE -60       /* offset for daylight savings time */
@@ -160,7 +178,8 @@ static const struct tzinfo tz[]= {
   {"G",  +7 * 60},         /* Golf */
   {"H",  +8 * 60},         /* Hotel */
   {"I",  +9 * 60},         /* India */
-  /* "J", Juliet is not used as a timezone, to indicate the observer's local time */
+  /* "J", Juliet is not used as a timezone, to indicate the observer's local
+     time */
   {"K", +10 * 60},         /* Kilo */
   {"L", +11 * 60},         /* Lima */
   {"M", +12 * 60},         /* Mike */
@@ -282,11 +301,11 @@ static time_t my_timegm(struct my_tm *tm)
 
   year = tm->tm_year + 1900;
   month = tm->tm_mon;
-  if (month < 0) {
+  if(month < 0) {
     year += (11 - month) / 12;
     month = 11 - (11 - month) % 12;
   }
-  else if (month >= 12) {
+  else if(month >= 12) {
     year -= month / 12;
     month = month % 12;
   }
@@ -301,7 +320,7 @@ static time_t my_timegm(struct my_tm *tm)
 }
 
 /*
- * Curl_parsedate()
+ * parsedate()
  *
  * Returns:
  *
@@ -311,7 +330,7 @@ static time_t my_timegm(struct my_tm *tm)
  * PARSEDATE_SOONER - time underflow at the low end of time_t
  */
 
-int Curl_parsedate(const char *date, time_t *output)
+static int parsedate(const char *date, time_t *output)
 {
   time_t t = 0;
   int wdaynum=-1;  /* day of the week number, 0-6 (mon-sun) */
@@ -387,7 +406,7 @@ int Curl_parsedate(const char *date, time_t *output)
            (indate< date) &&
            ((date[-1] == '+' || date[-1] == '-'))) {
           /* four digits and a value less than or equal to 1400 (to take into
-             account all sorts of funny time zone diffs) and it is preceeded
+             account all sorts of funny time zone diffs) and it is preceded
              with a plus or minus. This is a time zone indication.  1400 is
              picked since +1300 is frequently used and +1400 is mentioned as
              an edge number in the document "ISO C 200X Proposal: Timezone
@@ -502,7 +521,7 @@ int Curl_parsedate(const char *date, time_t *output)
 time_t curl_getdate(const char *p, const time_t *now)
 {
   time_t parsed;
-  int rc = Curl_parsedate(p, &parsed);
+  int rc = parsedate(p, &parsed);
   (void)now; /* legacy argument from the past that we ignore */
 
   switch(rc) {
