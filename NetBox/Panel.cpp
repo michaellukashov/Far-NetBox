@@ -360,7 +360,7 @@ void CPanel::FreeItemList(PluginPanelItem *panelItem, int itemsNumber)
 
 int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wchar_t **destPath, const bool deleteSource, const int opMode)
 {
-    // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
+    DEBUG_PRINTF(L"NetBox: GetFiles: begin");
     assert(m_ProtoClient);
     assert(!IsSessionManager());
 
@@ -402,7 +402,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     if (deleteSource)
     {
         //Check for rename/move inside server command
-        if (!(wcslen(*destPath) > 2 && (*destPath)[1] == L'\\' && (*destPath)[2] == L':'))
+        if (!((wcslen(*destPath) > 2) && (*destPath)[1] == L':'))
         {
             DEBUG_PRINTF(L"NetBox: 1");
             wstring errInfo;
@@ -475,7 +475,6 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 const IProtocol::ItemType itemType = (panelItem->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? IProtocol::ItemDirectory : IProtocol::ItemFile;
                 bool isExist = false;
                 DEBUG_PRINTF(L"NetBox: GetFiles: dstPath = %s", dstPath.c_str());
-                // DEBUG_PRINTF(L"NetBox: GetFiles: dstPath = %s", dstPath.c_str());
                 if (m_ProtoClient->CheckExisting(dstPath.c_str(), IProtocol::ItemDirectory, isExist, errInfo) && isExist)
                 {
                     //Move
@@ -490,8 +489,12 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     return 0;
                 }
             }
+            return 1;
         }
-        return 1;
+        else
+        {
+            // TODO: Копирование на локальный диск и удаление с сервера
+        }
     }
 
     //Full copied content (include subdirectories)
@@ -684,7 +687,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             // CFarPlugin::GetPSI()->FreePluginDirList(it->second, it->first);
         }
     }
-    // DEBUG_PRINTF(L"NetBox: GetFiles: end");
+    DEBUG_PRINTF(L"NetBox: GetFiles: end");
     return 1;
 }
 
