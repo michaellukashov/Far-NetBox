@@ -398,14 +398,17 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         *destPath = m_LastDirName.c_str();
     }
 
+    DEBUG_PRINTF(L"NetBox: deleteSource = %d, itemsNumber = %d, destPath = %s", deleteSource, itemsNumber, *destPath);
     if (deleteSource)
     {
         //Check for rename/move inside server command
         if (!(wcslen(*destPath) > 2 && (*destPath)[1] == L'\\' && (*destPath)[2] == L':'))
         {
+            DEBUG_PRINTF(L"NetBox: 1");
             wstring errInfo;
             if (itemsNumber > 1)
             {
+                DEBUG_PRINTF(L"NetBox: 2");
                 //Move operation
                 for (int i = 0; i < itemsNumber; ++i)
                 {
@@ -434,6 +437,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += pi->FindData.lpwszFileName;
                     wstring errInfo;
+                    DEBUG_PRINTF(L"NetBox: Rename 1");
                     if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
                         pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ?
                             IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo)
@@ -446,6 +450,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             }
             else
             {
+                DEBUG_PRINTF(L"NetBox: 3");
                 //Move/rename opration
                 wstring srcPath = m_ProtoClient->GetCurrentDirectory();
                 if (srcPath.compare(L"/") != 0)
@@ -469,6 +474,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 }
                 const IProtocol::ItemType itemType = (panelItem->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? IProtocol::ItemDirectory : IProtocol::ItemFile;
                 bool isExist = false;
+                DEBUG_PRINTF(L"NetBox: GetFiles: dstPath = %s", dstPath.c_str());
                 // DEBUG_PRINTF(L"NetBox: GetFiles: dstPath = %s", dstPath.c_str());
                 if (m_ProtoClient->CheckExisting(dstPath.c_str(), IProtocol::ItemDirectory, isExist, errInfo) && isExist)
                 {
@@ -476,6 +482,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += panelItem->FindData.lpwszFileName;
                 }
+                DEBUG_PRINTF(L"NetBox: Rename 2");
                 if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
                     itemType, errInfo) && !IS_SILENT(opMode))
                 {
