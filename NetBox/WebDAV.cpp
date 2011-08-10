@@ -347,8 +347,6 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(&outFile, &m_ProgressPercent));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     outFile.Close();
@@ -382,8 +380,6 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, m_CURL.SetInput(&inFile, &m_ProgressPercent));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     inFile.Close();
