@@ -389,7 +389,8 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
         return false;
     }
 
-    const string webDavPath = EscapeUTF8URL(remotePath);
+    // const string webDavPath = EscapeUTF8URL(remotePath);
+    const string webDavPath = LocalToFtpCP(remotePath, false);
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Expect:");    //Expect: 100-continue is not wanted
