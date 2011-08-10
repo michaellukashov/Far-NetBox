@@ -464,8 +464,8 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
         "<D:getcontentlength/>"
         "<D:creationdate/>"
         "<D:getlastmodified/>"
-        //"<Z:Win32LastAccessTime/>"
-        //"<Z:Win32FileAttributes/>"
+        "<Z:Win32LastAccessTime/>"
+        "<Z:Win32FileAttributes/>"
         "</D:prop>"
         "</D:propfind>";
 
