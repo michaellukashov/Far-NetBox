@@ -57,7 +57,7 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
     assert(abortEvent);
 
     const wchar_t *url = m_Session.GetURL();
-    DEBUG_PRINTF(L"NetBox: WebDAV: connecting to %s", url);
+    // DEBUG_PRINTF(L"NetBox: WebDAV: connecting to %s", url);
     //Initialize curl
     m_CURL.Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
         m_Session.GetProxySettings());
@@ -439,7 +439,6 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "DELETE"));
 
     CHECK_CUCALL(urlCode, m_CURL.Perform());
-
     if (urlCode != CURLE_OK)
     {
         errorInfo = ::MB2W(curl_easy_strerror(urlCode));
@@ -453,7 +452,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
-    DEBUG_PRINTF(L"NetBox: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
@@ -521,7 +520,7 @@ bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
         if (responseCode != expect)
         {
             errInfo = GetBadResponseInfo(responseCode);
-            DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
+            // DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
             return false;
         }
     }
