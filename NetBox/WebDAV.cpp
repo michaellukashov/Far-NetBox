@@ -98,8 +98,9 @@ bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isEx
     DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
+    const string webDavPath = EscapeUTF8URL(path);
     string responseDummy;
-    isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    isExist = SendPropFindRequest(::MB2W(webDavPath.c_str()).c_str(), responseDummy, errorInfo);
     DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: isExist = %d", isExist);
     return true;
 }
