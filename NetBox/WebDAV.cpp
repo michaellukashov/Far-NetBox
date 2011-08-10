@@ -122,7 +122,7 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_CREATED, errorInfo);
+    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
 }
 
 
@@ -446,7 +446,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_NO_CONTENT, errorInfo);
+    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
 }
 
 
