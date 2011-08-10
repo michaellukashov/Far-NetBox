@@ -95,16 +95,19 @@ void CWebDAV::Close()
 
 bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
+    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
     string responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: isExist = %d", isExist);
     return true;
 }
 
 
 bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
+    DEBUG_PRINTF(L"NetBox: MakeDirectory: begin: path = %s", path);
     const string webDavPath = EscapeUTF8URL(path);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
@@ -122,7 +125,9 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
+    DEBUG_PRINTF(L"NetBox: MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
+    return result;
 }
 
 

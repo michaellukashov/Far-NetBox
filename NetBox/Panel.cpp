@@ -737,6 +737,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
 
 int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, const int itemsNumber, const bool deleteSource, const int /*opMode*/)
 {
+    DEBUG_PRINTF(L"NetBox: CPanel::PutFiles: begin: sourcePath = %s", sourcePath);
     assert(m_ProtoClient);
 
     if (itemsNumber == 1 && wcscmp(panelItem->FindData.lpwszFileName, L"..") == 0)
@@ -833,16 +834,18 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
 
             bool success = true;
 
+            DEBUG_PRINTF(L"NetBox: CPanel::PutFiles: isDirectory = %d", isDirectory);
             if (isDirectory)
             {
                 //Create destination directory
                 bool dirExist = false;
                 wstring errInfo;
-                // DEBUG_PRINTF(L"NetBox: PutFiles: remotePath = %s", remotePath.c_str());
+                DEBUG_PRINTF(L"NetBox: PutFiles: remotePath = %s", remotePath.c_str());
                 if (!m_ProtoClient->CheckExisting(remotePath.c_str(), IProtocol::ItemDirectory, dirExist, errInfo))
                 {
                     return -1;
                 }
+                DEBUG_PRINTF(L"NetBox: CPanel::PutFiles: dirExist = %d", dirExist);
                 if (!dirExist)
                 {
                     while (!m_ProtoClient->MakeDirectory(remotePath.c_str(), errInfo))
@@ -956,7 +959,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     {
         CFarPlugin::GetPSI()->FreeDirList(it->second, it->first);
     }
-
+    DEBUG_PRINTF(L"NetBox: CPanel::PutFiles: end");
     return 1;
 }
 
