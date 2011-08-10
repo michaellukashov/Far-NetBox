@@ -349,13 +349,13 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
         return false;
     }
 
-    // const string webDavPath = EscapeUTF8URL(remotePath);
+    const string webDavPath = EscapeUTF8URL(remotePath);
     // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
     // const string webDavPath2 = LocalToFtpCP(::MB2W(webDavPath.c_str()).c_str(), true);
-    const string webDavPath2 = LocalToFtpCP(remotePath, false);
-    DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath2 = %s", ::MB2W(webDavPath2.c_str()).c_str());
+    // const string webDavPath = LocalToFtpCP(remotePath, false);
+    DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
-    CURLcode urlCode = CURLPrepare(webDavPath2.c_str(), false);
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
@@ -788,7 +788,7 @@ string CWebDAV::DecodeHex(const string &src) const
 }
 
 
-string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
+string CWebDAV::EscapeUTF8URL(const wchar_t *src, bool replace) const
 {
     assert(src && src[0] == L'/');
 

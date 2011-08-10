@@ -148,7 +148,7 @@ private:
      * \param src source string
      * \return encoded URL
      */
-    string EscapeUTF8URL(const wchar_t *src) const;
+    string EscapeUTF8URL(const wchar_t *src, bool replace = false) const;
 
 protected:
     CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);
