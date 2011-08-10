@@ -375,7 +375,6 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     }
 
     bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
-    bool result = CheckResponseCode(HTTP_STATUS_OK, errorInfo);
     DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
     return result;
 }
@@ -393,8 +392,8 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
         return false;
     }
 
-    // const string webDavPath = EscapeUTF8URL(remotePath);
-    const string webDavPath = LocalToFtpCP(remotePath, false);
+    const string webDavPath = EscapeUTF8URL(remotePath);
+    // const string webDavPath = LocalToFtpCP(remotePath, false);
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Expect:");    //Expect: 100-continue is not wanted
@@ -789,7 +788,7 @@ string CWebDAV::DecodeHex(const string &src) const
 }
 
 
-string CWebDAV::EscapeUTF8URL(const wchar_t *src, bool replace) const
+string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
 {
     assert(src && src[0] == L'/');
 
