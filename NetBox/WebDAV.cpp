@@ -785,7 +785,7 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
     string result;
     result.reserve(cntLength);
 
-    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()#%{}^[]`";
+    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()%{}^[]`";
 
     for (size_t i = 0; i < cntLength; ++i)
     {
