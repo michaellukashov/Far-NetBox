@@ -374,6 +374,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
         return false;
     }
 
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
     bool result = CheckResponseCode(HTTP_STATUS_OK, errorInfo);
     DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
     return result;
