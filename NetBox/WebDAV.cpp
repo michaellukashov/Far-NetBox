@@ -282,6 +282,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
             /* Win32 [Z:] (urn:schemas-microsoft-com)
             /************************************************************************/
             //last access datetime
+            // TODO: process D:creationdate D:getlastmodified
             const TiXmlElement *xmlLaDate = xmlProps->FirstChildElement((msNamespace + "Win32LastAccessTime").c_str());
             if (xmlLaDate && xmlLaDate->GetText())
             {
