@@ -95,13 +95,13 @@ void CWebDAV::Close()
 
 bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
+    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
     // const string webDavPath = EscapeUTF8URL(path);
     string responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: webDavPath = %s, isExist = %d", ::MB2W(webDavPath.c_str()).c_str(), isExist);
+    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
 }
 
@@ -336,12 +336,14 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
 
 bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
+    DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile outFile;
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
+        DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
 

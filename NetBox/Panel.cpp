@@ -403,7 +403,7 @@ void CPanel::FreeItemList(PluginPanelItem *panelItem, int itemsNumber)
 
 int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wchar_t **destPath, const bool deleteSource, const int opMode)
 {
-    DEBUG_PRINTF(L"NetBox: GetFiles: begin: destPath = %s, deleteSource = %d, opMode = %d", *destPath, deleteSource, opMode);
+    DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: begin: destPath = %s, deleteSource = %d, opMode = %d", *destPath, deleteSource, opMode);
     assert(m_ProtoClient);
     assert(!IsSessionManager());
 
@@ -441,17 +441,17 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         *destPath = m_LastDirName.c_str();
     }
 
-    DEBUG_PRINTF(L"NetBox: deleteSource = %d, itemsNumber = %d, destPath = %s", deleteSource, itemsNumber, *destPath);
+    DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: deleteSource = %d, itemsNumber = %d, destPath = %s", deleteSource, itemsNumber, *destPath);
     if (deleteSource)
     {
         //Check for rename/move inside server command
         if (!(*destPath && (wcslen(*destPath) > 2) && (*destPath)[1] == L':'))
         {
-            DEBUG_PRINTF(L"NetBox: 1");
+            DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: 1");
             wstring errInfo;
             if (itemsNumber > 1)
             {
-                DEBUG_PRINTF(L"NetBox: 2");
+                DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: 2");
                 //Move operation
                 for (int i = 0; i < itemsNumber; ++i)
                 {
@@ -480,7 +480,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += pi->FindData.lpwszFileName;
                     wstring errInfo;
-                    DEBUG_PRINTF(L"NetBox: Rename 1");
+                    DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: Rename 1");
                     if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
                         pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ?
                             IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo)
@@ -493,7 +493,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             }
             else if (itemsNumber == 1)
             {
-                DEBUG_PRINTF(L"NetBox: 3");
+                DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: 3");
                 //Move/rename operation
                 wstring srcPath = m_ProtoClient->GetCurrentDirectory();
                 if (srcPath.compare(L"/") != 0)
@@ -524,7 +524,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     ::AppendWChar(dstPath, L'/');
                     dstPath += panelItem->FindData.lpwszFileName;
                 }
-                DEBUG_PRINTF(L"NetBox: Rename 2");
+                DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: Rename 2");
                 if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
                     itemType, errInfo) && !IS_SILENT(opMode))
                 {
@@ -540,6 +540,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         }
     }
 
+    DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: itemsNumber = %d", itemsNumber);
     //Full copied content (include subdirectories)
     vector< pair<int, PluginPanelItem *> > subDirContent;
 
@@ -560,11 +561,13 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         }
     }
 
-    //Calculate total count/size and get content
+    // Calculate total count/size and get content
     size_t totalFileCount = 0;
     unsigned __int64 totalFileSize = 0;
+    DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: subDirContent.size = %u", subDirContent.size());
     for (vector< pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
+        DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: it->first = %u", it->first);
         for (int i = 0; i < it->first; ++i)
         {
             PluginPanelItem *pi = &it->second[i];
@@ -600,6 +603,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 remotePath += L'/';
             }
             remotePath += pi->FindData.lpwszFileName;
+            DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: remotePath = %s", remotePath);
             size_t slash;
             while((slash = remotePath.find(L'\\')) != string::npos)
             {
@@ -607,7 +611,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             }
 
             bool success = true;
-
+            DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: isDirectory = %d", isDirectory);
             if (isDirectory)
             {
                 //Create destination directory
@@ -631,6 +635,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 //Copy file
                 progressWnd.SetFileNames(remotePath.c_str(), localPath.c_str());
                 wstring errInfo;
+                DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: remotePath = %s", remotePath.c_str());
                 while (!m_ProtoClient->GetFile(remotePath.c_str(), localPath.c_str(), pi->FindData.nFileSize, errInfo))
                 {
                     if (WaitForSingleObject(m_AbortTask, 0) == WAIT_OBJECT_0)
@@ -730,7 +735,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             // CFarPlugin::GetPSI()->FreePluginDirList(it->second, it->first);
         }
     }
-    DEBUG_PRINTF(L"NetBox: GetFiles: end");
+    DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: end");
     return 1;
 }
 
