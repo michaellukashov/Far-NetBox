@@ -95,13 +95,13 @@ void CWebDAV::Close()
 
 bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
-    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
-    const string webDavPath = EscapeUTF8URL(path);
+    // const string webDavPath = EscapeUTF8URL(path);
     string responseDummy;
-    isExist = SendPropFindRequest(::MB2W(webDavPath.c_str()).c_str(), responseDummy, errorInfo);
-    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: webDavPath = %s, isExist = %d", ::MB2W(webDavPath.c_str()).c_str(), isExist);
+    isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: webDavPath = %s, isExist = %d", ::MB2W(webDavPath.c_str()).c_str(), isExist);
     return true;
 }
 
