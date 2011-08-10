@@ -95,20 +95,20 @@ void CWebDAV::Close()
 
 bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
-    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
     // const string webDavPath = EscapeUTF8URL(path);
     string responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
-    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
 }
 
 
 bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
-    DEBUG_PRINTF(L"NetBox: MakeDirectory: begin: path = %s", path);
+    // DEBUG_PRINTF(L"NetBox: MakeDirectory: begin: path = %s", path);
     const string webDavPath = EscapeUTF8URL(path);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
@@ -127,7 +127,7 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
     }
 
     bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
-    DEBUG_PRINTF(L"NetBox: MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
+    // DEBUG_PRINTF(L"NetBox: MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
     return result;
 }
 
@@ -336,7 +336,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
 
 bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
-    DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile outFile;
@@ -345,7 +345,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
-        DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
+        // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
 
@@ -353,7 +353,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
     // const string webDavPath2 = LocalToFtpCP(::MB2W(webDavPath.c_str()).c_str(), true);
     // const string webDavPath = LocalToFtpCP(remotePath, false);
-    DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
@@ -370,19 +370,19 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     if (urlCode != CURLE_OK)
     {
         errorInfo = ::MB2W(curl_easy_strerror(urlCode));
-        DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
+        // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
 
     bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
-    DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
     return result;
 }
 
 
 bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
-    DEBUG_PRINTF(L"NetBox: CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile inFile;
