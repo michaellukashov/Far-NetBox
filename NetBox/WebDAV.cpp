@@ -340,6 +340,8 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     assert(localPath && *localPath);
 
     CFile outFile;
+    // const string localPath2 = LocalToFtpCP(localPath, false);
+    // if (!outFile.OpenWrite(::MB2W(localPath2.c_str()).c_str()))
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
@@ -380,6 +382,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
 
 bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
+    DEBUG_PRINTF(L"NetBox: CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile inFile;
