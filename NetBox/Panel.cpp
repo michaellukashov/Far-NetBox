@@ -658,6 +658,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     }
                     //Retry
                 }
+                DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: after GetFile: success = %u", success);
             }
 
             if (success && deleteSource)
