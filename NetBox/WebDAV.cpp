@@ -101,7 +101,7 @@ bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isEx
     const string webDavPath = EscapeUTF8URL(path);
     string responseDummy;
     isExist = SendPropFindRequest(::MB2W(webDavPath.c_str()).c_str(), responseDummy, errorInfo);
-    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: isExist = %d", isExist);
+    DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: webDavPath = %s, isExist = %d", ::MB2W(webDavPath.c_str()).c_str(), isExist);
     return true;
 }
 
@@ -458,7 +458,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
-    // DEBUG_PRINTF(L"NetBox: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
