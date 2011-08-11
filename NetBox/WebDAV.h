@@ -30,6 +30,9 @@ class TiXmlElement;
  */
 class CSessionWebDAV : public CSession
 {
+public:
+    UINT GetCodePage() const { return 65001; } //UTF-8
+
 protected:
     //From CSession
     PSessionEditor CreateEditorInstance();
