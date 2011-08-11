@@ -615,7 +615,7 @@ wstring CWebDAV::GetBadResponseInfo(const int code) const
         descr = L"Invalid syntax";
         break;
     case HTTP_STATUS_DENIED             :
-        descr = L"Access denied";
+        descr = L"Unauthorized";
         break;
     case HTTP_STATUS_PAYMENT_REQ        :
         descr = L"Payment required";
