@@ -98,7 +98,6 @@ bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isEx
     // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
-    // const string webDavPath = EscapeUTF8URL(path);
     string responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
     // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
@@ -340,8 +339,6 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     assert(localPath && *localPath);
 
     CFile outFile;
-    // const string localPath2 = LocalToFtpCP(localPath, false);
-    // if (!outFile.OpenWrite(::MB2W(localPath2.c_str()).c_str()))
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
@@ -350,9 +347,6 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     }
 
     const string webDavPath = EscapeUTF8URL(remotePath);
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
-    // const string webDavPath2 = LocalToFtpCP(::MB2W(webDavPath.c_str()).c_str(), true);
-    // const string webDavPath = LocalToFtpCP(remotePath, false);
     // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
@@ -393,7 +387,6 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
     }
 
     const string webDavPath = EscapeUTF8URL(remotePath);
-    // const string webDavPath = LocalToFtpCP(remotePath, false);
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Expect:");    //Expect: 100-continue is not wanted
