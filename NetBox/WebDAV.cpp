@@ -57,7 +57,7 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
     assert(abortEvent);
 
     const wchar_t *url = m_Session.GetURL();
-    DEBUG_PRINTF(L"NetBox: WebDAV: connecting to %s", url);
+    // DEBUG_PRINTF(L"NetBox: WebDAV: connecting to %s", url);
     //Initialize curl
     m_CURL.Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
         m_Session.GetProxySettings());
@@ -95,16 +95,19 @@ void CWebDAV::Close()
 
 bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
 {
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
     string responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
 }
 
 
 bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 {
+    // DEBUG_PRINTF(L"NetBox: MakeDirectory: begin: path = %s", path);
     const string webDavPath = EscapeUTF8URL(path);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
@@ -122,7 +125,9 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_CREATED, errorInfo);
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
+    // DEBUG_PRINTF(L"NetBox: MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
+    return result;
 }
 
 
@@ -282,6 +287,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
             /* Win32 [Z:] (urn:schemas-microsoft-com)
             /************************************************************************/
             //last access datetime
+            // TODO: process D:creationdate D:getlastmodified
             const TiXmlElement *xmlLaDate = xmlProps->FirstChildElement((msNamespace + "Win32LastAccessTime").c_str());
             if (xmlLaDate && xmlLaDate->GetText())
             {
@@ -329,16 +335,19 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
 
 bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile outFile;
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
+        // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
 
     const string webDavPath = EscapeUTF8URL(remotePath);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
@@ -347,8 +356,6 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(&outFile, &m_ProgressPercent));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     outFile.Close();
@@ -357,15 +364,19 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     if (urlCode != CURLE_OK)
     {
         errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_OK, errorInfo);
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
+    return result;
 }
 
 
 bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
 {
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile inFile;
@@ -382,8 +393,6 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, m_CURL.SetSlist(slist));
     CHECK_CUCALL(urlCode, m_CURL.SetInput(&inFile, &m_ProgressPercent));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 0L));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
 
     inFile.Close();
@@ -442,21 +451,20 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_CUSTOMREQUEST, "DELETE"));
 
     CHECK_CUCALL(urlCode, m_CURL.Perform());
-
     if (urlCode != CURLE_OK)
     {
         errorInfo = ::MB2W(curl_easy_strerror(urlCode));
         return false;
     }
 
-    return CheckResponseCode(HTTP_STATUS_NO_CONTENT, errorInfo);
+    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
 }
 
 
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
-    DEBUG_PRINTF(L"NetBox: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"NetBox: CWebDAV::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
@@ -524,7 +532,7 @@ bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
         if (responseCode != expect)
         {
             errInfo = GetBadResponseInfo(responseCode);
-            DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
+            // DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
             return false;
         }
     }
@@ -783,7 +791,7 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
     string result;
     result.reserve(cntLength);
 
-    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()#%{}^[]`";
+    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()%{}^[]`";
 
     for (size_t i = 0; i < cntLength; ++i)
     {
