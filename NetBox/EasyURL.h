@@ -30,7 +30,7 @@
 class CSlistURL
 {
 public:
-    CSlistURL() : m_SList(NULL) {}
+    explicit CSlistURL() : m_SList(NULL) {}
     ~CSlistURL()
     {
         if (m_SList)
@@ -58,7 +58,7 @@ private:
 class CEasyURL
 {
 public:
-    CEasyURL();
+    explicit CEasyURL();
     ~CEasyURL();
 
     /**

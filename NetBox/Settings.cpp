@@ -407,10 +407,10 @@ void CSettings::ShowAbout()
 
 wstring CSettings::GetSessionPath() const
 {
-    wstring path = SessionPath();
+    wstring path = ::ExpandEnvVars(SessionPath());
     if (path.empty())
     {
-        path = CFarPlugin::GetPluginPath();
+        path = ::ExpandEnvVars(CFarPlugin::GetPluginPath());
         path += L"Sessions\\";
     }
     return path;

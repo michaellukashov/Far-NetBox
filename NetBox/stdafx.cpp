@@ -336,3 +336,12 @@ void CheckAbortEvent(HANDLE *AbortEvent)
 		}
 	}
 }
+
+wstring ExpandEnvVars(const wstring& str)
+{
+    wchar_t buf[MAX_PATH];
+    unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
+    wstring result = wstring(buf, size - 1);
+    // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
+    return result;
+}
