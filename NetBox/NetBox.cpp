@@ -225,7 +225,8 @@ int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
     return result;
 }
 
-int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t **destPath, int opMode)
+int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
+    int move, const wchar_t **destPath, int opMode)
 {
     assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
