@@ -219,14 +219,13 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         // Переименование на сервере
         // DEBUG_PRINTF(L"NetBox: ProcessKey: ShiftF6");
         // TransferFiles(Key == VK_F6);
-        // PluginPanelItem *panelItem = NULL;
-        // const int itemsNumber = 0;
         const wchar_t *destPath = m_ProtoClient->GetCurrentDirectory();
         // DEBUG_PRINTF(L"NetBox: ProcessKey: destPath = %s", destPath);
         const bool deleteSource = true;
         const int opMode = OPM_TOPLEVEL;
-        HANDLE plugin = reinterpret_cast<HANDLE>(this);
 
+        // Получим текущий элемент на панели плагина
+        HANDLE plugin = reinterpret_cast<HANDLE>(this);
         const size_t ppiBufferLength = CFarPlugin::GetPSI()->Control(plugin, FCTL_GETCURRENTPANELITEM, 0, static_cast<LONG_PTR>(NULL));
         if (!ppiBufferLength)
         {
