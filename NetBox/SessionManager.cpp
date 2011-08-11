@@ -181,7 +181,7 @@ bool CSessionManager::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 {
     wstring findMask = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
-    DEBUG_PRINTF(L"NetBox: findMask = %s", findMask.c_str());
+    // DEBUG_PRINTF(L"NetBox: findMask = %s", findMask.c_str());
     ::AppendWChar(findMask, L'\\');
     ::AppendWChar(findMask, L'*');
 

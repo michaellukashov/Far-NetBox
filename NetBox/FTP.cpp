@@ -366,7 +366,7 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
 
     const string cmd1 = "RNFR " + LocalToFtpCP(srcPath);
     const string cmd2 = "RNTO " + LocalToFtpCP(dstPath);
-    DEBUG_PRINTF(L"NetBox: Rename: srcPath = %s, dstPath = %s, type = %u", srcPath, dstPath, type);
+    // DEBUG_PRINTF(L"NetBox: Rename: srcPath = %s, dstPath = %s, type = %u", srcPath, dstPath, type);
     CSlistURL slist;
     slist.Append(cmd1.c_str());
     slist.Append(cmd2.c_str());

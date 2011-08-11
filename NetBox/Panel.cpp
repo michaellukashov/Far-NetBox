@@ -219,14 +219,12 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         // Переименование на сервере
         // DEBUG_PRINTF(L"NetBox: ProcessKey: ShiftF6");
         // TransferFiles(Key == VK_F6);
-        // PluginPanelItem *panelItem = NULL;
-        // const int itemsNumber = 0;
-        const wchar_t *destPath = m_ProtoClient->GetCurrentDirectory();
         // DEBUG_PRINTF(L"NetBox: ProcessKey: destPath = %s", destPath);
         const bool deleteSource = true;
         const int opMode = OPM_TOPLEVEL;
-        HANDLE plugin = reinterpret_cast<HANDLE>(this);
 
+        // Получим текущий элемент на панели плагина
+        HANDLE plugin = reinterpret_cast<HANDLE>(this);
         const size_t ppiBufferLength = CFarPlugin::GetPSI()->Control(plugin, FCTL_GETCURRENTPANELITEM, 0, static_cast<LONG_PTR>(NULL));
         if (!ppiBufferLength)
         {
@@ -241,6 +239,10 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             return 0;
         }
         // DEBUG_PRINTF(L"NetBox: ppi->FindData.lpwszFileName = %s", ppi->FindData.lpwszFileName);
+        wstring dstPath = m_ProtoClient->GetCurrentDirectory();
+        ::AppendWChar(dstPath, L'/');
+        dstPath += ppi->FindData.lpwszFileName;
+        const wchar_t *destPath = dstPath.c_str();
         GetFiles(ppi, 1, &destPath, deleteSource, opMode);
 
         // Перерисовываем панель
@@ -425,8 +427,10 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         {
             fileName = L"..." + fileName.substr(fileName.length() - 43);
         }
-        wchar_t copyPath[80];
-        swprintf_s(copyPath, CFarPlugin::GetString(deleteSource ? StringMovePath : StringCopyPath), itemsNumber > 1 ? CFarPlugin::GetString(deleteSource ? StringMoveSelected : StringCopySelected) : fileName.c_str());
+        wchar_t copyPath[MAX_PATH];
+        swprintf_s(copyPath, CFarPlugin::GetString(deleteSource ? StringMovePath : StringCopyPath),
+            itemsNumber > 1 ? CFarPlugin::GetString(deleteSource ? StringMoveSelected : StringCopySelected) : fileName.c_str());
+        // DEBUG_PRINTF(L"NetBox: copyPath = %s, destPath = %s", copyPath, *destPath);
         dlg.CreateText(dlg.GetLeft(), dlg.GetTop(), copyPath);
         const int idPath = dlg.CreateEdit(dlg.GetLeft(), dlg.GetTop() + 1, MAX_SIZE, *destPath);
         dlg.CreateSeparator(dlg.GetHeight() - 2);
