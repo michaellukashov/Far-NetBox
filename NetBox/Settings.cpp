@@ -408,7 +408,6 @@ void CSettings::ShowAbout()
 wstring CSettings::GetSessionPath() const
 {
     wstring path = ::ExpandEnvVars(SessionPath());
-    DEBUG_PRINTF(L"NetBox: path = %s", path.c_str());
     if (path.empty())
     {
         path = ::ExpandEnvVars(CFarPlugin::GetPluginPath());
