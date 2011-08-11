@@ -430,7 +430,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         wchar_t copyPath[MAX_PATH];
         swprintf_s(copyPath, CFarPlugin::GetString(deleteSource ? StringMovePath : StringCopyPath),
             itemsNumber > 1 ? CFarPlugin::GetString(deleteSource ? StringMoveSelected : StringCopySelected) : fileName.c_str());
-        DEBUG_PRINTF(L"NetBox: copyPath = %s, destPath = %s", copyPath, *destPath);
+        // DEBUG_PRINTF(L"NetBox: copyPath = %s, destPath = %s", copyPath, *destPath);
         dlg.CreateText(dlg.GetLeft(), dlg.GetTop(), copyPath);
         const int idPath = dlg.CreateEdit(dlg.GetLeft(), dlg.GetTop() + 1, MAX_SIZE, *destPath);
         dlg.CreateSeparator(dlg.GetHeight() - 2);
