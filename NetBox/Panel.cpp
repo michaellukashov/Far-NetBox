@@ -219,7 +219,6 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         // Переименование на сервере
         // DEBUG_PRINTF(L"NetBox: ProcessKey: ShiftF6");
         // TransferFiles(Key == VK_F6);
-        const wchar_t *destPath = m_ProtoClient->GetCurrentDirectory();
         // DEBUG_PRINTF(L"NetBox: ProcessKey: destPath = %s", destPath);
         const bool deleteSource = true;
         const int opMode = OPM_TOPLEVEL;
@@ -240,6 +239,10 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             return 0;
         }
         // DEBUG_PRINTF(L"NetBox: ppi->FindData.lpwszFileName = %s", ppi->FindData.lpwszFileName);
+        wstring dstPath = m_ProtoClient->GetCurrentDirectory();
+        ::AppendWChar(dstPath, L'/');
+        dstPath += ppi->FindData.lpwszFileName;
+        const wchar_t *destPath = dstPath.c_str();
         GetFiles(ppi, 1, &destPath, deleteSource, opMode);
 
         // Перерисовываем панель
