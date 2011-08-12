@@ -310,6 +310,10 @@ class TDateTime
 {
 };
 
+class TPersistent
+{
+};
+
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem;
 class TFarPanelModes;
