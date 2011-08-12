@@ -39,26 +39,27 @@ TRect Rect(int Left, int Top, int Right, int Bottom)
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     TObject(), FBounds(-1, -1, 40, 10),
-    Bounds(*this, &self::GetBounds, &self::SetBounds)
-    property<TFarDialog, TRect> ClientRect;
+    Bounds(*this, &self::GetBounds, &self::SetBounds),
+    // __property TRect ClientRect = { read = GetClientRect };
+    ClientRect(*this, &self::GetClientRect, &self::SetClientRect),
     // __property string HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
-    property<TFarDialog, string> HelpTopic;
+    HelpTopic(*this, &self::GetHelpTopic, &self::SetHelpTopic),
     // __property unsigned int Flags = { read = FFlags, write = SetFlags };
-    property<TFarDialog, unsigned int> Flags;
+    Flags(*this, &self::GetFlags, &self::SetFlags),
     // __property bool Centered = { read = GetCentered, write = SetCentered };
-    property<TFarDialog, bool> Centered;
+    Centered(*this, &self::GetCentered, &self::SetCentered),
     // __property TPoint Size = { read = GetSize, write = SetSize };
-    property<TFarDialog, TPoint> Size;
+    Size(*this, &self::GetSize, &self::SetSize),
     // __property TPoint ClientSize = { read = GetClientSize };
-    property<TFarDialog, TPoint> ClientSize;
+    ClientSize(*this, &self::GetClientSize, &self::SetClientSize),
     // __property int Width = { read = GetWidth, write = SetWidth };
-    property<TFarDialog, int> Width;
+    Width(*this, &self::GetWidth, &self::SetWidth),
     // __property int Height = { read = GetHeight, write = SetHeight };
-    property<TFarDialog, int> Height;
+    Height(*this, &self::GetHeight, &self::SetHeight),
     // __property string Caption = { read = GetCaption, write = SetCaption };
-    property<TFarDialog, string> Caption;
+    Caption(*this, &self::GetCaption, &self::SetCaption),
     // __property HANDLE Handle = { read = FHandle };
-    property<TFarDialog, HANDLE> Handle;
+    Handle(*this, &self::GetHandle, &self::SetHandle),
     // __property TFarButton *DefaultButton = { read = FDefaultButton };
     property<TFarDialog, TFarButton *> DefaultButton;
     // __property TFarBox *BorderBox = { read = FBorderBox };
@@ -66,22 +67,22 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     // __property TFarDialogItem *Item[int Index] = { read = GetItem };
     property<TFarDialog, TFarDialogItem *> Item;
     // __property int ItemCount = { read = GetItemCount };
-    property<TFarDialog, int> ItemCount;
+    ItemCount(*this, &self::GetItemCount, &self::SetItemCount),
     // __property TItemPosition NextItemPosition = { read = FNextItemPosition, write = FNextItemPosition };
-    property<TFarDialog, TItemPosition> NextItemPosition;
+    NextItemPosition(*this, &self::GetNextItemPosition, &self::SetNextItemPosition),
     // __property int DefaultGroup = { read = FDefaultGroup, write = FDefaultGroup };
-    property<TFarDialog, int> DefaultGroup;
+    DefaultGroup(*this, &self::GetDefaultGroup, &self::SetDefaultGroup),
     // __property int Tag = { read = FTag, write = FTag };
-    property<TFarDialog, int> Tag;
+    Tag(*this, &self::GetTag, &self::SetTag),
     // __property TFarDialogItem *ItemFocused = { read = FItemFocused, write = SetItemFocused };
     property<TFarDialog, TFarDialogItem *> ItemFocused;
     // __property int Result = { read = FResult };
-    property<TFarDialog, int> Result;
+    Result(*this, &self::GetResult, &self::SetResult),
     // __property TPoint MaxSize = { read = GetMaxSize };
-    property<TFarDialog, TPoint> MaxSize;
+    MaxSize(*this, &self::GetMaxSize, &self::SetMaxSize),
 
     // __property TFarKeyEvent OnKey = { read = FOnKey, write = FOnKey };
-    property<TFarDialog, TFarKeyEvent> OnKey;
+    OnKey(*this, &self::GetOnKey, &self::SetOnKey)
 {
     assert(AFarPlugin);
     FItems = new TObjectList();
