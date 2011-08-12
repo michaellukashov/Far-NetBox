@@ -462,7 +462,7 @@ public:
     // __property bool ANSIApis = { read = FANSIApis };
     // __property unsigned int FarThread = { read = FFarThread };
     property<TCustomFarPlugin, std::string> ModuleName;
-    property<TCustomFarPlugin, TFarDialog> TopDialog;
+    property<TCustomFarPlugin, TFarDialog *> TopDialog;
     property<TCustomFarPlugin, HWND> Handle;
     property<TCustomFarPlugin, bool> ANSIApis;
     property<TCustomFarPlugin, unsigned int> FarThread;
@@ -507,7 +507,8 @@ protected:
                                  TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
-    __property TCriticalSection *CriticalSection = { read = FCriticalSection };
+    // __property TCriticalSection *CriticalSection = { read = FCriticalSection };
+    property<TCustomFarPlugin, TCriticalSection*> CriticalSection;
 
 private:
     PluginInfo FPluginInfo;
@@ -580,9 +581,12 @@ protected:
 
     virtual void HandleException(exception *E, int OpMode = 0);
 
-    __property TFarPanelInfo *PanelInfo = { read = GetPanelInfo, index = 0 };
-    __property TFarPanelInfo *AnotherPanelInfo = { read = GetPanelInfo, index = 1 };
-    __property TCriticalSection *CriticalSection = { read = FCriticalSection };
+    // __property TFarPanelInfo *PanelInfo = { read = GetPanelInfo, index = 0 };
+    property<TCustomFarFileSystem, TFarPanelInfo *> PanelInfo;
+    // __property TFarPanelInfo *AnotherPanelInfo = { read = GetPanelInfo, index = 1 };
+    property<TCustomFarFileSystem, TFarEditorInfo *> AnotherPanelInfo;
+    // __property TCriticalSection *CriticalSection = { read = FCriticalSection };
+    property<TCustomFarFileSystem, TCriticalSection *> CriticalSection;
 
 protected:
     TCriticalSection *FCriticalSection;
@@ -665,13 +669,20 @@ class TFarPanelItem : TCustomFarPanelItem
 {
 public:
     TFarPanelItem(PluginPanelItem *APanelItem);
-    __property unsigned long Flags = { read = GetFlags };
-    __property unsigned long FileAttributes = { read = GetFileAttributes };
-    __property string FileName = { read = GetFileName };
-    __property void *UserData = { read = GetUserData };
-    __property bool Selected = { read = GetSelected, write = SetSelected };
-    __property bool IsParentDirectory = { read = GetIsParentDirectory };
-    __property bool IsFile = { read = GetIsFile };
+    // __property unsigned long Flags = { read = GetFlags };
+    property<TFarPanelItem, unsigned long> Flags;
+    // __property unsigned long FileAttributes = { read = GetFileAttributes };
+    property<TFarPanelItem, unsigned long> FileAttributes;
+    // __property string FileName = { read = GetFileName };
+    property<TFarPanelItem, string> FileName;
+    // __property void *UserData = { read = GetUserData };
+    property<TFarPanelItem, void *> UserData;
+    // __property bool Selected = { read = GetSelected, write = SetSelected };
+    property<TFarPanelItem, bool> Selected;
+    // __property bool IsParentDirectory = { read = GetIsParentDirectory };
+    property<TFarPanelItem, bool> IsParentDirectory;
+    // __property bool IsFile = { read = GetIsFile };
+    property<TFarPanelItem, bool> IsFile;
 
 protected:
     PluginPanelItem *FPanelItem;
@@ -720,15 +731,24 @@ public:
     TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
     virtual ~TFarPanelInfo();
 
-    __property TList *Items = { read = GetItems };
-    __property int ItemCount = { read = GetItemCount };
-    __property int SelectedCount = { read = GetSelectedCount };
-    __property TFarPanelItem *FocusedItem = { read = GetFocusedItem, write = SetFocusedItem };
-    __property int FocusedIndex = { read = GetFocusedIndex, write = SetFocusedIndex };
-    __property TRect Bounds = { read = GetBounds };
-    __property TFarPanelType Type = { read = GetType };
-    __property bool IsPlugin = { read = GetIsPlugin };
-    __property string CurrentDirectory = { read = GetCurrentDirectory };
+    // __property TList *Items = { read = GetItems };
+    property<TFarPanelInfo, TList *>Items;
+    // __property int ItemCount = { read = GetItemCount };
+    property<TFarPanelInfo, int> ItemCounts;
+    // __property int SelectedCount = { read = GetSelectedCount };
+    property<TFarPanelInfo, int> SelectedCount;
+    // __property TFarPanelItem *FocusedItem = { read = GetFocusedItem, write = SetFocusedItem };
+    property<TFarPanelInfo, TFarPanelItem *> FocusedItem;
+    // __property int FocusedIndex = { read = GetFocusedIndex, write = SetFocusedIndex };
+    property<TFarPanelInfo, int> FocusedIndex;
+    // __property TRect Bounds = { read = GetBounds };
+    property<TFarPanelInfo, TRect> Bounds;
+    // __property TFarPanelType Type = { read = GetType };
+    property<TFarPanelInfo, TFarPanelType> Type;
+    // __property bool IsPlugin = { read = GetIsPlugin };
+    property<TFarPanelInfo, bool> IsPlugin;
+    // __property string CurrentDirectory = { read = GetCurrentDirectory };
+    property<TFarPanelInfo, string> CurrentDirectory;
 
     void ApplySelection();
     TFarPanelItem *FindFileName(const string FileName);
@@ -754,7 +774,7 @@ private:
 //---------------------------------------------------------------------------
 enum MENUITEMFLAGS_EX
 {
-    MIF_HIDDEN = 0x40000000UL,
+    // MIF_HIDDEN = 0x40000000UL,
 };
 //---------------------------------------------------------------------------
 class TFarMenuItems : public TStringList
@@ -762,15 +782,18 @@ class TFarMenuItems : public TStringList
 public:
     TFarMenuItems();
     void AddSeparator(bool Visible = true);
-    HIDESBASE int Add(string Text, bool Visible = true);
+    virtual int Add(string Text, bool Visible = true);
 
     virtual void Clear();
     virtual void Delete(int Index);
 
-    __property int ItemFocused = { read = FItemFocused, write = SetItemFocused };
+    // __property int ItemFocused = { read = FItemFocused, write = SetItemFocused };
+    property<TFarMenuItems, int> ItemFocused;
 
-    __property bool Disabled[int Index] = { read = GetFlag, write = SetFlag, index = MIF_DISABLE };
-    __property bool Checked[int Index] = { read = GetFlag, write = SetFlag, index = MIF_CHECKED };
+    // __property bool Disabled[int Index] = { read = GetFlag, write = SetFlag, index = MIF_DISABLE };
+    property<TFarMenuItems, bool> Disabled;
+    // __property bool Checked[int Index] = { read = GetFlag, write = SetFlag, index = MIF_CHECKED };
+    property<TFarMenuItems, bool> Checked;
 
 protected:
     virtual void PutObject(int Index, TObject *AObject);
@@ -789,8 +812,10 @@ public:
     TFarEditorInfo(EditorInfo *Info);
     ~TFarEditorInfo();
 
-    __property int EditorID = { read = GetEditorID };
-    __property string FileName = { read = GetFileName };
+    // __property int EditorID = { read = GetEditorID };
+    property<TFarEditorInfo, int> EditorID;
+    // __property string FileName = { read = GetFileName };
+    property<TFarEditorInfo, string> FileName;
 
 private:
     EditorInfo *FEditorInfo;
@@ -822,7 +847,7 @@ extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
 inline char *StrFromFar(char *S)
 {
-    OemToChar(S, S);
+    // OemToChar(S, S);
     return S;
 }
 //---------------------------------------------------------------------------
@@ -830,21 +855,23 @@ string StrFromFar(const char *S);
 //---------------------------------------------------------------------------
 inline char *StrFromFar(string &S)
 {
-    OemToChar(S.c_str(), S.c_str());
-    return S.c_str();
+    // OemToChar(S.c_str(), S.c_str());
+    // return S.c_str();
+    return "";
 }
 //---------------------------------------------------------------------------
 inline char *StrToFar(char *S)
 {
-    CharToOem(S, S);
+    // CharToOem(S, S);
     return S;
 }
 //---------------------------------------------------------------------------
 inline char *StrToFar(string &S)
 {
-    S.Unique();
-    CharToOem(S.c_str(), S.c_str());
-    return S.c_str();
+    // S.Unique();
+    // CharToOem(S.c_str(), S.c_str());
+    // return S.c_str();
+    return "";
 }
 //---------------------------------------------------------------------------
-#endif
+
