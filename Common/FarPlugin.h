@@ -42,7 +42,10 @@
 #include <iterator>
 #include <algorithm>
 #include <assert.h>
+
 #pragma warning(pop)
+
+#include "property.h"
 
 using namespace std;
 
@@ -424,11 +427,16 @@ public:
     TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
             HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-    __property string ModuleName = { read = GetModuleName };
-    __property TFarDialog *TopDialog = { read = FTopDialog };
-    __property HWND Handle = { read = FHandle };
-    __property bool ANSIApis = { read = FANSIApis };
-    __property unsigned int FarThread = { read = FFarThread };
+    // __property string ModuleName = { read = GetModuleName };
+    // __property TFarDialog *TopDialog = { read = FTopDialog };
+    // __property HWND Handle = { read = FHandle };
+    // __property bool ANSIApis = { read = FANSIApis };
+    // __property unsigned int FarThread = { read = FFarThread };
+    property<TCustomFarPlugin, std::string> ModuleName;
+    property<TCustomFarPlugin, TFarDialog> TopDialog;
+    property<TCustomFarPlugin, HWND> Handle;
+    property<TCustomFarPlugin, bool> ANSIApis;
+    property<TCustomFarPlugin, unsigned int> FarThread;
 
 protected:
     PluginStartupInfo FStartupInfo;
