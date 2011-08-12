@@ -547,11 +547,11 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-typedef void __fastcall (__closure *TFarKeyEvent)
+typedef void (__closure *TFarKeyEvent)
 (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
-typedef void __fastcall (__closure *TFarMouseClickEvent)
+typedef void (__closure *TFarMouseClickEvent)
 (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
-typedef void __fastcall (__closure *TFarProcessGroupEvent)
+typedef void (__closure *TFarProcessGroupEvent)
 (TFarDialogItem *Item, void *Arg);
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
@@ -562,12 +562,12 @@ class TFarDialog : public TObject
     friend TFarList;
     friend class TFarListBox;
 public:
-    __fastcall TFarDialog(TCustomFarPlugin *AFarPlugin);
-    __fastcall ~TFarDialog();
+    TFarDialog(TCustomFarPlugin *AFarPlugin);
+    ~TFarDialog();
 
-    int __fastcall ShowModal();
-    void __fastcall ShowGroup(int Group, bool Show);
-    void __fastcall EnableGroup(int Group, bool Enable);
+    int ShowModal();
+    void ShowGroup(int Group, bool Show);
+    void EnableGroup(int Group, bool Enable);
 
     __property TRect Bounds = { read = FBounds, write = SetBounds };
     __property TRect ClientRect = { read = GetClientRect };
@@ -593,39 +593,39 @@ public:
 
     __property TFarKeyEvent OnKey = { read = FOnKey, write = FOnKey };
 
-    void __fastcall Redraw();
-    void __fastcall LockChanges();
-    void __fastcall UnlockChanges();
-    char __fastcall GetSystemColor(unsigned int Index);
-    bool __fastcall HotKey(unsigned long Key);
+    void Redraw();
+    void LockChanges();
+    void UnlockChanges();
+    char GetSystemColor(unsigned int Index);
+    bool HotKey(unsigned long Key);
 
 protected:
     __property TCustomFarPlugin *FarPlugin = { read = FFarPlugin };
     __property TObjectList *Items = { read = FItems };
 
-    void __fastcall Add(TFarDialogItem *Item);
-    void __fastcall Add(TFarDialogContainer *Container);
-    long __fastcall SendMessage(int Msg, int Param1, int Param2);
-    virtual long __fastcall DialogProc(int Msg, int Param1, long Param2);
-    virtual long __fastcall FailDialogProc(int Msg, int Param1, long Param2);
-    long __fastcall DefaultDialogProc(int Msg, int Param1, long Param2);
-    virtual bool __fastcall MouseEvent(MOUSE_EVENT_RECORD *Event);
-    virtual bool __fastcall Key(TFarDialogItem *Item, long KeyCode);
-    virtual void __fastcall Change();
-    virtual void __fastcall Init();
-    virtual bool __fastcall CloseQuery();
-    AnsiString __fastcall GetMsg(int MsgId);
-    void __fastcall GetNextItemPosition(int &Left, int &Top);
-    void __fastcall RefreshBounds();
-    virtual void __fastcall Idle();
-    void __fastcall BreakSynchronize();
-    void __fastcall Synchronize(TThreadMethod Method);
-    void __fastcall Close(TFarButton *Button);
-    void __fastcall ProcessGroup(int Group, TFarProcessGroupEvent Callback, void *Arg);
-    void __fastcall ShowItem(TFarDialogItem *Item, void *Arg);
-    void __fastcall EnableItem(TFarDialogItem *Item, void *Arg);
-    bool __fastcall ChangesLocked();
-    TFarDialogItem *__fastcall ItemAt(int X, int Y);
+    void Add(TFarDialogItem *Item);
+    void Add(TFarDialogContainer *Container);
+    long SendMessage(int Msg, int Param1, int Param2);
+    virtual long DialogProc(int Msg, int Param1, long Param2);
+    virtual long FailDialogProc(int Msg, int Param1, long Param2);
+    long DefaultDialogProc(int Msg, int Param1, long Param2);
+    virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
+    virtual bool Key(TFarDialogItem *Item, long KeyCode);
+    virtual void Change();
+    virtual void Init();
+    virtual bool CloseQuery();
+    AnsiString GetMsg(int MsgId);
+    void GetNextItemPosition(int &Left, int &Top);
+    void RefreshBounds();
+    virtual void Idle();
+    void BreakSynchronize();
+    void Synchronize(TThreadMethod Method);
+    void Close(TFarButton *Button);
+    void ProcessGroup(int Group, TFarProcessGroupEvent Callback, void *Arg);
+    void ShowItem(TFarDialogItem *Item, void *Arg);
+    void EnableItem(TFarDialogItem *Item, void *Arg);
+    bool ChangesLocked();
+    TFarDialogItem *ItemAt(int X, int Y);
 
     static long WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, long Param2);
 
@@ -654,25 +654,25 @@ private:
     HANDLE FSynchronizeObjects[2];
     TThreadMethod FSynchronizeMethod;
 
-    void __fastcall SetBounds(TRect value);
-    void __fastcall SetHelpTopic(AnsiString value);
-    void __fastcall SetFlags(unsigned int value);
-    void __fastcall SetCentered(bool value);
-    bool __fastcall GetCentered();
-    TPoint __fastcall GetSize();
-    void __fastcall SetSize(TPoint value);
-    void __fastcall SetCaption(AnsiString value);
-    AnsiString __fastcall GetCaption();
-    TFarDialogItem *__fastcall GetItem(int Index);
-    TRect __fastcall GetClientRect();
-    int __fastcall GetItemCount();
-    void __fastcall SetItemFocused(TFarDialogItem *value);
-    TPoint __fastcall GetClientSize();
-    TPoint __fastcall GetMaxSize();
-    void __fastcall SetWidth(int value);
-    int __fastcall GetWidth();
-    void __fastcall SetHeight(int value);
-    int __fastcall GetHeight();
+    void SetBounds(TRect value);
+    void SetHelpTopic(AnsiString value);
+    void SetFlags(unsigned int value);
+    void SetCentered(bool value);
+    bool GetCentered();
+    TPoint GetSize();
+    void SetSize(TPoint value);
+    void SetCaption(AnsiString value);
+    AnsiString GetCaption();
+    TFarDialogItem *GetItem(int Index);
+    TRect GetClientRect();
+    int GetItemCount();
+    void SetItemFocused(TFarDialogItem *value);
+    TPoint GetClientSize();
+    TPoint GetMaxSize();
+    void SetWidth(int value);
+    int GetWidth();
+    void SetHeight(int value);
+    int GetHeight();
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
@@ -685,15 +685,15 @@ public:
     __property bool Enabled = { read = FEnabled, write = SetEnabled };
 
 protected:
-    __fastcall TFarDialogContainer(TFarDialog *ADialog);
-    __fastcall ~TFarDialogContainer();
+    TFarDialogContainer(TFarDialog *ADialog);
+    ~TFarDialogContainer();
 
     __property TFarDialog *Dialog = { read = FDialog };
 
-    void __fastcall Add(TFarDialogItem *Item);
-    void __fastcall Remove(TFarDialogItem *Item);
-    virtual void __fastcall Change();
-    AnsiString __fastcall GetMsg(int MsgId);
+    void Add(TFarDialogItem *Item);
+    void Remove(TFarDialogItem *Item);
+    virtual void Change();
+    AnsiString GetMsg(int MsgId);
 
 private:
     int FLeft;
@@ -702,8 +702,8 @@ private:
     TFarDialog *FDialog;
     bool FEnabled;
 
-    void __fastcall SetPosition(int Index, int value);
-    void __fastcall SetEnabled(bool value);
+    void SetPosition(int Index, int value);
+    void SetEnabled(bool value);
 };
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
@@ -739,11 +739,11 @@ public:
     __property TNotifyEvent OnExit = { read = FOnExit, write = FOnExit };
     __property TFarMouseClickEvent OnMouseClick = { read = FOnMouseClick, write = FOnMouseClick };
 
-    void __fastcall Move(int DeltaX, int DeltaY);
-    void __fastcall MoveAt(int X, int Y);
-    virtual bool __fastcall CanFocus();
-    bool __fastcall Focused();
-    void __fastcall SetFocus();
+    void Move(int DeltaX, int DeltaY);
+    void MoveAt(int X, int Y);
+    virtual bool CanFocus();
+    bool Focused();
+    void SetFocus();
 
 protected:
     int FDefaultType;
@@ -752,8 +752,8 @@ protected:
     TNotifyEvent FOnExit;
     TFarMouseClickEvent FOnMouseClick;
 
-    __fastcall TFarDialogItem(TFarDialog *ADialog, int AType);
-    __fastcall ~TFarDialogItem();
+    TFarDialogItem(TFarDialog *ADialog, int AType);
+    ~TFarDialogItem();
 
     __property FarDialogItem *DialogItem = { read = GetDialogItem };
     __property bool CenterGroup = { read = GetFlag, write = SetFlag, index = DIF_CENTERGROUP };
@@ -764,44 +764,44 @@ protected:
     __property TFarDialogContainer *Container = { read = FContainer, write = SetContainer };
     __property bool Checked = { read = GetChecked, write = SetChecked };
 
-    virtual void __fastcall Detach();
-    void __fastcall DialogResized();
-    long __fastcall SendMessage(int Msg, int Param);
-    long __fastcall SendDialogMessage(int Msg, int Param1, int Param2);
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    long __fastcall DefaultItemProc(int Msg, int Param);
-    long __fastcall DefaultDialogProc(int Msg, int Param1, int Param2);
-    virtual long __fastcall FailItemProc(int Msg, long Param);
-    virtual void __fastcall Change();
-    void __fastcall DialogChange();
-    void __fastcall SetAlterType(int Index, bool value);
-    bool __fastcall GetAlterType(int Index);
-    virtual void __fastcall UpdateBounds();
-    virtual void __fastcall ResetBounds();
-    virtual void __fastcall Init();
-    virtual bool __fastcall CloseQuery();
-    virtual bool __fastcall MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
-    virtual bool __fastcall MouseClick(MOUSE_EVENT_RECORD *Event);
-    TPoint __fastcall MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-    void __fastcall Text(int X, int Y, int Color, AnsiString Str, bool Oem = false);
-    void __fastcall Redraw();
-    virtual bool __fastcall HotKey(char HotKey);
+    virtual void Detach();
+    void DialogResized();
+    long SendMessage(int Msg, int Param);
+    long SendDialogMessage(int Msg, int Param1, int Param2);
+    virtual long ItemProc(int Msg, long Param);
+    long DefaultItemProc(int Msg, int Param);
+    long DefaultDialogProc(int Msg, int Param1, int Param2);
+    virtual long FailItemProc(int Msg, long Param);
+    virtual void Change();
+    void DialogChange();
+    void SetAlterType(int Index, bool value);
+    bool GetAlterType(int Index);
+    virtual void UpdateBounds();
+    virtual void ResetBounds();
+    virtual void Init();
+    virtual bool CloseQuery();
+    virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
+    virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
+    TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
+    void Text(int X, int Y, int Color, AnsiString Str, bool Oem = false);
+    void Redraw();
+    virtual bool HotKey(char HotKey);
 
-    virtual bool __fastcall GetIsEmpty();
-    virtual void __fastcall SetDataInternal(const AnsiString value);
-    virtual void __fastcall SetData(const AnsiString value);
-    virtual AnsiString __fastcall GetData();
-    void __fastcall UpdateData(const AnsiString value);
-    void __fastcall UpdateSelected(int value);
+    virtual bool GetIsEmpty();
+    virtual void SetDataInternal(const AnsiString value);
+    virtual void SetData(const AnsiString value);
+    virtual AnsiString GetData();
+    void UpdateData(const AnsiString value);
+    void UpdateSelected(int value);
 
-    bool __fastcall GetFlag(int Index);
-    void __fastcall SetFlag(int Index, bool value);
+    bool GetFlag(int Index);
+    void SetFlag(int Index, bool value);
 
-    virtual void __fastcall DoFocus();
-    virtual void __fastcall DoExit();
+    virtual void DoFocus();
+    virtual void DoExit();
 
-    char __fastcall GetColor(int Index);
-    void __fastcall SetColor(int Index, char value);
+    char GetColor(int Index);
+    void SetColor(int Index, char value);
 
 private:
     TFarDialog *FDialog;
@@ -817,50 +817,50 @@ private:
     unsigned long FColorMask;
     bool FOem;
 
-    void __fastcall SetBounds(TRect value);
-    void __fastcall SetFlags(unsigned int value);
-    void __fastcall UpdateFlags(unsigned int value);
-    TRect __fastcall GetActualBounds();
-    unsigned int __fastcall GetFlags();
-    void __fastcall SetType(int value);
-    int __fastcall GetType();
-    void __fastcall SetEnabledFollow(TFarDialogItem *value);
-    void __fastcall SetEnabledDependency(TFarDialogItem *value);
-    void __fastcall SetEnabledDependencyNegative(TFarDialogItem *value);
-    void __fastcall SetSelected(int value);
-    int __fastcall GetSelected();
-    void __fastcall SetCoordinate(int Index, int value);
-    int __fastcall GetCoordinate(int Index);
-    void __fastcall SetWidth(int value);
-    int __fastcall GetWidth();
-    void __fastcall SetHeight(int value);
-    int __fastcall GetHeight();
-    TFarDialogItem *__fastcall GetPrevItem();
-    void __fastcall UpdateFocused(bool value);
-    void __fastcall SetContainer(TFarDialogContainer *value);
-    void __fastcall SetEnabled(bool value);
-    void __fastcall UpdateEnabled();
-    void __fastcall SetChecked(bool value);
-    bool __fastcall GetChecked();
-    FarDialogItem *__fastcall GetDialogItem();
+    void SetBounds(TRect value);
+    void SetFlags(unsigned int value);
+    void UpdateFlags(unsigned int value);
+    TRect GetActualBounds();
+    unsigned int GetFlags();
+    void SetType(int value);
+    int GetType();
+    void SetEnabledFollow(TFarDialogItem *value);
+    void SetEnabledDependency(TFarDialogItem *value);
+    void SetEnabledDependencyNegative(TFarDialogItem *value);
+    void SetSelected(int value);
+    int GetSelected();
+    void SetCoordinate(int Index, int value);
+    int GetCoordinate(int Index);
+    void SetWidth(int value);
+    int GetWidth();
+    void SetHeight(int value);
+    int GetHeight();
+    TFarDialogItem *GetPrevItem();
+    void UpdateFocused(bool value);
+    void SetContainer(TFarDialogContainer *value);
+    void SetEnabled(bool value);
+    void UpdateEnabled();
+    void SetChecked(bool value);
+    bool GetChecked();
+    FarDialogItem *GetDialogItem();
 };
 //---------------------------------------------------------------------------
 class TFarBox : public TFarDialogItem
 {
 public:
-    __fastcall TFarBox(TFarDialog *ADialog);
+    TFarBox(TFarDialog *ADialog);
 
     __property AnsiString Caption = { read = Data, write = Data };
     __property bool Double = { read = GetAlterType, write = SetAlterType, index = DI_DOUBLEBOX };
 };
 //---------------------------------------------------------------------------
-typedef void __fastcall (__closure *TFarButtonClick)(TFarButton *Sender, bool &Close);
+typedef void (__closure *TFarButtonClick)(TFarButton *Sender, bool &Close);
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem
 {
 public:
-    __fastcall TFarButton(TFarDialog *ADialog);
+    TFarButton(TFarDialog *ADialog);
 
     __property AnsiString Caption = { read = Data, write = Data };
     __property int Result = { read = FResult, write = FResult };
@@ -870,28 +870,28 @@ public:
     __property TFarButtonClick OnClick = { read = FOnClick, write = FOnClick };
 
 protected:
-    virtual void __fastcall SetDataInternal(const AnsiString value);
-    virtual AnsiString __fastcall GetData();
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual bool __fastcall HotKey(char HotKey);
+    virtual void SetDataInternal(const AnsiString value);
+    virtual AnsiString GetData();
+    virtual long ItemProc(int Msg, long Param);
+    virtual bool HotKey(char HotKey);
 
 private:
     int FResult;
     TFarButtonClick FOnClick;
     TFarButtonBrackets FBrackets;
 
-    void __fastcall SetDefault(bool value);
-    bool __fastcall GetDefault();
-    void __fastcall SetBrackets(TFarButtonBrackets value);
+    void SetDefault(bool value);
+    bool GetDefault();
+    void SetBrackets(TFarButtonBrackets value);
 };
 //---------------------------------------------------------------------------
-typedef void __fastcall (__closure *TFarAllowChange)(TFarDialogItem *Sender,
+typedef void (__closure *TFarAllowChange)(TFarDialogItem *Sender,
         long NewState, bool &AllowChange);
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
 {
 public:
-    __fastcall TFarCheckBox(TFarDialog *ADialog);
+    TFarCheckBox(TFarDialog *ADialog);
 
     __property AnsiString Caption = { read = Data, write = Data };
     __property bool AllowGrayed = { read = GetFlag, write = SetFlag, index = DIF_3STATE };
@@ -901,15 +901,15 @@ public:
 
 protected:
     TFarAllowChange FOnAllowChange;
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual bool __fastcall GetIsEmpty();
-    virtual void __fastcall SetData(const AnsiString value);
+    virtual long ItemProc(int Msg, long Param);
+    virtual bool GetIsEmpty();
+    virtual void SetData(const AnsiString value);
 };
 //---------------------------------------------------------------------------
 class TFarRadioButton : public TFarDialogItem
 {
 public:
-    __fastcall TFarRadioButton(TFarDialog *ADialog);
+    TFarRadioButton(TFarDialog *ADialog);
 
     __property Checked;
     __property AnsiString Caption = { read = Data, write = Data };
@@ -917,15 +917,15 @@ public:
 
 protected:
     TFarAllowChange FOnAllowChange;
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual bool __fastcall GetIsEmpty();
-    virtual void __fastcall SetData(const AnsiString value);
+    virtual long ItemProc(int Msg, long Param);
+    virtual bool GetIsEmpty();
+    virtual void SetData(const AnsiString value);
 };
 //---------------------------------------------------------------------------
 class TFarEdit : public TFarDialogItem
 {
 public:
-    __fastcall TFarEdit(TFarDialog *ADialog);
+    TFarEdit(TFarDialog *ADialog);
 
     __property AnsiString Text = { read = Data, write = Data };
     __property int AsInteger = { read = GetAsInteger, write = SetAsInteger };
@@ -938,46 +938,46 @@ public:
     __property bool ReadOnly = { read = GetFlag, write = SetFlag, index = DIF_READONLY };
 
 protected:
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual void __fastcall Detach();
+    virtual long ItemProc(int Msg, long Param);
+    virtual void Detach();
 
 private:
-    AnsiString __fastcall GetHistoryMask(int Index);
-    void __fastcall SetHistoryMask(int Index, AnsiString value);
-    void __fastcall SetAsInteger(int value);
-    int __fastcall GetAsInteger();
+    AnsiString GetHistoryMask(int Index);
+    void SetHistoryMask(int Index, AnsiString value);
+    void SetAsInteger(int value);
+    int GetAsInteger();
 };
 //---------------------------------------------------------------------------
 class TFarSeparator : public TFarDialogItem
 {
 public:
-    __fastcall TFarSeparator(TFarDialog *ADialog);
+    TFarSeparator(TFarDialog *ADialog);
 
     __property bool Double = { read = GetDouble, write = SetDouble };
     __property AnsiString Caption = { read = Data, write = Data };
     __property int Position = { read = GetPosition, write = SetPosition };
 
 protected:
-    virtual void __fastcall ResetBounds();
+    virtual void ResetBounds();
 
 private:
-    void __fastcall SetDouble(bool value);
-    bool __fastcall GetDouble();
-    void __fastcall SetPosition(int value);
-    int __fastcall GetPosition();
+    void SetDouble(bool value);
+    bool GetDouble();
+    void SetPosition(int value);
+    int GetPosition();
 };
 //---------------------------------------------------------------------------
 class TFarText : public TFarDialogItem
 {
 public:
-    __fastcall TFarText(TFarDialog *ADialog);
+    TFarText(TFarDialog *ADialog);
 
     __property AnsiString Caption = { read = Data, write = Data };
     __property CenterGroup;
     __property char Color = { read = GetColor, write = SetColor, index = 0 };
 
 protected:
-    virtual void __fastcall SetData(const AnsiString value);
+    virtual void SetData(const AnsiString value);
 };
 //---------------------------------------------------------------------------
 class FarList;
@@ -991,10 +991,10 @@ class TFarList : public TStringList
     friend TFarLister;
     friend TFarComboBox;
 public:
-    __fastcall TFarList(TFarDialogItem *ADialogItem = NULL);
-    virtual __fastcall ~TFarList();
+    TFarList(TFarDialogItem *ADialogItem = NULL);
+    virtual ~TFarList();
 
-    virtual void __fastcall Assign(TPersistent *Source);
+    virtual void Assign(TPersistent *Source);
 
     __property int Selected = { read = GetSelected, write = SetSelected };
     __property int TopIndex = { read = GetTopIndex, write = SetTopIndex };
@@ -1005,14 +1005,14 @@ public:
     __property bool Checked[int Index] = { read = GetFlag, write = SetFlag, index = LIF_CHECKED };
 
 protected:
-    virtual void __fastcall Changed();
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual void __fastcall Init();
-    void __fastcall UpdatePosition(int Position);
-    int __fastcall GetPosition();
-    virtual void __fastcall Put(int Index, const AnsiString S);
-    void __fastcall SetCurPos(int Position, int TopIndex);
-    void __fastcall UpdateItem(int Index);
+    virtual void Changed();
+    virtual long ItemProc(int Msg, long Param);
+    virtual void Init();
+    void UpdatePosition(int Position);
+    int GetPosition();
+    virtual void Put(int Index, const AnsiString S);
+    void SetCurPos(int Position, int TopIndex);
+    void UpdateItem(int Index);
 
     __property FarList *ListItems = { read = FListItems };
     __property TFarDialogItem *DialogItem = { read = FDialogItem };
@@ -1022,17 +1022,17 @@ private:
     TFarDialogItem *FDialogItem;
     bool FNoDialogUpdate;
 
-    inline int __fastcall GetSelectedInt(bool Init);
-    int __fastcall GetSelected();
-    void __fastcall SetSelected(int value);
-    int __fastcall GetTopIndex();
-    void __fastcall SetTopIndex(int value);
-    int __fastcall GetMaxLength();
-    int __fastcall GetVisibleCount();
-    unsigned int __fastcall GetFlags(int Index);
-    void __fastcall SetFlags(int Index, unsigned int value);
-    bool __fastcall GetFlag(int Index, int Flag);
-    void __fastcall SetFlag(int Index, int Flag, bool value);
+    inline int GetSelectedInt(bool Init);
+    int GetSelected();
+    void SetSelected(int value);
+    int GetTopIndex();
+    void SetTopIndex(int value);
+    int GetMaxLength();
+    int GetVisibleCount();
+    unsigned int GetFlags(int Index);
+    void SetFlags(int Index, unsigned int value);
+    bool GetFlag(int Index, int Flag);
+    void SetFlag(int Index, int Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
@@ -1040,10 +1040,10 @@ enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
 class TFarListBox : public TFarDialogItem
 {
 public:
-    __fastcall TFarListBox(TFarDialog *ADialog);
-    __fastcall ~TFarListBox();
+    TFarListBox(TFarDialog *ADialog);
+    ~TFarListBox();
 
-    void __fastcall SetItems(TStrings *value);
+    void SetItems(TStrings *value);
 
     __property bool NoAmpersand = { read = GetFlag, write = SetFlag, index = DIF_LISTNOAMPERSAND };
     __property bool AutoHighlight = { read = GetFlag, write = SetFlag, index = DIF_LISTAUTOHIGHLIGHT };
@@ -1053,27 +1053,27 @@ public:
     __property TFarListBoxAutoSelect AutoSelect = { read = FAutoSelect, write = SetAutoSelect };
 
 protected:
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual void __fastcall Init();
-    virtual bool __fastcall CloseQuery();
+    virtual long ItemProc(int Msg, long Param);
+    virtual void Init();
+    virtual bool CloseQuery();
 
 private:
     TFarList *FList;
     TFarListBoxAutoSelect FAutoSelect;
     bool FDenyClose;
 
-    void __fastcall SetAutoSelect(TFarListBoxAutoSelect value);
-    void __fastcall UpdateMouseReaction();
-    void __fastcall SetList(TFarList *value);
+    void SetAutoSelect(TFarListBoxAutoSelect value);
+    void UpdateMouseReaction();
+    void SetList(TFarList *value);
 };
 //---------------------------------------------------------------------------
 class TFarComboBox : public TFarDialogItem
 {
 public:
-    __fastcall TFarComboBox(TFarDialog *ADialog);
-    __fastcall ~TFarComboBox();
+    TFarComboBox(TFarDialog *ADialog);
+    ~TFarComboBox();
 
-    void __fastcall ResizeToFitContent();
+    void ResizeToFitContent();
 
     __property bool NoAmpersand = { read = GetFlag, write = SetFlag, index = DIF_LISTNOAMPERSAND };
     __property bool AutoHighlight = { read = GetFlag, write = SetFlag, index = DIF_LISTAUTOHIGHLIGHT };
@@ -1084,8 +1084,8 @@ public:
     __property bool DropDownList = { read = GetFlag, write = SetFlag, index = DIF_DROPDOWNLIST };
 
 protected:
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual void __fastcall Init();
+    virtual long ItemProc(int Msg, long Param);
+    virtual void Init();
 
 private:
     TFarList *FList;
@@ -1094,27 +1094,27 @@ private:
 class TFarLister : public TFarDialogItem
 {
 public:
-    __fastcall TFarLister(TFarDialog *ADialog);
-    virtual __fastcall ~TFarLister();
+    TFarLister(TFarDialog *ADialog);
+    virtual ~TFarLister();
 
     __property TStrings *Items = { read = GetItems, write = SetItems };
     __property int TopIndex = { read = FTopIndex, write = SetTopIndex };
     __property bool ScrollBar = { read = GetScrollBar };
 
 protected:
-    virtual long __fastcall ItemProc(int Msg, long Param);
-    virtual void __fastcall DoFocus();
+    virtual long ItemProc(int Msg, long Param);
+    virtual void DoFocus();
 
 private:
     TStringList *FItems;
     int FTopIndex;
 
-    void __fastcall ItemsChange(TObject *Sender);
-    bool __fastcall GetScrollBar();
-    TStrings *__fastcall GetItems();
-    void __fastcall SetItems(TStrings *value);
-    void __fastcall SetTopIndex(int value);
+    void ItemsChange(TObject *Sender);
+    bool GetScrollBar();
+    TStrings *GetItems();
+    void SetItems(TStrings *value);
+    void SetTopIndex(int value);
 };
 //---------------------------------------------------------------------------
-AnsiString __fastcall StripHotKey(AnsiString Text);
+AnsiString StripHotKey(AnsiString Text);
 //---------------------------------------------------------------------------
