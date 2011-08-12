@@ -540,6 +540,7 @@ protected:
 
 //---------------------------------------------------------------------------
 typedef void (*TThreadMethod)();
+typedef void (*TNotifyEvent)(TObject *);
 //---------------------------------------------------------------------------
 
 class TFarDialogContainer;
