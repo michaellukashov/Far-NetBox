@@ -571,14 +571,14 @@ public:
 
     __property TRect Bounds = { read = FBounds, write = SetBounds };
     __property TRect ClientRect = { read = GetClientRect };
-    __property AnsiString HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
+    __property string HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
     __property unsigned int Flags = { read = FFlags, write = SetFlags };
     __property bool Centered = { read = GetCentered, write = SetCentered };
     __property TPoint Size = { read = GetSize, write = SetSize };
     __property TPoint ClientSize = { read = GetClientSize };
     __property int Width = { read = GetWidth, write = SetWidth };
     __property int Height = { read = GetHeight, write = SetHeight };
-    __property AnsiString Caption = { read = GetCaption, write = SetCaption };
+    __property string Caption = { read = GetCaption, write = SetCaption };
     __property HANDLE Handle = { read = FHandle };
     __property TFarButton *DefaultButton = { read = FDefaultButton };
     __property TFarBox *BorderBox = { read = FBorderBox };
@@ -614,7 +614,7 @@ protected:
     virtual void Change();
     virtual void Init();
     virtual bool CloseQuery();
-    AnsiString GetMsg(int MsgId);
+    string GetMsg(int MsgId);
     void GetNextItemPosition(int &Left, int &Top);
     void RefreshBounds();
     virtual void Idle();
@@ -633,7 +633,7 @@ private:
     TCustomFarPlugin *FFarPlugin;
     TRect FBounds;
     unsigned int FFlags;
-    AnsiString FHelpTopic;
+    string FHelpTopic;
     bool FVisible;
     TObjectList *FItems;
     TObjectList *FContainers;
@@ -655,14 +655,14 @@ private:
     TThreadMethod FSynchronizeMethod;
 
     void SetBounds(TRect value);
-    void SetHelpTopic(AnsiString value);
+    void SetHelpTopic(string value);
     void SetFlags(unsigned int value);
     void SetCentered(bool value);
     bool GetCentered();
     TPoint GetSize();
     void SetSize(TPoint value);
-    void SetCaption(AnsiString value);
-    AnsiString GetCaption();
+    void SetCaption(string value);
+    string GetCaption();
     TFarDialogItem *GetItem(int Index);
     TRect GetClientRect();
     int GetItemCount();
@@ -693,7 +693,7 @@ protected:
     void Add(TFarDialogItem *Item);
     void Remove(TFarDialogItem *Item);
     virtual void Change();
-    AnsiString GetMsg(int MsgId);
+    string GetMsg(int MsgId);
 
 private:
     int FLeft;
@@ -757,7 +757,7 @@ protected:
 
     __property FarDialogItem *DialogItem = { read = GetDialogItem };
     __property bool CenterGroup = { read = GetFlag, write = SetFlag, index = DIF_CENTERGROUP };
-    __property AnsiString Data = { read = GetData, write = SetData };
+    __property string Data = { read = GetData, write = SetData };
     __property int Type = { read = GetType, write = SetType };
     __property int Item = { read = FItem };
     __property int Selected = { read = GetSelected, write = SetSelected };
@@ -783,15 +783,15 @@ protected:
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
     TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-    void Text(int X, int Y, int Color, AnsiString Str, bool Oem = false);
+    void Text(int X, int Y, int Color, string Str, bool Oem = false);
     void Redraw();
     virtual bool HotKey(char HotKey);
 
     virtual bool GetIsEmpty();
-    virtual void SetDataInternal(const AnsiString value);
-    virtual void SetData(const AnsiString value);
-    virtual AnsiString GetData();
-    void UpdateData(const AnsiString value);
+    virtual void SetDataInternal(const string value);
+    virtual void SetData(const string value);
+    virtual string GetData();
+    void UpdateData(const string value);
     void UpdateSelected(int value);
 
     bool GetFlag(int Index);
@@ -850,7 +850,7 @@ class TFarBox : public TFarDialogItem
 public:
     TFarBox(TFarDialog *ADialog);
 
-    __property AnsiString Caption = { read = Data, write = Data };
+    __property string Caption = { read = Data, write = Data };
     __property bool Double = { read = GetAlterType, write = SetAlterType, index = DI_DOUBLEBOX };
 };
 //---------------------------------------------------------------------------
@@ -862,7 +862,7 @@ class TFarButton : public TFarDialogItem
 public:
     TFarButton(TFarDialog *ADialog);
 
-    __property AnsiString Caption = { read = Data, write = Data };
+    __property string Caption = { read = Data, write = Data };
     __property int Result = { read = FResult, write = FResult };
     __property bool Default = { read = GetDefault, write = SetDefault };
     __property TFarButtonBrackets Brackets = { read = FBrackets, write = SetBrackets };
@@ -870,8 +870,8 @@ public:
     __property TFarButtonClick OnClick = { read = FOnClick, write = FOnClick };
 
 protected:
-    virtual void SetDataInternal(const AnsiString value);
-    virtual AnsiString GetData();
+    virtual void SetDataInternal(const string value);
+    virtual string GetData();
     virtual long ItemProc(int Msg, long Param);
     virtual bool HotKey(char HotKey);
 
@@ -893,7 +893,7 @@ class TFarCheckBox : public TFarDialogItem
 public:
     TFarCheckBox(TFarDialog *ADialog);
 
-    __property AnsiString Caption = { read = Data, write = Data };
+    __property string Caption = { read = Data, write = Data };
     __property bool AllowGrayed = { read = GetFlag, write = SetFlag, index = DIF_3STATE };
     __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
     __property Checked;
@@ -903,7 +903,7 @@ protected:
     TFarAllowChange FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const AnsiString value);
+    virtual void SetData(const string value);
 };
 //---------------------------------------------------------------------------
 class TFarRadioButton : public TFarDialogItem
@@ -912,14 +912,14 @@ public:
     TFarRadioButton(TFarDialog *ADialog);
 
     __property Checked;
-    __property AnsiString Caption = { read = Data, write = Data };
+    __property string Caption = { read = Data, write = Data };
     __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
 
 protected:
     TFarAllowChange FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const AnsiString value);
+    virtual void SetData(const string value);
 };
 //---------------------------------------------------------------------------
 class TFarEdit : public TFarDialogItem
@@ -927,12 +927,12 @@ class TFarEdit : public TFarDialogItem
 public:
     TFarEdit(TFarDialog *ADialog);
 
-    __property AnsiString Text = { read = Data, write = Data };
+    __property string Text = { read = Data, write = Data };
     __property int AsInteger = { read = GetAsInteger, write = SetAsInteger };
     __property bool Password = { read = GetAlterType, write = SetAlterType, index = DI_PSWEDIT };
     __property bool Fixed = { read = GetAlterType, write = SetAlterType, index = DI_FIXEDIT };
-    __property AnsiString Mask = { read = GetHistoryMask, write = SetHistoryMask, index = 1 };
-    __property AnsiString History = { read = GetHistoryMask, write = SetHistoryMask, index = 0 };
+    __property string Mask = { read = GetHistoryMask, write = SetHistoryMask, index = 1 };
+    __property string History = { read = GetHistoryMask, write = SetHistoryMask, index = 0 };
     __property bool ExpandEnvVars = { read = GetFlag, write = SetFlag, index = DIF_EDITEXPAND };
     __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
     __property bool ReadOnly = { read = GetFlag, write = SetFlag, index = DIF_READONLY };
@@ -942,8 +942,8 @@ protected:
     virtual void Detach();
 
 private:
-    AnsiString GetHistoryMask(int Index);
-    void SetHistoryMask(int Index, AnsiString value);
+    string GetHistoryMask(int Index);
+    void SetHistoryMask(int Index, string value);
     void SetAsInteger(int value);
     int GetAsInteger();
 };
@@ -954,7 +954,7 @@ public:
     TFarSeparator(TFarDialog *ADialog);
 
     __property bool Double = { read = GetDouble, write = SetDouble };
-    __property AnsiString Caption = { read = Data, write = Data };
+    __property string Caption = { read = Data, write = Data };
     __property int Position = { read = GetPosition, write = SetPosition };
 
 protected:
@@ -972,12 +972,12 @@ class TFarText : public TFarDialogItem
 public:
     TFarText(TFarDialog *ADialog);
 
-    __property AnsiString Caption = { read = Data, write = Data };
+    __property string Caption = { read = Data, write = Data };
     __property CenterGroup;
     __property char Color = { read = GetColor, write = SetColor, index = 0 };
 
 protected:
-    virtual void SetData(const AnsiString value);
+    virtual void SetData(const string value);
 };
 //---------------------------------------------------------------------------
 class FarList;
@@ -1010,7 +1010,7 @@ protected:
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
-    virtual void Put(int Index, const AnsiString S);
+    virtual void Put(int Index, const string S);
     void SetCurPos(int Position, int TopIndex);
     void UpdateItem(int Index);
 
@@ -1079,7 +1079,7 @@ public:
     __property bool AutoHighlight = { read = GetFlag, write = SetFlag, index = DIF_LISTAUTOHIGHLIGHT };
     __property bool WrapMode = { read = GetFlag, write = SetFlag, index = DIF_LISTWRAPMODE };
     __property TFarList *Items = { read = FList };
-    __property AnsiString Text = { read = Data, write = Data };
+    __property string Text = { read = Data, write = Data };
     __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
     __property bool DropDownList = { read = GetFlag, write = SetFlag, index = DIF_DROPDOWNLIST };
 
@@ -1116,5 +1116,5 @@ private:
     void SetTopIndex(int value);
 };
 //---------------------------------------------------------------------------
-AnsiString StripHotKey(AnsiString Text);
+string StripHotKey(string Text);
 //---------------------------------------------------------------------------
