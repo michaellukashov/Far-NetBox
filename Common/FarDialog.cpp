@@ -28,6 +28,7 @@ string StripHotKey(string Text)
     }
     return Text;
 }
+
 //---------------------------------------------------------------------------
 TRect Rect(int Left, int Top, int Right, int Bottom)
 {
@@ -103,6 +104,9 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     FBorderBox = new TFarBox(this);
     FBorderBox->Bounds = TRect(3, 1, -4, -2);
     FBorderBox->Double = true;
+
+    // Как-то инициализируем handle
+    SetBounds(Rect(0,0,0,0));
 }
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
