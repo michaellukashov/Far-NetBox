@@ -547,11 +547,11 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-typedef void (__closure *TFarKeyEvent)
+typedef void (*TFarKeyEvent)
 (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
-typedef void (__closure *TFarMouseClickEvent)
+typedef void (*TFarMouseClickEvent)
 (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
-typedef void (__closure *TFarProcessGroupEvent)
+typedef void (*TFarProcessGroupEvent)
 (TFarDialogItem *Item, void *Arg);
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
@@ -854,7 +854,7 @@ public:
     __property bool Double = { read = GetAlterType, write = SetAlterType, index = DI_DOUBLEBOX };
 };
 //---------------------------------------------------------------------------
-typedef void (__closure *TFarButtonClick)(TFarButton *Sender, bool &Close);
+typedef void (*TFarButtonClick)(TFarButton *Sender, bool &Close);
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem
@@ -885,7 +885,7 @@ private:
     void SetBrackets(TFarButtonBrackets value);
 };
 //---------------------------------------------------------------------------
-typedef void (__closure *TFarAllowChange)(TFarDialogItem *Sender,
+typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
         long NewState, bool &AllowChange);
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
