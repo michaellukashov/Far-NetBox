@@ -271,6 +271,46 @@ private:
     }
 };
 
+//---------------------------------------------------------------------------
+class TObject
+{
+};
+
+struct TPoint
+{
+    int x;
+    int y;
+};
+
+struct TRect
+{
+    int Left;
+    int Top;
+    int Right;
+    int Bottom;
+};
+
+class TObjectList
+{
+};
+
+class TStrings // : public vector<string>
+{
+};
+
+class TList
+{
+};
+
+class TStringList
+{
+};
+
+class TDateTime
+{
+};
+
+//---------------------------------------------------------------------------
 class TCustomFarFileSystem;
 class TFarPanelModes;
 class TFarKeyBarTitles;
@@ -320,25 +360,6 @@ struct TFarMessageParams
     TFarMessageClickEvent ClickEvent;
     void *Token;
 };
-//---------------------------------------------------------------------------
-class TObject
-{
-};
-
-struct TPoint
-{
-    int x;
-    int y;
-};
-
-class TObjectList
-{
-};
-
-class TStrings // : public vector<string>
-{
-};
-
 //---------------------------------------------------------------------------
 class TCustomFarPlugin : public TObject
 {
