@@ -538,6 +538,10 @@ protected:
     bool                    _UseFrame;  ///< Dialog frame flag
 };
 
+//---------------------------------------------------------------------------
+typedef void (*TThreadMethod)();
+//---------------------------------------------------------------------------
+
 class TFarDialogContainer;
 class TFarDialogItem;
 class TFarButton;
