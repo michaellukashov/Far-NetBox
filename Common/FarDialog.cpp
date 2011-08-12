@@ -32,6 +32,48 @@ string StripHotKey(string Text)
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     TObject(), FBounds(-1, -1, 40, 10),
     Bounds(*this, &self::GetBounds, &self::SetBounds)
+    property<TFarDialog, TRect> ClientRect;
+    // __property string HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
+    property<TFarDialog, string> HelpTopic;
+    // __property unsigned int Flags = { read = FFlags, write = SetFlags };
+    property<TFarDialog, unsigned int> Flags;
+    // __property bool Centered = { read = GetCentered, write = SetCentered };
+    property<TFarDialog, bool> Centered;
+    // __property TPoint Size = { read = GetSize, write = SetSize };
+    property<TFarDialog, TPoint> Size;
+    // __property TPoint ClientSize = { read = GetClientSize };
+    property<TFarDialog, TPoint> ClientSize;
+    // __property int Width = { read = GetWidth, write = SetWidth };
+    property<TFarDialog, int> Width;
+    // __property int Height = { read = GetHeight, write = SetHeight };
+    property<TFarDialog, int> Height;
+    // __property string Caption = { read = GetCaption, write = SetCaption };
+    property<TFarDialog, string> Caption;
+    // __property HANDLE Handle = { read = FHandle };
+    property<TFarDialog, HANDLE> Handle;
+    // __property TFarButton *DefaultButton = { read = FDefaultButton };
+    property<TFarDialog, TFarButton *> DefaultButton;
+    // __property TFarBox *BorderBox = { read = FBorderBox };
+    property<TFarDialog, TFarBox *> BorderBox;
+    // __property TFarDialogItem *Item[int Index] = { read = GetItem };
+    property<TFarDialog, TFarDialogItem *> Item;
+    // __property int ItemCount = { read = GetItemCount };
+    property<TFarDialog, int> ItemCount;
+    // __property TItemPosition NextItemPosition = { read = FNextItemPosition, write = FNextItemPosition };
+    property<TFarDialog, TItemPosition> NextItemPosition;
+    // __property int DefaultGroup = { read = FDefaultGroup, write = FDefaultGroup };
+    property<TFarDialog, int> DefaultGroup;
+    // __property int Tag = { read = FTag, write = FTag };
+    property<TFarDialog, int> Tag;
+    // __property TFarDialogItem *ItemFocused = { read = FItemFocused, write = SetItemFocused };
+    property<TFarDialog, TFarDialogItem *> ItemFocused;
+    // __property int Result = { read = FResult };
+    property<TFarDialog, int> Result;
+    // __property TPoint MaxSize = { read = GetMaxSize };
+    property<TFarDialog, TPoint> MaxSize;
+
+    // __property TFarKeyEvent OnKey = { read = FOnKey, write = FOnKey };
+    property<TFarDialog, TFarKeyEvent> OnKey;
 {
     assert(AFarPlugin);
     FItems = new TObjectList();
