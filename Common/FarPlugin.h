@@ -322,6 +322,12 @@ class TObject
 {
 };
 
+struct TPoint
+{
+    int x;
+    int y;
+};
+
 //---------------------------------------------------------------------------
 class TCustomFarPlugin : public TObject
 {
