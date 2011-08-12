@@ -29,6 +29,13 @@ string StripHotKey(string Text)
     return Text;
 }
 //---------------------------------------------------------------------------
+TRect Rect(int Left, int Top, int Right, int Bottom)
+{
+    TRect result = {Left, Top, Right, Bottom};
+    return result;
+}
+
+//---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     TObject(), FBounds(-1, -1, 40, 10),
     Bounds(*this, &self::GetBounds, &self::SetBounds)
