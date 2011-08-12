@@ -8,14 +8,14 @@ public:
     typedef type (object::*get_proc)() const;
     typedef void (object::*set_proc)(type const &);
 
-    property(object &object, get_proc getpr, set_proc setpr)
-        : obj   (object)
+    property(object &object, get_proc getpr, set_proc setpr) :
+        obj(object)
         , getter(getpr)
         , setter(setpr)
     {
     }
 
-    operator type ()
+    operator type()
     {
         return get();
     }
@@ -33,7 +33,6 @@ public:
     }
 
 private:
-
     object &obj;
     get_proc getter;
     set_proc setter;
