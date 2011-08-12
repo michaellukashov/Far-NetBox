@@ -48,35 +48,4 @@ private:
         (obj.*setter)(value);
     }
 };
-/*
-class window
-{
-public:
 
-    property<window, std::string> title;
-
-    window(std::string const& title_text)
-    : title(*this, &window::get_title, &window::set_title)
-    {
-        // Как-то инициализируем handle
-        set_title(title_text);
-    }
-
-private:
-
-    HWND handle;
-
-    std::string get_title() const
-    {
-        char buffer[1024] = {0};
-        GetWindowTextA(handle, buffer, sizeof(buffer));
-        return buffer;
-    }
-
-    void set_title(const std::string& new_title)
-    {
-        SetWindowTextA(handle, new_title.c_str());
-    }
-};
-
-*/
