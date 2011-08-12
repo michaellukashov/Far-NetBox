@@ -5,8 +5,8 @@ class property
 {
 public:
 
-    typedef type (object::*get_proc)() const;
-    typedef void (object::*set_proc)(type const &);
+    typedef type(object::*get_proc)() const;
+    typedef void(object::*set_proc)(type const &);
 
     property(object &object, get_proc getpr, set_proc setpr) :
         obj(object)
