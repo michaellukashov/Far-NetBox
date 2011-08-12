@@ -153,7 +153,7 @@ TPoint TFarDialog::GetMaxSize()
     return P;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHelpTopic(AnsiString value)
+void TFarDialog::SetHelpTopic(string value)
 {
     if (HelpTopic != value)
     {
@@ -236,7 +236,7 @@ int TFarDialog::GetHeight()
     return Size.y;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetCaption(AnsiString value)
+void TFarDialog::SetCaption(string value)
 {
     if (Caption != value)
     {
@@ -244,7 +244,7 @@ void TFarDialog::SetCaption(AnsiString value)
     }
 }
 //---------------------------------------------------------------------------
-AnsiString TFarDialog::GetCaption()
+string TFarDialog::GetCaption()
 {
     return FBorderBox->Caption;
 }
@@ -703,7 +703,7 @@ int TFarDialog::ShowModal()
         assert(DefaultButton);
         assert(DefaultButton->Default);
 
-        AnsiString AHelpTopic = HelpTopic;
+        string AHelpTopic = HelpTopic;
 
         {
             TFarEnvGuard Guard;
@@ -860,7 +860,7 @@ void TFarDialog::SetItemFocused(TFarDialogItem *value)
     }
 }
 //---------------------------------------------------------------------------
-AnsiString TFarDialog::GetMsg(int MsgId)
+string TFarDialog::GetMsg(int MsgId)
 {
     return FFarPlugin->GetMsg(MsgId);
 }
@@ -928,7 +928,7 @@ TFarDialogContainer::~TFarDialogContainer()
     delete FItems;
 }
 //---------------------------------------------------------------------------
-AnsiString TFarDialogContainer::GetMsg(int MsgId)
+string TFarDialogContainer::GetMsg(int MsgId)
 {
     return Dialog->GetMsg(MsgId);
 }
@@ -1104,9 +1104,9 @@ unsigned int TFarDialogItem::GetFlags()
     return DialogItem->Flags;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetDataInternal(const AnsiString value)
+void TFarDialogItem::SetDataInternal(const string value)
 {
-    AnsiString FarData = value.SubString(1, sizeof(DialogItem->Data) - 1);
+    string FarData = value.SubString(1, sizeof(DialogItem->Data) - 1);
     if (!Oem)
     {
         StrToFar(FarData);
@@ -1119,7 +1119,7 @@ void TFarDialogItem::SetDataInternal(const AnsiString value)
     DialogChange();
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetData(const AnsiString value)
+void TFarDialogItem::SetData(const string value)
 {
     if (Data != value)
     {
@@ -1127,9 +1127,9 @@ void TFarDialogItem::SetData(const AnsiString value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::UpdateData(const AnsiString value)
+void TFarDialogItem::UpdateData(const string value)
 {
-    AnsiString FarData = value.SubString(1, sizeof(DialogItem->Data) - 1);
+    string FarData = value.SubString(1, sizeof(DialogItem->Data) - 1);
     if (!Oem)
     {
         StrToFar(FarData);
@@ -1137,9 +1137,9 @@ void TFarDialogItem::UpdateData(const AnsiString value)
     strcpy(DialogItem->Data, FarData.c_str());
 }
 //---------------------------------------------------------------------------
-AnsiString TFarDialogItem::GetData()
+string TFarDialogItem::GetData()
 {
-    AnsiString Result = DialogItem->Data;
+    string Result = DialogItem->Data;
     if (!Oem)
     {
         StrFromFar(Result);
@@ -1606,7 +1606,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
     return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<long>(Event));
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::Text(int X, int Y, int Color, AnsiString Str, bool AOem)
+void TFarDialogItem::Text(int X, int Y, int Color, string Str, bool AOem)
 {
     if (!AOem && !Oem)
     {
@@ -1662,9 +1662,9 @@ TFarButton::TFarButton(TFarDialog *ADialog) :
     FBrackets = brNormal;
 }
 //---------------------------------------------------------------------------
-void TFarButton::SetDataInternal(const AnsiString value)
+void TFarButton::SetDataInternal(const string value)
 {
-    AnsiString AValue;
+    string AValue;
     switch (FBrackets)
     {
     case brTight:
@@ -1704,9 +1704,9 @@ void TFarButton::SetDataInternal(const AnsiString value)
     }
 }
 //---------------------------------------------------------------------------
-AnsiString TFarButton::GetData()
+string TFarButton::GetData()
 {
-    AnsiString Result = TFarDialogItem::GetData();
+    string Result = TFarDialogItem::GetData();
     if ((FBrackets == brTight) || (FBrackets == brSpace))
     {
         bool HasBrackets = (Result.Length() >= 2) &&
@@ -1752,7 +1752,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets value)
 {
     if (FBrackets != value)
     {
-        AnsiString AData = Data;
+        string AData = Data;
         SetFlag(DIF_NOBRACKETS, (value != brNormal));
         FBrackets = value;
         SetDataInternal(AData);
@@ -1838,7 +1838,7 @@ bool TFarCheckBox::GetIsEmpty()
     return Checked != BSTATE_CHECKED;
 }
 //---------------------------------------------------------------------------
-void TFarCheckBox::SetData(const AnsiString value)
+void TFarCheckBox::SetData(const string value)
 {
     TFarDialogItem::SetData(value);
     if (Left >= 0 || Right >= 0)
@@ -1882,7 +1882,7 @@ bool TFarRadioButton::GetIsEmpty()
     return !Checked;
 }
 //---------------------------------------------------------------------------
-void TFarRadioButton::SetData(const AnsiString value)
+void TFarRadioButton::SetData(const string value)
 {
     TFarDialogItem::SetData(value);
     if (Left >= 0 || Right >= 0)
@@ -1913,9 +1913,9 @@ long TFarEdit::ItemProc(int Msg, long Param)
     return TFarDialogItem::ItemProc(Msg, Param);
 }
 //---------------------------------------------------------------------------
-AnsiString TFarEdit::GetHistoryMask(int Index)
+string TFarEdit::GetHistoryMask(int Index)
 {
-    AnsiString Result =
+    string Result =
         ((Index == 0) && (Flags & DIF_HISTORY)) ||
         ((Index == 1) && (Flags & DIF_MASKEDIT)) ? DialogItem->Mask : "";
     if (!Oem)
@@ -1925,7 +1925,7 @@ AnsiString TFarEdit::GetHistoryMask(int Index)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TFarEdit::SetHistoryMask(int Index, AnsiString value)
+void TFarEdit::SetHistoryMask(int Index, string value)
 {
     if (GetHistoryMask(Index) != value)
     {
@@ -2030,7 +2030,7 @@ TFarText::TFarText(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-void TFarText::SetData(const AnsiString value)
+void TFarText::SetData(const string value)
 {
     TFarDialogItem::SetData(value);
     if (Left >= 0 || Right >= 0)
@@ -2089,7 +2089,7 @@ void TFarList::UpdateItem(int Index)
     DialogItem->SendMessage(DM_LISTUPDATE, (int)&ListUpdate);
 }
 //---------------------------------------------------------------------------
-void TFarList::Put(int Index, const AnsiString S)
+void TFarList::Put(int Index, const string S)
 {
     if ((DialogItem != NULL) && DialogItem->Dialog->Handle)
     {
@@ -2560,7 +2560,7 @@ long TFarLister::ItemProc(int Msg, long Param)
         int DisplayWidth = Width - (AScrollBar ? 1 : 0);
         int Color = Dialog->GetSystemColor(
                         FLAGSET(Dialog->Flags, FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
-        AnsiString Buf;
+        string Buf;
         for (int Row = 0; Row < Height; Row++)
         {
             int Index = TopIndex + Row;
@@ -2569,7 +2569,7 @@ long TFarLister::ItemProc(int Msg, long Param)
             {
                 Buf += Items->Strings[Index].SubString(1, DisplayWidth - 1);
             }
-            Buf += AnsiString::StringOfChar(' ', DisplayWidth - Buf.Length());
+            Buf += string::StringOfChar(' ', DisplayWidth - Buf.Length());
             StrToFar(Buf);
             if (AScrollBar)
             {
