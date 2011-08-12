@@ -19,6 +19,7 @@
 #pragma once
 
 #include "FarPlugin.h"
+#include "stdafx.h"
 
 #define MAX_SIZE -1
 
