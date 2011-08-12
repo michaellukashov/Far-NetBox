@@ -10,15 +10,15 @@
 // #include <Common.h>
 
 //---------------------------------------------------------------------------
-AnsiString StripHotKey(AnsiString Text)
+string StripHotKey(string Text)
 {
-    int Len = Text.Length();
+    int Len = Text.length();
     int Pos = 1;
     while (Pos <= Len)
     {
         if (Text[Pos] == '&')
         {
-            Text.Delete(Pos, 1);
+            Text.erase(Pos, 1);
             Len--;
         }
         else
