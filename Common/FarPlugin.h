@@ -308,7 +308,7 @@ struct TFarMessageParams
 {
     TFarMessageParams();
 
-    vector<string> *MoreMessages;
+    TStrings *MoreMessages;
     string CheckBoxLabel;
     bool CheckBox;
     unsigned int Timer;
@@ -329,6 +329,14 @@ struct TPoint
 {
     int x;
     int y;
+};
+
+class TObjectList
+{
+};
+
+class TStrings // : public vector<string>
+{
 };
 
 //---------------------------------------------------------------------------
@@ -373,15 +381,15 @@ public:
 
     static char *DuplicateStr(const string Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const string Title,
-                           const string Message, vector<string> *Buttons = NULL,
+                           const string Message, TStrings *Buttons = NULL,
                            TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
     int MaxMenuItemLength();
     int Menu(unsigned int Flags, string Title,
-                        string Bottom, vector<string> *Items, const int *BreakKeys,
+                        string Bottom, TStrings *Items, const int *BreakKeys,
                         int &BreakCode);
     int Menu(unsigned int Flags, const string Title,
-                        const string Bottom, vector<string> *Items);
+                        const string Bottom, TStrings *Items);
     int Menu(unsigned int Flags, const string Title,
                         const string Bottom, const FarMenuItem *Items, int Count,
                         const int *BreakKeys, int &BreakCode);
@@ -406,7 +414,7 @@ public:
     void FlushText();
     void WriteConsole(string Str);
     void FarCopyToClipboard(string Str);
-    void FarCopyToClipboard(vector<string> *Strings);
+    void FarCopyToClipboard(TStrings *Strings);
     int FarVersion();
     string FormatFarVersion(int Version);
     string TemporaryDir();
@@ -458,8 +466,8 @@ protected:
 
     virtual bool HandlesFunction(THandlesFunction Function);
     virtual void GetPluginInfoEx(long unsigned &Flags,
-                                            vector<string> *DiskMenuStrings, vector<string> *PluginMenuStrings,
-                                            vector<string> *PluginConfigStrings, vector<string> *CommandPrefixes) = 0;
+                                            TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
+                                            TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
     virtual bool ConfigureEx(int Item) = 0;
     virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
@@ -469,12 +477,12 @@ protected:
     virtual bool IsOldFar();
     virtual void OldFar();
     void ResetCachedInfo();
-    int MaxLength(vector<string> *Strings);
+    int MaxLength(TStrings *Strings);
     int FarMessage(unsigned int Flags,
-                              const string Title, const string Message, vector<string> *Buttons,
+                              const string Title, const string Message, TStrings *Buttons,
                               TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-                                 const string Title, const string Message, vector<string> *Buttons,
+                                 const string Title, const string Message, TStrings *Buttons,
                                  TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
@@ -577,7 +585,7 @@ class TFarPanelModes : public TObject
     friend class TCustomFarFileSystem;
 public:
     void SetPanelMode(int Mode, const string ColumnTypes = "",
-                                 const string ColumnWidths = "", vector<string> *ColumnTitles = NULL,
+                                 const string ColumnWidths = "", TStrings *ColumnTitles = NULL,
                                  bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
                                  bool CaseConversion = true, const string StatusColumnTypes = "",
                                  const string StatusColumnWidths = "");
@@ -787,7 +795,7 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(string Text, vector<string> *Result, int MaxWidth);
+void FarWrapText(string Text, TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
