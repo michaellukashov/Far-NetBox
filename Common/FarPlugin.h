@@ -360,7 +360,7 @@ public:
     virtual int ProcessEditorEvent(int Event, void *Param);
     virtual int ProcessEditorInput(const INPUT_RECORD *Rec);
 
-    virtual void HandleException(Exception *E, int OpMode = 0);
+    virtual void HandleException(exception *E, int OpMode = 0);
 
     static char *DuplicateStr(const string Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const string Title,
@@ -380,8 +380,8 @@ public:
                              string &Text, unsigned long Flags, string HistoryName = "",
                              int MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
     string GetMsg(int MsgId);
-    void SaveScreen(THandle &Screen);
-    void RestoreScreen(THandle &Screen);
+    void SaveScreen(HANDLE &Screen);
+    void RestoreScreen(HANDLE &Screen);
     bool CheckForEsc();
     bool Viewer(string FileName, unsigned int Flags,
                            string Title = "");
@@ -451,7 +451,7 @@ protected:
     virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
     virtual void HandleFileSystemException(TCustomFarFileSystem *FileSystem,
-            Exception *E, int OpMode = 0);
+            exception *E, int OpMode = 0);
     virtual bool IsOldFar();
     virtual void OldFar();
     void ResetCachedInfo();
@@ -535,7 +535,7 @@ protected:
     bool IsLeft();
     bool IsRight();
 
-    virtual void HandleException(Exception *E, int OpMode = 0);
+    virtual void HandleException(exception *E, int OpMode = 0);
 
     __property TFarPanelInfo *PanelInfo = { read = GetPanelInfo, index = 0 };
     __property TFarPanelInfo *AnotherPanelInfo = { read = GetPanelInfo, index = 1 };
