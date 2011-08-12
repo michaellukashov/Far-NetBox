@@ -30,7 +30,8 @@ string StripHotKey(string Text)
 }
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
-    TObject(), FBounds(-1, -1, 40, 10)
+    TObject(), FBounds(-1, -1, 40, 10),
+    Bounds(*this, &self::GetBounds, &self::SetBounds)
 {
     assert(AFarPlugin);
     FItems = new TObjectList();

@@ -566,6 +566,7 @@ class TFarDialog : public TObject
     friend TFarButton;
     friend TFarList;
     friend class TFarListBox;
+    typedef TFarDialog self;
 public:
     TFarDialog(TCustomFarPlugin *AFarPlugin);
     ~TFarDialog();
@@ -683,7 +684,8 @@ private:
     HANDLE FSynchronizeObjects[2];
     TThreadMethod FSynchronizeMethod;
 
-    void SetBounds(TRect value);
+    TRect GetBounds() const { return FBounds; }
+    void SetBounds(const TRect &value);
     void SetHelpTopic(string value);
     void SetFlags(unsigned int value);
     void SetCentered(bool value);
