@@ -664,7 +664,7 @@ private:
     TCustomFarPlugin *FFarPlugin;
     TRect FBounds;
     unsigned int FFlags;
-    string FHelpTopic;
+    wstring FHelpTopic;
     bool FVisible;
     TObjectList *FItems;
     TObjectList *FContainers;
@@ -687,8 +687,8 @@ private:
 
     TRect GetBounds() const { return FBounds; }
     void SetBounds(const TRect &value);
-    string GetHelpTopic() const { return FHelpTopic; }
-    void SetHelpTopic(const string &value);
+    wstring GetHelpTopic() const { return FHelpTopic; }
+    void SetHelpTopic(const wstring &value);
     unsigned int GetFlags() const { return FFlags; }
     void SetFlags(const unsigned int &value);
     void SetCentered(const bool &value);
