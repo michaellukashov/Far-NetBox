@@ -7,7 +7,13 @@ public:
 
     typedef type(object::*get_proc)() const;
 
-    property(object &object, get_proc getpr) :
+    property_ro() :
+        obj(NULL)
+        , getter(NULL)
+        , setter(NULL)
+    {
+    }
+    property_ro(object *object, get_proc getpr) :
         obj(object)
         , getter(getpr)
     {
@@ -20,29 +26,29 @@ public:
 
     type const &operator = (type const &value)
     {
-        set(value);
+        // set(value);
         return value;
     }
 
-    property &operator = (property const &prt)
+    property_ro &operator = (property_ro const &prt)
     {
-        set(prt.get());
+        // set(prt.get());
         return *this;
     }
 
 private:
-    object &obj;
+    object *obj;
     get_proc getter;
 
     inline type get() const
     {
-        return (obj.*getter)();
+        return ((*obj).*getter)();
     }
 
-    inline void set(type const &value)
-    {
-        (obj.*setter)(value);
-    }
+    // inline void set(type const &value)
+    // {
+        // (obj.*setter)(value);
+    // }
 };
 
 template <class object, class type>
@@ -53,7 +59,13 @@ public:
     typedef type(object::*get_proc)() const;
     typedef void(object::*set_proc)(type const &);
 
-    property(object &object, get_proc getpr, set_proc setpr) :
+    property() :
+        obj(NULL)
+        , getter(NULL)
+        , setter(NULL)
+    {
+    }
+    property(object *object, get_proc getpr, set_proc setpr) :
         obj(object)
         , getter(getpr)
         , setter(setpr)
@@ -78,18 +90,18 @@ public:
     }
 
 private:
-    object &obj;
+    object *obj;
     get_proc getter;
     set_proc setter;
 
     inline type get() const
     {
-        return (obj.*getter)();
+        return ((*obj).*getter)();
     }
 
     inline void set(type const &value)
     {
-        (obj.*setter)(value);
+        ((*obj).*setter)(value);
     }
 };
 
