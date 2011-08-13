@@ -118,6 +118,16 @@ public:
         return *this;
     }
 
+    inline bool operator == (const type &value)
+    {
+        return get() == value;
+    }
+
+    inline bool operator != (const type &value)
+    {
+        return !(operator == (value));
+    }
+
 private:
     object *obj;
     get_proc getter;
