@@ -288,6 +288,14 @@ struct TRect
     int Top;
     int Right;
     int Bottom;
+    int Width() const { return Right - Left; }
+    int Height() const { return Bottom - Top; }
+    TRect() :
+        Left(0),
+        Top(0),
+        Right(0),
+        Bottom(0)
+    {}
     TRect(int left, int top, int right, int bottom) :
         Left(left),
         Top(top),
