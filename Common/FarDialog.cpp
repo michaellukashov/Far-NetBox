@@ -90,7 +90,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-    for (int i = 0; i < Items->Count; i++)
+    for (int i = 0; i < ItemCount; i++)
     {
         Item[i]->Detach();
     }
@@ -108,7 +108,7 @@ TFarDialog::~TFarDialog()
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetBounds(TRect value)
+void TFarDialog::SetBounds(const TRect &value)
 {
     if (Bounds != value)
     {
@@ -138,7 +138,7 @@ void TFarDialog::SetBounds(TRect value)
     }
 }
 //---------------------------------------------------------------------------
-TRect TFarDialog::GetClientRect()
+TRect TFarDialog::GetClientRect() const 
 {
     TRect R;
     if (FBorderBox)
@@ -165,8 +165,8 @@ TPoint TFarDialog::GetClientSize() const
     if (FBorderBox)
     {
         TRect R = FBorderBox->ActualBounds;
-        S.x = R.Width() + 1;
-        S.y = R.Height() + 1;
+        S.x = R.Width + 1;
+        S.y = R.Height + 1;
         S.x -= S.x > 4 ? 4 : S.x;
         S.y -= S.y > 2 ? 2 : S.y;
     }
