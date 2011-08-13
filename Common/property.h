@@ -101,7 +101,7 @@ public:
     {
     }
 
-    operator type()
+    operator type() const
     {
         return get();
     }
@@ -128,15 +128,28 @@ public:
         return !(operator == (value));
     }
 
-private:
-    object *obj;
-    get_proc getter;
-    set_proc setter;
+    // const type operator . () const
+    // {
+        // return get();
+    // }
+    // type *operator -> () const
+    // {
+        // return get();
+    // }
+    // type *operator * () const
+    // {
+        // return &get();
+    // }
 
     inline type get() const
     {
         return ((*obj).*getter)();
     }
+
+private:
+    object *obj;
+    get_proc getter;
+    set_proc setter;
 
     inline void set(const type &value)
     {
