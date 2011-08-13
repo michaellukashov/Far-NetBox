@@ -700,7 +700,7 @@ private:
     TFarDialogItem *GetItem(int Index) const;
     TRect GetClientRect() const;
     int GetItemCount() const;
-    void SetItemFocused(TFarDialogItem *value);
+    void SetItemFocused(TFarDialogItem * const &value);
     TPoint GetClientSize() const;
     TPoint GetMaxSize() const;
     void SetWidth(const int &value);
@@ -710,6 +710,16 @@ private:
     HANDLE GetHandle() const { return FHandle; }
     TFarButton *GetDefaultButton() const { return FDefaultButton; }
     TFarBox *GetBorderBox() const { return FBorderBox; }
+    TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
+    void SetNextItemPosition(const TItemPosition &value) { FNextItemPosition = value; }
+    int GetDefaultGroup() const { return FDefaultGroup; }
+    void SetDefaultGroup(const int &value) { FDefaultGroup = value; }
+    int GetTag() const { return FTag; }
+    void SetTag(const int &value) { FTag = value; }
+    TFarDialogItem *GetItemFocused() const { return FItemFocused; }
+    int GetResult() const { return FResult; }
+    TFarKeyEvent GetOnKey() const { return FOnKey; }
+    void SetOnKey(const TFarKeyEvent &value) { FOnKey = value; }
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject

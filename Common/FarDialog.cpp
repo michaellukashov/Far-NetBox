@@ -883,7 +883,7 @@ void TFarDialog::EnableItem(TFarDialogItem *Item, void *Arg)
     Item->Enabled = *static_cast<bool *>(Arg);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetItemFocused(TFarDialogItem *value)
+void TFarDialog::SetItemFocused(TFarDialogItem * const &value)
 {
     if (value != ItemFocused)
     {
