@@ -311,11 +311,11 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
     R.Left = Left;
     R.Top = Top;
 
-    if (FDialogItemsCapacity.get() == Items->Count())
+    if (FDialogItemsCapacity == Items.get()->Count())
     {
         int DialogItemsDelta = 10;
         FarDialogItem *NewDialogItems;
-        NewDialogItems = new FarDialogItem[Items->Count + DialogItemsDelta];
+        NewDialogItems = new FarDialogItem[Items.get()->Count() + DialogItemsDelta];
         if (FDialogItems)
         {
             memcpy(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
@@ -328,7 +328,7 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
     }
 
     assert(DialogItem);
-    DialogItem->FItem = Items->Add(DialogItem);
+    DialogItem->FItem = Items.get()->Add(DialogItem);
 
     R.Bottom = R.Top;
     DialogItem->Bounds = R;
