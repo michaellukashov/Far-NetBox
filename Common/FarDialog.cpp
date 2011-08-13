@@ -4,15 +4,15 @@
 #include <farcolor.hpp>
 #include <math.h>
 
-#include "FarDialog.h"
 #include "stdafx.h"
+#include "FarDialog.h"
 
 // #include <Common.h>
 
 //---------------------------------------------------------------------------
 string StripHotKey(string Text)
 {
-    int Len = Text.length();
+    size_t Len = Text.length();
     int Pos = 1;
     while (Pos <= Len)
     {
@@ -78,7 +78,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     DefaultButton = property_ro<self, TFarButton *>(this, &self::GetDefaultButton);
     BorderBox = property_ro<self, TFarBox *>(this, &self::GetBorderBox);
     Item = property_idx<self, TFarDialogItem *>(this, &self::GetItem);
-    ItemCount = property_ro<self, int>(this, &self::GetItemCount);
+    ItemCount = property_ro<self, size_t>(this, &self::GetItemCount);
     NextItemPosition = property<self, TItemPosition>(this, &self::GetNextItemPosition, &self::SetNextItemPosition);
     DefaultGroup = property<self, int>(this, &self::GetDefaultGroup, &self::SetDefaultGroup);
     Tag = property<self, int>(this, &self::GetTag, &self::SetTag);
@@ -178,15 +178,15 @@ TPoint TFarDialog::GetClientSize() const
     return S;
 }
 //---------------------------------------------------------------------------
-TPoint TFarDialog::GetMaxSize()
+TPoint TFarDialog::GetMaxSize() const 
 {
-    TPoint P = FarPlugin->TerminalInfo();
+    TPoint P = FarPlugin.get()->TerminalInfo();
     P.x -= 2;
     P.y -= 3;
     return P;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHelpTopic(string value)
+void TFarDialog::SetHelpTopic(const string &value)
 {
     if (HelpTopic != value)
     {
@@ -195,7 +195,7 @@ void TFarDialog::SetHelpTopic(string value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetFlags(unsigned int value)
+void TFarDialog::SetFlags(const unsigned int &value)
 {
     if (Flags != value)
     {
@@ -218,18 +218,18 @@ void TFarDialog::SetCentered(const bool &value)
 //---------------------------------------------------------------------------
 bool TFarDialog::GetCentered() const
 {
-    return (Bounds.Left < 0) && (Bounds.Top < 0);
+    return (Bounds.get().Left < 0) && (Bounds.get().Top < 0);
 }
 //---------------------------------------------------------------------------
 TPoint TFarDialog::GetSize() const
 {
     if (Centered)
     {
-        return TPoint(Bounds.Right, Bounds.Bottom);
+        return TPoint(Bounds.get().Right, Bounds.get().Bottom);
     }
     else
     {
-        return TPoint(Bounds.Width() + 1, Bounds.Height() + 1);
+        return TPoint(Bounds.get().Width() + 1, Bounds.get().Height() + 1);
     }
 }
 //---------------------------------------------------------------------------
@@ -256,17 +256,17 @@ void TFarDialog::SetWidth(const int &value)
 //---------------------------------------------------------------------------
 int TFarDialog::GetWidth() const
 {
-    return Size.x;
+    return Size.get().x;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHeight(int value)
+void TFarDialog::SetHeight(const int &value)
 {
     Size = TPoint(Width, value);
 }
 //---------------------------------------------------------------------------
 int TFarDialog::GetHeight() const
 {
-    return Size.y;
+    return Size.get().y;
 }
 //---------------------------------------------------------------------------
 void TFarDialog::SetCaption(const string &value)
@@ -282,18 +282,18 @@ string TFarDialog::GetCaption() const
     return FBorderBox->Caption;
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetItemCount() const
+size_t TFarDialog::GetItemCount() const
 {
-    return FItems->Count;
+    return FItems->Count();
 }
 //---------------------------------------------------------------------------
 TFarDialogItem *TFarDialog::GetItem(int Index) const
 {
     TFarDialogItem *DialogItem;
-    if (FItems->Count)
+    if (GetItemCount())
     {
         assert(Index >= 0 && Index < FItems->Count);
-        DialogItem = dynamic_cast<TFarDialogItem *>(Items->Items[Index]);
+        DialogItem = dynamic_cast<TFarDialogItem *>((*Items.get())[Index]);
         assert(DialogItem);
     }
     else
@@ -311,7 +311,7 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
     R.Left = Left;
     R.Top = Top;
 
-    if (FDialogItemsCapacity == Items->Count)
+    if (FDialogItemsCapacity.get() == Items->Count())
     {
         int DialogItemsDelta = 10;
         FarDialogItem *NewDialogItems;

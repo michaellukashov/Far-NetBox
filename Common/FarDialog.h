@@ -605,7 +605,7 @@ public:
     // __property TFarDialogItem *Item[int Index] = { read = GetItem };
     property_idx<self, TFarDialogItem *> Item;
     // __property int ItemCount = { read = GetItemCount };
-    property<self, int> ItemCount;
+    property_ro<self, size_t> ItemCount;
     // __property TItemPosition NextItemPosition = { read = FNextItemPosition, write = FNextItemPosition };
     property<self, TItemPosition> NextItemPosition;
     // __property int DefaultGroup = { read = FDefaultGroup, write = FDefaultGroup };
@@ -699,7 +699,7 @@ private:
     string GetCaption() const;
     TFarDialogItem *GetItem(int Index) const;
     TRect GetClientRect() const;
-    int GetItemCount() const;
+    size_t GetItemCount() const;
     void SetItemFocused(TFarDialogItem * const &value);
     TPoint GetClientSize() const;
     TPoint GetMaxSize() const;
