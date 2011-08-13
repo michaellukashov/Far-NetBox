@@ -45,7 +45,7 @@ class property_idx
 {
 public:
 
-    typedef type(object::*get_proc)(int) const;
+    typedef type(object::*get_proc)(size_t) const;
 
     property_idx() :
         obj(NULL)
@@ -58,7 +58,7 @@ public:
     {
     }
 
-    type operator [](int Index) const
+    type operator [](size_t Index) const
     {
         return get(Index);
     }
@@ -74,7 +74,7 @@ private:
     object *obj;
     get_proc getter;
 
-    inline type get(int Index) const
+    inline type get(size_t Index) const
     {
         return ((*obj).*getter)(Index);
     }
