@@ -66,7 +66,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     // Инициализируем property
     Bounds = property<self, TRect>(this, &self::GetBounds, &self::SetBounds);
     ClientRect = property_ro<self, TRect>(this, &self::GetClientRect);
-    HelpTopic = property<self, string>(this, &self::GetHelpTopic, &self::SetHelpTopic);
+    HelpTopic = property<self, wstring>(this, &self::GetHelpTopic, &self::SetHelpTopic);
     Flags = property<self, unsigned int>(this, &self::GetFlags, &self::SetFlags);
     Centered = property<self, bool>(this, &self::GetCentered, &self::SetCentered);
     Size = property<self, TPoint>(this, &self::GetSize, &self::SetSize);
@@ -186,7 +186,7 @@ TPoint TFarDialog::GetMaxSize() const
     return P;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHelpTopic(const string &value)
+void TFarDialog::SetHelpTopic(const wstring &value)
 {
     if (HelpTopic != value)
     {
@@ -370,7 +370,7 @@ void TFarDialog::GetNextItemPosition(int &Left, int &Top)
     }
 }
 //---------------------------------------------------------------------------
-long WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1, long Param2)
+LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2)
 {
     TFarPluginEnvGuard Guard;
 
@@ -572,7 +572,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
             Change();
         }
     }
-    catch(const exception &E)
+    catch(exception &E)
     {
         FarPlugin.get()->HandleException(&E);
         if (!Handled)
@@ -586,7 +586,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
 long TFarDialog::DefaultDialogProc(int Msg, int Param1, long Param2)
 {
     TFarEnvGuard Guard;
-    return FarPlugin->FStartupInfo.DefDlgProc(Handle, Msg, Param1, Param2);
+    return FarPlugin.get()->FStartupInfo.DefDlgProc(Handle, Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 long TFarDialog::FailDialogProc(int Msg, int Param1, long Param2)
@@ -616,8 +616,8 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
     bool Handled = false;
     if (FLAGSET(Event->dwEventFlags, MOUSE_MOVED))
     {
-        int X = Event->dwMousePosition.X - Bounds.Left;
-        int Y = Event->dwMousePosition.Y - Bounds.Top;
+        int X = Event->dwMousePosition.X - Bounds.get().Left;
+        int Y = Event->dwMousePosition.Y - Bounds.get().Top;
         TFarDialogItem *Item = ItemAt(X, Y);
         if (Item != NULL)
         {
@@ -661,7 +661,7 @@ bool TFarDialog::HotKey(unsigned long Key)
     if (Result)
     {
         Result = false;
-        for (int i = 0; i < Items->Count; i++)
+        for (int i = 0; i < ItemCount; i++)
         {
             if (Item[i]->HotKey(HotKey))
             {
@@ -676,7 +676,7 @@ bool TFarDialog::HotKey(unsigned long Key)
 TFarDialogItem *TFarDialog::ItemAt(int X, int Y)
 {
     TFarDialogItem *Result = NULL;
-    for (int i = 0; i < Items->Count; i++)
+    for (int i = 0; i < ItemCount; i++)
     {
         TRect Bounds = Item[i]->ActualBounds;
         if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
@@ -691,7 +691,7 @@ TFarDialogItem *TFarDialog::ItemAt(int X, int Y)
 bool TFarDialog::CloseQuery()
 {
     bool Result = true;
-    for (int i = 0; i < Items->Count && Result; i++)
+    for (int i = 0; i < ItemCount && Result; i++)
     {
         if (!Item[i]->CloseQuery())
         {
@@ -713,7 +713,7 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-    for (int i = 0; i < Items->Count; i++)
+    for (int i = 0; i < ItemCount; i++)
     {
         Item[i]->Init();
     }
@@ -729,21 +729,23 @@ int TFarDialog::ShowModal()
 
     int BResult;
 
-    TFarDialog *PrevTopDialog = FarPlugin->FTopDialog;
-    FarPlugin->FTopDialog = this;
+    TFarDialog *PrevTopDialog = FarPlugin.get()->FTopDialog;
+    FarPlugin.get()->FTopDialog = this;
     try
     {
         assert(DefaultButton);
         assert(DefaultButton->Default);
 
-        string AHelpTopic = HelpTopic;
+        wstring AHelpTopic = HelpTopic;
 
         {
             TFarEnvGuard Guard;
-            BResult = FarPlugin->FStartupInfo.DialogEx(FarPlugin->FStartupInfo.ModuleNumber,
-                      Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-                      StrToFar(AHelpTopic), FDialogItems, Items->Count, 0, Flags,
-                      DialogProcGeneral, (long)this);
+            HANDLE dlg = FarPlugin.get()->FStartupInfo.DialogInit(
+                FarPlugin.get()->FStartupInfo.ModuleNumber,
+                Bounds.get().Left, Bounds.get().Top, Bounds.get().Right, Bounds.get().Bottom,
+                StrToFar(AHelpTopic), FDialogItems, ItemCount, 0, Flags,
+                DialogProcGeneral, (long)this);
+            BResult = FarPlugin.get()->FStartupInfo.DialogRun(dlg);
         }
 
         if (BResult >= 0)
@@ -763,7 +765,7 @@ int TFarDialog::ShowModal()
     catch (...)
     {
     }
-    FarPlugin->FTopDialog = PrevTopDialog;
+    FarPlugin.get()->FTopDialog = PrevTopDialog;
 
     return FResult;
 }

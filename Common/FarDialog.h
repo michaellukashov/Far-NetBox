@@ -581,7 +581,7 @@ public:
     // __property TRect ClientRect = { read = GetClientRect };
     property_ro<self, TRect> ClientRect;
     // __property string HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
-    property<self, string> HelpTopic;
+    property<self, wstring> HelpTopic;
     // __property unsigned int Flags = { read = FFlags, write = SetFlags };
     property<self, unsigned int> Flags;
     // __property bool Centered = { read = GetCentered, write = SetCentered };
@@ -658,7 +658,7 @@ protected:
     bool ChangesLocked();
     TFarDialogItem *ItemAt(int X, int Y);
 
-    static long WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, long Param2);
+    static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
 
 private:
     TCustomFarPlugin *FFarPlugin;
@@ -892,7 +892,7 @@ private:
     TFarDialogItem *FEnabledDependency;
     TFarDialogItem *FEnabledDependencyNegative;
     TFarDialogContainer *FContainer;
-    int FItem;
+    size_t FItem;
     bool FEnabled;
     bool FIsEnabled;
     unsigned long FColors;
