@@ -697,7 +697,7 @@ private:
     void SetSize(const TPoint &value);
     void SetCaption(const string &value);
     string GetCaption() const;
-    TFarDialogItem *GetItem(int Index) const;
+    TFarDialogItem *GetItem(size_t Index) const;
     TRect GetClientRect() const;
     size_t GetItemCount() const;
     void SetItemFocused(TFarDialogItem * const &value);

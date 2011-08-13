@@ -322,12 +322,12 @@ class TObjectList : public TObject
 public:
     size_t Count() const { return m_objects.size(); }
     
-    TObject * operator [](int Index) const
+    TObject * operator [](size_t Index) const
     {
         return m_objects[Index];
     }
 
-    int Add(TObject *value)
+    size_t Add(TObject *value)
     {
         m_objects.push_back(value);
         return m_objects.size() - 1;
