@@ -317,7 +317,7 @@ struct TRect
     {}
 };
 
-class TObjectList
+class TObjectList : public TObject
 {
 public:
     size_t Count() const { return m_objects.size(); }
@@ -325,6 +325,12 @@ public:
     TObject * operator [](int Index) const
     {
         return m_objects[Index];
+    }
+
+    int Add(TObject *value)
+    {
+        m_objects.push_back(value);
+        return m_objects.size() - 1;
     }
 
 private:
