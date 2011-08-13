@@ -847,12 +847,13 @@ void TFarDialog::Redraw()
 //---------------------------------------------------------------------------
 void TFarDialog::ShowGroup(int Group, bool Show)
 {
-    ProcessGroup(Group, &ShowItem, &Show);
+    // ((*this).*OnKey.get())(this, Item, KeyCode, Result);
+    ProcessGroup(Group, (TFarProcessGroupEvent)&TFarDialog::ShowItem, &Show);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::EnableGroup(int Group, bool Enable)
 {
-    ProcessGroup(Group, &EnableItem, &Enable);
+    ProcessGroup(Group, (TFarProcessGroupEvent)&TFarDialog::EnableItem, &Enable);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
@@ -861,12 +862,13 @@ void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
     LockChanges();
     try
     {
-        for (int i = 0; i < Items->Count; i++)
+        for (int i = 0; i < ItemCount; i++)
         {
             TFarDialogItem *I = Item[i];
             if (I->Group == Group)
             {
-                Callback(I, Arg);
+                // Callback(I, Arg);
+                ((*this).*Callback)(I, Arg);
             }
         }
     }
