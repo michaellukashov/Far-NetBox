@@ -907,18 +907,20 @@ inline char *StrFromFar(string &S)
     return "";
 }
 //---------------------------------------------------------------------------
-inline char *StrToFar(char *S)
+inline wchar_t *StrToFar(wchar_t *S)
 {
     // CharToOem(S, S);
     return S;
 }
 //---------------------------------------------------------------------------
-inline char *StrToFar(string &S)
+inline wchar_t *StrToFar(wstring &S)
 {
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
     // return S.c_str();
-    return "";
+    return L"";
 }
 //---------------------------------------------------------------------------
 
+// from winscp434source\core\Common.h
+#define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
