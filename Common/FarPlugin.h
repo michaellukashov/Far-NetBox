@@ -275,13 +275,18 @@ private:
 class TObject
 {
 public:
-    TObject()
+    TObject() :
+        FOwnsObjects(false)
     {}
     virtual ~TObject()
     {}
 
     virtual void Change()
     {}
+    void OwnsObjects(bool value) { FOwnsObjects = value; }
+
+private:
+    bool FOwnsObjects;
 };
 
 struct TPoint
@@ -324,7 +329,7 @@ class TObjectList : public TObject
 {
 public:
     size_t Count() const { return m_objects.size(); }
-    
+
     TObject * operator [](size_t Index) const
     {
         return m_objects[Index];
@@ -334,6 +339,9 @@ public:
     {
         m_objects.push_back(value);
         return m_objects.size() - 1;
+    }
+    void Remove(TObject *value)
+    {
     }
 
 private:
