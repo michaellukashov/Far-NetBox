@@ -166,8 +166,8 @@ TPoint TFarDialog::GetClientSize() const
     if (FBorderBox)
     {
         TRect R = FBorderBox->ActualBounds;
-        S.x = R.Width + 1;
-        S.y = R.Height + 1;
+        S.x = R.Width() + 1;
+        S.y = R.Height() + 1;
         S.x -= S.x > 4 ? 4 : S.x;
         S.y -= S.y > 2 ? 2 : S.y;
     }
