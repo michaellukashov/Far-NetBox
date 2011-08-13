@@ -643,7 +643,7 @@ bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
     bool Result = false;
     if (OnKey)
     {
-        OnKey(this, Item, KeyCode, Result);
+        ((*this).*OnKey.get())(this, Item, KeyCode, Result);
     }
     return Result;
 }
