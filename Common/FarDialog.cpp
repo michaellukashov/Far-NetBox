@@ -806,7 +806,7 @@ void TFarDialog::Change()
         try
         {
             TFarDialogItem *DItem;
-            for (int i = 0; i < Items->Count; i++)
+            for (int i = 0; i < ItemCount; i++)
             {
                 DItem = Item[i];
                 DItem->Change();
@@ -816,9 +816,9 @@ void TFarDialog::Change()
                 }
             }
 
-            for (int Index = 0; Index < NotifiedContainers->Count; Index++)
+            for (int Index = 0; Index < NotifiedContainers->Count(); Index++)
             {
-                ((TFarDialogContainer *)NotifiedContainers->Items[Index])->Change();
+                ((TFarDialogContainer *)(*NotifiedContainers)[Index])->Change();
             }
         }
         catch (...)
@@ -832,12 +832,12 @@ long TFarDialog::SendMessage(int Msg, int Param1, int Param2)
 {
     assert(Handle);
     TFarEnvGuard Guard;
-    return FarPlugin->FStartupInfo.SendDlgMessage(Handle, Msg, Param1, Param2);
+    return FarPlugin.get()->FStartupInfo.SendDlgMessage(Handle, Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-char TFarDialog::GetSystemColor(unsigned int Index) const
+char TFarDialog::GetSystemColor(unsigned int Index)
 {
-    return static_cast<char>(FarPlugin->FarAdvControl(ACTL_GETCOLOR, Index));
+    return static_cast<char>(FarPlugin.get()->FarAdvControl(ACTL_GETCOLOR, Index));
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Redraw()
@@ -847,12 +847,12 @@ void TFarDialog::Redraw()
 //---------------------------------------------------------------------------
 void TFarDialog::ShowGroup(int Group, bool Show)
 {
-    ProcessGroup(Group, ShowItem, &Show);
+    ProcessGroup(Group, &ShowItem, &Show);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::EnableGroup(int Group, bool Enable)
 {
-    ProcessGroup(Group, EnableItem, &Enable);
+    ProcessGroup(Group, &EnableItem, &Enable);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,

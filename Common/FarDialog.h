@@ -553,12 +553,11 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-typedef void (*TFarKeyEvent)
-(TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
-typedef void (*TFarMouseClickEvent)
-(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
-typedef void (*TFarProcessGroupEvent)
-(TFarDialogItem *Item, void *Arg);
+typedef void (TObject::*TFarKeyEvent)
+    (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
+typedef void (TObject::*TFarMouseClickEvent) 
+    (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
+typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
 {
