@@ -86,7 +86,7 @@ class property
 public:
 
     typedef type(object::*get_proc)() const;
-    typedef void(object::*set_proc)(type const &);
+    typedef void(object::*set_proc)(const type &);
 
     property() :
         obj(NULL)
@@ -106,13 +106,13 @@ public:
         return get();
     }
 
-    type const &operator = (type const &value)
+    const type &operator = (const type &value)
     {
         set(value);
         return value;
     }
 
-    property &operator = (property const &prt)
+    property &operator = (const property &prt)
     {
         set(prt.get());
         return *this;
@@ -128,7 +128,7 @@ private:
         return ((*obj).*getter)();
     }
 
-    inline void set(type const &value)
+    inline void set(const type &value)
     {
         ((*obj).*setter)(value);
     }
