@@ -287,7 +287,7 @@ size_t TFarDialog::GetItemCount() const
     return FItems->Count();
 }
 //---------------------------------------------------------------------------
-TFarDialogItem *TFarDialog::GetItem(int Index) const
+TFarDialogItem *TFarDialog::GetItem(size_t Index) const
 {
     TFarDialogItem *DialogItem;
     if (GetItemCount())
@@ -346,7 +346,7 @@ void TFarDialog::GetNextItemPosition(int &Left, int &Top)
     Left = R.Left;
     Top = R.Top;
 
-    TFarDialogItem *LastI = Item[Items->Count-1];
+    TFarDialogItem *LastI = Item[ItemCount-1];
     LastI = LastI == FBorderBox ? NULL : LastI;
 
     if (LastI)
@@ -458,10 +458,10 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                 {
                     Result = I->ItemProc(Msg, Param2);
                 }
-                catch(Exception &E)
+                catch(exception &E)
                 {
                     Handled = true;
-                    FarPlugin->HandleException(&E);
+                    FarPlugin.get()->HandleException(&E);
                     Result = I->FailItemProc(Msg, Param2);
                 }
 
@@ -480,11 +480,11 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                     (Param2 == KEY_ENTER) &&
                     ((Param1 < 0) ||
                      ((Param1 >= 0) && (dynamic_cast<TFarButton *>(Item[Param1]) == NULL))) &&
-                    DefaultButton->Enabled &&
-                    (DefaultButton->OnClick != NULL))
+                    DefaultButton.get()->Enabled &&
+                    (DefaultButton.get()->OnClick != NULL))
             {
-                bool Close = (DefaultButton->Result != 0);
-                DefaultButton->OnClick(DefaultButton, Close);
+                bool Close = (DefaultButton.get()->Result != 0);
+                DefaultButton.get()->OnClick(DefaultButton, Close);
                 Handled = true;
                 if (!Close)
                 {
@@ -572,9 +572,9 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
             Change();
         }
     }
-    catch(Exception &E)
+    catch(const exception &E)
     {
-        FarPlugin->HandleException(&E);
+        FarPlugin.get()->HandleException(&E);
         if (!Handled)
         {
             Result = FailDialogProc(Msg, Param1, Param2);
