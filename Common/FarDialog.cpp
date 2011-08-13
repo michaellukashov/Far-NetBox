@@ -38,7 +38,8 @@ TRect Rect(int Left, int Top, int Right, int Bottom)
 
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
-    TObject(), FBounds(-1, -1, 40, 10)
+    TObject(),
+    FBounds(-1, -1, 40, 10)
 {
     assert(AFarPlugin);
     FItems = new TObjectList();
@@ -119,22 +120,22 @@ void TFarDialog::SetBounds(const TRect &value)
             if (Handle)
             {
                 COORD Coord;
-                Coord.X = (short int)Size.x;
-                Coord.Y = (short int)Size.y;
+                Coord.X = (short int)Size.get().x;
+                Coord.Y = (short int)Size.get().y;
                 SendMessage(DM_RESIZEDIALOG, 0, (int)&Coord);
                 Coord.X = (short int)FBounds.Left;
                 Coord.Y = (short int)FBounds.Top;
                 SendMessage(DM_MOVEDIALOG, true, (int)&Coord);
             }
-            for (int i = 0; i < Items->Count; i++)
+            for (int i = 0; i < ItemCount; i++)
             {
                 Item[i]->DialogResized();
             }
         }
-        __finally
+        catch (...)
         {
-            UnlockChanges();
         }
+        UnlockChanges();
     }
 }
 //---------------------------------------------------------------------------
@@ -759,10 +760,10 @@ int TFarDialog::ShowModal()
             FResult = -1;
         }
     }
-    __finally
+    catch (...)
     {
-        FarPlugin->FTopDialog = PrevTopDialog;
     }
+    FarPlugin->FTopDialog = PrevTopDialog;
 
     return FResult;
 }
@@ -818,10 +819,10 @@ void TFarDialog::Change()
                 ((TFarDialogContainer *)NotifiedContainers->Items[Index])->Change();
             }
         }
-        __finally
+        catch (...)
         {
-            delete NotifiedContainers;
         }
+        delete NotifiedContainers;
     }
 }
 //---------------------------------------------------------------------------
@@ -867,10 +868,10 @@ void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
             }
         }
     }
-    __finally
+    catch (...)
     {
-        UnlockChanges();
     }
+    UnlockChanges();
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ShowItem(TFarDialogItem *Item, void *Arg)
@@ -925,12 +926,12 @@ void TFarDialog::UnlockChanges()
                 Change();
             }
         }
-        __finally
+        catch (...)
         {
-            if (Handle)
-            {
-                SendMessage(DM_ENABLEREDRAW, true, 0);
-            }
+        }
+        if (Handle)
+        {
+            SendMessage(DM_ENABLEREDRAW, true, 0);
         }
     }
 }
@@ -2134,10 +2135,10 @@ void TFarList::Put(int Index, const string S)
                 UpdateItem(Index);
             }
         }
-        __finally
+        catch (...)
         {
-            FNoDialogUpdate = false;
         }
+        FNoDialogUpdate = false;
     }
     else
     {
@@ -2202,10 +2203,10 @@ void TFarList::Changed()
                 SetCurPos((PrevSelected >= Count) ? (Count - 1) : PrevSelected,
                           PrevTopIndex);
             }
-            __finally
+            catch (...)
             {
-                DialogItem->Dialog->UnlockChanges();
             }
+            DialogItem->Dialog->UnlockChanges();
         }
     }
 }
