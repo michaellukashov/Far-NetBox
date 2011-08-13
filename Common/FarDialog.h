@@ -577,50 +577,50 @@ public:
     void EnableGroup(int Group, bool Enable);
 
     // __property TRect Bounds = { read = FBounds, write = SetBounds };
-    property<TFarDialog, TRect> Bounds;
+    property<self, TRect> Bounds;
     // __property TRect ClientRect = { read = GetClientRect };
-    property<TFarDialog, TRect> ClientRect;
+    property_ro<self, TRect> ClientRect;
     // __property string HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
-    property<TFarDialog, string> HelpTopic;
+    property<self, string> HelpTopic;
     // __property unsigned int Flags = { read = FFlags, write = SetFlags };
-    property<TFarDialog, unsigned int> Flags;
+    property<self, unsigned int> Flags;
     // __property bool Centered = { read = GetCentered, write = SetCentered };
-    property<TFarDialog, bool> Centered;
+    property<self, bool> Centered;
     // __property TPoint Size = { read = GetSize, write = SetSize };
-    property<TFarDialog, TPoint> Size;
+    property<self, TPoint> Size;
     // __property TPoint ClientSize = { read = GetClientSize };
-    property<TFarDialog, TPoint> ClientSize;
+    property_ro<self, TPoint> ClientSize;
     // __property int Width = { read = GetWidth, write = SetWidth };
-    property<TFarDialog, int> Width;
+    property<self, int> Width;
     // __property int Height = { read = GetHeight, write = SetHeight };
-    property<TFarDialog, int> Height;
+    property<self, int> Height;
     // __property string Caption = { read = GetCaption, write = SetCaption };
-    property<TFarDialog, string> Caption;
+    property<self, string> Caption;
     // __property HANDLE Handle = { read = FHandle };
-    property<TFarDialog, HANDLE> Handle;
+    property<self, HANDLE> Handle;
     // __property TFarButton *DefaultButton = { read = FDefaultButton };
-    property<TFarDialog, TFarButton *> DefaultButton;
+    property<self, TFarButton *> DefaultButton;
     // __property TFarBox *BorderBox = { read = FBorderBox };
-    property<TFarDialog, TFarBox *> BorderBox;
+    property<self, TFarBox *> BorderBox;
     // __property TFarDialogItem *Item[int Index] = { read = GetItem };
-    property<TFarDialog, TFarDialogItem *> Item;
+    property_idx<self, TFarDialogItem *> Item;
     // __property int ItemCount = { read = GetItemCount };
-    property<TFarDialog, int> ItemCount;
+    property<self, int> ItemCount;
     // __property TItemPosition NextItemPosition = { read = FNextItemPosition, write = FNextItemPosition };
-    property<TFarDialog, TItemPosition> NextItemPosition;
+    property<self, TItemPosition> NextItemPosition;
     // __property int DefaultGroup = { read = FDefaultGroup, write = FDefaultGroup };
-    property<TFarDialog, int> DefaultGroup;
+    property<self, int> DefaultGroup;
     // __property int Tag = { read = FTag, write = FTag };
-    property<TFarDialog, int> Tag;
+    property<self, int> Tag;
     // __property TFarDialogItem *ItemFocused = { read = FItemFocused, write = SetItemFocused };
-    property<TFarDialog, TFarDialogItem *> ItemFocused;
+    property<self, TFarDialogItem *> ItemFocused;
     // __property int Result = { read = FResult };
-    property<TFarDialog, int> Result;
+    property<self, int> Result;
     // __property TPoint MaxSize = { read = GetMaxSize };
-    property<TFarDialog, TPoint> MaxSize;
+    property<self, TPoint> MaxSize;
 
     // __property TFarKeyEvent OnKey = { read = FOnKey, write = FOnKey };
-    property<TFarDialog, TFarKeyEvent> OnKey;
+    property<self, TFarKeyEvent> OnKey;
 
     void Redraw();
     void LockChanges();
@@ -630,9 +630,9 @@ public:
 
 protected:
     // __property TCustomFarPlugin *FarPlugin = { read = FFarPlugin };
-    property<TFarDialog, TCustomFarPlugin *> FarPlugin;
+    property<self, TCustomFarPlugin *> FarPlugin;
     // __property TObjectList *Items = { read = FItems };
-    property<TFarDialog, TObjectList *> Items;
+    property<self, TObjectList *> Items;
 
     void Add(TFarDialogItem *Item);
     void Add(TFarDialogContainer *Container);
@@ -687,24 +687,29 @@ private:
 
     TRect GetBounds() const { return FBounds; }
     void SetBounds(const TRect &value);
-    void SetHelpTopic(string value);
-    void SetFlags(unsigned int value);
-    void SetCentered(bool value);
-    bool GetCentered();
-    TPoint GetSize();
-    void SetSize(TPoint value);
-    void SetCaption(string value);
-    string GetCaption();
-    TFarDialogItem *GetItem(int Index);
-    TRect GetClientRect();
-    int GetItemCount();
+    string GetHelpTopic() const { return FHelpTopic; }
+    void SetHelpTopic(const string &value);
+    unsigned int GetFlags() const { return FFlags; }
+    void SetFlags(const unsigned int &value);
+    void SetCentered(const bool &value);
+    bool GetCentered() const;
+    TPoint GetSize() const;
+    void SetSize(const TPoint &value);
+    void SetCaption(const string &value);
+    string GetCaption() const;
+    TFarDialogItem *GetItem(int Index) const;
+    TRect GetClientRect() const;
+    int GetItemCount() const;
     void SetItemFocused(TFarDialogItem *value);
-    TPoint GetClientSize();
-    TPoint GetMaxSize();
-    void SetWidth(int value);
-    int GetWidth();
-    void SetHeight(int value);
-    int GetHeight();
+    TPoint GetClientSize() const;
+    TPoint GetMaxSize() const;
+    void SetWidth(const int &value);
+    int GetWidth() const;
+    void SetHeight(const int &value);
+    int GetHeight() const;
+    HANDLE GetHandle() const { return FHandle; }
+    TFarButton *GetDefaultButton() const { return FDefaultButton; }
+    TFarBox *GetBorderBox() const { return FBorderBox; }
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
@@ -899,17 +904,17 @@ private:
     void SetCoordinate(int Index, int value);
     int GetCoordinate(int Index);
     void SetWidth(int value);
-    int GetWidth();
-    void SetHeight(int value);
-    int GetHeight();
+    int GetWidth() const;
+    void SetHeight(const int &value);
+    int GetHeight() const;
     TFarDialogItem *GetPrevItem();
     void UpdateFocused(bool value);
-    void SetContainer(TFarDialogContainer *value);
-    void SetEnabled(bool value);
+    void SetContainer(const TFarDialogContainer *&value);
+    void SetEnabled(const bool &value);
     void UpdateEnabled();
-    void SetChecked(bool value);
-    bool GetChecked();
-    FarDialogItem *GetDialogItem();
+    void SetChecked(const bool &value);
+    bool GetChecked() const;
+    FarDialogItem *GetDialogItem() const;
 };
 //---------------------------------------------------------------------------
 class TFarBox : public TFarDialogItem
@@ -1074,7 +1079,6 @@ protected:
     virtual void SetData(const string value);
 };
 //---------------------------------------------------------------------------
-class FarList;
 class TFarListBox;
 class TFarComboBox;
 class TFarLister;

@@ -32,57 +32,13 @@ string StripHotKey(string Text)
 //---------------------------------------------------------------------------
 TRect Rect(int Left, int Top, int Right, int Bottom)
 {
-    TRect result = {Left, Top, Right, Bottom};
+    TRect result = TRect(Left, Top, Right, Bottom);
     return result;
 }
 
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
-    TObject(), FBounds(-1, -1, 40, 10),
-    Bounds(*this, &self::GetBounds, &self::SetBounds),
-    // __property TRect ClientRect = { read = GetClientRect };
-    ClientRect(*this, &self::GetClientRect, &self::SetClientRect),
-    // __property string HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
-    HelpTopic(*this, &self::GetHelpTopic, &self::SetHelpTopic),
-    // __property unsigned int Flags = { read = FFlags, write = SetFlags };
-    Flags(*this, &self::GetFlags, &self::SetFlags),
-    // __property bool Centered = { read = GetCentered, write = SetCentered };
-    Centered(*this, &self::GetCentered, &self::SetCentered),
-    // __property TPoint Size = { read = GetSize, write = SetSize };
-    Size(*this, &self::GetSize, &self::SetSize),
-    // __property TPoint ClientSize = { read = GetClientSize };
-    ClientSize(*this, &self::GetClientSize, &self::SetClientSize),
-    // __property int Width = { read = GetWidth, write = SetWidth };
-    Width(*this, &self::GetWidth, &self::SetWidth),
-    // __property int Height = { read = GetHeight, write = SetHeight };
-    Height(*this, &self::GetHeight, &self::SetHeight),
-    // __property string Caption = { read = GetCaption, write = SetCaption };
-    Caption(*this, &self::GetCaption, &self::SetCaption),
-    // __property HANDLE Handle = { read = FHandle };
-    Handle(*this, &self::GetHandle, &self::SetHandle),
-    // __property TFarButton *DefaultButton = { read = FDefaultButton };
-    property<TFarDialog, TFarButton *> DefaultButton;
-    // __property TFarBox *BorderBox = { read = FBorderBox };
-    property<TFarDialog, TFarBox *> BorderBox;
-    // __property TFarDialogItem *Item[int Index] = { read = GetItem };
-    property<TFarDialog, TFarDialogItem *> Item;
-    // __property int ItemCount = { read = GetItemCount };
-    ItemCount(*this, &self::GetItemCount, &self::SetItemCount),
-    // __property TItemPosition NextItemPosition = { read = FNextItemPosition, write = FNextItemPosition };
-    NextItemPosition(*this, &self::GetNextItemPosition, &self::SetNextItemPosition),
-    // __property int DefaultGroup = { read = FDefaultGroup, write = FDefaultGroup };
-    DefaultGroup(*this, &self::GetDefaultGroup, &self::SetDefaultGroup),
-    // __property int Tag = { read = FTag, write = FTag };
-    Tag(*this, &self::GetTag, &self::SetTag),
-    // __property TFarDialogItem *ItemFocused = { read = FItemFocused, write = SetItemFocused };
-    property<TFarDialog, TFarDialogItem *> ItemFocused;
-    // __property int Result = { read = FResult };
-    Result(*this, &self::GetResult, &self::SetResult),
-    // __property TPoint MaxSize = { read = GetMaxSize };
-    MaxSize(*this, &self::GetMaxSize, &self::SetMaxSize),
-
-    // __property TFarKeyEvent OnKey = { read = FOnKey, write = FOnKey };
-    OnKey(*this, &self::GetOnKey, &self::SetOnKey)
+    TObject(), FBounds(-1, -1, 40, 10)
 {
     assert(AFarPlugin);
     FItems = new TObjectList();
@@ -106,8 +62,30 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     FBorderBox->Bounds = TRect(3, 1, -4, -2);
     FBorderBox->Double = true;
 
-    // Как-то инициализируем handle
-    SetBounds(Rect(0,0,0,0));
+    // Инициализируем property
+    Bounds = property<self, TRect>(this, &self::GetBounds, &self::SetBounds);
+    ClientRect = property_ro<self, TRect>(this, &self::GetClientRect);
+    HelpTopic = property<self, string>(this, &self::GetHelpTopic, &self::SetHelpTopic);
+    Flags = property<self, unsigned int>(this, &self::GetFlags, &self::SetFlags);
+    Centered = property<self, bool>(this, &self::GetCentered, &self::SetCentered);
+    Size = property<self, TPoint>(this, &self::GetSize, &self::SetSize);
+    ClientSize = property_ro<self, TPoint>(this, &self::GetClientSize);
+    Width = property<self, int>(this, &self::GetWidth, &self::SetWidth);
+    Height = property<self, int>(this, &self::GetHeight, &self::SetHeight);
+    Caption = property<self, string>(this, &self::GetCaption, &self::SetCaption);
+    Handle = property_ro<self, HANDLE>(this, &self::GetHandle);
+    DefaultButton = property_ro<self, TFarButton *>(this, &self::GetDefaultButton);
+    BorderBox = property_ro<self, TFarBox *>(this, &self::GetBorderBox);
+    Item = property_idx<self, TFarDialogItem *>(this, &self::GetItem);
+    ItemCount = property_ro<self, int>(this, &self::GetItemCount);
+    NextItemPosition = property<self, TItemPosition>(this, &self::GetNextItemPosition, &self::SetNextItemPosition);
+    DefaultGroup = property<self, int>(this, &self::GetDefaultGroup, &self::SetDefaultGroup);
+    Tag = property<self, int>(this, &self::GetTag, &self::SetTag);
+    ItemFocused = property<self, TFarDialogItem *>(this, &self::GetItemFocused, &self::SetItemFocused);
+    Result = property_ro<self, int>(this, &self::GetResult);
+    MaxSize = property_ro<self, TPoint>(this, &self::GetMaxSize);
+    
+    OnKey = property<self, TFarKeyEvent>(this, &self::GetOnKey, &self::SetOnKey);
 }
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
@@ -181,7 +159,7 @@ TRect TFarDialog::GetClientRect()
     return R;
 }
 //---------------------------------------------------------------------------
-TPoint TFarDialog::GetClientSize()
+TPoint TFarDialog::GetClientSize() const
 {
     TPoint S;
     if (FBorderBox)
@@ -225,7 +203,7 @@ void TFarDialog::SetFlags(unsigned int value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetCentered(bool value)
+void TFarDialog::SetCentered(const bool &value)
 {
     if (Centered != value)
     {
@@ -237,12 +215,12 @@ void TFarDialog::SetCentered(bool value)
     }
 }
 //---------------------------------------------------------------------------
-bool TFarDialog::GetCentered()
+bool TFarDialog::GetCentered() const
 {
     return (Bounds.Left < 0) && (Bounds.Top < 0);
 }
 //---------------------------------------------------------------------------
-TPoint TFarDialog::GetSize()
+TPoint TFarDialog::GetSize() const
 {
     if (Centered)
     {
@@ -254,7 +232,7 @@ TPoint TFarDialog::GetSize()
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetSize(TPoint value)
+void TFarDialog::SetSize(const TPoint &value)
 {
     TRect B = Bounds;
     if (Centered)
@@ -270,12 +248,12 @@ void TFarDialog::SetSize(TPoint value)
     Bounds = B;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetWidth(int value)
+void TFarDialog::SetWidth(const int &value)
 {
     Size = TPoint(value, Height);
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetWidth()
+int TFarDialog::GetWidth() const
 {
     return Size.x;
 }
@@ -285,12 +263,12 @@ void TFarDialog::SetHeight(int value)
     Size = TPoint(Width, value);
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetHeight()
+int TFarDialog::GetHeight() const
 {
     return Size.y;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetCaption(string value)
+void TFarDialog::SetCaption(const string &value)
 {
     if (Caption != value)
     {
@@ -298,17 +276,17 @@ void TFarDialog::SetCaption(string value)
     }
 }
 //---------------------------------------------------------------------------
-string TFarDialog::GetCaption()
+string TFarDialog::GetCaption() const
 {
     return FBorderBox->Caption;
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetItemCount()
+int TFarDialog::GetItemCount() const
 {
     return FItems->Count;
 }
 //---------------------------------------------------------------------------
-TFarDialogItem *TFarDialog::GetItem(int Index)
+TFarDialogItem *TFarDialog::GetItem(int Index) const
 {
     TFarDialogItem *DialogItem;
     if (FItems->Count)
@@ -854,7 +832,7 @@ long TFarDialog::SendMessage(int Msg, int Param1, int Param2)
     return FarPlugin->FStartupInfo.SendDlgMessage(Handle, Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-char TFarDialog::GetSystemColor(unsigned int Index)
+char TFarDialog::GetSystemColor(unsigned int Index) const
 {
     return static_cast<char>(FarPlugin->FarAdvControl(ACTL_GETCOLOR, Index));
 }
