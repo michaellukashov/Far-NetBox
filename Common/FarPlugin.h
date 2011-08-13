@@ -279,6 +279,9 @@ public:
     {}
     virtual ~TObject()
     {}
+
+    virtual void Change()
+    {}
 };
 
 struct TPoint
@@ -337,12 +340,17 @@ private:
     vector<TObject *> m_objects;
 };
 
-class TStrings // : public vector<string>
+class TStrings : public TObject
 {
 };
 
-class TList
+class TList : public TObjectList
 {
+public:
+    size_t IndexOf(TObject *value) const
+    {
+        return -1;
+    }
 };
 
 class TStringList
@@ -924,3 +932,4 @@ inline wchar_t *StrToFar(wstring &S)
 
 // from winscp434source\core\Common.h
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
+#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
