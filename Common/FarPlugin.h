@@ -274,12 +274,25 @@ private:
 //---------------------------------------------------------------------------
 class TObject
 {
+public:
+    TObject()
+    {}
+    virtual ~TObject()
+    {}
 };
 
 struct TPoint
 {
     int x;
     int y;
+    TPoint() :
+        x(0),
+        y(0)
+    {}
+    TPoint(int x, int y) :
+        x(x),
+        y(y)
+    {}
 };
 
 struct TRect
@@ -306,6 +319,16 @@ struct TRect
 
 class TObjectList
 {
+public:
+    size_t Count() const { return m_objects.size(); }
+    
+    TObject * operator [](int Index) const
+    {
+        return m_objects[Index];
+    }
+
+private:
+    vector<TObject *> m_objects;
 };
 
 class TStrings // : public vector<string>
