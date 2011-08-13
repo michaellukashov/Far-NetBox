@@ -10,7 +10,6 @@ public:
     property_ro() :
         obj(NULL)
         , getter(NULL)
-        , setter(NULL)
     {
     }
     property_ro(object *object, get_proc getpr) :
@@ -24,15 +23,10 @@ public:
         return get();
     }
 
-    type const &operator = (type const &value)
-    {
-        // set(value);
-        return value;
-    }
-
     property_ro &operator = (property_ro const &prt)
     {
-        // set(prt.get());
+        obj = prt.obj;
+        getter = prt.getter;
         return *this;
     }
 
@@ -44,11 +38,46 @@ private:
     {
         return ((*obj).*getter)();
     }
+};
 
-    // inline void set(type const &value)
-    // {
-        // (obj.*setter)(value);
-    // }
+template <class object, class type>
+class property_idx
+{
+public:
+
+    typedef type(object::*get_proc)(int) const;
+
+    property_idx() :
+        obj(NULL)
+        , getter(NULL)
+    {
+    }
+    property_idx(object *object, get_proc getpr) :
+        obj(object)
+        , getter(getpr)
+    {
+    }
+
+    type operator [](int Index) const
+    {
+        return get(Index);
+    }
+
+    property_idx &operator = (property_idx const &prt)
+    {
+        obj = prt.obj;
+        getter = prt.getter;
+        return *this;
+    }
+
+private:
+    object *obj;
+    get_proc getter;
+
+    inline type get(int Index) const
+    {
+        return ((*obj).*getter)(Index);
+    }
 };
 
 template <class object, class type>
