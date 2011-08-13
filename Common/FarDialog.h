@@ -579,7 +579,7 @@ public:
     property<self, TRect> Bounds;
     // __property TRect ClientRect = { read = GetClientRect };
     property_ro<self, TRect> ClientRect;
-    // __property string HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
+    // __property wstring HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
     property<self, wstring> HelpTopic;
     // __property unsigned int Flags = { read = FFlags, write = SetFlags };
     property<self, unsigned int> Flags;
@@ -593,8 +593,8 @@ public:
     property<self, int> Width;
     // __property int Height = { read = GetHeight, write = SetHeight };
     property<self, int> Height;
-    // __property string Caption = { read = GetCaption, write = SetCaption };
-    property<self, string> Caption;
+    // __property wstring Caption = { read = GetCaption, write = SetCaption };
+    property<self, wstring> Caption;
     // __property HANDLE Handle = { read = FHandle };
     property<self, HANDLE> Handle;
     // __property TFarButton *DefaultButton = { read = FDefaultButton };
@@ -644,7 +644,7 @@ protected:
     virtual void Change();
     virtual void Init();
     virtual bool CloseQuery();
-    string GetMsg(int MsgId);
+    wstring GetMsg(int MsgId);
     void GetNextItemPosition(int &Left, int &Top);
     void RefreshBounds();
     virtual void Idle();
@@ -694,8 +694,8 @@ private:
     bool GetCentered() const;
     TPoint GetSize() const;
     void SetSize(const TPoint &value);
-    void SetCaption(const string &value);
-    string GetCaption() const;
+    void SetCaption(const wstring &value);
+    wstring GetCaption() const;
     TFarDialogItem *GetItem(size_t Index) const;
     TRect GetClientRect() const;
     size_t GetItemCount() const;
@@ -725,13 +725,15 @@ class TFarDialogContainer : public TObject
 {
     friend TFarDialog;
     friend TFarDialogItem;
+    typedef TFarDialogContainer self;
 public:
     // __property int Left = { read = FLeft, write = SetPosition, index = 0 };
-    property<TFarDialogContainer, int> Left;
+    property<self, int> Left;
     // __property int Top = { read = FTop, write = SetPosition, index = 1 };
-    property<TFarDialogContainer, int> Top;
+    property<self, int> Top;
     // __property bool Enabled = { read = FEnabled, write = SetEnabled };
-    property<TFarDialogContainer, bool> Enabled;
+    property<self, bool> Enabled;
+    property_ro<self, size_t> ItemCount;
 
 protected:
     TFarDialogContainer(TFarDialog *ADialog);
@@ -743,7 +745,7 @@ protected:
     void Add(TFarDialogItem *Item);
     void Remove(TFarDialogItem *Item);
     virtual void Change();
-    string GetMsg(int MsgId);
+    wstring GetMsg(int MsgId);
 
 private:
     int FLeft;
@@ -754,6 +756,7 @@ private:
 
     void SetPosition(int Index, int value);
     void SetEnabled(bool value);
+    size_t GetItemCount() const;
 };
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
@@ -832,8 +835,8 @@ protected:
     property<TFarDialogItem, FarDialogItem *> DialogItem;
     // __property bool CenterGroup = { read = GetFlag, write = SetFlag, index = DIF_CENTERGROUP };
     property<TFarDialogItem, bool> CenterGroup;
-    // __property string Data = { read = GetData, write = SetData };
-    property<TFarDialogItem, string> Data;
+    // __property wstring Data = { read = GetData, write = SetData };
+    property<TFarDialogItem, wstring> Data;
     // __property int Type = { read = GetType, write = SetType };
     property<TFarDialogItem, int> Type;
     // __property int Item = { read = FItem };
@@ -864,15 +867,15 @@ protected:
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
     TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-    void Text(int X, int Y, int Color, string Str, bool Oem = false);
+    void Text(int X, int Y, int Color, wstring Str, bool Oem = false);
     void Redraw();
     virtual bool HotKey(char HotKey);
 
     virtual bool GetIsEmpty();
-    virtual void SetDataInternal(const string value);
-    virtual void SetData(const string value);
-    virtual string GetData();
-    void UpdateData(const string value);
+    virtual void SetDataInternal(const wstring value);
+    virtual void SetData(const wstring value);
+    virtual wstring GetData();
+    void UpdateData(const wstring value);
     void UpdateSelected(int value);
 
     bool GetFlag(int Index);
@@ -931,8 +934,8 @@ class TFarBox : public TFarDialogItem
 public:
     TFarBox(TFarDialog *ADialog);
 
-    // __property string Caption = { read = Data, write = Data };
-    property<TFarBox, string> Caption;
+    // __property wstring Caption = { read = Data, write = Data };
+    property<TFarBox, wstring> Caption;
     // __property bool Double = { read = GetAlterType, write = SetAlterType, index = DI_DOUBLEBOX };
     property<TFarBox, bool> Double;
 };
@@ -945,8 +948,8 @@ class TFarButton : public TFarDialogItem
 public:
     TFarButton(TFarDialog *ADialog);
 
-    // __property string Caption = { read = Data, write = Data };
-    property<TFarButton, string> Caption;
+    // __property wstring Caption = { read = Data, write = Data };
+    property<TFarButton, wstring> Caption;
     // __property int Result = { read = FResult, write = FResult };
     property<TFarButton, int> Result;
     // __property bool Default = { read = GetDefault, write = SetDefault };
@@ -959,8 +962,8 @@ public:
     property<TFarButton, TFarButtonClick> OnClick;
 
 protected:
-    virtual void SetDataInternal(const string value);
-    virtual string GetData();
+    virtual void SetDataInternal(const wstring value);
+    virtual wstring GetData();
     virtual long ItemProc(int Msg, long Param);
     virtual bool HotKey(char HotKey);
 
@@ -982,8 +985,8 @@ class TFarCheckBox : public TFarDialogItem
 public:
     TFarCheckBox(TFarDialog *ADialog);
 
-    // __property string Caption = { read = Data, write = Data };
-    property<TFarCheckBox, string> Caption;
+    // __property wstring Caption = { read = Data, write = Data };
+    property<TFarCheckBox, wstring> Caption;
     // __property bool AllowGrayed = { read = GetFlag, write = SetFlag, index = DIF_3STATE };
     property<TFarCheckBox, bool> AllowGrayed;
     // __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
@@ -995,7 +998,7 @@ protected:
     TFarAllowChange FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const string value);
+    virtual void SetData(const wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarRadioButton : public TFarDialogItem
@@ -1004,8 +1007,8 @@ public:
     TFarRadioButton(TFarDialog *ADialog);
 
     // __property Checked;
-    // __property string Caption = { read = Data, write = Data };
-    property<TFarRadioButton, string> Caption;
+    // __property wstring Caption = { read = Data, write = Data };
+    property<TFarRadioButton, wstring> Caption;
     // __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
     property<TFarRadioButton, TFarAllowChange> OnAllowChange;
 
@@ -1013,7 +1016,7 @@ protected:
     TFarAllowChange FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const string value);
+    virtual void SetData(const wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarEdit : public TFarDialogItem
@@ -1021,18 +1024,18 @@ class TFarEdit : public TFarDialogItem
 public:
     TFarEdit(TFarDialog *ADialog);
 
-    // __property string Text = { read = Data, write = Data };
-    property<TFarEdit, string> Text;
+    // __property wstring Text = { read = Data, write = Data };
+    property<TFarEdit, wstring> Text;
     // __property int AsInteger = { read = GetAsInteger, write = SetAsInteger };
     property<TFarEdit, int> AsInteger;
     // __property bool Password = { read = GetAlterType, write = SetAlterType, index = DI_PSWEDIT };
     property<TFarEdit, bool> Password;
     // __property bool Fixed = { read = GetAlterType, write = SetAlterType, index = DI_FIXEDIT };
     property<TFarEdit, bool> Fixed;
-    // __property string Mask = { read = GetHistoryMask, write = SetHistoryMask, index = 1 };
-    property<TFarEdit, string> Mask;
-    // __property string History = { read = GetHistoryMask, write = SetHistoryMask, index = 0 };
-    property<TFarEdit, string> History;
+    // __property wstring Mask = { read = GetHistoryMask, write = SetHistoryMask, index = 1 };
+    property<TFarEdit, wstring> Mask;
+    // __property wstring History = { read = GetHistoryMask, write = SetHistoryMask, index = 0 };
+    property<TFarEdit, wstring> History;
     // __property bool ExpandEnvVars = { read = GetFlag, write = SetFlag, index = DIF_EDITEXPAND };
     property<TFarEdit, bool> ExpandEnvVars;
     // __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
@@ -1045,8 +1048,8 @@ protected:
     virtual void Detach();
 
 private:
-    string GetHistoryMask(int Index);
-    void SetHistoryMask(int Index, string value);
+    wstring GetHistoryMask(int Index);
+    void SetHistoryMask(int Index, wstring value);
     void SetAsInteger(int value);
     int GetAsInteger();
 };
@@ -1058,8 +1061,8 @@ public:
 
     // __property bool Double = { read = GetDouble, write = SetDouble };
     property<TFarSeparator, bool> Double;
-    // __property string Caption = { read = Data, write = Data };
-    property<TFarSeparator, string> Caption;
+    // __property wstring Caption = { read = Data, write = Data };
+    property<TFarSeparator, wstring> Caption;
     // __property int Position = { read = GetPosition, write = SetPosition };
     property<TFarSeparator, int> Position;
 
@@ -1078,14 +1081,14 @@ class TFarText : public TFarDialogItem
 public:
     TFarText(TFarDialog *ADialog);
 
-    // __property string Caption = { read = Data, write = Data };
-    property<TFarText, string> Caption;
+    // __property wstring Caption = { read = Data, write = Data };
+    property<TFarText, wstring> Caption;
     // __property CenterGroup;
     // __property char Color = { read = GetColor, write = SetColor, index = 0 };
     property<TFarText, char> Color;
 
 protected:
-    virtual void SetData(const string value);
+    virtual void SetData(const wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarListBox;
@@ -1125,7 +1128,7 @@ protected:
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
-    virtual void Put(int Index, const string S);
+    virtual void Put(int Index, const wstring S);
     void SetCurPos(int Position, int TopIndex);
     void UpdateItem(int Index);
 
@@ -1208,8 +1211,8 @@ public:
     property<self, bool> WrapMode;
     // __property TFarList *Items = { read = FList };
     property<self, TFarList *> Items;
-    // __property string Text = { read = Data, write = Data };
-    property<self, string> Text;
+    // __property wstring Text = { read = Data, write = Data };
+    property<self, wstring> Text;
     // __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
     property<self, bool> AutoSelect;
     // __property bool DropDownList = { read = GetFlag, write = SetFlag, index = DIF_DROPDOWNLIST };
@@ -1252,6 +1255,6 @@ private:
     void SetTopIndex(int value);
 };
 //---------------------------------------------------------------------------
-string StripHotKey(string Text);
+wstring StripHotKey(wstring Text);
 TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------
