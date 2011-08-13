@@ -1,6 +1,51 @@
 #pragma once
 
 template <class object, class type>
+class property_ro
+{
+public:
+
+    typedef type(object::*get_proc)() const;
+
+    property(object &object, get_proc getpr) :
+        obj(object)
+        , getter(getpr)
+    {
+    }
+
+    operator type()
+    {
+        return get();
+    }
+
+    type const &operator = (type const &value)
+    {
+        set(value);
+        return value;
+    }
+
+    property &operator = (property const &prt)
+    {
+        set(prt.get());
+        return *this;
+    }
+
+private:
+    object &obj;
+    get_proc getter;
+
+    inline type get() const
+    {
+        return (obj.*getter)();
+    }
+
+    inline void set(type const &value)
+    {
+        (obj.*setter)(value);
+    }
+};
+
+template <class object, class type>
 class property
 {
 public:
