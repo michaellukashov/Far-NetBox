@@ -321,6 +321,18 @@ struct TRect
         Right(right),
         Bottom(bottom)
     {}
+    operator == () (const TRect &other)
+    {
+        return
+            Left == other.Left &&
+            Top == other.Top &&
+            Right == other.Right &&
+            Bottom == other.Bottom;
+    }
+    operator != ()(const TRect &other)
+    {
+        return !(operator == (other));
+    }
 };
 
 class TObjectList : public TObject
