@@ -596,7 +596,7 @@ public:
     HANDLE GetHandle() const { return FHandle; }
     TFarButton *GetDefaultButton() const { return FDefaultButton; }
     TFarBox *GetBorderBox() const { return FBorderBox; }
-    TFarDialogItem *GetItem(size_t Index) const;
+    TFarDialogItem *GetItem(size_t Index);
     size_t GetItemCount() const;
     TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
     void SetNextItemPosition(const TItemPosition &value) { FNextItemPosition = value; }
@@ -608,7 +608,7 @@ public:
     TFarDialogItem *GetItemFocused() const { return FItemFocused; }
     void SetItemFocused(TFarDialogItem * const &value);
     int GetResult() const { return FResult; }
-    TPoint GetMaxSize() const;
+    TPoint GetMaxSize();
     
     TFarKeyEvent GetOnKey() const { return FOnKey; }
     void SetOnKey(const TFarKeyEvent &value) { FOnKey = value; }
