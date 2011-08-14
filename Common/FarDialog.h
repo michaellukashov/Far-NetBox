@@ -619,8 +619,9 @@ public:
     char GetSystemColor(unsigned int Index);
     bool HotKey(unsigned long Key);
 
-protected:
     TCustomFarPlugin *GetFarPlugin() { return FFarPlugin; }
+
+protected:
     TObjectList *GetItems() { return FItems; }
 
     void Add(TFarDialogItem *Item);

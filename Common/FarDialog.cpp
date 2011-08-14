@@ -1986,41 +1986,43 @@ void TFarEdit::SetHistoryMask(int Index, wstring value)
 //---------------------------------------------------------------------------
 void TFarEdit::SetAsInteger(int value)
 {
-    int Int;
-    if (!TryStrToInt(GetText(), Int) || (GetAsInteger() != value))
+    int Int = GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
+    if (!Int || (GetAsInteger() != value))
     {
-        Text = IntToStr(value);
+        wchar_t Buffer[32];
+        SetText(GetDialog()->GetFarPlugin()->GetFarStandardFunctions().itoa(value, Buffer, 10));
         DialogChange();
     }
 }
 //---------------------------------------------------------------------------
 int TFarEdit::GetAsInteger()
 {
-    return StrToIntDef(GetText(), 0);
+    // return StrToIntDef(GetText(), 0);
+    return GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarSeparator::TFarSeparator(TFarDialog *ADialog) :
     TFarDialogItem(ADialog, DI_TEXT)
 {
-    Left = -1;
+    SetLeft(-1);
     SetFlag(DIF_SEPARATOR, true);
 }
 //---------------------------------------------------------------------------
 void TFarSeparator::ResetBounds()
 {
     TFarDialogItem::ResetBounds();
-    if (Bounds.Left < 0)
+    if (GetBounds().Left < 0)
     {
-        DialogItem.get()->X1 = -1;
+        GetDialogItem()->X1 = -1;
     }
 }
 //---------------------------------------------------------------------------
 void TFarSeparator::SetDouble(bool value)
 {
-    if (Double != value)
+    if (GetDouble() != value)
     {
-        assert(!Dialog->Handle);
+        assert(!GetDialog()->GetHandle());
         SetFlag(DIF_SEPARATOR, !value);
         SetFlag(DIF_SEPARATOR2, value);
     }
@@ -2033,15 +2035,15 @@ bool TFarSeparator::GetDouble()
 //---------------------------------------------------------------------------
 void TFarSeparator::SetPosition(int value)
 {
-    TRect R = Bounds;
+    TRect R = GetBounds();
     R.Top = value;
     R.Bottom = value;
-    Bounds = R;
+    SetBounds(R);
 }
 //---------------------------------------------------------------------------
 int TFarSeparator::GetPosition()
 {
-    return Bounds.Top;
+    return GetBounds().Top;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2053,9 +2055,9 @@ TFarText::TFarText(TFarDialog *ADialog) :
 void TFarText::SetData(const wstring value)
 {
     TFarDialogItem::SetData(value);
-    if (Left >= 0 || Right >= 0)
+    if (GetLeft() >= 0 || GetRight() >= 0)
     {
-        Width = StripHotKey(value).Length();
+        SetWidth(StripHotKey(value).size());
     }
 }
 //---------------------------------------------------------------------------
@@ -2085,9 +2087,9 @@ void TFarList::Assign(TPersistent *Source)
     TFarList *FarList = dynamic_cast<TFarList *>(Source);
     if (FarList != NULL)
     {
-        for (int Index = 0; Index < FarList->Count; Index++)
+        for (int Index = 0; Index < FarList->GetCount(); Index++)
         {
-            Flags[Index] = FarList->Flags[Index];
+            SetFlags(Index, FarList->GetFlags(Index));
         }
     }
 }
@@ -2095,29 +2097,31 @@ void TFarList::Assign(TPersistent *Source)
 void TFarList::UpdateItem(int Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
-    strcpy(ListItem->Text,
-           Strings[Index].SubString(1, sizeof(ListItem->Text) - 1).c_str());
-    if (!DialogItem.get()->Oem)
+    wstring value = GetString(Index).substr(1, sizeof(ListItem->Text) - 1);
+    wcscpy_s((wchar_t *)ListItem->Text,
+        value.size(),
+        value.c_str());
+    if (!GetDialogItem()->GetOem())
     {
-        StrToFar(ListItem->Text);
+        StrToFar(wstring(ListItem->Text));
     }
 
     FarListUpdate ListUpdate;
     memset(&ListUpdate, 0, sizeof(ListUpdate));
     ListUpdate.Index = Index;
     ListUpdate.Item = *ListItem;
-    DialogItem.get()->SendMessage(DM_LISTUPDATE, (int)&ListUpdate);
+    GetDialogItem()->SendMessage(DM_LISTUPDATE, (int)&ListUpdate);
 }
 //---------------------------------------------------------------------------
 void TFarList::Put(int Index, const wstring S)
 {
-    if ((DialogItem != NULL) && DialogItem.get()->Dialog->Handle)
+    if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
         FNoDialogUpdate = true;
         try
         {
             TStringList::Put(Index, S);
-            if (UpdateCount == 0)
+            if (GetUpdateCount() == 0)
             {
                 UpdateItem(Index);
             }
@@ -2137,22 +2141,22 @@ void TFarList::Changed()
 {
     TStringList::Changed();
 
-    if ((UpdateCount == 0) && !FNoDialogUpdate)
+    if ((GetUpdateCount() == 0) && !FNoDialogUpdate)
     {
         int PrevSelected;
         int PrevTopIndex;
-        if ((DialogItem != NULL) && DialogItem.get()->Dialog->Handle)
+        if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
         {
-            PrevSelected = Selected;
-            PrevTopIndex = TopIndex;
+            PrevSelected = GetSelected();
+            PrevTopIndex = GetTopIndex();
         }
-        if (FListItems->ItemsNumber != Count)
+        if (FListItems->ItemsNumber != GetCount())
         {
             FarListItem *Items = FListItems->Items;
-            if (Count)
+            if (GetCount())
             {
-                FListItems->Items = new FarListItem[Count];
-                for (int Index = 0; Index < Count; Index++)
+                FListItems->Items = new FarListItem[GetCount()];
+                for (int Index = 0; Index < GetCount(); Index++)
                 {
                     memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
                     if (Index < FListItems->ItemsNumber)
@@ -2166,34 +2170,36 @@ void TFarList::Changed()
                 FListItems->Items = NULL;
             }
             delete[] Items;
-            FListItems->ItemsNumber = Count;
+            FListItems->ItemsNumber = GetCount();
         }
-        for (int i = 0; i < Count; i++)
+        for (int i = 0; i < GetCount(); i++)
         {
-            strcpy(FListItems->Items[i].Text,
-                   Strings[i].SubString(1, sizeof(FListItems->Items[i].Text) - 1).c_str());
-            if ((DialogItem != NULL) && !DialogItem.get()->Oem)
+            wstring value = GetString(i).substr(1, sizeof(FListItems->Items[i].Text) - 1);
+            wcscpy_s((wchar_t *)FListItems->Items[i].Text,
+                value.size(),
+                value.c_str());
+            if ((GetDialogItem() != NULL) && !GetDialogItem()->GetOem())
             {
-                StrToFar(FListItems->Items[i].Text);
+                StrToFar(wstring(FListItems->Items[i].Text));
             }
         }
-        if ((DialogItem != NULL) && DialogItem.get()->Dialog->Handle)
+        if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
         {
-            DialogItem.get()->Dialog->LockChanges();
+            GetDialogItem()->GetDialog()->LockChanges();
             try
             {
-                DialogItem.get()->SendMessage(DM_LISTSET, (int)FListItems);
-                if (PrevTopIndex + DialogItem.get()->Height > Count)
+                GetDialogItem()->SendMessage(DM_LISTSET, (int)FListItems);
+                if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
                 {
-                    PrevTopIndex = Count > DialogItem.get()->Height ? Count - DialogItem.get()->Height : 0;
+                    PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
                 }
-                SetCurPos((PrevSelected >= Count) ? (Count - 1) : PrevSelected,
+                SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
                           PrevTopIndex);
             }
             catch (...)
             {
             }
-            DialogItem.get()->Dialog->UnlockChanges();
+            GetDialogItem()->GetDialog()->UnlockChanges();
         }
     }
 }
@@ -2203,13 +2209,13 @@ void TFarList::SetSelected(int value)
     assert(DialogItem != NULL);
     if (GetSelectedInt(false) != value)
     {
-        if (DialogItem.get()->Dialog->Handle)
+        if (GetDialogItem()->GetDialog()->GetHandle())
         {
             UpdatePosition(value);
         }
         else
         {
-            DialogItem.get()->Data = Strings[value];
+            GetDialogItem()->SetData(GetString(value));
         }
     }
 }
@@ -2218,10 +2224,10 @@ void TFarList::UpdatePosition(int Position)
 {
     if (Position >= 0)
     {
-        int ATopIndex = TopIndex;
+        int ATopIndex = GetTopIndex();
         // even if new position is visible already, FAR will scroll the view so
         // that the new selected item is the last one, following prevents the scroll
-        if ((ATopIndex <= Position) && (Position < ATopIndex + VisibleCount))
+        if ((ATopIndex <= Position) && (Position < ATopIndex + GetVisibleCount()))
         {
             SetCurPos(Position, ATopIndex);
         }
@@ -2239,12 +2245,12 @@ void TFarList::SetCurPos(int Position, int TopIndex)
     FarListPos ListPos;
     ListPos.SelectPos = Position;
     ListPos.TopPos = TopIndex;
-    DialogItem.get()->SendMessage(DM_LISTSETCURPOS, (int)&ListPos);
+    GetDialogItem()->SendMessage(DM_LISTSETCURPOS, (int)&ListPos);
 }
 //---------------------------------------------------------------------------
 void TFarList::SetTopIndex(int value)
 {
-    if (value != TopIndex)
+    if (value != GetTopIndex())
     {
         SetCurPos(-1, value);
     }
@@ -2252,14 +2258,14 @@ void TFarList::SetTopIndex(int value)
 //---------------------------------------------------------------------------
 int TFarList::GetPosition()
 {
-    assert(DialogItem != NULL);
-    return DialogItem.get()->SendMessage(DM_LISTGETCURPOS, NULL);
+    assert(GetDialogItem() != NULL);
+    return GetDialogItem()->SendMessage(DM_LISTGETCURPOS, NULL);
 }
 //---------------------------------------------------------------------------
 int TFarList::GetTopIndex()
 {
     int Result;
-    if (Count == 0)
+    if (GetCount() == 0)
     {
         Result = -1;
     }
@@ -2267,7 +2273,7 @@ int TFarList::GetTopIndex()
     {
         FarListPos ListPos;
         assert(DialogItem != NULL);
-        DialogItem.get()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<int>(&ListPos));
+        GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<int>(&ListPos));
         Result = ListPos.TopPos;
     }
     return Result;
@@ -2276,11 +2282,11 @@ int TFarList::GetTopIndex()
 int TFarList::GetMaxLength()
 {
     int Result = 0;
-    for (int i = 0; i < Count; i++)
+    for (int i = 0; i < GetCount(); i++)
     {
-        if (Result < Strings[i].Length())
+        if (Result < GetString(i).size())
         {
-            Result = Strings[i].Length();
+            Result = GetString(i).size();
         }
     }
     return Result;
@@ -2289,24 +2295,24 @@ int TFarList::GetMaxLength()
 int TFarList::GetVisibleCount()
 {
     assert(DialogItem != NULL);
-    return FDialogItem.get()->Height - (FDialogItem.get()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
+    return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
 //---------------------------------------------------------------------------
 int TFarList::GetSelectedInt(bool Init)
 {
     int Result;
-    assert(DialogItem != NULL);
-    if (Count == 0)
+    assert(GetDialogItem() != NULL);
+    if (GetCount() == 0)
     {
         Result = -1;
     }
-    else if (DialogItem.get()->Dialog->Handle && !Init)
+    else if (GetDialogItem()->GetDialog()->GetHandle() && !Init)
     {
         Result = GetPosition();
     }
     else
     {
-        Result = IndexOf(DialogItem.get()->DialogItem.get()->Data);
+        Result = IndexOf(GetDialogItem()->GetDialogItem()->PtrData);
     }
 
     return Result;
