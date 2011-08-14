@@ -11,9 +11,9 @@
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
-/* TODO 1 : Path class instead of AnsiString (handle relativity...) */
+/* TODO 1 : Path class instead of wstring (handle relativity...) */
 //---------------------------------------------------------------------------
-AnsiString UnixIncludeTrailingBackslash(const AnsiString Path)
+wstring UnixIncludeTrailingBackslash(const wstring Path)
 {
   // it used to return "/" when input path was empty
   if (!Path.IsEmpty() && !Path.IsDelimiter("/", Path.Length()))
@@ -27,26 +27,26 @@ AnsiString UnixIncludeTrailingBackslash(const AnsiString Path)
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
-AnsiString UnixExcludeTrailingBackslash(const AnsiString Path)
+wstring UnixExcludeTrailingBackslash(const wstring Path)
 {
   if ((Path.Length() > 1) && Path.IsDelimiter("/", Path.Length()))
       return Path.SubString(1, Path.Length() - 1);
     else return Path;
 }
 //---------------------------------------------------------------------------
-Boolean UnixComparePaths(const AnsiString Path1, const AnsiString Path2)
+Boolean UnixComparePaths(const wstring Path1, const wstring Path2)
 {
   return (UnixIncludeTrailingBackslash(Path1) == UnixIncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
-bool UnixIsChildPath(AnsiString Parent, AnsiString Child)
+bool UnixIsChildPath(wstring Parent, wstring Child)
 {
   Parent = UnixIncludeTrailingBackslash(Parent);
   Child = UnixIncludeTrailingBackslash(Child);
   return (Child.SubString(1, Parent.Length()) == Parent);
 }
 //---------------------------------------------------------------------------
-AnsiString UnixExtractFileDir(const AnsiString Path)
+wstring UnixExtractFileDir(const wstring Path)
 {
   int Pos = Path.LastDelimiter('/');
   // it used to return Path when no slash was found
@@ -56,22 +56,22 @@ AnsiString UnixExtractFileDir(const AnsiString Path)
   }
   else
   {
-    return (Pos == 1) ? AnsiString("/") : AnsiString();
+    return (Pos == 1) ? wstring("/") : wstring();
   }
 }
 //---------------------------------------------------------------------------
 // must return trailing backslash
-AnsiString UnixExtractFilePath(const AnsiString Path)
+wstring UnixExtractFilePath(const wstring Path)
 {
   int Pos = Path.LastDelimiter('/');
   // it used to return Path when no slash was found
-  return (Pos > 0) ? Path.SubString(1, Pos) : AnsiString();
+  return (Pos > 0) ? Path.SubString(1, Pos) : wstring();
 }
 //---------------------------------------------------------------------------
-AnsiString UnixExtractFileName(const AnsiString Path)
+wstring UnixExtractFileName(const wstring Path)
 {
   int Pos = Path.LastDelimiter('/');
-  AnsiString Result;
+  wstring Result;
   if (Pos > 0)
   {
     Result = Path.SubString(Pos + 1, Path.Length() - Pos);
@@ -83,14 +83,14 @@ AnsiString UnixExtractFileName(const AnsiString Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString UnixExtractFileExt(const AnsiString Path)
+wstring UnixExtractFileExt(const wstring Path)
 {
-  AnsiString FileName = UnixExtractFileName(Path);
+  wstring FileName = UnixExtractFileName(Path);
   int Pos = FileName.LastDelimiter(".");
-  return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : AnsiString();
+  return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : wstring();
 }
 //---------------------------------------------------------------------------
-AnsiString ExtractFileName(const AnsiString & Path, bool Unix)
+wstring ExtractFileName(const wstring & Path, bool Unix)
 {
   if (Unix)
   {
@@ -102,7 +102,7 @@ AnsiString ExtractFileName(const AnsiString & Path, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-bool ExtractCommonPath(TStrings * Files, AnsiString & Path)
+bool ExtractCommonPath(TStrings * Files, wstring & Path)
 {
   assert(Files->Count > 0);
 
@@ -129,7 +129,7 @@ bool ExtractCommonPath(TStrings * Files, AnsiString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnixExtractCommonPath(TStrings * Files, AnsiString & Path)
+bool UnixExtractCommonPath(TStrings * Files, wstring & Path)
 {
   assert(Files->Count > 0);
 
@@ -156,20 +156,20 @@ bool UnixExtractCommonPath(TStrings * Files, AnsiString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsUnixRootPath(const AnsiString Path)
+bool IsUnixRootPath(const wstring Path)
 {
   return Path.IsEmpty() || (Path == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool IsUnixHiddenFile(const AnsiString FileName)
+bool IsUnixHiddenFile(const wstring FileName)
 {
   return (FileName != ROOTDIRECTORY) && (FileName != PARENTDIRECTORY) &&
     !FileName.IsEmpty() && (FileName[1] == '.');
 }
 //---------------------------------------------------------------------------
-AnsiString AbsolutePath(const AnsiString & Base, const AnsiString & Path)
+wstring AbsolutePath(const wstring & Base, const wstring & Path)
 {
-  AnsiString Result;
+  wstring Result;
   if (Path.IsEmpty())
   {
     Result = Base;
@@ -198,21 +198,21 @@ AnsiString AbsolutePath(const AnsiString & Base, const AnsiString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString FromUnixPath(const AnsiString Path)
+wstring FromUnixPath(const wstring Path)
 {
   return StringReplace(Path, "/", "\\", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
-AnsiString ToUnixPath(const AnsiString Path)
+wstring ToUnixPath(const wstring Path)
 {
   return StringReplace(Path, "\\", "/", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
-static void CutFirstDirectory(AnsiString & S, bool Unix)
+static void CutFirstDirectory(wstring & S, bool Unix)
 {
   bool Root;
   int P;
-  AnsiString Sep = Unix ? "/" : "\\";
+  wstring Sep = Unix ? "/" : "\\";
   if (S == Sep)
   {
     S = "";
@@ -249,10 +249,10 @@ static void CutFirstDirectory(AnsiString & S, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString MinimizeName(const AnsiString FileName, int MaxLen, bool Unix)
+wstring MinimizeName(const wstring FileName, int MaxLen, bool Unix)
 {
-  AnsiString Drive, Dir, Name, Result;
-  AnsiString Sep = Unix ? "/" : "\\";
+  wstring Drive, Dir, Name, Result;
+  wstring Sep = Unix ? "/" : "\\";
 
   Result = FileName;
   if (Unix)
@@ -305,9 +305,9 @@ AnsiString MinimizeName(const AnsiString FileName, int MaxLen, bool Unix)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString MakeFileList(TStrings * FileList)
+wstring MakeFileList(TStrings * FileList)
 {
-  AnsiString Result;
+  wstring Result;
   for (int Index = 0; Index < FileList->Count; Index++)
   {
     if (!Result.IsEmpty())
@@ -315,7 +315,7 @@ AnsiString MakeFileList(TStrings * FileList)
       Result += " ";
     }
 
-    AnsiString FileName = FileList->Strings[Index];
+    wstring FileName = FileList->Strings[Index];
     // currently this is used for local file only, so no delimiting is done
     if (FileName.Pos(" ") > 0)
     {
@@ -372,7 +372,7 @@ TModificationFmt LessDateTimePrecision(
   return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
 //---------------------------------------------------------------------------
-AnsiString UserModificationStr(TDateTime DateTime,
+wstring UserModificationStr(TDateTime DateTime,
   TModificationFmt Precision)
 {
   switch (Precision)
@@ -389,8 +389,8 @@ AnsiString UserModificationStr(TDateTime DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(AnsiString FileName, unsigned long Attrs,
-  AnsiString * TypeName)
+int FakeFileImageIndex(wstring FileName, unsigned long Attrs,
+  wstring * TypeName)
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
@@ -440,7 +440,7 @@ TRemoteToken::TRemoteToken() :
 {
 }
 //---------------------------------------------------------------------------
-TRemoteToken::TRemoteToken(const AnsiString & Name) :
+TRemoteToken::TRemoteToken(const wstring & Name) :
   FName(Name),
   FID(0),
   FIDValid(false)
@@ -542,7 +542,7 @@ bool TRemoteToken::GetIsSet() const
   return !FName.IsEmpty() || FIDValid;
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteToken::GetDisplayText() const
+wstring TRemoteToken::GetDisplayText() const
 {
   if (!FName.IsEmpty())
   {
@@ -554,11 +554,11 @@ AnsiString TRemoteToken::GetDisplayText() const
   }
   else
   {
-    return AnsiString();
+    return wstring();
   }
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteToken::GetLogText() const
+wstring TRemoteToken::GetLogText() const
 {
   return FORMAT("\"%s\" [%d]", (FName, int(FID)));
 }
@@ -640,7 +640,7 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
   }
 }
 //---------------------------------------------------------------------------
-bool TRemoteTokenList::Exists(const AnsiString & Name) const
+bool TRemoteTokenList::Exists(const wstring & Name) const
 {
   return (FNameMap.find(Name) != FNameMap.end());
 }
@@ -660,7 +660,7 @@ const TRemoteToken * TRemoteTokenList::Find(unsigned int ID) const
   return Result;
 }
 //---------------------------------------------------------------------------
-const TRemoteToken * TRemoteTokenList::Find(const AnsiString & Name) const
+const TRemoteToken * TRemoteTokenList::Find(const wstring & Name) const
 {
   TNameMap::const_iterator I = FNameMap.find(Name);
   const TRemoteToken * Result;
@@ -682,7 +682,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const char * Title)
     Terminal->LogEvent(FORMAT("Following %s found:", (Title)));
     for (size_t Index = 0; Index < FTokens.size(); Index++)
     {
-      Terminal->LogEvent(AnsiString("  ") + FTokens[Index].LogText);
+      Terminal->LogEvent(wstring("  ") + FTokens[Index].LogText);
     }
   }
   else
@@ -772,7 +772,7 @@ void TRemoteFile::LoadTypeInfo()
   if (IsDirectory) Attrs |= FILE_ATTRIBUTE_DIRECTORY;
   if (IsHidden) Attrs |= FILE_ATTRIBUTE_HIDDEN;
 
-  AnsiString DumbFileName = (IsSymLink && !LinkTo.IsEmpty() ? LinkTo : FileName);
+  wstring DumbFileName = (IsSymLink && !LinkTo.IsEmpty() ? LinkTo : FileName);
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
 }
@@ -786,7 +786,7 @@ Integer TRemoteFile::GetIconIndex() const
   return FIconIndex;
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFile::GetTypeName()
+wstring TRemoteFile::GetTypeName()
 {
   // check avilability of type info by icon index, because type name can be empty
   if (FIconIndex < 0)
@@ -864,7 +864,7 @@ void TRemoteFile::SetType(char AType)
 {
   FType = AType;
   // Allow even non-standard file types (e.g. 'S')
-  // if (!AnsiString("-DL").Pos((Char)toupper(FType))) Abort();
+  // if (!wstring("-DL").Pos((Char)toupper(FType))) Abort();
   FIsSymLink = ((Char)toupper(FType) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
@@ -914,12 +914,12 @@ void TRemoteFile::SetModification(const TDateTime & value)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFile::GetUserModificationStr()
+wstring TRemoteFile::GetUserModificationStr()
 {
   return ::UserModificationStr(Modification, FModificationFmt);
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFile::GetModificationStr()
+wstring TRemoteFile::GetModificationStr()
 {
   Word Year, Month, Day, Hour, Min, Sec, MSec;
   Modification.DecodeDate(&Year, &Month, &Day);
@@ -946,7 +946,7 @@ AnsiString TRemoteFile::GetModificationStr()
   }
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFile::GetExtension()
+wstring TRemoteFile::GetExtension()
 {
   return UnixExtractFileExt(FFileName);
 }
@@ -956,19 +956,19 @@ void TRemoteFile::SetRights(TRights * value)
   FRights->Assign(value);
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFile::GetRightsStr()
+wstring TRemoteFile::GetRightsStr()
 {
-  return FRights->Unknown ? AnsiString() : FRights->Text;
+  return FRights->Unknown ? wstring() : FRights->Text;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetListingStr(AnsiString value)
+void TRemoteFile::SetListingStr(wstring value)
 {
   // Value stored in 'value' can be used for error message
-  AnsiString Line = value;
+  wstring Line = value;
   FIconIndex = -1;
   try
   {
-    AnsiString Col;
+    wstring Col;
 
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
@@ -1269,14 +1269,14 @@ void TRemoteFile::FindLinkedFile()
   }
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFile::GetListingStr()
+wstring TRemoteFile::GetListingStr()
 {
   // note that ModificationStr is longer than 12 for mfFull
-  AnsiString LinkPart;
+  wstring LinkPart;
   // expanded from ?: to avoid memory leaks
   if (IsSymLink)
   {
-    LinkPart = AnsiString(SYMLINKSTR) + LinkTo;
+    LinkPart = wstring(SYMLINKSTR) + LinkTo;
   }
   return Format("%s%s %3s %-8s %-8s %9s %-12s %s%s", ARRAYOFCONST((
     Type, Rights->Text, IntToStr(INodeBlocks), Owner.Name,
@@ -1284,13 +1284,13 @@ AnsiString TRemoteFile::GetListingStr()
     LinkPart)));
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFile::GetFullFileName() const
+wstring TRemoteFile::GetFullFileName() const
 {
   if (FFullFileName.IsEmpty())
   {
     assert(Terminal);
     assert(Directory != NULL);
-    AnsiString Path;
+    wstring Path;
     if (IsParentDirectory) Path = Directory->ParentPath;
       else
     if (IsDirectory) Path = UnixIncludeTrailingBackslash(Directory->FullDirectory + FileName);
@@ -1373,12 +1373,12 @@ void TRemoteFileList::Clear()
   TObjectList::Clear();
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::SetDirectory(AnsiString value)
+void TRemoteFileList::SetDirectory(wstring value)
 {
   FDirectory = UnixExcludeTrailingBackslash(value);
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFileList::GetFullDirectory()
+wstring TRemoteFileList::GetFullDirectory()
 {
   return UnixIncludeTrailingBackslash(Directory);
 }
@@ -1393,7 +1393,7 @@ Boolean TRemoteFileList::GetIsRoot()
   return (Directory == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteFileList::GetParentPath()
+wstring TRemoteFileList::GetParentPath()
 {
   return UnixExtractFilePath(Directory);
 }
@@ -1406,7 +1406,7 @@ __int64 TRemoteFileList::GetTotalSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::FindFile(const AnsiString &FileName)
+TRemoteFile * TRemoteFileList::FindFile(const wstring &FileName)
 {
   for (Integer Index = 0; Index < Count; Index++)
     if (Files[Index]->FileName == FileName) return Files[Index];
@@ -1447,7 +1447,7 @@ void TRemoteDirectory::Clear()
   TRemoteFileList::Clear();
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::SetDirectory(AnsiString value)
+void TRemoteDirectory::SetDirectory(wstring value)
 {
   TRemoteFileList::SetDirectory(value);
   //Load();
@@ -1581,7 +1581,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
   return (const_cast<TRemoteDirectoryCache*>(this)->Count == 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::HasFileList(const AnsiString Directory)
+bool TRemoteDirectoryCache::HasFileList(const wstring Directory)
 {
   TGuard Guard(FSection);
 
@@ -1589,7 +1589,7 @@ bool TRemoteDirectoryCache::HasFileList(const AnsiString Directory)
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::HasNewerFileList(const AnsiString Directory,
+bool TRemoteDirectoryCache::HasNewerFileList(const wstring Directory,
   TDateTime Timestamp)
 {
   TGuard Guard(FSection);
@@ -1606,7 +1606,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const AnsiString Directory,
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::GetFileList(const AnsiString Directory,
+bool TRemoteDirectoryCache::GetFileList(const wstring Directory,
   TRemoteFileList * FileList)
 {
   TGuard Guard(FSection);
@@ -1637,13 +1637,13 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryCache::ClearFileList(AnsiString Directory, bool SubDirs)
+void TRemoteDirectoryCache::ClearFileList(wstring Directory, bool SubDirs)
 {
   TGuard Guard(FSection);
   DoClearFileList(Directory, SubDirs);
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryCache::DoClearFileList(AnsiString Directory, bool SubDirs)
+void TRemoteDirectoryCache::DoClearFileList(wstring Directory, bool SubDirs)
 {
   Directory = UnixExcludeTrailingBackslash(Directory);
   int Index = IndexOf(Directory);
@@ -1689,8 +1689,8 @@ bool TRemoteDirectoryChangesCache::GetIsEmpty() const
   return (const_cast<TRemoteDirectoryChangesCache*>(this)->Count == 0);
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::SetValue(const AnsiString & Name,
-  const AnsiString & Value)
+void TRemoteDirectoryChangesCache::SetValue(const wstring & Name,
+  const wstring & Value)
 {
   int Index = IndexOfName(Name);
   if (Index > 0)
@@ -1700,22 +1700,22 @@ void TRemoteDirectoryChangesCache::SetValue(const AnsiString & Name,
   Values[Name] = Value;
 }
 //---------------------------------------------------------------------------
-AnsiString TRemoteDirectoryChangesCache::GetValue(const AnsiString & Name)
+wstring TRemoteDirectoryChangesCache::GetValue(const wstring & Name)
 {
-  AnsiString Value = Values[Name];
+  wstring Value = Values[Name];
   SetValue(Name, Value);
   return Value;
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::AddDirectoryChange(
-  const AnsiString SourceDir, const AnsiString Change,
-  const AnsiString TargetDir)
+  const wstring SourceDir, const wstring Change,
+  const wstring TargetDir)
 {
   assert(!TargetDir.IsEmpty());
   SetValue(TargetDir, "//");
   if (TTerminal::ExpandFileName(Change, SourceDir) != TargetDir)
   {
-    AnsiString Key;
+    wstring Key;
     if (DirectoryChangeKey(SourceDir, Change, Key))
     {
       SetValue(Key, TargetDir);
@@ -1724,7 +1724,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
-  AnsiString SourceDir)
+  wstring SourceDir)
 {
   for (int Index = 0; Index < Count; Index++)
   {
@@ -1737,16 +1737,16 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
-  AnsiString TargetDir)
+  wstring TargetDir)
 {
-  AnsiString Key;
+  wstring Key;
   // hack to clear at least local sym-link change in case symlink is deleted
   DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
     UnixExtractFileName(TargetDir), Key);
 
   for (int Index = 0; Index < Count; Index++)
   {
-    AnsiString Name = Names[Index];
+    wstring Name = Names[Index];
     if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
         (Values[Name].SubString(1, TargetDir.Length()) == TargetDir) ||
         (!Key.IsEmpty() && (Name == Key)))
@@ -1758,9 +1758,9 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
-  const AnsiString SourceDir, const AnsiString Change, AnsiString & TargetDir)
+  const wstring SourceDir, const wstring Change, wstring & TargetDir)
 {
-  AnsiString Key;
+  wstring Key;
   bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
   Result = (IndexOfName(Key) >= 0);
@@ -1778,7 +1778,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
     Result = DirectoryChangeKey(SourceDir, Change, Key);
     if (Result)
     {
-      AnsiString Directory = GetValue(Key);
+      wstring Directory = GetValue(Key);
       Result = !Directory.IsEmpty();
       if (Result)
       {
@@ -1789,7 +1789,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Serialize(AnsiString & Data)
+void TRemoteDirectoryChangesCache::Serialize(wstring & Data)
 {
   Data = "A";
   int ACount = Count;
@@ -1817,7 +1817,7 @@ void TRemoteDirectoryChangesCache::Serialize(AnsiString & Data)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Deserialize(const AnsiString Data)
+void TRemoteDirectoryChangesCache::Deserialize(const wstring Data)
 {
   if (Data.IsEmpty())
   {
@@ -1830,7 +1830,7 @@ void TRemoteDirectoryChangesCache::Deserialize(const AnsiString Data)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
-  const AnsiString SourceDir, const AnsiString Change, AnsiString & Key)
+  const wstring SourceDir, const wstring Change, wstring & Key)
 {
   bool Result = !Change.IsEmpty();
   if (Result)
@@ -2017,7 +2017,7 @@ void TRights::SetAllowUndef(bool value)
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetText(const AnsiString & value)
+void TRights::SetText(const wstring & value)
 {
   if (value != Text)
   {
@@ -2072,12 +2072,12 @@ void TRights::SetText(const AnsiString & value)
       }
     }
 
-    FText = KeepText ? value : AnsiString();
+    FText = KeepText ? value : wstring();
   }
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-AnsiString TRights::GetText() const
+wstring TRights::GetText() const
 {
   if (!FText.IsEmpty())
   {
@@ -2085,7 +2085,7 @@ AnsiString TRights::GetText() const
   }
   else
   {
-    AnsiString Result;
+    wstring Result;
     Result.SetLength(TextLen);
 
     int Flag = 00001;
@@ -2132,9 +2132,9 @@ AnsiString TRights::GetText() const
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetOctal(AnsiString value)
+void TRights::SetOctal(wstring value)
 {
-  AnsiString AValue(value);
+  wstring AValue(value);
   if (AValue.Length() == 3)
   {
     AValue = "0" + AValue;
@@ -2177,9 +2177,9 @@ unsigned long TRights::GetNumberDecadic() const
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString TRights::GetOctal() const
+wstring TRights::GetOctal() const
 {
-  AnsiString Result;
+  wstring Result;
   unsigned short N = NumberSet; // used to be "Number"
   Result.SetLength(4);
   Result[1] = static_cast<char>('0' + ((N & 07000) >> 9));
@@ -2283,7 +2283,7 @@ bool  TRights::GetReadOnly()
   return Right[rrUserWrite] && Right[rrGroupWrite] && Right[rrOtherWrite];
 }
 //---------------------------------------------------------------------------
-AnsiString TRights::GetSimplestStr() const
+wstring TRights::GetSimplestStr() const
 {
   if (IsUndef)
   {
@@ -2295,10 +2295,10 @@ AnsiString TRights::GetSimplestStr() const
   }
 }
 //---------------------------------------------------------------------------
-AnsiString TRights::GetModeStr() const
+wstring TRights::GetModeStr() const
 {
-  AnsiString Result;
-  AnsiString SetModeStr, UnsetModeStr;
+  wstring Result;
+  wstring SetModeStr, UnsetModeStr;
   TRight Right;
   int Index;
 
@@ -2535,7 +2535,7 @@ void TRemoteProperties::Load(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteBinaryData(AnsiString("Valid"),
+  Storage->WriteBinaryData(wstring("Valid"),
     static_cast<const void *>(&Valid), sizeof(Valid));
 
   if (Valid.Contains(vpRights))

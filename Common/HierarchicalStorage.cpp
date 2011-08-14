@@ -18,30 +18,30 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
 //---------------------------------------------------------------------------
-AnsiString MungeStr(const AnsiString Str)
+wstring MungeStr(const wstring Str)
 {
-  AnsiString Result;
+  wstring Result;
   Result.SetLength(Str.Length() * 3 + 1);
   putty_mungestr(Str.c_str(), Result.c_str());
   PackStr(Result);
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString UnMungeStr(const AnsiString Str)
+wstring UnMungeStr(const wstring Str)
 {
-  AnsiString Result;
+  wstring Result;
   Result.SetLength(Str.Length() * 3 + 1);
   putty_unmungestr(Str.c_str(), Result.c_str(), Result.Length());
   PackStr(Result);
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString PuttyMungeStr(const AnsiString Str)
+wstring PuttyMungeStr(const wstring Str)
 {
   return MungeStr(Str);
 }
 //---------------------------------------------------------------------------
-AnsiString MungeIniName(const AnsiString Str)
+wstring MungeIniName(const wstring Str)
 {
   int P = Str.Pos("=");
   // make this fast for now
@@ -55,7 +55,7 @@ AnsiString MungeIniName(const AnsiString Str)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString UnMungeIniName(const AnsiString Str)
+wstring UnMungeIniName(const wstring Str)
 {
   int P = Str.Pos("%3D");
   // make this fast for now
@@ -69,7 +69,7 @@ AnsiString UnMungeIniName(const AnsiString Str)
   }
 }
 //===========================================================================
-THierarchicalStorage::THierarchicalStorage(const AnsiString AStorage)
+THierarchicalStorage::THierarchicalStorage(const wstring AStorage)
 {
   FStorage = AStorage;
   FKeyHistory = new TStringList();
@@ -88,13 +88,13 @@ void THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
   FAccessMode = value;
 }
 //---------------------------------------------------------------------------
-AnsiString THierarchicalStorage::GetCurrentSubKeyMunged()
+wstring THierarchicalStorage::GetCurrentSubKeyMunged()
 {
   if (FKeyHistory->Count) return FKeyHistory->Strings[FKeyHistory->Count-1];
     else return "";
 }
 //---------------------------------------------------------------------------
-AnsiString THierarchicalStorage::GetCurrentSubKey()
+wstring THierarchicalStorage::GetCurrentSubKey()
 {
   return UnMungeStr(GetCurrentSubKeyMunged());
 }
@@ -104,9 +104,9 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey("", CanCreate);
 }
 //---------------------------------------------------------------------------
-AnsiString THierarchicalStorage::MungeSubKey(AnsiString Key, bool Path)
+wstring THierarchicalStorage::MungeSubKey(wstring Key, bool Path)
 {
-  AnsiString Result;
+  wstring Result;
   if (Path)
   {
     assert(Key.IsEmpty() || (Key[Key.Length()] != '\\'));
@@ -126,7 +126,7 @@ AnsiString THierarchicalStorage::MungeSubKey(AnsiString Key, bool Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::OpenSubKey(const AnsiString SubKey, bool /*CanCreate*/, bool Path)
+bool THierarchicalStorage::OpenSubKey(const wstring SubKey, bool /*CanCreate*/, bool Path)
 {
   FKeyHistory->Add(IncludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path)));
   return true;
@@ -155,7 +155,7 @@ void THierarchicalStorage::ClearSubKeys()
   }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::RecursiveDeleteSubKey(const AnsiString Key)
+void THierarchicalStorage::RecursiveDeleteSubKey(const wstring Key)
 {
   if (OpenSubKey(Key, false))
   {
@@ -181,7 +181,7 @@ bool THierarchicalStorage::HasSubKeys()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::HasSubKey(const AnsiString SubKey)
+bool THierarchicalStorage::HasSubKey(const wstring SubKey)
 {
   bool Result = OpenSubKey(SubKey, false);
   if (Result)
@@ -256,9 +256,9 @@ void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
   }
 }
 //---------------------------------------------------------------------------
-AnsiString THierarchicalStorage::ReadString(const AnsiString Name, const AnsiString Default)
+wstring THierarchicalStorage::ReadString(const wstring Name, const wstring Default)
 {
-  AnsiString Result;
+  wstring Result;
   if (MungeStringValues)
   {
     Result = UnMungeStr(ReadStringRaw(Name, MungeStr(Default)));
@@ -270,16 +270,16 @@ AnsiString THierarchicalStorage::ReadString(const AnsiString Name, const AnsiStr
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString THierarchicalStorage::ReadBinaryData(const AnsiString Name)
+wstring THierarchicalStorage::ReadBinaryData(const wstring Name)
 {
   int Size = BinaryDataSize(Name);
-  AnsiString Value;
+  wstring Value;
   Value.SetLength(Size);
   ReadBinaryData(Name, Value.c_str(), Size);
   return Value;
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteString(const AnsiString Name, const AnsiString Value)
+void THierarchicalStorage::WriteString(const wstring Name, const wstring Value)
 {
   if (MungeStringValues)
   {
@@ -291,13 +291,13 @@ void THierarchicalStorage::WriteString(const AnsiString Name, const AnsiString V
   }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteBinaryData(const AnsiString Name,
-  const AnsiString Value)
+void THierarchicalStorage::WriteBinaryData(const wstring Name,
+  const wstring Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 //---------------------------------------------------------------------------
-AnsiString THierarchicalStorage::IncludeTrailingBackslash(const AnsiString & S)
+wstring THierarchicalStorage::IncludeTrailingBackslash(const wstring & S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -310,7 +310,7 @@ AnsiString THierarchicalStorage::IncludeTrailingBackslash(const AnsiString & S)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString THierarchicalStorage::ExcludeTrailingBackslash(const AnsiString & S)
+wstring THierarchicalStorage::ExcludeTrailingBackslash(const wstring & S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -323,13 +323,13 @@ AnsiString THierarchicalStorage::ExcludeTrailingBackslash(const AnsiString & S)
   }
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const AnsiString AStorage):
+TRegistryStorage::TRegistryStorage(const wstring AStorage):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   Init();
 };
 //---------------------------------------------------------------------------
-TRegistryStorage::TRegistryStorage(const AnsiString AStorage, HKEY ARootKey):
+TRegistryStorage::TRegistryStorage(const wstring AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   Init();
@@ -360,7 +360,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     int Index = 0;
     while ((Index < Names->Count) && Result)
     {
-      AnsiString Name = MungeStr(Names->Strings[Index]);
+      wstring Name = MungeStr(Names->Strings[Index]);
       unsigned long Size = Buffer.size();
       unsigned long Type;
       int RegResult;
@@ -392,7 +392,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString TRegistryStorage::GetSource()
+wstring TRegistryStorage::GetSource()
 {
   return RootKeyToStr(FRegistry->RootKey) + "\\" + Storage;
 }
@@ -415,11 +415,11 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path)
+bool TRegistryStorage::OpenSubKey(const wstring SubKey, bool CanCreate, bool Path)
 {
   bool Result;
   if (FKeyHistory->Count > 0) FRegistry->CloseKey();
-  AnsiString K = ExcludeTrailingBackslash(Storage + CurrentSubKey + MungeSubKey(SubKey, Path));
+  wstring K = ExcludeTrailingBackslash(Storage + CurrentSubKey + MungeSubKey(SubKey, Path));
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
   return Result;
@@ -435,9 +435,9 @@ void TRegistryStorage::CloseSubKey()
   }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteSubKey(const AnsiString SubKey)
+bool TRegistryStorage::DeleteSubKey(const wstring SubKey)
 {
-  AnsiString K;
+  wstring K;
   if (FKeyHistory->Count == 0) K = Storage + CurrentSubKey;
   K += MungeStr(SubKey);
   return FRegistry->DeleteKey(K);
@@ -457,51 +457,51 @@ void TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
   FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteValue(const AnsiString Name)
+bool TRegistryStorage::DeleteValue(const wstring Name)
 {
   return FRegistry->DeleteValue(Name);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::KeyExists(const AnsiString SubKey)
+bool TRegistryStorage::KeyExists(const wstring SubKey)
 {
-  AnsiString K = MungeStr(SubKey);
+  wstring K = MungeStr(SubKey);
   bool Result = FRegistry->KeyExists(K);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::ValueExists(const AnsiString Value)
+bool TRegistryStorage::ValueExists(const wstring Value)
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::BinaryDataSize(const AnsiString Name)
+int TRegistryStorage::BinaryDataSize(const wstring Name)
 {
   int Result = FRegistry->GetDataSize(Name);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::ReadBool(const AnsiString Name, bool Default)
+bool TRegistryStorage::ReadBool(const wstring Name, bool Default)
 {
   READ_REGISTRY(ReadBool);
 }
 //---------------------------------------------------------------------------
-TDateTime TRegistryStorage::ReadDateTime(const AnsiString Name, TDateTime Default)
+TDateTime TRegistryStorage::ReadDateTime(const wstring Name, TDateTime Default)
 {
   READ_REGISTRY(ReadDateTime);
 }
 //---------------------------------------------------------------------------
-double TRegistryStorage::ReadFloat(const AnsiString Name, double Default)
+double TRegistryStorage::ReadFloat(const wstring Name, double Default)
 {
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::ReadInteger(const AnsiString Name, int Default)
+int TRegistryStorage::ReadInteger(const wstring Name, int Default)
 {
   READ_REGISTRY(ReadInteger);
 }
 //---------------------------------------------------------------------------
-__int64 TRegistryStorage::ReadInt64(const AnsiString Name, __int64 Default)
+__int64 TRegistryStorage::ReadInt64(const wstring Name, __int64 Default)
 {
   __int64 Result = Default;
   if (FRegistry->ValueExists(Name))
@@ -518,12 +518,12 @@ __int64 TRegistryStorage::ReadInt64(const AnsiString Name, __int64 Default)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString TRegistryStorage::ReadStringRaw(const AnsiString Name, const AnsiString Default)
+wstring TRegistryStorage::ReadStringRaw(const wstring Name, const wstring Default)
 {
   READ_REGISTRY(ReadString);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::ReadBinaryData(const AnsiString Name,
+int TRegistryStorage::ReadBinaryData(const wstring Name,
   void * Buffer, int Size)
 {
   int Result;
@@ -546,32 +546,32 @@ int TRegistryStorage::ReadBinaryData(const AnsiString Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBool(const AnsiString Name, bool Value)
+void TRegistryStorage::WriteBool(const wstring Name, bool Value)
 {
   WRITE_REGISTRY(WriteBool);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteDateTime(const AnsiString Name, TDateTime Value)
+void TRegistryStorage::WriteDateTime(const wstring Name, TDateTime Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteFloat(const AnsiString Name, double Value)
+void TRegistryStorage::WriteFloat(const wstring Name, double Value)
 {
   WRITE_REGISTRY(WriteFloat);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteStringRaw(const AnsiString Name, const AnsiString Value)
+void TRegistryStorage::WriteStringRaw(const wstring Name, const wstring Value)
 {
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteInteger(const AnsiString Name, int Value)
+void TRegistryStorage::WriteInteger(const wstring Name, int Value)
 {
   WRITE_REGISTRY(WriteInteger);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteInt64(const AnsiString Name, __int64 Value)
+void TRegistryStorage::WriteInt64(const wstring Name, __int64 Value)
 {
   try
   {
@@ -583,7 +583,7 @@ void TRegistryStorage::WriteInt64(const AnsiString Name, __int64 Value)
   }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBinaryData(const AnsiString Name,
+void TRegistryStorage::WriteBinaryData(const wstring Name,
   const void * Buffer, int Size)
 {
   try
@@ -603,7 +603,7 @@ int TRegistryStorage::GetFailed()
   return Result;
 }
 //===========================================================================
-TIniFileStorage::TIniFileStorage(const AnsiString AStorage):
+TIniFileStorage::TIniFileStorage(const wstring AStorage):
   THierarchicalStorage(AStorage)
 {
   FIniFile = new TMemIniFile(Storage);
@@ -672,17 +672,17 @@ TIniFileStorage::~TIniFileStorage()
   }
 }
 //---------------------------------------------------------------------------
-AnsiString TIniFileStorage::GetSource()
+wstring TIniFileStorage::GetSource()
 {
   return Storage;
 }
 //---------------------------------------------------------------------------
-AnsiString TIniFileStorage::GetCurrentSection()
+wstring TIniFileStorage::GetCurrentSection()
 {
   return ExcludeTrailingBackslash(GetCurrentSubKeyMunged());
 }
 //---------------------------------------------------------------------------
-bool TIniFileStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path)
+bool TIniFileStorage::OpenSubKey(const wstring SubKey, bool CanCreate, bool Path)
 {
   bool Result = CanCreate;
 
@@ -693,7 +693,7 @@ bool TIniFileStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool P
     {
       Sections->Sorted = true;
       FIniFile->ReadSections(Sections);
-      AnsiString NewKey = ExcludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path));
+      wstring NewKey = ExcludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path));
       int Index = -1;
       if (Sections->Count)
       {
@@ -718,7 +718,7 @@ bool TIniFileStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool P
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TIniFileStorage::DeleteSubKey(const AnsiString SubKey)
+bool TIniFileStorage::DeleteSubKey(const wstring SubKey)
 {
   bool Result;
   try
@@ -742,11 +742,11 @@ void TIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->Count; i++)
     {
-      AnsiString Section = Sections->Strings[i];
+      wstring Section = Sections->Strings[i];
       if (AnsiCompareText(CurrentSubKey,
           Section.SubString(1, CurrentSubKey.Length())) == 0)
       {
-        AnsiString SubSection = Section.SubString(CurrentSubKey.Length() + 1,
+        wstring SubSection = Section.SubString(CurrentSubKey.Length() + 1,
           Section.Length() - CurrentSubKey.Length());
         int P = SubSection.Pos("\\");
         if (P)
@@ -775,30 +775,30 @@ void TIniFileStorage::GetValueNames(Classes::TStrings* Strings)
   }
 }
 //---------------------------------------------------------------------------
-bool TIniFileStorage::KeyExists(const AnsiString SubKey)
+bool TIniFileStorage::KeyExists(const wstring SubKey)
 {
   return FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey));
 }
 //---------------------------------------------------------------------------
-bool TIniFileStorage::ValueExists(const AnsiString Value)
+bool TIniFileStorage::ValueExists(const wstring Value)
 {
   return FIniFile->ValueExists(CurrentSection, MungeIniName(Value));
 }
 //---------------------------------------------------------------------------
-bool TIniFileStorage::DeleteValue(const AnsiString Name)
+bool TIniFileStorage::DeleteValue(const wstring Name)
 {
   FIniFile->DeleteKey(CurrentSection, MungeIniName(Name));
   return true;
 }
 //---------------------------------------------------------------------------
-int TIniFileStorage::BinaryDataSize(const AnsiString Name)
+int TIniFileStorage::BinaryDataSize(const wstring Name)
 {
   return ReadStringRaw(Name, "").Length() / 2;
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::ApplyOverrides()
 {
-  AnsiString OverridesKey = IncludeTrailingBackslash("Override");
+  wstring OverridesKey = IncludeTrailingBackslash("Override");
 
   TStrings * Sections = new TStringList();
   try
@@ -807,12 +807,12 @@ void TIniFileStorage::ApplyOverrides()
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->Count; i++)
     {
-      AnsiString Section = Sections->Strings[i];
+      wstring Section = Sections->Strings[i];
 
       if (AnsiSameText(OverridesKey,
             Section.SubString(1, OverridesKey.Length())))
       {
-        AnsiString SubKey = Section.SubString(OverridesKey.Length() + 1,
+        wstring SubKey = Section.SubString(OverridesKey.Length() + 1,
           Section.Length() - OverridesKey.Length());
 
         // this all uses raw names (munged)
@@ -823,8 +823,8 @@ void TIniFileStorage::ApplyOverrides()
 
           for (int ii = 0; ii < Names->Count; ii++)
           {
-            AnsiString Name = Names->Strings[ii];
-            AnsiString Value = FIniFile->ReadString(Section, Name, "");
+            wstring Name = Names->Strings[ii];
+            wstring Value = FIniFile->ReadString(Section, Name, "");
             FIniFile->WriteString(SubKey, Name, Value);
           }
         }
@@ -843,21 +843,21 @@ void TIniFileStorage::ApplyOverrides()
   }
 }
 //---------------------------------------------------------------------------
-bool TIniFileStorage::ReadBool(const AnsiString Name, bool Default)
+bool TIniFileStorage::ReadBool(const wstring Name, bool Default)
 {
   return FIniFile->ReadBool(CurrentSection, MungeIniName(Name), Default);
 }
 //---------------------------------------------------------------------------
-int TIniFileStorage::ReadInteger(const AnsiString Name, int Default)
+int TIniFileStorage::ReadInteger(const wstring Name, int Default)
 {
   int Result = FIniFile->ReadInteger(CurrentSection, MungeIniName(Name), Default);
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 TIniFileStorage::ReadInt64(const AnsiString Name, __int64 Default)
+__int64 TIniFileStorage::ReadInt64(const wstring Name, __int64 Default)
 {
   __int64 Result = Default;
-  AnsiString Str;
+  wstring Str;
   Str = ReadStringRaw(Name, "");
   if (!Str.IsEmpty())
   {
@@ -866,10 +866,10 @@ __int64 TIniFileStorage::ReadInt64(const AnsiString Name, __int64 Default)
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime TIniFileStorage::ReadDateTime(const AnsiString Name, TDateTime Default)
+TDateTime TIniFileStorage::ReadDateTime(const wstring Name, TDateTime Default)
 {
   TDateTime Result;
-  AnsiString Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
+  wstring Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
   if (Value.IsEmpty())
   {
     Result = Default;
@@ -878,7 +878,7 @@ TDateTime TIniFileStorage::ReadDateTime(const AnsiString Name, TDateTime Default
   {
     try
     {
-      AnsiString Raw = HexToStr(Value);
+      wstring Raw = HexToStr(Value);
       if (Raw.Length() == sizeof(Result))
       {
         memcpy(&Result, Raw.c_str(), sizeof(Result));
@@ -897,10 +897,10 @@ TDateTime TIniFileStorage::ReadDateTime(const AnsiString Name, TDateTime Default
   return Result;
 }
 //---------------------------------------------------------------------------
-double TIniFileStorage::ReadFloat(const AnsiString Name, double Default)
+double TIniFileStorage::ReadFloat(const wstring Name, double Default)
 {
   double Result;
-  AnsiString Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
+  wstring Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
   if (Value.IsEmpty())
   {
     Result = Default;
@@ -909,7 +909,7 @@ double TIniFileStorage::ReadFloat(const AnsiString Name, double Default)
   {
     try
     {
-      AnsiString Raw = HexToStr(Value);
+      wstring Raw = HexToStr(Value);
       if (Raw.Length() == sizeof(Result))
       {
         memcpy(&Result, Raw.c_str(), sizeof(Result));
@@ -928,16 +928,16 @@ double TIniFileStorage::ReadFloat(const AnsiString Name, double Default)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString TIniFileStorage::ReadStringRaw(const AnsiString Name, AnsiString Default)
+wstring TIniFileStorage::ReadStringRaw(const wstring Name, wstring Default)
 {
-  AnsiString Result = FIniFile->ReadString(CurrentSection, MungeIniName(Name), Default);
+  wstring Result = FIniFile->ReadString(CurrentSection, MungeIniName(Name), Default);
   return Result;
 }
 //---------------------------------------------------------------------------
-int TIniFileStorage::ReadBinaryData(const AnsiString Name,
+int TIniFileStorage::ReadBinaryData(const wstring Name,
   void * Buffer, int Size)
 {
-  AnsiString Value = HexToStr(ReadStringRaw(Name, ""));
+  wstring Value = HexToStr(ReadStringRaw(Name, ""));
   int Len = Value.Length();
   if (Size > Len)
   {
@@ -948,38 +948,38 @@ int TIniFileStorage::ReadBinaryData(const AnsiString Name,
   return Size;
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteBool(const AnsiString Name, bool Value)
+void TIniFileStorage::WriteBool(const wstring Name, bool Value)
 {
   FIniFile->WriteBool(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteInteger(const AnsiString Name, int Value)
+void TIniFileStorage::WriteInteger(const wstring Name, int Value)
 {
   FIniFile->WriteInteger(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteInt64(const AnsiString Name, __int64 Value)
+void TIniFileStorage::WriteInt64(const wstring Name, __int64 Value)
 {
   WriteStringRaw(Name, IntToStr(Value));
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteDateTime(const AnsiString Name, TDateTime Value)
+void TIniFileStorage::WriteDateTime(const wstring Name, TDateTime Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteFloat(const AnsiString Name, double Value)
+void TIniFileStorage::WriteFloat(const wstring Name, double Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteStringRaw(const AnsiString Name, const AnsiString Value)
+void TIniFileStorage::WriteStringRaw(const wstring Name, const wstring Value)
 {
   FIniFile->WriteString(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteBinaryData(const AnsiString Name,
+void TIniFileStorage::WriteBinaryData(const wstring Name,
   const void * Buffer, int Size)
 {
-  WriteStringRaw(Name, StrToHex(AnsiString(static_cast<const char*>(Buffer), Size)));
+  WriteStringRaw(Name, StrToHex(wstring(static_cast<const char*>(Buffer), Size)));
 }

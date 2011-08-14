@@ -10,113 +10,113 @@ enum TStorageAccessMode { smRead, smReadWrite };
 class THierarchicalStorage
 {
 public:
-  THierarchicalStorage(const AnsiString AStorage);
+  THierarchicalStorage(const wstring AStorage);
   virtual ~THierarchicalStorage();
   bool OpenRootKey(bool CanCreate);
-  virtual bool OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path = false);
+  virtual bool OpenSubKey(const wstring SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
-  virtual bool DeleteSubKey(const AnsiString SubKey) = 0;
+  virtual bool DeleteSubKey(const wstring SubKey) = 0;
   virtual void GetSubKeyNames(Classes::TStrings* Strings) = 0;
   virtual void GetValueNames(Classes::TStrings* Strings) = 0;
   bool HasSubKeys();
-  bool HasSubKey(const AnsiString SubKey);
-  virtual bool KeyExists(const AnsiString SubKey) = 0;
-  virtual bool ValueExists(const AnsiString Value) = 0;
-  virtual void RecursiveDeleteSubKey(const AnsiString Key);
+  bool HasSubKey(const wstring SubKey);
+  virtual bool KeyExists(const wstring SubKey) = 0;
+  virtual bool ValueExists(const wstring Value) = 0;
+  virtual void RecursiveDeleteSubKey(const wstring Key);
   virtual void ClearSubKeys();
   virtual void ReadValues(Classes::TStrings* Strings, bool MaintainKeys = false);
   virtual void WriteValues(Classes::TStrings* Strings, bool MaintainKeys = false);
   virtual void ClearValues();
-  virtual bool DeleteValue(const AnsiString Name) = 0;
+  virtual bool DeleteValue(const wstring Name) = 0;
 
-  virtual int BinaryDataSize(const AnsiString Name) = 0;
+  virtual int BinaryDataSize(const wstring Name) = 0;
 
-  virtual bool ReadBool(const AnsiString Name, bool Default) = 0;
-  virtual int ReadInteger(const AnsiString Name, int Default) = 0;
-  virtual __int64 ReadInt64(const AnsiString Name, __int64 Default) = 0;
-  virtual TDateTime ReadDateTime(const AnsiString Name, TDateTime Default) = 0;
-  virtual double ReadFloat(const AnsiString Name, double Default) = 0;
-  virtual AnsiString ReadStringRaw(const AnsiString Name, const AnsiString Default) = 0;
-  virtual int ReadBinaryData(const AnsiString Name, void * Buffer, int Size) = 0;
+  virtual bool ReadBool(const wstring Name, bool Default) = 0;
+  virtual int ReadInteger(const wstring Name, int Default) = 0;
+  virtual __int64 ReadInt64(const wstring Name, __int64 Default) = 0;
+  virtual TDateTime ReadDateTime(const wstring Name, TDateTime Default) = 0;
+  virtual double ReadFloat(const wstring Name, double Default) = 0;
+  virtual wstring ReadStringRaw(const wstring Name, const wstring Default) = 0;
+  virtual int ReadBinaryData(const wstring Name, void * Buffer, int Size) = 0;
 
-  virtual AnsiString ReadString(AnsiString Name, AnsiString Default);
-  AnsiString ReadBinaryData(const AnsiString Name);
+  virtual wstring ReadString(wstring Name, wstring Default);
+  wstring ReadBinaryData(const wstring Name);
 
-  virtual void WriteBool(const AnsiString Name, bool Value) = 0;
-  virtual void WriteStringRaw(const AnsiString Name, const AnsiString Value) = 0;
-  virtual void WriteInteger(const AnsiString Name, int Value) = 0;
-  virtual void WriteInt64(AnsiString Name, __int64 Value) = 0;
-  virtual void WriteDateTime(const AnsiString Name, TDateTime Value) = 0;
-  virtual void WriteFloat(const AnsiString Name, double Value) = 0;
-  virtual void WriteBinaryData(const AnsiString Name, const void * Buffer, int Size) = 0;
+  virtual void WriteBool(const wstring Name, bool Value) = 0;
+  virtual void WriteStringRaw(const wstring Name, const wstring Value) = 0;
+  virtual void WriteInteger(const wstring Name, int Value) = 0;
+  virtual void WriteInt64(wstring Name, __int64 Value) = 0;
+  virtual void WriteDateTime(const wstring Name, TDateTime Value) = 0;
+  virtual void WriteFloat(const wstring Name, double Value) = 0;
+  virtual void WriteBinaryData(const wstring Name, const void * Buffer, int Size) = 0;
 
-  virtual void WriteString(const AnsiString Name, const AnsiString Value);
-  void WriteBinaryData(const AnsiString Name, const AnsiString Value);
+  virtual void WriteString(const wstring Name, const wstring Value);
+  void WriteBinaryData(const wstring Name, const wstring Value);
 
-  __property AnsiString Storage  = { read=FStorage };
-  __property AnsiString CurrentSubKey  = { read=GetCurrentSubKey };
+  __property wstring Storage  = { read=FStorage };
+  __property wstring CurrentSubKey  = { read=GetCurrentSubKey };
   __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
-  __property AnsiString Source = { read = GetSource };
+  __property wstring Source = { read = GetSource };
 
 protected:
-  AnsiString FStorage;
+  wstring FStorage;
   TStrings * FKeyHistory;
   TStorageAccessMode FAccessMode;
   bool FExplicit;
   bool FMungeStringValues;
 
-  AnsiString GetCurrentSubKey();
-  AnsiString GetCurrentSubKeyMunged();
+  wstring GetCurrentSubKey();
+  wstring GetCurrentSubKeyMunged();
   virtual void SetAccessMode(TStorageAccessMode value);
-  static AnsiString IncludeTrailingBackslash(const AnsiString & S);
-  static AnsiString ExcludeTrailingBackslash(const AnsiString & S);
-  AnsiString MungeSubKey(AnsiString Key, bool Path);
-  virtual AnsiString GetSource() = 0;
+  static wstring IncludeTrailingBackslash(const wstring & S);
+  static wstring ExcludeTrailingBackslash(const wstring & S);
+  wstring MungeSubKey(wstring Key, bool Path);
+  virtual wstring GetSource() = 0;
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
-  TRegistryStorage(const AnsiString AStorage, HKEY ARootKey);
-  TRegistryStorage(const AnsiString AStorage);
+  TRegistryStorage(const wstring AStorage, HKEY ARootKey);
+  TRegistryStorage(const wstring AStorage);
   virtual ~TRegistryStorage();
 
   bool Copy(TRegistryStorage * Storage);
 
-  virtual bool OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path = false);
+  virtual bool OpenSubKey(const wstring SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
-  virtual bool DeleteSubKey(const AnsiString SubKey);
-  virtual bool DeleteValue(const AnsiString Name);
+  virtual bool DeleteSubKey(const wstring SubKey);
+  virtual bool DeleteValue(const wstring Name);
   virtual void GetSubKeyNames(Classes::TStrings* Strings);
-  virtual bool KeyExists(const AnsiString SubKey);
-  virtual bool ValueExists(const AnsiString Value);
+  virtual bool KeyExists(const wstring SubKey);
+  virtual bool ValueExists(const wstring Value);
 
-  virtual int BinaryDataSize(const AnsiString Name);
+  virtual int BinaryDataSize(const wstring Name);
 
-  virtual bool ReadBool(const AnsiString Name, bool Default);
-  virtual int ReadInteger(const AnsiString Name, int Default);
-  virtual __int64 ReadInt64(const AnsiString Name, __int64 Default);
-  virtual TDateTime ReadDateTime(const AnsiString Name, TDateTime Default);
-  virtual double ReadFloat(const AnsiString Name, double Default);
-  virtual AnsiString ReadStringRaw(const AnsiString Name, const AnsiString Default);
-  virtual int ReadBinaryData(const AnsiString Name, void * Buffer, int Size);
+  virtual bool ReadBool(const wstring Name, bool Default);
+  virtual int ReadInteger(const wstring Name, int Default);
+  virtual __int64 ReadInt64(const wstring Name, __int64 Default);
+  virtual TDateTime ReadDateTime(const wstring Name, TDateTime Default);
+  virtual double ReadFloat(const wstring Name, double Default);
+  virtual wstring ReadStringRaw(const wstring Name, const wstring Default);
+  virtual int ReadBinaryData(const wstring Name, void * Buffer, int Size);
 
-  virtual void WriteBool(const AnsiString Name, bool Value);
-  virtual void WriteInteger(const AnsiString Name, int Value);
-  virtual void WriteInt64(const AnsiString Name, __int64 Value);
-  virtual void WriteDateTime(const AnsiString Name, TDateTime Value);
-  virtual void WriteFloat(const AnsiString Name, double Value);
-  virtual void WriteStringRaw(const AnsiString Name, const AnsiString Value);
-  virtual void WriteBinaryData(const AnsiString Name, const void * Buffer, int Size);
+  virtual void WriteBool(const wstring Name, bool Value);
+  virtual void WriteInteger(const wstring Name, int Value);
+  virtual void WriteInt64(const wstring Name, __int64 Value);
+  virtual void WriteDateTime(const wstring Name, TDateTime Value);
+  virtual void WriteFloat(const wstring Name, double Value);
+  virtual void WriteStringRaw(const wstring Name, const wstring Value);
+  virtual void WriteBinaryData(const wstring Name, const void * Buffer, int Size);
 
   virtual void GetValueNames(Classes::TStrings* Strings);
 
 protected:
   int GetFailed();
   virtual void SetAccessMode(TStorageAccessMode value);
-  virtual AnsiString GetSource();
+  virtual wstring GetSource();
 
   __property int Failed  = { read=GetFailed, write=FFailed };
 
@@ -130,46 +130,46 @@ private:
 class TIniFileStorage : public THierarchicalStorage
 {
 public:
-  TIniFileStorage(const AnsiString FileName);
+  TIniFileStorage(const wstring FileName);
   virtual ~TIniFileStorage();
 
-  virtual bool OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path = false);
-  virtual bool DeleteSubKey(const AnsiString SubKey);
-  virtual bool DeleteValue(const AnsiString Name);
+  virtual bool OpenSubKey(const wstring SubKey, bool CanCreate, bool Path = false);
+  virtual bool DeleteSubKey(const wstring SubKey);
+  virtual bool DeleteValue(const wstring Name);
   virtual void GetSubKeyNames(Classes::TStrings* Strings);
-  virtual bool KeyExists(const AnsiString SubKey);
-  virtual bool ValueExists(const AnsiString Value);
+  virtual bool KeyExists(const wstring SubKey);
+  virtual bool ValueExists(const wstring Value);
 
-  virtual int BinaryDataSize(const AnsiString Name);
+  virtual int BinaryDataSize(const wstring Name);
 
-  virtual bool ReadBool(const AnsiString Name, bool Default);
-  virtual int ReadInteger(const AnsiString Name, int Default);
-  virtual __int64 ReadInt64(const AnsiString Name, __int64 Default);
-  virtual TDateTime ReadDateTime(const AnsiString Name, TDateTime Default);
-  virtual double ReadFloat(const AnsiString Name, double Default);
-  virtual AnsiString ReadStringRaw(const AnsiString Name, const AnsiString Default);
-  virtual int ReadBinaryData(const AnsiString Name, void * Buffer, int Size);
+  virtual bool ReadBool(const wstring Name, bool Default);
+  virtual int ReadInteger(const wstring Name, int Default);
+  virtual __int64 ReadInt64(const wstring Name, __int64 Default);
+  virtual TDateTime ReadDateTime(const wstring Name, TDateTime Default);
+  virtual double ReadFloat(const wstring Name, double Default);
+  virtual wstring ReadStringRaw(const wstring Name, const wstring Default);
+  virtual int ReadBinaryData(const wstring Name, void * Buffer, int Size);
 
-  virtual void WriteBool(const AnsiString Name, bool Value);
-  virtual void WriteInteger(const AnsiString Name, int Value);
-  virtual void WriteInt64(AnsiString Name, __int64 Value);
-  virtual void WriteDateTime(const AnsiString Name, TDateTime Value);
-  virtual void WriteFloat(const AnsiString Name, double Value);
-  virtual void WriteStringRaw(const AnsiString Name, const AnsiString Value);
-  virtual void WriteBinaryData(const AnsiString Name, const void * Buffer, int Size);
+  virtual void WriteBool(const wstring Name, bool Value);
+  virtual void WriteInteger(const wstring Name, int Value);
+  virtual void WriteInt64(wstring Name, __int64 Value);
+  virtual void WriteDateTime(const wstring Name, TDateTime Value);
+  virtual void WriteFloat(const wstring Name, double Value);
+  virtual void WriteStringRaw(const wstring Name, const wstring Value);
+  virtual void WriteBinaryData(const wstring Name, const void * Buffer, int Size);
 
   virtual void GetValueNames(Classes::TStrings* Strings);
 
 private:
   TMemIniFile * FIniFile;
   TStrings * FOriginal;
-  AnsiString GetCurrentSection();
+  wstring GetCurrentSection();
   void ApplyOverrides();
 protected:
-  __property AnsiString CurrentSection  = { read=GetCurrentSection };
-  virtual AnsiString GetSource();
+  __property wstring CurrentSection  = { read=GetCurrentSection };
+  virtual wstring GetSource();
 };
 //---------------------------------------------------------------------------
-AnsiString PuttyMungeStr(const AnsiString Str);
+wstring PuttyMungeStr(const wstring Str);
 //---------------------------------------------------------------------------
 #endif
