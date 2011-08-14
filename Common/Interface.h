@@ -1,10 +1,10 @@
 //---------------------------------------------------------------------------
-#ifndef InterfaceH
-#define InterfaceH
+#pragma once
+
 //---------------------------------------------------------------------------
 #include "Configuration.h"
 #include "SessionData.h"
-#define HELP_NONE ""
+#define HELP_NONE L""
 //---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration();
 
@@ -89,4 +89,3 @@ typedef void ( *TFileFoundEvent)
 typedef void ( *TFindingFileEvent)
   (TTerminal * Terminal, const wstring Directory, bool & Cancel);
 //---------------------------------------------------------------------------
-#endif
