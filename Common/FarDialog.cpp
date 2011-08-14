@@ -60,40 +60,15 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
     FBorderBox = new TFarBox(this);
-    FBorderBox->Bounds = TRect(3, 1, -4, -2);
-    FBorderBox->Double = true;
-
-    // Инициализируем property
-    Bounds = property<self, TRect>(this, &self::GetBounds, &self::SetBounds);
-    ClientRect = property_ro<self, TRect>(this, &self::GetClientRect);
-    HelpTopic = property<self, wstring>(this, &self::GetHelpTopic, &self::SetHelpTopic);
-    Flags = property<self, unsigned int>(this, &self::GetFlags, &self::SetFlags);
-    Centered = property<self, bool>(this, &self::GetCentered, &self::SetCentered);
-    Size = property<self, TPoint>(this, &self::GetSize, &self::SetSize);
-    ClientSize = property_ro<self, TPoint>(this, &self::GetClientSize);
-    Width = property<self, int>(this, &self::GetWidth, &self::SetWidth);
-    Height = property<self, int>(this, &self::GetHeight, &self::SetHeight);
-    Caption = property<self, wstring>(this, &self::GetCaption, &self::SetCaption);
-    Handle = property_ro<self, HANDLE>(this, &self::GetHandle);
-    DefaultButton = property_ro<self, TFarButton *>(this, &self::GetDefaultButton);
-    BorderBox = property_ro<self, TFarBox *>(this, &self::GetBorderBox);
-    Item = property_idx<self, TFarDialogItem *>(this, &self::GetItem);
-    ItemCount = property_ro<self, size_t>(this, &self::GetItemCount);
-    NextItemPosition = property<self, TItemPosition>(this, &self::GetNextItemPosition, &self::SetNextItemPosition);
-    DefaultGroup = property<self, int>(this, &self::GetDefaultGroup, &self::SetDefaultGroup);
-    Tag = property<self, int>(this, &self::GetTag, &self::SetTag);
-    ItemFocused = property<self, TFarDialogItem *>(this, &self::GetItemFocused, &self::SetItemFocused);
-    Result = property_ro<self, int>(this, &self::GetResult);
-    MaxSize = property_ro<self, TPoint>(this, &self::GetMaxSize);
-    
-    OnKey = property<self, TFarKeyEvent>(this, &self::GetOnKey, &self::SetOnKey);
+    FBorderBox->SetBounds(TRect(3, 1, -4, -2));
+    FBorderBox->SetDouble(true);
 }
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-    for (int i = 0; i < ItemCount; i++)
+    for (int i = 0; i < GetItemCount(); i++)
     {
-        Item[i]->Detach();
+        GetItem(i)->Detach();
     }
     delete FItems;
     delete[] FDialogItems;
@@ -111,7 +86,7 @@ TFarDialog::~TFarDialog()
 //---------------------------------------------------------------------------
 void TFarDialog::SetBounds(const TRect &value)
 {
-    if (Bounds != value)
+    if (GetBounds() != value)
     {
         LockChanges();
         try
