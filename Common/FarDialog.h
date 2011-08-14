@@ -1104,20 +1104,19 @@ public:
 
     void ResizeToFitContent();
 
-    // __property bool NoAmpersand = { read = GetFlag, write = SetFlag, index = DIF_LISTNOAMPERSAND };
-    property<self, bool> NoAmpersand;
-    // __property bool AutoHighlight = { read = GetFlag, write = SetFlag, index = DIF_LISTAUTOHIGHLIGHT };
-    property<self, bool> AutoHighlight;
-    // __property bool WrapMode = { read = GetFlag, write = SetFlag, index = DIF_LISTWRAPMODE };
-    property<self, bool> WrapMode;
-    // __property TFarList *Items = { read = FList };
-    property<self, TFarList *> Items;
-    // __property wstring Text = { read = Data, write = Data };
-    property<self, wstring> Text;
-    // __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
-    property<self, bool> AutoSelect;
-    // __property bool DropDownList = { read = GetFlag, write = SetFlag, index = DIF_DROPDOWNLIST };
-    property<self, bool> DropDownList;
+    bool GetNoAmpersand() { return GetFlag(DIF_LISTNOAMPERSAND); }
+    void SetNoAmpersand(bool value) { SetFlag(DIF_LISTNOAMPERSAND, value); }
+    bool GetAutoHighlight() { return GetFlag(DIF_LISTAUTOHIGHLIGHT); }
+    void SetAutoHighlight(bool value) { SetFlag(DIF_LISTAUTOHIGHLIGHT, value); }
+    bool GetWrapMode() { return GetFlag(DIF_LISTWRAPMODE); }
+    void SetWrapMode(bool value) { SetFlag(DIF_LISTWRAPMODE, value); }
+    TFarList *GetItems() { return FList; }
+    virtual wstring GetText() { return GetData(); }
+    virtual void SetText(wstring value) { SetData(value); }
+    bool GetAutoSelect() { return GetFlag(DIF_SELECTONENTRY); }
+    void SetAutoSelect(bool value) { SetFlag(DIF_SELECTONENTRY, value); }
+    bool GetDropDownList() { return GetFlag(DIF_DROPDOWNLIST); }
+    void SetDropDownList(bool value) { SetFlag(DIF_DROPDOWNLIST, value); }
 
 protected:
     virtual long ItemProc(int Msg, long Param);
@@ -1134,12 +1133,11 @@ public:
     TFarLister(TFarDialog *ADialog);
     virtual ~TFarLister();
 
-    // __property TStrings *Items = { read = GetItems, write = SetItems };
-    property<self, TStrings *> Items;
-    // __property int TopIndex = { read = FTopIndex, write = SetTopIndex };
-    property<self, int> TopIndex;
-    // __property bool ScrollBar = { read = GetScrollBar };
-    property<self, bool> ScrollBar;
+    TStrings *GetItems();
+    void SetItems(TStrings *value);
+    int GetTopIndex() { return FTopIndex; }
+    void SetTopIndex(int value);
+    bool GetScrollBar();
 
 protected:
     virtual long ItemProc(int Msg, long Param);
@@ -1150,10 +1148,6 @@ private:
     int FTopIndex;
 
     void ItemsChange(TObject *Sender);
-    bool GetScrollBar();
-    TStrings *GetItems();
-    void SetItems(TStrings *value);
-    void SetTopIndex(int value);
 };
 //---------------------------------------------------------------------------
 wstring StripHotKey(wstring Text);
