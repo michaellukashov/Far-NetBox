@@ -560,7 +560,7 @@ public:
     virtual int DeleteFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
                                        int ItemsNumber, int OpMode);
     virtual int GetFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-                                    int ItemsNumber, int Move, char *DestPath, int OpMode);
+                                    int ItemsNumber, int Move, wchar_t *DestPath, int OpMode);
     virtual int PutFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
                                     int ItemsNumber, int Move, int OpMode);
     virtual int ProcessEditorEvent(int Event, void *Param);
@@ -704,9 +704,9 @@ public:
     int DeleteFiles(struct PluginPanelItem *PanelItem,
                                int ItemsNumber, int OpMode);
     int GetFiles(struct PluginPanelItem *PanelItem,
-                            int ItemsNumber, int Move, char *DestPath, int OpMode);
+        int ItemsNumber, int Move, wchar_t *DestPath, int OpMode);
     int PutFiles(struct PluginPanelItem *PanelItem,
-                            int ItemsNumber, int Move, int OpMode);
+        int ItemsNumber, int Move, int OpMode);
     virtual void Close();
 
 protected:
@@ -726,7 +726,7 @@ protected:
     virtual int MakeDirectoryEx(wstring &Name, int OpMode);
     virtual bool DeleteFilesEx(TList *PanelItems, int OpMode);
     virtual int GetFilesEx(TList *PanelItems, bool Move,
-                                      wstring &DestPath, int OpMode);
+        wstring &DestPath, int OpMode);
     virtual int PutFilesEx(TList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();

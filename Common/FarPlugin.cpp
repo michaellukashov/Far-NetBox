@@ -628,7 +628,7 @@ int TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::GetFiles(HANDLE Plugin,
         struct PluginPanelItem *PanelItem, int ItemsNumber, int Move,
-        char *DestPath, int OpMode)
+        wchar_t *DestPath, int OpMode)
 {
     TCustomFarFileSystem *FileSystem = (TCustomFarFileSystem *)Plugin;
     try
@@ -1982,7 +1982,8 @@ int TCustomFarFileSystem::MakeDirectory(wchar_t *Name, int OpMode)
     StrToFar(NameStr);
     if (NameStr != Name)
     {
-        strcpy(Name, NameStr.c_str());
+        // strcpy(Name, NameStr.c_str());
+        wcscpy_s(Name, NameStr.size(), NameStr.c_str());
     }
     return Result;
 }
@@ -2006,7 +2007,7 @@ int TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem *PanelItem,
 }
 //---------------------------------------------------------------------------
 int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
-        int ItemsNumber, int Move, char *DestPath, int OpMode)
+        int ItemsNumber, int Move, wchar_t *DestPath, int OpMode)
 {
     ResetCachedInfo();
     TList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
