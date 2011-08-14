@@ -401,7 +401,7 @@ enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
                        fsAltShift, fsCtrlAlt
                      };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
-typedef void (*TFarInputBoxValidateEvent)(string &Text);
+typedef void (*TFarInputBoxValidateEvent)(wstring &Text);
 //---------------------------------------------------------------------------
 enum
 {
@@ -422,14 +422,14 @@ struct TFarMessageParams
     TFarMessageParams();
 
     TStrings *MoreMessages;
-    string CheckBoxLabel;
+    wstring CheckBoxLabel;
     bool CheckBox;
     unsigned int Timer;
     unsigned int TimerAnswer;
     TFarMessageTimerEvent TimerEvent;
     unsigned int Timeout;
     unsigned int TimeoutButton;
-    string TimeoutStr;
+    wstring TimeoutStr;
     TFarMessageClickEvent ClickEvent;
     void *Token;
 };
@@ -473,51 +473,51 @@ public:
 
     virtual void HandleException(exception *E, int OpMode = 0);
 
-    static char *DuplicateStr(const string Str, bool AllowEmpty = false);
-    int Message(unsigned int Flags, const string Title,
-                           const string Message, TStrings *Buttons = NULL,
+    static char *DuplicateStr(const wstring Str, bool AllowEmpty = false);
+    int Message(unsigned int Flags, const wstring Title,
+                           const wstring Message, TStrings *Buttons = NULL,
                            TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
     int MaxMenuItemLength();
-    int Menu(unsigned int Flags, string Title,
-                        string Bottom, TStrings *Items, const int *BreakKeys,
+    int Menu(unsigned int Flags, wstring Title,
+                        wstring Bottom, TStrings *Items, const int *BreakKeys,
                         int &BreakCode);
-    int Menu(unsigned int Flags, const string Title,
-                        const string Bottom, TStrings *Items);
-    int Menu(unsigned int Flags, const string Title,
-                        const string Bottom, const FarMenuItem *Items, int Count,
+    int Menu(unsigned int Flags, const wstring Title,
+                        const wstring Bottom, TStrings *Items);
+    int Menu(unsigned int Flags, const wstring Title,
+                        const wstring Bottom, const FarMenuItem *Items, int Count,
                         const int *BreakKeys, int &BreakCode);
-    bool InputBox(string Title, string Prompt,
-                             string &Text, unsigned long Flags, string HistoryName = "",
+    bool InputBox(wstring Title, wstring Prompt,
+                             wstring &Text, unsigned long Flags, wstring HistoryName = L"",
                              int MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
-    string GetMsg(int MsgId);
+    wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
     bool CheckForEsc();
-    bool Viewer(string FileName, unsigned int Flags,
-                           string Title = "");
-    bool Editor(string FileName, unsigned int Flags,
-                           string Title = "");
+    bool Viewer(wstring FileName, unsigned int Flags,
+                           wstring Title = L"");
+    bool Editor(wstring FileName, unsigned int Flags,
+                           wstring Title = L"");
 
     int FarAdvControl(int Command, void *Param = NULL);
     int FarAdvControl(int Command, int Param);
     bool FarControl(int Command, void *Param, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(int Command, void *Param);
     unsigned int FarSystemSettings();
-    void Text(int X, int Y, int Color, string Str);
+    void Text(int X, int Y, int Color, wstring Str);
     void FlushText();
-    void WriteConsole(string Str);
-    void FarCopyToClipboard(string Str);
+    void WriteConsole(wstring Str);
+    void FarCopyToClipboard(wstring Str);
     void FarCopyToClipboard(TStrings *Strings);
     int FarVersion();
-    string FormatFarVersion(int Version);
-    string TemporaryDir();
+    wstring FormatFarVersion(int Version);
+    wstring TemporaryDir();
     int InputRecordToKey(const INPUT_RECORD *Rec);
     TFarEditorInfo *EditorInfo();
 
-    void ShowConsoleTitle(const string Title);
+    void ShowConsoleTitle(const wstring Title);
     void ClearConsoleTitle();
-    void UpdateConsoleTitle(const string Title);
+    void UpdateConsoleTitle(const wstring Title);
     void UpdateConsoleTitleProgress(short Progress);
     void ShowTerminalScreen();
     void SaveTerminalScreen();
@@ -529,7 +529,7 @@ public:
     TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
             HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-    string GetModuleName();
+    wstring GetModuleName();
     TFarDialog *GetTopDialog() const { return FTopDialog; }
     HWND GetHandle() const { return FHandle; };
     bool GetANSIApis() const { return FANSIApis; };
@@ -568,10 +568,10 @@ protected:
     void ResetCachedInfo();
     int MaxLength(TStrings *Strings);
     int FarMessage(unsigned int Flags,
-                              const string Title, const string Message, TStrings *Buttons,
+                              const wstring Title, const wstring Message, TStrings *Buttons,
                               TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-                                 const string Title, const string Message, TStrings *Buttons,
+                                 const wstring Title, const wstring Message, TStrings *Buttons,
                                  TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
@@ -580,12 +580,12 @@ protected:
 private:
     PluginInfo FPluginInfo;
     TStringList *FSavedTitles;
-    string FCurrentTitle;
+    wstring FCurrentTitle;
     short FCurrentProgress;
 
     void ClearPluginInfo(PluginInfo &Info);
     void UpdateConsoleTitle();
-    string FormatConsoleTitle();
+    wstring FormatConsoleTitle();
     HWND GetConsoleWindow();
 };
 //---------------------------------------------------------------------------
@@ -619,19 +619,19 @@ protected:
     bool FClosed;
 
     virtual void GetOpenPluginInfoEx(long unsigned &Flags,
-            string &HostFile, string &CurDir, string &Format,
-            string &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
+            wstring &HostFile, wstring &CurDir, wstring &Format,
+            wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
             int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
-            string &ShortcutData) = 0;
+            wstring &ShortcutData) = 0;
     virtual bool GetFindDataEx(TList *PanelItems, int OpMode) = 0;
     virtual bool ProcessHostFileEx(TList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
-    virtual bool SetDirectoryEx(const string Dir, int OpMode);
-    virtual int MakeDirectoryEx(string &Name, int OpMode);
+    virtual bool SetDirectoryEx(const wstring Dir, int OpMode);
+    virtual int MakeDirectoryEx(wstring &Name, int OpMode);
     virtual bool DeleteFilesEx(TList *PanelItems, int OpMode);
     virtual int GetFilesEx(TList *PanelItems, bool Move,
-                                      string &DestPath, int OpMode);
+                                      wstring &DestPath, int OpMode);
     virtual int PutFilesEx(TList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
@@ -639,7 +639,7 @@ protected:
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePlugin();
-    string GetMsg(int MsgId);
+    wstring GetMsg(int MsgId);
     TCustomFarFileSystem *GetOppositeFileSystem();
     bool IsActiveFileSystem();
     bool IsLeft();
@@ -672,11 +672,11 @@ class TFarPanelModes : public TObject
 {
     friend class TCustomFarFileSystem;
 public:
-    void SetPanelMode(int Mode, const string ColumnTypes = "",
-                                 const string ColumnWidths = "", TStrings *ColumnTitles = NULL,
-                                 bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-                                 bool CaseConversion = true, const string StatusColumnTypes = "",
-                                 const string StatusColumnWidths = "");
+    void SetPanelMode(int Mode, const wstring ColumnTypes = L"",
+        const wstring ColumnWidths = L"", TStrings *ColumnTitles = NULL,
+        bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
+        bool CaseConversion = true, const wstring StatusColumnTypes = L"",
+        const wstring StatusColumnWidths = L"");
 
 private:
     PanelMode FPanelModes[PANEL_MODES_COUNT];
@@ -687,7 +687,7 @@ private:
 
     void FillOpenPluginInfo(struct OpenPluginInfo *Info);
     static void ClearPanelMode(PanelMode &Mode);
-    static int CommaCount(const string ColumnTypes);
+    static int CommaCount(const wstring ColumnTypes);
 };
 //---------------------------------------------------------------------------
 class TFarKeyBarTitles : public TObject
@@ -698,7 +698,7 @@ public:
     void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
                                      int FunctionKeyStart, int FunctionKeyEnd = 0);
     void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int FunctionKey,
-                                   const string Title);
+                                   const wstring Title);
 
 private:
     KeyBarTitles FKeyBarTitles;
@@ -718,12 +718,12 @@ public:
 
 protected:
     virtual void GetData(
-        unsigned long &Flags, string &FileName, __int64 &Size,
+        unsigned long &Flags, wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         TDateTime &LastWriteTime, TDateTime &LastAccess,
-        unsigned long &NumberOfLinks, string &Description,
-        string &Owner, void *& UserData, int &CustomColumnNumber) = 0;
-    virtual string CustomColumnData(int Column);
+        unsigned long &NumberOfLinks, wstring &Description,
+        wstring &Owner, void *& UserData, int &CustomColumnNumber) = 0;
+    virtual wstring CustomColumnData(int Column);
 
     void FillPanelItem(struct PluginPanelItem *PanelItem);
 };
@@ -734,7 +734,7 @@ public:
     TFarPanelItem(PluginPanelItem *APanelItem);
     unsigned long GetFlags();
     unsigned long GetFileAttributes() const;
-    string GetFileName();
+    wstring GetFileName();
     void *GetUserData();
     bool GetSelected();
     void SetSelected(bool value);
@@ -745,12 +745,12 @@ protected:
     PluginPanelItem *FPanelItem;
 
     virtual void GetData(
-        unsigned long &Flags, string &FileName, __int64 &Size,
+        unsigned long &Flags, wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         TDateTime &LastWriteTime, TDateTime &LastAccess,
-        unsigned long &NumberOfLinks, string &Description,
-        string &Owner, void *& UserData, int &CustomColumnNumber);
-    virtual string CustomColumnData(int Column);
+        unsigned long &NumberOfLinks, wstring &Description,
+        wstring &Owner, void *& UserData, int &CustomColumnNumber);
+    virtual wstring CustomColumnData(int Column);
 
 private:
 };
@@ -758,18 +758,18 @@ private:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-    THintPanelItem(const string AHint);
+    THintPanelItem(const wstring AHint);
 
 protected:
     virtual void GetData(
-        unsigned long &Flags, string &FileName, __int64 &Size,
+        unsigned long &Flags, wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         TDateTime &LastWriteTime, TDateTime &LastAccess,
-        unsigned long &NumberOfLinks, string &Description,
-        string &Owner, void *& UserData, int &CustomColumnNumber);
+        unsigned long &NumberOfLinks, wstring &Description,
+        wstring &Owner, void *& UserData, int &CustomColumnNumber);
 
 private:
-    string FHint;
+    wstring FHint;
 };
 //---------------------------------------------------------------------------
 enum TFarPanelType { ptFile, ptTree, ptQuickView, ptInfo };
@@ -790,10 +790,10 @@ public:
     TRect GetBounds();
     TFarPanelType GetType();
     bool GetIsPlugin();
-    string GetCurrentDirectory();
+    wstring GetCurrentDirectory();
 
     void ApplySelection();
-    TFarPanelItem *FindFileName(const string FileName);
+    TFarPanelItem *FindFileName(const wstring FileName);
     TFarPanelItem *FindUserData(void *UserData);
 
 private:
@@ -812,7 +812,7 @@ class TFarMenuItems : public TStringList
 public:
     TFarMenuItems();
     void AddSeparator(bool Visible = true);
-    virtual int Add(string Text, bool Visible = true);
+    virtual int Add(wstring Text, bool Visible = true);
 
     virtual void Clear();
     virtual void Delete(int Index);
@@ -842,7 +842,7 @@ public:
     ~TFarEditorInfo();
 
     int GetEditorID();
-    string GetFileName();
+    wstring GetFileName();
 
 private:
     EditorInfo *FEditorInfo;
@@ -866,7 +866,7 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(string Text, TStrings *Result, int MaxWidth);
+void FarWrapText(wstring Text, TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
@@ -876,9 +876,9 @@ inline char *StrFromFar(char *S)
     return S;
 }
 //---------------------------------------------------------------------------
-string StrFromFar(const char *S);
+wstring StrFromFar(const char *S);
 //---------------------------------------------------------------------------
-inline char *StrFromFar(string &S)
+inline char *StrFromFar(wstring &S)
 {
     // OemToChar(S.c_str(), S.c_str());
     // return S.c_str();
