@@ -2294,7 +2294,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
 int TFarPanelModes::CommaCount(const wstring ColumnTypes)
 {
     int Count = 0;
-    for (int Index = 1; Index <= ColumnTypes.Length(); Index++)
+    for (int Index = 1; Index <= ColumnTypes.size(); Index++)
     {
         if (ColumnTypes[Index] == ',')
         {
@@ -2336,7 +2336,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
     }
     for (int Index = FunctionKeyStart; Index <= FunctionKeyEnd; Index++)
     {
-        SetKeyBarTitle(ShiftStatus, Index, "");
+        SetKeyBarTitle(ShiftStatus, Index, L"");
     }
 }
 //---------------------------------------------------------------------------
@@ -2344,7 +2344,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
         int FunctionKey, const wstring Title)
 {
     assert(FunctionKey >= 1 && FunctionKey <= LENOF(FKeyBarTitles.Titles));
-    char **Titles;
+    wchar_t **Titles;
     switch (ShiftStatus)
     {
     case fsNone:
@@ -2402,10 +2402,10 @@ void TFarKeyBarTitles::FillOpenPluginInfo(struct OpenPluginInfo *Info)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-wstring TCustomFarPanelItem::CustomColumnData(int /*Column*/)
+wstring TCustomFarPanelItem::GetCustomColumnData(int /*Column*/)
 {
     assert(false);
-    return "";
+    return L"";
 }
 //---------------------------------------------------------------------------
 void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
@@ -2428,20 +2428,23 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     PanelItem->FindData.ftCreationTime = FileTime;
     PanelItem->FindData.ftLastAccessTime = FileTimeA;
     PanelItem->FindData.ftLastWriteTime = FileTime;
-    PanelItem->FindData.nFileSizeLow = (long int)Size;
-    PanelItem->FindData.nFileSizeHigh = (long int)(Size >> 32);
-    PanelItem->PackSize = (long int)Size;
-    ASCOPY(PanelItem->FindData.cFileName, FileName);
-    StrToFar(PanelItem->FindData.cFileName);
+    PanelItem->FindData.nFileSize = Size;
+    // PanelItem->FindData.FileSizeHigh = (long int)(Size >> 32);
+    // PanelItem->PackSize = (long int)Size;
+    // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
+    wcscpy_s((wchar_t *)PanelItem->FindData.lpwszFileName, FileName.size(), FileName.c_str());
+    // StrToFar(PanelItem->FindData.lpwszFileName);
     PanelItem->Description = StrToFar(TCustomFarPlugin::DuplicateStr(Description));
     PanelItem->Owner = StrToFar(TCustomFarPlugin::DuplicateStr(Owner));
 
-    PanelItem->CustomColumnData = new char *[PanelItem->CustomColumnNumber];
+    // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
+    wchar_t **CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
     {
-        PanelItem->CustomColumnData[Index] =
-            StrToFar(TCustomFarPlugin::DuplicateStr(CustomColumnData(Index)));
+        CustomColumnData[Index] =
+            StrToFar(TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index)));
     }
+    PanelItem->CustomColumnData = CustomColumnData;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2462,10 +2465,10 @@ void TFarPanelItem::GetData(
     assert(false);
 }
 //---------------------------------------------------------------------------
-wstring TFarPanelItem::CustomColumnData(int /*Column*/)
+wstring TFarPanelItem::GetCustomColumnData(int /*Column*/)
 {
     assert(false);
-    return "";
+    return L"";
 }
 //---------------------------------------------------------------------------
 unsigned long TFarPanelItem::GetFlags()
@@ -2475,7 +2478,7 @@ unsigned long TFarPanelItem::GetFlags()
 //---------------------------------------------------------------------------
 wstring TFarPanelItem::GetFileName()
 {
-    wstring Result = FPanelItem->FindData.cFileName;
+    wstring Result = FPanelItem->FindData.lpwszFileName;
     return StrFromFar(Result);
 }
 //---------------------------------------------------------------------------
@@ -2508,12 +2511,12 @@ unsigned long TFarPanelItem::GetFileAttributes()
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsParentDirectory()
 {
-    return (FileName == "..");
+    return (GetFileName() == L"..");
 }
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsFile()
 {
-    return (FileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
+    return (GetFileAttributes() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2556,30 +2559,31 @@ int TFarPanelInfo::GetItemCount()
 //---------------------------------------------------------------------------
 TRect TFarPanelInfo::GetBounds()
 {
-    return FPanelInfo->PanelRect;
+    RECT rect = FPanelInfo->PanelRect;
+    return TRect(rect.left, rect.top, rect.right, rect.bottom);
 }
 //---------------------------------------------------------------------------
 int TFarPanelInfo::GetSelectedCount()
 {
     int Count = FPanelInfo->SelectedItemsNumber;
 
-    if (Count == 1 &&
-            (FPanelInfo->SelectedItems[0].Flags & PPIF_SELECTED) == 0)
+    if (Count == 1)
     {
+        // (FPanelInfo->SelectedItems(0).Flags & PPIF_SELECTED) == 0)
         Count = 0;
     }
 
     return Count;
 }
 //---------------------------------------------------------------------------
-TList *TFarPanelInfo::GetItems()
+TObjectList *TFarPanelInfo::GetItems()
 {
     if (!FItems)
     {
         FItems = new TObjectList();
         for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
         {
-            FItems->Add(new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
+            FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
         }
     }
     return FItems;
@@ -2587,12 +2591,12 @@ TList *TFarPanelInfo::GetItems()
 //---------------------------------------------------------------------------
 TFarPanelItem *TFarPanelInfo::FindFileName(const wstring FileName)
 {
-    TList *AItems = Items;
+    TObjectList *AItems = GetItems();
     TFarPanelItem *PanelItem;
-    for (int Index = 0; Index < AItems->Count; Index++)
+    for (int Index = 0; Index < AItems->GetCount(); Index++)
     {
-        PanelItem = static_cast<TFarPanelItem *>(AItems->Items[Index]);
-        if (PanelItem->FileName == FileName)
+        PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
+        if (PanelItem->GetFileName() == FileName)
         {
             return PanelItem;
         }
@@ -2602,12 +2606,12 @@ TFarPanelItem *TFarPanelInfo::FindFileName(const wstring FileName)
 //---------------------------------------------------------------------------
 TFarPanelItem *TFarPanelInfo::FindUserData(void *UserData)
 {
-    TList *AItems = Items;
+    TObjectList *AItems = GetItems();
     TFarPanelItem *PanelItem;
-    for (int Index = 0; Index < AItems->Count; Index++)
+    for (int Index = 0; Index < AItems->GetCount(); Index++)
     {
-        PanelItem = static_cast<TFarPanelItem *>(AItems->Items[Index]);
-        if (PanelItem->UserData == UserData)
+        PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
+        if (PanelItem->GetUserData() == UserData)
         {
             return PanelItem;
         }
@@ -2619,16 +2623,16 @@ void TFarPanelInfo::ApplySelection()
 {
     // for "another panel info", there's no owner
     assert(FOwner != NULL);
-    FOwner->FarControl(FCTL_SETSELECTION, FPanelInfo);
+    FOwner->FarControl(FCTL_SETSELECTION, 0, (LONG_PTR)FPanelInfo);
 }
 //---------------------------------------------------------------------------
 TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 {
-    int Index = FocusedIndex;
-    if ((Index >= 0) && (Items->Count > 0))
+    int Index = GetFocusedIndex();
+    if ((Index >= 0) && (GetItems()->GetCount() > 0))
     {
-        assert(Index < Items->Count);
-        return (TFarPanelItem *)Items->Items[Index];
+        assert(Index < GetItems()->GetCount());
+        return (TFarPanelItem *)GetItems()->GetItem(Index);
     }
     else
     {
@@ -2638,9 +2642,9 @@ TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 //---------------------------------------------------------------------------
 void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
 {
-    int Index = Items->IndexOf(value);
+    int Index = GetItems()->IndexOf((TObject *)value);
     assert(Index >= 0);
-    FocusedIndex = Index;
+    SetFocusedIndex(Index);
 }
 //---------------------------------------------------------------------------
 int TFarPanelInfo::GetFocusedIndex()
@@ -2652,14 +2656,14 @@ void TFarPanelInfo::SetFocusedIndex(int value)
 {
     // for "another panel info", there's no owner
     assert(FOwner != NULL);
-    if (FocusedIndex != value)
+    if (GetFocusedIndex() != value)
     {
         assert(value >= 0 && value < FPanelInfo->ItemsNumber);
         FPanelInfo->CurrentItem = value;
         PanelRedrawInfo PanelInfo;
         PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
         PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
-        FOwner->FarControl(FCTL_REDRAWPANEL, &PanelInfo);
+        FOwner->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)&PanelInfo);
     }
 }
 //---------------------------------------------------------------------------
@@ -2692,7 +2696,7 @@ bool TFarPanelInfo::GetIsPlugin()
 //---------------------------------------------------------------------------
 wstring TFarPanelInfo::GetCurrentDirectory()
 {
-    wstring Result = FPanelInfo->CurDir;
+    wstring Result = L""; //FPanelInfo->CurDir;
     return StrFromFar(Result);
 }
 //---------------------------------------------------------------------------
@@ -2722,15 +2726,15 @@ void TFarMenuItems::PutObject(int Index, TObject *AObject)
 {
     TStringList::PutObject(Index, AObject);
     bool Focused = (reinterpret_cast<int>(AObject) & MIF_SEPARATOR) != 0;
-    if ((Index == ItemFocused) && !Focused)
+    if ((Index == GetItemFocused()) && !Focused)
     {
         FItemFocused = -1;
     }
     if (Focused)
     {
-        if (ItemFocused >= 0)
+        if (GetItemFocused() >= 0)
         {
-            SetFlag(ItemFocused, MIF_SELECTED, false);
+            SetFlag(GetItemFocused(), MIF_SELECTED, false);
         }
         FItemFocused = Index;
     }
@@ -2741,18 +2745,18 @@ int TFarMenuItems::Add(wstring Text, bool Visible)
     int Result = TStringList::Add(Text);
     if (!Visible)
     {
-        SetFlag(Count - 1, MIF_HIDDEN, true);
+        SetFlag(GetCount() - 1, MIF_HIDDEN, true);
     }
     return Result;
 }
 //---------------------------------------------------------------------------
 void TFarMenuItems::AddSeparator(bool Visible)
 {
-    Add("");
-    SetFlag(Count - 1, MIF_SEPARATOR, true);
+    Add(L"");
+    SetFlag(GetCount() - 1, MIF_SEPARATOR, true);
     if (!Visible)
     {
-        SetFlag(Count - 1, MIF_HIDDEN, true);
+        SetFlag(GetCount() - 1, MIF_HIDDEN, true);
     }
 }
 //---------------------------------------------------------------------------

@@ -429,6 +429,12 @@ public:
     {
         return false;
     }
+    virtual void Clear()
+    {
+    }
+    virtual void PutObject(int Index, TObject *AObject)
+    {
+    }
 private:
     TNotifyEvent FOnChange;
 };
@@ -818,7 +824,7 @@ protected:
         TDateTime &LastWriteTime, TDateTime &LastAccess,
         unsigned long &NumberOfLinks, wstring &Description,
         wstring &Owner, void *& UserData, int &CustomColumnNumber) = 0;
-    virtual wstring CustomColumnData(int Column);
+    virtual wstring GetCustomColumnData(int Column);
 
     void FillPanelItem(struct PluginPanelItem *PanelItem);
 };
@@ -828,7 +834,7 @@ class TFarPanelItem : TCustomFarPanelItem
 public:
     TFarPanelItem(PluginPanelItem *APanelItem);
     unsigned long GetFlags();
-    unsigned long GetFileAttributes() const;
+    unsigned long GetFileAttributes();
     wstring GetFileName();
     void *GetUserData();
     bool GetSelected();
@@ -845,7 +851,7 @@ protected:
         TDateTime &LastWriteTime, TDateTime &LastAccess,
         unsigned long &NumberOfLinks, wstring &Description,
         wstring &Owner, void *& UserData, int &CustomColumnNumber);
-    virtual wstring CustomColumnData(int Column);
+    virtual wstring GetCustomColumnData(int Column);
 
 private:
 };
@@ -875,7 +881,7 @@ public:
     TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
     virtual ~TFarPanelInfo();
 
-    TList *GetItems();
+    TObjectList *GetItems();
     int GetItemCount();
     int GetSelectedCount();
     TFarPanelItem *GetFocusedItem();
@@ -893,7 +899,7 @@ public:
 
 private:
     PanelInfo *FPanelInfo;
-    TList *FItems;
+    TObjectList *FItems;
     TCustomFarFileSystem *FOwner;
 };
 //---------------------------------------------------------------------------
@@ -915,10 +921,10 @@ public:
     int GetItemFocused() { return FItemFocused; }
     void SetItemFocused(int value);
 
-    bool GetDisabled() { return GetFlag(MIF_DISABLE); }
-    void SetDisabled(bool value) { SetFlag(MIF_DISABLE, value); }
-    bool GetChecked() { return GetFlag(MIF_CHECKED); }
-    void SetChecked(bool value) { SetFlag(MIF_CHECKED, value); }
+    bool GetDisabled(int Index) { return GetFlag(Index, MIF_DISABLE); }
+    void SetDisabled(int Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
+    bool GetChecked(int Index) { return GetFlag(Index, MIF_CHECKED); }
+    void SetChecked(int Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
 
 protected:
     virtual void PutObject(int Index, TObject *AObject);
@@ -926,8 +932,8 @@ protected:
 private:
     int FItemFocused;
 
-    void SetFlag(int Flag, bool Value);
-    bool GetFlag(int Flag);
+    void SetFlag(int Index, int Flag, bool Value);
+    bool GetFlag(int Index, int Flag);
 };
 //---------------------------------------------------------------------------
 class TFarEditorInfo
