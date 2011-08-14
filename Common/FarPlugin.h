@@ -364,9 +364,12 @@ public:
     void Remove(TObject *value)
     {
     }
+    bool GetOwnsObjects() { return FOwnsObjects; }
+    void SetOwnsObjects(bool value) { FOwnsObjects = value; }
 
 private:
     vector<TObject *> m_objects;
+    bool FOwnsObjects;
 };
 
 class TList : public TObjectList
@@ -515,7 +518,7 @@ public:
 
     virtual void HandleException(exception *E, int OpMode = 0);
 
-    static char *DuplicateStr(const wstring Str, bool AllowEmpty = false);
+    static wchar_t *DuplicateStr(const wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const wstring Title,
                            const wstring Message, TStrings *Buttons = NULL,
                            TFarMessageParams *Params = NULL, bool Oem = false);
@@ -912,13 +915,13 @@ void FarWrapText(wstring Text, TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
-inline char *StrFromFar(char *S)
+inline wchar_t *StrFromFar(wchar_t *S)
 {
     // OemToChar(S, S);
     return S;
 }
 //---------------------------------------------------------------------------
-wstring StrFromFar(const char *S);
+wstring StrFromFar(const wchar_t *S);
 //---------------------------------------------------------------------------
 inline char *StrFromFar(wstring &S)
 {
