@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
-#include "stdafx.h"
-#define NO_WIN32_LEAN_AND_MEAN
 #include <ShFolder.h>
+#include "stdafx.h"
+// #define NO_WIN32_LEAN_AND_MEAN
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -9,8 +9,7 @@
 #include "Interface.h"
 // #include <StrUtils.hpp>
 // #include <math.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
+
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 // TCriticalSection
