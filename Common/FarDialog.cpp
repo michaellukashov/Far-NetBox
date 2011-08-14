@@ -399,7 +399,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
             try
             {
                 FNeedsSynchronize = false;
-                FSynchronizeMethod();
+                ((*this).*FSynchronizeMethod)();
                 ReleaseSemaphore(FSynchronizeObjects[0], 1, NULL);
                 BreakSynchronize();
             }
@@ -1265,7 +1265,7 @@ void TFarDialogItem::SetEnabledFollow(TFarDialogItem *value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetEnabledDependency(TFarDialogItem *value)
 {
-    if (EnabledDependency != value)
+    if (GetEnabledDependency() != value)
     {
         FEnabledDependency = value;
         Change();
@@ -1274,7 +1274,7 @@ void TFarDialogItem::SetEnabledDependency(TFarDialogItem *value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetEnabledDependencyNegative(TFarDialogItem *value)
 {
-    if (EnabledDependencyNegative != value)
+    if (GetEnabledDependencyNegative() != value)
     {
         FEnabledDependencyNegative = value;
         Change();
@@ -1283,7 +1283,7 @@ void TFarDialogItem::SetEnabledDependencyNegative(TFarDialogItem *value)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetIsEmpty()
 {
-    return Data.Trim().IsEmpty();
+    return GetData().empty();
 }
 //---------------------------------------------------------------------------
 long TFarDialogItem::FailItemProc(int Msg, long Param)
@@ -1292,7 +1292,7 @@ long TFarDialogItem::FailItemProc(int Msg, long Param)
     switch (Msg)
     {
     case DN_KILLFOCUS:
-        Result = Item;
+        Result = GetItem();
         break;
 
     default:
@@ -1346,9 +1346,9 @@ void TFarDialogItem::DoFocus()
 //---------------------------------------------------------------------------
 void TFarDialogItem::DoExit()
 {
-    if (OnExit)
+    if (FOnExit)
     {
-        OnExit(this);
+        ((*this).*FOnExit)(this);
     }
 }
 //---------------------------------------------------------------------------

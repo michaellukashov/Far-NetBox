@@ -540,8 +540,8 @@ protected:
 };
 
 //---------------------------------------------------------------------------
-typedef void (*TThreadMethod)();
-typedef void (*TNotifyEvent)(TObject *);
+typedef void (TObject::*TThreadMethod)();
+typedef void (TObject::*TNotifyEvent)(TObject *);
 //---------------------------------------------------------------------------
 
 class TFarDialogContainer;
