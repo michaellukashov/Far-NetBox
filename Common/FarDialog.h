@@ -620,10 +620,8 @@ public:
     bool HotKey(unsigned long Key);
 
 protected:
-    // __property TCustomFarPlugin *FarPlugin = { read = FFarPlugin };
-    property<self, TCustomFarPlugin *> FarPlugin;
-    // __property TObjectList *Items = { read = FItems };
-    property<self, TObjectList *> Items;
+    TCustomFarPlugin *GetFarPlugin() { return FFarPlugin; }
+    TObjectList *GetItems() { return FItems; }
 
     void Add(TFarDialogItem *Item);
     void Add(TFarDialogContainer *Container);
@@ -682,20 +680,19 @@ class TFarDialogContainer : public TObject
     friend TFarDialogItem;
     typedef TFarDialogContainer self;
 public:
-    // __property int Left = { read = FLeft, write = SetPosition, index = 0 };
-    property<self, int> Left;
-    // __property int Top = { read = FTop, write = SetPosition, index = 1 };
-    property<self, int> Top;
-    // __property bool Enabled = { read = FEnabled, write = SetEnabled };
-    property<self, bool> Enabled;
-    property_ro<self, size_t> ItemCount;
+    int GetLeft() { return FLeft; }
+    void SetLeft(int value) { SetPosition(0, value); }
+    int GetTop() { return FTop; }
+    void SetTop(int value) { SetPosition(1, value); }
+    bool GetEnabled() { return FEnabled; }
+    void SetEnabled(bool value);
+    size_t GetItemCount() const;
 
 protected:
     TFarDialogContainer(TFarDialog *ADialog);
     ~TFarDialogContainer();
 
-    // __property TFarDialog *Dialog = { read = FDialog };
-    property<TFarDialogContainer, TFarDialog *> Dialog;
+    TFarDialog *GetDialog() { return FDialog; }
 
     void Add(TFarDialogItem *Item);
     void Remove(TFarDialogItem *Item);
@@ -710,8 +707,6 @@ private:
     bool FEnabled;
 
     void SetPosition(int Index, int value);
-    void SetEnabled(bool value);
-    size_t GetItemCount() const;
 };
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
@@ -722,8 +717,8 @@ class TFarDialogItem : public TObject
     friend TFarDialogContainer;
     friend TFarList;
 public:
-    // __property TRect Bounds = { read = FBounds, write = SetBounds };
-    property<TFarDialogItem, TRect> Bounds;
+    TRect GetBounds() const { return FBounds; }
+    void SetBounds(TRect value);
     // __property TRect ActualBounds = { read = GetActualBounds };
     property<TFarDialogItem, TRect> ActualBounds;
     // __property int Left = { read = GetCoordinate, write = SetCoordinate, index = 0 };
@@ -856,7 +851,6 @@ private:
     unsigned long FColorMask;
     bool FOem;
 
-    void SetBounds(TRect value);
     void SetFlags(unsigned int value);
     void UpdateFlags(unsigned int value);
     TRect GetActualBounds();

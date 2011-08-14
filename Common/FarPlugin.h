@@ -809,9 +809,9 @@ public:
     void SetItemFocused(int value);
 
     bool GetDisabled() { return GetFlag(MIF_DISABLE); }
-    void SetDisabled(bool value) { SetFlag(MIF_DISABLE, true); }
+    void SetDisabled(bool value) { SetFlag(MIF_DISABLE, value); }
     bool GetChecked() { return GetFlag(MIF_CHECKED); }
-    void SetChecked(bool value) { SetFlag(MIF_CHECKED, true); }
+    void SetChecked(bool value) { SetFlag(MIF_CHECKED, value); }
 
 protected:
     virtual void PutObject(int Index, TObject *AObject);
