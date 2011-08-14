@@ -1764,14 +1764,14 @@ void TFarButton::SetDefault(bool value)
 //---------------------------------------------------------------------------
 bool TFarButton::GetDefault()
 {
-    return DialogItem.get()->DefaultButton;
+    return GetDialogItem()->DefaultButton;
 }
 //---------------------------------------------------------------------------
 void TFarButton::SetBrackets(TFarButtonBrackets value)
 {
     if (FBrackets != value)
     {
-        wstring AData = Data;
+        wstring AData = GetData();
         SetFlag(DIF_NOBRACKETS, (value != brNormal));
         FBrackets = value;
         SetDataInternal(AData);
@@ -1782,16 +1782,16 @@ long TFarButton::ItemProc(int Msg, long Param)
 {
     if (Msg == DN_BTNCLICK)
     {
-        if (!Enabled)
+        if (!GetEnabled())
         {
             return true;
         }
         else
         {
-            bool Close = (Result != 0);
-            if (OnClick)
+            bool Close = (GetResult() != 0);
+            if (FOnClick)
             {
-                OnClick(this, Close);
+                ((*this).FOnClick)(this, Close);
             }
             if (!Close)
             {
@@ -1804,22 +1804,22 @@ long TFarButton::ItemProc(int Msg, long Param)
 //---------------------------------------------------------------------------
 bool TFarButton::HotKey(char HotKey)
 {
-    int P = Caption.Pos("&");
+    int P = GetCaption().find_first_of(L"&");
     bool Result =
-        Visible && Enabled &&
-        (P > 0) && (P < Caption.Length()) &&
-        SameText(Caption[P + 1], HotKey);
+        GetVisible() && GetEnabled() &&
+        (P > 0) && (P < GetCaption().size()) &&
+        (GetCaption()[P + 1] == HotKey);
     if (Result)
     {
-        bool Close = (Result != 0);
-        if (OnClick)
+        bool Close = (GetResult() != 0);
+        if (FOnClick)
         {
-            OnClick(this, Close);
+            ((*this).FOnClick)(this, Close);
         }
 
         if (Close)
         {
-            Dialog->Close(this);
+            GetDialog()->Close(this);
         }
     }
     return Result;
@@ -1836,9 +1836,9 @@ long TFarCheckBox::ItemProc(int Msg, long Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (OnAllowChange)
+        if (FOnAllowChange)
         {
-            OnAllowChange(this, Param, Allow);
+            ((*this).FOnAllowChange)(this, Param, Allow);
         }
         if (Allow)
         {
@@ -1854,15 +1854,15 @@ long TFarCheckBox::ItemProc(int Msg, long Param)
 //---------------------------------------------------------------------------
 bool TFarCheckBox::GetIsEmpty()
 {
-    return Checked != BSTATE_CHECKED;
+    return GetChecked() != BSTATE_CHECKED;
 }
 //---------------------------------------------------------------------------
 void TFarCheckBox::SetData(const wstring value)
 {
     TFarDialogItem::SetData(value);
-    if (Left >= 0 || Right >= 0)
+    if (GetLeft() >= 0 || GetRight() >= 0)
     {
-        Width = 4 + StripHotKey(value).Length();
+        SetWidth(4 + StripHotKey(value).size());
     }
 }
 //---------------------------------------------------------------------------
@@ -1877,9 +1877,9 @@ long TFarRadioButton::ItemProc(int Msg, long Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (OnAllowChange)
+        if (FOnAllowChange)
         {
-            OnAllowChange(this, Param, Allow);
+            ((*this).FOnAllowChange)(this, Param, Allow);
         }
         if (Allow)
         {
@@ -1898,15 +1898,15 @@ long TFarRadioButton::ItemProc(int Msg, long Param)
 //---------------------------------------------------------------------------
 bool TFarRadioButton::GetIsEmpty()
 {
-    return !Checked;
+    return !GetChecked();
 }
 //---------------------------------------------------------------------------
 void TFarRadioButton::SetData(const wstring value)
 {
     TFarDialogItem::SetData(value);
-    if (Left >= 0 || Right >= 0)
+    if (GetLeft() >= 0 || GetRight() >= 0)
     {
-        Width = 4 + StripHotKey(value).Length();
+        SetWidth(4 + StripHotKey(value).size());
     }
 }
 //---------------------------------------------------------------------------
@@ -1914,12 +1914,12 @@ void TFarRadioButton::SetData(const wstring value)
 TFarEdit::TFarEdit(TFarDialog *ADialog) :
     TFarDialogItem(ADialog, DI_EDIT)
 {
-    AutoSelect = false;
+    SetAutoSelect(false);
 }
 //---------------------------------------------------------------------------
 void TFarEdit::Detach()
 {
-    delete[] DialogItem.get()->Mask;
+    delete[] GetDialogItem()->Mask;
     TFarDialogItem::Detach();
 }
 //---------------------------------------------------------------------------
@@ -1927,7 +1927,8 @@ long TFarEdit::ItemProc(int Msg, long Param)
 {
     if (Msg == DN_EDITCHANGE)
     {
-        strcpy(DialogItem.get()->Data, ((FarDialogItem *)Param)->Data);
+        wstring Data = ((FarDialogItem *)Param)->PtrData;
+        wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
     }
     return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -1935,9 +1936,9 @@ long TFarEdit::ItemProc(int Msg, long Param)
 wstring TFarEdit::GetHistoryMask(int Index)
 {
     wstring Result =
-        ((Index == 0) && (Flags & DIF_HISTORY)) ||
-        ((Index == 1) && (Flags & DIF_MASKEDIT)) ? DialogItem.get()->Mask : "";
-    if (!Oem)
+        ((Index == 0) && (GetFlags() & DIF_HISTORY)) ||
+        ((Index == 1) && (GetFlags() & DIF_MASKEDIT)) ? GetDialogItem()->Mask : L"";
+    if (!GetOem())
     {
         StrFromFar(Result);
     }
@@ -1951,33 +1952,33 @@ void TFarEdit::SetHistoryMask(int Index, wstring value)
         assert(!Dialog->Handle);
         assert(&DialogItem.get()->Mask == &DialogItem.get()->History);
 
-        delete[] DialogItem.get()->Mask;
-        if (value.IsEmpty())
+        delete[] GetDialogItem()->Mask;
+        if (value.empty())
         {
-            DialogItem.get()->Mask = NULL;
+            GetDialogItem()->Mask = NULL;
         }
         else
         {
-            DialogItem.get()->Mask = new char[value.Length()+1];
-            strcpy((char *)DialogItem.get()->Mask, value.c_str());
-            if (!Oem)
+            GetDialogItem()->Mask = new wchar_t[value.size() + 1];
+            wcscpy_s((wchar_t *)GetDialogItem()->Mask, value.size(), value.c_str());
+            if (!GetOem())
             {
-                StrToFar((char *)DialogItem.get()->Mask);
+                StrToFar((wchar_t *)GetDialogItem()->Mask);
             }
         }
-        bool PrevHistory = !History.IsEmpty();
-        SetFlag(DIF_HISTORY, (Index == 0) && !value.IsEmpty());
-        bool Masked = (Index == 1) && !value.IsEmpty();
+        bool PrevHistory = !GetHistory().empty();
+        SetFlag(DIF_HISTORY, (Index == 0) && !value.empty());
+        bool Masked = (Index == 1) && !value.empty();
         SetFlag(DIF_MASKEDIT, Masked);
         if (Masked)
         {
-            Fixed = true;
+            SetFixed(true);
         }
-        bool CurrHistory = !History.IsEmpty();
+        bool CurrHistory = !GetHistory().empty();
         if (PrevHistory != CurrHistory)
         {
             // add/remove space for history arrow
-            Width = Width + (CurrHistory ? -1 : 1);
+            SetWidth(GetWidth() + (CurrHistory ? -1 : 1));
         }
         DialogChange();
     }
@@ -1986,7 +1987,7 @@ void TFarEdit::SetHistoryMask(int Index, wstring value)
 void TFarEdit::SetAsInteger(int value)
 {
     int Int;
-    if (!TryStrToInt(Text.Trim(), Int) || (AsInteger != value))
+    if (!TryStrToInt(GetText(), Int) || (GetAsInteger() != value))
     {
         Text = IntToStr(value);
         DialogChange();
@@ -1995,7 +1996,7 @@ void TFarEdit::SetAsInteger(int value)
 //---------------------------------------------------------------------------
 int TFarEdit::GetAsInteger()
 {
-    return StrToIntDef(Text.Trim(), 0);
+    return StrToIntDef(GetText(), 0);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
