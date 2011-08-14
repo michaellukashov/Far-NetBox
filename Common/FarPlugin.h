@@ -742,9 +742,9 @@ protected:
 
     virtual void HandleException(exception *E, int OpMode = 0);
 
-    TFarPanelInfo *GetPanelInfo() const { return GetPanelInfo(0); };
-    TFarPanelInfo *GetAnotherPanelInfo() const { return GetPanelInfo(1); };
-    TCriticalSection *GetCriticalSection() const { return FCriticalSection; };
+    TFarPanelInfo *GetPanelInfo() { return GetPanelInfo(0); };
+    TFarPanelInfo *GetAnotherPanelInfo() { return GetPanelInfo(1); };
+    TCriticalSection *GetCriticalSection() { return FCriticalSection; };
 
 protected:
     TCriticalSection *FCriticalSection;
@@ -759,7 +759,7 @@ private:
     void ClearOpenPluginInfo(OpenPluginInfo &Info);
     TList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
                                           int ItemsNumber);
-    TFarPanelInfo *GetPanelInfo(int Another) const;
+    TFarPanelInfo *GetPanelInfo(int Another);
 };
 //---------------------------------------------------------------------------
 #define PANEL_MODES_COUNT 10

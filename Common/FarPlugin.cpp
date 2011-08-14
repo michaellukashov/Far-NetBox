@@ -2024,7 +2024,8 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
     StrToFar(DestPathStr);
     if (DestPathStr != DestPath)
     {
-        strcpy(DestPath, DestPathStr.c_str());
+        // strcpy(DestPath, DestPathStr.c_str());
+        wcscpy_s(DestPath, DestPathStr.size(), DestPathStr.c_str());
     }
     delete PanelItems;
 
