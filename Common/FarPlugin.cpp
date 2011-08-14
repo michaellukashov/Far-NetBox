@@ -562,7 +562,7 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
     }
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const char *Dir, int OpMode)
+int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode)
 {
     TCustomFarFileSystem *FileSystem = (TCustomFarFileSystem *)Plugin;
     try
@@ -583,7 +583,7 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const char *Dir, int OpMode)
     }
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, char *Name, int OpMode)
+int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, wchar_t *Name, int OpMode)
 {
     TCustomFarFileSystem *FileSystem = (TCustomFarFileSystem *)Plugin;
     try
@@ -1554,7 +1554,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE &Screen)
 void TCustomFarPlugin::HandleException(exception *E, int /*OpMode*/)
 {
     assert(E);
-    Message(FMSG_WARNING | FMSG_MB_OK, "", E->Message);
+    Message(FMSG_WARNING | FMSG_MB_OK, L"", StrToFar(E->what()));
 }
 //---------------------------------------------------------------------------
 wstring TCustomFarPlugin::GetMsg(int MsgId)
@@ -1586,8 +1586,10 @@ bool TCustomFarPlugin::Viewer(wstring FileName,
         unsigned int Flags, wstring Title)
 {
     TFarEnvGuard Guard;
-    int Result = FStartupInfo.Viewer(StrToFar(FileName),
-                                     StrToFar(Title), 0, 0, -1, -1, Flags);
+    int Result = FStartupInfo.Viewer(
+        StrToFar(FileName),
+        StrToFar(Title), 0, 0, -1, -1, Flags,
+        65001);
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1595,8 +1597,10 @@ bool TCustomFarPlugin::Editor(wstring FileName,
         unsigned int Flags, wstring Title)
 {
     TFarEnvGuard Guard;
-    int Result = FStartupInfo.Editor(StrToFar(FileName),
-                                     StrToFar(Title), 0, 0, -1, -1, Flags, -1, -1);
+    int Result = FStartupInfo.Editor(
+        StrToFar(FileName),
+        StrToFar(Title), 0, 0, -1, -1, Flags, -1, -1,
+        65001);
     return (Result == EEC_MODIFIED) || (Result == EEC_NOT_MODIFIED);
 }
 //---------------------------------------------------------------------------
@@ -1618,15 +1622,16 @@ unsigned int TCustomFarPlugin::FarSystemSettings()
 bool TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
 {
     wstring Buf;
+    int Param = 0;
     switch (Command)
     {
     case FCTL_CLOSEPLUGIN:
     case FCTL_SETPANELDIR:
-    case FCTL_SETANOTHERPANELDIR:
+    // case FCTL_SETANOTHERPANELDIR:
     case FCTL_SETCMDLINE:
     case FCTL_INSERTCMDLINE:
-        Buf = (char *)Param;
-        Param = StrToFar(Buf);
+        Buf = (wchar_t *)Param2;
+        // Param = StrToFar(Buf);
         break;
 
     case FCTL_GETCMDLINE:
@@ -1663,7 +1668,7 @@ int TCustomFarPlugin::FarEditorControl(int Command, void *Param)
         break;
 
     case ECTL_SETTITLE:
-        Buf = (char *)Param;
+        Buf = (wchar_t *)Param;
         Param = StrToFar(Buf);
         break;
 
@@ -1712,15 +1717,19 @@ int TCustomFarPlugin::FarVersion()
 //---------------------------------------------------------------------------
 wstring TCustomFarPlugin::FormatFarVersion(int Version)
 {
-    return FORMAT("%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
+    // return FORMAT("%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
+    wstring Buffer;
+    Buffer.resize(512);
+    GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L"%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
+    return Buffer;
 }
 //---------------------------------------------------------------------------
 wstring TCustomFarPlugin::TemporaryDir()
 {
     wstring Result;
-    Result.SetLength(MAX_PATH);
+    Result.resize(MAX_PATH);
     TFarEnvGuard Guard;
-    FFarStandardFunctions.MkTemp(Result.c_str(), NULL);
+    FFarStandardFunctions.MkTemp((wchar_t *)Result.c_str(), Result.size(), NULL);
     PackStr(Result);
     StrFromFar(Result);
     return Result;
@@ -1873,14 +1882,14 @@ int TCustomFarFileSystem::GetFindData(
     try
     {
         Result = !FClosed && GetFindDataEx(PanelItems, OpMode);
-        if (Result && PanelItems->Count)
+        if (Result && PanelItems->GetCount())
         {
-            *PanelItem = new PluginPanelItem[PanelItems->Count];
-            memset(*PanelItem, 0, PanelItems->Count * sizeof(PluginPanelItem));
-            *ItemsNumber = PanelItems->Count;
-            for (int Index = 0; Index < PanelItems->Count; Index++)
+            *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
+            memset(*PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
+            *ItemsNumber = PanelItems->GetCount();
+            for (int Index = 0; Index < PanelItems->GetCount(); Index++)
             {
-                ((TCustomFarPanelItem *)PanelItems->Items[Index])->FillPanelItem(
+                ((TCustomFarPanelItem *)PanelItems->GetItem(Index))->FillPanelItem(
                     &((*PanelItem)[Index]));
             }
         }
@@ -1948,7 +1957,7 @@ int TCustomFarFileSystem::ProcessEvent(int Event, void *Param)
     return ProcessEventEx(Event, Param);
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::SetDirectory(const char *Dir, int OpMode)
+int TCustomFarFileSystem::SetDirectory(const wchar_t *Dir, int OpMode)
 {
     ResetCachedInfo();
     InvalidateOpenPluginInfo();
@@ -1957,7 +1966,7 @@ int TCustomFarFileSystem::SetDirectory(const char *Dir, int OpMode)
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::MakeDirectory(char *Name, int OpMode)
+int TCustomFarFileSystem::MakeDirectory(wchar_t *Name, int OpMode)
 {
     ResetCachedInfo();
     wstring NameStr = Name;

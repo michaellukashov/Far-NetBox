@@ -555,8 +555,8 @@ public:
                                            struct PluginPanelItem *PanelItem, int ItemsNumber, int OpMode);
     virtual int ProcessKey(HANDLE Plugin, int Key, unsigned int ControlState);
     virtual int ProcessEvent(HANDLE Plugin, int Event, void *Param);
-    virtual int SetDirectory(HANDLE Plugin, const char *Dir, int OpMode);
-    virtual int MakeDirectory(HANDLE Plugin, char *Name, int OpMode);
+    virtual int SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode);
+    virtual int MakeDirectory(HANDLE Plugin, wchar_t *Name, int OpMode);
     virtual int DeleteFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
                                        int ItemsNumber, int OpMode);
     virtual int GetFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
@@ -699,8 +699,8 @@ public:
                                    int ItemsNumber, int OpMode);
     int ProcessKey(int Key, unsigned int ControlState);
     int ProcessEvent(int Event, void *Param);
-    int SetDirectory(const char *Dir, int OpMode);
-    int MakeDirectory(char *Name, int OpMode);
+    int SetDirectory(const wchar_t *Dir, int OpMode);
+    int MakeDirectory(wchar_t *Name, int OpMode);
     int DeleteFiles(struct PluginPanelItem *PanelItem,
                                int ItemsNumber, int OpMode);
     int GetFiles(struct PluginPanelItem *PanelItem,
@@ -718,7 +718,7 @@ protected:
             wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
             int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
             wstring &ShortcutData) = 0;
-    virtual bool GetFindDataEx(TList *PanelItems, int OpMode) = 0;
+    virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) = 0;
     virtual bool ProcessHostFileEx(TList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
@@ -987,6 +987,14 @@ inline wchar_t *StrToFar(wchar_t *S)
 }
 //---------------------------------------------------------------------------
 inline wchar_t *StrToFar(wstring &S)
+{
+    // S.Unique();
+    // CharToOem(S.c_str(), S.c_str());
+    // return S.c_str();
+    return L"";
+}
+//---------------------------------------------------------------------------
+inline wstring StrToFar(const char *S)
 {
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
