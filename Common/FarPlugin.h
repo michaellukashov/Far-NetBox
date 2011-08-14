@@ -903,3 +903,4 @@ inline wchar_t *StrToFar(wstring &S)
 // from winscp434source\core\Common.h
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
+#define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
