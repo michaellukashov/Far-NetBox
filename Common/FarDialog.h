@@ -1022,20 +1022,18 @@ public:
 
     virtual void Assign(TPersistent *Source);
 
-    // __property int Selected = { read = GetSelected, write = SetSelected };
-    property<self, int> Selected;
-    // __property int TopIndex = { read = GetTopIndex, write = SetTopIndex };
-    property<self, int> TopIndex;
-    // __property int MaxLength = { read = GetMaxLength };
-    property<self, int> MaxLength;
-    // __property int VisibleCount = { read = GetVisibleCount };
-    property<self, int> VisibleCount;
-    // __property unsigned int Flags[int Index] = { read = GetFlags, write = SetFlags };
-    property<self, unsigned int> Flags;
-    // __property bool Disabled[int Index] = { read = GetFlag, write = SetFlag, index = LIF_DISABLE };
-    property<self, bool> Disabled;
-    // __property bool Checked[int Index] = { read = GetFlag, write = SetFlag, index = LIF_CHECKED };
-    property<self, bool> Checked;
+    int GetSelected();
+    void SetSelected(int value);
+    int GetTopIndex();
+    void SetTopIndex(int value);
+    int GetMaxLength();
+    int GetVisibleCount();
+    unsigned int GetFlags(int Index);
+    void SetFlags(int Index, unsigned int value);
+    bool GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
+    void SetDisabled(int Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
+    bool GetChecked(int Index) { return GetFlag(Index, LIF_CHECKED); }
+    void SetChecked(int Index, bool value) { SetFlag(Index, LIF_CHECKED, value); }
 
 protected:
     virtual void Changed();
@@ -1047,10 +1045,8 @@ protected:
     void SetCurPos(int Position, int TopIndex);
     void UpdateItem(int Index);
 
-    // __property FarList *ListItems = { read = FListItems };
-    property<self, FarList *> ListItems;
-    // __property TFarDialogItem *DialogItem = { read = FDialogItem };
-    property<self, TFarDialogItem *> DialogItem;
+    FarList *GetListItems() { return FListItems; }
+    TFarDialogItem *GetDialogItem() { return FDialogItem; }
 
 private:
     FarList *FListItems;
@@ -1058,14 +1054,6 @@ private:
     bool FNoDialogUpdate;
 
     inline int GetSelectedInt(bool Init);
-    int GetSelected();
-    void SetSelected(int value);
-    int GetTopIndex();
-    void SetTopIndex(int value);
-    int GetMaxLength();
-    int GetVisibleCount();
-    unsigned int GetFlags(int Index);
-    void SetFlags(int Index, unsigned int value);
     bool GetFlag(int Index, int Flag);
     void SetFlag(int Index, int Flag, bool value);
 };
