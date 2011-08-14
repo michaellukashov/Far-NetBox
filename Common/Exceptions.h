@@ -1,11 +1,11 @@
 //---------------------------------------------------------------------------
-#ifndef ExceptionsH
-#define ExceptionsH
+#pragma once
 
-#include <Classes.hpp>
-#include <SysUtils.hpp>
-#include <SysInit.hpp>
-#include <System.hpp>
+// #include <Classes.hpp>
+// #include <SysUtils.hpp>
+// #include <SysInit.hpp>
+// #include <System.hpp>
+
 //---------------------------------------------------------------------------
 bool ExceptionMessage(exception * E, wstring & Message);
 wstring LastSysErrorMessage();
@@ -13,31 +13,31 @@ TStrings * ExceptionToMoreMessages(exception * E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
-class ExtException : public Sysutils::exception
+class ExtException : public exception
 {
 public:
   ExtException(exception* E);
   ExtException(exception* E, wstring Msg);
   // "copy the exception", just append message to the end
   ExtException(wstring Msg, exception* E);
-  ExtException(wstring Msg, wstring MoreMessages, wstring HelpKeyword = "");
+  ExtException(wstring Msg, wstring MoreMessages, wstring HelpKeyword = L"");
   ExtException(wstring Msg, TStrings* MoreMessages, bool Own);
   virtual ~ExtException(void);
-  __property TStrings* MoreMessages = {read=FMoreMessages};
-  __property wstring HelpKeyword = {read=FHelpKeyword};
+  TStrings* GetMoreMessages() { return FMoreMessages; }
+  wstring GetHelpKeyword() { return FHelpKeyword; }
 
-  inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) { }
-  inline ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::exception(Ident, Args, Args_Size) { }
-  inline ExtException(const wstring Msg, int AHelpContext) : Sysutils::exception(Msg, AHelpContext) { }
-  inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
+  // inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) { }
+  // inline ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::exception(Ident, Args, Args_Size) { }
+  inline ExtException(const wstring Msg, int AHelpContext) : exception(Msg, AHelpContext) { }
+  // inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
   inline ExtException(int Ident, int AHelpContext)/* overload */ : exception(Ident, AHelpContext) { }
-  inline ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }
+  // inline ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }
 
 protected:
   void AddMoreMessages(exception* E);
 
 private:
-  Classes::TStrings* FMoreMessages;
+  TStrings *FMoreMessages;
   wstring FHelpKeyword;
 };
 //---------------------------------------------------------------------------
@@ -48,13 +48,14 @@ private:
     inline NAME(exception* E, wstring Msg) : BASE(E, Msg) { } \
     inline NAME(exception* E, int Ident) : BASE(E, Ident) { } \
     inline virtual ~NAME(void) { } \
-    inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
-    inline NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
     inline NAME(const wstring Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
-    inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
     inline NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
-    inline NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
   };
+
+    // inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
+    // inline NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
+    // inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
+    // inline NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(ESsh, ExtException);
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException);
@@ -99,4 +100,3 @@ public:
   TOnceDoneOperation Operation;
 };
 //---------------------------------------------------------------------------
-#endif  // Exceptions
