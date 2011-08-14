@@ -263,9 +263,10 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
         int Index = 0;
         while (!Result && Index < FOpenedPlugins->GetCount())
         {
-            FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItems(Index));
+            FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
             assert(FileSystem);
-            if (FileSystem->PanelInfo->Bounds == Bounds)
+            TRect bounds = FileSystem->GetPanelInfo()->GetBounds();
+            if (bounds == Bounds)
             {
                 Result = FileSystem;
             }
@@ -278,10 +279,10 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::InvalidateOpenPluginInfo()
 {
-    for (int Index = 0; Index < FOpenedPlugins->Count; Index++)
+    for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
         TCustomFarFileSystem *FileSystem =
-            dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->Items[Index]);
+            dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItem(Index));
         FileSystem->InvalidateOpenPluginInfo();
     }
 }
@@ -322,7 +323,7 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
         wstring Buf;
         if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
         {
-            Buf = (char *)Item;
+            Buf = (wchar_t *)Item;
             StrFromFar(Buf);
             Item = int(Buf.c_str());
         }
@@ -357,7 +358,7 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
         try
         {
             {
-                TGuard Guard(FileSystem->CriticalSection);
+                TGuard Guard(FileSystem->GetCriticalSection());
                 FileSystem->Close();
             }
             delete FileSystem;
@@ -412,7 +413,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             FileSystem->GetOpenPluginInfo(Info);
         }
     }
@@ -433,7 +434,7 @@ int TCustomFarPlugin::GetFindData(HANDLE Plugin,
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             return FileSystem->GetFindData(PanelItem, ItemsNumber, OpMode);
         }
     }
@@ -455,7 +456,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             FileSystem->FreeFindData(PanelItem, ItemsNumber);
         }
     }
@@ -478,7 +479,7 @@ int TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
             assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
             {
-                TGuard Guard(FileSystem->CriticalSection);
+                TGuard Guard(FileSystem->GetCriticalSection());
                 return FileSystem->ProcessHostFile(PanelItem, ItemsNumber, OpMode);
             }
         }
@@ -507,7 +508,7 @@ int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
             assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
             {
-                TGuard Guard(FileSystem->CriticalSection);
+                TGuard Guard(FileSystem->GetCriticalSection());
                 return FileSystem->ProcessKey(Key, ControlState);
             }
         }
@@ -539,13 +540,13 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
             wstring Buf;
             if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
             {
-                Buf = (char *)Param;
+                Buf = (wchar_t *)Param;
                 StrFromFar(Buf);
-                Param = Buf.c_str();
+                Param = (void *)Buf.c_str();
             }
 
             {
-                TGuard Guard(FileSystem->CriticalSection);
+                TGuard Guard(FileSystem->GetCriticalSection());
                 return FileSystem->ProcessEvent(Event, Param);
             }
         }
@@ -571,7 +572,7 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const char *Dir, int OpMode)
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             return FileSystem->SetDirectory(Dir, OpMode);
         }
     }
@@ -592,7 +593,7 @@ int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, char *Name, int OpMode)
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             return FileSystem->MakeDirectory(Name, OpMode);
         }
     }
@@ -614,7 +615,7 @@ int TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             return FileSystem->DeleteFiles(PanelItem, ItemsNumber, OpMode);
         }
     }
@@ -637,7 +638,7 @@ int TCustomFarPlugin::GetFiles(HANDLE Plugin,
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             return FileSystem->GetFiles(PanelItem, ItemsNumber, Move, DestPath, OpMode);
         }
     }
@@ -660,7 +661,7 @@ int TCustomFarPlugin::PutFiles(HANDLE Plugin,
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
-            TGuard Guard(FileSystem->CriticalSection);
+            TGuard Guard(FileSystem->GetCriticalSection());
             return FileSystem->PutFiles(PanelItem, ItemsNumber, Move, OpMode);
         }
     }
@@ -717,11 +718,11 @@ int TCustomFarPlugin::MaxMenuItemLength()
 int TCustomFarPlugin::MaxLength(TStrings *Strings)
 {
     int Result = 0;
-    for (int Index = 0; Index < Strings->Count; Index++)
+    for (int Index = 0; Index < Strings->GetCount(); Index++)
     {
-        if (Result < Strings->Strings[Index].Length())
+        if (Result < Strings->GetString(Index).size())
         {
-            Result = Strings->Strings[Index].Length();
+            Result = Strings->GetString(Index).size();
         }
     }
     return Result;
@@ -774,11 +775,11 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         if (Params->MoreMessages != NULL)
         {
             MoreMessageLines = new TStringList();
-            wstring MoreMessages = Params->MoreMessages->Text;
-            while (MoreMessages[MoreMessages.Length()] == '\n' ||
-                    MoreMessages[MoreMessages.Length()] == '\r')
+            wstring MoreMessages = Params->MoreMessages->GetText();
+            while (MoreMessages[MoreMessages.size()] == L'\n' ||
+                    MoreMessages[MoreMessages.size()] == L'\r')
             {
-                MoreMessages.SetLength(MoreMessages.Length() - 1);
+                MoreMessages.resize(MoreMessages.size() - 1);
             }
             FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
             int MoreMaxLen = Plugin->MaxLength(MoreMessageLines);
@@ -789,15 +790,15 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         }
 
         // temporary
-        Size = TPoint(MaxMessageWidth, 10);
-        Caption = Title;
-        Flags = Flags |
-                FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING);
+        SetSize(TPoint(MaxMessageWidth, 10));
+        SetCaption(Title);
+        SetFlags(GetFlags() |
+                FLAGMASK(FLAGSET(AFlags, FMSG_WARNING), FDLG_WARNING));
 
-        for (int Index = 0; Index < MessageLines->Count; Index++)
+        for (int Index = 0; Index < MessageLines->GetCount(); Index++)
         {
             TFarText *Text = new TFarText(this);
-            Text->Caption = MessageLines->Strings[Index];
+            Text->SetCaption(MessageLines->GetString(Index));
         }
 
         TFarLister *MoreMessagesLister = NULL;
@@ -808,33 +809,38 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             new TFarSeparator(this);
 
             MoreMessagesLister = new TFarLister(this);
-            MoreMessagesLister->Items->Assign(MoreMessageLines);
-            MoreMessagesLister->Left = BorderBox->Left + 1;
+            MoreMessagesLister->GetItems()->Assign(MoreMessageLines);
+            MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
 
             MoreMessagesSeparator = new TFarSeparator(this);
         }
 
-        int ButtonOffset = (Params->CheckBoxLabel.IsEmpty() ? -1 : -2);
+        int ButtonOffset = (Params->CheckBoxLabel.empty() ? -1 : -2);
         int ButtonLines = 1;
         TFarButton *Button = NULL;
         FTimeoutButton = NULL;
-        for (int Index = 0; Index < Buttons->Count; Index++)
+        for (int Index = 0; Index < Buttons->GetCount(); Index++)
         {
             TFarButton *PrevButton = Button;
             Button = new TFarButton(this);
-            Button->Default = (Index == 0);
-            Button->Brackets = brNone;
-            Button->OnClick = ButtonClick;
-            wstring Caption = Buttons->Strings[Index];
+            Button->SetDefault(Index == 0);
+            Button->SetBrackets(brNone);
+            Button->SetOnClick((TFarButtonClick)&TFarMessageDialog::ButtonClick);
+            wstring Caption = Buttons->GetString(Index);
             if ((Params->Timeout > 0) &&
                     (Params->TimeoutButton == (unsigned int)Index))
             {
                 FTimeoutButtonCaption = Caption;
-                Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
+                // Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
+                // Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
+                wstring Buffer;
+                Buffer.resize(256);
+                GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
+                SetCaption(Buffer);
                 FTimeoutButton = Button;
             }
             Button->Caption = FORMAT(" %s ", (Caption));
-            Button->Top = BorderBox->Bottom + ButtonOffset;
+            Button->Top = GetBorderBox()->GetBottom() + ButtonOffset;
             Button->Bottom = Button->Top;
             Button->Result = Index + 1;
             Button->CenterGroup = true;
@@ -844,7 +850,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 Button->Move(PrevButton->Right - Button->Left + 1, 0);
             }
 
-            if (MaxMessageWidth < Button->Right - BorderBox->Left)
+            if (MaxMessageWidth < Button->Right - GetBorderBox()->GetLeft())
             {
                 for (int PIndex = 0; PIndex < ItemCount; PIndex++)
                 {
@@ -854,13 +860,13 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                         PrevButton->Move(0, -1);
                     }
                 }
-                Button->Move(- (Button->Left - BorderBox->Left), 0);
+                Button->Move(- (Button->Left - GetBorderBox()->GetLeft()), 0);
                 ButtonLines++;
             }
 
-            if (MaxLen < Button->Right - BorderBox->Left)
+            if (MaxLen < Button->Right - GetBorderBox()->GetLeft())
             {
-                MaxLen = Button->Right - BorderBox->Left;
+                MaxLen = Button->Right - GetBorderBox()->GetLeft();
             }
 
             NextItemPosition = ipRight;
@@ -872,9 +878,9 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             CheckBox = new TFarCheckBox(this);
             CheckBox->Caption = Params->CheckBoxLabel;
 
-            if (MaxLen < CheckBox->Right - BorderBox->Left)
+            if (MaxLen < CheckBox->Right - GetBorderBox()->GetLeft())
             {
-                MaxLen = CheckBox->Right - BorderBox->Left;
+                MaxLen = CheckBox->Right - GetBorderBox()->GetLeft();
             }
         }
         else
@@ -899,7 +905,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             assert(MoreMessagesLister != NULL);
             MoreMessagesLister->Height = MoreMessageHeight;
             MoreMessagesLister->Right =
-                BorderBox->Right - (MoreMessagesLister->ScrollBar ? 0 : 1);
+                GetBorderBox()->GetRight() - (MoreMessagesLister->ScrollBar ? 0 : 1);
             MoreMessagesLister->TabStop = MoreMessagesLister->ScrollBar;
             assert(MoreMessagesSeparator != NULL);
             MoreMessagesSeparator->Position =

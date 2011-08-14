@@ -337,6 +337,18 @@ struct TRect
     {
         return !(operator == (other));
     }
+    bool operator == (const RECT &other)
+    {
+        return
+            Left == other.left &&
+            Top == other.top &&
+            Right == other.right &&
+            Bottom == other.bottom;
+    }
+    bool operator != (const RECT &other)
+    {
+        return !(operator == (other));
+    }
 };
 
 class TPersistent : public TObject
@@ -355,6 +367,10 @@ public:
     {
         return m_objects[Index];
     }
+    TObject * GetItem(size_t Index) const
+    {
+        return m_objects[Index];
+    }
 
     size_t Add(TObject *value)
     {
@@ -363,6 +379,10 @@ public:
     }
     void Remove(TObject *value)
     {
+    }
+    size_t IndexOf(TObject *value) const
+    {
+        return -1;
     }
     bool GetOwnsObjects() { return FOwnsObjects; }
     void SetOwnsObjects(bool value) { FOwnsObjects = value; }
@@ -375,10 +395,6 @@ private:
 class TList : public TObjectList
 {
 public:
-    size_t IndexOf(TObject *value) const
-    {
-        return -1;
-    }
 };
 
 class TStrings : public TPersistent
@@ -389,6 +405,10 @@ public:
         return 0;
     }
     wstring GetString(int Index)
+    {
+        return L"";
+    }
+    wstring GetText()
     {
         return L"";
     }
