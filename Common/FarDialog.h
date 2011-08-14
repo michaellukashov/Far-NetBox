@@ -1069,18 +1069,19 @@ public:
 
     void SetItems(TStrings *value);
 
-    // __property bool NoAmpersand = { read = GetFlag, write = SetFlag, index = DIF_LISTNOAMPERSAND };
-    property<self, bool> NoAmpersand;
-    // __property bool AutoHighlight = { read = GetFlag, write = SetFlag, index = DIF_LISTAUTOHIGHLIGHT };
-    property<self, bool> AutoHighlight;
-    // __property bool NoBox = { read = GetFlag, write = SetFlag, index = DIF_LISTNOBOX };
-    property<self, bool> NoBox;
-    // __property bool WrapMode = { read = GetFlag, write = SetFlag, index = DIF_LISTWRAPMODE };
+    bool GetNoAmpersand() { return GetFlag(DIF_LISTNOAMPERSAND); }
+    void SetNoAmpersand(bool value) { SetFlag(DIF_LISTNOAMPERSAND); }
+    bool GetAutoHighlight() { return GetFlag(DIF_LISTAUTOHIGHLIGHT); }
+    void SetAutoHighlight(bool value) { SetFlag(DIF_LISTAUTOHIGHLIGHT); }
+    bool GetNoBox() { return GetFlag(DIF_LISTNOBOX); }
+    void SetNoBox(bool value) { SetFlag(DIF_LISTNOBOX); }
     property<self, bool> WrapMode;
-    // __property TFarList *Items = { read = FList, write = SetList };
-    property<self, TFarList *> Items;
-    // __property TFarListBoxAutoSelect AutoSelect = { read = FAutoSelect, write = SetAutoSelect };
-    property<self, TFarListBoxAutoSelect> AutoSelect;
+    bool GetWrapMode() { return GetFlag(DIF_LISTWRAPMODE); }
+    void SetWrapMode(bool value) { SetFlag(DIF_LISTWRAPMODE); }
+    TFarList *GetItems() { return FList; }
+    void SetList(TFarList *value);
+    TFarListBoxAutoSelect GetAutoSelect() { return FAutoSelect; }
+    void SetAutoSelect(TFarListBoxAutoSelect value);
 
 protected:
     virtual long ItemProc(int Msg, long Param);
@@ -1092,9 +1093,7 @@ private:
     TFarListBoxAutoSelect FAutoSelect;
     bool FDenyClose;
 
-    void SetAutoSelect(TFarListBoxAutoSelect value);
     void UpdateMouseReaction();
-    void SetList(TFarList *value);
 };
 //---------------------------------------------------------------------------
 class TFarComboBox : public TFarDialogItem
