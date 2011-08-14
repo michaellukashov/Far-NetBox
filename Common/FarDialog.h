@@ -764,6 +764,8 @@ public:
     virtual bool CanFocus();
     bool Focused();
     void SetFocus();
+    size_t GetItem() { return FItem; }
+    void SetItem(size_t value) { FItem = value; }
 
 protected:
     int FDefaultType;
@@ -782,7 +784,6 @@ protected:
     virtual void SetData(const wstring value);
     int GetType();
     void SetType(int value);
-    int GetItem() { return FItem; }
     int GetSelected();
     void SetSelected(int value);
     TFarDialogContainer *GetContainer() { return FContainer; }
