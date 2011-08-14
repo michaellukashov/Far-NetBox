@@ -321,7 +321,7 @@ struct TRect
         Right(right),
         Bottom(bottom)
     {}
-    operator == () (const TRect &other)
+    bool operator == (const TRect &other)
     {
         return
             Left == other.Left &&
@@ -329,7 +329,7 @@ struct TRect
             Right == other.Right &&
             Bottom == other.Bottom;
     }
-    operator != ()(const TRect &other)
+    bool operator != (const TRect &other)
     {
         return !(operator == (other));
     }
