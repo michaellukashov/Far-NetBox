@@ -1,5 +1,7 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
+#include <ShFolder.h>
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -7,7 +9,6 @@
 #include "Interface.h"
 // #include <StrUtils.hpp>
 // #include <math.h>
-#include <ShFolder.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
