@@ -1742,21 +1742,21 @@ wstring TFarButton::GetData()
 //---------------------------------------------------------------------------
 void TFarButton::SetDefault(bool value)
 {
-    if (Default != value)
+    if (GetDefault() != value)
     {
-        assert(!Dialog->Handle);
-        DialogItem.get()->DefaultButton = value;
+        assert(!GetDialog()->GetHandle());
+        GetDialogItem()->DefaultButton = value;
         if (value)
         {
-            if (Dialog->DefaultButton && (Dialog->DefaultButton != this))
+            if (GetDialog()->GetDefaultButton() && (GetDialog()->GetDefaultButton() != this))
             {
-                Dialog->DefaultButton->Default = false;
+                GetDialog()->GetDefaultButton()->SetDefault(false);
             }
-            Dialog->FDefaultButton = this;
+            GetDialog()->FDefaultButton = this;
         }
-        else if (Dialog->DefaultButton == this)
+        else if (GetDialog()->GetDefaultButton() == this)
         {
-            Dialog->FDefaultButton = NULL;
+            GetDialog()->FDefaultButton = NULL;
         }
         DialogChange();
     }
