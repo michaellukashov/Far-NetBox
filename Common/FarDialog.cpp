@@ -1067,9 +1067,9 @@ void TFarDialogItem::UpdateBounds()
 {
     ResetBounds();
 
-    if (Dialog.get()->Handle)
+    if (GetDialog()->GetHandle())
     {
-        TRect B = ActualBounds;
+        TRect B = GetActualBounds();
         SMALL_RECT Rect;
         Rect.Left = (short int)B.Left;
         Rect.Top = (short int)B.Top;
@@ -1095,7 +1095,7 @@ void TFarDialogItem::SetColor(int Index, char value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetFlags(unsigned int value)
 {
-    if (Flags != value)
+    if (GetFlags() != value)
     {
         assert(!Dialog->Handle);
         UpdateFlags(value);
@@ -1104,42 +1104,42 @@ void TFarDialogItem::SetFlags(unsigned int value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::UpdateFlags(unsigned int value)
 {
-    if (Flags != value)
+    if (GetFlags() != value)
     {
-        DialogItem.get()->Flags = value;
+        GetDialogItem()->Flags = value;
         DialogChange();
     }
 }
 //---------------------------------------------------------------------------
 TRect TFarDialogItem::GetActualBounds()
 {
-    return TRect(DialogItem.get()->X1, DialogItem.get()->Y1,
-                 DialogItem.get()->X2, DialogItem.get()->Y2);
+    return TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
+                 GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
 unsigned int TFarDialogItem::GetFlags()
 {
-    return DialogItem.get()->Flags;
+    return GetDialogItem()->Flags;
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetDataInternal(const wstring value)
 {
-    wstring FarData = value.substr(1, sizeof(DialogItem.get()->PtrData) - 1);
-    if (!Oem)
+    wstring FarData = value.substr(1, sizeof(GetDialogItem()->PtrData) - 1);
+    if (!GetOem())
     {
         StrToFar(FarData);
     }
-    if (Dialog->Handle)
+    if (GetDialog()->GetHandle())
     {
         SendMessage(DM_SETTEXTPTR, (int)FarData.c_str());
     }
-    strcpy(DialogItem.get()->Data, FarData.c_str());
+    wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
     DialogChange();
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetData(const wstring value)
 {
-    if (Data != value)
+    if (GetData() != value)
     {
         SetDataInternal(value);
     }
@@ -1147,18 +1147,18 @@ void TFarDialogItem::SetData(const wstring value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::UpdateData(const wstring value)
 {
-    wstring FarData = value.SubString(1, sizeof(DialogItem.get()->Data) - 1);
-    if (!Oem)
+    wstring FarData = value.substr(1, sizeof(GetDialogItem()->PtrData) - 1);
+    if (!GetOem())
     {
         StrToFar(FarData);
     }
-    strcpy(DialogItem.get()->Data, FarData.c_str());
+    wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
 }
 //---------------------------------------------------------------------------
 wstring TFarDialogItem::GetData()
 {
-    wstring Result = DialogItem.get()->Data;
-    if (!Oem)
+    wstring Result = GetDialogItem()->PtrData;
+    if (!GetOem())
     {
         StrFromFar(Result);
     }
@@ -1167,34 +1167,34 @@ wstring TFarDialogItem::GetData()
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetType(int value)
 {
-    if (Type != value)
+    if (GetType() != value)
     {
-        assert(!Dialog->Handle);
-        DialogItem.get()->Type = value;
+        assert(!GetDialog()->GetHandle());
+        GetDialogItem()->Type = value;
     }
 }
 //---------------------------------------------------------------------------
 int TFarDialogItem::GetType()
 {
-    return DialogItem.get()->Type;
+    return GetDialogItem()->Type;
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetAlterType(int Index, bool value)
 {
     if (GetAlterType(Index) != value)
     {
-        Type = value ? Index : FDefaultType;
+        SetType(value ? Index : FDefaultType);
     }
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetAlterType(int Index)
 {
-    return (Type == Index);
+    return (GetType() == Index);
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetFlag(int Index)
 {
-    bool Result = (Flags & (Index & 0xFFFFFF00UL)) != 0;
+    bool Result = (GetFlags() & (Index & 0xFFFFFF00UL)) != 0;
     if (Index & 0x000000FFUL)
     {
         Result = !Result;
@@ -1211,28 +1211,28 @@ void TFarDialogItem::SetFlag(int Index, bool value)
             value = !value;
         }
 
-        unsigned long F = Flags;
+        unsigned long F = GetFlags();
         unsigned long Flag = Index & 0xFFFFFF00UL;
         bool ToHandle = true;
 
         switch (Flag)
         {
         case DIF_DISABLE:
-            if (Dialog->Handle)
+            if (GetDialog()->GetHandle())
             {
                 SendMessage(DM_ENABLE, !value);
             }
             break;
 
         case DIF_HIDDEN:
-            if (Dialog->Handle)
+            if (GetDialog()->GetHandle())
             {
                 SendMessage(DM_SHOWITEM, !value);
             }
             break;
 
         case DIF_3STATE:
-            if (Dialog->Handle)
+            if (GetDialog()->GetHandle())
             {
                 SendMessage(DM_SET3STATE, value);
             }
@@ -1256,7 +1256,7 @@ void TFarDialogItem::SetFlag(int Index, bool value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetEnabledFollow(TFarDialogItem *value)
 {
-    if (EnabledFollow != value)
+    if (GetEnabledFollow() != value)
     {
         FEnabledFollow = value;
         Change();
