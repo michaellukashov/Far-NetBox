@@ -3,7 +3,7 @@
 
 #include "FarPlugin.h"
 #include "FarDialog.h"
-// #include <Common.h>
+#include "Common.h"
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TCustomFarPlugin *FarPlugin = NULL;
