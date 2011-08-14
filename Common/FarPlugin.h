@@ -419,6 +419,9 @@ public:
     void SetObject(int Index, TObject *obj)
     {
     }
+    void AddObject(wstring str, TObject *obj)
+    {
+    }
 
     TNotifyEvent GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
@@ -989,6 +992,11 @@ inline wchar_t *StrToFar(wstring &S)
     // CharToOem(S.c_str(), S.c_str());
     // return S.c_str();
     return L"";
+}
+//---------------------------------------------------------------------------
+bool Win32Check(bool RetVal)
+{
+    return true;
 }
 //---------------------------------------------------------------------------
 

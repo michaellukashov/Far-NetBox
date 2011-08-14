@@ -834,14 +834,14 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 // Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
                 // Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
                 wstring Buffer;
-                Buffer.resize(256);
+                Buffer.resize(512);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
                 SetCaption(Buffer);
                 FTimeoutButton = Button;
             }
             // Button->Caption = FORMAT(" %s ", (Caption));
             wstring Buffer;
-            Buffer.resize(256);
+            Buffer.resize(512);
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Caption.c_str(), int(Params->Timeout / 1000));
             Button->SetCaption(Buffer);
             Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
@@ -966,9 +966,9 @@ void TFarMessageDialog::Idle()
             // Caption += wstring::StringOfChar(' ',
                                                 // FTimeoutButton->Caption.Length() - Caption.Length());
             wstring Buffer;
-            Buffer.resize(256);
+            Buffer.resize(512);
             wstring Buffer2;
-            Buffer2.resize(256);
+            Buffer2.resize(512);
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer2.c_str(), FTimeoutButtonCaption.c_str(), FParams->TimeoutStr.c_str(), int((FParams->Timeout - Running) / 1000));
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Buffer2.c_str());
             wstring Caption = Buffer;
@@ -1329,7 +1329,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint *Size, TPoint *Cursor)
 //---------------------------------------------------------------------------
 HWND TCustomFarPlugin::GetConsoleWindow()
 {
-    char Title[512];
+    wchar_t Title[512];
     GetConsoleTitle(Title, sizeof(Title) - 1);
     StrFromFar(Title);
     HWND Result = FindWindow(NULL, Title);
@@ -1414,7 +1414,8 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
     Source.Bottom = static_cast<SHORT>(Size.y);
     Dest.X = 0;
     Dest.Y = 0;
-    Fill.char.AsciiChar = ' ';
+    Fill.Char.AsciiChar = ' ';
+    // Fill.Ñhar.UnicodeChar = ' ';
     Fill.Attributes = 7;
     ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
 }
@@ -1425,7 +1426,8 @@ void TCustomFarPlugin::ShowTerminalScreen()
     TPoint Size, Cursor;
     TerminalInfo(&Size, &Cursor);
 
-    wstring Blank = wstring::StringOfChar(' ', Size.x);
+    wstring Blank; // = wstring::StringOfChar(' ', Size.x);
+    Blank.resize(Size.x);
     for (int Y = 0; Y < Size.y; Y++)
     {
         Text(0, Y, 7/* LIGHTGRAY */, Blank);
@@ -1453,12 +1455,12 @@ struct TConsoleTitleParam
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ShowConsoleTitle(const wstring Title)
 {
-    char SaveTitle[512];
+    wchar_t SaveTitle[512];
     GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
     StrFromFar(SaveTitle);
     TConsoleTitleParam Param;
     Param.Progress = FCurrentProgress;
-    Param.Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
+    Param.Own = !FCurrentTitle.empty() && (FormatConsoleTitle() == SaveTitle);
     assert(sizeof(Param) == sizeof(TObject *));
     if (Param.Own)
     {
@@ -1476,8 +1478,8 @@ void TCustomFarPlugin::ShowConsoleTitle(const wstring Title)
 void TCustomFarPlugin::ClearConsoleTitle()
 {
     assert(FSavedTitles->Count > 0);
-    wstring Title = FSavedTitles->Strings[FSavedTitles->Count-1];
-    TObject *Object = FSavedTitles->Objects[FSavedTitles->Count-1];
+    wstring Title = FSavedTitles->GetString(FSavedTitles->GetCount()-1);
+    TObject *Object = (TObject *)FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
     TConsoleTitleParam Param = *(TConsoleTitleParam *)&Object;
     if (Param.Own)
     {
@@ -1487,11 +1489,11 @@ void TCustomFarPlugin::ClearConsoleTitle()
     }
     else
     {
-        FCurrentTitle = "";
+        FCurrentTitle = L"";
         FCurrentProgress = -1;
         SetConsoleTitle(StrToFar(Title));
     }
-    FSavedTitles->Delete(FSavedTitles->Count-1);
+    FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle(const wstring Title)
@@ -1513,7 +1515,11 @@ wstring TCustomFarPlugin::FormatConsoleTitle()
     wstring Title;
     if (FCurrentProgress >= 0)
     {
-        Title = FORMAT("{%d%%} %s", (FCurrentProgress, FCurrentTitle));
+        // Title = FORMAT("{%d%%} %s", (FCurrentProgress, FCurrentTitle));
+        wstring Buffer;
+        Buffer.resize(512);
+        GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L"{%d%%} %s", FCurrentProgress, FCurrentTitle);
+        Title = Buffer;
     }
     else
     {
@@ -1529,15 +1535,15 @@ void TCustomFarPlugin::UpdateConsoleTitle()
     SetConsoleTitle(StrToFar(Title));
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::SaveScreen(THandle &Screen)
+void TCustomFarPlugin::SaveScreen(HANDLE &Screen)
 {
     assert(!Screen);
     TFarEnvGuard Guard;
-    Screen = (THandle)FStartupInfo.SaveScreen(0, 0, -1, -1);
+    Screen = (HANDLE)FStartupInfo.SaveScreen(0, 0, -1, -1);
     assert(Screen);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::RestoreScreen(THandle &Screen)
+void TCustomFarPlugin::RestoreScreen(HANDLE &Screen)
 {
     assert(Screen);
     TFarEnvGuard Guard;
