@@ -270,6 +270,10 @@ private:
 };
 
 //---------------------------------------------------------------------------
+class TObject;
+typedef void (TObject::*TThreadMethod)();
+typedef void (TObject::*TNotifyEvent)(TObject *);
+//---------------------------------------------------------------------------
 class TObject
 {
 public:
@@ -335,7 +339,14 @@ struct TRect
     }
 };
 
-class TObjectList : public TObject
+class TPersistent : public TObject
+{
+public:
+    virtual void Assign(TPersistent *Source)
+    {}
+};
+
+class TObjectList : public TPersistent
 {
 public:
     size_t Count() const { return m_objects.size(); }
@@ -358,14 +369,6 @@ private:
     vector<TObject *> m_objects;
 };
 
-class TPersistent : public TObject
-{
-};
-
-class TStrings : public TPersistent
-{
-};
-
 class TList : public TObjectList
 {
 public:
@@ -375,11 +378,9 @@ public:
     }
 };
 
-class TStringList : public TObject
+class TStrings : public TPersistent
 {
 public:
-    virtual void Assign(TPersistent *Source)
-    {}
     virtual size_t GetCount()
     {
         return 0;
@@ -388,6 +389,22 @@ public:
     {
         return L"";
     }
+
+    TNotifyEvent GetOnChange() { return FOnChange; }
+    void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
+    bool Equals(TStrings *value)
+    {
+        return false;
+    }
+private:
+    TNotifyEvent FOnChange;
+};
+
+class TStringList : public TStrings
+{
+public:
+    virtual void Assign(TPersistent *Source)
+    {}
     void Put(int Index, wstring value)
     {
     }

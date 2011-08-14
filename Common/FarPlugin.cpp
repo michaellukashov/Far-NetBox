@@ -1,14 +1,13 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include "stdafx.h"
 
 #include "FarPlugin.h"
 #include "FarDialog.h"
-#include <Common.h>
+// #include <Common.h>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TCustomFarPlugin *FarPlugin = NULL;
-#define FAR_TITLE_SUFFIX " - Far"
+#define FAR_TITLE_SUFFIX L" - Far"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
