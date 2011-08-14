@@ -2419,9 +2419,10 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     wstring Description;
     wstring Owner;
 
+    void *UserData = (void *)PanelItem->UserData;
     GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
             LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
-            (void *)PanelItem->UserData, PanelItem->CustomColumnNumber);
+            UserData, PanelItem->CustomColumnNumber);
 
     FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
     FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
@@ -2583,7 +2584,7 @@ TObjectList *TFarPanelInfo::GetItems()
         FItems = new TObjectList();
         for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
         {
-            FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
+            // FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
         }
     }
     return FItems;
@@ -2919,7 +2920,7 @@ void FarWrapText(wstring Text, TStrings *Result, int MaxWidth)
             }
             else
             {
-                Result->Add("");
+                Result->Add(L"");
             }
         }
     }
@@ -2932,7 +2933,7 @@ void FarWrapText(wstring Text, TStrings *Result, int MaxWidth)
 //---------------------------------------------------------------------------
 wstring StrFromFar(const char *S)
 {
-    wstring Result = S;
-    OemToChar(Result.c_str(), Result.c_str());
+    wstring Result; // = S;
+    // OemToChar(Result.c_str(), Result.c_str());
     return Result;
 }

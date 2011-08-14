@@ -400,6 +400,9 @@ public:
 class TStrings : public TPersistent
 {
 public:
+    size_t Add(wstring value)
+    {
+    }
     virtual size_t GetCount()
     {
         return 0;
@@ -460,9 +463,6 @@ public:
     size_t IndexOf(const wchar_t *value)
     {
         return -1;
-    }
-    size_t Add(wstring value)
-    {
     }
     void Delete(size_t Index)
     {
