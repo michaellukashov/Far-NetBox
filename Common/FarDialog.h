@@ -685,6 +685,8 @@ public:
     int GetTop() { return FTop; }
     void SetTop(int value) { SetPosition(1, value); }
     size_t GetItemCount() const;
+    bool GetEnabled() { return FEnabled; }
+    void SetEnabled(bool value);
 
 protected:
     TFarDialogContainer(TFarDialog *ADialog);
@@ -777,7 +779,7 @@ protected:
     TFarDialogItem(TFarDialog *ADialog, int AType);
     ~TFarDialogItem();
 
-    FarDialogItem *GetDialogItem() const;
+    FarDialogItem *GetDialogItem();
     bool GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
     void SetCenterGroup(bool value) { SetFlag(DIF_CENTERGROUP, value); }
     virtual wstring GetData();
@@ -787,7 +789,7 @@ protected:
     int GetSelected();
     void SetSelected(int value);
     TFarDialogContainer *GetContainer() { return FContainer; }
-    void SetContainer(const TFarDialogContainer *&value);
+    void SetContainer(TFarDialogContainer *value);
     bool GetChecked() const;
     void SetChecked(bool value);
 
@@ -846,7 +848,6 @@ private:
     int GetCoordinate(int Index);
     TFarDialogItem *GetPrevItem();
     void UpdateFocused(bool value);
-    void SetEnabled(const bool &value);
     void UpdateEnabled();
 };
 //---------------------------------------------------------------------------

@@ -841,7 +841,7 @@ void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
         for (int i = 0; i < GetItemCount(); i++)
         {
             TFarDialogItem *I = GetItem(i);
-            if (I->Group == GetGroup())
+            if (I->GetGroup() == Group)
             {
                 // Callback(I, Arg);
                 ((*this).*Callback)(I, Arg);
@@ -861,12 +861,12 @@ void TFarDialog::ShowItem(TFarDialogItem *Item, void *Arg)
 //---------------------------------------------------------------------------
 void TFarDialog::EnableItem(TFarDialogItem *Item, void *Arg)
 {
-    Item->Enabled = *static_cast<bool *>(Arg);
+    Item->SetEnabled(*static_cast<bool *>(Arg));
 }
 //---------------------------------------------------------------------------
 void TFarDialog::SetItemFocused(TFarDialogItem * const &value)
 {
-    if (value != ItemFocused)
+    if (value != GetItemFocused())
     {
         assert(value);
         value->SetFocus();
@@ -885,7 +885,7 @@ void TFarDialog::LockChanges()
     if (FChangesLocked == 1)
     {
         assert(!FChangesPending);
-        if (Handle)
+        if (GetHandle())
         {
             SendMessage(DM_ENABLEREDRAW, false, 0);
         }
@@ -909,7 +909,7 @@ void TFarDialog::UnlockChanges()
         catch (...)
         {
         }
-        if (Handle)
+        if (GetHandle())
         {
             SendMessage(DM_ENABLEREDRAW, true, 0);
         }
@@ -932,8 +932,8 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog *ADialog) :
     FDialog = ADialog;
     FEnabled = true;
 
-    Dialog.get()->Add(this);
-    Dialog.get()->GetNextItemPosition(FLeft, FTop);
+    GetDialog()->Add(this);
+    GetDialog()->GetNextItemPosition(FLeft, FTop);
 }
 //---------------------------------------------------------------------------
 TFarDialogContainer::~TFarDialogContainer()
@@ -943,20 +943,20 @@ TFarDialogContainer::~TFarDialogContainer()
 //---------------------------------------------------------------------------
 wstring TFarDialogContainer::GetMsg(int MsgId)
 {
-    return Dialog.get()->GetMsg(MsgId);
+    return GetDialog()->GetMsg(MsgId);
 }
 //---------------------------------------------------------------------------
 void TFarDialogContainer::Add(TFarDialogItem *Item)
 {
     assert(FItems->IndexOf(Item) < 0);
-    Item->Container = this;
+    Item->SetContainer(this);
     FItems->Add(Item);
 }
 //---------------------------------------------------------------------------
 void TFarDialogContainer::Remove(TFarDialogItem *Item)
 {
     assert(FItems->IndexOf(Item) >= 0);
-    Item->Container = NULL;
+    Item->SetContainer(NULL);
     FItems->Remove(Item);
     if (FItems->Count() == 0)
     {
@@ -970,7 +970,7 @@ void TFarDialogContainer::SetPosition(int Index, int value)
     if (Position != value)
     {
         Position = value;
-        for (int Index = 0; Index < ItemCount; Index++)
+        for (int Index = 0; Index < GetItemCount(); Index++)
         {
             dynamic_cast<TFarDialogItem *>((*FItems)[Index])->DialogResized();
         }
@@ -983,10 +983,10 @@ void TFarDialogContainer::Change()
 //---------------------------------------------------------------------------
 void TFarDialogContainer::SetEnabled(bool value)
 {
-    if (Enabled != value)
+    if (FEnabled != value)
     {
         FEnabled = true;
-        for (int Index = 0; Index < ItemCount; Index++)
+        for (int Index = 0; Index < GetItemCount(); Index++)
         {
             dynamic_cast<TFarDialogItem *>((*FItems)[Index])->UpdateEnabled();
         }
@@ -1015,9 +1015,9 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
     FColors = 0;
     FColorMask = 0;
 
-    Dialog.get()->Add(this);
+    GetDialog()->Add(this);
 
-    DialogItem.get()->Type = AType;
+    GetDialogItem()->Type = AType;
 }
 //---------------------------------------------------------------------------
 TFarDialogItem::~TFarDialogItem()
@@ -1025,15 +1025,15 @@ TFarDialogItem::~TFarDialogItem()
     assert(!Dialog);
 }
 //---------------------------------------------------------------------------
-FarDialogItem *TFarDialogItem::GetDialogItem() const
+FarDialogItem *TFarDialogItem::GetDialogItem()
 {
     assert(Dialog);
-    return &Dialog.get()->FDialogItems[Item];
+    return &GetDialog()->FDialogItems[GetItem()];
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetBounds(TRect value)
 {
-    if (Bounds != value)
+    if (FBounds != value)
     {
         FBounds = value;
         UpdateBounds();
@@ -1052,14 +1052,14 @@ void TFarDialogItem::DialogResized()
 //---------------------------------------------------------------------------
 void TFarDialogItem::ResetBounds()
 {
-    TRect B = Bounds;
-    FarDialogItem *DItem = DialogItem;
+    TRect B = FBounds;
+    FarDialogItem *DItem = GetDialogItem();
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
-    (Container ? Container.get()->CB : 0 ) + B.BB : Dialog.get()->Size.get().DB + B.BB
-    BOUND(X1, Left, x, Left);
-    BOUND(Y1, Top, y, Top);
-    BOUND(X2, Right, x, Left);
-    BOUND(Y2, Bottom, y, Top);
+    (GetContainer() ? GetContainer()->CB : 0 ) + B.BB : GetDialog()->GetSize().DB + B.BB
+    BOUND(X1, Left, x, GetLeft());
+    BOUND(Y1, Top, y, GetTop());
+    BOUND(X2, Right, x, GetLeft());
+    BOUND(Y2, Bottom, y, GetTop());
 #undef BOUND
 }
 //---------------------------------------------------------------------------
