@@ -259,7 +259,7 @@ wstring TFarDialog::GetCaption() const
 //---------------------------------------------------------------------------
 size_t TFarDialog::GetItemCount() const
 {
-    return FItems->Count();
+    return FItems->GetCount();
 }
 //---------------------------------------------------------------------------
 TFarDialogItem *TFarDialog::GetItem(size_t Index)
@@ -286,11 +286,11 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
     R.Left = Left;
     R.Top = Top;
 
-    if (FDialogItemsCapacity == GetItems()->Count())
+    if (FDialogItemsCapacity == GetItems()->GetCount())
     {
         int DialogItemsDelta = 10;
         FarDialogItem *NewDialogItems;
-        NewDialogItems = new FarDialogItem[GetItems()->Count() + DialogItemsDelta];
+        NewDialogItems = new FarDialogItem[GetItems()->GetCount() + DialogItemsDelta];
         if (FDialogItems)
         {
             memcpy(NewDialogItems, FDialogItems, FDialogItemsCapacity * sizeof(FarDialogItem));
@@ -792,7 +792,7 @@ void TFarDialog::Change()
                 }
             }
 
-            for (int Index = 0; Index < NotifiedContainers->Count(); Index++)
+            for (int Index = 0; Index < NotifiedContainers->GetCount(); Index++)
             {
                 ((TFarDialogContainer *)(*NotifiedContainers)[Index])->Change();
             }
@@ -958,7 +958,7 @@ void TFarDialogContainer::Remove(TFarDialogItem *Item)
     assert(FItems->IndexOf(Item) >= 0);
     Item->SetContainer(NULL);
     FItems->Remove(Item);
-    if (FItems->Count() == 0)
+    if (FItems->GetCount() == 0)
     {
         delete this;
     }
@@ -995,7 +995,7 @@ void TFarDialogContainer::SetEnabled(bool value)
 //---------------------------------------------------------------------------
 size_t TFarDialogContainer::GetItemCount() const
 {
-    return FItems->Count();
+    return FItems->GetCount();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
