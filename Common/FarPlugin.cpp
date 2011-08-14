@@ -1931,7 +1931,7 @@ int TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem *PanelItem,
         int ItemsNumber, int OpMode)
 {
     ResetCachedInfo();
-    TList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+    TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     bool Result;
     try
     {
@@ -1992,7 +1992,7 @@ int TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem *PanelItem,
         int ItemsNumber, int OpMode)
 {
     ResetCachedInfo();
-    TList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+    TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     bool Result;
     try
     {
@@ -2010,7 +2010,7 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
         int ItemsNumber, int Move, wchar_t *DestPath, int OpMode)
 {
     ResetCachedInfo();
-    TList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+    TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     int Result;
     wstring DestPathStr = DestPath;
     try
@@ -2036,7 +2036,7 @@ int TCustomFarFileSystem::PutFiles(struct PluginPanelItem *PanelItem,
         int ItemsNumber, int Move, int OpMode)
 {
     ResetCachedInfo();
-    TList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
+    TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     int Result;
     try
     {
@@ -2104,15 +2104,15 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
     // FarControl(Another ? FCTL_REDRAWANOTHERPANEL : FCTL_REDRAWPANEL, NULL);
     if (Another)
-        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)void, PANEL_PASSIVE);
+        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)0, PANEL_PASSIVE);
     else
-        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)(void), PANEL_ACTIVE);
+        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)0, PANEL_ACTIVE);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::ClosePlugin()
 {
     FClosed = true;
-    FarControl(FCTL_CLOSEPLUGIN, "C:\\");
+    FarControl(FCTL_CLOSEPLUGIN, 0, (LONG_PTR)L"C:\\");
     // FAR WORKAROUND
     // Calling UpdatePanel() is necessary, otherwise plugin remains in panel,
     // but it causes FAR to fail
@@ -2137,7 +2137,7 @@ bool TCustomFarFileSystem::IsActiveFileSystem()
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::IsLeft()
 {
-    return (PanelInfo->Bounds.Left <= 0);
+    return (GetPanelInfo(0)->GetBounds().Left <= 0);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::IsRight()
@@ -2145,7 +2145,7 @@ bool TCustomFarFileSystem::IsRight()
     return !IsLeft();
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessHostFileEx(TList * /*PanelItems*/, int /*OpMode*/)
+bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
 {
     return false;
 }
@@ -2170,32 +2170,32 @@ int TCustomFarFileSystem::MakeDirectoryEx(wstring & /*Name*/, int /*OpMode*/)
     return -1;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::DeleteFilesEx(TList * /*PanelItems*/, int /*OpMode*/)
+bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /*PanelItems*/, int /*OpMode*/)
 {
     return false;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::GetFilesEx(TList * /*PanelItems*/, bool /*Move*/,
+int TCustomFarFileSystem::GetFilesEx(TObjectList * /*PanelItems*/, bool /*Move*/,
         wstring & /*DestPath*/, int /*OpMode*/)
 {
     return 0;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::PutFilesEx(TList * /*PanelItems*/,
+int TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
         bool /*Move*/, int /*OpMode*/)
 {
     return 0;
 }
 //---------------------------------------------------------------------------
-TList *TCustomFarFileSystem::CreatePanelItemList(
+TObjectList *TCustomFarFileSystem::CreatePanelItemList(
     struct PluginPanelItem *PanelItem, int ItemsNumber)
 {
-    TList *PanelItems = new TObjectList();
+    TObjectList *PanelItems = new TObjectList();
     try
     {
         for (int Index = 0; Index < ItemsNumber; Index++)
         {
-            PanelItems->Add(new TFarPanelItem(&PanelItem[Index]));
+            PanelItems->Add((TObject *)new TFarPanelItem(&PanelItem[Index]));
         }
     }
     catch(...)
@@ -2229,7 +2229,7 @@ void TFarPanelModes::SetPanelMode(int Mode, const wstring ColumnTypes,
         bool CaseConversion, const wstring StatusColumnTypes,
         const wstring StatusColumnWidths)
 {
-    int ColumnTypesCount = !ColumnTypes.IsEmpty() ? CommaCount(ColumnTypes)+1 : 0;
+    int ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
     assert(Mode >= 0 && Mode < LENOF(FPanelModes));
     assert(!ColumnTitles || (ColumnTitles->Count == ColumnTypesCount));
 
@@ -2238,11 +2238,11 @@ void TFarPanelModes::SetPanelMode(int Mode, const wstring ColumnTypes,
     FPanelModes[Mode].ColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnWidths));
     if (ColumnTitles)
     {
-        FPanelModes[Mode].ColumnTitles = new char *[ColumnTypesCount];
+        FPanelModes[Mode].ColumnTitles = new wchar_t *[ColumnTypesCount];
         for (int Index = 0; Index < ColumnTypesCount; Index++)
         {
             FPanelModes[Mode].ColumnTitles[Index] = StrToFar(
-                    TCustomFarPlugin::DuplicateStr(ColumnTitles->Strings[Index]));
+                TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));
         }
     }
     FPanelModes[Mode].FullScreen = FullScreen;

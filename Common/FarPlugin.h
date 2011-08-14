@@ -719,15 +719,15 @@ protected:
             int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
             wstring &ShortcutData) = 0;
     virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) = 0;
-    virtual bool ProcessHostFileEx(TList *PanelItems, int OpMode);
+    virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
     virtual bool SetDirectoryEx(const wstring Dir, int OpMode);
     virtual int MakeDirectoryEx(wstring &Name, int OpMode);
-    virtual bool DeleteFilesEx(TList *PanelItems, int OpMode);
-    virtual int GetFilesEx(TList *PanelItems, bool Move,
+    virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
+    virtual int GetFilesEx(TObjectList *PanelItems, bool Move,
         wstring &DestPath, int OpMode);
-    virtual int PutFilesEx(TList *PanelItems, bool Move, int OpMode);
+    virtual int PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
     bool FarControl(int Command, int Param1, LONG_PTR Param2);
@@ -757,7 +757,7 @@ private:
     static unsigned int FInstances;
 
     void ClearOpenPluginInfo(OpenPluginInfo &Info);
-    TList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
+    TObjectList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
                                           int ItemsNumber);
     TFarPanelInfo *GetPanelInfo(int Another);
 };
