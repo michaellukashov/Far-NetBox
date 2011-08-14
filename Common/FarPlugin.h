@@ -730,7 +730,7 @@ protected:
     virtual int PutFilesEx(TList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
-    bool FarControl(int Command, void *Param);
+    bool FarControl(int Command, int Param1, LONG_PTR Param2);
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePlugin();

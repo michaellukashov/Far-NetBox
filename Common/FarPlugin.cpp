@@ -2067,7 +2067,12 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
     if (FPanelInfo[Another] == NULL)
     {
         ::PanelInfo *Info = new ::PanelInfo;
-        if (!FarControl(Another == 0 ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO, Info))
+        bool res = false;
+        if (Another)
+            res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_PASSIVE);
+        else
+            res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_ACTIVE);
+        if (!res) // FarControl(Another == 0 ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO, Info))
         {
             memset(Info, 0, sizeof(*Info));
             assert(false);
@@ -2077,23 +2082,31 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
     return FPanelInfo[Another];
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::FarControl(int Command, void *Param)
+bool TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2)
 {
-    return FPlugin->FarControl(Command, Param, this);
+    return FPlugin->FarControl(Command, Param1, Param2, this);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 {
     unsigned int PrevInstances = FInstances;
     InvalidateOpenPluginInfo();
-    FarControl(Another ? FCTL_UPDATEANOTHERPANEL : FCTL_UPDATEPANEL,
-               (void *)(!ClearSelection));
+    // FarControl(Another ? FCTL_UPDATEANOTHERPANEL : FCTL_UPDATEPANEL,
+               // (void *)(!ClearSelection));
+    if (Another)
+        FPlugin->FarControl(FCTL_UPDATEPANEL, 0, (LONG_PTR)(!ClearSelection), PANEL_PASSIVE);
+    else
+        FPlugin->FarControl(FCTL_UPDATEPANEL, 0, (LONG_PTR)(!ClearSelection), PANEL_ACTIVE);
     return (FInstances >= PrevInstances);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-    FarControl(Another ? FCTL_REDRAWANOTHERPANEL : FCTL_REDRAWPANEL, NULL);
+    // FarControl(Another ? FCTL_REDRAWANOTHERPANEL : FCTL_REDRAWPANEL, NULL);
+    if (Another)
+        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)void, PANEL_PASSIVE);
+    else
+        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)(void), PANEL_ACTIVE);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::ClosePlugin()
