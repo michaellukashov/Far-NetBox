@@ -854,10 +854,10 @@ class TFarBox : public TFarDialogItem
 public:
     TFarBox(TFarDialog *ADialog);
 
-    // __property wstring Caption = { read = Data, write = Data };
-    property<TFarBox, wstring> Caption;
-    // __property bool Double = { read = GetAlterType, write = SetAlterType, index = DI_DOUBLEBOX };
-    property<TFarBox, bool> Double;
+    virtual wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual bool GetDouble() { return GetAlterType(DI_DOUBLEBOX); }
+    virtual void SetDouble(bool value) { SetAlterType(DI_DOUBLEBOX, value); }
 };
 //---------------------------------------------------------------------------
 typedef void (*TFarButtonClick)(TFarButton *Sender, bool &Close);
