@@ -702,10 +702,10 @@ void ProcessLocalDirectory(wstring DirName,
 
       } while (FindNext(SearchRec) == 0);
     }
-    __finally
+    catch (...)
     {
-      FindClose(SearchRec);
     }
+    FindClose(SearchRec);
   }
 }
 //---------------------------------------------------------------------------

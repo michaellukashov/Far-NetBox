@@ -180,13 +180,13 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
             }
             FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix));
         }
-        __finally
+        catch (...)
         {
-            delete DiskMenuStrings;
-            delete PluginMenuStrings;
-            delete PluginConfigStrings;
-            delete CommandPrefixes;
         }
+        delete DiskMenuStrings;
+        delete PluginMenuStrings;
+        delete PluginConfigStrings;
+        delete CommandPrefixes;
         memcpy(Info, &FPluginInfo, sizeof(FPluginInfo));
     }
     catch(exception &E)
@@ -359,10 +359,10 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
             }
             delete FileSystem;
         }
-        __finally
+        catch (...)
         {
-            FOpenedPlugins->Remove(FileSystem);
         }
+        FOpenedPlugins->Remove(FileSystem);
     }
     catch(exception &E)
     {
@@ -906,11 +906,11 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
 
         Size = S;
     }
-    __finally
+    catch (...)
     {
-        delete MessageLines;
-        delete MoreMessageLines;
     }
+    delete MessageLines;
+    delete MoreMessageLines;
 }
 //---------------------------------------------------------------------------
 void TFarMessageDialog::Idle()
@@ -1019,10 +1019,10 @@ int TCustomFarPlugin::DialogMessage(unsigned int Flags,
     {
         Result = Dialog->Execute(Params->CheckBox);
     }
-    __finally
+    catch (...)
     {
-        delete Dialog;
     }
+    delete Dialog;
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1080,11 +1080,11 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
                                       Flags | FMSG_LEFTALIGN, NULL, Items, MessageLines->Count,
                                       Buttons->Count);
     }
-    __finally
+    catch (...)
     {
-        delete Items;
-        delete MessageLines;
     }
+    delete Items;
+    delete MessageLines;
 
     return Result;
 }
@@ -1183,10 +1183,10 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const wstring Title,
             Result = ResultItem;
         }
     }
-    __finally
+    catch (...)
     {
-        delete[] MenuItems;
     }
+    delete[] MenuItems;
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1818,11 +1818,11 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
                 KeyBarTitles->FillOpenPluginInfo(&FOpenPluginInfo);
                 FOpenPluginInfo.ShortcutData = StrToFar(TCustomFarPlugin::DuplicateStr(ShortcutData));
             }
-            __finally
+            catch (...)
             {
-                delete PanelModes;
-                delete KeyBarTitles;
             }
+            delete PanelModes;
+            delete KeyBarTitles;
 
             FOpenPluginInfoValid = true;
         }
@@ -1857,10 +1857,10 @@ int TCustomFarFileSystem::GetFindData(
             *ItemsNumber = 0;
         }
     }
-    __finally
+    catch (...)
     {
-        delete PanelItems;
     }
+    delete PanelItems;
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1895,10 +1895,10 @@ int TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem *PanelItem,
     {
         Result = ProcessHostFileEx(PanelItems, OpMode);
     }
-    __finally
+    catch (...)
     {
-        delete PanelItems;
     }
+    delete PanelItems;
 
     return Result;
 }
@@ -1934,13 +1934,13 @@ int TCustomFarFileSystem::MakeDirectory(char *Name, int OpMode)
         StrFromFar(NameStr);
         Result = MakeDirectoryEx(NameStr, OpMode);
     }
-    __finally
+    catch (...)
     {
-        StrToFar(NameStr);
-        if (NameStr != Name)
-        {
-            strcpy(Name, NameStr.c_str());
-        }
+    }
+    StrToFar(NameStr);
+    if (NameStr != Name)
+    {
+        strcpy(Name, NameStr.c_str());
     }
     return Result;
 }
@@ -1955,10 +1955,10 @@ int TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem *PanelItem,
     {
         Result = DeleteFilesEx(PanelItems, OpMode);
     }
-    __finally
+    catch (...)
     {
-        delete PanelItems;
     }
+    delete PanelItems;
 
     return Result;
 }
@@ -1975,15 +1975,15 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
         StrFromFar(DestPathStr);
         Result = GetFilesEx(PanelItems, Move, DestPathStr, OpMode);
     }
-    __finally
+    catch (...)
     {
-        StrToFar(DestPathStr);
-        if (DestPathStr != DestPath)
-        {
-            strcpy(DestPath, DestPathStr.c_str());
-        }
-        delete PanelItems;
     }
+    StrToFar(DestPathStr);
+    if (DestPathStr != DestPath)
+    {
+        strcpy(DestPath, DestPathStr.c_str());
+    }
+    delete PanelItems;
 
     return Result;
 }
@@ -1998,10 +1998,10 @@ int TCustomFarFileSystem::PutFiles(struct PluginPanelItem *PanelItem,
     {
         Result = PutFilesEx(PanelItems, Move, OpMode);
     }
-    __finally
+    catch (...)
     {
-        delete PanelItems;
     }
+    delete PanelItems;
 
     return Result;
 }
@@ -2856,11 +2856,11 @@ void FarWrapText(wstring Text, TStrings *Result, int MaxWidth)
             }
         }
     }
-    __finally
+    catch (...)
     {
-        delete Lines;
-        delete WrappedLines;
     }
+    delete Lines;
+    delete WrappedLines;
 }
 //---------------------------------------------------------------------------
 wstring StrFromFar(const char *S)
