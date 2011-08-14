@@ -5,8 +5,7 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
+
 //---------------------------------------------------------------------------
 bool ExceptionMessage(exception * E, wstring & Message)
 {
@@ -19,7 +18,7 @@ bool ExceptionMessage(exception * E, wstring & Message)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
-  else if (E->Message.IsEmpty())
+  else if (E->Message.empty())
   {
     Result = false;
   }
@@ -30,9 +29,9 @@ bool ExceptionMessage(exception * E, wstring & Message)
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings * ExceptionToMoreMessages(exception * E)
+TStrings *ExceptionToMoreMessages(exception * E)
 {
-  TStrings * Result = NULL;
+  TStrings *Result = NULL;
   wstring Message;
   if (ExceptionMessage(E, Message))
   {
@@ -54,7 +53,7 @@ ExtException::ExtException(exception * E) :
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(exception* E, wstring Msg):
-  exception(Msg)
+  exception(::W2MB(Msg.c_str()))
 {
   AddMoreMessages(E);
 }
@@ -65,9 +64,9 @@ ExtException::ExtException(wstring Msg, exception* E) :
   // "copy exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
-  if (!Msg.IsEmpty())
+  if (!Msg.empty())
   {
-    if (Message.IsEmpty())
+    if (Message.empty())
     {
       Message = Msg;
     }
@@ -84,7 +83,7 @@ ExtException::ExtException(wstring Msg, exception* E) :
 //---------------------------------------------------------------------------
 ExtException::ExtException(wstring Msg, wstring MoreMessages,
     wstring HelpKeyword) :
-  exception(Msg),
+  exception(::W2MB(Msg.c_str())),
   FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.IsEmpty())
@@ -96,7 +95,7 @@ ExtException::ExtException(wstring Msg, wstring MoreMessages,
 //---------------------------------------------------------------------------
 ExtException::ExtException(wstring Msg, TStrings* MoreMessages,
   bool Own) :
-  exception(Msg)
+  exception(::W2MB(Msg.c_str()))
 {
   if (Own)
   {

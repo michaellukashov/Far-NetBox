@@ -28,9 +28,9 @@ public:
 
   // inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) { }
   // inline ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::exception(Ident, Args, Args_Size) { }
-  inline ExtException(const wstring Msg, int AHelpContext) : exception(Msg, AHelpContext) { }
+  inline ExtException(const wstring Msg, int AHelpContext) : exception(::W2MB(Msg.c_str()).c_str(), AHelpContext) { }
   // inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
-  inline ExtException(int Ident, int AHelpContext)/* overload */ : exception(Ident, AHelpContext) { }
+  // inline ExtException(int Ident, int AHelpContext)/* overload */ : exception(Ident, AHelpContext) { }
   // inline ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }
 
 protected:
@@ -46,16 +46,17 @@ private:
   { \
   public: \
     inline NAME(exception* E, wstring Msg) : BASE(E, Msg) { } \
-    inline NAME(exception* E, int Ident) : BASE(E, Ident) { } \
     inline virtual ~NAME(void) { } \
     inline NAME(const wstring Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
-    inline NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
   };
 
+    // inline NAME(exception* E, int Ident) : BASE(E, Ident) { } \
     // inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
     // inline NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
     // inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
     // inline NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
+    // inline NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
+
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(ESsh, ExtException);
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException);
