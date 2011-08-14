@@ -860,7 +860,7 @@ public:
     virtual void SetDouble(bool value) { SetAlterType(DI_DOUBLEBOX, value); }
 };
 //---------------------------------------------------------------------------
-typedef void (*TFarButtonClick)(TFarButton *Sender, bool &Close);
+typedef void (TObject::*TFarButtonClick)(TFarButton *Sender, bool &Close);
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem

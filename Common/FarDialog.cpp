@@ -459,7 +459,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                     (GetDefaultButton()->GetOnClick() != NULL))
             {
                 bool Close = (GetDefaultButton()->GetResult() != 0);
-                GetDefaultButton()->GetOnClick()(GetDefaultButton(), Close);
+                ((*this).*(GetDefaultButton()->GetOnClick()))(GetDefaultButton(), Close);
                 Handled = true;
                 if (!Close)
                 {
@@ -1791,7 +1791,7 @@ long TFarButton::ItemProc(int Msg, long Param)
             bool Close = (GetResult() != 0);
             if (FOnClick)
             {
-                ((*this).FOnClick)(this, Close);
+                ((*this).*FOnClick)(this, Close);
             }
             if (!Close)
             {
@@ -1814,7 +1814,7 @@ bool TFarButton::HotKey(char HotKey)
         bool Close = (GetResult() != 0);
         if (FOnClick)
         {
-            ((*this).FOnClick)(this, Close);
+            ((*this).*FOnClick)(this, Close);
         }
 
         if (Close)
