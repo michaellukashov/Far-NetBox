@@ -540,9 +540,6 @@ protected:
 };
 
 //---------------------------------------------------------------------------
-typedef void (TObject::*TThreadMethod)();
-typedef void (TObject::*TNotifyEvent)(TObject *);
-//---------------------------------------------------------------------------
 
 class TFarDialogContainer;
 class TFarDialogItem;
@@ -1049,6 +1046,7 @@ protected:
     void UpdateItem(int Index);
 
     FarList *GetListItems() { return FListItems; }
+    // void SetListItems(FarList *value) { FListItems = value; }
     TFarDialogItem *GetDialogItem() { return FDialogItem; }
 
 private:

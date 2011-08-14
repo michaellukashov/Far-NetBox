@@ -2322,7 +2322,7 @@ int TFarList::GetSelected()
 {
     int Result = GetSelectedInt(false);
 
-    if ((Result < 0) && (Count > 0))
+    if ((Result < 0) && (GetCount() > 0))
     {
         Result = 0;
     }
@@ -2340,7 +2340,7 @@ void TFarList::SetFlags(int Index, unsigned int value)
     if (FListItems->Items[Index].Flags != value)
     {
         FListItems->Items[Index].Flags = value;
-        if ((DialogItem != NULL) && DialogItem.get()->Dialog->Handle && (UpdateCount == 0))
+        if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle() && (GetUpdateCount() == 0))
         {
             UpdateItem(Index);
         }
@@ -2349,12 +2349,12 @@ void TFarList::SetFlags(int Index, unsigned int value)
 //---------------------------------------------------------------------------
 bool TFarList::GetFlag(int Index, int Flag)
 {
-    return FLAGSET(Flags[Index], static_cast<unsigned int>(Flag));
+    return FLAGSET(GetFlags(Index), static_cast<unsigned int>(Flag));
 }
 //---------------------------------------------------------------------------
 void TFarList::SetFlag(int Index, int Flag, bool value)
 {
-    Flags[Index] = (Flags[Index] & ~Flag) | FLAGMASK(value, Flag);
+    SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(value, Flag));
 }
 //---------------------------------------------------------------------------
 void TFarList::Init()
@@ -2364,17 +2364,17 @@ void TFarList::Init()
 //---------------------------------------------------------------------------
 long TFarList::ItemProc(int Msg, long Param)
 {
-    assert(DialogItem != NULL);
+    assert(GetDialogItem() != NULL);
     if (Msg == DN_LISTCHANGE)
     {
-        if ((Param < 0) || ((Param == 0) && (Count == 0)))
+        if ((Param < 0) || ((Param == 0) && (GetCount() == 0)))
         {
-            DialogItem.get()->UpdateData("");
+            GetDialogItem()->UpdateData(L"");
         }
         else
         {
-            assert(Param >= 0 && Param < Count);
-            DialogItem.get()->UpdateData(Strings[Param]);
+            assert(Param >= 0 && Param < GetCount());
+            GetDialogItem()->UpdateData(GetString(Param));
         }
     }
     return false;
@@ -2385,7 +2385,7 @@ TFarListBox::TFarListBox(TFarDialog *ADialog) :
     TFarDialogItem(ADialog, DI_LISTBOX)
 {
     FList = new TFarList(this);
-    DialogItem.get()->ListItems = FList->ListItems;
+    GetDialogItem()->ListItems = FList->GetListItems();
     FAutoSelect = asOnlyFocus;
     // FAR WORKAROUND
     FDenyClose = false;
@@ -2401,7 +2401,7 @@ long TFarListBox::ItemProc(int Msg, long Param)
     bool Result;
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
-    if ((Msg == DN_KEY) && (FarPlugin->FarVersion() >= FAR170) && Dialog->HotKey(Param))
+    if ((Msg == DN_KEY) && (GetDialog()->GetFarPlugin()->FarVersion() >= FAR170) && GetDialog()->HotKey(Param))
     {
         Result = true;
     }
@@ -2415,8 +2415,8 @@ long TFarListBox::ItemProc(int Msg, long Param)
     }
 
     // FAR WORKAROUND
-    if ((Msg == DN_MOUSECLICK) && (Items->Count > 0) &&
-            (FarPlugin->FarVersion() < FAR170ALPHA6))
+    if ((Msg == DN_MOUSECLICK) && (GetDialog()->GetItemCount() > 0) &&
+            (GetDialog()->GetFarPlugin()->FarVersion() < FAR170ALPHA6))
     {
         FDenyClose = true;
     }
@@ -2427,16 +2427,16 @@ long TFarListBox::ItemProc(int Msg, long Param)
 void TFarListBox::Init()
 {
     TFarDialogItem::Init();
-    Items->Init();
+    GetItems()->Init();
     UpdateMouseReaction();
 }
 //---------------------------------------------------------------------------
 void TFarListBox::SetAutoSelect(TFarListBoxAutoSelect value)
 {
-    if (AutoSelect != value)
+    if (GetAutoSelect() != value)
     {
         FAutoSelect = value;
-        if (Dialog->Handle)
+        if (GetDialog()->GetHandle())
         {
             UpdateMouseReaction();
         }
@@ -2445,7 +2445,7 @@ void TFarListBox::SetAutoSelect(TFarListBoxAutoSelect value)
 //---------------------------------------------------------------------------
 void TFarListBox::UpdateMouseReaction()
 {
-    SendMessage(DM_LISTSETMOUSEREACTION, AutoSelect);
+    SendMessage(DM_LISTSETMOUSEREACTION, GetAutoSelect());
 }
 //---------------------------------------------------------------------------
 void TFarListBox::SetItems(TStrings *value)
@@ -2478,8 +2478,8 @@ TFarComboBox::TFarComboBox(TFarDialog *ADialog) :
     TFarDialogItem(ADialog, DI_COMBOBOX)
 {
     FList = new TFarList(this);
-    DialogItem.get()->ListItems = FList->ListItems;
-    AutoSelect = false;
+    GetDialogItem()->ListItems = FList->GetListItems();
+    SetAutoSelect(false);
 }
 //---------------------------------------------------------------------------
 TFarComboBox::~TFarComboBox()
@@ -2489,14 +2489,16 @@ TFarComboBox::~TFarComboBox()
 //---------------------------------------------------------------------------
 void TFarComboBox::ResizeToFitContent()
 {
-    Width = FList->MaxLength;
+    SetWidth(FList->GetMaxLength());
 }
 //---------------------------------------------------------------------------
 long TFarComboBox::ItemProc(int Msg, long Param)
 {
     if (Msg == DN_EDITCHANGE)
     {
-        strcpy(DialogItem.get()->Data, ((FarDialogItem *)Param)->Data);
+        // strcpy(GetDialogItem()->PtrData, ((FarDialogItem *)Param)->Data);
+        wstring Data = ((FarDialogItem *)Param)->PtrData;
+        wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
     }
 
     if (FList->ItemProc(Msg, Param))
@@ -2512,7 +2514,7 @@ long TFarComboBox::ItemProc(int Msg, long Param)
 void TFarComboBox::Init()
 {
     TFarDialogItem::Init();
-    Items->Init();
+    GetItems()->Init();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2521,7 +2523,7 @@ TFarLister::TFarLister(TFarDialog *ADialog) :
     FItems(new TStringList()),
     FTopIndex(0)
 {
-    FItems->OnChange = ItemsChange;
+    FItems->SetOnChange((TNotifyEvent)&TFarLister::ItemsChange);
 }
 //---------------------------------------------------------------------------
 TFarLister::~TFarLister()
@@ -2532,7 +2534,7 @@ TFarLister::~TFarLister()
 void TFarLister::ItemsChange(TObject * /*Sender*/)
 {
     FTopIndex = 0;
-    if (Dialog->Handle)
+    if (GetDialog()->GetHandle())
     {
         Redraw();
     }
@@ -2540,12 +2542,12 @@ void TFarLister::ItemsChange(TObject * /*Sender*/)
 //---------------------------------------------------------------------------
 bool TFarLister::GetScrollBar()
 {
-    return (Items->Count > Height);
+    return (GetItems()->GetCount() > GetHeight());
 }
 //---------------------------------------------------------------------------
 void TFarLister::SetTopIndex(int value)
 {
-    if (TopIndex != value)
+    if (GetTopIndex() != value)
     {
         FTopIndex = value;
         Redraw();
@@ -2577,25 +2579,28 @@ long TFarLister::ItemProc(int Msg, long Param)
 
     if (Msg == DN_DRAWDLGITEM)
     {
-        bool AScrollBar = ScrollBar;
+        bool AScrollBar = GetScrollBar();
         int ScrollBarPos = 0;
-        if (Items->Count - Height > 0)
+        if (GetItems()->GetCount() - GetHeight() > 0)
         {
-            ScrollBarPos = float(Height - 3) * (float(FTopIndex) / (Items->Count - Height)) + 1;
+            ScrollBarPos = float(GetHeight() - 3) * (float(FTopIndex) / (GetItems()->GetCount() - GetHeight())) + 1;
         }
-        int DisplayWidth = Width - (AScrollBar ? 1 : 0);
-        int Color = Dialog->GetSystemColor(
-                        FLAGSET(Dialog->Flags, FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
+        int DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
+        int Color = GetDialog()->GetSystemColor(
+                        FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
         wstring Buf;
-        for (int Row = 0; Row < Height; Row++)
+        for (int Row = 0; Row < GetHeight(); Row++)
         {
-            int Index = TopIndex + Row;
-            Buf = " ";
-            if (Index < Items->Count)
+            int Index = GetTopIndex() + Row;
+            Buf = L" ";
+            if (Index < GetItems()->GetCount())
             {
-                Buf += Items->Strings[Index].SubString(1, DisplayWidth - 1);
+                wstring value = GetItems()->GetString(Index).substr(1, DisplayWidth - 1);
+                Buf += value;
             }
-            Buf += wstring::StringOfChar(' ', DisplayWidth - Buf.Length());
+            wstring value; // = wstring::StringOfChar(' ', DisplayWidth - Buf.size());
+            value.resize(DisplayWidth - Buf.size());
+            Buf += value;
             StrToFar(Buf);
             if (AScrollBar)
             {
@@ -2608,7 +2613,7 @@ long TFarLister::ItemProc(int Msg, long Param)
                 {
                     Buf += '\xB2';
                 }
-                else if (Row == Height - 1)
+                else if (Row == GetHeight() - 1)
                 {
                     Buf += '\x1F';
                 }
@@ -2624,7 +2629,7 @@ long TFarLister::ItemProc(int Msg, long Param)
     {
         Result = true;
 
-        int NewTopIndex = TopIndex;
+        int NewTopIndex = GetTopIndex();
         if ((Param == KEY_UP) || (Param == KEY_LEFT))
         {
             if (NewTopIndex > 0)
@@ -2639,7 +2644,7 @@ long TFarLister::ItemProc(int Msg, long Param)
         }
         else if ((Param == KEY_DOWN) || (Param == KEY_RIGHT))
         {
-            if (NewTopIndex < Items->Count - Height)
+            if (NewTopIndex < GetItems()->GetCount() - GetHeight())
             {
                 NewTopIndex++;
             }
@@ -2651,9 +2656,9 @@ long TFarLister::ItemProc(int Msg, long Param)
         }
         else if (Param == KEY_PGUP)
         {
-            if (NewTopIndex > Height - 1)
+            if (NewTopIndex > GetHeight() - 1)
             {
-                NewTopIndex -= Height - 1;
+                NewTopIndex -= GetHeight() - 1;
             }
             else
             {
@@ -2662,13 +2667,13 @@ long TFarLister::ItemProc(int Msg, long Param)
         }
         else if (Param == KEY_PGDN)
         {
-            if (NewTopIndex < Items->Count - Height - Height + 1)
+            if (NewTopIndex < GetItems()->GetCount() - GetHeight() - GetHeight() + 1)
             {
-                NewTopIndex += Height - 1;
+                NewTopIndex += GetHeight() - 1;
             }
             else
             {
-                NewTopIndex = Items->Count - Height;
+                NewTopIndex = GetItems()->GetCount() - GetHeight();
             }
         }
         else if (Param == KEY_HOME)
@@ -2677,14 +2682,14 @@ long TFarLister::ItemProc(int Msg, long Param)
         }
         else if (Param == KEY_END)
         {
-            NewTopIndex = Items->Count - Height;
+            NewTopIndex = GetItems()->GetCount() - GetHeight();
         }
         else
         {
             Result = TFarDialogItem::ItemProc(Msg, Param);
         }
 
-        TopIndex = NewTopIndex;
+        SetTopIndex(NewTopIndex);
     }
     else if (Msg == DN_MOUSECLICK)
     {
@@ -2697,40 +2702,40 @@ long TFarLister::ItemProc(int Msg, long Param)
         TPoint P = MouseClientPosition(Event);
 
         if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK) &&
-                (P.x < Width - 1))
+                (P.x < GetWidth() - 1))
         {
             Result = TFarDialogItem::ItemProc(Msg, Param);
         }
         else
         {
-            int NewTopIndex = TopIndex;
+            int NewTopIndex = GetTopIndex();
 
-            if (((P.x == Width - 1) && (P.y == 0)) ||
-                    ((P.x < Width - 1) && (P.y < Height / 2)))
+            if (((P.x == GetWidth() - 1) && (P.y == 0)) ||
+                    ((P.x < GetWidth() - 1) && (P.y < GetHeight() / 2)))
             {
                 if (NewTopIndex > 0)
                 {
                     NewTopIndex--;
                 }
             }
-            else if (((P.x == Width - 1) && (P.y == Height - 1)) ||
-                     ((P.x < Width - 1) && (P.y >= Height / 2)))
+            else if (((P.x == GetWidth() - 1) && (P.y == GetHeight() - 1)) ||
+                     ((P.x < GetWidth() - 1) && (P.y >= GetHeight() / 2)))
             {
-                if (NewTopIndex < Items->Count - Height)
+                if (NewTopIndex < GetItems()->GetCount() - GetHeight())
                 {
                     NewTopIndex++;
                 }
             }
             else
             {
-                assert(P.x == Width - 1);
-                assert((P.y > 0) && (P.y < Height - 1));
-                NewTopIndex = ceil(float(P.y - 1) / (Height - 2) * (Items->Count - Height + 1));
+                assert(P.x == GetWidth() - 1);
+                assert((P.y > 0) && (P.y < GetHeight() - 1));
+                NewTopIndex = ceil(float(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1));
             }
 
             Result = true;
 
-            TopIndex = NewTopIndex;
+            SetTopIndex(NewTopIndex);
         }
     }
     else
