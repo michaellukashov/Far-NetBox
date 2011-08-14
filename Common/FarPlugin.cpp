@@ -217,7 +217,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
 
 #undef FREESTRINGARRAY
 
-        delete[] Info.DiskMenuNumbers;
+        delete[] Info.DiskMenuStrings;
         delete[] Info.CommandPrefix;
     }
     memset(&Info, 0, sizeof(Info));
@@ -226,7 +226,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
 //---------------------------------------------------------------------------
 wchar_t *TCustomFarPlugin::DuplicateStr(const wstring Str, bool AllowEmpty)
 {
-    if (Str.IsEmpty() && !AllowEmpty)
+    if (Str.empty() && !AllowEmpty)
     {
         return NULL;
     }
@@ -246,21 +246,24 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
     PanelInfo Info;
     if (FarVersion() >= FAR170BETA5)
     {
-        FarControl(Another ? FCTL_GETANOTHERPANELSHORTINFO : FCTL_GETPANELSHORTINFO, &Info, Plugin);
+        // FarControl(Another ? FCTL_GETANOTHERPANELSHORTINFO : FCTL_GETPANELSHORTINFO, &Info, Plugin);
     }
     else
     {
-        FarControl(Another ? FCTL_GETANOTHERPANELINFO : FCTL_GETPANELINFO, &Info, Plugin);
+        if (Another)
+            FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_PASSIVE);
+        else
+            FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_ACTIVE);
     }
 
     if (Info.Plugin)
     {
-        TRect Bounds = Info.PanelRect;
+        RECT Bounds = Info.PanelRect;
         TCustomFarFileSystem *FileSystem;
         int Index = 0;
-        while (!Result && Index < FOpenedPlugins->Count)
+        while (!Result && Index < FOpenedPlugins->GetCount())
         {
-            FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->Items[Index]);
+            FileSystem = dynamic_cast<TCustomFarFileSystem *>(FOpenedPlugins->GetItems(Index));
             assert(FileSystem);
             if (FileSystem->PanelInfo->Bounds == Bounds)
             {
@@ -1582,7 +1585,7 @@ unsigned int TCustomFarPlugin::FarSystemSettings()
     return FFarSystemSettings;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::FarControl(int Command, void *Param, HANDLE Plugin)
+bool TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
 {
     wstring Buf;
     switch (Command)
@@ -1604,7 +1607,7 @@ bool TCustomFarPlugin::FarControl(int Command, void *Param, HANDLE Plugin)
     }
 
     TFarEnvGuard Guard;
-    return FStartupInfo.Control(Plugin, Command, Param);
+    return FStartupInfo.Control(Plugin, Command, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::FarAdvControl(int Command, void *Param)

@@ -349,7 +349,7 @@ public:
 class TObjectList : public TPersistent
 {
 public:
-    size_t Count() const { return m_objects.size(); }
+    size_t GetCount() const { return m_objects.size(); }
 
     TObject * operator [](size_t Index) const
     {
@@ -550,7 +550,7 @@ public:
 
     int FarAdvControl(int Command, void *Param = NULL);
     int FarAdvControl(int Command, int Param);
-    bool FarControl(int Command, void *Param, HANDLE Plugin = INVALID_HANDLE_VALUE);
+    bool FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(int Command, void *Param);
     unsigned int FarSystemSettings();
     void Text(int X, int Y, int Color, wstring Str);
