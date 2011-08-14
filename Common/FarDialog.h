@@ -684,8 +684,6 @@ public:
     void SetLeft(int value) { SetPosition(0, value); }
     int GetTop() { return FTop; }
     void SetTop(int value) { SetPosition(1, value); }
-    bool GetEnabled() { return FEnabled; }
-    void SetEnabled(bool value);
     size_t GetItemCount() const;
 
 protected:
@@ -719,51 +717,47 @@ class TFarDialogItem : public TObject
 public:
     TRect GetBounds() const { return FBounds; }
     void SetBounds(TRect value);
-    // __property TRect ActualBounds = { read = GetActualBounds };
-    property<TFarDialogItem, TRect> ActualBounds;
-    // __property int Left = { read = GetCoordinate, write = SetCoordinate, index = 0 };
-    property<TFarDialogItem, int> Left;
-    // __property int Top = { read = GetCoordinate, write = SetCoordinate, index = 1 };
-    property<TFarDialogItem, int> Top;
-    // __property int Right = { read = GetCoordinate, write = SetCoordinate, index = 2 };
-    property<TFarDialogItem, int> Right;
-    // __property int Bottom = { read = GetCoordinate, write = SetCoordinate, index = 3 };
-    property<TFarDialogItem, int> Bottom;
-    // __property int Width = { read = GetWidth, write = SetWidth };
-    property<TFarDialogItem, int> Width;
-    // __property int Height = { read = GetHeight, write = SetHeight };
-    property<TFarDialogItem, int> Height;
-    // __property unsigned int Flags = { read = GetFlags, write = SetFlags };
-    property<TFarDialogItem, unsigned int> Flags;
-    // __property bool Enabled = { read = FEnabled, write = SetEnabled };
-    property<TFarDialogItem, bool> Enabled;
-    // __property bool IsEnabled = { read = FIsEnabled };
-    property<TFarDialogItem, bool> IsEnabled;
-    // __property TFarDialogItem *EnabledFollow = { read = FEnabledFollow, write = SetEnabledFollow };
-    property<TFarDialogItem, TFarDialogItem *> EnabledFollow;
-    // __property TFarDialogItem *EnabledDependency = { read = FEnabledDependency, write = SetEnabledDependency };
-    property<TFarDialogItem, TFarDialogItem *> EnabledDependency;
-    // __property TFarDialogItem *EnabledDependencyNegative = { read = FEnabledDependencyNegative, write = SetEnabledDependencyNegative };
-    property<TFarDialogItem, TFarDialogItem *> EnabledDependencyNegative;
-    // __property bool IsEmpty = { read = GetIsEmpty };
-    property<TFarDialogItem, bool> IsEmpty;
-    // __property int Group = { read = FGroup, write = FGroup };
-    property<TFarDialogItem, int> Group;
-    // __property bool Visible = { read = GetFlag, write = SetFlag, index = DIF_HIDDEN | DIF_INVERSE };
-    property<TFarDialogItem, bool> Visible;
-    // __property bool TabStop = { read = GetFlag, write = SetFlag, index = DIF_NOFOCUS | DIF_INVERSE };
-    property<TFarDialogItem, bool> TabStop;
-    // __property bool Oem = { read = FOem, write = FOem };
-    property<TFarDialogItem, bool> Oem;
-    // __property int Tag = { read = FTag, write = FTag };
-    property<TFarDialogItem, int> Tag;
-    // __property TFarDialog *Dialog = { read = FDialog };
-    property<TFarDialogItem, TFarDialog *> Dialog;
+    TRect GetActualBounds();
+    int GetLeft() { return GetCoordinate(0); }
+    void SetLeft(int value) { SetCoordinate(0, value); }
+    int GetTop() { return GetCoordinate(1); }
+    void SetTop(int value) { SetCoordinate(1, value); }
+    int GetRight() { return GetCoordinate(2); }
+    void SetRight(int value) { SetCoordinate(2, value); }
+    int GetBottom() { return GetCoordinate(3); }
+    void SetBottom(int value) { SetCoordinate(3, value); }
+    int GetWidth() const;
+    void SetWidth(int value);
+    int GetHeight() const;
+    void SetHeight(const int &value);
+    unsigned int GetFlags();
+    void SetFlags(unsigned int value);
+    bool GetEnabled() { return FEnabled; }
+    void SetEnabled(bool value);
+    bool GetIsEnabled() { return FIsEnabled; }
+    TFarDialogItem *GetEnabledFollow() { return FEnabledFollow; }
+    void SetEnabledFollow(TFarDialogItem *value);
+    TFarDialogItem *GetEnabledDependency() { return FEnabledDependency; }
+    void SetEnabledDependency(TFarDialogItem *value);
+    TFarDialogItem *GetEnabledDependencyNegative() { return FEnabledDependencyNegative; }
+    void SetEnabledDependencyNegative(TFarDialogItem *value);
+    virtual bool GetIsEmpty();
+    int GetGroup() { return FGroup; }
+    void SetGroup(int value) { FGroup = value; }
+    bool GetVisible() { return GetFlag(DIF_HIDDEN | DIF_INVERSE); }
+    void SetVisible(bool value) { SetFlag(DIF_HIDDEN | DIF_INVERSE, value); }
+    bool GetTabStop() { return GetFlag(DIF_NOFOCUS | DIF_INVERSE); }
+    void SetTabStop(bool value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, value); }
+    bool GetOem() { return FOem; }
+    void SetOem(bool value) { FOem = value; }
+    int GetTag() { return FTag; }
+    void SetTag(int value) { FTag = value; }
+    TFarDialog *GetDialog() { return FDialog; }
 
-    // __property TNotifyEvent OnExit = { read = FOnExit, write = FOnExit };
-    property<TFarDialogItem, TNotifyEvent> OnExit;
-    // __property TFarMouseClickEvent OnMouseClick = { read = FOnMouseClick, write = FOnMouseClick };
-    property<TFarDialogItem, TFarMouseClickEvent> OnMouseClick;
+    TNotifyEvent GetOnExit() { return FOnExit; }
+    void SetOnExit(TNotifyEvent value) { FOnExit = value; }
+    TFarMouseClickEvent GetOnMouseClick() { return FOnMouseClick; }
+    void SetOnMouseClick(TFarMouseClickEvent value) { FOnMouseClick = value; }
 
     void Move(int DeltaX, int DeltaY);
     void MoveAt(int X, int Y);
@@ -781,22 +775,20 @@ protected:
     TFarDialogItem(TFarDialog *ADialog, int AType);
     ~TFarDialogItem();
 
-    // __property FarDialogItem *DialogItem = { read = GetDialogItem };
-    property<TFarDialogItem, FarDialogItem *> DialogItem;
-    // __property bool CenterGroup = { read = GetFlag, write = SetFlag, index = DIF_CENTERGROUP };
-    property<TFarDialogItem, bool> CenterGroup;
-    // __property wstring Data = { read = GetData, write = SetData };
-    property<TFarDialogItem, wstring> Data;
-    // __property int Type = { read = GetType, write = SetType };
-    property<TFarDialogItem, int> Type;
-    // __property int Item = { read = FItem };
-    property<TFarDialogItem, int> Item;
-    // __property int Selected = { read = GetSelected, write = SetSelected };
-    property<TFarDialogItem, int> Selected;
-    // __property TFarDialogContainer *Container = { read = FContainer, write = SetContainer };
-    property<TFarDialogItem, TFarDialogContainer *> Container;
-    // __property bool Checked = { read = GetChecked, write = SetChecked };
-    property<TFarDialogItem, bool> Checked;
+    FarDialogItem *GetDialogItem() const;
+    bool GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
+    void SetCenterGroup(bool value) { SetFlag(DIF_CENTERGROUP, value); }
+    virtual wstring GetData();
+    virtual void SetData(const wstring value);
+    int GetType();
+    void SetType(int value);
+    int GetItem() { return FItem; }
+    int GetSelected();
+    void SetSelected(int value);
+    TFarDialogContainer *GetContainer() { return FContainer; }
+    void SetContainer(const TFarDialogContainer *&value);
+    bool GetChecked() const;
+    void SetChecked(bool value);
 
     virtual void Detach();
     void DialogResized();
@@ -821,10 +813,7 @@ protected:
     void Redraw();
     virtual bool HotKey(char HotKey);
 
-    virtual bool GetIsEmpty();
     virtual void SetDataInternal(const wstring value);
-    virtual void SetData(const wstring value);
-    virtual wstring GetData();
     void UpdateData(const wstring value);
     void UpdateSelected(int value);
 
@@ -851,31 +840,13 @@ private:
     unsigned long FColorMask;
     bool FOem;
 
-    void SetFlags(unsigned int value);
     void UpdateFlags(unsigned int value);
-    TRect GetActualBounds();
-    unsigned int GetFlags();
-    void SetType(int value);
-    int GetType();
-    void SetEnabledFollow(TFarDialogItem *value);
-    void SetEnabledDependency(TFarDialogItem *value);
-    void SetEnabledDependencyNegative(TFarDialogItem *value);
-    void SetSelected(int value);
-    int GetSelected();
     void SetCoordinate(int Index, int value);
     int GetCoordinate(int Index);
-    void SetWidth(int value);
-    int GetWidth() const;
-    void SetHeight(const int &value);
-    int GetHeight() const;
     TFarDialogItem *GetPrevItem();
     void UpdateFocused(bool value);
-    void SetContainer(const TFarDialogContainer *&value);
     void SetEnabled(const bool &value);
     void UpdateEnabled();
-    void SetChecked(const bool &value);
-    bool GetChecked() const;
-    FarDialogItem *GetDialogItem() const;
 };
 //---------------------------------------------------------------------------
 class TFarBox : public TFarDialogItem
