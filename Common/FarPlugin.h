@@ -45,8 +45,6 @@
 
 #pragma warning(pop)
 
-#include "property.h"
-
 using namespace std;
 
 #define NETBOX_DEBUG
