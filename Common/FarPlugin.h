@@ -412,6 +412,9 @@ public:
     {
         return L"";
     }
+    void SetText(wstring S)
+    {
+    }
     void *GetObject(int Index)
     {
         return NULL;

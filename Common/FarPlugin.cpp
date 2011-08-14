@@ -2762,14 +2762,14 @@ void TFarMenuItems::AddSeparator(bool Visible)
 //---------------------------------------------------------------------------
 void TFarMenuItems::SetItemFocused(int value)
 {
-    if (ItemFocused != value)
+    if (GetItemFocused() != value)
     {
-        if (ItemFocused >= 0)
+        if (GetItemFocused() >= 0)
         {
-            SetFlag(ItemFocused, MIF_SELECTED, false);
+            SetFlag(GetItemFocused(), MIF_SELECTED, false);
         }
         FItemFocused = value;
-        SetFlag(ItemFocused, MIF_SELECTED, true);
+        SetFlag(GetItemFocused(), MIF_SELECTED, true);
     }
 }
 //---------------------------------------------------------------------------
@@ -2777,7 +2777,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
 {
     if (GetFlag(Index, Flag) != Value)
     {
-        int F = int(Objects[Index]);
+        int F = int(GetObject(Index));
         if (Value)
         {
             F |= Flag;
@@ -2786,13 +2786,13 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
         {
             F &= ~Flag;
         }
-        Objects[Index] = (TObject *)F;
+        SetObject(Index, (TObject *)F);
     }
 }
 //---------------------------------------------------------------------------
 bool TFarMenuItems::GetFlag(int Index, int Flag)
 {
-    return int(Objects[Index]) & Flag;
+    return int(GetObject(Index)) & Flag;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2813,7 +2813,7 @@ int TFarEditorInfo::GetEditorID()
 //---------------------------------------------------------------------------
 wstring TFarEditorInfo::GetFileName()
 {
-    wstring Result = FEditorInfo->FileName;
+    wstring Result = L""; // FEditorInfo->FileName;
     return StrFromFar(Result);
 };
 //---------------------------------------------------------------------------
@@ -2822,7 +2822,7 @@ TFarEnvGuard::TFarEnvGuard()
 {
     assert(AreFileApisANSI());
     assert(FarPlugin != NULL);
-    if (!FarPlugin->ANSIApis)
+    if (!FarPlugin->GetANSIApis())
     {
         SetFileApisToOEM();
     }
@@ -2831,7 +2831,7 @@ TFarEnvGuard::TFarEnvGuard()
 TFarEnvGuard::~TFarEnvGuard()
 {
     assert(FarPlugin != NULL);
-    if (!FarPlugin->ANSIApis)
+    if (!FarPlugin->GetANSIApis())
     {
         assert(!AreFileApisANSI());
         SetFileApisToANSI();
@@ -2878,41 +2878,43 @@ void FarWrapText(wstring Text, TStrings *Result, int MaxWidth)
     try
     {
         Lines = new TStringList();
-        Lines->Text = Text;
+        Lines->SetText(Text);
         WrappedLines = new TStringList();
-        for (int Index = 0; Index < Lines->Count; Index++)
+        for (int Index = 0; Index < Lines->GetCount(); Index++)
         {
-            wstring WrappedLine = Lines->Strings[Index];
-            if (!WrappedLine.IsEmpty())
+            wstring WrappedLine = Lines->GetString(Index);
+            if (!WrappedLine.empty())
             {
-                WrappedLine = StringReplace(WrappedLine, "'", "\3", TReplaceFlags() << rfReplaceAll);
-                WrappedLine = StringReplace(WrappedLine, "\"", "\4", TReplaceFlags() << rfReplaceAll);
-                WrappedLine = WrapText(WrappedLine, MaxWidth);
-                WrappedLine = StringReplace(WrappedLine, "\3", "'", TReplaceFlags() << rfReplaceAll);
-                WrappedLine = StringReplace(WrappedLine, "\4", "\"", TReplaceFlags() << rfReplaceAll);
-                WrappedLines->Text = WrappedLine;
-                for (int WrappedIndex = 0; WrappedIndex < WrappedLines->Count; WrappedIndex++)
+                WrappedLine = ReplaceChar(WrappedLine, '\'', '\3');
+                WrappedLine = ReplaceChar(WrappedLine, '\"', '\4');
+                // WrappedLine = WrapText(WrappedLine, MaxWidth);
+                WrappedLine = ReplaceChar(WrappedLine, '\3', '\'');
+                WrappedLine = ReplaceChar(WrappedLine, '\4', '\"');
+                WrappedLines->SetText(WrappedLine);
+                for (int WrappedIndex = 0; WrappedIndex < WrappedLines->GetCount(); WrappedIndex++)
                 {
-                    wstring FullLine = WrappedLines->Strings[WrappedIndex];
+                    wstring FullLine = WrappedLines->GetString(WrappedIndex);
                     do
                     {
                         // WrapText does not wrap when not possible, enforce it
                         // (it also does not wrap when the line is longer than maximum only
                         // because of trailing dot or similar)
-                        wstring Line = FullLine.SubString(1, MaxWidth);
-                        FullLine.Delete(1, MaxWidth);
+                        wstring Line = FullLine.substr(1, MaxWidth);
+                        FullLine.erase(1, MaxWidth);
 
                         int P;
-                        while ((P = Line.Pos("\t")) > 0)
+                        while ((P = Line.find_first_of(L"\t")) > 0)
                         {
-                            Line.Delete(P, 1);
-                            Line.Insert(wstring::StringOfChar(' ',
-                                                                 ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
-                                        P);
+                            Line.erase(P, 1);
+                            // wstring::StringOfChar(' ',
+                            // ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1)
+                            wstring s;
+                            s.resize(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
+                            Line.append(s.c_str(), P);
                         }
                         Result->Add(Line);
                     }
-                    while (!FullLine.IsEmpty());
+                    while (!FullLine.empty());
                 }
             }
             else
