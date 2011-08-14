@@ -2234,6 +2234,7 @@ void TFarPanelModes::SetPanelMode(int Mode, const wstring ColumnTypes,
     assert(!ColumnTitles || (ColumnTitles->Count == ColumnTypesCount));
 
     ClearPanelMode(FPanelModes[Mode]);
+    wchar_t *Titles[PANEL_MODES_COUNT];
     FPanelModes[Mode].ColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnTypes));
     FPanelModes[Mode].ColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnWidths));
     if (ColumnTitles)
@@ -2241,9 +2242,12 @@ void TFarPanelModes::SetPanelMode(int Mode, const wstring ColumnTypes,
         FPanelModes[Mode].ColumnTitles = new wchar_t *[ColumnTypesCount];
         for (int Index = 0; Index < ColumnTypesCount; Index++)
         {
-            FPanelModes[Mode].ColumnTitles[Index] = StrToFar(
+            // FPanelModes[Mode].ColumnTitles[Index] = StrToFar(
+                // TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));
+            Titles[Index] = StrToFar(
                 TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));
         }
+        FPanelModes[Mode].ColumnTitles = Titles;
     }
     FPanelModes[Mode].FullScreen = FullScreen;
     FPanelModes[Mode].DetailedStatus = DetailedStatus;
