@@ -1,15 +1,13 @@
 //---------------------------------------------------------------------------
 #define NO_WIN32_LEAN_AND_MEAN
-#include <vcl.h>
-#pragma hdrstop
 
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
-#include <StrUtils.hpp>
-#include <math.h>
-#include <shfolder.h>
+// #include <StrUtils.hpp>
+// #include <math.h>
+#include <ShFolder.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------

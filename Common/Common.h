@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef CommonH
-#define CommonH
+#pragma once
+
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(NULL, "")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
@@ -177,4 +177,3 @@ struct TPasLibModule
 #endif
 #define USEDPARAM(p) ((p) == (p))
 //---------------------------------------------------------------------------
-#endif
