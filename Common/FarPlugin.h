@@ -358,7 +358,11 @@ private:
     vector<TObject *> m_objects;
 };
 
-class TStrings : public TObject
+class TPersistent : public TObject
+{
+};
+
+class TStrings : public TPersistent
 {
 };
 
@@ -371,15 +375,36 @@ public:
     }
 };
 
-class TStringList
+class TStringList : public TObject
 {
+public:
+    virtual void Assign(TPersistent *Source)
+    {}
+    virtual size_t GetCount()
+    {
+        return 0;
+    }
+    wstring GetString(int Index)
+    {
+        return L"";
+    }
+    void Put(int Index, wstring value)
+    {
+    }
+    int GetUpdateCount()
+    {
+        return 0;
+    }
+    void Changed()
+    {
+    }
+    size_t IndexOf(const wchar_t *value)
+    {
+        return -1;
+    }
 };
 
 class TDateTime
-{
-};
-
-class TPersistent
 {
 };
 
@@ -534,7 +559,7 @@ public:
     HWND GetHandle() const { return FHandle; };
     bool GetANSIApis() const { return FANSIApis; };
     unsigned int GetFarThread() const { return FFarThread; };
-
+    FarStandardFunctions GetFarStandardFunctions() { return FFarStandardFunctions; }
 protected:
     PluginStartupInfo FStartupInfo;
     FarStandardFunctions FFarStandardFunctions;
@@ -904,3 +929,6 @@ inline wchar_t *StrToFar(wstring &S)
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
+#define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
