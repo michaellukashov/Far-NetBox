@@ -1,5 +1,4 @@
-#ifndef TextsCoreH
-#define TextsCoreH
+#pragma once
 
 #define UNKNOWN_KEY2    1
 #define DIFFERENT_KEY3  2
@@ -381,4 +380,3 @@
 #define OPENSSL_VERSION         611
 #define OPENSSL_URL             612
 
-#endif // TextsCore
