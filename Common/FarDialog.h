@@ -879,7 +879,7 @@ public:
     bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
     void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
     virtual TFarButtonClick GetOnClick() { return FOnClick; }
-    virtual void SetOnClick(TFarButtonClick value) { FOnClick= value; }
+    virtual void SetOnClick(TFarButtonClick value) { FOnClick = value; }
 
 protected:
     virtual void SetDataInternal(const wstring value);
@@ -901,14 +901,16 @@ class TFarCheckBox : public TFarDialogItem
 public:
     TFarCheckBox(TFarDialog *ADialog);
 
-    // __property wstring Caption = { read = Data, write = Data };
-    property<TFarCheckBox, wstring> Caption;
-    // __property bool AllowGrayed = { read = GetFlag, write = SetFlag, index = DIF_3STATE };
-    property<TFarCheckBox, bool> AllowGrayed;
-    // __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
-    property<TFarCheckBox, TFarAllowChange> OnAllowChange;
-    // __property Checked;
-    // __property Selected;
+    virtual wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(wstring value) { SetData(value); }
+    bool GetAllowGrayed() { return GetFlag(DIF_3STATE); }
+    void SetAllowGrayed(bool value) { SetFlag(DIF_3STATE, value); }
+    virtual TFarAllowChange GetOnAllowChange() { return FOnAllowChange; }
+    virtual void SetOnAllowChange(TFarAllowChange value) { FOnAllowChange = value; }
+    bool GetChecked() { return TFarDialogItem::GetChecked(); }
+    void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
+    bool GetSelected() { return TFarDialogItem::GetSelected(); }
+    void SetSelected(bool value) { TFarDialogItem::SetSelected(value); }
 
 protected:
     TFarAllowChange FOnAllowChange;
