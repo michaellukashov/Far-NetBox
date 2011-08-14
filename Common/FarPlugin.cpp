@@ -162,21 +162,21 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
 
 #undef COMPOSESTRINGARRAY(NAME)
 
-            if (DiskMenuStrings->Count)
+            if (DiskMenuStrings->GetCount())
             {
-                int *NumberArray = new int[DiskMenuStrings->Count];
-                FPluginInfo.DiskMenuNumbers = NumberArray;
-                for (int Index = 0; Index < DiskMenuStrings->Count; Index++)
+                wchar_t *NumberArray = new wchar_t[DiskMenuStrings->GetCount()];
+                FPluginInfo.DiskMenuStrings = &NumberArray;
+                for (int Index = 0; Index < DiskMenuStrings->GetCount(); Index++)
                 {
-                    NumberArray[Index] = (int)DiskMenuStrings->Objects[Index];
+                    NumberArray[Index] = (int)DiskMenuStrings->GetObjects(Index);
                 }
             }
 
             wstring CommandPrefix;
-            for (int Index = 0; Index < CommandPrefixes->Count; Index++)
+            for (int Index = 0; Index < CommandPrefixes->GetCount(); Index++)
             {
-                CommandPrefix = CommandPrefix + (CommandPrefix.IsEmpty() ? "" : ":") +
-                                CommandPrefixes->Strings[Index];
+                CommandPrefix = CommandPrefix + (CommandPrefix.empty() ? L"" : L":") +
+                                CommandPrefixes->GetString(Index);
             }
             FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix));
         }

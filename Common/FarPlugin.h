@@ -392,6 +392,10 @@ public:
     {
         return L"";
     }
+    void *GetObjects(int Index)
+    {
+        return NULL;
+    }
 
     TNotifyEvent GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
