@@ -868,18 +868,18 @@ class TFarButton : public TFarDialogItem
 public:
     TFarButton(TFarDialog *ADialog);
 
-    // __property wstring Caption = { read = Data, write = Data };
-    property<TFarButton, wstring> Caption;
-    // __property int Result = { read = FResult, write = FResult };
-    property<TFarButton, int> Result;
-    // __property bool Default = { read = GetDefault, write = SetDefault };
-    property<TFarButton, bool> Default;
-    // __property TFarButtonBrackets Brackets = { read = FBrackets, write = SetBrackets };
-    property<TFarButton, TFarButtonBrackets> Brackets;
-    // __property CenterGroup;
-    // property<TFarButton, bool> CenterGroup;
-    // __property TFarButtonClick OnClick = { read = FOnClick, write = FOnClick };
-    property<TFarButton, TFarButtonClick> OnClick;
+    virtual wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual int GetResult() { return FResult; }
+    virtual void SetResult(int value) { FResult = value; }
+    bool GetDefault();
+    void SetDefault(bool value);
+    TFarButtonBrackets GetBrackets() { return FBrackets; }
+    void SetBrackets(TFarButtonBrackets value);
+    bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
+    void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
+    virtual TFarButtonClick GetOnClick() { return FOnClick; }
+    virtual void SetOnClick(TFarButtonClick value) { FOnClick= value; }
 
 protected:
     virtual void SetDataInternal(const wstring value);
@@ -891,10 +891,6 @@ private:
     int FResult;
     TFarButtonClick FOnClick;
     TFarButtonBrackets FBrackets;
-
-    void SetDefault(bool value);
-    bool GetDefault();
-    void SetBrackets(TFarButtonBrackets value);
 };
 //---------------------------------------------------------------------------
 typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
