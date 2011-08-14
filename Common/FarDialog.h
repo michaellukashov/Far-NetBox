@@ -1070,14 +1070,13 @@ public:
     void SetItems(TStrings *value);
 
     bool GetNoAmpersand() { return GetFlag(DIF_LISTNOAMPERSAND); }
-    void SetNoAmpersand(bool value) { SetFlag(DIF_LISTNOAMPERSAND); }
+    void SetNoAmpersand(bool value) { SetFlag(DIF_LISTNOAMPERSAND, value); }
     bool GetAutoHighlight() { return GetFlag(DIF_LISTAUTOHIGHLIGHT); }
-    void SetAutoHighlight(bool value) { SetFlag(DIF_LISTAUTOHIGHLIGHT); }
+    void SetAutoHighlight(bool value) { SetFlag(DIF_LISTAUTOHIGHLIGHT, value); }
     bool GetNoBox() { return GetFlag(DIF_LISTNOBOX); }
-    void SetNoBox(bool value) { SetFlag(DIF_LISTNOBOX); }
-    property<self, bool> WrapMode;
+    void SetNoBox(bool value) { SetFlag(DIF_LISTNOBOX, value); }
     bool GetWrapMode() { return GetFlag(DIF_LISTWRAPMODE); }
-    void SetWrapMode(bool value) { SetFlag(DIF_LISTWRAPMODE); }
+    void SetWrapMode(bool value) { SetFlag(DIF_LISTWRAPMODE, value); }
     TFarList *GetItems() { return FList; }
     void SetList(TFarList *value);
     TFarListBoxAutoSelect GetAutoSelect() { return FAutoSelect; }
