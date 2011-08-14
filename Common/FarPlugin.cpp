@@ -1055,7 +1055,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
 
     int Result;
     TStringList *MessageLines = NULL;
-    char **Items = NULL;
+    wchar_t **Items = NULL;
     try
     {
         wstring FullMessage = Message;
@@ -1093,7 +1093,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         {
             wstring S = MessageLines->GetString(Index);
             MessageLines->SetString(Index, StrToFar(S));
-            Items[Index] = MessageLines->GetString(Index).c_str();
+            Items[Index] = (wchar_t *)MessageLines->GetString(Index).c_str();
         }
 
         TFarEnvGuard Guard;
@@ -1118,7 +1118,7 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     // make the output actually background of FAR screen
     if (FTerminalScreenShowing)
     {
-        FarControl(FCTL_SETUSERSCREEN, NULL);
+        FarControl(FCTL_SETUSERSCREEN, 0, NULL);
     }
 
     int Result;
@@ -1131,14 +1131,14 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     else
     {
         assert(Params == NULL);
-        wstring Items = Title + "\n" + Message;
+        wstring Items = Title + L"\n" + Message;
         if (!Oem)
         {
             StrToFar(Items);
         }
         TFarEnvGuard Guard;
         Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
-                                      Flags | FMSG_ALLINONE | FMSG_LEFTALIGN, NULL, (char **)Items.c_str(), 0, 0);
+                                      Flags | FMSG_ALLINONE | FMSG_LEFTALIGN, NULL, (wchar_t **)Items.c_str(), 0, 0);
     }
     return Result;
 }
@@ -1153,7 +1153,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, wstring Title,
     wstring ABottom = Bottom;
     TFarEnvGuard Guard;
     return FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
-                             Flags, StrToFar(ATitle), (char *)StrToFar(ABottom), NULL, BreakKeys,
+                             Flags, StrToFar(ATitle), (wchar_t *)StrToFar(ABottom), NULL, BreakKeys,
                              &BreakCode, Items, Count);
 }
 //---------------------------------------------------------------------------
@@ -1163,25 +1163,27 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const wstring Title,
 {
     assert(Items && Items->Count);
     int Result;
-    FarMenuItemEx *MenuItems = new FarMenuItemEx[Items->Count];
+    FarMenuItemEx *MenuItems = new FarMenuItemEx[Items->GetCount()];
     try
     {
         int Selected = -1;
         int Count = 0;
-        for (int i = 0; i < Items->Count; i++)
+        for (int i = 0; i < Items->GetCount(); i++)
         {
-            int Flags = int(Items->Objects[i]);
+            int Flags = int(Items->GetObject(i));
             if (FLAGCLEAR(Flags, MIF_HIDDEN))
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
-                wstring Text = Items->Strings[i].SubString(1, sizeof(MenuItems[i].Text)-1);
+                wstring Text = Items->GetString(i).substr(1, sizeof(MenuItems[i].Text)-1);
                 MenuItems[Count].Flags = Flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
                     assert(Selected < 0);
                     Selected = i;
                 }
-                strcpy(MenuItems[Count].Text.Text, StrToFar(Text));
+                // strcpy(MenuItems[Count].Text.Text, StrToFar(Text));
+                wstring Str = StrToFar(Text);
+                wcscpy_s((wchar_t *)MenuItems[Count].Text, Str.size(), Str.c_str());
                 MenuItems[Count].UserData = i;
                 Count++;
             }
@@ -1195,9 +1197,9 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const wstring Title,
             Result = MenuItems[ResultItem].UserData;
             if (Selected >= 0)
             {
-                Items->Objects[Selected] = (TObject *)(int(Items->Objects[Selected]) & ~MIF_SELECTED);
+                Items->SetObject(Selected, (TObject *)(int(Items->GetObject(Selected)) & ~MIF_SELECTED));
             }
-            Items->Objects[Result] = (TObject *)(int(Items->Objects[Result]) | MIF_SELECTED);
+            Items->SetObject(Result, (TObject *)(int(Items->GetObject(Result)) | MIF_SELECTED));
         }
         else
         {
@@ -1227,15 +1229,19 @@ bool TCustomFarPlugin::InputBox(const wstring Title,
     do
     {
         wstring DestText;
-        DestText.SetLength(MaxLen + 1);
-        THandle ScreenHandle = 0;
+        DestText.resize(MaxLen + 1);
+        HANDLE ScreenHandle = 0;
         SaveScreen(ScreenHandle);
         wstring AText = Text;
         {
             TFarEnvGuard Guard;
-            Result = FStartupInfo.InputBox(StrToFar(Title), StrToFar(Prompt),
-                                           StrToFar(HistoryName), StrToFar(AText), DestText.c_str(), MaxLen, NULL,
-                                           FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
+            Result = FStartupInfo.InputBox(
+                StrToFar((wchar_t *)Title.c_str()),
+                StrToFar((wchar_t *)Prompt.c_str()),
+                StrToFar((wchar_t *)HistoryName.c_str()),
+                StrToFar((wchar_t *)AText.c_str()),
+                (wchar_t *)DestText.c_str(), MaxLen, NULL,
+                FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
         }
         RestoreScreen(ScreenHandle);
         Repeat = false;
@@ -1276,7 +1282,7 @@ void TCustomFarPlugin::FlushText()
 void TCustomFarPlugin::WriteConsole(wstring Str)
 {
     unsigned long Written;
-    ::WriteConsole(FConsoleOutput, StrToFar(Str), Str.Length(), &Written, NULL);
+    ::WriteConsole(FConsoleOutput, StrToFar(Str), Str.size(), &Written, NULL);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FarCopyToClipboard(wstring Str)
@@ -1287,15 +1293,15 @@ void TCustomFarPlugin::FarCopyToClipboard(wstring Str)
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FarCopyToClipboard(TStrings *Strings)
 {
-    if (Strings->Count > 0)
+    if (Strings->GetCount() > 0)
     {
-        if (Strings->Count == 1)
+        if (Strings->GetCount() == 1)
         {
-            FarCopyToClipboard(Strings->Strings[0]);
+            FarCopyToClipboard(Strings->GetString(0));
         }
         else
         {
-            FarCopyToClipboard(Strings->Text);
+            FarCopyToClipboard(Strings->GetText());
         }
     }
 }
@@ -1436,7 +1442,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
 void TCustomFarPlugin::SaveTerminalScreen()
 {
     FTerminalScreenShowing = false;
-    FarControl(FCTL_SETUSERSCREEN, NULL);
+    FarControl(FCTL_SETUSERSCREEN, 0, NULL);
 }
 //---------------------------------------------------------------------------
 struct TConsoleTitleParam

@@ -416,6 +416,9 @@ public:
     {
         return NULL;
     }
+    void SetObject(int Index, TObject *obj)
+    {
+    }
 
     TNotifyEvent GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
@@ -967,11 +970,11 @@ inline wchar_t *StrFromFar(wchar_t *S)
 //---------------------------------------------------------------------------
 wstring StrFromFar(const wchar_t *S);
 //---------------------------------------------------------------------------
-inline char *StrFromFar(wstring &S)
+inline wchar_t *StrFromFar(wstring &S)
 {
     // OemToChar(S.c_str(), S.c_str());
     // return S.c_str();
-    return "";
+    return L"";
 }
 //---------------------------------------------------------------------------
 inline wchar_t *StrToFar(wchar_t *S)
