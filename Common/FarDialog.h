@@ -575,51 +575,43 @@ public:
     void ShowGroup(int Group, bool Show);
     void EnableGroup(int Group, bool Enable);
 
-    // __property TRect Bounds = { read = FBounds, write = SetBounds };
-    property<self, TRect> Bounds;
-    // __property TRect ClientRect = { read = GetClientRect };
-    property_ro<self, TRect> ClientRect;
-    // __property wstring HelpTopic = { read = FHelpTopic, write = SetHelpTopic };
-    property<self, wstring> HelpTopic;
-    // __property unsigned int Flags = { read = FFlags, write = SetFlags };
-    property<self, unsigned int> Flags;
-    // __property bool Centered = { read = GetCentered, write = SetCentered };
-    property<self, bool> Centered;
-    // __property TPoint Size = { read = GetSize, write = SetSize };
-    property<self, TPoint> Size;
-    // __property TPoint ClientSize = { read = GetClientSize };
-    property_ro<self, TPoint> ClientSize;
-    // __property int Width = { read = GetWidth, write = SetWidth };
-    property<self, int> Width;
-    // __property int Height = { read = GetHeight, write = SetHeight };
-    property<self, int> Height;
-    // __property wstring Caption = { read = GetCaption, write = SetCaption };
-    property<self, wstring> Caption;
-    // __property HANDLE Handle = { read = FHandle };
-    property<self, HANDLE> Handle;
-    // __property TFarButton *DefaultButton = { read = FDefaultButton };
-    property<self, TFarButton *> DefaultButton;
-    // __property TFarBox *BorderBox = { read = FBorderBox };
-    property<self, TFarBox *> BorderBox;
-    // __property TFarDialogItem *Item[int Index] = { read = GetItem };
-    property_idx<self, TFarDialogItem *> Item;
-    // __property int ItemCount = { read = GetItemCount };
-    property_ro<self, size_t> ItemCount;
-    // __property TItemPosition NextItemPosition = { read = FNextItemPosition, write = FNextItemPosition };
-    property<self, TItemPosition> NextItemPosition;
-    // __property int DefaultGroup = { read = FDefaultGroup, write = FDefaultGroup };
-    property<self, int> DefaultGroup;
-    // __property int Tag = { read = FTag, write = FTag };
-    property<self, int> Tag;
-    // __property TFarDialogItem *ItemFocused = { read = FItemFocused, write = SetItemFocused };
-    property<self, TFarDialogItem *> ItemFocused;
-    // __property int Result = { read = FResult };
-    property<self, int> Result;
-    // __property TPoint MaxSize = { read = GetMaxSize };
-    property<self, TPoint> MaxSize;
-
-    // __property TFarKeyEvent OnKey = { read = FOnKey, write = FOnKey };
-    property<self, TFarKeyEvent> OnKey;
+    TRect GetBounds() const { return FBounds; }
+    void SetBounds(const TRect &value);
+    TRect GetClientRect() const;
+    wstring GetHelpTopic() const { return FHelpTopic; }
+    void SetHelpTopic(const wstring &value);
+    unsigned int GetFlags() const { return FFlags; }
+    void SetFlags(const unsigned int &value);
+    bool GetCentered() const;
+    void SetCentered(const bool &value);
+    TPoint GetSize() const;
+    void SetSize(const TPoint &value);
+    TPoint GetClientSize() const;
+    int GetWidth() const;
+    void SetWidth(const int &value);
+    int GetHeight() const;
+    void SetHeight(const int &value);
+    wstring GetCaption() const;
+    void SetCaption(const wstring &value);
+    HANDLE GetHandle() const { return FHandle; }
+    TFarButton *GetDefaultButton() const { return FDefaultButton; }
+    TFarBox *GetBorderBox() const { return FBorderBox; }
+    TFarDialogItem *GetItem(size_t Index) const;
+    size_t GetItemCount() const;
+    TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
+    void SetNextItemPosition(const TItemPosition &value) { FNextItemPosition = value; }
+    void GetNextItemPosition(int &Left, int &Top);
+    int GetDefaultGroup() const { return FDefaultGroup; }
+    void SetDefaultGroup(const int &value) { FDefaultGroup = value; }
+    int GetTag() const { return FTag; }
+    void SetTag(const int &value) { FTag = value; }
+    TFarDialogItem *GetItemFocused() const { return FItemFocused; }
+    void SetItemFocused(TFarDialogItem * const &value);
+    int GetResult() const { return FResult; }
+    TPoint GetMaxSize() const;
+    
+    TFarKeyEvent GetOnKey() const { return FOnKey; }
+    void SetOnKey(const TFarKeyEvent &value) { FOnKey = value; }
 
     void Redraw();
     void LockChanges();
@@ -645,7 +637,6 @@ protected:
     virtual void Init();
     virtual bool CloseQuery();
     wstring GetMsg(int MsgId);
-    void GetNextItemPosition(int &Left, int &Top);
     void RefreshBounds();
     virtual void Idle();
     void BreakSynchronize();
@@ -683,42 +674,6 @@ private:
     bool FNeedsSynchronize;
     HANDLE FSynchronizeObjects[2];
     TThreadMethod FSynchronizeMethod;
-
-    TRect GetBounds() const { return FBounds; }
-    void SetBounds(const TRect &value);
-    wstring GetHelpTopic() const { return FHelpTopic; }
-    void SetHelpTopic(const wstring &value);
-    unsigned int GetFlags() const { return FFlags; }
-    void SetFlags(const unsigned int &value);
-    void SetCentered(const bool &value);
-    bool GetCentered() const;
-    TPoint GetSize() const;
-    void SetSize(const TPoint &value);
-    void SetCaption(const wstring &value);
-    wstring GetCaption() const;
-    TFarDialogItem *GetItem(size_t Index) const;
-    TRect GetClientRect() const;
-    size_t GetItemCount() const;
-    void SetItemFocused(TFarDialogItem * const &value);
-    TPoint GetClientSize() const;
-    TPoint GetMaxSize() const;
-    void SetWidth(const int &value);
-    int GetWidth() const;
-    void SetHeight(const int &value);
-    int GetHeight() const;
-    HANDLE GetHandle() const { return FHandle; }
-    TFarButton *GetDefaultButton() const { return FDefaultButton; }
-    TFarBox *GetBorderBox() const { return FBorderBox; }
-    TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
-    void SetNextItemPosition(const TItemPosition &value) { FNextItemPosition = value; }
-    int GetDefaultGroup() const { return FDefaultGroup; }
-    void SetDefaultGroup(const int &value) { FDefaultGroup = value; }
-    int GetTag() const { return FTag; }
-    void SetTag(const int &value) { FTag = value; }
-    TFarDialogItem *GetItemFocused() const { return FItemFocused; }
-    int GetResult() const { return FResult; }
-    TFarKeyEvent GetOnKey() const { return FOnKey; }
-    void SetOnKey(const TFarKeyEvent &value) { FOnKey = value; }
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
