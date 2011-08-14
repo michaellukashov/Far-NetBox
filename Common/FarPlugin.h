@@ -412,7 +412,7 @@ public:
     {
         return L"";
     }
-    void *GetObjects(int Index)
+    void *GetObject(int Index)
     {
         return NULL;
     }
@@ -446,11 +446,31 @@ public:
     {
         return -1;
     }
+    size_t Add(wstring value)
+    {
+    }
+    void Delete(size_t Index)
+    {
+    }
+    void SetString(int Index, wstring S)
+    {
+    }
 };
 
 class TDateTime
 {
+public:
+    operator double()
+    {
+        return 0.0;
+    }
 };
+
+TDateTime Now()
+{
+    TDateTime result;
+    return result;
+}
 
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem;
