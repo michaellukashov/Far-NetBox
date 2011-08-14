@@ -8,7 +8,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(Exception * E, AnsiString & Message)
+bool ExceptionMessage(exception * E, wstring & Message)
 {
   bool Result = true;
   if (dynamic_cast<EAbort *>(E) != NULL)
@@ -30,10 +30,10 @@ bool __fastcall ExceptionMessage(Exception * E, AnsiString & Message)
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings * ExceptionToMoreMessages(Exception * E)
+TStrings * ExceptionToMoreMessages(exception * E)
 {
   TStrings * Result = NULL;
-  AnsiString Message;
+  wstring Message;
   if (ExceptionMessage(E, Message))
   {
     Result = new TStringList();
@@ -47,20 +47,20 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   return Result;
 }
 //---------------------------------------------------------------------------
-__fastcall ExtException::ExtException(Exception * E) :
-  Exception("")
+ExtException::ExtException(exception * E) :
+  exception("")
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-__fastcall ExtException::ExtException(Exception* E, AnsiString Msg):
-  Exception(Msg)
+ExtException::ExtException(exception* E, wstring Msg):
+  exception(Msg)
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-__fastcall ExtException::ExtException(AnsiString Msg, Exception* E) :
-  Exception("")
+ExtException::ExtException(wstring Msg, exception* E) :
+  exception("")
 {
   // "copy exception"
   AddMoreMessages(E);
@@ -82,9 +82,9 @@ __fastcall ExtException::ExtException(AnsiString Msg, Exception* E) :
   }
 }
 //---------------------------------------------------------------------------
-__fastcall ExtException::ExtException(AnsiString Msg, AnsiString MoreMessages,
-    AnsiString HelpKeyword) :
-  Exception(Msg),
+ExtException::ExtException(wstring Msg, wstring MoreMessages,
+    wstring HelpKeyword) :
+  exception(Msg),
   FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.IsEmpty())
@@ -94,9 +94,9 @@ __fastcall ExtException::ExtException(AnsiString Msg, AnsiString MoreMessages,
   }
 }
 //---------------------------------------------------------------------------
-__fastcall ExtException::ExtException(AnsiString Msg, TStrings* MoreMessages,
+ExtException::ExtException(wstring Msg, TStrings* MoreMessages,
   bool Own) :
-  Exception(Msg)
+  exception(Msg)
 {
   if (Own)
   {
@@ -109,7 +109,7 @@ __fastcall ExtException::ExtException(AnsiString Msg, TStrings* MoreMessages,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall ExtException::AddMoreMessages(Exception* E)
+void ExtException::AddMoreMessages(exception* E)
 {
   if (E != NULL)
   {
@@ -135,7 +135,7 @@ void __fastcall ExtException::AddMoreMessages(Exception* E)
       }
     }
 
-    AnsiString Msg;
+    wstring Msg;
     ExceptionMessage(E, Msg);
 
     // new exception does not have own message, this is in fact duplication of
@@ -157,15 +157,15 @@ void __fastcall ExtException::AddMoreMessages(Exception* E)
   }
 }
 //---------------------------------------------------------------------------
-__fastcall ExtException::~ExtException()
+ExtException::~ExtException()
 {
   delete FMoreMessages;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall LastSysErrorMessage()
+wstring LastSysErrorMessage()
 {
   int LastError = GetLastError();
-  AnsiString Result;
+  wstring Result;
   if (LastError != 0)
   {
     Result = FORMAT(Sysconst_SOSError, (LastError, SysErrorMessage(LastError)));
@@ -173,7 +173,7 @@ AnsiString __fastcall LastSysErrorMessage()
   return Result;
 }
 //---------------------------------------------------------------------------
-__fastcall EOSExtException::EOSExtException(AnsiString Msg) :
+EOSExtException::EOSExtException(wstring Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
 }

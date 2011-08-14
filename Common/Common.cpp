@@ -14,25 +14,25 @@
 //---------------------------------------------------------------------------
 // TCriticalSection
 //---------------------------------------------------------------------------
-__fastcall TCriticalSection::TCriticalSection()
+TCriticalSection::TCriticalSection()
 {
   FAcquired = 0;
   InitializeCriticalSection(&FSection);
 }
 //---------------------------------------------------------------------------
-__fastcall TCriticalSection::~TCriticalSection()
+TCriticalSection::~TCriticalSection()
 {
   assert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCriticalSection::Enter()
+void TCriticalSection::Enter()
 {
   EnterCriticalSection(&FSection);
   FAcquired++;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCriticalSection::Leave()
+void TCriticalSection::Leave()
 {
   FAcquired--;
   LeaveCriticalSection(&FSection);
@@ -40,28 +40,28 @@ void __fastcall TCriticalSection::Leave()
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
-__fastcall TGuard::TGuard(TCriticalSection * ACriticalSection) :
+TGuard::TGuard(TCriticalSection * ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   assert(ACriticalSection != NULL);
   FCriticalSection->Enter();
 }
 //---------------------------------------------------------------------------
-__fastcall TGuard::~TGuard()
+TGuard::~TGuard()
 {
   FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
 // TUnguard
 //---------------------------------------------------------------------------
-__fastcall TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
+TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   assert(ACriticalSection != NULL);
   FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
-__fastcall TUnguard::~TUnguard()
+TUnguard::~TUnguard()
 {
   FCriticalSection->Enter();
 }
@@ -71,14 +71,14 @@ const char EngShortMonthNames[12][4] =
   {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 //---------------------------------------------------------------------------
-AnsiString ReplaceChar(AnsiString Str, Char A, Char B)
+wstring ReplaceChar(wstring Str, char A, char B)
 {
   for (Integer Index = 0; Index < Str.Length(); Index++)
     if (Str[Index+1] == A) Str[Index+1] = B;
   return Str;
 }
 //---------------------------------------------------------------------------
-AnsiString DeleteChar(AnsiString Str, Char C)
+wstring DeleteChar(wstring Str, char C)
 {
   int P;
   while ((P = Str.Pos(C)) > 0)
@@ -88,15 +88,15 @@ AnsiString DeleteChar(AnsiString Str, Char C)
   return Str;
 }
 //---------------------------------------------------------------------------
-void PackStr(AnsiString &Str)
+void PackStr(wstring &Str)
 {
   // Following will free unnecessary bytes
   Str = Str.c_str();
 }
 //---------------------------------------------------------------------------
-AnsiString MakeValidFileName(AnsiString FileName)
+wstring MakeValidFileName(wstring FileName)
 {
-  AnsiString IllegalChars = ":;,=+<>|\"[] \\/?*";
+  wstring IllegalChars = ":;,=+<>|\"[] \\/?*";
   for (int Index = 0; Index < IllegalChars.Length(); Index++)
   {
     FileName = ReplaceChar(FileName, IllegalChars[Index+1], '-');
@@ -104,7 +104,7 @@ AnsiString MakeValidFileName(AnsiString FileName)
   return FileName;
 }
 //---------------------------------------------------------------------------
-AnsiString RootKeyToStr(HKEY RootKey)
+wstring RootKeyToStr(HKEY RootKey)
 {
   if (RootKey == HKEY_USERS) return "HKEY_USERS";
     else
@@ -121,7 +121,7 @@ AnsiString RootKeyToStr(HKEY RootKey)
   {  Abort(); return ""; };
 }
 //---------------------------------------------------------------------------
-AnsiString BooleanToEngStr(bool B)
+wstring BooleanToEngStr(bool B)
 {
   if (B)
   {
@@ -133,7 +133,7 @@ AnsiString BooleanToEngStr(bool B)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString BooleanToStr(bool B)
+wstring BooleanToStr(bool B)
 {
   if (B)
   {
@@ -145,7 +145,7 @@ AnsiString BooleanToStr(bool B)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString DefaultStr(const AnsiString & Str, const AnsiString & Default)
+wstring DefaultStr(const wstring & Str, const wstring & Default)
 {
   if (!Str.IsEmpty())
   {
@@ -157,10 +157,10 @@ AnsiString DefaultStr(const AnsiString & Str, const AnsiString & Default)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString CutToChar(AnsiString &Str, Char Ch, bool Trim)
+wstring CutToChar(wstring &Str, char Ch, bool Trim)
 {
   Integer P = Str.Pos(Ch);
-  AnsiString Result;
+  wstring Result;
   if (P)
   {
     Result = Str.SubString(1, P-1);
@@ -179,7 +179,7 @@ AnsiString CutToChar(AnsiString &Str, Char Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString CopyToChars(const AnsiString & Str, int & From, AnsiString Chs, bool Trim,
+wstring CopyToChars(const wstring & Str, int & From, wstring Chs, bool Trim,
   char * Delimiter)
 {
   int P;
@@ -191,7 +191,7 @@ AnsiString CopyToChars(const AnsiString & Str, int & From, AnsiString Chs, bool 
     }
   }
 
-  AnsiString Result;
+  wstring Result;
   if (P <= Str.Length())
   {
     if (Delimiter != NULL)
@@ -221,7 +221,7 @@ AnsiString CopyToChars(const AnsiString & Str, int & From, AnsiString Chs, bool 
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString DelimitStr(AnsiString Str, AnsiString Chars)
+wstring DelimitStr(wstring Str, wstring Chars)
 {
   for (int i = 1; i <= Str.Length(); i++)
   {
@@ -234,9 +234,9 @@ AnsiString DelimitStr(AnsiString Str, AnsiString Chars)
   return Str;
 }
 //---------------------------------------------------------------------------
-AnsiString ShellDelimitStr(AnsiString Str, char Quote)
+wstring ShellDelimitStr(wstring Str, char Quote)
 {
-  AnsiString Chars = "$\\";
+  wstring Chars = "$\\";
   if (Quote == '"')
   {
     Chars += "`\"";
@@ -244,12 +244,12 @@ AnsiString ShellDelimitStr(AnsiString Str, char Quote)
   return DelimitStr(Str, Chars);
 }
 //---------------------------------------------------------------------------
-AnsiString ExceptionLogString(Exception *E)
+wstring ExceptionLogString(exception *E)
 {
   assert(E);
-  if (E->InheritsFrom(__classid(Exception)))
+  if (E->InheritsFrom(__classid(exception)))
   {
-    AnsiString Msg;
+    wstring Msg;
     Msg = FORMAT("(%s) %s", (E->ClassName(), E->Message));
     if (E->InheritsFrom(__classid(ExtException)))
     {
@@ -266,27 +266,27 @@ AnsiString ExceptionLogString(Exception *E)
   {
     char Buffer[1024];
     ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
-    return AnsiString(Buffer);
+    return wstring(Buffer);
   }
 }
 //---------------------------------------------------------------------------
-bool IsNumber(const AnsiString Str)
+bool IsNumber(const wstring Str)
 {
   int Value;
   return TryStrToInt(Str, Value);
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall SystemTemporaryDirectory()
+wstring SystemTemporaryDirectory()
 {
-  AnsiString TempDir;
+  wstring TempDir;
   TempDir.SetLength(MAX_PATH);
   TempDir.SetLength(GetTempPath(MAX_PATH, TempDir.c_str()));
   return TempDir;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall GetShellFolderPath(int CSIdl)
+wstring GetShellFolderPath(int CSIdl)
 {
-  AnsiString Result;
+  wstring Result;
   HMODULE Shell32Lib = LoadLibrary("SHELL32.DLL");
   if (Shell32Lib != NULL)
   {
@@ -304,7 +304,7 @@ AnsiString __fastcall GetShellFolderPath(int CSIdl)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall StripPathQuotes(const AnsiString Path)
+wstring StripPathQuotes(const wstring Path)
 {
   if ((Path.Length() >= 2) &&
       (Path[1] == '\"') && (Path[Path.Length()] == '\"'))
@@ -317,7 +317,7 @@ AnsiString __fastcall StripPathQuotes(const AnsiString Path)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall AddPathQuotes(AnsiString Path)
+wstring AddPathQuotes(wstring Path)
 {
   Path = StripPathQuotes(Path);
   if (Path.Pos(" "))
@@ -327,8 +327,8 @@ AnsiString __fastcall AddPathQuotes(AnsiString Path)
   return Path;
 }
 //---------------------------------------------------------------------------
-void __fastcall SplitCommand(AnsiString Command, AnsiString &Program,
-  AnsiString & Params, AnsiString & Dir)
+void SplitCommand(wstring Command, wstring &Program,
+  wstring & Params, wstring & Dir)
 {
   Command = Command.Trim();
   Params = "";
@@ -344,7 +344,7 @@ void __fastcall SplitCommand(AnsiString Command, AnsiString &Program,
     }
     else
     {
-      throw Exception(FMTLOAD(INVALID_SHELL_COMMAND, ("\"" + Command)));
+      throw exception(FMTLOAD(INVALID_SHELL_COMMAND, ("\"" + Command)));
     }
   }
   else
@@ -367,18 +367,18 @@ void __fastcall SplitCommand(AnsiString Command, AnsiString &Program,
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall ExtractProgram(AnsiString Command)
+wstring ExtractProgram(wstring Command)
 {
-  AnsiString Program;
-  AnsiString Params;
-  AnsiString Dir;
+  wstring Program;
+  wstring Params;
+  wstring Dir;
 
   SplitCommand(Command, Program, Params, Dir);
 
   return Program;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall FormatCommand(AnsiString Program, AnsiString Params)
+wstring FormatCommand(wstring Program, wstring Params)
 {
   Program = Program.Trim();
   Params = Params.Trim();
@@ -389,11 +389,11 @@ AnsiString __fastcall FormatCommand(AnsiString Program, AnsiString Params)
 //---------------------------------------------------------------------------
 const char ShellCommandFileNamePattern[] = "!.!";
 //---------------------------------------------------------------------------
-void __fastcall ReformatFileNameCommand(AnsiString & Command)
+void ReformatFileNameCommand(wstring & Command)
 {
   if (!Command.IsEmpty())
   {
-    AnsiString Program, Params, Dir;
+    wstring Program, Params, Dir;
     SplitCommand(Command, Program, Params, Dir);
     if (Params.Pos(ShellCommandFileNamePattern) == 0)
     {
@@ -403,14 +403,14 @@ void __fastcall ReformatFileNameCommand(AnsiString & Command)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall ExpandFileNameCommand(const AnsiString Command,
-  const AnsiString FileName)
+wstring ExpandFileNameCommand(const wstring Command,
+  const wstring FileName)
 {
   return AnsiReplaceStr(Command, ShellCommandFileNamePattern,
     AddPathQuotes(FileName));
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall EscapePuttyCommandParam(AnsiString Param)
+wstring EscapePuttyCommandParam(wstring Param)
 {
   bool Space = false;
 
@@ -454,9 +454,9 @@ AnsiString __fastcall EscapePuttyCommandParam(AnsiString Param)
   return Param;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall ExpandEnvironmentVariables(const AnsiString & Str)
+wstring ExpandEnvironmentVariables(const wstring & Str)
 {
-  AnsiString Buf;
+  wstring Buf;
   unsigned int Size = 1024;
 
   Buf.SetLength(Size);
@@ -475,10 +475,10 @@ AnsiString __fastcall ExpandEnvironmentVariables(const AnsiString & Str)
   return Buf;
 }
 //---------------------------------------------------------------------------
-bool __fastcall CompareFileName(const AnsiString & Path1, const AnsiString & Path2)
+bool CompareFileName(const wstring & Path1, const wstring & Path2)
 {
-  AnsiString ShortPath1 = ExtractShortPathName(Path1);
-  AnsiString ShortPath2 = ExtractShortPathName(Path2);
+  wstring ShortPath1 = ExtractShortPathName(Path1);
+  wstring ShortPath2 = ExtractShortPathName(Path2);
 
   bool Result;
   // ExtractShortPathName returns empty string if file does not exist
@@ -493,13 +493,13 @@ bool __fastcall CompareFileName(const AnsiString & Path1, const AnsiString & Pat
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ComparePaths(const AnsiString & Path1, const AnsiString & Path2)
+bool ComparePaths(const wstring & Path1, const wstring & Path2)
 {
   // TODO: ExpandUNCFileName
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsReservedName(AnsiString FileName)
+bool IsReservedName(wstring FileName)
 {
   int P = FileName.Pos(".");
   int Len = (P > 0) ? P - 1 : FileName.Length();
@@ -509,7 +509,7 @@ bool __fastcall IsReservedName(AnsiString FileName)
     {
       FileName.SetLength(P - 1);
     }
-    static AnsiString Reserved[] = {
+    static wstring Reserved[] = {
       "CON", "PRN", "AUX", "NUL",
       "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
       "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9" };
@@ -524,7 +524,7 @@ bool __fastcall IsReservedName(AnsiString FileName)
   return false;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall DisplayableStr(const AnsiString Str)
+wstring DisplayableStr(const wstring Str)
 {
   bool Displayable = true;
   int Index = 1;
@@ -538,7 +538,7 @@ AnsiString __fastcall DisplayableStr(const AnsiString Str)
     Index++;
   }
 
-  AnsiString Result;
+  wstring Result;
   if (Displayable)
   {
     Result = "\"";
@@ -584,22 +584,22 @@ AnsiString __fastcall DisplayableStr(const AnsiString Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall CharToHex(char Ch, bool UpperCase)
+wstring CharToHex(char Ch, bool UpperCase)
 {
   static char UpperDigits[] = "0123456789ABCDEF";
   static char LowerDigits[] = "0123456789abcdef";
 
   const char * Digits = (UpperCase ? UpperDigits : LowerDigits);
-  AnsiString Result;
+  wstring Result;
   Result.SetLength(2);
   Result[1] = Digits[((unsigned char)Ch & 0xF0) >> 4];
   Result[2] = Digits[ (unsigned char)Ch & 0x0F];
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall StrToHex(const AnsiString Str, bool UpperCase, char Separator)
+wstring StrToHex(const wstring Str, bool UpperCase, char Separator)
 {
-  AnsiString Result;
+  wstring Result;
   for (int i = 1; i <= Str.Length(); i++)
   {
     Result += CharToHex(Str[i], UpperCase);
@@ -611,10 +611,10 @@ AnsiString __fastcall StrToHex(const AnsiString Str, bool UpperCase, char Separa
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall HexToStr(const AnsiString Hex)
+wstring HexToStr(const wstring Hex)
 {
-  static AnsiString Digits = "0123456789ABCDEF";
-  AnsiString Result;
+  static wstring Digits = "0123456789ABCDEF";
+  wstring Result;
   int L, P1, P2;
   L = Hex.Length();
   if (L % 2 == 0)
@@ -637,9 +637,9 @@ AnsiString __fastcall HexToStr(const AnsiString Hex)
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall HexToInt(const AnsiString Hex, int MinChars)
+unsigned int HexToInt(const wstring Hex, int MinChars)
 {
-  static AnsiString Digits = "0123456789ABCDEF";
+  static wstring Digits = "0123456789ABCDEF";
   int Result = 0;
   int I = 1;
   while (I <= Hex.Length())
@@ -661,12 +661,12 @@ unsigned int __fastcall HexToInt(const AnsiString Hex, int MinChars)
   return Result;
 }
 //---------------------------------------------------------------------------
-char __fastcall HexToChar(const AnsiString Hex, int MinChars)
+char HexToChar(const wstring Hex, int MinChars)
 {
   return (char)HexToInt(Hex, MinChars);
 }
 //---------------------------------------------------------------------------
-bool __fastcall FileSearchRec(const AnsiString FileName, TSearchRec & Rec)
+bool FileSearchRec(const wstring FileName, WIN32_FIND_DATA &Rec)
 {
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
@@ -677,7 +677,7 @@ bool __fastcall FileSearchRec(const AnsiString FileName, TSearchRec & Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall ProcessLocalDirectory(AnsiString DirName,
+void ProcessLocalDirectory(wstring DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param,
   int FindAttrs)
 {
@@ -686,7 +686,7 @@ void __fastcall ProcessLocalDirectory(AnsiString DirName,
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
-  TSearchRec SearchRec;
+  WIN32_FIND_DATA SearchRec;
 
   DirName = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName + "*.*", FindAttrs, SearchRec) == 0)
@@ -709,7 +709,7 @@ void __fastcall ProcessLocalDirectory(AnsiString DirName,
   }
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day)
+TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
 {
   try
   {
@@ -721,7 +721,7 @@ TDateTime __fastcall EncodeDateVerbose(Word Year, Word Month, Word Day)
   }
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
+TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec)
 {
   try
   {
@@ -754,7 +754,7 @@ static bool DateTimeParamsInitialized = false;
 static TDateTimeParams DateTimeParams;
 static TCriticalSection DateTimeParamsSection;
 //---------------------------------------------------------------------------
-static TDateTimeParams * __fastcall GetDateTimeParams()
+static TDateTimeParams * GetDateTimeParams()
 {
   if (!DateTimeParamsInitialized)
   {
@@ -781,7 +781,7 @@ static TDateTimeParams * __fastcall GetDateTimeParams()
 
         case TIME_ZONE_ID_INVALID:
         default:
-          throw Exception(TIMEZONE_ERROR);
+          throw exception(TIMEZONE_ERROR);
       }
       // Is it same as SysUtils::UnixDateDelta = 25569 ??
       DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
@@ -816,7 +816,7 @@ static TDateTimeParams * __fastcall GetDateTimeParams()
   return &DateTimeParams;
 }
 //---------------------------------------------------------------------------
-static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
   TDateTime & Result)
 {
   if (Date.wYear == 0)
@@ -848,7 +848,7 @@ static void __fastcall EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Y
   }
 }
 //---------------------------------------------------------------------------
-static bool __fastcall IsDateInDST(const TDateTime & DateTime)
+static bool IsDateInDST(const TDateTime & DateTime)
 {
   struct TDSTCache
   {
@@ -931,12 +931,12 @@ static bool __fastcall IsDateInDST(const TDateTime & DateTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall UsesDaylightHack()
+bool UsesDaylightHack()
 {
   return GetDateTimeParams()->DaylightHack;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
+TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
@@ -968,7 +968,7 @@ TDateTime __fastcall UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall Round(double Number)
+__int64 Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
@@ -980,7 +980,7 @@ __int64 __fastcall Round(double Number)
 #define TIME_WIN_TO_POSIX(ft, t) ((t) = (__int64) \
     ((*(LONGLONG*)&(ft)) / (LONGLONG) 10000000 - (LONGLONG) 11644473600))
 //---------------------------------------------------------------------------
-static __int64 __fastcall DateTimeToUnix(const TDateTime DateTime)
+static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
@@ -988,7 +988,7 @@ static __int64 __fastcall DateTimeToUnix(const TDateTime DateTime)
     Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
-FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
+FILETIME DateTimeToFileTime(const TDateTime DateTime,
   TDSTMode /*DSTMode*/)
 {
   FILETIME Result;
@@ -1007,7 +1007,7 @@ FILETIME __fastcall DateTimeToFileTime(const TDateTime DateTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime)
+TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
   SYSTEMTIME SysTime;
@@ -1028,7 +1028,7 @@ TDateTime __fastcall FileTimeToDateTime(const FILETIME & FileTime)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
+__int64 ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   __int64 Result;
@@ -1070,7 +1070,7 @@ __int64 __fastcall ConvertTimestampToUnix(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
+TDateTime ConvertTimestampToUTC(TDateTime DateTime)
 {
 
   TDateTimeParams * Params = GetDateTimeParams();
@@ -1082,7 +1082,7 @@ TDateTime __fastcall ConvertTimestampToUTC(TDateTime DateTime)
   return DateTime;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+__int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   __int64 Result;
@@ -1098,7 +1098,7 @@ __int64 __fastcall ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
+TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
@@ -1139,9 +1139,9 @@ TDateTime __fastcall AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode
   return DateTime;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall FixedLenDateTimeFormat(const AnsiString & Format)
+wstring FixedLenDateTimeFormat(const wstring & Format)
 {
-  AnsiString Result = Format;
+  wstring Result = Format;
   bool AsIs = false;
 
   int Index = 1;
@@ -1190,7 +1190,7 @@ AnsiString __fastcall FixedLenDateTimeFormat(const AnsiString & Format)
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall CompareFileTime(TDateTime T1, TDateTime T2)
+int CompareFileTime(TDateTime T1, TDateTime T2)
 {
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
@@ -1218,14 +1218,14 @@ int __fastcall CompareFileTime(TDateTime T1, TDateTime T2)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall RecursiveDeleteFile(const AnsiString FileName, bool ToRecycleBin)
+bool RecursiveDeleteFile(const wstring FileName, bool ToRecycleBin)
 {
   SHFILEOPSTRUCT Data;
 
   memset(&Data, 0, sizeof(Data));
   Data.hwnd = NULL;
   Data.wFunc = FO_DELETE;
-  AnsiString FileList(FileName);
+  wstring FileList(FileName);
   FileList.SetLength(FileList.Length() + 2);
   FileList[FileList.Length() - 1] = '\0';
   FileList[FileList.Length()] = '\0';
@@ -1254,7 +1254,7 @@ bool __fastcall RecursiveDeleteFile(const AnsiString FileName, bool ToRecycleBin
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall CancelAnswer(int Answers)
+int CancelAnswer(int Answers)
 {
   int Result;
   if ((Answers & qaCancel) != 0)
@@ -1281,7 +1281,7 @@ int __fastcall CancelAnswer(int Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall AbortAnswer(int Answers)
+int AbortAnswer(int Answers)
 {
   int Result;
   if (FLAGSET(Answers, qaAbort))
@@ -1295,7 +1295,7 @@ int __fastcall AbortAnswer(int Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall ContinueAnswer(int Answers)
+int ContinueAnswer(int Answers)
 {
   int Result;
   if (FLAGSET(Answers, qaSkip))
@@ -1325,7 +1325,7 @@ int __fastcall ContinueAnswer(int Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-TPasLibModule * __fastcall FindModule(void * Instance)
+TPasLibModule * FindModule(void * Instance)
 {
   TPasLibModule * CurModule;
   CurModule = reinterpret_cast<TPasLibModule*>(LibModuleList);
@@ -1344,12 +1344,12 @@ TPasLibModule * __fastcall FindModule(void * Instance)
   return CurModule;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall LoadStr(int Ident, unsigned int MaxLength)
+wstring LoadStr(int Ident, unsigned int MaxLength)
 {
   TPasLibModule * MainModule = FindModule(HInstance);
   assert(MainModule != NULL);
 
-  AnsiString Result;
+  wstring Result;
   Result.SetLength(MaxLength);
   int Length = LoadString(MainModule->ResInstance, Ident, Result.c_str(), MaxLength);
   Result.SetLength(Length);
@@ -1357,10 +1357,10 @@ AnsiString __fastcall LoadStr(int Ident, unsigned int MaxLength)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall LoadStrPart(int Ident, int Part)
+wstring LoadStrPart(int Ident, int Part)
 {
-  AnsiString Result;
-  AnsiString Str = LoadStr(Ident);
+  wstring Result;
+  wstring Str = LoadStr(Ident);
 
   while (Part > 0)
   {
@@ -1370,7 +1370,7 @@ AnsiString __fastcall LoadStrPart(int Ident, int Part)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall DecodeUrlChars(AnsiString S)
+wstring DecodeUrlChars(wstring S)
 {
   int i = 1;
   while (i <= S.Length())
@@ -1384,7 +1384,7 @@ AnsiString __fastcall DecodeUrlChars(AnsiString S)
       case '%':
         if (i <= S.Length() - 2)
         {
-          AnsiString C = HexToStr(S.SubString(i + 1, 2));
+          wstring C = HexToStr(S.SubString(i + 1, 2));
           if (C.Length() == 1)
           {
             S[i] = C[1];
@@ -1398,14 +1398,14 @@ AnsiString __fastcall DecodeUrlChars(AnsiString S)
   return S;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall DoEncodeUrl(AnsiString S, AnsiString Chars)
+wstring DoEncodeUrl(wstring S, wstring Chars)
 {
   int i = 1;
   while (i <= S.Length())
   {
     if (Chars.Pos(S[i]) > 0)
     {
-      AnsiString H = CharToHex(S[i]);
+      wstring H = CharToHex(S[i]);
       S.Insert(H, i + 1);
       S[i] = '%';
       i += H.Length();
@@ -1415,9 +1415,9 @@ AnsiString __fastcall DoEncodeUrl(AnsiString S, AnsiString Chars)
   return S;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall EncodeUrlChars(AnsiString S, AnsiString Ignore)
+wstring EncodeUrlChars(wstring S, wstring Ignore)
 {
-  AnsiString Chars;
+  wstring Chars;
   if (Ignore.Pos(' ') == 0)
   {
     Chars += ' ';
@@ -1429,9 +1429,9 @@ AnsiString __fastcall EncodeUrlChars(AnsiString S, AnsiString Ignore)
   return DoEncodeUrl(S, Chars);
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall NonUrlChars()
+wstring NonUrlChars()
 {
-  AnsiString S;
+  wstring S;
   for (unsigned int I = 0; I <= 255; I++)
   {
     char C = static_cast<char>(I);
@@ -1450,12 +1450,12 @@ AnsiString __fastcall NonUrlChars()
   return S;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall EncodeUrlString(AnsiString S)
+wstring EncodeUrlString(wstring S)
 {
   return DoEncodeUrl(S, NonUrlChars());
 }
 //---------------------------------------------------------------------------
-void __fastcall OemToAnsi(AnsiString & Str)
+void OemToAnsi(wstring & Str)
 {
   if (!Str.IsEmpty())
   {
@@ -1464,7 +1464,7 @@ void __fastcall OemToAnsi(AnsiString & Str)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall AnsiToOem(AnsiString & Str)
+void AnsiToOem(wstring & Str)
 {
   if (!Str.IsEmpty())
   {
@@ -1473,13 +1473,13 @@ void __fastcall AnsiToOem(AnsiString & Str)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall EscapeHotkey(const AnsiString & Caption)
+wstring EscapeHotkey(const wstring & Caption)
 {
   return StringReplace(Caption, "&", "&&", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
-bool __fastcall CutToken(AnsiString & Str, AnsiString & Token)
+bool CutToken(wstring & Str, wstring & Token)
 {
   bool Result;
 
@@ -1539,7 +1539,7 @@ bool __fastcall CutToken(AnsiString & Str, AnsiString & Token)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall AddToList(AnsiString & List, const AnsiString & Value, char Delimiter)
+void AddToList(wstring & List, const wstring & Value, char Delimiter)
 {
   if (!List.IsEmpty() && (List[List.Length()] != Delimiter))
   {
@@ -1548,19 +1548,19 @@ void __fastcall AddToList(AnsiString & List, const AnsiString & Value, char Deli
   List += Value;
 }
 //---------------------------------------------------------------------------
-bool __fastcall Is2000()
+bool Is2000()
 {
   return (Win32MajorVersion >= 5);
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsWin7()
+bool IsWin7()
 {
   return
     (Win32MajorVersion > 6) ||
     ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsExactly2008R2()
+bool IsExactly2008R2()
 {
   HANDLE Kernel32 = GetModuleHandle(kernel32);
   typedef BOOL WINAPI (* TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);

@@ -7,53 +7,53 @@
 #include <SysInit.hpp>
 #include <System.hpp>
 //---------------------------------------------------------------------------
-bool __fastcall ExceptionMessage(Exception * E, AnsiString & Message);
-AnsiString __fastcall LastSysErrorMessage();
-TStrings * ExceptionToMoreMessages(Exception * E);
+bool ExceptionMessage(exception * E, wstring & Message);
+wstring LastSysErrorMessage();
+TStrings * ExceptionToMoreMessages(exception * E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
-class ExtException : public Sysutils::Exception
+class ExtException : public Sysutils::exception
 {
 public:
-  __fastcall ExtException(Exception* E);
-  __fastcall ExtException(Exception* E, AnsiString Msg);
+  ExtException(exception* E);
+  ExtException(exception* E, wstring Msg);
   // "copy the exception", just append message to the end
-  __fastcall ExtException(AnsiString Msg, Exception* E);
-  __fastcall ExtException(AnsiString Msg, AnsiString MoreMessages, AnsiString HelpKeyword = "");
-  __fastcall ExtException(AnsiString Msg, TStrings* MoreMessages, bool Own);
-  __fastcall virtual ~ExtException(void);
+  ExtException(wstring Msg, exception* E);
+  ExtException(wstring Msg, wstring MoreMessages, wstring HelpKeyword = "");
+  ExtException(wstring Msg, TStrings* MoreMessages, bool Own);
+  virtual ~ExtException(void);
   __property TStrings* MoreMessages = {read=FMoreMessages};
-  __property AnsiString HelpKeyword = {read=FHelpKeyword};
+  __property wstring HelpKeyword = {read=FHelpKeyword};
 
-  inline __fastcall ExtException(const AnsiString Msg, const TVarRec * Args, const int Args_Size) : Sysutils::Exception(Msg, Args, Args_Size) { }
-  inline __fastcall ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::Exception(Ident, Args, Args_Size) { }
-  inline __fastcall ExtException(const AnsiString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext) { }
-  inline __fastcall ExtException(const AnsiString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
-  inline __fastcall ExtException(int Ident, int AHelpContext)/* overload */ : Exception(Ident, AHelpContext) { }
-  inline __fastcall ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::Exception(ResStringRec, Args, Args_Size, AHelpContext) { }
+  inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) { }
+  inline ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::exception(Ident, Args, Args_Size) { }
+  inline ExtException(const wstring Msg, int AHelpContext) : Sysutils::exception(Msg, AHelpContext) { }
+  inline ExtException(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
+  inline ExtException(int Ident, int AHelpContext)/* overload */ : exception(Ident, AHelpContext) { }
+  inline ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }
 
 protected:
-  void __fastcall AddMoreMessages(Exception* E);
+  void AddMoreMessages(exception* E);
 
 private:
   Classes::TStrings* FMoreMessages;
-  AnsiString FHelpKeyword;
+  wstring FHelpKeyword;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
   public: \
-    inline __fastcall NAME(Exception* E, AnsiString Msg) : BASE(E, Msg) { } \
-    inline __fastcall NAME(Exception* E, int Ident) : BASE(E, Ident) { } \
-    inline __fastcall virtual ~NAME(void) { } \
-    inline __fastcall NAME(const AnsiString Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
-    inline __fastcall NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
-    inline __fastcall NAME(const AnsiString Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
-    inline __fastcall NAME(const AnsiString Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
-    inline __fastcall NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
-    inline __fastcall NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
+    inline NAME(exception* E, wstring Msg) : BASE(E, Msg) { } \
+    inline NAME(exception* E, int Ident) : BASE(E, Ident) { } \
+    inline virtual ~NAME(void) { } \
+    inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
+    inline NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
+    inline NAME(const wstring Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
+    inline NAME(const wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
+    inline NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
+    inline NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
   };
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(ESsh, ExtException);
@@ -66,22 +66,22 @@ DERIVE_EXT_EXCEPTION(EScpFileSkipped, EScpSkipFile);
 class EOSExtException : public ExtException
 {
 public:
-  __fastcall EOSExtException();
-  __fastcall EOSExtException(AnsiString Msg);
+  EOSExtException();
+  EOSExtException(wstring Msg);
 };
 //---------------------------------------------------------------------------
 class EFatal : public ExtException
 {
 public:
   // fatal errors are always copied, new message is only appended
-  inline __fastcall EFatal(Exception* E, AnsiString Msg) : ExtException(Msg, E) { }
+  inline EFatal(exception* E, wstring Msg) : ExtException(Msg, E) { }
 };
 //---------------------------------------------------------------------------
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
   public: \
-    inline __fastcall NAME(Exception* E, AnsiString Msg) : BASE(E, Msg) { } \
+    inline NAME(exception* E, wstring Msg) : BASE(E, Msg) { } \
   };
 //---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
@@ -91,7 +91,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 class ESshTerminate : public EFatal
 {
 public:
-  inline __fastcall ESshTerminate(Exception* E, AnsiString Msg, TOnceDoneOperation AOperation) :
+  inline ESshTerminate(exception* E, wstring Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
   { }
