@@ -1355,18 +1355,18 @@ void TFarDialogItem::DoExit()
 long TFarDialogItem::DefaultItemProc(int Msg, int Param)
 {
     TFarEnvGuard Guard;
-    return Dialog->FarPlugin->FStartupInfo.DefDlgProc(Dialog->Handle, Msg, Item, Param);
+    return GetDialog()->GetFarPlugin()->FStartupInfo.DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
 long TFarDialogItem::DefaultDialogProc(int Msg, int Param1, int Param2)
 {
     TFarEnvGuard Guard;
-    return Dialog->FarPlugin->FStartupInfo.DefDlgProc(Dialog->Handle, Msg, Param1, Param2);
+    return GetDialog()->GetFarPlugin()->FStartupInfo.DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
 {
-    if (EnabledFollow || EnabledDependency || EnabledDependencyNegative)
+    if (GetEnabledFollow() || GetEnabledDependency() || GetEnabledDependencyNegative())
     {
         UpdateEnabled();
     }
@@ -1374,7 +1374,7 @@ void TFarDialogItem::Change()
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetEnabled(bool value)
 {
-    if (Enabled != value)
+    if (GetEnabled() != value)
     {
         FEnabled = value;
         UpdateEnabled();
@@ -1384,42 +1384,42 @@ void TFarDialogItem::SetEnabled(bool value)
 void TFarDialogItem::UpdateEnabled()
 {
     bool Value =
-        Enabled &&
-        (!EnabledFollow || EnabledFollow->IsEnabled) &&
-        (!EnabledDependency ||
-         (!EnabledDependency->IsEmpty && EnabledDependency->IsEnabled)) &&
-        (!EnabledDependencyNegative ||
-         (EnabledDependencyNegative->IsEmpty || !EnabledDependencyNegative->IsEnabled)) &&
-        (!Container || Container->Enabled);
+        GetEnabled() &&
+        (!GetEnabledFollow() || GetEnabledFollow()->GetIsEnabled()) &&
+        (!GetEnabledDependency() ||
+         (!GetEnabledDependency()->GetIsEmpty() && GetEnabledDependency()->GetIsEnabled())) &&
+        (!GetEnabledDependencyNegative() ||
+         (GetEnabledDependencyNegative()->GetIsEmpty() || !GetEnabledDependencyNegative()->GetIsEnabled())) &&
+        (!GetContainer() || GetContainer()->GetEnabled());
 
-    if (Value != IsEnabled)
+    if (Value != GetIsEnabled())
     {
         FIsEnabled = Value;
-        SetFlag(DIF_DISABLE | DIF_INVERSE, IsEnabled);
+        SetFlag(DIF_DISABLE | DIF_INVERSE, GetIsEnabled());
     }
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::DialogChange()
 {
-    assert(Dialog);
-    Dialog->Change();
+    assert(GetDialog());
+    GetDialog()->Change();
 }
 //---------------------------------------------------------------------------
 long TFarDialogItem::SendDialogMessage(int Msg, int Param1, int Param2)
 {
-    return Dialog->SendMessage(Msg, Param1, Param2);
+    return GetDialog()->SendMessage(Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 long TFarDialogItem::SendMessage(int Msg, int Param)
 {
-    return Dialog->SendMessage(Msg, Item, Param);
+    return GetDialog()->SendMessage(Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetSelected(int value)
 {
-    if (Selected != value)
+    if (GetSelected() != value)
     {
-        if (Dialog->Handle)
+        if (GetDialog()->GetHandle())
         {
             SendMessage(DM_SETCHECK, value);
         }
@@ -1429,59 +1429,59 @@ void TFarDialogItem::SetSelected(int value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::UpdateSelected(int value)
 {
-    if (Selected != value)
+    if (GetSelected() != value)
     {
-        DialogItem.get()->Selected = value;
+        GetDialogItem()->Selected = value;
         DialogChange();
     }
 }
 //---------------------------------------------------------------------------
 int TFarDialogItem::GetSelected()
 {
-    return DialogItem.get()->Selected;
+    return GetDialogItem()->Selected;
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetChecked(bool value)
 {
-    Selected = value ? BSTATE_CHECKED : BSTATE_UNCHECKED;
+    SetSelected(value ? BSTATE_CHECKED : BSTATE_UNCHECKED);
 }
 //---------------------------------------------------------------------------
-bool _fastcall TFarDialogItem::GetChecked()
+bool TFarDialogItem::GetChecked()
 {
-    return Selected == BSTATE_CHECKED;
+    return GetSelected() == BSTATE_CHECKED;
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Move(int DeltaX, int DeltaY)
 {
-    TRect R = Bounds;
+    TRect R = GetBounds();
 
     R.Left += DeltaX;
     R.Right += DeltaX;
     R.Top += DeltaY;
     R.Bottom += DeltaY;
 
-    Bounds = R;
+    SetBounds(R);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::MoveAt(int X, int Y)
 {
-    Move(X - Left, Y - Top);
+    Move(X - GetLeft(), Y - GetTop());
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetCoordinate(int Index, int value)
 {
     assert(sizeof(TRect) == sizeof(long) * 4);
-    TRect R = Bounds;
+    TRect R = GetBounds();
     long *D = (long *)&R;
     D += Index;
     *D = value;
-    Bounds = R;
+    SetBounds(R);
 }
 //---------------------------------------------------------------------------
 int TFarDialogItem::GetCoordinate(int Index)
 {
     assert(sizeof(TRect) == sizeof(long) * 4);
-    TRect R = Bounds;
+    TRect R = GetBounds();
     long *D = (long *)&R;
     D += Index;
     return *D;
@@ -1489,7 +1489,7 @@ int TFarDialogItem::GetCoordinate(int Index)
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetWidth(int value)
 {
-    TRect R = Bounds;
+    TRect R = GetBounds();
     if (R.Left >= 0)
     {
         R.Right = R.Left + value - 1;
@@ -1499,17 +1499,17 @@ void TFarDialogItem::SetWidth(int value)
         assert(R.Right < 0);
         R.Left = R.Right - value + 1;
     }
-    Bounds = R;
+    SetBounds(R);
 }
 //---------------------------------------------------------------------------
 int TFarDialogItem::GetWidth()
 {
-    return ActualBounds.Width() + 1;
+    return GetActualBounds().Width() + 1;
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetHeight(int value)
 {
-    TRect R = Bounds;
+    TRect R = GetBounds();
     if (R.Top >= 0)
     {
         R.Bottom = R.Top + value - 1;
@@ -1519,17 +1519,18 @@ void TFarDialogItem::SetHeight(int value)
         assert(R.Bottom < 0);
         R.Top = R.Bottom - value + 1;
     }
-    Bounds = R;
+    SetBounds(R);
 }
 //---------------------------------------------------------------------------
 int TFarDialogItem::GetHeight()
 {
-    return ActualBounds.Height() + 1;
+    return GetActualBounds().Height() + 1;
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::CanFocus()
 {
-    return Visible && Enabled && TabStop &&
+    int Type = GetType();
+    return GetVisible() && GetEnabled() && GetTabStop() &&
            (Type == DI_EDIT || Type == DI_PSWEDIT || Type == DI_FIXEDIT ||
             Type == DI_BUTTON || Type == DI_CHECKBOX || Type == DI_RADIOBUTTON ||
             Type == DI_COMBOBOX || Type == DI_LISTBOX || Type == DI_USERCONTROL);
@@ -1537,14 +1538,14 @@ bool TFarDialogItem::CanFocus()
 //---------------------------------------------------------------------------
 bool TFarDialogItem::Focused()
 {
-    return DialogItem.get()->Focus != 0;
+    return GetDialogItem()->Focus != 0;
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::UpdateFocused(bool value)
 {
-    DialogItem.get()->Focus = value;
+    GetDialogItem()->Focus = value;
     assert(Dialog);
-    Dialog->FItemFocused = value ? this : NULL;
+    GetDialog()->SetItemFocused(value ? this : NULL);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetFocus()
@@ -1552,16 +1553,16 @@ void TFarDialogItem::SetFocus()
     assert(CanFocus());
     if (!Focused())
     {
-        if (Dialog->Handle)
+        if (GetDialog()->GetHandle())
         {
             SendMessage(DM_SETFOCUS, 0);
         }
         else
         {
-            if (Dialog->ItemFocused)
+            if (GetDialog()->GetItemFocused())
             {
-                assert(Dialog->ItemFocused != this);
-                Dialog->ItemFocused->UpdateFocused(false);
+                assert(GetDialog()->GetItemFocused() != this);
+                GetDialog()->GetItemFocused()->UpdateFocused(false);
             }
             UpdateFocused(true);
         }
@@ -1577,16 +1578,16 @@ void TFarDialogItem::Init()
         // at least for "text" item, returned item size is not correct (on 1.70 final)
         SendMessage(DM_GETITEMPOSITION, (int)&Rect);
 
-        TRect B = Bounds;
+        TRect B = GetBounds();
         B.Left = Rect.Left;
         B.Right = Rect.Right;
-        Bounds = B;
+        SetBounds(B);
     }
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::CloseQuery()
 {
-    if (Focused() && (Dialog->Result >= 0))
+    if (Focused() && (GetDialog()->GetResult() >= 0))
     {
         DoExit();
     }
@@ -1596,24 +1597,24 @@ bool TFarDialogItem::CloseQuery()
 TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
 {
     TPoint Result;
-    if (Type == DI_USERCONTROL)
+    if (GetType() == DI_USERCONTROL)
     {
         Result = TPoint(Event->dwMousePosition.X, Event->dwMousePosition.Y);
     }
     else
     {
         Result = TPoint(
-                     Event->dwMousePosition.X - Dialog->Bounds.Left - Left,
-                     Event->dwMousePosition.Y - Dialog->Bounds.Top - Top);
+                     Event->dwMousePosition.X - GetDialog()->GetBounds().Left - GetLeft(),
+                     Event->dwMousePosition.Y - GetDialog()->GetBounds().Top - GetTop());
     }
     return Result;
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
 {
-    if (OnMouseClick)
+    if (FOnMouseClick)
     {
-        OnMouseClick(this, Event);
+        ((*this).*FOnMouseClick)(this, Event);
     }
     return DefaultItemProc(DN_MOUSECLICK, reinterpret_cast<long>(Event));
 }
@@ -1626,35 +1627,35 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
 //---------------------------------------------------------------------------
 void TFarDialogItem::Text(int X, int Y, int Color, wstring Str, bool AOem)
 {
-    if (!AOem && !Oem)
+    if (!AOem && !GetOem())
     {
         StrToFar(Str);
     }
     TFarEnvGuard Guard;
-    Dialog->FarPlugin->FStartupInfo.Text(
-        Dialog->Bounds.Left + Left + X, Dialog->Bounds.Top + Top + Y,
+    GetDialog()->GetFarPlugin()->FStartupInfo.Text(
+        GetDialog()->GetBounds().Left + GetLeft() + X, GetDialog()->GetBounds().Top + GetTop() + Y,
         Color, Str.c_str());
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Redraw()
 {
     // do not know how to force redraw of the item only
-    Dialog->Redraw();
+    GetDialog()->Redraw();
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetContainer(TFarDialogContainer *value)
 {
-    if (Container != value)
+    if (GetContainer() != value)
     {
-        TFarDialogContainer *PrevContainer = Container;
+        TFarDialogContainer *PrevContainer = GetContainer();
         FContainer = value;
         if (PrevContainer)
         {
             PrevContainer->Remove(this);
         }
-        if (Container)
+        if (GetContainer())
         {
-            Container->Add(this);
+            GetContainer()->Add(this);
         }
         UpdateBounds();
         UpdateEnabled();
@@ -1686,11 +1687,11 @@ void TFarButton::SetDataInternal(const wstring value)
     switch (FBrackets)
     {
     case brTight:
-        AValue = "[" + value + "]";
+        AValue = L"[" + value + L"]";
         break;
 
     case brSpace:
-        AValue = " " + value + " ";
+        AValue = L" " + value + L" ";
         break;
 
     default:
@@ -1700,7 +1701,7 @@ void TFarButton::SetDataInternal(const wstring value)
 
     TFarDialogItem::SetDataInternal(AValue);
 
-    if ((Left >= 0) || (Right >= 0))
+    if ((GetLeft() >= 0) || (GetRight() >= 0))
     {
         int Margin;
         switch (FBrackets)
@@ -1718,7 +1719,7 @@ void TFarButton::SetDataInternal(const wstring value)
             Margin = 2;
             break;
         }
-        Width = Margin + StripHotKey(AValue).Length() + Margin;
+        SetWidth(Margin + StripHotKey(AValue).size() + Margin);
     }
 }
 //---------------------------------------------------------------------------
@@ -1727,13 +1728,13 @@ wstring TFarButton::GetData()
     wstring Result = TFarDialogItem::GetData();
     if ((FBrackets == brTight) || (FBrackets == brSpace))
     {
-        bool HasBrackets = (Result.Length() >= 2) &&
-                           (Result[1] == ((FBrackets == brSpace) ? ' ' : '[')) &&
-                           (Result[Result.Length()] == ((FBrackets == brSpace) ? ' ' : ']'));
+        bool HasBrackets = (Result.size() >= 2) &&
+            (Result[1] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
+            (Result[Result.size()] == ((FBrackets == brSpace) ? L' ' : L']'));
         assert(HasBrackets);
         if (HasBrackets)
         {
-            Result = Result.SubString(2, Result.Length() - 2);
+            Result = Result.substr(2, Result.size() - 2);
         }
     }
     return Result;

@@ -728,10 +728,10 @@ public:
     void SetRight(int value) { SetCoordinate(2, value); }
     int GetBottom() { return GetCoordinate(3); }
     void SetBottom(int value) { SetCoordinate(3, value); }
-    int GetWidth() const;
+    int GetWidth();
     void SetWidth(int value);
-    int GetHeight() const;
-    void SetHeight(const int &value);
+    int GetHeight();
+    void SetHeight(int value);
     unsigned int GetFlags();
     void SetFlags(unsigned int value);
     bool GetEnabled() { return FEnabled; }
@@ -790,7 +790,7 @@ protected:
     void SetSelected(int value);
     TFarDialogContainer *GetContainer() { return FContainer; }
     void SetContainer(TFarDialogContainer *value);
-    bool GetChecked() const;
+    bool GetChecked();
     void SetChecked(bool value);
 
     virtual void Detach();
