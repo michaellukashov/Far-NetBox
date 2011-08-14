@@ -30,20 +30,20 @@ const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int FtpsImplicitPortNumber = 990;
 //---------------------------------------------------------------------
-TDateTime __fastcall SecToDateTime(int Sec)
+TDateTime SecToDateTime(int Sec)
 {
   return TDateTime((unsigned short)(Sec/60/60),
     (unsigned short)(Sec/60%60), (unsigned short)(Sec%60), 0);
 }
 //--- TSessionData ----------------------------------------------------
-__fastcall TSessionData::TSessionData(AnsiString aName):
+TSessionData::TSessionData(AnsiString aName):
   TNamedObject(aName)
 {
   Default();
   FModified = true;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Default()
+void TSessionData::Default()
 {
   HostName = "";
   PortNumber = SshPortNumber;
@@ -175,13 +175,13 @@ void __fastcall TSessionData::Default()
   // add also to TSessionLog::AddStartupInfo()
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::NonPersistant()
+void TSessionData::NonPersistant()
 {
   UpdateDirectories = false;
   PreserveDirectoryChanges = false;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Assign(TPersistent * Source)
+void TSessionData::Assign(TPersistent * Source)
 {
   if (Source && Source->InheritsFrom(__classid(TSessionData)))
   {
@@ -311,7 +311,7 @@ void __fastcall TSessionData::Assign(TPersistent * Source)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
+void TSessionData::Load(THierarchicalStorage * Storage)
 {
   bool RewritePassword = false;
   if (Storage->OpenSubKey(InternalStorageKey, False))
@@ -573,7 +573,7 @@ void __fastcall TSessionData::Load(THierarchicalStorage * Storage)
   FSource = ssStored;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
+void TSessionData::Save(THierarchicalStorage * Storage,
   bool PuttyExport, const TSessionData * Default)
 {
   if (Storage->OpenSubKey(InternalStorageKey, true))
@@ -801,7 +801,7 @@ void __fastcall TSessionData::Save(THierarchicalStorage * Storage,
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
+void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
 {
   if (!Configuration->DisablePasswordStoring && !PuttyExport && !FPassword.IsEmpty())
   {
@@ -842,19 +842,19 @@ void __fastcall TSessionData::SavePasswords(THierarchicalStorage * Storage, bool
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::RecryptPasswords()
+void TSessionData::RecryptPasswords()
 {
   Password = Password;
   ProxyPassword = ProxyPassword;
   TunnelPassword = TunnelPassword;
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::HasAnyPassword()
+bool TSessionData::HasAnyPassword()
 {
   return !FPassword.IsEmpty() || !FProxyPassword.IsEmpty() || !FTunnelPassword.IsEmpty();
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Modify()
+void TSessionData::Modify()
 {
   FModified = true;
   if (FSource == ssStored)
@@ -863,7 +863,7 @@ void __fastcall TSessionData::Modify()
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetSource()
+AnsiString TSessionData::GetSource()
 {
   switch (FSource)
   {
@@ -882,7 +882,7 @@ AnsiString __fastcall TSessionData::GetSource()
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
+void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 {
   if (Storage->OpenSubKey(InternalStorageKey, true))
   {
@@ -894,7 +894,7 @@ void __fastcall TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Stor
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::Remove()
+void TSessionData::Remove()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try
@@ -911,7 +911,7 @@ void __fastcall TSessionData::Remove()
   }
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::ParseUrl(AnsiString Url, TOptions * Options,
+bool TSessionData::ParseUrl(AnsiString Url, TOptions * Options,
   TStoredSessionList * StoredSessions, bool & DefaultsOnly, AnsiString * FileName,
   bool * AProtocolDefined)
 {
@@ -1147,7 +1147,7 @@ bool __fastcall TSessionData::ParseUrl(AnsiString Url, TOptions * Options,
   return true;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::ConfigureTunnel(int APortNumber)
+void TSessionData::ConfigureTunnel(int APortNumber)
 {
   FOrigHostName = HostName;
   FOrigPortNumber = PortNumber;
@@ -1159,24 +1159,24 @@ void __fastcall TSessionData::ConfigureTunnel(int APortNumber)
   ProxyMethod = pmNone;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::RollbackTunnel()
+void TSessionData::RollbackTunnel()
 {
   HostName = FOrigHostName;
   PortNumber = FOrigPortNumber;
   ProxyMethod = FOrigProxyMethod;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::ExpandEnvironmentVariables()
+void TSessionData::ExpandEnvironmentVariables()
 {
   PublicKeyFile = ::ExpandEnvironmentVariables(PublicKeyFile);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::ValidatePath(const AnsiString Path)
+void TSessionData::ValidatePath(const AnsiString Path)
 {
   // noop
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::ValidateName(const AnsiString Name)
+void TSessionData::ValidateName(const AnsiString Name)
 {
   if (Name.LastDelimiter("/") > 0)
   {
@@ -1184,17 +1184,17 @@ void __fastcall TSessionData::ValidateName(const AnsiString Name)
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::EncryptPassword(const AnsiString & Password, AnsiString Key)
+AnsiString TSessionData::EncryptPassword(const AnsiString & Password, AnsiString Key)
 {
   return Configuration->EncryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::StronglyRecryptPassword(const AnsiString & Password, AnsiString Key)
+AnsiString TSessionData::StronglyRecryptPassword(const AnsiString & Password, AnsiString Key)
 {
   return Configuration->StronglyRecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::DecryptPassword(const AnsiString & Password, AnsiString Key)
+AnsiString TSessionData::DecryptPassword(const AnsiString & Password, AnsiString Key)
 {
   AnsiString Result;
   try
@@ -1208,17 +1208,17 @@ AnsiString __fastcall TSessionData::DecryptPassword(const AnsiString & Password,
   return Result;
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::GetCanLogin()
+bool TSessionData::GetCanLogin()
 {
   return !FHostName.IsEmpty();
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetSessionKey()
+AnsiString TSessionData::GetSessionKey()
 {
   return FORMAT("%s@%s", (UserName, HostName));
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetInternalStorageKey()
+AnsiString TSessionData::GetInternalStorageKey()
 {
   if (Name.IsEmpty())
   {
@@ -1230,12 +1230,12 @@ AnsiString __fastcall TSessionData::GetInternalStorageKey()
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetStorageKey()
+AnsiString TSessionData::GetStorageKey()
 {
   return SessionName;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetHostName(AnsiString value)
+void TSessionData::SetHostName(AnsiString value)
 {
   if (FHostName != value)
   {
@@ -1260,42 +1260,42 @@ void __fastcall TSessionData::SetHostName(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPortNumber(int value)
+void TSessionData::SetPortNumber(int value)
 {
   SET_SESSION_PROPERTY(PortNumber);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetShell(AnsiString value)
+void TSessionData::SetShell(AnsiString value)
 {
   SET_SESSION_PROPERTY(Shell);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetSftpServer(AnsiString value)
+void TSessionData::SetSftpServer(AnsiString value)
 {
   SET_SESSION_PROPERTY(SftpServer);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetClearAliases(bool value)
+void TSessionData::SetClearAliases(bool value)
 {
   SET_SESSION_PROPERTY(ClearAliases);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetListingCommand(AnsiString value)
+void TSessionData::SetListingCommand(AnsiString value)
 {
   SET_SESSION_PROPERTY(ListingCommand);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetIgnoreLsWarnings(bool value)
+void TSessionData::SetIgnoreLsWarnings(bool value)
 {
   SET_SESSION_PROPERTY(IgnoreLsWarnings);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetUnsetNationalVars(bool value)
+void TSessionData::SetUnsetNationalVars(bool value)
 {
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetUserName(AnsiString value)
+void TSessionData::SetUserName(AnsiString value)
 {
   // UserName is key for password encryption
   AnsiString XPassword = Password;
@@ -1308,7 +1308,7 @@ void __fastcall TSessionData::SetUserName(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPassword(AnsiString value)
+void TSessionData::SetPassword(AnsiString value)
 {
   if (!value.IsEmpty())
   {
@@ -1318,109 +1318,109 @@ void __fastcall TSessionData::SetPassword(AnsiString value)
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetPassword()
+AnsiString TSessionData::GetPassword()
 {
   return DecryptPassword(FPassword, UserName+HostName);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPasswordless(bool value)
+void TSessionData::SetPasswordless(bool value)
 {
   SET_SESSION_PROPERTY(Passwordless);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPingInterval(int value)
+void TSessionData::SetPingInterval(int value)
 {
   SET_SESSION_PROPERTY(PingInterval);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTryAgent(bool value)
+void TSessionData::SetTryAgent(bool value)
 {
   SET_SESSION_PROPERTY(TryAgent);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetAgentFwd(bool value)
+void TSessionData::SetAgentFwd(bool value)
 {
   SET_SESSION_PROPERTY(AgentFwd);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetAuthTIS(bool value)
+void TSessionData::SetAuthTIS(bool value)
 {
   SET_SESSION_PROPERTY(AuthTIS);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetAuthKI(bool value)
+void TSessionData::SetAuthKI(bool value)
 {
   SET_SESSION_PROPERTY(AuthKI);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetAuthKIPassword(bool value)
+void TSessionData::SetAuthKIPassword(bool value)
 {
   SET_SESSION_PROPERTY(AuthKIPassword);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetAuthGSSAPI(bool value)
+void TSessionData::SetAuthGSSAPI(bool value)
 {
   SET_SESSION_PROPERTY(AuthGSSAPI);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetGSSAPIFwdTGT(bool value)
+void TSessionData::SetGSSAPIFwdTGT(bool value)
 {
   SET_SESSION_PROPERTY(GSSAPIFwdTGT);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetGSSAPIServerRealm(AnsiString value)
+void TSessionData::SetGSSAPIServerRealm(AnsiString value)
 {
   SET_SESSION_PROPERTY(GSSAPIServerRealm);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetChangeUsername(bool value)
+void TSessionData::SetChangeUsername(bool value)
 {
   SET_SESSION_PROPERTY(ChangeUsername);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCompression(bool value)
+void TSessionData::SetCompression(bool value)
 {
   SET_SESSION_PROPERTY(Compression);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSshProt(TSshProt value)
+void TSessionData::SetSshProt(TSshProt value)
 {
   SET_SESSION_PROPERTY(SshProt);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSsh2DES(bool value)
+void TSessionData::SetSsh2DES(bool value)
 {
   SET_SESSION_PROPERTY(Ssh2DES);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSshNoUserAuth(bool value)
+void TSessionData::SetSshNoUserAuth(bool value)
 {
   SET_SESSION_PROPERTY(SshNoUserAuth);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetSshProtStr()
+AnsiString TSessionData::GetSshProtStr()
 {
   return SshProtList[FSshProt];
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::GetUsesSsh()
+bool TSessionData::GetUsesSsh()
 {
   return (FSProtocol != fsFTP);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCipher(int Index, TCipher value)
+void TSessionData::SetCipher(int Index, TCipher value)
 {
   assert(Index >= 0 && Index < CIPHER_COUNT);
   SET_SESSION_PROPERTY(Ciphers[Index]);
 }
 //---------------------------------------------------------------------
-TCipher __fastcall TSessionData::GetCipher(int Index) const
+TCipher TSessionData::GetCipher(int Index) const
 {
   assert(Index >= 0 && Index < CIPHER_COUNT);
   return FCiphers[Index];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCipherList(AnsiString value)
+void TSessionData::SetCipherList(AnsiString value)
 {
   bool Used[CIPHER_COUNT];
   for (int C = 0; C < CIPHER_COUNT; C++) Used[C] = false;
@@ -1448,7 +1448,7 @@ void __fastcall TSessionData::SetCipherList(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetCipherList() const
+AnsiString TSessionData::GetCipherList() const
 {
   AnsiString Result;
   for (int Index = 0; Index < CIPHER_COUNT; Index++)
@@ -1458,19 +1458,19 @@ AnsiString __fastcall TSessionData::GetCipherList() const
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetKex(int Index, TKex value)
+void TSessionData::SetKex(int Index, TKex value)
 {
   assert(Index >= 0 && Index < KEX_COUNT);
   SET_SESSION_PROPERTY(Kex[Index]);
 }
 //---------------------------------------------------------------------
-TKex __fastcall TSessionData::GetKex(int Index) const
+TKex TSessionData::GetKex(int Index) const
 {
   assert(Index >= 0 && Index < KEX_COUNT);
   return FKex[Index];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetKexList(AnsiString value)
+void TSessionData::SetKexList(AnsiString value)
 {
   bool Used[KEX_COUNT];
   for (int K = 0; K < KEX_COUNT; K++) Used[K] = false;
@@ -1498,7 +1498,7 @@ void __fastcall TSessionData::SetKexList(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetKexList() const
+AnsiString TSessionData::GetKexList() const
 {
   AnsiString Result;
   for (int Index = 0; Index < KEX_COUNT; Index++)
@@ -1508,7 +1508,7 @@ AnsiString __fastcall TSessionData::GetKexList() const
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPublicKeyFile(AnsiString value)
+void TSessionData::SetPublicKeyFile(AnsiString value)
 {
   if (FPublicKeyFile != value)
   {
@@ -1517,48 +1517,48 @@ void __fastcall TSessionData::SetPublicKeyFile(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetReturnVar(AnsiString value)
+void TSessionData::SetReturnVar(AnsiString value)
 {
   SET_SESSION_PROPERTY(ReturnVar);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetLookupUserGroups(bool value)
+void TSessionData::SetLookupUserGroups(bool value)
 {
   SET_SESSION_PROPERTY(LookupUserGroups);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetEOLType(TEOLType value)
+void TSessionData::SetEOLType(TEOLType value)
 {
   SET_SESSION_PROPERTY(EOLType);
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TSessionData::GetTimeoutDT()
+TDateTime TSessionData::GetTimeoutDT()
 {
   return SecToDateTime(Timeout);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetTimeout(int value)
+void TSessionData::SetTimeout(int value)
 {
   SET_SESSION_PROPERTY(Timeout);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetProtocol(TProtocol value)
+void TSessionData::SetProtocol(TProtocol value)
 {
   SET_SESSION_PROPERTY(Protocol);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetFSProtocol(TFSProtocol value)
+void TSessionData::SetFSProtocol(TFSProtocol value)
 {
   SET_SESSION_PROPERTY(FSProtocol);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetFSProtocolStr()
+AnsiString TSessionData::GetFSProtocolStr()
 {
   assert(FSProtocol >= 0 && FSProtocol < FSPROTOCOL_COUNT);
   return FSProtocolNames[FSProtocol];
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetDetectReturnVar(bool value)
+void TSessionData::SetDetectReturnVar(bool value)
 {
   if (value != DetectReturnVar)
   {
@@ -1566,12 +1566,12 @@ void __fastcall TSessionData::SetDetectReturnVar(bool value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSessionData::GetDetectReturnVar()
+bool TSessionData::GetDetectReturnVar()
 {
   return ReturnVar.IsEmpty();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetDefaultShell(bool value)
+void TSessionData::SetDefaultShell(bool value)
 {
   if (value != DefaultShell)
   {
@@ -1579,12 +1579,12 @@ void __fastcall TSessionData::SetDefaultShell(bool value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSessionData::GetDefaultShell()
+bool TSessionData::GetDefaultShell()
 {
   return Shell.IsEmpty();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetProtocolStr(AnsiString value)
+void TSessionData::SetProtocolStr(AnsiString value)
 {
   FProtocol = ptRaw;
   for (int Index = 0; Index < PROTOCOL_COUNT; Index++)
@@ -1597,12 +1597,12 @@ void __fastcall TSessionData::SetProtocolStr(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetProtocolStr() const
+AnsiString TSessionData::GetProtocolStr() const
 {
   return ProtocolNames[Protocol];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPingIntervalDT(TDateTime value)
+void TSessionData::SetPingIntervalDT(TDateTime value)
 {
   unsigned short hour, min, sec, msec;
 
@@ -1610,32 +1610,32 @@ void __fastcall TSessionData::SetPingIntervalDT(TDateTime value)
   PingInterval = ((int)hour)*60*60 + ((int)min)*60 + sec;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TSessionData::GetPingIntervalDT()
+TDateTime TSessionData::GetPingIntervalDT()
 {
   return SecToDateTime(PingInterval);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetPingType(TPingType value)
+void TSessionData::SetPingType(TPingType value)
 {
   SET_SESSION_PROPERTY(PingType);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetAddressFamily(TAddressFamily value)
+void TSessionData::SetAddressFamily(TAddressFamily value)
 {
   SET_SESSION_PROPERTY(AddressFamily);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetRekeyData(AnsiString value)
+void TSessionData::SetRekeyData(AnsiString value)
 {
   SET_SESSION_PROPERTY(RekeyData);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetRekeyTime(unsigned int value)
+void TSessionData::SetRekeyTime(unsigned int value)
 {
   SET_SESSION_PROPERTY(RekeyTime);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetDefaultSessionName()
+AnsiString TSessionData::GetDefaultSessionName()
 {
   if (!HostName.IsEmpty() && !UserName.IsEmpty())
   {
@@ -1651,7 +1651,7 @@ AnsiString __fastcall TSessionData::GetDefaultSessionName()
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetSessionName()
+AnsiString TSessionData::GetSessionName()
 {
   if (!Name.IsEmpty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
@@ -1664,7 +1664,7 @@ AnsiString __fastcall TSessionData::GetSessionName()
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetSessionUrl()
+AnsiString TSessionData::GetSessionUrl()
 {
   AnsiString Url;
   if (!Name.IsEmpty() && !TNamedObjectList::IsHidden(this) &&
@@ -1709,227 +1709,227 @@ AnsiString __fastcall TSessionData::GetSessionUrl()
   return Url;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTimeDifference(TDateTime value)
+void TSessionData::SetTimeDifference(TDateTime value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetLocalDirectory(AnsiString value)
+void TSessionData::SetLocalDirectory(AnsiString value)
 {
   SET_SESSION_PROPERTY(LocalDirectory);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetRemoteDirectory(AnsiString value)
+void TSessionData::SetRemoteDirectory(AnsiString value)
 {
   SET_SESSION_PROPERTY(RemoteDirectory);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetUpdateDirectories(bool value)
+void TSessionData::SetUpdateDirectories(bool value)
 {
   SET_SESSION_PROPERTY(UpdateDirectories);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCacheDirectories(bool value)
+void TSessionData::SetCacheDirectories(bool value)
 {
   SET_SESSION_PROPERTY(CacheDirectories);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCacheDirectoryChanges(bool value)
+void TSessionData::SetCacheDirectoryChanges(bool value)
 {
   SET_SESSION_PROPERTY(CacheDirectoryChanges);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetPreserveDirectoryChanges(bool value)
+void TSessionData::SetPreserveDirectoryChanges(bool value)
 {
   SET_SESSION_PROPERTY(PreserveDirectoryChanges);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetResolveSymlinks(bool value)
+void TSessionData::SetResolveSymlinks(bool value)
 {
   SET_SESSION_PROPERTY(ResolveSymlinks);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetDSTMode(TDSTMode value)
+void TSessionData::SetDSTMode(TDSTMode value)
 {
   SET_SESSION_PROPERTY(DSTMode);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetDeleteToRecycleBin(bool value)
+void TSessionData::SetDeleteToRecycleBin(bool value)
 {
   SET_SESSION_PROPERTY(DeleteToRecycleBin);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetOverwrittenToRecycleBin(bool value)
+void TSessionData::SetOverwrittenToRecycleBin(bool value)
 {
   SET_SESSION_PROPERTY(OverwrittenToRecycleBin);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetRecycleBinPath(AnsiString value)
+void TSessionData::SetRecycleBinPath(AnsiString value)
 {
   SET_SESSION_PROPERTY(RecycleBinPath);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetPostLoginCommands(AnsiString value)
+void TSessionData::SetPostLoginCommands(AnsiString value)
 {
   SET_SESSION_PROPERTY(PostLoginCommands);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetLockInHome(bool value)
+void TSessionData::SetLockInHome(bool value)
 {
   SET_SESSION_PROPERTY(LockInHome);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSpecial(bool value)
+void TSessionData::SetSpecial(bool value)
 {
   SET_SESSION_PROPERTY(Special);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetScp1Compatibility(bool value)
+void TSessionData::SetScp1Compatibility(bool value)
 {
   SET_SESSION_PROPERTY(Scp1Compatibility);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTcpNoDelay(bool value)
+void TSessionData::SetTcpNoDelay(bool value)
 {
   SET_SESSION_PROPERTY(TcpNoDelay);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyMethod(TProxyMethod value)
+void TSessionData::SetProxyMethod(TProxyMethod value)
 {
   SET_SESSION_PROPERTY(ProxyMethod);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyHost(AnsiString value)
+void TSessionData::SetProxyHost(AnsiString value)
 {
   SET_SESSION_PROPERTY(ProxyHost);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyPort(int value)
+void TSessionData::SetProxyPort(int value)
 {
   SET_SESSION_PROPERTY(ProxyPort);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyUsername(AnsiString value)
+void TSessionData::SetProxyUsername(AnsiString value)
 {
   SET_SESSION_PROPERTY(ProxyUsername);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyPassword(AnsiString value)
+void TSessionData::SetProxyPassword(AnsiString value)
 {
   value = EncryptPassword(value, ProxyUsername+ProxyHost);
   SET_SESSION_PROPERTY(ProxyPassword);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetProxyPassword() const
+AnsiString TSessionData::GetProxyPassword() const
 {
   return DecryptPassword(FProxyPassword, ProxyUsername+ProxyHost);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyTelnetCommand(AnsiString value)
+void TSessionData::SetProxyTelnetCommand(AnsiString value)
 {
   SET_SESSION_PROPERTY(ProxyTelnetCommand);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyLocalCommand(AnsiString value)
+void TSessionData::SetProxyLocalCommand(AnsiString value)
 {
   SET_SESSION_PROPERTY(ProxyLocalCommand);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyDNS(TAutoSwitch value)
+void TSessionData::SetProxyDNS(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(ProxyDNS);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetProxyLocalhost(bool value)
+void TSessionData::SetProxyLocalhost(bool value)
 {
   SET_SESSION_PROPERTY(ProxyLocalhost);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpProxyLogonType(int value)
+void TSessionData::SetFtpProxyLogonType(int value)
 {
   SET_SESSION_PROPERTY(FtpProxyLogonType);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetBug(TSshBug Bug, TAutoSwitch value)
+void TSessionData::SetBug(TSshBug Bug, TAutoSwitch value)
 {
   assert(Bug >= 0 && Bug < LENOF(FBugs));
   SET_SESSION_PROPERTY(Bugs[Bug]);
 }
 //---------------------------------------------------------------------
-TAutoSwitch __fastcall TSessionData::GetBug(TSshBug Bug) const
+TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
   assert(Bug >= 0 && Bug < LENOF(FBugs));
   return FBugs[Bug];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCustomParam1(AnsiString value)
+void TSessionData::SetCustomParam1(AnsiString value)
 {
   SET_SESSION_PROPERTY(CustomParam1);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetCustomParam2(AnsiString value)
+void TSessionData::SetCustomParam2(AnsiString value)
 {
   SET_SESSION_PROPERTY(CustomParam2);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPDownloadQueue(int value)
+void TSessionData::SetSFTPDownloadQueue(int value)
 {
   SET_SESSION_PROPERTY(SFTPDownloadQueue);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPUploadQueue(int value)
+void TSessionData::SetSFTPUploadQueue(int value)
 {
   SET_SESSION_PROPERTY(SFTPUploadQueue);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPListingQueue(int value)
+void TSessionData::SetSFTPListingQueue(int value)
 {
   SET_SESSION_PROPERTY(SFTPListingQueue);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPMaxVersion(int value)
+void TSessionData::SetSFTPMaxVersion(int value)
 {
   SET_SESSION_PROPERTY(SFTPMaxVersion);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPMaxPacketSize(unsigned long value)
+void TSessionData::SetSFTPMaxPacketSize(unsigned long value)
 {
   SET_SESSION_PROPERTY(SFTPMaxPacketSize);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch value)
+void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch value)
 {
   assert(Bug >= 0 && Bug < LENOF(FSFTPBugs));
   SET_SESSION_PROPERTY(SFTPBugs[Bug]);
 }
 //---------------------------------------------------------------------
-TAutoSwitch __fastcall TSessionData::GetSFTPBug(TSftpBug Bug) const
+TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
   assert(Bug >= 0 && Bug < LENOF(FSFTPBugs));
   return FSFTPBugs[Bug];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetSCPLsFullTime(TAutoSwitch value)
+void TSessionData::SetSCPLsFullTime(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(SCPLsFullTime);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpListAll(TAutoSwitch value)
+void TSessionData::SetFtpListAll(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(FtpListAll);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetColor(int value)
+void TSessionData::SetColor(int value)
 {
   SET_SESSION_PROPERTY(Color);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnel(bool value)
+void TSessionData::SetTunnel(bool value)
 {
   SET_SESSION_PROPERTY(Tunnel);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelHostName(AnsiString value)
+void TSessionData::SetTunnelHostName(AnsiString value)
 {
   if (FTunnelHostName != value)
   {
@@ -1954,12 +1954,12 @@ void __fastcall TSessionData::SetTunnelHostName(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPortNumber(int value)
+void TSessionData::SetTunnelPortNumber(int value)
 {
   SET_SESSION_PROPERTY(TunnelPortNumber);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelUserName(AnsiString value)
+void TSessionData::SetTunnelUserName(AnsiString value)
 {
   // TunnelUserName is key for password encryption
   AnsiString XTunnelPassword = TunnelPassword;
@@ -1972,18 +1972,18 @@ void __fastcall TSessionData::SetTunnelUserName(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPassword(AnsiString value)
+void TSessionData::SetTunnelPassword(AnsiString value)
 {
   value = EncryptPassword(value, TunnelUserName+TunnelHostName);
   SET_SESSION_PROPERTY(TunnelPassword);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetTunnelPassword()
+AnsiString TSessionData::GetTunnelPassword()
 {
   return DecryptPassword(FTunnelPassword, TunnelUserName+TunnelHostName);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPublicKeyFile(AnsiString value)
+void TSessionData::SetTunnelPublicKeyFile(AnsiString value)
 {
   if (FTunnelPublicKeyFile != value)
   {
@@ -1992,67 +1992,67 @@ void __fastcall TSessionData::SetTunnelPublicKeyFile(AnsiString value)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelLocalPortNumber(int value)
+void TSessionData::SetTunnelLocalPortNumber(int value)
 {
   SET_SESSION_PROPERTY(TunnelLocalPortNumber);
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::GetTunnelAutoassignLocalPortNumber()
+bool TSessionData::GetTunnelAutoassignLocalPortNumber()
 {
   return (FTunnelLocalPortNumber <= 0);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetTunnelPortFwd(AnsiString value)
+void TSessionData::SetTunnelPortFwd(AnsiString value)
 {
   SET_SESSION_PROPERTY(TunnelPortFwd);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpPasvMode(bool value)
+void TSessionData::SetFtpPasvMode(bool value)
 {
   SET_SESSION_PROPERTY(FtpPasvMode);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpForcePasvIp(bool value)
+void TSessionData::SetFtpForcePasvIp(bool value)
 {
   SET_SESSION_PROPERTY(FtpForcePasvIp);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpAccount(AnsiString value)
+void TSessionData::SetFtpAccount(AnsiString value)
 {
   SET_SESSION_PROPERTY(FtpAccount);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpPingInterval(int value)
+void TSessionData::SetFtpPingInterval(int value)
 {
   SET_SESSION_PROPERTY(FtpPingInterval);
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TSessionData::GetFtpPingIntervalDT()
+TDateTime TSessionData::GetFtpPingIntervalDT()
 {
   return SecToDateTime(FtpPingInterval);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetFtpPingType(TPingType value)
+void TSessionData::SetFtpPingType(TPingType value)
 {
   SET_SESSION_PROPERTY(FtpPingType);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionData::SetFtps(TFtps value)
+void TSessionData::SetFtps(TFtps value)
 {
   SET_SESSION_PROPERTY(Ftps);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetNotUtf(TAutoSwitch value)
+void TSessionData::SetNotUtf(TAutoSwitch value)
 {
   SET_SESSION_PROPERTY(NotUtf);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetHostKey(AnsiString value)
+void TSessionData::SetHostKey(AnsiString value)
 {
   SET_SESSION_PROPERTY(HostKey);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetInfoTip()
+AnsiString TSessionData::GetInfoTip()
 {
   if (UsesSsh)
   {
@@ -2068,7 +2068,7 @@ AnsiString __fastcall TSessionData::GetInfoTip()
   }
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall TSessionData::GetLocalName()
+AnsiString TSessionData::GetLocalName()
 {
   AnsiString Result = Name;
   int P = Result.LastDelimiter("/");
@@ -2079,20 +2079,20 @@ AnsiString __fastcall TSessionData::GetLocalName()
   return Result;
 }
 //=== TStoredSessionList ----------------------------------------------
-__fastcall TStoredSessionList::TStoredSessionList(bool aReadOnly):
+TStoredSessionList::TStoredSessionList(bool aReadOnly):
   TNamedObjectList(), FReadOnly(aReadOnly)
 {
   assert(Configuration);
   FDefaultSettings = new TSessionData(DefaultName);
 }
 //---------------------------------------------------------------------
-__fastcall TStoredSessionList::~TStoredSessionList()
+TStoredSessionList::~TStoredSessionList()
 {
   assert(Configuration);
   delete FDefaultSettings;
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
+void TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults)
 {
   TStringList *SubKeys = new TStringList();
@@ -2159,7 +2159,7 @@ void __fastcall TStoredSessionList::Load(THierarchicalStorage * Storage,
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Load(AnsiString aKey, bool UseDefaults)
+void TStoredSessionList::Load(AnsiString aKey, bool UseDefaults)
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   try {
@@ -2169,7 +2169,7 @@ void __fastcall TStoredSessionList::Load(AnsiString aKey, bool UseDefaults)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Load()
+void TStoredSessionList::Load()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try {
@@ -2180,7 +2180,7 @@ void __fastcall TStoredSessionList::Load()
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
+void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   TSessionData * Data, bool All, bool RecryptPasswordOnly,
   TSessionData * FactoryDefaults)
 {
@@ -2197,7 +2197,7 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
+void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
   TSessionData * FactoryDefaults = new TSessionData("");
@@ -2216,12 +2216,12 @@ void __fastcall TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
+void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 {
   DoSave(Storage, All, false);
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
+void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try
@@ -2241,17 +2241,17 @@ void __fastcall TStoredSessionList::DoSave(bool All, bool Explicit, bool Recrypt
   Saved();
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Save(bool All, bool Explicit)
+void TStoredSessionList::Save(bool All, bool Explicit)
 {
   DoSave(All, Explicit, false);
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::RecryptPasswords()
+void TStoredSessionList::RecryptPasswords()
 {
   DoSave(true, true, true);
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Saved()
+void TStoredSessionList::Saved()
 {
   FDefaultSettings->Modified = false;
   for (int Index = 0; Index < Count + HiddenCount; Index++)
@@ -2260,7 +2260,7 @@ void __fastcall TStoredSessionList::Saved()
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Export(const AnsiString FileName)
+void TStoredSessionList::Export(const AnsiString FileName)
 {
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   try
@@ -2277,13 +2277,13 @@ void __fastcall TStoredSessionList::Export(const AnsiString FileName)
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::SelectAll(bool Select)
+void TStoredSessionList::SelectAll(bool Select)
 {
   for (int Index = 0; Index < Count; Index++)
     Sessions[Index]->Selected = Select;
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Import(TStoredSessionList * From,
+void TStoredSessionList::Import(TStoredSessionList * From,
   bool OnlySelected)
 {
   for (int Index = 0; Index < From->Count; Index++)
@@ -2301,7 +2301,7 @@ void __fastcall TStoredSessionList::Import(TStoredSessionList * From,
   Save(false, true);
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::SelectSessionsToImport
+void TStoredSessionList::SelectSessionsToImport
   (TStoredSessionList * Dest, bool SSHOnly)
 {
   for (int Index = 0; Index < Count; Index++)
@@ -2312,7 +2312,7 @@ void __fastcall TStoredSessionList::SelectSessionsToImport
   }
 }
 //---------------------------------------------------------------------
-void __fastcall TStoredSessionList::Cleanup()
+void TStoredSessionList::Cleanup()
 {
   try {
     if (Configuration->Storage == stRegistry) Clear();
@@ -2329,14 +2329,14 @@ void __fastcall TStoredSessionList::Cleanup()
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TStoredSessionList::IndexOf(TSessionData * Data)
+int TStoredSessionList::IndexOf(TSessionData * Data)
 {
   for (int Index = 0; Index < Count; Index++)
     if (Data == Sessions[Index]) return Index;
   return -1;
 }
 //---------------------------------------------------------------------------
-TSessionData * __fastcall TStoredSessionList::NewSession(
+TSessionData * TStoredSessionList::NewSession(
   AnsiString SessionName, TSessionData * Session)
 {
   TSessionData * DuplicateSession = (TSessionData*)FindByName(SessionName);
@@ -2360,7 +2360,7 @@ TSessionData * __fastcall TStoredSessionList::NewSession(
   return DuplicateSession;
 }
 //---------------------------------------------------------------------------
-void __fastcall TStoredSessionList::SetDefaultSettings(TSessionData * value)
+void TStoredSessionList::SetDefaultSettings(TSessionData * value)
 {
   assert(FDefaultSettings);
   if (FDefaultSettings != value)
@@ -2375,7 +2375,7 @@ void __fastcall TStoredSessionList::SetDefaultSettings(TSessionData * value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TStoredSessionList::ImportHostKeys(const AnsiString TargetKey,
+void TStoredSessionList::ImportHostKeys(const AnsiString TargetKey,
   const AnsiString SourceKey, TStoredSessionList * Sessions,
   bool OnlySelected)
 {
@@ -2426,7 +2426,7 @@ void __fastcall TStoredSessionList::ImportHostKeys(const AnsiString TargetKey,
   }
 }
 //---------------------------------------------------------------------------
-TSessionData * __fastcall TStoredSessionList::ParseUrl(AnsiString Url,
+TSessionData * TStoredSessionList::ParseUrl(AnsiString Url,
   TOptions * Options, bool & DefaultsOnly, AnsiString * FileName,
   bool * AProtocolDefined)
 {

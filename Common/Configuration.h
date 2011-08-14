@@ -52,113 +52,113 @@ private:
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
 
-  AnsiString __fastcall GetOSVersionStr();
-  TVSFixedFileInfo *__fastcall GetFixedApplicationInfo();
-  void * __fastcall GetApplicationInfo();
-  virtual AnsiString __fastcall GetVersionStr();
-  virtual AnsiString __fastcall GetVersion();
-  AnsiString __fastcall GetProductVersion();
-  AnsiString __fastcall GetProductName();
-  AnsiString __fastcall GetCompanyName();
-  AnsiString __fastcall TrimVersion(AnsiString Version);
-  AnsiString __fastcall GetStoredSessionsSubKey();
-  AnsiString __fastcall GetPuttySessionsKey();
-  void __fastcall SetRandomSeedFile(AnsiString value);
-  AnsiString __fastcall GetRandomSeedFileName();
-  void __fastcall SetPuttyRegistryStorageKey(AnsiString value);
-  AnsiString __fastcall GetSshHostKeysSubKey();
-  AnsiString __fastcall GetRootKeyStr();
-  AnsiString __fastcall GetConfigurationSubKey();
-  TEOLType __fastcall GetLocalEOLType();
-  void __fastcall SetLogging(bool value);
-  void __fastcall SetLogFileName(AnsiString value);
-  void __fastcall SetLogToFile(bool value);
-  bool __fastcall GetLogToFile();
-  void __fastcall SetLogWindowLines(int value);
-  void __fastcall SetLogWindowComplete(bool value);
-  bool __fastcall GetLogWindowComplete();
-  void __fastcall SetLogFileAppend(bool value);
-  void __fastcall SetLogProtocol(int value);
-  void __fastcall SetLogActions(bool value);
-  AnsiString __fastcall GetDefaultLogFileName();
-  AnsiString __fastcall GetTimeFormat();
-  void __fastcall SetStorage(TStorage value);
-  AnsiString __fastcall GetRegistryStorageKey();
-  AnsiString __fastcall GetIniFileStorageName();
-  void __fastcall SetIniFileStorageName(AnsiString value);
-  AnsiString __fastcall GetPartialExt() const;
-  AnsiString __fastcall GetFileInfoString(const AnsiString Key);
-  bool __fastcall GetGSSAPIInstalled();
-  void __fastcall SetSessionReopenAuto(int value);
-  void __fastcall SetSessionReopenBackground(int value);
-  void __fastcall SetSessionReopenTimeout(int value);
-  void __fastcall SetTunnelLocalPortNumberLow(int value);
-  void __fastcall SetTunnelLocalPortNumberHigh(int value);
-  void __fastcall SetCacheDirectoryChangesMaxSize(int value);
-  void __fastcall SetShowFtpWelcomeMessage(bool value);
-  int __fastcall GetCompoundVersion();
-  void __fastcall UpdateActualLogProtocol();
+  AnsiString GetOSVersionStr();
+  TVSFixedFileInfo *GetFixedApplicationInfo();
+  void * GetApplicationInfo();
+  virtual AnsiString GetVersionStr();
+  virtual AnsiString GetVersion();
+  AnsiString GetProductVersion();
+  AnsiString GetProductName();
+  AnsiString GetCompanyName();
+  AnsiString TrimVersion(AnsiString Version);
+  AnsiString GetStoredSessionsSubKey();
+  AnsiString GetPuttySessionsKey();
+  void SetRandomSeedFile(AnsiString value);
+  AnsiString GetRandomSeedFileName();
+  void SetPuttyRegistryStorageKey(AnsiString value);
+  AnsiString GetSshHostKeysSubKey();
+  AnsiString GetRootKeyStr();
+  AnsiString GetConfigurationSubKey();
+  TEOLType GetLocalEOLType();
+  void SetLogging(bool value);
+  void SetLogFileName(AnsiString value);
+  void SetLogToFile(bool value);
+  bool GetLogToFile();
+  void SetLogWindowLines(int value);
+  void SetLogWindowComplete(bool value);
+  bool GetLogWindowComplete();
+  void SetLogFileAppend(bool value);
+  void SetLogProtocol(int value);
+  void SetLogActions(bool value);
+  AnsiString GetDefaultLogFileName();
+  AnsiString GetTimeFormat();
+  void SetStorage(TStorage value);
+  AnsiString GetRegistryStorageKey();
+  AnsiString GetIniFileStorageName();
+  void SetIniFileStorageName(AnsiString value);
+  AnsiString GetPartialExt() const;
+  AnsiString GetFileInfoString(const AnsiString Key);
+  bool GetGSSAPIInstalled();
+  void SetSessionReopenAuto(int value);
+  void SetSessionReopenBackground(int value);
+  void SetSessionReopenTimeout(int value);
+  void SetTunnelLocalPortNumberLow(int value);
+  void SetTunnelLocalPortNumberHigh(int value);
+  void SetCacheDirectoryChangesMaxSize(int value);
+  void SetShowFtpWelcomeMessage(bool value);
+  int GetCompoundVersion();
+  void UpdateActualLogProtocol();
 
 protected:
   TStorage FStorage;
   TCriticalSection * FCriticalSection;
 
-  virtual TStorage __fastcall GetStorage();
-  virtual void __fastcall Changed();
-  virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void __fastcall LoadData(THierarchicalStorage * Storage);
-  virtual void __fastcall CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
-  virtual void __fastcall LoadAdmin(THierarchicalStorage * Storage);
-  virtual AnsiString __fastcall GetDefaultKeyFile();
-  virtual void __fastcall Saved();
-  void __fastcall CleanupRegistry(AnsiString CleanupSubKey);
-  AnsiString __fastcall BannerHash(const AnsiString & Banner);
+  virtual TStorage GetStorage();
+  virtual void Changed();
+  virtual void SaveData(THierarchicalStorage * Storage, bool All);
+  virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
+  virtual void LoadAdmin(THierarchicalStorage * Storage);
+  virtual AnsiString GetDefaultKeyFile();
+  virtual void Saved();
+  void CleanupRegistry(AnsiString CleanupSubKey);
+  AnsiString BannerHash(const AnsiString & Banner);
 
-  virtual bool __fastcall GetConfirmOverwriting();
-  virtual void __fastcall SetConfirmOverwriting(bool value);
-  bool __fastcall GetConfirmResume();
-  void __fastcall SetConfirmResume(bool value);
-  bool __fastcall GetAutoReadDirectoryAfterOp();
-  void __fastcall SetAutoReadDirectoryAfterOp(bool value);
-  virtual bool __fastcall GetRememberPassword();
+  virtual bool GetConfirmOverwriting();
+  virtual void SetConfirmOverwriting(bool value);
+  bool GetConfirmResume();
+  void SetConfirmResume(bool value);
+  bool GetAutoReadDirectoryAfterOp();
+  void SetAutoReadDirectoryAfterOp(bool value);
+  virtual bool GetRememberPassword();
 
-  virtual AnsiString __fastcall ModuleFileName();
+  virtual AnsiString ModuleFileName();
 
-  AnsiString __fastcall GetFileFileInfoString(const AnsiString Key,
+  AnsiString GetFileFileInfoString(const AnsiString Key,
     const AnsiString FileName);
-  void * __fastcall GetFileApplicationInfo(const AnsiString FileName);
-  AnsiString __fastcall GetFileProductVersion(const AnsiString FileName);
-  AnsiString __fastcall GetFileProductName(const AnsiString FileName);
-  AnsiString __fastcall GetFileCompanyName(const AnsiString FileName);
+  void * GetFileApplicationInfo(const AnsiString FileName);
+  AnsiString GetFileProductVersion(const AnsiString FileName);
+  AnsiString GetFileProductName(const AnsiString FileName);
+  AnsiString GetFileCompanyName(const AnsiString FileName);
 
   __property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
   __property AnsiString PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
   __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
 
 public:
-  __fastcall TConfiguration();
-  virtual __fastcall ~TConfiguration();
-  virtual void __fastcall Default();
-  virtual void __fastcall Load();
-  virtual void __fastcall Save(bool All, bool Explicit);
-  void __fastcall Export(const AnsiString FileName);
-  void __fastcall CleanupConfiguration();
-  void __fastcall CleanupIniFile();
-  void __fastcall CleanupHostKeys();
-  void __fastcall CleanupRandomSeedFile();
-  void __fastcall BeginUpdate();
-  void __fastcall EndUpdate();
-  void __fastcall LoadDirectoryChangesCache(const AnsiString SessionKey,
+  TConfiguration();
+  virtual ~TConfiguration();
+  virtual void Default();
+  virtual void Load();
+  virtual void Save(bool All, bool Explicit);
+  void Export(const AnsiString FileName);
+  void CleanupConfiguration();
+  void CleanupIniFile();
+  void CleanupHostKeys();
+  void CleanupRandomSeedFile();
+  void BeginUpdate();
+  void EndUpdate();
+  void LoadDirectoryChangesCache(const AnsiString SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void __fastcall SaveDirectoryChangesCache(const AnsiString SessionKey,
+  void SaveDirectoryChangesCache(const AnsiString SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  bool __fastcall ShowBanner(const AnsiString SessionKey, const AnsiString & Banner);
-  void __fastcall NeverShowBanner(const AnsiString SessionKey, const AnsiString & Banner);
+  bool ShowBanner(const AnsiString SessionKey, const AnsiString & Banner);
+  void NeverShowBanner(const AnsiString SessionKey, const AnsiString & Banner);
   virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
-  void __fastcall TemporaryLogging(const AnsiString ALogFileName);
-  virtual AnsiString __fastcall EncryptPassword(AnsiString Password, AnsiString Key);
-  virtual AnsiString __fastcall DecryptPassword(AnsiString Password, AnsiString Key);
-  virtual AnsiString __fastcall StronglyRecryptPassword(AnsiString Password, AnsiString Key);
+  void TemporaryLogging(const AnsiString ALogFileName);
+  virtual AnsiString EncryptPassword(AnsiString Password, AnsiString Key);
+  virtual AnsiString DecryptPassword(AnsiString Password, AnsiString Key);
+  virtual AnsiString StronglyRecryptPassword(AnsiString Password, AnsiString Key);
 
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
@@ -218,8 +218,8 @@ public:
 class TShortCuts
 {
 public:
-  void __fastcall Add(TShortCut ShortCut);
-  bool __fastcall Has(TShortCut ShortCut) const;
+  void Add(TShortCut ShortCut);
+  bool Has(TShortCut ShortCut) const;
 
 private:
   std::set<TShortCut> FShortCuts;

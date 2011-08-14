@@ -18,7 +18,7 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
 //---------------------------------------------------------------------------
-AnsiString __fastcall MungeStr(const AnsiString Str)
+AnsiString MungeStr(const AnsiString Str)
 {
   AnsiString Result;
   Result.SetLength(Str.Length() * 3 + 1);
@@ -27,7 +27,7 @@ AnsiString __fastcall MungeStr(const AnsiString Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall UnMungeStr(const AnsiString Str)
+AnsiString UnMungeStr(const AnsiString Str)
 {
   AnsiString Result;
   Result.SetLength(Str.Length() * 3 + 1);
@@ -36,12 +36,12 @@ AnsiString __fastcall UnMungeStr(const AnsiString Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall PuttyMungeStr(const AnsiString Str)
+AnsiString PuttyMungeStr(const AnsiString Str)
 {
   return MungeStr(Str);
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall MungeIniName(const AnsiString Str)
+AnsiString MungeIniName(const AnsiString Str)
 {
   int P = Str.Pos("=");
   // make this fast for now
@@ -55,7 +55,7 @@ AnsiString __fastcall MungeIniName(const AnsiString Str)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall UnMungeIniName(const AnsiString Str)
+AnsiString UnMungeIniName(const AnsiString Str)
 {
   int P = Str.Pos("%3D");
   // make this fast for now
@@ -69,7 +69,7 @@ AnsiString __fastcall UnMungeIniName(const AnsiString Str)
   }
 }
 //===========================================================================
-__fastcall THierarchicalStorage::THierarchicalStorage(const AnsiString AStorage)
+THierarchicalStorage::THierarchicalStorage(const AnsiString AStorage)
 {
   FStorage = AStorage;
   FKeyHistory = new TStringList();
@@ -78,33 +78,33 @@ __fastcall THierarchicalStorage::THierarchicalStorage(const AnsiString AStorage)
   MungeStringValues = true;
 }
 //---------------------------------------------------------------------------
-__fastcall THierarchicalStorage::~THierarchicalStorage()
+THierarchicalStorage::~THierarchicalStorage()
 {
   delete FKeyHistory;
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
+void THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 {
   FAccessMode = value;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall THierarchicalStorage::GetCurrentSubKeyMunged()
+AnsiString THierarchicalStorage::GetCurrentSubKeyMunged()
 {
   if (FKeyHistory->Count) return FKeyHistory->Strings[FKeyHistory->Count-1];
     else return "";
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall THierarchicalStorage::GetCurrentSubKey()
+AnsiString THierarchicalStorage::GetCurrentSubKey()
 {
   return UnMungeStr(GetCurrentSubKeyMunged());
 }
 //---------------------------------------------------------------------------
-bool __fastcall THierarchicalStorage::OpenRootKey(bool CanCreate)
+bool THierarchicalStorage::OpenRootKey(bool CanCreate)
 {
   return OpenSubKey("", CanCreate);
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall THierarchicalStorage::MungeSubKey(AnsiString Key, bool Path)
+AnsiString THierarchicalStorage::MungeSubKey(AnsiString Key, bool Path)
 {
   AnsiString Result;
   if (Path)
@@ -126,19 +126,19 @@ AnsiString __fastcall THierarchicalStorage::MungeSubKey(AnsiString Key, bool Pat
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall THierarchicalStorage::OpenSubKey(const AnsiString SubKey, bool /*CanCreate*/, bool Path)
+bool THierarchicalStorage::OpenSubKey(const AnsiString SubKey, bool /*CanCreate*/, bool Path)
 {
   FKeyHistory->Add(IncludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path)));
   return true;
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::CloseSubKey()
+void THierarchicalStorage::CloseSubKey()
 {
   if (FKeyHistory->Count == 0) throw Exception("");
     else FKeyHistory->Delete(FKeyHistory->Count-1);
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::ClearSubKeys()
+void THierarchicalStorage::ClearSubKeys()
 {
   TStringList *SubKeys = new TStringList();
   try
@@ -155,7 +155,7 @@ void __fastcall THierarchicalStorage::ClearSubKeys()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::RecursiveDeleteSubKey(const AnsiString Key)
+void THierarchicalStorage::RecursiveDeleteSubKey(const AnsiString Key)
 {
   if (OpenSubKey(Key, false))
   {
@@ -165,7 +165,7 @@ void __fastcall THierarchicalStorage::RecursiveDeleteSubKey(const AnsiString Key
   DeleteSubKey(Key);
 }
 //---------------------------------------------------------------------------
-bool __fastcall THierarchicalStorage::HasSubKeys()
+bool THierarchicalStorage::HasSubKeys()
 {
   bool Result;
   TStrings * SubKeys = new TStringList();
@@ -181,7 +181,7 @@ bool __fastcall THierarchicalStorage::HasSubKeys()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall THierarchicalStorage::HasSubKey(const AnsiString SubKey)
+bool THierarchicalStorage::HasSubKey(const AnsiString SubKey)
 {
   bool Result = OpenSubKey(SubKey, false);
   if (Result)
@@ -191,7 +191,7 @@ bool __fastcall THierarchicalStorage::HasSubKey(const AnsiString SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
+void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   bool MaintainKeys)
 {
   TStrings * Names = new TStringList();
@@ -217,7 +217,7 @@ void __fastcall THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::ClearValues()
+void THierarchicalStorage::ClearValues()
 {
   TStrings * Names = new TStringList();
   try
@@ -234,7 +234,7 @@ void __fastcall THierarchicalStorage::ClearValues()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
+void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
   bool MaintainKeys)
 {
   ClearValues();
@@ -256,7 +256,7 @@ void __fastcall THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall THierarchicalStorage::ReadString(const AnsiString Name, const AnsiString Default)
+AnsiString THierarchicalStorage::ReadString(const AnsiString Name, const AnsiString Default)
 {
   AnsiString Result;
   if (MungeStringValues)
@@ -270,7 +270,7 @@ AnsiString __fastcall THierarchicalStorage::ReadString(const AnsiString Name, co
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall THierarchicalStorage::ReadBinaryData(const AnsiString Name)
+AnsiString THierarchicalStorage::ReadBinaryData(const AnsiString Name)
 {
   int Size = BinaryDataSize(Name);
   AnsiString Value;
@@ -279,7 +279,7 @@ AnsiString __fastcall THierarchicalStorage::ReadBinaryData(const AnsiString Name
   return Value;
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::WriteString(const AnsiString Name, const AnsiString Value)
+void THierarchicalStorage::WriteString(const AnsiString Name, const AnsiString Value)
 {
   if (MungeStringValues)
   {
@@ -291,13 +291,13 @@ void __fastcall THierarchicalStorage::WriteString(const AnsiString Name, const A
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall THierarchicalStorage::WriteBinaryData(const AnsiString Name,
+void THierarchicalStorage::WriteBinaryData(const AnsiString Name,
   const AnsiString Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall THierarchicalStorage::IncludeTrailingBackslash(const AnsiString & S)
+AnsiString THierarchicalStorage::IncludeTrailingBackslash(const AnsiString & S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -310,7 +310,7 @@ AnsiString __fastcall THierarchicalStorage::IncludeTrailingBackslash(const AnsiS
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const AnsiString & S)
+AnsiString THierarchicalStorage::ExcludeTrailingBackslash(const AnsiString & S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -323,32 +323,32 @@ AnsiString __fastcall THierarchicalStorage::ExcludeTrailingBackslash(const AnsiS
   }
 }
 //===========================================================================
-__fastcall TRegistryStorage::TRegistryStorage(const AnsiString AStorage):
+TRegistryStorage::TRegistryStorage(const AnsiString AStorage):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   Init();
 };
 //---------------------------------------------------------------------------
-__fastcall TRegistryStorage::TRegistryStorage(const AnsiString AStorage, HKEY ARootKey):
+TRegistryStorage::TRegistryStorage(const AnsiString AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   Init();
   FRegistry->RootKey = ARootKey;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::Init()
+void TRegistryStorage::Init()
 {
   FFailed = 0;
   FRegistry = new TRegistry();
   FRegistry->Access = KEY_READ;
 }
 //---------------------------------------------------------------------------
-__fastcall TRegistryStorage::~TRegistryStorage()
+TRegistryStorage::~TRegistryStorage()
 {
   delete FRegistry;
 };
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
+bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
@@ -392,12 +392,12 @@ bool __fastcall TRegistryStorage::Copy(TRegistryStorage * Storage)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TRegistryStorage::GetSource()
+AnsiString TRegistryStorage::GetSource()
 {
   return RootKeyToStr(FRegistry->RootKey) + "\\" + Storage;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
+void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 {
   THierarchicalStorage::SetAccessMode(value);
   if (FRegistry)
@@ -415,7 +415,7 @@ void __fastcall TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path)
+bool TRegistryStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path)
 {
   bool Result;
   if (FKeyHistory->Count > 0) FRegistry->CloseKey();
@@ -425,7 +425,7 @@ bool __fastcall TRegistryStorage::OpenSubKey(const AnsiString SubKey, bool CanCr
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::CloseSubKey()
+void TRegistryStorage::CloseSubKey()
 {
   FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
@@ -435,7 +435,7 @@ void __fastcall TRegistryStorage::CloseSubKey()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::DeleteSubKey(const AnsiString SubKey)
+bool TRegistryStorage::DeleteSubKey(const AnsiString SubKey)
 {
   AnsiString K;
   if (FKeyHistory->Count == 0) K = Storage + CurrentSubKey;
@@ -443,7 +443,7 @@ bool __fastcall TRegistryStorage::DeleteSubKey(const AnsiString SubKey)
   return FRegistry->DeleteKey(K);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
+void TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   FRegistry->GetKeyNames(Strings);
   for (int Index = 0; Index < Strings->Count; Index++)
@@ -452,56 +452,56 @@ void __fastcall TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
+void TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
 {
   FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::DeleteValue(const AnsiString Name)
+bool TRegistryStorage::DeleteValue(const AnsiString Name)
 {
   return FRegistry->DeleteValue(Name);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::KeyExists(const AnsiString SubKey)
+bool TRegistryStorage::KeyExists(const AnsiString SubKey)
 {
   AnsiString K = MungeStr(SubKey);
   bool Result = FRegistry->KeyExists(K);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::ValueExists(const AnsiString Value)
+bool TRegistryStorage::ValueExists(const AnsiString Value)
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TRegistryStorage::BinaryDataSize(const AnsiString Name)
+int TRegistryStorage::BinaryDataSize(const AnsiString Name)
 {
   int Result = FRegistry->GetDataSize(Name);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TRegistryStorage::ReadBool(const AnsiString Name, bool Default)
+bool TRegistryStorage::ReadBool(const AnsiString Name, bool Default)
 {
   READ_REGISTRY(ReadBool);
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TRegistryStorage::ReadDateTime(const AnsiString Name, TDateTime Default)
+TDateTime TRegistryStorage::ReadDateTime(const AnsiString Name, TDateTime Default)
 {
   READ_REGISTRY(ReadDateTime);
 }
 //---------------------------------------------------------------------------
-double __fastcall TRegistryStorage::ReadFloat(const AnsiString Name, double Default)
+double TRegistryStorage::ReadFloat(const AnsiString Name, double Default)
 {
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-int __fastcall TRegistryStorage::ReadInteger(const AnsiString Name, int Default)
+int TRegistryStorage::ReadInteger(const AnsiString Name, int Default)
 {
   READ_REGISTRY(ReadInteger);
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall TRegistryStorage::ReadInt64(const AnsiString Name, __int64 Default)
+__int64 TRegistryStorage::ReadInt64(const AnsiString Name, __int64 Default)
 {
   __int64 Result = Default;
   if (FRegistry->ValueExists(Name))
@@ -518,12 +518,12 @@ __int64 __fastcall TRegistryStorage::ReadInt64(const AnsiString Name, __int64 De
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TRegistryStorage::ReadStringRaw(const AnsiString Name, const AnsiString Default)
+AnsiString TRegistryStorage::ReadStringRaw(const AnsiString Name, const AnsiString Default)
 {
   READ_REGISTRY(ReadString);
 }
 //---------------------------------------------------------------------------
-int __fastcall TRegistryStorage::ReadBinaryData(const AnsiString Name,
+int TRegistryStorage::ReadBinaryData(const AnsiString Name,
   void * Buffer, int Size)
 {
   int Result;
@@ -546,32 +546,32 @@ int __fastcall TRegistryStorage::ReadBinaryData(const AnsiString Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteBool(const AnsiString Name, bool Value)
+void TRegistryStorage::WriteBool(const AnsiString Name, bool Value)
 {
   WRITE_REGISTRY(WriteBool);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteDateTime(const AnsiString Name, TDateTime Value)
+void TRegistryStorage::WriteDateTime(const AnsiString Name, TDateTime Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteFloat(const AnsiString Name, double Value)
+void TRegistryStorage::WriteFloat(const AnsiString Name, double Value)
 {
   WRITE_REGISTRY(WriteFloat);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteStringRaw(const AnsiString Name, const AnsiString Value)
+void TRegistryStorage::WriteStringRaw(const AnsiString Name, const AnsiString Value)
 {
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteInteger(const AnsiString Name, int Value)
+void TRegistryStorage::WriteInteger(const AnsiString Name, int Value)
 {
   WRITE_REGISTRY(WriteInteger);
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteInt64(const AnsiString Name, __int64 Value)
+void TRegistryStorage::WriteInt64(const AnsiString Name, __int64 Value)
 {
   try
   {
@@ -583,7 +583,7 @@ void __fastcall TRegistryStorage::WriteInt64(const AnsiString Name, __int64 Valu
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TRegistryStorage::WriteBinaryData(const AnsiString Name,
+void TRegistryStorage::WriteBinaryData(const AnsiString Name,
   const void * Buffer, int Size)
 {
   try
@@ -596,14 +596,14 @@ void __fastcall TRegistryStorage::WriteBinaryData(const AnsiString Name,
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TRegistryStorage::GetFailed()
+int TRegistryStorage::GetFailed()
 {
   int Result = FFailed;
   FFailed = 0;
   return Result;
 }
 //===========================================================================
-__fastcall TIniFileStorage::TIniFileStorage(const AnsiString AStorage):
+TIniFileStorage::TIniFileStorage(const AnsiString AStorage):
   THierarchicalStorage(AStorage)
 {
   FIniFile = new TMemIniFile(Storage);
@@ -612,7 +612,7 @@ __fastcall TIniFileStorage::TIniFileStorage(const AnsiString AStorage):
   ApplyOverrides();
 }
 //---------------------------------------------------------------------------
-__fastcall TIniFileStorage::~TIniFileStorage()
+TIniFileStorage::~TIniFileStorage()
 {
   TStrings * Strings = new TStringList;
   try
@@ -672,17 +672,17 @@ __fastcall TIniFileStorage::~TIniFileStorage()
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TIniFileStorage::GetSource()
+AnsiString TIniFileStorage::GetSource()
 {
   return Storage;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TIniFileStorage::GetCurrentSection()
+AnsiString TIniFileStorage::GetCurrentSection()
 {
   return ExcludeTrailingBackslash(GetCurrentSubKeyMunged());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TIniFileStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path)
+bool TIniFileStorage::OpenSubKey(const AnsiString SubKey, bool CanCreate, bool Path)
 {
   bool Result = CanCreate;
 
@@ -718,7 +718,7 @@ bool __fastcall TIniFileStorage::OpenSubKey(const AnsiString SubKey, bool CanCre
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TIniFileStorage::DeleteSubKey(const AnsiString SubKey)
+bool TIniFileStorage::DeleteSubKey(const AnsiString SubKey)
 {
   bool Result;
   try
@@ -733,7 +733,7 @@ bool __fastcall TIniFileStorage::DeleteSubKey(const AnsiString SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
+void TIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
   try
@@ -766,7 +766,7 @@ void __fastcall TIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::GetValueNames(Classes::TStrings* Strings)
+void TIniFileStorage::GetValueNames(Classes::TStrings* Strings)
 {
   FIniFile->ReadSection(CurrentSection, Strings);
   for (int Index = 0; Index < Strings->Count; Index++)
@@ -775,28 +775,28 @@ void __fastcall TIniFileStorage::GetValueNames(Classes::TStrings* Strings)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TIniFileStorage::KeyExists(const AnsiString SubKey)
+bool TIniFileStorage::KeyExists(const AnsiString SubKey)
 {
   return FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey));
 }
 //---------------------------------------------------------------------------
-bool __fastcall TIniFileStorage::ValueExists(const AnsiString Value)
+bool TIniFileStorage::ValueExists(const AnsiString Value)
 {
   return FIniFile->ValueExists(CurrentSection, MungeIniName(Value));
 }
 //---------------------------------------------------------------------------
-bool __fastcall TIniFileStorage::DeleteValue(const AnsiString Name)
+bool TIniFileStorage::DeleteValue(const AnsiString Name)
 {
   FIniFile->DeleteKey(CurrentSection, MungeIniName(Name));
   return true;
 }
 //---------------------------------------------------------------------------
-int __fastcall TIniFileStorage::BinaryDataSize(const AnsiString Name)
+int TIniFileStorage::BinaryDataSize(const AnsiString Name)
 {
   return ReadStringRaw(Name, "").Length() / 2;
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::ApplyOverrides()
+void TIniFileStorage::ApplyOverrides()
 {
   AnsiString OverridesKey = IncludeTrailingBackslash("Override");
 
@@ -843,18 +843,18 @@ void __fastcall TIniFileStorage::ApplyOverrides()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TIniFileStorage::ReadBool(const AnsiString Name, bool Default)
+bool TIniFileStorage::ReadBool(const AnsiString Name, bool Default)
 {
   return FIniFile->ReadBool(CurrentSection, MungeIniName(Name), Default);
 }
 //---------------------------------------------------------------------------
-int __fastcall TIniFileStorage::ReadInteger(const AnsiString Name, int Default)
+int TIniFileStorage::ReadInteger(const AnsiString Name, int Default)
 {
   int Result = FIniFile->ReadInteger(CurrentSection, MungeIniName(Name), Default);
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall TIniFileStorage::ReadInt64(const AnsiString Name, __int64 Default)
+__int64 TIniFileStorage::ReadInt64(const AnsiString Name, __int64 Default)
 {
   __int64 Result = Default;
   AnsiString Str;
@@ -866,7 +866,7 @@ __int64 __fastcall TIniFileStorage::ReadInt64(const AnsiString Name, __int64 Def
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime __fastcall TIniFileStorage::ReadDateTime(const AnsiString Name, TDateTime Default)
+TDateTime TIniFileStorage::ReadDateTime(const AnsiString Name, TDateTime Default)
 {
   TDateTime Result;
   AnsiString Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
@@ -897,7 +897,7 @@ TDateTime __fastcall TIniFileStorage::ReadDateTime(const AnsiString Name, TDateT
   return Result;
 }
 //---------------------------------------------------------------------------
-double __fastcall TIniFileStorage::ReadFloat(const AnsiString Name, double Default)
+double TIniFileStorage::ReadFloat(const AnsiString Name, double Default)
 {
   double Result;
   AnsiString Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
@@ -928,13 +928,13 @@ double __fastcall TIniFileStorage::ReadFloat(const AnsiString Name, double Defau
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TIniFileStorage::ReadStringRaw(const AnsiString Name, AnsiString Default)
+AnsiString TIniFileStorage::ReadStringRaw(const AnsiString Name, AnsiString Default)
 {
   AnsiString Result = FIniFile->ReadString(CurrentSection, MungeIniName(Name), Default);
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TIniFileStorage::ReadBinaryData(const AnsiString Name,
+int TIniFileStorage::ReadBinaryData(const AnsiString Name,
   void * Buffer, int Size)
 {
   AnsiString Value = HexToStr(ReadStringRaw(Name, ""));
@@ -948,37 +948,37 @@ int __fastcall TIniFileStorage::ReadBinaryData(const AnsiString Name,
   return Size;
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::WriteBool(const AnsiString Name, bool Value)
+void TIniFileStorage::WriteBool(const AnsiString Name, bool Value)
 {
   FIniFile->WriteBool(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::WriteInteger(const AnsiString Name, int Value)
+void TIniFileStorage::WriteInteger(const AnsiString Name, int Value)
 {
   FIniFile->WriteInteger(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::WriteInt64(const AnsiString Name, __int64 Value)
+void TIniFileStorage::WriteInt64(const AnsiString Name, __int64 Value)
 {
   WriteStringRaw(Name, IntToStr(Value));
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::WriteDateTime(const AnsiString Name, TDateTime Value)
+void TIniFileStorage::WriteDateTime(const AnsiString Name, TDateTime Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::WriteFloat(const AnsiString Name, double Value)
+void TIniFileStorage::WriteFloat(const AnsiString Name, double Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::WriteStringRaw(const AnsiString Name, const AnsiString Value)
+void TIniFileStorage::WriteStringRaw(const AnsiString Name, const AnsiString Value)
 {
   FIniFile->WriteString(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void __fastcall TIniFileStorage::WriteBinaryData(const AnsiString Name,
+void TIniFileStorage::WriteBinaryData(const AnsiString Name,
   const void * Buffer, int Size)
 {
   WriteStringRaw(Name, StrToHex(AnsiString(static_cast<const char*>(Buffer), Size)));
