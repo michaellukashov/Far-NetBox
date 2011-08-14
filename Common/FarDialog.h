@@ -977,21 +977,17 @@ class TFarSeparator : public TFarDialogItem
 public:
     TFarSeparator(TFarDialog *ADialog);
 
-    // __property bool Double = { read = GetDouble, write = SetDouble };
-    property<TFarSeparator, bool> Double;
-    // __property wstring Caption = { read = Data, write = Data };
-    property<TFarSeparator, wstring> Caption;
-    // __property int Position = { read = GetPosition, write = SetPosition };
-    property<TFarSeparator, int> Position;
+    bool GetDouble();
+    void SetDouble(bool value);
+    virtual wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(wstring value) { SetData(value); }
+    int GetPosition();
+    void SetPosition(int value);
 
 protected:
     virtual void ResetBounds();
 
 private:
-    void SetDouble(bool value);
-    bool GetDouble();
-    void SetPosition(int value);
-    int GetPosition();
 };
 //---------------------------------------------------------------------------
 class TFarText : public TFarDialogItem
@@ -999,11 +995,12 @@ class TFarText : public TFarDialogItem
 public:
     TFarText(TFarDialog *ADialog);
 
-    // __property wstring Caption = { read = Data, write = Data };
-    property<TFarText, wstring> Caption;
-    // __property CenterGroup;
-    // __property char Color = { read = GetColor, write = SetColor, index = 0 };
-    property<TFarText, char> Color;
+    virtual wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(wstring value) { SetData(value); }
+    bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
+    void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
+    bool GetColor() { return TFarDialogItem::GetColor(0); }
+    void SetColor(bool value) { TFarDialogItem::SetColor(0, value); }
 
 protected:
     virtual void SetData(const wstring value);
