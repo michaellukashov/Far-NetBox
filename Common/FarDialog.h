@@ -924,11 +924,12 @@ class TFarRadioButton : public TFarDialogItem
 public:
     TFarRadioButton(TFarDialog *ADialog);
 
-    // __property Checked;
-    // __property wstring Caption = { read = Data, write = Data };
-    property<TFarRadioButton, wstring> Caption;
-    // __property TFarAllowChange OnAllowChange = { read = FOnAllowChange, write = FOnAllowChange };
-    property<TFarRadioButton, TFarAllowChange> OnAllowChange;
+    bool GetChecked() { return TFarDialogItem::GetChecked(); }
+    void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
+    virtual wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual TFarAllowChange GetOnAllowChange() { return FOnAllowChange; }
+    virtual void SetOnAllowChange(TFarAllowChange value) { FOnAllowChange = value; }
 
 protected:
     TFarAllowChange FOnAllowChange;
@@ -942,24 +943,25 @@ class TFarEdit : public TFarDialogItem
 public:
     TFarEdit(TFarDialog *ADialog);
 
-    // __property wstring Text = { read = Data, write = Data };
-    property<TFarEdit, wstring> Text;
-    // __property int AsInteger = { read = GetAsInteger, write = SetAsInteger };
-    property<TFarEdit, int> AsInteger;
-    // __property bool Password = { read = GetAlterType, write = SetAlterType, index = DI_PSWEDIT };
-    property<TFarEdit, bool> Password;
-    // __property bool Fixed = { read = GetAlterType, write = SetAlterType, index = DI_FIXEDIT };
-    property<TFarEdit, bool> Fixed;
-    // __property wstring Mask = { read = GetHistoryMask, write = SetHistoryMask, index = 1 };
-    property<TFarEdit, wstring> Mask;
-    // __property wstring History = { read = GetHistoryMask, write = SetHistoryMask, index = 0 };
-    property<TFarEdit, wstring> History;
-    // __property bool ExpandEnvVars = { read = GetFlag, write = SetFlag, index = DIF_EDITEXPAND };
-    property<TFarEdit, bool> ExpandEnvVars;
-    // __property bool AutoSelect = { read = GetFlag, write = SetFlag, index = DIF_SELECTONENTRY };
-    property<TFarEdit, bool> AutoSelect;
-    // __property bool ReadOnly = { read = GetFlag, write = SetFlag, index = DIF_READONLY };
-    property<TFarEdit, bool> ReadOnly;
+    virtual wstring GetText() { return GetData(); }
+    virtual void SetText(wstring value) { SetData(value); }
+    int GetAsInteger();
+    void SetAsInteger(int value);
+    virtual bool GetPassword() { return GetAlterType(DI_PSWEDIT); }
+    virtual void SetPassword(bool value) { SetAlterType(DI_PSWEDIT, value); }
+    virtual bool GetFixed() { return GetAlterType(DI_FIXEDIT); }
+    virtual void SetFixed(bool value) { SetAlterType(DI_FIXEDIT, value); }
+
+    virtual wstring GetMask() { return GetHistoryMask(1); }
+    virtual void SetMask(wstring value) { SetHistoryMask(1, value); }
+    virtual wstring GetHistory() { return GetHistoryMask(0); }
+    virtual void SetHistory(wstring value) { SetHistoryMask(0, value); }
+    bool GetExpandEnvVars() { return GetFlag(DIF_EDITEXPAND); }
+    void SetExpandEnvVars(bool value) { SetFlag(DIF_EDITEXPAND, value); }
+    bool GetAutoSelect() { return GetFlag(DIF_SELECTONENTRY); }
+    void SetAutoSelect(bool value) { SetFlag(DIF_SELECTONENTRY, value); }
+    bool GetReadOnly() { return GetFlag(DIF_READONLY); }
+    void SetReadOnly(bool value) { SetFlag(DIF_READONLY, value); }
 
 protected:
     virtual long ItemProc(int Msg, long Param);
@@ -968,8 +970,6 @@ protected:
 private:
     wstring GetHistoryMask(int Index);
     void SetHistoryMask(int Index, wstring value);
-    void SetAsInteger(int value);
-    int GetAsInteger();
 };
 //---------------------------------------------------------------------------
 class TFarSeparator : public TFarDialogItem
