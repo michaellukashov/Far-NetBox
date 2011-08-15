@@ -4,7 +4,7 @@
 
 #include "Common.h"
 #include "Option.h"
-#include "FileBuffer.h"
+// #include "FileBuffer.h"
 #include "NamedObjs.h"
 #include "HierarchicalStorage.h"
 #include "Configuration.h"

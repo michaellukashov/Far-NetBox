@@ -6,7 +6,7 @@
 
 #include "Common.h"
 #include "Exceptions.h"
-#include "FileBuffer.h"
+// #include "FileBuffer.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "PuttyIntf.h"
