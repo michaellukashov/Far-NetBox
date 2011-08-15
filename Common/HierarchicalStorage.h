@@ -5,6 +5,9 @@
 // #include <registry.hpp>
 #include "Classes.h"
 //---------------------------------------------------------------------------
+class TMemIniFile;
+class TRegistry;
+//---------------------------------------------------------------------------
 enum TStorage { stDetect, stRegistry, stIniFile };
 enum TStorageAccessMode { smRead, smReadWrite };
 //---------------------------------------------------------------------------
@@ -121,11 +124,12 @@ public:
   virtual void GetValueNames(TStrings* Strings);
 
 protected:
-  int GetFailed();
   virtual void SetAccessMode(TStorageAccessMode value);
   virtual wstring GetSource();
 
-  __property int Failed  = { read=GetFailed, write=FFailed };
+  // __property int Failed  = { read=GetFailed, write=FFailed };
+  int GetFailed();
+  void GetFailed(int value) { FFailed = value; }
 
 private:
   TRegistry * FRegistry;
@@ -170,10 +174,10 @@ public:
 private:
   TMemIniFile * FIniFile;
   TStrings * FOriginal;
-  wstring GetCurrentSection();
   void ApplyOverrides();
 protected:
-  __property wstring CurrentSection  = { read=GetCurrentSection };
+  // __property wstring CurrentSection  = { read=GetCurrentSection };
+  wstring GetCurrentSection();
   virtual wstring GetSource();
 };
 //---------------------------------------------------------------------------
