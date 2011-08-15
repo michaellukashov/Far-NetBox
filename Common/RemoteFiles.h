@@ -7,13 +7,13 @@
 //---------------------------------------------------------------------------
 enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------
-#define SYMLINKSTR " -> "
-#define PARENTDIRECTORY ".."
-#define THISDIRECTORY "."
-#define ROOTDIRECTORY "/"
-#define FILETYPE_SYMLINK 'L'
-#define FILETYPE_DIRECTORY 'D'
-#define PARTIAL_EXT ".filepart"
+#define SYMLINKSTR L" -> "
+#define PARENTDIRECTORY L".."
+#define THISDIRECTORY L"."
+#define ROOTDIRECTORY L"/"
+#define FILETYPE_SYMLINK L'L'
+#define FILETYPE_DIRECTORY L'D'
+#define PARTIAL_EXT L".filepart"
 //---------------------------------------------------------------------------
 class TTerminal;
 class TRights;
