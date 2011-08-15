@@ -34,24 +34,27 @@ public:
 
   int Compare(const TRemoteToken & rht) const;
 
-  __property wstring Name = { read = FName, write = FName };
-  __property bool NameValid = { read = GetNameValid };
-  __property unsigned int ID = { read = FID, write = SetID };
-  __property bool IDValid = { read = FIDValid };
-  __property bool IsSet  = { read = GetIsSet };
-  __property wstring LogText = { read = GetLogText };
-  __property wstring DisplayText = { read = GetDisplayText };
+  // __property wstring Name = { read = FName, write = FName };
+  wstring GetName() { return FName; }
+  void SetName(wstring value) { FName = value; }
+  // __property bool NameValid = { read = GetNameValid };
+  bool GetNameValid() const;
+  // __property unsigned int ID = { read = FID, write = SetID };
+  unsigned int GetID() { return FID; }
+  void SetID(unsigned int value);
+  // __property bool IDValid = { read = FIDValid };
+  bool GetIDValid() { return FIDValid; }
+  // __property bool IsSet  = { read = GetIsSet };
+  bool GetIsSet() const;
+  // __property wstring LogText = { read = GetLogText };
+   wstring GetLogText() const;
+  // __property wstring DisplayText = { read = GetDisplayText };
+  wstring GetDisplayText() const;
 
 private:
   wstring FName;
   unsigned int FID;
   bool FIDValid;
-
-  void SetID(unsigned int value);
-  bool GetNameValid() const;
-  bool GetIsSet() const;
-  wstring GetDisplayText() const;
-  wstring GetLogText() const;
 };
 //---------------------------------------------------------------------------
 class TRemoteTokenList
