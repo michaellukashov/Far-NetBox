@@ -73,7 +73,7 @@ const char EngShortMonthNames[12][4] =
 //---------------------------------------------------------------------------
 wstring ReplaceChar(wstring Str, char A, char B)
 {
-  for (int Index = 0; Index < Str.Length(); Index++)
+  for (int Index = 0; Index < Str.size(); Index++)
     if (Str[Index+1] == A) Str[Index+1] = B;
   return Str;
 }
@@ -81,9 +81,9 @@ wstring ReplaceChar(wstring Str, char A, char B)
 wstring DeleteChar(wstring Str, char C)
 {
   int P;
-  while ((P = Str.Pos(C)) > 0)
+  while ((P = Str.find_first_of(C, 0)) > 0)
   {
-    Str.Delete(P, 1);
+    Str.erase(P, 1);
   }
   return Str;
 }
@@ -96,27 +96,27 @@ void PackStr(wstring &Str)
 //---------------------------------------------------------------------------
 wstring MakeValidFileName(wstring FileName)
 {
-  wstring IllegalChars = ":;,=+<>|\"[] \\/?*";
-  for (int Index = 0; Index < IllegalChars.Length(); Index++)
+  wstring IllegalChars = L":;,=+<>|\"[] \\/?*";
+  for (int Index = 0; Index < IllegalChars.size(); Index++)
   {
-    FileName = ReplaceChar(FileName, IllegalChars[Index+1], '-');
+    FileName = ReplaceChar(FileName, IllegalChars[Index+1], L'-');
   }
   return FileName;
 }
 //---------------------------------------------------------------------------
 wstring RootKeyToStr(HKEY RootKey)
 {
-  if (RootKey == HKEY_USERS) return "HKEY_USERS";
+  if (RootKey == HKEY_USERS) return L"HKEY_USERS";
     else
-  if (RootKey == HKEY_LOCAL_MACHINE) return "HKEY_LOCAL_MACHINE";
+  if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
     else
-  if (RootKey == HKEY_CURRENT_USER) return "HKEY_CURRENT_USER";
+  if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
     else
-  if (RootKey == HKEY_CLASSES_ROOT) return "HKEY_CLASSES_ROOT";
+  if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
     else
-  if (RootKey == HKEY_CURRENT_CONFIG) return "HKEY_CURRENT_CONFIG";
+  if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
     else
-  if (RootKey == HKEY_DYN_DATA) return "HKEY_DYN_DATA";
+  if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
     else
   {  Abort(); return ""; };
 }
