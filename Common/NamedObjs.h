@@ -13,10 +13,18 @@ class TNamedObject : public TPersistent
 public:
   wstring Name;
   TNamedObject(): TPersistent() {};
-  int CompareName(wstring aName, Boolean CaseSensitive = false);
+  int CompareName(wstring aName, bool CaseSensitive = false);
   TNamedObject(wstring aName): TPersistent(), Name(aName) {}
   void MakeUniqueIn(TNamedObjectList * List);
 };
+//---------------------------------------------------------------------------
+enum TListNotification
+{
+  lnAdded,
+  lnExtracted,
+  lnDeleted,
+};
+
 //---------------------------------------------------------------------------
 class TNamedObjectList : public TObjectList
 {
@@ -34,7 +42,7 @@ public:
   TNamedObjectList();
   void AlphaSort();
   virtual TNamedObject * AtObject(int Index);
-  TNamedObject * FindByName(wstring Name, Boolean CaseSensitive = false);
+  TNamedObject * FindByName(wstring Name, bool CaseSensitive = false);
   // __property int Count = { read = GetCount, write = SetCount };
   int GetCount();
   void SetCount(int value);

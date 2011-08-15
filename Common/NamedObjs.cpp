@@ -18,7 +18,7 @@ int NamedObjectSortProc(void * Item1, void * Item2)
 }
 //--- TNamedObject ----------------------------------------------------------
 int TNamedObject::CompareName(wstring aName,
-  Boolean CaseSensitive)
+  bool CaseSensitive)
 {
   if (CaseSensitive)
     return Name.AnsiCompare(aName);
@@ -82,7 +82,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 }
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::FindByName(wstring Name,
-  Boolean CaseSensitive)
+  bool CaseSensitive)
 {
   for (int Index = 0; Index < TObjectList::Count; Index++)
     if (!((TNamedObject *)Items[Index])->CompareName(Name, CaseSensitive))
