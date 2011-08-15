@@ -850,7 +850,7 @@ bool TRemoteFile::GetIsInaccesibleDirectory() const
         ((Rights->Right[TRights::rrUserExec] != TRights::rsNo) &&
          (AnsiCompareText(Terminal->UserName, Owner.Name) == 0)));
   }
-    else Result = False;
+    else Result = false;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -986,7 +986,7 @@ void TRemoteFile::SetListingStr(wstring value)
 
     // Rights string may contain special permission attributes (S,t, ...)
     // (TODO: maybe no longer necessary, once we can handle the special permissions)
-    Rights->AllowUndef = True;
+    Rights->AllowUndef = true;
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
     Rights->Text = Line.SubString(1, 9);
@@ -2475,7 +2475,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
     }
     else
     {
-      CommonProperties.Rights.AllowUndef = True;
+      CommonProperties.Rights.AllowUndef = true;
       CommonProperties.Rights &= *File->Rights;
       if (CommonProperties.Owner != File->Owner)
       {

@@ -431,7 +431,7 @@ void TRegistryStorage::CloseSubKey()
   THierarchicalStorage::CloseSubKey();
   if (FKeyHistory->Count)
   {
-    FRegistry->OpenKey(Storage + CurrentSubKey, True);
+    FRegistry->OpenKey(Storage + CurrentSubKey, true);
   }
 }
 //---------------------------------------------------------------------------

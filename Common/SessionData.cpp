@@ -314,7 +314,7 @@ void TSessionData::Assign(TPersistent * Source)
 void TSessionData::Load(THierarchicalStorage * Storage)
 {
   bool RewritePassword = false;
-  if (Storage->OpenSubKey(InternalStorageKey, False))
+  if (Storage->OpenSubKey(InternalStorageKey, false))
   {
     PortNumber = Storage->ReadInteger("PortNumber", PortNumber);
     UserName = Storage->ReadString("UserName", UserName);
@@ -2163,7 +2163,7 @@ void TStoredSessionList::Load(wstring aKey, bool UseDefaults)
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   try {
-    if (Storage->OpenRootKey(False)) Load(Storage, false, UseDefaults);
+    if (Storage->OpenRootKey(false)) Load(Storage, false, UseDefaults);
   } __finally {
     delete Storage;
   }
@@ -2173,7 +2173,7 @@ void TStoredSessionList::Load()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try {
-    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, False))
+    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
       Load(Storage);
   } __finally {
     delete Storage;
@@ -2319,7 +2319,7 @@ void TStoredSessionList::Cleanup()
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->RegistryStorageKey);
     try {
       Storage->AccessMode = smReadWrite;
-      if (Storage->OpenRootKey(False))
+      if (Storage->OpenRootKey(false))
         Storage->RecursiveDeleteSubKey(Configuration->StoredSessionsSubKey);
     } __finally {
       delete Storage;

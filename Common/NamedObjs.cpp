@@ -54,7 +54,7 @@ bool TNamedObjectList::IsHidden(TNamedObject * Object)
 TNamedObjectList::TNamedObjectList():
   TObjectList()
 {
-  AutoSort = True;
+  AutoSort = true;
 }
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(int Index)
