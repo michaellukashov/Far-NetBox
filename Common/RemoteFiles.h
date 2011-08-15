@@ -299,12 +299,12 @@ public:
   void ClearFileList(wstring Directory, bool SubDirs);
   void Clear();
 
-  __property bool IsEmpty = { read = GetIsEmpty };
+  // __property bool IsEmpty = { read = GetIsEmpty };
+  bool GetIsEmpty() const;
 protected:
   virtual void Delete(int Index);
 private:
   TCriticalSection * FSection;
-  bool GetIsEmpty() const;
   void DoClearFileList(wstring Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
@@ -324,12 +324,12 @@ public:
   void Serialize(wstring & Data);
   void Deserialize(const wstring Data);
 
-  __property bool IsEmpty = { read = GetIsEmpty };
+  // __property bool IsEmpty = { read = GetIsEmpty };
+  bool GetIsEmpty() const;
 
 private:
   static bool DirectoryChangeKey(const wstring SourceDir,
     const wstring Change, wstring & Key);
-  bool GetIsEmpty() const;
   void SetValue(const wstring & Name, const wstring & Value);
   wstring GetValue(const wstring & Name);
 
