@@ -535,7 +535,6 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected);
   void RecryptPasswords();
-    { return (TSessionData*)AtObject(Index); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   int IndexOf(TSessionData * Data);
@@ -544,7 +543,7 @@ public:
     wstring * FileName = NULL, bool * ProtocolDefined = NULL);
   virtual ~TStoredSessionList();
   // __property TSessionData * Sessions[int Index]  = { read=AtSession };
-  TSessionData *AtSession(int Index);
+  TSessionData *AtSession(int Index) { return (TSessionData*)AtObject(Index); }
   // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   TSessionData *GetDefaultSettings() { return FDefaultSettings; }
   void SetDefaultSettings(TSessionData * value);
