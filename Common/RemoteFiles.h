@@ -440,7 +440,12 @@ private:
 };
 //---------------------------------------------------------------------------
 enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
-typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
+// FIXME
+// typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
+struct TValidProperties
+{
+};
+
 class TRemoteProperties
 {
 public:
