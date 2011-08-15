@@ -223,13 +223,7 @@ friend class TFTPFileSystem;
 protected:
   wstring FDirectory;
   TDateTime FTimestamp;
-  TRemoteFile * GetFiles(int Index);
-  virtual void SetDirectory(wstring value);
-  wstring GetFullDirectory();
-  bool GetIsRoot();
   TRemoteFile * GetParentDirectory();
-  wstring GetParentPath();
-  __int64 GetTotalSize();
 
   virtual void Clear();
 public:
@@ -237,13 +231,21 @@ public:
   TRemoteFile * FindFile(const wstring &FileName);
   virtual void DuplicateTo(TRemoteFileList * Copy);
   virtual void AddFile(TRemoteFile * File);
-  __property wstring Directory = { read = FDirectory, write = SetDirectory };
-  __property TRemoteFile * Files[int Index] = { read = GetFiles };
-  __property wstring FullDirectory  = { read=GetFullDirectory };
-  __property bool IsRoot = { read = GetIsRoot };
-  __property wstring ParentPath = { read = GetParentPath };
-  __property __int64 TotalSize = { read = GetTotalSize };
-  __property TDateTime Timestamp = { read = FTimestamp };
+  // __property wstring Directory = { read = FDirectory, write = SetDirectory };
+  wstring GetDirectory() { return FDirectory; }
+  virtual void SetDirectory(wstring value);
+  // __property TRemoteFile * Files[int Index] = { read = GetFiles };
+  TRemoteFile *GetFiles(int Index);
+  // __property wstring FullDirectory  = { read=GetFullDirectory };
+  wstring GetFullDirectory();
+  // __property bool IsRoot = { read = GetIsRoot };
+  bool GetIsRoot();
+  // __property wstring ParentPath = { read = GetParentPath };
+  wstring GetParentPath();
+  // __property __int64 TotalSize = { read = GetTotalSize };
+  __int64 GetTotalSize();
+  // __property TDateTime Timestamp = { read = FTimestamp };
+  TDateTime GetTimestamp() { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectory : public TRemoteFileList
