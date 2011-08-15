@@ -9,36 +9,36 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
-  AnsiString Name;
-  __fastcall TNamedObject(): TPersistent() {};
-  Integer __fastcall CompareName(AnsiString aName, Boolean CaseSensitive = False);
-  __fastcall TNamedObject(AnsiString aName): TPersistent(), Name(aName) {}
-  void __fastcall MakeUniqueIn(TNamedObjectList * List);
+  wstring Name;
+  TNamedObject(): TPersistent() {};
+  Integer CompareName(wstring aName, Boolean CaseSensitive = False);
+  TNamedObject(wstring aName): TPersistent(), Name(aName) {}
+  void MakeUniqueIn(TNamedObjectList * List);
 };
 //---------------------------------------------------------------------------
 class TNamedObjectList : public TObjectList
 {
 private:
   int FHiddenCount;
-  int __fastcall GetCount();
-  virtual void __fastcall Notify(void *Ptr, TListNotification Action);
-  void __fastcall SetCount(int value);
+  int GetCount();
+  virtual void Notify(void *Ptr, TListNotification Action);
+  void SetCount(int value);
 protected:
-  void __fastcall Recount();
+  void Recount();
 public:
-  static const AnsiString HiddenPrefix;
-  static bool __fastcall IsHidden(TNamedObject * Object);
+  static const wstring HiddenPrefix;
+  static bool IsHidden(TNamedObject * Object);
 
   bool AutoSort;
 
-  __fastcall TNamedObjectList();
-  void __fastcall AlphaSort();
-  virtual TNamedObject * __fastcall AtObject(Integer Index);
-  TNamedObject * __fastcall FindByName(AnsiString Name, Boolean CaseSensitive = False);
+  TNamedObjectList();
+  void AlphaSort();
+  virtual TNamedObject * AtObject(Integer Index);
+  TNamedObject * FindByName(wstring Name, Boolean CaseSensitive = False);
   __property int Count = { read = GetCount, write = SetCount };
   __property int HiddenCount = { read = FHiddenCount, write = FHiddenCount };
 };
 //---------------------------------------------------------------------------
-int __fastcall NamedObjectSortProc(void * Item1, void * Item2);
+int NamedObjectSortProc(void * Item1, void * Item2);
 //---------------------------------------------------------------------------
 #endif

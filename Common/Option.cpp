@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-__fastcall TOptions::TOptions()
+TOptions::TOptions()
 {
   FSwitchMarks = "-/";
   FSwitchValueDelimiters = ":=";
@@ -15,7 +15,7 @@ __fastcall TOptions::TOptions()
   FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptions::Add(AnsiString Value)
+void TOptions::Add(wstring Value)
 {
   if (!FNoMoreSwitches &&
       (Value.Length() == 2) &&
@@ -71,11 +71,11 @@ void __fastcall TOptions::Add(AnsiString Value)
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TOptions::GetParam(int Index)
+wstring TOptions::GetParam(int Index)
 {
   assert((Index >= 1) && (Index <= FParamCount));
 
-  AnsiString Result;
+  wstring Result;
   size_t I = 0;
   while ((I < FOptions.size()) && (Index > 0))
   {
@@ -94,20 +94,20 @@ AnsiString __fastcall TOptions::GetParam(int Index)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::GetEmpty()
+bool TOptions::GetEmpty()
 {
   return FOptions.empty();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const AnsiString Switch,
-  AnsiString & Value, int & ParamsStart, int & ParamsCount)
+bool TOptions::FindSwitch(const wstring Switch,
+  wstring & Value, int & ParamsStart, int & ParamsCount)
 {
   ParamsStart = 0;
   int Index = 0;
   bool Found = false;
   while ((Index < int(FOptions.size())) && !Found)
   {
-    AnsiString S;
+    wstring S;
     if (FOptions[Index].Type == otParam)
     {
       ParamsStart++;
@@ -142,25 +142,25 @@ bool __fastcall TOptions::FindSwitch(const AnsiString Switch,
   return Found;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const AnsiString Switch, AnsiString & Value)
+bool TOptions::FindSwitch(const wstring Switch, wstring & Value)
 {
   int ParamsStart;
   int ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const AnsiString Switch)
+bool TOptions::FindSwitch(const wstring Switch)
 {
-  AnsiString Value;
+  wstring Value;
   int ParamsStart;
   int ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::FindSwitch(const AnsiString Switch,
+bool TOptions::FindSwitch(const wstring Switch,
   TStrings * Params, int ParamsMax)
 {
-  AnsiString Value;
+  wstring Value;
   int ParamsStart;
   int ParamsCount;
   bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount);
@@ -182,10 +182,10 @@ bool __fastcall TOptions::FindSwitch(const AnsiString Switch,
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TOptions::SwitchValue(const AnsiString Switch,
-  const AnsiString Default)
+wstring TOptions::SwitchValue(const wstring Switch,
+  const wstring Default)
 {
-  AnsiString Value;
+  wstring Value;
   FindSwitch(Switch, Value);
   if (Value.IsEmpty())
   {
@@ -194,7 +194,7 @@ AnsiString __fastcall TOptions::SwitchValue(const AnsiString Switch,
   return Value;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptions::UnusedSwitch(AnsiString & Switch)
+bool TOptions::UnusedSwitch(wstring & Switch)
 {
   bool Result = false;
   size_t Index = 0;
@@ -212,7 +212,7 @@ bool __fastcall TOptions::UnusedSwitch(AnsiString & Switch)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
+void TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
 {
   if (ParamsCount > 0)
   {
@@ -221,7 +221,7 @@ void __fastcall TOptions::ParamsProcessed(int ParamsStart, int ParamsCount)
     size_t Index = 0;
     while ((Index < FOptions.size()) && (ParamsStart > 0))
     {
-      AnsiString S;
+      wstring S;
       if (FOptions[Index].Type == otParam)
       {
         --ParamsStart;

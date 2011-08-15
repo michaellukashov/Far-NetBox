@@ -9,37 +9,37 @@ enum TOptionType { otParam, otSwitch };
 class TOptions
 {
 public:
-  __fastcall TOptions();
+  TOptions();
 
-  bool __fastcall FindSwitch(const AnsiString Switch);
-  bool __fastcall FindSwitch(const AnsiString Switch, AnsiString & Value);
-  bool __fastcall FindSwitch(const AnsiString Switch, int & ParamsStart,
+  bool FindSwitch(const wstring Switch);
+  bool FindSwitch(const wstring Switch, wstring & Value);
+  bool FindSwitch(const wstring Switch, int & ParamsStart,
     int & ParamsCount);
-  bool __fastcall FindSwitch(const AnsiString Switch, TStrings * Params,
+  bool FindSwitch(const wstring Switch, TStrings * Params,
     int ParamsMax = -1);
-  void __fastcall ParamsProcessed(int Position, int Count);
-  AnsiString __fastcall SwitchValue(const AnsiString Switch, const AnsiString Default = "");
-  bool __fastcall UnusedSwitch(AnsiString & Switch);
+  void ParamsProcessed(int Position, int Count);
+  wstring SwitchValue(const wstring Switch, const wstring Default = "");
+  bool UnusedSwitch(wstring & Switch);
 
   __property int ParamCount = { read = FParamCount };
-  __property AnsiString Param[int Index] = { read = GetParam };
+  __property wstring Param[int Index] = { read = GetParam };
   __property bool Empty = { read = GetEmpty };
 
 protected:
-  AnsiString FSwitchMarks;
-  AnsiString FSwitchValueDelimiters;
+  wstring FSwitchMarks;
+  wstring FSwitchValueDelimiters;
 
-  void __fastcall Add(AnsiString Option);
+  void Add(wstring Option);
 
-  bool __fastcall FindSwitch(const AnsiString Switch,
-    AnsiString & Value, int & ParamsStart, int & ParamsCount);
+  bool FindSwitch(const wstring Switch,
+    wstring & Value, int & ParamsStart, int & ParamsCount);
 
 private:
   struct TOption
   {
     TOptionType Type;
-    AnsiString Name;
-    AnsiString Value;
+    wstring Name;
+    wstring Value;
     bool Used;
   };
 
@@ -47,8 +47,8 @@ private:
   bool FNoMoreSwitches;
   int FParamCount;
 
-  AnsiString __fastcall GetParam(int Index);
-  bool __fastcall GetEmpty();
+  wstring GetParam(int Index);
+  bool GetEmpty();
 };
 //---------------------------------------------------------------------------
 #endif
