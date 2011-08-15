@@ -67,7 +67,7 @@ bool RecursiveDeleteFile(const wstring FileName, bool ToRecycleBin);
 int CancelAnswer(int Answers);
 int AbortAnswer(int Answers);
 int ContinueAnswer(int Answers);
-wstring LoadStr(int Ident, unsigned int MaxLength);
+wstring LoadStr(int Ident, unsigned int MaxLength = 0);
 wstring LoadStrPart(int Ident, int Part);
 wstring EscapeHotkey(const wstring & Caption);
 bool CutToken(wstring & Str, wstring & Token);

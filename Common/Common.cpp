@@ -118,18 +118,18 @@ wstring RootKeyToStr(HKEY RootKey)
     else
   if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
     else
-  {  Abort(); return ""; };
+  {  /*Abort(); */return L""; };
 }
 //---------------------------------------------------------------------------
 wstring BooleanToEngStr(bool B)
 {
   if (B)
   {
-    return "Yes";
+    return L"Yes";
   }
   else
   {
-    return "No";
+    return L"No";
   }
 }
 //---------------------------------------------------------------------------
@@ -147,7 +147,7 @@ wstring BooleanToStr(bool B)
 //---------------------------------------------------------------------------
 wstring DefaultStr(const wstring & Str, const wstring & Default)
 {
-  if (!Str.IsEmpty())
+  if (!Str.empty())
   {
     return Str;
   }
@@ -159,22 +159,22 @@ wstring DefaultStr(const wstring & Str, const wstring & Default)
 //---------------------------------------------------------------------------
 wstring CutToChar(wstring &Str, char Ch, bool Trim)
 {
-  int P = Str.Pos(Ch);
+  int P = Str.find_first_of(Ch, 0);
   wstring Result;
   if (P)
   {
-    Result = Str.SubString(1, P-1);
-    Str.Delete(1, P);
+    Result = Str.substr(1, P-1);
+    Str.erase(1, P);
   }
   else
   {
     Result = Str;
-    Str = "";
+    Str = L"";
   }
   if (Trim)
   {
-    Result = Result.TrimRight();
-    Str = Str.TrimLeft();
+    // Result = Result.TrimRight();
+    // Str = Str.TrimLeft();
   }
   return Result;
 }
@@ -183,37 +183,37 @@ wstring CopyToChars(const wstring & Str, int & From, wstring Chs, bool Trim,
   char * Delimiter)
 {
   int P;
-  for (P = From; P <= Str.Length(); P++)
+  for (P = From; P <= Str.size(); P++)
   {
-    if (IsDelimiter(Chs, Str, P))
+    if (false) //FIXME IsDelimiter(Chs, Str, P))
     {
       break;
     }
   }
 
   wstring Result;
-  if (P <= Str.Length())
+  if (P <= Str.size())
   {
     if (Delimiter != NULL)
     {
       *Delimiter = Str[P];
     }
-    Result = Str.SubString(From, P-From);
+    Result = Str.substr(From, P-From);
     From = P+1;
   }
   else
   {
     if (Delimiter != NULL)
     {
-      *Delimiter = '\0';
+      *Delimiter = L'\0';
     }
-    Result = Str.SubString(From, Str.Length() - From + 1);
+    Result = Str.substr(From, Str.size() - From + 1);
     From = P;
   }
   if (Trim)
   {
-    Result = Result.TrimRight();
-    while ((P <= Str.Length()) && (Str[P] == ' '))
+    // Result = Result.TrimRight();
+    while ((P <= Str.size()) && (Str[P] == L' '))
     {
       P++;
     }
@@ -223,11 +223,11 @@ wstring CopyToChars(const wstring & Str, int & From, wstring Chs, bool Trim,
 //---------------------------------------------------------------------------
 wstring DelimitStr(wstring Str, wstring Chars)
 {
-  for (int i = 1; i <= Str.Length(); i++)
+  for (int i = 1; i <= Str.size(); i++)
   {
-    if (Str.IsDelimiter(Chars, i))
+    if (false) // FIXME Str.IsDelimiter(Chars, i))
     {
-      Str.Insert("\\", i);
+      Str.insert(i, L"\\");
       i++;
     }
   }
@@ -236,10 +236,10 @@ wstring DelimitStr(wstring Str, wstring Chars)
 //---------------------------------------------------------------------------
 wstring ShellDelimitStr(wstring Str, char Quote)
 {
-  wstring Chars = "$\\";
+  wstring Chars = L"$\\";
   if (Quote == '"')
   {
-    Chars += "`\"";
+    Chars += L"`\"";
   }
   return DelimitStr(Str, Chars);
 }
@@ -247,25 +247,29 @@ wstring ShellDelimitStr(wstring Str, char Quote)
 wstring ExceptionLogString(exception *E)
 {
   assert(E);
-  if (E->InheritsFrom(__classid(exception)))
+  // if (E->InheritsFrom(__classid(exception)))
+  if (true) // FIXME dynamic_cast<E>(E) != NULL) // ->InheritsFrom(__classid(exception)))
   {
     wstring Msg;
-    Msg = FORMAT("(%s) %s", (E->ClassName(), E->Message));
-    if (E->InheritsFrom(__classid(ExtException)))
+    // Msg = FORMAT("(%s) %s", (E->ClassName(), E->Message));
+    Msg = E->what();
+    if (false) // FIXME E->InheritsFrom(__classid(ExtException)))
     {
+      /*
       TStrings * MoreMessages = ((ExtException*)E)->MoreMessages;
       if (MoreMessages)
       {
         Msg += "\n" +
           StringReplace(MoreMessages->Text, "\r", "", TReplaceFlags() << rfReplaceAll);
       }
+      */
     }
     return Msg;
   }
   else
   {
-    char Buffer[1024];
-    ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
+    wchar_t Buffer[1024];
+    // ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
     return wstring(Buffer);
   }
 }
