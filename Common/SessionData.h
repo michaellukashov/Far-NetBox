@@ -248,7 +248,6 @@ private:
   void SetSCPLsFullTime(TAutoSwitch value);
   void SetFtpListAll(TAutoSwitch value);
   wstring GetStorageKey();
-  wstring GetInternalStorageKey();
   void SetDSTMode(TDSTMode value);
   void SetDeleteToRecycleBin(bool value);
   void SetOverwrittenToRecycleBin(bool value);
@@ -285,7 +284,8 @@ private:
   static wstring DecryptPassword(const wstring & Password, wstring Key);
   static wstring StronglyRecryptPassword(const wstring & Password, wstring Key);
 
-  __property wstring InternalStorageKey = { read = GetInternalStorageKey };
+  // __property wstring InternalStorageKey = { read = GetInternalStorageKey };
+  wstring GetInternalStorageKey();
 
 public:
   TSessionData(wstring aName);
