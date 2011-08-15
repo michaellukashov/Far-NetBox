@@ -310,211 +310,211 @@ public:
   static void ValidateName(const wstring Name);
 
   // __property wstring HostName  = { read=FHostName, write=SetHostName };
-  wstring HostName  = { read=FHostName, write=SetHostName };
+  wstring GetHostName() { return FHostName; }
   // __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
-  int PortNumber  = { read=FPortNumber, write=SetPortNumber };
+  int GetPortNumber() { return FPortNumber; }
   // __property wstring UserName  = { read=FUserName, write=SetUserName };
-  wstring UserName  = { read=FUserName, write=SetUserName };
+  wstring GetUserName() { return FUserName; }
   __property wstring Password  = { read=GetPassword, write=SetPassword };
   // __property bool Passwordless = { read=FPasswordless, write=SetPasswordless };
-  bool Passwordless = { read=FPasswordless, write=SetPasswordless };
+  bool GetPasswordless() { return FPasswordless; }
   // __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };
-  int PingInterval  = { read=FPingInterval, write=SetPingInterval };
+  int GetPingInterval() { return FPingInterval; }
   // __property bool TryAgent  = { read=FTryAgent, write=SetTryAgent };
-  bool TryAgent  = { read=FTryAgent, write=SetTryAgent };
+  bool GetTryAgent() { return FTryAgent; }
   // __property bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
-  bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
+  bool GetAgentFwd() { return FAgentFwd; }
   // __property wstring ListingCommand = { read = FListingCommand, write = SetListingCommand };
-  wstring ListingCommand = { read = FListingCommand, write = SetListingCommand };
+  wstring GetListingCommand() { return FListingCommand; }
   // __property bool AuthTIS  = { read=FAuthTIS, write=SetAuthTIS };
-  bool AuthTIS  = { read=FAuthTIS, write=SetAuthTIS };
+  bool GetAuthTIS() { return FAuthTIS; }
   // __property bool AuthKI  = { read=FAuthKI, write=SetAuthKI };
-  bool AuthKI  = { read=FAuthKI, write=SetAuthKI };
+  bool GetAuthKI() { return FAuthKI; }
   // __property bool AuthKIPassword  = { read=FAuthKIPassword, write=SetAuthKIPassword };
-  bool AuthKIPassword  = { read=FAuthKIPassword, write=SetAuthKIPassword };
+  bool GetAuthKIPassword() { return FAuthKIPassword; }
   // __property bool AuthGSSAPI  = { read=FAuthGSSAPI, write=SetAuthGSSAPI };
-  bool AuthGSSAPI  = { read=FAuthGSSAPI, write=SetAuthGSSAPI };
+  bool GetAuthGSSAPI() { return FAuthGSSAPI; }
   // __property bool GSSAPIFwdTGT = { read=FGSSAPIFwdTGT, write=SetGSSAPIFwdTGT };
-  bool GSSAPIFwdTGT = { read=FGSSAPIFwdTGT, write=SetGSSAPIFwdTGT };
+  bool GetGSSAPIFwdTGT() { return FGSSAPIFwdTGT; }
   // __property wstring GSSAPIServerRealm = { read=FGSSAPIServerRealm, write=SetGSSAPIServerRealm };
-  wstring GSSAPIServerRealm = { read=FGSSAPIServerRealm, write=SetGSSAPIServerRealm };
+  wstring GetGSSAPIServerRealm() { return FGSSAPIServerRealm; }
   // __property bool ChangeUsername  = { read=FChangeUsername, write=SetChangeUsername };
-  bool ChangeUsername  = { read=FChangeUsername, write=SetChangeUsername };
+  bool GetChangeUsername() { return FChangeUsername; }
   // __property bool Compression  = { read=FCompression, write=SetCompression };
-  bool Compression  = { read=FCompression, write=SetCompression };
+  bool GetCompression() { return FCompression; }
   // __property TSshProt SshProt  = { read=FSshProt, write=SetSshProt };
-  TSshProt SshProt  = { read=FSshProt, write=SetSshProt };
+  TSshProt GetSshProt() { return FSshProt; }
   __property bool UsesSsh = { read = GetUsesSsh };
   // __property bool Ssh2DES  = { read=FSsh2DES, write=SetSsh2DES };
-  bool Ssh2DES  = { read=FSsh2DES, write=SetSsh2DES };
+  bool GetSsh2DES() { return FSsh2DES; }
   // __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
-  bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
+  bool GetSshNoUserAuth() { return FSshNoUserAuth; }
   __property TCipher Cipher[int Index] = { read=GetCipher, write=SetCipher };
   __property TKex Kex[int Index] = { read=GetKex, write=SetKex };
   // __property wstring PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
-  wstring PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
+  wstring GetPublicKeyFile() { return FPublicKeyFile; }
   // __property TProtocol Protocol  = { read=FProtocol, write=SetProtocol };
-  TProtocol Protocol  = { read=FProtocol, write=SetProtocol };
+  TProtocol GetProtocol() { return FProtocol; }
   __property wstring ProtocolStr  = { read=GetProtocolStr, write=SetProtocolStr };
   // __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
-  TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
+  TFSProtocol GetFSProtocol() { return FFSProtocol; }
   __property wstring FSProtocolStr  = { read=GetFSProtocolStr };
   // __property bool Modified  = { read=FModified, write=FModified };
-  bool Modified  = { read=FModified, write=FModified };
+  bool GetModified() { return FModified; }
   __property bool CanLogin  = { read=GetCanLogin };
   // __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
-  bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
+  bool GetClearAliases() { return FClearAliases; }
   __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
   // __property TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
-  TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
+  TDateTime GetTimeDifference() { return FTimeDifference; }
   // __property TPingType PingType = { read = FPingType, write = SetPingType };
-  TPingType PingType = { read = FPingType, write = SetPingType };
+  TPingType GetPingType() { return FPingType; }
   __property wstring SessionName  = { read=GetSessionName };
   __property wstring DefaultSessionName  = { read=GetDefaultSessionName };
   __property wstring SessionUrl  = { read=GetSessionUrl };
   // __property wstring LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
-  wstring LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
+  wstring GetLocalDirectory() { return FLocalDirectory; }
   // __property wstring RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
-  wstring RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
+  wstring GetRemoteDirectory() { return FRemoteDirectory; }
   // __property bool UpdateDirectories = { read=FUpdateDirectories, write=SetUpdateDirectories };
-  bool UpdateDirectories = { read=FUpdateDirectories, write=SetUpdateDirectories };
+  bool GetUpdateDirectories() { return FUpdateDirectories; }
   // __property bool CacheDirectories = { read=FCacheDirectories, write=SetCacheDirectories };
-  bool CacheDirectories = { read=FCacheDirectories, write=SetCacheDirectories };
+  bool GetCacheDirectories() { return FCacheDirectories; }
   // __property bool CacheDirectoryChanges = { read=FCacheDirectoryChanges, write=SetCacheDirectoryChanges };
-  bool CacheDirectoryChanges = { read=FCacheDirectoryChanges, write=SetCacheDirectoryChanges };
+  bool GetCacheDirectoryChanges() { return FCacheDirectoryChanges; }
   // __property bool PreserveDirectoryChanges = { read=FPreserveDirectoryChanges, write=SetPreserveDirectoryChanges };
-  bool PreserveDirectoryChanges = { read=FPreserveDirectoryChanges, write=SetPreserveDirectoryChanges };
+  bool GetPreserveDirectoryChanges() { return FPreserveDirectoryChanges; }
   // __property bool LockInHome = { read=FLockInHome, write=SetLockInHome };
-  bool LockInHome = { read=FLockInHome, write=SetLockInHome };
+  bool GetLockInHome() { return FLockInHome; }
   // __property bool Special = { read=FSpecial, write=SetSpecial };
-  bool Special = { read=FSpecial, write=SetSpecial };
+  bool GetSpecial() { return FSpecial; }
   // __property bool Selected  = { read=FSelected, write=FSelected };
-  bool Selected  = { read=FSelected, write=FSelected };
+  bool GetSelected() { return FSelected; }
   __property wstring InfoTip  = { read=GetInfoTip };
   __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
   __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
   // __property TEOLType EOLType = { read = FEOLType, write = SetEOLType };
-  TEOLType EOLType = { read = FEOLType, write = SetEOLType };
+  TEOLType GetEOLType() { return FEOLType; }
   // __property bool LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
-  bool LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
+  bool GetLookupUserGroups() { return FLookupUserGroups; }
   // __property wstring ReturnVar = { read = FReturnVar, write = SetReturnVar };
-  wstring ReturnVar = { read = FReturnVar, write = SetReturnVar };
+  wstring GetReturnVar() { return FReturnVar; }
   // __property bool Scp1Compatibility = { read = FScp1Compatibility, write = SetScp1Compatibility };
-  bool Scp1Compatibility = { read = FScp1Compatibility, write = SetScp1Compatibility };
+  bool GetScp1Compatibility() { return FScp1Compatibility; }
   // __property wstring Shell = { read = FShell, write = SetShell };
-  wstring Shell = { read = FShell, write = SetShell };
+  wstring GetShell() { return FShell; }
   // __property wstring SftpServer = { read = FSftpServer, write = SetSftpServer };
-  wstring SftpServer = { read = FSftpServer, write = SetSftpServer };
+  wstring GetSftpServer() { return FSftpServer; }
   // __property int Timeout = { read = FTimeout, write = SetTimeout };
-  int Timeout = { read = FTimeout, write = SetTimeout };
+  int GetTimeout() { return FTimeout; }
   __property TDateTime TimeoutDT = { read = GetTimeoutDT };
   // __property bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
-  bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
+  bool GetUnsetNationalVars() { return FUnsetNationalVars; }
   // __property bool IgnoreLsWarnings  = { read=FIgnoreLsWarnings, write=SetIgnoreLsWarnings };
-  bool IgnoreLsWarnings  = { read=FIgnoreLsWarnings, write=SetIgnoreLsWarnings };
+  bool GetIgnoreLsWarnings() { return FIgnoreLsWarnings; }
   // __property bool TcpNoDelay  = { read=FTcpNoDelay, write=SetTcpNoDelay };
-  bool TcpNoDelay  = { read=FTcpNoDelay, write=SetTcpNoDelay };
+  bool GetTcpNoDelay() { return FTcpNoDelay; }
   __property wstring SshProtStr  = { read=GetSshProtStr };
   __property wstring CipherList  = { read=GetCipherList, write=SetCipherList };
   __property wstring KexList  = { read=GetKexList, write=SetKexList };
   // __property TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
-  TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
+  TProxyMethod GetProxyMethod() { return FProxyMethod; }
   // __property wstring ProxyHost  = { read=FProxyHost, write=SetProxyHost };
-  wstring ProxyHost  = { read=FProxyHost, write=SetProxyHost };
+  wstring GetProxyHost() { return FProxyHost; }
   // __property int ProxyPort  = { read=FProxyPort, write=SetProxyPort };
-  int ProxyPort  = { read=FProxyPort, write=SetProxyPort };
+  int GetProxyPort() { return FProxyPort; }
   // __property wstring ProxyUsername  = { read=FProxyUsername, write=SetProxyUsername };
-  wstring ProxyUsername  = { read=FProxyUsername, write=SetProxyUsername };
+  wstring GetProxyUsername() { return FProxyUsername; }
   __property wstring ProxyPassword  = { read=GetProxyPassword, write=SetProxyPassword };
   // __property wstring ProxyTelnetCommand  = { read=FProxyTelnetCommand, write=SetProxyTelnetCommand };
-  wstring ProxyTelnetCommand  = { read=FProxyTelnetCommand, write=SetProxyTelnetCommand };
+  wstring GetProxyTelnetCommand() { return FProxyTelnetCommand; }
   // __property wstring ProxyLocalCommand  = { read=FProxyLocalCommand, write=SetProxyLocalCommand };
-  wstring ProxyLocalCommand  = { read=FProxyLocalCommand, write=SetProxyLocalCommand };
+  wstring GetProxyLocalCommand() { return FProxyLocalCommand; }
   // __property TAutoSwitch ProxyDNS  = { read=FProxyDNS, write=SetProxyDNS };
-  TAutoSwitch ProxyDNS  = { read=FProxyDNS, write=SetProxyDNS };
+  TAutoSwitch GetProxyDNS() { return FProxyDNS; }
   // __property bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
-  bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
+  bool GetProxyLocalhost() { return FProxyLocalhost; }
   // __property int FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
-  int FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
+  int GetFtpProxyLogonType() { return FFtpProxyLogonType; }
   __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
   // __property wstring CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
-  wstring CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
+  wstring GetCustomParam1() { return FCustomParam1; }
   // __property wstring CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
-  wstring CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
+  wstring GetCustomParam2() { return FCustomParam2; }
   __property wstring SessionKey = { read = GetSessionKey };
   // __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
-  bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
+  bool GetResolveSymlinks() { return FResolveSymlinks; }
   // __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
-  int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
+  int SFTGetPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
   // __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
-  int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
+  int GetSFTPUploadQueue() { return FSFTPUploadQueue; }
   // __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
-  int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
+  int GetSFTPListingQueue() { return FSFTPListingQueue; }
   // __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
-  int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
+  int GetSFTPMaxVersion() { return FSFTPMaxVersion; }
   // __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
-  unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
+  unsigned long GetSFTPMaxPacketSize() { return FSFTPMaxPacketSize; }
   __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
   // __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
-  TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
+  TAutoSwitch GetSCPLsFullTime() { return FSCPLsFullTime; }
   // __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
-  TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
+  TAutoSwitch GetFtpListAll() { return FFtpListAll; }
   // __property TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
-  TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
+  TDSTMode GetDSTMode() { return FDSTMode; }
   // __property bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
-  bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
+  bool GetDeleteToRecycleBin() { return FDeleteToRecycleBin; }
   // __property bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
-  bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
+  bool GetOverwrittenToRecycleBin() { return FOverwrittenToRecycleBin; }
   // __property wstring RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
-  wstring RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
+  wstring GetRecycleBinPath() { return FRecycleBinPath; }
   // __property wstring PostLoginCommands = { read = FPostLoginCommands, write = SetPostLoginCommands };
-  wstring PostLoginCommands = { read = FPostLoginCommands, write = SetPostLoginCommands };
+  wstring GetPostLoginCommands() { return FPostLoginCommands; }
   // __property TAddressFamily AddressFamily = { read = FAddressFamily, write = SetAddressFamily };
-  TAddressFamily AddressFamily = { read = FAddressFamily, write = SetAddressFamily };
+  TAddressFamily GetAddressFamily() { return FAddressFamily; }
   // __property wstring RekeyData = { read = FRekeyData, write = SetRekeyData };
-  wstring RekeyData = { read = FRekeyData, write = SetRekeyData };
+  wstring GetRekeyData() { return FRekeyData; }
   // __property unsigned int RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
-  unsigned int RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
+  unsigned int GetRekeyTime() { return FRekeyTime; }
   // __property int Color = { read = FColor, write = SetColor };
-  int Color = { read = FColor, write = SetColor };
+  int GetColor() { return FColor; }
   // __property bool Tunnel = { read = FTunnel, write = SetTunnel };
-  bool Tunnel = { read = FTunnel, write = SetTunnel };
+  bool GetTunnel() { return FTunnel; }
   // __property wstring TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
-  wstring TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
+  wstring GetTunnelHostName() { return FTunnelHostName; }
   // __property int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
-  int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
+  int GetTunnelPortNumber() { return FTunnelPortNumber; }
   // __property wstring TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
-  wstring TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
+  wstring GetTunnelUserName() { return FTunnelUserName; }
   __property wstring TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
   // __property wstring TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
-  wstring TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
+  wstring GetTunnelPublicKeyFile() { return FTunnelPublicKeyFile; }
   __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
   // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
-  int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
+  int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
   // __property wstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
-  wstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
+  Getwstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
   // __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
-  bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
+  bool GetFtpPasvMode() { return FFtpPasvMode; }
   // __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
-  bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
+  bool GetFtpForcePasvIp() { return FFtpForcePasvIp; }
   // __property wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
-  wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
+  wstring GetFtpAccount() { return FFtpAccount; }
   // __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
-  int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
+  int GetFtpPingInterval() { return FFtpPingInterval; }
   __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
   // __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
-  TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
+  TPingType GetFtpPingType() { return FFtpPingType; }
   // __property TFtps Ftps = { read = FFtps, write = SetFtps };
-  TFtps Ftps = { read = FFtps, write = SetFtps };
+  TFtps GetFtps() { return FFtps; }
   // __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
-  TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
+  TAutoSwitch GetNotUtf() { return FNotUtf; }
   // __property wstring HostKey = { read = FHostKey, write = SetHostKey };
-  wstring HostKey = { read = FHostKey, write = SetHostKey };
+  wstring GetHostKey() { return FHostKey; }
   __property wstring StorageKey = { read = GetStorageKey };
   // __property wstring OrigHostName = { read = FOrigHostName };
-  wstring OrigHostName = { read = FOrigHostName };
+  wstring GetOrigHostName() { return FOrigHostName; }
   // __property int OrigPortNumber = { read = FOrigPortNumber };
-  int OrigPortNumber = { read = FOrigPortNumber };
+  int GetOrigPortNumber() { return FOrigPortNumber; }
   __property wstring LocalName = { read = GetLocalName };
   __property wstring Source = { read = GetSource };
 };
