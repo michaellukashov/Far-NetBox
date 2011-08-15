@@ -73,7 +73,7 @@ const char EngShortMonthNames[12][4] =
 //---------------------------------------------------------------------------
 wstring ReplaceChar(wstring Str, char A, char B)
 {
-  for (Integer Index = 0; Index < Str.Length(); Index++)
+  for (int Index = 0; Index < Str.Length(); Index++)
     if (Str[Index+1] == A) Str[Index+1] = B;
   return Str;
 }
@@ -159,7 +159,7 @@ wstring DefaultStr(const wstring & Str, const wstring & Default)
 //---------------------------------------------------------------------------
 wstring CutToChar(wstring &Str, char Ch, bool Trim)
 {
-  Integer P = Str.Pos(Ch);
+  int P = Str.Pos(Ch);
   wstring Result;
   if (P)
   {

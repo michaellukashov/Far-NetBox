@@ -1414,7 +1414,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
     Source.Bottom = static_cast<SHORT>(Size.y);
     Dest.X = 0;
     Dest.Y = 0;
-    Fill.Char.AsciiChar = ' ';
+    Fill.char.AsciiChar = ' ';
     // Fill.Ñhar.UnicodeChar = ' ';
     Fill.Attributes = 7;
     ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
