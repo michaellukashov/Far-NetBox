@@ -17,7 +17,7 @@ int NamedObjectSortProc(void * Item1, void * Item2)
   return AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
 }
 //--- TNamedObject ----------------------------------------------------------
-Integer TNamedObject::CompareName(wstring aName,
+int TNamedObject::CompareName(wstring aName,
   Boolean CaseSensitive)
 {
   if (CaseSensitive)
@@ -32,7 +32,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
   if (List && (List->IndexOf(this) == -1))
     while (List->FindByName(Name))
     {
-      Integer N = 0, P;
+      int N = 0, P;
       // If name already contains number parenthesis remove it (and remember it)
       if ((Name[Name.Length()] == ')') && ((P = Name.LastDelimiter('(')) > 0))
         try {
@@ -57,7 +57,7 @@ TNamedObjectList::TNamedObjectList():
   AutoSort = True;
 }
 //---------------------------------------------------------------------------
-TNamedObject * TNamedObjectList::AtObject(Integer Index)
+TNamedObject * TNamedObjectList::AtObject(int Index)
 {
   return (TNamedObject *)Items[Index+HiddenCount];
 }
@@ -84,7 +84,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 TNamedObject * TNamedObjectList::FindByName(wstring Name,
   Boolean CaseSensitive)
 {
-  for (Integer Index = 0; Index < TObjectList::Count; Index++)
+  for (int Index = 0; Index < TObjectList::Count; Index++)
     if (!((TNamedObject *)Items[Index])->CompareName(Name, CaseSensitive))
       return (TNamedObject *)Items[Index];
   return NULL;
