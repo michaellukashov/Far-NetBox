@@ -252,7 +252,7 @@ wstring ExceptionLogString(exception *E)
   {
     wstring Msg;
     // Msg = FORMAT("(%s) %s", (E->ClassName(), E->Message));
-    Msg = E->what();
+    Msg = ::MB2W(E->what());
     if (false) // FIXME E->InheritsFrom(__classid(ExtException)))
     {
       /*
@@ -276,15 +276,14 @@ wstring ExceptionLogString(exception *E)
 //---------------------------------------------------------------------------
 bool IsNumber(const wstring Str)
 {
-  int Value;
-  return TryStrToInt(Str, Value);
+  return _wtoi(Str.c_str()) != 0;
 }
 //---------------------------------------------------------------------------
 wstring SystemTemporaryDirectory()
 {
   wstring TempDir;
-  TempDir.SetLength(MAX_PATH);
-  TempDir.SetLength(GetTempPath(MAX_PATH, TempDir.c_str()));
+  TempDir.resize(MAX_PATH);
+  TempDir.resize(GetTempPath(MAX_PATH, TempDir.c_str()));
   return TempDir;
 }
 //---------------------------------------------------------------------------
