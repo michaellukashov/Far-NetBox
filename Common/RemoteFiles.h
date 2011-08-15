@@ -106,31 +106,7 @@ private:
   wstring FFullFileName;
   int FIsHidden;
   wstring FTypeName;
-  int GetAttr();
-  bool GetBrokenLink();
-  bool GetIsDirectory() const;
-  TRemoteFile * GetLinkedFile();
-  void SetLinkedFile(TRemoteFile * value);
-  wstring GetModificationStr();
   void SetModification(const TDateTime & value);
-  void SetListingStr(wstring value);
-  wstring GetListingStr();
-  wstring GetRightsStr();
-  char GetType() const;
-  void SetType(char AType);
-  void SetTerminal(TTerminal * value);
-  void SetRights(TRights * value);
-  wstring GetFullFileName() const;
-  bool GetHaveFullFileName() const;
-  int GetIconIndex() const;
-  wstring GetTypeName();
-  bool GetIsHidden();
-  void SetIsHidden(bool value);
-  bool GetIsParentDirectory() const;
-  bool GetIsThisDirectory() const;
-  bool GetIsInaccesibleDirectory() const;
-  wstring GetExtension();
-  wstring GetUserModificationStr();
   void LoadTypeInfo();
 
 protected:
@@ -144,38 +120,87 @@ public:
   void ShiftTime(const TDateTime & Difference);
   void Complete();
 
-  __property int Attr = { read = GetAttr };
-  __property bool BrokenLink = { read = GetBrokenLink };
-  __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
-  __property wstring RightsStr = { read = GetRightsStr };
-  __property __int64 Size = { read = FSize, write = FSize };
-  __property TRemoteToken Owner = { read = FOwner, write = FOwner };
-  __property TRemoteToken Group = { read = FGroup, write = FGroup };
-  __property wstring FileName = { read = FFileName, write = FFileName };
-  __property int INodeBlocks = { read = FINodeBlocks };
-  __property TDateTime Modification = { read = FModification, write = SetModification };
-  __property wstring ModificationStr = { read = GetModificationStr };
-  __property wstring UserModificationStr = { read = GetUserModificationStr };
-  __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
-  __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
-  __property bool IsSymLink = { read = FIsSymLink };
-  __property bool IsDirectory = { read = GetIsDirectory };
-  __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
-  __property wstring LinkTo = { read = FLinkTo, write = FLinkTo };
-  __property wstring ListingStr = { read = GetListingStr, write = SetListingStr };
-  __property TRights * Rights = { read = FRights, write = SetRights };
-  __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
-  __property char Type = { read = GetType, write = SetType };
-  __property bool Selected  = { read=FSelected, write=FSelected };
-  __property wstring FullFileName  = { read = GetFullFileName, write = FFullFileName };
-  __property bool HaveFullFileName  = { read = GetHaveFullFileName };
-  __property int IconIndex = { read = GetIconIndex };
-  __property wstring TypeName = { read = GetTypeName };
-  __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
-  __property bool IsParentDirectory = { read = GetIsParentDirectory };
-  __property bool IsThisDirectory = { read = GetIsThisDirectory };
-  __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
-  __property wstring Extension  = { read=GetExtension };
+  // __property int Attr = { read = GetAttr };
+  int GetAttr();
+  // __property bool BrokenLink = { read = GetBrokenLink };
+  bool GetBrokenLink();
+  // __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
+  TRemoteFileList *GetDirectory() { return FDirectory; }
+  void SetDirectory(TRemoteFileList *value) { FDirectory = value; }
+  // __property wstring RightsStr = { read = GetRightsStr };
+  wstring GetRightsStr();
+  // __property __int64 Size = { read = FSize, write = FSize };
+  __int64 GetSize() { return FSize; }
+  void SetSize(__int64 value) { FSize = value; }
+  // __property TRemoteToken Owner = { read = FOwner, write = FOwner };
+  TRemoteToken GetOwner() { return FOwner; }
+  void SetOwner(TRemoteToken value) { FOwner = value; }
+  // __property TRemoteToken Group = { read = FGroup, write = FGroup };
+  TRemoteToken GetGroup() { return FGroup; }
+  void SetGroup(TRemoteToken value) { FGroup = value; }
+  // __property wstring FileName = { read = FFileName, write = FFileName };
+  wstring GetFileName() { return FFileName; }
+  void SetFileName(wstring value) { FFileName = value; }
+  // __property int INodeBlocks = { read = FINodeBlocks };
+  int GetINodeBlocks() { return FINodeBlocks; };
+  // __property TDateTime Modification = { read = FModification, write = SetModification };
+  TDateTime GetModification() { return FModification; }
+  void SetModification(TDateTime value) { FModification = value; }
+  // __property wstring ModificationStr = { read = GetModificationStr };
+  wstring GetModificationStr();
+  // __property wstring UserModificationStr = { read = GetUserModificationStr };
+  wstring GetUserModificationStr();
+  // __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
+  TModificationFmt GetModificationFmt() { return FModificationFmt; }
+  void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
+  // __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
+  TDateTime GetLastAccess() { return FLastAccess; }
+  void SetLastAccess(TDateTime value) { FLastAccess = value; }
+  // __property bool IsSymLink = { read = FIsSymLink };
+  bool GetIsSymLink() { return FIsSymLink; }
+  // __property bool IsDirectory = { read = GetIsDirectory };
+  bool GetIsDirectory() const;
+  // __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
+  TRemoteFile * GetLinkedFile();
+  void SetLinkedFile(TRemoteFile * value);
+  // __property wstring LinkTo = { read = FLinkTo, write = FLinkTo };
+  wstring GetLinkTo() { return FLinkTo; }
+  void SetLinkTo(wstring value) { FLinkTo = value; }
+  // __property wstring ListingStr = { read = GetListingStr, write = SetListingStr };
+  wstring GetListingStr();
+  void SetListingStr(wstring value);
+  // __property TRights * Rights = { read = FRights, write = SetRights };
+  TRights *GetRights() { return FRights; }
+  void SetRights(TRights * value);
+  // __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
+  TTerminal * GetTerminal() { return FTerminal; }
+  void SetTerminal(TTerminal * value);
+  // __property char Type = { read = GetType, write = SetType };
+  char GetType() const;
+  void SetType(char AType);
+  // __property bool Selected  = { read=FSelected, write=FSelected };
+  bool GetSelected() { return FSelected; }
+  void SetSelected(bool value) { FSelected = value; }
+  // __property wstring FullFileName  = { read = GetFullFileName, write = FFullFileName };
+  wstring GetFullFileName() const;
+  void SetFullFileName(wstring value) { FFullFileName = value; }
+  // __property bool HaveFullFileName  = { read = GetHaveFullFileName };
+  bool GetHaveFullFileName() const;
+  // __property int IconIndex = { read = GetIconIndex };
+  int GetIconIndex() const;
+  // __property wstring TypeName = { read = GetTypeName };
+  wstring GetTypeName();
+  // __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
+  bool GetIsHidden();
+  void SetIsHidden(bool value);
+  // __property bool IsParentDirectory = { read = GetIsParentDirectory };
+  bool GetIsParentDirectory() const;
+  // __property bool IsThisDirectory = { read = GetIsThisDirectory };
+  bool GetIsThisDirectory() const;
+  // __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
+  bool GetIsInaccesibleDirectory() const;
+  // __property wstring Extension  = { read=GetExtension };
+  wstring GetExtension();
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
