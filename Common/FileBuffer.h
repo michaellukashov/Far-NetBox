@@ -2,11 +2,14 @@
 #ifndef FileBufferH
 #define FileBufferH
 
-#include <classes.hpp>
+#include "Classes.h"
 //---------------------------------------------------------------------------
 enum TEOLType { eolLF /* \n */, eolCRLF /* \r\n */, eolCR /* \r */ };
 const int cpRemoveCtrlZ = 0x01;
 const int cpRemoveBOM =   0x02;
+//---------------------------------------------------------------------------
+class TStream;
+class TMemoryStream;
 //---------------------------------------------------------------------------
 class TFileBuffer
 {
@@ -22,22 +25,25 @@ public:
   DWORD LoadStream(TStream * Stream, const DWORD Len, bool ForceLen);
   DWORD ReadStream(TStream * Stream, const DWORD Len, bool ForceLen);
   void WriteToStream(TStream * Stream, const DWORD Len);
-  __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
-  __property char * Data = { read=GetData };
-  __property int Size = { read=FSize, write=SetSize };
-  __property int Position = { read=GetPosition, write=SetPosition };
+  // __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
+  TMemoryStream *GetMemory() { return FMemory; }
+  void SetMemory(TMemoryStream * value);
+  // __property char * Data = { read=GetData };
+  char *GetData() const { return NULL; } // FIXME (char *)FMemory->Memory; }
+  // __property int Size = { read=FSize, write=SetSize };
+  int GetSize() { return FSize; }
+  void SetSize(int value);
+  // __property int Position = { read=GetPosition, write=SetPosition };
+  int GetPosition() const;
+  void SetPosition(int value);
 
 private:
   TMemoryStream * FMemory;
   int FSize;
 
-  void SetMemory(TMemoryStream * value);
-  char * GetData() const { return (char *)FMemory->Memory; }
-  void SetSize(int value);
-  void SetPosition(int value);
-  int GetPosition() const;
 };
 //---------------------------------------------------------------------------
+/*
 class TSafeHandleStream : public THandleStream
 {
 public:
@@ -45,6 +51,7 @@ public:
   virtual int Read(void * Buffer, int Count);
   virtual int Write(const void * Buffer, int Count);
 };
+*/
 //---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------
