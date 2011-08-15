@@ -2,6 +2,7 @@
 #pragma once
 
 #include <set>
+
 #include "RemoteFiles.h"
 // #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -53,7 +54,7 @@ private:
   bool FDisableAcceptingHostKeys;
 
   wstring GetOSVersionStr();
-  TVSFixedFileInfo *GetFixedApplicationInfo();
+  // TVSFixedFileInfo *GetFixedApplicationInfo();
   void * GetApplicationInfo();
   virtual wstring GetVersionStr();
   virtual wstring GetVersion();
@@ -160,7 +161,7 @@ public:
   virtual wstring DecryptPassword(wstring Password, wstring Key);
   virtual wstring StronglyRecryptPassword(wstring Password, wstring Key);
 
-  __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
+  // __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
   __property wstring StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
   __property wstring PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };

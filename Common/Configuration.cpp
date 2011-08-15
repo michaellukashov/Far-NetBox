@@ -572,10 +572,10 @@ wstring TConfiguration::GetOSVersionStr()
   return Result;
 }
 //---------------------------------------------------------------------------
-TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
-{
-  return GetFixedFileInfo(ApplicationInfo);
-}
+// TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
+// {
+  // return GetFixedFileInfo(ApplicationInfo);
+// }
 //---------------------------------------------------------------------------
 int TConfiguration::GetCompoundVersion()
 {
