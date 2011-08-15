@@ -153,8 +153,6 @@ private:
   void SetHostName(wstring value);
   void SetPortNumber(int value);
   void SetUserName(wstring value);
-  void SetPassword(wstring value);
-  wstring GetPassword();
   void SetPasswordless(bool value);
   void SetPingInterval(int value);
   void SetTryAgent(bool value);
@@ -170,26 +168,12 @@ private:
   void SetSshProt(TSshProt value);
   void SetSsh2DES(bool value);
   void SetSshNoUserAuth(bool value);
-  void SetCipher(int Index, TCipher value);
-  TCipher GetCipher(int Index) const;
-  void SetKex(int Index, TKex value);
-  TKex GetKex(int Index) const;
   void SetPublicKeyFile(wstring value);
 
-  void SetProtocolStr(wstring value);
-  wstring GetProtocolStr() const;
-  bool GetCanLogin();
-  void SetPingIntervalDT(TDateTime value);
-  TDateTime GetPingIntervalDT();
-  TDateTime GetFtpPingIntervalDT();
   void SetTimeDifference(TDateTime value);
   void SetPingType(TPingType value);
-  wstring GetSessionName();
-  wstring GetDefaultSessionName();
-  wstring GetSessionUrl();
   void SetProtocol(TProtocol value);
   void SetFSProtocol(TFSProtocol value);
-  wstring GetFSProtocolStr();
   void SetLocalDirectory(wstring value);
   void SetRemoteDirectory(wstring value);
   void SetUpdateDirectories(bool value);
@@ -198,13 +182,8 @@ private:
   void SetPreserveDirectoryChanges(bool value);
   void SetLockInHome(bool value);
   void SetSpecial(bool value);
-  wstring GetInfoTip();
-  bool GetDefaultShell();
-  void SetDetectReturnVar(bool value);
-  bool GetDetectReturnVar();
   void SetListingCommand(wstring value);
   void SetClearAliases(bool value);
-  void SetDefaultShell(bool value);
   void SetEOLType(TEOLType value);
   void SetLookupUserGroups(bool value);
   void SetReturnVar(wstring value);
@@ -215,39 +194,24 @@ private:
   void SetUnsetNationalVars(bool value);
   void SetIgnoreLsWarnings(bool value);
   void SetTcpNoDelay(bool value);
-  wstring GetSshProtStr();
-  bool GetUsesSsh();
-  void SetCipherList(wstring value);
-  wstring GetCipherList() const;
-  void SetKexList(wstring value);
-  wstring GetKexList() const;
   void SetProxyMethod(TProxyMethod value);
   void SetProxyHost(wstring value);
   void SetProxyPort(int value);
   void SetProxyUsername(wstring value);
-  void SetProxyPassword(wstring value);
   void SetProxyTelnetCommand(wstring value);
   void SetProxyLocalCommand(wstring value);
   void SetProxyDNS(TAutoSwitch value);
   void SetProxyLocalhost(bool value);
-  wstring GetProxyPassword() const;
   void SetFtpProxyLogonType(int value);
-  void SetBug(TSshBug Bug, TAutoSwitch value);
-  TAutoSwitch GetBug(TSshBug Bug) const;
-  wstring GetSessionKey();
   void SetCustomParam1(wstring value);
   void SetCustomParam2(wstring value);
   void SetResolveSymlinks(bool value);
-  void SetSFTPDownloadQueue(int value);
   void SetSFTPUploadQueue(int value);
   void SetSFTPListingQueue(int value);
   void SetSFTPMaxVersion(int value);
   void SetSFTPMaxPacketSize(unsigned long value);
-  void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
-  TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   void SetSCPLsFullTime(TAutoSwitch value);
   void SetFtpListAll(TAutoSwitch value);
-  wstring GetStorageKey();
   void SetDSTMode(TDSTMode value);
   void SetDeleteToRecycleBin(bool value);
   void SetOverwrittenToRecycleBin(bool value);
@@ -261,12 +225,8 @@ private:
   void SetTunnelHostName(wstring value);
   void SetTunnelPortNumber(int value);
   void SetTunnelUserName(wstring value);
-  void SetTunnelPassword(wstring value);
-  wstring GetTunnelPassword();
   void SetTunnelPublicKeyFile(wstring value);
-  void SetTunnelPortFwd(wstring value);
   void SetTunnelLocalPortNumber(int value);
-  bool GetTunnelAutoassignLocalPortNumber();
   void SetFtpPasvMode(bool value);
   void SetFtpForcePasvIp(bool value);
   void SetFtpAccount(wstring value);
@@ -275,11 +235,8 @@ private:
   void SetFtps(TFtps value);
   void SetNotUtf(TAutoSwitch value);
   void SetHostKey(wstring value);
-  TDateTime GetTimeoutDT();
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
-  wstring GetLocalName();
   void Modify();
-  wstring GetSource();
   static wstring EncryptPassword(const wstring & Password, wstring Key);
   static wstring DecryptPassword(const wstring & Password, wstring Key);
   static wstring StronglyRecryptPassword(const wstring & Password, wstring Key);
@@ -315,7 +272,9 @@ public:
   int GetPortNumber() { return FPortNumber; }
   // __property wstring UserName  = { read=FUserName, write=SetUserName };
   wstring GetUserName() { return FUserName; }
-  __property wstring Password  = { read=GetPassword, write=SetPassword };
+  // __property wstring Password  = { read=GetPassword, write=SetPassword };
+  void SetPassword(wstring value);
+  wstring GetPassword();
   // __property bool Passwordless = { read=FPasswordless, write=SetPasswordless };
   bool GetPasswordless() { return FPasswordless; }
   // __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };
@@ -344,34 +303,48 @@ public:
   bool GetCompression() { return FCompression; }
   // __property TSshProt SshProt  = { read=FSshProt, write=SetSshProt };
   TSshProt GetSshProt() { return FSshProt; }
-  __property bool UsesSsh = { read = GetUsesSsh };
+  // __property bool UsesSsh = { read = GetUsesSsh };
+  bool GetUsesSsh();
   // __property bool Ssh2DES  = { read=FSsh2DES, write=SetSsh2DES };
   bool GetSsh2DES() { return FSsh2DES; }
   // __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
   bool GetSshNoUserAuth() { return FSshNoUserAuth; }
-  __property TCipher Cipher[int Index] = { read=GetCipher, write=SetCipher };
-  __property TKex Kex[int Index] = { read=GetKex, write=SetKex };
+  // __property TCipher Cipher[int Index] = { read=GetCipher, write=SetCipher };
+  void SetCipher(int Index, TCipher value);
+  TCipher GetCipher(int Index) const;
+  // __property TKex Kex[int Index] = { read=GetKex, write=SetKex };
+  void SetKex(int Index, TKex value);
+  TKex GetKex(int Index) const;
   // __property wstring PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
   wstring GetPublicKeyFile() { return FPublicKeyFile; }
   // __property TProtocol Protocol  = { read=FProtocol, write=SetProtocol };
   TProtocol GetProtocol() { return FProtocol; }
-  __property wstring ProtocolStr  = { read=GetProtocolStr, write=SetProtocolStr };
+  // __property wstring ProtocolStr  = { read=GetProtocolStr, write=SetProtocolStr };
+  void SetProtocolStr(wstring value);
+  wstring GetProtocolStr() const;
   // __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
   TFSProtocol GetFSProtocol() { return FFSProtocol; }
-  __property wstring FSProtocolStr  = { read=GetFSProtocolStr };
+  // __property wstring FSProtocolStr  = { read=GetFSProtocolStr };
+  wstring GetFSProtocolStr();
   // __property bool Modified  = { read=FModified, write=FModified };
   bool GetModified() { return FModified; }
-  __property bool CanLogin  = { read=GetCanLogin };
+  // __property bool CanLogin  = { read=GetCanLogin };
+  bool GetCanLogin();
   // __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
   bool GetClearAliases() { return FClearAliases; }
-  __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
+  // __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
+  void SetPingIntervalDT(TDateTime value);
+  TDateTime GetPingIntervalDT();
   // __property TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
   TDateTime GetTimeDifference() { return FTimeDifference; }
   // __property TPingType PingType = { read = FPingType, write = SetPingType };
   TPingType GetPingType() { return FPingType; }
-  __property wstring SessionName  = { read=GetSessionName };
-  __property wstring DefaultSessionName  = { read=GetDefaultSessionName };
-  __property wstring SessionUrl  = { read=GetSessionUrl };
+  // __property wstring SessionName  = { read=GetSessionName };
+  wstring GetSessionName();
+  // __property wstring DefaultSessionName  = { read=GetDefaultSessionName };
+  wstring GetDefaultSessionName();
+  // __property wstring SessionUrl  = { read=GetSessionUrl };
+  wstring GetSessionUrl();
   // __property wstring LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   wstring GetLocalDirectory() { return FLocalDirectory; }
   // __property wstring RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
@@ -390,9 +363,14 @@ public:
   bool GetSpecial() { return FSpecial; }
   // __property bool Selected  = { read=FSelected, write=FSelected };
   bool GetSelected() { return FSelected; }
-  __property wstring InfoTip  = { read=GetInfoTip };
-  __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
-  __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
+  // __property wstring InfoTip  = { read=GetInfoTip };
+  wstring GetInfoTip();
+  // __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
+  bool GetDefaultShell();
+  void SetDefaultShell(bool value);
+  // __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
+  void SetDetectReturnVar(bool value);
+  bool GetDetectReturnVar();
   // __property TEOLType EOLType = { read = FEOLType, write = SetEOLType };
   TEOLType GetEOLType() { return FEOLType; }
   // __property bool LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
@@ -407,16 +385,22 @@ public:
   wstring GetSftpServer() { return FSftpServer; }
   // __property int Timeout = { read = FTimeout, write = SetTimeout };
   int GetTimeout() { return FTimeout; }
-  __property TDateTime TimeoutDT = { read = GetTimeoutDT };
+  // __property TDateTime TimeoutDT = { read = GetTimeoutDT };
+  TDateTime GetTimeoutDT();
   // __property bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
   bool GetUnsetNationalVars() { return FUnsetNationalVars; }
   // __property bool IgnoreLsWarnings  = { read=FIgnoreLsWarnings, write=SetIgnoreLsWarnings };
   bool GetIgnoreLsWarnings() { return FIgnoreLsWarnings; }
   // __property bool TcpNoDelay  = { read=FTcpNoDelay, write=SetTcpNoDelay };
   bool GetTcpNoDelay() { return FTcpNoDelay; }
-  __property wstring SshProtStr  = { read=GetSshProtStr };
-  __property wstring CipherList  = { read=GetCipherList, write=SetCipherList };
-  __property wstring KexList  = { read=GetKexList, write=SetKexList };
+  // __property wstring SshProtStr  = { read=GetSshProtStr };
+  wstring GetSshProtStr();
+  // __property wstring CipherList  = { read=GetCipherList, write=SetCipherList };
+  void SetCipherList(wstring value);
+  wstring GetCipherList() const;
+  // __property wstring KexList  = { read=GetKexList, write=SetKexList };
+  void SetKexList(wstring value);
+  wstring GetKexList() const;
   // __property TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
   TProxyMethod GetProxyMethod() { return FProxyMethod; }
   // __property wstring ProxyHost  = { read=FProxyHost, write=SetProxyHost };
@@ -425,7 +409,9 @@ public:
   int GetProxyPort() { return FProxyPort; }
   // __property wstring ProxyUsername  = { read=FProxyUsername, write=SetProxyUsername };
   wstring GetProxyUsername() { return FProxyUsername; }
-  __property wstring ProxyPassword  = { read=GetProxyPassword, write=SetProxyPassword };
+  // __property wstring ProxyPassword  = { read=GetProxyPassword, write=SetProxyPassword };
+  wstring GetProxyPassword() const;
+  void SetProxyPassword(wstring value);
   // __property wstring ProxyTelnetCommand  = { read=FProxyTelnetCommand, write=SetProxyTelnetCommand };
   wstring GetProxyTelnetCommand() { return FProxyTelnetCommand; }
   // __property wstring ProxyLocalCommand  = { read=FProxyLocalCommand, write=SetProxyLocalCommand };
@@ -436,16 +422,21 @@ public:
   bool GetProxyLocalhost() { return FProxyLocalhost; }
   // __property int FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
   int GetFtpProxyLogonType() { return FFtpProxyLogonType; }
-  __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
+  // __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
+  void SetBug(TSshBug Bug, TAutoSwitch value);
+  TAutoSwitch GetBug(TSshBug Bug) const;
   // __property wstring CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
   wstring GetCustomParam1() { return FCustomParam1; }
   // __property wstring CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
   wstring GetCustomParam2() { return FCustomParam2; }
-  __property wstring SessionKey = { read = GetSessionKey };
+  // __property wstring SessionKey = { read = GetSessionKey };
+  wstring GetSessionKey();
   // __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
   bool GetResolveSymlinks() { return FResolveSymlinks; }
   // __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
-  int SFTGetPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
+  // __property int SFTGetPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
+  int GetSFTGetPDownloadQueue() { return FSFTPDownloadQueue; }
+  void SetSFTPDownloadQueue(int value);
   // __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
   int GetSFTPUploadQueue() { return FSFTPUploadQueue; }
   // __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
@@ -454,7 +445,9 @@ public:
   int GetSFTPMaxVersion() { return FSFTPMaxVersion; }
   // __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
   unsigned long GetSFTPMaxPacketSize() { return FSFTPMaxPacketSize; }
-  __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
+  // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
+  void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
+  TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   // __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   TAutoSwitch GetSCPLsFullTime() { return FSCPLsFullTime; }
   // __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
@@ -485,14 +478,18 @@ public:
   int GetTunnelPortNumber() { return FTunnelPortNumber; }
   // __property wstring TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
   wstring GetTunnelUserName() { return FTunnelUserName; }
-  __property wstring TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
+  // __property wstring TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
+  void SetTunnelPassword(wstring value);
+  wstring GetTunnelPassword();
   // __property wstring TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
   wstring GetTunnelPublicKeyFile() { return FTunnelPublicKeyFile; }
-  __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
+  // __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
+  bool GetTunnelAutoassignLocalPortNumber();
   // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
   int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
   // __property wstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
-  Getwstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
+  wstring GetTunnelPortFwd() { return FTunnelPortFwd; }
+  void SetTunnelPortFwd(wstring value);
   // __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
   bool GetFtpPasvMode() { return FFtpPasvMode; }
   // __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
@@ -501,7 +498,8 @@ public:
   wstring GetFtpAccount() { return FFtpAccount; }
   // __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
   int GetFtpPingInterval() { return FFtpPingInterval; }
-  __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
+  // __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
+  TDateTime GetFtpPingIntervalDT();
   // __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
   TPingType GetFtpPingType() { return FFtpPingType; }
   // __property TFtps Ftps = { read = FFtps, write = SetFtps };
@@ -510,13 +508,16 @@ public:
   TAutoSwitch GetNotUtf() { return FNotUtf; }
   // __property wstring HostKey = { read = FHostKey, write = SetHostKey };
   wstring GetHostKey() { return FHostKey; }
-  __property wstring StorageKey = { read = GetStorageKey };
+  // __property wstring StorageKey = { read = GetStorageKey };
+  wstring GetStorageKey();
   // __property wstring OrigHostName = { read = FOrigHostName };
   wstring GetOrigHostName() { return FOrigHostName; }
   // __property int OrigPortNumber = { read = FOrigPortNumber };
   int GetOrigPortNumber() { return FOrigPortNumber; }
-  __property wstring LocalName = { read = GetLocalName };
-  __property wstring Source = { read = GetSource };
+  // __property wstring LocalName = { read = GetLocalName };
+  wstring GetLocalName();
+  // __property wstring Source = { read = GetSource };
+  wstring GetSource();
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
@@ -534,7 +535,6 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected);
   void RecryptPasswords();
-  TSessionData * AtSession(int Index)
     { return (TSessionData*)AtObject(Index); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
@@ -543,8 +543,11 @@ public:
   TSessionData * ParseUrl(wstring Url, TOptions * Options, bool & DefaultsOnly,
     wstring * FileName = NULL, bool * ProtocolDefined = NULL);
   virtual ~TStoredSessionList();
-  __property TSessionData * Sessions[int Index]  = { read=AtSession };
-  __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
+  // __property TSessionData * Sessions[int Index]  = { read=AtSession };
+  TSessionData *AtSession(int Index);
+  // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
+  TSessionData *GetDefaultSettings() { return FDefaultSettings; }
+  void SetDefaultSettings(TSessionData * value);
 
   static void ImportHostKeys(const wstring TargetKey,
     const wstring SourceKey, TStoredSessionList * Sessions,
@@ -553,7 +556,6 @@ public:
 private:
   TSessionData * FDefaultSettings;
   bool FReadOnly;
-  void SetDefaultSettings(TSessionData * value);
   void DoSave(THierarchicalStorage * Storage, bool All, bool RecryptPasswordOnly);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly);
   void DoSave(THierarchicalStorage * Storage,
