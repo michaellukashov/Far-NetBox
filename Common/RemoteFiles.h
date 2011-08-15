@@ -260,23 +260,29 @@ private:
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
   virtual void SetDirectory(wstring value);
-  TStrings * GetSelectedFiles();
-  bool GetLoaded();
-  void SetIncludeParentDirectory(bool value);
-  void SetIncludeThisDirectory(bool value);
 protected:
   virtual void Clear();
 public:
   TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
   virtual void AddFile(TRemoteFile * File);
   virtual void DuplicateTo(TRemoteFileList * Copy);
-  __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
-  __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
-  __property bool IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
-  __property bool IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
-  __property bool Loaded = { read = GetLoaded };
-  __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
-  __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
+  // __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
+  TTerminal *GetTerminal() { return FTerminal; }
+  void SetTerminal(TTerminal *value) { FTerminal = value; }
+  // __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
+  TStrings * GetSelectedFiles();
+  // __property bool IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
+  bool GetIncludeParentDirectory() { return FIncludeParentDirectory; }
+  void SetIncludeParentDirectory(bool value);
+  // __property bool IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
+  bool GetIncludeThisDirectory() { return FIncludeThisDirectory; }
+  void SetIncludeThisDirectory(bool value);
+  // __property bool Loaded = { read = GetLoaded };
+  bool GetLoaded();
+  // __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
+  TRemoteFile *GetParentDirectory() { return FParentDirectory; }
+  // __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
+  TRemoteFile *GetThisDirectory() { return FThisDirectory; }
 };
 //---------------------------------------------------------------------------
 class TCriticalSection;
