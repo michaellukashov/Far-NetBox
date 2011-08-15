@@ -2,7 +2,8 @@
 #ifndef HierarchicalStorageH
 #define HierarchicalStorageH
 
-#include <registry.hpp>
+// #include <registry.hpp>
+#include "Classes.h"
 //---------------------------------------------------------------------------
 enum TStorage { stDetect, stRegistry, stIniFile };
 enum TStorageAccessMode { smRead, smReadWrite };
@@ -16,16 +17,16 @@ public:
   virtual bool OpenSubKey(const wstring SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
   virtual bool DeleteSubKey(const wstring SubKey) = 0;
-  virtual void GetSubKeyNames(Classes::TStrings* Strings) = 0;
-  virtual void GetValueNames(Classes::TStrings* Strings) = 0;
+  virtual void GetSubKeyNames(TStrings* Strings) = 0;
+  virtual void GetValueNames(TStrings* Strings) = 0;
   bool HasSubKeys();
   bool HasSubKey(const wstring SubKey);
   virtual bool KeyExists(const wstring SubKey) = 0;
   virtual bool ValueExists(const wstring Value) = 0;
   virtual void RecursiveDeleteSubKey(const wstring Key);
   virtual void ClearSubKeys();
-  virtual void ReadValues(Classes::TStrings* Strings, bool MaintainKeys = false);
-  virtual void WriteValues(Classes::TStrings* Strings, bool MaintainKeys = false);
+  virtual void ReadValues(TStrings* Strings, bool MaintainKeys = false);
+  virtual void WriteValues(TStrings* Strings, bool MaintainKeys = false);
   virtual void ClearValues();
   virtual bool DeleteValue(const wstring Name) = 0;
 
@@ -53,27 +54,33 @@ public:
   virtual void WriteString(const wstring Name, const wstring Value);
   void WriteBinaryData(const wstring Name, const wstring Value);
 
-  __property wstring Storage  = { read=FStorage };
-  __property wstring CurrentSubKey  = { read=GetCurrentSubKey };
-  __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
-  __property bool Explicit = { read = FExplicit, write = FExplicit };
-  __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
-  __property wstring Source = { read = GetSource };
+  // __property wstring Storage  = { read=FStorage };
+  wstring GetStorage() { return FStorage; }
+  // __property wstring CurrentSubKey  = { read=GetCurrentSubKey };
+  wstring GetCurrentSubKey();
+  // __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
+  TStorageAccessMode GetAccessMode() { return FAccessMode; }
+  virtual void SetAccessMode(TStorageAccessMode value);
+  // __property bool Explicit = { read = FExplicit, write = FExplicit };
+  bool GetExplicit() { return FExplicit; }
+  void SetExplicit(bool value) { FExplicit = value; }
+  // __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
+  bool GetMungeStringValues() { return FMungeStringValues; }
+  void SetMungeStringValues(bool value) { FMungeStringValues = value; }
+  // __property wstring Source = { read = GetSource };
+  virtual wstring GetSource() = 0;
 
 protected:
   wstring FStorage;
-  TStrings * FKeyHistory;
+  TStrings *FKeyHistory;
   TStorageAccessMode FAccessMode;
   bool FExplicit;
   bool FMungeStringValues;
 
-  wstring GetCurrentSubKey();
   wstring GetCurrentSubKeyMunged();
-  virtual void SetAccessMode(TStorageAccessMode value);
   static wstring IncludeTrailingBackslash(const wstring & S);
   static wstring ExcludeTrailingBackslash(const wstring & S);
   wstring MungeSubKey(wstring Key, bool Path);
-  virtual wstring GetSource() = 0;
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage
@@ -89,7 +96,7 @@ public:
   virtual void CloseSubKey();
   virtual bool DeleteSubKey(const wstring SubKey);
   virtual bool DeleteValue(const wstring Name);
-  virtual void GetSubKeyNames(Classes::TStrings* Strings);
+  virtual void GetSubKeyNames(TStrings* Strings);
   virtual bool KeyExists(const wstring SubKey);
   virtual bool ValueExists(const wstring Value);
 
@@ -111,7 +118,7 @@ public:
   virtual void WriteStringRaw(const wstring Name, const wstring Value);
   virtual void WriteBinaryData(const wstring Name, const void * Buffer, int Size);
 
-  virtual void GetValueNames(Classes::TStrings* Strings);
+  virtual void GetValueNames(TStrings* Strings);
 
 protected:
   int GetFailed();
@@ -136,7 +143,7 @@ public:
   virtual bool OpenSubKey(const wstring SubKey, bool CanCreate, bool Path = false);
   virtual bool DeleteSubKey(const wstring SubKey);
   virtual bool DeleteValue(const wstring Name);
-  virtual void GetSubKeyNames(Classes::TStrings* Strings);
+  virtual void GetSubKeyNames(TStrings* Strings);
   virtual bool KeyExists(const wstring SubKey);
   virtual bool ValueExists(const wstring Value);
 
@@ -158,7 +165,7 @@ public:
   virtual void WriteStringRaw(const wstring Name, const wstring Value);
   virtual void WriteBinaryData(const wstring Name, const void * Buffer, int Size);
 
-  virtual void GetValueNames(Classes::TStrings* Strings);
+  virtual void GetValueNames(TStrings* Strings);
 
 private:
   TMemIniFile * FIniFile;
