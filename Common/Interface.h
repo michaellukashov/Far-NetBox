@@ -6,6 +6,8 @@
 #include "SessionData.h"
 #define HELP_NONE L""
 //---------------------------------------------------------------------------
+typedef int (TObject::*TThreadFunc)(void *Parameter);
+//---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration();
 
 void ShowExtendedException(exception * E);
