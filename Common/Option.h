@@ -1,0 +1,54 @@
+//---------------------------------------------------------------------------
+#ifndef OptionH
+#define OptionH
+
+#include <vector>
+//---------------------------------------------------------------------------
+enum TOptionType { otParam, otSwitch };
+//---------------------------------------------------------------------------
+class TOptions
+{
+public:
+  TOptions();
+
+  bool FindSwitch(const wstring Switch);
+  bool FindSwitch(const wstring Switch, wstring & Value);
+  bool FindSwitch(const wstring Switch, int & ParamsStart,
+    int & ParamsCount);
+  bool FindSwitch(const wstring Switch, TStrings * Params,
+    int ParamsMax = -1);
+  void ParamsProcessed(int Position, int Count);
+  wstring SwitchValue(const wstring Switch, const wstring Default = L"");
+  bool UnusedSwitch(wstring & Switch);
+
+  // __property int ParamCount = { read = FParamCount };
+  int GetParamCount() { return FParamCount; }
+  // __property wstring Param[int Index] = { read = GetParam };
+  wstring GetParam(int Index);
+  // __property bool Empty = { read = GetEmpty };
+  bool GetEmpty();
+
+protected:
+  wstring FSwitchMarks;
+  wstring FSwitchValueDelimiters;
+
+  void Add(wstring Option);
+
+  bool FindSwitch(const wstring Switch,
+    wstring & Value, int & ParamsStart, int & ParamsCount);
+
+private:
+  struct TOption
+  {
+    TOptionType Type;
+    wstring Name;
+    wstring Value;
+    bool Used;
+  };
+
+  std::vector<TOption> FOptions;
+  bool FNoMoreSwitches;
+  int FParamCount;
+};
+//---------------------------------------------------------------------------
+#endif

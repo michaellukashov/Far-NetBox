@@ -120,24 +120,24 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
   BLOCK("Interface", CANCREATE, \
     KEY(String,   RandomSeedFile); \
     KEY(String,   PuttyRegistryStorageKey); \
-    KEY(Bool,     ConfirmOverwriting); \
-    KEY(Bool,     ConfirmResume); \
-    KEY(Bool,     AutoReadDirectoryAfterOp); \
-    KEY(Integer,  SessionReopenAuto); \
-    KEY(Integer,  SessionReopenBackground); \
-    KEY(Integer,  SessionReopenTimeout); \
-    KEY(Integer,  TunnelLocalPortNumberLow); \
-    KEY(Integer,  TunnelLocalPortNumberHigh); \
-    KEY(Integer,  CacheDirectoryChangesMaxSize); \
-    KEY(Bool,     ShowFtpWelcomeMessage); \
+    KEY(bool,     ConfirmOverwriting); \
+    KEY(bool,     ConfirmResume); \
+    KEY(bool,     AutoReadDirectoryAfterOp); \
+    KEY(int,  SessionReopenAuto); \
+    KEY(int,  SessionReopenBackground); \
+    KEY(int,  SessionReopenTimeout); \
+    KEY(int,  TunnelLocalPortNumberLow); \
+    KEY(int,  TunnelLocalPortNumberHigh); \
+    KEY(int,  CacheDirectoryChangesMaxSize); \
+    KEY(bool,     ShowFtpWelcomeMessage); \
   ); \
   BLOCK("Logging", CANCREATE, \
-    KEYEX(Bool,  PermanentLogging, Logging); \
+    KEYEX(bool,  PermanentLogging, Logging); \
     KEYEX(String,PermanentLogFileName, LogFileName); \
-    KEY(Bool,    LogFileAppend); \
-    KEY(Integer, LogWindowLines); \
-    KEY(Integer, LogProtocol); \
-    KEYEX(Bool,  PermanentLogActions, LogActions); \
+    KEY(bool,    LogFileAppend); \
+    KEY(int, LogWindowLines); \
+    KEY(int, LogProtocol); \
+    KEYEX(bool,  PermanentLogActions, LogActions); \
   );
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
@@ -572,10 +572,10 @@ wstring TConfiguration::GetOSVersionStr()
   return Result;
 }
 //---------------------------------------------------------------------------
-TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
-{
-  return GetFixedFileInfo(ApplicationInfo);
-}
+// TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
+// {
+  // return GetFixedFileInfo(ApplicationInfo);
+// }
 //---------------------------------------------------------------------------
 int TConfiguration::GetCompoundVersion()
 {

@@ -34,7 +34,7 @@ wstring UnixExcludeTrailingBackslash(const wstring Path)
     else return Path;
 }
 //---------------------------------------------------------------------------
-Boolean UnixComparePaths(const wstring Path1, const wstring Path2)
+bool UnixComparePaths(const wstring Path1, const wstring Path2)
 {
   return (UnixIncludeTrailingBackslash(Path1) == UnixIncludeTrailingBackslash(Path2));
 }
@@ -777,7 +777,7 @@ void TRemoteFile::LoadTypeInfo()
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
 }
 //---------------------------------------------------------------------------
-Integer TRemoteFile::GetIconIndex() const
+int TRemoteFile::GetIconIndex() const
 {
   if (FIconIndex == -1)
   {
@@ -796,7 +796,7 @@ wstring TRemoteFile::GetTypeName()
   return FTypeName;
 }
 //---------------------------------------------------------------------------
-Boolean TRemoteFile::GetIsHidden()
+bool TRemoteFile::GetIsHidden()
 {
   bool Result;
   switch (FIsHidden)
@@ -822,24 +822,24 @@ void TRemoteFile::SetIsHidden(bool value)
   FIsHidden = value ? 1 : 0;
 }
 //---------------------------------------------------------------------------
-Boolean TRemoteFile::GetIsDirectory() const
+bool TRemoteFile::GetIsDirectory() const
 {
   return (toupper(Type) == FILETYPE_DIRECTORY);
 }
 //---------------------------------------------------------------------------
-Boolean TRemoteFile::GetIsParentDirectory() const
+bool TRemoteFile::GetIsParentDirectory() const
 {
   return (FileName == PARENTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-Boolean TRemoteFile::GetIsThisDirectory() const
+bool TRemoteFile::GetIsThisDirectory() const
 {
   return (FileName == THISDIRECTORY);
 }
 //---------------------------------------------------------------------------
-Boolean TRemoteFile::GetIsInaccesibleDirectory() const
+bool TRemoteFile::GetIsInaccesibleDirectory() const
 {
-  Boolean Result;
+  bool Result;
   if (IsDirectory)
   {
     assert(Terminal);
@@ -850,7 +850,7 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
         ((Rights->Right[TRights::rrUserExec] != TRights::rsNo) &&
          (AnsiCompareText(Terminal->UserName, Owner.Name) == 0)));
   }
-    else Result = False;
+    else Result = false;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -864,8 +864,8 @@ void TRemoteFile::SetType(char AType)
 {
   FType = AType;
   // Allow even non-standard file types (e.g. 'S')
-  // if (!wstring("-DL").Pos((Char)toupper(FType))) Abort();
-  FIsSymLink = ((Char)toupper(FType) == FILETYPE_SYMLINK);
+  // if (!wstring("-DL").Pos((char)toupper(FType))) Abort();
+  FIsSymLink = ((char)toupper(FType) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::GetLinkedFile()
@@ -978,7 +978,7 @@ void TRemoteFile::SetListingStr(wstring value)
 
     #define GETNCOL  \
       { if (Line.IsEmpty()) throw Exception(""); \
-        Integer P = Line.Pos(' '); \
+        int P = Line.Pos(' '); \
         if (P) { Col = Line.SubString(1, P-1); Line.Delete(1, P); } \
           else { Col = Line; Line = ""; } \
       }
@@ -986,7 +986,7 @@ void TRemoteFile::SetListingStr(wstring value)
 
     // Rights string may contain special permission attributes (S,t, ...)
     // (TODO: maybe no longer necessary, once we can handle the special permissions)
-    Rights->AllowUndef = True;
+    Rights->AllowUndef = true;
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
     Rights->Text = Line.SubString(1, 9);
@@ -1308,9 +1308,9 @@ bool TRemoteFile::GetHaveFullFileName() const
   return !FFullFileName.IsEmpty() || (Directory != NULL);
 }
 //---------------------------------------------------------------------------
-Integer TRemoteFile::GetAttr()
+int TRemoteFile::GetAttr()
 {
-  Integer Result = 0;
+  int Result = 0;
   if (Rights->ReadOnly) Result |= faReadOnly;
   if (IsHidden) Result |= faHidden;
   return Result;
@@ -1383,12 +1383,12 @@ wstring TRemoteFileList::GetFullDirectory()
   return UnixIncludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::GetFiles(Integer Index)
+TRemoteFile * TRemoteFileList::GetFiles(int Index)
 {
   return (TRemoteFile *)Items[Index];
 }
 //---------------------------------------------------------------------------
-Boolean TRemoteFileList::GetIsRoot()
+bool TRemoteFileList::GetIsRoot()
 {
   return (Directory == ROOTDIRECTORY);
 }
@@ -1401,14 +1401,14 @@ wstring TRemoteFileList::GetParentPath()
 __int64 TRemoteFileList::GetTotalSize()
 {
   __int64 Result = 0;
-  for (Integer Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < Count; Index++)
     if (!Files[Index]->IsDirectory) Result += Files[Index]->Size;
   return Result;
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::FindFile(const wstring &FileName)
 {
-  for (Integer Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < Count; Index++)
     if (Files[Index]->FileName == FileName) return Files[Index];
   return NULL;
 }
@@ -1506,7 +1506,7 @@ TStrings * TRemoteDirectory::GetSelectedFiles()
   return FSelectedFiles;
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::SetIncludeParentDirectory(Boolean value)
+void TRemoteDirectory::SetIncludeParentDirectory(bool value)
 {
   if (IncludeParentDirectory != value)
   {
@@ -1524,7 +1524,7 @@ void TRemoteDirectory::SetIncludeParentDirectory(Boolean value)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::SetIncludeThisDirectory(Boolean value)
+void TRemoteDirectory::SetIncludeThisDirectory(bool value)
 {
   if (IncludeThisDirectory != value)
   {
@@ -2475,7 +2475,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
     }
     else
     {
-      CommonProperties.Rights.AllowUndef = True;
+      CommonProperties.Rights.AllowUndef = true;
       CommonProperties.Rights &= *File->Rights;
       if (CommonProperties.Owner != File->Owner)
       {

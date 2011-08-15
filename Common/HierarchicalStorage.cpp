@@ -191,7 +191,7 @@ bool THierarchicalStorage::HasSubKey(const wstring SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::ReadValues(Classes::TStrings* Strings,
+void THierarchicalStorage::ReadValues(TStrings* Strings,
   bool MaintainKeys)
 {
   TStrings * Names = new TStringList();
@@ -234,7 +234,7 @@ void THierarchicalStorage::ClearValues()
   }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteValues(Classes::TStrings * Strings,
+void THierarchicalStorage::WriteValues(TStrings * Strings,
   bool MaintainKeys)
 {
   ClearValues();
@@ -431,7 +431,7 @@ void TRegistryStorage::CloseSubKey()
   THierarchicalStorage::CloseSubKey();
   if (FKeyHistory->Count)
   {
-    FRegistry->OpenKey(Storage + CurrentSubKey, True);
+    FRegistry->OpenKey(Storage + CurrentSubKey, true);
   }
 }
 //---------------------------------------------------------------------------
@@ -443,7 +443,7 @@ bool TRegistryStorage::DeleteSubKey(const wstring SubKey)
   return FRegistry->DeleteKey(K);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
+void TRegistryStorage::GetSubKeyNames(TStrings* Strings)
 {
   FRegistry->GetKeyNames(Strings);
   for (int Index = 0; Index < Strings->Count; Index++)
@@ -452,7 +452,7 @@ void TRegistryStorage::GetSubKeyNames(Classes::TStrings* Strings)
   }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::GetValueNames(Classes::TStrings* Strings)
+void TRegistryStorage::GetValueNames(TStrings* Strings)
 {
   FRegistry->GetValueNames(Strings);
 }
@@ -733,7 +733,7 @@ bool TIniFileStorage::DeleteSubKey(const wstring SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
+void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
   try
@@ -766,7 +766,7 @@ void TIniFileStorage::GetSubKeyNames(Classes::TStrings* Strings)
   }
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::GetValueNames(Classes::TStrings* Strings)
+void TIniFileStorage::GetValueNames(TStrings* Strings)
 {
   FIniFile->ReadSection(CurrentSection, Strings);
   for (int Index = 0; Index < Strings->Count; Index++)

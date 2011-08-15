@@ -6,7 +6,7 @@
 
 #include "Common.h"
 #include "Exceptions.h"
-#include "FileBuffer.h"
+// #include "FileBuffer.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "PuttyIntf.h"
@@ -314,7 +314,7 @@ void TSessionData::Assign(TPersistent * Source)
 void TSessionData::Load(THierarchicalStorage * Storage)
 {
   bool RewritePassword = false;
-  if (Storage->OpenSubKey(InternalStorageKey, False))
+  if (Storage->OpenSubKey(InternalStorageKey, false))
   {
     PortNumber = Storage->ReadInteger("PortNumber", PortNumber);
     UserName = Storage->ReadString("UserName", UserName);
@@ -591,10 +591,10 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, PROPERTY, )
 
     WRITE_DATA(String, HostName);
-    WRITE_DATA(Integer, PortNumber);
-    WRITE_DATA(Bool, Passwordless);
-    WRITE_DATA_EX(Integer, "PingInterval", PingInterval / 60, );
-    WRITE_DATA_EX(Integer, "PingIntervalSecs", PingInterval % 60, );
+    WRITE_DATA(int, PortNumber);
+    WRITE_DATA(bool, Passwordless);
+    WRITE_DATA_EX(int, "PingInterval", PingInterval / 60, );
+    WRITE_DATA_EX(int, "PingIntervalSecs", PingInterval % 60, );
     Storage->DeleteValue("PingIntervalSec"); // obsolete
     // when PingInterval is stored always store PingType not to attempt to
     // deduce PingType from PingInterval (backward compatibility with pre 3.5)
@@ -607,15 +607,15 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       Storage->DeleteValue("PingType");
     }
-    WRITE_DATA(Integer, Timeout);
-    WRITE_DATA(Bool, TryAgent);
-    WRITE_DATA(Bool, AgentFwd);
-    WRITE_DATA(Bool, AuthTIS);
-    WRITE_DATA(Bool, AuthKI);
-    WRITE_DATA(Bool, AuthKIPassword);
+    WRITE_DATA(int, Timeout);
+    WRITE_DATA(bool, TryAgent);
+    WRITE_DATA(bool, AgentFwd);
+    WRITE_DATA(bool, AuthTIS);
+    WRITE_DATA(bool, AuthKI);
+    WRITE_DATA(bool, AuthKIPassword);
 
-    WRITE_DATA(Bool, AuthGSSAPI);
-    WRITE_DATA(Bool, GSSAPIFwdTGT);
+    WRITE_DATA(bool, AuthGSSAPI);
+    WRITE_DATA(bool, GSSAPIFwdTGT);
     WRITE_DATA(String, GSSAPIServerRealm);
     Storage->DeleteValue("TryGSSKEX");
     Storage->DeleteValue("UserNameFromEnvironment");
@@ -624,25 +624,25 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     if (PuttyExport)
     {
       // duplicate kerberos setting with keys of the vintela quest putty
-      WRITE_DATA_EX(Bool, "AuthSSPI", AuthGSSAPI, );
-      WRITE_DATA_EX(Bool, "SSPIFwdTGT", GSSAPIFwdTGT, );
+      WRITE_DATA_EX(bool, "AuthSSPI", AuthGSSAPI, );
+      WRITE_DATA_EX(bool, "SSPIFwdTGT", GSSAPIFwdTGT, );
       WRITE_DATA_EX(String, "KerbPrincipal", GSSAPIServerRealm, );
       // duplicate kerberos setting with keys of the official putty
-      WRITE_DATA_EX(Bool, "GssapiFwd", GSSAPIFwdTGT, );
+      WRITE_DATA_EX(bool, "GssapiFwd", GSSAPIFwdTGT, );
     }
 
-    WRITE_DATA(Bool, ChangeUsername);
-    WRITE_DATA(Bool, Compression);
-    WRITE_DATA(Integer, SshProt);
-    WRITE_DATA(Bool, Ssh2DES);
-    WRITE_DATA(Bool, SshNoUserAuth);
+    WRITE_DATA(bool, ChangeUsername);
+    WRITE_DATA(bool, Compression);
+    WRITE_DATA(int, SshProt);
+    WRITE_DATA(bool, Ssh2DES);
+    WRITE_DATA(bool, SshNoUserAuth);
     WRITE_DATA_EX(String, "Cipher", CipherList, );
     WRITE_DATA_EX(String, "KEX", KexList, );
-    WRITE_DATA(Integer, AddressFamily);
+    WRITE_DATA(int, AddressFamily);
     WRITE_DATA_EX(String, "RekeyBytes", RekeyData, );
-    WRITE_DATA(Integer, RekeyTime);
+    WRITE_DATA(int, RekeyTime);
 
-    WRITE_DATA(Bool, TcpNoDelay);
+    WRITE_DATA(bool, TcpNoDelay);
 
     if (PuttyExport)
     {
@@ -653,43 +653,43 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, UserName);
       WRITE_DATA(String, PublicKeyFile);
-      WRITE_DATA(Integer, FSProtocol);
+      WRITE_DATA(int, FSProtocol);
       WRITE_DATA(String, LocalDirectory);
       WRITE_DATA(String, RemoteDirectory);
-      WRITE_DATA(Bool, UpdateDirectories);
-      WRITE_DATA(Bool, CacheDirectories);
-      WRITE_DATA(Bool, CacheDirectoryChanges);
-      WRITE_DATA(Bool, PreserveDirectoryChanges);
+      WRITE_DATA(bool, UpdateDirectories);
+      WRITE_DATA(bool, CacheDirectories);
+      WRITE_DATA(bool, CacheDirectoryChanges);
+      WRITE_DATA(bool, PreserveDirectoryChanges);
 
-      WRITE_DATA(Bool, ResolveSymlinks);
-      WRITE_DATA_EX(Integer, "ConsiderDST", DSTMode, );
-      WRITE_DATA(Bool, LockInHome);
+      WRITE_DATA(bool, ResolveSymlinks);
+      WRITE_DATA_EX(int, "ConsiderDST", DSTMode, );
+      WRITE_DATA(bool, LockInHome);
       // Special is never stored (if it would, login dialog must be modified not to
       // duplicate Special parameter when Special session is loaded and then stored
       // under different name)
-      // WRITE_DATA(Bool, Special);
+      // WRITE_DATA(bool, Special);
       WRITE_DATA(String, Shell);
-      WRITE_DATA(Bool, ClearAliases);
-      WRITE_DATA(Bool, UnsetNationalVars);
+      WRITE_DATA(bool, ClearAliases);
+      WRITE_DATA(bool, UnsetNationalVars);
       WRITE_DATA(String, ListingCommand);
-      WRITE_DATA(Bool, IgnoreLsWarnings);
-      WRITE_DATA(Integer, SCPLsFullTime);
-      WRITE_DATA(Integer, FtpListAll);
-      WRITE_DATA(Bool, Scp1Compatibility);
+      WRITE_DATA(bool, IgnoreLsWarnings);
+      WRITE_DATA(int, SCPLsFullTime);
+      WRITE_DATA(int, FtpListAll);
+      WRITE_DATA(bool, Scp1Compatibility);
       WRITE_DATA(Float, TimeDifference);
-      WRITE_DATA(Bool, DeleteToRecycleBin);
-      WRITE_DATA(Bool, OverwrittenToRecycleBin);
+      WRITE_DATA(bool, DeleteToRecycleBin);
+      WRITE_DATA(bool, OverwrittenToRecycleBin);
       WRITE_DATA(String, RecycleBinPath);
       WRITE_DATA(String, PostLoginCommands);
 
       WRITE_DATA(String, ReturnVar);
-      WRITE_DATA(Bool, LookupUserGroups);
-      WRITE_DATA(Integer, EOLType);
+      WRITE_DATA(bool, LookupUserGroups);
+      WRITE_DATA(int, EOLType);
       Storage->DeleteValue("SFTPUtfBug");
-      WRITE_DATA_EX(Integer, "Utf", NotUtf, );
+      WRITE_DATA_EX(int, "Utf", NotUtf, );
     }
 
-    WRITE_DATA(Integer, ProxyMethod);
+    WRITE_DATA(int, ProxyMethod);
     if (PuttyExport)
     {
       // support for Putty 0.53b and older
@@ -724,7 +724,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       Storage->DeleteValue("ProxySOCKSVersion");
     }
     WRITE_DATA(String, ProxyHost);
-    WRITE_DATA(Integer, ProxyPort);
+    WRITE_DATA(int, ProxyPort);
     WRITE_DATA(String, ProxyUsername);
     if (ProxyMethod == pmCmd)
     {
@@ -735,12 +735,12 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA(StringRaw, ProxyTelnetCommand);
     }
     #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
-    WRITE_DATA_CONV(Integer, "ProxyDNS", ProxyDNS);
+    WRITE_DATA_CONV(int, "ProxyDNS", ProxyDNS);
     #undef WRITE_DATA_CONV_FUNC
-    WRITE_DATA(Bool, ProxyLocalhost);
+    WRITE_DATA(bool, ProxyLocalhost);
 
     #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-    #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, "Bug" #BUG, Bug[sb##BUG]);
+    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, "Bug" #BUG, Bug[sb##BUG]);
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -765,31 +765,31 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       WRITE_DATA(String, SftpServer);
 
-      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, "SFTP" #BUG "Bug", SFTPBug[sb##BUG], );
+      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, "SFTP" #BUG "Bug", SFTPBug[sb##BUG], );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
       #undef WRITE_SFTP_BUG
 
-      WRITE_DATA(Integer, SFTPMaxVersion);
-      WRITE_DATA(Integer, SFTPMaxPacketSize);
+      WRITE_DATA(int, SFTPMaxVersion);
+      WRITE_DATA(int, SFTPMaxPacketSize);
 
-      WRITE_DATA(Integer, Color);
+      WRITE_DATA(int, Color);
 
-      WRITE_DATA(Bool, Tunnel);
+      WRITE_DATA(bool, Tunnel);
       WRITE_DATA(String, TunnelHostName);
-      WRITE_DATA(Integer, TunnelPortNumber);
+      WRITE_DATA(int, TunnelPortNumber);
       WRITE_DATA(String, TunnelUserName);
       WRITE_DATA(String, TunnelPublicKeyFile);
-      WRITE_DATA(Integer, TunnelLocalPortNumber);
+      WRITE_DATA(int, TunnelLocalPortNumber);
 
-      WRITE_DATA(Bool, FtpPasvMode);
-      WRITE_DATA(Bool, FtpForcePasvIp);
+      WRITE_DATA(bool, FtpPasvMode);
+      WRITE_DATA(bool, FtpForcePasvIp);
       WRITE_DATA(String, FtpAccount);
-      WRITE_DATA(Integer, FtpPingInterval);
-      WRITE_DATA(Integer, FtpPingType);
-      WRITE_DATA(Integer, Ftps);
+      WRITE_DATA(int, FtpPingInterval);
+      WRITE_DATA(int, FtpPingType);
+      WRITE_DATA(int, Ftps);
 
-      WRITE_DATA(Integer, FtpProxyLogonType);
+      WRITE_DATA(int, FtpProxyLogonType);
 
       WRITE_DATA(String, CustomParam1);
       WRITE_DATA(String, CustomParam2);
@@ -968,7 +968,7 @@ bool TSessionData::ParseUrl(wstring Url, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (Integer Index = 0; Index < StoredSessions->Count + StoredSessions->HiddenCount; Index++)
+    for (int Index = 0; Index < StoredSessions->Count + StoredSessions->HiddenCount; Index++)
     {
       TSessionData * AData = (TSessionData *)StoredSessions->Items[Index];
       if (AnsiSameText(AData->Name, DecodedUrl) ||
@@ -2163,7 +2163,7 @@ void TStoredSessionList::Load(wstring aKey, bool UseDefaults)
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   try {
-    if (Storage->OpenRootKey(False)) Load(Storage, false, UseDefaults);
+    if (Storage->OpenRootKey(false)) Load(Storage, false, UseDefaults);
   } __finally {
     delete Storage;
   }
@@ -2173,7 +2173,7 @@ void TStoredSessionList::Load()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try {
-    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, False))
+    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
       Load(Storage);
   } __finally {
     delete Storage;
@@ -2319,7 +2319,7 @@ void TStoredSessionList::Cleanup()
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->RegistryStorageKey);
     try {
       Storage->AccessMode = smReadWrite;
-      if (Storage->OpenRootKey(False))
+      if (Storage->OpenRootKey(false))
         Storage->RecursiveDeleteSubKey(Configuration->StoredSessionsSubKey);
     } __finally {
       delete Storage;

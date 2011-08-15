@@ -7,13 +7,13 @@
 //---------------------------------------------------------------------------
 enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------
-#define SYMLINKSTR " -> "
-#define PARENTDIRECTORY ".."
-#define THISDIRECTORY "."
-#define ROOTDIRECTORY "/"
-#define FILETYPE_SYMLINK 'L'
-#define FILETYPE_DIRECTORY 'D'
-#define PARTIAL_EXT ".filepart"
+#define SYMLINKSTR L" -> "
+#define PARENTDIRECTORY L".."
+#define THISDIRECTORY L"."
+#define ROOTDIRECTORY L"/"
+#define FILETYPE_SYMLINK L'L'
+#define FILETYPE_DIRECTORY L'D'
+#define PARTIAL_EXT L".filepart"
 //---------------------------------------------------------------------------
 class TTerminal;
 class TRights;
@@ -34,24 +34,27 @@ public:
 
   int Compare(const TRemoteToken & rht) const;
 
-  __property wstring Name = { read = FName, write = FName };
-  __property bool NameValid = { read = GetNameValid };
-  __property unsigned int ID = { read = FID, write = SetID };
-  __property bool IDValid = { read = FIDValid };
-  __property bool IsSet  = { read = GetIsSet };
-  __property wstring LogText = { read = GetLogText };
-  __property wstring DisplayText = { read = GetDisplayText };
+  // __property wstring Name = { read = FName, write = FName };
+  wstring GetName() { return FName; }
+  void SetName(wstring value) { FName = value; }
+  // __property bool NameValid = { read = GetNameValid };
+  bool GetNameValid() const;
+  // __property unsigned int ID = { read = FID, write = SetID };
+  unsigned int GetID() { return FID; }
+  void SetID(unsigned int value);
+  // __property bool IDValid = { read = FIDValid };
+  bool GetIDValid() { return FIDValid; }
+  // __property bool IsSet  = { read = GetIsSet };
+  bool GetIsSet() const;
+  // __property wstring LogText = { read = GetLogText };
+   wstring GetLogText() const;
+  // __property wstring DisplayText = { read = GetDisplayText };
+  wstring GetDisplayText() const;
 
 private:
   wstring FName;
   unsigned int FID;
   bool FIDValid;
-
-  void SetID(unsigned int value);
-  bool GetNameValid() const;
-  bool GetIsSet() const;
-  wstring GetDisplayText() const;
-  wstring GetLogText() const;
 };
 //---------------------------------------------------------------------------
 class TRemoteTokenList
@@ -86,48 +89,24 @@ private:
   TModificationFmt FModificationFmt;
   __int64 FSize;
   wstring FFileName;
-  Integer FINodeBlocks;
+  int FINodeBlocks;
   TDateTime FModification;
   TDateTime FLastAccess;
   TRemoteToken FGroup;
-  Integer FIconIndex;
-  Boolean FIsSymLink;
+  int FIconIndex;
+  bool FIsSymLink;
   TRemoteFile * FLinkedFile;
   TRemoteFile * FLinkedByFile;
   wstring FLinkTo;
   TRights *FRights;
   TTerminal *FTerminal;
-  Char FType;
+  char FType;
   bool FSelected;
   bool FCyclicLink;
   wstring FFullFileName;
   int FIsHidden;
   wstring FTypeName;
-  int GetAttr();
-  bool GetBrokenLink();
-  bool GetIsDirectory() const;
-  TRemoteFile * GetLinkedFile();
-  void SetLinkedFile(TRemoteFile * value);
-  wstring GetModificationStr();
   void SetModification(const TDateTime & value);
-  void SetListingStr(wstring value);
-  wstring GetListingStr();
-  wstring GetRightsStr();
-  char GetType() const;
-  void SetType(char AType);
-  void SetTerminal(TTerminal * value);
-  void SetRights(TRights * value);
-  wstring GetFullFileName() const;
-  bool GetHaveFullFileName() const;
-  int GetIconIndex() const;
-  wstring GetTypeName();
-  bool GetIsHidden();
-  void SetIsHidden(bool value);
-  bool GetIsParentDirectory() const;
-  bool GetIsThisDirectory() const;
-  bool GetIsInaccesibleDirectory() const;
-  wstring GetExtension();
-  wstring GetUserModificationStr();
   void LoadTypeInfo();
 
 protected:
@@ -141,38 +120,87 @@ public:
   void ShiftTime(const TDateTime & Difference);
   void Complete();
 
-  __property int Attr = { read = GetAttr };
-  __property bool BrokenLink = { read = GetBrokenLink };
-  __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
-  __property wstring RightsStr = { read = GetRightsStr };
-  __property __int64 Size = { read = FSize, write = FSize };
-  __property TRemoteToken Owner = { read = FOwner, write = FOwner };
-  __property TRemoteToken Group = { read = FGroup, write = FGroup };
-  __property wstring FileName = { read = FFileName, write = FFileName };
-  __property int INodeBlocks = { read = FINodeBlocks };
-  __property TDateTime Modification = { read = FModification, write = SetModification };
-  __property wstring ModificationStr = { read = GetModificationStr };
-  __property wstring UserModificationStr = { read = GetUserModificationStr };
-  __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
-  __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
-  __property bool IsSymLink = { read = FIsSymLink };
-  __property bool IsDirectory = { read = GetIsDirectory };
-  __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
-  __property wstring LinkTo = { read = FLinkTo, write = FLinkTo };
-  __property wstring ListingStr = { read = GetListingStr, write = SetListingStr };
-  __property TRights * Rights = { read = FRights, write = SetRights };
-  __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
-  __property Char Type = { read = GetType, write = SetType };
-  __property bool Selected  = { read=FSelected, write=FSelected };
-  __property wstring FullFileName  = { read = GetFullFileName, write = FFullFileName };
-  __property bool HaveFullFileName  = { read = GetHaveFullFileName };
-  __property int IconIndex = { read = GetIconIndex };
-  __property wstring TypeName = { read = GetTypeName };
-  __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
-  __property bool IsParentDirectory = { read = GetIsParentDirectory };
-  __property bool IsThisDirectory = { read = GetIsThisDirectory };
-  __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
-  __property wstring Extension  = { read=GetExtension };
+  // __property int Attr = { read = GetAttr };
+  int GetAttr();
+  // __property bool BrokenLink = { read = GetBrokenLink };
+  bool GetBrokenLink();
+  // __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
+  TRemoteFileList *GetDirectory() { return FDirectory; }
+  void SetDirectory(TRemoteFileList *value) { FDirectory = value; }
+  // __property wstring RightsStr = { read = GetRightsStr };
+  wstring GetRightsStr();
+  // __property __int64 Size = { read = FSize, write = FSize };
+  __int64 GetSize() { return FSize; }
+  void SetSize(__int64 value) { FSize = value; }
+  // __property TRemoteToken Owner = { read = FOwner, write = FOwner };
+  TRemoteToken GetOwner() { return FOwner; }
+  void SetOwner(TRemoteToken value) { FOwner = value; }
+  // __property TRemoteToken Group = { read = FGroup, write = FGroup };
+  TRemoteToken GetGroup() { return FGroup; }
+  void SetGroup(TRemoteToken value) { FGroup = value; }
+  // __property wstring FileName = { read = FFileName, write = FFileName };
+  wstring GetFileName() { return FFileName; }
+  void SetFileName(wstring value) { FFileName = value; }
+  // __property int INodeBlocks = { read = FINodeBlocks };
+  int GetINodeBlocks() { return FINodeBlocks; };
+  // __property TDateTime Modification = { read = FModification, write = SetModification };
+  TDateTime GetModification() { return FModification; }
+  void SetModification(TDateTime value) { FModification = value; }
+  // __property wstring ModificationStr = { read = GetModificationStr };
+  wstring GetModificationStr();
+  // __property wstring UserModificationStr = { read = GetUserModificationStr };
+  wstring GetUserModificationStr();
+  // __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
+  TModificationFmt GetModificationFmt() { return FModificationFmt; }
+  void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
+  // __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
+  TDateTime GetLastAccess() { return FLastAccess; }
+  void SetLastAccess(TDateTime value) { FLastAccess = value; }
+  // __property bool IsSymLink = { read = FIsSymLink };
+  bool GetIsSymLink() { return FIsSymLink; }
+  // __property bool IsDirectory = { read = GetIsDirectory };
+  bool GetIsDirectory() const;
+  // __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
+  TRemoteFile * GetLinkedFile();
+  void SetLinkedFile(TRemoteFile * value);
+  // __property wstring LinkTo = { read = FLinkTo, write = FLinkTo };
+  wstring GetLinkTo() { return FLinkTo; }
+  void SetLinkTo(wstring value) { FLinkTo = value; }
+  // __property wstring ListingStr = { read = GetListingStr, write = SetListingStr };
+  wstring GetListingStr();
+  void SetListingStr(wstring value);
+  // __property TRights * Rights = { read = FRights, write = SetRights };
+  TRights *GetRights() { return FRights; }
+  void SetRights(TRights * value);
+  // __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
+  TTerminal * GetTerminal() { return FTerminal; }
+  void SetTerminal(TTerminal * value);
+  // __property char Type = { read = GetType, write = SetType };
+  char GetType() const;
+  void SetType(char AType);
+  // __property bool Selected  = { read=FSelected, write=FSelected };
+  bool GetSelected() { return FSelected; }
+  void SetSelected(bool value) { FSelected = value; }
+  // __property wstring FullFileName  = { read = GetFullFileName, write = FFullFileName };
+  wstring GetFullFileName() const;
+  void SetFullFileName(wstring value) { FFullFileName = value; }
+  // __property bool HaveFullFileName  = { read = GetHaveFullFileName };
+  bool GetHaveFullFileName() const;
+  // __property int IconIndex = { read = GetIconIndex };
+  int GetIconIndex() const;
+  // __property wstring TypeName = { read = GetTypeName };
+  wstring GetTypeName();
+  // __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
+  bool GetIsHidden();
+  void SetIsHidden(bool value);
+  // __property bool IsParentDirectory = { read = GetIsParentDirectory };
+  bool GetIsParentDirectory() const;
+  // __property bool IsThisDirectory = { read = GetIsThisDirectory };
+  bool GetIsThisDirectory() const;
+  // __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
+  bool GetIsInaccesibleDirectory() const;
+  // __property wstring Extension  = { read=GetExtension };
+  wstring GetExtension();
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
@@ -195,13 +223,7 @@ friend class TFTPFileSystem;
 protected:
   wstring FDirectory;
   TDateTime FTimestamp;
-  TRemoteFile * GetFiles(Integer Index);
-  virtual void SetDirectory(wstring value);
-  wstring GetFullDirectory();
-  Boolean GetIsRoot();
   TRemoteFile * GetParentDirectory();
-  wstring GetParentPath();
-  __int64 GetTotalSize();
 
   virtual void Clear();
 public:
@@ -209,13 +231,21 @@ public:
   TRemoteFile * FindFile(const wstring &FileName);
   virtual void DuplicateTo(TRemoteFileList * Copy);
   virtual void AddFile(TRemoteFile * File);
-  __property wstring Directory = { read = FDirectory, write = SetDirectory };
-  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
-  __property wstring FullDirectory  = { read=GetFullDirectory };
-  __property Boolean IsRoot = { read = GetIsRoot };
-  __property wstring ParentPath = { read = GetParentPath };
-  __property __int64 TotalSize = { read = GetTotalSize };
-  __property TDateTime Timestamp = { read = FTimestamp };
+  // __property wstring Directory = { read = FDirectory, write = SetDirectory };
+  wstring GetDirectory() { return FDirectory; }
+  virtual void SetDirectory(wstring value);
+  // __property TRemoteFile * Files[int Index] = { read = GetFiles };
+  TRemoteFile *GetFiles(int Index);
+  // __property wstring FullDirectory  = { read=GetFullDirectory };
+  wstring GetFullDirectory();
+  // __property bool IsRoot = { read = GetIsRoot };
+  bool GetIsRoot();
+  // __property wstring ParentPath = { read = GetParentPath };
+  wstring GetParentPath();
+  // __property __int64 TotalSize = { read = GetTotalSize };
+  __int64 GetTotalSize();
+  // __property TDateTime Timestamp = { read = FTimestamp };
+  TDateTime GetTimestamp() { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectory : public TRemoteFileList
@@ -223,30 +253,36 @@ class TRemoteDirectory : public TRemoteFileList
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 private:
-  Boolean FIncludeParentDirectory;
-  Boolean FIncludeThisDirectory;
+  bool FIncludeParentDirectory;
+  bool FIncludeThisDirectory;
   TTerminal * FTerminal;
   TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
   virtual void SetDirectory(wstring value);
-  TStrings * GetSelectedFiles();
-  Boolean GetLoaded();
-  void SetIncludeParentDirectory(Boolean value);
-  void SetIncludeThisDirectory(Boolean value);
 protected:
   virtual void Clear();
 public:
   TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
   virtual void AddFile(TRemoteFile * File);
   virtual void DuplicateTo(TRemoteFileList * Copy);
-  __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
-  __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
-  __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
-  __property Boolean IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
-  __property Boolean Loaded = { read = GetLoaded };
-  __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
-  __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
+  // __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
+  TTerminal *GetTerminal() { return FTerminal; }
+  void SetTerminal(TTerminal *value) { FTerminal = value; }
+  // __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
+  TStrings * GetSelectedFiles();
+  // __property bool IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
+  bool GetIncludeParentDirectory() { return FIncludeParentDirectory; }
+  void SetIncludeParentDirectory(bool value);
+  // __property bool IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
+  bool GetIncludeThisDirectory() { return FIncludeThisDirectory; }
+  void SetIncludeThisDirectory(bool value);
+  // __property bool Loaded = { read = GetLoaded };
+  bool GetLoaded();
+  // __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
+  TRemoteFile *GetParentDirectory() { return FParentDirectory; }
+  // __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
+  TRemoteFile *GetThisDirectory() { return FThisDirectory; }
 };
 //---------------------------------------------------------------------------
 class TCriticalSection;
@@ -263,12 +299,12 @@ public:
   void ClearFileList(wstring Directory, bool SubDirs);
   void Clear();
 
-  __property bool IsEmpty = { read = GetIsEmpty };
+  // __property bool IsEmpty = { read = GetIsEmpty };
+  bool GetIsEmpty() const;
 protected:
   virtual void Delete(int Index);
 private:
   TCriticalSection * FSection;
-  bool GetIsEmpty() const;
   void DoClearFileList(wstring Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
@@ -288,12 +324,12 @@ public:
   void Serialize(wstring & Data);
   void Deserialize(const wstring Data);
 
-  __property bool IsEmpty = { read = GetIsEmpty };
+  // __property bool IsEmpty = { read = GetIsEmpty };
+  bool GetIsEmpty() const;
 
 private:
   static bool DirectoryChangeKey(const wstring SourceDir,
     const wstring Change, wstring & Key);
-  bool GetIsEmpty() const;
   void SetValue(const wstring & Name, const wstring & Value);
   wstring GetValue(const wstring & Name);
 
@@ -356,20 +392,41 @@ public:
   operator unsigned short() const;
   operator unsigned long() const;
 
-  __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
-  __property bool IsUndef = { read = GetIsUndef };
-  __property wstring ModeStr = { read = GetModeStr };
-  __property wstring SimplestStr = { read = GetSimplestStr };
-  __property wstring Octal = { read = GetOctal, write = SetOctal };
-  __property unsigned short Number = { read = GetNumber, write = SetNumber };
-  __property unsigned short NumberSet = { read = FSet };
-  __property unsigned short NumberUnset = { read = FUnset };
-  __property unsigned long NumberDecadic = { read = GetNumberDecadic };
-  __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
-  __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
-  __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
-  __property wstring Text = { read = GetText, write = SetText };
-  __property bool Unknown = { read = FUnknown };
+  // __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
+  bool GetAllowUndef() { return FAllowUndef; }
+  void SetAllowUndef(bool value);
+  // __property bool IsUndef = { read = GetIsUndef };
+  bool GetIsUndef() const;
+  // __property wstring ModeStr = { read = GetModeStr };
+  wstring GetModeStr() const;
+  // __property wstring SimplestStr = { read = GetSimplestStr };
+  wstring GetSimplestStr() const;
+  // __property wstring Octal = { read = GetOctal, write = SetOctal };
+  wstring GetOctal() const;
+  void SetOctal(wstring value);
+  // __property unsigned short Number = { read = GetNumber, write = SetNumber };
+  unsigned short GetNumber() const;
+  void SetNumber(unsigned short value);
+  // __property unsigned short NumberSet = { read = FSet };
+  unsigned short GetNumberSet() { return FSet; }
+  // __property unsigned short NumberUnset = { read = FUnset };
+  unsigned short GetNumberUnset() { return FUnset; }
+  // __property unsigned long NumberDecadic = { read = GetNumberDecadic };
+  unsigned long GetNumberDecadic() const;
+  // __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
+  bool GetReadOnly();
+  void SetReadOnly(bool value);
+  // __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
+  bool GetRight(TRight Right) const;
+  void SetRight(TRight Right, bool value);
+  // __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
+  TState GetRightUndef(TRight Right) const;
+  void SetRightUndef(TRight Right, TState value);
+  // __property wstring Text = { read = GetText, write = SetText };
+  wstring GetText() const;
+  void SetText(const wstring & value);
+  // __property bool Unknown = { read = FUnknown };
+  bool GetUnknown() { return FUnknown; }
 
 private:
   bool FAllowUndef;
@@ -378,29 +435,17 @@ private:
   wstring FText;
   bool FUnknown;
 
-  bool GetIsUndef() const;
-  wstring GetModeStr() const;
-  wstring GetSimplestStr() const;
-  void SetNumber(unsigned short value);
-  wstring GetText() const;
-  void SetText(const wstring & value);
-  void SetOctal(wstring value);
-  unsigned short GetNumber() const;
   unsigned short GetNumberSet() const;
   unsigned short GetNumberUnset() const;
-  unsigned long GetNumberDecadic() const;
-  wstring GetOctal() const;
-  bool GetReadOnly();
-  bool GetRight(TRight Right) const;
-  TState GetRightUndef(TRight Right) const;
-  void SetAllowUndef(bool value);
-  void SetReadOnly(bool value);
-  void SetRight(TRight Right, bool value);
-  void SetRightUndef(TRight Right, TState value);
 };
 //---------------------------------------------------------------------------
 enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
-typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
+// FIXME
+// typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
+struct TValidProperties
+{
+};
+
 class TRemoteProperties
 {
 public:
@@ -432,7 +477,7 @@ wstring UnixExtractFileDir(const wstring Path);
 wstring UnixExtractFilePath(const wstring Path);
 wstring UnixExtractFileName(const wstring Path);
 wstring UnixExtractFileExt(const wstring Path);
-Boolean UnixComparePaths(const wstring Path1, const wstring Path2);
+bool UnixComparePaths(const wstring Path1, const wstring Path2);
 bool UnixIsChildPath(wstring Parent, wstring Child);
 bool ExtractCommonPath(TStrings * Files, wstring & Path);
 bool UnixExtractCommonPath(TStrings * Files, wstring & Path);
