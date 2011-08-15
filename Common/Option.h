@@ -18,12 +18,15 @@ public:
   bool FindSwitch(const wstring Switch, TStrings * Params,
     int ParamsMax = -1);
   void ParamsProcessed(int Position, int Count);
-  wstring SwitchValue(const wstring Switch, const wstring Default = "");
+  wstring SwitchValue(const wstring Switch, const wstring Default = L"");
   bool UnusedSwitch(wstring & Switch);
 
-  __property int ParamCount = { read = FParamCount };
-  __property wstring Param[int Index] = { read = GetParam };
-  __property bool Empty = { read = GetEmpty };
+  // __property int ParamCount = { read = FParamCount };
+  int GetParamCount() { return FParamCount; }
+  // __property wstring Param[int Index] = { read = GetParam };
+  wstring GetParam(int Index);
+  // __property bool Empty = { read = GetEmpty };
+  bool GetEmpty();
 
 protected:
   wstring FSwitchMarks;
@@ -46,9 +49,6 @@ private:
   std::vector<TOption> FOptions;
   bool FNoMoreSwitches;
   int FParamCount;
-
-  wstring GetParam(int Index);
-  bool GetEmpty();
 };
 //---------------------------------------------------------------------------
 #endif
