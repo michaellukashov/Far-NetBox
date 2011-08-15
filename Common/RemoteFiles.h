@@ -392,20 +392,41 @@ public:
   operator unsigned short() const;
   operator unsigned long() const;
 
-  __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
-  __property bool IsUndef = { read = GetIsUndef };
-  __property wstring ModeStr = { read = GetModeStr };
-  __property wstring SimplestStr = { read = GetSimplestStr };
-  __property wstring Octal = { read = GetOctal, write = SetOctal };
-  __property unsigned short Number = { read = GetNumber, write = SetNumber };
-  __property unsigned short NumberSet = { read = FSet };
-  __property unsigned short NumberUnset = { read = FUnset };
-  __property unsigned long NumberDecadic = { read = GetNumberDecadic };
-  __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
-  __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
-  __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
-  __property wstring Text = { read = GetText, write = SetText };
-  __property bool Unknown = { read = FUnknown };
+  // __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
+  bool GetAllowUndef() { return FAllowUndef; }
+  void SetAllowUndef(bool value);
+  // __property bool IsUndef = { read = GetIsUndef };
+  bool GetIsUndef() const;
+  // __property wstring ModeStr = { read = GetModeStr };
+  wstring GetModeStr() const;
+  // __property wstring SimplestStr = { read = GetSimplestStr };
+  wstring GetSimplestStr() const;
+  // __property wstring Octal = { read = GetOctal, write = SetOctal };
+  wstring GetOctal() const;
+  void SetOctal(wstring value);
+  // __property unsigned short Number = { read = GetNumber, write = SetNumber };
+  unsigned short GetNumber() const;
+  void SetNumber(unsigned short value);
+  // __property unsigned short NumberSet = { read = FSet };
+  unsigned short GetNumberSet() { return FSet; }
+  // __property unsigned short NumberUnset = { read = FUnset };
+  unsigned short GetNumberUnset() { return FUnset; }
+  // __property unsigned long NumberDecadic = { read = GetNumberDecadic };
+  unsigned long GetNumberDecadic() const;
+  // __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
+  bool GetReadOnly();
+  void SetReadOnly(bool value);
+  // __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
+  bool GetRight(TRight Right) const;
+  void SetRight(TRight Right, bool value);
+  // __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
+  TState GetRightUndef(TRight Right) const;
+  void SetRightUndef(TRight Right, TState value);
+  // __property wstring Text = { read = GetText, write = SetText };
+  wstring GetText() const;
+  void SetText(const wstring & value);
+  // __property bool Unknown = { read = FUnknown };
+  bool GetUnknown() { return FUnknown; }
 
 private:
   bool FAllowUndef;
@@ -414,25 +435,8 @@ private:
   wstring FText;
   bool FUnknown;
 
-  bool GetIsUndef() const;
-  wstring GetModeStr() const;
-  wstring GetSimplestStr() const;
-  void SetNumber(unsigned short value);
-  wstring GetText() const;
-  void SetText(const wstring & value);
-  void SetOctal(wstring value);
-  unsigned short GetNumber() const;
   unsigned short GetNumberSet() const;
   unsigned short GetNumberUnset() const;
-  unsigned long GetNumberDecadic() const;
-  wstring GetOctal() const;
-  bool GetReadOnly();
-  bool GetRight(TRight Right) const;
-  TState GetRightUndef(TRight Right) const;
-  void SetAllowUndef(bool value);
-  void SetReadOnly(bool value);
-  void SetRight(TRight Right, bool value);
-  void SetRightUndef(TRight Right, TState value);
 };
 //---------------------------------------------------------------------------
 enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
