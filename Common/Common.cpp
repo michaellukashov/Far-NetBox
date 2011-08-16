@@ -1240,7 +1240,7 @@ wstring FixedLenDateTimeFormat(const wstring & Format)
       if (!AsIs && (strchr("dDeEmMhHnNsS", F) != NULL) &&
           ((Index == Result.size()) || (Result[Index + 1] != F)))
       {
-        Result.insert(Index, F);
+        // FIXME Result.insert(Index, F);
       }
 
       while ((Index <= Result.size()) && (F == Result[Index]))
@@ -1259,6 +1259,8 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   // (when one time is seconds-precision and other is millisecond-precision,
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
+  //  FIXME
+  /*
   static TDateTime TwoSeconds(0, 0, 2, 0);
   int Result;
   if (T1 == T2)
@@ -1279,10 +1281,14 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
     Result = 0;
   }
   return Result;
+  */
+  return 0;
 }
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const wstring FileName, bool ToRecycleBin)
 {
+//FIXME
+/*
   SHFILEOPSTRUCT Data;
 
   memset(&Data, 0, sizeof(Data));
@@ -1315,6 +1321,8 @@ bool RecursiveDeleteFile(const wstring FileName, bool ToRecycleBin)
     SetLastError(ErrorCode);
   }
   return Result;
+  */
+  return false;
 }
 //---------------------------------------------------------------------------
 int CancelAnswer(int Answers)
@@ -1388,6 +1396,7 @@ int ContinueAnswer(int Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
+/*
 TPasLibModule * FindModule(void * Instance)
 {
   TPasLibModule * CurModule;
@@ -1432,26 +1441,27 @@ wstring LoadStrPart(int Ident, int Part)
   }
   return Result;
 }
+*/
 //---------------------------------------------------------------------------
 wstring DecodeUrlChars(wstring S)
 {
   int i = 1;
-  while (i <= S.Length())
+  while (i <= S.size())
   {
     switch (S[i])
     {
-      case '+':
-        S[i] = ' ';
+      case L'+':
+        S[i] = L' ';
         break;
 
-      case '%':
-        if (i <= S.Length() - 2)
+      case L'%':
+        if (i <= S.size() - 2)
         {
-          wstring C = HexToStr(S.SubString(i + 1, 2));
-          if (C.Length() == 1)
+          wstring C = HexToStr(S.substr(i + 1, 2));
+          if (C.size() == 1)
           {
             S[i] = C[1];
-            S.Delete(i + 1, 2);
+            S.erase(i + 1, 2);
           }
         }
         break;
@@ -1464,14 +1474,14 @@ wstring DecodeUrlChars(wstring S)
 wstring DoEncodeUrl(wstring S, wstring Chars)
 {
   int i = 1;
-  while (i <= S.Length())
+  while (i <= S.size())
   {
-    if (Chars.Pos(S[i]) > 0)
+    if (Chars.find_first_of(S[i]) > 0)
     {
       wstring H = CharToHex(S[i]);
-      S.Insert(H, i + 1);
-      S[i] = '%';
-      i += H.Length();
+      S.insert(i + 1, H);
+      S[i] = L'%';
+      i += H.size();
     }
     i++;
   }
@@ -1481,13 +1491,13 @@ wstring DoEncodeUrl(wstring S, wstring Chars)
 wstring EncodeUrlChars(wstring S, wstring Ignore)
 {
   wstring Chars;
-  if (Ignore.Pos(' ') == 0)
+  if (Ignore.find_first_of(L' ') == 0)
   {
-    Chars += ' ';
+    Chars += L' ';
   }
-  if (Ignore.Pos('/') == 0)
+  if (Ignore.find_first_of(L'/') == 0)
   {
-    Chars += '/';
+    Chars += L'/';
   }
   return DoEncodeUrl(S, Chars);
 }
@@ -1520,25 +1530,25 @@ wstring EncodeUrlString(wstring S)
 //---------------------------------------------------------------------------
 void OemToAnsi(wstring & Str)
 {
-  if (!Str.IsEmpty())
+  if (!Str.empty())
   {
-    Str.Unique();
-    OemToChar(Str.c_str(), Str.c_str());
+    // Str.Unique();
+    // FIXME OemToChar(Str.c_str(), Str.c_str());
   }
 }
 //---------------------------------------------------------------------------
 void AnsiToOem(wstring & Str)
 {
-  if (!Str.IsEmpty())
+  if (!Str.empty())
   {
-    Str.Unique();
-    CharToOem(Str.c_str(), Str.c_str());
+    // Str.Unique();
+    // FIXME CharToOem(Str.c_str(), Str.c_str());
   }
 }
 //---------------------------------------------------------------------------
 wstring EscapeHotkey(const wstring & Caption)
 {
-  return StringReplace(Caption, "&", "&&", TReplaceFlags() << rfReplaceAll);
+  return Caption; // FIXME StringReplace(Caption, "&", "&&", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
@@ -1546,33 +1556,33 @@ bool CutToken(wstring & Str, wstring & Token)
 {
   bool Result;
 
-  Token = "";
+  Token = L"";
 
   // inspired by Putty's sftp_getcmd() from PSFTP.C
   int Index = 1;
-  while ((Index <= Str.Length()) &&
-    ((Str[Index] == ' ') || (Str[Index] == '\t')))
+  while ((Index <= Str.size()) &&
+    ((Str[Index] == L' ') || (Str[Index] == L'\t')))
   {
     Index++;
   }
 
-  if (Index <= Str.Length())
+  if (Index <= Str.size())
   {
     bool Quoting = false;
 
-    while (Index <= Str.Length())
+    while (Index <= Str.size())
     {
-      if (!Quoting && ((Str[Index] == ' ') || (Str[Index] == '\t')))
+      if (!Quoting && ((Str[Index] == L' ') || (Str[Index] == L'\t')))
       {
         break;
       }
-      else if ((Str[Index] == '"') && (Index + 1 <= Str.Length()) &&
-        (Str[Index + 1] == '"'))
+      else if ((Str[Index] == L'"') && (Index + 1 <= Str.size()) &&
+        (Str[Index + 1] == L'"'))
       {
         Index += 2;
-        Token += '"';
+        Token += L'"';
       }
-      else if (Str[Index] == '"')
+      else if (Str[Index] == L'"')
       {
         Index++;
         Quoting = !Quoting;
@@ -1584,27 +1594,27 @@ bool CutToken(wstring & Str, wstring & Token)
       }
     }
 
-    if (Index <= Str.Length())
+    if (Index <= Str.size())
     {
       Index++;
     }
 
-    Str = Str.SubString(Index, Str.Length());
+    Str = Str.substr(Index, Str.size());
 
     Result = true;
   }
   else
   {
     Result = false;
-    Str = "";
+    Str = L"";
   }
 
   return Result;
 }
 //---------------------------------------------------------------------------
-void AddToList(wstring & List, const wstring & Value, char Delimiter)
+void AddToList(wstring & List, const wstring & Value, wchar_t Delimiter)
 {
-  if (!List.IsEmpty() && (List[List.Length()] != Delimiter))
+  if (!List.empty() && (List[List.size()] != Delimiter))
   {
     List += Delimiter;
   }
@@ -1613,68 +1623,70 @@ void AddToList(wstring & List, const wstring & Value, char Delimiter)
 //---------------------------------------------------------------------------
 bool Is2000()
 {
-  return (Win32MajorVersion >= 5);
+  return false; // FIXME (Win32MajorVersion >= 5);
 }
 //---------------------------------------------------------------------------
 bool IsWin7()
 {
-  return
-    (Win32MajorVersion > 6) ||
-    ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
+  return false; // FIXME
+    // (Win32MajorVersion > 6) ||
+    // ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
 }
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
-  HANDLE Kernel32 = GetModuleHandle(kernel32);
-  typedef BOOL WINAPI (* TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-  TGetProductInfo GetProductInfo =
-      (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
-  bool Result;
-  if (GetProductInfo == NULL)
-  {
-    Result = false;
-  }
-  else
-  {
-    DWORD Type;
-    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
-    switch (Type)
-    {
-      case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
-      case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
-      case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
-      case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
-      case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
-      case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
-      case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
-      case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
-      case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
-      case 0x002A /*PRODUCT_HYPER*/:
-      case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
-      case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
-      case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
-      case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
-      case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
-      case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
-      case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
-      case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
-      case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
-      case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
-      case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
-      case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
-      case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
-      case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
-      case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
-      case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
-      case 0x0011 /*PRODUCT_WEB_SERVE*/:
-      case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
-        Result = true;
-        break;
+// FIXME
+return false;
+  // HANDLE Kernel32 = GetModuleHandle(kernel32);
+  // typedef BOOL WINAPI (* TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+  // TGetProductInfo GetProductInfo =
+      // (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
+  // bool Result;
+  // if (GetProductInfo == NULL)
+  // {
+    // Result = false;
+  // }
+  // else
+  // {
+    // DWORD Type;
+    // GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
+    // switch (Type)
+    // {
+      // case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
+      // case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
+      // case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
+      // case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
+      // case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
+      // case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
+      // case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
+      // case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
+      // case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
+      // case 0x002A /*PRODUCT_HYPER*/:
+      // case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
+      // case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
+      // case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
+      // case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
+      // case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
+      // case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
+      // case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
+      // case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
+      // case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
+      // case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
+      // case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
+      // case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
+      // case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
+      // case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
+      // case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
+      // case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
+      // case 0x0011 /*PRODUCT_WEB_SERVE*/:
+      // case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
+        // Result = true;
+        // break;
 
-      default:
-        Result = false;
-        break;
-    }
-  }
-  return Result;
+      // default:
+        // Result = false;
+        // break;
+    // }
+  // }
+  // return Result;
 }
