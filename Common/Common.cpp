@@ -293,11 +293,13 @@ wstring GetShellFolderPath(int CSIdl)
   HMODULE Shell32Lib = LoadLibrary(L"SHELL32.DLL");
   if (Shell32Lib != NULL)
   {
+    typedef HRESULT (__stdcall *PFNSHGETFOLDERPATH)(HWND, int, HANDLE, DWORD, LPTSTR);
     PFNSHGETFOLDERPATH SHGetFolderPath = (PFNSHGETFOLDERPATH)
-      GetProcAddress(Shell32Lib, L"SHGetFolderPathA");
+      GetProcAddress(Shell32Lib, "SHGetFolderPathA");
     if (SHGetFolderPath != NULL)
     {
-      char Path[2 * MAX_PATH + 10] = L"\0";
+      wchar_t Path[2 * MAX_PATH + 10] = L"\0";
+      const int SHGFP_TYPE_CURRENT = 0;
       if (SUCCEEDED(SHGetFolderPath(NULL, CSIdl, NULL, SHGFP_TYPE_CURRENT, Path)))
       {
         Result = Path;
@@ -312,7 +314,7 @@ wstring StripPathQuotes(const wstring Path)
   if ((Path.size() >= 2) &&
       (Path[1] == L'\"') && (Path[Path.size()] == L'\"'))
   {
-    return Path.substr(2, Path.Length() - 2);
+    return Path.substr(2, Path.size() - 2);
   }
   else
   {
@@ -323,9 +325,9 @@ wstring StripPathQuotes(const wstring Path)
 wstring AddPathQuotes(wstring Path)
 {
   Path = StripPathQuotes(Path);
-  if (Path.Pos(" "))
+  if (Path.find_first_of(L" "))
   {
-    Path = "\"" + Path + "\"";
+    Path = L"\"" + Path + L"\"";
   }
   return Path;
 }
@@ -333,40 +335,48 @@ wstring AddPathQuotes(wstring Path)
 void SplitCommand(wstring Command, wstring &Program,
   wstring & Params, wstring & Dir)
 {
-  Command = Command.Trim();
-  Params = "";
-  Dir = "";
-  if (!Command.IsEmpty() && (Command[1] == '\"'))
+  // Command = Command.Trim(); //FIXME
+  Params = L"";
+  Dir = L"";
+  if (!Command.empty() && (Command[1] == L'\"'))
   {
-    Command.Delete(1, 1);
-    int P = Command.Pos('"');
+    Command.erase(1, 1);
+    int P = Command.find_first_of(L'"');
     if (P)
     {
-      Program = Command.SubString(1, P-1).Trim();
-      Params = Command.SubString(P + 1, Command.Length() - P).Trim();
+      Program = Command.substr(1, P-1); // .Trim();
+      Params = Command.substr(P + 1, Command.size() - P); //.Trim();
     }
     else
     {
-      throw exception(FMTLOAD(INVALID_SHELL_COMMAND, ("\"" + Command)));
+      throw exception(); // FIXME FMTLOAD(INVALID_SHELL_COMMAND, ("\"" + Command)));
     }
   }
   else
   {
-    int P = Command.Pos(" ");
+    int P = Command.find_first_of(L" ");
     if (P)
     {
-      Program = Command.SubString(1, P).Trim();
-      Params = Command.SubString(P + 1, Command.Length() - P).Trim();
+      Program = Command.substr(1, P); // .Trim();
+      Params = Command.substr(P + 1, Command.size() - P); // .Trim();
     }
     else
     {
       Program = Command;
     }
   }
-  int B = Program.LastDelimiter("\\/");
+  int B = Program.find_last_of(L"\\");
   if (B)
   {
-    Dir = Program.SubString(1, B).Trim();
+    Dir = Program.substr(1, B); // .Trim();
+  }
+  else
+  {
+    B = Program.find_last_of(L"/");
+    if (B)
+    {
+      Dir = Program.substr(1, B); // .Trim();
+    }
   }
 }
 //---------------------------------------------------------------------------
@@ -383,24 +393,24 @@ wstring ExtractProgram(wstring Command)
 //---------------------------------------------------------------------------
 wstring FormatCommand(wstring Program, wstring Params)
 {
-  Program = Program.Trim();
-  Params = Params.Trim();
-  if (!Params.IsEmpty()) Params = " " + Params;
-  if (Program.Pos(" ")) Program = "\"" + Program + "\"";
+  // Program = Program.Trim();
+  // Params = Params.Trim();
+  if (!Params.empty()) Params = L" " + Params;
+  if (Program.find_first_of(L" ")) Program = L"\"" + Program + L"\"";
   return Program + Params;
 }
 //---------------------------------------------------------------------------
-const char ShellCommandFileNamePattern[] = "!.!";
+const wchar_t ShellCommandFileNamePattern[] = L"!.!";
 //---------------------------------------------------------------------------
 void ReformatFileNameCommand(wstring & Command)
 {
-  if (!Command.IsEmpty())
+  if (!Command.empty())
   {
     wstring Program, Params, Dir;
     SplitCommand(Command, Program, Params, Dir);
-    if (Params.Pos(ShellCommandFileNamePattern) == 0)
+    if (Params.find_first_of(ShellCommandFileNamePattern) == 0)
     {
-      Params = Params + (Params.IsEmpty() ? "" : " ") + ShellCommandFileNamePattern;
+      Params = Params + (Params.empty() ? L"" : L" ") + ShellCommandFileNamePattern;
     }
     Command = FormatCommand(Program, Params);
   }
