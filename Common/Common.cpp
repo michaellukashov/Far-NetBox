@@ -283,21 +283,21 @@ wstring SystemTemporaryDirectory()
 {
   wstring TempDir;
   TempDir.resize(MAX_PATH);
-  TempDir.resize(GetTempPath(MAX_PATH, TempDir.c_str()));
+  TempDir.resize(GetTempPath(MAX_PATH, (wchar_t *)TempDir.c_str()));
   return TempDir;
 }
 //---------------------------------------------------------------------------
 wstring GetShellFolderPath(int CSIdl)
 {
   wstring Result;
-  HMODULE Shell32Lib = LoadLibrary("SHELL32.DLL");
+  HMODULE Shell32Lib = LoadLibrary(L"SHELL32.DLL");
   if (Shell32Lib != NULL)
   {
     PFNSHGETFOLDERPATH SHGetFolderPath = (PFNSHGETFOLDERPATH)
-      GetProcAddress(Shell32Lib, "SHGetFolderPathA");
+      GetProcAddress(Shell32Lib, L"SHGetFolderPathA");
     if (SHGetFolderPath != NULL)
     {
-      char Path[2 * MAX_PATH + 10] = "\0";
+      char Path[2 * MAX_PATH + 10] = L"\0";
       if (SUCCEEDED(SHGetFolderPath(NULL, CSIdl, NULL, SHGFP_TYPE_CURRENT, Path)))
       {
         Result = Path;
@@ -309,10 +309,10 @@ wstring GetShellFolderPath(int CSIdl)
 //---------------------------------------------------------------------------
 wstring StripPathQuotes(const wstring Path)
 {
-  if ((Path.Length() >= 2) &&
-      (Path[1] == '\"') && (Path[Path.Length()] == '\"'))
+  if ((Path.size() >= 2) &&
+      (Path[1] == L'\"') && (Path[Path.size()] == L'\"'))
   {
-    return Path.SubString(2, Path.Length() - 2);
+    return Path.substr(2, Path.Length() - 2);
   }
   else
   {
