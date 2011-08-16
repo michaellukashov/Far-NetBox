@@ -331,6 +331,18 @@ wstring AddPathQuotes(wstring Path)
   }
   return Path;
 }
+
+wstring ReplaceStrAll(wstring Str, wstring What, wstring ByWhat)
+{
+    wstring result = Str;
+    size_t pos = result.find_first_of(What);
+    while (pos >= 0)
+    {
+        result.replace(pos, What.size(), ByWhat);
+        pos = result.find_first_of(What);
+    }
+}
+
 //---------------------------------------------------------------------------
 void SplitCommand(wstring Command, wstring &Program,
   wstring & Params, wstring & Dir)
@@ -419,7 +431,7 @@ void ReformatFileNameCommand(wstring & Command)
 wstring ExpandFileNameCommand(const wstring Command,
   const wstring FileName)
 {
-  return AnsiReplaceStr(Command, ShellCommandFileNamePattern,
+  return ReplaceStrAll(Command, ShellCommandFileNamePattern,
     AddPathQuotes(FileName));
 }
 //---------------------------------------------------------------------------
@@ -427,30 +439,30 @@ wstring EscapePuttyCommandParam(wstring Param)
 {
   bool Space = false;
 
-  for (int i = 1; i <= Param.Length(); i++)
+  for (int i = 1; i <= Param.size(); i++)
   {
     switch (Param[i])
     {
-      case '"':
-        Param.Insert("\\", i);
+      case L'"':
+        Param.insert(i, L"\\");
         i++;
         break;
 
-      case ' ':
+      case L' ':
         Space = true;
         break;
 
-      case '\\':
+      case L'\\':
         int i2 = i;
-        while ((i2 <= Param.Length()) && (Param[i2] == '\\'))
+        while ((i2 <= Param.size()) && (Param[i2] == L'\\'))
         {
           i2++;
         }
-        if ((i2 <= Param.Length()) && (Param[i2] == '"'))
+        if ((i2 <= Param.size()) && (Param[i2] == L'"'))
         {
-          while (Param[i] == '\\')
+          while (Param[i] == L'\\')
           {
-            Param.Insert("\\", i);
+            Param.insert(i, L"\\");
             i += 2;
           }
           i--;
@@ -461,7 +473,7 @@ wstring EscapePuttyCommandParam(wstring Param)
 
   if (Space)
   {
-    Param = "\"" + Param + '"';
+    Param = L"\"" + Param + L'"';
   }
 
   return Param;
@@ -472,21 +484,43 @@ wstring ExpandEnvironmentVariables(const wstring & Str)
   wstring Buf;
   unsigned int Size = 1024;
 
-  Buf.SetLength(Size);
-  Buf.Unique();
-  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), Buf.c_str(), Size);
+  Buf.resize(Size);
+  // Buf.Unique(); //FIXME
+  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), (wchar_t *)Buf.c_str(), Size);
 
   if (Len > Size)
   {
-    Buf.SetLength(Len);
-    Buf.Unique();
-    ExpandEnvironmentStrings(Str.c_str(), Buf.c_str(), Len);
+    Buf.resize(Len);
+    // Buf.Unique();
+    ExpandEnvironmentStrings(Str.c_str(), (wchar_t *)Buf.c_str(), Len);
   }
 
   PackStr(Buf);
 
   return Buf;
 }
+//---------------------------------------------------------------------------
+wstring ExtractShortPathName(const wstring & Path1)
+{
+    return Path1; //FIXME
+}
+
+bool AnsiSameText(const wstring &Str1, const wstring &Str2)
+{
+    return Str1 == Str2; //FIXME
+}
+
+wstring IncludeTrailingBackslash(const wstring &Path1)
+{
+    wstring result = Path1;
+    if (Path1[Path1.size() - 1] != L'/' ||
+        Path1[Path1.size() - 1] != L'\\')
+    {
+        result += L'\\';
+    }
+    return result;
+}
+
 //---------------------------------------------------------------------------
 bool CompareFileName(const wstring & Path1, const wstring & Path2)
 {
@@ -495,7 +529,7 @@ bool CompareFileName(const wstring & Path1, const wstring & Path2)
 
   bool Result;
   // ExtractShortPathName returns empty string if file does not exist
-  if (ShortPath1.IsEmpty() || ShortPath2.IsEmpty())
+  if (ShortPath1.empty() || ShortPath2.empty())
   {
     Result = AnsiSameText(Path1, Path2);
   }
@@ -514,21 +548,21 @@ bool ComparePaths(const wstring & Path1, const wstring & Path2)
 //---------------------------------------------------------------------------
 bool IsReservedName(wstring FileName)
 {
-  int P = FileName.Pos(".");
-  int Len = (P > 0) ? P - 1 : FileName.Length();
+  int P = FileName.find_first_of(L".");
+  int Len = (P > 0) ? P - 1 : FileName.size();
   if ((Len == 3) || (Len == 4))
   {
     if (P > 0)
     {
-      FileName.SetLength(P - 1);
+      FileName.resize(P - 1);
     }
     static wstring Reserved[] = {
-      "CON", "PRN", "AUX", "NUL",
-      "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-      "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9" };
+      L"CON", L"PRN", L"AUX", L"NUL",
+      L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
+      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
     for (int Index = 0; Index < LENOF(Reserved); Index++)
     {
-      if (SameText(FileName, Reserved[Index]))
+      if (AnsiSameText(FileName, Reserved[Index]))
       {
         return true;
       }
@@ -541,10 +575,10 @@ wstring DisplayableStr(const wstring Str)
 {
   bool Displayable = true;
   int Index = 1;
-  while ((Index <= Str.Length()) && Displayable)
+  while ((Index <= Str.size()) && Displayable)
   {
-    if ((Str[Index] < '\32') &&
-        (Str[Index] != '\n') && (Str[Index] != '\r') && (Str[Index] != '\t') && (Str[Index] != '\b'))
+    if ((Str[Index] < L'\32') &&
+        (Str[Index] != L'\n') && (Str[Index] != L'\r') && (Str[Index] != L'\t') && (Str[Index] != L'\b'))
     {
       Displayable = false;
     }
@@ -554,33 +588,33 @@ wstring DisplayableStr(const wstring Str)
   wstring Result;
   if (Displayable)
   {
-    Result = "\"";
-    for (int Index = 1; Index <= Str.Length(); Index++)
+    Result = L"\"";
+    for (int Index = 1; Index <= Str.size(); Index++)
     {
       switch (Str[Index])
       {
-        case '\n':
-          Result += "\\n";
+        case L'\n':
+          Result += L"\\n";
           break;
 
-        case '\r':
-          Result += "\\r";
+        case L'\r':
+          Result += L"\\r";
           break;
 
-        case '\t':
-          Result += "\\t";
+        case L'\t':
+          Result += L"\\t";
           break;
 
-        case '\b':
-          Result += "\\b";
+        case L'\b':
+          Result += L"\\b";
           break;
 
-        case '\\':
-          Result += "\\\\";
+        case L'\\':
+          Result += L"\\\\";
           break;
 
-        case '"':
-          Result += "\\\"";
+        case L'"':
+          Result += L"\\\"";
           break;
 
         default:
@@ -588,11 +622,11 @@ wstring DisplayableStr(const wstring Str)
           break;
       }
     }
-    Result += "\"";
+    Result += L"\"";
   }
   else
   {
-    Result = "0x" + StrToHex(Str);
+    Result = L"0x" + StrToHex(Str);
   }
   return Result;
 }
@@ -604,7 +638,7 @@ wstring CharToHex(char Ch, bool UpperCase)
 
   const char * Digits = (UpperCase ? UpperDigits : LowerDigits);
   wstring Result;
-  Result.SetLength(2);
+  Result.resize(2);
   Result[1] = Digits[((unsigned char)Ch & 0xF0) >> 4];
   Result[2] = Digits[ (unsigned char)Ch & 0x0F];
   return Result;
@@ -613,10 +647,10 @@ wstring CharToHex(char Ch, bool UpperCase)
 wstring StrToHex(const wstring Str, bool UpperCase, char Separator)
 {
   wstring Result;
-  for (int i = 1; i <= Str.Length(); i++)
+  for (int i = 1; i <= Str.size(); i++)
   {
     Result += CharToHex(Str[i], UpperCase);
-    if ((Separator != '\0') && (i < Str.Length()))
+    if ((Separator != L'\0') && (i < Str.size()))
     {
       Result += Separator;
     }
@@ -626,24 +660,24 @@ wstring StrToHex(const wstring Str, bool UpperCase, char Separator)
 //---------------------------------------------------------------------------
 wstring HexToStr(const wstring Hex)
 {
-  static wstring Digits = "0123456789ABCDEF";
+  static wstring Digits = L"0123456789ABCDEF";
   wstring Result;
   int L, P1, P2;
-  L = Hex.Length();
+  L = Hex.size();
   if (L % 2 == 0)
   {
-    for (int i = 1; i <= Hex.Length(); i += 2)
+    for (int i = 1; i <= Hex.size(); i += 2)
     {
-      P1 = Digits.Pos((char)toupper(Hex[i]));
-      P2 = Digits.Pos((char)toupper(Hex[i + 1]));
+      P1 = Digits.find_first_of((char)toupper(Hex[i]));
+      P2 = Digits.find_first_of((char)toupper(Hex[i + 1]));
       if (P1 <= 0 || P2 <= 0)
       {
-        Result = "";
+        Result = L"";
         break;
       }
       else
       {
-        Result += static_cast<char>((P1 - 1) * 16 + P2 - 1);
+        Result += static_cast<wchar_t>((P1 - 1) * 16 + P2 - 1);
       }
     }
   }
@@ -652,12 +686,12 @@ wstring HexToStr(const wstring Hex)
 //---------------------------------------------------------------------------
 unsigned int HexToInt(const wstring Hex, int MinChars)
 {
-  static wstring Digits = "0123456789ABCDEF";
+  static wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
   int I = 1;
-  while (I <= Hex.Length())
+  while (I <= Hex.size())
   {
-    int A = Digits.Pos((char)toupper(Hex[I]));
+    int A = Digits.find_first_of((wchar_t)toupper(Hex[I]));
     if (A <= 0)
     {
       if ((MinChars < 0) || (I <= MinChars))
@@ -681,6 +715,8 @@ char HexToChar(const wstring Hex, int MinChars)
 //---------------------------------------------------------------------------
 bool FileSearchRec(const wstring FileName, WIN32_FIND_DATA &Rec)
 {
+// FIXME
+/*
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
   if (Result)
@@ -688,12 +724,16 @@ bool FileSearchRec(const wstring FileName, WIN32_FIND_DATA &Rec)
     FindClose(Rec);
   }
   return Result;
+*/ 
+    return false;
 }
 //---------------------------------------------------------------------------
 void ProcessLocalDirectory(wstring DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param,
   int FindAttrs)
 {
+// FIXME
+/*
   assert(CallBackFunc);
   if (FindAttrs < 0)
   {
@@ -720,10 +760,13 @@ void ProcessLocalDirectory(wstring DirName,
     }
     FindClose(SearchRec);
   }
+  */
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
 {
+// FIXME
+/*
   try
   {
     return EncodeDate(Year, Month, Day);
@@ -732,10 +775,14 @@ TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
   {
     throw EConvertError(FORMAT("%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
   }
+  */
+  return TDateTime();
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec)
 {
+// FIXME
+/*
   try
   {
     return EncodeTime(Hour, Min, Sec, MSec);
@@ -744,6 +791,8 @@ TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short 
   {
     throw EConvertError(FORMAT("%s [%d:%d:%d.%d]", (E.Message, int(Hour), int(Min), int(Sec), int(MSec))));
   }
+  */
+  return TDateTime();
 }
 //---------------------------------------------------------------------------
 struct TDateTimeParams
