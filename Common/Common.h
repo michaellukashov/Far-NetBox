@@ -67,7 +67,10 @@ bool RecursiveDeleteFile(const wstring FileName, bool ToRecycleBin);
 int CancelAnswer(int Answers);
 int AbortAnswer(int Answers);
 int ContinueAnswer(int Answers);
-wstring LoadStr(int Ident, unsigned int MaxLength = 0);
+static wstring LoadStr(int Ident, unsigned int MaxLength = 0)
+{
+    return L"";
+}
 wstring LoadStrPart(int Ident, int Part);
 wstring EscapeHotkey(const wstring & Caption);
 bool CutToken(wstring & Str, wstring & Token);
@@ -130,7 +133,7 @@ void MakeMethod(void * Data, void * Code, MethodT & Method)
   ((TMethod*)&Method)->Code = Code;
 }
 //---------------------------------------------------------------------------
-TMethod MakeMethod(void * Data, void * Code)
+static TMethod MakeMethod(void * Data, void * Code)
 {
   TMethod Method = { Data, Code };
   return Method;
