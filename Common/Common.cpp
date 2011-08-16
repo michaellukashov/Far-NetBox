@@ -843,7 +843,7 @@ static TDateTimeParams * GetDateTimeParams()
 
         case TIME_ZONE_ID_INVALID:
         default:
-          throw exception(TIMEZONE_ERROR);
+          throw exception(); // FIXME (TIMEZONE_ERROR);
       }
       // Is it same as SysUtils::UnixDateDelta = 25569 ??
       DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
@@ -884,8 +884,8 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
   if (Date.wYear == 0)
   {
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
-    Result = Temp + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
-      (7 * (Date.wDay - 1));
+    Result = Temp; // FIXME + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
+      // (7 * (Date.wDay - 1));
     if (Date.wDay == 5)
     {
       unsigned short Month = static_cast<unsigned short>(Date.wMonth + 1);
@@ -897,16 +897,16 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
 
       if (Result >= EncodeDateVerbose(Year, Month, 1))
       {
-        Result -= 7;
+        // Result -= 7;
       }
     }
-    Result += EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
-      Date.wMilliseconds);
+    // Result += EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
+      // Date.wMilliseconds);
   }
   else
   {
-    Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
-      EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
+    // Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
+      // EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
   }
 }
 //---------------------------------------------------------------------------
@@ -939,7 +939,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
   else
   {
     unsigned short Year, Month, Day;
-    DecodeDate(DateTime, Year, Month, Day);
+    // DecodeDate(DateTime, Year, Month, Day);
 
     TDSTCache * CurrentCache = &DSTCache[0];
 
@@ -979,15 +979,15 @@ static bool IsDateInDST(const TDateTime & DateTime)
 
     if (CurrentCache->SummerDST)
     {
-      Result =
-        (DateTime >= CurrentCache->DaylightDate) &&
-        (DateTime < CurrentCache->StandardDate);
+      Result = false; // FIXME
+        // (DateTime >= CurrentCache->DaylightDate) &&
+        // (DateTime < CurrentCache->StandardDate);
     }
     else
     {
-      Result =
-        (DateTime < CurrentCache->StandardDate) ||
-        (DateTime >= CurrentCache->DaylightDate);
+      Result = false; // FIXME
+        // (DateTime < CurrentCache->StandardDate) ||
+        // (DateTime >= CurrentCache->DaylightDate);
     }
   }
   return Result;
@@ -1003,30 +1003,30 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   TDateTimeParams * Params = GetDateTimeParams();
 
   TDateTime Result;
-  Result = Params->UnixEpoch + (double(TimeStamp) / 86400);
+  Result = TDateTime(); // FIXME Params->UnixEpoch + (double(TimeStamp) / 86400);
 
   if (Params->DaylightHack)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      Result -= Params->CurrentDifference;
+      // Result -= Params->CurrentDifference;
     }
     else if (DSTMode == dstmKeep)
     {
-      Result -= Params->BaseDifference;
+      // Result -= Params->BaseDifference;
     }
   }
   else
   {
-    Result -= Params->BaseDifference;
+    // Result -= Params->BaseDifference;
   }
-
+/*
   if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
   {
     Result -= (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
   }
-
+*/
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1046,8 +1046,8 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
-  return Round(double(DateTime - Params->UnixEpoch) * 86400) +
-    Params->CurrentDifferenceSec;
+  return 0; // FIXME Round(double(DateTime - Params->UnixEpoch) * 86400) +
+    // Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
 FILETIME DateTimeToFileTime(const TDateTime DateTime,
@@ -1086,7 +1086,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
-  TDateTime Result = SystemTimeToDateTime(SysTime);
+  TDateTime Result = TDateTime(); // FIXME SystemTimeToDateTime(SysTime);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1105,7 +1105,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+      TDateTime DateTime = TDateTime(); // FIXME SystemTimeToDateTime(SystemTime);
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
 
@@ -1123,7 +1123,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+      TDateTime DateTime = TDateTime(); // FIXME SystemTimeToDateTime(SystemTime);
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
     }
@@ -1136,10 +1136,11 @@ TDateTime ConvertTimestampToUTC(TDateTime DateTime)
 {
 
   TDateTimeParams * Params = GetDateTimeParams();
-  DateTime += Params->CurrentDifference;
-  DateTime +=
-    (IsDateInDST(DateTime) ?
-      Params->DaylightDifference : Params->StandardDifference);
+  // FIXME
+  // DateTime += Params->CurrentDifference;
+  // DateTime +=
+    // (IsDateInDST(DateTime) ?
+      // Params->DaylightDifference : Params->StandardDifference);
 
   return DateTime;
 }
@@ -1168,19 +1169,19 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      DateTime = DateTime - Params->CurrentDaylightDifference;
+      // FIXME DateTime = DateTime - Params->CurrentDaylightDifference;
     }
 
     if (!IsDateInDST(DateTime))
     {
       if (DSTMode == dstmWin)
       {
-        DateTime = DateTime - Params->DaylightDifference;
+        // DateTime = DateTime - Params->DaylightDifference;
       }
     }
     else
     {
-      DateTime = DateTime - Params->StandardDifference;
+      // DateTime = DateTime - Params->StandardDifference;
     }
   }
   else
@@ -1189,11 +1190,11 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
     {
       if (IsDateInDST(DateTime))
       {
-        DateTime = DateTime + Params->DaylightDifference;
+        // DateTime = DateTime + Params->DaylightDifference;
       }
       else
       {
-        DateTime = DateTime + Params->StandardDifference;
+        // DateTime = DateTime + Params->StandardDifference;
       }
     }
   }
@@ -1207,25 +1208,25 @@ wstring FixedLenDateTimeFormat(const wstring & Format)
   bool AsIs = false;
 
   int Index = 1;
-  while (Index <= Result.Length())
+  while (Index <= Result.size())
   {
-    char F = Result[Index];
-    if ((F == '\'') || (F == '\"'))
+    wchar_t F = Result[Index];
+    if ((F == L'\'') || (F == L'\"'))
     {
       AsIs = !AsIs;
       Index++;
     }
-    else if (!AsIs && ((F == 'a') || (F == 'A')))
+    else if (!AsIs && ((F == L'a') || (F == L'A')))
     {
-      if (Result.SubString(Index, 5).LowerCase() == "am/pm")
+      if (Result.substr(Index, 5)/*.LowerCase()*/ == L"am/pm")
       {
         Index += 5;
       }
-      else if (Result.SubString(Index, 3).LowerCase() == "a/p")
+      else if (Result.substr(Index, 3)/*.LowerCase()*/ == L"a/p")
       {
         Index += 3;
       }
-      else if (Result.SubString(Index, 4).LowerCase() == "ampm")
+      else if (Result.substr(Index, 4)/*.LowerCase()*/ == L"ampm")
       {
         Index += 4;
       }
@@ -1237,12 +1238,12 @@ wstring FixedLenDateTimeFormat(const wstring & Format)
     else
     {
       if (!AsIs && (strchr("dDeEmMhHnNsS", F) != NULL) &&
-          ((Index == Result.Length()) || (Result[Index + 1] != F)))
+          ((Index == Result.size()) || (Result[Index + 1] != F)))
       {
-        Result.Insert(F, Index);
+        Result.insert(Index, F);
       }
 
-      while ((Index <= Result.Length()) && (F == Result[Index]))
+      while ((Index <= Result.size()) && (F == Result[Index]))
       {
         Index++;
       }
