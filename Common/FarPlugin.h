@@ -764,7 +764,10 @@ inline wchar_t *StrFromFar(wchar_t *S)
     return S;
 }
 //---------------------------------------------------------------------------
-wstring StrFromFar(const wchar_t *S);
+inline wstring StrFromFar(const wchar_t *S)
+{
+    return S;
+}
 //---------------------------------------------------------------------------
 inline wchar_t *StrFromFar(wstring &S)
 {
@@ -795,7 +798,7 @@ inline wstring StrToFar(const char *S)
     return L"";
 }
 //---------------------------------------------------------------------------
-bool Win32Check(bool RetVal)
+static bool Win32Check(bool RetVal)
 {
     return true;
 }
