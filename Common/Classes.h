@@ -147,6 +147,7 @@ class TStrings : public TPersistent
 public:
     size_t Add(wstring value)
     {
+        return -1;
     }
     virtual size_t GetCount()
     {
@@ -226,7 +227,7 @@ public:
     }
 };
 
-TDateTime Now()
+static TDateTime Now()
 {
     TDateTime result;
     return result;
