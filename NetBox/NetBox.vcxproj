@@ -191,7 +191,7 @@
     <ClCompile Include="..\Common\FarDialog.cpp" />
     <ClCompile Include="..\Common\FarPlugin.cpp" />
     <ClCompile Include="..\Common\Common.cpp" />
-    <ClCompile Include="..\Common\WinSCPFileSystem.cpp" />
+    <ClCompile Include="WinSCPFileSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
