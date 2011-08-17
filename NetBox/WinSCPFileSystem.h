@@ -2,9 +2,9 @@
 #ifndef WinSCPFileSystemH
 #define WinSCPFileSystemH
 //---------------------------------------------------------------------------
-#include <Interface.h>
+#include "Interface.h"
 #include "FarPlugin.h"
-#include <FileOperationProgress.h>
+#include "FileOperationProgress.h"
 #include <Terminal.h>
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
