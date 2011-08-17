@@ -1,0 +1,731 @@
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#pragma hdrstop
+#include "WinSCPPlugin.h"
+#include "WinSCPFileSystem.h"
+#include "FarConfiguration.h"
+#include "FarTexts.h"
+#include "FarDialog.h"
+#include "plugin.hpp"
+#include <Common.h>
+#include <CoreMain.h>
+#include <Exceptions.h>
+#include <Terminal.h>
+#include <GUITools.h>
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+TCustomFarPlugin * __fastcall CreateFarPlugin(HWND Handle)
+{
+  return new TWinSCPPlugin(Handle);
+}
+//---------------------------------------------------------------------------
+TMessageParams::TMessageParams()
+{
+  Flags = 0;
+  Aliases = NULL;
+  AliasesCount = 0;
+  Params = 0;
+  Timer = 0;
+  TimerEvent = NULL;
+  TimerAnswers = 0;
+  Timeout = 0;
+  TimeoutAnswer = 0;
+}
+//---------------------------------------------------------------------------
+__fastcall TWinSCPPlugin::TWinSCPPlugin(HWND AHandle): TCustomFarPlugin(AHandle)
+{
+  FInitialized = false;
+  CreateMutex(NULL, false, "WinSCPFar");
+}
+//---------------------------------------------------------------------------
+__fastcall TWinSCPPlugin::~TWinSCPPlugin()
+{
+  if (FInitialized)
+  {
+    FarConfiguration->Plugin = NULL;
+    CoreFinalize();
+  }
+}
+//---------------------------------------------------------------------------
+bool __fastcall TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
+{
+  return (Function == hfProcessKey || Function == hfProcessEvent);
+}
+//---------------------------------------------------------------------------
+int __fastcall TWinSCPPlugin::GetMinFarVersion()
+{
+  return FAR170BETA5;
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
+{
+  try
+  {
+    TCustomFarPlugin::SetStartupInfo(Info);
+    assert(!FInitialized);
+    CoreInitialize();
+    FInitialized = true;
+  }
+  catch(Exception & E)
+  {
+    HandleException(&E);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
+  TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
+  TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
+{
+  Flags = PF_FULLCMDLINE;
+  if (FarConfiguration->DisksMenu)
+  {
+    DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
+      (TObject *)FarConfiguration->DisksMenuHotKey);
+  }
+  if (FarConfiguration->PluginsMenu)
+  {
+    PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
+  }
+  if (FarConfiguration->PluginsMenuCommands)
+  {
+    PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
+  }
+  PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
+  CommandPrefixes->CommaText = FarConfiguration->CommandPrefixes;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TWinSCPPlugin::ConfigureEx(int /*Item*/)
+{
+  bool Change = false;
+
+  TFarMenuItems * MenuItems = new TFarMenuItems();
+  try
+  {
+    int MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
+    int MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
+    int MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
+    int MTransfer = MenuItems->Add(GetMsg(CONFIG_TRANSFER));
+    int MBackground = MenuItems->Add(GetMsg(CONFIG_BACKGROUND));
+    int MEndurance = MenuItems->Add(GetMsg(CONFIG_ENDURANCE));
+    int MTransferEditor = MenuItems->Add(GetMsg(CONFIG_TRANSFER_EDITOR));
+    int MLogging = MenuItems->Add(GetMsg(CONFIG_LOGGING));
+    int MIntegration = MenuItems->Add(GetMsg(CONFIG_INTEGRATION));
+    MenuItems->AddSeparator();
+    int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
+
+    int Result;
+
+    do
+    {
+      Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), "", MenuItems);
+
+      if (Result >= 0)
+      {
+        if (Result == MInterface)
+        {
+          if (ConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MTransfer)
+        {
+          if (TransferConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MBackground)
+        {
+          if (QueueConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MEndurance)
+        {
+          if (EnduranceConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MPanel)
+        {
+          if (PanelConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MTransferEditor)
+        {
+          if (TransferEditorConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MConfirmations)
+        {
+          if (ConfirmationsConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MLogging)
+        {
+          if (LoggingConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MIntegration)
+        {
+          if (IntegrationConfigurationDialog())
+          {
+            Change = true;
+          }
+        }
+        else if (Result == MAbout)
+        {
+          AboutDialog();
+        }
+      }
+    }
+    while (Result >= 0);
+  }
+  __finally
+  {
+    delete MenuItems;
+  }
+
+  return Change;
+}
+//---------------------------------------------------------------------------
+int __fastcall TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
+{
+  // for performance reasons, do not pass the event to file systems on redraw
+  if ((Event != EE_REDRAW) || FarConfiguration->EditorUploadOnSave ||
+      FarConfiguration->EditorMultiple)
+  {
+    TWinSCPFileSystem * FileSystem;
+    for (int Index = 0; Index < FOpenedPlugins->Count; Index++)
+    {
+      FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->Items[Index]);
+      FileSystem->ProcessEditorEvent(Event, Param);
+    }
+  }
+
+  return 0;
+}
+//---------------------------------------------------------------------------
+int __fastcall TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
+{
+  int Result;
+  if ((Rec->EventType == KEY_EVENT) &&
+      Rec->Event.KeyEvent.bKeyDown &&
+      (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
+      (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, LEFT_ALT_PRESSED) ||
+       FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, RIGHT_ALT_PRESSED)) &&
+      FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFT_PRESSED))
+  {
+    CommandsMenu(false);
+    Result = 1;
+  }
+  else
+  {
+    Result = 0;
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+TCustomFarFileSystem * __fastcall TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
+{
+  TWinSCPFileSystem * FileSystem = NULL;
+  try
+  {
+    if ((OpenFrom == OPEN_PLUGINSMENU) &&
+        (!FarConfiguration->PluginsMenu || (Item == 1)))
+    {
+      CommandsMenu(true);
+    }
+    else
+    {
+      FileSystem = new TWinSCPFileSystem(this);
+
+      if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
+          OpenFrom == OPEN_FINDLIST)
+      {
+        // nothing
+      }
+      else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
+      {
+        AnsiString Directory;
+        AnsiString Name = (char*)Item;
+        if (OpenFrom == OPEN_SHORTCUT)
+        {
+          int P = Name.Pos("\1");
+          if (P)
+          {
+            Directory = Name.SubString(P + 1, Name.Length() - P);
+            Name.SetLength(P - 1);
+          }
+
+          TWinSCPFileSystem * PanelSystem;
+          PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+          if (PanelSystem && PanelSystem->Connected() &&
+              PanelSystem->Terminal->SessionData->SessionUrl == Name)
+          {
+            PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
+            if (PanelSystem->UpdatePanel())
+            {
+              PanelSystem->RedrawPanel();
+            }
+            Abort();
+          }
+          // directory will be set by FAR itself
+          Directory = "";
+        }
+        assert(StoredSessions);
+        bool DefaultsOnly;
+        TSessionData * Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
+        if (DefaultsOnly)
+        {
+          Abort();
+        }
+        if (!Session->CanLogin)
+        {
+          assert(false);
+          Abort();
+        }
+        FileSystem->Connect(Session);
+        if (!Directory.IsEmpty())
+        {
+          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+        }
+      }
+      else
+      {
+        assert(false);
+      }
+    }
+  }
+  catch(...)
+  {
+    delete FileSystem;
+    throw;
+  }
+
+  return FileSystem;
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
+{
+  TFarMenuItems * MenuItems = new TFarMenuItems();
+  try
+  {
+    TWinSCPFileSystem * FileSystem;
+    TWinSCPFileSystem * AnotherFileSystem;
+    FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+    AnotherFileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem(true));
+    bool FSConnected = (FileSystem != NULL) && FileSystem->Connected();
+    bool AnotherFSConnected = (AnotherFileSystem != NULL) && AnotherFileSystem->Connected();
+    bool FSVisible = FSConnected && FromFileSystem;
+    bool AnyFSVisible = (FSConnected || AnotherFSConnected) && FromFileSystem;
+
+    int MAttributes = MenuItems->Add(GetMsg(MENU_COMMANDS_ATTRIBUTES), FSVisible);
+    int MLink = MenuItems->Add(GetMsg(MENU_COMMANDS_LINK), FSVisible);
+    int MApplyCommand = MenuItems->Add(GetMsg(MENU_COMMANDS_APPLY_COMMAND), FSVisible);
+    int MFullSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
+    int MSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
+    int MQueue = MenuItems->Add(GetMsg(MENU_COMMANDS_QUEUE), FSVisible);
+    int MInformation = MenuItems->Add(GetMsg(MENU_COMMANDS_INFORMATION), FSVisible);
+    int MLog = MenuItems->Add(GetMsg(MENU_COMMANDS_LOG), FSVisible);
+    int MClearCaches = MenuItems->Add(GetMsg(MENU_COMMANDS_CLEAR_CACHES), FSVisible);
+    int MPutty = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTY), FSVisible);
+    int MEditHistory = MenuItems->Add(GetMsg(MENU_COMMANDS_EDIT_HISTORY), FSConnected);
+    MenuItems->AddSeparator(FSConnected || FSVisible);
+    int MAddBookmark = MenuItems->Add(GetMsg(MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
+    int MOpenDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
+    int MHomeDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
+    int MSynchronizeBrowsing = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
+    MenuItems->AddSeparator(FSVisible);
+    int MPageant = MenuItems->Add(GetMsg(MENU_COMMANDS_PAGEANT), FromFileSystem);
+    int MPuttygen = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTYGEN), FromFileSystem);
+    MenuItems->AddSeparator(FromFileSystem);
+    int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
+    int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
+
+    MenuItems->Disabled[MLog] = !FSVisible || !FileSystem->IsLogging();
+    MenuItems->Disabled[MClearCaches] = !FSVisible || FileSystem->AreCachesEmpty();
+    MenuItems->Disabled[MPutty] = !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PuttyPath)));
+    MenuItems->Disabled[MEditHistory] = !FSConnected || FileSystem->IsEditHistoryEmpty();
+    MenuItems->Checked[MSynchronizeBrowsing] = FSVisible && FileSystem->IsSynchronizedBrowsing();
+    MenuItems->Disabled[MPageant] = !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PageantPath)));
+    MenuItems->Disabled[MPuttygen] = !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PuttygenPath)));
+
+    int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), "", MenuItems);
+
+    if (Result >= 0)
+    {
+      if (Result == MLog)
+      {
+        assert(FileSystem);
+        FileSystem->ShowLog();
+      }
+      else if (Result == MAttributes)
+      {
+        assert(FileSystem);
+        FileSystem->FileProperties();
+      }
+      else if (Result == MLink)
+      {
+        assert(FileSystem);
+        FileSystem->CreateLink();
+      }
+      else if (Result == MApplyCommand)
+      {
+        assert(FileSystem);
+        FileSystem->ApplyCommand();
+      }
+      else if (Result == MFullSynchronize)
+      {
+        if (FileSystem != NULL)
+        {
+          FileSystem->FullSynchronize(true);
+        }
+        else
+        {
+          assert(AnotherFileSystem != NULL);
+          AnotherFileSystem->FullSynchronize(false);
+        }
+      }
+      else if (Result == MSynchronize)
+      {
+        if (FileSystem != NULL)
+        {
+          FileSystem->Synchronize();
+        }
+        else
+        {
+          assert(AnotherFileSystem != NULL);
+          AnotherFileSystem->Synchronize();
+        }
+      }
+      else if (Result == MQueue)
+      {
+        assert(FileSystem);
+        FileSystem->QueueShow(false);
+      }
+      else if (Result == MAddBookmark || Result == MOpenDirectory)
+      {
+        assert(FileSystem);
+        FileSystem->OpenDirectory(Result == MAddBookmark);
+      }
+      else if (Result == MHomeDirectory)
+      {
+        FileSystem->HomeDirectory();
+      }
+      else if (Result == MConfigure)
+      {
+        ConfigureEx(0);
+      }
+      else if (Result == MAbout)
+      {
+        AboutDialog();
+      }
+      else if (Result == MPutty)
+      {
+        assert(FileSystem);
+        FileSystem->OpenSessionInPutty();
+      }
+      else if (Result == MEditHistory)
+      {
+        assert(FileSystem);
+        FileSystem->EditHistory();
+      }
+      else if (Result == MPageant || Result == MPuttygen)
+      {
+        AnsiString Path = (Result == MPageant) ?
+          FarConfiguration->PageantPath : FarConfiguration->PuttygenPath;
+        AnsiString Program, Params, Dir;
+        SplitCommand(Path, Program, Params, Dir);
+        ExecuteShell(Program, Params);
+      }
+      else if (Result == MClearCaches)
+      {
+        assert(FileSystem);
+        FileSystem->ClearCaches();
+      }
+      else if (Result == MSynchronizeBrowsing)
+      {
+        assert(FileSystem != NULL);
+        FileSystem->ToggleSynchronizeBrowsing();
+      }
+      else if (Result == MInformation)
+      {
+        assert(FileSystem);
+        FileSystem->ShowInformation();
+      }
+      else
+      {
+        assert(false);
+      }
+    }
+  }
+  __finally
+  {
+    delete MenuItems;
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::ShowExtendedException(Exception * E)
+{
+  if (!E->Message.IsEmpty())
+  {
+    if (E->InheritsFrom(__classid(Exception)))
+    {
+      if (!E->InheritsFrom(__classid(EAbort)))
+      {
+        TQueryType Type;
+        Type = (E->InheritsFrom(__classid(ESshTerminate)) ?
+          qtInformation : qtError);
+
+        TStrings * MoreMessages = NULL;
+        if (E->InheritsFrom(__classid(ExtException)))
+        {
+          MoreMessages = ((ExtException *)E)->MoreMessages;
+        }
+
+        AnsiString Message = TranslateExceptionMessage(E);
+        MoreMessageDialog(Message, MoreMessages, Type, qaOK);
+      }
+    }
+    else
+    {
+      ShowException(ExceptObject(), ExceptAddr());
+    }
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::OldFar()
+{
+  throw Exception(FORMAT(GetMsg(OLD_FAR), (FormatFarVersion(GetMinFarVersion()))));
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::HandleException(Exception * E, int OpMode)
+{
+  if (((OpMode & OPM_FIND) == 0) || E->InheritsFrom(__classid(EFatal)))
+  {
+    ShowExtendedException(E);
+  }
+}
+//---------------------------------------------------------------------------
+struct TFarMessageData
+{
+  TFarMessageData()
+  {
+    Params = NULL;
+    ButtonCount = 0;
+  }
+
+  const TMessageParams * Params;
+  int Buttons[15 + 1];
+  int ButtonCount;
+};
+//---------------------------------------------------------------------------
+void __fastcall TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
+{
+  TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
+
+  assert(Result >= 0 && Result < Data.ButtonCount);
+
+  if ((Data.Params != NULL) && (Data.Params->Aliases != NULL))
+  {
+    for (unsigned int i = 0; i < Data.Params->AliasesCount; i++)
+    {
+      if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
+          (Data.Params->Aliases[i].OnClick != NULL))
+      {
+        Data.Params->Aliases[i].OnClick(NULL);
+        Close = false;
+        break;
+      }
+    }
+  }
+}
+//---------------------------------------------------------------------------
+int __fastcall TWinSCPPlugin::MoreMessageDialog(AnsiString Str,
+  TStrings * MoreMessages, TQueryType Type, int Answers,
+  const TMessageParams * Params)
+{
+  int Result;
+  TStrings * ButtonLabels = new TStringList();
+  try
+  {
+    unsigned int Flags = 0;
+
+    if (Params != NULL)
+    {
+      Flags = Params->Flags;
+    }
+
+    int TitleId;
+    switch (Type) {
+      case qtConfirmation: TitleId = MSG_TITLE_CONFIRMATION; break;
+      case qtInformation: TitleId = MSG_TITLE_INFORMATION; break;
+      case qtError: TitleId = MSG_TITLE_ERROR; Flags |= FMSG_WARNING; break;
+      case qtWarning: TitleId = MSG_TITLE_WARNING; Flags |= FMSG_WARNING; break;
+      default: assert(false);
+    }
+    TFarMessageData Data;
+    Data.Params = Params;
+
+    // make sure to do the check on full answers, not on reduced "timer answers"
+    if (((Answers & qaAbort) && (Answers & qaRetry)) ||
+        (TopDialog != NULL))
+    {
+      // use warning colors for abort/retry confirmation dialog
+      Flags |= FMSG_WARNING;
+    }
+
+    if (Params != NULL)
+    {
+      if (Params->Timer > 0)
+      {
+        if (Params->TimerAnswers > 0)
+        {
+          Answers = Params->TimerAnswers;
+        }
+        if (!Params->TimerMessage.IsEmpty())
+        {
+          Str = Params->TimerMessage;
+        }
+      }
+    }
+
+    int AAnswers = Answers;
+    bool NeverAskAgainCheck = (Params != NULL) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
+    bool NeverAskAgainPending = NeverAskAgainCheck;
+    int TimeoutButton = 0;
+
+    #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
+      if (AAnswers & qa ## TYPE) \
+      { \
+        ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
+        Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
+        Data.ButtonCount++; \
+        AAnswers -= qa ## TYPE; \
+        if ((Params != NULL) && (Params->Timeout != 0) && \
+            (Params->TimeoutAnswer == qa ## TYPE)) \
+        { \
+          TimeoutButton = ButtonLabels->Count - 1; \
+        } \
+        if (NeverAskAgainPending && CANNEVERASK) \
+        { \
+          ButtonLabels->Objects[ButtonLabels->Count - 1] = (TObject*)true; \
+          NeverAskAgainPending = false; \
+        } \
+      }
+    #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
+    ADD_BUTTON_EX(Yes, true);
+    ADD_BUTTON(No);
+    ADD_BUTTON_EX(OK, true);
+    ADD_BUTTON(Cancel);
+    ADD_BUTTON(Abort);
+    ADD_BUTTON(Retry);
+    ADD_BUTTON(Ignore);
+    ADD_BUTTON(Skip);
+    ADD_BUTTON(All);
+    ADD_BUTTON(NoToAll);
+    ADD_BUTTON_EX(YesToAll, true);
+    ADD_BUTTON(Help);
+    #undef ADD_BUTTON
+    #undef ADD_BUTTON_EX
+
+    USEDPARAM(AAnswers);
+    assert(!AAnswers);
+    USEDPARAM(NeverAskAgainPending);
+    assert(!NeverAskAgainPending);
+
+    if ((Params != NULL) && (Params->Aliases != NULL))
+    {
+      for (int bi = 0; bi < Data.ButtonCount; bi++)
+      {
+        for (unsigned int ai = 0; ai < Params->AliasesCount; ai++)
+        {
+          if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
+          {
+            ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
+            break;
+          }
+        }
+      }
+    }
+
+    #define MORE_BUTTON_ID -2
+    TFarMessageParams FarParams;
+
+    if (NeverAskAgainCheck)
+    {
+      FarParams.CheckBoxLabel =
+        (Answers == qaOK) ? GetMsg(MSG_CHECK_NEVER_SHOW_AGAIN) :
+          GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
+    }
+
+    if (Params != NULL)
+    {
+      if (Params->Timer > 0)
+      {
+        FarParams.Timer = Params->Timer;
+        FarParams.TimerEvent = Params->TimerEvent;
+      }
+
+      if (Params->Timeout > 0)
+      {
+        FarParams.Timeout = Params->Timeout;
+        FarParams.TimeoutButton = TimeoutButton;
+        FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
+      }
+    }
+
+    FarParams.Token = &Data;
+    FarParams.ClickEvent = MessageClick;
+
+    AnsiString DialogStr = Str;
+    if (MoreMessages && (MoreMessages->Count > 0))
+    {
+      FarParams.MoreMessages = MoreMessages;
+    }
+    else
+    {
+      FarParams.MoreMessages = NULL;
+    }
+
+    Result = Message(Flags, GetMsg(TitleId), DialogStr, ButtonLabels, &FarParams);
+    if (FarParams.TimerAnswer > 0)
+    {
+      Result = FarParams.TimerAnswer;
+    }
+    else if (Result < 0)
+    {
+      Result = CancelAnswer(Answers);
+    }
+    else
+    {
+      assert(Result >= 0 && Result < Data.ButtonCount);
+      Result = Data.Buttons[Result];
+    }
+
+    if (FarParams.CheckBox)
+    {
+      assert(NeverAskAgainCheck);
+      Result = qaNeverAskAgain;
+    }
+  }
+  __finally
+  {
+    delete ButtonLabels;
+  }
+  return Result;
+}
