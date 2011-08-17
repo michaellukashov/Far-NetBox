@@ -1,23 +1,22 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include "stdafx.h"
 
-#include <StrUtils.hpp>
+// #include <StrUtils.hpp>
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
 #include "FarDialog.h"
 #include "FarTexts.h"
 #include "FarConfiguration.h"
 #include "farkeys.hpp"
-#include <Common.h>
-#include <Exceptions.h>
-#include <SessionData.h>
-#include <CoreMain.h>
-#include <SysUtils.hpp>
-#include <ScpFileSystem.h>
-#include <Bookmarks.h>
-#include <GUITools.h>
-#include <CompThread.hpp>
+#include "Common.h"
+#include "Exceptions.h"
+#include "SessionData.h"
+// #include <CoreMain.h>
+// #include <SysUtils.hpp>
+#include "ScpFileSystem.h"
+// #include <Bookmarks.h>
+// #include <GUITools.h>
+// #include <CompThread.hpp>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
