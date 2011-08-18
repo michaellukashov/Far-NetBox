@@ -749,7 +749,7 @@ void TTerminal::Open()
                   LogEvent("Using SFTP protocol.");
                 }
               }
-              __finally
+              catch(...)
               {
                 delete FSecureShell;
                 FSecureShell = NULL;
@@ -761,7 +761,7 @@ void TTerminal::Open()
             FFileSystem->Open();
           }
         }
-        __finally
+        catch(...)
         {
           if (FSessionData->Tunnel)
           {
@@ -797,7 +797,7 @@ void TTerminal::Open()
         throw;
       }
     }
-    __finally
+    catch(...)
     {
       // Prevent calling Information with active=false unless there was at least
       // one call with active=true
@@ -892,7 +892,7 @@ void TTerminal::OpenTunnel()
     {
       FTunnel->Open();
     }
-    __finally
+    catch(...)
     {
       FTunnelOpening = false;
     }
@@ -980,7 +980,7 @@ void TTerminal::Reopen(int Params)
 
     Open();
   }
-  __finally
+  catch(...)
   {
     SessionData->RemoteDirectory = PrevRemoteDirectory;
     SessionData->FSProtocol = OrigFSProtocol;
@@ -1007,7 +1007,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 
     Result = Results->Strings[0];
   }
-  __finally
+  catch(...)
   {
     delete Prompts;
     delete Results;
@@ -1093,7 +1093,7 @@ int TTerminal::QueryUserException(const wstring Query,
       MoreMessages->Count ? MoreMessages : NULL,
       Answers, Params, QueryType);
   }
-  __finally
+  catch(...)
   {
     delete MoreMessages;
   }
@@ -1671,7 +1671,7 @@ void TTerminal::EndTransaction()
         if (FReadCurrentDirectoryPending) ReadCurrentDirectory();
         if (FReadDirectoryPending) ReadDirectory(!FReadCurrentDirectoryPending);
       }
-      __finally
+      catch(...)
       {
         FReadCurrentDirectoryPending = false;
         FReadDirectoryPending = false;
@@ -1773,7 +1773,7 @@ int TTerminal::CommandError(exception * E, const wstring Msg,
     {
       HandleExtendedException(ECmd);
     }
-    __finally
+    catch(...)
     {
       delete ECmd;
     }
@@ -2162,7 +2162,7 @@ void TTerminal::DoStartup()
     }
 
   }
-  __finally
+  catch(...)
   {
     EndTransaction();
   }
@@ -2224,7 +2224,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         LoadedFromCache = FDirectoryCache->GetFileList(CurrentDirectory, FFiles);
       }
-      __finally
+      catch(...)
       {
         DoReadDirectory(ReloadOnly);
       }
@@ -2255,7 +2255,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         Files->Directory = CurrentDirectory;
         CustomReadDirectory(Files);
       }
-      __finally
+      catch(...)
       {
         DoReadDirectoryProgress(-1, Cancel);
         FReadingCurrentDirectory = false;
@@ -2363,7 +2363,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(wstring Directory, bool UseC
       {
         ReadDirectory(FileList);
       }
-      __finally
+      catch(...)
       {
         ExceptionOnFail = false;
       }
@@ -2403,7 +2403,7 @@ void TTerminal::ProcessDirectory(const wstring DirName,
         }
       }
     }
-    __finally
+    catch(...)
     {
       ExceptionOnFail = false;
     }
@@ -2430,7 +2430,7 @@ void TTerminal::ProcessDirectory(const wstring DirName,
         }
       }
     }
-    __finally
+    catch(...)
     {
       delete FileList;
     }
@@ -2495,7 +2495,7 @@ bool TTerminal::FileExists(const wstring FileName, TRemoteFile ** AFile)
     {
       ReadFile(FileName, File);
     }
-    __finally
+    catch(...)
     {
       ExceptionOnFail = false;
     }
@@ -2577,7 +2577,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               }
               Success = true;
             }
-            __finally
+            catch(...)
             {
               Progress.Finish(FileName, Success, OnceDoneOperation);
             }
@@ -2591,7 +2591,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           Index++;
         }
       }
-      __finally
+      catch(...)
       {
         if (Side == osRemote)
         {
@@ -2604,7 +2604,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         Result = true;
       }
     }
-    __finally
+    catch(...)
     {
       FOperationProgress = NULL;
       Progress.Stop();
@@ -3162,7 +3162,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const wstring Target,
   {
     Result = ProcessFiles(FileList, foRemoteMove, MoveFile, &Params);
   }
-  __finally
+  catch(...)
   {
     if (Active)
     {
@@ -3839,7 +3839,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
 
     Size = Params.Size;
   }
-  __finally
+  catch(...)
   {
     FOperationProgress = NULL;
     OperationProgress.Stop();
@@ -3988,7 +3988,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
           );
         }
       }
-      __finally
+      catch(...)
       {
         FindClose(SearchRec);
       }
@@ -4064,7 +4064,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
               ChecklistItem = NULL;
             }
           }
-          __finally
+          catch(...)
           {
             delete ChecklistItem;
           }
@@ -4079,7 +4079,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
       }
     }
   }
-  __finally
+  catch(...)
   {
     if (Data.LocalFileList != NULL)
     {
@@ -4257,7 +4257,7 @@ void TTerminal::SynchronizeCollectFile(const wstring FileName,
         }
       }
     }
-    __finally
+    catch(...)
     {
       delete ChecklistItem;
     }
@@ -4436,7 +4436,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete DownloadList;
     delete DeleteRemoteList;
@@ -4552,7 +4552,7 @@ void TTerminal::DoFilesFind(wstring Directory, TFilesFindParams & Params)
     {
       ProcessDirectory(Directory, FileFind, &Params, false, true);
     }
-    __finally
+    catch(...)
     {
       FOnFindingFile = NULL;
     }
@@ -4692,7 +4692,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         FFileSystem->CopyToRemote(FilesToCopy, UnlockedTargetDir,
           CopyParam, Params, &OperationProgress, OnceDoneOperation);
       }
-      __finally
+      catch(...)
       {
         if (Active)
         {
@@ -4706,7 +4706,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         Result = true;
       }
     }
-    __finally
+    catch(...)
     {
       OperationProgress.Stop();
       FOperationProgress = NULL;
@@ -4762,7 +4762,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
             (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
           TotalSizeKnown = true;
         }
-        __finally
+        catch(...)
         {
           ExceptionOnFail = false;
         }
@@ -4786,7 +4786,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
             FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,
               &OperationProgress, OnceDoneOperation);
           }
-          __finally
+          catch(...)
           {
             if (Active)
             {
@@ -4805,13 +4805,13 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
           Result = true;
         }
       }
-      __finally
+      catch(...)
       {
         FOperationProgress = NULL;
         OperationProgress.Stop();
       }
     }
-    __finally
+    catch(...)
     {
       // If session is still active (no fatal error) we reload directory
       // by calling EndTransaction
@@ -4819,7 +4819,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
     }
 
   }
-  __finally
+  catch(...)
   {
     if (OwnsFileList) delete FilesToCopy;
   }

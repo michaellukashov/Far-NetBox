@@ -352,7 +352,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
         }
       }
     }
-    __finally
+    catch(...)
     {
       FTerminal->ExceptionOnFail = false;
     }
@@ -621,7 +621,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const wstring * Cmd)
       }
     }
   }
-  __finally
+  catch(...)
   {
     FProcessingCommand = false;
   }
@@ -645,7 +645,7 @@ void TSCPFileSystem::ExecCommand(const wstring & Cmd, int Params,
     if (Params & ecReadProgress) COParams |= coReadProgress;
     ReadCommandOutput(COParams, &CmdString);
   }
-  __finally
+  catch(...)
   {
     if (FTerminal->UseBusyCursor)
     {
@@ -808,7 +808,7 @@ void TSCPFileSystem::ClearAliases()
         ClearAlias(CommandList->Strings[Index]);
       }
     }
-    __finally
+    catch(...)
     {
       delete CommandList;
     }
@@ -941,7 +941,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             FileList->AddFile(File);
           }
         }
-        __finally
+        catch(...)
         {
           delete OutputCopy;
         }
@@ -1244,7 +1244,7 @@ void TSCPFileSystem::AnyCommand(const wstring Command,
     ExecCommand(fsAnyCommand, ARRAYOFCONST((Command)),
       ecDefault | ecIgnoreWarnings);
   }
-  __finally
+  catch(...)
   {
     FOnCaptureOutput = NULL;
     FSecureShell->OnCaptureOutput = NULL;
@@ -1518,7 +1518,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     Failed = false;
   }
-  __finally
+  catch(...)
   {
     // Tell remote side, that we're done.
     if (FTerminal->Active)
@@ -1813,7 +1813,7 @@ void TSCPFileSystem::SCPSource(const wstring FileName,
       }
     }
   }
-  __finally
+  catch(...)
   {
     if (File != NULL)
     {
@@ -1923,7 +1923,7 @@ void TSCPFileSystem::SCPDirectorySource(const wstring DirectoryName,
         );
       };
     }
-    __finally
+    catch(...)
     {
       FindClose(SearchRec);
     }
@@ -1944,7 +1944,7 @@ void TSCPFileSystem::SCPDirectorySource(const wstring DirectoryName,
       }
     }
   }
-  __finally
+  catch(...)
   {
     if (FTerminal->Active)
     {
@@ -2014,7 +2014,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
                 FTerminal->DeleteFile(FileName, File)
               );
             }
-            __finally
+            catch(...)
             {
               FTerminal->ExceptionOnFail = false;
             }
@@ -2050,7 +2050,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       }
     }
   }
-  __finally
+  catch(...)
   {
     // In case that copying doesn't cause fatal error (ie. connection is
     // still active) but wasn't succesful (exception or user termination)
@@ -2451,7 +2451,7 @@ void TSCPFileSystem::SCPSink(const wstring TargetDir,
                 SetFileTime(File, NULL, &FileData.AcTime, &FileData.WrTime);
               }
             }
-            __finally
+            catch(...)
             {
               if (File) CloseHandle(File);
               if (FileStream) delete FileStream;

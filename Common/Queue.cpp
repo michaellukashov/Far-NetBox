@@ -478,7 +478,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
         }
       }
     }
-    __finally
+    catch(...)
     {
       if (Current != NULL)
       {
@@ -1101,7 +1101,7 @@ bool TTerminalItem::WaitForUserAction(
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
   }
-  __finally
+  catch(...)
   {
     FUserAction = NULL;
     FItem->SetStatus(PrevStatus);
@@ -1225,7 +1225,7 @@ void TTerminalItem::OperationProgress(
 
       WaitForEvent();
     }
-    __finally
+    catch(...)
     {
       FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
@@ -1359,7 +1359,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
     }
     DoExecute(TerminalItem->FTerminal);
   }
-  __finally
+  catch(...)
   {
     {
       TGuard Guard(FSection);
@@ -1471,7 +1471,7 @@ bool TQueueItemProxy::ProcessUserAction(void * Arg)
   {
     Result = FQueue->ItemProcessUserAction(FQueueItem, Arg);
   }
-  __finally
+  catch(...)
   {
     FProcessingUserAction = false;
   }

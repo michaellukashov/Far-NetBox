@@ -69,7 +69,7 @@ void TFarConfiguration::Saved()
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(".>")+1, ELEM.Length() - ELEM.LastDelimiter(".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
   BLOCK("Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
@@ -140,7 +140,7 @@ void TFarConfiguration::Load()
   {
     TGUIConfiguration::Load();
   }
-  __finally
+  catch(...)
   {
     FForceInheritance = false;
   }
@@ -153,7 +153,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
   {
     TGUIConfiguration::Save(All, Explicit);
   }
-  __finally
+  catch(...)
   {
     FForceInheritance = false;
   }

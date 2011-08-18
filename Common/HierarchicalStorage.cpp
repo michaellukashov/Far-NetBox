@@ -149,7 +149,7 @@ void THierarchicalStorage::ClearSubKeys()
       RecursiveDeleteSubKey(SubKeys->Strings[Index]);
     }
   }
-  __finally
+  catch(...)
   {
     delete SubKeys;
   }
@@ -174,7 +174,7 @@ bool THierarchicalStorage::HasSubKeys()
     GetSubKeyNames(SubKeys);
     Result = (SubKeys->Count > 0);
   }
-  __finally
+  catch(...)
   {
     delete SubKeys;
   }
@@ -211,7 +211,7 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete Names;
   }
@@ -228,7 +228,7 @@ void THierarchicalStorage::ClearValues()
       DeleteValue(Names->Strings[Index]);
     }
   }
-  __finally
+  catch(...)
   {
     delete Names;
   }
@@ -385,7 +385,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       ++Index;
     }
   }
-  __finally
+  catch(...)
   {
     delete Names;
   }
@@ -656,7 +656,7 @@ TIniFileStorage::~TIniFileStorage()
         {
           Strings->SaveToStream(Stream);
         }
-        __finally
+        catch(...)
         {
           CloseHandle(Handle);
           delete Stream;
@@ -664,7 +664,7 @@ TIniFileStorage::~TIniFileStorage()
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete FOriginal;
     delete Strings;
@@ -705,7 +705,7 @@ bool TIniFileStorage::OpenSubKey(const wstring SubKey, bool CanCreate, bool Path
         }
       }
     }
-    __finally
+    catch(...)
     {
       delete Sections;
     }
@@ -760,7 +760,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete Sections;
   }
@@ -828,7 +828,7 @@ void TIniFileStorage::ApplyOverrides()
             FIniFile->WriteString(SubKey, Name, Value);
           }
         }
-        __finally
+        catch(...)
         {
           delete Names;
         }
@@ -837,7 +837,7 @@ void TIniFileStorage::ApplyOverrides()
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete Sections;
   }

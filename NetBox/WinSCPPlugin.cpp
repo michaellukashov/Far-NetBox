@@ -193,7 +193,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
     }
     while (Result >= 0);
   }
-  __finally
+  catch(...)
   {
     delete MenuItems;
   }
@@ -473,7 +473,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete MenuItems;
   }
@@ -723,7 +723,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
       Result = qaNeverAskAgain;
     }
   }
-  __finally
+  catch(...)
   {
     delete ButtonLabels;
   }

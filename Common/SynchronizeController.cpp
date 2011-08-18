@@ -167,7 +167,7 @@ void TSynchronizeController::SynchronizeChange(
             SubdirsChanged = false;
           }
         }
-        __finally
+        catch(...)
         {
           delete Checklist;
         }

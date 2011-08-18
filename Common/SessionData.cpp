@@ -905,7 +905,7 @@ void TSessionData::Remove()
       Storage->RecursiveDeleteSubKey(InternalStorageKey);
     }
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -2152,7 +2152,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete SubKeys;
     delete Loaded;
@@ -2164,7 +2164,7 @@ void TStoredSessionList::Load(wstring aKey, bool UseDefaults)
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   try {
     if (Storage->OpenRootKey(false)) Load(Storage, false, UseDefaults);
-  } __finally {
+  } catch(...) {
     delete Storage;
   }
 }
@@ -2175,7 +2175,7 @@ void TStoredSessionList::Load()
   try {
     if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
       Load(Storage);
-  } __finally {
+  } catch(...) {
     delete Storage;
   }
 }
@@ -2210,7 +2210,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
-  __finally
+  catch(...)
   {
     delete FactoryDefaults;
   }
@@ -2233,7 +2233,7 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
       DoSave(Storage, All, RecryptPasswordOnly);
     }
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -2271,7 +2271,7 @@ void TStoredSessionList::Export(const wstring FileName)
       Save(Storage, true);
     }
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -2321,7 +2321,7 @@ void TStoredSessionList::Cleanup()
       Storage->AccessMode = smReadWrite;
       if (Storage->OpenRootKey(false))
         Storage->RecursiveDeleteSubKey(Configuration->StoredSessionsSubKey);
-    } __finally {
+    } catch(...) {
       delete Storage;
     }
   } catch (exception &E) {
@@ -2418,7 +2418,7 @@ void TStoredSessionList::ImportHostKeys(const wstring TargetKey,
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete SourceStorage;
     delete TargetStorage;

@@ -663,7 +663,7 @@ void TSessionLog::Add(TLogLineType Type, const wstring & Line)
         {
           DoAdd(Type, Line, DoAddToSelf);
         }
-        __finally
+        catch(...)
         {
           DeleteUnnecessary();
 
@@ -867,7 +867,7 @@ void TSessionLog::DeleteUnnecessary()
       }
     }
   }
-  __finally
+  catch(...)
   {
     EndUpdate();
   }
@@ -904,7 +904,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       ADF("Configuration: %s", (Storage->Source));
     }
-    __finally
+    catch(...)
     {
       delete Storage;
     }
@@ -1037,7 +1037,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
     #undef ADF
   }
-  __finally
+  catch(...)
   {
     DeleteUnnecessary();
 

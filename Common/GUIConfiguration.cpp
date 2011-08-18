@@ -422,7 +422,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
             Rule->Load(Storage);
           }
         }
-        __finally
+        catch(...)
         {
           Storage->CloseSubKey();
         }
@@ -462,7 +462,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
           Rule->Save(Storage);
         }
       }
-      __finally
+      catch(...)
       {
         Storage->CloseSubKey();
       }
@@ -616,7 +616,7 @@ wstring TGUIConfiguration::PropertyToKey(const wstring Property)
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
     KEY(Bool,     ContinueOnError); \
@@ -667,7 +667,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
       FCopyParamList->Save(Storage);
     }
   }
-  __finally
+  catch(...)
   {
     Storage->CloseSubKey();
   }
@@ -677,7 +677,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   {
     FNewDirectoryProperties.Save(Storage);
   }
-  __finally
+  catch(...)
   {
     Storage->CloseSubKey();
   }
@@ -714,7 +714,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     FCopyParamList->Reset();
   }
-  __finally
+  catch(...)
   {
     Storage->CloseSubKey();
   }
@@ -738,7 +738,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   {
     FNewDirectoryProperties.Load(Storage);
   }
-  __finally
+  catch(...)
   {
     Storage->CloseSubKey();
   }
@@ -949,7 +949,7 @@ TStrings * TGUIConfiguration::GetLocales()
         Found = (FindNext(SearchRec) == 0);
       }
     }
-    __finally
+    catch(...)
     {
       FindClose(SearchRec);
     }
@@ -1028,7 +1028,7 @@ TStrings * TGUIConfiguration::GetLocales()
       }
     }
   }
-  __finally
+  catch(...)
   {
     delete Exts;
   }

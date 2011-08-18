@@ -1256,7 +1256,7 @@ void TRemoteFile::FindLinkedFile()
       {
         Terminal->ReadSymlink(this, FLinkedFile);
       }
-      __finally
+      catch(...)
       {
         Terminal->ExceptionOnFail = false;
       }
@@ -1568,7 +1568,7 @@ void TRemoteDirectoryCache::Clear()
       Objects[Index] = NULL;
     }
   }
-  __finally
+  catch(...)
   {
     TStringList::Clear();
   }
@@ -1806,7 +1806,7 @@ void TRemoteDirectoryChangesCache::Serialize(wstring & Data)
       }
       Data += Limited->Text;
     }
-    __finally
+    catch(...)
     {
       delete Limited;
     }

@@ -60,7 +60,7 @@ void TConfiguration::Default()
       AdminStorage->CloseSubKey();
     }
   }
-  __finally
+  catch(...)
   {
     delete AdminStorage;
   }
@@ -114,7 +114,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(".>")+1, ELEM.Length() - ELEM.LastDelimiter(".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
@@ -161,7 +161,7 @@ void TConfiguration::Save(bool All, bool Explicit)
       SaveData(AStorage, All);
     }
   }
-  __finally
+  catch(...)
   {
     delete AStorage;
   }
@@ -200,7 +200,7 @@ void TConfiguration::Export(const wstring FileName)
       SaveData(ExportStorage, true);
     }
   }
-  __finally
+  catch(...)
   {
     delete ExportStorage;
     delete Storage;
@@ -238,7 +238,7 @@ void TConfiguration::Load()
       LoadData(Storage);
     }
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -313,7 +313,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
       Source->CloseSubKey();
     }
   }
-  __finally
+  catch(...)
   {
     delete Names;
   }
@@ -333,7 +333,7 @@ void TConfiguration::LoadDirectoryChangesCache(const wstring SessionKey,
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -354,7 +354,7 @@ void TConfiguration::SaveDirectoryChangesCache(const wstring SessionKey,
       Storage->WriteBinaryData(SessionKey, Data);
     }
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -382,7 +382,7 @@ bool TConfiguration::ShowBanner(const wstring SessionKey,
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, "") != StrToHex(BannerHash(Banner)));
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -404,7 +404,7 @@ void TConfiguration::NeverShowBanner(const wstring SessionKey,
       Storage->WriteString(SessionKey, StrToHex(BannerHash(Banner)));
     }
   }
-  __finally
+  catch(...)
   {
     delete Storage;
   }
@@ -470,7 +470,7 @@ void TConfiguration::CleanupRegistry(wstring CleanupSubKey)
   {
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
   }
-  __finally
+  catch(...)
   {
     delete Registry;
   }
@@ -710,7 +710,7 @@ wstring TConfiguration::GetFileFileInfoString(const wstring Key,
       assert(!FileName.IsEmpty());
     }
   }
-  __finally
+  catch(...)
   {
     if (!FileName.IsEmpty())
     {
@@ -800,7 +800,7 @@ void TConfiguration::SetStorage(TStorage value)
       // when switching from ini to registry
       CopyData(SourceStorage, TargetStorage);
     }
-    __finally
+    catch(...)
     {
       delete SourceStorage;
       delete TargetStorage;
