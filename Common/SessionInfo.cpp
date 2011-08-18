@@ -576,7 +576,7 @@ wstring TSessionLog::GetSessionName()
   return FSessionData->SessionName;
 }
 //---------------------------------------------------------------------------
-wstring TSessionLog::GetLine(Integer Index)
+wstring TSessionLog::GetLine(int Index)
 {
   return Strings[Index - FTopIndex];
 }

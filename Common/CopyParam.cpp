@@ -445,7 +445,7 @@ bool TCopyParamType::UseAsciiTransfer(wstring FileName,
   }
 }
 //---------------------------------------------------------------------------
-TRights TCopyParamType::RemoteFileRights(Integer Attrs) const
+TRights TCopyParamType::RemoteFileRights(int Attrs) const
 {
   TRights R = Rights;
   if ((Attrs & faDirectory) && AddXToDirectories)
