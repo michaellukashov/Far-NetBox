@@ -267,7 +267,7 @@ protected:
   int ConfirmFileOverwrite(const wstring FileName,
     const TOverwriteFileParams * FileParams, int Answers, const TQueryParams * QueryParams,
     TOperationSide Side, int Params, TFileOperationProgressType * OperationProgress,
-    wstring Message = "");
+    wstring Message = L"");
   void DoSynchronizeCollectDirectory(const wstring LocalDirectory,
     const wstring RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
@@ -343,7 +343,7 @@ public:
   void RecryptPasswords();
   bool AllowedAnyCommand(const wstring Command);
   void AnyCommand(const wstring Command, TCaptureOutputEvent OutputEvent);
-  void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const wstring Message = "");
+  void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const wstring Message = L"");
   wstring AbsolutePath(wstring Path, bool Local);
   void BeginTransaction();
   void ReadCurrentDirectory();
@@ -414,7 +414,7 @@ public:
   wstring FileUrl(const wstring FileName);
   bool FileOperationLoopQuery(exception & E,
     TFileOperationProgressType * OperationProgress, const wstring Message,
-    bool AllowSkip, wstring SpecialRetry = "");
+    bool AllowSkip, wstring SpecialRetry = L"");
   TUsableCopyParamAttrs UsableCopyParamAttrs(int Params);
   bool QueryReopen(exception * E, int Params,
     TFileOperationProgressType * OperationProgress);
