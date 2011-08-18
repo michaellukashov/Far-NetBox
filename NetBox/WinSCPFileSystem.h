@@ -8,7 +8,7 @@
 #include <Terminal.h>
 // #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
-// #include <Queue.h>
+#include <Queue.h>
 #include <list>
 #include <map>
 //---------------------------------------------------------------------------
@@ -220,7 +220,8 @@ protected:
   bool IsLogging();
   void ShowLog();
 
-  __property TTerminal * Terminal = { read = FTerminal };
+  // __property  TTerminal * Terminal = { read = FTerminal };
+  TTerminal * GetTerminal() { return FTerminal; }
 
 private:
   TTerminal * FTerminal;
@@ -234,9 +235,9 @@ private:
   bool FQueueEventPending;
   TQueueEvent FQueueEvent;
   bool FReloadDirectory;
-  THandle FProgressSaveScreenHandle;
-  THandle FSynchronizationSaveScreenHandle;
-  THandle FAuthenticationSaveScreenHandle;
+  HANDLE FProgressSaveScreenHandle;
+  HANDLE FSynchronizationSaveScreenHandle;
+  HANDLE FAuthenticationSaveScreenHandle;
   TDateTime FSynchronizationStart;
   bool FSynchronizationCompare;
   TStrings * FFileList;
@@ -297,7 +298,7 @@ private:
     bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TList * PanelItems,
-    TOperationSide Side, bool SelectedOnly = false, wstring Directory = "",
+    TOperationSide Side, bool SelectedOnly = false, wstring Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = NULL);
   TStrings * CreateSelectedFileList(TOperationSide Side,
     TFarPanelInfo * PanelInfo = NULL);

@@ -21,81 +21,81 @@ enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
   fsAnyCommand, fsReadSymlink, fsChangeProperties, fsMoveFile };
 //---------------------------------------------------------------------------
-const dfNoRecursive = 0x01;
-const dfAlternative = 0x02;
-const dfForceDelete = 0x04;
+const int dfNoRecursive = 0x01;
+const int dfAlternative = 0x02;
+const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
 class TCustomFileSystem
 {
 public:
-  virtual __fastcall ~TCustomFileSystem();
+  virtual ~TCustomFileSystem();
 
-  virtual void __fastcall Open() = 0;
-  virtual void __fastcall Close() = 0;
-  virtual bool __fastcall GetActive() = 0;
-  virtual void __fastcall Idle() = 0;
-  virtual AnsiString __fastcall AbsolutePath(AnsiString Path, bool Local) = 0;
-  virtual void __fastcall AnyCommand(const AnsiString Command,
+  virtual void Open() = 0;
+  virtual void Close() = 0;
+  virtual bool GetActive() = 0;
+  virtual void Idle() = 0;
+  virtual wstring AbsolutePath(wstring Path, bool Local) = 0;
+  virtual void AnyCommand(const wstring Command,
     TCaptureOutputEvent OutputEvent) = 0;
-  virtual void __fastcall ChangeDirectory(const AnsiString Directory) = 0;
-  virtual void __fastcall CachedChangeDirectory(const AnsiString Directory) = 0;
-  virtual void __fastcall AnnounceFileListOperation() = 0;
-  virtual void __fastcall ChangeFileProperties(const AnsiString FileName,
+  virtual void ChangeDirectory(const wstring Directory) = 0;
+  virtual void CachedChangeDirectory(const wstring Directory) = 0;
+  virtual void AnnounceFileListOperation() = 0;
+  virtual void ChangeFileProperties(const wstring FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
-  virtual bool __fastcall LoadFilesProperties(TStrings * FileList) = 0;
-  virtual void __fastcall CalculateFilesChecksum(const AnsiString & Alg,
+  virtual bool LoadFilesProperties(TStrings * FileList) = 0;
+  virtual void CalculateFilesChecksum(const wstring & Alg,
     TStrings * FileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
-  virtual void __fastcall CopyToLocal(TStrings * FilesToCopy,
-    const AnsiString TargetDir, const TCopyParamType * CopyParam,
+  virtual void CopyToLocal(TStrings * FilesToCopy,
+    const wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void __fastcall CopyToRemote(TStrings * FilesToCopy,
-    const AnsiString TargetDir, const TCopyParamType * CopyParam,
+  virtual void CopyToRemote(TStrings * FilesToCopy,
+    const wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void __fastcall CreateDirectory(const AnsiString DirName) = 0;
-  virtual void __fastcall CreateLink(const AnsiString FileName, const AnsiString PointTo, bool Symbolic) = 0;
-  virtual void __fastcall DeleteFile(const AnsiString FileName,
+  virtual void CreateDirectory(const wstring DirName) = 0;
+  virtual void CreateLink(const wstring FileName, const wstring PointTo, bool Symbolic) = 0;
+  virtual void DeleteFile(const wstring FileName,
     const TRemoteFile * File, int Params,
     TRmSessionAction & Action) = 0;
-  virtual void __fastcall CustomCommandOnFile(const AnsiString FileName,
-    const TRemoteFile * File, AnsiString Command, int Params, TCaptureOutputEvent OutputEvent) = 0;
-  virtual void __fastcall DoStartup() = 0;
-  virtual void __fastcall HomeDirectory() = 0;
-  virtual bool __fastcall IsCapable(int Capability) const = 0;
-  virtual void __fastcall LookupUsersGroups() = 0;
-  virtual void __fastcall ReadCurrentDirectory() = 0;
-  virtual void __fastcall ReadDirectory(TRemoteFileList * FileList) = 0;
-  virtual void __fastcall ReadFile(const AnsiString FileName,
+  virtual void CustomCommandOnFile(const wstring FileName,
+    const TRemoteFile * File, wstring Command, int Params, TCaptureOutputEvent OutputEvent) = 0;
+  virtual void DoStartup() = 0;
+  virtual void HomeDirectory() = 0;
+  virtual bool IsCapable(int Capability) const = 0;
+  virtual void LookupUsersGroups() = 0;
+  virtual void ReadCurrentDirectory() = 0;
+  virtual void ReadDirectory(TRemoteFileList * FileList) = 0;
+  virtual void ReadFile(const wstring FileName,
     TRemoteFile *& File) = 0;
-  virtual void __fastcall ReadSymlink(TRemoteFile * SymLinkFile,
+  virtual void ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File) = 0;
-  virtual void __fastcall RenameFile(const AnsiString FileName,
-    const AnsiString NewName) = 0;
-  virtual void __fastcall CopyFile(const AnsiString FileName,
-    const AnsiString NewName) = 0;
-  virtual AnsiString __fastcall FileUrl(const AnsiString FileName) = 0;
-  virtual TStrings * __fastcall GetFixedPaths() = 0;
-  virtual void __fastcall SpaceAvailable(const AnsiString Path,
+  virtual void RenameFile(const wstring FileName,
+    const wstring NewName) = 0;
+  virtual void CopyFile(const wstring FileName,
+    const wstring NewName) = 0;
+  virtual wstring FileUrl(const wstring FileName) = 0;
+  virtual TStrings * GetFixedPaths() = 0;
+  virtual void SpaceAvailable(const wstring Path,
     TSpaceAvailable & ASpaceAvailable) = 0;
-  virtual const TSessionInfo & __fastcall GetSessionInfo() = 0;
-  virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve) = 0;
-  virtual bool __fastcall TemporaryTransferFile(const AnsiString & FileName) = 0;
-  virtual bool __fastcall GetStoredCredentialsTried() = 0;
-  virtual AnsiString __fastcall GetUserName() = 0;
+  virtual const TSessionInfo & GetSessionInfo() = 0;
+  virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
+  virtual bool TemporaryTransferFile(const wstring & FileName) = 0;
+  virtual bool GetStoredCredentialsTried() = 0;
+  virtual wstring GetUserName() = 0;
 
-  __property AnsiString CurrentDirectory = { read = GetCurrentDirectory };
+  // __property wstring CurrentDirectory = { read = GetCurrentDirectory };
+  virtual wstring GetCurrentDirectory() = 0;
 
 protected:
   TTerminal * FTerminal;
 
-  __fastcall TCustomFileSystem(TTerminal * ATerminal);
-  virtual AnsiString __fastcall GetCurrentDirectory() = 0;
+  TCustomFileSystem(TTerminal * ATerminal);
 
-  static void __fastcall FindCustomCommandPattern(
-    const AnsiString & Command, int Index, int & Len, char & PatternCmd);
+  static void FindCustomCommandPattern(
+    const wstring & Command, int Index, int & Len, char & PatternCmd);
 };
 //---------------------------------------------------------------------------
 #endif

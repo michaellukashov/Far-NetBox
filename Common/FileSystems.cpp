@@ -8,12 +8,12 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-__fastcall TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
+TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
   FTerminal(ATerminal)
 {
   assert(FTerminal);
 }
 //---------------------------------------------------------------------------
-__fastcall TCustomFileSystem::~TCustomFileSystem()
+TCustomFileSystem::~TCustomFileSystem()
 {
 }
