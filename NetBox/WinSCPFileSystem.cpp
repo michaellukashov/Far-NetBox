@@ -101,14 +101,14 @@ void TRemoteFilePanelItem::GetData(
   unsigned long & /*NumberOfLinks*/, wstring & /*Description*/,
   wstring & Owner, void *& UserData, int & CustomColumnNumber)
 {
-  FileName = FRemoteFile->FileName;
-  Size = FRemoteFile->Size;
+  FileName = FRemoteFile->GetFileName();
+  Size = FRemoteFile->GetSize();
   FileAttributes =
-    FLAGMASK(FRemoteFile->IsDirectory, FILE_ATTRIBUTE_DIRECTORY) |
-    FLAGMASK(FRemoteFile->IsHidden, FILE_ATTRIBUTE_HIDDEN) |
-    FLAGMASK(FRemoteFile->Rights->ReadOnly, FILE_ATTRIBUTE_READONLY) |
-    FLAGMASK(FRemoteFile->IsSymLink, FILE_ATTRIBUTE_REPARSE_POINT);
-  LastWriteTime = FRemoteFile->Modification;
+    FLAGMASK(FRemoteFile->GetIsDirectory(), FILE_ATTRIBUTE_DIRECTORY) |
+    FLAGMASK(FRemoteFile->GetIsHidden(), FILE_ATTRIBUTE_HIDDEN) |
+    FLAGMASK(FRemoteFile->GetRights()->GetReadOnly(), FILE_ATTRIBUTE_READONLY) |
+    FLAGMASK(FRemoteFile->GetIsSymLink(), FILE_ATTRIBUTE_REPARSE_POINT);
+  LastWriteTime = FRemoteFile->GetModification();
   LastAccess = FRemoteFile->LastAccess;
   Owner = FRemoteFile->Owner;
   UserData = FRemoteFile;
@@ -119,8 +119,8 @@ wstring TRemoteFilePanelItem::CustomColumnData(int Column)
 {
   switch (Column) {
     case 0: return FRemoteFile->Group;
-    case 1: return FRemoteFile->RightsStr;
-    case 2: return FRemoteFile->Rights->Octal;
+    case 1: return FRemoteFile->GetRightsStr();
+    case 2: return FRemoteFile->GetRights()->Octal;
     case 3: return FRemoteFile->LinkTo;
     default: assert(false); return wstring();
   }
@@ -1020,15 +1020,15 @@ void TWinSCPFileSystem::CreateLink()
   {
     File = (TRemoteFile *)PanelInfo->FocusedItem->UserData;
 
-    Edit = File->IsSymLink && Terminal->SessionData->ResolveSymlinks;
+    Edit = File->GetIsSymLink() && Terminal->SessionData->ResolveSymlinks;
     if (Edit)
     {
-      FileName = File->FileName;
+      FileName = File->GetFileName();
       PointTo = File->LinkTo;
     }
     else
     {
-      PointTo = File->FileName;
+      PointTo = File->GetFileName();
     }
   }
 
@@ -1037,7 +1037,7 @@ void TWinSCPFileSystem::CreateLink()
   {
     if (Edit)
     {
-      assert(File->FileName == FileName);
+      assert(File->GetFileName() == FileName);
       int Params = dfNoRecursive;
       Terminal->ExceptionOnFail = true;
       try
@@ -1767,7 +1767,7 @@ void TWinSCPFileSystem::RenameFile()
     RequireCapability(fcRename);
 
     TRemoteFile * File = static_cast<TRemoteFile *>(PanelItem->UserData);
-    wstring NewName = File->FileName;
+    wstring NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {
       try
@@ -1881,7 +1881,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
       Name = UnixIncludeTrailingBackslash(FSessionsFolder);
       if (!Focused->IsParentDirectory)
       {
-        Name = UnixIncludeTrailingBackslash(Name + Focused->FileName);
+        Name = UnixIncludeTrailingBackslash(Name + Focused->GetFileName());
       }
     }
     InsertTokenOnCommandLine(Name, true);
@@ -1905,7 +1905,7 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
         }
         else
         {
-          InsertTokenOnCommandLine(File->FileName, true);
+          InsertTokenOnCommandLine(File->GetFileName(), true);
         }
       }
     }
@@ -2372,14 +2372,14 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
       }
       else
       {
-        assert(PanelItem->FileName == GetMsg(NEW_SESSION_HINT));
+        assert(PanelItem->GetFileName() == GetMsg(NEW_SESSION_HINT));
       }
     }
     else
     {
       assert(PanelItem->UserData == NULL);
       wstring Folder = UnixIncludeTrailingBackslash(
-        UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->FileName);
+        UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
       int Index = 0;
       while (Index < StoredSessions->Count)
       {
@@ -2418,7 +2418,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
       else
       {
         Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM),
-          (((TFarPanelItem *)PanelItems->Items[0])->FileName));
+          (((TFarPanelItem *)PanelItems->Items[0])->GetFileName()));
       }
 
       if ((OpMode & OPM_SILENT) || !FarConfiguration->ConfirmDeleting ||
@@ -2558,7 +2558,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
     if (PanelItems->Count == 1)
     {
       Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT),
-        (((TFarPanelItem *)PanelItems->Items[0])->FileName));
+        (((TFarPanelItem *)PanelItems->Items[0])->GetFileName()));
     }
     else
     {
@@ -2773,7 +2773,7 @@ bool TWinSCPFileSystem::ImportSessions(TList * PanelItems, bool /*Move*/,
     {
       PanelItem = (TFarPanelItem *)PanelItems->Items[i];
       bool AnyData = false;
-      FileName = PanelItem->FileName;
+      FileName = PanelItem->GetFileName();
       if (PanelItem->IsFile)
       {
         THierarchicalStorage * Storage = NULL;
@@ -2821,7 +2821,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
   {
     Result = new TStringList();
     assert((Side == osLocal) || PanelItem->UserData);
-    wstring FileName = PanelItem->FileName;
+    wstring FileName = PanelItem->GetFileName();
     if (Side == osLocal)
     {
       FileName = IncludeTrailingBackslash(PanelInfo->CurrentDirectory) + FileName;
@@ -2869,7 +2869,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TList * PanelItems,
       if ((!SelectedOnly || PanelItem->Selected) &&
           !PanelItem->IsParentDirectory)
       {
-        FileName = PanelItem->FileName;
+        FileName = PanelItem->GetFileName();
         if (Side == osRemote)
         {
           Data = (TRemoteFile *)PanelItem->UserData;
@@ -3281,7 +3281,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       TList * PanelItems = PanelInfo->Items;
       for (int Index = 0; Index < PanelItems->Count; Index++)
       {
-        if (((TFarPanelItem *)PanelItems->Items[Index])->FileName == FileName)
+        if (((TFarPanelItem *)PanelItems->Items[Index])->GetFileName() == FileName)
         {
           PanelItem = (TFarPanelItem *)PanelItems->Items[Index];
           break;
@@ -3297,7 +3297,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       PanelItem = (TFarPanelItem *)FPanelItems->Items[Index];
     }
 
-    assert(PanelItem->FileName ==
+    assert(PanelItem->GetFileName() ==
       ((Side == osLocal) ? ExtractFileName(FileName) : FileName));
     if (Success)
     {
@@ -3678,14 +3678,14 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
 
         if (NativeEdit)
         {
-          assert(FLastEditFile == Info->FileName);
+          assert(FLastEditFile == Info->GetFileName());
           // always upload under the most recent name
           UploadFromEditor(NoReload, FLastEditFile, FTerminal->CurrentDirectory);
         }
 
         if (MultipleEdit)
         {
-          UploadFromEditor(NoReload, Info->FileName, I->second.Directory);
+          UploadFromEditor(NoReload, Info->GetFileName(), I->second.Directory);
           // note that panel gets not refreshed upon switch to
           // panel view. but that's intentional
         }
@@ -3749,7 +3749,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
         try
         {
           if (!FLastEditFile.IsEmpty() &&
-              AnsiSameText(FLastEditFile, Info->FileName))
+              AnsiSameText(FLastEditFile, Info->GetFileName()))
           {
             FLastEditorID = Info->EditorID;
             FEditorPendingSave = false;
@@ -3757,16 +3757,16 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
 
           if (!FLastMultipleEditFile.IsEmpty())
           {
-            bool IsLastMultipleEditFile = AnsiSameText(FLastMultipleEditFile, Info->FileName);
+            bool IsLastMultipleEditFile = AnsiSameText(FLastMultipleEditFile, Info->GetFileName());
             assert(IsLastMultipleEditFile);
             if (IsLastMultipleEditFile)
             {
               FLastMultipleEditFile = "";
 
               TMultipleEdit MultipleEdit;
-              MultipleEdit.FileName = ExtractFileName(Info->FileName);
+              MultipleEdit.FileName = ExtractFileName(Info->GetFileName());
               MultipleEdit.Directory = FLastMultipleEditDirectory;
-              MultipleEdit.LocalFileName = Info->FileName;
+              MultipleEdit.LocalFileName = Info->GetFileName();
               MultipleEdit.PendingSave = false;
               FMultipleEdits[Info->EditorID] = MultipleEdit;
               if (FLastMultipleEditReadOnly)
@@ -3810,17 +3810,17 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
         {
           if (I->second.PendingSave)
           {
-            UploadFromEditor(true, Info->FileName, I->second.Directory);
+            UploadFromEditor(true, Info->GetFileName(), I->second.Directory);
             // reload panel content (if uploaded to current directory.
             // no need for RefreshPanel as panel is not visible yet.
             UpdatePanel();
           }
 
-          if (DeleteFile(Info->FileName))
+          if (DeleteFile(Info->GetFileName()))
           {
             // remove directory only if it is empty
             // (to avoid deleting another directory if user uses "save as")
-            RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->FileName)));
+            RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
           }
 
           FMultipleEdits.erase(I);
@@ -3843,7 +3843,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
         {
           // if the file is saved under different name ("save as"), we upload
           // the file back under that name
-          FLastEditFile = Info->FileName;
+          FLastEditFile = Info->GetFileName();
 
           if (FarConfiguration->EditorUploadOnSave)
           {
@@ -3854,11 +3854,11 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
         TMultipleEdits::iterator I = FMultipleEdits.find(Info->EditorID);
         if (I != FMultipleEdits.end())
         {
-          if (I->second.LocalFileName != Info->FileName)
+          if (I->second.LocalFileName != Info->GetFileName())
           {
             // update file name (after "save as")
-            I->second.LocalFileName = Info->FileName;
-            I->second.FileName = ExtractFileName(Info->FileName);
+            I->second.LocalFileName = Info->GetFileName();
+            I->second.FileName = ExtractFileName(Info->GetFileName());
             // update editor title
             wstring FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
               I->second.FileName;
