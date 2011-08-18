@@ -3,15 +3,20 @@
 #define FileMasksH
 //---------------------------------------------------------------------------
 #include <vector>
-#include <Masks.hpp>
+// #include <Masks.hpp>
 //---------------------------------------------------------------------------
-class EFileMasksException : public Exception
+class EFileMasksException : public exception
 {
 public:
-  __fastcall EFileMasksException(AnsiString Message, int ErrorStart, int ErrorLen);
+  EFileMasksException(wstring Message, int ErrorStart, int ErrorLen);
   int ErrorStart;
   int ErrorLen;
 };
+//---------------------------------------------------------------------------
+class TMask
+{
+};
+
 //---------------------------------------------------------------------------
 class TFileMasks
 {
@@ -21,33 +26,35 @@ public:
     TParams();
     __int64 Size;
 
-    AnsiString ToString() const;
+    wstring ToString() const;
   };
 
-  static bool __fastcall IsMask(const AnsiString Mask);
-  static AnsiString __fastcall NormalizeMask(const AnsiString & Mask, const AnsiString & AnyMask = "");
+  static bool IsMask(const wstring Mask);
+  static wstring NormalizeMask(const wstring & Mask, const wstring & AnyMask = L"");
 
-  __fastcall TFileMasks();
-  __fastcall TFileMasks(const TFileMasks & Source);
-  __fastcall TFileMasks(const AnsiString & AMasks);
-  __fastcall ~TFileMasks();
-  TFileMasks & __fastcall operator =(const TFileMasks & rhm);
-  TFileMasks & __fastcall operator =(const AnsiString & rhs);
-  bool __fastcall operator ==(const TFileMasks & rhm) const;
-  bool __fastcall operator ==(const AnsiString & rhs) const;
+  TFileMasks();
+  TFileMasks(const TFileMasks & Source);
+  TFileMasks(const wstring & AMasks);
+  ~TFileMasks();
+  TFileMasks & operator =(const TFileMasks & rhm);
+  TFileMasks & operator =(const wstring & rhs);
+  bool operator ==(const TFileMasks & rhm) const;
+  bool operator ==(const wstring & rhs) const;
 
-  void __fastcall SetMask(const AnsiString & Mask);
-  void __fastcall Negate();
+  void SetMask(const wstring & Mask);
+  void Negate();
 
-  bool __fastcall Matches(const AnsiString FileName, bool Directory = false,
-    const AnsiString Path = "", const TParams * Params = NULL) const;
-  bool __fastcall Matches(const AnsiString FileName, bool Local, bool Directory,
+  bool Matches(const wstring FileName, bool Directory = false,
+    const wstring Path = L"", const TParams * Params = NULL) const;
+  bool Matches(const wstring FileName, bool Local, bool Directory,
     const TParams * Params = NULL) const;
 
-  __property AnsiString Masks = { read = FStr, write = SetMasks };
-
+  // __property wstring Masks = { read = FStr, write = SetMasks };
+  wstring GetMasks() { return FStr; }
+  void SetMasks(const wstring value);
+  
 private:
-  AnsiString FStr;
+  wstring FStr;
 
   struct TMaskMask
   {
@@ -65,34 +72,33 @@ private:
     __int64 HighSize;
     TSizeMask LowSizeMask;
     __int64 LowSize;
-    AnsiString Str;
+    wstring Str;
   };
 
   typedef std::vector<TMask> TMasks;
   TMasks FIncludeMasks;
   TMasks FExcludeMasks;
 
-  void __fastcall SetStr(const AnsiString value, bool SingleMask);
-  void __fastcall SetMasks(const AnsiString value);
-  void __fastcall CreateMaskMask(const AnsiString & Mask, int Start, int End, bool Ex,
+  void SetStr(const wstring value, bool SingleMask);
+  void CreateMaskMask(const wstring & Mask, int Start, int End, bool Ex,
     TMaskMask & MaskMask);
-  static inline void __fastcall ReleaseMaskMask(TMaskMask & MaskMask);
-  inline void __fastcall Clear();
-  static void __fastcall Clear(TMasks & Masks);
-  static void __fastcall TrimEx(AnsiString & Str, int & Start, int & End);
-  static bool __fastcall MatchesMasks(const AnsiString FileName, bool Directory,
-    const AnsiString Path, const TParams * Params, const TMasks & Masks);
-  static inline bool __fastcall MatchesMaskMask(const TMaskMask & MaskMask, const AnsiString & Str);
-  static inline bool __fastcall IsAnyMask(const AnsiString & Mask);
-  void __fastcall ThrowError(int Start, int End);
+  static inline void ReleaseMaskMask(TMaskMask & MaskMask);
+  inline void Clear();
+  static void Clear(TMasks & Masks);
+  static void TrimEx(wstring & Str, int & Start, int & End);
+  static bool MatchesMasks(const wstring FileName, bool Directory,
+    const wstring Path, const TParams * Params, const TMasks & Masks);
+  static inline bool MatchesMaskMask(const TMaskMask & MaskMask, const wstring & Str);
+  static inline bool IsAnyMask(const wstring & Mask);
+  void ThrowError(int Start, int End);
 };
 //---------------------------------------------------------------------------
-AnsiString __fastcall MaskFileName(AnsiString FileName, const AnsiString Mask);
-bool __fastcall IsFileNameMask(const AnsiString Mask);
-AnsiString __fastcall DelimitFileNameMask(AnsiString Mask);
+wstring MaskFileName(wstring FileName, const wstring Mask);
+bool IsFileNameMask(const wstring Mask);
+wstring DelimitFileNameMask(wstring Mask);
 //---------------------------------------------------------------------------
-typedef void __fastcall (__closure * TCustomCommandPatternEvent)
-  (int Index, const AnsiString Pattern, void * Arg, AnsiString & Replacement,
+typedef void (TObject::*TCustomCommandPatternEvent)
+  (int Index, const wstring Pattern, void * Arg, wstring & Replacement,
    bool & LastPass);
 //---------------------------------------------------------------------------
 class TCustomCommand
@@ -102,24 +108,24 @@ friend class TInteractiveCustomCommand;
 public:
   TCustomCommand();
 
-  AnsiString __fastcall Complete(const AnsiString & Command, bool LastPass);
-  virtual void __fastcall Validate(const AnsiString & Command);
+  wstring Complete(const wstring & Command, bool LastPass);
+  virtual void Validate(const wstring & Command);
 
 protected:
   static const char NoQuote;
-  static const AnsiString Quotes;
-  void __fastcall GetToken(const AnsiString & Command,
+  static const wstring Quotes;
+  void GetToken(const wstring & Command,
     int Index, int & Len, char & PatternCmd);
-  void __fastcall CustomValidate(const AnsiString & Command, void * Arg);
-  bool __fastcall FindPattern(const AnsiString & Command, char PatternCmd);
+  void CustomValidate(const wstring & Command, void * Arg);
+  bool FindPattern(const wstring & Command, char PatternCmd);
 
-  virtual void __fastcall ValidatePattern(const AnsiString & Command,
+  virtual void ValidatePattern(const wstring & Command,
     int Index, int Len, char PatternCmd, void * Arg);
 
-  virtual int __fastcall PatternLen(int Index, char PatternCmd) = 0;
-  virtual bool __fastcall PatternReplacement(int Index, const AnsiString & Pattern,
-    AnsiString & Replacement, bool & Delimit) = 0;
-  virtual void __fastcall DelimitReplacement(AnsiString & Replacement, char Quote);
+  virtual int PatternLen(int Index, char PatternCmd) = 0;
+  virtual bool PatternReplacement(int Index, const wstring & Pattern,
+    wstring & Replacement, bool & Delimit) = 0;
+  virtual void DelimitReplacement(wstring & Replacement, char Quote);
 };
 //---------------------------------------------------------------------------
 class TInteractiveCustomCommand : public TCustomCommand
@@ -128,11 +134,11 @@ public:
   TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void __fastcall Prompt(int Index, const AnsiString & Prompt,
-    AnsiString & Value);
-  virtual int __fastcall PatternLen(int Index, char PatternCmd);
-  virtual bool __fastcall PatternReplacement(int Index, const AnsiString & Pattern,
-    AnsiString & Replacement, bool & Delimit);
+  virtual void Prompt(int Index, const wstring & Prompt,
+    wstring & Value);
+  virtual int PatternLen(int Index, char PatternCmd);
+  virtual bool PatternReplacement(int Index, const wstring & Pattern,
+    wstring & Replacement, bool & Delimit);
 
 private:
   TCustomCommand * FChildCustomCommand;
@@ -141,39 +147,39 @@ private:
 class TTerminal;
 struct TCustomCommandData
 {
-  __fastcall TCustomCommandData();
-  __fastcall TCustomCommandData(TTerminal * Terminal);
+  TCustomCommandData();
+  TCustomCommandData(TTerminal * Terminal);
 
-  AnsiString HostName;
-  AnsiString UserName;
-  AnsiString Password;
+  wstring HostName;
+  wstring UserName;
+  wstring Password;
 };
 //---------------------------------------------------------------------------
 class TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand();
-  TFileCustomCommand(const TCustomCommandData & Data, const AnsiString & Path);
-  TFileCustomCommand(const TCustomCommandData & Data, const AnsiString & Path,
-    const AnsiString & FileName, const AnsiString & FileList);
+  TFileCustomCommand(const TCustomCommandData & Data, const wstring & Path);
+  TFileCustomCommand(const TCustomCommandData & Data, const wstring & Path,
+    const wstring & FileName, const wstring & FileList);
 
-  virtual void __fastcall Validate(const AnsiString & Command);
-  virtual void __fastcall ValidatePattern(const AnsiString & Command,
+  virtual void Validate(const wstring & Command);
+  virtual void ValidatePattern(const wstring & Command,
     int Index, int Len, char PatternCmd, void * Arg);
 
-  bool __fastcall IsFileListCommand(const AnsiString & Command);
-  virtual bool __fastcall IsFileCommand(const AnsiString & Command);
+  bool IsFileListCommand(const wstring & Command);
+  virtual bool IsFileCommand(const wstring & Command);
 
 protected:
-  virtual int __fastcall PatternLen(int Index, char PatternCmd);
-  virtual bool __fastcall PatternReplacement(int Index, const AnsiString & Pattern,
-    AnsiString & Replacement, bool & Delimit);
+  virtual int PatternLen(int Index, char PatternCmd);
+  virtual bool PatternReplacement(int Index, const wstring & Pattern,
+    wstring & Replacement, bool & Delimit);
 
 private:
   TCustomCommandData FData;
-  AnsiString FPath;
-  AnsiString FFileName;
-  AnsiString FFileList;
+  wstring FPath;
+  wstring FFileName;
+  wstring FFileList;
 };
 //---------------------------------------------------------------------------
 typedef TFileCustomCommand TRemoteCustomCommand;
