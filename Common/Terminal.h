@@ -2,7 +2,7 @@
 #ifndef TerminalH
 #define TerminalH
 
-#include <Classes.hpp>
+#include "Classes.h"
 
 #include "SessionInfo.h"
 #include "Interface.h"
