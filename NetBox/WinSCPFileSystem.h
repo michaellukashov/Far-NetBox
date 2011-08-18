@@ -52,7 +52,7 @@ const int soAllowSelectedOnly = 0x01;
 // for FullSynchronize dialog
 const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
-enum TSessionAction { saAdd, saEdit, saConnect };
+enum TSessionActionEnum { saAdd, saEdit, saConnect };
 //---------------------------------------------------------------------------
 typedef void (TObject::*TGetSynchronizeOptionsEvent)
   (int Params, TSynchronizeOptions & Options);
@@ -106,7 +106,7 @@ protected:
 
   void ProcessEditorEvent(int Event, void * Param);
 
-  virtual void HandleException(Exception * E, int OpMode = 0);
+  virtual void HandleException(exception * E, int OpMode = 0);
   void KeepaliveThreadCallback();
 
   inline bool SessionList();
@@ -147,7 +147,7 @@ protected:
   bool ExecuteCommand(const wstring Command);
   void TerminalCaptureLog(const wstring & AddedLine, bool StdError);
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
-    wstring & TargetDirectory, TGUICopyParamType * Params, int Options,
+    wstring & TargetDirectory, TCopyParamType * Params, int Options,
     int CopyParamAttrs);
   bool LinkDialog(wstring & FileName, wstring & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
@@ -249,7 +249,7 @@ private:
   bool FLastMultipleEditReadOnly;
   int FLastEditorID;
   bool FEditorPendingSave;
-  TGUICopyParamType FLastEditCopyParam;
+  TCopyParamType FLastEditCopyParam;
   bool FNoProgress;
   bool FNoProgressFinish;
   TKeepaliveThread * FKeepaliveThread;
@@ -288,7 +288,7 @@ private:
     wstring SessionName, const wstring & Banner, bool & NeverShowAgain,
     int Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    Exception * E, void * Arg);
+    exception * E, void * Arg);
   void TerminalDeleteLocalFile(const wstring FileName, bool Alternative);
   void OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);

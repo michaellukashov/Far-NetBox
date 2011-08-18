@@ -349,7 +349,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
   SAFE_DESTROY(FTerminal);
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::HandleException(Exception * E, int OpMode)
+void TWinSCPFileSystem::HandleException(exception * E, int OpMode)
 {
   if ((Terminal != NULL) && E->InheritsFrom(__classid(EFatal)))
   {
@@ -577,7 +577,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != NULL) && (EData != Data))
     {
-      throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
+      throw exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
     }
     else
     {
@@ -654,7 +654,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
             {
               if (StoredSessions->FindByName(Name))
               {
-                throw Exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
+                throw exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
               }
               else
               {
@@ -759,7 +759,7 @@ void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, wstring Message
 {
   if (Panel->IsPlugin || (Panel->Type != ptFile))
   {
-    throw Exception(Message);
+    throw exception(Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -767,7 +767,7 @@ void TWinSCPFileSystem::RequireCapability(int Capability)
 {
   if (!FTerminal->IsCapable[static_cast<TFSCapability>(Capability)])
   {
-    throw Exception(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED),
+    throw exception(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED),
       (FTerminal->GetFileSystemInfo().ProtocolName)));
   }
 }
@@ -1067,7 +1067,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
   TempDir = FPlugin->TemporaryDir();
   if (TempDir.IsEmpty() || !ForceDirectories(TempDir))
   {
-    throw Exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
+    throw exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
   }
 
   FTerminal->ExceptionOnFail = true;
@@ -1200,7 +1200,7 @@ void TWinSCPFileSystem::ApplyCommand()
               {
                 if ((LocalFileList == NULL) || (LocalFileList->Count != 1))
                 {
-                  throw Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
+                  throw exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
                 }
               }
               else
@@ -1210,7 +1210,7 @@ void TWinSCPFileSystem::ApplyCommand()
                      (FileList->Count != 1) &&
                      (LocalFileList->Count != FileList->Count)))
                 {
-                  throw Exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
+                  throw exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
                 }
               }
             }
@@ -1288,7 +1288,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   {
                     if (LocalFileList->Count != RemoteFileList->Count)
                     {
-                      throw Exception(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
+                      throw exception(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
                     }
 
                     for (int Index = 0; Index < LocalFileList->Count; Index++)
@@ -1639,7 +1639,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch(Exception & E)
+  catch(exception & E)
   {
     HandleException(&E);
     throw;
@@ -1971,7 +1971,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const wstring Path,
     {
       Terminal->SpaceAvailable(Path, ASpaceAvailable);
     }
-    catch(Exception & E)
+    catch(exception & E)
     {
       if (!Terminal->Active)
       {
@@ -2275,7 +2275,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
               }
             }
           }
-          catch(Exception & E)
+          catch(exception & E)
           {
             FSynchronisingBrowse = false;
             WinSCPPlugin()->ShowExtendedException(&E);
@@ -2472,7 +2472,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
     // directories and the plugin can hold data for one directory only
     if (OpMode & OPM_FIND)
     {
-      throw Exception(GetMsg(VIEW_FROM_FIND_NOT_SUPPORTED));
+      throw exception(GetMsg(VIEW_FROM_FIND_NOT_SUPPORTED));
     }
 
     FFileList = CreateFileList(PanelItems, osRemote);
@@ -2483,7 +2483,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
         (OpMode & OPM_SILENT) &&
         (!EditView || FarConfiguration->EditorDownloadDefaultMode);
 
-      TGUICopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
+      TCopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
       if (EditView)
       {
         EditViewCopyParam(CopyParam);
@@ -2620,7 +2620,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
-  TGUICopyParamType CopyParam;
+  TCopyParamType CopyParam;
 
   if (Edit)
   {
@@ -2796,7 +2796,7 @@ bool TWinSCPFileSystem::ImportSessions(TList * PanelItems, bool /*Move*/,
       }
       if (!AnyData)
       {
-        throw Exception(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY), (FileName)));
+        throw exception(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY), (FileName)));
       }
     }
   }
@@ -2983,7 +2983,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 
     Result = true;
   }
-  catch(Exception &E)
+  catch(exception &E)
   {
     FTerminal->ShowExtendedException(&E);
     SAFE_DESTROY(FTerminal);
@@ -3145,7 +3145,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const wstring FileName,
   if (!RecursiveDeleteFile(FileName,
         (FLAGSET(FPlugin->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
-    throw Exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR), (FileName)));
+    throw exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR), (FileName)));
   }
 }
 //---------------------------------------------------------------------------
@@ -3230,7 +3230,7 @@ void TWinSCPFileSystem::TerminalDisplayBanner(
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalShowExtendedException(
-  TTerminal * /*Terminal*/, Exception * E, void * /*Arg*/)
+  TTerminal * /*Terminal*/, exception * E, void * /*Arg*/)
 {
   WinSCPPlugin()->ShowExtendedException(E);
 }

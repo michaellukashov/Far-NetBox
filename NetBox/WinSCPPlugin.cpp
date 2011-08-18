@@ -67,7 +67,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     CoreInitialize();
     FInitialized = true;
   }
-  catch(Exception & E)
+  catch(exception & E)
   {
     HandleException(&E);
   }
@@ -479,11 +479,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::ShowExtendedException(Exception * E)
+void TWinSCPPlugin::ShowExtendedException(exception * E)
 {
   if (!E->Message.IsEmpty())
   {
-    if (E->InheritsFrom(__classid(Exception)))
+    if (E->InheritsFrom(__classid(exception)))
     {
       if (!E->InheritsFrom(__classid(EAbort)))
       {
@@ -510,10 +510,10 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::OldFar()
 {
-  throw Exception(FORMAT(GetMsg(OLD_FAR), (FormatFarVersion(GetMinFarVersion()))));
+  throw exception(FORMAT(GetMsg(OLD_FAR), (FormatFarVersion(GetMinFarVersion()))));
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::HandleException(Exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || E->InheritsFrom(__classid(EFatal)))
   {
