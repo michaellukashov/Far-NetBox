@@ -136,31 +136,31 @@ void TRemoteFilePanelItem::TranslateColumnTypes(wstring & ColumnTypes,
   while (!AColumnTypes.empty())
   {
     Column = CutToChar(AColumnTypes, ',', false);
-    if (Column == "G")
+    if (Column == L"G")
     {
-      Column = "C0";
+      Column = L"C0";
       Title = FarPlugin->GetMsg(GROUP_COL_TITLE);
     }
-    else if (Column == "R")
+    else if (Column == L"R")
     {
-      Column = "C1";
+      Column = L"C1";
       Title = FarPlugin->GetMsg(RIGHTS_COL_TITLE);
     }
-    else if (Column == "RO")
+    else if (Column == L"RO")
     {
-      Column = "C2";
+      Column = L"C2";
       Title = FarPlugin->GetMsg(RIGHTS_OCTAL_COL_TITLE);
     }
-    else if (Column == "L")
+    else if (Column == L"L")
     {
-      Column = "C3";
+      Column = L"C3";
       Title = FarPlugin->GetMsg(LINK_TO_COL_TITLE);
     }
     else
     {
-      Title = "";
+      Title = L"";
     }
-    ColumnTypes += (ColumnTypes.empty() ? "" : ",") + Column;
+    ColumnTypes += (ColumnTypes.empty() ? L"" : L",") + Column;
     if (ColumnTitles)
     {
       ColumnTitles->Add(Title);
@@ -174,18 +174,18 @@ void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
   TStrings * ColumnTitles = new TStringList();
   try
   {
-    if (FarConfiguration->CustomPanelModeDetailed)
+    if (GetFarConfiguration()->CustomPanelModeDetailed)
     {
-      wstring ColumnTypes = FarConfiguration->ColumnTypesDetailed;
-      wstring StatusColumnTypes = FarConfiguration->StatusColumnTypesDetailed;
+      wstring ColumnTypes = GetFarConfiguration()->ColumnTypesDetailed;
+      wstring StatusColumnTypes = GetFarConfiguration()->StatusColumnTypesDetailed;
 
       TranslateColumnTypes(ColumnTypes, ColumnTitles);
       TranslateColumnTypes(StatusColumnTypes, NULL);
 
       PanelModes->SetPanelMode(5 /*detailed */,
-        ColumnTypes, FarConfiguration->ColumnWidthsDetailed,
-        ColumnTitles, FarConfiguration->FullScreenDetailed, false, true, false,
-        StatusColumnTypes, FarConfiguration->StatusColumnWidthsDetailed);
+        ColumnTypes, GetFarConfiguration()->ColumnWidthsDetailed,
+        ColumnTitles, GetFarConfiguration()->FullScreenDetailed, false, true, false,
+        StatusColumnTypes, GetFarConfiguration()->StatusColumnWidthsDetailed);
     }
   }
   catch(...)
@@ -300,7 +300,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FAuthenticationSaveScreenHandle = 0;
   FFileList = NULL;
   FPanelItems = NULL;
-  FSavedFindFolder = "";
+  FSavedFindFolder = L"";
   FTerminal = NULL;
   FQueue = NULL;
   FQueueStatus = NULL;
@@ -431,7 +431,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
     // leaved subdirectory is not focused, when entering parent directory.
     CurDir = FTerminal->CurrentDirectory;
     Format = FTerminal->SessionData->SessionName;
-    if (FarConfiguration->HostNameInTitle)
+    if (GetFarConfiguration()->HostNameInTitle)
     {
       PanelTitle = ::FORMAT(" %s:%s ", (Format, CurDir));
     }
@@ -447,7 +447,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
   else
   {
     CurDir = FSessionsFolder;
-    Format = "winscp";
+    Format = L"winscp";
     Flags = OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
     PanelTitle = ::FORMAT(" %s ", (GetMsg(STORED_SESSION_TITLE)));
 
@@ -632,7 +632,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
     if (FillInConnect)
     {
       Data->Assign(OrigData);
-      Data->Name = "";
+      Data->Name = L"";
     }
 
     TSessionAction Action;
@@ -720,7 +720,7 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
     {
       wstring Command = (char *)Param;
       if (!Command.Trim().empty() &&
-          (Command.SubString(1, 3).LowerCase() != "cd "))
+          (Command.SubString(1, 3).LowerCase() != L"cd "))
       {
         Result = ExecuteCommand(Command);
       }
@@ -996,7 +996,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
     }
 
     if ((Key == VK_F4) && (ControlState == 0) &&
-         FarConfiguration->EditorMultiple)
+         GetFarConfiguration()->EditorMultiple)
     {
       MultipleEdit();
       Handled = true;
@@ -1102,12 +1102,12 @@ void TWinSCPFileSystem::ApplyCommand()
   {
     try
     {
-      int Params = FarConfiguration->ApplyCommandParams;
-      wstring Command = FarConfiguration->ApplyCommandCommand;
+      int Params = GetFarConfiguration()->ApplyCommandParams;
+      wstring Command = GetFarConfiguration()->ApplyCommandCommand;
       if (ApplyCommandDialog(Command, Params))
       {
-        FarConfiguration->ApplyCommandParams = Params;
-        FarConfiguration->ApplyCommandCommand = Command;
+        GetFarConfiguration()->ApplyCommandParams = Params;
+        GetFarConfiguration()->ApplyCommandCommand = Command;
         if (FLAGCLEAR(Params, ccLocal))
         {
           if (EnsureCommandSessionFallback(fcShellAnyCommand))
@@ -1725,7 +1725,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
       try
       {
         wstring Target = FTerminal->CurrentDirectory;
-        wstring FileMask = "*.*";
+        wstring FileMask = L"*.*";
         if (RemoteTransferDialog(FileList, Target, FileMask, Move))
         {
           try
@@ -1857,7 +1857,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(wstring Token, bool Separate)
 
     if (Separate)
     {
-      Token += " ";
+      Token += L" ";
     }
 
     FarControl(FCTL_INSERTCMDLINE, Token.c_str());
@@ -2031,7 +2031,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
     wstring SessionKey = FTerminal->SessionData->SessionKey;
     TBookmarkList * CurrentBookmarkList;
 
-    CurrentBookmarkList = FarConfiguration->Bookmarks[SessionKey];
+    CurrentBookmarkList = GetFarConfiguration()->Bookmarks[SessionKey];
     if (CurrentBookmarkList != NULL)
     {
       BookmarkList->Assign(CurrentBookmarkList);
@@ -2043,12 +2043,12 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
       Bookmark->Remote = Directory;
       Bookmark->Name = Directory;
       BookmarkList->Add(Bookmark);
-      FarConfiguration->Bookmarks[SessionKey] = BookmarkList;
+      GetFarConfiguration()->Bookmarks[SessionKey] = BookmarkList;
     }
 
     bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList);
 
-    FarConfiguration->Bookmarks[SessionKey] = BookmarkList;
+    GetFarConfiguration()->Bookmarks[SessionKey] = BookmarkList;
 
     if (Result)
     {
@@ -2083,7 +2083,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 {
   FSynchronisingBrowse = !FSynchronisingBrowse;
 
-  if (FarConfiguration->ConfirmSynchronizedBrowsing)
+  if (GetFarConfiguration()->ConfirmSynchronizedBrowsing)
   {
     wstring Message = FSynchronisingBrowse ?
       GetMsg(SYNCHRONIZE_BROWSING_ON) : GetMsg(SYNCHRONIZE_BROWSING_OFF);
@@ -2092,7 +2092,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
     if (MoreMessageDialog(Message, NULL, qtInformation, qaOK, &Params) ==
           qaNeverAskAgain)
     {
-      FarConfiguration->ConfirmSynchronizedBrowsing = false;
+      GetFarConfiguration()->ConfirmSynchronizedBrowsing = false;
     }
   }
 }
@@ -2141,7 +2141,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
   // workaround to ignore "change to root directory" command issued by FAR,
   // before file is opened for viewing/editing from "find file" dialog
   // when plugin uses UNIX style paths
-  else if (OpMode & OPM_FIND && OpMode & OPM_SILENT && Dir == "\\")
+  else if (OpMode & OPM_FIND && OpMode & OPM_SILENT && Dir == L"\\")
   {
     if (FSavedFindFolder.empty())
     {
@@ -2156,7 +2156,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
       }
       catch(...)
       {
-        FSavedFindFolder = "";
+        FSavedFindFolder = L"";
       }
       return Result;
     }
@@ -2173,7 +2173,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
       FSessionsFolder = AbsolutePath("/" + FSessionsFolder, Dir);
       assert(FSessionsFolder[1] == '/');
       FSessionsFolder.Delete(1, 1);
-      FNewSessionsFolder = "";
+      FNewSessionsFolder = L"";
     }
     else
     {
@@ -2188,7 +2188,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
       FTerminal->ExceptionOnFail = true;
       try
       {
-        if (Dir == "\\")
+        if (Dir == L"\\")
         {
           FTerminal->ChangeDirectory(ROOTDIRECTORY);
         }
@@ -2319,7 +2319,7 @@ int TWinSCPFileSystem::MakeDirectoryEx(wstring & Name, int OpMode)
     }
     else
     {
-      Name = "";
+      Name = L"";
       return -1;
     }
   }
@@ -2339,13 +2339,13 @@ int TWinSCPFileSystem::MakeDirectoryEx(wstring & Name, int OpMode)
     }
     else
     {
-      Name = "";
+      Name = L"";
       return -1;
     }
   }
   else
   {
-    Name = "";
+    Name = L"";
     return -1;
   }
 }
@@ -2421,7 +2421,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
           (((TFarPanelItem *)PanelItems->Items[0])->GetFileName()));
       }
 
-      if ((OpMode & OPM_SILENT) || !FarConfiguration->ConfirmDeleting ||
+      if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->ConfirmDeleting ||
         (MoreMessageDialog(Query, NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
       {
         FTerminal->DeleteFiles(FFileList);
@@ -2436,7 +2436,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
   }
   else if (SessionList())
   {
-    if ((OpMode & OPM_SILENT) || !FarConfiguration->ConfirmDeleting ||
+    if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->ConfirmDeleting ||
       (MoreMessageDialog(GetMsg(DELETE_SESSIONS_CONFIRM), NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
       ProcessSessions(PanelItems, DeleteSession, NULL);
@@ -2451,7 +2451,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::QueueAddItem(TQueueItem * Item)
 {
-  FarConfiguration->CacheFarSettings();
+  GetFarConfiguration()->CacheFarSettings();
   FQueue->AddItem(Item);
 }
 //---------------------------------------------------------------------------
@@ -2481,7 +2481,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
       bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
       bool Confirmed =
         (OpMode & OPM_SILENT) &&
-        (!EditView || FarConfiguration->EditorDownloadDefaultMode);
+        (!EditView || GetFarConfiguration()->EditorDownloadDefaultMode);
 
       TCopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
       if (EditView)
@@ -2527,8 +2527,8 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
         }
         else
         {
-          FOriginalEditFile = "";
-          FLastEditFile = "";
+          FOriginalEditFile = L"";
+          FLastEditFile = L"";
           FLastEditorID = -1;
         }
 
@@ -2625,7 +2625,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   if (Edit)
   {
     CopyParam = FLastEditCopyParam;
-    Confirmed = FarConfiguration->EditorUploadSameOptions;
+    Confirmed = GetFarConfiguration()->EditorUploadSameOptions;
     Ask = false;
   }
   else
@@ -2713,7 +2713,7 @@ int TWinSCPFileSystem::PutFilesEx(TList * PanelItems, bool Move, int OpMode)
         // editor should be closed already
         assert(FLastEditorID < 0);
 
-        if (FarConfiguration->EditorUploadOnSave)
+        if (GetFarConfiguration()->EditorUploadOnSave)
         {
           // already uploaded from EE_REDRAW
           Result = -1;
@@ -2723,8 +2723,8 @@ int TWinSCPFileSystem::PutFilesEx(TList * PanelItems, bool Move, int OpMode)
           // just in case file was saved under different name
           FFileList->Strings[0] = FLastEditFile;
 
-          FOriginalEditFile = "";
-          FLastEditFile = "";
+          FOriginalEditFile = L"";
+          FLastEditFile = L"";
 
           Result = UploadFiles(Move, OpMode, true, FTerminal->CurrentDirectory);
         }
@@ -3380,7 +3380,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     ProgressBar1 = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + "\n";
     if (TransferOperation)
     {
-      Message2 = "\1\n";
+      Message2 = L"\1\n";
       wstring StatusLine;
       wstring Value;
 
@@ -3520,14 +3520,14 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     switch (Event)
     {
       case qeEmpty:
-        if (Hidden && FarConfiguration->QueueBeep)
+        if (Hidden && GetFarConfiguration()->QueueBeep)
         {
           MessageBeep(MB_OK);
         }
         break;
 
       case qePendingUserAction:
-        if (Hidden && !GUIConfiguration->QueueAutoPopup && FarConfiguration->QueueBeep)
+        if (Hidden && !GUIConfiguration->QueueAutoPopup && GetFarConfiguration()->QueueBeep)
         {
           // MB_ICONQUESTION would be more appropriate, but in default Windows Sound
           // schema it has no sound associated
@@ -3761,7 +3761,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
             assert(IsLastMultipleEditFile);
             if (IsLastMultipleEditFile)
             {
-              FLastMultipleEditFile = "";
+              FLastMultipleEditFile = L"";
 
               TMultipleEdit MultipleEdit;
               MultipleEdit.FileName = ExtractFileName(Info->GetFileName());
@@ -3845,7 +3845,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
           // the file back under that name
           FLastEditFile = Info->GetFileName();
 
-          if (FarConfiguration->EditorUploadOnSave)
+          if (GetFarConfiguration()->EditorUploadOnSave)
           {
             FEditorPendingSave = true;
           }
@@ -3866,7 +3866,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
             FPlugin->FarEditorControl(ECTL_SETTITLE, FullFileName.c_str());
           }
 
-          if (FarConfiguration->EditorUploadOnSave)
+          if (GetFarConfiguration()->EditorUploadOnSave)
           {
             FEditorPendingSave = true;
           }
@@ -3892,7 +3892,7 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
   // we have no way to give FAR back the modified filename, so make sure we
   // fail downloading file not valid on windows
   CopyParam.ReplaceInvalidChars = false;
-  CopyParam.FileMask = "";
+  CopyParam.FileMask = L"";
   CopyParam.ExcludeFileMask = TFileMasks();
 }
 //---------------------------------------------------------------------------
@@ -4012,9 +4012,9 @@ void TWinSCPFileSystem::MultipleEdit(wstring Directory,
     if (FarPlugin->Editor(FLastMultipleEditFile,
            EF_NONMODAL | VF_IMMEDIATERETURN | VF_DISABLEHISTORY, FullFileName))
     {
-      assert(FLastMultipleEditFile == "");
+      assert(FLastMultipleEditFile == L"");
     }
-    FLastMultipleEditFile = "";
+    FLastMultipleEditFile = L"";
   }
   else
   {
