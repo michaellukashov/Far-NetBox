@@ -147,7 +147,7 @@ protected:
     wstring Name, wstring Instructions, TStrings * Prompts,
     TStrings * Results, bool & Result, void * Arg);
   void DoShowExtendedException(TTerminal * Terminal,
-    Exception * E, void * Arg);
+    exception * E, void * Arg);
   void DoQueueItemUpdate(TQueueItem * Item);
   void DoListUpdate();
   void DoEvent(TQueueEvent Event);

@@ -71,7 +71,7 @@ public:
   }
 
   TTerminal * Terminal;
-  Exception * E;
+  exception * E;
 };
 //---------------------------------------------------------------------------
 class TTerminalItem : public TSignalThread
@@ -111,7 +111,7 @@ protected:
     wstring Name, wstring Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    Exception * E, void * Arg);
+    exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const wstring & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
@@ -817,7 +817,7 @@ void TTerminalQueue::DoPromptUser(TTerminal * Terminal,
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoShowExtendedException(
-  TTerminal * Terminal, Exception * E, void * Arg)
+  TTerminal * Terminal, exception * E, void * Arg)
 {
   if (OnShowExtendedException != NULL)
   {
@@ -864,7 +864,7 @@ public:
     TTerminalItem * Item, const wstring & Name);
 
 protected:
-  virtual bool DoQueryReopen(Exception * E);
+  virtual bool DoQueryReopen(exception * E);
 
 private:
   TTerminalItem * FItem;
@@ -877,7 +877,7 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal,
 {
 }
 //---------------------------------------------------------------------------
-bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
+bool TBackgroundTerminal::DoQueryReopen(exception * /*E*/)
 {
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
@@ -974,7 +974,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch(Exception & E)
+  catch(exception & E)
   {
     // do not show error messages, if task was canceled anyway
     // (for example if transfer is cancelled during reconnection attempts)
@@ -1183,7 +1183,7 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalShowExtendedException(
-  TTerminal * Terminal, Exception * E, void * Arg)
+  TTerminal * Terminal, exception * E, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == NULL);
