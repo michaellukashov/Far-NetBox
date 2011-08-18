@@ -977,7 +977,7 @@ void TRemoteFile::SetListingStr(wstring value)
     Line.Delete(1, 1);
 
     #define GETNCOL  \
-      { if (Line.IsEmpty()) throw Exception(""); \
+      { if (Line.IsEmpty()) throw exception(""); \
         int P = Line.Pos(' '); \
         if (P) { Col = Line.SubString(1, P-1); Line.Delete(1, P); } \
           else { Col = Line; Line = ""; } \
@@ -1196,7 +1196,7 @@ void TRemoteFile::SetListingStr(wstring value)
     #undef GETNCOL
     #undef GETCOL
   }
-  catch (Exception &E)
+  catch (exception &E)
   {
     throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, ARRAYOFCONST((value))));
   }
@@ -1261,7 +1261,7 @@ void TRemoteFile::FindLinkedFile()
         Terminal->ExceptionOnFail = false;
       }
     }
-    catch (Exception &E)
+    catch (exception &E)
     {
       if (E.InheritsFrom(__classid(EFatal))) throw;
         else Terminal->Log->AddException(&E);
@@ -2025,7 +2025,7 @@ void TRights::SetText(const wstring & value)
         (!AllowUndef && (value.Pos(UndefSymbol) > 0)) ||
         (value.Pos(" ") > 0))
     {
-      throw Exception(FMTLOAD(RIGHTS_ERROR, (value)));
+      throw exception(FMTLOAD(RIGHTS_ERROR, (value)));
     }
 
     FSet = 0;
@@ -2153,7 +2153,7 @@ void TRights::SetOctal(wstring value)
 
     if (!Correct)
     {
-      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, (value)));
+      throw exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, (value)));
     }
 
     Number = static_cast<unsigned short>(

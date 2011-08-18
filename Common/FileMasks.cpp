@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
     wstring Message, int AErrorStart, int AErrorLen) :
-  Exception(Message)
+  exception(Message)
 {
   ErrorStart = AErrorStart;
   ErrorLen = AErrorLen;
@@ -548,13 +548,13 @@ void TCustomCommand::GetToken(
 
     if (Len < 0)
     {
-      throw Exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, (PatternCmd, Index)));
+      throw exception(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, (PatternCmd, Index)));
     }
     else if (Len > 0)
     {
       if ((Command.Length() - Index + 1) < Len)
       {
-        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
+        throw exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
       }
     }
     else if (Len == 0)
@@ -562,7 +562,7 @@ void TCustomCommand::GetToken(
       const char * PatternEnd = strchr(Ptr + 1, '!');
       if (PatternEnd == NULL)
       {
-        throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
+        throw exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -862,7 +862,7 @@ void TFileCustomCommand::Validate(const wstring & Command)
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
-    throw Exception(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
+    throw exception(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
       (Found[1], Found[0])));
   }
 }

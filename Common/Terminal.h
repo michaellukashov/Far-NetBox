@@ -39,7 +39,7 @@ typedef void (TObject::*TDisplayBannerEvent)
   (TTerminal * Terminal, wstring SessionName, const wstring & Banner,
    bool & NeverShowAgain, int Options);
 typedef void (TObject::*TExtendedExceptionEvent)
-  (TTerminal * Terminal, Exception * E, void * Arg);
+  (TTerminal * Terminal, exception * E, void * Arg);
 typedef void (TObject::*TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
 typedef void (TObject::*TReadDirectoryProgressEvent)(
   System::TObject* Sender, int Progress, bool & Cancel);
@@ -89,7 +89,7 @@ typedef void (TObject::*TInformationEvent)
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (Exception & E)                                                   \
+    catch (exception & E)                                                   \
     {                                                                       \
       TERMINAL->FileOperationLoopQuery(E, OperationProgress, MESSAGE, ALLOW_SKIP); \
       DoRepeat = true;                                                      \
@@ -199,8 +199,8 @@ private:
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
 
-  void CommandError(Exception * E, const wstring Msg);
-  int CommandError(Exception * E, const wstring Msg, int Answers);
+  void CommandError(exception * E, const wstring Msg);
+  int CommandError(exception * E, const wstring Msg, int Answers);
   wstring GetCurrentDirectory();
   bool GetExceptionOnFail() const;
   const TRemoteTokenList * GetGroups();
@@ -269,7 +269,7 @@ protected:
     int * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(wstring FileName, const TCopyParamType * CopyParam);
-  bool HandleException(Exception * E);
+  bool HandleException(exception * E);
   void CalculateFileSize(wstring FileName,
     const TRemoteFile * File, /*TCalculateSizeParams*/ void * Size);
   void DoCalculateDirectorySize(const wstring FileName,
@@ -302,8 +302,8 @@ protected:
   void RecycleFile(wstring FileName, const TRemoteFile * File);
   TStrings * GetFixedPaths();
   void DoStartup();
-  virtual bool DoQueryReopen(Exception * E);
-  virtual void FatalError(Exception * E, wstring Msg);
+  virtual bool DoQueryReopen(exception * E);
+  virtual void FatalError(exception * E, wstring Msg);
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     wstring Name, wstring Instructions, TStrings * Prompts,
@@ -326,19 +326,19 @@ protected:
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual int QueryUserException(const wstring Query,
-    Exception * E, int Answers, const TQueryParams * Params,
+    exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     wstring Name, wstring Instructions, TStrings * Prompts, TStrings * Results);
   virtual void DisplayBanner(const wstring & Banner);
   virtual void Closed();
-  virtual void HandleExtendedException(Exception * E);
+  virtual void HandleExtendedException(exception * E);
   bool IsListenerFree(unsigned int PortNumber);
   void DoProgress(TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
-    TFileOperationProgressType * OperationProgress, Exception * E = NULL);
+    TFileOperationProgressType * OperationProgress, exception * E = NULL);
   void DoAnyCommand(const wstring Command, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(wstring Directory, bool UseCache);
@@ -355,7 +355,7 @@ public:
   void Reopen(int Params);
   virtual void DirectoryModified(const wstring Path, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
-  void ShowExtendedException(Exception * E);
+  void ShowExtendedException(exception * E);
   void Idle();
   void RecryptPasswords();
   bool AllowedAnyCommand(const wstring Command);
@@ -395,7 +395,7 @@ public:
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * FileList);
   void TerminalError(wstring Msg);
-  void TerminalError(Exception * E, wstring Msg);
+  void TerminalError(exception * E, wstring Msg);
   void ReloadDirectory();
   void RefreshDirectory();
   void RenameFile(const wstring FileName, const wstring NewName);
@@ -429,11 +429,11 @@ public:
   void MakeLocalFileList(const wstring FileName,
     const TSearchRec Rec, void * Param);
   wstring FileUrl(const wstring FileName);
-  bool FileOperationLoopQuery(Exception & E,
+  bool FileOperationLoopQuery(exception & E,
     TFileOperationProgressType * OperationProgress, const wstring Message,
     bool AllowSkip, wstring SpecialRetry = "");
   TUsableCopyParamAttrs UsableCopyParamAttrs(int Params);
-  bool QueryReopen(Exception * E, int Params,
+  bool QueryReopen(exception * E, int Params,
     TFileOperationProgressType * OperationProgress);
   wstring PeekCurrentDirectory();
 

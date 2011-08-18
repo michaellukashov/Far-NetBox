@@ -1180,7 +1180,7 @@ void TSessionData::ValidateName(const wstring Name)
 {
   if (Name.LastDelimiter("/") > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, (Name, "/")));
+    throw exception(FMTLOAD(ITEM_NAME_INVALID, (Name, "/")));
   }
 }
 //---------------------------------------------------------------------
@@ -2324,7 +2324,7 @@ void TStoredSessionList::Cleanup()
     } __finally {
       delete Storage;
     }
-  } catch (Exception &E) {
+  } catch (exception &E) {
     throw ExtException(&E, CLEANUP_SESSIONS_ERROR);
   }
 }

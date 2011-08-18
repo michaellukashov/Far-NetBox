@@ -603,7 +603,7 @@ unsigned long GetSpeedLimit(const wstring & Text)
     if (!TryStrToInt(Text, SSpeed) ||
         (SSpeed < 0))
     {
-      throw Exception(FMTLOAD(SPEED_INVALID, (Text)));
+      throw exception(FMTLOAD(SPEED_INVALID, (Text)));
     }
     Speed = SSpeed;
   }

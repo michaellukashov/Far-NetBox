@@ -39,7 +39,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
           Name.Delete(P, Name.Length() - P + 1);
           Name = Name.TrimRight();
-        } catch (Exception &E) { N = 0; };
+        } catch (exception &E) { N = 0; };
       Name += " (" + IntToStr(N+1) + ")";
     }
 }
