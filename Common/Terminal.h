@@ -40,9 +40,9 @@ typedef void (TObject::*TDisplayBannerEvent)
    bool & NeverShowAgain, int Options);
 typedef void (TObject::*TExtendedExceptionEvent)
   (TTerminal * Terminal, exception * E, void * Arg);
-typedef void (TObject::*TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
+typedef void (TObject::*TReadDirectoryEvent)(TObject * Sender, bool ReloadOnly);
 typedef void (TObject::*TReadDirectoryProgressEvent)(
-  System::TObject* Sender, int Progress, bool & Cancel);
+  TObject* Sender, int Progress, bool & Cancel);
 typedef void (TObject::*TProcessFileEvent)
   (const wstring FileName, const TRemoteFile * File, void * Param);
 typedef void (TObject::*TProcessFileEventEx)
@@ -57,7 +57,7 @@ typedef void (TObject::*TDeleteLocalFileEvent)(
 typedef int (TObject::*TDirectoryModifiedEvent)
   (TTerminal * Terminal, const wstring Directory, bool SubDirs);
 typedef void (TObject::*TInformationEvent)
-  (TTerminal * Terminal, const wstring & Str, bool Status, bool Active = true);
+  (TTerminal * Terminal, const wstring & Str, bool Status, bool Active);
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
   {                                                           \
@@ -101,41 +101,41 @@ typedef void (TObject::*TInformationEvent)
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP };
 //---------------------------------------------------------------------------
-const cpDelete = 0x01;
-const cpTemporary = 0x04;
-const cpNoConfirmation = 0x08;
-const cpNewerOnly = 0x10;
-const cpAppend = 0x20;
-const cpResume = 0x40;
+const int cpDelete = 0x01;
+const int cpTemporary = 0x04;
+const int cpNoConfirmation = 0x08;
+const int cpNewerOnly = 0x10;
+const int cpAppend = 0x20;
+const int cpResume = 0x40;
 //---------------------------------------------------------------------------
-const ccApplyToDirectories = 0x01;
-const ccRecursive = 0x02;
-const ccUser = 0x100;
+const int ccApplyToDirectories = 0x01;
+const int ccRecursive = 0x02;
+const int ccUser = 0x100;
 //---------------------------------------------------------------------------
-const csIgnoreErrors = 0x01;
+const int csIgnoreErrors = 0x01;
 //---------------------------------------------------------------------------
-const ropNoReadDirectory = 0x02;
+const int ropNoReadDirectory = 0x02;
 //---------------------------------------------------------------------------
-const boDisableNeverShowAgain = 0x01;
+const int boDisableNeverShowAgain = 0x01;
 //---------------------------------------------------------------------------
 class TTerminal : public TObject, public TSessionUI
 {
 public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode { smRemote, smLocal, smBoth };
-  static const spDelete = 0x01; // cannot be combined with spTimestamp
-  static const spNoConfirmation = 0x02; // has no effect for spTimestamp
-  static const spExistingOnly = 0x04; // is implicit for spTimestamp
-  static const spNoRecurse = 0x08;
-  static const spUseCache = 0x10; // cannot be combined with spTimestamp
-  static const spDelayProgress = 0x20; // cannot be combined with spTimestamp
-  static const spPreviewChanges = 0x40; // not used by core
-  static const spSubDirs = 0x80; // cannot be combined with spTimestamp
-  static const spTimestamp = 0x100;
-  static const spNotByTime = 0x200; // cannot be combined with spTimestamp and smBoth
-  static const spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
+  static const int spDelete = 0x01; // cannot be combined with spTimestamp
+  static const int spNoConfirmation = 0x02; // has no effect for spTimestamp
+  static const int spExistingOnly = 0x04; // is implicit for spTimestamp
+  static const int spNoRecurse = 0x08;
+  static const int spUseCache = 0x10; // cannot be combined with spTimestamp
+  static const int spDelayProgress = 0x20; // cannot be combined with spTimestamp
+  static const int spPreviewChanges = 0x40; // not used by core
+  static const int spSubDirs = 0x80; // cannot be combined with spTimestamp
+  static const int spTimestamp = 0x100;
+  static const int spNotByTime = 0x200; // cannot be combined with spTimestamp and smBoth
+  static const int spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
   // 0x800 is reserved for GUI (spSelectedOnly)
-  static const spMirror = 0x1000;
+  static const int spMirror = 0x1000;
 
 // for TranslateLockedPath()
 friend class TRemoteFile;
