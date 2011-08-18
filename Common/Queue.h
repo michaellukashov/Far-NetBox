@@ -74,14 +74,29 @@ public:
   TTerminalQueueStatus * CreateStatus(TTerminalQueueStatus * Current);
   void Idle();
 
-  __property bool IsEmpty = { read = GetIsEmpty };
-  __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
-  __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
-  __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
-  __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
-  __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
-  __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
-  __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
+  // __property bool IsEmpty = { read = GetIsEmpty };
+  bool GetIsEmpty();
+  // __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };)
+  int GetTransfersLimit() { return FTransfersLimit; }
+  void SetTransfersLimit(int value);
+  // __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };)
+  TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
+  void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  // __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };)
+  TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
+  void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
+  // __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };)
+  TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  // __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };)
+  TQueueListUpdate GetOnListUpdate() { return FOnListUpdate; }
+  void SetOnListUpdate(TQueueListUpdate value) { FOnListUpdate = value; }
+  // __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };)
+  TQueueItemUpdateEvent GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
+  void SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
+  // __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };)
+  TQueueEventEvent GetOnEvent() { return FOnEvent; }
+  void SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
 
 protected:
   friend class TTerminalItem;
@@ -136,9 +151,6 @@ protected:
   void DoQueueItemUpdate(TQueueItem * Item);
   void DoListUpdate();
   void DoEvent(TQueueEvent Event);
-
-  void SetTransfersLimit(int value);
-  bool GetIsEmpty();
 };
 //---------------------------------------------------------------------------
 class TQueueItem
@@ -162,8 +174,11 @@ public:
 
   static bool IsUserActionStatus(TStatus Status);
 
-  __property TStatus Status = { read = GetStatus };
-  __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };
+  // __property TStatus Status = { read = GetStatus };
+  TStatus GetStatus();
+  // __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };)
+  HANDLE GetCompleteEvent() { return FCompleteEvent; }
+  void SetCompleteEvent(HANDLE value) { FCompleteEvent = value; }
 
 protected:
   TStatus FStatus;
@@ -179,7 +194,6 @@ protected:
   virtual ~TQueueItem();
 
   void SetStatus(TStatus Status);
-  TStatus GetStatus();
   void Execute(TTerminalItem * TerminalItem);
   virtual void DoExecute(TTerminal * Terminal) = 0;
   void SetProgress(TFileOperationProgressType & ProgressData);
@@ -205,12 +219,19 @@ public:
   bool Resume();
   bool SetCPSLimit(unsigned long CPSLimit);
 
-  __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
-  __property TQueueItem::TInfo * Info = { read = FInfo };
-  __property TQueueItem::TStatus Status = { read = FStatus };
-  __property bool ProcessingUserAction = { read = FProcessingUserAction };
-  __property int Index = { read = GetIndex };
-  __property void * UserData = { read = FUserData, write = FUserData };
+  // __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
+  TFileOperationProgressType * GetProgressData();
+  // __property TQueueItem::TInfo * Info = { read = FInfo };)
+  TQueueItem::TInfo * GetInfo() { return FInfo; }
+  // __property TQueueItem::TStatus Status = { read = FStatus };)
+  TQueueItem::TStatus GetStatus() { return FStatus; }
+  // __property bool ProcessingUserAction = { read = FProcessingUserAction };)
+  bool GetProcessingUserAction() { return FProcessingUserAction; }
+  // __property int Index = { read = GetIndex };
+  int GetIndex();
+  // __property void * UserData = { read = FUserData, write = FUserData };)
+  void * GetUserData() { return FUserData; }
+  void SetUserData(void * value) { FUserData = value; }
 
 private:
   TFileOperationProgressType * FProgressData;
@@ -224,8 +245,6 @@ private:
 
   TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual ~TQueueItemProxy();
-  int GetIndex();
-  TFileOperationProgressType * GetProgressData();
 };
 //---------------------------------------------------------------------------
 class TTerminalQueueStatus
@@ -238,9 +257,12 @@ public:
 
   TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
 
-  __property int Count = { read = GetCount };
-  __property int ActiveCount = { read = GetActiveCount };
-  __property TQueueItemProxy * Items[int Index] = { read = GetItem };
+  // __property int Count = { read = GetCount };
+  int GetCount();
+  // __property int ActiveCount = { read = GetActiveCount };
+  int GetActiveCount();
+  // __property TQueueItemProxy * Items[int Index] = { read = GetItem };
+  TQueueItemProxy * GetItem(int Index);
 
 protected:
   TTerminalQueueStatus();
@@ -253,9 +275,6 @@ private:
   TList * FList;
   int FActiveCount;
 
-  int GetCount();
-  int GetActiveCount();
-  TQueueItemProxy * GetItem(int Index);
 };
 //---------------------------------------------------------------------------
 class TLocatedQueueItem : public TQueueItem
