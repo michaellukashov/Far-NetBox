@@ -14,7 +14,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-__fastcall TSynchronizeController::TSynchronizeController(
+TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectories AOnTooManyDirectories)
 {
@@ -27,12 +27,12 @@ __fastcall TSynchronizeController::TSynchronizeController(
   FOptions = NULL;
 }
 //---------------------------------------------------------------------------
-__fastcall TSynchronizeController::~TSynchronizeController()
+TSynchronizeController::~TSynchronizeController()
 {
   assert(FSynchronizeMonitor == NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::StartStop(TObject * Sender,
+void TSynchronizeController::StartStop(TObject * Sender,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
@@ -104,17 +104,17 @@ void __fastcall TSynchronizeController::StartStop(TObject * Sender,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, const AnsiString Directory, bool & SubdirsChanged)
+void TSynchronizeController::SynchronizeChange(
+  TObject * /*Sender*/, const wstring Directory, bool & SubdirsChanged)
 {
   try
   {
-    AnsiString RemoteDirectory;
-    AnsiString RootLocalDirectory;
+    wstring RemoteDirectory;
+    wstring RootLocalDirectory;
     RootLocalDirectory = IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
     RemoteDirectory = UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
-    AnsiString LocalDirectory = IncludeTrailingBackslash(Directory);
+    wstring LocalDirectory = IncludeTrailingBackslash(Directory);
 
     assert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
       RootLocalDirectory);
@@ -180,7 +180,7 @@ void __fastcall TSynchronizeController::SynchronizeChange(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
+void TSynchronizeController::SynchronizeAbort(bool Close)
 {
   if (FSynchronizeMonitor != NULL)
   {
@@ -190,11 +190,11 @@ void __fastcall TSynchronizeController::SynchronizeAbort(bool Close)
   FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const AnsiString FileName)
+void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
+  const wstring FileName)
 {
   TSynchronizeLogEntry Entry;
-  AnsiString Message;
+  wstring Message;
   switch (Operation)
   {
     case soDelete:
@@ -214,8 +214,8 @@ void __fastcall TSynchronizeController::LogOperation(TSynchronizeOperation Opera
   SynchronizeLog(Entry, Message);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-  const AnsiString Message)
+void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
+  const wstring Message)
 {
   if (FSynchronizeLog != NULL)
   {
@@ -223,8 +223,8 @@ void __fastcall TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entr
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const AnsiString DirectoryName, bool & Add)
+void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
+  const wstring DirectoryName, bool & Add)
 {
   if ((FOptions != NULL) && (FOptions->Filter != NULL))
   {
@@ -239,8 +239,8 @@ void __fastcall TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
   Add = Add && FCopyParam.AllowTransfer(DirectoryName, osLocal, true, MaskParams);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeInvalid(
-  TObject * /*Sender*/, const AnsiString Directory, const AnsiString ErrorStr)
+void TSynchronizeController::SynchronizeInvalid(
+  TObject * /*Sender*/, const wstring Directory, const wstring ErrorStr)
 {
   if (FOnSynchronizeInvalid != NULL)
   {
@@ -250,7 +250,7 @@ void __fastcall TSynchronizeController::SynchronizeInvalid(
   SynchronizeAbort(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeTooManyDirectories(
+void TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, int & MaxDirectories)
 {
   if (FOnTooManyDirectories != NULL)
@@ -259,7 +259,7 @@ void __fastcall TSynchronizeController::SynchronizeTooManyDirectories(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSynchronizeController::SynchronizeDirectoriesChange(
+void TSynchronizeController::SynchronizeDirectoriesChange(
   TObject * /*Sender*/, int Directories)
 {
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, (Directories)));

@@ -6,8 +6,8 @@
 //---------------------------------------------------------------------------
 struct TSynchronizeParamType
 {
-  AnsiString LocalDirectory;
-  AnsiString RemoteDirectory;
+  wstring LocalDirectory;
+  wstring RemoteDirectory;
   int Params;
   int Options;
 };
@@ -15,26 +15,26 @@ struct TSynchronizeParamType
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
-typedef void __fastcall (__closure * TSynchronizeAbortEvent)
-  (System::TObject * Sender, bool Close);
-typedef void __fastcall (__closure * TSynchronizeThreadsEvent)
+typedef void (TObject::* TSynchronizeAbortEvent)
+  (TObject * Sender, bool Close);
+typedef void (TObject::* TSynchronizeThreadsEvent)
   (TObject* Sender, TThreadMethod Method);
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
-typedef void __fastcall (__closure * TSynchronizeLog)
-  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const AnsiString Message);
-typedef void __fastcall (__closure * TSynchronizeStartStopEvent)
-  (System::TObject * Sender, bool Start, const TSynchronizeParamType & Params,
+typedef void (TObject::* TSynchronizeLog)
+  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const wstring Message);
+typedef void (TObject::* TSynchronizeStartStopEvent)
+  (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
    const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
    TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
    TSynchronizeLog OnSynchronizeLog);
-typedef void __fastcall (__closure * TSynchronizeEvent)
-  (TSynchronizeController * Sender, const AnsiString LocalDirectory,
-   const AnsiString RemoteDirectory, const TCopyParamType & CopyParam,
+typedef void (TObject::* TSynchronizeEvent)
+  (TSynchronizeController * Sender, const wstring LocalDirectory,
+   const wstring RemoteDirectory, const TCopyParamType & CopyParam,
    const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
    TSynchronizeOptions * Options, bool Full);
-typedef void __fastcall (__closure * TSynchronizeInvalidEvent)
-  (TSynchronizeController * Sender, const AnsiString Directory, const AnsiString ErrorStr);
-typedef void __fastcall (__closure * TSynchronizeTooManyDirectories)
+typedef void (TObject::* TSynchronizeInvalidEvent)
+  (TSynchronizeController * Sender, const wstring Directory, const wstring ErrorStr);
+typedef void (TObject::* TSynchronizeTooManyDirectories)
   (TSynchronizeController * Sender, int & MaxDirectories);
 //---------------------------------------------------------------------------
 namespace Discmon
@@ -47,17 +47,17 @@ enum TSynchronizeOperation { soUpload, soDelete };
 class TSynchronizeController
 {
 public:
-  __fastcall TSynchronizeController(TSynchronizeEvent AOnSynchronize,
+  TSynchronizeController(TSynchronizeEvent AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,
     TSynchronizeTooManyDirectories AOnTooManyDirectories);
-  __fastcall ~TSynchronizeController();
+  ~TSynchronizeController();
 
-  void __fastcall StartStop(TObject * Sender, bool Start,
+  void StartStop(TObject * Sender, bool Start,
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLog OnSynchronizeLog);
-  void __fastcall LogOperation(TSynchronizeOperation Operation, const AnsiString FileName);
+  void LogOperation(TSynchronizeOperation Operation, const wstring FileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;
@@ -71,16 +71,16 @@ private:
   TSynchronizeLog FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void __fastcall SynchronizeChange(TObject * Sender, const AnsiString Directory,
+  void SynchronizeChange(TObject * Sender, const wstring Directory,
     bool & SubdirsChanged);
-  void __fastcall SynchronizeAbort(bool Close);
-  void __fastcall SynchronizeLog(TSynchronizeLogEntry Entry, const AnsiString Message);
-  void __fastcall SynchronizeInvalid(TObject * Sender, const AnsiString Directory,
-    const AnsiString ErrorStr);
-  void __fastcall SynchronizeFilter(TObject * Sender, const AnsiString DirectoryName,
+  void SynchronizeAbort(bool Close);
+  void SynchronizeLog(TSynchronizeLogEntry Entry, const wstring Message);
+  void SynchronizeInvalid(TObject * Sender, const wstring Directory,
+    const wstring ErrorStr);
+  void SynchronizeFilter(TObject * Sender, const wstring DirectoryName,
     bool & Add);
-  void __fastcall SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
-  void __fastcall SynchronizeDirectoriesChange(TObject * Sender, int Directories);
+  void SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
+  void SynchronizeDirectoriesChange(TObject * Sender, int Directories);
 };
 //---------------------------------------------------------------------------
 #endif
