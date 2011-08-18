@@ -37,7 +37,7 @@ void TSessionPanelItem::SetPanelModes(TFarPanelModes * PanelModes)
     ColumnTitles->Add(FarPlugin->GetMsg(SESSION_NAME_COL_TITLE));
     for (int Index = 0; Index < PANEL_MODES_COUNT; Index++)
     {
-      PanelModes->SetPanelMode(Index, "N", "0", ColumnTitles, false, false, false);
+      PanelModes->SetPanelMode(Index, L"N", L"0", ColumnTitles, false, false, false);
     }
   }
   __finally
