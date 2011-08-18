@@ -71,7 +71,8 @@ public:
 protected:
   // __property TStrings * Output = { read = FOutput };
   TStrings *GetOutput() { return FOutput; };
-  __property int ReturnCode = { read = FReturnCode };
+  // __property int ReturnCode = { read = FReturnCode };
+  int GetReturnCode() { return FReturnCode; }
 
   virtual wstring GetCurrentDirectory();
 
@@ -98,7 +99,7 @@ private:
   void EnsureLocation();
   void ExecCommand(const wstring & Cmd, int Params,
     const wstring & CmdString);
-  void ExecCommand(TFSCommand Cmd, const TVarRec * args = NULL,
+  void ExecCommand(TFSCommand Cmd, //FIXME const wchar_t TVarRec * args = NULL,
     int size = 0, int Params = -1);
   void ReadCommandOutput(int Params, const wstring * Cmd = NULL);
   void SCPResponse(bool * GotLastLine = NULL);
@@ -125,7 +126,7 @@ private:
     const TRemoteToken & Token, TFSCommand Cmd, const wstring & RecursiveStr);
 
   static bool RemoveLastLine(wstring & Line,
-    int & ReturnCode, wstring LastLine = "");
+    int & ReturnCode, wstring LastLine = L"");
 };
 //---------------------------------------------------------------------------
 #endif // ScpFileSystemH
