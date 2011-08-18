@@ -6,7 +6,7 @@
 #include "FarPlugin.h"
 #include "FileOperationProgress.h"
 #include <Terminal.h>
-// #include <GUIConfiguration.h>
+#include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #include <Queue.h>
 #include <list>
