@@ -152,7 +152,7 @@ private:
   TConfiguration * FConfiguration;
   wstring FCurrentDirectory;
   wstring FLockDirectory;
-  Integer FExceptionOnFail;
+  int FExceptionOnFail;
   TRemoteDirectory * FFiles;
   int FInTransaction;
   bool FSuspendTransaction;
@@ -201,25 +201,9 @@ private:
 
   void CommandError(exception * E, const wstring Msg);
   int CommandError(exception * E, const wstring Msg, int Answers);
-  wstring GetCurrentDirectory();
-  bool GetExceptionOnFail() const;
-  const TRemoteTokenList * GetGroups();
-  const TRemoteTokenList * GetUsers();
-  const TRemoteTokenList * GetMembership();
-  void SetCurrentDirectory(wstring value);
-  void SetExceptionOnFail(bool value);
   void ReactOnCommand(int /*TFSCommand*/ Cmd);
-  wstring GetUserName() const;
-  bool GetAreCachesEmpty() const;
   void ClearCachedFileList(const wstring Path, bool SubDirs);
   void AddCachedFileList(TRemoteFileList * FileList);
-  bool GetCommandSessionOpened();
-  TTerminal * GetCommandSession();
-  bool GetResolvingSymlinks();
-  bool GetActive();
-  wstring GetPassword();
-  wstring GetTunnelPassword();
-  bool GetStoredCredentialsTried();
   inline bool InTransaction();
 
 protected:
@@ -248,7 +232,6 @@ protected:
   int FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const wstring Message, void * Param1 = NULL, void * Param2 = NULL);
-  bool GetIsCapable(TFSCapability Capability) const;
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
     bool Ex = false);
@@ -275,7 +258,7 @@ protected:
   void DoCalculateDirectorySize(const wstring FileName,
     const TRemoteFile * File, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const wstring FileName,
-    const TSearchRec Rec, /*__int64*/ void * Size);
+    const WIN32_FIND_DATA Rec, /*__int64*/ void * Size);
   void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam = NULL);
   TBatchOverwrite EffectiveBatchOverwrite(
@@ -300,7 +283,6 @@ protected:
   void DeleteLocalFile(wstring FileName,
     const TRemoteFile * File, void * Param);
   void RecycleFile(wstring FileName, const TRemoteFile * File);
-  TStrings * GetFixedPaths();
   void DoStartup();
   virtual bool DoQueryReopen(exception * E);
   virtual void FatalError(exception * E, wstring Msg);
@@ -345,7 +327,8 @@ protected:
   wstring EncryptPassword(const wstring & Password);
   wstring DecryptPassword(const wstring & Password);
 
-  __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
+  // __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
+  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
 
 public:
   TTerminal(TSessionData * SessionData, TConfiguration * Configuration);
@@ -427,7 +410,7 @@ public:
   bool DirectoryFileList(const wstring Path,
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const wstring FileName,
-    const TSearchRec Rec, void * Param);
+    const WIN32_FIND_DATA Rec, void * Param);
   wstring FileUrl(const wstring FileName);
   bool FileOperationLoopQuery(exception & E,
     TFileOperationProgressType * OperationProgress, const wstring Message,
@@ -445,14 +428,24 @@ public:
   static wstring ExpandFileName(wstring Path,
     const wstring BasePath);
 
-  __property TSessionData * SessionData = { read = FSessionData };
-  __property TSessionLog * Log = { read = FLog };
-  __property TConfiguration * Configuration = { read = FConfiguration };
-  __property bool Active = { read = GetActive };
-  __property TSessionStatus Status = { read = FStatus };
-  __property wstring CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
-  __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
-  __property TRemoteDirectory * Files = { read = FFiles };
+  // __property TSessionData * SessionData = { read = FSessionData };
+  TSessionData * GetSessionData() { return FSessionData; }
+  // __property TSessionLog * Log = { read = FLog };
+  TSessionLog * GetLog() { return FLog; }
+  // __property TConfiguration * Configuration = { read = FConfiguration };
+  TConfiguration * GetConfiguration() { return FConfiguration; }
+  // __property bool Active = { read = GetActive };
+  bool GetActive();
+  // __property TSessionStatus Status = { read = FStatus };
+  TSessionStatus GetStatus() { return FStatus; }
+  // __property wstring CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
+  wstring GetCurrentDirectory();
+  void SetCurrentDirectory(wstring value);
+  // __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
+  bool GetExceptionOnFail() const;
+  void SetExceptionOnFail(bool value);
+  // __property TRemoteDirectory * Files = { read = FFiles };
+  TRemoteDirectory * GetFiles() { return FFiles; }
   TNotifyEvent GetOnChangeDirectory() { return FOnChangeDirectory; }
   void SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory = value; }
   TReadDirectoryEvent GetOnReadDirectory() { return FOnReadDirectory; }
@@ -463,26 +456,44 @@ public:
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
   TDeleteLocalFileEvent GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
-  __property const TRemoteTokenList * Groups = { read = GetGroups };
-  __property const TRemoteTokenList * Users = { read = GetUsers };
-  __property const TRemoteTokenList * Membership = { read = GetMembership };
-  __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
-  __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
-  __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
+  // __property const TRemoteTokenList * Groups = { read = GetGroups };
+  const TRemoteTokenList * GetGroups();
+  // __property const TRemoteTokenList * Users = { read = GetUsers };
+  const TRemoteTokenList * GetUsers();
+  // __property const TRemoteTokenList * Membership = { read = GetMembership };
+  const TRemoteTokenList * GetMembership();
+  // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };)
+  TFileOperationProgressEvent GetOnProgress() { return FOnProgress; }
+  void SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
+  // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };)
+  TFileOperationFinished GetOnFinished() { return FOnFinished; }
+  void SetOnFinished(TFileOperationFinished value) { FOnFinished = value; }
+  // __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
+  TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
-  __property wstring UserName = { read=GetUserName };
-  __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
-  __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
-  __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
-  __property TTerminal * CommandSession = { read = GetCommandSession };
+  // __property wstring UserName = { read=GetUserName };
+  wstring GetUserName() const;
+  // __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
+  bool GetIsCapable(TFSCapability Capability) const;
+  // __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
+  bool GetAreCachesEmpty() const;
+  // __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
+  bool GetCommandSessionOpened();
+  // __property TTerminal * CommandSession = { read = GetCommandSession };
+  TTerminal * GetCommandSession();
   bool GetAutoReadDirectory() { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
-  __property TStrings * FixedPaths = { read = GetFixedPaths };
-  __property bool ResolvingSymlinks = { read = GetResolvingSymlinks };
-  __property wstring Password = { read = GetPassword };
-  __property wstring TunnelPassword = { read = GetTunnelPassword };
-  __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
+  // __property TStrings * FixedPaths = { read = GetFixedPaths };
+  TStrings * GetFixedPaths();
+  // __property bool ResolvingSymlinks = { read = GetResolvingSymlinks };
+  bool GetResolvingSymlinks();
+  // __property wstring Password = { read = GetPassword };
+  wstring GetPassword();
+  // __property wstring TunnelPassword = { read = GetTunnelPassword };
+  wstring GetTunnelPassword();
+  // __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
+  bool GetStoredCredentialsTried();
   TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
   TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
@@ -495,7 +506,8 @@ public:
   void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
   TNotifyEvent GetOnClose() { return FOnClose; }
   void SetOnClose(TNotifyEvent value) { FOnClose = value; }
-  __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
+  // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
+  int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 };
 //---------------------------------------------------------------------------
 class TSecondaryTerminal : public TTerminal

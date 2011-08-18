@@ -3757,7 +3757,7 @@ wstring TTerminal::FileUrl(const wstring FileName)
 }
 //---------------------------------------------------------------------------
 void TTerminal::MakeLocalFileList(const wstring FileName,
-  const TSearchRec Rec, void * Param)
+  const WIN32_FIND_DATA Rec, void * Param)
 {
   TMakeLocalFileListParams & Params = *static_cast<TMakeLocalFileListParams*>(Param);
 
@@ -3774,7 +3774,7 @@ void TTerminal::MakeLocalFileList(const wstring FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CalculateLocalFileSize(const wstring FileName,
-  const TSearchRec Rec, /*TCalculateSizeParams*/ void * Params)
+  const WIN32_FIND_DATA Rec, /*TCalculateSizeParams*/ void * Params)
 {
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams*>(Params);
 
@@ -3826,7 +3826,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
 
     assert(!FOperationProgress);
     FOperationProgress = &OperationProgress;
-    TSearchRec Rec;
+    WIN32_FIND_DATA Rec;
     for (int Index = 0; Index < FileList->Count; Index++)
     {
       wstring FileName = FileList->Strings[Index];
@@ -3931,7 +3931,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
   try
   {
     bool Found;
-    TSearchRec SearchRec;
+    WIN32_FIND_DATA SearchRec;
     Data.LocalFileList = new TStringList();
     Data.LocalFileList->Sorted = true;
     Data.LocalFileList->CaseSensitive = false;
