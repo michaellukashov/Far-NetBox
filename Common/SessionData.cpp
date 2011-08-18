@@ -993,7 +993,7 @@ bool TSessionData::ParseUrl(wstring Url, TOptions * Options,
       }
       ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
 
-      if (StoredSessions->IsHidden(Data))
+      if (StoredSessions->GetIsHidden()(Data))
       {
         Data->Remove();
         StoredSessions->Remove(Data);

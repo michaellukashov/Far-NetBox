@@ -733,7 +733,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FLinkedFile = FLinkedFile->Duplicate(true);
       Result->FLinkedFile->FLinkedByFile = Result;
     }
-    *Result->Rights = *FRights;
+    *Result->GetRights() = *FRights;
     #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
     COPY_FP(Terminal);
     COPY_FP(Owner);
@@ -1402,14 +1402,14 @@ __int64 TRemoteFileList::GetTotalSize()
 {
   __int64 Result = 0;
   for (int Index = 0; Index < Count; Index++)
-    if (!Files[Index]->IsDirectory) Result += Files[Index]->Size;
+    if (!Files[Index]->GetIsDirectory()) Result += Files[Index]->Size;
   return Result;
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::FindFile(const wstring &FileName)
 {
   for (int Index = 0; Index < Count; Index++)
-    if (Files[Index]->FileName == FileName) return Files[Index];
+    if (Files[Index]->GetFileName() == FileName) return Files[Index];
   return NULL;
 }
 //=== TRemoteDirectory ------------------------------------------------------
@@ -2456,11 +2456,11 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
     assert(File);
     if (!Index)
     {
-      CommonProperties.Rights = *(File->Rights);
+      CommonProperties.Rights = *(File->GetRights());
       // previously we allowed undef implicitly for directories,
       // now we do it explicitly in properties dialog and only in combination
       // with "recursive" option
-      CommonProperties.Rights.AllowUndef = File->Rights->IsUndef;
+      CommonProperties.Rights.AllowUndef = File->GetRights()->IsUndef;
       CommonProperties.Valid << vpRights;
       if (File->Owner.IsSet)
       {
@@ -2476,7 +2476,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
     else
     {
       CommonProperties.Rights.AllowUndef = true;
-      CommonProperties.Rights &= *File->Rights;
+      CommonProperties.Rights &= *File->GetRights();
       if (CommonProperties.Owner != File->Owner)
       {
         CommonProperties.Owner.Clear();

@@ -2004,9 +2004,9 @@ void TTerminal::FileModified(const TRemoteFile * File,
   {
     if ((File != NULL) && (File->Directory != NULL))
     {
-      if (File->IsDirectory)
+      if (File->GetIsDirectory())
       {
-        Directory = File->Directory->FullDirectory + File->FileName;
+        Directory = File->Directory->FullDirectory + File->GetFileName();
       }
       ParentDirectory = File->Directory->Directory;
     }
@@ -2019,10 +2019,10 @@ void TTerminal::FileModified(const TRemoteFile * File,
       }
 
       // this case for scripting
-      if ((File != NULL) && File->IsDirectory)
+      if ((File != NULL) && File->GetIsDirectory())
       {
         Directory = UnixIncludeTrailingBackslash(ParentDirectory) +
-          UnixExtractFileName(File->FileName);
+          UnixExtractFileName(File->GetFileName());
       }
     }
   }
@@ -2106,7 +2106,7 @@ void TTerminal::EnsureNonExistence(const wstring FileName)
     TRemoteFile *File = FFiles->FindFile(FileName);
     if (File)
     {
-      if (File->IsDirectory) throw ECommand(NULL, FMTLOAD(RENAME_CREATE_DIR_EXISTS, (FileName)));
+      if (File->GetIsDirectory()) throw ECommand(NULL, FMTLOAD(RENAME_CREATE_DIR_EXISTS, (FileName)));
         else throw ECommand(NULL, FMTLOAD(RENAME_CREATE_FILE_EXISTS, (FileName)));
     }
   }
@@ -2299,7 +2299,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(wstring Directory, const TFile
       while (Index < FileList->Count)
       {
         TRemoteFile * File = FileList->Files[Index];
-        if (!Mask.Matches(File->FileName))
+        if (!Mask.Matches(File->GetFileName()))
         {
           FileList->Delete(Index);
         }
@@ -2426,7 +2426,7 @@ void TTerminal::ProcessDirectory(const wstring DirName,
         File = FileList->Files[Index];
         if (!File->IsParentDirectory && !File->IsThisDirectory)
         {
-          CallBackFunc(Directory + File->FileName, File, Param);
+          CallBackFunc(Directory + File->GetFileName(), File, Param);
         }
       }
     }
@@ -2455,13 +2455,13 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   assert(FFileSystem);
   try
   {
-    LogEvent(FORMAT("Reading symlink \"%s\".", (SymlinkFile->FileName)));
+    LogEvent(FORMAT("Reading symlink \"%s\".", (SymlinkFile->GetFileName())));
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
   catch (exception &E)
   {
-    CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, (SymlinkFile->FileName)));
+    CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, (SymlinkFile->GetFileName())));
   }
 }
 //---------------------------------------------------------------------------
@@ -2678,7 +2678,7 @@ void TTerminal::RecycleFile(wstring FileName,
   if (FileName.IsEmpty())
   {
     assert(File != NULL);
-    FileName = File->FileName;
+    FileName = File->GetFileName();
   }
 
   if (!IsRecycledFile(FileName))
@@ -2699,7 +2699,7 @@ void TTerminal::DeleteFile(wstring FileName,
 {
   if (FileName.IsEmpty() && File)
   {
-    FileName = File->FileName;
+    FileName = File->GetFileName();
   }
   if (OperationProgress && OperationProgress->Operation == foDelete)
   {
@@ -2779,7 +2779,7 @@ void TTerminal::CustomCommandOnFile(wstring FileName,
   TCustomCommandParams * Params = ((TCustomCommandParams *)AParams);
   if (FileName.IsEmpty() && File)
   {
-    FileName = File->FileName;
+    FileName = File->GetFileName();
   }
   if (OperationProgress && OperationProgress->Operation == foCustomCommand)
   {
@@ -2844,7 +2844,7 @@ void TTerminal::CustomCommandOnFiles(wstring Command,
     for (int i = 0; i < Files->Count; i++)
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(Files->Objects[i]);
-      bool Dir = File->IsDirectory && !File->IsSymLink;
+      bool Dir = File->GetIsDirectory() && !File->IsSymLink;
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
       {
@@ -2873,7 +2873,7 @@ void TTerminal::ChangeFileProperties(wstring FileName,
 
   if (FileName.IsEmpty() && File)
   {
-    FileName = File->FileName;
+    FileName = File->GetFileName();
   }
   if (OperationProgress && OperationProgress->Operation == foSetProperties)
   {
@@ -2886,7 +2886,7 @@ void TTerminal::ChangeFileProperties(wstring FileName,
       (FileName, BooleanToEngStr(RProperties->Recursive))));
     if (RProperties->Valid.Contains(vpRights))
     {
-      LogEvent(FORMAT(" - mode: \"%s\"", (RProperties->Rights.ModeStr)));
+      LogEvent(FORMAT(" - mode: \"%s\"", (RProperties->GetRights().ModeStr)));
     }
     if (RProperties->Valid.Contains(vpGroup))
     {
@@ -2964,7 +2964,7 @@ void TTerminal::CalculateFileSize(wstring FileName,
 
   if (FileName.IsEmpty())
   {
-    FileName = File->FileName;
+    FileName = File->GetFileName();
   }
 
   bool AllowTransfer = (AParams->CopyParam == NULL);
@@ -2974,13 +2974,13 @@ void TTerminal::CalculateFileSize(wstring FileName,
     MaskParams.Size = File->Size;
 
     AllowTransfer = AParams->CopyParam->AllowTransfer(
-      UnixExcludeTrailingBackslash(File->FullFileName), osRemote, File->IsDirectory,
+      UnixExcludeTrailingBackslash(File->FullFileName), osRemote, File->GetIsDirectory(),
       MaskParams);
   }
 
   if (AllowTransfer)
   {
-    if (File->IsDirectory)
+    if (File->GetIsDirectory())
     {
       if (!File->IsSymLink)
       {
@@ -3075,7 +3075,7 @@ void TTerminal::RenameFile(const TRemoteFile * File,
   assert(File && File->Directory == FFiles);
   bool Proceed = true;
   // if filename doesn't contain path, we check for existence of file
-  if ((File->FileName != NewName) && CheckExistence &&
+  if ((File->GetFileName() != NewName) && CheckExistence &&
       Configuration->ConfirmOverwriting &&
       UnixComparePaths(CurrentDirectory, FFiles->Directory))
   {
@@ -3083,7 +3083,7 @@ void TTerminal::RenameFile(const TRemoteFile * File,
     if (DuplicateFile)
     {
       wstring QuestionFmt;
-      if (DuplicateFile->IsDirectory) QuestionFmt = LoadStr(DIRECTORY_OVERWRITE);
+      if (DuplicateFile->GetIsDirectory()) QuestionFmt = LoadStr(DIRECTORY_OVERWRITE);
         else QuestionFmt = LoadStr(FILE_OVERWRITE);
       int Result;
       TQueryParams Params(qpNeverAskAgainCheck);
@@ -3103,8 +3103,8 @@ void TTerminal::RenameFile(const TRemoteFile * File,
 
   if (Proceed)
   {
-    FileModified(File, File->FileName);
-    RenameFile(File->FileName, NewName);
+    FileModified(File, File->GetFileName());
+    RenameFile(File->GetFileName(), NewName);
   }
 }
 //---------------------------------------------------------------------------
@@ -3179,7 +3179,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const wstring Target,
         // but currently this is the only way we can move (at least in GUI)
         // current directory
         if ((File != NULL) &&
-            File->IsDirectory &&
+            File->GetIsDirectory() &&
             ((CurrentDirectory.SubString(1, FileList->Strings[Index].Length()) == FileList->Strings[Index]) &&
              ((FileList->Strings[Index].Length() == CurrentDirectory.Length()) ||
               (CurrentDirectory[FileList->Strings[Index].Length() + 1] == '/'))))
@@ -3970,7 +3970,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
           {
             TSynchronizeFileData * FileData = new TSynchronizeFileData;
 
-            FileData->IsDirectory = FLAGSET(SearchRec.Attr, faDirectory);
+            FileData->GetIsDirectory() = FLAGSET(SearchRec.Attr, faDirectory);
             FileData->Info.FileName = FileName;
             FileData->Info.Directory = Data.LocalDirectory;
             FileData->Info.Modification = FileTimeToDateTime(SearchRec.FindData.ftLastWriteTime);
@@ -4023,7 +4023,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
           try
           {
-            ChecklistItem->IsDirectory = FileData->IsDirectory;
+            ChecklistItem->GetIsDirectory() = FileData->GetIsDirectory();
 
             ChecklistItem->Local = FileData->Info;
             ChecklistItem->FLocalLastWriteTime = FileData->LocalLastWriteTime;
@@ -4046,7 +4046,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
                 (Modified ? TSynchronizeChecklist::saUploadUpdate : TSynchronizeChecklist::saUploadNew);
               ChecklistItem->Checked =
                 (Modified || FLAGCLEAR(Params, spExistingOnly)) &&
-                (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
+                (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Params, spNoRecurse) ||
                  FLAGSET(Params, spSubDirs));
             }
             else if ((Mode == smLocal) && FLAGCLEAR(Params, spTimestamp))
@@ -4054,7 +4054,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
               ChecklistItem->Action = TSynchronizeChecklist::saDeleteLocal;
               ChecklistItem->Checked =
                 FLAGSET(Params, spDelete) &&
-                (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
+                (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Params, spNoRecurse) ||
                  FLAGSET(Params, spSubDirs));
             }
 
@@ -4103,23 +4103,23 @@ void TTerminal::SynchronizeCollectFile(const wstring FileName,
   TFileMasks::TParams MaskParams;
   MaskParams.Size = File->Size;
   wstring LocalFileName =
-    Data->CopyParam->ChangeFileName(File->FileName, osRemote, false);
+    Data->CopyParam->ChangeFileName(File->GetFileName(), osRemote, false);
   if (Data->CopyParam->AllowTransfer(
         UnixExcludeTrailingBackslash(File->FullFileName), osRemote,
-        File->IsDirectory, MaskParams) &&
-      !FFileSystem->TemporaryTransferFile(File->FileName) &&
+        File->GetIsDirectory(), MaskParams) &&
+      !FFileSystem->TemporaryTransferFile(File->GetFileName()) &&
       (FLAGCLEAR(Data->Flags, sfFirstLevel) ||
        (Data->Options == NULL) || (Data->Options->Filter == NULL) ||
-        Data->Options->Filter->Find(File->FileName, FoundIndex) ||
+        Data->Options->Filter->Find(File->GetFileName(), FoundIndex) ||
         Data->Options->Filter->Find(LocalFileName, FoundIndex)))
   {
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
     try
     {
-      ChecklistItem->IsDirectory = File->IsDirectory;
+      ChecklistItem->GetIsDirectory() = File->GetIsDirectory();
       ChecklistItem->ImageIndex = File->IconIndex;
 
-      ChecklistItem->Remote.FileName = File->FileName;
+      ChecklistItem->Remote.FileName = File->GetFileName();
       ChecklistItem->Remote.Directory = Data->RemoteDirectory;
       ChecklistItem->Remote.Modification = File->Modification;
       ChecklistItem->Remote.ModificationFmt = File->ModificationFmt;
@@ -4135,12 +4135,12 @@ void TTerminal::SynchronizeCollectFile(const wstring FileName,
 
         LocalData->New = false;
 
-        if (File->IsDirectory != LocalData->IsDirectory)
+        if (File->GetIsDirectory() != LocalData->GetIsDirectory())
         {
           LogEvent(FORMAT("%s is directory on one side, but file on the another",
-            (File->FileName)));
+            (File->GetFileName())));
         }
-        else if (!File->IsDirectory)
+        else if (!File->GetIsDirectory())
         {
           ChecklistItem->Local = LocalData->Info;
 
@@ -4209,7 +4209,7 @@ void TTerminal::SynchronizeCollectFile(const wstring FileName,
         {
           DoSynchronizeCollectDirectory(
             Data->LocalDirectory + LocalData->Info.FileName,
-            Data->RemoteDirectory + File->FileName,
+            Data->RemoteDirectory + File->GetFileName(),
             Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
             Data->Options, (Data->Flags & ~sfFirstLevel),
             Data->Checklist);
@@ -4233,7 +4233,7 @@ void TTerminal::SynchronizeCollectFile(const wstring FileName,
               (Modified ? TSynchronizeChecklist::saDownloadUpdate : TSynchronizeChecklist::saDownloadNew);
             ChecklistItem->Checked =
               (Modified || FLAGCLEAR(Data->Params, spExistingOnly)) &&
-              (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
+              (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Data->Params, spNoRecurse) ||
                FLAGSET(Data->Params, spSubDirs));
           }
         }
@@ -4244,7 +4244,7 @@ void TTerminal::SynchronizeCollectFile(const wstring FileName,
             ChecklistItem->Action = TSynchronizeChecklist::saDeleteRemote;
             ChecklistItem->Checked =
               FLAGSET(Data->Params, spDelete) &&
-              (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
+              (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Data->Params, spNoRecurse) ||
                FLAGSET(Data->Params, spSubDirs));
           }
         }
@@ -4518,7 +4518,7 @@ void TTerminal::FileFind(wstring FileName,
   {
     if (FileName.IsEmpty())
     {
-      FileName = File->FileName;
+      FileName = File->GetFileName();
     }
 
     TFileMasks::TParams MaskParams;
@@ -4526,12 +4526,12 @@ void TTerminal::FileFind(wstring FileName,
 
     wstring FullFileName = UnixExcludeTrailingBackslash(File->FullFileName);
     if (AParams->FileMask.Matches(FullFileName, false,
-         File->IsDirectory, &MaskParams))
+         File->GetIsDirectory(), &MaskParams))
     {
       AParams->OnFileFound(this, FileName, File, AParams->Cancel);
     }
 
-    if (File->IsDirectory)
+    if (File->GetIsDirectory())
     {
       DoFilesFind(FullFileName, *AParams);
     }

@@ -1124,7 +1124,7 @@ void TSCPFileSystem::ChangeFileProperties(const wstring FileName,
   TChmodSessionAction & Action)
 {
   assert(Properties);
-  bool IsDirectory = File && File->IsDirectory;
+  bool IsDirectory = File && File->GetIsDirectory();
   bool Recursive = Properties->Recursive && IsDirectory;
   wstring RecursiveStr = Recursive ? "-R" : "";
 
@@ -1140,7 +1140,7 @@ void TSCPFileSystem::ChangeFileProperties(const wstring FileName,
   }
   if (Properties->Valid.Contains(vpRights))
   {
-    TRights Rights = Properties->Rights;
+    TRights Rights = Properties->GetRights();
 
     // if we don't set modes recursively, we may add X at once with other
     // options. Otherwise we have to add X after recusive command
@@ -1194,7 +1194,7 @@ void TSCPFileSystem::CustomCommandOnFile(const wstring FileName,
     TCaptureOutputEvent OutputEvent)
 {
   assert(File);
-  bool Dir = File->IsDirectory && !File->IsSymLink;
+  bool Dir = File->GetIsDirectory() && !File->IsSymLink;
   if (Dir && (Params & ccRecursive))
   {
     TCustomCommandParams AParams;
@@ -1403,7 +1403,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         if (File != NULL)
         {
           int Answer;
-          if (File->IsDirectory)
+          if (File->GetIsDirectory())
           {
             wstring Message = FMTLOAD(DIRECTORY_OVERWRITE, (FileNameOnly));
             TQueryParams QueryParams(qpNeverAskAgainCheck);
@@ -2128,7 +2128,7 @@ void TSCPFileSystem::SCPSink(const wstring TargetDir,
 
     // In case of error occured before control record arrived.
     // We can finally use full path here, as we get current path in FileName param
-    // (we used to set the file into OperationProgress->FileName, but it collided
+    // (we used to set the file into OperationProgress->GetFileName(), but it collided
     // with progress outputing, particularly for scripting)
     wstring AbsoluteFileName = FileName;
 
@@ -2257,7 +2257,7 @@ void TSCPFileSystem::SCPSink(const wstring TargetDir,
         }
 
         bool Dir = (Ctrl == 'D');
-        wstring SourceFullName = SourceDir + OperationProgress->FileName;
+        wstring SourceFullName = SourceDir + OperationProgress->GetFileName();
         if (!CopyParam->AllowTransfer(SourceFullName, osRemote, Dir, MaskParams))
         {
           FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer",
@@ -2268,7 +2268,7 @@ void TSCPFileSystem::SCPSink(const wstring TargetDir,
 
         wstring DestFileName =
           IncludeTrailingBackslash(TargetDir) +
-          CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
+          CopyParam->ChangeFileName(OperationProgress->GetFileName(), osRemote,
             Level == 0);
 
         FileData.Attrs = FileGetAttr(DestFileName);
@@ -2288,7 +2288,7 @@ void TSCPFileSystem::SCPSink(const wstring TargetDir,
             );
             /* SCP: can we set the timestamp for directories ? */
           }
-          wstring FullFileName = SourceDir + OperationProgress->FileName;
+          wstring FullFileName = SourceDir + OperationProgress->GetFileName();
           SCPSink(DestFileName, FullFileName, UnixIncludeTrailingBackslash(FullFileName),
             CopyParam, Success, OperationProgress, Params, Level + 1);
           continue;
@@ -2332,7 +2332,7 @@ void TSCPFileSystem::SCPSink(const wstring TargetDir,
                   int Answer;
                   SUSPEND_OPERATION (
                     Answer = FTerminal->ConfirmFileOverwrite(
-                      OperationProgress->FileName, &FileParams,
+                      OperationProgress->GetFileName(), &FileParams,
                       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
                       &QueryParams, osLocal, Params, OperationProgress);
                   );
@@ -2422,7 +2422,7 @@ void TSCPFileSystem::SCPSink(const wstring TargetDir,
               {
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
-                  FMTLOAD(COPY_FATAL, (OperationProgress->FileName)));
+                  FMTLOAD(COPY_FATAL, (OperationProgress->GetFileName())));
               }
 
               OperationProgress->TransferingFile = false;

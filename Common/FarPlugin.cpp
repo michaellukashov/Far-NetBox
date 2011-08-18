@@ -2814,7 +2814,7 @@ int TFarEditorInfo::GetEditorID()
 //---------------------------------------------------------------------------
 wstring TFarEditorInfo::GetFileName()
 {
-    wstring Result = L""; // FEditorInfo->FileName;
+    wstring Result = L""; // FEditorInfo->GetFileName();
     return StrFromFar(Result);
 };
 //---------------------------------------------------------------------------

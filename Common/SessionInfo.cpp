@@ -133,14 +133,14 @@ public:
             TRemoteFile * File = FFileList->Files[Index];
 
             FLog->Add(llAction, "      <file>");
-            FLog->Add(llAction, FORMAT("        <filename value=\"%s\" />", (XmlEscape(File->FileName))));
+            FLog->Add(llAction, FORMAT("        <filename value=\"%s\" />", (XmlEscape(File->GetFileName()))));
             FLog->Add(llAction, FORMAT("        <type value=\"%s\" />", (XmlEscape(File->Type))));
-            if (!File->IsDirectory)
+            if (!File->GetIsDirectory())
             {
               FLog->Add(llAction, FORMAT("        <size value=\"%s\" />", (IntToStr(File->Size))));
             }
             FLog->Add(llAction, FORMAT("        <modification value=\"%s\" />", (XmlTimestamp(File->Modification))));
-            FLog->Add(llAction, FORMAT("        <permissions value=\"%s\" />", (XmlEscape(File->Rights->Text))));
+            FLog->Add(llAction, FORMAT("        <permissions value=\"%s\" />", (XmlEscape(File->GetRights()->Text))));
             FLog->Add(llAction, "      </file>");
           }
           FLog->Add(llAction, "    </files>");
@@ -378,7 +378,7 @@ void TFileSessionAction::FileName(const wstring & FileName)
 {
   if (FRecord != NULL)
   {
-    FRecord->FileName(FileName);
+    FRecord->GetFileName()(FileName);
   }
 }
 //---------------------------------------------------------------------------
@@ -441,7 +441,7 @@ void TChmodSessionAction::Rights(const TRights & Rights)
 {
   if (FRecord != NULL)
   {
-    FRecord->Rights(Rights);
+    FRecord->GetRights()(Rights);
   }
 }
 //---------------------------------------------------------------------------

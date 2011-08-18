@@ -147,7 +147,7 @@ void TSynchronizeController::SynchronizeChange(
               const TSynchronizeChecklist::TItem * Item = Checklist->Item[Index];
               // note that there may be action saDeleteRemote even if nothing has changed
               // so this is sub-optimal
-              if (Item->IsDirectory)
+              if (Item->GetIsDirectory())
               {
                 if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
                     (Item->Action == TSynchronizeChecklist::saDeleteRemote))
