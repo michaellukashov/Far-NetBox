@@ -10,17 +10,17 @@
 #include "PuttyTools.h"
 #include "Terminal.h"
 //---------------------------------------------------------------------------
-__fastcall EFileMasksException::EFileMasksException(
-    AnsiString Message, int AErrorStart, int AErrorLen) :
+EFileMasksException::EFileMasksException(
+    wstring Message, int AErrorStart, int AErrorLen) :
   Exception(Message)
 {
   ErrorStart = AErrorStart;
   ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall MaskFilePart(const AnsiString Part, const AnsiString Mask, bool& Masked)
+wstring MaskFilePart(const wstring Part, const wstring Mask, bool& Masked)
 {
-  AnsiString Result;
+  wstring Result;
   int RestStart = 1;
   bool Delim = false;
   for (int Index = 1; Index <= Mask.Length(); Index++)
@@ -66,7 +66,7 @@ AnsiString __fastcall MaskFilePart(const AnsiString Part, const AnsiString Mask,
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall MaskFileName(AnsiString FileName, const AnsiString Mask)
+wstring MaskFileName(wstring FileName, const wstring Mask)
 {
   if (!Mask.IsEmpty() && (Mask != "*") && (Mask != "*.*"))
   {
@@ -77,8 +77,8 @@ AnsiString __fastcall MaskFileName(AnsiString FileName, const AnsiString Mask)
       int P2 = FileName.LastDelimiter(".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
-      AnsiString FileExt = P2 > 1 ?
-        FileName.SubString(P2 + 1, FileName.Length() - P2) : AnsiString();
+      wstring FileExt = P2 > 1 ?
+        FileName.SubString(P2 + 1, FileName.Length() - P2) : wstring();
       FileExt = MaskFilePart(FileExt, Mask.SubString(P + 1, Mask.Length() - P), Masked);
       if (P2 > 1)
       {
@@ -98,14 +98,14 @@ AnsiString __fastcall MaskFileName(AnsiString FileName, const AnsiString Mask)
   return FileName;
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsFileNameMask(const AnsiString Mask)
+bool IsFileNameMask(const wstring Mask)
 {
   bool Masked = false;
   MaskFilePart("", Mask, Masked);
   return Masked;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall DelimitFileNameMask(AnsiString Mask)
+wstring DelimitFileNameMask(wstring Mask)
 {
   for (int i = 1; i <= Mask.Length(); i++)
   {
@@ -124,23 +124,23 @@ TFileMasks::TParams::TParams() :
 {
 }
 //---------------------------------------------------------------------------
-AnsiString TFileMasks::TParams::ToString() const
+wstring TFileMasks::TParams::ToString() const
 {
-  return AnsiString("[") + IntToStr(Size) + "]";
+  return wstring("[") + IntToStr(Size) + "]";
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::IsMask(const AnsiString Mask)
+bool TFileMasks::IsMask(const wstring Mask)
 {
   return (Mask.LastDelimiter("?*[") > 0);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::IsAnyMask(const AnsiString & Mask)
+bool TFileMasks::IsAnyMask(const wstring & Mask)
 {
   return Mask.IsEmpty() || (Mask == "*.*") || (Mask == "*");
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TFileMasks::NormalizeMask(const AnsiString & Mask, const AnsiString & AnyMask)
+wstring TFileMasks::NormalizeMask(const wstring & Mask, const wstring & AnyMask)
 {
   if (IsAnyMask(Mask))
   {
@@ -152,32 +152,32 @@ AnsiString __fastcall TFileMasks::NormalizeMask(const AnsiString & Mask, const A
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TFileMasks::TFileMasks()
+TFileMasks::TFileMasks()
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TFileMasks::TFileMasks(const TFileMasks & Source)
+TFileMasks::TFileMasks(const TFileMasks & Source)
 {
   SetStr(Source.Masks, false);
 }
 //---------------------------------------------------------------------------
-__fastcall TFileMasks::TFileMasks(const AnsiString & AMasks)
+TFileMasks::TFileMasks(const wstring & AMasks)
 {
   SetStr(AMasks, false);
 }
 //---------------------------------------------------------------------------
-__fastcall TFileMasks::~TFileMasks()
+TFileMasks::~TFileMasks()
 {
   Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::Clear()
+void TFileMasks::Clear()
 {
   Clear(FIncludeMasks);
   Clear(FExcludeMasks);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::Clear(TMasks & Masks)
+void TFileMasks::Clear(TMasks & Masks)
 {
   TMasks::iterator I = Masks.begin();
   while (I != Masks.end())
@@ -189,14 +189,14 @@ void __fastcall TFileMasks::Clear(TMasks & Masks)
   Masks.clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::Negate()
+void TFileMasks::Negate()
 {
   FStr = "";
   FIncludeMasks.swap(FExcludeMasks);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::MatchesMasks(const AnsiString FileName, bool Directory,
-  const AnsiString Path, const TParams * Params, const TMasks & Masks)
+bool TFileMasks::MatchesMasks(const wstring FileName, bool Directory,
+  const wstring Path, const TParams * Params, const TMasks & Masks)
 {
   bool Result = false;
 
@@ -253,8 +253,8 @@ bool __fastcall TFileMasks::MatchesMasks(const AnsiString FileName, bool Directo
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::Matches(const AnsiString FileName, bool Directory,
-  const AnsiString Path, const TParams * Params) const
+bool TFileMasks::Matches(const wstring FileName, bool Directory,
+  const wstring Path, const TParams * Params) const
 {
   bool Result =
     (FIncludeMasks.empty() || MatchesMasks(FileName, Directory, Path, Params, FIncludeMasks)) &&
@@ -262,13 +262,13 @@ bool __fastcall TFileMasks::Matches(const AnsiString FileName, bool Directory,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::Matches(const AnsiString FileName, bool Local,
+bool TFileMasks::Matches(const wstring FileName, bool Local,
   bool Directory, const TParams * Params) const
 {
   bool Result;
   if (Local)
   {
-    AnsiString Path = ExtractFilePath(FileName);
+    wstring Path = ExtractFilePath(FileName);
     if (!Path.IsEmpty())
     {
       Path = ToUnixPath(ExcludeTrailingBackslash(Path));
@@ -283,36 +283,36 @@ bool __fastcall TFileMasks::Matches(const AnsiString FileName, bool Local,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::operator ==(const TFileMasks & rhm) const
+bool TFileMasks::operator ==(const TFileMasks & rhm) const
 {
   return (Masks == rhm.Masks);
 }
 //---------------------------------------------------------------------------
-TFileMasks & __fastcall TFileMasks::operator =(const AnsiString & rhs)
+TFileMasks & TFileMasks::operator =(const wstring & rhs)
 {
   Masks = rhs;
   return *this;
 }
 //---------------------------------------------------------------------------
-TFileMasks & __fastcall TFileMasks::operator =(const TFileMasks & rhm)
+TFileMasks & TFileMasks::operator =(const TFileMasks & rhm)
 {
   Masks = rhm.Masks;
   return *this;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::operator ==(const AnsiString & rhs) const
+bool TFileMasks::operator ==(const wstring & rhs) const
 {
   return (Masks == rhs);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::ThrowError(int Start, int End)
+void TFileMasks::ThrowError(int Start, int End)
 {
   throw EFileMasksException(
     FMTLOAD(MASK_ERROR, (Masks.SubString(Start, End - Start + 1))),
     Start, End - Start + 1);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::CreateMaskMask(const AnsiString & Mask, int Start, int End,
+void TFileMasks::CreateMaskMask(const wstring & Mask, int Start, int End,
   bool Ex, TMaskMask & MaskMask)
 {
   try
@@ -335,20 +335,20 @@ void __fastcall TFileMasks::CreateMaskMask(const AnsiString & Mask, int Start, i
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
+void TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
 {
   delete MaskMask.Mask;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::TrimEx(AnsiString & Str, int & Start, int & End)
+void TFileMasks::TrimEx(wstring & Str, int & Start, int & End)
 {
-  AnsiString Buf = TrimLeft(Str);
+  wstring Buf = TrimLeft(Str);
   Start += Str.Length() - Buf.Length();
   Str = TrimRight(Buf);
   End -= Buf.Length() - Str.Length();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const AnsiString & Str)
+bool TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const wstring & Str)
 {
   bool Result;
   if (MaskMask.Kind == TMaskMask::Any)
@@ -366,7 +366,7 @@ bool __fastcall TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const An
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::SetMasks(const AnsiString value)
+void TFileMasks::SetMasks(const wstring value)
 {
   if (FStr != value)
   {
@@ -374,14 +374,14 @@ void __fastcall TFileMasks::SetMasks(const AnsiString value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::SetMask(const AnsiString & Mask)
+void TFileMasks::SetMask(const wstring & Mask)
 {
   SetStr(Mask, true);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileMasks::SetStr(const AnsiString Str, bool SingleMask)
+void TFileMasks::SetStr(const wstring Str, bool SingleMask)
 {
-  AnsiString Backup = FStr;
+  wstring Backup = FStr;
   try
   {
     FStr = Str;
@@ -393,7 +393,7 @@ void __fastcall TFileMasks::SetStr(const AnsiString Str, bool SingleMask)
     {
       int MaskStart = NextMaskFrom;
       char NextMaskDelimiter;
-      AnsiString MaskStr;
+      wstring MaskStr;
       if (SingleMask)
       {
         MaskStr = Str;
@@ -426,7 +426,7 @@ void __fastcall TFileMasks::SetStr(const AnsiString Str, bool SingleMask)
         {
           char PartDelimiter = NextPartDelimiter;
           int PartFrom = NextPartFrom;
-          AnsiString PartStr = CopyToChars(MaskStr, NextPartFrom, "<>", false, &NextPartDelimiter);
+          wstring PartStr = CopyToChars(MaskStr, NextPartFrom, "<>", false, &NextPartDelimiter);
 
           int PartStart = MaskStart + PartFrom - 1;
           int PartEnd = MaskStart + NextPartFrom - 2;
@@ -522,14 +522,14 @@ void __fastcall TFileMasks::SetStr(const AnsiString Str, bool SingleMask)
 #define TEXT_TOKEN '\255'
 //---------------------------------------------------------------------------
 const char TCustomCommand::NoQuote = '\0';
-const AnsiString TCustomCommand::Quotes = "\"'";
+const wstring TCustomCommand::Quotes = "\"'";
 //---------------------------------------------------------------------------
 TCustomCommand::TCustomCommand()
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::GetToken(
-  const AnsiString & Command, int Index, int & Len, char & PatternCmd)
+void TCustomCommand::GetToken(
+  const wstring & Command, int Index, int & Len, char & PatternCmd)
 {
   assert(Index <= Command.Length());
   const char * Ptr = Command.c_str() + Index - 1;
@@ -582,10 +582,10 @@ void __fastcall TCustomCommand::GetToken(
   }
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall TCustomCommand::Complete(const AnsiString & Command,
+wstring TCustomCommand::Complete(const wstring & Command,
   bool LastPass)
 {
-  AnsiString Result;
+  wstring Result;
   int Index = 1;
 
   while (Index <= Command.Length())
@@ -619,8 +619,8 @@ AnsiString __fastcall TCustomCommand::Complete(const AnsiString & Command,
       {
         Quote = Command[Index - 1];
       }
-      AnsiString Pattern = Command.SubString(Index, Len);
-      AnsiString Replacement;
+      wstring Pattern = Command.SubString(Index, Len);
+      wstring Replacement;
       bool Delimit = true;
       if (PatternReplacement(Index, Pattern, Replacement, Delimit))
       {
@@ -647,17 +647,17 @@ AnsiString __fastcall TCustomCommand::Complete(const AnsiString & Command,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::DelimitReplacement(AnsiString & Replacement, char Quote)
+void TCustomCommand::DelimitReplacement(wstring & Replacement, char Quote)
 {
   Replacement = ShellDelimitStr(Replacement, Quote);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::Validate(const AnsiString & Command)
+void TCustomCommand::Validate(const wstring & Command)
 {
   CustomValidate(Command, NULL);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::CustomValidate(const AnsiString & Command,
+void TCustomCommand::CustomValidate(const wstring & Command,
   void * Arg)
 {
   int Index = 1;
@@ -673,7 +673,7 @@ void __fastcall TCustomCommand::CustomValidate(const AnsiString & Command,
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommand::FindPattern(const AnsiString & Command,
+bool TCustomCommand::FindPattern(const wstring & Command,
   char PatternCmd)
 {
   bool Result = false;
@@ -696,7 +696,7 @@ bool __fastcall TCustomCommand::FindPattern(const AnsiString & Command,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommand::ValidatePattern(const AnsiString & /*Command*/,
+void TCustomCommand::ValidatePattern(const wstring & /*Command*/,
   int /*Index*/, int /*Len*/, char /*PatternCmd*/, void * /*Arg*/)
 {
 }
@@ -708,13 +708,13 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
   FChildCustomCommand = ChildCustomCommand;
 }
 //---------------------------------------------------------------------------
-void __fastcall TInteractiveCustomCommand::Prompt(int /*Index*/,
-  const AnsiString & /*Prompt*/, AnsiString & Value)
+void TInteractiveCustomCommand::Prompt(int /*Index*/,
+  const wstring & /*Prompt*/, wstring & Value)
 {
   Value = "";
 }
 //---------------------------------------------------------------------------
-int __fastcall TInteractiveCustomCommand::PatternLen(int Index, char PatternCmd)
+int TInteractiveCustomCommand::PatternLen(int Index, char PatternCmd)
 {
   int Len;
   switch (PatternCmd)
@@ -730,13 +730,13 @@ int __fastcall TInteractiveCustomCommand::PatternLen(int Index, char PatternCmd)
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TInteractiveCustomCommand::PatternReplacement(int Index, const AnsiString & Pattern,
-  AnsiString & Replacement, bool & Delimit)
+bool TInteractiveCustomCommand::PatternReplacement(int Index, const wstring & Pattern,
+  wstring & Replacement, bool & Delimit)
 {
   bool Result;
   if ((Pattern.Length() >= 3) && (Pattern[2] == '?'))
   {
-    AnsiString PromptStr;
+    wstring PromptStr;
     int Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos("?");
     if (Pos > 0)
     {
@@ -766,11 +766,11 @@ bool __fastcall TInteractiveCustomCommand::PatternReplacement(int Index, const A
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TCustomCommandData::TCustomCommandData()
+TCustomCommandData::TCustomCommandData()
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
+TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
   HostName = Terminal->SessionData->HostName;
   UserName = Terminal->SessionData->UserName;
@@ -783,15 +783,15 @@ TFileCustomCommand::TFileCustomCommand()
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-  const AnsiString & Path)
+  const wstring & Path)
 {
   FData = Data;
   FPath = Path;
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-    const AnsiString & Path, const AnsiString & FileName,
-    const AnsiString & FileList) :
+    const wstring & Path, const wstring & FileName,
+    const wstring & FileList) :
   TCustomCommand()
 {
   FData = Data;
@@ -800,7 +800,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
   FFileList = FileList;
 }
 //---------------------------------------------------------------------------
-int __fastcall TFileCustomCommand::PatternLen(int /*Index*/, char PatternCmd)
+int TFileCustomCommand::PatternLen(int /*Index*/, char PatternCmd)
 {
   int Len;
   switch (toupper(PatternCmd))
@@ -820,8 +820,8 @@ int __fastcall TFileCustomCommand::PatternLen(int /*Index*/, char PatternCmd)
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::PatternReplacement(int /*Index*/,
-  const AnsiString & Pattern, AnsiString & Replacement, bool & Delimit)
+bool TFileCustomCommand::PatternReplacement(int /*Index*/,
+  const wstring & Pattern, wstring & Replacement, bool & Delimit)
 {
   // keep consistent with TSessionLog::OpenLogFile
 
@@ -856,7 +856,7 @@ bool __fastcall TFileCustomCommand::PatternReplacement(int /*Index*/,
   return true;
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileCustomCommand::Validate(const AnsiString & Command)
+void TFileCustomCommand::Validate(const wstring & Command)
 {
   int Found[2] = { 0, 0 };
   CustomValidate(Command, &Found);
@@ -867,7 +867,7 @@ void __fastcall TFileCustomCommand::Validate(const AnsiString & Command)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileCustomCommand::ValidatePattern(const AnsiString & /*Command*/,
+void TFileCustomCommand::ValidatePattern(const wstring & /*Command*/,
   int Index, int /*Len*/, char PatternCmd, void * Arg)
 {
   int * Found = static_cast<int *>(Arg);
@@ -884,12 +884,12 @@ void __fastcall TFileCustomCommand::ValidatePattern(const AnsiString & /*Command
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::IsFileListCommand(const AnsiString & Command)
+bool TFileCustomCommand::IsFileListCommand(const wstring & Command)
 {
   return FindPattern(Command, '&');
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFileCustomCommand::IsFileCommand(const AnsiString & Command)
+bool TFileCustomCommand::IsFileCommand(const wstring & Command)
 {
   return FindPattern(Command, '!') || FindPattern(Command, '&');
 }

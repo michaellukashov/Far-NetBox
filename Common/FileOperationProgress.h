@@ -14,11 +14,11 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
 enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-typedef void __fastcall (__closure *TFileOperationProgressEvent)
+typedef void (TObject::*TFileOperationProgressEvent)
   (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
-typedef void __fastcall (__closure *TFileOperationFinished)
+typedef void (TObject::*TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
-    const AnsiString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    const wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
 {
@@ -37,16 +37,16 @@ private:
   std::vector<__int64> FTotalTransferredThen;
 
 protected:
-  void __fastcall ClearTransfer();
-  inline void __fastcall DoProgress();
+  void ClearTransfer();
+  inline void DoProgress();
 
 public:
   // common data
   TFileOperation Operation;
   // on what side if operation being processed (local/remote), source of copy
   TOperationSide Side;
-  AnsiString FileName;
-  AnsiString Directory;
+  wstring FileName;
+  wstring Directory;
   bool AsciiTransfer;
   bool TransferingFile;
   bool Temp;
@@ -77,62 +77,62 @@ public:
 
   bool Suspended;
 
-  __fastcall TFileOperationProgressType();
-  __fastcall TFileOperationProgressType(
+  TFileOperationProgressType();
+  TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinished AOnFinished);
-  __fastcall ~TFileOperationProgressType();
-  void __fastcall AddLocalyUsed(__int64 ASize);
-  void __fastcall AddTransfered(__int64 ASize, bool AddToTotals = true);
-  void __fastcall AddResumed(__int64 ASize);
-  void __fastcall Clear();
-  unsigned int __fastcall CPS();
-  void __fastcall Finish(AnsiString FileName, bool Success,
+  ~TFileOperationProgressType();
+  void AddLocalyUsed(__int64 ASize);
+  void AddTransfered(__int64 ASize, bool AddToTotals = true);
+  void AddResumed(__int64 ASize);
+  void Clear();
+  unsigned int CPS();
+  void Finish(wstring FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  unsigned long __fastcall LocalBlockSize();
-  bool __fastcall IsLocalyDone();
-  bool __fastcall IsTransferDone();
-  void __fastcall SetFile(AnsiString AFileName, bool AFileInProgress = true);
-  void __fastcall SetFileInProgress();
-  int __fastcall OperationProgress();
-  unsigned long __fastcall TransferBlockSize();
-  unsigned long __fastcall AdjustToCPSLimit(unsigned long Size);
-  static unsigned long __fastcall StaticBlockSize();
-  void __fastcall Reset();
-  void __fastcall Resume();
-  void __fastcall SetLocalSize(__int64 ASize);
-  void __fastcall SetAsciiTransfer(bool AAsciiTransfer);
-  void __fastcall SetResumeStatus(TResumeStatus AResumeStatus);
-  void __fastcall SetTransferSize(__int64 ASize);
-  void __fastcall ChangeTransferSize(__int64 ASize);
-  void __fastcall RollbackTransfer();
-  void __fastcall SetTotalSize(__int64 ASize);
-  void __fastcall Start(TFileOperation AOperation, TOperationSide ASide, int ACount);
-  void __fastcall Start(TFileOperation AOperation,
-    TOperationSide ASide, int ACount, bool ATemp, const AnsiString ADirectory,
+  unsigned long LocalBlockSize();
+  bool IsLocalyDone();
+  bool IsTransferDone();
+  void SetFile(wstring AFileName, bool AFileInProgress = true);
+  void SetFileInProgress();
+  int OperationProgress();
+  unsigned long TransferBlockSize();
+  unsigned long AdjustToCPSLimit(unsigned long Size);
+  static unsigned long StaticBlockSize();
+  void Reset();
+  void Resume();
+  void SetLocalSize(__int64 ASize);
+  void SetAsciiTransfer(bool AAsciiTransfer);
+  void SetResumeStatus(TResumeStatus AResumeStatus);
+  void SetTransferSize(__int64 ASize);
+  void ChangeTransferSize(__int64 ASize);
+  void RollbackTransfer();
+  void SetTotalSize(__int64 ASize);
+  void Start(TFileOperation AOperation, TOperationSide ASide, int ACount);
+  void Start(TFileOperation AOperation,
+    TOperationSide ASide, int ACount, bool ATemp, const wstring ADirectory,
     unsigned long ACPSLimit);
-  void __fastcall Stop();
-  void __fastcall Suspend();
+  void Stop();
+  void Suspend();
   // whole operation
-  TDateTime __fastcall TimeElapsed();
+  TDateTime TimeElapsed();
   // only current file
-  TDateTime __fastcall TimeExpected();
-  TDateTime __fastcall TotalTimeExpected();
-  TDateTime __fastcall TotalTimeLeft();
-  int __fastcall TransferProgress();
-  int __fastcall OverallProgress();
-  int __fastcall TotalTransferProgress();
+  TDateTime TimeExpected();
+  TDateTime TotalTimeExpected();
+  TDateTime TotalTimeLeft();
+  int TransferProgress();
+  int OverallProgress();
+  int TotalTransferProgress();
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress
 {
 public:
-  __fastcall TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
+  TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
   {
     FOperationProgress = OperationProgress;
     FOperationProgress->Suspend();
   }
 
-  __fastcall ~TSuspendFileOperationProgress()
+  ~TSuspendFileOperationProgress()
   {
     FOperationProgress->Resume();
   }
