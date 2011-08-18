@@ -206,7 +206,7 @@ public:
   // __property TSessionLog * Parent = { read = FParent, write = FParent };
   TSessionLog * GetParent() { return FParent; }
   void SetParent(TSessionLog * value) { FParent = value; }
-  //  __property bool Logging = { read = FLogging };
+  // __property bool Logging = { read = FLogging };
   bool GetLogging() { return FLogging; }
   // __property int BottomIndex = { read = GetBottomIndex };
   int GetBottomIndex();
@@ -218,7 +218,7 @@ public:
   // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
   TNotifyEvent GetOnStateChange() { return FOnStateChange; }
   void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
-  //  __property wstring CurrentFileName = { read = FCurrentFileName };
+  // __property wstring CurrentFileName = { read = FCurrentFileName };
   wstring GetCurrentFileName() { return FCurrentFileName; }
   // __property bool LoggingToFile = { read = GetLoggingToFile };
   bool GetLoggingToFile();

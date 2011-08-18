@@ -76,25 +76,25 @@ public:
 
   // __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty();
-  // __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };)
+  // __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
   int GetTransfersLimit() { return FTransfersLimit; }
   void SetTransfersLimit(int value);
-  // __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };)
+  // __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
   TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
-  // __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };)
+  // __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
   TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
-  // __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };)
+  // __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
   TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
-  // __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };)
+  // __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   TQueueListUpdate GetOnListUpdate() { return FOnListUpdate; }
   void SetOnListUpdate(TQueueListUpdate value) { FOnListUpdate = value; }
-  // __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };)
+  // __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   TQueueItemUpdateEvent GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
-  // __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };)
+  // __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
   TQueueEventEvent GetOnEvent() { return FOnEvent; }
   void SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
 
@@ -176,7 +176,7 @@ public:
 
   // __property TStatus Status = { read = GetStatus };
   TStatus GetStatus();
-  // __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };)
+  // __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };
   HANDLE GetCompleteEvent() { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE value) { FCompleteEvent = value; }
 
@@ -221,15 +221,15 @@ public:
 
   // __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
   TFileOperationProgressType * GetProgressData();
-  // __property TQueueItem::TInfo * Info = { read = FInfo };)
+  // __property TQueueItem::TInfo * Info = { read = FInfo };
   TQueueItem::TInfo * GetInfo() { return FInfo; }
-  // __property TQueueItem::TStatus Status = { read = FStatus };)
+  // __property TQueueItem::TStatus Status = { read = FStatus };
   TQueueItem::TStatus GetStatus() { return FStatus; }
-  // __property bool ProcessingUserAction = { read = FProcessingUserAction };)
+  // __property bool ProcessingUserAction = { read = FProcessingUserAction };
   bool GetProcessingUserAction() { return FProcessingUserAction; }
   // __property int Index = { read = GetIndex };
   int GetIndex();
-  // __property void * UserData = { read = FUserData, write = FUserData };)
+  // __property void * UserData = { read = FUserData, write = FUserData };
   void * GetUserData() { return FUserData; }
   void SetUserData(void * value) { FUserData = value; }
 

@@ -462,10 +462,10 @@ public:
   const TRemoteTokenList * GetUsers();
   // __property const TRemoteTokenList * Membership = { read = GetMembership };
   const TRemoteTokenList * GetMembership();
-  // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };)
+  // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
   TFileOperationProgressEvent GetOnProgress() { return FOnProgress; }
   void SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
-  // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };)
+  // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
   TFileOperationFinished GetOnFinished() { return FOnFinished; }
   void SetOnFinished(TFileOperationFinished value) { FOnFinished = value; }
   // __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
