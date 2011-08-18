@@ -542,8 +542,10 @@ public:
   virtual void Idle();
   void RecryptPasswords();
 
-  __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
-  __property int ActiveCount = { read = GetActiveCount };
+  // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
+  TTerminal * GetTerminal(int Index);
+  // __property int ActiveCount = { read = GetActiveCount };
+  int GetActiveCount();
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
@@ -551,8 +553,6 @@ protected:
 private:
   TConfiguration * FConfiguration;
 
-  TTerminal * GetTerminal(int Index);
-  int GetActiveCount();
 };
 //---------------------------------------------------------------------------
 struct TCustomCommandParams
@@ -649,8 +649,10 @@ public:
 
   ~TSynchronizeChecklist();
 
-  __property int Count = { read = GetCount };
-  __property const TItem * Item[int Index] = { read = GetItem };
+  // __property int Count = { read = GetCount };
+  int GetCount() const;
+  // __property const TItem * Item[int Index] = { read = GetItem };
+  const TItem * GetItem(int Index) const;
 
 protected:
   TSynchronizeChecklist();
@@ -658,8 +660,6 @@ protected:
   void Sort();
   void Add(TItem * Item);
 
-  int GetCount() const;
-  const TItem * GetItem(int Index) const;
 
 private:
   TList * FList;
