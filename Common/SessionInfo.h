@@ -193,7 +193,7 @@ public:
   TSessionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration * Configuration);
   ~TSessionLog();
-  HIDESBASE void Add(TLogLineType Type, const wstring & Line);
+  virtual void Add(TLogLineType Type, const wstring & Line);
   void AddStartupInfo();
   void AddException(exception * E);
   void AddSeparator();
@@ -203,19 +203,33 @@ public:
   void Lock();
   void Unlock();
 
-  __property TSessionLog * Parent = { read = FParent, write = FParent };
-  __property bool Logging = { read = FLogging };
-  __property int BottomIndex = { read = GetBottomIndex };
-  __property wstring Line[int Index]  = { read=GetLine };
-  __property TLogLineType Type[int Index]  = { read=GetType };
-  __property OnChange;
-  __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
-  __property wstring CurrentFileName = { read = FCurrentFileName };
-  __property bool LoggingToFile = { read = GetLoggingToFile };
-  __property int TopIndex = { read = FTopIndex };
-  __property wstring SessionName = { read = GetSessionName };
-  __property wstring Name = { read = FName, write = FName };
-  __property Count;
+  // __property TSessionLog * Parent = { read = FParent, write = FParent };
+  TSessionLog * GetParent() { return FParent; }
+  void SetParent(TSessionLog * value) { FParent = value; }
+  //  __property bool Logging = { read = FLogging };
+  bool GetLogging() { return FLogging; }
+  // __property int BottomIndex = { read = GetBottomIndex };
+  int GetBottomIndex();
+  // __property wstring Line[int Index]  = { read=GetLine };
+  wstring GetLine(int Index);
+  // __property TLogLineType Type[int Index]  = { read=GetType };
+  TLogLineType GetType(int Index);
+  // __property OnChange;
+  // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
+  TNotifyEvent GetOnStateChange() { return FOnStateChange; }
+  void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
+  //  __property wstring CurrentFileName = { read = FCurrentFileName };
+  wstring GetCurrentFileName() { return FCurrentFileName; }
+  // __property bool LoggingToFile = { read = GetLoggingToFile };
+  bool GetLoggingToFile();
+  // __property int TopIndex = { read = FTopIndex };
+  int GetTopIndex() { return FTopIndex; }
+  // __property wstring SessionName = { read = GetSessionName };
+  wstring GetSessionName();
+  // __property wstring Name = { read = FName, write = FName };
+  wstring GetName() { return FName; }
+  void SetName(wstring value) { FName = value; }
+  // __property Count;
 
 protected:
   void CloseLogFile();
@@ -241,15 +255,10 @@ private:
   TList * FPendingActions;
   TNotifyEvent FOnStateChange;
 
-  wstring GetLine(int Index);
-  TLogLineType GetType(int Index);
   void DeleteUnnecessary();
   void StateChange();
   void OpenLogFile();
-  int GetBottomIndex();
   wstring GetLogFileName();
-  bool GetLoggingToFile();
-  wstring GetSessionName();
   void DoAdd(TLogLineType Type, wstring Line,
     void (TObject::*f)(TLogLineType Type, const wstring & Line));
   void DoAddToParent(TLogLineType aType, const wstring & aLine);
