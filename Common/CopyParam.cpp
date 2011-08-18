@@ -55,7 +55,7 @@ wstring TCopyParamType::GetInfoStr(wstring Separator, int Options) const
   #define ADD(STR, EXCEPT) \
     if (FLAGCLEAR(Options, EXCEPT)) \
     { \
-      Result += (Result.IsEmpty() ? wstring() : Separator) + (STR); \
+      Result += (Result.empty() ? wstring() : Separator) + (STR); \
     } \
     else \
     { \
@@ -171,11 +171,11 @@ wstring TCopyParamType::GetInfoStr(wstring Separator, int Options) const
 
   if (SomeAttrExcluded)
   {
-    Result += (Result.IsEmpty() ? wstring() : Separator) +
+    Result += (Result.empty() ? wstring() : Separator) +
       FORMAT(LoadStrPart(COPY_INFO_NOT_USABLE, 1),
-        (LoadStrPart(COPY_INFO_NOT_USABLE, (Result.IsEmpty() ? 3 : 2))));
+        (LoadStrPart(COPY_INFO_NOT_USABLE, (Result.empty() ? 3 : 2))));
   }
-  else if (Result.IsEmpty())
+  else if (Result.empty())
   {
     Result = LoadStr(COPY_INFO_DEFAULT);
   }
@@ -289,7 +289,7 @@ wstring TCopyParamType::ValidLocalFileName(wstring FileName) const
     }
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
-    if (!FileName.IsEmpty() &&
+    if (!FileName.empty() &&
         ((FileName[FileName.Length()] == ' ') ||
          (FileName[FileName.Length()] == '.')))
     {
@@ -356,9 +356,9 @@ wstring TCopyParamType::RestoreChars(wstring FileName) const
 wstring TCopyParamType::ValidLocalPath(wstring Path) const
 {
   wstring Result;
-  while (!Path.IsEmpty())
+  while (!Path.empty())
   {
-    if (!Result.IsEmpty())
+    if (!Result.empty())
     {
       Result += "\\";
     }
@@ -504,14 +504,14 @@ bool TCopyParamType::AllowResume(__int64 Size) const
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowAnyTransfer() const
 {
-  return ExcludeFileMask.Masks.IsEmpty();
+  return ExcludeFileMask.Masks.empty();
 }
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowTransfer(wstring FileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
   bool Result = true;
-  if (!ExcludeFileMask.Masks.IsEmpty())
+  if (!ExcludeFileMask.Masks.empty())
   {
     Result = (ExcludeFileMask.Matches(FileName, (Side == osLocal),
       Directory, &Params) == NegativeExclude);

@@ -299,7 +299,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
           Abort();
         }
         FileSystem->Connect(Session);
-        if (!Directory.IsEmpty())
+        if (!Directory.empty())
         {
           FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
         }
@@ -481,7 +481,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(exception * E)
 {
-  if (!E->Message.IsEmpty())
+  if (!E->Message.empty())
   {
     if (E->InheritsFrom(__classid(exception)))
     {
@@ -597,7 +597,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         {
           Answers = Params->TimerAnswers;
         }
-        if (!Params->TimerMessage.IsEmpty())
+        if (!Params->TimerMessage.empty())
         {
           Str = Params->TimerMessage;
         }

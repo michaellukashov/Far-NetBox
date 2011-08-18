@@ -1498,14 +1498,14 @@ void TCustomFarPlugin::ClearConsoleTitle()
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle(const wstring Title)
 {
-    assert(!FCurrentTitle.IsEmpty());
+    assert(!FCurrentTitle.empty());
     FCurrentTitle = Title;
     UpdateConsoleTitle();
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitleProgress(short Progress)
 {
-    assert(!FCurrentTitle.IsEmpty());
+    assert(!FCurrentTitle.empty());
     FCurrentProgress = Progress;
     UpdateConsoleTitle();
 }

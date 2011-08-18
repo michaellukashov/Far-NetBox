@@ -109,10 +109,10 @@ wstring THierarchicalStorage::MungeSubKey(wstring Key, bool Path)
   wstring Result;
   if (Path)
   {
-    assert(Key.IsEmpty() || (Key[Key.Length()] != '\\'));
-    while (!Key.IsEmpty())
+    assert(Key.empty() || (Key[Key.Length()] != '\\'));
+    while (!Key.empty())
     {
-      if (!Result.IsEmpty())
+      if (!Result.empty())
       {
         Result += '\\';
       }
@@ -300,7 +300,7 @@ void THierarchicalStorage::WriteBinaryData(const wstring Name,
 wstring THierarchicalStorage::IncludeTrailingBackslash(const wstring & S)
 {
   // expanded from ?: as it caused memory leaks
-  if (S.IsEmpty())
+  if (S.empty())
   {
     return S;
   }
@@ -313,7 +313,7 @@ wstring THierarchicalStorage::IncludeTrailingBackslash(const wstring & S)
 wstring THierarchicalStorage::ExcludeTrailingBackslash(const wstring & S)
 {
   // expanded from ?: as it caused memory leaks
-  if (S.IsEmpty())
+  if (S.empty())
   {
     return S;
   }
@@ -859,7 +859,7 @@ __int64 TIniFileStorage::ReadInt64(const wstring Name, __int64 Default)
   __int64 Result = Default;
   wstring Str;
   Str = ReadStringRaw(Name, "");
-  if (!Str.IsEmpty())
+  if (!Str.empty())
   {
     Result = StrToInt64Def(Str, Default);
   }
@@ -870,7 +870,7 @@ TDateTime TIniFileStorage::ReadDateTime(const wstring Name, TDateTime Default)
 {
   TDateTime Result;
   wstring Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
-  if (Value.IsEmpty())
+  if (Value.empty())
   {
     Result = Default;
   }
@@ -901,7 +901,7 @@ double TIniFileStorage::ReadFloat(const wstring Name, double Default)
 {
   double Result;
   wstring Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
-  if (Value.IsEmpty())
+  if (Value.empty())
   {
     Result = Default;
   }

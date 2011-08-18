@@ -226,7 +226,7 @@ wstring TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int size)
     FirstLineCmd = Command(fsFirstLine, ARRAYOFCONST((FirstLine))) + Separator;
 
   wstring Result;
-  if (!Line.IsEmpty())
+  if (!Line.empty())
     Result = FORMAT("%s%s%s%s", (FirstLineCmd, Line, Separator, LastLineCmd));
   else
     Result = FORMAT("%s%s", (FirstLineCmd, LastLineCmd));
@@ -246,7 +246,7 @@ wstring TCommandSet::GetLastLine()
 wstring TCommandSet::GetReturnVar()
 {
   assert(SessionData);
-  if (!FReturnVar.IsEmpty()) return wstring('$') + FReturnVar;
+  if (!FReturnVar.empty()) return wstring('$') + FReturnVar;
     else
   if (SessionData->DetectReturnVar) return '0';
     else return wstring('$') + SessionData->ReturnVar;
@@ -268,7 +268,7 @@ TStrings * TCommandSet::CreateCommandList()
   for (Integer Index = 0; Index < ShellCommandCount; Index++)
   {
     wstring Cmd = Commands[(TFSCommand)Index];
-    if (!Cmd.IsEmpty())
+    if (!Cmd.empty())
     {
       Cmd = ExtractCommand(Cmd);
       if ((Cmd != "%s") && (CommandList->IndexOf(Cmd) < 0))
@@ -326,7 +326,7 @@ const TSessionInfo & TSCPFileSystem::GetSessionInfo()
 //---------------------------------------------------------------------------
 const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-  if (FFileSystemInfo.AdditionalInfo.IsEmpty() && Retrieve)
+  if (FFileSystemInfo.AdditionalInfo.empty() && Retrieve)
   {
     wstring UName;
     FTerminal->ExceptionOnFail = true;
@@ -455,7 +455,7 @@ bool TSCPFileSystem::IsCapable(int Capability) const
 //---------------------------------------------------------------------------
 wstring TSCPFileSystem::DelimitStr(wstring Str)
 {
-  if (!Str.IsEmpty())
+  if (!Str.empty())
   {
     Str = ::DelimitStr(Str, "\\`$\"");
     if (Str[1] == '-') Str = "./"+Str;
@@ -465,7 +465,7 @@ wstring TSCPFileSystem::DelimitStr(wstring Str)
 //---------------------------------------------------------------------------
 void TSCPFileSystem::EnsureLocation()
 {
-  if (!FCachedDirectoryChange.IsEmpty())
+  if (!FCachedDirectoryChange.empty())
   {
     FTerminal->LogEvent(FORMAT("Locating to cached directory \"%s\".",
       (FCachedDirectoryChange)));
@@ -516,7 +516,7 @@ bool TSCPFileSystem::RemoveLastLine(wstring & Line,
     int & ReturnCode, wstring LastLine)
 {
   bool IsLastLine = false;
-  if (LastLine.IsEmpty()) LastLine = LAST_LINE;
+  if (LastLine.empty()) LastLine = LAST_LINE;
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
   int Pos = Line.Pos(LastLine);
@@ -574,7 +574,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const wstring * Cmd)
       {
         Line = FSecureShell->ReceiveLine();
         IsLast = IsLastLine(Line);
-        if (!IsLast || !Line.IsEmpty())
+        if (!IsLast || !Line.empty())
         {
           FOutput->Add(Line);
           if (FLAGSET(Params, coReadProgress))
@@ -596,10 +596,10 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const wstring * Cmd)
       wstring Message = FSecureShell->GetStdError();
       if ((Params & coExpectNoOutput) && FOutput->Count)
       {
-        if (!Message.IsEmpty()) Message += "\n";
+        if (!Message.empty()) Message += "\n";
         Message += FOutput->Text;
       }
-      while (!Message.IsEmpty() && (Message.LastDelimiter("\n\r") == Message.Length()))
+      while (!Message.empty() && (Message.LastDelimiter("\n\r") == Message.Length()))
       {
         Message.SetLength(Message.Length() - 1);
       }
@@ -613,7 +613,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const wstring * Cmd)
       }
         else
       if (!(Params & coOnlyReturnCode) &&
-          ((!Message.IsEmpty() && ((FOutput->Count == 0) || !(Params & coIgnoreWarnings))) ||
+          ((!Message.empty() && ((FOutput->Count == 0) || !(Params & coIgnoreWarnings))) ||
            WrongReturnCode))
       {
         assert(Cmd != NULL);
@@ -715,7 +715,7 @@ void TSCPFileSystem::LookupUsersGroups()
   if (FOutput->Count > 0)
   {
     wstring Groups = FOutput->Strings[0];
-    while (!Groups.IsEmpty())
+    while (!Groups.empty())
     {
       wstring NewGroup = CutToChar(Groups, ' ', false);
       FTerminal->FGroups.Add(TRemoteToken(NewGroup));
@@ -767,7 +767,7 @@ void TSCPFileSystem::DetectReturnVar()
       }
     }
 
-    if (NewReturnVar.IsEmpty())
+    if (NewReturnVar.empty())
     {
       Abort();
     }
@@ -786,7 +786,7 @@ void TSCPFileSystem::DetectReturnVar()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ClearAlias(wstring Alias)
 {
-  if (!Alias.IsEmpty())
+  if (!Alias.empty())
   {
     // this command usually fails, because there will never be
     // aliases on all commands -> see last False parametr
@@ -837,7 +837,7 @@ void TSCPFileSystem::UnsetNationalVars()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ReadCurrentDirectory()
 {
-  if (FCachedDirectoryChange.IsEmpty())
+  if (FCachedDirectoryChange.empty())
   {
     ExecCommand(fsCurrentDirectory);
     FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->Strings[0]);
@@ -861,7 +861,7 @@ void TSCPFileSystem::AnnounceFileListOperation()
 void TSCPFileSystem::ChangeDirectory(const wstring Directory)
 {
   wstring ToDir;
-  if (!Directory.IsEmpty() &&
+  if (!Directory.empty() &&
       ((Directory[1] != '~') || (Directory.SubString(1, 2) == "~ ")))
   {
     ToDir = "\"" + DelimitStr(Directory) + "\"";
@@ -1113,7 +1113,7 @@ void TSCPFileSystem::ChangeFileToken(const wstring & DelimitedName,
     Str = Token.Name;
   }
 
-  if (!Str.IsEmpty())
+  if (!Str.empty())
   {
     ExecCommand(Cmd, ARRAYOFCONST((RecursiveStr, Str, DelimitedName)));
   }
@@ -1222,7 +1222,7 @@ void TSCPFileSystem::CaptureOutput(const wstring & AddedLine, bool StdError)
   wstring Line = AddedLine;
   if (StdError ||
       !RemoveLastLine(Line, ReturnCode) ||
-      !Line.IsEmpty())
+      !Line.empty())
   {
     assert(FOnCaptureOutput != NULL);
     FOnCaptureOutput(Line, StdError);

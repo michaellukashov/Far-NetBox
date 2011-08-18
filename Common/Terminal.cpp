@@ -123,13 +123,13 @@ TSynchronizeChecklist::TItem::~TItem()
 //---------------------------------------------------------------------------
 const wstring& TSynchronizeChecklist::TItem::GetFileName() const
 {
-  if (!Remote.FileName.IsEmpty())
+  if (!Remote.FileName.empty())
   {
     return Remote.FileName;
   }
   else
   {
-    assert(!Local.FileName.IsEmpty());
+    assert(!Local.FileName.empty());
     return Local.FileName;
   }
 }
@@ -160,13 +160,13 @@ int TSynchronizeChecklist::Compare(void * AItem1, void * AItem2)
   TItem * Item2 = static_cast<TItem *>(AItem2);
 
   int Result;
-  if (!Item1->Local.Directory.IsEmpty())
+  if (!Item1->Local.Directory.empty())
   {
     Result = CompareText(Item1->Local.Directory, Item2->Local.Directory);
   }
   else
   {
-    assert(!Item1->Remote.Directory.IsEmpty());
+    assert(!Item1->Remote.Directory.empty());
     Result = CompareText(Item1->Remote.Directory, Item2->Remote.Directory);
   }
 
@@ -327,7 +327,7 @@ bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
     if (IsAuthenticationPrompt(Kind))
     {
       Instructions = LoadStr(TUNNEL_INSTRUCTION) +
-        (Instructions.IsEmpty() ? "" : "\n") +
+        (Instructions.empty() ? "" : "\n") +
         Instructions;
     }
 
@@ -596,14 +596,14 @@ void TTerminal::RecryptPasswords()
 //---------------------------------------------------------------------------
 bool TTerminal::IsAbsolutePath(const wstring Path)
 {
-  return !Path.IsEmpty() && Path[1] == '/';
+  return !Path.empty() && Path[1] == '/';
 }
 //---------------------------------------------------------------------------
 wstring TTerminal::ExpandFileName(wstring Path,
   const wstring BasePath)
 {
   Path = UnixExcludeTrailingBackslash(Path);
-  if (!IsAbsolutePath(Path) && !BasePath.IsEmpty())
+  if (!IsAbsolutePath(Path) && !BasePath.empty())
   {
     // TODO: Handle more complicated cases like "../../xxx"
     if (Path == "..")
@@ -719,7 +719,7 @@ void TTerminal::Open()
                 catch(exception & E)
                 {
                   assert(!FSecureShell->Active);
-                  if (!FSecureShell->Active && !FTunnelError.IsEmpty())
+                  if (!FSecureShell->Active && !FTunnelError.empty())
                   {
                     // the only case where we expect this to happen
                     assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
@@ -964,7 +964,7 @@ void TTerminal::Reopen(int Params)
     // so make sure we do not try retrieving current directory from the server
     // (particularly with FTP)
     wstring ACurrentDirectory = PeekCurrentDirectory();
-    if (!ACurrentDirectory.IsEmpty())
+    if (!ACurrentDirectory.empty())
     {
       SessionData->RemoteDirectory = ACurrentDirectory;
     }
@@ -1079,7 +1079,7 @@ int TTerminal::QueryUserException(const wstring Query,
   TStrings * MoreMessages = new TStringList();
   try
   {
-    if (!E->Message.IsEmpty() && !Query.IsEmpty())
+    if (!E->Message.empty() && !Query.empty())
     {
       MoreMessages->Add(E->Message);
     }
@@ -1089,7 +1089,7 @@ int TTerminal::QueryUserException(const wstring Query,
     {
       MoreMessages->AddStrings(EE->MoreMessages);
     }
-    Result = QueryUser(!Query.IsEmpty() ? Query : E->Message,
+    Result = QueryUser(!Query.empty() ? Query : E->Message,
       MoreMessages->Count ? MoreMessages : NULL,
       Answers, Params, QueryType);
   }
@@ -1334,7 +1334,7 @@ bool TTerminal::FileOperationLoopQuery(exception & E,
   {
     int Answers = qaRetry | qaAbort |
       FLAGMASK(AllowSkip, (qaSkip | qaAll)) |
-      FLAGMASK(!SpecialRetry.IsEmpty(), qaYes);
+      FLAGMASK(!SpecialRetry.empty(), qaYes);
     TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
     TQueryButtonAlias Aliases[2];
     int AliasCount = 0;
@@ -1412,7 +1412,7 @@ int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
 //---------------------------------------------------------------------------
 wstring TTerminal::TranslateLockedPath(wstring Path, bool Lock)
 {
-  if (!SessionData->LockInHome || Path.IsEmpty() || (Path[1] != '/'))
+  if (!SessionData->LockInHome || Path.empty() || (Path[1] != '/'))
     return Path;
 
   if (Lock)
@@ -1420,7 +1420,7 @@ wstring TTerminal::TranslateLockedPath(wstring Path, bool Lock)
     if (Path.SubString(1, FLockDirectory.Length()) == FLockDirectory)
     {
       Path.Delete(1, FLockDirectory.Length());
-      if (Path.IsEmpty()) Path = "/";
+      if (Path.empty()) Path = "/";
     }
   }
   else
@@ -1529,7 +1529,7 @@ wstring TTerminal::GetCurrentDirectory()
   if (FFileSystem)
   {
     FCurrentDirectory = FFileSystem->CurrentDirectory;
-    if (FCurrentDirectory.IsEmpty())
+    if (FCurrentDirectory.empty())
     {
       ReadCurrentDirectory();
     }
@@ -1575,7 +1575,7 @@ wstring TTerminal::GetUserName() const
   assert(FFileSystem != NULL);
   wstring Result = FFileSystem->GetUserName();
   // Is empty also when stored username was used
-  if (Result.IsEmpty())
+  if (Result.empty())
   {
     Result = SessionData->UserName;
   }
@@ -1828,7 +1828,7 @@ void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const wstring Me
   LogEvent("Closing session after completed operation (as requested by user)");
   Close();
   throw ESshTerminate(NULL,
-    Message.IsEmpty() ? LoadStr(CLOSED_ON_COMPLETION) : Message,
+    Message.empty() ? LoadStr(CLOSED_ON_COMPLETION) : Message,
     Operation);
 }
 //---------------------------------------------------------------------------
@@ -1909,7 +1909,7 @@ int TTerminal::ConfirmFileOverwrite(const wstring FileName,
 
   if (BatchOverwrite == boNo)
   {
-    if (Message.IsEmpty())
+    if (Message.empty())
     {
       Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
         REMOTE_FILE_OVERWRITE), (FileName));
@@ -2010,10 +2010,10 @@ void TTerminal::FileModified(const TRemoteFile * File,
       }
       ParentDirectory = File->Directory->Directory;
     }
-    else if (!FileName.IsEmpty())
+    else if (!FileName.empty())
     {
       ParentDirectory = UnixExtractFilePath(FileName);
-      if (ParentDirectory.IsEmpty())
+      if (ParentDirectory.empty())
       {
         ParentDirectory = CurrentDirectory;
       }
@@ -2029,11 +2029,11 @@ void TTerminal::FileModified(const TRemoteFile * File,
 
   if (SessionData->CacheDirectories)
   {
-    if (!Directory.IsEmpty())
+    if (!Directory.empty())
     {
       DirectoryModified(Directory, true);
     }
-    if (!ParentDirectory.IsEmpty())
+    if (!ParentDirectory.empty())
     {
       DirectoryModified(ParentDirectory, false);
     }
@@ -2041,7 +2041,7 @@ void TTerminal::FileModified(const TRemoteFile * File,
 
   if (SessionData->CacheDirectoryChanges && ClearDirectoryChange)
   {
-    if (!Directory.IsEmpty())
+    if (!Directory.empty())
     {
       FDirectoryChangesCache->ClearDirectoryChange(Directory);
       FDirectoryChangesCache->ClearDirectoryChangeTarget(Directory);
@@ -2051,7 +2051,7 @@ void TTerminal::FileModified(const TRemoteFile * File,
 //---------------------------------------------------------------------------
 void TTerminal::DirectoryModified(const wstring Path, bool SubDirs)
 {
-  if (Path.IsEmpty())
+  if (Path.empty())
   {
     ClearCachedFileList(CurrentDirectory, SubDirs);
   }
@@ -2100,7 +2100,7 @@ void TTerminal::RefreshDirectory()
 void TTerminal::EnsureNonExistence(const wstring FileName)
 {
   // if filename doesn't contain path, we check for existence of file
-  if ((UnixExtractFileDir(FileName).IsEmpty()) &&
+  if ((UnixExtractFileDir(FileName).empty()) &&
       UnixComparePaths(CurrentDirectory, FFiles->Directory))
   {
     TRemoteFile *File = FFiles->FindFile(FileName);
@@ -2156,7 +2156,7 @@ void TTerminal::DoStartup()
     LookupUsersGroups();
 
     DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true);
-    if (!SessionData->RemoteDirectory.IsEmpty())
+    if (!SessionData->RemoteDirectory.empty())
     {
       ChangeDirectory(SessionData->RemoteDirectory);
     }
@@ -2194,7 +2194,7 @@ void TTerminal::ReadCurrentDirectory()
       FLastDirectoryChange = "";
     }
 
-    if (OldDirectory.IsEmpty())
+    if (OldDirectory.empty())
     {
       FLockDirectory = (SessionData->LockInHome ?
         FFileSystem->CurrentDirectory : wstring(""));
@@ -2665,7 +2665,7 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(int Params)
 bool TTerminal::IsRecycledFile(wstring FileName)
 {
   wstring Path = UnixExtractFilePath(FileName);
-  if (Path.IsEmpty())
+  if (Path.empty())
   {
     Path = CurrentDirectory;
   }
@@ -2675,7 +2675,7 @@ bool TTerminal::IsRecycledFile(wstring FileName)
 void TTerminal::RecycleFile(wstring FileName,
   const TRemoteFile * File)
 {
-  if (FileName.IsEmpty())
+  if (FileName.empty())
   {
     assert(File != NULL);
     FileName = File->GetFileName();
@@ -2697,7 +2697,7 @@ void TTerminal::RecycleFile(wstring FileName,
 void TTerminal::DeleteFile(wstring FileName,
   const TRemoteFile * File, void * AParams)
 {
-  if (FileName.IsEmpty() && File)
+  if (FileName.empty() && File)
   {
     FileName = File->GetFileName();
   }
@@ -2777,7 +2777,7 @@ void TTerminal::CustomCommandOnFile(wstring FileName,
   const TRemoteFile * File, void * AParams)
 {
   TCustomCommandParams * Params = ((TCustomCommandParams *)AParams);
-  if (FileName.IsEmpty() && File)
+  if (FileName.empty() && File)
   {
     FileName = File->GetFileName();
   }
@@ -2848,7 +2848,7 @@ void TTerminal::CustomCommandOnFiles(wstring Command,
 
       if (!Dir || FLAGSET(Params, ccApplyToDirectories))
       {
-        if (!FileList.IsEmpty())
+        if (!FileList.empty())
         {
           FileList += " ";
         }
@@ -2871,7 +2871,7 @@ void TTerminal::ChangeFileProperties(wstring FileName,
   TRemoteProperties * RProperties = (TRemoteProperties *)Properties;
   assert(RProperties && !RProperties->Valid.Empty());
 
-  if (FileName.IsEmpty() && File)
+  if (FileName.empty() && File)
   {
     FileName = File->GetFileName();
   }
@@ -2962,7 +2962,7 @@ void TTerminal::CalculateFileSize(wstring FileName,
   assert(File);
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams*>(Param);
 
-  if (FileName.IsEmpty())
+  if (FileName.empty())
   {
     FileName = File->GetFileName();
   }
@@ -3410,7 +3410,7 @@ void TTerminal::LookupUsersGroups()
 //---------------------------------------------------------------------------
 bool TTerminal::AllowedAnyCommand(const wstring Command)
 {
-  return !Command.Trim().IsEmpty();
+  return !Command.Trim().empty();
 }
 //---------------------------------------------------------------------------
 bool TTerminal::GetCommandSessionOpened()
@@ -4030,7 +4030,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const wstring LocalDirectory,
 
             if (Modified)
             {
-              assert(!FileData->MatchingRemoteFile.Directory.IsEmpty());
+              assert(!FileData->MatchingRemoteFile.Directory.empty());
               ChecklistItem->Remote = FileData->MatchingRemoteFile;
               ChecklistItem->ImageIndex = FileData->MatchingRemoteFileImageIndex;
               ChecklistItem->RemoteFile = FileData->MatchingRemoteFileFile;
@@ -4516,7 +4516,7 @@ void TTerminal::FileFind(wstring FileName,
 
   if (!AParams->Cancel)
   {
-    if (FileName.IsEmpty())
+    if (FileName.empty())
     {
       FileName = File->GetFileName();
     }
@@ -4599,7 +4599,7 @@ wstring TTerminal::GetPassword()
 {
   wstring Result;
   // FPassword is empty also when stored password was used
-  if (FPassword.IsEmpty())
+  if (FPassword.empty())
   {
     Result = SessionData->Password;
   }
@@ -4614,7 +4614,7 @@ wstring TTerminal::GetTunnelPassword()
 {
   wstring Result;
   // FTunnelPassword is empty also when stored password was used
-  if (FTunnelPassword.IsEmpty())
+  if (FTunnelPassword.empty())
   {
     Result = SessionData->TunnelPassword;
   }
@@ -4842,7 +4842,7 @@ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal,
   Log->Name = Name;
   SessionData->NonPersistant();
   assert(FMainTerminal != NULL);
-  if (!FMainTerminal->UserName.IsEmpty())
+  if (!FMainTerminal->UserName.empty())
   {
     SessionData->UserName = FMainTerminal->UserName;
   }
@@ -4888,7 +4888,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
         Password = FMainTerminal->Password;
       }
       Results->Strings[0] = Password;
-      if (!Results->Strings[0].IsEmpty())
+      if (!Results->Strings[0].empty())
       {
         LogEvent("Using remembered password of the main session.");
         AResult = true;

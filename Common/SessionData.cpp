@@ -549,12 +549,12 @@ void TSessionData::Load(THierarchicalStorage * Storage)
       if (Storage->OpenSubKey(InternalStorageKey, true))
       {
         Storage->DeleteValue("PasswordPlain");
-        if (!Password.IsEmpty())
+        if (!Password.empty())
         {
           Storage->WriteString("Password", FPassword);
         }
         Storage->DeleteValue("TunnelPasswordPlain");
-        if (!TunnelPassword.IsEmpty())
+        if (!TunnelPassword.empty())
         {
           Storage->WriteString("TunnelPassword", FTunnelPassword);
         }
@@ -803,7 +803,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
 {
-  if (!Configuration->DisablePasswordStoring && !PuttyExport && !FPassword.IsEmpty())
+  if (!Configuration->DisablePasswordStoring && !PuttyExport && !FPassword.empty())
   {
     Storage->WriteString("Password", StronglyRecryptPassword(FPassword, UserName+HostName));
   }
@@ -821,7 +821,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
   else
   {
     // save password encrypted
-    if (!FProxyPassword.IsEmpty())
+    if (!FProxyPassword.empty())
     {
       Storage->WriteString("ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, ProxyUsername+ProxyHost));
     }
@@ -831,7 +831,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
     }
     Storage->DeleteValue("ProxyPassword");
 
-    if (!Configuration->DisablePasswordStoring && !FTunnelPassword.IsEmpty())
+    if (!Configuration->DisablePasswordStoring && !FTunnelPassword.empty())
     {
       Storage->WriteString("TunnelPassword", StronglyRecryptPassword(FTunnelPassword, TunnelUserName+TunnelHostName));
     }
@@ -851,7 +851,7 @@ void TSessionData::RecryptPasswords()
 //---------------------------------------------------------------------
 bool TSessionData::HasAnyPassword()
 {
-  return !FPassword.IsEmpty() || !FProxyPassword.IsEmpty() || !FTunnelPassword.IsEmpty();
+  return !FPassword.empty() || !FProxyPassword.empty() || !FTunnelPassword.empty();
 }
 //---------------------------------------------------------------------
 void TSessionData::Modify()
@@ -961,7 +961,7 @@ bool TSessionData::ParseUrl(wstring Url, TOptions * Options,
     *AProtocolDefined = ProtocolDefined;
   }
 
-  if (!Url.IsEmpty())
+  if (!Url.empty())
   {
     wstring DecodedUrl = DecodeUrlChars(Url);
     // lookup stored session even if protocol was defined
@@ -1033,7 +1033,7 @@ bool TSessionData::ParseUrl(wstring Url, TOptions * Options,
       {
         HostName = HostInfo.SubString(2, P - 2);
         HostInfo.Delete(1, P);
-        if (!HostInfo.IsEmpty() && (HostInfo[1] == ':'))
+        if (!HostInfo.empty() && (HostInfo[1] == ':'))
         {
           HostInfo.Delete(1, 1);
         }
@@ -1044,7 +1044,7 @@ bool TSessionData::ParseUrl(wstring Url, TOptions * Options,
       }
 
       // expanded from ?: operator, as it caused strange "access violation" errors
-      if (!HostInfo.IsEmpty())
+      if (!HostInfo.empty())
       {
         PortNumber = StrToIntDef(DecodeUrlChars(HostInfo), -1);
         PortNumberDefined = true;
@@ -1062,12 +1062,12 @@ bool TSessionData::ParseUrl(wstring Url, TOptions * Options,
       bool PasswordSeparator = (UserInfo.Pos(':') != 0);
       UserName = DecodeUrlChars(CutToChar(UserInfo, ':', false));
       Password = DecodeUrlChars(UserInfo);
-      Passwordless = Password.IsEmpty() && PasswordSeparator;
+      Passwordless = Password.empty() && PasswordSeparator;
 
       ARemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
     }
 
-    if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != "/"))
+    if (!ARemoteDirectory.empty() && (ARemoteDirectory != "/"))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != '/') &&
           (FileName != NULL))
@@ -1210,7 +1210,7 @@ wstring TSessionData::DecryptPassword(const wstring & Password, wstring Key)
 //---------------------------------------------------------------------
 bool TSessionData::GetCanLogin()
 {
-  return !FHostName.IsEmpty();
+  return !FHostName.empty();
 }
 //---------------------------------------------------------------------------
 wstring TSessionData::GetSessionKey()
@@ -1220,7 +1220,7 @@ wstring TSessionData::GetSessionKey()
 //---------------------------------------------------------------------
 wstring TSessionData::GetInternalStorageKey()
 {
-  if (Name.IsEmpty())
+  if (Name.empty())
   {
     return SessionKey;
   }
@@ -1252,7 +1252,7 @@ void TSessionData::SetHostName(wstring value)
     Modify();
 
     Password = XPassword;
-    if (!XPassword.IsEmpty())
+    if (!XPassword.empty())
     {
       XPassword.Unique();
       memset(XPassword.c_str(), 0, XPassword.Length());
@@ -1301,7 +1301,7 @@ void TSessionData::SetUserName(wstring value)
   wstring XPassword = Password;
   SET_SESSION_PROPERTY(UserName);
   Password = XPassword;
-  if (!XPassword.IsEmpty())
+  if (!XPassword.empty())
   {
     XPassword.Unique();
     memset(XPassword.c_str(), 0, XPassword.Length());
@@ -1310,7 +1310,7 @@ void TSessionData::SetUserName(wstring value)
 //---------------------------------------------------------------------
 void TSessionData::SetPassword(wstring value)
 {
-  if (!value.IsEmpty())
+  if (!value.empty())
   {
     Passwordless = false;
   }
@@ -1427,7 +1427,7 @@ void TSessionData::SetCipherList(wstring value)
 
   wstring CipherStr;
   int Index = 0;
-  while (!value.IsEmpty() && (Index < CIPHER_COUNT))
+  while (!value.empty() && (Index < CIPHER_COUNT))
   {
     CipherStr = CutToChar(value, ',', true);
     for (int C = 0; C < CIPHER_COUNT; C++)
@@ -1477,7 +1477,7 @@ void TSessionData::SetKexList(wstring value)
 
   wstring KexStr;
   int Index = 0;
-  while (!value.IsEmpty() && (Index < KEX_COUNT))
+  while (!value.empty() && (Index < KEX_COUNT))
   {
     KexStr = CutToChar(value, ',', true);
     for (int K = 0; K < KEX_COUNT; K++)
@@ -1568,7 +1568,7 @@ void TSessionData::SetDetectReturnVar(bool value)
 //---------------------------------------------------------------------------
 bool TSessionData::GetDetectReturnVar()
 {
-  return ReturnVar.IsEmpty();
+  return ReturnVar.empty();
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetDefaultShell(bool value)
@@ -1581,7 +1581,7 @@ void TSessionData::SetDefaultShell(bool value)
 //---------------------------------------------------------------------------
 bool TSessionData::GetDefaultShell()
 {
-  return Shell.IsEmpty();
+  return Shell.empty();
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetProtocolStr(wstring value)
@@ -1637,11 +1637,11 @@ void TSessionData::SetRekeyTime(unsigned int value)
 //---------------------------------------------------------------------
 wstring TSessionData::GetDefaultSessionName()
 {
-  if (!HostName.IsEmpty() && !UserName.IsEmpty())
+  if (!HostName.empty() && !UserName.empty())
   {
     return FORMAT("%s@%s", (UserName, HostName));
   }
-  else if (!HostName.IsEmpty())
+  else if (!HostName.empty())
   {
     return HostName;
   }
@@ -1653,7 +1653,7 @@ wstring TSessionData::GetDefaultSessionName()
 //---------------------------------------------------------------------
 wstring TSessionData::GetSessionName()
 {
-  if (!Name.IsEmpty() && !TNamedObjectList::IsHidden(this) &&
+  if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
   {
     return Name;
@@ -1667,7 +1667,7 @@ wstring TSessionData::GetSessionName()
 wstring TSessionData::GetSessionUrl()
 {
   wstring Url;
-  if (!Name.IsEmpty() && !TNamedObjectList::IsHidden(this) &&
+  if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
   {
     Url = Name;
@@ -1693,11 +1693,11 @@ wstring TSessionData::GetSessionUrl()
         break;
     }
 
-    if (!HostName.IsEmpty() && !UserName.IsEmpty())
+    if (!HostName.empty() && !UserName.empty())
     {
       Url += FORMAT("%s@%s", (UserName, HostName));
     }
-    else if (!HostName.IsEmpty())
+    else if (!HostName.empty())
     {
       Url += HostName;
     }
@@ -1946,7 +1946,7 @@ void TSessionData::SetTunnelHostName(wstring value)
     Modify();
 
     TunnelPassword = XTunnelPassword;
-    if (!XTunnelPassword.IsEmpty())
+    if (!XTunnelPassword.empty())
     {
       XTunnelPassword.Unique();
       memset(XTunnelPassword.c_str(), 0, XTunnelPassword.Length());
@@ -1965,7 +1965,7 @@ void TSessionData::SetTunnelUserName(wstring value)
   wstring XTunnelPassword = TunnelPassword;
   SET_SESSION_PROPERTY(TunnelUserName);
   TunnelPassword = XTunnelPassword;
-  if (!XTunnelPassword.IsEmpty())
+  if (!XTunnelPassword.empty())
   {
     XTunnelPassword.Unique();
     memset(XTunnelPassword.c_str(), 0, XTunnelPassword.Length());
@@ -2058,7 +2058,7 @@ wstring TSessionData::GetInfoTip()
   {
     return FMTLOAD(SESSION_INFO_TIP,
         (HostName, UserName,
-         (PublicKeyFile.IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
+         (PublicKeyFile.empty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
          SshProtStr, FSProtocolStr));
   }
   else

@@ -68,7 +68,7 @@ wstring MaskFilePart(const wstring Part, const wstring Mask, bool& Masked)
 //---------------------------------------------------------------------------
 wstring MaskFileName(wstring FileName, const wstring Mask)
 {
-  if (!Mask.IsEmpty() && (Mask != "*") && (Mask != "*.*"))
+  if (!Mask.empty() && (Mask != "*") && (Mask != "*.*"))
   {
     bool Masked;
     int P = Mask.LastDelimiter(".");
@@ -85,7 +85,7 @@ wstring MaskFileName(wstring FileName, const wstring Mask)
         FileName.SetLength(P2 - 1);
       }
       FileName = MaskFilePart(FileName, Mask.SubString(1, P - 1), Masked);
-      if (!FileExt.IsEmpty())
+      if (!FileExt.empty())
       {
         FileName += "." + FileExt;
       }
@@ -137,7 +137,7 @@ bool TFileMasks::IsMask(const wstring Mask)
 //---------------------------------------------------------------------------
 bool TFileMasks::IsAnyMask(const wstring & Mask)
 {
-  return Mask.IsEmpty() || (Mask == "*.*") || (Mask == "*");
+  return Mask.empty() || (Mask == "*.*") || (Mask == "*");
 }
 //---------------------------------------------------------------------------
 wstring TFileMasks::NormalizeMask(const wstring & Mask, const wstring & AnyMask)
@@ -269,7 +269,7 @@ bool TFileMasks::Matches(const wstring FileName, bool Local,
   if (Local)
   {
     wstring Path = ExtractFilePath(FileName);
-    if (!Path.IsEmpty())
+    if (!Path.empty())
     {
       Path = ToUnixPath(ExcludeTrailingBackslash(Path));
     }
@@ -408,7 +408,7 @@ void TFileMasks::SetStr(const wstring Str, bool SingleMask)
 
       TrimEx(MaskStr, MaskStart, MaskEnd);
 
-      if (!MaskStr.IsEmpty())
+      if (!MaskStr.empty())
       {
         TMask Mask;
         Mask.Str = MaskStr;
@@ -461,7 +461,7 @@ void TFileMasks::SetStr(const wstring Str, bool SingleMask)
               Size = ParseSize(PartStr);
             }
           }
-          else if (!PartStr.IsEmpty())
+          else if (!PartStr.empty())
           {
             int D = PartStr.LastDelimiter("\\/");
 

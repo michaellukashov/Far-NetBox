@@ -148,7 +148,7 @@ bool TCopyParamRule::Match(const wstring & Mask,
   const wstring & Value, bool Path, bool Local) const
 {
   bool Result;
-  if (Mask.IsEmpty())
+  if (Mask.empty())
   {
     Result = true;
   }
@@ -195,18 +195,18 @@ void TCopyParamRule::Save(THierarchicalStorage * Storage) const
 bool TCopyParamRule::GetEmpty() const
 {
   return
-    FData.HostName.IsEmpty() &&
-    FData.UserName.IsEmpty() &&
-    FData.RemoteDirectory.IsEmpty() &&
-    FData.LocalDirectory.IsEmpty();
+    FData.HostName.empty() &&
+    FData.UserName.empty() &&
+    FData.RemoteDirectory.empty() &&
+    FData.LocalDirectory.empty();
 }
 //---------------------------------------------------------------------------
 wstring TCopyParamRule::GetInfoStr(wstring Separator) const
 {
   wstring Result;
   #define ADD(FMT, ELEM) \
-    if (!FData.ELEM.IsEmpty()) \
-      Result += (Result.IsEmpty() ? wstring() : Separator) + FMTLOAD(FMT, (FData.ELEM));
+    if (!FData.ELEM.empty()) \
+      Result += (Result.empty() ? wstring() : Separator) + FMTLOAD(FMT, (FData.ELEM));
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
@@ -585,7 +585,7 @@ void TGUIConfiguration::DefaultLocalized()
     // guard against "empty resourse string" from obsolete traslations
     // (DefaultLocalized is called for the first time before detection of
     // obsolete translations)
-    if (!LoadStr(COPY_PARAM_PRESET_ASCII).IsEmpty())
+    if (!LoadStr(COPY_PARAM_PRESET_ASCII).empty())
     {
       TCopyParamType * CopyParam;
 
@@ -769,7 +769,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
       char LocaleStr[4];
       GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, LocaleStr, sizeof(LocaleStr));
       LocaleName = LocaleStr;
-      assert(!LocaleName.IsEmpty());
+      assert(!LocaleName.empty());
     }
     else
     {
@@ -1019,7 +1019,7 @@ TStrings * TGUIConfiguration::GetLocales()
         {
           wstring LangName = GetFileFileInfoString("LangName",
             ChangeFileExt(ModuleFileName(), wstring(".") + Exts->Strings[Index]));
-          if (!LangName.IsEmpty())
+          if (!LangName.empty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<TObject*>(
               AdditionaLanguageMask + Exts->Strings[Index][3]));
@@ -1065,7 +1065,7 @@ void TGUIConfiguration::SetCopyParamList(const TCopyParamList * value)
 int TGUIConfiguration::GetCopyParamIndex()
 {
   int Result;
-  if (FCopyParamCurrent.IsEmpty())
+  if (FCopyParamCurrent.empty())
   {
     Result = -1;
   }
@@ -1103,7 +1103,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
 TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(wstring Name)
 {
   TGUICopyParamType Result = FDefaultCopyParam;
-  if (!Name.IsEmpty())
+  if (!Name.empty())
   {
     int Index = FCopyParamList->IndexOfName(Name);
     assert(Index >= 0);

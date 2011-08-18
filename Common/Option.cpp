@@ -187,7 +187,7 @@ wstring TOptions::SwitchValue(const wstring Switch,
 {
   wstring Value;
   FindSwitch(Switch, Value);
-  if (Value.IsEmpty())
+  if (Value.empty())
   {
     Value = Default;
   }

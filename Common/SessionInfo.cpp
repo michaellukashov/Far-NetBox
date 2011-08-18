@@ -115,7 +115,7 @@ public:
         for (int Index = 0; Index < FNames->Count; Index++)
         {
           wstring Value = FValues->Strings[Index];
-          if (Value.IsEmpty())
+          if (Value.empty())
           {
             FLog->Add(llAction, FORMAT("    <%s />", (FNames->Strings[Index])));
           }
@@ -182,7 +182,7 @@ public:
   {
     assert(FErrorMessages == NULL);
     FErrorMessages = new TStringList();
-    if (!E->Message.IsEmpty())
+    if (!E->Message.empty())
     {
       FErrorMessages->Add(E->Message);
     }
@@ -631,12 +631,12 @@ void TSessionLog::DoAdd(TLogLineType Type, wstring Line,
 {
   wstring Prefix;
 
-  if ((Type != llAction) && !Name.IsEmpty())
+  if ((Type != llAction) && !Name.empty())
   {
     Prefix = "[" + Name + "] ";
   }
 
-  while (!Line.IsEmpty())
+  while (!Line.empty())
   {
     f(Type, Prefix + CutToChar(Line, '\n', false));
   }
@@ -913,15 +913,15 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF("Session name: %s (%s)", (Data->SessionName, Data->Source));
     ADF("Host name: %s (Port: %d)", (Data->HostName, Data->PortNumber));
     ADF("User name: %s (Password: %s, Key file: %s)",
-      (Data->UserName, BooleanToEngStr(!Data->Password.IsEmpty()),
-       BooleanToEngStr(!Data->PublicKeyFile.IsEmpty())))
+      (Data->UserName, BooleanToEngStr(!Data->Password.empty()),
+       BooleanToEngStr(!Data->PublicKeyFile.empty())))
     ADF("Tunnel: %s", (BooleanToEngStr(Data->Tunnel)));
     if (Data->Tunnel)
     {
       ADF("Tunnel: Host name: %s (Port: %d)", (Data->TunnelHostName, Data->TunnelPortNumber));
       ADF("Tunnel: User name: %s (Password: %s, Key file: %s)",
-        (Data->TunnelUserName, BooleanToEngStr(!Data->TunnelPassword.IsEmpty()),
-         BooleanToEngStr(!Data->TunnelPublicKeyFile.IsEmpty())))
+        (Data->TunnelUserName, BooleanToEngStr(!Data->TunnelPassword.empty()),
+         BooleanToEngStr(!Data->TunnelPublicKeyFile.empty())))
       ADF("Tunnel: Local port number: %d", (Data->TunnelLocalPortNumber));
     }
     ADF("Transfer Protocol: %s", (Data->FSProtocolStr));
@@ -945,7 +945,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       ADF("HostName: %s (Port: %d); Username: %s; Passwd: %s",
         (Data->ProxyHost, Data->ProxyPort,
-         Data->ProxyUsername, BooleanToEngStr(!Data->ProxyPassword.IsEmpty())));
+         Data->ProxyUsername, BooleanToEngStr(!Data->ProxyPassword.empty())));
       if (Data->ProxyMethod == pmTelnet)
       {
         ADF("Telnet command: %s", (Data->ProxyTelnetCommand));
@@ -987,7 +987,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF("Return code variable: %s; Lookup user groups: %s",
         ((Data->DetectReturnVar ? wstring("Autodetect") : Data->ReturnVar),
          BooleanToEngStr(Data->LookupUserGroups)));
-      ADF("Shell: %s", ((Data->Shell.IsEmpty()? wstring("default") : Data->Shell)));
+      ADF("Shell: %s", ((Data->Shell.empty()? wstring("default") : Data->Shell)));
       ADF("EOL: %d, UTF: %d", (Data->EOLType, Data->NotUtf));
       ADF("Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
         (BooleanToEngStr(Data->ClearAliases), BooleanToEngStr(Data->UnsetNationalVars),
@@ -1024,8 +1024,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
          BooleanToEngStr(Data->FtpForcePasvIp)));
     }
     ADF("Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
-      ((Data->LocalDirectory.IsEmpty() ? wstring("default") : Data->LocalDirectory),
-       (Data->RemoteDirectory.IsEmpty() ? wstring("home") : Data->RemoteDirectory),
+      ((Data->LocalDirectory.empty() ? wstring("default") : Data->LocalDirectory),
+       (Data->RemoteDirectory.empty() ? wstring("home") : Data->RemoteDirectory),
        BooleanToEngStr(Data->UpdateDirectories),
        BooleanToEngStr(Data->CacheDirectories)));
     ADF("Cache directory changes: %s, Permanent: %s",

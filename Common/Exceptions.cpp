@@ -86,7 +86,7 @@ ExtException::ExtException(wstring Msg, wstring MoreMessages,
   exception(::W2MB(Msg.c_str())),
   FHelpKeyword(HelpKeyword)
 {
-  if (!MoreMessages.IsEmpty())
+  if (!MoreMessages.empty())
   {
     FMoreMessages = new TStringList();
     FMoreMessages->Text = MoreMessages;
@@ -120,10 +120,10 @@ void ExtException::AddMoreMessages(exception* E)
     ExtException * ExtE = dynamic_cast<ExtException *>(E);
     if (ExtE != NULL)
     {
-      if (!ExtE->HelpKeyword.IsEmpty())
+      if (!ExtE->HelpKeyword.empty())
       {
         // we have to yet decide what to do now
-        assert(HelpKeyword.IsEmpty());
+        assert(HelpKeyword.empty());
 
         FHelpKeyword = ExtE->HelpKeyword;
       }
@@ -139,11 +139,11 @@ void ExtException::AddMoreMessages(exception* E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-    if (Message.IsEmpty())
+    if (Message.empty())
     {
       Message = Msg;
     }
-    else if (!Msg.IsEmpty())
+    else if (!Msg.empty())
     {
       FMoreMessages->Insert(0, Msg);
     }

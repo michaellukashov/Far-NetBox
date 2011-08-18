@@ -16,7 +16,7 @@
 wstring UnixIncludeTrailingBackslash(const wstring Path)
 {
   // it used to return "/" when input path was empty
-  if (!Path.IsEmpty() && !Path.IsDelimiter("/", Path.Length()))
+  if (!Path.empty() && !Path.IsDelimiter("/", Path.Length()))
   {
     return Path + "/";
   }
@@ -107,12 +107,12 @@ bool ExtractCommonPath(TStrings * Files, wstring & Path)
   assert(Files->Count > 0);
 
   Path = ExtractFilePath(Files->Strings[0]);
-  bool Result = !Path.IsEmpty();
+  bool Result = !Path.empty();
   if (Result)
   {
     for (int Index = 1; Index < Files->Count; Index++)
     {
-      while (!Path.IsEmpty() &&
+      while (!Path.empty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
       {
         int PrevLen = Path.Length();
@@ -134,12 +134,12 @@ bool UnixExtractCommonPath(TStrings * Files, wstring & Path)
   assert(Files->Count > 0);
 
   Path = UnixExtractFilePath(Files->Strings[0]);
-  bool Result = !Path.IsEmpty();
+  bool Result = !Path.empty();
   if (Result)
   {
     for (int Index = 1; Index < Files->Count; Index++)
     {
-      while (!Path.IsEmpty() &&
+      while (!Path.empty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
       {
         int PrevLen = Path.Length();
@@ -158,19 +158,19 @@ bool UnixExtractCommonPath(TStrings * Files, wstring & Path)
 //---------------------------------------------------------------------------
 bool IsUnixRootPath(const wstring Path)
 {
-  return Path.IsEmpty() || (Path == ROOTDIRECTORY);
+  return Path.empty() || (Path == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
 bool IsUnixHiddenFile(const wstring FileName)
 {
   return (FileName != ROOTDIRECTORY) && (FileName != PARENTDIRECTORY) &&
-    !FileName.IsEmpty() && (FileName[1] == '.');
+    !FileName.empty() && (FileName[1] == '.');
 }
 //---------------------------------------------------------------------------
 wstring AbsolutePath(const wstring & Base, const wstring & Path)
 {
   wstring Result;
-  if (Path.IsEmpty())
+  if (Path.empty())
   {
     Result = Base;
   }
@@ -281,7 +281,7 @@ wstring MinimizeName(const wstring FileName, int MaxLen, bool Unix)
     }
   }
 
-  while ((!Dir.IsEmpty() || !Drive.IsEmpty()) && (Result.Length() > MaxLen))
+  while ((!Dir.empty() || !Drive.empty()) && (Result.Length() > MaxLen))
   {
     if (Dir == Sep + "..." + Sep)
     {
@@ -310,7 +310,7 @@ wstring MakeFileList(TStrings * FileList)
   wstring Result;
   for (int Index = 0; Index < FileList->Count; Index++)
   {
-    if (!Result.IsEmpty())
+    if (!Result.empty())
     {
       Result += " ";
     }
@@ -480,9 +480,9 @@ TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rht)
 int TRemoteToken::Compare(const TRemoteToken & rht) const
 {
   int Result;
-  if (!FName.IsEmpty())
+  if (!FName.empty())
   {
-    if (!rht.FName.IsEmpty())
+    if (!rht.FName.empty())
     {
       Result = AnsiCompareText(FName, rht.FName);
     }
@@ -493,7 +493,7 @@ int TRemoteToken::Compare(const TRemoteToken & rht) const
   }
   else
   {
-    if (!rht.FName.IsEmpty())
+    if (!rht.FName.empty())
     {
       Result = 1;
     }
@@ -534,17 +534,17 @@ void TRemoteToken::SetID(unsigned int value)
 //---------------------------------------------------------------------------
 bool TRemoteToken::GetNameValid() const
 {
-  return !FName.IsEmpty();
+  return !FName.empty();
 }
 //---------------------------------------------------------------------------
 bool TRemoteToken::GetIsSet() const
 {
-  return !FName.IsEmpty() || FIDValid;
+  return !FName.empty() || FIDValid;
 }
 //---------------------------------------------------------------------------
 wstring TRemoteToken::GetDisplayText() const
 {
-  if (!FName.IsEmpty())
+  if (!FName.empty())
   {
     return FName;
   }
@@ -752,7 +752,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
     COPY_FP(Selected);
     COPY_FP(CyclicLink);
     #undef COPY_FP
-    if (Standalone && (!FFullFileName.IsEmpty() || (Directory != NULL)))
+    if (Standalone && (!FFullFileName.empty() || (Directory != NULL)))
     {
       Result->FFullFileName = FullFileName;
     }
@@ -772,7 +772,7 @@ void TRemoteFile::LoadTypeInfo()
   if (IsDirectory) Attrs |= FILE_ATTRIBUTE_DIRECTORY;
   if (IsHidden) Attrs |= FILE_ATTRIBUTE_HIDDEN;
 
-  wstring DumbFileName = (IsSymLink && !LinkTo.IsEmpty() ? LinkTo : FileName);
+  wstring DumbFileName = (IsSymLink && !LinkTo.empty() ? LinkTo : FileName);
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
 }
@@ -890,7 +890,7 @@ bool TRemoteFile::GetBrokenLink()
   // If file is symlink but we couldn't find linked file we assume broken link
   return (IsSymLink && (FCyclicLink || !FLinkedFile) &&
     Terminal->ResolvingSymlinks);
-  // "!FLinkTo.IsEmpty()" removed because it does not work with SFTP
+  // "!FLinkTo.empty()" removed because it does not work with SFTP
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::ShiftTime(const TDateTime & Difference)
@@ -977,7 +977,7 @@ void TRemoteFile::SetListingStr(wstring value)
     Line.Delete(1, 1);
 
     #define GETNCOL  \
-      { if (Line.IsEmpty()) throw exception(""); \
+      { if (Line.empty()) throw exception(""); \
         int P = Line.Pos(' '); \
         if (P) { Col = Line.SubString(1, P-1); Line.Delete(1, P); } \
           else { Col = Line; Line = ""; } \
@@ -993,7 +993,7 @@ void TRemoteFile::SetListingStr(wstring value)
     Line.Delete(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
-    if (!Line.IsEmpty() && ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
+    if (!Line.empty() && ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
     {
       Line.Delete(1, 1);
     }
@@ -1018,7 +1018,7 @@ void TRemoteFile::SetListingStr(wstring value)
     {
       FGroup.Name = FGroup.Name + Col;
       GETCOL;
-      assert(!Col.IsEmpty());
+      assert(!Col.empty());
       // for devices etc.. there is additional column ending by comma, we ignore it
       if (Col[Col.Length()] == ',') GETCOL;
       ASize = StrToInt64Def(Col, -1);
@@ -1029,7 +1029,7 @@ void TRemoteFile::SetListingStr(wstring value)
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
-    if (double(FModification) == 0 && FileName.IsEmpty())
+    if (double(FModification) == 0 && FileName.empty())
     {
       FSize = ASize;
 
@@ -1219,7 +1219,7 @@ void TRemoteFile::FindLinkedFile()
   FLinkedFile = NULL;
 
   FCyclicLink = false;
-  if (!LinkTo.IsEmpty())
+  if (!LinkTo.empty())
   {
     // check for cyclic link
     TRemoteFile * LinkedBy = FLinkedByFile;
@@ -1286,7 +1286,7 @@ wstring TRemoteFile::GetListingStr()
 //---------------------------------------------------------------------------
 wstring TRemoteFile::GetFullFileName() const
 {
-  if (FFullFileName.IsEmpty())
+  if (FFullFileName.empty())
   {
     assert(Terminal);
     assert(Directory != NULL);
@@ -1305,7 +1305,7 @@ wstring TRemoteFile::GetFullFileName() const
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetHaveFullFileName() const
 {
-  return !FFullFileName.IsEmpty() || (Directory != NULL);
+  return !FFullFileName.empty() || (Directory != NULL);
 }
 //---------------------------------------------------------------------------
 int TRemoteFile::GetAttr()
@@ -1481,7 +1481,7 @@ void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
 //---------------------------------------------------------------------------
 bool TRemoteDirectory::GetLoaded()
 {
-  return ((Terminal != NULL) && Terminal->Active && !Directory.IsEmpty());
+  return ((Terminal != NULL) && Terminal->Active && !Directory.empty());
 }
 //---------------------------------------------------------------------------
 TStrings * TRemoteDirectory::GetSelectedFiles()
@@ -1711,7 +1711,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
   const wstring SourceDir, const wstring Change,
   const wstring TargetDir)
 {
-  assert(!TargetDir.IsEmpty());
+  assert(!TargetDir.empty());
   SetValue(TargetDir, "//");
   if (TTerminal::ExpandFileName(Change, SourceDir) != TargetDir)
   {
@@ -1749,7 +1749,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
     wstring Name = Names[Index];
     if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
         (Values[Name].SubString(1, TargetDir.Length()) == TargetDir) ||
-        (!Key.IsEmpty() && (Name == Key)))
+        (!Key.empty() && (Name == Key)))
     {
       Delete(Index);
       Index--;
@@ -1779,7 +1779,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
     if (Result)
     {
       wstring Directory = GetValue(Key);
-      Result = !Directory.IsEmpty();
+      Result = !Directory.empty();
       if (Result)
       {
         TargetDir = Directory;
@@ -1819,7 +1819,7 @@ void TRemoteDirectoryChangesCache::Serialize(wstring & Data)
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::Deserialize(const wstring Data)
 {
-  if (Data.IsEmpty())
+  if (Data.empty())
   {
     Text = "";
   }
@@ -1832,11 +1832,11 @@ void TRemoteDirectoryChangesCache::Deserialize(const wstring Data)
 bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   const wstring SourceDir, const wstring Change, wstring & Key)
 {
-  bool Result = !Change.IsEmpty();
+  bool Result = !Change.empty();
   if (Result)
   {
     bool Absolute = TTerminal::IsAbsolutePath(Change);
-    Result = !SourceDir.IsEmpty() || Absolute;
+    Result = !SourceDir.empty() || Absolute;
     if (Result)
     {
       // expanded from ?: to avoid memory leaks
@@ -2079,7 +2079,7 @@ void TRights::SetText(const wstring & value)
 //---------------------------------------------------------------------------
 wstring TRights::GetText() const
 {
-  if (!FText.IsEmpty())
+  if (!FText.empty())
   {
     return FText;
   }
@@ -2335,18 +2335,18 @@ wstring TRights::GetModeStr() const
         break;
     }
 
-    if (!SetModeStr.IsEmpty() || !UnsetModeStr.IsEmpty())
+    if (!SetModeStr.empty() || !UnsetModeStr.empty())
     {
-      if (!Result.IsEmpty())
+      if (!Result.empty())
       {
         Result += ',';
       }
       Result += ModeGroups[Group];
-      if (!SetModeStr.IsEmpty())
+      if (!SetModeStr.empty())
       {
         Result += "+" + SetModeStr;
       }
-      if (!UnsetModeStr.IsEmpty())
+      if (!UnsetModeStr.empty())
       {
         Result += "-" + UnsetModeStr;
       }

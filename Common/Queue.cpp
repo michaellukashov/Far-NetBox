@@ -1700,7 +1700,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   {
     assert(FilesToCopy->Count > 0);
     FInfo->Source = FilesToCopy->Strings[0];
-    if (UnixExtractFilePath(FInfo->Source).IsEmpty())
+    if (UnixExtractFilePath(FInfo->Source).empty())
     {
       FInfo->Source = UnixIncludeTrailingBackslash(Terminal->CurrentDirectory) +
         FInfo->Source;

@@ -33,7 +33,7 @@ TConfiguration::TConfiguration()
   else
   {
     RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
-    if (RandomSeedPath.IsEmpty())
+    if (RandomSeedPath.empty())
     {
       RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
     }
@@ -531,7 +531,7 @@ void TConfiguration::CleanupIniFile()
 //---------------------------------------------------------------------------
 wstring TConfiguration::EncryptPassword(wstring Password, wstring Key)
 {
-  if (Password.IsEmpty())
+  if (Password.empty())
   {
     return wstring();
   }
@@ -543,7 +543,7 @@ wstring TConfiguration::EncryptPassword(wstring Password, wstring Key)
 //---------------------------------------------------------------------------
 wstring TConfiguration::DecryptPassword(wstring Password, wstring Key)
 {
-  if (Password.IsEmpty())
+  if (Password.empty())
   {
     return wstring();
   }
@@ -593,7 +593,7 @@ wstring TConfiguration::ModuleFileName()
 void * TConfiguration::GetFileApplicationInfo(const wstring FileName)
 {
   void * Result;
-  if (FileName.IsEmpty())
+  if (FileName.empty())
   {
     if (!FApplicationInfo)
     {
@@ -707,12 +707,12 @@ wstring TConfiguration::GetFileFileInfoString(const wstring Key,
     }
     else
     {
-      assert(!FileName.IsEmpty());
+      assert(!FileName.empty());
     }
   }
   catch(...)
   {
-    if (!FileName.IsEmpty())
+    if (!FileName.empty())
     {
       FreeFileInfo(Info);
     }
@@ -738,7 +738,7 @@ void TConfiguration::SetIniFileStorageName(wstring value)
 //---------------------------------------------------------------------------
 wstring TConfiguration::GetIniFileStorageName()
 {
-  if (FIniFileStorageName.IsEmpty())
+  if (FIniFileStorageName.empty())
   {
     return ChangeFileExt(ParamStr(0), ".ini");
   }
@@ -834,12 +834,12 @@ void TConfiguration::SetRandomSeedFile(wstring value)
     FRandomSeedFile = value;
 
     // never allow empty seed file to avoid Putty trying to reinitialize the path
-    if (RandomSeedFileName.IsEmpty())
+    if (RandomSeedFileName.empty())
     {
       FRandomSeedFile = FDefaultRandomSeedFile;
     }
 
-    if (!PrevRandomSeedFileName.IsEmpty() &&
+    if (!PrevRandomSeedFileName.empty() &&
         (PrevRandomSeedFileName != RandomSeedFileName) &&
         FileExists(PrevRandomSeedFileName))
     {
@@ -904,7 +904,7 @@ void TConfiguration::SetLogToFile(bool value)
 //---------------------------------------------------------------------
 bool TConfiguration::GetLogToFile()
 {
-  return !LogFileName.IsEmpty();
+  return !LogFileName.empty();
 }
 //---------------------------------------------------------------------
 void TConfiguration::UpdateActualLogProtocol()
