@@ -41,7 +41,6 @@ private:
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
   __int64 FResumeThreshold;
-  wstring GetLogStr() const;
   char FInvalidCharsReplacement;
   wstring FLocalInvalidChars;
   wstring FTokenizibleChars;
@@ -56,9 +55,6 @@ private:
   static const char TokenReplacement = char(true);
 
   static wstring Untokenize(wstring FileName);
-  void SetLocalInvalidChars(wstring value);
-  bool GetReplaceInvalidChars() const;
-  void SetReplaceInvalidChars(bool value);
   char * ReplaceChar(wstring & FileName, char * InvalidChar) const;
   wstring RestoreChars(wstring FileName) const;
 
@@ -88,27 +84,67 @@ public:
 
   bool operator==(const TCopyParamType & rhp) const;
 
-  __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
-  __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
-  __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
-  __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
-  __property TRights Rights = { read = FRights, write = FRights };
-  __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
-  __property wstring LogStr  = { read=GetLogStr };
-  __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
-  __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
-  __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
-  __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
-  __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
-  __property char InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
-  __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
-  __property wstring LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
-  __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
-  __property wstring FileMask = { read = FFileMask, write = FFileMask };
-  __property TFileMasks ExcludeFileMask = { read = FExcludeFileMask, write = FExcludeFileMask };
-  __property bool NegativeExclude = { read = FNegativeExclude, write = FNegativeExclude };
-  __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };
-  __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  // __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
+  TFileMasks GetAsciiFileMask() { return FAsciiFileMask; }
+  void SetAsciiFileMask(TFileMasks value) { FAsciiFileMask = value; }
+  // __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
+  TFileNameCase GetFileNameCase() { return FFileNameCase; }
+  void SetFileNameCase(TFileNameCase value) { FFileNameCase = value; }
+  // __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
+  bool GetPreserveReadOnly() { return FPreserveReadOnly; }
+  void SetPreserveReadOnly(bool value) { FPreserveReadOnly = value; }
+  // __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
+  bool GetPreserveTime() { return FPreserveTime; }
+  void SetPreserveTime(bool value) { FPreserveTime = value; }
+  // __property TRights Rights = { read = FRights, write = FRights };
+  TRights GetRights() { return FRights; }
+  void SetRights(TRights value) { FRights = value; }
+  // __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
+  TTransferMode GetTransferMode() { return FTransferMode; }
+  void SetTransferMode(TTransferMode value) { FTransferMode = value; }
+  // __property wstring LogStr  = { read=GetLogStr };
+  wstring GetLogStr() const;
+  // __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
+  bool GetAddXToDirectories() { return FAddXToDirectories; }
+  // __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
+  bool GetPreserveRights() { return FPreserveRights; }
+  void SetPreserveRights(bool value) { FPreserveRights = value; }
+  // __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
+  bool GetIgnorePermErrors() { return FIgnorePermErrors; }
+  void SetIgnorePermErrors(bool value) { FIgnorePermErrors = value; }
+  // __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
+  TResumeSupport GetResumeSupport() { return FResumeSupport; }
+  void SetResumeSupport(TResumeSupport value) { FResumeSupport = value; }
+  // __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  __int64 GetResumeThreshold() { return FResumeThreshold; }
+  void SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
+  // __property char InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
+  char GetInvalidCharsReplacement() { return FInvalidCharsReplacement; }
+  void SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
+  // __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
+  bool GetReplaceInvalidChars() const;
+  void SetReplaceInvalidChars(bool value);
+  // __property wstring LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
+  wstring GetLocalInvalidChars() { return FLocalInvalidChars; }
+  void SetLocalInvalidChars(wstring value);
+  // __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
+  bool GetCalculateSize() { return FCalculateSize; }
+  void SetCalculateSize(bool value) { FCalculateSize = value; }
+  // __property wstring FileMask = { read = FFileMask, write = FFileMask };
+  wstring GetFileMask() { return FFileMask; }
+  void SetFileMask(wstring value) { FFileMask = value; }
+  // __property TFileMasks ExcludeFileMask = { read = FExcludeFileMask, write = FExcludeFileMask };
+  TFileMasks GetExcludeFileMask() { return FExcludeFileMask; }
+  void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }
+  // __property bool NegativeExclude = { read = FNegativeExclude, write = FNegativeExclude };
+  bool GetNegativeExclude() { return FNegativeExclude; }
+  void SetNegativeExclude(bool value) { FNegativeExclude = value; }
+  // __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };
+  bool GetClearArchive() { return FClearArchive; }
+  void SetClearArchive(bool value) { FClearArchive = value; }
+  // __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  unsigned long GetCPSLimit() { return FCPSLimit; }
+  void SetCPSLimit(unsigned long value) { FCPSLimit = value; }
 };
 //---------------------------------------------------------------------------
 unsigned long GetSpeedLimit(const wstring & Text);

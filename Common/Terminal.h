@@ -453,35 +453,48 @@ public:
   __property wstring CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
   __property TRemoteDirectory * Files = { read = FFiles };
-  __property TNotifyEvent OnChangeDirectory = { read = FOnChangeDirectory, write = FOnChangeDirectory };
-  __property TReadDirectoryEvent OnReadDirectory = { read = FOnReadDirectory, write = FOnReadDirectory };
-  __property TNotifyEvent OnStartReadDirectory = { read = FOnStartReadDirectory, write = FOnStartReadDirectory };
-  __property TReadDirectoryProgressEvent OnReadDirectoryProgress = { read = FOnReadDirectoryProgress, write = FOnReadDirectoryProgress };
-  __property TDeleteLocalFileEvent OnDeleteLocalFile = { read = FOnDeleteLocalFile, write = FOnDeleteLocalFile };
+  TNotifyEvent GetOnChangeDirectory() { return FOnChangeDirectory; }
+  void SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory = value; }
+  TReadDirectoryEvent GetOnReadDirectory() { return FOnReadDirectory; }
+  void SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory = value; }
+  TNotifyEvent GetOnStartReadDirectory() { return FOnStartReadDirectory; }
+  void SetOnStartReadDirectory(TNotifyEvent value) { FOnStartReadDirectory = value; }
+  TReadDirectoryProgressEvent GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
+  TDeleteLocalFileEvent GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
   __property const TRemoteTokenList * Groups = { read = GetGroups };
   __property const TRemoteTokenList * Users = { read = GetUsers };
   __property const TRemoteTokenList * Membership = { read = GetMembership };
   __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
   __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
   __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
-  __property bool UseBusyCursor = { read = FUseBusyCursor, write = FUseBusyCursor };
+  bool GetUseBusyCursor() { return FUseBusyCursor; }
+  void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   __property wstring UserName = { read=GetUserName };
   __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
   __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
   __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
   __property TTerminal * CommandSession = { read = GetCommandSession };
-  __property bool AutoReadDirectory = { read = FAutoReadDirectory, write = FAutoReadDirectory };
+  bool GetAutoReadDirectory() { return FAutoReadDirectory; }
+  void SetAutoReadDirectory(bool value) { FAutoReadDirectory = value; }
   __property TStrings * FixedPaths = { read = GetFixedPaths };
   __property bool ResolvingSymlinks = { read = GetResolvingSymlinks };
   __property wstring Password = { read = GetPassword };
   __property wstring TunnelPassword = { read = GetTunnelPassword };
   __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
-  __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
-  __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
-  __property TDisplayBannerEvent OnDisplayBanner = { read = FOnDisplayBanner, write = FOnDisplayBanner };
-  __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
-  __property TInformationEvent OnInformation = { read = FOnInformation, write = FOnInformation };
-  __property TNotifyEvent OnClose = { read = FOnClose, write = FOnClose };
+  TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
+  void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
+  void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
+  TDisplayBannerEvent GetOnDisplayBanner() { return FOnDisplayBanner; }
+  void SetOnDisplayBanner(TDisplayBannerEvent value) { FOnDisplayBanner = value; }
+  TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  TInformationEvent GetOnInformation() { return FOnInformation; }
+  void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
+  TNotifyEvent GetOnClose() { return FOnClose; }
+  void SetOnClose(TNotifyEvent value) { FOnClose = value; }
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 };
 //---------------------------------------------------------------------------
