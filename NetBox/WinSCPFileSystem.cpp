@@ -174,18 +174,18 @@ void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
   TStrings * ColumnTitles = new TStringList();
   try
   {
-    if (FarConfiguration->CustomPanelModeDetailed)
+    if (FarConfiguration->GetCustomPanelModeDetailed())
     {
-      wstring ColumnTypes = FarConfiguration->ColumnTypesDetailed;
-      wstring StatusColumnTypes = FarConfiguration->StatusColumnTypesDetailed;
+      wstring ColumnTypes = FarConfiguration->GetColumnTypesDetailed();
+      wstring StatusColumnTypes = FarConfiguration->GetStatusColumnTypesDetailed();
 
       TranslateColumnTypes(ColumnTypes, ColumnTitles);
       TranslateColumnTypes(StatusColumnTypes, NULL);
 
       PanelModes->SetPanelMode(5 /*detailed */,
-        ColumnTypes, FarConfiguration->ColumnWidthsDetailed,
-        ColumnTitles, FarConfiguration->FullScreenDetailed, false, true, false,
-        StatusColumnTypes, FarConfiguration->StatusColumnWidthsDetailed);
+        ColumnTypes, FarConfiguration->GetColumnWidthsDetailed(),
+        ColumnTitles, FarConfiguration->GetFullScreenDetailed(), false, true, false,
+        StatusColumnTypes, FarConfiguration->GetStatusColumnWidthsDetailed());
     }
   }
   catch(...)
