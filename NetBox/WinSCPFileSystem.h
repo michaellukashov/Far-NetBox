@@ -25,18 +25,18 @@ class TTerminalQueueStatus;
 class TQueueItem;
 class TKeepaliveThread;
 struct TMessageParams;
-#define REMOTE_DIR_HISTORY "WinscpRemoteDirectory"
-#define ASCII_MASK_HISTORY "WinscpAsciiMask"
-#define LINK_FILENAME_HISTORY "WinscpRemoteLink"
-#define LINK_POINT_TO_HISTORY "WinscpRemoteLinkPointTo"
-#define APPLY_COMMAND_HISTORY "WinscpApplyCmd"
-#define APPLY_COMMAND_PARAM_HISTORY "WinscpApplyCmdParam"
-#define LOG_FILE_HISTORY "WinscpLogFile"
-#define REMOTE_SYNC_HISTORY "WinscpRemoteSync"
-#define LOCAL_SYNC_HISTORY "WinscpLocalSync"
-#define MOVE_TO_HISTORY "WinscpMoveTo"
-#define EXCLUDE_FILE_MASK_HISTORY "WinscpExcludeFileMask"
-#define MAKE_SESSION_FOLDER_HISTORY "WinscpSessionFolder"
+#define REMOTE_DIR_HISTORY L"WinscpRemoteDirectory"
+#define ASCII_MASK_HISTORY L"WinscpAsciiMask"
+#define LINK_FILENAME_HISTORY L"WinscpRemoteLink"
+#define LINK_POINT_TO_HISTORY L"WinscpRemoteLinkPointTo"
+#define APPLY_COMMAND_HISTORY L"WinscpApplyCmd"
+#define APPLY_COMMAND_PARAM_HISTORY L"WinscpApplyCmdParam"
+#define LOG_FILE_HISTORY L"WinscpLogFile"
+#define REMOTE_SYNC_HISTORY L"WinscpRemoteSync"
+#define LOCAL_SYNC_HISTORY L"WinscpLocalSync"
+#define MOVE_TO_HISTORY L"WinscpMoveTo"
+#define EXCLUDE_FILE_MASK_HISTORY L"WinscpExcludeFileMask"
+#define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
 //---------------------------------------------------------------------------
 // for Properties dialog
 const int cpMode =  0x01;

@@ -274,7 +274,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
           TWinSCPFileSystem * PanelSystem;
           PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
           if (PanelSystem && PanelSystem->Connected() &&
-              PanelSystem->Terminal->SessionData->SessionUrl == Name)
+              PanelSystem->Terminal->GetSessionData()->SessionUrl == Name)
           {
             PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
             if (PanelSystem->UpdatePanel())
