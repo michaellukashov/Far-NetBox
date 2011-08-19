@@ -11,10 +11,10 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "SessionData.h"
-// #include <CoreMain.h>
+#include <CoreMain.h>
 // #include <SysUtils.hpp>
 #include "ScpFileSystem.h"
-// #include <Bookmarks.h>
+#include <Bookmarks.h>
 // #include <GUITools.h>
 // #include <CompThread.hpp>
 // FAR WORKAROUND
