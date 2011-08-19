@@ -23,7 +23,7 @@ TQueryButtonAlias::TQueryButtonAlias()
   OnClick = NULL;
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(unsigned int AParams, AnsiString AHelpKeyword)
+TQueryParams::TQueryParams(unsigned int AParams, wstring AHelpKeyword)
 {
   Params = AParams;
   Aliases = NULL;
@@ -38,7 +38,7 @@ TQueryParams::TQueryParams(unsigned int AParams, AnsiString AHelpKeyword)
   HelpKeyword = AHelpKeyword;
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
+bool IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
     (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
