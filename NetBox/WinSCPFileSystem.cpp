@@ -430,8 +430,8 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
     // (vandyke: c:/windows/system) are displayed correctly on command-line, but
     // leaved subdirectory is not focused, when entering parent directory.
     CurDir = FTerminal->GetCurrentDirectory();
-    Format = FTerminal->GetSessionData()->SessionName;
-    if (FarConfiguration->HostNameInTitle)
+    Format = FTerminal->GetSessionData()->GetSessionName();
+    if (FarConfiguration->GetHostNameInTitle())
     {
       PanelTitle = ::FORMAT(" %s:%s ", (Format, CurDir));
     }
@@ -3039,7 +3039,7 @@ void TWinSCPFileSystem::LogAuthentication(
 
     Message += wstring::StringOfChar('\n', Height - Count);
 
-    FPlugin->Message(0, Terminal->GetSessionData()->SessionName, Message);
+    FPlugin->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
   }
   catch(...)
   {
@@ -3058,7 +3058,7 @@ void TWinSCPFileSystem::TerminalInformation(
       {
         FAuthenticationLog = new TStringList();
         FPlugin->SaveScreen(FAuthenticationSaveScreenHandle);
-        FPlugin->ShowConsoleTitle(Terminal->GetSessionData()->SessionName);
+        FPlugin->ShowConsoleTitle(Terminal->GetSessionData()->GetSessionName());
       }
 
       LogAuthentication(Terminal, Str);
