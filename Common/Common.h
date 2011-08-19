@@ -196,3 +196,18 @@ struct TPasLibModule
 #endif
 #define USEDPARAM(p) ((p) == (p))
 //---------------------------------------------------------------------------
+static void Abort()
+{
+    throw std::exception();
+}
+//---------------------------------------------------------------------------
+class TCompThread : public TObject
+{
+public:
+  TCompThread(bool value) {}
+  void Resume() {}
+  void Terminate() {}
+  void SetEvent(HANDLE Event) {}
+  bool GetTerminated() { return true; }
+};
+//---------------------------------------------------------------------------
