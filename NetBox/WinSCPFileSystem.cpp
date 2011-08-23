@@ -503,12 +503,12 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
 
       for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
-        Data = StoredSessions->Sessions[Index];
-        if (Data->Name.SubString(1, Folder.Length()) == Folder)
+        Data = StoredSessions->GetSessions(Index);
+        if (Data->Name.substr(1, Folder.size()) == Folder)
         {
-          wstring Name = Data->Name.SubString(
-            Folder.Length() + 1, Data->Name.Length() - Folder.Length());
-          int Slash = Name.Pos('/');
+          wstring Name = Data->Name.substr(
+            Folder.size() + 1, Data->Name.size() - Folder.size());
+          int Slash = Name.find_first_of(L'/');
           if (Slash > 0)
           {
             Name.SetLength(Slash - 1);
@@ -2383,11 +2383,11 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
       int Index = 0;
       while (Index < StoredSessions->GetCount())
       {
-        TSessionData * Data = StoredSessions->Sessions[Index];
+        TSessionData * Data = StoredSessions->GetSessions()[Index];
         if (Data->Name.SubString(1, Folder.Length()) == Folder)
         {
           ProcessSession(Data, Param);
-          if (StoredSessions->Sessions[Index] != Data)
+          if (StoredSessions->GetSessions()[Index] != Data)
           {
             Index--;
           }
