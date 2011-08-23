@@ -211,5 +211,5 @@ public:
   bool GetTerminated() { return true; }
 };
 //---------------------------------------------------------------------------
-wstring FORMAT(const wstring &fmt, ...);
+wstring FORMAT(const wchar_t *fmt, ...);
 //---------------------------------------------------------------------------

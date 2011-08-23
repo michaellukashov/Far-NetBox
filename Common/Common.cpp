@@ -1691,12 +1691,12 @@ return false;
   // return Result;
 }
 
-wstring FORMAT(const wstring &fmt, ...)
+wstring FORMAT(const wchar_t *fmt, ...)
 {
 	wstring result;
 	va_list args;
 	va_start(args, fmt);
-	int len = _vscwprintf(format, args);
+	int len = _vscwprintf(fmt, args);
 	wstring buf(len + sizeof(wchar_t), 0);
 	vswprintf_s(&buf[0], buf.size(), fmt, args);
 	va_end(args);
