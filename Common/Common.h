@@ -10,7 +10,7 @@
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define ASCOPY(dest, source) SCOPY(dest, source.c_str())
-#define FORMAT(S, F) Format(S, ARRAYOFCONST(F))
+// #define FORMAT(S, F) Format(S, ARRAYOFCONST(F))
 #define FMTLOAD(I, F) FmtLoadStr(I, ARRAYOFCONST(F))
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
@@ -211,5 +211,5 @@ public:
   bool GetTerminated() { return true; }
 };
 //---------------------------------------------------------------------------
-// TODO FORMAT(fmt, ...)
+wstring FORMAT(const wstring &fmt, ...);
 //---------------------------------------------------------------------------
