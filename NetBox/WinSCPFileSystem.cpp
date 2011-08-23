@@ -476,9 +476,9 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
       }
 
       TRemoteFile * File;
-      for (int Index = 0; Index < FTerminal->Files->Count; Index++)
+      for (int Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
       {
-        File = FTerminal->Files->Files[Index];
+        File = FTerminal->GetFiles()->GetFiles()[Index];
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
     }
@@ -501,7 +501,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
     {
       ChildPaths->CaseSensitive = false;
 
-      for (int Index = 0; Index < StoredSessions->Count; Index++)
+      for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
         Data = StoredSessions->Sessions[Index];
         if (Data->Name.SubString(1, Folder.Length()) == Folder)
@@ -535,7 +535,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
       PanelItems->Add(new TSessionFolderPanelItem(FNewSessionsFolder));
     }
 
-    if (PanelItems->Count == 0)
+    if (PanelItems->GetCount() == 0)
     {
       PanelItems->Add(new THintPanelItem(GetMsg(NEW_SESSION_HINT)));
     }
@@ -893,7 +893,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 
     if (Key == VK_F4 && (ControlState == 0))
     {
-      if ((Data != NULL) || (StoredSessions->Count == 0))
+      if ((Data != NULL) || (StoredSessions->GetCount() == 0))
       {
         EditConnectSession(Data, true);
       }
@@ -1198,7 +1198,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
               if (FileListCommand)
               {
-                if ((LocalFileList == NULL) || (LocalFileList->Count != 1))
+                if ((LocalFileList == NULL) || (LocalFileList->GetCount() != 1))
                 {
                   throw exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
                 }
@@ -1206,9 +1206,9 @@ void TWinSCPFileSystem::ApplyCommand()
               else
               {
                 if ((LocalFileList == NULL) ||
-                    ((LocalFileList->Count != 1) &&
-                     (FileList->Count != 1) &&
-                     (LocalFileList->Count != FileList->Count)))
+                    ((LocalFileList->GetCount() != 1) &&
+                     (FileList->GetCount() != 1) &&
+                     (LocalFileList->GetCount() != FileList->GetCount())))
                 {
                   throw exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
                 }
@@ -1233,7 +1233,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
               TFileOperationProgressType Progress(&OperationProgress, &OperationFinished);
 
-              Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->Count);
+              Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->GetCount());
 
               try
               {
@@ -1244,7 +1244,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
                   if (LocalFileCommand)
                   {
-                    assert(LocalFileList->Count == 1);
+                    assert(LocalFileList->GetCount() == 1);
                     LocalFile = LocalFileList->Strings[0];
                   }
 
@@ -1256,11 +1256,11 @@ void TWinSCPFileSystem::ApplyCommand()
                 }
                 else if (LocalFileCommand)
                 {
-                  if (LocalFileList->Count == 1)
+                  if (LocalFileList->GetCount() == 1)
                   {
                     wstring LocalFile = LocalFileList->Strings[0];
 
-                    for (int Index = 0; Index < RemoteFileList->Count; Index++)
+                    for (int Index = 0; Index < RemoteFileList->GetCount(); Index++)
                     {
                       wstring FileName = RemoteFileList->Strings[Index];
                       TCustomCommandData Data(FTerminal);
@@ -1270,11 +1270,11 @@ void TWinSCPFileSystem::ApplyCommand()
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                     }
                   }
-                  else if (RemoteFileList->Count == 1)
+                  else if (RemoteFileList->GetCount() == 1)
                   {
                     wstring FileName = RemoteFileList->Strings[0];
 
-                    for (int Index = 0; Index < LocalFileList->Count; Index++)
+                    for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
                     {
                       TCustomCommandData Data(FTerminal);
                       TLocalCustomCommand CustomCommand(
@@ -1286,12 +1286,12 @@ void TWinSCPFileSystem::ApplyCommand()
                   }
                   else
                   {
-                    if (LocalFileList->Count != RemoteFileList->Count)
+                    if (LocalFileList->GetCount() != RemoteFileList->GetCount())
                     {
                       throw exception(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
                     }
 
-                    for (int Index = 0; Index < LocalFileList->Count; Index++)
+                    for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
                     {
                       wstring FileName = RemoteFileList->Strings[Index];
                       TCustomCommandData Data(FTerminal);
@@ -1305,7 +1305,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 }
                 else
                 {
-                  for (int Index = 0; Index < RemoteFileList->Count; Index++)
+                  for (int Index = 0; Index < RemoteFileList->GetCount(); Index++)
                   {
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(Data,
@@ -1475,7 +1475,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
         FPlugin->RestoreScreen(FSynchronizationSaveScreenHandle);
       }
 
-      if (Checklist->Count == 0)
+      if (Checklist->GetCount() == 0)
       {
         MoreMessageDialog(GetMsg(COMPARE_NO_DIFFERENCES), NULL,
            qtInformation, qaOK);
@@ -1930,7 +1930,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   {
     if (FileList != NULL)
     {
-      for (int Index = 0; Index < FileList->Count; Index++)
+      for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
         TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
         if (File != NULL)
@@ -2359,7 +2359,7 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
   TProcessSessionEvent ProcessSession, void * Param)
 {
-  for (int Index = 0; Index < PanelItems->Count; Index++)
+  for (int Index = 0; Index < PanelItems->GetCount(); Index++)
   {
     TFarPanelItem * PanelItem = (TFarPanelItem *)PanelItems->Items[Index];
     assert(PanelItem);
@@ -2381,7 +2381,7 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
       wstring Folder = UnixIncludeTrailingBackslash(
         UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
       int Index = 0;
-      while (Index < StoredSessions->Count)
+      while (Index < StoredSessions->GetCount())
       {
         TSessionData * Data = StoredSessions->Sessions[Index];
         if (Data->Name.SubString(1, Folder.Length()) == Folder)
@@ -2410,10 +2410,10 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
       wstring Query;
       bool Recycle = FTerminal->GetSessionData()->DeleteToRecycleBin &&
         !FTerminal->IsRecycledFile(FFileList->Strings[0]);
-      if (PanelItems->Count > 1)
+      if (PanelItems->GetCount() > 1)
       {
         Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM),
-          (PanelItems->Count));
+          (PanelItems->GetCount()));
       }
       else
       {
@@ -2517,7 +2517,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
 
       if (Confirmed)
       {
-        if ((FFileList->Count == 1) && (OpMode & OPM_EDIT))
+        if ((FFileList->GetCount() == 1) && (OpMode & OPM_EDIT))
         {
           FOriginalEditFile = IncludeTrailingBackslash(DestPath) +
             UnixExtractFileName(FFileList->Strings[0]);
@@ -2555,14 +2555,14 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
   {
     wstring Title = GetMsg(EXPORT_SESSION_TITLE);
     wstring Prompt;
-    if (PanelItems->Count == 1)
+    if (PanelItems->GetCount() == 1)
     {
       Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT),
         (((TFarPanelItem *)PanelItems->Items[0])->GetFileName()));
     }
     else
     {
-      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT), (PanelItems->Count));
+      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT), (PanelItems->GetCount()));
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
@@ -2706,7 +2706,7 @@ int TWinSCPFileSystem::PutFilesEx(TList * PanelItems, bool Move, int OpMode)
       // When comparing, beware that one path may be long path and the other short
       // (since 1.70 alpha 6, DestPath in GetFiles is short path,
       // while current path in PutFiles is long path)
-      if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->Count == 1) &&
+      if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->GetCount() == 1) &&
           (CompareFileName(FFileList->Strings[0], FOriginalEditFile) ||
            CompareFileName(FFileList->Strings[0], FLastEditFile)))
       {
@@ -2769,7 +2769,7 @@ bool TWinSCPFileSystem::ImportSessions(TList * PanelItems, bool /*Move*/,
   {
     wstring FileName;
     TFarPanelItem * PanelItem;
-    for (int i = 0; i < PanelItems->Count; i++)
+    for (int i = 0; i < PanelItems->GetCount(); i++)
     {
       PanelItem = (TFarPanelItem *)PanelItems->Items[i];
       bool AnyData = false;
@@ -2862,7 +2862,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TList * PanelItems,
     wstring FileName;
     TFarPanelItem * PanelItem;
     TObject * Data = NULL;
-    for (int Index = 0; Index < PanelItems->Count; Index++)
+    for (int Index = 0; Index < PanelItems->GetCount(); Index++)
     {
       PanelItem = (TFarPanelItem *)PanelItems->Items[Index];
       assert(PanelItem);
@@ -2900,7 +2900,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TList * PanelItems,
       }
     }
 
-    if (FileList->Count == 0)
+    if (FileList->GetCount() == 0)
     {
       Abort();
     }
@@ -3019,14 +3019,14 @@ void TWinSCPFileSystem::LogAuthentication(
     FarWrapText(FAuthenticationLog->Text.TrimRight(), AuthenticationLogLines, Width);
     int Count;
     wstring Message;
-    if (AuthenticationLogLines->Count == 0)
+    if (AuthenticationLogLines->GetCount() == 0)
     {
       Message = wstring::StringOfChar(' ', Width) + "\n";
       Count = 1;
     }
     else
     {
-      while (AuthenticationLogLines->Count > Height)
+      while (AuthenticationLogLines->GetCount() > Height)
       {
         AuthenticationLogLines->Delete(0);
       }
@@ -3034,7 +3034,7 @@ void TWinSCPFileSystem::LogAuthentication(
         AuthenticationLogLines->Strings[0] +
           wstring::StringOfChar(' ', Width - AuthenticationLogLines->Strings[0].Length());
       Message = AnsiReplaceStr(AuthenticationLogLines->Text, "\r", "");
-      Count = AuthenticationLogLines->Count;
+      Count = AuthenticationLogLines->GetCount();
     }
 
     Message += wstring::StringOfChar('\n', Height - Count);
@@ -3205,7 +3205,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   if (Kind == pkPrompt)
   {
     assert(Instructions.empty());
-    assert(Prompts->Count == 1);
+    assert(Prompts->GetCount() == 1);
     assert(bool(Prompts->Objects[0]));
     wstring AResult = Results->Strings[0];
 
@@ -3279,7 +3279,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     if (!FPanelItems)
     {
       TList * PanelItems = PanelInfo->Items;
-      for (int Index = 0; Index < PanelItems->Count; Index++)
+      for (int Index = 0; Index < PanelItems->GetCount(); Index++)
       {
         if (((TFarPanelItem *)PanelItems->Items[Index])->GetFileName() == FileName)
         {
@@ -3291,7 +3291,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     else
     {
       assert(FFileList);
-      assert(FPanelItems->Count == FFileList->Count);
+      assert(FPanelItems->GetCount() == FFileList->GetCount());
       int Index = FFileList->IndexOf(FileName);
       assert(Index >= 0);
       PanelItem = (TFarPanelItem *)FPanelItems->Items[Index];
@@ -3903,13 +3903,13 @@ void TWinSCPFileSystem::MultipleEdit()
       (PanelInfo->FocusedItem->UserData != NULL))
   {
     TStrings * FileList = CreateFocusedFileList(osRemote);
-    assert((FileList == NULL) || (FileList->Count == 1));
+    assert((FileList == NULL) || (FileList->GetCount() == 1));
 
     if (FileList != NULL)
     {
       try
       {
-        if (FileList->Count == 1)
+        if (FileList->GetCount() == 1)
         {
           MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->Strings[0],
             (TRemoteFile*)FileList->Objects[0]);
@@ -4060,7 +4060,7 @@ void TWinSCPFileSystem::EditHistory()
     }
 
     MenuItems->Add("");
-    MenuItems->ItemFocused = MenuItems->Count - 1;
+    MenuItems->ItemFocused = MenuItems->GetCount() - 1;
 
     const int BreakKeys[] = { VK_F4, 0 };
 
