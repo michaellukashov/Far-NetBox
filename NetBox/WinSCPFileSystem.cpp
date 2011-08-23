@@ -478,8 +478,8 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
       TRemoteFile * File;
       for (int Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
       {
-        File = FTerminal->GetFiles()->GetFiles()[Index];
-        PanelItems->Add(new TRemoteFilePanelItem(File));
+        File = FTerminal->GetFiles()->GetFiles(Index);
+        PanelItems->Add((TObject *)new TRemoteFilePanelItem(File));
       }
     }
     catch(...)
@@ -499,7 +499,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
     TStringList * ChildPaths = new TStringList();
     try
     {
-      ChildPaths->CaseSensitive = false;
+      ChildPaths->SetCaseSensitive(false);
 
       for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
