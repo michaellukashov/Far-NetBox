@@ -433,13 +433,13 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
     Format = FTerminal->GetSessionData()->GetSessionName();
     if (FarConfiguration->GetHostNameInTitle())
     {
-      PanelTitle = ::FORMAT(" %s:%s ", (Format, CurDir));
+      PanelTitle = ::FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
     }
     else
     {
-      PanelTitle = ::FORMAT(" %s ", (CurDir));
+      PanelTitle = ::FORMAT(" %s ", CurDir.c_str());
     }
-    ShortcutData = ::FORMAT("%s\1%s", (FTerminal->GetSessionData()->SessionUrl, CurDir));
+    ShortcutData = ::FORMAT("%s\1%s", FTerminal->GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -449,7 +449,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
     CurDir = FSessionsFolder;
     Format = L"winscp";
     Flags = OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
-    PanelTitle = ::FORMAT(" %s ", (GetMsg(STORED_SESSION_TITLE)));
+    PanelTitle = ::FORMAT(L" %s ", GetMsg(STORED_SESSION_TITLE).c_str());
 
     TSessionPanelItem::SetPanelModes(PanelModes);
     TSessionPanelItem::SetKeyBarTitles(KeyBarTitles);
