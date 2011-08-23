@@ -216,6 +216,9 @@ public:
     void SetString(int Index, wstring S)
     {
     }
+	void SetCaseSensitive(bool value)
+	{
+	}
 };
 
 class TDateTime
