@@ -543,7 +543,7 @@ public:
     wstring * FileName = NULL, bool * ProtocolDefined = NULL);
   virtual ~TStoredSessionList();
   // __property TSessionData * Sessions[int Index]  = { read=AtSession };
-  TSessionData *AtSession(int Index) { return (TSessionData*)AtObject(Index); }
+  TSessionData *GetSession(int Index) { return (TSessionData*)AtObject(Index); }
   // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   TSessionData *GetDefaultSettings() { return FDefaultSettings; }
   void SetDefaultSettings(TSessionData * value);
