@@ -503,7 +503,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
 
       for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
-        Data = StoredSessions->GetSessions(Index);
+        Data = StoredSessions->GetSession(Index);
         if (Data->Name.substr(1, Folder.size()) == Folder)
         {
           wstring Name = Data->Name.substr(
@@ -511,11 +511,11 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
           int Slash = Name.find_first_of(L'/');
           if (Slash > 0)
           {
-            Name.SetLength(Slash - 1);
-            if (ChildPaths->IndexOf(Name) < 0)
+            Name.resize(Slash - 1);
+            if (ChildPaths->IndexOf(Name.c_str()) < 0)
             {
-              PanelItems->Add(new TSessionFolderPanelItem(Name));
-              ChildPaths->Add(Name);
+              PanelItems->Add((TObject *)new TSessionFolderPanelItem(Name));
+              ChildPaths->Add((TObject *)Name);
             }
           }
           else
