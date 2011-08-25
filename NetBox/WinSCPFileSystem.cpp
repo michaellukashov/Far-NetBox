@@ -1869,7 +1869,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(wstring Token, bool Separate)
       Token += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, Token.c_str());
+    FarControl(FCTL_INSERTCMDLINE, 0, (LONG_PTR)Token.c_str());
   }
 }
 //---------------------------------------------------------------------------
@@ -1888,7 +1888,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
     else
     {
       Name = UnixIncludeTrailingBackslash(FSessionsFolder);
-      if (!Focused->IsParentDirectory)
+      if (!Focused->GetIsParentDirectory())
       {
         Name = UnixIncludeTrailingBackslash(Name + Focused->GetFileName());
       }
@@ -1899,18 +1899,18 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 {
-  TFarPanelItem * Focused = GetPanelInfo()->FocusedItem;
+  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
   if (Focused != NULL)
   {
-    if (!Focused->IsParentDirectory)
+    if (!Focused->GetIsParentDirectory())
     {
-      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(Focused->UserData);
+      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(Focused->GetUserData());
       if (File != NULL)
       {
         if (Full)
         {
-          InsertTokenOnCommandLine(File->FullFileName, true);
+          InsertTokenOnCommandLine(File->GetFullFileName(), true);
         }
         else
         {
@@ -1941,10 +1941,10 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     {
       for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
-        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
+        TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
         if (File != NULL)
         {
-          FileNames->Add(File->FullFileName);
+          FileNames->Add(File->GetFullFileName());
         }
         else
         {
@@ -1954,8 +1954,8 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     }
     else
     {
-      if ((GetPanelInfo()->SelectedCount == 0) &&
-          GetPanelInfo()->FocusedItem->IsParentDirectory)
+      if ((GetPanelInfo()->GetSelectedCount() == 0) &&
+          GetPanelInfo()->GetFocusedItem()->GetIsParentDirectory())
       {
         FileNames->Add(UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory()));
       }
@@ -1965,16 +1965,16 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   }
   catch(...)
   {
+  }
     delete FileList;
     delete FileNames;
-  }
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::GetSpaceAvailable(const wstring Path,
   TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
-  if ((Terminal != NULL) && GetTerminal()->IsCapable[fcCheckingSpaceAvailable])
+  if ((GetTerminal() != NULL) && GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
   {
     try
     {
@@ -1996,9 +1996,9 @@ void TWinSCPFileSystem::ShowInformation()
   TSessionInfo SessionInfo = GetTerminal()->GetSessionInfo();
   TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
   TGetSpaceAvailable OnGetSpaceAvailable = NULL;
-  if (GetTerminal()->IsCapable[fcCheckingSpaceAvailable])
+  if (GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
   {
-    OnGetSpaceAvailable = GetSpaceAvailable;
+    // FIXME OnGetSpaceAvailable = GetSpaceAvailable;
   }
   FileSystemInfoDialog(SessionInfo, FileSystemInfo, GetTerminal()->GetCurrentDirectory(),
     OnGetSpaceAvailable);
@@ -2007,7 +2007,7 @@ void TWinSCPFileSystem::ShowInformation()
 bool TWinSCPFileSystem::AreCachesEmpty()
 {
   assert(Connected());
-  return FTerminal->AreCachesEmpty;
+  return FTerminal->GetAreCachesEmpty();
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ClearCaches()
@@ -2019,8 +2019,8 @@ void TWinSCPFileSystem::ClearCaches()
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
-  ::OpenSessionInPutty(GUIConfiguration->PuttyPath, FTerminal->GetSessionData(),
-    GUIConfiguration->PuttyPassword ? GetTerminal()->Password : wstring());
+  ::OpenSessionInPutty(GUIConfiguration->GetPuttyPath(), FTerminal->GetSessionData(),
+    GUIConfiguration->GetPuttyPassword() ? GetTerminal()->GetPassword() : wstring());
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
@@ -2037,10 +2037,10 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
   try
   {
     wstring Directory = FTerminal->GetCurrentDirectory();
-    wstring SessionKey = FTerminal->GetSessionData()->SessionKey;
+    wstring SessionKey = FTerminal->GetSessionData()->GetSessionKey();
     TBookmarkList * CurrentBookmarkList;
 
-    CurrentBookmarkList = FarConfiguration->Bookmarks[SessionKey];
+    CurrentBookmarkList = FarConfiguration->GetBookmark(SessionKey);
     if (CurrentBookmarkList != NULL)
     {
       BookmarkList->Assign(CurrentBookmarkList);
@@ -2048,16 +2048,16 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 
     if (Add)
     {
-      TBookmark * Bookmark = new TBookmark;
-      Bookmark->Remote = Directory;
-      Bookmark->Name = Directory;
+      TBookmark *Bookmark = new TBookmark;
+      Bookmark->SetRemote(Directory);
+      Bookmark->SetName(Directory);
       BookmarkList->Add(Bookmark);
-      FarConfiguration->Bookmarks[SessionKey] = BookmarkList;
+      FarConfiguration->SetBookmark(SessionKey, BookmarkList);
     }
 
     bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList);
 
-    FarConfiguration->Bookmarks[SessionKey] = BookmarkList;
+    FarConfiguration->SetBookmarks(SessionKey, BookmarkList);
 
     if (Result)
     {
@@ -2070,8 +2070,8 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
   }
   catch(...)
   {
-    delete BookmarkList;
   }
+    delete BookmarkList;
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::HomeDirectory()

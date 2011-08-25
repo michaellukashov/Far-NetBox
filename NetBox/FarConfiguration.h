@@ -92,8 +92,8 @@ public:
   wstring GetPuttygenPath();
   void SetPuttygenPath(wstring value) { FPuttygenPath = value; }
   // __property TBookmarkList * Bookmarks[wstring Key] = { read = GetBookmarks, write = SetBookmarks };
-  TBookmarkList * GetBookmarks(wstring Key);
-  void SetBookmarks(wstring Key, TBookmarkList * value);
+  TBookmarkList * GetBookmark(wstring Key);
+  void SetBookmark(wstring Key, TBookmarkList * value);
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);

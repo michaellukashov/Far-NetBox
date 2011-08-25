@@ -222,14 +222,14 @@ wstring TFarConfiguration::ModuleFileName()
   return Plugin->ModuleName;
 }
 //---------------------------------------------------------------------------
-void TFarConfiguration::SetBookmarks(wstring Key,
+void TFarConfiguration::SetBookmark(wstring Key,
   TBookmarkList * value)
 {
   FBookmarks->Bookmarks[Key] = value;
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * TFarConfiguration::GetBookmarks(wstring Key)
+TBookmarkList * TFarConfiguration::GetBookmark(wstring Key)
 {
   return FBookmarks->Bookmarks[Key];
 }
