@@ -144,6 +144,11 @@ class TList : public TObjectList
 public:
 };
 
+enum TDuplicatesEnum
+{
+    dupAccept
+};
+
 class TStrings : public TPersistent
 {
 public:
@@ -193,6 +198,9 @@ public:
     {
     }
     virtual void PutObject(int Index, TObject *AObject)
+    {
+    }
+    void SetDuplicates(TDuplicatesEnum value)
     {
     }
 private:
