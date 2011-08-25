@@ -824,7 +824,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const wstring Command)
         FPlugin->ShowTerminalScreen();
 
         FOutputLog = true;
-        FTerminal->AnyCommand(Command, GetTerminalCaptureLog());
+        // FIXME FTerminal->AnyCommand(Command, TerminalCaptureLog);
       }
       catch(...)
       {
@@ -854,7 +854,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 {
   bool Handled = false;
 
-  TFarPanelItem * Focused = PanelInfo->GetFocusedItem();
+  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
   if ((Key == 'W') && (ControlState & PKF_SHIFT) &&
         (ControlState & PKF_ALT))
@@ -866,9 +866,9 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
   {
     TSessionData * Data = NULL;
 
-    if ((Focused != NULL) && Focused->GetIsFile() && Focused->UserData)
+    if ((Focused != NULL) && Focused->GetIsFile() && Focused->GetUserData())
     {
-      Data = (TSessionData *)Focused->UserData;
+      Data = (TSessionData *)Focused->GetUserData();
     }
 
     if ((Key == 'F') && FLAGSET(ControlState, PKF_CONTROL))
@@ -994,7 +994,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
     }
 
     if ((Key == VK_F4) && (ControlState == 0) &&
-         FarConfiguration->EditorMultiple)
+         FarConfiguration->GetEditorMultiple())
     {
       MultipleEdit();
       Handled = true;
@@ -1014,11 +1014,11 @@ void TWinSCPFileSystem::CreateLink()
   wstring PointTo;
   bool SymbolicLink = true;
 
-  if (PanelInfo->FocusedItem && PanelInfo->FocusedItem->UserData)
+  if (GetPanelInfo()->GetFocusedItem() && GetPanelInfo()->GetFocusedItem()->GetUserData())
   {
-    File = (TRemoteFile *)PanelInfo->FocusedItem->UserData;
+    File = (TRemoteFile *)GetPanelInfo()->GetFocusedItem()->GetUserData();
 
-    Edit = File->GetIsSymLink() && Terminal->GetSessionData()->ResolveSymlinks;
+    Edit = File->GetIsSymLink() && GetTerminal()->GetSessionData()->GetResolveSymlinks();
     if (Edit)
     {
       FileName = File->GetFileName();
@@ -1031,23 +1031,23 @@ void TWinSCPFileSystem::CreateLink()
   }
 
   if (LinkDialog(FileName, PointTo, SymbolicLink, Edit,
-        Terminal->IsCapable[fcHardLink]))
+        GetTerminal()->GetIsCapable(fcHardLink)))
   {
     if (Edit)
     {
       assert(File->GetFileName() == FileName);
       int Params = dfNoRecursive;
-      Terminal->ExceptionOnFail = true;
+      GetTerminal()->SetExceptionOnFail(true);
       try
       {
-        Terminal->DeleteFile("", File, &Params);
+        GetTerminal()->DeleteFile(L"", File, &Params);
       }
       catch(...)
       {
-        Terminal->ExceptionOnFail = false;
+        GetTerminal()->SetExceptionOnFail(false);
       }
     }
-    Terminal->CreateLink(FileName, PointTo, SymbolicLink);
+    GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink);
     if (UpdatePanel())
     {
       RedrawPanel();
@@ -1058,17 +1058,17 @@ void TWinSCPFileSystem::CreateLink()
 void TWinSCPFileSystem::TemporarilyDownloadFiles(
   TStrings * FileList, TCopyParamType CopyParam, wstring & TempDir)
 {
-  CopyParam.FileNameCase = ncNoChange;
-  CopyParam.PreserveReadOnly = false;
-  CopyParam.ResumeSupport = rsOff;
+  CopyParam.SetFileNameCase(ncNoChange);
+  CopyParam.SetPreserveReadOnly(false);
+  CopyParam.SetResumeSupport(rsOff);
 
   TempDir = FPlugin->TemporaryDir();
   if (TempDir.empty() || !ForceDirectories(TempDir))
   {
-    throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
+    // FIXME throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
   }
 
-  FTerminal->ExceptionOnFail = true;
+  FTerminal->SetExceptionOnFail(true);
   try
   {
     try
@@ -1079,18 +1079,25 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
     {
       try
       {
-        RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
+        RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
       }
       catch(...)
       {
       }
       throw;
     }
+      try
+      {
+        RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
+      }
+      catch(...)
+      {
+      }
   }
   catch(...)
   {
-    FTerminal->ExceptionOnFail = false;
   }
+    FTerminal->SetExceptionOnFail(false);
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ApplyCommand()
@@ -1100,18 +1107,18 @@ void TWinSCPFileSystem::ApplyCommand()
   {
     try
     {
-      int Params = FarConfiguration->ApplyCommandParams;
-      wstring Command = FarConfiguration->ApplyCommandCommand;
+      int Params = FarConfiguration->GetApplyCommandParams();
+      wstring Command = FarConfiguration->GetApplyCommandCommand();
       if (ApplyCommandDialog(Command, Params))
       {
-        FarConfiguration->ApplyCommandParams = Params;
-        FarConfiguration->ApplyCommandCommand = Command;
+        FarConfiguration->SetApplyCommandParams(Params);
+        FarConfiguration->SetApplyCommandCommand(Command);
         if (FLAGCLEAR(Params, ccLocal))
         {
           if (EnsureCommandSessionFallback(fcShellAnyCommand))
           {
-            TCustomCommandData Data(Terminal);
-            TRemoteCustomCommand RemoteCustomCommand(Data, Terminal->GetCurrentDirectory());
+            TCustomCommandData Data(GetTerminal());
+            TRemoteCustomCommand RemoteCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
             TFarInteractiveCustomCommand InteractiveCustomCommand(
               FPlugin, &RemoteCustomCommand);
 
@@ -1126,14 +1133,14 @@ void TWinSCPFileSystem::ApplyCommand()
                 assert(!FNoProgress);
                 FNoProgress = true;
                 FOutputLog = true;
-                OutputEvent = TerminalCaptureLog;
+                // FIXME OutputEvent = TerminalCaptureLog;
               }
 
               if (FLAGSET(Params, ccCopyResults))
               {
                 assert(FCapturedLog == NULL);
                 FCapturedLog = new TStringList();
-                OutputEvent = TerminalCaptureLog;
+                // FIXME OutputEvent = TerminalCaptureLog;
               }
 
               try
@@ -1163,7 +1170,7 @@ void TWinSCPFileSystem::ApplyCommand()
             }
             catch(...)
             {
-              PanelInfo->ApplySelection();
+              GetPanelInfo()->ApplySelection();
               if (UpdatePanel())
               {
                 RedrawPanel();
@@ -1173,8 +1180,8 @@ void TWinSCPFileSystem::ApplyCommand()
         }
         else
         {
-          TCustomCommandData Data(Terminal);
-          TLocalCustomCommand LocalCustomCommand(Data, Terminal->GetCurrentDirectory());
+          TCustomCommandData Data(GetTerminal());
+          TLocalCustomCommand LocalCustomCommand(Data, GetTerminal()->GetCurrentDirectory());
           TFarInteractiveCustomCommand InteractiveCustomCommand(FPlugin,
             &LocalCustomCommand);
 
@@ -1189,7 +1196,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             if (LocalFileCommand)
             {
-              TFarPanelInfo * AnotherPanel = AnotherPanelInfo;
+              TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
               RequireLocalPanel(AnotherPanel, GetMsg(APPLY_COMMAND_LOCAL_PATH_REQUIRED));
 
               LocalFileList = CreateSelectedFileList(osLocal, AnotherPanel);
@@ -1215,7 +1222,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             wstring TempDir;
 
-            TemporarilyDownloadFiles(FileList, GUIConfiguration->DefaultCopyParam, TempDir);
+            TemporarilyDownloadFiles(FileList, GUIConfiguration->GetDefaultCopyParam(), TempDir);
 
             try
             {
@@ -1248,7 +1255,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
                   TCustomCommandData Data(FTerminal);
                   TLocalCustomCommand CustomCommand(Data,
-                    Terminal->GetCurrentDirectory(), "", LocalFile, FileList);
+                    GetTerminal()->GetCurrentDirectory(), "", LocalFile, FileList);
                   ExecuteShellAndWait(FPlugin->Handle, CustomCommand.Complete(Command, true),
                     TProcessMessagesEvent(NULL));
                 }
@@ -1263,7 +1270,7 @@ void TWinSCPFileSystem::ApplyCommand()
                       wstring FileName = RemoteFileList->Strings[Index];
                       TCustomCommandData Data(FTerminal);
                       TLocalCustomCommand CustomCommand(Data,
-                        Terminal->GetCurrentDirectory(), FileName, LocalFile, "");
+                        GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, "");
                       ExecuteShellAndWait(FPlugin->Handle,
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                     }
@@ -1276,7 +1283,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     {
                       TCustomCommandData Data(FTerminal);
                       TLocalCustomCommand CustomCommand(
-                        Data, Terminal->GetCurrentDirectory(),
+                        Data, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->Strings[Index], "");
                       ExecuteShellAndWait(FPlugin->Handle,
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
@@ -1294,7 +1301,7 @@ void TWinSCPFileSystem::ApplyCommand()
                       wstring FileName = RemoteFileList->Strings[Index];
                       TCustomCommandData Data(FTerminal);
                       TLocalCustomCommand CustomCommand(
-                        Data, Terminal->GetCurrentDirectory(),
+                        Data, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->Strings[Index], "");
                       ExecuteShellAndWait(FPlugin->Handle,
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
@@ -1307,7 +1314,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   {
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(Data,
-                      Terminal->GetCurrentDirectory(), RemoteFileList->Strings[Index], "", "");
+                      GetTerminal()->GetCurrentDirectory(), RemoteFileList->Strings[Index], "", "");
                     ExecuteShellAndWait(FPlugin->Handle,
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                   }
@@ -1435,7 +1442,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   bool SaveSettings = false;
 
   TCopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
-  TUsableCopyParamAttrs CopyParamAttrs = Terminal->UsableCopyParamAttrs(0);
+  TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   int Options =
     FLAGMASK(!FTerminal->IsCapable[fcTimestampChanging], fsoDisableTimestamp) |
     FLAGMASK(SynchronizeAllowSelectedOnly(), fsoAllowSelectedOnly);
@@ -1586,7 +1593,7 @@ void TWinSCPFileSystem::Synchronize()
   try
   {
     TCopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
-    int CopyParamAttrs = Terminal->UsableCopyParamAttrs(0).Upload;
+    int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
     if (SynchronizeDialog(Params, &CopyParam, Controller.StartStop,
@@ -1730,11 +1737,11 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
           {
             if (Move)
             {
-              Terminal->MoveFiles(FileList, Target, FileMask);
+              GetTerminal()->MoveFiles(FileList, Target, FileMask);
             }
             else
             {
-              Terminal->CopyFiles(FileList, Target, FileMask);
+              GetTerminal()->CopyFiles(FileList, Target, FileMask);
             }
           }
           catch(...)
@@ -1770,7 +1777,7 @@ void TWinSCPFileSystem::RenameFile()
     {
       try
       {
-        Terminal->RenameFile(File, NewName, true);
+        GetTerminal()->RenameFile(File, NewName, true);
       }
       catch(...)
       {
@@ -1795,7 +1802,7 @@ void TWinSCPFileSystem::FileProperties()
       TRemoteProperties CurrentProperties;
 
       bool Cont = true;
-      if (!Terminal->LoadFilesProperties(FileList))
+      if (!GetTerminal()->LoadFilesProperties(FileList))
       {
         if (UpdatePanel())
         {
@@ -1963,15 +1970,15 @@ void TWinSCPFileSystem::GetSpaceAvailable(const wstring Path,
   TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
-  if ((Terminal != NULL) && Terminal->IsCapable[fcCheckingSpaceAvailable])
+  if ((Terminal != NULL) && GetTerminal()->IsCapable[fcCheckingSpaceAvailable])
   {
     try
     {
-      Terminal->SpaceAvailable(Path, ASpaceAvailable);
+      GetTerminal()->SpaceAvailable(Path, ASpaceAvailable);
     }
     catch(exception & E)
     {
-      if (!Terminal->GetActive())
+      if (!GetTerminal()->GetActive())
       {
         Close = true;
       }
@@ -1982,14 +1989,14 @@ void TWinSCPFileSystem::GetSpaceAvailable(const wstring Path,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ShowInformation()
 {
-  TSessionInfo SessionInfo = Terminal->GetSessionInfo();
-  TFileSystemInfo FileSystemInfo = Terminal->GetFileSystemInfo();
+  TSessionInfo SessionInfo = GetTerminal()->GetSessionInfo();
+  TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
   TGetSpaceAvailable OnGetSpaceAvailable = NULL;
-  if (Terminal->IsCapable[fcCheckingSpaceAvailable])
+  if (GetTerminal()->IsCapable[fcCheckingSpaceAvailable])
   {
     OnGetSpaceAvailable = GetSpaceAvailable;
   }
-  FileSystemInfoDialog(SessionInfo, FileSystemInfo, Terminal->GetCurrentDirectory(),
+  FileSystemInfoDialog(SessionInfo, FileSystemInfo, GetTerminal()->GetCurrentDirectory(),
     OnGetSpaceAvailable);
 }
 //---------------------------------------------------------------------------
@@ -2009,7 +2016,7 @@ void TWinSCPFileSystem::OpenSessionInPutty()
 {
   assert(Connected());
   ::OpenSessionInPutty(GUIConfiguration->PuttyPath, FTerminal->GetSessionData(),
-    GUIConfiguration->PuttyPassword ? Terminal->Password : wstring());
+    GUIConfiguration->PuttyPassword ? GetTerminal()->Password : wstring());
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
@@ -2494,7 +2501,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
       if (!Confirmed)
       {
         int CopyParamAttrs =
-          Terminal->UsableCopyParamAttrs(Params).Download |
+          GetTerminal()->UsableCopyParamAttrs(Params).Download |
           FLAGMASK(EditView, cpaNoExcludeMask);
         int Options =
           FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
@@ -2638,13 +2645,13 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   if (!Confirmed)
   {
     int CopyParamAttrs =
-      Terminal->UsableCopyParamAttrs(Params).Upload |
+      GetTerminal()->UsableCopyParamAttrs(Params).Upload |
       FLAGMASK(Edit, (cpaNoExcludeMask | cpaNoClearArchive));
     // heurictics: do not ask for target directory when uploaded file
     // was downloaded in edit mode
     int Options =
       FLAGMASK(Edit, coTempTransfer) |
-      FLAGMASK(Edit || !Terminal->IsCapable[fcNewerOnlyUpload], coDisableNewerOnly);
+      FLAGMASK(Edit || !GetTerminal()->IsCapable[fcNewerOnlyUpload], coDisableNewerOnly);
     Confirmed = CopyDialog(true, Move, FFileList, DestPath,
       &CopyParam, Options, CopyParamAttrs);
 
@@ -2925,9 +2932,9 @@ void TWinSCPFileSystem::SaveSession()
     if (Data)
     {
       bool Changed = false;
-      if (Terminal->GetSessionData()->UpdateDirectories)
+      if (GetTerminal()->GetSessionData()->UpdateDirectories)
       {
-        Data->RemoteDirectory = Terminal->GetSessionData()->RemoteDirectory;
+        Data->RemoteDirectory = GetTerminal()->GetSessionData()->RemoteDirectory;
         Changed = true;
       }
 
@@ -2996,7 +3003,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
 {
-  Terminal->Open();
+  GetTerminal()->Open();
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
@@ -3037,7 +3044,7 @@ void TWinSCPFileSystem::LogAuthentication(
 
     Message += wstring::StringOfChar('\n', Height - Count);
 
-    FPlugin->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
+    FPlugin->Message(0, GetTerminal()->GetSessionData()->GetSessionName(), Message);
   }
   catch(...)
   {
@@ -3050,13 +3057,13 @@ void TWinSCPFileSystem::TerminalInformation(
 {
   if (Active)
   {
-    if (Terminal->Status == ssOpening)
+    if (GetTerminal()->Status == ssOpening)
     {
       if (FAuthenticationLog == NULL)
       {
         FAuthenticationLog = new TStringList();
         FPlugin->SaveScreen(FAuthenticationSaveScreenHandle);
-        FPlugin->ShowConsoleTitle(Terminal->GetSessionData()->GetSessionName());
+        FPlugin->ShowConsoleTitle(GetTerminal()->GetSessionData()->GetSessionName());
       }
 
       LogAuthentication(Terminal, Str);
@@ -3215,8 +3222,8 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   }
   else
   {
-    Result = PasswordDialog(Terminal->GetSessionData(), Kind, Name, Instructions,
-      Prompts, Results, Terminal->StoredCredentialsTried);
+    Result = PasswordDialog(GetTerminal()->GetSessionData(), Kind, Name, Instructions,
+      Prompts, Results, GetTerminal()->StoredCredentialsTried);
   }
 }
 //---------------------------------------------------------------------------
@@ -3483,9 +3490,9 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
 
   if (FRefreshRemoteDirectory)
   {
-    if ((Terminal != NULL) && Terminal->GetActive())
+    if ((Terminal != NULL) && GetTerminal()->GetActive())
     {
-      Terminal->RefreshDirectory();
+      GetTerminal()->RefreshDirectory();
       if (UpdatePanel())
       {
         RedrawPanel();
