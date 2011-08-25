@@ -270,7 +270,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
           TWinSCPFileSystem * PanelSystem;
           PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
           if (PanelSystem && PanelSystem->Connected() &&
-              PanelSystem->Terminal->GetSessionData()->SessionUrl == Name)
+              PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == Name)
           {
             PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
             if (PanelSystem->UpdatePanel())
@@ -280,7 +280,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
             Abort();
           }
           // directory will be set by FAR itself
-          Directory = "";
+          Directory = L"";
         }
         assert(StoredSessions);
         bool DefaultsOnly;
@@ -289,7 +289,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
         {
           Abort();
         }
-        if (!Session->CanLogin)
+        if (!Session->GetCanLogin())
         {
           assert(false);
           Abort();
@@ -352,15 +352,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
     int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
-    MenuItems->Disabled[MLog] = !FSVisible || !FileSystem->IsLogging();
-    MenuItems->Disabled[MClearCaches] = !FSVisible || FileSystem->AreCachesEmpty();
-    MenuItems->Disabled[MPutty] = !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PuttyPath)));
-    MenuItems->Disabled[MEditHistory] = !FSConnected || FileSystem->IsEditHistoryEmpty();
-    MenuItems->Checked[MSynchronizeBrowsing] = FSVisible && FileSystem->IsSynchronizedBrowsing();
-    MenuItems->Disabled[MPageant] = !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PageantPath)));
-    MenuItems->Disabled[MPuttygen] = !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PuttygenPath)));
+    MenuItems->SetDisabled(MLog, !FSVisible || !FileSystem->IsLogging());
+    MenuItems->SetDisabled(MClearCaches, !FSVisible || FileSystem->AreCachesEmpty());
+    MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttyPath()))));
+    MenuItems->SetDisabled(MEditHistory, !FSConnected || FileSystem->IsEditHistoryEmpty());
+    MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && FileSystem->IsSynchronizedBrowsing());
+    MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
+    MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
-    int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), "", MenuItems);
+    int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
 
     if (Result >= 0)
     {
@@ -443,7 +443,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       else if (Result == MPageant || Result == MPuttygen)
       {
         wstring Path = (Result == MPageant) ?
-          FarConfiguration->PageantPath : FarConfiguration->PuttygenPath;
+          FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
         wstring Program, Params, Dir;
         SplitCommand(Path, Program, Params, Dir);
         ExecuteShell(Program, Params);
@@ -477,6 +477,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(exception * E)
 {
+// FIXME
+/*
   if (!E->Message.empty())
   {
     if (E->InheritsFrom(__classid(exception)))
@@ -502,16 +504,17 @@ void TWinSCPPlugin::ShowExtendedException(exception * E)
       ShowException(ExceptObject(), ExceptAddr());
     }
   }
+*/
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::OldFar()
 {
-  throw exception(FORMAT(GetMsg(OLD_FAR), (FormatFarVersion(GetMinFarVersion()))));
+  throw std::exception(::FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || E->InheritsFrom(__classid(EFatal)))
+  if (((OpMode & OPM_FIND) == 0)) // || E->InheritsFrom(__classid(EFatal)))
   {
     ShowExtendedException(E);
   }
@@ -543,7 +546,7 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
       if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
           (Data.Params->Aliases[i].OnClick != NULL))
       {
-        Data.Params->Aliases[i].OnClick(NULL);
+        Data.Params->GetAliases(i).OnClick(NULL);
         Close = false;
         break;
       }
