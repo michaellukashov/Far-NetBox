@@ -381,6 +381,11 @@ bool AnsiSameText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
+bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
+{
+    // FIXME
+    return false;
+}
 
 bool ForceDirectories(const std::wstring Dir)
 {
