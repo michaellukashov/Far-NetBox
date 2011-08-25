@@ -796,7 +796,7 @@ std::string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
     for (size_t i = 0; i < cntLength; ++i)
     {
         const char chkChar = plainText[i];
-        if (*find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
+        if (*std::find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
                 (chkChar >= 'a' && chkChar <= 'z') ||
                 (chkChar >= 'A' && chkChar <= 'Z') ||
                 (chkChar >= '0' && chkChar <= '9'))
