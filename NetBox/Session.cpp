@@ -34,7 +34,7 @@
 #include <openssl/buffer.h>
 
 std::string CSession::m_CryptKey = "NetBox";
-vector<CSession::ProtoImplInfo> CSession::m_Factory;
+std::vector<CSession::ProtoImplInfo> CSession::m_Factory;
 
 static const char *ParamRoot =      "NetBox";
 static const char *ParamCrypt =     "crypt";

@@ -33,7 +33,7 @@
 #define MIN_FAR_VERMINOR 0
 #define MIN_FAR_BUILD    0
 
-vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
+std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 
 extern "C"
 {
