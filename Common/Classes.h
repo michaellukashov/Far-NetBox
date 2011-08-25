@@ -203,6 +203,9 @@ public:
     void SetDuplicates(TDuplicatesEnum value)
     {
     }
+    void Sort()
+    {
+    }
 private:
     TNotifyEvent FOnChange;
 };
