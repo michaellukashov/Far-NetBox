@@ -531,9 +531,9 @@ private:
     }
 
 protected:
-    HANDLE                  m_Dlg;       ///< Dialog descriptor
-    int                     _Width;     ///< Dialog width
-    int                     _Height;    ///< Dialog height
-    std::vector<FarDialogItem>   _DlgItems;  ///< Dialog items array
-    bool                    _UseFrame;  ///< Dialog frame flag
+    HANDLE m_Dlg; ///< Dialog descriptor
+    int _Width; ///< Dialog width
+    int _Height; ///< Dialog height
+    std::vector<FarDialogItem> _DlgItems; ///< Dialog items array
+    bool _UseFrame; ///< Dialog frame flag
 };
