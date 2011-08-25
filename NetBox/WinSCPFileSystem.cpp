@@ -1558,7 +1558,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
       ProgressWidth - RemoteLabel.size(), true) + L"\n";
     Message += StartTimeLabel + FSynchronizationStart.TimeString() + L"\n";
     Message += TimeElapsedLabel +
-      FormatDateTimeSpan(Configuration->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + "\n";
+      FormatDateTimeSpan(Configuration->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
 
     FPlugin->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
@@ -1573,35 +1573,38 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::Synchronize()
 {
-  TFarPanelInfo * AnotherPanel = AnotherPanelInfo;
+  TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   RequireLocalPanel(AnotherPanel, GetMsg(SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
   TSynchronizeParamType Params;
   Params.LocalDirectory = AnotherPanel->GetCurrentDirectory();
   Params.RemoteDirectory = FTerminal->GetCurrentDirectory();
-  int UnusedParams = (GUIConfiguration->SynchronizeParams &
+  int UnusedParams = (GUIConfiguration->GetSynchronizeParams() &
     (TTerminal::spPreviewChanges | TTerminal::spTimestamp |
      TTerminal::spNotByTime | TTerminal::spBySize));
-  Params.Params = GUIConfiguration->SynchronizeParams & ~UnusedParams;
-  Params.Options = GUIConfiguration->SynchronizeOptions;
+  Params.Params = GUIConfiguration->GetSynchronizeParams() & ~UnusedParams;
+  Params.Options = GUIConfiguration->GetSynchronizeOptions();
   bool SaveSettings = false;
-  TSynchronizeController Controller(&DoSynchronize, &DoSynchronizeInvalid,
-    &DoSynchronizeTooManyDirectories);
+  TSynchronizeController Controller(
+    (TSynchronizeEvent)&TWinSCPFileSystem::DoSynchronize,
+    (TSynchronizeInvalidEvent)&TWinSCPFileSystem::DoSynchronizeInvalid,
+    (TSynchronizeTooManyDirectories)&TWinSCPFileSystem::DoSynchronizeTooManyDirectories);
   assert(FSynchronizeController == NULL);
   FSynchronizeController = &Controller;
 
   try
   {
-    TCopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
+    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
     int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
-    if (SynchronizeDialog(Params, &CopyParam, Controller.StartStop,
-          SaveSettings, Options, CopyParamAttrs, GetSynchronizeOptions) &&
+    if (SynchronizeDialog(Params, &CopyParam,
+        (TSynchronizeStartStopEvent)&TSynchronizeController::StartStop, //FIXME Controller.StartStop
+        SaveSettings, Options, CopyParamAttrs, GetSynchronizeOptions) &&
         SaveSettings)
     {
-      GUIConfiguration->SynchronizeParams = Params.Params | UnusedParams;
-      GUIConfiguration->SynchronizeOptions = Params.Options;
+      GUIConfiguration->SetSynchronizeParams(Params.Params | UnusedParams);
+      GUIConfiguration->SetSynchronizeOptions(Params.Options;
     }
   }
   catch(...)
