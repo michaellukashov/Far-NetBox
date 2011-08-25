@@ -115,10 +115,10 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
 void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogParams &params,
     struct ProxySettings &proxySettings);
 
-void AppendWChar(wstring &str, const wchar_t ch);
+void AppendWChar(std::wstring &str, const wchar_t ch);
 void AppendChar(string &str, const char ch);
 
-void AppendPathDelimiterW(wstring &str);
+void AppendPathDelimiterW(std::wstring &str);
 void AppendPathDelimiterA(string &str);
 
 std::wstring MB2W(const char *src, const UINT cp = CP_ACP);

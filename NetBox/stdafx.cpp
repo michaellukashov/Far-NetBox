@@ -247,7 +247,7 @@ void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogPar
     proxySettings.proxyPassword = dlg.GetText(params.idProxyPassword);
 }
 
-void AppendWChar(wstring &str, const wchar_t ch)
+void AppendWChar(std::wstring &str, const wchar_t ch)
 {
     if (!str.empty() && str[str.length() - 1] != ch)
     {
@@ -263,7 +263,7 @@ void AppendChar(string &str, const char ch)
     }
 }
 
-void AppendPathDelimiterW(wstring &str)
+void AppendPathDelimiterW(std::wstring &str)
 {
     if (!str.empty() && str[str.length() - 1] != L'/' && str[str.length() - 1] != L'\\')
     {
