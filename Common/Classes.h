@@ -152,7 +152,8 @@ public:
 
 enum TDuplicatesEnum
 {
-    dupAccept
+    dupAccept,
+    dupError
 };
 
 class TStrings : public TPersistent
@@ -241,6 +242,11 @@ public:
 	void SetCaseSensitive(bool value)
 	{
 	}
+    void SetSorted(bool value)
+    {
+    }
+      // SetDuplicates(dupError);
+      // SetCaseSensitive(true);
 };
 
 class TDateTime

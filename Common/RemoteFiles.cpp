@@ -1513,15 +1513,15 @@ void TRemoteDirectory::SetIncludeParentDirectory(bool value)
   if (GetIncludeParentDirectory() != value)
   {
     FIncludeParentDirectory = value;
-    if (value && ParentDirectory)
+    if (value && GetParentDirectory())
     {
-      assert(IndexOf(ParentDirectory) < 0);
+      assert(IndexOf(GetParentDirectory()) < 0);
       Add(GetParentDirectory());
     }
     else if (!value && GetParentDirectory())
     {
       assert(IndexOf(GetParentDirectory()) >= 0);
-      Extract(GetParentDirectory());
+      // FIXME Extract(GetParentDirectory());
     }
   }
 }
@@ -1539,7 +1539,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
     else if (!value && GetThisDirectory())
     {
       assert(IndexOf(GetThisDirectory()) >= 0);
-      Extract(GetThisDirectory());
+      // FIXME Extract(GetThisDirectory());
     }
   }
 }
@@ -1547,9 +1547,9 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   FSection = new TCriticalSection();
-  Sorted = true;
-  Duplicates = dupError;
-  CaseSensitive = true;
+  SetSorted(true);
+  SetDuplicates(dupError);
+  SetCaseSensitive(true);
 }
 //---------------------------------------------------------------------------
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
@@ -1564,23 +1564,23 @@ void TRemoteDirectoryCache::Clear()
 
   try
   {
-    for (int Index = 0; Index < Count; Index++)
+    for (int Index = 0; Index < GetCount(); Index++)
     {
-      delete (TRemoteFileList *)Objects[Index];
-      Objects[Index] = NULL;
+      delete (TRemoteFileList *)GetObject(Index);
+      SetObject(Index, NULL);
     }
   }
   catch(...)
   {
-    TStringList::Clear();
   }
+    TStringList::Clear();
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmpty() const
 {
   TGuard Guard(FSection);
 
-  return (const_cast<TRemoteDirectoryCache*>(this)->Count == 0);
+  return (const_cast<TRemoteDirectoryCache*>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasFileList(const std::wstring Directory)
