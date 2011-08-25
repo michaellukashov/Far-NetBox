@@ -16,6 +16,7 @@ public:
 
   // __property TCustomFarPlugin * Plugin = { read = FPlugin, write = SetPlugin };
   TCustomFarPlugin * GetPlugin() { return FPlugin; }
+  void SetPlugin(TCustomFarPlugin * value);
   // __property bool ConfirmOverwritingOverride = { read = FConfirmOverwritingOverride, write = FConfirmOverwritingOverride };
   bool GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool value) { FConfirmOverwritingOverride = value; }
@@ -140,7 +141,6 @@ private:
 
   TBookmarks * FBookmarks;
 
-  void SetPlugin(TCustomFarPlugin * value);
   int FarConfirmations();
 };
 //---------------------------------------------------------------------------
