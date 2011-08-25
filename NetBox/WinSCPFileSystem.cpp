@@ -2057,7 +2057,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 
     bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList);
 
-    FarConfiguration->SetBookmarks(SessionKey, BookmarkList);
+    FarConfiguration->SetBookmark(SessionKey, BookmarkList);
 
     if (Result)
     {
@@ -2092,7 +2092,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 {
   FSynchronisingBrowse = !FSynchronisingBrowse;
 
-  if (FarConfiguration->ConfirmSynchronizedBrowsing)
+  if (FarConfiguration->GetConfirmSynchronizedBrowsing())
   {
     wstring Message = FSynchronisingBrowse ?
       GetMsg(SYNCHRONIZE_BROWSING_ON) : GetMsg(SYNCHRONIZE_BROWSING_OFF);
@@ -2101,7 +2101,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
     if (MoreMessageDialog(Message, NULL, qtInformation, qaOK, &Params) ==
           qaNeverAskAgain)
     {
-      FarConfiguration->ConfirmSynchronizedBrowsing = false;
+      FarConfiguration->SetConfirmSynchronizedBrowsing(false);
     }
   }
 }
@@ -2109,25 +2109,25 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 bool TWinSCPFileSystem::SynchronizeBrowsing(wstring NewPath)
 {
   bool Result;
-  TFarPanelInfo * AnotherPanel = AnotherPanelInfo;
+  TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   wstring OldPath = AnotherPanel->GetCurrentDirectory();
   // IncludeTrailingBackslash to expand C: to C:\.
-  if (!FarControl(FCTL_SETANOTHERPANELDIR,
-        IncludeTrailingBackslash(NewPath).c_str()))
+  if (!FarControl(INVALID_HANDLE_VALUE, FCTL_SETPANELDIR, 
+        (LONG_PTR)IncludeTrailingBackslash(NewPath).c_str()))
   {
     Result = false;
   }
   else
   {
     ResetCachedInfo();
-    AnotherPanel = AnotherPanelInfo;
+    SetAnotherPanel(AnotherPanelInfo);
     if (!ComparePaths(AnotherPanel->GetCurrentDirectory(), NewPath))
     {
       // FAR WORKAROUND
       // If FCTL_SETANOTHERPANELDIR above fails, Far default current
       // directory to initial (?) one. So move this back to
       // previous directory.
-      FarControl(FCTL_SETANOTHERPANELDIR, OldPath.c_str());
+      FarControl(INVALID_HANDLE_VALUE, FCTL_SETPANELDIR, (LONG_PTR)OldPath.c_str());
       Result = false;
     }
     else
@@ -2165,8 +2165,8 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
       }
       catch(...)
       {
-        FSavedFindFolder = L"";
       }
+        FSavedFindFolder = L"";
       return Result;
     }
   }
@@ -2179,9 +2179,9 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
 
     if (SessionList())
     {
-      FSessionsFolder = AbsolutePath("/" + FSessionsFolder, Dir);
-      assert(FSessionsFolder[1] == '/');
-      FSessionsFolder.Delete(1, 1);
+      FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
+      assert(FSessionsFolder[1] == L'/');
+      FSessionsFolder.erase(1, 1);
       FNewSessionsFolder = L"";
     }
     else
