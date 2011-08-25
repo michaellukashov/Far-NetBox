@@ -1,5 +1,7 @@
 #pragma once
 
+#include <WinDef.h>
+
 #pragma warning(push, 1)
 #include <string>
 #include <vector>
