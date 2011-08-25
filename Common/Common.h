@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
 #pragma once
 
+#include <WinBase.h>
+
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(NULL, "")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
