@@ -21,7 +21,7 @@
 #include "Strings.h"
 
 
-wstring GetSystemErrorMessage(const DWORD errCode)
+std::wstring GetSystemErrorMessage(const DWORD errCode)
 {
     assert(errCode);
 
@@ -164,7 +164,7 @@ string NumberToText(int number)
     return string(codeText);
 }
 
-wstring NumberToWString(unsigned long number)
+std::wstring NumberToWString(unsigned long number)
 {
     wchar_t toText[16];
     _itow_s(number, toText, 10);
@@ -285,7 +285,7 @@ void AppendPathDelimiterA(string &str)
  * \param cp code page
  * \return wide string
  */
-wstring MB2W(const char *src, const UINT cp)
+std::wstring MB2W(const char *src, const UINT cp)
 {
     assert(src);
 
@@ -337,7 +337,7 @@ void CheckAbortEvent(HANDLE *AbortEvent)
     }
 }
 
-wstring ExpandEnvVars(const std::wstring& str)
+std::wstring ExpandEnvVars(const std::wstring& str)
 {
     wchar_t buf[MAX_PATH];
     unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));

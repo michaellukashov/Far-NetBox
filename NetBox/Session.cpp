@@ -93,7 +93,7 @@ const wchar_t *CSession::GetDefaultScheme(const int protoId)
 }
 
 
-wstring CSession::GetSupportedPrefixes()
+std::wstring CSession::GetSupportedPrefixes()
 {
     std::wstring prefixes;
     for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
@@ -731,7 +731,7 @@ void CSession::SetProperty(const char *name, const __int64 val)
 }
 
 
-wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
+std::wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
 {
     if (src.empty())
     {

@@ -553,7 +553,7 @@ bool CSFTP::Delete(const wchar_t *path, const ItemType type, std::wstring &error
     return retStatus;
 }
 
-wstring CSFTP::GetURL()
+std::wstring CSFTP::GetURL()
 {
     return CProtocolBase<CSessionSFTP>::GetURL();
 }
@@ -655,7 +655,7 @@ void CSFTP::libssh2_trace_handler_func(LIBSSH2_SESSION *session,
     Log2(message);
 }
 
-wstring CSFTP::FormatSSHLastErrorDescription() const
+std::wstring CSFTP::FormatSSHLastErrorDescription() const
 {
     assert(m_SSHSession);
 

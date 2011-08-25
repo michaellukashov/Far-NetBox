@@ -555,7 +555,7 @@ bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, std::wst
 }
 
 
-wstring CWebDAV::GetBadResponseInfo(const int code) const
+std::wstring CWebDAV::GetBadResponseInfo(const int code) const
 {
     const wchar_t *descr = NULL;
     switch (code)

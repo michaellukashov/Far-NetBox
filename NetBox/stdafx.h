@@ -34,7 +34,7 @@
  * \param errCode system error code
  * \return error message
  */
-wstring GetSystemErrorMessage(const DWORD errCode);
+std::wstring GetSystemErrorMessage(const DWORD errCode);
 
 /**
  * Parse URL
@@ -65,7 +65,7 @@ unsigned long TextToNumber(const std::wstring &text);
  */
 string NumberToText(int number);
 
-wstring NumberToWString(unsigned long number);
+std::wstring NumberToWString(unsigned long number);
 
 struct ProxySettings
 {
@@ -121,9 +121,9 @@ void AppendChar(string &str, const char ch);
 void AppendPathDelimiterW(wstring &str);
 void AppendPathDelimiterA(string &str);
 
-wstring MB2W(const char *src, const UINT cp = CP_ACP);
+std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
 string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 
 void CheckAbortEvent(HANDLE *AbortEvent);
 
-wstring ExpandEnvVars(const std::wstring& str);
+std::wstring ExpandEnvVars(const std::wstring& str);

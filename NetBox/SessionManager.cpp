@@ -335,7 +335,7 @@ PSession CSessionManager::LoadSession(const wchar_t *name)
 }
 
 
-wstring CSessionManager::ConvertPath(const wchar_t *pathBase, const wchar_t *sub /*= NULL*/) const
+std::wstring CSessionManager::ConvertPath(const wchar_t *pathBase, const wchar_t *sub /*= NULL*/) const
 {
     assert(pathBase);
 

@@ -405,7 +405,7 @@ void CSettings::ShowAbout()
     dlg.DoModal();
 }
 
-wstring CSettings::GetSessionPath() const
+std::wstring CSettings::GetSessionPath() const
 {
     std::wstring path = ::ExpandEnvVars(SessionPath());
     if (path.empty())
