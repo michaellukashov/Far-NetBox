@@ -411,6 +411,11 @@ std::wstring IncludeTrailingBackslash(const std::wstring str)
 {
     // FIXME
     std::wstring result = str;
+    if (str[str.size() - 1] != L'/' ||
+        str[str.size() - 1] != L'\\')
+    {
+        result += L'\\';
+    }
     return result;
 }
 

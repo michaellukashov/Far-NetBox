@@ -341,6 +341,7 @@ std::wstring ReplaceStrAll(std::wstring Str, std::wstring What, std::wstring ByW
         result.replace(pos, What.size(), ByWhat);
         pos = result.find_first_of(What);
     }
+    return result;
 }
 
 //---------------------------------------------------------------------------
@@ -503,22 +504,6 @@ std::wstring ExpandEnvironmentVariables(const std::wstring & Str)
 std::wstring ExtractShortPathName(const std::wstring & Path1)
 {
     return Path1; //FIXME
-}
-
-bool AnsiSameText(const std::wstring &Str1, const std::wstring &Str2)
-{
-    return Str1 == Str2; //FIXME
-}
-
-std::wstring IncludeTrailingBackslash(const std::wstring &Path1)
-{
-    std::wstring result = Path1;
-    if (Path1[Path1.size() - 1] != L'/' ||
-        Path1[Path1.size() - 1] != L'\\')
-    {
-        result += L'\\';
-    }
-    return result;
 }
 
 //---------------------------------------------------------------------------
