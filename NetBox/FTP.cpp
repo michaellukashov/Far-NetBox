@@ -204,7 +204,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorIn
     static const char *delimiters = "\r\n";
     size_t lastPos = response.find_first_not_of(delimiters, 0);
     size_t nextPos = response.find_first_of(delimiters, lastPos);
-    while (string::npos != nextPos || string::npos != lastPos)
+    while (std::string::npos != nextPos || string::npos != lastPos)
     {
         const string singleString = response.substr(lastPos, nextPos - lastPos);
         if (_strnicmp(singleString.c_str(), "total ", 6))

@@ -255,7 +255,7 @@ void AppendWChar(std::wstring &str, const wchar_t ch)
     }
 }
 
-void AppendChar(string &str, const char ch)
+void AppendChar(std::string &str, const char ch)
 {
     if (!str.empty() && str[str.length() - 1] != ch)
     {
@@ -271,7 +271,7 @@ void AppendPathDelimiterW(std::wstring &str)
     }
 }
 
-void AppendPathDelimiterA(string &str)
+void AppendPathDelimiterA(std::string &str)
 {
     if (!str.empty() && str[str.length() - 1] != '/' && str[str.length() - 1] != '\\')
     {

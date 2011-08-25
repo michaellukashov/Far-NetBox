@@ -783,7 +783,7 @@ std::wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
             BUF_MEM *bptr;
             if (BIO_get_mem_ptr(b64, &bptr))
             {
-                encodedVal = ::MB2W(string(static_cast<const char *>(bptr->data), bptr->length).c_str());
+                encodedVal = ::MB2W(std::string(static_cast<const char *>(bptr->data), bptr->length).c_str());
             }
         }
     }

@@ -97,7 +97,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetOutput(string &out, int *progress);
+    CURLcode SetOutput(std::string &out, int *progress);
 
     /**
      * Set output as file

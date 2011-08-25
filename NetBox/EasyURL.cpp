@@ -210,7 +210,7 @@ CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 }
 
 
-CURLcode CEasyURL::SetOutput(string &out, int *progress)
+CURLcode CEasyURL::SetOutput(std::string &out, int *progress)
 {
     assert(m_Prepared);
     assert(progress);
