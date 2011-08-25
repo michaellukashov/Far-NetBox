@@ -357,5 +357,6 @@ std::wstring LowerCase(const std::wstring str)
 {
     // FIXME
     std::wstring result = str;
+    // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
     return result;
 }
