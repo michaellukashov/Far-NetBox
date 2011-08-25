@@ -12,11 +12,11 @@ TConfiguration * CreateConfiguration();
 
 void ShowExtendedException(exception * E);
 
-wstring GetRegistryKey();
+std::wstring GetRegistryKey();
 void Busy(bool Start);
-wstring AppNameString();
-wstring SshVersionString();
-void CopyToClipboard(wstring Text);
+std::wstring AppNameString();
+std::wstring SshVersionString();
+void CopyToClipboard(std::wstring Text);
 int StartThread(void * SecurityAttributes, unsigned StackSize,
   TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
   unsigned & ThreadId);
@@ -45,7 +45,7 @@ struct TQueryButtonAlias
   TQueryButtonAlias();
 
   unsigned int Button;
-  wstring Alias;
+  std::wstring Alias;
   TNotifyEvent OnClick;
 };
 
@@ -53,19 +53,19 @@ typedef void ( *TQueryParamsTimerEvent)(unsigned int & Result);
 
 struct TQueryParams
 {
-  TQueryParams(unsigned int AParams = 0, wstring AHelpKeyword = HELP_NONE);
+  TQueryParams(unsigned int AParams = 0, std::wstring AHelpKeyword = HELP_NONE);
 
   const TQueryButtonAlias * Aliases;
   unsigned int AliasesCount;
   unsigned int Params;
   unsigned int Timer;
   TQueryParamsTimerEvent TimerEvent;
-  wstring TimerMessage;
+  std::wstring TimerMessage;
   unsigned int TimerAnswers;
   unsigned int Timeout;
   unsigned int TimeoutAnswer;
   unsigned int NoBatchAnswers;
-  wstring HelpKeyword;
+  std::wstring HelpKeyword;
 };
 
 enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
@@ -86,8 +86,8 @@ enum TPromptKind
 bool IsAuthenticationPrompt(TPromptKind Kind);
 //---------------------------------------------------------------------------
 typedef void ( *TFileFoundEvent)
-  (TTerminal * Terminal, const wstring FileName, const TRemoteFile * File,
+  (TTerminal * Terminal, const std::wstring FileName, const TRemoteFile * File,
    bool & Cancel);
 typedef void ( *TFindingFileEvent)
-  (TTerminal * Terminal, const wstring Directory, bool & Cancel);
+  (TTerminal * Terminal, const std::wstring Directory, bool & Cancel);
 //---------------------------------------------------------------------------

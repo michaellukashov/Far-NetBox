@@ -11,10 +11,10 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
-  wstring Name;
+  std::wstring Name;
   TNamedObject(): TPersistent() {};
-  int CompareName(wstring aName, bool CaseSensitive = false);
-  TNamedObject(wstring aName): TPersistent(), Name(aName) {}
+  int CompareName(std::wstring aName, bool CaseSensitive = false);
+  TNamedObject(std::wstring aName): TPersistent(), Name(aName) {}
   void MakeUniqueIn(TNamedObjectList * List);
 };
 //---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ private:
 protected:
   void Recount();
 public:
-  static const wstring HiddenPrefix;
+  static const std::wstring HiddenPrefix;
   static bool IsHidden(TNamedObject * Object);
 
   bool AutoSort;
@@ -42,7 +42,7 @@ public:
   TNamedObjectList();
   void AlphaSort();
   virtual TNamedObject * AtObject(int Index);
-  TNamedObject * FindByName(wstring Name, bool CaseSensitive = false);
+  TNamedObject * FindByName(std::wstring Name, bool CaseSensitive = false);
   // __property int Count = { read = GetCount, write = SetCount };
   int GetCount();
   void SetCount(int value);

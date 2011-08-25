@@ -140,11 +140,11 @@ protected:
   void TerminalFinished(TTerminalItem * TerminalItem);
   bool TerminalFree(TTerminalItem * TerminalItem);
 
-  void DoQueryUser(TObject * Sender, const wstring Query,
+  void DoQueryUser(TObject * Sender, const std::wstring Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params, int & Answer,
     TQueryType Type, void * Arg);
   void DoPromptUser(TTerminal * Terminal, TPromptKind Kind,
-    wstring Name, wstring Instructions, TStrings * Prompts,
+    std::wstring Name, std::wstring Instructions, TStrings * Prompts,
     TStrings * Results, bool & Result, void * Arg);
   void DoShowExtendedException(TTerminal * Terminal,
     exception * E, void * Arg);
@@ -166,10 +166,10 @@ public:
   {
     TFileOperation Operation;
     TOperationSide Side;
-    wstring Source;
-    wstring Destination;
-    wstring ModifiedLocal;
-    wstring ModifiedRemote;
+    std::wstring Source;
+    std::wstring Destination;
+    std::wstring ModifiedLocal;
+    std::wstring ModifiedRemote;
   };
 
   static bool IsUserActionStatus(TStatus Status);
@@ -199,7 +199,7 @@ protected:
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy);
   void SetCPSLimit(unsigned long CPSLimit);
-  virtual wstring StartupDirectory() = 0;
+  virtual std::wstring StartupDirectory() = 0;
 };
 //---------------------------------------------------------------------------
 class TQueueItemProxy
@@ -283,23 +283,23 @@ protected:
   TLocatedQueueItem(TTerminal * Terminal);
 
   virtual void DoExecute(TTerminal * Terminal);
-  virtual wstring StartupDirectory();
+  virtual std::wstring StartupDirectory();
 
 private:
-  wstring FCurrentDir;
+  std::wstring FCurrentDir;
 };
 //---------------------------------------------------------------------------
 class TTransferQueueItem : public TLocatedQueueItem
 {
 public:
   TTransferQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const wstring & TargetDir,
+    TStrings * FilesToCopy, const std::wstring & TargetDir,
     const TCopyParamType * CopyParam, int Params, TOperationSide Side);
   virtual ~TTransferQueueItem();
 
 protected:
   TStrings * FFilesToCopy;
-  wstring FTargetDir;
+  std::wstring FTargetDir;
   TCopyParamType * FCopyParam;
   int FParams;
 };
@@ -308,7 +308,7 @@ class TUploadQueueItem : public TTransferQueueItem
 {
 public:
   TUploadQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const wstring & TargetDir,
+    TStrings * FilesToCopy, const std::wstring & TargetDir,
     const TCopyParamType * CopyParam, int Params);
 
 protected:
@@ -319,7 +319,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
   TDownloadQueueItem(TTerminal * Terminal,
-    TStrings * FilesToCopy, const wstring & TargetDir,
+    TStrings * FilesToCopy, const std::wstring & TargetDir,
     const TCopyParamType * CopyParam, int Params);
 
 protected:

@@ -18,7 +18,7 @@ TQueryButtonAlias::TQueryButtonAlias()
   OnClick = NULL;
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(unsigned int AParams, wstring AHelpKeyword)
+TQueryParams::TQueryParams(unsigned int AParams, std::wstring AHelpKeyword)
 {
   Params = AParams;
   Aliases = NULL;

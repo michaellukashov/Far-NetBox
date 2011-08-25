@@ -145,7 +145,7 @@ public:
 class TStrings : public TPersistent
 {
 public:
-    size_t Add(wstring value)
+    size_t Add(std::wstring value)
     {
         return -1;
     }
@@ -153,15 +153,15 @@ public:
     {
         return 0;
     }
-    wstring GetString(int Index)
+    std::wstring GetString(int Index)
     {
         return L"";
     }
-    wstring GetText()
+    std::wstring GetText()
     {
         return L"";
     }
-    void SetText(wstring S)
+    void SetText(std::wstring S)
     {
     }
     void *GetObject(int Index)
@@ -171,7 +171,7 @@ public:
     void SetObject(int Index, TObject *obj)
     {
     }
-    void AddObject(wstring str, TObject *obj)
+    void AddObject(std::wstring str, TObject *obj)
     {
     }
 
@@ -196,7 +196,7 @@ class TStringList : public TStrings
 public:
     virtual void Assign(TPersistent *Source)
     {}
-    void Put(int Index, wstring value)
+    void Put(int Index, std::wstring value)
     {
     }
     int GetUpdateCount()
@@ -213,7 +213,7 @@ public:
     void Delete(size_t Index)
     {
     }
-    void SetString(int Index, wstring S)
+    void SetString(int Index, std::wstring S)
     {
     }
 	void SetCaseSensitive(bool value)

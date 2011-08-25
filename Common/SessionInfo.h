@@ -12,21 +12,21 @@ struct TSessionInfo
   TSessionInfo();
 
   TDateTime LoginTime;
-  wstring ProtocolBaseName;
-  wstring ProtocolName;
-  wstring SecurityProtocolName;
+  std::wstring ProtocolBaseName;
+  std::wstring ProtocolName;
+  std::wstring SecurityProtocolName;
 
-  wstring CSCipher;
-  wstring CSCompression;
-  wstring SCCipher;
-  wstring SCCompression;
+  std::wstring CSCipher;
+  std::wstring CSCompression;
+  std::wstring SCCipher;
+  std::wstring SCCompression;
 
-  wstring SshVersionString;
-  wstring SshImplementation;
-  wstring HostKeyFingerprint;
+  std::wstring SshVersionString;
+  std::wstring SshImplementation;
+  std::wstring HostKeyFingerprint;
 
-  wstring CertificateFingerprint;
-  wstring Certificate;
+  std::wstring CertificateFingerprint;
+  std::wstring Certificate;
 };
 //---------------------------------------------------------------------------
 enum TFSCapability { fcUserGroupListing, fcModeChanging, fcGroupChanging,
@@ -42,28 +42,28 @@ struct TFileSystemInfo
 {
   TFileSystemInfo();
 
-  wstring ProtocolBaseName;
-  wstring ProtocolName;
-  wstring RemoteSystem;
-  wstring AdditionalInfo;
+  std::wstring ProtocolBaseName;
+  std::wstring ProtocolName;
+  std::wstring RemoteSystem;
+  std::wstring AdditionalInfo;
   bool IsCapable[fcCount];
 };
 //---------------------------------------------------------------------------
 class TSessionUI
 {
 public:
-  virtual void Information(const wstring & Str, bool Status) = 0;
-  virtual int QueryUser(const wstring Query,
+  virtual void Information(const std::wstring & Str, bool Status) = 0;
+  virtual int QueryUser(const std::wstring Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual int QueryUserException(const wstring Query,
+  virtual int QueryUserException(const std::wstring Query,
     exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    wstring Name, wstring Instructions, TStrings * Prompts,
+    std::wstring Name, std::wstring Instructions, TStrings * Prompts,
     TStrings * Results) = 0;
-  virtual void DisplayBanner(const wstring & Banner) = 0;
-  virtual void FatalError(exception * E, wstring Msg) = 0;
+  virtual void DisplayBanner(const std::wstring & Banner) = 0;
+  virtual void FatalError(exception * E, std::wstring Msg) = 0;
   virtual void HandleExtendedException(exception * E) = 0;
   virtual void Closed() = 0;
 };
@@ -73,9 +73,9 @@ enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAct
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
 //---------------------------------------------------------------------------
 typedef void (TObject::*TCaptureOutputEvent)(
-  const wstring & Str, bool StdError);
+  const std::wstring & Str, bool StdError);
 typedef void (TObject::*TCalculatedChecksumEvent)(
-  const wstring & FileName, const wstring & Alg, const wstring & Hash);
+  const std::wstring & FileName, const std::wstring & Alg, const std::wstring & Hash);
 //---------------------------------------------------------------------------
 class TCriticalSection;
 class TSessionActionRecord;
@@ -101,18 +101,18 @@ class TFileSessionAction : public TSessionAction
 {
 public:
   TFileSessionAction(TSessionLog * Log, TLogAction Action);
-  TFileSessionAction(TSessionLog * Log, TLogAction Action, const wstring & FileName);
+  TFileSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring & FileName);
 
-  void FileName(const wstring & FileName);
+  void FileName(const std::wstring & FileName);
 };
 //---------------------------------------------------------------------------
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
   TFileLocationSessionAction(TSessionLog * Log, TLogAction Action);
-  TFileLocationSessionAction(TSessionLog * Log, TLogAction Action, const wstring & FileName);
+  TFileLocationSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring & FileName);
 
-  void Destination(const wstring & Destination);
+  void Destination(const std::wstring & Destination);
 };
 //---------------------------------------------------------------------------
 class TUploadSessionAction : public TFileLocationSessionAction
@@ -132,8 +132,8 @@ class TRights;
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
-  TChmodSessionAction(TSessionLog * Log, const wstring & FileName);
-  TChmodSessionAction(TSessionLog * Log, const wstring & FileName,
+  TChmodSessionAction(TSessionLog * Log, const std::wstring & FileName);
+  TChmodSessionAction(TSessionLog * Log, const std::wstring & FileName,
     const TRights & Rights);
 
   void Rights(const TRights & Rights);
@@ -143,20 +143,20 @@ public:
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
-  TTouchSessionAction(TSessionLog * Log, const wstring & FileName,
+  TTouchSessionAction(TSessionLog * Log, const std::wstring & FileName,
     const TDateTime & Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
-  TMkdirSessionAction(TSessionLog * Log, const wstring & FileName);
+  TMkdirSessionAction(TSessionLog * Log, const std::wstring & FileName);
 };
 //---------------------------------------------------------------------------
 class TRmSessionAction : public TFileSessionAction
 {
 public:
-  TRmSessionAction(TSessionLog * Log, const wstring & FileName);
+  TRmSessionAction(TSessionLog * Log, const std::wstring & FileName);
 
   void Recursive();
 };
@@ -164,23 +164,23 @@ public:
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-  TMvSessionAction(TSessionLog * Log, const wstring & FileName,
-    const wstring & Destination);
+  TMvSessionAction(TSessionLog * Log, const std::wstring & FileName,
+    const std::wstring & Destination);
 };
 //---------------------------------------------------------------------------
 class TCallSessionAction : public TSessionAction
 {
 public:
-  TCallSessionAction(TSessionLog * Log, const wstring & Command,
-    const wstring & Destination);
+  TCallSessionAction(TSessionLog * Log, const std::wstring & Command,
+    const std::wstring & Destination);
 
-  void AddOutput(const wstring & Output, bool StdError);
+  void AddOutput(const std::wstring & Output, bool StdError);
 };
 //---------------------------------------------------------------------------
 class TLsSessionAction : public TSessionAction
 {
 public:
-  TLsSessionAction(TSessionLog * Log, const wstring & Destination);
+  TLsSessionAction(TSessionLog * Log, const std::wstring & Destination);
 
   void FileList(TRemoteFileList * FileList);
 };
@@ -193,7 +193,7 @@ public:
   TSessionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration * Configuration);
   ~TSessionLog();
-  virtual void Add(TLogLineType Type, const wstring & Line);
+  virtual void Add(TLogLineType Type, const std::wstring & Line);
   void AddStartupInfo();
   void AddException(exception * E);
   void AddSeparator();
@@ -210,25 +210,25 @@ public:
   bool GetLogging() { return FLogging; }
   // __property int BottomIndex = { read = GetBottomIndex };
   int GetBottomIndex();
-  // __property wstring Line[int Index]  = { read=GetLine };
-  wstring GetLine(int Index);
+  // __property std::wstring Line[int Index]  = { read=GetLine };
+  std::wstring GetLine(int Index);
   // __property TLogLineType Type[int Index]  = { read=GetType };
   TLogLineType GetType(int Index);
   // __property OnChange;
   // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
   TNotifyEvent GetOnStateChange() { return FOnStateChange; }
   void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
-  // __property wstring CurrentFileName = { read = FCurrentFileName };
-  wstring GetCurrentFileName() { return FCurrentFileName; }
+  // __property std::wstring CurrentFileName = { read = FCurrentFileName };
+  std::wstring GetCurrentFileName() { return FCurrentFileName; }
   // __property bool LoggingToFile = { read = GetLoggingToFile };
   bool GetLoggingToFile();
   // __property int TopIndex = { read = FTopIndex };
   int GetTopIndex() { return FTopIndex; }
-  // __property wstring SessionName = { read = GetSessionName };
-  wstring GetSessionName();
-  // __property wstring Name = { read = FName, write = FName };
-  wstring GetName() { return FName; }
-  void SetName(wstring value) { FName = value; }
+  // __property std::wstring SessionName = { read = GetSessionName };
+  std::wstring GetSessionName();
+  // __property std::wstring Name = { read = FName, write = FName };
+  std::wstring GetName() { return FName; }
+  void SetName(std::wstring value) { FName = value; }
   // __property Count;
 
 protected:
@@ -243,13 +243,13 @@ private:
   TCriticalSection * FCriticalSection;
   bool FLogging;
   void * FFile;
-  wstring FCurrentLogFileName;
-  wstring FCurrentFileName;
+  std::wstring FCurrentLogFileName;
+  std::wstring FCurrentFileName;
   int FLoggedLines;
   int FTopIndex;
   TSessionUI * FUI;
   TSessionData * FSessionData;
-  wstring FName;
+  std::wstring FName;
   bool FLoggingActions;
   bool FClosed;
   TList * FPendingActions;
@@ -258,11 +258,11 @@ private:
   void DeleteUnnecessary();
   void StateChange();
   void OpenLogFile();
-  wstring GetLogFileName();
-  void DoAdd(TLogLineType Type, wstring Line,
-    void (TObject::*f)(TLogLineType Type, const wstring & Line));
-  void DoAddToParent(TLogLineType aType, const wstring & aLine);
-  void DoAddToSelf(TLogLineType aType, const wstring & aLine);
+  std::wstring GetLogFileName();
+  void DoAdd(TLogLineType Type, std::wstring Line,
+    void (TObject::*f)(TLogLineType Type, const std::wstring & Line));
+  void DoAddToParent(TLogLineType aType, const std::wstring & aLine);
+  void DoAddToSelf(TLogLineType aType, const std::wstring & aLine);
   void DoAddStartupInfo(TSessionData * Data);
 };
 //---------------------------------------------------------------------------

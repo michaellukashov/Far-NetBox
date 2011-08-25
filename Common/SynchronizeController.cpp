@@ -100,16 +100,16 @@ void TSynchronizeController::StartStop(TObject * Sender,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, const wstring Directory, bool & SubdirsChanged)
+  TObject * /*Sender*/, const std::wstring Directory, bool & SubdirsChanged)
 {
   try
   {
-    wstring RemoteDirectory;
-    wstring RootLocalDirectory;
+    std::wstring RemoteDirectory;
+    std::wstring RootLocalDirectory;
     RootLocalDirectory = IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory);
     RemoteDirectory = UnixIncludeTrailingBackslash(FSynchronizeParams.RemoteDirectory);
 
-    wstring LocalDirectory = IncludeTrailingBackslash(Directory);
+    std::wstring LocalDirectory = IncludeTrailingBackslash(Directory);
 
     assert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
       RootLocalDirectory);
@@ -186,10 +186,10 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const wstring FileName)
+  const std::wstring FileName)
 {
   TSynchronizeLogEntry Entry;
-  wstring Message;
+  std::wstring Message;
   switch (Operation)
   {
     case soDelete:
@@ -210,7 +210,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-  const wstring Message)
+  const std::wstring Message)
 {
   if (FSynchronizeLog != NULL)
   {
@@ -219,7 +219,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const wstring DirectoryName, bool & Add)
+  const std::wstring DirectoryName, bool & Add)
 {
   if ((FOptions != NULL) && (FOptions->Filter != NULL))
   {
@@ -235,7 +235,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeInvalid(
-  TObject * /*Sender*/, const wstring Directory, const wstring ErrorStr)
+  TObject * /*Sender*/, const std::wstring Directory, const std::wstring ErrorStr)
 {
   if (FOnSynchronizeInvalid != NULL)
   {

@@ -4,7 +4,7 @@
 #include "TextsCore.h"
 
 //---------------------------------------------------------------------------
-bool ExceptionMessage(exception * E, wstring & Message)
+bool ExceptionMessage(exception * E, std::wstring & Message)
 {
   bool Result = true;
   if (dynamic_cast<EAbort *>(E) != NULL)
@@ -29,7 +29,7 @@ bool ExceptionMessage(exception * E, wstring & Message)
 TStrings *ExceptionToMoreMessages(exception * E)
 {
   TStrings *Result = NULL;
-  wstring Message;
+  std::wstring Message;
   if (ExceptionMessage(E, Message))
   {
     Result = new TStringList();
@@ -49,13 +49,13 @@ ExtException::ExtException(exception * E) :
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(exception* E, wstring Msg):
+ExtException::ExtException(exception* E, std::wstring Msg):
   exception(::W2MB(Msg.c_str()))
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(wstring Msg, exception* E) :
+ExtException::ExtException(std::wstring Msg, exception* E) :
   exception("")
 {
   // "copy exception"
@@ -78,8 +78,8 @@ ExtException::ExtException(wstring Msg, exception* E) :
   }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(wstring Msg, wstring MoreMessages,
-    wstring HelpKeyword) :
+ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
+    std::wstring HelpKeyword) :
   exception(::W2MB(Msg.c_str())),
   FHelpKeyword(HelpKeyword)
 {
@@ -90,7 +90,7 @@ ExtException::ExtException(wstring Msg, wstring MoreMessages,
   }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(wstring Msg, TStrings* MoreMessages,
+ExtException::ExtException(std::wstring Msg, TStrings* MoreMessages,
   bool Own) :
   exception(::W2MB(Msg.c_str()))
 {
@@ -131,7 +131,7 @@ void ExtException::AddMoreMessages(exception* E)
       }
     }
 
-    wstring Msg;
+    std::wstring Msg;
     ExceptionMessage(E, Msg);
 
     // new exception does not have own message, this is in fact duplication of
@@ -158,10 +158,10 @@ ExtException::~ExtException()
   delete FMoreMessages;
 }
 //---------------------------------------------------------------------------
-wstring LastSysErrorMessage()
+std::wstring LastSysErrorMessage()
 {
   int LastError = GetLastError();
-  wstring Result;
+  std::wstring Result;
   if (LastError != 0)
   {
     Result = FORMAT(Sysconst_SOSError, (LastError, SysErrorMessage(LastError)));
@@ -169,7 +169,7 @@ wstring LastSysErrorMessage()
   return Result;
 }
 //---------------------------------------------------------------------------
-EOSExtException::EOSExtException(wstring Msg) :
+EOSExtException::EOSExtException(std::wstring Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
 }

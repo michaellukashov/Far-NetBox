@@ -6,8 +6,8 @@
 //---------------------------------------------------------------------------
 struct TSynchronizeParamType
 {
-  wstring LocalDirectory;
-  wstring RemoteDirectory;
+  std::wstring LocalDirectory;
+  std::wstring RemoteDirectory;
   int Params;
   int Options;
 };
@@ -21,19 +21,19 @@ typedef void (TObject::* TSynchronizeThreadsEvent)
   (TObject* Sender, TThreadMethod Method);
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
 typedef void (TObject::* TSynchronizeLog)
-  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const wstring Message);
+  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const std::wstring Message);
 typedef void (TObject::* TSynchronizeStartStopEvent)
   (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
    const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
    TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
    TSynchronizeLog OnSynchronizeLog);
 typedef void (TObject::* TSynchronizeEvent)
-  (TSynchronizeController * Sender, const wstring LocalDirectory,
-   const wstring RemoteDirectory, const TCopyParamType & CopyParam,
+  (TSynchronizeController * Sender, const std::wstring LocalDirectory,
+   const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,
    const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
    TSynchronizeOptions * Options, bool Full);
 typedef void (TObject::* TSynchronizeInvalidEvent)
-  (TSynchronizeController * Sender, const wstring Directory, const wstring ErrorStr);
+  (TSynchronizeController * Sender, const std::wstring Directory, const std::wstring ErrorStr);
 typedef void (TObject::* TSynchronizeTooManyDirectories)
   (TSynchronizeController * Sender, int & MaxDirectories);
 //---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ public:
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLog OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, const wstring FileName);
+  void LogOperation(TSynchronizeOperation Operation, const std::wstring FileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;
@@ -71,13 +71,13 @@ private:
   TSynchronizeLog FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject * Sender, const wstring Directory,
+  void SynchronizeChange(TObject * Sender, const std::wstring Directory,
     bool & SubdirsChanged);
   void SynchronizeAbort(bool Close);
-  void SynchronizeLog(TSynchronizeLogEntry Entry, const wstring Message);
-  void SynchronizeInvalid(TObject * Sender, const wstring Directory,
-    const wstring ErrorStr);
-  void SynchronizeFilter(TObject * Sender, const wstring DirectoryName,
+  void SynchronizeLog(TSynchronizeLogEntry Entry, const std::wstring Message);
+  void SynchronizeInvalid(TObject * Sender, const std::wstring Directory,
+    const std::wstring ErrorStr);
+  void SynchronizeFilter(TObject * Sender, const std::wstring DirectoryName,
     bool & Add);
   void SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
   void SynchronizeDirectoriesChange(TObject * Sender, int Directories);

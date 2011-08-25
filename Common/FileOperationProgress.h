@@ -18,7 +18,7 @@ typedef void (TObject::*TFileOperationProgressEvent)
   (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
 typedef void (TObject::*TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
-    const wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
 {
@@ -45,8 +45,8 @@ public:
   TFileOperation Operation;
   // on what side if operation being processed (local/remote), source of copy
   TOperationSide Side;
-  wstring FileName;
-  wstring Directory;
+  std::wstring FileName;
+  std::wstring Directory;
   bool AsciiTransfer;
   bool TransferingFile;
   bool Temp;
@@ -86,12 +86,12 @@ public:
   void AddResumed(__int64 ASize);
   void Clear();
   unsigned int CPS();
-  void Finish(wstring FileName, bool Success,
+  void Finish(std::wstring FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   unsigned long LocalBlockSize();
   bool IsLocalyDone();
   bool IsTransferDone();
-  void SetFile(wstring AFileName, bool AFileInProgress = true);
+  void SetFile(std::wstring AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   int OperationProgress();
   unsigned long TransferBlockSize();
@@ -108,7 +108,7 @@ public:
   void SetTotalSize(__int64 ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, int ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, int ACount, bool ATemp, const wstring ADirectory,
+    TOperationSide ASide, int ACount, bool ATemp, const std::wstring ADirectory,
     unsigned long ACPSLimit);
   void Stop();
   void Suspend();

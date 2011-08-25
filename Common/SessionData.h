@@ -49,22 +49,22 @@ class TSessionData : public TNamedObject
 friend class TStoredSessionList;
 
 private:
-  wstring FHostName;
+  std::wstring FHostName;
   int FPortNumber;
-  wstring FUserName;
-  wstring FPassword;
+  std::wstring FUserName;
+  std::wstring FPassword;
   bool FPasswordless;
   int FPingInterval;
   TPingType FPingType;
   bool FTryAgent;
   bool FAgentFwd;
-  wstring FListingCommand;
+  std::wstring FListingCommand;
   bool FAuthTIS;
   bool FAuthKI;
   bool FAuthKIPassword;
   bool FAuthGSSAPI;
   bool FGSSAPIFwdTGT; // not supported anymore
-  wstring FGSSAPIServerRealm; // not supported anymore
+  std::wstring FGSSAPIServerRealm; // not supported anymore
   bool FChangeUsername;
   bool FCompression;
   TSshProt FSshProt;
@@ -74,12 +74,12 @@ private:
   TKex FKex[KEX_COUNT];
   bool FClearAliases;
   TEOLType FEOLType;
-  wstring FPublicKeyFile;
+  std::wstring FPublicKeyFile;
   TProtocol FProtocol;
   TFSProtocol FFSProtocol;
   bool FModified;
-  wstring FLocalDirectory;
-  wstring FRemoteDirectory;
+  std::wstring FLocalDirectory;
+  std::wstring FRemoteDirectory;
   bool FLockInHome;
   bool FSpecial;
   bool FUpdateDirectories;
@@ -88,27 +88,27 @@ private:
   bool FPreserveDirectoryChanges;
   bool FSelected;
   bool FLookupUserGroups;
-  wstring FReturnVar;
+  std::wstring FReturnVar;
   bool FScp1Compatibility;
-  wstring FShell;
-  wstring FSftpServer;
+  std::wstring FShell;
+  std::wstring FSftpServer;
   int FTimeout;
   bool FUnsetNationalVars;
   bool FIgnoreLsWarnings;
   bool FTcpNoDelay;
   TProxyMethod FProxyMethod;
-  wstring FProxyHost;
+  std::wstring FProxyHost;
   int FProxyPort;
-  wstring FProxyUsername;
-  wstring FProxyPassword;
-  wstring FProxyTelnetCommand;
-  wstring FProxyLocalCommand;
+  std::wstring FProxyUsername;
+  std::wstring FProxyPassword;
+  std::wstring FProxyTelnetCommand;
+  std::wstring FProxyLocalCommand;
   TAutoSwitch FProxyDNS;
   bool FProxyLocalhost;
   int FFtpProxyLogonType;
   TAutoSwitch FBugs[BUG_COUNT];
-  wstring FCustomParam1;
-  wstring FCustomParam2;
+  std::wstring FCustomParam1;
+  std::wstring FCustomParam2;
   bool FResolveSymlinks;
   TDateTime FTimeDifference;
   int FSFTPDownloadQueue;
@@ -120,39 +120,39 @@ private:
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
   bool FDeleteToRecycleBin;
   bool FOverwrittenToRecycleBin;
-  wstring FRecycleBinPath;
-  wstring FPostLoginCommands;
+  std::wstring FRecycleBinPath;
+  std::wstring FPostLoginCommands;
   TAutoSwitch FSCPLsFullTime;
   TAutoSwitch FFtpListAll;
   TAddressFamily FAddressFamily;
-  wstring FRekeyData;
+  std::wstring FRekeyData;
   unsigned int FRekeyTime;
   int FColor;
   bool FTunnel;
-  wstring FTunnelHostName;
+  std::wstring FTunnelHostName;
   int FTunnelPortNumber;
-  wstring FTunnelUserName;
-  wstring FTunnelPassword;
-  wstring FTunnelPublicKeyFile;
+  std::wstring FTunnelUserName;
+  std::wstring FTunnelPassword;
+  std::wstring FTunnelPublicKeyFile;
   int FTunnelLocalPortNumber;
-  wstring FTunnelPortFwd;
+  std::wstring FTunnelPortFwd;
   bool FFtpPasvMode;
   bool FFtpForcePasvIp;
-  wstring FFtpAccount;
+  std::wstring FFtpAccount;
   int FFtpPingInterval;
   TPingType FFtpPingType;
   TFtps FFtps;
   TAutoSwitch FNotUtf;
-  wstring FHostKey;
+  std::wstring FHostKey;
 
-  wstring FOrigHostName;
+  std::wstring FOrigHostName;
   int FOrigPortNumber;
   TProxyMethod FOrigProxyMethod;
   TSessionSource FSource;
 
-  void SetHostName(wstring value);
+  void SetHostName(std::wstring value);
   void SetPortNumber(int value);
-  void SetUserName(wstring value);
+  void SetUserName(std::wstring value);
   void SetPasswordless(bool value);
   void SetPingInterval(int value);
   void SetTryAgent(bool value);
@@ -162,49 +162,49 @@ private:
   void SetAuthKIPassword(bool value);
   void SetAuthGSSAPI(bool value);
   void SetGSSAPIFwdTGT(bool value);
-  void SetGSSAPIServerRealm(wstring value);
+  void SetGSSAPIServerRealm(std::wstring value);
   void SetChangeUsername(bool value);
   void SetCompression(bool value);
   void SetSshProt(TSshProt value);
   void SetSsh2DES(bool value);
   void SetSshNoUserAuth(bool value);
-  void SetPublicKeyFile(wstring value);
+  void SetPublicKeyFile(std::wstring value);
 
   void SetTimeDifference(TDateTime value);
   void SetPingType(TPingType value);
   void SetProtocol(TProtocol value);
   void SetFSProtocol(TFSProtocol value);
-  void SetLocalDirectory(wstring value);
-  void SetRemoteDirectory(wstring value);
+  void SetLocalDirectory(std::wstring value);
+  void SetRemoteDirectory(std::wstring value);
   void SetUpdateDirectories(bool value);
   void SetCacheDirectories(bool value);
   void SetCacheDirectoryChanges(bool value);
   void SetPreserveDirectoryChanges(bool value);
   void SetLockInHome(bool value);
   void SetSpecial(bool value);
-  void SetListingCommand(wstring value);
+  void SetListingCommand(std::wstring value);
   void SetClearAliases(bool value);
   void SetEOLType(TEOLType value);
   void SetLookupUserGroups(bool value);
-  void SetReturnVar(wstring value);
+  void SetReturnVar(std::wstring value);
   void SetScp1Compatibility(bool value);
-  void SetShell(wstring value);
-  void SetSftpServer(wstring value);
+  void SetShell(std::wstring value);
+  void SetSftpServer(std::wstring value);
   void SetTimeout(int value);
   void SetUnsetNationalVars(bool value);
   void SetIgnoreLsWarnings(bool value);
   void SetTcpNoDelay(bool value);
   void SetProxyMethod(TProxyMethod value);
-  void SetProxyHost(wstring value);
+  void SetProxyHost(std::wstring value);
   void SetProxyPort(int value);
-  void SetProxyUsername(wstring value);
-  void SetProxyTelnetCommand(wstring value);
-  void SetProxyLocalCommand(wstring value);
+  void SetProxyUsername(std::wstring value);
+  void SetProxyTelnetCommand(std::wstring value);
+  void SetProxyLocalCommand(std::wstring value);
   void SetProxyDNS(TAutoSwitch value);
   void SetProxyLocalhost(bool value);
   void SetFtpProxyLogonType(int value);
-  void SetCustomParam1(wstring value);
-  void SetCustomParam2(wstring value);
+  void SetCustomParam1(std::wstring value);
+  void SetCustomParam2(std::wstring value);
   void SetResolveSymlinks(bool value);
   void SetSFTPUploadQueue(int value);
   void SetSFTPListingQueue(int value);
@@ -215,37 +215,37 @@ private:
   void SetDSTMode(TDSTMode value);
   void SetDeleteToRecycleBin(bool value);
   void SetOverwrittenToRecycleBin(bool value);
-  void SetRecycleBinPath(wstring value);
-  void SetPostLoginCommands(wstring value);
+  void SetRecycleBinPath(std::wstring value);
+  void SetPostLoginCommands(std::wstring value);
   void SetAddressFamily(TAddressFamily value);
-  void SetRekeyData(wstring value);
+  void SetRekeyData(std::wstring value);
   void SetRekeyTime(unsigned int value);
   void SetColor(int value);
   void SetTunnel(bool value);
-  void SetTunnelHostName(wstring value);
+  void SetTunnelHostName(std::wstring value);
   void SetTunnelPortNumber(int value);
-  void SetTunnelUserName(wstring value);
-  void SetTunnelPublicKeyFile(wstring value);
+  void SetTunnelUserName(std::wstring value);
+  void SetTunnelPublicKeyFile(std::wstring value);
   void SetTunnelLocalPortNumber(int value);
   void SetFtpPasvMode(bool value);
   void SetFtpForcePasvIp(bool value);
-  void SetFtpAccount(wstring value);
+  void SetFtpAccount(std::wstring value);
   void SetFtpPingInterval(int value);
   void SetFtpPingType(TPingType value);
   void SetFtps(TFtps value);
   void SetNotUtf(TAutoSwitch value);
-  void SetHostKey(wstring value);
+  void SetHostKey(std::wstring value);
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport);
   void Modify();
-  static wstring EncryptPassword(const wstring & Password, wstring Key);
-  static wstring DecryptPassword(const wstring & Password, wstring Key);
-  static wstring StronglyRecryptPassword(const wstring & Password, wstring Key);
+  static std::wstring EncryptPassword(const std::wstring & Password, std::wstring Key);
+  static std::wstring DecryptPassword(const std::wstring & Password, std::wstring Key);
+  static std::wstring StronglyRecryptPassword(const std::wstring & Password, std::wstring Key);
 
-  // __property wstring InternalStorageKey = { read = GetInternalStorageKey };
-  wstring GetInternalStorageKey();
+  // __property std::wstring InternalStorageKey = { read = GetInternalStorageKey };
+  std::wstring GetInternalStorageKey();
 
 public:
-  TSessionData(wstring aName);
+  TSessionData(std::wstring aName);
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage * Storage);
@@ -256,25 +256,25 @@ public:
   bool HasAnyPassword();
   void Remove();
   virtual void Assign(TPersistent * Source);
-  bool ParseUrl(wstring Url, TOptions * Options,
+  bool ParseUrl(std::wstring Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
-    wstring * FileName, bool * AProtocolDefined);
+    std::wstring * FileName, bool * AProtocolDefined);
   bool ParseOptions(TOptions * Options);
   void ConfigureTunnel(int PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
-  static void ValidatePath(const wstring Path);
-  static void ValidateName(const wstring Name);
+  static void ValidatePath(const std::wstring Path);
+  static void ValidateName(const std::wstring Name);
 
-  // __property wstring HostName  = { read=FHostName, write=SetHostName };
-  wstring GetHostName() { return FHostName; }
+  // __property std::wstring HostName  = { read=FHostName, write=SetHostName };
+  std::wstring GetHostName() { return FHostName; }
   // __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
   int GetPortNumber() { return FPortNumber; }
-  // __property wstring UserName  = { read=FUserName, write=SetUserName };
-  wstring GetUserName() { return FUserName; }
-  // __property wstring Password  = { read=GetPassword, write=SetPassword };
-  void SetPassword(wstring value);
-  wstring GetPassword();
+  // __property std::wstring UserName  = { read=FUserName, write=SetUserName };
+  std::wstring GetUserName() { return FUserName; }
+  // __property std::wstring Password  = { read=GetPassword, write=SetPassword };
+  void SetPassword(std::wstring value);
+  std::wstring GetPassword();
   // __property bool Passwordless = { read=FPasswordless, write=SetPasswordless };
   bool GetPasswordless() { return FPasswordless; }
   // __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };
@@ -283,8 +283,8 @@ public:
   bool GetTryAgent() { return FTryAgent; }
   // __property bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
   bool GetAgentFwd() { return FAgentFwd; }
-  // __property wstring ListingCommand = { read = FListingCommand, write = SetListingCommand };
-  wstring GetListingCommand() { return FListingCommand; }
+  // __property std::wstring ListingCommand = { read = FListingCommand, write = SetListingCommand };
+  std::wstring GetListingCommand() { return FListingCommand; }
   // __property bool AuthTIS  = { read=FAuthTIS, write=SetAuthTIS };
   bool GetAuthTIS() { return FAuthTIS; }
   // __property bool AuthKI  = { read=FAuthKI, write=SetAuthKI };
@@ -295,8 +295,8 @@ public:
   bool GetAuthGSSAPI() { return FAuthGSSAPI; }
   // __property bool GSSAPIFwdTGT = { read=FGSSAPIFwdTGT, write=SetGSSAPIFwdTGT };
   bool GetGSSAPIFwdTGT() { return FGSSAPIFwdTGT; }
-  // __property wstring GSSAPIServerRealm = { read=FGSSAPIServerRealm, write=SetGSSAPIServerRealm };
-  wstring GetGSSAPIServerRealm() { return FGSSAPIServerRealm; }
+  // __property std::wstring GSSAPIServerRealm = { read=FGSSAPIServerRealm, write=SetGSSAPIServerRealm };
+  std::wstring GetGSSAPIServerRealm() { return FGSSAPIServerRealm; }
   // __property bool ChangeUsername  = { read=FChangeUsername, write=SetChangeUsername };
   bool GetChangeUsername() { return FChangeUsername; }
   // __property bool Compression  = { read=FCompression, write=SetCompression };
@@ -315,17 +315,17 @@ public:
   // __property TKex Kex[int Index] = { read=GetKex, write=SetKex };
   void SetKex(int Index, TKex value);
   TKex GetKex(int Index) const;
-  // __property wstring PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
-  wstring GetPublicKeyFile() { return FPublicKeyFile; }
+  // __property std::wstring PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
+  std::wstring GetPublicKeyFile() { return FPublicKeyFile; }
   // __property TProtocol Protocol  = { read=FProtocol, write=SetProtocol };
   TProtocol GetProtocol() { return FProtocol; }
-  // __property wstring ProtocolStr  = { read=GetProtocolStr, write=SetProtocolStr };
-  void SetProtocolStr(wstring value);
-  wstring GetProtocolStr() const;
+  // __property std::wstring ProtocolStr  = { read=GetProtocolStr, write=SetProtocolStr };
+  void SetProtocolStr(std::wstring value);
+  std::wstring GetProtocolStr() const;
   // __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
   TFSProtocol GetFSProtocol() { return FFSProtocol; }
-  // __property wstring FSProtocolStr  = { read=GetFSProtocolStr };
-  wstring GetFSProtocolStr();
+  // __property std::wstring FSProtocolStr  = { read=GetFSProtocolStr };
+  std::wstring GetFSProtocolStr();
   // __property bool Modified  = { read=FModified, write=FModified };
   bool GetModified() { return FModified; }
   // __property bool CanLogin  = { read=GetCanLogin };
@@ -339,16 +339,16 @@ public:
   TDateTime GetTimeDifference() { return FTimeDifference; }
   // __property TPingType PingType = { read = FPingType, write = SetPingType };
   TPingType GetPingType() { return FPingType; }
-  // __property wstring SessionName  = { read=GetSessionName };
-  wstring GetSessionName();
-  // __property wstring DefaultSessionName  = { read=GetDefaultSessionName };
-  wstring GetDefaultSessionName();
-  // __property wstring SessionUrl  = { read=GetSessionUrl };
-  wstring GetSessionUrl();
-  // __property wstring LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
-  wstring GetLocalDirectory() { return FLocalDirectory; }
-  // __property wstring RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
-  wstring GetRemoteDirectory() { return FRemoteDirectory; }
+  // __property std::wstring SessionName  = { read=GetSessionName };
+  std::wstring GetSessionName();
+  // __property std::wstring DefaultSessionName  = { read=GetDefaultSessionName };
+  std::wstring GetDefaultSessionName();
+  // __property std::wstring SessionUrl  = { read=GetSessionUrl };
+  std::wstring GetSessionUrl();
+  // __property std::wstring LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
+  std::wstring GetLocalDirectory() { return FLocalDirectory; }
+  // __property std::wstring RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
+  std::wstring GetRemoteDirectory() { return FRemoteDirectory; }
   // __property bool UpdateDirectories = { read=FUpdateDirectories, write=SetUpdateDirectories };
   bool GetUpdateDirectories() { return FUpdateDirectories; }
   // __property bool CacheDirectories = { read=FCacheDirectories, write=SetCacheDirectories };
@@ -363,8 +363,8 @@ public:
   bool GetSpecial() { return FSpecial; }
   // __property bool Selected  = { read=FSelected, write=FSelected };
   bool GetSelected() { return FSelected; }
-  // __property wstring InfoTip  = { read=GetInfoTip };
-  wstring GetInfoTip();
+  // __property std::wstring InfoTip  = { read=GetInfoTip };
+  std::wstring GetInfoTip();
   // __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
   bool GetDefaultShell();
   void SetDefaultShell(bool value);
@@ -375,14 +375,14 @@ public:
   TEOLType GetEOLType() { return FEOLType; }
   // __property bool LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
   bool GetLookupUserGroups() { return FLookupUserGroups; }
-  // __property wstring ReturnVar = { read = FReturnVar, write = SetReturnVar };
-  wstring GetReturnVar() { return FReturnVar; }
+  // __property std::wstring ReturnVar = { read = FReturnVar, write = SetReturnVar };
+  std::wstring GetReturnVar() { return FReturnVar; }
   // __property bool Scp1Compatibility = { read = FScp1Compatibility, write = SetScp1Compatibility };
   bool GetScp1Compatibility() { return FScp1Compatibility; }
-  // __property wstring Shell = { read = FShell, write = SetShell };
-  wstring GetShell() { return FShell; }
-  // __property wstring SftpServer = { read = FSftpServer, write = SetSftpServer };
-  wstring GetSftpServer() { return FSftpServer; }
+  // __property std::wstring Shell = { read = FShell, write = SetShell };
+  std::wstring GetShell() { return FShell; }
+  // __property std::wstring SftpServer = { read = FSftpServer, write = SetSftpServer };
+  std::wstring GetSftpServer() { return FSftpServer; }
   // __property int Timeout = { read = FTimeout, write = SetTimeout };
   int GetTimeout() { return FTimeout; }
   // __property TDateTime TimeoutDT = { read = GetTimeoutDT };
@@ -393,29 +393,29 @@ public:
   bool GetIgnoreLsWarnings() { return FIgnoreLsWarnings; }
   // __property bool TcpNoDelay  = { read=FTcpNoDelay, write=SetTcpNoDelay };
   bool GetTcpNoDelay() { return FTcpNoDelay; }
-  // __property wstring SshProtStr  = { read=GetSshProtStr };
-  wstring GetSshProtStr();
-  // __property wstring CipherList  = { read=GetCipherList, write=SetCipherList };
-  void SetCipherList(wstring value);
-  wstring GetCipherList() const;
-  // __property wstring KexList  = { read=GetKexList, write=SetKexList };
-  void SetKexList(wstring value);
-  wstring GetKexList() const;
+  // __property std::wstring SshProtStr  = { read=GetSshProtStr };
+  std::wstring GetSshProtStr();
+  // __property std::wstring CipherList  = { read=GetCipherList, write=SetCipherList };
+  void SetCipherList(std::wstring value);
+  std::wstring GetCipherList() const;
+  // __property std::wstring KexList  = { read=GetKexList, write=SetKexList };
+  void SetKexList(std::wstring value);
+  std::wstring GetKexList() const;
   // __property TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
   TProxyMethod GetProxyMethod() { return FProxyMethod; }
-  // __property wstring ProxyHost  = { read=FProxyHost, write=SetProxyHost };
-  wstring GetProxyHost() { return FProxyHost; }
+  // __property std::wstring ProxyHost  = { read=FProxyHost, write=SetProxyHost };
+  std::wstring GetProxyHost() { return FProxyHost; }
   // __property int ProxyPort  = { read=FProxyPort, write=SetProxyPort };
   int GetProxyPort() { return FProxyPort; }
-  // __property wstring ProxyUsername  = { read=FProxyUsername, write=SetProxyUsername };
-  wstring GetProxyUsername() { return FProxyUsername; }
-  // __property wstring ProxyPassword  = { read=GetProxyPassword, write=SetProxyPassword };
-  wstring GetProxyPassword() const;
-  void SetProxyPassword(wstring value);
-  // __property wstring ProxyTelnetCommand  = { read=FProxyTelnetCommand, write=SetProxyTelnetCommand };
-  wstring GetProxyTelnetCommand() { return FProxyTelnetCommand; }
-  // __property wstring ProxyLocalCommand  = { read=FProxyLocalCommand, write=SetProxyLocalCommand };
-  wstring GetProxyLocalCommand() { return FProxyLocalCommand; }
+  // __property std::wstring ProxyUsername  = { read=FProxyUsername, write=SetProxyUsername };
+  std::wstring GetProxyUsername() { return FProxyUsername; }
+  // __property std::wstring ProxyPassword  = { read=GetProxyPassword, write=SetProxyPassword };
+  std::wstring GetProxyPassword() const;
+  void SetProxyPassword(std::wstring value);
+  // __property std::wstring ProxyTelnetCommand  = { read=FProxyTelnetCommand, write=SetProxyTelnetCommand };
+  std::wstring GetProxyTelnetCommand() { return FProxyTelnetCommand; }
+  // __property std::wstring ProxyLocalCommand  = { read=FProxyLocalCommand, write=SetProxyLocalCommand };
+  std::wstring GetProxyLocalCommand() { return FProxyLocalCommand; }
   // __property TAutoSwitch ProxyDNS  = { read=FProxyDNS, write=SetProxyDNS };
   TAutoSwitch GetProxyDNS() { return FProxyDNS; }
   // __property bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
@@ -425,12 +425,12 @@ public:
   // __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
   void SetBug(TSshBug Bug, TAutoSwitch value);
   TAutoSwitch GetBug(TSshBug Bug) const;
-  // __property wstring CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
-  wstring GetCustomParam1() { return FCustomParam1; }
-  // __property wstring CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
-  wstring GetCustomParam2() { return FCustomParam2; }
-  // __property wstring SessionKey = { read = GetSessionKey };
-  wstring GetSessionKey();
+  // __property std::wstring CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
+  std::wstring GetCustomParam1() { return FCustomParam1; }
+  // __property std::wstring CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
+  std::wstring GetCustomParam2() { return FCustomParam2; }
+  // __property std::wstring SessionKey = { read = GetSessionKey };
+  std::wstring GetSessionKey();
   // __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
   bool GetResolveSymlinks() { return FResolveSymlinks; }
   // __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
@@ -458,44 +458,44 @@ public:
   bool GetDeleteToRecycleBin() { return FDeleteToRecycleBin; }
   // __property bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
   bool GetOverwrittenToRecycleBin() { return FOverwrittenToRecycleBin; }
-  // __property wstring RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
-  wstring GetRecycleBinPath() { return FRecycleBinPath; }
-  // __property wstring PostLoginCommands = { read = FPostLoginCommands, write = SetPostLoginCommands };
-  wstring GetPostLoginCommands() { return FPostLoginCommands; }
+  // __property std::wstring RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
+  std::wstring GetRecycleBinPath() { return FRecycleBinPath; }
+  // __property std::wstring PostLoginCommands = { read = FPostLoginCommands, write = SetPostLoginCommands };
+  std::wstring GetPostLoginCommands() { return FPostLoginCommands; }
   // __property TAddressFamily AddressFamily = { read = FAddressFamily, write = SetAddressFamily };
   TAddressFamily GetAddressFamily() { return FAddressFamily; }
-  // __property wstring RekeyData = { read = FRekeyData, write = SetRekeyData };
-  wstring GetRekeyData() { return FRekeyData; }
+  // __property std::wstring RekeyData = { read = FRekeyData, write = SetRekeyData };
+  std::wstring GetRekeyData() { return FRekeyData; }
   // __property unsigned int RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
   unsigned int GetRekeyTime() { return FRekeyTime; }
   // __property int Color = { read = FColor, write = SetColor };
   int GetColor() { return FColor; }
   // __property bool Tunnel = { read = FTunnel, write = SetTunnel };
   bool GetTunnel() { return FTunnel; }
-  // __property wstring TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
-  wstring GetTunnelHostName() { return FTunnelHostName; }
+  // __property std::wstring TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
+  std::wstring GetTunnelHostName() { return FTunnelHostName; }
   // __property int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
   int GetTunnelPortNumber() { return FTunnelPortNumber; }
-  // __property wstring TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
-  wstring GetTunnelUserName() { return FTunnelUserName; }
-  // __property wstring TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
-  void SetTunnelPassword(wstring value);
-  wstring GetTunnelPassword();
-  // __property wstring TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
-  wstring GetTunnelPublicKeyFile() { return FTunnelPublicKeyFile; }
+  // __property std::wstring TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
+  std::wstring GetTunnelUserName() { return FTunnelUserName; }
+  // __property std::wstring TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
+  void SetTunnelPassword(std::wstring value);
+  std::wstring GetTunnelPassword();
+  // __property std::wstring TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
+  std::wstring GetTunnelPublicKeyFile() { return FTunnelPublicKeyFile; }
   // __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
   bool GetTunnelAutoassignLocalPortNumber();
   // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
   int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
-  // __property wstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
-  wstring GetTunnelPortFwd() { return FTunnelPortFwd; }
-  void SetTunnelPortFwd(wstring value);
+  // __property std::wstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
+  std::wstring GetTunnelPortFwd() { return FTunnelPortFwd; }
+  void SetTunnelPortFwd(std::wstring value);
   // __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
   bool GetFtpPasvMode() { return FFtpPasvMode; }
   // __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
   bool GetFtpForcePasvIp() { return FFtpForcePasvIp; }
-  // __property wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
-  wstring GetFtpAccount() { return FFtpAccount; }
+  // __property std::wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
+  std::wstring GetFtpAccount() { return FFtpAccount; }
   // __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
   int GetFtpPingInterval() { return FFtpPingInterval; }
   // __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
@@ -506,29 +506,29 @@ public:
   TFtps GetFtps() { return FFtps; }
   // __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
   TAutoSwitch GetNotUtf() { return FNotUtf; }
-  // __property wstring HostKey = { read = FHostKey, write = SetHostKey };
-  wstring GetHostKey() { return FHostKey; }
-  // __property wstring StorageKey = { read = GetStorageKey };
-  wstring GetStorageKey();
-  // __property wstring OrigHostName = { read = FOrigHostName };
-  wstring GetOrigHostName() { return FOrigHostName; }
+  // __property std::wstring HostKey = { read = FHostKey, write = SetHostKey };
+  std::wstring GetHostKey() { return FHostKey; }
+  // __property std::wstring StorageKey = { read = GetStorageKey };
+  std::wstring GetStorageKey();
+  // __property std::wstring OrigHostName = { read = FOrigHostName };
+  std::wstring GetOrigHostName() { return FOrigHostName; }
   // __property int OrigPortNumber = { read = FOrigPortNumber };
   int GetOrigPortNumber() { return FOrigPortNumber; }
-  // __property wstring LocalName = { read = GetLocalName };
-  wstring GetLocalName();
-  // __property wstring Source = { read = GetSource };
-  wstring GetSource();
+  // __property std::wstring LocalName = { read = GetLocalName };
+  std::wstring GetLocalName();
+  // __property std::wstring Source = { read = GetSource };
+  std::wstring GetSource();
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
 {
 public:
   TStoredSessionList(bool aReadOnly = false);
-  void Load(wstring aKey, bool UseDefaults);
+  void Load(std::wstring aKey, bool UseDefaults);
   void Load();
   void Save(bool All, bool Explicit);
   void Saved();
-  void Export(const wstring FileName);
+  void Export(const std::wstring FileName);
   void Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false);
   void Save(THierarchicalStorage * Storage, bool All = false);
@@ -538,9 +538,9 @@ public:
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   int IndexOf(TSessionData * Data);
-  TSessionData * NewSession(wstring SessionName, TSessionData * Session);
-  TSessionData * ParseUrl(wstring Url, TOptions * Options, bool & DefaultsOnly,
-    wstring * FileName = NULL, bool * ProtocolDefined = NULL);
+  TSessionData * NewSession(std::wstring SessionName, TSessionData * Session);
+  TSessionData * ParseUrl(std::wstring Url, TOptions * Options, bool & DefaultsOnly,
+    std::wstring * FileName = NULL, bool * ProtocolDefined = NULL);
   virtual ~TStoredSessionList();
   // __property TSessionData * Sessions[int Index]  = { read=AtSession };
   TSessionData *GetSession(int Index) { return (TSessionData*)AtObject(Index); }
@@ -548,8 +548,8 @@ public:
   TSessionData *GetDefaultSettings() { return FDefaultSettings; }
   void SetDefaultSettings(TSessionData * value);
 
-  static void ImportHostKeys(const wstring TargetKey,
-    const wstring SourceKey, TStoredSessionList * Sessions,
+  static void ImportHostKeys(const std::wstring TargetKey,
+    const std::wstring SourceKey, TStoredSessionList * Sessions,
     bool OnlySelected);
 
 private:

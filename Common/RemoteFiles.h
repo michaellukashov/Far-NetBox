@@ -24,7 +24,7 @@ class TRemoteToken
 {
 public:
   TRemoteToken();
-  explicit TRemoteToken(const wstring & Name);
+  explicit TRemoteToken(const std::wstring & Name);
 
   void Clear();
 
@@ -34,9 +34,9 @@ public:
 
   int Compare(const TRemoteToken & rht) const;
 
-  // __property wstring Name = { read = FName, write = FName };
-  wstring GetName() { return FName; }
-  void SetName(wstring value) { FName = value; }
+  // __property std::wstring Name = { read = FName, write = FName };
+  std::wstring GetName() { return FName; }
+  void SetName(std::wstring value) { FName = value; }
   // __property bool NameValid = { read = GetNameValid };
   bool GetNameValid() const;
   // __property unsigned int ID = { read = FID, write = SetID };
@@ -46,13 +46,13 @@ public:
   bool GetIDValid() { return FIDValid; }
   // __property bool IsSet  = { read = GetIsSet };
   bool GetIsSet() const;
-  // __property wstring LogText = { read = GetLogText };
-   wstring GetLogText() const;
-  // __property wstring DisplayText = { read = GetDisplayText };
-  wstring GetDisplayText() const;
+  // __property std::wstring LogText = { read = GetLogText };
+   std::wstring GetLogText() const;
+  // __property std::wstring DisplayText = { read = GetDisplayText };
+  std::wstring GetDisplayText() const;
 
 private:
-  wstring FName;
+  std::wstring FName;
   unsigned int FID;
   bool FIDValid;
 };
@@ -64,9 +64,9 @@ public:
   void Clear();
   void Add(const TRemoteToken & Token);
   void AddUnique(const TRemoteToken & Token);
-  bool Exists(const wstring & Name) const;
+  bool Exists(const std::wstring & Name) const;
   const TRemoteToken * Find(unsigned int ID) const;
-  const TRemoteToken * Find(const wstring & Name) const;
+  const TRemoteToken * Find(const std::wstring & Name) const;
   void Log(TTerminal * Terminal, const char * Title);
 
   int Count() const;
@@ -74,7 +74,7 @@ public:
 
 private:
   typedef std::vector<TRemoteToken> TTokens;
-  typedef std::map<wstring, size_t> TNameMap;
+  typedef std::map<std::wstring, size_t> TNameMap;
   typedef std::map<unsigned int, size_t> TIDMap;
   TTokens FTokens;
   TNameMap FNameMap;
@@ -88,7 +88,7 @@ private:
   TRemoteToken FOwner;
   TModificationFmt FModificationFmt;
   __int64 FSize;
-  wstring FFileName;
+  std::wstring FFileName;
   int FINodeBlocks;
   TDateTime FModification;
   TDateTime FLastAccess;
@@ -97,15 +97,15 @@ private:
   bool FIsSymLink;
   TRemoteFile * FLinkedFile;
   TRemoteFile * FLinkedByFile;
-  wstring FLinkTo;
+  std::wstring FLinkTo;
   TRights *FRights;
   TTerminal *FTerminal;
   char FType;
   bool FSelected;
   bool FCyclicLink;
-  wstring FFullFileName;
+  std::wstring FFullFileName;
   int FIsHidden;
-  wstring FTypeName;
+  std::wstring FTypeName;
   void SetModification(const TDateTime & value);
   void LoadTypeInfo();
 
@@ -127,8 +127,8 @@ public:
   // __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
   TRemoteFileList *GetDirectory() { return FDirectory; }
   void SetDirectory(TRemoteFileList *value) { FDirectory = value; }
-  // __property wstring RightsStr = { read = GetRightsStr };
-  wstring GetRightsStr();
+  // __property std::wstring RightsStr = { read = GetRightsStr };
+  std::wstring GetRightsStr();
   // __property __int64 Size = { read = FSize, write = FSize };
   __int64 GetSize() { return FSize; }
   void SetSize(__int64 value) { FSize = value; }
@@ -138,18 +138,18 @@ public:
   // __property TRemoteToken Group = { read = FGroup, write = FGroup };
   TRemoteToken GetGroup() { return FGroup; }
   void SetGroup(TRemoteToken value) { FGroup = value; }
-  // __property wstring FileName = { read = FFileName, write = FFileName };
-  wstring GetFileName() { return FFileName; }
-  void SetFileName(wstring value) { FFileName = value; }
+  // __property std::wstring FileName = { read = FFileName, write = FFileName };
+  std::wstring GetFileName() { return FFileName; }
+  void SetFileName(std::wstring value) { FFileName = value; }
   // __property int INodeBlocks = { read = FINodeBlocks };
   int GetINodeBlocks() { return FINodeBlocks; };
   // __property TDateTime Modification = { read = FModification, write = SetModification };
   TDateTime GetModification() { return FModification; }
   void SetModification(TDateTime value) { FModification = value; }
-  // __property wstring ModificationStr = { read = GetModificationStr };
-  wstring GetModificationStr();
-  // __property wstring UserModificationStr = { read = GetUserModificationStr };
-  wstring GetUserModificationStr();
+  // __property std::wstring ModificationStr = { read = GetModificationStr };
+  std::wstring GetModificationStr();
+  // __property std::wstring UserModificationStr = { read = GetUserModificationStr };
+  std::wstring GetUserModificationStr();
   // __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
   TModificationFmt GetModificationFmt() { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
@@ -163,12 +163,12 @@ public:
   // __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
   TRemoteFile * GetLinkedFile();
   void SetLinkedFile(TRemoteFile * value);
-  // __property wstring LinkTo = { read = FLinkTo, write = FLinkTo };
-  wstring GetLinkTo() { return FLinkTo; }
-  void SetLinkTo(wstring value) { FLinkTo = value; }
-  // __property wstring ListingStr = { read = GetListingStr, write = SetListingStr };
-  wstring GetListingStr();
-  void SetListingStr(wstring value);
+  // __property std::wstring LinkTo = { read = FLinkTo, write = FLinkTo };
+  std::wstring GetLinkTo() { return FLinkTo; }
+  void SetLinkTo(std::wstring value) { FLinkTo = value; }
+  // __property std::wstring ListingStr = { read = GetListingStr, write = SetListingStr };
+  std::wstring GetListingStr();
+  void SetListingStr(std::wstring value);
   // __property TRights * Rights = { read = FRights, write = SetRights };
   TRights *GetRights() { return FRights; }
   void SetRights(TRights * value);
@@ -181,15 +181,15 @@ public:
   // __property bool Selected  = { read=FSelected, write=FSelected };
   bool GetSelected() { return FSelected; }
   void SetSelected(bool value) { FSelected = value; }
-  // __property wstring FullFileName  = { read = GetFullFileName, write = FFullFileName };
-  wstring GetFullFileName() const;
-  void SetFullFileName(wstring value) { FFullFileName = value; }
+  // __property std::wstring FullFileName  = { read = GetFullFileName, write = FFullFileName };
+  std::wstring GetFullFileName() const;
+  void SetFullFileName(std::wstring value) { FFullFileName = value; }
   // __property bool HaveFullFileName  = { read = GetHaveFullFileName };
   bool GetHaveFullFileName() const;
   // __property int IconIndex = { read = GetIconIndex };
   int GetIconIndex() const;
-  // __property wstring TypeName = { read = GetTypeName };
-  wstring GetTypeName();
+  // __property std::wstring TypeName = { read = GetTypeName };
+  std::wstring GetTypeName();
   // __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
   bool GetIsHidden();
   void SetIsHidden(bool value);
@@ -199,8 +199,8 @@ public:
   bool GetIsThisDirectory() const;
   // __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
   bool GetIsInaccesibleDirectory() const;
-  // __property wstring Extension  = { read=GetExtension };
-  wstring GetExtension();
+  // __property std::wstring Extension  = { read=GetExtension };
+  std::wstring GetExtension();
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryFile : public TRemoteFile
@@ -221,27 +221,27 @@ friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
 protected:
-  wstring FDirectory;
+  std::wstring FDirectory;
   TDateTime FTimestamp;
   TRemoteFile * GetParentDirectory();
 
   virtual void Clear();
 public:
   TRemoteFileList();
-  TRemoteFile * FindFile(const wstring &FileName);
+  TRemoteFile * FindFile(const std::wstring &FileName);
   virtual void DuplicateTo(TRemoteFileList * Copy);
   virtual void AddFile(TRemoteFile * File);
-  // __property wstring Directory = { read = FDirectory, write = SetDirectory };
-  wstring GetDirectory() { return FDirectory; }
-  virtual void SetDirectory(wstring value);
+  // __property std::wstring Directory = { read = FDirectory, write = SetDirectory };
+  std::wstring GetDirectory() { return FDirectory; }
+  virtual void SetDirectory(std::wstring value);
   // __property TRemoteFile * Files[int Index] = { read = GetFiles };
   TRemoteFile *GetFiles(int Index);
-  // __property wstring FullDirectory  = { read=GetFullDirectory };
-  wstring GetFullDirectory();
+  // __property std::wstring FullDirectory  = { read=GetFullDirectory };
+  std::wstring GetFullDirectory();
   // __property bool IsRoot = { read = GetIsRoot };
   bool GetIsRoot();
-  // __property wstring ParentPath = { read = GetParentPath };
-  wstring GetParentPath();
+  // __property std::wstring ParentPath = { read = GetParentPath };
+  std::wstring GetParentPath();
   // __property __int64 TotalSize = { read = GetTotalSize };
   __int64 GetTotalSize();
   // __property TDateTime Timestamp = { read = FTimestamp };
@@ -259,7 +259,7 @@ private:
   TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
-  virtual void SetDirectory(wstring value);
+  virtual void SetDirectory(std::wstring value);
 protected:
   virtual void Clear();
 public:
@@ -291,12 +291,12 @@ class TRemoteDirectoryCache : private TStringList
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
-  bool HasFileList(const wstring Directory);
-  bool HasNewerFileList(const wstring Directory, TDateTime Timestamp);
-  bool GetFileList(const wstring Directory,
+  bool HasFileList(const std::wstring Directory);
+  bool HasNewerFileList(const std::wstring Directory, TDateTime Timestamp);
+  bool GetFileList(const std::wstring Directory,
     TRemoteFileList * FileList);
   void AddFileList(TRemoteFileList * FileList);
-  void ClearFileList(wstring Directory, bool SubDirs);
+  void ClearFileList(std::wstring Directory, bool SubDirs);
   void Clear();
 
   // __property bool IsEmpty = { read = GetIsEmpty };
@@ -305,7 +305,7 @@ protected:
   virtual void Delete(int Index);
 private:
   TCriticalSection * FSection;
-  void DoClearFileList(wstring Directory, bool SubDirs);
+  void DoClearFileList(std::wstring Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList
@@ -313,25 +313,25 @@ class TRemoteDirectoryChangesCache : private TStringList
 public:
   TRemoteDirectoryChangesCache(int MaxSize);
 
-  void AddDirectoryChange(const wstring SourceDir,
-    const wstring Change, const wstring TargetDir);
-  void ClearDirectoryChange(wstring SourceDir);
-  void ClearDirectoryChangeTarget(wstring TargetDir);
-  bool GetDirectoryChange(const wstring SourceDir,
-    const wstring Change, wstring & TargetDir);
+  void AddDirectoryChange(const std::wstring SourceDir,
+    const std::wstring Change, const std::wstring TargetDir);
+  void ClearDirectoryChange(std::wstring SourceDir);
+  void ClearDirectoryChangeTarget(std::wstring TargetDir);
+  bool GetDirectoryChange(const std::wstring SourceDir,
+    const std::wstring Change, std::wstring & TargetDir);
   void Clear();
 
-  void Serialize(wstring & Data);
-  void Deserialize(const wstring Data);
+  void Serialize(std::wstring & Data);
+  void Deserialize(const std::wstring Data);
 
   // __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const;
 
 private:
-  static bool DirectoryChangeKey(const wstring SourceDir,
-    const wstring Change, wstring & Key);
-  void SetValue(const wstring & Name, const wstring & Value);
-  wstring GetValue(const wstring & Name);
+  static bool DirectoryChangeKey(const std::wstring SourceDir,
+    const std::wstring Change, std::wstring & Key);
+  void SetValue(const std::wstring & Name, const std::wstring & Value);
+  std::wstring GetValue(const std::wstring & Name);
 
   int FMaxSize;
 };
@@ -397,13 +397,13 @@ public:
   void SetAllowUndef(bool value);
   // __property bool IsUndef = { read = GetIsUndef };
   bool GetIsUndef() const;
-  // __property wstring ModeStr = { read = GetModeStr };
-  wstring GetModeStr() const;
-  // __property wstring SimplestStr = { read = GetSimplestStr };
-  wstring GetSimplestStr() const;
-  // __property wstring Octal = { read = GetOctal, write = SetOctal };
-  wstring GetOctal() const;
-  void SetOctal(wstring value);
+  // __property std::wstring ModeStr = { read = GetModeStr };
+  std::wstring GetModeStr() const;
+  // __property std::wstring SimplestStr = { read = GetSimplestStr };
+  std::wstring GetSimplestStr() const;
+  // __property std::wstring Octal = { read = GetOctal, write = SetOctal };
+  std::wstring GetOctal() const;
+  void SetOctal(std::wstring value);
   // __property unsigned short Number = { read = GetNumber, write = SetNumber };
   unsigned short GetNumber() const;
   void SetNumber(unsigned short value);
@@ -422,9 +422,9 @@ public:
   // __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
   TState GetRightUndef(TRight Right) const;
   void SetRightUndef(TRight Right, TState value);
-  // __property wstring Text = { read = GetText, write = SetText };
-  wstring GetText() const;
-  void SetText(const wstring & value);
+  // __property std::wstring Text = { read = GetText, write = SetText };
+  std::wstring GetText() const;
+  void SetText(const std::wstring & value);
   // __property bool Unknown = { read = FUnknown };
   bool GetUnknown() { return FUnknown; }
 
@@ -432,7 +432,7 @@ private:
   bool FAllowUndef;
   unsigned short FSet;
   unsigned short FUnset;
-  wstring FText;
+  std::wstring FText;
   bool FUnknown;
 
   unsigned short GetNumberSet() const;
@@ -471,31 +471,31 @@ public:
     const TRemoteProperties & OriginalProperties, TRemoteProperties NewProperties);
 };
 //---------------------------------------------------------------------------
-wstring UnixIncludeTrailingBackslash(const wstring Path);
-wstring UnixExcludeTrailingBackslash(const wstring Path);
-wstring UnixExtractFileDir(const wstring Path);
-wstring UnixExtractFilePath(const wstring Path);
-wstring UnixExtractFileName(const wstring Path);
-wstring UnixExtractFileExt(const wstring Path);
-bool UnixComparePaths(const wstring Path1, const wstring Path2);
-bool UnixIsChildPath(wstring Parent, wstring Child);
-bool ExtractCommonPath(TStrings * Files, wstring & Path);
-bool UnixExtractCommonPath(TStrings * Files, wstring & Path);
-wstring ExtractFileName(const wstring & Path, bool Unix);
-bool IsUnixRootPath(const wstring Path);
-bool IsUnixHiddenFile(const wstring Path);
-wstring AbsolutePath(const wstring & Base, const wstring & Path);
-wstring FromUnixPath(const wstring Path);
-wstring ToUnixPath(const wstring Path);
-wstring MinimizeName(const wstring FileName, int MaxLen, bool Unix);
-wstring MakeFileList(TStrings * FileList);
+std::wstring UnixIncludeTrailingBackslash(const std::wstring Path);
+std::wstring UnixExcludeTrailingBackslash(const std::wstring Path);
+std::wstring UnixExtractFileDir(const std::wstring Path);
+std::wstring UnixExtractFilePath(const std::wstring Path);
+std::wstring UnixExtractFileName(const std::wstring Path);
+std::wstring UnixExtractFileExt(const std::wstring Path);
+bool UnixComparePaths(const std::wstring Path1, const std::wstring Path2);
+bool UnixIsChildPath(std::wstring Parent, std::wstring Child);
+bool ExtractCommonPath(TStrings * Files, std::wstring & Path);
+bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path);
+std::wstring ExtractFileName(const std::wstring & Path, bool Unix);
+bool IsUnixRootPath(const std::wstring Path);
+bool IsUnixHiddenFile(const std::wstring Path);
+std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path);
+std::wstring FromUnixPath(const std::wstring Path);
+std::wstring ToUnixPath(const std::wstring Path);
+std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix);
+std::wstring MakeFileList(TStrings * FileList);
 TDateTime ReduceDateTimePrecision(TDateTime DateTime,
   TModificationFmt Precision);
 TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-wstring UserModificationStr(TDateTime DateTime,
+std::wstring UserModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
-int FakeFileImageIndex(wstring FileName, unsigned long Attrs = 0,
-  wstring * TypeName = NULL);
+int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs = 0,
+  std::wstring * TypeName = NULL);
 //---------------------------------------------------------------------------
 #endif

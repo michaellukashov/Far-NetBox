@@ -12,7 +12,7 @@ int NamedObjectSortProc(void * Item1, void * Item2)
   return AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
 }
 //--- TNamedObject ----------------------------------------------------------
-int TNamedObject::CompareName(wstring aName,
+int TNamedObject::CompareName(std::wstring aName,
   bool CaseSensitive)
 {
   if (CaseSensitive)
@@ -39,7 +39,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     }
 }
 //--- TNamedObjectList ------------------------------------------------------
-const wstring TNamedObjectList::HiddenPrefix = "_!_";
+const std::wstring TNamedObjectList::HiddenPrefix = "_!_";
 //---------------------------------------------------------------------------
 bool TNamedObjectList::IsHidden(TNamedObject * Object)
 {
@@ -76,7 +76,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
   Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject * TNamedObjectList::FindByName(wstring Name,
+TNamedObject * TNamedObjectList::FindByName(std::wstring Name,
   bool CaseSensitive)
 {
   for (int Index = 0; Index < TObjectList::Count; Index++)
