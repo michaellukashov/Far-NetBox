@@ -1382,36 +1382,36 @@ void TRemoteFileList::SetDirectory(std::wstring value)
 //---------------------------------------------------------------------------
 std::wstring TRemoteFileList::GetFullDirectory()
 {
-  return UnixIncludeTrailingBackslash(Directory);
+  return UnixIncludeTrailingBackslash(GetDirectory());
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::GetFiles(int Index)
+TRemoteFile * TRemoteFileList::GetFile(int Index)
 {
-  return (TRemoteFile *)Items[Index];
+  return (TRemoteFile *)GetItem(Index);
 }
 //---------------------------------------------------------------------------
 bool TRemoteFileList::GetIsRoot()
 {
-  return (Directory == ROOTDIRECTORY);
+  return (GetDirectory() == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
 std::wstring TRemoteFileList::GetParentPath()
 {
-  return UnixExtractFilePath(Directory);
+  return UnixExtractFilePath(GetDirectory());
 }
 //---------------------------------------------------------------------------
 __int64 TRemoteFileList::GetTotalSize()
 {
   __int64 Result = 0;
-  for (int Index = 0; Index < Count; Index++)
-    if (!Files[Index]->GetIsDirectory()) Result += Files[Index]->Size;
+  for (int Index = 0; Index < GetCount(); Index++)
+    if (!GetFile(Index)->GetIsDirectory()) Result += GetFile(Index)->GetSize();
   return Result;
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::FindFile(const std::wstring &FileName)
 {
-  for (int Index = 0; Index < Count; Index++)
-    if (Files[Index]->GetFileName() == FileName) return Files[Index];
+  for (int Index = 0; Index < GetCount(); Index++)
+    if (GetFile(Index)->GetFileName() == FileName) return GetFile(Index);
   return NULL;
 }
 //=== TRemoteDirectory ------------------------------------------------------
@@ -1435,12 +1435,12 @@ TRemoteDirectory::TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Tem
 //---------------------------------------------------------------------------
 void TRemoteDirectory::Clear()
 {
-  if (ThisDirectory && !IncludeThisDirectory)
+  if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
     delete FThisDirectory;
     FThisDirectory = NULL;
   }
-  if (ParentDirectory && !IncludeParentDirectory)
+  if (GetParentDirectory() && !GetIncludeParentDirectory())
   {
     delete FParentDirectory;
     FParentDirectory = NULL;
@@ -1457,33 +1457,33 @@ void TRemoteDirectory::SetDirectory(std::wstring value)
 //---------------------------------------------------------------------------
 void TRemoteDirectory::AddFile(TRemoteFile * File)
 {
-  if (File->IsThisDirectory) FThisDirectory = File;
-  if (File->IsParentDirectory) FParentDirectory = File;
+  if (File->GetIsThisDirectory()) FThisDirectory = File;
+  if (File->GetIsParentDirectory()) FParentDirectory = File;
 
-  if ((!File->IsThisDirectory || IncludeThisDirectory) &&
-      (!File->IsParentDirectory || IncludeParentDirectory))
+  if ((!File->GetIsThisDirectory() || GetIncludeThisDirectory()) &&
+      (!File->GetIsParentDirectory() || GetIncludeParentDirectory()))
   {
     TRemoteFileList::AddFile(File);
   }
-  File->Terminal = Terminal;
+  File->SetTerminal(GetTerminal());
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy)
 {
   TRemoteFileList::DuplicateTo(Copy);
-  if (ThisDirectory && !IncludeThisDirectory)
+  if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
-    Copy->AddFile(ThisDirectory->Duplicate(false));
+    Copy->AddFile(GetThisDirectory()->Duplicate(false));
   }
-  if (ParentDirectory && !IncludeParentDirectory)
+  if (GetParentDirectory() && !GetIncludeParentDirectory())
   {
-    Copy->AddFile(ParentDirectory->Duplicate(false));
+    Copy->AddFile(GetParentDirectory()->Duplicate(false));
   }
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectory::GetLoaded()
 {
-  return ((Terminal != NULL) && Terminal->Active && !Directory.empty());
+  return ((GetTerminal() != NULL) && GetTerminal()->GetActive() && !GetDirectory().empty());
 }
 //---------------------------------------------------------------------------
 TStrings * TRemoteDirectory::GetSelectedFiles()
@@ -1497,11 +1497,11 @@ TStrings * TRemoteDirectory::GetSelectedFiles()
     FSelectedFiles->Clear();
   }
 
-  for (int Index = 0; Index < Count; Index ++)
+  for (int Index = 0; Index < GetCount(); Index ++)
   {
-    if (Files[Index]->Selected)
+    if (GetFile(Index)->GetSelected())
     {
-      FSelectedFiles->Add(Files[Index]->FullFileName);
+      FSelectedFiles->Add(GetFile(Index)->GetFullFileName());
     }
   }
 
@@ -1510,36 +1510,36 @@ TStrings * TRemoteDirectory::GetSelectedFiles()
 //---------------------------------------------------------------------------
 void TRemoteDirectory::SetIncludeParentDirectory(bool value)
 {
-  if (IncludeParentDirectory != value)
+  if (GetIncludeParentDirectory() != value)
   {
     FIncludeParentDirectory = value;
     if (value && ParentDirectory)
     {
       assert(IndexOf(ParentDirectory) < 0);
-      Add(ParentDirectory);
+      Add(GetParentDirectory());
     }
-    else if (!value && ParentDirectory)
+    else if (!value && GetParentDirectory())
     {
-      assert(IndexOf(ParentDirectory) >= 0);
-      Extract(ParentDirectory);
+      assert(IndexOf(GetParentDirectory()) >= 0);
+      Extract(GetParentDirectory());
     }
   }
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectory::SetIncludeThisDirectory(bool value)
 {
-  if (IncludeThisDirectory != value)
+  if (GetIncludeThisDirectory() != value)
   {
     FIncludeThisDirectory = value;
-    if (value && ThisDirectory)
+    if (value && GetThisDirectory())
     {
-      assert(IndexOf(ThisDirectory) < 0);
-      Add(ThisDirectory);
+      assert(IndexOf(GetThisDirectory()) < 0);
+      Add(GetThisDirectory());
     }
-    else if (!value && ThisDirectory)
+    else if (!value && GetThisDirectory())
     {
-      assert(IndexOf(ThisDirectory) >= 0);
-      Extract(ThisDirectory);
+      assert(IndexOf(GetThisDirectory()) >= 0);
+      Extract(GetThisDirectory());
     }
   }
 }
