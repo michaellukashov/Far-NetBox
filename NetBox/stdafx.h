@@ -129,6 +129,7 @@ void CheckAbortEvent(HANDLE *AbortEvent);
 std::wstring ExpandEnvVars(const std::wstring& str);
 
 std::wstring Trim(const std::wstring str);
+std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
@@ -163,3 +164,5 @@ TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
 
 std::wstring IntToStr(int value);
+int StrToInt(const std::wstring value);
+int StrToInt64Def(const std::wstring value, int defval);

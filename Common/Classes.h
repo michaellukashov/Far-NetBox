@@ -1,5 +1,7 @@
 #pragma once
 
+#include "stdafx.h"
+
 #include <WinDef.h>
 
 #pragma warning(push, 1)
@@ -14,6 +16,7 @@
 
 #pragma warning(pop)
 
+//TODO: remove
 using namespace std;
 
 //---------------------------------------------------------------------------
@@ -264,6 +267,10 @@ public:
     {
         return std::wstring();
     }
+    void DecodeDate(unsigned short &Y,
+        unsigned short &M, unsigned short &D);
+    void DecodeTime(unsigned short &H,
+        unsigned short &N, unsigned short &S, unsigned short &MS);
 };
 
 static TDateTime Now()

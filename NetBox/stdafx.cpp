@@ -353,6 +353,13 @@ std::wstring Trim(const std::wstring str)
     return result;
 }
 
+std::wstring TrimLeft(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
 std::wstring TrimRight(const std::wstring str)
 {
     // FIXME
@@ -515,4 +522,14 @@ std::wstring IntToStr(int value)
 {
     std::wstring result;
     return result;
+}
+
+int StrToInt(const std::wstring value)
+{
+    return 0;
+}
+
+int StrToInt64Def(const std::wstring value, int defval)
+{
+    return 0;
 }
