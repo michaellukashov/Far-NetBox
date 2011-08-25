@@ -33,7 +33,7 @@
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
 
-string CSession::m_CryptKey = "NetBox";
+std::string CSession::m_CryptKey = "NetBox";
 vector<CSession::ProtoImplInfo> CSession::m_Factory;
 
 static const char *ParamRoot =      "NetBox";

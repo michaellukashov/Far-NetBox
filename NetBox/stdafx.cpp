@@ -157,7 +157,7 @@ unsigned long TextToNumber(const std::wstring &text)
     return static_cast<unsigned long>(_wtoi(text.c_str()));
 }
 
-string NumberToText(int number)
+std::string NumberToText(int number)
 {
     char codeText[16];
     _itoa_s(number, codeText, 10);
@@ -306,7 +306,7 @@ std::wstring MB2W(const char *src, const UINT cp)
  * \param cp code page
  * \return multibyte string
  */
-string W2MB(const wchar_t *src, const UINT cp)
+std::string W2MB(const wchar_t *src, const UINT cp)
 {
     assert(src);
 

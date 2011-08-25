@@ -63,7 +63,7 @@ unsigned long TextToNumber(const std::wstring &text);
  * \param number number
  * \return string result
  */
-string NumberToText(int number);
+std::string NumberToText(int number);
 
 std::wstring NumberToWString(unsigned long number);
 
@@ -122,7 +122,7 @@ void AppendPathDelimiterW(wstring &str);
 void AppendPathDelimiterA(string &str);
 
 std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
-string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
+std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 
 void CheckAbortEvent(HANDLE *AbortEvent);
 

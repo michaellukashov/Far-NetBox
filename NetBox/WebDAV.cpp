@@ -702,7 +702,7 @@ std::wstring CWebDAV::GetBadResponseInfo(const int code) const
 }
 
 
-string CWebDAV::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
+std::string CWebDAV::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
 {
     assert(element);
     assert(name);
@@ -754,7 +754,7 @@ FILETIME CWebDAV::ParseDateTime(const char *dt) const
 }
 
 
-string CWebDAV::DecodeHex(const string &src) const
+std::string CWebDAV::DecodeHex(const string &src) const
 {
     const size_t cntLength = src.length();
     string result;
@@ -781,7 +781,7 @@ string CWebDAV::DecodeHex(const string &src) const
 }
 
 
-string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
+std::string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
 {
     assert(src && src[0] == L'/');
 
