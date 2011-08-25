@@ -169,6 +169,9 @@ public:
     void SetCommaText(std::wstring S)
     {
     }
+    void SetString(int Index, std::wstring S)
+    {
+    }
     void *GetObject(int Index)
     {
         return NULL;
@@ -216,9 +219,6 @@ public:
         return -1;
     }
     void Delete(size_t Index)
-    {
-    }
-    void SetString(int Index, std::wstring S)
     {
     }
 	void SetCaseSensitive(bool value)
