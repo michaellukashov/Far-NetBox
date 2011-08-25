@@ -1270,8 +1270,8 @@ void TWinSCPFileSystem::ApplyCommand()
                       wstring FileName = RemoteFileList->GetString(Index);
                       TCustomCommandData Data(FTerminal);
                       TLocalCustomCommand CustomCommand(Data,
-                        GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, "");
-                      ExecuteShellAndWait(FPlugin->Handle,
+                        GetTerminal()->GetCurrentDirectory(), FileName, LocalFile, L"");
+                      ExecuteShellAndWait(FPlugin->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                     }
                   }
@@ -1285,7 +1285,7 @@ void TWinSCPFileSystem::ApplyCommand()
                       TLocalCustomCommand CustomCommand(
                         Data, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetString(Index), L"");
-                      ExecuteShellAndWait(FPlugin->Handle,
+                      ExecuteShellAndWait(FPlugin->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                     }
                   }
@@ -1298,12 +1298,12 @@ void TWinSCPFileSystem::ApplyCommand()
 
                     for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
                     {
-                      wstring FileName = RemoteFileList->GetString(Index];
+                      wstring FileName = RemoteFileList->GetString(Index);
                       TCustomCommandData Data(FTerminal);
                       TLocalCustomCommand CustomCommand(
                         Data, GetTerminal()->GetCurrentDirectory(),
                         FileName, LocalFileList->GetString(Index), L"");
-                      ExecuteShellAndWait(FPlugin->Handle,
+                      ExecuteShellAndWait(FPlugin->GetHandle(),
                         CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                     }
                   }
@@ -1315,7 +1315,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(Data,
                       GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetString(Index), "", "");
-                    ExecuteShellAndWait(FPlugin->Handle,
+                    ExecuteShellAndWait(FPlugin->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                   }
                 }
