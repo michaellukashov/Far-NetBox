@@ -67,7 +67,7 @@ TCustomFarPlugin::~TCustomFarPlugin()
     FConsoleOutput = INVALID_HANDLE_VALUE;
 
     ClearPluginInfo(FPluginInfo);
-    assert(FOpenedPlugins->Count == 0);
+    assert(FOpenedPlugins->GetCount() == 0);
     delete FOpenedPlugins;
     delete FSavedTitles;
     delete FCriticalSection;
@@ -760,7 +760,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
     assert(Params != NULL);
     assert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
     assert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
-    assert(FLAGCLEAR(AFlags, FMSG_DOWN));
+    // FIXME assert(FLAGCLEAR(AFlags, FMSG_DOWN));
     assert(FLAGCLEAR(AFlags, FMSG_ALLINONE));
 
     TStrings *MessageLines = new TStringList();
@@ -1059,7 +1059,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         std::wstring FullMessage = Message;
         if (Params->MoreMessages != NULL)
         {
-            FullMessage += std::wstring(L"\n\x01\n") + Params->MoreMessages->GetText();
+            FullMessage += std::wstring(L"\n\x01\n") + Params->GetMoreMessages()->GetText();
             while (FullMessage[FullMessage.size()] == L'\n' ||
                     FullMessage[FullMessage.size()] == L'\r')
             {
@@ -1159,7 +1159,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                                       const std::wstring Bottom, TStrings *Items, const int *BreakKeys,
                                       int &BreakCode)
 {
-    assert(Items && Items->Count);
+    assert(Items && Items->GetCount());
     int Result;
     FarMenuItemEx *MenuItems = new FarMenuItemEx[Items->GetCount()];
     try
