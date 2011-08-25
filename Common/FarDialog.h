@@ -505,7 +505,7 @@ private:
     }
 
     /**
-     * Access to dialog instances map
+     * Access to dialog instances std::map
      * \param dlg Far dialog handle
      * \param inst dialog class instance
      * \param removeVal true to remove value
@@ -513,7 +513,7 @@ private:
      */
     static CFarDialog *AccessDlgInstances(HANDLE dlg, CFarDialog *inst, const bool removeVal = false)
     {
-        static map<HANDLE, CFarDialog *> dlgInstances;
+        static std::map<HANDLE, CFarDialog *> dlgInstances;
         if (dlg && inst && !removeVal)
         {
             dlgInstances.insert(make_pair(dlg, inst));
@@ -525,7 +525,7 @@ private:
             return NULL;
         }
 
-        map<HANDLE, CFarDialog *>::iterator it = dlgInstances.find(dlg);
+        std::map<HANDLE, CFarDialog *>::iterator it = dlgInstances.find(dlg);
         assert(it != dlgInstances.end());
         return it->second;
     }
