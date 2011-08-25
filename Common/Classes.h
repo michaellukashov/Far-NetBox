@@ -166,6 +166,9 @@ public:
     void SetText(std::wstring S)
     {
     }
+    void SetCommaText(std::wstring S)
+    {
+    }
     void *GetObject(int Index)
     {
         return NULL;
