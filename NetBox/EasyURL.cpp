@@ -124,7 +124,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
 
     CURLcode urlCode = CURLE_OK;
 
-    const string url = m_TopURL + (path ? path : "");
+    const std::string url = m_TopURL + (path ? path : "");
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
     if (handleTimeout)
     {
@@ -172,7 +172,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
             default:
                 return CURLE_UNSUPPORTED_PROTOCOL;
         }
-        string proxy = ::W2MB(m_proxySettings.proxyHost.c_str());
+        std::string proxy = ::W2MB(m_proxySettings.proxyHost.c_str());
         unsigned long port = m_proxySettings.proxyPort;
         if (port)
         {
@@ -183,8 +183,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
-        string login = ::W2MB(m_proxySettings.proxyLogin.c_str());
-        string password = ::W2MB(m_proxySettings.proxyPassword.c_str());
+        std::string login = ::W2MB(m_proxySettings.proxyLogin.c_str());
+        std::string password = ::W2MB(m_proxySettings.proxyPassword.c_str());
         if (!login.empty())
         {
             CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));

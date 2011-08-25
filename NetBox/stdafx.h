@@ -38,12 +38,12 @@ std::wstring GetSystemErrorMessage(const DWORD errCode);
 
 /**
  * Parse URL
- * \param url source url string
+ * \param url source url std::string
  * \param scheme scheme name
  * \param hostName host name
  * \param port port number
  * \param path path
- * \param query additional query string
+ * \param query additional query std::string
  * \param userName user name
  * \param password password
  */
@@ -59,9 +59,9 @@ FILETIME UnixTimeToFileTime(const time_t t);
 unsigned long TextToNumber(const std::wstring &text);
 
 /**
- * Convert int to string
+ * Convert int to std::string
  * \param number number
- * \return string result
+ * \return std::string result
  */
 std::string NumberToText(int number);
 

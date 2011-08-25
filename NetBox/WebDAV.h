@@ -84,7 +84,7 @@ private:
      * \param errInfo buffer to save error message
      * \return false if error
      */
-    bool SendPropFindRequest(const wchar_t *dir, string &response, std::wstring &errInfo);
+    bool SendPropFindRequest(const wchar_t *dir, std::string &response, std::wstring &errInfo);
 
     /**
      * Check response for valid code
@@ -117,7 +117,7 @@ private:
      * \param defaultVal default namespace id
      * \return namespace id
      */
-    string GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const;
+    std::string GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const;
 
     /**
      * Parse internet datetime
@@ -138,17 +138,17 @@ private:
 
     /**
      * Decode content with safe symbols wrapper (%XX)
-     * \param src source string
+     * \param src source std::string
      * \return decoded content
      */
-    string DecodeHex(const string &src) const;
+    std::string DecodeHex(const std::string &src) const;
 
     /**
      * Encode URL to UTF8 format with unsafe symbols wrapper (%XX)
-     * \param src source string
+     * \param src source std::string
      * \return encoded URL
      */
-    string EscapeUTF8URL(const wchar_t *src) const;
+    std::string EscapeUTF8URL(const wchar_t *src) const;
 
 protected:
     CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);

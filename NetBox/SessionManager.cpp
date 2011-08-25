@@ -138,7 +138,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, std::wstring &errorIn
     else
     {
         const size_t lastSlash = newPath.rfind(L'\\');
-        if (lastSlash != string::npos)
+        if (lastSlash != std::string::npos)
         {
             newPath.erase(lastSlash);
         }
@@ -226,7 +226,7 @@ bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
         else
         {
             const size_t fileExtPos = item.Name.rfind(L'.');
-            if (fileExtPos == string::npos)
+            if (fileExtPos == std::string::npos)
             {
                 continue;
             }
@@ -293,7 +293,7 @@ bool CSessionManager::PutFile(const wchar_t *remotePath, const wchar_t *localPat
         return false;
     }
     std::wstring savePath = ConvertPath(m_Settings.GetSessionPath().c_str(), remotePath);
-    if (savePath.rfind(L'\\') != string::npos)
+    if (savePath.rfind(L'\\') != std::string::npos)
     {
         savePath.erase(savePath.rfind(L'\\'));
     }
@@ -346,8 +346,8 @@ std::wstring CSessionManager::ConvertPath(const wchar_t *pathBase, const wchar_t
         ret += (sub[0] == L'\\' || sub[0] == L'/' ? ++sub : sub);
     }
 
-    size_t pos = string::npos;
-    while ((pos = ret.find(L'/')) != string::npos)
+    size_t pos = std::string::npos;
+    while ((pos = ret.find(L'/')) != std::string::npos)
     {
         ret[pos] = L'\\';
     }

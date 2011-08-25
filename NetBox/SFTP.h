@@ -109,7 +109,7 @@ private:
      * \param src source path
      * \return path in ftp codepage
      */
-    inline string LocalToSftpCP(const wchar_t *src) const
+    inline std::string LocalToSftpCP(const wchar_t *src) const
     {
         assert(src && src[0] == L'/');
         return ::W2MB(src, m_Session.GetCodePage());

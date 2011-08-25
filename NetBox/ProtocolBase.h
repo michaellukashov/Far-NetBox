@@ -59,8 +59,8 @@ public:
             if (moveUp)
             {
                 const size_t lastSlash = newPath.rfind(L'/');
-                assert(lastSlash != string::npos);
-                if (lastSlash != string::npos && lastSlash != 0)
+                assert(lastSlash != std::string::npos);
+                if (lastSlash != std::string::npos && lastSlash != 0)
                 {
                     newPath.erase(lastSlash);
                 }
@@ -186,13 +186,13 @@ protected:
      * \param src source path
      * \return path in ftp codepage
      */
-    string LocalToFtpCP(const wchar_t *src, bool replace = false) const
+    std::string LocalToFtpCP(const wchar_t *src, bool replace = false) const
     {
         assert(src && src[0] == L'/');
-        string r = ::W2MB(src, m_Session.GetCodePage());
+        std::string r = ::W2MB(src, m_Session.GetCodePage());
         if (replace)
         {
-            while (r.find(L'#') != string::npos)
+            while (r.find(L'#') != std::string::npos)
             {
                 r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
             }

@@ -210,10 +210,10 @@ private:
     bool Save(const wchar_t *fileName) const;
 
     /**
-     * Crypt/decrypt string
-     * \param src source string
+     * Crypt/decrypt std::string
+     * \param src source std::string
      * \param encrypt operation type (true = encode; false = decode)
-     * \return encrypted/decrypted string value
+     * \return encrypted/decrypted std::string value
      */
     std::wstring Crypt(const std::wstring &src, const bool encrypt) const;
 
@@ -239,7 +239,7 @@ private:
     {
         Property() : NeedCrypt(false)
         {}
-        string Name; ///< Property name
+        std::string Name; ///< Property name
         std::wstring Value; ///< Property value
         bool NeedCrypt; ///< Crypt value flag
     };
@@ -250,6 +250,6 @@ private:
     std::vector<Property> m_Properties; ///< Session's properties
     struct ProxySettings m_proxySettings;
 
-    static string m_CryptKey; ///< Crypt key
+    static std::string m_CryptKey; ///< Crypt key
     static std::vector<ProtoImplInfo> m_Factory; ///< Client protocol implementation factory
 };

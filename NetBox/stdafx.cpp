@@ -62,7 +62,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse scheme name
     const size_t delimScheme = urlParse.find(L"://");
-    if (delimScheme != string::npos)
+    if (delimScheme != std::string::npos)
     {
         if (scheme)
         {
@@ -74,13 +74,13 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse path
     const size_t delimPath = urlParse.find(L'/');
-    if (delimPath != string::npos)
+    if (delimPath != std::string::npos)
     {
         std::wstring parsePath = urlParse.substr(delimPath);
         urlParse.erase(delimPath);
         //Parse query
         const size_t delimQuery = parsePath.rfind(L'?');
-        if (delimQuery != string::npos)
+        if (delimQuery != std::string::npos)
         {
             if (query)
             {
@@ -100,11 +100,11 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse user name/password
     const size_t delimLogin = urlParse.rfind(L'@');
-    if (delimLogin != string::npos)
+    if (delimLogin != std::string::npos)
     {
         std::wstring parseLogin = urlParse.substr(0, delimLogin);
         const size_t delimPwd = parseLogin.rfind(L':');
-        if (delimPwd != string::npos)
+        if (delimPwd != std::string::npos)
         {
             if (password)
             {
@@ -126,7 +126,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
     }
 
     const size_t delimPort = urlParse.rfind(L':');
-    if (delimPort != string::npos)
+    if (delimPort != std::string::npos)
     {
         if (port)
         {
@@ -161,7 +161,7 @@ std::string NumberToText(int number)
 {
     char codeText[16];
     _itoa_s(number, codeText, 10);
-    return string(codeText);
+    return std::string(codeText);
 }
 
 std::wstring NumberToWString(unsigned long number)
@@ -280,10 +280,10 @@ void AppendPathDelimiterA(std::string &str)
 }
 
 /**
- * Encoding multibyte to wide string
- * \param src source string
+ * Encoding multibyte to wide std::string
+ * \param src source std::string
  * \param cp code page
- * \return wide string
+ * \return wide std::string
  */
 std::wstring MB2W(const char *src, const UINT cp)
 {
@@ -301,16 +301,16 @@ std::wstring MB2W(const char *src, const UINT cp)
 }
 
 /**
- * Encoding wide to multibyte string
- * \param src source string
+ * Encoding wide to multibyte std::string
+ * \param src source std::string
  * \param cp code page
- * \return multibyte string
+ * \return multibyte std::string
  */
 std::string W2MB(const wchar_t *src, const UINT cp)
 {
     assert(src);
 
-    string mb;
+    std::string mb;
     const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
     if (reqLength)
     {

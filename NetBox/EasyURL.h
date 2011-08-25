@@ -92,8 +92,8 @@ public:
     CURLcode SetSlist(CSlistURL &slist);
 
     /**
-     * Set output as string buffer
-     * \param out output string buffer
+     * Set output as std::string buffer
+     * \param out output std::string buffer
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
@@ -129,7 +129,7 @@ public:
 
     /**
      * Execute FTP command
-     * \param cmd command string
+     * \param cmd command std::string
      * \return curl status
      */
     CURLcode ExecuteFtpCommand(const char *cmd);
@@ -174,9 +174,9 @@ private:
     CURL *m_CURL; ///< CURL
     bool m_Prepared; ///< Preapre statement flag
 
-    string m_TopURL; ///< Top URL (ftp://host:21)
-    string m_UserName; ///< User name
-    string m_Password; ///< Password
+    std::string m_TopURL; ///< Top URL (ftp://host:21)
+    std::string m_UserName; ///< User name
+    std::string m_Password; ///< Password
 
     //! Output writer description
     struct OutputWriter
@@ -189,7 +189,7 @@ private:
         } Type;
         union
         {
-            string *String;
+            std::string *String;
             CFile  *File;
         };
         HANDLE AbortEvent;

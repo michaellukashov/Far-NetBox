@@ -277,7 +277,7 @@ bool CSFTP::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     assert(m_SFTPSession);
 
-    const string sftpPath = LocalToSftpCP(path);
+    const std::string sftpPath = LocalToSftpCP(path);
     const bool retStatus = (libssh2_sftp_mkdir_ex(m_SFTPSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length()), LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH | LIBSSH2_SFTP_S_IXOTH) == LIBSSH2_ERROR_NONE);
     if (!retStatus)
     {
@@ -510,8 +510,8 @@ bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemTyp
 {
     assert(m_SFTPSession);
 
-    const string srcSftpPath = LocalToSftpCP(srcPath);
-    const string dstSftpPath = LocalToSftpCP(dstPath);
+    const std::string srcSftpPath = LocalToSftpCP(srcPath);
+    const std::string dstSftpPath = LocalToSftpCP(dstPath);
 
     const bool retStatus = (libssh2_sftp_rename_ex(m_SFTPSession, srcSftpPath.c_str(),
                             static_cast<unsigned int>(srcSftpPath.length()), dstSftpPath.c_str(),
@@ -534,7 +534,7 @@ bool CSFTP::Delete(const wchar_t *path, const ItemType type, std::wstring &error
 
     bool retStatus = false;
 
-    const string sftpPath = LocalToSftpCP(path);
+    const std::string sftpPath = LocalToSftpCP(path);
 
     if (type == ItemDirectory)
     {
@@ -611,12 +611,12 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, s
     }
 
     //Authenticate
-    const string userName = ::W2MB(m_Session.GetUserName(), CP_UTF8);
-    const string password = ::W2MB(m_Session.GetPassword(), CP_UTF8);
+    const std::string userName = ::W2MB(m_Session.GetUserName(), CP_UTF8);
+    const std::string password = ::W2MB(m_Session.GetPassword(), CP_UTF8);
     if (keyFileName)
     {
         //By key
-        const string keyPlaneFileName = ::W2MB(keyFileName);
+        const std::string keyPlaneFileName = ::W2MB(keyFileName);
         if (libssh2_userauth_publickey_fromfile_ex(m_SSHSession, userName.c_str(), static_cast<unsigned int>(userName.length()), NULL, keyPlaneFileName.c_str(), password.c_str()))
         {
             errInfo = FormatSSHLastErrorDescription();
@@ -659,7 +659,7 @@ std::wstring CSFTP::FormatSSHLastErrorDescription() const
 {
     assert(m_SSHSession);
 
-    string errorMessage = "SSH session error (libssh2)\n";
+    std::string errorMessage = "SSH session error (libssh2)\n";
 
     char *sshErrMsg = NULL;
     const int errCode = libssh2_session_last_error(m_SSHSession, &sshErrMsg, NULL, 0);

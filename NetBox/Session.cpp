@@ -146,7 +146,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     std::wstring prefixCmd(prefix);
     const size_t preffixDelim = prefixCmd.find(L':');
-    if (preffixDelim == string::npos)
+    if (preffixDelim == std::string::npos)
     {
         return PSession();    //wtf?
     }
@@ -163,7 +163,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     std::wstring protoScheme(prefixCmd);
     const size_t schemeDelim = protoScheme.find(L':');
-    if (schemeDelim == string::npos)
+    if (schemeDelim == std::string::npos)
     {
         return PSession();    //no scheme specified
     }
@@ -221,7 +221,7 @@ PSession CSession::Load(const wchar_t *fileName)
     {
         return PSession();    //Wrong format
     }
-    string buff(buffSize, 0);
+    std::string buff(buffSize, 0);
     if (!xmlFile.Read(&buff[0], buffSize))
     {
         return PSession();
@@ -230,14 +230,14 @@ PSession CSession::Load(const wchar_t *fileName)
     //Determine session name from file name
     std::wstring sessionName = fileName;
     const size_t startPos = sessionName.rfind(L'\\');
-    assert(startPos != string::npos);
-    if (startPos != string::npos)
+    assert(startPos != std::string::npos);
+    if (startPos != std::string::npos)
     {
         sessionName.erase(0, startPos + 1);
     }
     const size_t endPos = sessionName.rfind(L'.');
-    assert(endPos != string::npos);
-    if (endPos != string::npos)
+    assert(endPos != std::string::npos);
+    if (endPos != std::string::npos)
     {
         sessionName.erase(endPos);
     }
@@ -342,7 +342,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     //Decode password
     if (iniPwdVal.size() > 4 && iniPwdVal.substr(0, 4).compare(L"hex:") == 0)
     {
-        const string plainHexPwd = ::W2MB(iniPwdVal.substr(4).c_str());
+        const std::string plainHexPwd = ::W2MB(iniPwdVal.substr(4).c_str());
         std::vector<char> unhexPwd;
         for (size_t i = 0; i < plainHexPwd.size(); i += 2)
         {
@@ -352,7 +352,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
                 unhexPwd.push_back(static_cast<char>(val));
             }
         }
-        string decodedPwd;
+        std::string decodedPwd;
         const char xorMask = (unhexPwd[0] ^ unhexPwd[1]) | 80;
         for (size_t i = 2; i < unhexPwd.size(); ++i)
         {
@@ -452,8 +452,8 @@ void CSession::ExportFromRegistry()
                     break;
                 }
 
-                size_t pos = string::npos;
-                while ((pos = sessionName.find_first_of(L"<>:\"/\\|?*")) != string::npos)
+                size_t pos = std::string::npos;
+                while ((pos = sessionName.find_first_of(L"<>:\"/\\|?*")) != std::string::npos)
                 {
                     sessionName[pos] = L'_';
                 }
@@ -498,7 +498,7 @@ bool CSession::Save(const wchar_t *fileName) const
     for (std::vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         xmlNode = new TiXmlElement(it->Name.c_str());
-        const string val = ::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
+        const std::string val = ::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
         xmlNode->LinkEndChild(new TiXmlText(val.c_str()));
         if (it->NeedCrypt)
         {
@@ -790,7 +790,7 @@ std::wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
     else
     {
         //Base64 decode
-        string base64Value = ::W2MB(src.c_str());
+        std::string base64Value = ::W2MB(src.c_str());
         BIO *bmem = BIO_new_mem_buf(&base64Value[0], static_cast<int>(base64Value.length()));
         bmem = BIO_push(b64, bmem);
 
