@@ -509,7 +509,7 @@ void TWinSCPPlugin::ShowExtendedException(exception * E)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::OldFar()
 {
-  throw std::exception(::FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
+  // FIXME throw exception(::FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(exception * E, int OpMode)
@@ -546,7 +546,7 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
       if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
           (Data.Params->Aliases[i].OnClick != NULL))
       {
-        Data.Params->GetAliases(i).OnClick(NULL);
+        // FIXME Data.Params->Aliases[i].OnClick(NULL);
         Close = false;
         break;
       }
@@ -582,7 +582,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
 
     // make sure to do the check on full answers, not on reduced "timer answers"
     if (((Answers & qaAbort) && (Answers & qaRetry)) ||
-        (TopDialog != NULL))
+        (GetTopDialog() != NULL))
     {
       // use warning colors for abort/retry confirmation dialog
       Flags |= FMSG_WARNING;
@@ -622,7 +622,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->Objects[ButtonLabels->GetCount() - 1] = (TObject*)true; \
+          ButtonLabels->SetObject(ButtonLabels->GetCount() - 1, (TObject*)true); \
           NeverAskAgainPending = false; \
         } \
       }
