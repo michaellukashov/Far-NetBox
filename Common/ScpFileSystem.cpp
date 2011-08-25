@@ -1103,7 +1103,7 @@ void TSCPFileSystem::ChangeFileToken(const std::wstring & DelimitedName,
   {
     Str = IntToStr(Token.ID);
   }
-  else if (Token.NameValid)
+  else if (Token.GetNameValid())
   {
     Str = Token.Name;
   }

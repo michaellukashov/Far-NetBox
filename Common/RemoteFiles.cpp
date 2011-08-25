@@ -393,12 +393,12 @@ int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
 
   TSHFileInfo SHFileInfo;
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
-  if ((FileName == "..") ||
+  if ((FileName == L"..") ||
       ((FileName.size() == 2) && (FileName[2] == ':') &&
        (tolower(FileName[1]) >= 'a') && (tolower(FileName[1]) <= 'z')) ||
       IsReservedName(FileName))
   {
-    FileName = "dumb";
+    FileName = L"dumb";
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
@@ -409,6 +409,8 @@ int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
   }
 
   int Icon;
+  // FIXME
+  /*
   if (SHGetFileInfo(FileName.c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
@@ -427,6 +429,7 @@ int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
     }
     Icon = -1;
   }
+  */
 
   return Icon;
 }
@@ -557,7 +560,7 @@ std::wstring TRemoteToken::GetDisplayText() const
 //---------------------------------------------------------------------------
 std::wstring TRemoteToken::GetLogText() const
 {
-  return FORMAT("\"%s\" [%d]", (FName, int(FID)));
+  return ::FORMAT(L"\"%s\" [%d]", FName.c_str(), int(FID));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -591,23 +594,23 @@ void TRemoteTokenList::Clear()
 void TRemoteTokenList::Add(const TRemoteToken & Token)
 {
   FTokens.push_back(Token);
-  if (Token.IDValid)
+  if (Token.GetIDValid())
   {
     std::pair<TIDMap::iterator, bool> Position =
-      FIDMap.insert(TIDMap::value_type(Token.ID, FTokens.size() - 1));
+      FIDMap.insert(TIDMap::value_type(Token.GetID(), FTokens.size() - 1));
   }
-  if (Token.NameValid)
+  if (Token.GetNameValid())
   {
     std::pair<TNameMap::iterator, bool> Position =
-      FNameMap.insert(TNameMap::value_type(Token.Name, FTokens.size() - 1));
+      FNameMap.insert(TNameMap::value_type(Token.GetName(), FTokens.size() - 1));
   }
 }
 //---------------------------------------------------------------------------
 void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
 {
-  if (Token.IDValid)
+  if (Token.GetIDValid())
   {
-    TIDMap::const_iterator I = FIDMap.find(Token.ID);
+    TIDMap::const_iterator I = FIDMap.find(Token.GetID());
     if (I != FIDMap.end())
     {
       // is present already.
@@ -619,9 +622,9 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
       Add(Token);
     }
   }
-  else if (Token.NameValid)
+  else if (Token.GetNameValid())
   {
-    TNameMap::const_iterator I = FNameMap.find(Token.Name);
+    TNameMap::const_iterator I = FNameMap.find(Token.GetName());
     if (I != FNameMap.end())
     {
       // is present already.
@@ -676,15 +679,15 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const char * Title)
 {
   if (!FTokens.empty())
   {
-    Terminal->LogEvent(FORMAT("Following %s found:", (Title)));
+    Terminal->LogEvent(::FORMAT(L"Following %s found:", Title));
     for (size_t Index = 0; Index < FTokens.size(); Index++)
     {
-      Terminal->LogEvent(std::wstring("  ") + FTokens[Index].LogText);
+      Terminal->LogEvent(std::wstring(L"  ") + FTokens[Index].GetLogText());
     }
   }
   else
   {
-    Terminal->LogEvent(FORMAT("No %s found.", (Title)));
+    Terminal->LogEvent(::FORMAT(L"No %s found.", Title));
   }
 }
 //---------------------------------------------------------------------------
@@ -749,9 +752,9 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
     COPY_FP(Selected);
     COPY_FP(CyclicLink);
     #undef COPY_FP
-    if (Standalone && (!FFullFileName.empty() || (Directory != NULL)))
+    if (Standalone && (!FFullFileName.empty() || (GetDirectory() != NULL)))
     {
-      Result->FFullFileName = FullFileName;
+      Result->FFullFileName = GetFullFileName();
     }
   }
   catch(...)
@@ -766,10 +769,10 @@ void TRemoteFile::LoadTypeInfo()
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
   unsigned long Attrs = 0;
-  if (IsDirectory) Attrs |= FILE_ATTRIBUTE_DIRECTORY;
-  if (IsHidden) Attrs |= FILE_ATTRIBUTE_HIDDEN;
+  if (GetIsDirectory()) Attrs |= FILE_ATTRIBUTE_DIRECTORY;
+  if (GetIsHidden()) Attrs |= FILE_ATTRIBUTE_HIDDEN;
 
-  std::wstring DumbFileName = (IsSymLink && !LinkTo.empty() ? LinkTo : FileName);
+  std::wstring DumbFileName = (GetIsSymLink() && !GetLinkTo().empty() ? GetLinkTo() : GetFileName());
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
 }
@@ -807,7 +810,7 @@ bool TRemoteFile::GetIsHidden()
       break;
 
     default:
-      Result = IsUnixHiddenFile(FileName);
+      Result = IsUnixHiddenFile(GetFileName());
       break;
   }
 
@@ -821,31 +824,31 @@ void TRemoteFile::SetIsHidden(bool value)
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetIsDirectory() const
 {
-  return (toupper(Type) == FILETYPE_DIRECTORY);
+  return (toupper(GetType()) == FILETYPE_DIRECTORY);
 }
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetIsParentDirectory() const
 {
-  return (FileName == PARENTDIRECTORY);
+  return (GetFileName() == PARENTDIRECTORY);
 }
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetIsThisDirectory() const
 {
-  return (FileName == THISDIRECTORY);
+  return (GetFileName() == THISDIRECTORY);
 }
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetIsInaccesibleDirectory() const
 {
   bool Result;
-  if (IsDirectory)
+  if (GetIsDirectory())
   {
-    assert(Terminal);
+    assert(GetTerminal());
     Result = !
-       (((Rights->RightUndef[TRights::rrOtherExec] != TRights::rsNo)) ||
-        ((Rights->Right[TRights::rrGroupExec] != TRights::rsNo) &&
-         Terminal->Membership->Exists(Group.Name)) ||
-        ((Rights->Right[TRights::rrUserExec] != TRights::rsNo) &&
-         (AnsiCompareText(Terminal->UserName, Owner.Name) == 0)));
+       (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
+        ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
+         GetTerminal()->GetMembership()->Exists(GetGroup().GetName())) ||
+        ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
+         (AnsiCompareText(GetTerminal()->GetUserName(), GetOwner().GetName()) == 0)));
   }
     else Result = false;
   return Result;
@@ -853,8 +856,8 @@ bool TRemoteFile::GetIsInaccesibleDirectory() const
 //---------------------------------------------------------------------------
 char TRemoteFile::GetType() const
 {
-  if (IsSymLink && FLinkedFile) return FLinkedFile->Type;
-    else return FType;
+  if (GetIsSymLink() && FLinkedFile) return FLinkedFile->GetType();
+  else return FType;
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::SetType(char AType)
@@ -883,16 +886,16 @@ void TRemoteFile::SetLinkedFile(TRemoteFile * value)
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetBrokenLink()
 {
-  assert(Terminal);
+  assert(GetTerminal());
   // If file is symlink but we couldn't find linked file we assume broken link
-  return (IsSymLink && (FCyclicLink || !FLinkedFile) &&
-    Terminal->ResolvingSymlinks);
+  return (GetIsSymLink() && (FCyclicLink || !FLinkedFile) &&
+    GetTerminal()->GetResolvingSymlinks());
   // "!FLinkTo.empty()" removed because it does not work with SFTP
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::ShiftTime(const TDateTime & Difference)
 {
-  double D = double(Difference);
+  double D = double(Difference.operator double());
   if ((D != 0) && (FModificationFmt != mfMDY))
   {
     assert(int(FModification) != 0);
@@ -913,7 +916,7 @@ void TRemoteFile::SetModification(const TDateTime & value)
 //---------------------------------------------------------------------------
 std::wstring TRemoteFile::GetUserModificationStr()
 {
-  return ::UserModificationStr(Modification, FModificationFmt);
+  return ::UserModificationStr(GetModification(), FModificationFmt);
 }
 //---------------------------------------------------------------------------
 std::wstring TRemoteFile::GetModificationStr()
@@ -924,7 +927,7 @@ std::wstring TRemoteFile::GetModificationStr()
   switch (FModificationFmt)
   {
     case mfNone:
-      return "";
+      return L"";
 
     case mfMDY:
       return FORMAT("%3s %2d %2d", (EngShortMonthNames[Month-1], Day, Year));

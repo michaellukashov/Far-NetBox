@@ -135,6 +135,7 @@ std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, con
 int AnsiPos(const std::wstring str, wchar_t ñ);
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
 bool AnsiSameText(const std::wstring str1, const std::wstring str2);
+bool AnsiCompareText(const std::wstring str1, const std::wstring str2);
 bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size);
 int LastDelimiter(const std::wstring str1, const wchar_t delim);
 
@@ -160,3 +161,5 @@ TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D)
 TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
+
+std::wstring IntToStr(int value);

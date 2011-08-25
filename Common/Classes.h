@@ -244,13 +244,21 @@ public:
     {}
     explicit TDateTime(double)
     {}
-    operator double()
+    operator double() const
     {
         return 0.0;
     }
     void operator = (double value)
     {
 
+    }
+    bool operator == (const TDateTime &rhs)
+    {
+        return false;
+    }
+    bool operator != (const TDateTime &rhs)
+    {
+        return !(operator == (rhs));
     }
     std::wstring TimeString() const
     {

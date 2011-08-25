@@ -394,6 +394,12 @@ bool AnsiSameText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
+bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
 bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
 {
     // FIXME
@@ -500,6 +506,12 @@ TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S
 }
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
+{
+    std::wstring result;
+    return result;
+}
+
+std::wstring IntToStr(int value)
 {
     std::wstring result;
     return result;
