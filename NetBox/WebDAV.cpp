@@ -52,7 +52,7 @@ CWebDAV::~CWebDAV()
 }
 
 
-bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
+bool CWebDAV::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
     assert(abortEvent);
 
@@ -64,8 +64,8 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
     m_CURL.SetAbortEvent(abortEvent);
 
     //Check initial path existing
-    wstring path;
-    // wstring query;
+    std::wstring path;
+    // std::wstring query;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
     // DEBUG_PRINTF(L"NetBox: path = %s, query = %s", path.c_str(), query.c_str());
@@ -93,7 +93,7 @@ void CWebDAV::Close()
 }
 
 
-bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
@@ -105,7 +105,7 @@ bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isEx
 }
 
 
-bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CWebDAV::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: MakeDirectory: begin: path = %s", path);
     const string webDavPath = EscapeUTF8URL(path);
@@ -131,7 +131,7 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
@@ -143,7 +143,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
     }
 
     //Erase slashes (to compare in xml parse)
-    wstring currentPath(m_CurrentDirectory);
+    std::wstring currentPath(m_CurrentDirectory);
     while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
     {
         currentPath.erase(currentPath.length() - 1);
@@ -169,7 +169,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
         {
             LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
         }
-        wstring             Name;
+        std::wstring             Name;
         DWORD               Attributes;
         FILETIME            Created;
         FILETIME            Modified;
@@ -209,8 +209,8 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
             continue;
         }
 
-        const wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
-        wstring path;
+        const std::wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
+        std::wstring path;
         ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
         if (path.empty())
         {
@@ -333,7 +333,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
 }
 
 
-bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
@@ -374,7 +374,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
 }
 
 
-bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
@@ -408,7 +408,7 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
 }
 
 
-bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
+bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
 {
     const string srcWebDavPath = EscapeUTF8URL(srcPath);
     const string dstWebDavPath = EscapeUTF8URL(dstPath);
@@ -438,7 +438,7 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
 }
 
 
-bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &errorInfo)
+bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, std::wstring &errorInfo)
 {
     const string webDavPath = EscapeUTF8URL(path);
 
@@ -461,7 +461,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 }
 
 
-bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
+bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, std::wstring &errInfo)
 {
     const string webDavPath = EscapeUTF8URL(dir);
     // DEBUG_PRINTF(L"NetBox: CWebDAV::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
@@ -524,7 +524,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
 }
 
 
-bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
+bool CWebDAV::CheckResponseCode(const long expect, std::wstring &errInfo)
 {
     long responseCode = 0;
     if (curl_easy_getinfo(m_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
@@ -540,7 +540,7 @@ bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
 }
 
 
-bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, wstring &errInfo)
+bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
 {
     long responseCode = 0;
     if (curl_easy_getinfo(m_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
@@ -688,7 +688,7 @@ wstring CWebDAV::GetBadResponseInfo(const int code) const
         break;
     }
 
-    wstring errInfo = L"Incorrect response code: ";
+    std::wstring errInfo = L"Incorrect response code: ";
 
     errInfo += ::NumberToWString(code);
 

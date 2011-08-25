@@ -72,8 +72,8 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
         return false;
     }
 
-    wstring scheme;
-    wstring hostName;
+    std::wstring scheme;
+    std::wstring hostName;
     unsigned short port = 0;
     ParseURL(url, &scheme, &hostName, &port, NULL, NULL, NULL, NULL);
 
@@ -392,7 +392,7 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {
         // DEBUG_PRINTF(L"NetBox: data = %s", ::MB2W(data).c_str());
-        wstring dataw = ::MB2W(data);
+        std::wstring dataw = ::MB2W(data);
         RegExpSearch search = {
             dataw.c_str(),
             0,

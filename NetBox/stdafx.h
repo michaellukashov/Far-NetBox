@@ -47,7 +47,7 @@ wstring GetSystemErrorMessage(const DWORD errCode);
  * \param userName user name
  * \param password password
  */
-void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned short *port, wstring *path, wstring *query, wstring *userName, wstring *password);
+void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, unsigned short *port, std::wstring *path, std::wstring *query, std::wstring *userName, std::wstring *password);
 
 /**
  * Convert unix time to file time
@@ -56,7 +56,7 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
  */
 FILETIME UnixTimeToFileTime(const time_t t);
 
-unsigned long TextToNumber(const wstring &text);
+unsigned long TextToNumber(const std::wstring &text);
 
 /**
  * Convert int to string
@@ -70,10 +70,10 @@ wstring NumberToWString(unsigned long number);
 struct ProxySettings
 {
     int proxyType;
-    wstring proxyHost;
+    std::wstring proxyHost;
     unsigned long proxyPort;
-    wstring proxyLogin;
-    wstring proxyPassword;
+    std::wstring proxyLogin;
+    std::wstring proxyPassword;
 };
 
 struct ProxySettingsDialogParams
@@ -91,7 +91,7 @@ struct ProxySettingsDialogParams
     FarDialogItem *proxyLoginItem;
     FarDialogItem *proxyPasswordTextItem;
     FarDialogItem *proxyPasswordItem;
-    wstring proxyPortStr;
+    std::wstring proxyPortStr;
 
     int idProxyTypeText;
     int idProxyTypeComboBox;
@@ -126,4 +126,4 @@ string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 
 void CheckAbortEvent(HANDLE *AbortEvent);
 
-wstring ExpandEnvVars(const wstring& str);
+wstring ExpandEnvVars(const std::wstring& str);

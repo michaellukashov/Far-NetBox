@@ -78,7 +78,7 @@ void CSettings::Load()
     if (settings.Open(RegPluginName, true))
     {
         DWORD regVal;
-        wstring regStrVal;
+        std::wstring regStrVal;
         if (settings.GetNumber(RegAddToDM, regVal))
         {
             m_AddToDiskMenu = (regVal != 0);
@@ -260,7 +260,7 @@ void CSettings::MainConfigure()
     dlg.CreateSeparator(++topPos);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgTimeout));
-    wstring timeoutStr = ::NumberToWString(m_Timeout);
+    std::wstring timeoutStr = ::NumberToWString(m_Timeout);
     FarDialogItem *itemEdit;
     const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1,
         dlg.GetWidth(), topPos, topPos, timeoutStr.c_str(), DIF_MASKEDIT, &itemEdit);
@@ -393,8 +393,8 @@ void CSettings::ShowAbout()
     int topPos = dlg.GetTop();
     dlg.CreateText(dlg.GetLeft() + 5, ++topPos, CFarPlugin::GetString(StringPluginDescriptionText));
     ++topPos;
-    wstring ver = PLUGIN_VERSION_WTXT;
-    wstring version = CFarPlugin::GetFormattedString(StringPluginVersion, ver.c_str());
+    std::wstring ver = PLUGIN_VERSION_WTXT;
+    std::wstring version = CFarPlugin::GetFormattedString(StringPluginVersion, ver.c_str());
     // DEBUG_PRINTF(L"NetBox: version = %s", version.c_str());
     dlg.CreateText(dlg.GetLeft() + 16, ++topPos, version.c_str());
 
@@ -407,7 +407,7 @@ void CSettings::ShowAbout()
 
 wstring CSettings::GetSessionPath() const
 {
-    wstring path = ::ExpandEnvVars(SessionPath());
+    std::wstring path = ::ExpandEnvVars(SessionPath());
     if (path.empty())
     {
         path = ::ExpandEnvVars(CFarPlugin::GetPluginPath());

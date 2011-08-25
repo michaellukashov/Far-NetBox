@@ -34,7 +34,7 @@ CLogger::CLogger() :
 }
 
 void CLogger::Initialize(bool enableLogging, int loggingLevel,
-    bool logToFile, const wstring &logFileName)
+    bool logToFile, const std::wstring &logFileName)
 {
     CLogger::Shutdown();
     m_Logger.m_enableLogging = enableLogging;
@@ -79,7 +79,7 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
     // Log
     int len = _vscwprintf(format, args);
-    wstring buf(len + sizeof(wchar_t), 0);
+    std::wstring buf(len + sizeof(wchar_t), 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
     fprintf_s(f, "%s\n", (char *)::W2MB(buf.c_str()).c_str());
 

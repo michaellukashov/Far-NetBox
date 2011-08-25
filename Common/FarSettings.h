@@ -42,7 +42,7 @@ public:
     inline bool Open(const wchar_t *regPath, const bool readOnly)
     {
         Close();
-        wstring keyName = CFarPlugin::GetPSI()->RootKey;
+        std::wstring keyName = CFarPlugin::GetPSI()->RootKey;
         keyName += L'\\';
         keyName += regPath;
         const DWORD status = readOnly ?
@@ -83,7 +83,7 @@ public:
      * \param val key value
      * \return false if error
      */
-    inline bool GetString(const wchar_t *name, wstring &val) const
+    inline bool GetString(const wchar_t *name, std::wstring &val) const
     {
         assert(_RegKey != NULL);
 
@@ -159,7 +159,7 @@ public:
         vector<wstring> keys;
         for (DWORD i = 0; i < subKeys; ++i)
         {
-            wstring name(256, 0);
+            std::wstring name(256, 0);
             DWORD nameSz = static_cast<DWORD>(name.size());
             if (RegEnumKeyEx(_RegKey, i, &name[0], &nameSz, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
             {
@@ -182,7 +182,7 @@ public:
         bool result = false;
 
         //Delete tree using Shell API
-        wstring keyName = CFarPlugin::GetPSI()->RootKey;
+        std::wstring keyName = CFarPlugin::GetPSI()->RootKey;
         keyName += L'\\';
         keyName += regPath;
 

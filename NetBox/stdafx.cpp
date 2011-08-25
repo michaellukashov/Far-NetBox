@@ -25,7 +25,7 @@ wstring GetSystemErrorMessage(const DWORD errCode)
 {
     assert(errCode);
 
-    wstring errorMsg;
+    std::wstring errorMsg;
 
     wchar_t codeNum[16];
     swprintf_s(codeNum, L"[0x%08X]", errCode);
@@ -54,11 +54,11 @@ wstring GetSystemErrorMessage(const DWORD errCode)
 }
 
 
-void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned short *port, wstring *path, wstring *query, wstring *userName, wstring *password)
+void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, unsigned short *port, std::wstring *path, std::wstring *query, std::wstring *userName, std::wstring *password)
 {
     assert(url);
 
-    wstring urlParse(url);
+    std::wstring urlParse(url);
 
     //Parse scheme name
     const size_t delimScheme = urlParse.find(L"://");
@@ -76,7 +76,7 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
     const size_t delimPath = urlParse.find(L'/');
     if (delimPath != string::npos)
     {
-        wstring parsePath = urlParse.substr(delimPath);
+        std::wstring parsePath = urlParse.substr(delimPath);
         urlParse.erase(delimPath);
         //Parse query
         const size_t delimQuery = parsePath.rfind(L'?');
@@ -102,7 +102,7 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
     const size_t delimLogin = urlParse.rfind(L'@');
     if (delimLogin != string::npos)
     {
-        wstring parseLogin = urlParse.substr(0, delimLogin);
+        std::wstring parseLogin = urlParse.substr(0, delimLogin);
         const size_t delimPwd = parseLogin.rfind(L':');
         if (delimPwd != string::npos)
         {
@@ -130,7 +130,7 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
     {
         if (port)
         {
-            const wstring portNum = urlParse.substr(delimPort + 1);
+            const std::wstring portNum = urlParse.substr(delimPort + 1);
             *port = static_cast<unsigned short>(_wtoi(portNum.c_str()));
         }
         urlParse.erase(delimPort);
@@ -152,7 +152,7 @@ FILETIME UnixTimeToFileTime(const time_t t)
     return ft;
 }
 
-unsigned long TextToNumber(const wstring &text)
+unsigned long TextToNumber(const std::wstring &text)
 {
     return static_cast<unsigned long>(_wtoi(text.c_str()));
 }
@@ -168,7 +168,7 @@ wstring NumberToWString(unsigned long number)
 {
     wchar_t toText[16];
     _itow_s(number, toText, 10);
-    return wstring(toText);
+    return std::wstring(toText);
 }
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
@@ -289,7 +289,7 @@ wstring MB2W(const char *src, const UINT cp)
 {
     assert(src);
 
-    wstring wide;
+    std::wstring wide;
     const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
     if (reqLength)
     {
@@ -337,11 +337,11 @@ void CheckAbortEvent(HANDLE *AbortEvent)
     }
 }
 
-wstring ExpandEnvVars(const wstring& str)
+wstring ExpandEnvVars(const std::wstring& str)
 {
     wchar_t buf[MAX_PATH];
     unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
-    wstring result = wstring(buf, size - 1);
+    std::wstring result = std::wstring(buf, size - 1);
     // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
     return result;
 }

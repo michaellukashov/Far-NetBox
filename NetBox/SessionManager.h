@@ -30,36 +30,36 @@ class CSessionManager : public IProtocol
 {
 public:
     //From IProtocol
-    virtual bool Connect(HANDLE, wstring &)
+    virtual bool Connect(HANDLE, std::wstring &)
     {
         assert(NULL);
         return false;
     }
     virtual void Close()                    {}
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-    virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo);
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
+    virtual bool ChangeDirectory(const wchar_t *name, std::wstring &errorInfo);
     virtual const wchar_t *GetCurrentDirectory()
     {
         return m_CurrentDirectory.c_str();
     }
-    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
-    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
+    virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo);
     virtual void FreeList(PluginPanelItem *items, int itemsNum);
-    virtual bool GetFile(const wchar_t *, const wchar_t *, const unsigned __int64, wstring &)
+    virtual bool GetFile(const wchar_t *, const wchar_t *, const unsigned __int64, std::wstring &)
     {
         assert(NULL);
         return false;
     }
-    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    virtual bool Rename(const wchar_t *, const wchar_t *, const ItemType, wstring &)
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    virtual bool Rename(const wchar_t *, const wchar_t *, const ItemType, std::wstring &)
     {
         assert(NULL);
         return false;
     }
-    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
-    virtual wstring GetURL(const bool)
+    virtual bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
+    virtual std::wstring GetURL(const bool)
     {
-        return wstring();
+        return std::wstring();
     }
     virtual int GetProgress()
     {
@@ -105,8 +105,8 @@ private:
      * \param sub additional path
      * \return result path
      */
-    wstring ConvertPath(const wchar_t *pathBase, const wchar_t *sub = NULL) const;
+    std::wstring ConvertPath(const wchar_t *pathBase, const wchar_t *sub = NULL) const;
 
 private:
-    wstring m_CurrentDirectory;  ///< Current directory name
+    std::wstring m_CurrentDirectory;  ///< Current directory name
 };

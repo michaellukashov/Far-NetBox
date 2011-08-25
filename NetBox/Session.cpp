@@ -95,7 +95,7 @@ const wchar_t *CSession::GetDefaultScheme(const int protoId)
 
 wstring CSession::GetSupportedPrefixes()
 {
-    wstring prefixes;
+    std::wstring prefixes;
     for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         if (!prefixes.empty())
@@ -144,7 +144,7 @@ PSession CSession::Create(const wchar_t *prefix)
 {
     assert(prefix && *prefix);
 
-    wstring prefixCmd(prefix);
+    std::wstring prefixCmd(prefix);
     const size_t preffixDelim = prefixCmd.find(L':');
     if (preffixDelim == string::npos)
     {
@@ -161,7 +161,7 @@ PSession CSession::Create(const wchar_t *prefix)
         prefixCmd.erase(0, 1);
     }
 
-    wstring protoScheme(prefixCmd);
+    std::wstring protoScheme(prefixCmd);
     const size_t schemeDelim = protoScheme.find(L':');
     if (schemeDelim == string::npos)
     {
@@ -228,7 +228,7 @@ PSession CSession::Load(const wchar_t *fileName)
     }
 
     //Determine session name from file name
-    wstring sessionName = fileName;
+    std::wstring sessionName = fileName;
     const size_t startPos = sessionName.rfind(L'\\');
     assert(startPos != string::npos);
     if (startPos != string::npos)
@@ -289,7 +289,7 @@ PSession CSession::Load(const wchar_t *fileName)
         const char *key = xmlNode->Value();
         const char *plainVal = xmlEl->GetText();
 
-        wstring val = plainVal ? ::MB2W(plainVal, CP_UTF8) : wstring();
+        std::wstring val = plainVal ? ::MB2W(plainVal, CP_UTF8) : std::wstring();
         const char *crypt = xmlEl->Attribute(ParamCrypt);
         if (crypt)
         {
@@ -316,23 +316,23 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     assert(fileName);
 
     //Get values from ini file
-    wstring iniUrlVal(256, 0);
+    std::wstring iniUrlVal(256, 0);
     if (!GetPrivateProfileString(L"FarFTP", L"Url", NULL, &iniUrlVal[0], static_cast<DWORD>(iniUrlVal.length()), fileName))
     {
         return PSession();
     }
-    wstring hostName;
+    std::wstring hostName;
     ParseURL(iniUrlVal.c_str(), NULL, &hostName, NULL, NULL, NULL, NULL, NULL);
     if (hostName.empty())
     {
         return PSession();
     }
-    wstring iniUsrVal(32, 0);
+    std::wstring iniUsrVal(32, 0);
     GetPrivateProfileString(L"FarFTP", L"User", NULL, &iniUsrVal[0], static_cast<DWORD>(iniUsrVal.length()), fileName);
-    wstring iniPwdVal(32, 0);
+    std::wstring iniPwdVal(32, 0);
     GetPrivateProfileString(L"FarFTP", L"Password", NULL, &iniPwdVal[0], static_cast<DWORD>(iniPwdVal.length()), fileName);
     INT iniPrPwd = GetPrivateProfileInt(L"FarFTP", L"AskLogin", 0, fileName);
-    wstring iniCPVal(32, 0);
+    std::wstring iniCPVal(32, 0);
     GetPrivateProfileString(L"FarFTP", L"CharTable", NULL, &iniCPVal[0], static_cast<DWORD>(iniCPVal.length()), fileName);
 
     PSession session = PSession(new CSessionFTP());
@@ -371,7 +371,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     static_cast<CSessionFTP *>(session.get())->SetCodePage(codePage ? codePage : CP_UTF8);
 
     //Name
-    wstring sessionName;
+    std::wstring sessionName;
     sessionName = L"FarFTP (";
     sessionName += hostName;
     sessionName += L')';
@@ -391,7 +391,7 @@ void CSession::ExportFromRegistry()
         const vector<wstring> keys = settings.EnumKeys();
         for (vector<wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
         {
-            wstring regName(L"NetBox");
+            std::wstring regName(L"NetBox");
             regName += L'\\';
             regName += *it;
             if (settings.Open(regName.c_str(), true))
@@ -411,7 +411,7 @@ void CSession::ExportFromRegistry()
                 assert(session.get());
                 session->m_ProtoId = protoId;
 
-                wstring sessionName, URL, userName, password, keyFile;
+                std::wstring sessionName, URL, userName, password, keyFile;
                 bool promptPwd = false, useKeyFile = false;
                 UINT codePage = CP_UTF8;
                 settings.GetString(L"Name", sessionName);
@@ -459,7 +459,7 @@ void CSession::ExportFromRegistry()
                 }
                 session->SetSessionName(sessionName.c_str());
 
-                wstring savePath = m_Settings.GetSessionPath();
+                std::wstring savePath = m_Settings.GetSessionPath();
                 CreateDirectory(savePath.c_str(), NULL);
 
                 if (session->Save(savePath.c_str(), false))
@@ -525,10 +525,10 @@ bool CSession::Save(const wchar_t *path, const bool overwrite) const
 {
     assert(path && *path);
 
-    wstring savePath = path;
+    std::wstring savePath = path;
     ::AppendPathDelimiterW(savePath);
 
-    wstring fileName = savePath;
+    std::wstring fileName = savePath;
     fileName += GetSessionName();
     fileName += L".netbox";
 
@@ -550,7 +550,7 @@ bool CSession::Save(const wchar_t *path, const bool overwrite) const
 PProtocol CSession::CreateClient()
 {
     //Check url
-    wstring hostName, userName, password;
+    std::wstring hostName, userName, password;
     ParseURL(GetURL(), NULL, &hostName, NULL, NULL, NULL, &userName, &password);
     if (hostName.empty())
     {
@@ -731,11 +731,11 @@ void CSession::SetProperty(const char *name, const __int64 val)
 }
 
 
-wstring CSession::Crypt(const wstring &src, const bool encrypt) const
+wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
 {
     if (src.empty())
     {
-        return wstring();
+        return std::wstring();
     }
 
     if (m_Settings.UseOwnKey())
@@ -762,7 +762,7 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
     EVP_CIPHER_CTX_init(&ctx);
     BIO *b64 = BIO_new(BIO_f_base64());
 
-    wstring encodedVal;
+    std::wstring encodedVal;
 
     if (encrypt)
     {

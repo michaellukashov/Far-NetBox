@@ -446,11 +446,11 @@ public:
      * \param dlgItemId item id
      * \return item text
      */
-    inline wstring GetText(const int dlgItemId) const
+    inline std::wstring GetText(const int dlgItemId) const
     {
         assert(m_Dlg != INVALID_HANDLE_VALUE);
 
-        wstring itemText;
+        std::wstring itemText;
 
         const LONG_PTR itemTextLen = CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_GETTEXTLENGTH, dlgItemId, 0);
         if (itemTextLen != 0)

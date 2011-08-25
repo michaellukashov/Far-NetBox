@@ -50,7 +50,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
     m_Settings.Load();
     CLogger::Initialize(m_Settings.EnableLogging(), m_Settings.LoggingLevel(),
         m_Settings.LogToFile(), m_Settings.LogFileName());
-    wstring ver = PLUGIN_VERSION_WTXT;
+    std::wstring ver = PLUGIN_VERSION_WTXT;
     Log1(L"NetBox plugin version %s started.", ver.c_str());
 
     WSADATA wsaData;
@@ -89,7 +89,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
         pi->DiskMenuStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
     }
 
-    static wstring cmdPreffix;
+    static std::wstring cmdPreffix;
     cmdPreffix = m_Settings.CmdPrefix();
     if (m_Settings.AltPrefix())
     {

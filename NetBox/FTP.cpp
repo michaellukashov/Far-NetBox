@@ -90,7 +90,7 @@ CFTP::~CFTP()
 }
 
 
-bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
+bool CFTP::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
     assert(abortEvent);
 
@@ -101,7 +101,7 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     m_CURL.SetAbortEvent(abortEvent);
 
     //Check initial path existing
-    wstring path;
+    std::wstring path;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
@@ -130,7 +130,7 @@ CURLcode CFTP::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tru
     return urlCode;
 }
 
-bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
     isExist = false;
@@ -161,7 +161,7 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 }
 
 
-bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CFTP::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
 
@@ -177,7 +177,7 @@ bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
@@ -221,8 +221,8 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             {
                 bool dirExist = true;
                 bool fileExist = true;
-                wstring errDummy;
-                wstring chkPath = ftpItem.LinkPath;
+                std::wstring errDummy;
+                std::wstring chkPath = ftpItem.LinkPath;
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     ftpItem.Type = FTPItem::Directory;
@@ -270,8 +270,8 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             {
                 //Check link for file/dir
                 bool dirExist = true;
-                wstring errDummy;
-                wstring chkPath = ftpList[i].LinkPath;
+                std::wstring errDummy;
+                std::wstring chkPath = ftpList[i].LinkPath;
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     farItem.FindData.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
@@ -295,7 +295,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 }
 
 
-bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     assert(remotePath && remotePath[0] == L'/');
     assert(localPath && *localPath);
@@ -327,7 +327,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 }
 
 
-bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     assert(remotePath && remotePath[0] == L'/');
     assert(localPath && *localPath);
@@ -359,7 +359,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 }
 
 
-bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo)
+bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo)
 {
     assert(srcPath && srcPath[0] == L'/');
     assert(dstPath && dstPath[0] == L'/');
@@ -386,7 +386,7 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
 }
 
 
-bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
+bool CFTP::Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
 

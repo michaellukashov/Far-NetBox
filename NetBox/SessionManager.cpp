@@ -68,7 +68,7 @@ BOOL CSessionManager::ProcessKey(HANDLE plugin, const int key, const unsigned in
         PSession session = CSession::Create();
         if (session.get())
         {
-            const wstring savePath = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
+            const std::wstring savePath = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
             session->Save(savePath.c_str(), false);
             CFarPlugin::GetPSI()->Control(plugin, FCTL_UPDATEPANEL, 0, NULL);
             CFarPlugin::GetPSI()->Control(plugin, FCTL_REDRAWPANEL, 0, NULL);
@@ -94,8 +94,8 @@ BOOL CSessionManager::ProcessKey(HANDLE plugin, const int key, const unsigned in
             return 1;
         }
 
-        const wstring sessionPath = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
-        wstring sessionFileName = ConvertPath(sessionPath.c_str(), ppi->FindData.lpwszFileName);
+        const std::wstring sessionPath = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
+        std::wstring sessionFileName = ConvertPath(sessionPath.c_str(), ppi->FindData.lpwszFileName);
         sessionFileName += L".netbox";
 
         PSession session = CSession::Load(sessionFileName.c_str());
@@ -115,14 +115,14 @@ BOOL CSessionManager::ProcessKey(HANDLE plugin, const int key, const unsigned in
 }
 
 
-bool CSessionManager::CheckExisting(const wchar_t *path, const ItemType /*type*/, bool &isExist, wstring & /*errorInfo*/)
+bool CSessionManager::CheckExisting(const wchar_t *path, const ItemType /*type*/, bool &isExist, std::wstring & /*errorInfo*/)
 {
     isExist = (GetFileAttributes(ConvertPath(m_Settings.GetSessionPath().c_str(), path).c_str()) != INVALID_FILE_ATTRIBUTES);
     return true;
 }
 
 
-bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
+bool CSessionManager::ChangeDirectory(const wchar_t *name, std::wstring &errorInfo)
 {
     assert(name && *name);
 
@@ -130,7 +130,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
 
     assert(!moveUp || !m_CurrentDirectory.empty());   //Must be handled in CPanel (exit from session)
 
-    wstring newPath = m_CurrentDirectory;
+    std::wstring newPath = m_CurrentDirectory;
     if (!moveUp)
     {
         newPath = ConvertPath(newPath.c_str(), name);
@@ -161,9 +161,9 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, wstring &errorInfo)
 }
 
 
-bool CSessionManager::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CSessionManager::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
-    const wstring dirPath = ConvertPath(m_Settings.GetSessionPath().c_str(), path);
+    const std::wstring dirPath = ConvertPath(m_Settings.GetSessionPath().c_str(), path);
     // DEBUG_PRINTF(L"NetBox: dirPath = %s", dirPath.c_str());
     if (!CreateDirectory(dirPath.c_str(), NULL))
     {
@@ -178,9 +178,9 @@ bool CSessionManager::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
-    wstring findMask = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
+    std::wstring findMask = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
     // DEBUG_PRINTF(L"NetBox: findMask = %s", findMask.c_str());
     ::AppendWChar(findMask, L'\\');
     ::AppendWChar(findMask, L'*');
@@ -202,7 +202,7 @@ bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, wstring &e
     struct SessionItem
     {
         SessionItem() : Attributes(0) {}
-        wstring             Name;
+        std::wstring             Name;
         DWORD               Attributes;
     };
     vector<SessionItem> sessionItems;
@@ -284,7 +284,7 @@ void CSessionManager::FreeList(PluginPanelItem *items, int itemsNum)
 }
 
 
-bool CSessionManager::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CSessionManager::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     PSession session = CSession::ImportFromFTP(localPath);
     if (!session.get())
@@ -292,7 +292,7 @@ bool CSessionManager::PutFile(const wchar_t *remotePath, const wchar_t *localPat
         errorInfo = L"Unsupported format";
         return false;
     }
-    wstring savePath = ConvertPath(m_Settings.GetSessionPath().c_str(), remotePath);
+    std::wstring savePath = ConvertPath(m_Settings.GetSessionPath().c_str(), remotePath);
     if (savePath.rfind(L'\\') != string::npos)
     {
         savePath.erase(savePath.rfind(L'\\'));
@@ -301,9 +301,9 @@ bool CSessionManager::PutFile(const wchar_t *remotePath, const wchar_t *localPat
 }
 
 
-bool CSessionManager::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
+bool CSessionManager::Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo)
 {
-    wstring delPath = ConvertPath(m_Settings.GetSessionPath().c_str(), path);
+    std::wstring delPath = ConvertPath(m_Settings.GetSessionPath().c_str(), path);
     if (type == ItemFile)
     {
         delPath += L".netbox";
@@ -327,7 +327,7 @@ PSession CSessionManager::LoadSession(const wchar_t *name)
 {
     assert(name && *name);
 
-    wstring sessionFileName = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
+    std::wstring sessionFileName = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
     sessionFileName = ConvertPath(sessionFileName.c_str(), name);
     sessionFileName += L".netbox";
 
@@ -339,7 +339,7 @@ wstring CSessionManager::ConvertPath(const wchar_t *pathBase, const wchar_t *sub
 {
     assert(pathBase);
 
-    wstring ret(pathBase);
+    std::wstring ret(pathBase);
     if (sub && *sub)
     {
         ::AppendPathDelimiterW(ret);

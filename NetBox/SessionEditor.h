@@ -100,7 +100,7 @@ protected:
     int m_IdBtnCancel;
 
     bool m_EditMode;
-    wstring m_Title;
+    std::wstring m_Title;
 
     CSession *m_Session;
 

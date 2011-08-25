@@ -69,7 +69,7 @@ public:
      * Get supported protocols prefixes
      * \return supported protocols prefixes
      */
-    static wstring GetSupportedPrefixes();
+    static std::wstring GetSupportedPrefixes();
 
     struct ProxySettings &GetProxySettings() { return m_proxySettings; }
 
@@ -215,7 +215,7 @@ private:
      * \param encrypt operation type (true = encode; false = decode)
      * \return encrypted/decrypted string value
      */
-    wstring Crypt(const wstring &src, const bool encrypt) const;
+    std::wstring Crypt(const std::wstring &src, const bool encrypt) const;
 
     //! Client's protocol implementation
     struct ProtoImplInfo
@@ -240,13 +240,13 @@ private:
         Property() : NeedCrypt(false)
         {}
         string Name; ///< Property name
-        wstring Value; ///< Property value
+        std::wstring Value; ///< Property value
         bool NeedCrypt; ///< Crypt value flag
     };
 
 private:
     int m_ProtoId; ///< Unique protocol id
-    wstring m_SessionName; ///< Session name
+    std::wstring m_SessionName; ///< Session name
     vector<Property> m_Properties; ///< Session's properties
     struct ProxySettings m_proxySettings;
 

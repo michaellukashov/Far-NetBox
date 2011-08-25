@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE(testnetbox_01)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
-    wstring path = L"C:\\test";
+    std::wstring path = L"C:\\test";
     AppendPathDelimiterW(path);
     BOOST_CHECK(path == L"C:\\test\\");
 }

@@ -150,13 +150,13 @@ private:
      * \param title error title
      * \param info additional info
      */
-    void ShowErrorDialog(const DWORD errCode, const wstring &title, const wchar_t *info = NULL) const;
+    void ShowErrorDialog(const DWORD errCode, const std::wstring &title, const wchar_t *info = NULL) const;
 
     void ResetAbortTask();
 private:
     IProtocol *m_ProtoClient; ///< Client's protocol implementation
-    wstring m_LastDirName; ///< Last created/copyed directory name (used as buffer)
-    wstring m_Title; ///< Panel title
+    std::wstring m_LastDirName; ///< Last created/copyed directory name (used as buffer)
+    std::wstring m_Title; ///< Panel title
 
     bool m_ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
 

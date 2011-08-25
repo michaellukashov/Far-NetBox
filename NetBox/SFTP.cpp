@@ -150,15 +150,15 @@ CSFTP::~CSFTP()
 }
 
 
-bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
+bool CSFTP::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
     assert(abortEvent);
     assert(m_Socket == INVALID_SOCKET);
 
     m_AbortEvent = abortEvent;
 
-    wstring hostName;
-    wstring path;
+    std::wstring hostName;
+    std::wstring path;
     unsigned short port = 0;
     ParseURL(m_Session.GetURL(), NULL, &hostName, &port, &path, NULL, NULL, NULL);
 
@@ -257,7 +257,7 @@ void CSFTP::Close()
 }
 
 
-bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     assert(type == ItemDirectory);
     assert(m_SFTPSession);
@@ -273,7 +273,7 @@ bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExis
 }
 
 
-bool CSFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CSFTP::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     assert(m_SFTPSession);
 
@@ -287,7 +287,7 @@ bool CSFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
@@ -307,7 +307,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
         {
             Modified.dwLowDateTime = Modified.dwHighDateTime = LastAccess.dwLowDateTime = LastAccess.dwHighDateTime =0;
         }
-        wstring             Name;
+        std::wstring             Name;
         DWORD               Attributes;
         FILETIME            Modified;
         FILETIME            LastAccess;
@@ -383,7 +383,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 }
 
 
-bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
+bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo)
 {
     assert(localPath && *localPath);
     assert(m_SFTPSession);
@@ -438,7 +438,7 @@ bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 }
 
 
-bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
+bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo)
 {
     assert(localPath && *localPath);
     assert(m_SFTPSession);
@@ -506,7 +506,7 @@ bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 }
 
 
-bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
+bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
 {
     assert(m_SFTPSession);
 
@@ -528,7 +528,7 @@ bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemTyp
 }
 
 
-bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
+bool CSFTP::Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo)
 {
     assert(m_SFTPSession);
 
@@ -558,7 +558,7 @@ wstring CSFTP::GetURL()
     return CProtocolBase<CSessionSFTP>::GetURL();
 }
 
-bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo)
+bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, std::wstring &errInfo)
 {
     assert(m_Socket == INVALID_SOCKET);
 
