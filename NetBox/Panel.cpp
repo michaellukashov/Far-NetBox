@@ -546,7 +546,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
 
     // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: itemsNumber = %d", itemsNumber);
     //Full copied content (include subdirectories)
-    std::vector< pair<int, PluginPanelItem *> > subDirContent;
+    std::vector< std::pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full copied content
     subDirContent.push_back(std::make_pair(itemsNumber, panelItem));
@@ -569,7 +569,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     size_t totalFileCount = 0;
     unsigned __int64 totalFileSize = 0;
     // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: subDirContent.size = %u", subDirContent.size());
-    for (std::vector< pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: it->first = %u", it->first);
         for (int i = 0; i < it->first; ++i)
@@ -590,7 +590,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     progressWnd.Show();
 
     //Copy content
-    for (std::vector< pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         for (int i = 0; i < it->first; ++i)
         {
@@ -733,7 +733,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     }
 
     //Free content
-    for (std::vector< pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         if (it->first > 0)
         {
@@ -756,7 +756,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     }
 
     //Full copied content (include subdirectories)
-    std::vector< pair<int, FAR_FIND_DATA *> > subDirContent;
+    std::vector< std::pair<int, FAR_FIND_DATA *> > subDirContent;
 
     //Get full copied content (top folder)
     std::vector<FAR_FIND_DATA> topItems;
@@ -789,7 +789,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     //Calculate total count/size and get content
     size_t totalFileCount = 0;
     unsigned __int64 totalFileSize = 0;
-    for (std::vector< pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         for (int i = 0; i < it->first; ++i)
         {
@@ -812,7 +812,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     progressWnd.Show();
 
     //Copy content
-    for (std::vector< pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         for (int i = 0; i != it->first; ++i)
         {
@@ -965,7 +965,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     }
 
     //Free content
-    for (std::vector< pair<int, FAR_FIND_DATA *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, FAR_FIND_DATA *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         CFarPlugin::GetPSI()->FreeDirList(it->second, it->first);
     }
@@ -1023,7 +1023,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     }
 
     //Full removed content (include subdirectories)
-    std::vector< pair<int, PluginPanelItem *> > subDirContent;
+    std::vector< std::pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full removed content
     subDirContent.push_back(std::make_pair(itemsNumber, panelItem));
@@ -1045,7 +1045,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     //Remove content
     CNotificationWindow progressWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetString(StringPrgDelete));
     progressWnd.Show();
-    for (std::vector< pair<int, PluginPanelItem *> >::const_reverse_iterator it = subDirContent.rbegin(); it != subDirContent.rend(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_reverse_iterator it = subDirContent.rbegin(); it != subDirContent.rend(); ++it)
     {
         for (int i = it->first - 1; i >= 0; --i)
         {
@@ -1095,7 +1095,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     }
 
     //Free content
-    for (std::vector< pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         if (it->first > 0)
         {
