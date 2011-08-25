@@ -22,7 +22,7 @@
 #include "Logging.h"
 #include "resource.h"
 
-CLogger m_Logger;
+CLogger _Logger;
 
 CLogger::CLogger() :
     m_first(true),
@@ -37,10 +37,10 @@ void CLogger::Initialize(bool enableLogging, int loggingLevel,
     bool logToFile, const std::wstring &logFileName)
 {
     CLogger::Shutdown();
-    m_Logger.m_enableLogging = enableLogging;
-    m_Logger.m_loggingLevel = loggingLevel;
-    m_Logger.m_logToFile = logToFile;
-    m_Logger.m_logFileName = logFileName;
+    _Logger.m_enableLogging = enableLogging;
+    _Logger.m_loggingLevel = loggingLevel;
+    _Logger.m_logToFile = logToFile;
+    _Logger.m_logFileName = logFileName;
 }
 
 void CLogger::Shutdown()
@@ -137,7 +137,7 @@ void Log1(const wchar_t *format, ...)
 {
     va_list args;
     va_start(args, format);
-    m_Logger.Log(LEVEL_DEBUG1, format, args);
+    _Logger.Log(LEVEL_DEBUG1, format, args);
     va_end(args);
 }
 
@@ -145,12 +145,12 @@ void Log2(const wchar_t *format, ...)
 {
     va_list args;
     va_start(args, format);
-    m_Logger.Log(LEVEL_DEBUG2, format, args);
+    _Logger.Log(LEVEL_DEBUG2, format, args);
     va_end(args);
 }
 
 void Log2(const char *str)
 {
-    m_Logger.Log(LEVEL_DEBUG2, str);
+    _Logger.Log(LEVEL_DEBUG2, str);
 }
 
