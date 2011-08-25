@@ -718,7 +718,7 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
     {
       wstring Command = (char *)Param;
       if (!Command.Trim().empty() &&
-          (Command.SubString(1, 3).LowerCase() != L"cd "))
+          (Command.substr(1, 3).LowerCase() != L"cd "))
       {
         Result = ExecuteCommand(Command);
       }
@@ -1545,10 +1545,10 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
     wstring Message;
 
     Message = LocalLabel + MinimizeName(LocalDirectory,
-      ProgressWidth - LocalLabel.Length(), false);
-    Message += wstring::StringOfChar(' ', ProgressWidth - Message.Length()) + "\n";
+      ProgressWidth - LocalLabel.size(), false);
+    Message += wstring::StringOfChar(' ', ProgressWidth - Message.size()) + "\n";
     Message += RemoteLabel + MinimizeName(RemoteDirectory,
-      ProgressWidth - RemoteLabel.Length(), true) + "\n";
+      ProgressWidth - RemoteLabel.size(), true) + "\n";
     Message += StartTimeLabel + FSynchronizationStart.TimeString() + "\n";
     Message += TimeElapsedLabel +
       FormatDateTimeSpan(Configuration->TimeFormat, Now() - FSynchronizationStart) + "\n";
@@ -1848,7 +1848,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(wstring Token, bool Separate)
 {
   if (!Token.empty())
   {
-    if (Token.Pos(" ") > 0)
+    if (Token.find_first_of(" ") > 0)
     {
       Token = FORMAT("\"%s\"", (Token));
     }
@@ -2224,13 +2224,13 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
             wstring RemotePath = UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory());
             wstring FullPrevPath = UnixIncludeTrailingBackslash(PrevPath);
             wstring ALocalPath;
-            if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath)
+            if (RemotePath.substr(1, FullPrevPath.size()) == FullPrevPath)
             {
               ALocalPath = IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
-                FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
-                  RemotePath.Length() - FullPrevPath.Length()));
+                FromUnixPath(RemotePath.substr(FullPrevPath.size() + 1,
+                  RemotePath.size() - FullPrevPath.size()));
             }
-            else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath)
+            else if (FullPrevPath.substr(1, RemotePath.size()) == RemotePath)
             {
               wstring NewLocalPath;
               ALocalPath = ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
@@ -2382,7 +2382,7 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
       while (Index < StoredSessions->GetCount())
       {
         TSessionData * Data = StoredSessions->GetSessions()[Index];
-        if (Data->Name.SubString(1, Folder.Length()) == Folder)
+        if (Data->Name.substr(1, Folder.size()) == Folder)
         {
           ProcessSession(Data, Param);
           if (StoredSessions->GetSessions()[Index] != Data)
@@ -3030,7 +3030,7 @@ void TWinSCPFileSystem::LogAuthentication(
       }
       AuthenticationLogLines->Strings[0] =
         AuthenticationLogLines->Strings[0] +
-          wstring::StringOfChar(' ', Width - AuthenticationLogLines->Strings[0].Length());
+          wstring::StringOfChar(' ', Width - AuthenticationLogLines->Strings[0].size());
       Message = AnsiReplaceStr(AuthenticationLogLines->Text, "\r", "");
       Count = AuthenticationLogLines->GetCount();
     }
@@ -3367,13 +3367,13 @@ void TWinSCPFileSystem::ShowOperationProgress(
       FileName = ExtractFileName(FileName);
     }
     Message1 = ProgressFileLabel + MinimizeName(FileName,
-      ProgressWidth - ProgressFileLabel.Length(), ProgressData.Side == osRemote) + "\n";
+      ProgressWidth - ProgressFileLabel.size(), ProgressData.Side == osRemote) + "\n";
     // for downloads to temporary directory,
     // do not show target directory
     if (TransferOperation && !((ProgressData.Side == osRemote) && ProgressData.Temp))
     {
       Message1 += TargetDirLabel + MinimizeName(ProgressData.Directory,
-        ProgressWidth - TargetDirLabel.Length(), ProgressData.Side == osLocal) + "\n";
+        ProgressWidth - TargetDirLabel.size(), ProgressData.Side == osLocal) + "\n";
     }
     ProgressBar1 = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + "\n";
     if (TransferOperation)
@@ -3384,7 +3384,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
       Value = FormatDateTimeSpan(Configuration->TimeFormat, ProgressData.TimeElapsed());
       StatusLine = TimeElapsedLabel +
-        wstring::StringOfChar(' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.Length() - Value.Length()) +
+        wstring::StringOfChar(' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.size() - Value.size()) +
         Value + "  ";
 
       wstring LabelText;
@@ -3399,19 +3399,19 @@ void TWinSCPFileSystem::ShowOperationProgress(
         LabelText = StartTimeLabel;
       }
       StatusLine = StatusLine + LabelText +
-        wstring::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
-        LabelText.Length() - Value.Length()) +
+        wstring::StringOfChar(' ', ProgressWidth - StatusLine.size() -
+        LabelText.size() - Value.size()) +
         Value;
       Message2 += StatusLine + "\n";
 
       Value = FormatBytes(ProgressData.TotalTransfered);
       StatusLine = BytesTransferedLabel +
-        wstring::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferedLabel.Length() - Value.Length()) +
+        wstring::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferedLabel.size() - Value.size()) +
         Value + "  ";
       Value = FORMAT("%s/s", (FormatBytes(ProgressData.CPS())));
       StatusLine = StatusLine + CPSLabel +
-        wstring::StringOfChar(' ', ProgressWidth - StatusLine.Length() -
-        CPSLabel.Length() - Value.Length()) +
+        wstring::StringOfChar(' ', ProgressWidth - StatusLine.size() -
+        CPSLabel.size() - Value.size()) +
         Value;
       Message2 += StatusLine + "\n";
       ProgressBar2 += ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + "\n";
@@ -3438,7 +3438,7 @@ wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
   wstring Result;
   // OEM character set (Ansi does not have the ascii art we need)
   Result = wstring::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
-  Result += wstring::StringOfChar('\xB0', (Width - 5) - Result.Length());
+  Result += wstring::StringOfChar('\xB0', (Width - 5) - Result.size());
   Result += FORMAT("%4d%%", (Percentage));
   return Result;
 }

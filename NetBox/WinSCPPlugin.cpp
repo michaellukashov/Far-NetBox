@@ -257,14 +257,14 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
         wstring Directory;
-        wstring Name = (char*)Item;
+        wstring Name = (wchar_t *)Item;
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          int P = Name.Pos("\1");
+          int P = Name.find_first_of(L"\1");
           if (P)
           {
-            Directory = Name.SubString(P + 1, Name.Length() - P);
-            Name.SetLength(P - 1);
+            Directory = Name.substr(P + 1, Name.size() - P);
+            Name.resize(P - 1);
           }
 
           TWinSCPFileSystem * PanelSystem;

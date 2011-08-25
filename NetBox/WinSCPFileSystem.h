@@ -94,7 +94,7 @@ protected:
     wstring & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
     int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     wstring & ShortcutData);
-  virtual bool GetFindDataEx(TList * PanelItems, int OpMode);
+  virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode);
   virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
   virtual bool SetDirectoryEx(const wstring Dir, int OpMode);
   virtual int MakeDirectoryEx(wstring & Name, int OpMode);

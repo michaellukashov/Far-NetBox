@@ -62,7 +62,7 @@ void TFarConfiguration::Saved()
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #define LASTELEM(ELEM) \
-  ELEM.SubString(ELEM.LastDelimiter(".>")+1, ELEM.Length() - ELEM.LastDelimiter(".>"))
+  ELEM.substr(ELEM.LastDelimiter(".>")+1, ELEM.size() - ELEM.LastDelimiter(".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
