@@ -108,7 +108,6 @@ private:
   std::wstring FFullFileName;
   int FIsHidden;
   std::wstring FTypeName;
-  void SetModification(const TDateTime & value);
   void LoadTypeInfo();
 
 protected:
@@ -147,7 +146,7 @@ public:
   int GetINodeBlocks() { return FINodeBlocks; };
   // __property TDateTime Modification = { read = FModification, write = SetModification };
   TDateTime GetModification() { return FModification; }
-  void SetModification(TDateTime value) { FModification = value; }
+  void SetModification(const TDateTime & value);
   // __property std::wstring ModificationStr = { read = GetModificationStr };
   std::wstring GetModificationStr();
   // __property std::wstring UserModificationStr = { read = GetUserModificationStr };
@@ -237,7 +236,7 @@ public:
   std::wstring GetDirectory() { return FDirectory; }
   virtual void SetDirectory(std::wstring value);
   // __property TRemoteFile * Files[int Index] = { read = GetFiles };
-  TRemoteFile *GetFiles(int Index);
+  TRemoteFile *GetFile(int Index);
   // __property std::wstring FullDirectory  = { read=GetFullDirectory };
   std::wstring GetFullDirectory();
   // __property bool IsRoot = { read = GetIsRoot };

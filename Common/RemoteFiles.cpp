@@ -1354,18 +1354,18 @@ TRemoteFileList::TRemoteFileList():
 void TRemoteFileList::AddFile(TRemoteFile * File)
 {
   Add(File);
-  File->Directory = this;
+  File->SetDirectory(this);
 }
 //---------------------------------------------------------------------------
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
 {
   Copy->Clear();
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
-    TRemoteFile * File = Files[Index];
+    TRemoteFile * File = GetFile(Index);
     Copy->AddFile(File->Duplicate(false));
   }
-  Copy->FDirectory = Directory;
+  Copy->FDirectory = GetDirectory();
   Copy->FTimestamp = FTimestamp;
 }
 //---------------------------------------------------------------------------

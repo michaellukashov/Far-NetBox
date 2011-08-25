@@ -134,6 +134,9 @@ public:
     {
         return -1;
     }
+    void Clear()
+    {
+    }
     bool GetOwnsObjects() { return FOwnsObjects; }
     void SetOwnsObjects(bool value) { FOwnsObjects = value; }
 
