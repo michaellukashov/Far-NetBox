@@ -49,7 +49,7 @@ public:
   virtual void WriteBool(const std::wstring Name, bool Value) = 0;
   virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value) = 0;
   virtual void WriteInteger(const std::wstring Name, int Value) = 0;
-  virtual void WriteInt64(std::wstring Name, __int64 Value) = 0;
+  virtual void WriteInt64(const std::wstring Name, __int64 Value) = 0;
   virtual void WriteDateTime(const std::wstring Name, TDateTime Value) = 0;
   virtual void WriteFloat(const std::wstring Name, double Value) = 0;
   virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, int Size) = 0;
