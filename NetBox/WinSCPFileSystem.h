@@ -297,7 +297,7 @@ private:
     TOperationSide Side, bool DragDrop, const wstring & FileName, bool Success,
     bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
-  TStrings * CreateFileList(TList * PanelItems,
+  TStrings * CreateFileList(TObjectList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, wstring Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = NULL);
   TStrings * CreateSelectedFileList(TOperationSide Side,

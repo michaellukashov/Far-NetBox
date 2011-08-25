@@ -1418,9 +1418,9 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
     {
       CreateFileList(GetPanelInfo()->GetItems(), osRemote, true, L"", true, Options.Filter);
     }
-    if (AnotherPanelInfo->GetSelectedCount() > 0)
+    if (GetAnotherPanelInfo()->GetSelectedCount() > 0)
     {
-      CreateFileList(GetAnotherPanelInfo()->GetItems*(, osLocal, true, L"", true, Options.Filter);
+      CreateFileList(GetAnotherPanelInfo()->GetItems(), osLocal, true, L"", true, Options.Filter);
     }
     Options.Filter->Sort();
   }
@@ -1434,17 +1434,17 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   wstring LocalDirectory = AnotherPanel->GetCurrentDirectory();
   wstring RemoteDirectory = FTerminal->GetCurrentDirectory();
 
-  bool SaveMode = !(GUIConfiguration->SynchronizeModeAuto < 0);
+  bool SaveMode = !(GUIConfiguration->GetSynchronizeModeAuto() < 0);
   TTerminal::TSynchronizeMode Mode =
-    (SaveMode ? (TTerminal::TSynchronizeMode)GUIConfiguration->SynchronizeModeAuto :
+    (SaveMode ? (TTerminal::TSynchronizeMode)GUIConfiguration->GetSynchronizeModeAuto() :
       (Source ? TTerminal::smLocal : TTerminal::smRemote));
-  int Params = GUIConfiguration->SynchronizeParams;
+  int Params = GUIConfiguration->GetSynchronizeParams();
   bool SaveSettings = false;
 
-  TCopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
+  TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
   TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   int Options =
-    FLAGMASK(!FTerminal->IsCapable[fcTimestampChanging], fsoDisableTimestamp) |
+    FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
     FLAGMASK(SynchronizeAllowSelectedOnly(), fsoAllowSelectedOnly);
   if (FullSynchronizeDialog(Mode, Params, LocalDirectory, RemoteDirectory,
         &CopyParam, SaveSettings, SaveMode, Options, CopyParamAttrs))
@@ -1454,10 +1454,10 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
 
     if (SaveSettings)
     {
-      GUIConfiguration->SynchronizeParams = Params;
+      GUIConfiguration->SetSynchronizeParams(Params);
       if (SaveMode)
       {
-        GUIConfiguration->SynchronizeModeAuto = Mode;
+        GUIConfiguration->SetSynchronizeModeAuto(Mode);
       }
     }
 
@@ -1472,7 +1472,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       {
         Checklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
           Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-          TerminalSynchronizeDirectory, &SynchronizeOptions);
+          (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory, &SynchronizeOptions);
       }
       catch(...)
       {
@@ -1501,23 +1501,23 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
         {
           FTerminal->SynchronizeApply(Checklist, LocalDirectory, RemoteDirectory,
             &CopyParam, Params | TTerminal::spNoConfirmation,
-            TerminalSynchronizeDirectory);
+            (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory);
         }
         catch(...)
         {
+        }
           FPlugin->ClearConsoleTitle();
           FPlugin->RestoreScreen(FSynchronizationSaveScreenHandle);
-        }
       }
     }
     catch(...)
     {
+    }
       delete Checklist;
       if (UpdatePanel())
       {
         RedrawPanel();
       }
-    }
   }
 }
 //---------------------------------------------------------------------------
@@ -2857,7 +2857,7 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings * TWinSCPFileSystem::CreateFileList(TList * PanelItems,
+TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TOperationSide Side, bool SelectedOnly, wstring Directory, bool FileNameOnly,
   TStrings * AFileList)
 {
