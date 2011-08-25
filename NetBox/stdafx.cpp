@@ -374,3 +374,10 @@ std::wstring ExcludeTrailingBackslash(const std::wstring str)
     // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
     return result;
 }
+
+std::wstring StringOfChar(const whacr_t c, size_t len);
+{
+    // FIXME
+    std::wstring result;
+    return result;
+}
