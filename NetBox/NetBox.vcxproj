@@ -88,7 +88,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -107,7 +107,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -156,7 +156,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
