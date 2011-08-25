@@ -150,15 +150,15 @@ CSFTP::~CSFTP()
 }
 
 
-bool CSFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
+bool CSFTP::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
     assert(abortEvent);
     assert(m_Socket == INVALID_SOCKET);
 
     m_AbortEvent = abortEvent;
 
-    wstring hostName;
-    wstring path;
+    std::wstring hostName;
+    std::wstring path;
     unsigned short port = 0;
     ParseURL(m_Session.GetURL(), NULL, &hostName, &port, &path, NULL, NULL, NULL);
 
@@ -257,7 +257,7 @@ void CSFTP::Close()
 }
 
 
-bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     assert(type == ItemDirectory);
     assert(m_SFTPSession);
@@ -273,11 +273,11 @@ bool CSFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExis
 }
 
 
-bool CSFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CSFTP::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     assert(m_SFTPSession);
 
-    const string sftpPath = LocalToSftpCP(path);
+    const std::string sftpPath = LocalToSftpCP(path);
     const bool retStatus = (libssh2_sftp_mkdir_ex(m_SFTPSession, sftpPath.c_str(), static_cast<unsigned int>(sftpPath.length()), LIBSSH2_SFTP_S_IRWXU | LIBSSH2_SFTP_S_IRGRP | LIBSSH2_SFTP_S_IXGRP | LIBSSH2_SFTP_S_IROTH | LIBSSH2_SFTP_S_IXOTH) == LIBSSH2_ERROR_NONE);
     if (!retStatus)
     {
@@ -287,7 +287,7 @@ bool CSFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
@@ -307,13 +307,13 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
         {
             Modified.dwLowDateTime = Modified.dwHighDateTime = LastAccess.dwLowDateTime = LastAccess.dwHighDateTime =0;
         }
-        wstring             Name;
+        std::wstring             Name;
         DWORD               Attributes;
         FILETIME            Modified;
         FILETIME            LastAccess;
         unsigned __int64    Size;
     };
-    vector<SFTPItem> sftpItems;
+    std::vector<SFTPItem> sftpItems;
 
     //Read directory content
     char fileName[512];
@@ -383,7 +383,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 }
 
 
-bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
+bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo)
 {
     assert(localPath && *localPath);
     assert(m_SFTPSession);
@@ -410,7 +410,7 @@ bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
         m_ProgressPercent = 0;
     }
 
-    vector<char> buff(4096);
+    std::vector<char> buff(4096);
     ssize_t rc;
     while ((rc = libssh2_sftp_read(sftpFile, &buff[0], buff.size())) > 0)
     {
@@ -438,7 +438,7 @@ bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 }
 
 
-bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo)
+bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo)
 {
     assert(localPath && *localPath);
     assert(m_SFTPSession);
@@ -468,7 +468,7 @@ bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
         m_ProgressPercent = 0;
     }
 
-    vector<char> buff(4096);
+    std::vector<char> buff(4096);
     size_t readSize = buff.size();
     while (readSize)
     {
@@ -506,12 +506,12 @@ bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
 }
 
 
-bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
+bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
 {
     assert(m_SFTPSession);
 
-    const string srcSftpPath = LocalToSftpCP(srcPath);
-    const string dstSftpPath = LocalToSftpCP(dstPath);
+    const std::string srcSftpPath = LocalToSftpCP(srcPath);
+    const std::string dstSftpPath = LocalToSftpCP(dstPath);
 
     const bool retStatus = (libssh2_sftp_rename_ex(m_SFTPSession, srcSftpPath.c_str(),
                             static_cast<unsigned int>(srcSftpPath.length()), dstSftpPath.c_str(),
@@ -528,13 +528,13 @@ bool CSFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemTyp
 }
 
 
-bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
+bool CSFTP::Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo)
 {
     assert(m_SFTPSession);
 
     bool retStatus = false;
 
-    const string sftpPath = LocalToSftpCP(path);
+    const std::string sftpPath = LocalToSftpCP(path);
 
     if (type == ItemDirectory)
     {
@@ -553,12 +553,12 @@ bool CSFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
     return retStatus;
 }
 
-wstring CSFTP::GetURL()
+std::wstring CSFTP::GetURL()
 {
     return CProtocolBase<CSessionSFTP>::GetURL();
 }
 
-bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo)
+bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, std::wstring &errInfo)
 {
     assert(m_Socket == INVALID_SOCKET);
 
@@ -611,12 +611,12 @@ bool CSFTP::OpenSSHSession(const wchar_t *hostName, const unsigned short port, w
     }
 
     //Authenticate
-    const string userName = ::W2MB(m_Session.GetUserName(), CP_UTF8);
-    const string password = ::W2MB(m_Session.GetPassword(), CP_UTF8);
+    const std::string userName = ::W2MB(m_Session.GetUserName(), CP_UTF8);
+    const std::string password = ::W2MB(m_Session.GetPassword(), CP_UTF8);
     if (keyFileName)
     {
         //By key
-        const string keyPlaneFileName = ::W2MB(keyFileName);
+        const std::string keyPlaneFileName = ::W2MB(keyFileName);
         if (libssh2_userauth_publickey_fromfile_ex(m_SSHSession, userName.c_str(), static_cast<unsigned int>(userName.length()), NULL, keyPlaneFileName.c_str(), password.c_str()))
         {
             errInfo = FormatSSHLastErrorDescription();
@@ -655,11 +655,11 @@ void CSFTP::libssh2_trace_handler_func(LIBSSH2_SESSION *session,
     Log2(message);
 }
 
-wstring CSFTP::FormatSSHLastErrorDescription() const
+std::wstring CSFTP::FormatSSHLastErrorDescription() const
 {
     assert(m_SSHSession);
 
-    string errorMessage = "SSH session error (libssh2)\n";
+    std::string errorMessage = "SSH session error (libssh2)\n";
 
     char *sshErrMsg = NULL;
     const int errCode = libssh2_session_last_error(m_SSHSession, &sshErrMsg, NULL, 0);

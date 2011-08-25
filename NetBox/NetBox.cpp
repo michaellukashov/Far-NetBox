@@ -34,7 +34,7 @@
 #define MIN_FAR_VERMINOR 0
 #define MIN_FAR_BUILD    0
 
-vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
+std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 
 extern "C"
 {
@@ -51,7 +51,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
     m_Settings.Load();
     CLogger::Initialize(m_Settings.EnableLogging(), m_Settings.LoggingLevel(),
         m_Settings.LogToFile(), m_Settings.LogFileName());
-    wstring ver = PLUGIN_VERSION_WTXT;
+    std::wstring ver = PLUGIN_VERSION_WTXT;
     Log1(L"NetBox plugin version %s started.", ver.c_str());
 
     WSADATA wsaData;
@@ -91,7 +91,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
         pi->DiskMenuStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
     }
 
-    static wstring cmdPreffix;
+    static std::wstring cmdPreffix;
     cmdPreffix = m_Settings.CmdPrefix();
     if (m_Settings.AltPrefix())
     {
@@ -109,7 +109,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
 
 void WINAPI ExitFARW()
 {
-    for (vector<CPanel *>::const_iterator it = m_PanelInstances.begin(); it != m_PanelInstances.end(); ++it)
+    for (std::vector<CPanel *>::const_iterator it = m_PanelInstances.begin(); it != m_PanelInstances.end(); ++it)
     {
         delete *it;
     }
@@ -125,7 +125,7 @@ void WINAPI ClosePluginW(HANDLE plugin)
     assert(panelInstance);
     delete panelInstance;
 
-    vector<CPanel *>::iterator it = find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin);
+    std::vector<CPanel *>::iterator it = std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin);
     assert(it != m_PanelInstances.end());
     m_PanelInstances.erase(it);
 }
@@ -212,14 +212,14 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
 
 void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->GetOpenPluginInfo(pluginInfo);
 }
 
 int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"NetBox: SetDirectoryW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->ChangeDirectory(dir, opMode);
@@ -230,7 +230,7 @@ int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
     int move, const wchar_t **destPath, int opMode)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetFiles(panelItem, itemsNumber, destPath, move != 0, opMode);
@@ -240,7 +240,7 @@ int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
 
 int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNumber, int opMode)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"NetBox: GetFindDataW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetItemList(panelItem, itemsNumber, opMode);
@@ -250,35 +250,35 @@ int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNu
 
 void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->FreeItemList(panelItem, itemsNumber);
 }
 
 int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->MakeDirectory(name, opMode);
 }
 
 int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->DeleteFiles(panelItem, itemsNumber, opMode);
 }
 
 int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->PutFiles(srcPath, panelItem, itemsNumber, move != 0, opMode);
 }
 
 int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 {
-    assert(find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
+    assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->ProcessKey(key, controlState);
 }

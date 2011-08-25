@@ -1,5 +1,7 @@
 #pragma once
 
+#include <WinDef.h>
+
 #pragma warning(push, 1)
 #include <string>
 #include <vector>
@@ -142,10 +144,15 @@ class TList : public TObjectList
 public:
 };
 
+enum TDuplicatesEnum
+{
+    dupAccept
+};
+
 class TStrings : public TPersistent
 {
 public:
-    size_t Add(wstring value)
+    size_t Add(std::wstring value)
     {
         return -1;
     }
@@ -153,15 +160,21 @@ public:
     {
         return 0;
     }
-    wstring GetString(int Index)
+    std::wstring GetString(int Index)
     {
         return L"";
     }
-    wstring GetText()
+    std::wstring GetText()
     {
         return L"";
     }
-    void SetText(wstring S)
+    void SetText(std::wstring S)
+    {
+    }
+    void SetCommaText(std::wstring S)
+    {
+    }
+    void SetString(int Index, std::wstring S)
     {
     }
     void *GetObject(int Index)
@@ -171,7 +184,7 @@ public:
     void SetObject(int Index, TObject *obj)
     {
     }
-    void AddObject(wstring str, TObject *obj)
+    void AddObject(std::wstring str, TObject *obj)
     {
     }
 
@@ -187,23 +200,10 @@ public:
     virtual void PutObject(int Index, TObject *AObject)
     {
     }
-private:
-    TNotifyEvent FOnChange;
-};
-
-class TStringList : public TStrings
-{
-public:
-    virtual void Assign(TPersistent *Source)
-    {}
-    void Put(int Index, wstring value)
+    void SetDuplicates(TDuplicatesEnum value)
     {
     }
-    int GetUpdateCount()
-    {
-        return 0;
-    }
-    void Changed()
+    void Sort()
     {
     }
     size_t IndexOf(const wchar_t *value)
@@ -213,7 +213,23 @@ public:
     void Delete(size_t Index)
     {
     }
-    void SetString(int Index, wstring S)
+private:
+    TNotifyEvent FOnChange;
+};
+
+class TStringList : public TStrings
+{
+public:
+    virtual void Assign(TPersistent *Source)
+    {}
+    void Put(int Index, std::wstring value)
+    {
+    }
+    int GetUpdateCount()
+    {
+        return 0;
+    }
+    void Changed()
     {
     }
 	void SetCaseSensitive(bool value)
@@ -224,15 +240,23 @@ public:
 class TDateTime
 {
 public:
+    TDateTime()
+    {}
+    explicit TDateTime(double)
+    {}
     operator double()
     {
         return 0.0;
+    }
+    std::wstring TimeString() const
+    {
+        return std::wstring();
     }
 };
 
 static TDateTime Now()
 {
-    TDateTime result;
+    TDateTime result(0.0);
     return result;
 }
 

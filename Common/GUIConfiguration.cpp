@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
 #include <LanguagesDEPfix.hpp>
 #include "GUIConfiguration.h"
 #include "GUITools.h"
@@ -18,7 +16,7 @@ const ccCopyResults = ccUser << 2;
 const ccSet = 0x80000000;
 //---------------------------------------------------------------------------
 static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
-static const wstring AdditionaLanguagePrefix("XX");
+static const std::wstring AdditionaLanguagePrefix("XX");
 //---------------------------------------------------------------------------
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
@@ -144,8 +142,8 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-bool TCopyParamRule::Match(const wstring & Mask,
-  const wstring & Value, bool Path, bool Local) const
+bool TCopyParamRule::Match(const std::wstring & Mask,
+  const std::wstring & Value, bool Path, bool Local) const
 {
   bool Result;
   if (Mask.empty())
@@ -201,12 +199,12 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.empty();
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamRule::GetInfoStr(wstring Separator) const
+std::wstring TCopyParamRule::GetInfoStr(std::wstring Separator) const
 {
-  wstring Result;
+  std::wstring Result;
   #define ADD(FMT, ELEM) \
     if (!FData.ELEM.empty()) \
-      Result += (Result.empty() ? wstring() : Separator) + FMTLOAD(FMT, (FData.ELEM));
+      Result += (Result.empty() ? std::wstring() : Separator) + FMTLOAD(FMT, (FData.ELEM));
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
@@ -216,7 +214,7 @@ wstring TCopyParamRule::GetInfoStr(wstring Separator) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-wstring TCopyParamList::FInvalidChars("/\\[]");
+std::wstring TCopyParamList::FInvalidChars("/\\[]");
 //---------------------------------------------------------------------------
 TCopyParamList::TCopyParamList()
 {
@@ -253,7 +251,7 @@ void TCopyParamList::Modify()
   FModified = true;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::ValidateName(const wstring Name)
+void TCopyParamList::ValidateName(const std::wstring Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
@@ -297,7 +295,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::IndexOfName(const wstring Name) const
+int TCopyParamList::IndexOfName(const std::wstring Name) const
 {
   return FNames->IndexOf(Name);
 }
@@ -324,13 +322,13 @@ void TCopyParamList::Clear()
   FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Add(const wstring Name,
+void TCopyParamList::Add(const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(Count, Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Insert(int Index, const wstring Name,
+void TCopyParamList::Insert(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   assert(FNames->IndexOf(Name) < 0);
@@ -341,7 +339,7 @@ void TCopyParamList::Insert(int Index, const wstring Name,
   Modify();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Change(int Index, const wstring Name,
+void TCopyParamList::Change(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != Names[Index]) || !CompareItem(Index, CopyParam, Rule))
@@ -404,7 +402,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
 {
   for (int Index = 0; Index < ACount; Index++)
   {
-    wstring Name = IntToStr(Index);
+    std::wstring Name = IntToStr(Index);
     TCopyParamRule * Rule = NULL;
     TCopyParamType * CopyParam = new TCopyParamType();
     try
@@ -485,7 +483,7 @@ const TCopyParamType * TCopyParamList::GetCopyParam(int Index) const
   return reinterpret_cast<TCopyParamType *>(FCopyParams->Items[Index]);
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamList::GetName(int Index) const
+std::wstring TCopyParamList::GetName(int Index) const
 {
   return FNames->Strings[Index];
 }
@@ -555,7 +553,7 @@ void TGUIConfiguration::Default()
   FQueueTransfersLimit = 2;
   FQueueAutoPopup = true;
   FQueueRememberPassword = false;
-  wstring ProgramsFolder;
+  std::wstring ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
   FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + "PuTTY\\putty.exe";
   FDefaultPuttyPath = FormatCommand("%PROGRAMFILES%\\PuTTY\\putty.exe", "");
@@ -607,11 +605,11 @@ void TGUIConfiguration::DefaultLocalized()
   }
 }
 //---------------------------------------------------------------------------
-wstring TGUIConfiguration::PropertyToKey(const wstring Property)
+std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 {
   // no longer useful
   int P = Property.LastDelimiter(".>");
-  return Property.SubString(P + 1, Property.Length() - P);
+  return Property.substr(P + 1, Property.size() - P);
 }
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
@@ -726,7 +724,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // yet in the string). Note that FileExists may display error dialog, but as
   // it should be called only for custom users path, let's expect that the user
   // can take care of it.
-  if ((FPuttyPath.SubString(1, 1) != "\"") &&
+  if ((FPuttyPath.substr(1, 1) != "\"") &&
       (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
        FileExists(ExpandEnvironmentVariables(FPuttyPath))))
   {
@@ -753,15 +751,15 @@ void TGUIConfiguration::Saved()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
-  wstring * FileName)
+  std::wstring * FileName)
 {
-  wstring LibraryFileName;
+  std::wstring LibraryFileName;
   HANDLE NewInstance = 0;
   bool Internal = (ALocale == InternalLocale());
   if (!Internal)
   {
-    wstring Module;
-    wstring LocaleName;
+    std::wstring Module;
+    std::wstring LocaleName;
 
     Module = ModuleFileName();
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
@@ -777,13 +775,13 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         char(ALocale & ~AdditionaLanguageMask);
     }
 
-    Module = ChangeFileExt(Module, wstring(".") + LocaleName);
+    Module = ChangeFileExt(Module, std::wstring(".") + LocaleName);
     // Look for a potential language/country translation
     NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
     if (!NewInstance)
     {
       // Finally look for a language only translation
-      Module.SetLength(Module.Length() - 1);
+      Module.SetLength(Module.size() - 1);
       NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
       if (NewInstance)
       {
@@ -920,7 +918,7 @@ void TGUIConfiguration::SetResourceModule(HANDLE Instance)
 //---------------------------------------------------------------------------
 TStrings * TGUIConfiguration::GetLocales()
 {
-  wstring LocalesExts;
+  std::wstring LocalesExts;
   TStringList * Exts = new TStringList();
   try
   {
@@ -935,14 +933,14 @@ TStrings * TGUIConfiguration::GetLocales()
       FindAttrs, SearchRec) == 0);
     try
     {
-      wstring Ext;
+      std::wstring Ext;
       while (Found)
       {
         Ext = ExtractFileExt(SearchRec.Name).UpperCase();
-        if ((Ext.Length() >= 3) && (Ext != ".EXE") && (Ext != ".COM") &&
+        if ((Ext.size() >= 3) && (Ext != ".EXE") && (Ext != ".COM") &&
             (Ext != ".DLL") && (Ext != ".INI"))
         {
-          Ext = Ext.SubString(2, Ext.Length() - 1);
+          Ext = Ext.substr(2, Ext.size() - 1);
           LocalesExts += Ext;
           Exts->Add(Ext);
         }
@@ -974,7 +972,7 @@ TStrings * TGUIConfiguration::GetLocales()
           Ext = Exts->IndexOf(Langs->Ext[Index]);
           if (Ext < 0)
           {
-            Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
+            Ext = Exts->IndexOf(Langs->Ext[Index].substr(1, 2));
             if (Ext >= 0)
             {
               Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
@@ -997,7 +995,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
         if (Locale)
         {
-          wstring Name;
+          std::wstring Name;
           GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
             LocaleStr, sizeof(LocaleStr));
           Name = LocaleStr;
@@ -1014,11 +1012,11 @@ TStrings * TGUIConfiguration::GetLocales()
       for (int Index = 0; Index < Exts->Count; Index++)
       {
         if ((Exts->Objects[Index] == NULL) &&
-            (Exts->Strings[Index].Length() == 3) &&
-            SameText(Exts->Strings[Index].SubString(1, 2), AdditionaLanguagePrefix))
+            (Exts->Strings[Index].size() == 3) &&
+            SameText(Exts->Strings[Index].substr(1, 2), AdditionaLanguagePrefix))
         {
-          wstring LangName = GetFileFileInfoString("LangName",
-            ChangeFileExt(ModuleFileName(), wstring(".") + Exts->Strings[Index]));
+          std::wstring LangName = GetFileFileInfoString("LangName",
+            ChangeFileExt(ModuleFileName(), std::wstring(".") + Exts->Strings[Index]));
           if (!LangName.empty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<TObject*>(
@@ -1078,7 +1076,7 @@ int TGUIConfiguration::GetCopyParamIndex()
 //---------------------------------------------------------------------------
 void TGUIConfiguration::SetCopyParamIndex(int value)
 {
-  wstring Name;
+  std::wstring Name;
   if (value < 0)
   {
     Name = "";
@@ -1090,7 +1088,7 @@ void TGUIConfiguration::SetCopyParamIndex(int value)
   CopyParamCurrent = Name;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamCurrent(wstring value)
+void TGUIConfiguration::SetCopyParamCurrent(std::wstring value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1100,7 +1098,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
   return CopyParamPreset[CopyParamCurrent];
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(wstring Name)
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(std::wstring Name)
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.empty())

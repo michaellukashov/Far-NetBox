@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
 #pragma once
 
+#include <WinBase.h>
+
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(NULL, "")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
@@ -21,60 +23,60 @@
 //---------------------------------------------------------------------------
 extern const char EngShortMonthNames[12][4];
 //---------------------------------------------------------------------------
-wstring ReplaceChar(wstring Str, char A, char B);
-wstring DeleteChar(wstring Str, char C);
-void PackStr(wstring &Str);
-wstring MakeValidFileName(wstring FileName);
-wstring RootKeyToStr(HKEY RootKey);
-wstring BooleanToStr(bool B);
-wstring BooleanToEngStr(bool B);
-wstring DefaultStr(const wstring & Str, const wstring & Default);
-wstring CutToChar(wstring &Str, char Ch, bool Trim);
-wstring CopyToChars(const wstring & Str, int & From, wstring Chs, bool Trim,
+std::wstring ReplaceChar(std::wstring Str, char A, char B);
+std::wstring DeleteChar(std::wstring Str, char C);
+void PackStr(std::wstring &Str);
+std::wstring MakeValidFileName(std::wstring FileName);
+std::wstring RootKeyToStr(HKEY RootKey);
+std::wstring BooleanToStr(bool B);
+std::wstring BooleanToEngStr(bool B);
+std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default);
+std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim);
+std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs, bool Trim,
   char * Delimiter = NULL);
-wstring DelimitStr(wstring Str, wstring Chars);
-wstring ShellDelimitStr(wstring Str, char Quote);
-void OemToAnsi(wstring & Str);
-void AnsiToOem(wstring & Str);
-wstring ExceptionLogString(exception *E);
-bool IsNumber(const wstring Str);
-wstring SystemTemporaryDirectory();
-wstring GetShellFolderPath(int CSIdl);
-wstring StripPathQuotes(const wstring Path);
-wstring AddPathQuotes(wstring Path);
-void SplitCommand(wstring Command, wstring &Program,
-  wstring & Params, wstring & Dir);
-wstring ExtractProgram(wstring Command);
-wstring FormatCommand(wstring Program, wstring Params);
-wstring ExpandFileNameCommand(const wstring Command,
-  const wstring FileName);
-void ReformatFileNameCommand(wstring & Command);
-wstring EscapePuttyCommandParam(wstring Param);
-wstring ExpandEnvironmentVariables(const wstring & Str);
-bool ComparePaths(const wstring & Path1, const wstring & Path2);
-bool CompareFileName(const wstring & Path1, const wstring & Path2);
-bool IsReservedName(wstring FileName);
-wstring DisplayableStr(const wstring Str);
-wstring CharToHex(char Ch, bool UpperCase = true);
-wstring StrToHex(const wstring Str, bool UpperCase = true, char Separator = '\0');
-wstring HexToStr(const wstring Hex);
-unsigned int HexToInt(const wstring Hex, int MinChars = 0);
-char HexToChar(const wstring Hex, int MinChars = 0);
-wstring DecodeUrlChars(wstring S);
-wstring EncodeUrlChars(wstring S, wstring Ignore = L"");
-wstring EncodeUrlString(wstring S);
-bool RecursiveDeleteFile(const wstring FileName, bool ToRecycleBin);
+std::wstring DelimitStr(std::wstring Str, std::wstring Chars);
+std::wstring ShellDelimitStr(std::wstring Str, char Quote);
+void OemToAnsi(std::wstring & Str);
+void AnsiToOem(std::wstring & Str);
+std::wstring ExceptionLogString(exception *E);
+bool IsNumber(const std::wstring Str);
+std::wstring SystemTemporaryDirectory();
+std::wstring GetShellFolderPath(int CSIdl);
+std::wstring StripPathQuotes(const std::wstring Path);
+std::wstring AddPathQuotes(std::wstring Path);
+void SplitCommand(std::wstring Command, std::wstring &Program,
+  std::wstring & Params, std::wstring & Dir);
+std::wstring ExtractProgram(std::wstring Command);
+std::wstring FormatCommand(std::wstring Program, std::wstring Params);
+std::wstring ExpandFileNameCommand(const std::wstring Command,
+  const std::wstring FileName);
+void ReformatFileNameCommand(std::wstring & Command);
+std::wstring EscapePuttyCommandParam(std::wstring Param);
+std::wstring ExpandEnvironmentVariables(const std::wstring & Str);
+bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2);
+bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2);
+bool IsReservedName(std::wstring FileName);
+std::wstring DisplayableStr(const std::wstring Str);
+std::wstring CharToHex(char Ch, bool UpperCase = true);
+std::wstring StrToHex(const std::wstring Str, bool UpperCase = true, char Separator = '\0');
+std::wstring HexToStr(const std::wstring Hex);
+unsigned int HexToInt(const std::wstring Hex, int MinChars = 0);
+char HexToChar(const std::wstring Hex, int MinChars = 0);
+std::wstring DecodeUrlChars(std::wstring S);
+std::wstring EncodeUrlChars(std::wstring S, std::wstring Ignore = L"");
+std::wstring EncodeUrlString(std::wstring S);
+bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin);
 int CancelAnswer(int Answers);
 int AbortAnswer(int Answers);
 int ContinueAnswer(int Answers);
-static wstring LoadStr(int Ident, unsigned int MaxLength = 0)
+static std::wstring LoadStr(int Ident, unsigned int MaxLength = 0)
 {
     return L"";
 }
-wstring LoadStrPart(int Ident, int Part);
-wstring EscapeHotkey(const wstring & Caption);
-bool CutToken(wstring & Str, wstring & Token);
-void AddToList(wstring & List, const wstring & Value, char Delimiter);
+std::wstring LoadStrPart(int Ident, int Part);
+std::wstring EscapeHotkey(const std::wstring & Caption);
+bool CutToken(std::wstring & Str, std::wstring & Token);
+void AddToList(std::wstring & List, const std::wstring & Value, char Delimiter);
 bool Is2000();
 bool IsWin7();
 bool IsExactly2008R2();
@@ -86,16 +88,16 @@ __int64 Round(double Number);
     int Time;
     __int64 Size;
     int Attr;
-    wstring Name;
+    std::wstring Name;
     int ExcludeAttr;   
     HANDLE FindHandle;
     TWin32FindData FindData;
 }; */
 //---------------------------------------------------------------------------
 typedef void (* TProcessLocalFileEvent)
-  (const wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
-bool FileSearchRec(const wstring FileName, WIN32_FIND_DATA &Rec);
-void ProcessLocalDirectory(wstring DirName,
+  (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
+bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec);
+void ProcessLocalDirectory(std::wstring DirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
 //---------------------------------------------------------------------------
 enum TDSTMode
@@ -117,7 +119,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
 TDateTime ConvertTimestampToUTC(TDateTime DateTime);
 __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
-wstring FixedLenDateTimeFormat(const wstring & Format);
+std::wstring FixedLenDateTimeFormat(const std::wstring & Format);
 int CompareFileTime(TDateTime T1, TDateTime T2);
 //---------------------------------------------------------------------------
 struct TMethod
@@ -211,5 +213,5 @@ public:
   bool GetTerminated() { return true; }
 };
 //---------------------------------------------------------------------------
-wstring FORMAT(const wchar_t *fmt, ...);
+std::wstring FORMAT(const wchar_t *fmt, ...);
 //---------------------------------------------------------------------------

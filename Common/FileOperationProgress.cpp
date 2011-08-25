@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "Common.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -82,7 +79,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int ACount, bool ATemp,
-  const wstring ADirectory, unsigned long ACPSLimit)
+  const std::wstring ADirectory, unsigned long ACPSLimit)
 {
   Clear();
   Operation = AOperation;
@@ -177,7 +174,7 @@ void TFileOperationProgressType::DoProgress()
   FOnProgress(*this, Cancel);
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::Finish(wstring FileName,
+void TFileOperationProgressType::Finish(std::wstring FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
@@ -189,7 +186,7 @@ void TFileOperationProgressType::Finish(wstring FileName,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetFile(wstring AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(std::wstring AFileName, bool AFileInProgress)
 {
   FileName = AFileName;
   FileInProgress = AFileInProgress;

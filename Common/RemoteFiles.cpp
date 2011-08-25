@@ -1,24 +1,21 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+// #include <SysUtils.hpp>
+#include "stdafx.h"
 
 #include "RemoteFiles.h"
-
-#include <SysUtils.hpp>
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
-/* TODO 1 : Path class instead of wstring (handle relativity...) */
+/* TODO 1 : Path class instead of std::wstring (handle relativity...) */
 //---------------------------------------------------------------------------
-wstring UnixIncludeTrailingBackslash(const wstring Path)
+std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 {
   // it used to return "/" when input path was empty
-  if (!Path.empty() && !Path.IsDelimiter("/", Path.Length()))
+  if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size()))
   {
-    return Path + "/";
+    return Path + L"/";
   }
   else
   {
@@ -27,54 +24,54 @@ wstring UnixIncludeTrailingBackslash(const wstring Path)
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
-wstring UnixExcludeTrailingBackslash(const wstring Path)
+std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
 {
-  if ((Path.Length() > 1) && Path.IsDelimiter("/", Path.Length()))
-      return Path.SubString(1, Path.Length() - 1);
+  if ((Path.size() > 1) && ::IsDelimiter(Path, L"/", Path.size()))
+      return Path.substr(1, Path.size() - 1);
     else return Path;
 }
 //---------------------------------------------------------------------------
-bool UnixComparePaths(const wstring Path1, const wstring Path2)
+bool UnixComparePaths(const std::wstring Path1, const std::wstring Path2)
 {
   return (UnixIncludeTrailingBackslash(Path1) == UnixIncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
-bool UnixIsChildPath(wstring Parent, wstring Child)
+bool UnixIsChildPath(std::wstring Parent, std::wstring Child)
 {
   Parent = UnixIncludeTrailingBackslash(Parent);
   Child = UnixIncludeTrailingBackslash(Child);
-  return (Child.SubString(1, Parent.Length()) == Parent);
+  return (Child.substr(1, Parent.size()) == Parent);
 }
 //---------------------------------------------------------------------------
-wstring UnixExtractFileDir(const wstring Path)
+std::wstring UnixExtractFileDir(const std::wstring Path)
 {
-  int Pos = Path.LastDelimiter('/');
+  int Pos = ::LastDelimiter(Path, L'/');
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
-    return Path.SubString(1, Pos - 1);
+    return Path.substr(1, Pos - 1);
   }
   else
   {
-    return (Pos == 1) ? wstring("/") : wstring();
+    return (Pos == 1) ? std::wstring(L"/") : std::wstring();
   }
 }
 //---------------------------------------------------------------------------
 // must return trailing backslash
-wstring UnixExtractFilePath(const wstring Path)
+std::wstring UnixExtractFilePath(const std::wstring Path)
 {
-  int Pos = Path.LastDelimiter('/');
+  int Pos = ::LastDelimiter(Path, L'/');
   // it used to return Path when no slash was found
-  return (Pos > 0) ? Path.SubString(1, Pos) : wstring();
+  return (Pos > 0) ? Path.substr(1, Pos) : std::wstring();
 }
 //---------------------------------------------------------------------------
-wstring UnixExtractFileName(const wstring Path)
+std::wstring UnixExtractFileName(const std::wstring Path)
 {
-  int Pos = Path.LastDelimiter('/');
-  wstring Result;
+  int Pos = ::LastDelimiter(Path, L'/');
+  std::wstring Result;
   if (Pos > 0)
   {
-    Result = Path.SubString(Pos + 1, Path.Length() - Pos);
+    Result = Path.substr(Pos + 1, Path.size() - Pos);
   }
   else
   {
@@ -83,14 +80,14 @@ wstring UnixExtractFileName(const wstring Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-wstring UnixExtractFileExt(const wstring Path)
+std::wstring UnixExtractFileExt(const std::wstring Path)
 {
-  wstring FileName = UnixExtractFileName(Path);
-  int Pos = FileName.LastDelimiter(".");
-  return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : wstring();
+  std::wstring FileName = UnixExtractFileName(Path);
+  int Pos = ::LastDelimiter(FileName, '.');
+  return (Pos > 0) ? Path.substr(Pos, Path.size() - Pos + 1) : std::wstring();
 }
 //---------------------------------------------------------------------------
-wstring ExtractFileName(const wstring & Path, bool Unix)
+std::wstring ExtractFileName(const std::wstring & Path, bool Unix)
 {
   if (Unix)
   {
@@ -98,28 +95,28 @@ wstring ExtractFileName(const wstring & Path, bool Unix)
   }
   else
   {
-    return ExtractFileName(Path);
+    return ExtractFileName(Path, false);
   }
 }
 //---------------------------------------------------------------------------
-bool ExtractCommonPath(TStrings * Files, wstring & Path)
+bool ExtractCommonPath(TStrings * Files, std::wstring & Path)
 {
-  assert(Files->Count > 0);
+  assert(Files->GetCount() > 0);
 
-  Path = ExtractFilePath(Files->Strings[0]);
+  Path = ExtractFilePath(Files->GetString(0));
   bool Result = !Path.empty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->Count; Index++)
+    for (int Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.empty() &&
-        (Files->Strings[Index].SubString(1, Path.Length()) != Path))
+        (Files->GetString(Index).substr(1, Path.size()) != Path))
       {
-        int PrevLen = Path.Length();
+        int PrevLen = Path.size();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
-        if (Path.Length() == PrevLen)
+        if (Path.size() == PrevLen)
         {
-          Path = "";
+          Path = L"";
           Result = false;
         }
       }
@@ -129,24 +126,24 @@ bool ExtractCommonPath(TStrings * Files, wstring & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnixExtractCommonPath(TStrings * Files, wstring & Path)
+bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path)
 {
-  assert(Files->Count > 0);
+  assert(Files->GetCount() > 0);
 
-  Path = UnixExtractFilePath(Files->Strings[0]);
+  Path = UnixExtractFilePath(Files->GetString(0));
   bool Result = !Path.empty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->Count; Index++)
+    for (int Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.empty() &&
-        (Files->Strings[Index].SubString(1, Path.Length()) != Path))
+        (Files->GetString(Index).substr(1, Path.size()) != Path))
       {
-        int PrevLen = Path.Length();
+        int PrevLen = Path.size();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
-        if (Path.Length() == PrevLen)
+        if (Path.size() == PrevLen)
         {
-          Path = "";
+          Path = L"";
           Result = false;
         }
       }
@@ -156,20 +153,20 @@ bool UnixExtractCommonPath(TStrings * Files, wstring & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsUnixRootPath(const wstring Path)
+bool IsUnixRootPath(const std::wstring Path)
 {
   return Path.empty() || (Path == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool IsUnixHiddenFile(const wstring FileName)
+bool IsUnixHiddenFile(const std::wstring FileName)
 {
   return (FileName != ROOTDIRECTORY) && (FileName != PARENTDIRECTORY) &&
     !FileName.empty() && (FileName[1] == '.');
 }
 //---------------------------------------------------------------------------
-wstring AbsolutePath(const wstring & Base, const wstring & Path)
+std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
 {
-  wstring Result;
+  std::wstring Result;
   if (Path.empty())
   {
     Result = Base;
@@ -183,46 +180,46 @@ wstring AbsolutePath(const wstring & Base, const wstring & Path)
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
     int P;
-    while ((P = Result.Pos("/../")) > 0)
+    while ((P = Result.find_first_of(L"/../")) > 0)
     {
-      int P2 = Result.SubString(1, P-1).LastDelimiter("/");
+      int P2 = ::LastDelimiter(Result.substr(1, P-1), L'/');
       assert(P2 > 0);
-      Result.Delete(P2, P - P2 + 3);
+      Result.erase(P2, P - P2 + 3);
     }
-    while ((P = Result.Pos("/./")) > 0)
+    while ((P = Result.find_first_of(L"/./")) > 0)
     {
-      Result.Delete(P, 2);
+      Result.erase(P, 2);
     }
     Result = UnixExcludeTrailingBackslash(Result);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-wstring FromUnixPath(const wstring Path)
+std::wstring FromUnixPath(const std::wstring Path)
 {
-  return StringReplace(Path, "/", "\\", TReplaceFlags() << rfReplaceAll);
+  return StringReplace(Path, L"/", L"\\"); //, TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
-wstring ToUnixPath(const wstring Path)
+std::wstring ToUnixPath(const std::wstring Path)
 {
-  return StringReplace(Path, "\\", "/", TReplaceFlags() << rfReplaceAll);
+  return StringReplace(Path, L"\\", L"/"); // , TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
-static void CutFirstDirectory(wstring & S, bool Unix)
+static void CutFirstDirectory(std::wstring & S, bool Unix)
 {
   bool Root;
   int P;
-  wstring Sep = Unix ? "/" : "\\";
+  std::wstring Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
-    S = "";
+    S = L"";
   }
   else
   {
     if (S[1] == Sep[1])
     {
       Root = true;
-      S.Delete(1, 1);
+      S.erase(1, 1);
     }
     else
     {
@@ -230,17 +227,17 @@ static void CutFirstDirectory(wstring & S, bool Unix)
     }
     if (S[1] == '.')
     {
-      S.Delete(1, 4);
+      S.erase(1, 4);
     }
-    P = S.AnsiPos(Sep[1]);
+    P = ::AnsiPos(S, Sep[1]);
     if (P)
     {
-      S.Delete(1, P);
-      S = "..." + Sep + S;
+      S.erase(1, P);
+      S = L"..." + Sep + S;
     }
     else
     {
-      S = "";
+      S = L"";
     }
     if (Root)
     {
@@ -249,47 +246,47 @@ static void CutFirstDirectory(wstring & S, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-wstring MinimizeName(const wstring FileName, int MaxLen, bool Unix)
+std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
 {
-  wstring Drive, Dir, Name, Result;
-  wstring Sep = Unix ? "/" : "\\";
+  std::wstring Drive, Dir, Name, Result;
+  std::wstring Sep = Unix ? L"/" : L"\\";
 
   Result = FileName;
   if (Unix)
   {
-    int P = Result.LastDelimiter("/");
+    int P = ::LastDelimiter(Result, L'/');
     if (P)
     {
-      Dir = Result.SubString(1, P);
-      Name = Result.SubString(P + 1, Result.Length() - P);
+      Dir = Result.substr(1, P);
+      Name = Result.substr(P + 1, Result.size() - P);
     }
     else
     {
-      Dir = "";
+      Dir = L"";
       Name = Result;
     }
   }
   else
   {
     Dir = ExtractFilePath(Result);
-    Name = ExtractFileName(Result);
+    Name = ExtractFileName(Result, false);
 
-    if (Dir.Length() >= 2 && Dir[2] == ':')
+    if (Dir.size() >= 2 && Dir[2] == L':')
     {
-      Drive = Dir.SubString(1, 2);
-      Dir.Delete(1, 2);
+      Drive = Dir.substr(1, 2);
+      Dir.erase(1, 2);
     }
   }
 
-  while ((!Dir.empty() || !Drive.empty()) && (Result.Length() > MaxLen))
+  while ((!Dir.empty() || !Drive.empty()) && (Result.size() > MaxLen))
   {
-    if (Dir == Sep + "..." + Sep)
+    if (Dir == Sep + L"..." + Sep)
     {
-      Dir = "..." + Sep;
+      Dir = L"..." + Sep;
     }
-    else if (Dir == "")
+    else if (Dir == L"")
     {
-      Drive = "";
+      Drive = L"";
     }
     else
     {
@@ -298,26 +295,26 @@ wstring MinimizeName(const wstring FileName, int MaxLen, bool Unix)
     Result = Drive + Dir + Name;
   }
 
-  if (Result.Length() > MaxLen)
+  if (Result.size() > MaxLen)
   {
-    Result = Result.SubString(1, MaxLen);
+    Result = Result.substr(1, MaxLen);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-wstring MakeFileList(TStrings * FileList)
+std::wstring MakeFileList(TStrings * FileList)
 {
-  wstring Result;
-  for (int Index = 0; Index < FileList->Count; Index++)
+  std::wstring Result;
+  for (int Index = 0; Index < FileList->GetCount(); Index++)
   {
     if (!Result.empty())
     {
       Result += " ";
     }
 
-    wstring FileName = FileList->Strings[Index];
+    std::wstring FileName = FileList->Strings[Index];
     // currently this is used for local file only, so no delimiting is done
-    if (FileName.Pos(" ") > 0)
+    if (FileName.find_first_of(L" ") > 0)
     {
       Result += "\"" + FileName + "\"";
     }
@@ -372,7 +369,7 @@ TModificationFmt LessDateTimePrecision(
   return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
 //---------------------------------------------------------------------------
-wstring UserModificationStr(TDateTime DateTime,
+std::wstring UserModificationStr(TDateTime DateTime,
   TModificationFmt Precision)
 {
   switch (Precision)
@@ -389,15 +386,15 @@ wstring UserModificationStr(TDateTime DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(wstring FileName, unsigned long Attrs,
-  wstring * TypeName)
+int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
+  std::wstring * TypeName)
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
   TSHFileInfo SHFileInfo;
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == "..") ||
-      ((FileName.Length() == 2) && (FileName[2] == ':') &&
+      ((FileName.size() == 2) && (FileName[2] == ':') &&
        (tolower(FileName[1]) >= 'a') && (tolower(FileName[1]) <= 'z')) ||
       IsReservedName(FileName))
   {
@@ -408,7 +405,7 @@ int FakeFileImageIndex(wstring FileName, unsigned long Attrs,
   if (AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT))
   {
     static const size_t PartialExtLen = sizeof(PARTIAL_EXT) - 1;
-    FileName.SetLength(FileName.Length() - PartialExtLen);
+    FileName.SetLength(FileName.size() - PartialExtLen);
   }
 
   int Icon;
@@ -440,7 +437,7 @@ TRemoteToken::TRemoteToken() :
 {
 }
 //---------------------------------------------------------------------------
-TRemoteToken::TRemoteToken(const wstring & Name) :
+TRemoteToken::TRemoteToken(const std::wstring & Name) :
   FName(Name),
   FID(0),
   FIDValid(false)
@@ -542,7 +539,7 @@ bool TRemoteToken::GetIsSet() const
   return !FName.empty() || FIDValid;
 }
 //---------------------------------------------------------------------------
-wstring TRemoteToken::GetDisplayText() const
+std::wstring TRemoteToken::GetDisplayText() const
 {
   if (!FName.empty())
   {
@@ -554,11 +551,11 @@ wstring TRemoteToken::GetDisplayText() const
   }
   else
   {
-    return wstring();
+    return std::wstring();
   }
 }
 //---------------------------------------------------------------------------
-wstring TRemoteToken::GetLogText() const
+std::wstring TRemoteToken::GetLogText() const
 {
   return FORMAT("\"%s\" [%d]", (FName, int(FID)));
 }
@@ -640,7 +637,7 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
   }
 }
 //---------------------------------------------------------------------------
-bool TRemoteTokenList::Exists(const wstring & Name) const
+bool TRemoteTokenList::Exists(const std::wstring & Name) const
 {
   return (FNameMap.find(Name) != FNameMap.end());
 }
@@ -660,7 +657,7 @@ const TRemoteToken * TRemoteTokenList::Find(unsigned int ID) const
   return Result;
 }
 //---------------------------------------------------------------------------
-const TRemoteToken * TRemoteTokenList::Find(const wstring & Name) const
+const TRemoteToken * TRemoteTokenList::Find(const std::wstring & Name) const
 {
   TNameMap::const_iterator I = FNameMap.find(Name);
   const TRemoteToken * Result;
@@ -682,7 +679,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const char * Title)
     Terminal->LogEvent(FORMAT("Following %s found:", (Title)));
     for (size_t Index = 0; Index < FTokens.size(); Index++)
     {
-      Terminal->LogEvent(wstring("  ") + FTokens[Index].LogText);
+      Terminal->LogEvent(std::wstring("  ") + FTokens[Index].LogText);
     }
   }
   else
@@ -772,7 +769,7 @@ void TRemoteFile::LoadTypeInfo()
   if (IsDirectory) Attrs |= FILE_ATTRIBUTE_DIRECTORY;
   if (IsHidden) Attrs |= FILE_ATTRIBUTE_HIDDEN;
 
-  wstring DumbFileName = (IsSymLink && !LinkTo.empty() ? LinkTo : FileName);
+  std::wstring DumbFileName = (IsSymLink && !LinkTo.empty() ? LinkTo : FileName);
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
 }
@@ -786,7 +783,7 @@ int TRemoteFile::GetIconIndex() const
   return FIconIndex;
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFile::GetTypeName()
+std::wstring TRemoteFile::GetTypeName()
 {
   // check avilability of type info by icon index, because type name can be empty
   if (FIconIndex < 0)
@@ -864,7 +861,7 @@ void TRemoteFile::SetType(char AType)
 {
   FType = AType;
   // Allow even non-standard file types (e.g. 'S')
-  // if (!wstring("-DL").Pos((char)toupper(FType))) Abort();
+  // if (!std::wstring("-DL").Pos((char)toupper(FType))) Abort();
   FIsSymLink = ((char)toupper(FType) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
@@ -914,12 +911,12 @@ void TRemoteFile::SetModification(const TDateTime & value)
   }
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFile::GetUserModificationStr()
+std::wstring TRemoteFile::GetUserModificationStr()
 {
   return ::UserModificationStr(Modification, FModificationFmt);
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFile::GetModificationStr()
+std::wstring TRemoteFile::GetModificationStr()
 {
   Word Year, Month, Day, Hour, Min, Sec, MSec;
   Modification.DecodeDate(&Year, &Month, &Day);
@@ -946,7 +943,7 @@ wstring TRemoteFile::GetModificationStr()
   }
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFile::GetExtension()
+std::wstring TRemoteFile::GetExtension()
 {
   return UnixExtractFileExt(FFileName);
 }
@@ -956,30 +953,30 @@ void TRemoteFile::SetRights(TRights * value)
   FRights->Assign(value);
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFile::GetRightsStr()
+std::wstring TRemoteFile::GetRightsStr()
 {
-  return FRights->Unknown ? wstring() : FRights->Text;
+  return FRights->Unknown ? std::wstring() : FRights->Text;
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetListingStr(wstring value)
+void TRemoteFile::SetListingStr(std::wstring value)
 {
   // Value stored in 'value' can be used for error message
-  wstring Line = value;
+  std::wstring Line = value;
   FIconIndex = -1;
   try
   {
-    wstring Col;
+    std::wstring Col;
 
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
 
     Type = Line[1];
-    Line.Delete(1, 1);
+    Line.erase(1, 1);
 
     #define GETNCOL  \
       { if (Line.empty()) throw exception(""); \
         int P = Line.Pos(' '); \
-        if (P) { Col = Line.SubString(1, P-1); Line.Delete(1, P); } \
+        if (P) { Col = Line.substr(1, P-1); Line.erase(1, P); } \
           else { Col = Line; Line = ""; } \
       }
     #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
@@ -989,18 +986,18 @@ void TRemoteFile::SetListingStr(wstring value)
     Rights->AllowUndef = true;
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    Rights->Text = Line.SubString(1, 9);
-    Line.Delete(1, 9);
+    Rights->Text = Line.substr(1, 9);
+    Line.erase(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
     if (!Line.empty() && ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
     {
-      Line.Delete(1, 1);
+      Line.erase(1, 1);
     }
-    else if ((Line.Length() >= 2) && (Line[1] == ' ') &&
+    else if ((Line.size() >= 2) && (Line[1] == ' ') &&
              ((Line[2] == '+') || (Line[2] == '@') || (Line[2] == '.')))
     {
-      Line.Delete(1, 2);
+      Line.erase(1, 2);
     }
     Line = Line.TrimLeft();
 
@@ -1020,7 +1017,7 @@ void TRemoteFile::SetListingStr(wstring value)
       GETCOL;
       assert(!Col.empty());
       // for devices etc.. there is additional column ending by comma, we ignore it
-      if (Col[Col.Length()] == ',') GETCOL;
+      if (Col[Col.size()] == ',') GETCOL;
       ASize = StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
@@ -1052,15 +1049,15 @@ void TRemoteFile::SetListingStr(wstring value)
       COL2MONTH;
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
-      if ((Month == 0) && (Col.Length() == 10) && (Col[5] == '-') && (Col[8] == '-'))
+      if ((Month == 0) && (Col.size() == 10) && (Col[5] == '-') && (Col[8] == '-'))
       {
-        Year = (Word)Col.SubString(1, 4).ToInt();
-        Month = (Word)Col.SubString(6, 2).ToInt();
-        Day = (Word)Col.SubString(9, 2).ToInt();
+        Year = (Word)Col.substr(1, 4).ToInt();
+        Month = (Word)Col.substr(6, 2).ToInt();
+        Day = (Word)Col.substr(9, 2).ToInt();
         GETCOL;
-        Hour = (Word)Col.SubString(1, 2).ToInt();
-        Min = (Word)Col.SubString(4, 2).ToInt();
-        Sec = (Word)Col.SubString(7, 2).ToInt();
+        Hour = (Word)Col.substr(1, 2).ToInt();
+        Min = (Word)Col.substr(4, 2).ToInt();
+        Sec = (Word)Col.substr(7, 2).ToInt();
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename
@@ -1097,13 +1094,13 @@ void TRemoteFile::SetListingStr(wstring value)
         if (FullTime)
         {
           GETCOL;
-          if (Col.Length() != 8)
+          if (Col.size() != 8)
           {
             Abort();
           }
-          Hour = (Word)StrToInt(Col.SubString(1, 2));
-          Min = (Word)StrToInt(Col.SubString(4, 2));
-          Sec = (Word)StrToInt(Col.SubString(7, 2));
+          Hour = (Word)StrToInt(Col.substr(1, 2));
+          Min = (Word)StrToInt(Col.substr(4, 2));
+          Sec = (Word)StrToInt(Col.substr(7, 2));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GETNCOL;
@@ -1123,16 +1120,16 @@ void TRemoteFile::SetListingStr(wstring value)
             // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
-            Col = Line.SubString(1, 6).Trim();
-            Line.Delete(1, 6);
+            Col = Line.substr(1, 6).Trim();
+            Line.erase(1, 6);
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
           if ((P = (Word)Col.Pos(':')) > 0)
           {
             Word CurrMonth, CurrDay;
-            Hour = (Word)StrToInt(Col.SubString(1, P-1));
-            Min = (Word)StrToInt(Col.SubString(P+1, Col.Length() - P));
+            Hour = (Word)StrToInt(Col.substr(1, P-1));
+            Min = (Word)StrToInt(Col.substr(P+1, Col.size() - P));
             if (Hour > 23 || Hour > 59) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
@@ -1180,8 +1177,8 @@ void TRemoteFile::SetListingStr(wstring value)
           P = Line.Pos(SYMLINKSTR);
           if (P)
           {
-            FLinkTo = Line.SubString(
-              P + strlen(SYMLINKSTR), Line.Length() - P + strlen(SYMLINKSTR) + 1);
+            FLinkTo = Line.substr(
+              P + strlen(SYMLINKSTR), Line.size() - P + strlen(SYMLINKSTR) + 1);
             Line.SetLength(P - 1);
           }
           else
@@ -1269,14 +1266,14 @@ void TRemoteFile::FindLinkedFile()
   }
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFile::GetListingStr()
+std::wstring TRemoteFile::GetListingStr()
 {
   // note that ModificationStr is longer than 12 for mfFull
-  wstring LinkPart;
+  std::wstring LinkPart;
   // expanded from ?: to avoid memory leaks
   if (IsSymLink)
   {
-    LinkPart = wstring(SYMLINKSTR) + LinkTo;
+    LinkPart = std::wstring(SYMLINKSTR) + LinkTo;
   }
   return Format("%s%s %3s %-8s %-8s %9s %-12s %s%s", ARRAYOFCONST((
     Type, Rights->Text, IntToStr(INodeBlocks), Owner.Name,
@@ -1284,13 +1281,13 @@ wstring TRemoteFile::GetListingStr()
     LinkPart)));
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFile::GetFullFileName() const
+std::wstring TRemoteFile::GetFullFileName() const
 {
   if (FFullFileName.empty())
   {
     assert(Terminal);
     assert(Directory != NULL);
-    wstring Path;
+    std::wstring Path;
     if (IsParentDirectory) Path = Directory->ParentPath;
       else
     if (IsDirectory) Path = UnixIncludeTrailingBackslash(Directory->FullDirectory + FileName);
@@ -1373,12 +1370,12 @@ void TRemoteFileList::Clear()
   TObjectList::Clear();
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::SetDirectory(wstring value)
+void TRemoteFileList::SetDirectory(std::wstring value)
 {
   FDirectory = UnixExcludeTrailingBackslash(value);
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFileList::GetFullDirectory()
+std::wstring TRemoteFileList::GetFullDirectory()
 {
   return UnixIncludeTrailingBackslash(Directory);
 }
@@ -1393,7 +1390,7 @@ bool TRemoteFileList::GetIsRoot()
   return (Directory == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFileList::GetParentPath()
+std::wstring TRemoteFileList::GetParentPath()
 {
   return UnixExtractFilePath(Directory);
 }
@@ -1406,7 +1403,7 @@ __int64 TRemoteFileList::GetTotalSize()
   return Result;
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::FindFile(const wstring &FileName)
+TRemoteFile * TRemoteFileList::FindFile(const std::wstring &FileName)
 {
   for (int Index = 0; Index < Count; Index++)
     if (Files[Index]->GetFileName() == FileName) return Files[Index];
@@ -1447,7 +1444,7 @@ void TRemoteDirectory::Clear()
   TRemoteFileList::Clear();
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::SetDirectory(wstring value)
+void TRemoteDirectory::SetDirectory(std::wstring value)
 {
   TRemoteFileList::SetDirectory(value);
   //Load();
@@ -1581,7 +1578,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
   return (const_cast<TRemoteDirectoryCache*>(this)->Count == 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::HasFileList(const wstring Directory)
+bool TRemoteDirectoryCache::HasFileList(const std::wstring Directory)
 {
   TGuard Guard(FSection);
 
@@ -1589,7 +1586,7 @@ bool TRemoteDirectoryCache::HasFileList(const wstring Directory)
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::HasNewerFileList(const wstring Directory,
+bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
   TDateTime Timestamp)
 {
   TGuard Guard(FSection);
@@ -1606,7 +1603,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const wstring Directory,
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::GetFileList(const wstring Directory,
+bool TRemoteDirectoryCache::GetFileList(const std::wstring Directory,
   TRemoteFileList * FileList)
 {
   TGuard Guard(FSection);
@@ -1637,13 +1634,13 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryCache::ClearFileList(wstring Directory, bool SubDirs)
+void TRemoteDirectoryCache::ClearFileList(std::wstring Directory, bool SubDirs)
 {
   TGuard Guard(FSection);
   DoClearFileList(Directory, SubDirs);
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryCache::DoClearFileList(wstring Directory, bool SubDirs)
+void TRemoteDirectoryCache::DoClearFileList(std::wstring Directory, bool SubDirs)
 {
   Directory = UnixExcludeTrailingBackslash(Directory);
   int Index = IndexOf(Directory);
@@ -1657,7 +1654,7 @@ void TRemoteDirectoryCache::DoClearFileList(wstring Directory, bool SubDirs)
     Index = Count-1;
     while (Index >= 0)
     {
-      if (Strings[Index].SubString(1, Directory.Length()) == Directory)
+      if (Strings[Index].substr(1, Directory.size()) == Directory)
       {
         Delete(Index);
       }
@@ -1689,8 +1686,8 @@ bool TRemoteDirectoryChangesCache::GetIsEmpty() const
   return (const_cast<TRemoteDirectoryChangesCache*>(this)->Count == 0);
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::SetValue(const wstring & Name,
-  const wstring & Value)
+void TRemoteDirectoryChangesCache::SetValue(const std::wstring & Name,
+  const std::wstring & Value)
 {
   int Index = IndexOfName(Name);
   if (Index > 0)
@@ -1700,22 +1697,22 @@ void TRemoteDirectoryChangesCache::SetValue(const wstring & Name,
   Values[Name] = Value;
 }
 //---------------------------------------------------------------------------
-wstring TRemoteDirectoryChangesCache::GetValue(const wstring & Name)
+std::wstring TRemoteDirectoryChangesCache::GetValue(const std::wstring & Name)
 {
-  wstring Value = Values[Name];
+  std::wstring Value = Values[Name];
   SetValue(Name, Value);
   return Value;
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::AddDirectoryChange(
-  const wstring SourceDir, const wstring Change,
-  const wstring TargetDir)
+  const std::wstring SourceDir, const std::wstring Change,
+  const std::wstring TargetDir)
 {
   assert(!TargetDir.empty());
   SetValue(TargetDir, "//");
   if (TTerminal::ExpandFileName(Change, SourceDir) != TargetDir)
   {
-    wstring Key;
+    std::wstring Key;
     if (DirectoryChangeKey(SourceDir, Change, Key))
     {
       SetValue(Key, TargetDir);
@@ -1724,11 +1721,11 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
-  wstring SourceDir)
+  std::wstring SourceDir)
 {
   for (int Index = 0; Index < Count; Index++)
   {
-    if (Names[Index].SubString(1, SourceDir.Length()) == SourceDir)
+    if (Names[Index].substr(1, SourceDir.size()) == SourceDir)
     {
       Delete(Index);
       Index--;
@@ -1737,18 +1734,18 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
-  wstring TargetDir)
+  std::wstring TargetDir)
 {
-  wstring Key;
+  std::wstring Key;
   // hack to clear at least local sym-link change in case symlink is deleted
   DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
     UnixExtractFileName(TargetDir), Key);
 
   for (int Index = 0; Index < Count; Index++)
   {
-    wstring Name = Names[Index];
-    if ((Name.SubString(1, TargetDir.Length()) == TargetDir) ||
-        (Values[Name].SubString(1, TargetDir.Length()) == TargetDir) ||
+    std::wstring Name = Names[Index];
+    if ((Name.substr(1, TargetDir.size()) == TargetDir) ||
+        (Values[Name].substr(1, TargetDir.size()) == TargetDir) ||
         (!Key.empty() && (Name == Key)))
     {
       Delete(Index);
@@ -1758,9 +1755,9 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
-  const wstring SourceDir, const wstring Change, wstring & TargetDir)
+  const std::wstring SourceDir, const std::wstring Change, std::wstring & TargetDir)
 {
-  wstring Key;
+  std::wstring Key;
   bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
   Result = (IndexOfName(Key) >= 0);
@@ -1778,7 +1775,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
     Result = DirectoryChangeKey(SourceDir, Change, Key);
     if (Result)
     {
-      wstring Directory = GetValue(Key);
+      std::wstring Directory = GetValue(Key);
       Result = !Directory.empty();
       if (Result)
       {
@@ -1789,7 +1786,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Serialize(wstring & Data)
+void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
 {
   Data = "A";
   int ACount = Count;
@@ -1817,7 +1814,7 @@ void TRemoteDirectoryChangesCache::Serialize(wstring & Data)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Deserialize(const wstring Data)
+void TRemoteDirectoryChangesCache::Deserialize(const std::wstring Data)
 {
   if (Data.empty())
   {
@@ -1830,7 +1827,7 @@ void TRemoteDirectoryChangesCache::Deserialize(const wstring Data)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
-  const wstring SourceDir, const wstring Change, wstring & Key)
+  const std::wstring SourceDir, const std::wstring Change, std::wstring & Key)
 {
   bool Result = !Change.empty();
   if (Result)
@@ -2017,13 +2014,13 @@ void TRights::SetAllowUndef(bool value)
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetText(const wstring & value)
+void TRights::SetText(const std::wstring & value)
 {
   if (value != Text)
   {
-    if ((value.Length() != TextLen) ||
+    if ((value.size() != TextLen) ||
         (!AllowUndef && (value.Pos(UndefSymbol) > 0)) ||
-        (value.Pos(" ") > 0))
+        (value.find_first_of(L" ") > 0))
     {
       throw exception(FMTLOAD(RIGHTS_ERROR, (value)));
     }
@@ -2072,12 +2069,12 @@ void TRights::SetText(const wstring & value)
       }
     }
 
-    FText = KeepText ? value : wstring();
+    FText = KeepText ? value : std::wstring();
   }
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
-wstring TRights::GetText() const
+std::wstring TRights::GetText() const
 {
   if (!FText.empty())
   {
@@ -2085,7 +2082,7 @@ wstring TRights::GetText() const
   }
   else
   {
-    wstring Result;
+    std::wstring Result;
     Result.SetLength(TextLen);
 
     int Flag = 00001;
@@ -2132,20 +2129,20 @@ wstring TRights::GetText() const
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetOctal(wstring value)
+void TRights::SetOctal(std::wstring value)
 {
-  wstring AValue(value);
-  if (AValue.Length() == 3)
+  std::wstring AValue(value);
+  if (AValue.size() == 3)
   {
     AValue = "0" + AValue;
   }
 
   if (Octal != AValue)
   {
-    bool Correct = (AValue.Length() == 4);
+    bool Correct = (AValue.size() == 4);
     if (Correct)
     {
-      for (int i = 1; (i <= AValue.Length()) && Correct; i++)
+      for (int i = 1; (i <= AValue.size()) && Correct; i++)
       {
         Correct = (AValue[i] >= '0') && (AValue[i] <= '7');
       }
@@ -2177,9 +2174,9 @@ unsigned long TRights::GetNumberDecadic() const
   return Result;
 }
 //---------------------------------------------------------------------------
-wstring TRights::GetOctal() const
+std::wstring TRights::GetOctal() const
 {
-  wstring Result;
+  std::wstring Result;
   unsigned short N = NumberSet; // used to be "Number"
   Result.SetLength(4);
   Result[1] = static_cast<char>('0' + ((N & 07000) >> 9));
@@ -2283,7 +2280,7 @@ bool  TRights::GetReadOnly()
   return Right[rrUserWrite] && Right[rrGroupWrite] && Right[rrOtherWrite];
 }
 //---------------------------------------------------------------------------
-wstring TRights::GetSimplestStr() const
+std::wstring TRights::GetSimplestStr() const
 {
   if (IsUndef)
   {
@@ -2295,10 +2292,10 @@ wstring TRights::GetSimplestStr() const
   }
 }
 //---------------------------------------------------------------------------
-wstring TRights::GetModeStr() const
+std::wstring TRights::GetModeStr() const
 {
-  wstring Result;
-  wstring SetModeStr, UnsetModeStr;
+  std::wstring Result;
+  std::wstring SetModeStr, UnsetModeStr;
   TRight Right;
   int Index;
 
@@ -2535,7 +2532,7 @@ void TRemoteProperties::Load(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteBinaryData(wstring("Valid"),
+  Storage->WriteBinaryData(std::wstring("Valid"),
     static_cast<const void *>(&Valid), sizeof(Valid));
 
   if (Valid.Contains(vpRights))

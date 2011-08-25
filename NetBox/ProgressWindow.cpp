@@ -53,7 +53,7 @@ void CProgressWindow::Show()
     CreateText(GetLeft(), ++topPos, CFarPlugin::GetString(StringPrgTo));
     m_IdDstFileName = CreateText(GetLeft(), ++topPos, L"");
 
-    wstring prgBar(WND_WIDTH - 5, L'\x2591');
+    std::wstring prgBar(WND_WIDTH - 5, L'\x2591');
     prgBar += L"   0%";
     m_IdCurrentProgress = CreateText(GetLeft(), ++topPos, prgBar.c_str());
 
@@ -85,7 +85,7 @@ void CProgressWindow::SetFileNames(const wchar_t *srcFileName, const wchar_t *ds
     assert(srcFileName);
     assert(dstFileName);
 
-    wstring trimmedSrcFileName(srcFileName);
+    std::wstring trimmedSrcFileName(srcFileName);
     if (trimmedSrcFileName.length() > WND_WIDTH)
     {
         trimmedSrcFileName.replace(3, 3, 3, L'.');
@@ -93,7 +93,7 @@ void CProgressWindow::SetFileNames(const wchar_t *srcFileName, const wchar_t *ds
     }
     trimmedSrcFileName.resize(WND_WIDTH, L' ');
 
-    wstring trimmedDstFileName(dstFileName);
+    std::wstring trimmedDstFileName(dstFileName);
     if (trimmedDstFileName.length() > WND_WIDTH)
     {
         trimmedDstFileName.replace(3, 3, 3, L'.');
@@ -141,7 +141,7 @@ LONG_PTR CProgressWindow::DialogMessageProc(int msg, int param1, LONG_PTR param2
         const int percent = m_ProtoImpl->GetProgress();
         if (percent >= 0 && percent <= 100)
         {
-            wstring prgBar(WND_WIDTH - 5, L'\x2591');
+            std::wstring prgBar(WND_WIDTH - 5, L'\x2591');
             const size_t fillLength = percent * prgBar.length() / 100;
             prgBar.replace(0, fillLength, fillLength, L'\x2588');
 

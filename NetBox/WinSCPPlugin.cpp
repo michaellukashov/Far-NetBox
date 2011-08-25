@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
@@ -12,8 +10,6 @@
 #include <Exceptions.h>
 #include <Terminal.h>
 #include <GUITools.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 TCustomFarPlugin * CreateFarPlugin(HWND Handle)
 {
@@ -36,14 +32,14 @@ TMessageParams::TMessageParams()
 TWinSCPPlugin::TWinSCPPlugin(HWND AHandle): TCustomFarPlugin(AHandle)
 {
   FInitialized = false;
-  CreateMutex(NULL, false, "WinSCPFar");
+  CreateMutex(NULL, false, L"WinSCPFar");
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
-    FarConfiguration->Plugin = NULL;
+    FarConfiguration->SetPlugin(NULL);
     CoreFinalize();
   }
 }
@@ -78,21 +74,21 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
   Flags = PF_FULLCMDLINE;
-  if (FarConfiguration->DisksMenu)
+  if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      (TObject *)FarConfiguration->DisksMenuHotKey);
+      (TObject *)FarConfiguration->GetDisksMenuHotKey());
   }
-  if (FarConfiguration->PluginsMenu)
+  if (FarConfiguration->GetPluginsMenu())
   {
     PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
   }
-  if (FarConfiguration->PluginsMenuCommands)
+  if (FarConfiguration->GetPluginsMenuCommands())
   {
     PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
-  CommandPrefixes->CommaText = FarConfiguration->CommandPrefixes;
+  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
@@ -118,7 +114,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 
     do
     {
-      Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), "", MenuItems);
+      Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems);
 
       if (Result >= 0)
       {
@@ -204,13 +200,13 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 int TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
 {
   // for performance reasons, do not pass the event to file systems on redraw
-  if ((Event != EE_REDRAW) || FarConfiguration->EditorUploadOnSave ||
-      FarConfiguration->EditorMultiple)
+  if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
+      FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem;
     for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
-      FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->Items[Index]);
+      FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Event, Param);
     }
   }
@@ -245,7 +241,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
   try
   {
     if ((OpenFrom == OPEN_PLUGINSMENU) &&
-        (!FarConfiguration->PluginsMenu || (Item == 1)))
+        (!FarConfiguration->GetPluginsMenu() || (Item == 1)))
     {
       CommandsMenu(true);
     }
@@ -261,20 +257,20 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
         wstring Directory;
-        wstring Name = (char*)Item;
+        wstring Name = (wchar_t *)Item;
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          int P = Name.Pos("\1");
+          int P = Name.find_first_of(L"\1");
           if (P)
           {
-            Directory = Name.SubString(P + 1, Name.Length() - P);
-            Name.SetLength(P - 1);
+            Directory = Name.substr(P + 1, Name.size() - P);
+            Name.resize(P - 1);
           }
 
           TWinSCPFileSystem * PanelSystem;
           PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
           if (PanelSystem && PanelSystem->Connected() &&
-              PanelSystem->Terminal->GetSessionData()->SessionUrl == Name)
+              PanelSystem->GetTerminal()->GetSessionData()->GetSessionUrl() == Name)
           {
             PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
             if (PanelSystem->UpdatePanel())
@@ -284,7 +280,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
             Abort();
           }
           // directory will be set by FAR itself
-          Directory = "";
+          Directory = L"";
         }
         assert(StoredSessions);
         bool DefaultsOnly;
@@ -293,7 +289,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
         {
           Abort();
         }
-        if (!Session->CanLogin)
+        if (!Session->GetCanLogin())
         {
           assert(false);
           Abort();
@@ -356,15 +352,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
     int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
-    MenuItems->Disabled[MLog] = !FSVisible || !FileSystem->IsLogging();
-    MenuItems->Disabled[MClearCaches] = !FSVisible || FileSystem->AreCachesEmpty();
-    MenuItems->Disabled[MPutty] = !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PuttyPath)));
-    MenuItems->Disabled[MEditHistory] = !FSConnected || FileSystem->IsEditHistoryEmpty();
-    MenuItems->Checked[MSynchronizeBrowsing] = FSVisible && FileSystem->IsSynchronizedBrowsing();
-    MenuItems->Disabled[MPageant] = !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PageantPath)));
-    MenuItems->Disabled[MPuttygen] = !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->PuttygenPath)));
+    MenuItems->SetDisabled(MLog, !FSVisible || !FileSystem->IsLogging());
+    MenuItems->SetDisabled(MClearCaches, !FSVisible || FileSystem->AreCachesEmpty());
+    MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttyPath()))));
+    MenuItems->SetDisabled(MEditHistory, !FSConnected || FileSystem->IsEditHistoryEmpty());
+    MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && FileSystem->IsSynchronizedBrowsing());
+    MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
+    MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
-    int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), "", MenuItems);
+    int Result = Menu(FMENU_WRAPMODE, GetMsg(MENU_COMMANDS), L"", MenuItems);
 
     if (Result >= 0)
     {
@@ -447,7 +443,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       else if (Result == MPageant || Result == MPuttygen)
       {
         wstring Path = (Result == MPageant) ?
-          FarConfiguration->PageantPath : FarConfiguration->PuttygenPath;
+          FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
         wstring Program, Params, Dir;
         SplitCommand(Path, Program, Params, Dir);
         ExecuteShell(Program, Params);
@@ -481,6 +477,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(exception * E)
 {
+// FIXME
+/*
   if (!E->Message.empty())
   {
     if (E->InheritsFrom(__classid(exception)))
@@ -506,16 +504,17 @@ void TWinSCPPlugin::ShowExtendedException(exception * E)
       ShowException(ExceptObject(), ExceptAddr());
     }
   }
+*/
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::OldFar()
 {
-  throw exception(FORMAT(GetMsg(OLD_FAR), (FormatFarVersion(GetMinFarVersion()))));
+  throw ExtException(::FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || E->InheritsFrom(__classid(EFatal)))
+  if (((OpMode & OPM_FIND) == 0)) // || E->InheritsFrom(__classid(EFatal)))
   {
     ShowExtendedException(E);
   }
@@ -547,7 +546,7 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
       if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
           (Data.Params->Aliases[i].OnClick != NULL))
       {
-        Data.Params->Aliases[i].OnClick(NULL);
+        // FIXME Data.Params->Aliases[i].OnClick(NULL);
         Close = false;
         break;
       }
@@ -583,7 +582,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
 
     // make sure to do the check on full answers, not on reduced "timer answers"
     if (((Answers & qaAbort) && (Answers & qaRetry)) ||
-        (TopDialog != NULL))
+        (GetTopDialog() != NULL))
     {
       // use warning colors for abort/retry confirmation dialog
       Flags |= FMSG_WARNING;
@@ -623,7 +622,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->Objects[ButtonLabels->GetCount() - 1] = (TObject*)true; \
+          ButtonLabels->SetObject(ButtonLabels->GetCount() - 1, (TObject*)true); \
           NeverAskAgainPending = false; \
         } \
       }
@@ -656,7 +655,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {
-            ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
+            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
             break;
           }
         }
@@ -690,7 +689,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
     }
 
     FarParams.Token = &Data;
-    FarParams.ClickEvent = MessageClick;
+    // FIXME FarParams.SetClickEvent(MessageClick);
 
     wstring DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))

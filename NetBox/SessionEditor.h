@@ -100,11 +100,11 @@ protected:
     int m_IdBtnCancel;
 
     bool m_EditMode;
-    wstring m_Title;
+    std::wstring m_Title;
 
     CSession *m_Session;
 
     ProxySettingsDialogParams m_params;
 };
 
-typedef auto_ptr<CSessionEditor> PSessionEditor;
+typedef std::auto_ptr<CSessionEditor> PSessionEditor;

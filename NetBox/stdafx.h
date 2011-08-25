@@ -34,20 +34,20 @@
  * \param errCode system error code
  * \return error message
  */
-wstring GetSystemErrorMessage(const DWORD errCode);
+std::wstring GetSystemErrorMessage(const DWORD errCode);
 
 /**
  * Parse URL
- * \param url source url string
+ * \param url source url std::string
  * \param scheme scheme name
  * \param hostName host name
  * \param port port number
  * \param path path
- * \param query additional query string
+ * \param query additional query std::string
  * \param userName user name
  * \param password password
  */
-void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned short *port, wstring *path, wstring *query, wstring *userName, wstring *password);
+void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, unsigned short *port, std::wstring *path, std::wstring *query, std::wstring *userName, std::wstring *password);
 
 /**
  * Convert unix time to file time
@@ -56,24 +56,24 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
  */
 FILETIME UnixTimeToFileTime(const time_t t);
 
-unsigned long TextToNumber(const wstring &text);
+unsigned long TextToNumber(const std::wstring &text);
 
 /**
- * Convert int to string
+ * Convert int to std::string
  * \param number number
- * \return string result
+ * \return std::string result
  */
-string NumberToText(int number);
+std::string NumberToText(int number);
 
-wstring NumberToWString(unsigned long number);
+std::wstring NumberToWString(unsigned long number);
 
 struct ProxySettings
 {
     int proxyType;
-    wstring proxyHost;
+    std::wstring proxyHost;
     unsigned long proxyPort;
-    wstring proxyLogin;
-    wstring proxyPassword;
+    std::wstring proxyLogin;
+    std::wstring proxyPassword;
 };
 
 struct ProxySettingsDialogParams
@@ -81,7 +81,7 @@ struct ProxySettingsDialogParams
     FarDialogItem *proxyTypeTextItem;
     FarDialogItem *proxyTypeComboBoxItem;
     FarList proxyTypeList;
-    vector<FarListItem> proxyTypeListItems;
+    std::vector<FarListItem> proxyTypeListItems;
     FarDialogItem *separatorItem;
     FarDialogItem *proxyHostTextItem;
     FarDialogItem *proxyHostItem;
@@ -91,7 +91,7 @@ struct ProxySettingsDialogParams
     FarDialogItem *proxyLoginItem;
     FarDialogItem *proxyPasswordTextItem;
     FarDialogItem *proxyPasswordItem;
-    wstring proxyPortStr;
+    std::wstring proxyPortStr;
 
     int idProxyTypeText;
     int idProxyTypeComboBox;
@@ -115,15 +115,39 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
 void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogParams &params,
     struct ProxySettings &proxySettings);
 
-void AppendWChar(wstring &str, const wchar_t ch);
-void AppendChar(string &str, const char ch);
+void AppendWChar(std::wstring &str, const wchar_t ch);
+void AppendChar(std::string &str, const char ch);
 
-void AppendPathDelimiterW(wstring &str);
-void AppendPathDelimiterA(string &str);
+void AppendPathDelimiterW(std::wstring &str);
+void AppendPathDelimiterA(std::string &str);
 
-wstring MB2W(const char *src, const UINT cp = CP_ACP);
-string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
+std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
+std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 
 void CheckAbortEvent(HANDLE *AbortEvent);
 
-wstring ExpandEnvVars(const wstring& str);
+std::wstring ExpandEnvVars(const std::wstring& str);
+
+std::wstring Trim(const std::wstring str);
+std::wstring TrimRight(const std::wstring str);
+std::wstring LowerCase(const std::wstring str);
+std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
+int AnsiPos(const std::wstring str, wchar_t ñ);
+std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
+bool AnsiSameText(const std::wstring str1, const std::wstring str2);
+bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size);
+int LastDelimiter(const std::wstring str1, const wchar_t delim);
+
+bool ForceDirectories(const std::wstring Dir);
+bool DeleteFile(const std::wstring File);
+bool RemoveDir(const std::wstring Dir);
+
+std::wstring IncludeTrailingBackslash(const std::wstring Str);
+std::wstring ExcludeTrailingBackslash(const std::wstring Str);
+std::wstring ExtractFileDir(const std::wstring Str);
+std::wstring ExtractFilePath(const std::wstring Str);
+std::wstring GetCurrentDir();
+
+std::wstring StringOfChar(const wchar_t c, size_t len);
+
+void RaiseLastOSError();

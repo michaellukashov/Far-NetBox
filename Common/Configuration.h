@@ -26,8 +26,8 @@ private:
   void * FApplicationInfo;
   bool FLogging;
   bool FPermanentLogging;
-  wstring FLogFileName;
-  wstring FPermanentLogFileName;
+  std::wstring FLogFileName;
+  std::wstring FPermanentLogFileName;
   int FLogWindowLines;
   bool FLogFileAppend;
   int FLogProtocol;
@@ -40,21 +40,21 @@ private:
   int FSessionReopenAuto;
   int FSessionReopenBackground;
   int FSessionReopenTimeout;
-  wstring FIniFileStorageName;
+  std::wstring FIniFileStorageName;
   int FTunnelLocalPortNumberLow;
   int FTunnelLocalPortNumberHigh;
   int FCacheDirectoryChangesMaxSize;
   bool FShowFtpWelcomeMessage;
-  wstring FDefaultRandomSeedFile;
-  wstring FRandomSeedFile;
-  wstring FPuttyRegistryStorageKey;
+  std::wstring FDefaultRandomSeedFile;
+  std::wstring FRandomSeedFile;
+  std::wstring FPuttyRegistryStorageKey;
 
   bool FDisablePasswordStoring;
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
 
   // TVSFixedFileInfo *GetFixedApplicationInfo();
-  wstring TrimVersion(wstring Version);
+  std::wstring TrimVersion(std::wstring Version);
   void UpdateActualLogProtocol();
 
 protected:
@@ -67,23 +67,23 @@ protected:
   virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
   virtual void LoadAdmin(THierarchicalStorage * Storage);
   virtual void Saved();
-  void CleanupRegistry(wstring CleanupSubKey);
-  wstring BannerHash(const wstring & Banner);
+  void CleanupRegistry(std::wstring CleanupSubKey);
+  std::wstring BannerHash(const std::wstring & Banner);
 
-  virtual wstring ModuleFileName();
+  virtual std::wstring ModuleFileName();
 
-  wstring GetFileFileInfoString(const wstring Key,
-    const wstring FileName);
-  void * GetFileApplicationInfo(const wstring FileName);
-  wstring GetFileProductVersion(const wstring FileName);
-  wstring GetFileProductName(const wstring FileName);
-  wstring GetFileCompanyName(const wstring FileName);
+  std::wstring GetFileFileInfoString(const std::wstring Key,
+    const std::wstring FileName);
+  void * GetFileApplicationInfo(const std::wstring FileName);
+  std::wstring GetFileProductVersion(const std::wstring FileName);
+  std::wstring GetFileProductName(const std::wstring FileName);
+  std::wstring GetFileCompanyName(const std::wstring FileName);
 
   // __property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
   bool GetPermanentLogging() { return FPermanentLogging; }
   void SetLogging(bool value);
-    // __property wstring PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
-  wstring GetPermanentLogFileName() { return FPermanentLogFileName; }
+    // __property std::wstring PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
+  std::wstring GetPermanentLogFileName() { return FPermanentLogFileName; }
   // __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
   bool GetPermanentLogActions() { return FPermanentLogActions; }
 
@@ -93,69 +93,69 @@ public:
   virtual void Default();
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
-  void Export(const wstring FileName);
+  void Export(const std::wstring FileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
   void CleanupRandomSeedFile();
   void BeginUpdate();
   void EndUpdate();
-  void LoadDirectoryChangesCache(const wstring SessionKey,
+  void LoadDirectoryChangesCache(const std::wstring SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void SaveDirectoryChangesCache(const wstring SessionKey,
+  void SaveDirectoryChangesCache(const std::wstring SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  bool ShowBanner(const wstring SessionKey, const wstring & Banner);
-  void NeverShowBanner(const wstring SessionKey, const wstring & Banner);
+  bool ShowBanner(const std::wstring SessionKey, const std::wstring & Banner);
+  void NeverShowBanner(const std::wstring SessionKey, const std::wstring & Banner);
   virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
-  void TemporaryLogging(const wstring ALogFileName);
-  virtual wstring EncryptPassword(wstring Password, wstring Key);
-  virtual wstring DecryptPassword(wstring Password, wstring Key);
-  virtual wstring StronglyRecryptPassword(wstring Password, wstring Key);
+  void TemporaryLogging(const std::wstring ALogFileName);
+  virtual std::wstring EncryptPassword(std::wstring Password, std::wstring Key);
+  virtual std::wstring DecryptPassword(std::wstring Password, std::wstring Key);
+  virtual std::wstring StronglyRecryptPassword(std::wstring Password, std::wstring Key);
 
   // __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   // __property void * ApplicationInfo  = { read=GetApplicationInfo };
   void * GetApplicationInfo();
-  // __property wstring StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
-  wstring GetStoredSessionsSubKey();
-  // __property wstring PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
-  wstring GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
-  void SetPuttyRegistryStorageKey(wstring value);
-  // __property wstring PuttySessionsKey  = { read=GetPuttySessionsKey };
-  wstring GetPuttySessionsKey();
-  // __property wstring RandomSeedFile  = { read=FRandomSeedFile, write=SetRandomSeedFile };
-  wstring GetRandomSeedFile() { return FRandomSeedFile; }
-  void SetRandomSeedFile(wstring value);
-  // __property wstring RandomSeedFileName  = { read=GetRandomSeedFileName };
-  wstring GetRandomSeedFileName();
-  // __property wstring SshHostKeysSubKey  = { read=GetSshHostKeysSubKey };
-  wstring GetSshHostKeysSubKey();
-  // __property wstring RootKeyStr  = { read=GetRootKeyStr };
-  wstring GetRootKeyStr();
-  // __property wstring ConfigurationSubKey  = { read=GetConfigurationSubKey };
-  wstring GetConfigurationSubKey();
+  // __property std::wstring StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
+  std::wstring GetStoredSessionsSubKey();
+  // __property std::wstring PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
+  std::wstring GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
+  void SetPuttyRegistryStorageKey(std::wstring value);
+  // __property std::wstring PuttySessionsKey  = { read=GetPuttySessionsKey };
+  std::wstring GetPuttySessionsKey();
+  // __property std::wstring RandomSeedFile  = { read=FRandomSeedFile, write=SetRandomSeedFile };
+  std::wstring GetRandomSeedFile() { return FRandomSeedFile; }
+  void SetRandomSeedFile(std::wstring value);
+  // __property std::wstring RandomSeedFileName  = { read=GetRandomSeedFileName };
+  std::wstring GetRandomSeedFileName();
+  // __property std::wstring SshHostKeysSubKey  = { read=GetSshHostKeysSubKey };
+  std::wstring GetSshHostKeysSubKey();
+  // __property std::wstring RootKeyStr  = { read=GetRootKeyStr };
+  std::wstring GetRootKeyStr();
+  // __property std::wstring ConfigurationSubKey  = { read=GetConfigurationSubKey };
+  std::wstring GetConfigurationSubKey();
   // __property TEOLType LocalEOLType = { read = GetLocalEOLType };
   TEOLType GetLocalEOLType();
-  // __property wstring VersionStr = { read=GetVersionStr };
-  virtual wstring GetVersionStr();
-  // __property wstring Version = { read=GetVersion };
-  virtual wstring GetVersion();
+  // __property std::wstring VersionStr = { read=GetVersionStr };
+  virtual std::wstring GetVersionStr();
+  // __property std::wstring Version = { read=GetVersion };
+  virtual std::wstring GetVersion();
   // __property int CompoundVersion = { read=GetCompoundVersion };
   int GetCompoundVersion();
-  // __property wstring ProductVersion = { read=GetProductVersion };
-  wstring GetProductVersion();
-  // __property wstring ProductName = { read=GetProductName };
-  wstring GetProductName();
-  // __property wstring CompanyName = { read=GetCompanyName };
-  wstring GetCompanyName();
-  // __property wstring FileInfoString[wstring Key] = { read = GetFileInfoString };
-  wstring GetFileInfoString(const wstring Key);
-  // __property wstring OSVersionStr = { read = GetOSVersionStr };
-  wstring GetOSVersionStr();
+  // __property std::wstring ProductVersion = { read=GetProductVersion };
+  std::wstring GetProductVersion();
+  // __property std::wstring ProductName = { read=GetProductName };
+  std::wstring GetProductName();
+  // __property std::wstring CompanyName = { read=GetCompanyName };
+  std::wstring GetCompanyName();
+  // __property std::wstring FileInfoString[std::wstring Key] = { read = GetFileInfoString };
+  std::wstring GetFileInfoString(const std::wstring Key);
+  // __property std::wstring OSVersionStr = { read = GetOSVersionStr };
+  std::wstring GetOSVersionStr();
   // __property bool Logging  = { read=FLogging, write=SetLogging };
   bool GetLogging() { return FLogging; }
-  // __property wstring LogFileName  = { read=FLogFileName, write=SetLogFileName };
-  wstring GetLogFileName() { return FLogFileName; }
-  void SetLogFileName(wstring value);
+  // __property std::wstring LogFileName  = { read=FLogFileName, write=SetLogFileName };
+  std::wstring GetLogFileName() { return FLogFileName; }
+  void SetLogFileName(std::wstring value);
   // __property bool LogToFile  = { read=GetLogToFile, write=SetLogToFile };
   bool GetLogToFile();
   void SetLogToFile(bool value);
@@ -176,8 +176,8 @@ public:
   // __property bool LogWindowComplete  = { read=GetLogWindowComplete, write=SetLogWindowComplete };
   bool GetLogWindowComplete();
   void SetLogWindowComplete(bool value);
-  // __property wstring DefaultLogFileName  = { read=GetDefaultLogFileName };
-  wstring GetDefaultLogFileName();
+  // __property std::wstring DefaultLogFileName  = { read=GetDefaultLogFileName };
+  std::wstring GetDefaultLogFileName();
   // __property TNotifyEvent OnChange = { read = FOnChange, write = FOnChange };
   TNotifyEvent GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent value) { FOnChange = value; }
@@ -192,8 +192,8 @@ public:
   void SetAutoReadDirectoryAfterOp(bool value);
   // __property bool RememberPassword = { read = GetRememberPassword };
   virtual bool GetRememberPassword();
-  // __property wstring PartialExt = {read=GetPartialExt};
-  wstring GetPartialExt() const;
+  // __property std::wstring PartialExt = {read=GetPartialExt};
+  std::wstring GetPartialExt() const;
   // __property int SessionReopenAuto = { read = FSessionReopenAuto, write = SetSessionReopenAuto };
   int GetSessionReopenAuto() { return FSessionReopenAuto; }
   void SetSessionReopenAuto(int value);
@@ -216,18 +216,18 @@ public:
   bool GetShowFtpWelcomeMessage() { return FShowFtpWelcomeMessage; }
   void SetShowFtpWelcomeMessage(bool value);
 
-  // __property wstring TimeFormat = { read = GetTimeFormat };
-  wstring GetTimeFormat();
+  // __property std::wstring TimeFormat = { read = GetTimeFormat };
+  std::wstring GetTimeFormat();
   // __property TStorage Storage  = { read=GetStorage, write=SetStorage };
   virtual TStorage GetStorage();
   void SetStorage(TStorage value);
-  // __property wstring RegistryStorageKey  = { read=GetRegistryStorageKey };
-  wstring GetRegistryStorageKey();
-  // __property wstring IniFileStorageName  = { read=GetIniFileStorageName, write=SetIniFileStorageName };
-  wstring GetIniFileStorageName();
-  void SetIniFileStorageName(wstring value);
-  // __property wstring DefaultKeyFile = { read = GetDefaultKeyFile };
-  virtual wstring GetDefaultKeyFile();
+  // __property std::wstring RegistryStorageKey  = { read=GetRegistryStorageKey };
+  std::wstring GetRegistryStorageKey();
+  // __property std::wstring IniFileStorageName  = { read=GetIniFileStorageName, write=SetIniFileStorageName };
+  std::wstring GetIniFileStorageName();
+  void SetIniFileStorageName(std::wstring value);
+  // __property std::wstring DefaultKeyFile = { read = GetDefaultKeyFile };
+  virtual std::wstring GetDefaultKeyFile();
 
   // __property bool DisablePasswordStoring = { read = FDisablePasswordStoring };
   bool GetDisablePasswordStoring() { return FDisablePasswordStoring; }

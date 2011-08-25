@@ -72,8 +72,8 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
         return false;
     }
 
-    wstring scheme;
-    wstring hostName;
+    std::wstring scheme;
+    std::wstring hostName;
     unsigned short port = 0;
     ParseURL(url, &scheme, &hostName, &port, NULL, NULL, NULL, NULL);
 
@@ -124,7 +124,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
 
     CURLcode urlCode = CURLE_OK;
 
-    const string url = m_TopURL + (path ? path : "");
+    const std::string url = m_TopURL + (path ? path : "");
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
     if (handleTimeout)
     {
@@ -172,7 +172,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
             default:
                 return CURLE_UNSUPPORTED_PROTOCOL;
         }
-        string proxy = ::W2MB(m_proxySettings.proxyHost.c_str());
+        std::string proxy = ::W2MB(m_proxySettings.proxyHost.c_str());
         unsigned long port = m_proxySettings.proxyPort;
         if (port)
         {
@@ -183,8 +183,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
-        string login = ::W2MB(m_proxySettings.proxyLogin.c_str());
-        string password = ::W2MB(m_proxySettings.proxyPassword.c_str());
+        std::string login = ::W2MB(m_proxySettings.proxyLogin.c_str());
+        std::string password = ::W2MB(m_proxySettings.proxyPassword.c_str());
         if (!login.empty())
         {
             CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
@@ -210,7 +210,7 @@ CURLcode CEasyURL::SetSlist(CSlistURL &slist)
 }
 
 
-CURLcode CEasyURL::SetOutput(string &out, int *progress)
+CURLcode CEasyURL::SetOutput(std::string &out, int *progress)
 {
     assert(m_Prepared);
     assert(progress);
@@ -392,7 +392,7 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {
         // DEBUG_PRINTF(L"NetBox: data = %s", ::MB2W(data).c_str());
-        wstring dataw = ::MB2W(data);
+        std::wstring dataw = ::MB2W(data);
         RegExpSearch search = {
             dataw.c_str(),
             0,

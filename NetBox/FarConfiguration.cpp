@@ -1,13 +1,8 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
 #include "FarPlugin.h"
 #include <Common.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
@@ -67,7 +62,7 @@ void TFarConfiguration::Saved()
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #define LASTELEM(ELEM) \
-  ELEM.SubString(ELEM.LastDelimiter(".>")+1, ELEM.Length() - ELEM.LastDelimiter(".>"))
+  ELEM.substr(ELEM.LastDelimiter(".>")+1, ELEM.size() - ELEM.LastDelimiter(".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
@@ -227,14 +222,14 @@ wstring TFarConfiguration::ModuleFileName()
   return Plugin->ModuleName;
 }
 //---------------------------------------------------------------------------
-void TFarConfiguration::SetBookmarks(wstring Key,
+void TFarConfiguration::SetBookmark(wstring Key,
   TBookmarkList * value)
 {
   FBookmarks->Bookmarks[Key] = value;
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * TFarConfiguration::GetBookmarks(wstring Key)
+TBookmarkList * TFarConfiguration::GetBookmark(wstring Key)
 {
   return FBookmarks->Bookmarks[Key];
 }

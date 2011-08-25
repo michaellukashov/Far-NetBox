@@ -17,19 +17,19 @@ public:
   void ModifyAll(bool Modify);
   void Clear();
 
-  // __property TBookmarkList * Bookmarks[wstring Index] = { read = GetBookmarks, write = SetBookmarks };
-  TBookmarkList * GetBookmarks(wstring Index);
-  void SetBookmarks(wstring Index, TBookmarkList * value);
+  // __property TBookmarkList * Bookmarks[std::wstring Index] = { read = GetBookmarks, write = SetBookmarks };
+  TBookmarkList * GetBookmarks(std::wstring Index);
+  void SetBookmarks(std::wstring Index, TBookmarkList * value);
   // __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * value);
 
 private:
   TStringList * FBookmarkLists;
-  wstring FSharedKey;
-  static wstring Keys[];
+  std::wstring FSharedKey;
+  static std::wstring Keys[];
 
-  void LoadLevel(THierarchicalStorage * Storage, const wstring Key,
+  void LoadLevel(THierarchicalStorage * Storage, const std::wstring Key,
     int Index, TBookmarkList * BookmarkList);
 };
 //---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ public:
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark * Bookmark);
-  TBookmark * FindByName(const wstring Node, const wstring Name);
+  TBookmark * FindByName(const std::wstring Node, const std::wstring Name);
   TBookmark * FindByShortCut(TShortCut ShortCut);
   virtual void Assign(TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
@@ -58,9 +58,9 @@ public:
   int GetCount();
   // __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
   TBookmark * GetBookmarks(int Index);
-  // __property bool NodeOpened[wstring Index] = { read = GetNodeOpened, write = SetNodeOpened };
-  bool GetNodeOpened(wstring Index);
-  void SetNodeOpened(wstring Index, bool value);
+  // __property bool NodeOpened[std::wstring Index] = { read = GetNodeOpened, write = SetNodeOpened };
+  bool GetNodeOpened(std::wstring Index);
+  void SetNodeOpened(std::wstring Index, bool value);
 
 protected:
   int IndexOf(TBookmark * Bookmark);
@@ -84,18 +84,18 @@ public:
 
   virtual void Assign(TPersistent * Source);
 
-  // __property wstring Name = { read = FName, write = SetName };
-  wstring GetName() { return FName; }
-  void SetName(const wstring value);
-  // __property wstring Local = { read = FLocal, write = SetLocal };
-  wstring GetLocal() { return FLocal; }
-  void SetLocal(const wstring value);
-  // __property wstring Remote = { read = FRemote, write = SetRemote };
-  wstring GetRemote() { return FRemote; }
-  void SetRemote(const wstring value);
-  // __property wstring Node = { read = FNode, write = SetNode };
-  wstring GetNode() { return FNode; }
-  void SetNode(const wstring value);
+  // __property std::wstring Name = { read = FName, write = SetName };
+  std::wstring GetName() { return FName; }
+  void SetName(const std::wstring value);
+  // __property std::wstring Local = { read = FLocal, write = SetLocal };
+  std::wstring GetLocal() { return FLocal; }
+  void SetLocal(const std::wstring value);
+  // __property std::wstring Remote = { read = FRemote, write = SetRemote };
+  std::wstring GetRemote() { return FRemote; }
+  void SetRemote(const std::wstring value);
+  // __property std::wstring Node = { read = FNode, write = SetNode };
+  std::wstring GetNode() { return FNode; }
+  void SetNode(const std::wstring value);
   // __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
   TShortCut GetShortCut() { return FShortCut; }
   void SetShortCut(TShortCut value);
@@ -103,15 +103,15 @@ public:
 protected:
   TBookmarkList * FOwner;
 
-  static wstring BookmarkKey(const wstring Node, const wstring Name);
-  // __property wstring Key = { read = GetKey };
-  wstring GetKey();
+  static std::wstring BookmarkKey(const std::wstring Node, const std::wstring Name);
+  // __property std::wstring Key = { read = GetKey };
+  std::wstring GetKey();
 
 private:
-  wstring FName;
-  wstring FLocal;
-  wstring FRemote;
-  wstring FNode;
+  std::wstring FName;
+  std::wstring FLocal;
+  std::wstring FRemote;
+  std::wstring FNode;
   TShortCut FShortCut;
 
   void Modify(int OldIndex);

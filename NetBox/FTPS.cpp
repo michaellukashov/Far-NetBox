@@ -64,8 +64,8 @@ bool CFTPS::TryToResolveConnectionProblem()
     {
         // Показываем предупреждение о сертификате
         // DEBUG_PRINTF(L"NetBox: TryToResolveConnectionProblem: errorCode: %u", m_lastErrorCurlCode);
-        wstring errorInfo = ::MB2W(curl_easy_strerror(m_lastErrorCurlCode));
-        wstring msg = CFarPlugin::GetFormattedString(StringSSLErrorContinue, errorInfo.c_str());
+        std::wstring errorInfo = ::MB2W(curl_easy_strerror(m_lastErrorCurlCode));
+        std::wstring msg = CFarPlugin::GetFormattedString(StringSSLErrorContinue, errorInfo.c_str());
         const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), msg.c_str(), FMSG_MB_YESNO | FMSG_WARNING);
         if (retCode == 0) // Yes
         {

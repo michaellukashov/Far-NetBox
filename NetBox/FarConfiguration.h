@@ -16,6 +16,7 @@ public:
 
   // __property TCustomFarPlugin * Plugin = { read = FPlugin, write = SetPlugin };
   TCustomFarPlugin * GetPlugin() { return FPlugin; }
+  void SetPlugin(TCustomFarPlugin * value);
   // __property bool ConfirmOverwritingOverride = { read = FConfirmOverwritingOverride, write = FConfirmOverwritingOverride };
   bool GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool value) { FConfirmOverwritingOverride = value; }
@@ -91,8 +92,8 @@ public:
   wstring GetPuttygenPath();
   void SetPuttygenPath(wstring value) { FPuttygenPath = value; }
   // __property TBookmarkList * Bookmarks[wstring Key] = { read = GetBookmarks, write = SetBookmarks };
-  TBookmarkList * GetBookmarks(wstring Key);
-  void SetBookmarks(wstring Key, TBookmarkList * value);
+  TBookmarkList * GetBookmark(wstring Key);
+  void SetBookmark(wstring Key, TBookmarkList * value);
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
@@ -140,7 +141,6 @@ private:
 
   TBookmarks * FBookmarks;
 
-  void SetPlugin(TCustomFarPlugin * value);
   int FarConfirmations();
 };
 //---------------------------------------------------------------------------

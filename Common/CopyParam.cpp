@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "Common.h"
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
@@ -46,16 +43,16 @@ void TCopyParamType::Default()
   CPSLimit = 0;
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamType::GetInfoStr(wstring Separator, int Options) const
+std::wstring TCopyParamType::GetInfoStr(std::wstring Separator, int Options) const
 {
   TCopyParamType Defaults;
-  wstring Result;
+  std::wstring Result;
 
   bool SomeAttrExcluded = false;
   #define ADD(STR, EXCEPT) \
     if (FLAGCLEAR(Options, EXCEPT)) \
     { \
-      Result += (Result.empty() ? wstring() : Separator) + (STR); \
+      Result += (Result.empty() ? std::wstring() : Separator) + (STR); \
     } \
     else \
     { \
@@ -65,7 +62,7 @@ wstring TCopyParamType::GetInfoStr(wstring Separator, int Options) const
   if ((TransferMode != Defaults.TransferMode) ||
       ((TransferMode == tmAutomatic) && !(AsciiFileMask == Defaults.AsciiFileMask)))
   {
-    wstring S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE, 1),
+    std::wstring S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE, 1),
       (LoadStrPart(COPY_INFO_TRANSFER_TYPE, TransferMode + 2)));
     if (TransferMode == tmAutomatic)
     {
@@ -99,7 +96,7 @@ wstring TCopyParamType::GetInfoStr(wstring Separator, int Options) const
 
     if (PreserveRights)
     {
-      wstring RightsStr = Rights.Text;
+      std::wstring RightsStr = Rights.Text;
       if (AddXToDirectories)
       {
         RightsStr += ", " + LoadStr(COPY_INFO_ADD_X_TO_DIRS);
@@ -171,7 +168,7 @@ wstring TCopyParamType::GetInfoStr(wstring Separator, int Options) const
 
   if (SomeAttrExcluded)
   {
-    Result += (Result.empty() ? wstring() : Separator) +
+    Result += (Result.empty() ? std::wstring() : Separator) +
       FORMAT(LoadStrPart(COPY_INFO_NOT_USABLE, 1),
         (LoadStrPart(COPY_INFO_NOT_USABLE, (Result.empty() ? 3 : 2))));
   }
@@ -216,7 +213,7 @@ TCopyParamType & TCopyParamType::operator =(const TCopyParamType & rhp)
   return *this;
 }
 //---------------------------------------------------------------------------
-void TCopyParamType::SetLocalInvalidChars(wstring value)
+void TCopyParamType::SetLocalInvalidChars(std::wstring value)
 {
   if (value != LocalInvalidChars)
   {
@@ -238,7 +235,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool value)
   }
 }
 //---------------------------------------------------------------------------
-char * TCopyParamType::ReplaceChar(wstring & FileName, char * InvalidChar) const
+char * TCopyParamType::ReplaceChar(std::wstring & FileName, char * InvalidChar) const
 {
   int Index = InvalidChar - FileName.c_str() + 1;
   if (FileName.ByteType(Index) == mbSingleByte)
@@ -262,7 +259,7 @@ char * TCopyParamType::ReplaceChar(wstring & FileName, char * InvalidChar) const
   return InvalidChar;
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamType::ValidLocalFileName(wstring FileName) const
+std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
 {
   if (InvalidCharsReplacement != NoReplacement)
   {
@@ -276,8 +273,8 @@ wstring TCopyParamType::ValidLocalFileName(wstring FileName) const
       char Char;
       if ((InvalidCharsReplacement == TokenReplacement) &&
           (*InvalidChar == TokenPrefix) &&
-          (((FileName.Length() - Pos) <= 1) ||
-           (((Char = HexToChar(FileName.SubString(Pos + 1, 2))) == '\0') ||
+          (((FileName.size() - Pos) <= 1) ||
+           (((Char = HexToChar(FileName.substr(Pos + 1, 2))) == '\0') ||
             (FTokenizibleChars.Pos(Char) == 0))))
       {
         InvalidChar++;
@@ -290,18 +287,18 @@ wstring TCopyParamType::ValidLocalFileName(wstring FileName) const
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
     if (!FileName.empty() &&
-        ((FileName[FileName.Length()] == ' ') ||
-         (FileName[FileName.Length()] == '.')))
+        ((FileName[FileName.size()] == ' ') ||
+         (FileName[FileName.size()] == '.')))
     {
-      ReplaceChar(FileName, FileName.c_str() + FileName.Length() - 1);
+      ReplaceChar(FileName, FileName.c_str() + FileName.size() - 1);
     }
 
     if (IsReservedName(FileName))
     {
-      int P = FileName.Pos(".");
+      int P = FileName.find_first_of(L".");
       if (P == 0)
       {
-        P = FileName.Length() + 1;
+        P = FileName.size() + 1;
       }
       FileName.Insert("%00", P);
     }
@@ -309,7 +306,7 @@ wstring TCopyParamType::ValidLocalFileName(wstring FileName) const
   return FileName;
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamType::RestoreChars(wstring FileName) const
+std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
 {
   if (InvalidCharsReplacement == TokenReplacement)
   {
@@ -317,26 +314,26 @@ wstring TCopyParamType::RestoreChars(wstring FileName) const
     while ((InvalidChar = strchr(InvalidChar, TokenPrefix)) != NULL)
     {
       int Index = InvalidChar - FileName.c_str() + 1;
-      if ((FileName.Length() >= Index + 2) &&
+      if ((FileName.size() >= Index + 2) &&
           (FileName.ByteType(Index) == mbSingleByte) &&
           (FileName.ByteType(Index + 1) == mbSingleByte) &&
           (FileName.ByteType(Index + 2) == mbSingleByte))
       {
-        wstring Hex = FileName.SubString(Index + 1, 2);
+        std::wstring Hex = FileName.substr(Index + 1, 2);
         char Char = HexToChar(Hex);
         if ((Char != '\0') &&
             ((FTokenizibleChars.Pos(Char) > 0) ||
-             (((Char == ' ') || (Char == '.')) && (Index == FileName.Length() - 2))))
+             (((Char == ' ') || (Char == '.')) && (Index == FileName.size() - 2))))
         {
           FileName[Index] = Char;
-          FileName.Delete(Index + 1, 2);
+          FileName.erase(Index + 1, 2);
           InvalidChar = FileName.c_str() + Index;
         }
         else if ((Hex == "00") &&
-                 ((Index == FileName.Length() - 2) || (FileName[Index + 3] == '.')) &&
-                 IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
+                 ((Index == FileName.size() - 2) || (FileName[Index + 3] == '.')) &&
+                 IsReservedName(FileName.substr(1, Index - 1) + FileName.substr(Index + 3, FileName.size() - Index - 3 + 1)))
         {
-          FileName.Delete(Index, 3);
+          FileName.erase(Index, 3);
           InvalidChar = FileName.c_str() + Index - 1;
         }
         else
@@ -353,9 +350,9 @@ wstring TCopyParamType::RestoreChars(wstring FileName) const
   return FileName;
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamType::ValidLocalPath(wstring Path) const
+std::wstring TCopyParamType::ValidLocalPath(std::wstring Path) const
 {
-  wstring Result;
+  std::wstring Result;
   while (!Path.empty())
   {
     if (!Result.empty())
@@ -368,21 +365,21 @@ wstring TCopyParamType::ValidLocalPath(wstring Path) const
 }
 //---------------------------------------------------------------------------
 // not used yet
-wstring TCopyParamType::Untokenize(wstring FileName)
+std::wstring TCopyParamType::Untokenize(std::wstring FileName)
 {
   char * Token;
-  wstring Result = FileName;
+  std::wstring Result = FileName;
   while ((Token = AnsiStrScan(Result.c_str(), TokenPrefix)) != NULL)
   {
     int Index = Token - Result.c_str() + 1;
-    if (Index > Result.Length() - 2)
+    if (Index > Result.size() - 2)
     {
       Result = FileName;
       break;
     }
     else
     {
-      char Ch = (char)HexToInt(Result.SubString(Index + 1, 2), -1);
+      char Ch = (char)HexToInt(Result.substr(Index + 1, 2), -1);
       if (Ch == '\0')
       {
         Result = FileName;
@@ -391,14 +388,14 @@ wstring TCopyParamType::Untokenize(wstring FileName)
       else
       {
         Result[Index] = Ch;
-        Result.Delete(Index + 1, 2);
+        Result.erase(Index + 1, 2);
       }
     }
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamType::ChangeFileName(wstring FileName,
+std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
   TOperationSide Side, bool FirstLevel) const
 {
   if (FirstLevel)
@@ -408,10 +405,10 @@ wstring TCopyParamType::ChangeFileName(wstring FileName,
   switch (FileNameCase) {
     case ncUpperCase: FileName = FileName.UpperCase(); break;
     case ncLowerCase: FileName = FileName.LowerCase(); break;
-    case ncFirstUpperCase: FileName = FileName.SubString(1, 1).UpperCase() +
-      FileName.SubString(2, FileName.Length()-1).LowerCase(); break;
+    case ncFirstUpperCase: FileName = FileName.substr(1, 1).UpperCase() +
+      FileName.substr(2, FileName.size()-1).LowerCase(); break;
     case ncLowerCaseShort:
-      if ((FileName.Length() <= 12) && (FileName.Pos(".") <= 9) &&
+      if ((FileName.size() <= 12) && (FileName.find_first_of(L".") <= 9) &&
           (FileName == FileName.UpperCase()))
       {
         FileName = FileName.LowerCase();
@@ -433,7 +430,7 @@ wstring TCopyParamType::ChangeFileName(wstring FileName,
   return FileName;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::UseAsciiTransfer(wstring FileName,
+bool TCopyParamType::UseAsciiTransfer(std::wstring FileName,
   TOperationSide Side, const TFileMasks::TParams & Params) const
 {
   switch (TransferMode) {
@@ -453,7 +450,7 @@ TRights TCopyParamType::RemoteFileRights(int Attrs) const
   return R;
 }
 //---------------------------------------------------------------------------
-wstring TCopyParamType::GetLogStr() const
+std::wstring TCopyParamType::GetLogStr() const
 {
   char CaseC[] = "NULFS";
   char ModeC[] = "BAM";
@@ -507,7 +504,7 @@ bool TCopyParamType::AllowAnyTransfer() const
   return ExcludeFileMask.Masks.empty();
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::AllowTransfer(wstring FileName,
+bool TCopyParamType::AllowTransfer(std::wstring FileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
   bool Result = true;
@@ -590,7 +587,7 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-unsigned long GetSpeedLimit(const wstring & Text)
+unsigned long GetSpeedLimit(const std::wstring & Text)
 {
   unsigned long Speed;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
@@ -610,9 +607,9 @@ unsigned long GetSpeedLimit(const wstring & Text)
   return Speed * 1024;
 }
 //---------------------------------------------------------------------------
-wstring SetSpeedLimit(unsigned long Limit)
+std::wstring SetSpeedLimit(unsigned long Limit)
 {
-  wstring Text;
+  std::wstring Text;
   if (Limit == 0)
   {
     Text = LoadStr(SPEED_UNLIMITED);

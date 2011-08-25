@@ -62,15 +62,15 @@ public:
     virtual ~CWebDAV();
 
     //From IProtocol
-    virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);
+    virtual bool Connect(HANDLE abortEvent, std::wstring &errorInfo);
     virtual void Close();
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
-    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
-    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
-    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
+    virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo);
+    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
+    virtual bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
     virtual bool Aborted() const
     {
         return m_CURL.Aborted();
@@ -84,7 +84,7 @@ private:
      * \param errInfo buffer to save error message
      * \return false if error
      */
-    bool SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo);
+    bool SendPropFindRequest(const wchar_t *dir, std::string &response, std::wstring &errInfo);
 
     /**
      * Check response for valid code
@@ -92,7 +92,7 @@ private:
      * \param errInfo buffer to save error message
      * \return false if error (response unexpected)
      */
-    bool CheckResponseCode(const long expect, wstring &errInfo);
+    bool CheckResponseCode(const long expect, std::wstring &errInfo);
 
     /**
      * Check response for valid code
@@ -101,14 +101,14 @@ private:
      * \param errInfo buffer to save error message
      * \return false if error (response unexpected)
      */
-    bool CheckResponseCode(const long expect1, const long expect2, wstring &errInfo);
+    bool CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo);
 
     /**
      * Get incorrect response information
      * \param code response code
      * \return response information
      */
-    wstring GetBadResponseInfo(const int code) const;
+    std::wstring GetBadResponseInfo(const int code) const;
 
     /**
      * Get xml namespace
@@ -117,7 +117,7 @@ private:
      * \param defaultVal default namespace id
      * \return namespace id
      */
-    string GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const;
+    std::string GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const;
 
     /**
      * Parse internet datetime
@@ -138,17 +138,17 @@ private:
 
     /**
      * Decode content with safe symbols wrapper (%XX)
-     * \param src source string
+     * \param src source std::string
      * \return decoded content
      */
-    string DecodeHex(const string &src) const;
+    std::string DecodeHex(const std::string &src) const;
 
     /**
      * Encode URL to UTF8 format with unsafe symbols wrapper (%XX)
-     * \param src source string
+     * \param src source std::string
      * \return encoded URL
      */
-    string EscapeUTF8URL(const wchar_t *src) const;
+    std::string EscapeUTF8URL(const wchar_t *src) const;
 
 protected:
     CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);

@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "CoreMain.h"
 
 #include "Common.h"
@@ -13,8 +10,6 @@
 #include "FileZillaIntf.h"
 #endif
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TConfiguration * Configuration = NULL;
 TStoredSessionList * StoredSessions = NULL;
 //---------------------------------------------------------------------------
@@ -23,7 +18,7 @@ TQueryButtonAlias::TQueryButtonAlias()
   OnClick = NULL;
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(unsigned int AParams, wstring AHelpKeyword)
+TQueryParams::TQueryParams(unsigned int AParams, std::wstring AHelpKeyword)
 {
   Params = AParams;
   Aliases = NULL;

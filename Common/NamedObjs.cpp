@@ -1,10 +1,5 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "NamedObjs.h"
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2)
 {
@@ -17,7 +12,7 @@ int NamedObjectSortProc(void * Item1, void * Item2)
   return AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
 }
 //--- TNamedObject ----------------------------------------------------------
-int TNamedObject::CompareName(wstring aName,
+int TNamedObject::CompareName(std::wstring aName,
   bool CaseSensitive)
 {
   if (CaseSensitive)
@@ -34,21 +29,21 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     {
       int N = 0, P;
       // If name already contains number parenthesis remove it (and remember it)
-      if ((Name[Name.Length()] == ')') && ((P = Name.LastDelimiter('(')) > 0))
+      if ((Name[Name.size()] == ')') && ((P = Name.LastDelimiter('(')) > 0))
         try {
-          N = StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
-          Name.Delete(P, Name.Length() - P + 1);
+          N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
+          Name.erase(P, Name.size() - P + 1);
           Name = Name.TrimRight();
         } catch (exception &E) { N = 0; };
       Name += " (" + IntToStr(N+1) + ")";
     }
 }
 //--- TNamedObjectList ------------------------------------------------------
-const wstring TNamedObjectList::HiddenPrefix = "_!_";
+const std::wstring TNamedObjectList::HiddenPrefix = "_!_";
 //---------------------------------------------------------------------------
 bool TNamedObjectList::IsHidden(TNamedObject * Object)
 {
-  return (Object->Name.SubString(1, HiddenPrefix.Length()) == HiddenPrefix);
+  return (Object->Name.substr(1, HiddenPrefix.size()) == HiddenPrefix);
 }
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList():
@@ -81,7 +76,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
   Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject * TNamedObjectList::FindByName(wstring Name,
+TNamedObject * TNamedObjectList::FindByName(std::wstring Name,
   bool CaseSensitive)
 {
   for (int Index = 0; Index < TObjectList::Count; Index++)

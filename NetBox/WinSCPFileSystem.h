@@ -94,7 +94,7 @@ protected:
     wstring & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
     int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
     wstring & ShortcutData);
-  virtual bool GetFindDataEx(TList * PanelItems, int OpMode);
+  virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode);
   virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
   virtual bool SetDirectoryEx(const wstring Dir, int OpMode);
   virtual int MakeDirectoryEx(wstring & Name, int OpMode);
@@ -114,7 +114,7 @@ protected:
   TWinSCPPlugin * WinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType & ProgressData,
     bool Force);
-  bool SessionDialog(TSessionData * Data, TSessionAction & Action);
+  bool SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
   void DuplicateRenameSession(TSessionData * Data,
     bool Duplicate);
@@ -142,7 +142,7 @@ protected:
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing();
   bool PropertiesDialog(TStrings * FileList,
-    const wstring Directory, TStrings * GroupList, TStrings * UserList,
+    const wstring Directory, const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     TRemoteProperties * Properties, int AllowedChanges);
   bool ExecuteCommand(const wstring Command);
   void TerminalCaptureLog(const wstring & AddedLine, bool StdError);
@@ -297,7 +297,7 @@ private:
     TOperationSide Side, bool DragDrop, const wstring & FileName, bool Success,
     bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
-  TStrings * CreateFileList(TList * PanelItems,
+  TStrings * CreateFileList(TObjectList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, wstring Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = NULL);
   TStrings * CreateSelectedFileList(TOperationSide Side,

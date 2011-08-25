@@ -76,7 +76,7 @@ public:
      * Get session path
      * \return session path
      */
-    wstring GetSessionPath() const;
+    std::wstring GetSessionPath() const;
 
     //
     // Proxy
@@ -85,7 +85,7 @@ public:
     {
         return m_proxySettings.proxyType;
     }
-    wstring ProxyHost() const
+    std::wstring ProxyHost() const
     {
         return m_proxySettings.proxyHost;
     }
@@ -93,11 +93,11 @@ public:
     {
         return m_proxySettings.proxyPort;
     }
-    wstring ProxyLogin() const
+    std::wstring ProxyLogin() const
     {
         return m_proxySettings.proxyLogin;
     }
-    wstring ProxyPassword() const
+    std::wstring ProxyPassword() const
     {
         return m_proxySettings.proxyPassword;
     }
@@ -123,7 +123,7 @@ public:
     }
 
 private:
-    void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
+    void AddMenuItem(std::vector<FarMenuItemEx> &items, DWORD flags, int titleId);
 
     void MainConfigure();
     void ProxyConfigure();
@@ -137,15 +137,15 @@ private:
     //Settings variables
     bool m_AddToDiskMenu; ///< Add plugin to disk menu flag
     bool m_AddToPanelMenu; ///< Add plugin to panel plugin menu flag
-    wstring m_CmdPrefix; ///< Plugin command prefix
+    std::wstring m_CmdPrefix; ///< Plugin command prefix
     bool m_AltPrefix; ///< Hande additional prefix flag (ftp, sftp etc)
     bool m_UseOwnKey; ///< Use own encryption key flag
     unsigned long m_Timeout; ///< Default timeout in seconds
-    wstring m_SessionPath; ///< Session folder path
+    std::wstring m_SessionPath; ///< Session folder path
     bool m_EnableLogging; ///< Enable logging flag
     int m_LoggingLevel;
     bool m_LogToFile;
-    wstring m_LogFileName;
+    std::wstring m_LogFileName;
     
     ProxySettings m_proxySettings;
 };

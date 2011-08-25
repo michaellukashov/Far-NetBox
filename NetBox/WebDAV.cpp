@@ -52,7 +52,7 @@ CWebDAV::~CWebDAV()
 }
 
 
-bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
+bool CWebDAV::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
     assert(abortEvent);
 
@@ -64,8 +64,8 @@ bool CWebDAV::Connect(HANDLE abortEvent, wstring &errorInfo)
     m_CURL.SetAbortEvent(abortEvent);
 
     //Check initial path existing
-    wstring path;
-    // wstring query;
+    std::wstring path;
+    // std::wstring query;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
     // DEBUG_PRINTF(L"NetBox: path = %s, query = %s", path.c_str(), query.c_str());
@@ -93,22 +93,22 @@ void CWebDAV::Close()
 }
 
 
-bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
-    string responseDummy;
+    std::string responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
     // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
 }
 
 
-bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CWebDAV::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: MakeDirectory: begin: path = %s", path);
-    const string webDavPath = EscapeUTF8URL(path);
+    const std::string webDavPath = EscapeUTF8URL(path);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     CSlistURL slist;
@@ -131,19 +131,19 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
 
-    string response;
+    std::string response;
     if (!SendPropFindRequest(m_CurrentDirectory.c_str(), response, errorInfo))
     {
         return false;
     }
 
     //Erase slashes (to compare in xml parse)
-    wstring currentPath(m_CurrentDirectory);
+    std::wstring currentPath(m_CurrentDirectory);
     while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
     {
         currentPath.erase(currentPath.length() - 1);
@@ -153,7 +153,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
         currentPath.erase(0, 1);
     }
 
-    const string decodedResp = DecodeHex(response);
+    const std::string decodedResp = DecodeHex(response);
 
 #ifdef _DEBUG
     //////////////////////////////////////////////////////////////////////////
@@ -169,14 +169,14 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
         {
             LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
         }
-        wstring             Name;
+        std::wstring             Name;
         DWORD               Attributes;
         FILETIME            Created;
         FILETIME            Modified;
         FILETIME            LastAccess;
         unsigned __int64    Size;
     };
-    vector<WebDAVItem> wdavItems;
+    std::vector<WebDAVItem> wdavItems;
 
     TiXmlDocument xmlDoc;
     xmlDoc.Parse(decodedResp.c_str());
@@ -192,8 +192,8 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
     const TiXmlElement *xmlRoot = xmlDoc.RootElement();
 
     //Determine global namespace
-    const string glDavNs = GetNamespace(xmlRoot, "DAV:", "D:");
-    const string glMsNs = GetNamespace(xmlRoot, "urn:schemas-microsoft-com:", "Z:");
+    const std::string glDavNs = GetNamespace(xmlRoot, "DAV:", "D:");
+    const std::string glMsNs = GetNamespace(xmlRoot, "urn:schemas-microsoft-com:", "Z:");
 
     const TiXmlNode *xmlRespNode = NULL;
     while ((xmlRespNode = xmlRoot->IterateChildren((glDavNs + "response").c_str(), xmlRespNode)) != NULL)
@@ -201,16 +201,16 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
         WebDAVItem item;
 
         const TiXmlElement *xmlRespElem = xmlRespNode->ToElement();
-        const string davNamespace = GetNamespace(xmlRespElem, "DAV:", glDavNs.c_str());
-        const string msNamespace = GetNamespace(xmlRespElem, "urn:schemas-microsoft-com:", glMsNs.c_str());
+        const std::string davNamespace = GetNamespace(xmlRespElem, "DAV:", glDavNs.c_str());
+        const std::string msNamespace = GetNamespace(xmlRespElem, "urn:schemas-microsoft-com:", glMsNs.c_str());
         const TiXmlElement *xmlHref = xmlRespNode->FirstChildElement((glDavNs + "href").c_str());
         if (!xmlHref || !xmlHref->GetText())
         {
             continue;
         }
 
-        const wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
-        wstring path;
+        const std::wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
+        std::wstring path;
         ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
         if (path.empty())
         {
@@ -234,7 +234,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
         //name
         item.Name = path;
         const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
-        if (nameDelim != string::npos)
+        if (nameDelim != std::string::npos)
         {
             item.Name.erase(0, nameDelim + 1);
         }
@@ -333,7 +333,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo
 }
 
 
-bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
@@ -346,7 +346,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
         return false;
     }
 
-    const string webDavPath = EscapeUTF8URL(remotePath);
+    const std::string webDavPath = EscapeUTF8URL(remotePath);
     // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
@@ -374,7 +374,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
 }
 
 
-bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"NetBox: CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
@@ -386,7 +386,7 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
         return false;
     }
 
-    const string webDavPath = EscapeUTF8URL(remotePath);
+    const std::string webDavPath = EscapeUTF8URL(remotePath);
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
     slist.Append("Expect:");    //Expect: 100-continue is not wanted
@@ -408,17 +408,17 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
 }
 
 
-bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, wstring &errorInfo)
+bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
 {
-    const string srcWebDavPath = EscapeUTF8URL(srcPath);
-    const string dstWebDavPath = EscapeUTF8URL(dstPath);
+    const std::string srcWebDavPath = EscapeUTF8URL(srcPath);
+    const std::string dstWebDavPath = EscapeUTF8URL(dstPath);
 
     CURLcode urlCode = CURLPrepare(srcWebDavPath.c_str());
     CSlistURL slist;
     slist.Append("Depth: infinity");
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     slist.Append("Content-Length: 0");
-    string dstParam = "Destination: ";
+    std::string dstParam = "Destination: ";
     dstParam += m_CURL.GetTopURL();
     dstParam += dstWebDavPath;
     slist.Append(dstParam.c_str());
@@ -438,9 +438,9 @@ bool CWebDAV::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemT
 }
 
 
-bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &errorInfo)
+bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, std::wstring &errorInfo)
 {
-    const string webDavPath = EscapeUTF8URL(path);
+    const std::string webDavPath = EscapeUTF8URL(path);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     CSlistURL slist;
@@ -461,9 +461,9 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, wstring &erro
 }
 
 
-bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring &errInfo)
+bool CWebDAV::SendPropFindRequest(const wchar_t *dir, std::string &response, std::wstring &errInfo)
 {
-    const string webDavPath = EscapeUTF8URL(dir);
+    const std::string webDavPath = EscapeUTF8URL(dir);
     // DEBUG_PRINTF(L"NetBox: CWebDAV::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
@@ -524,7 +524,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, string &response, wstring 
 }
 
 
-bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
+bool CWebDAV::CheckResponseCode(const long expect, std::wstring &errInfo)
 {
     long responseCode = 0;
     if (curl_easy_getinfo(m_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
@@ -540,7 +540,7 @@ bool CWebDAV::CheckResponseCode(const long expect, wstring &errInfo)
 }
 
 
-bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, wstring &errInfo)
+bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
 {
     long responseCode = 0;
     if (curl_easy_getinfo(m_CURL, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
@@ -555,7 +555,7 @@ bool CWebDAV::CheckResponseCode(const long expect1, const long expect2, wstring 
 }
 
 
-wstring CWebDAV::GetBadResponseInfo(const int code) const
+std::wstring CWebDAV::GetBadResponseInfo(const int code) const
 {
     const wchar_t *descr = NULL;
     switch (code)
@@ -688,7 +688,7 @@ wstring CWebDAV::GetBadResponseInfo(const int code) const
         break;
     }
 
-    wstring errInfo = L"Incorrect response code: ";
+    std::wstring errInfo = L"Incorrect response code: ";
 
     errInfo += ::NumberToWString(code);
 
@@ -702,13 +702,13 @@ wstring CWebDAV::GetBadResponseInfo(const int code) const
 }
 
 
-string CWebDAV::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
+std::string CWebDAV::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
 {
     assert(element);
     assert(name);
     assert(defaultVal);
 
-    string ns = defaultVal;
+    std::string ns = defaultVal;
     const TiXmlAttribute *attr = element->FirstAttribute();
     while (attr)
     {
@@ -754,10 +754,10 @@ FILETIME CWebDAV::ParseDateTime(const char *dt) const
 }
 
 
-string CWebDAV::DecodeHex(const string &src) const
+std::string CWebDAV::DecodeHex(const std::string &src) const
 {
     const size_t cntLength = src.length();
-    string result;
+    std::string result;
     result.reserve(cntLength);
 
     for (size_t i = 0; i < cntLength; ++i)
@@ -781,14 +781,14 @@ string CWebDAV::DecodeHex(const string &src) const
 }
 
 
-string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
+std::string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
 {
     assert(src && src[0] == L'/');
 
-    string plainText = ::W2MB(src, CP_UTF8);
+    std::string plainText = ::W2MB(src, CP_UTF8);
     const size_t cntLength = plainText.length();
 
-    string result;
+    std::string result;
     result.reserve(cntLength);
 
     static const char permitSymbols[] = "/;@&=+$,-_.?!~'()%{}^[]`";
@@ -796,7 +796,7 @@ string CWebDAV::EscapeUTF8URL(const wchar_t *src) const
     for (size_t i = 0; i < cntLength; ++i)
     {
         const char chkChar = plainText[i];
-        if (*find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
+        if (*std::find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
                 (chkChar >= 'a' && chkChar <= 'z') ||
                 (chkChar >= 'A' && chkChar <= 'Z') ||
                 (chkChar >= '0' && chkChar <= '9'))
