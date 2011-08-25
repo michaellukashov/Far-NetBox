@@ -745,7 +745,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
 {
   if (FOutputLog)
   {
-    FPlugin->WriteConsole(AddedLine + "\n");
+    FPlugin->WriteConsole(AddedLine + L"\n");
   }
   if (FCapturedLog != NULL)
   {
@@ -755,7 +755,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, wstring Message)
 {
-  if (Panel->IsPlugin || (Panel->Type != ptFile))
+  if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
     throw ExtException(Message);
   }
@@ -763,21 +763,21 @@ void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, wstring Message
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::RequireCapability(int Capability)
 {
-  if (!FTerminal->IsCapable[static_cast<TFSCapability>(Capability)])
+  if (!FTerminal->GetIsCapable(static_cast<TFSCapability>(Capability)))
   {
-    throw ExtException(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED),
+    throw ExtException(::FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
       (FTerminal->GetFileSystemInfo().ProtocolName)));
   }
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
 {
-  bool Result = FTerminal->IsCapable[Capability] ||
-    FTerminal->CommandSessionOpened;
+  bool Result = FTerminal->GetIsCapable(Capability) ||
+    FTerminal->GetCommandSessionOpened();
 
   if (!Result)
   {
-    if (!GUIConfiguration->ConfirmCommandSession)
+    if (!GUIConfiguration->GetConfirmCommandSession())
     {
       Result = true;
     }
@@ -785,13 +785,13 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params;
       Params.Params = qpNeverAskAgainCheck;
-      int Answer = MoreMessageDialog(FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION),
-        (FTerminal->GetFileSystemInfo().ProtocolName,
-         FTerminal->GetFileSystemInfo().ProtocolName)), NULL,
+      int Answer = MoreMessageDialog(::FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
+        FTerminal->GetFileSystemInfo().ProtocolName.c_str(),
+         FTerminal->GetFileSystemInfo().ProtocolName.c_str()), NULL,
         qtConfirmation, qaOK | qaCancel, &Params);
       if (Answer == qaNeverAskAgain)
       {
-        GUIConfiguration->ConfirmCommandSession = false;
+        GUIConfiguration->SetConfirmCommandSession(false);
         Result = true;
       }
       else
@@ -802,7 +802,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
 
     if (Result)
     {
-      ConnectTerminal(FTerminal->CommandSession);
+      ConnectTerminal(FTerminal->GetCommandSession());
     }
   }
 
@@ -817,14 +817,14 @@ bool TWinSCPFileSystem::ExecuteCommand(const wstring Command)
     FTerminal->BeginTransaction();
     try
     {
-      FarControl(FCTL_SETCMDLINE, NULL);
+      FarControl(FCTL_SETCMDLINE, 0, NULL);
       FPlugin->ShowConsoleTitle(Command);
       try
       {
         FPlugin->ShowTerminalScreen();
 
         FOutputLog = true;
-        FTerminal->AnyCommand(Command, TerminalCaptureLog);
+        FTerminal->AnyCommand(Command, GetTerminalCaptureLog());
       }
       catch(...)
       {
@@ -854,7 +854,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 {
   bool Handled = false;
 
-  TFarPanelItem * Focused = PanelInfo->FocusedItem;
+  TFarPanelItem * Focused = PanelInfo->GetFocusedItem();
 
   if ((Key == 'W') && (ControlState & PKF_SHIFT) &&
         (ControlState & PKF_ALT))
@@ -866,7 +866,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
   {
     TSessionData * Data = NULL;
 
-    if ((Focused != NULL) && Focused->IsFile && Focused->UserData)
+    if ((Focused != NULL) && Focused->GetIsFile() && Focused->UserData)
     {
       Data = (TSessionData *)Focused->UserData;
     }
@@ -1858,7 +1858,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(wstring Token, bool Separate)
       Token += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, Token.c_str());
+    FarControl(FCTL_INSERTCMDLINE, 0, Token.c_str());
   }
 }
 //---------------------------------------------------------------------------
