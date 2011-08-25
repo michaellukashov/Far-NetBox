@@ -179,7 +179,7 @@ set ( TESTNETBOX_01_HEADERS
 
 set ( TESTNETBOX_01_SOURCES
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-    ${NETBOX_SOURCES}
+    ${PROJECT_ROOT}/NetBox/stdafx.cpp
 )
 
 set ( TESTNETBOX_01_LIBRARIES

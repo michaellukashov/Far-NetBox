@@ -39,7 +39,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool Connect(HANDLE abortEvent, wstring &errorInfo) = 0;
+    virtual bool Connect(HANDLE abortEvent, std::wstring &errorInfo) = 0;
 
     /**
      * Close connection
@@ -54,7 +54,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo) = 0;
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo) = 0;
 
     /**
      * Change directory directory
@@ -62,7 +62,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo) = 0;
+    virtual bool ChangeDirectory(const wchar_t *name, std::wstring &errorInfo) = 0;
 
     /**
      * Get current directory
@@ -76,7 +76,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo) = 0;
+    virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo) = 0;
 
     /**
      * Get current directory listing
@@ -85,7 +85,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo) = 0;
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo) = 0;
 
     /**
      * Free directory listing
@@ -102,7 +102,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo) = 0;
+    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo) = 0;
 
     /**
      * Copy local to remote file
@@ -112,7 +112,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo) = 0;
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo) = 0;
 
     /**
      * Rename remote file/directory
@@ -127,7 +127,7 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo) = 0;
+    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo) = 0;
 
     /**
      * Delete remote file/directory
@@ -136,14 +136,14 @@ public:
      * \param errorInfo error description
      * \return false if error
      */
-    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo) = 0;
+    virtual bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo) = 0;
 
     /**
      * Get current URL (without path)
      * \param includeUser include user's name/password info
      * \return current URL
      */
-    virtual wstring GetURL(const bool includeUser = false) = 0;
+    virtual std::wstring GetURL(const bool includeUser = false) = 0;
 
     /**
      * Get progress in percent of currently processing operation
@@ -155,4 +155,4 @@ public:
     virtual bool Aborted() const = 0;
 };
 
-typedef auto_ptr<IProtocol> PProtocol;
+typedef std::auto_ptr<IProtocol> PProtocol;

@@ -23,7 +23,7 @@
 #include "SessionEditor.h"
 
 class CSession;
-typedef auto_ptr<CSession> PSession;
+typedef std::auto_ptr<CSession> PSession;
 
 
 /**
@@ -69,7 +69,7 @@ public:
      * Get supported protocols prefixes
      * \return supported protocols prefixes
      */
-    static wstring GetSupportedPrefixes();
+    static std::wstring GetSupportedPrefixes();
 
     struct ProxySettings &GetProxySettings() { return m_proxySettings; }
 
@@ -210,12 +210,12 @@ private:
     bool Save(const wchar_t *fileName) const;
 
     /**
-     * Crypt/decrypt string
-     * \param src source string
+     * Crypt/decrypt std::string
+     * \param src source std::string
      * \param encrypt operation type (true = encode; false = decode)
-     * \return encrypted/decrypted string value
+     * \return encrypted/decrypted std::string value
      */
-    wstring Crypt(const wstring &src, const bool encrypt) const;
+    std::wstring Crypt(const std::wstring &src, const bool encrypt) const;
 
     //! Client's protocol implementation
     struct ProtoImplInfo
@@ -239,17 +239,17 @@ private:
     {
         Property() : NeedCrypt(false)
         {}
-        string Name; ///< Property name
-        wstring Value; ///< Property value
+        std::string Name; ///< Property name
+        std::wstring Value; ///< Property value
         bool NeedCrypt; ///< Crypt value flag
     };
 
 private:
     int m_ProtoId; ///< Unique protocol id
-    wstring m_SessionName; ///< Session name
-    vector<Property> m_Properties; ///< Session's properties
+    std::wstring m_SessionName; ///< Session name
+    std::vector<Property> m_Properties; ///< Session's properties
     struct ProxySettings m_proxySettings;
 
-    static string m_CryptKey; ///< Crypt key
-    static vector<ProtoImplInfo> m_Factory; ///< Client protocol implementation factory
+    static std::string m_CryptKey; ///< Crypt key
+    static std::vector<ProtoImplInfo> m_Factory; ///< Client protocol implementation factory
 };
