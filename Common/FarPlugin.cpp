@@ -1059,7 +1059,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         std::wstring FullMessage = Message;
         if (Params->MoreMessages != NULL)
         {
-            FullMessage += std::wstring(L"\n\x01\n") + Params->GetMoreMessages()->GetText();
+            FullMessage += std::wstring(L"\n\x01\n") + Params->MoreMessages->GetText();
             while (FullMessage[FullMessage.size()] == L'\n' ||
                     FullMessage[FullMessage.size()] == L'\r')
             {
@@ -1475,7 +1475,7 @@ void TCustomFarPlugin::ShowConsoleTitle(const std::wstring Title)
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ClearConsoleTitle()
 {
-    assert(FSavedTitles->Count > 0);
+    assert(FSavedTitles->GetCount() > 0);
     std::wstring Title = FSavedTitles->GetString(FSavedTitles->GetCount()-1);
     TObject *Object = (TObject *)FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
     TConsoleTitleParam Param = *(TConsoleTitleParam *)&Object;
@@ -2229,7 +2229,7 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
 {
     int ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
     assert(Mode >= 0 && Mode < LENOF(FPanelModes));
-    assert(!ColumnTitles || (ColumnTitles->Count == ColumnTypesCount));
+    assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
     ClearPanelMode(FPanelModes[Mode]);
     wchar_t *Titles[PANEL_MODES_COUNT];
@@ -2849,7 +2849,7 @@ TFarPluginEnvGuard::TFarPluginEnvGuard()
     // keep the assertion, but be robust, in case we are called from incorrectly
     // programmed plugin (e.g. EMenu)
     FANSIApis = AreFileApisANSI();
-    assert(FANSIApis == FarPlugin->ANSIApis);
+    assert(FANSIApis == FarPlugin->GetANSIApis());
 
     if (!FANSIApis)
     {
