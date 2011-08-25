@@ -618,7 +618,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
   TSessionData * OrigData = Data;
   bool NewData = !Data;
-  bool FillInConnect = !Edit && !Data->CanLogin;
+  bool FillInConnect = !Edit && !Data->GetCanLogin();
 
   if (NewData || FillInConnect)
   {
