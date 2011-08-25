@@ -79,7 +79,7 @@ std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
       FileExt = MaskFilePart(FileExt, Mask.substr(P + 1, Mask.size() - P), Masked);
       if (P2 > 1)
       {
-        FileName.SetLength(P2 - 1);
+        FileName.resize(P2 - 1);
       }
       FileName = MaskFilePart(FileName, Mask.substr(1, P - 1), Masked);
       if (!FileExt.empty())
@@ -466,7 +466,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
 
             if (Mask.DirectoryOnly)
             {
-              PartStr.SetLength(PartStr.size() - 1);
+              PartStr.resize(PartStr.size() - 1);
               D = PartStr.LastDelimiter("\\/");
             }
 

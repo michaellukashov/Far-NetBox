@@ -16,7 +16,7 @@
 std::wstring MungeStr(const std::wstring Str)
 {
   std::wstring Result;
-  Result.SetLength(Str.size() * 3 + 1);
+  Result.resize(Str.size() * 3 + 1);
   putty_mungestr(Str.c_str(), Result.c_str());
   PackStr(Result);
   return Result;
@@ -25,7 +25,7 @@ std::wstring MungeStr(const std::wstring Str)
 std::wstring UnMungeStr(const std::wstring Str)
 {
   std::wstring Result;
-  Result.SetLength(Str.size() * 3 + 1);
+  Result.resize(Str.size() * 3 + 1);
   putty_unmungestr(Str.c_str(), Result.c_str(), Result.size());
   PackStr(Result);
   return Result;
@@ -269,7 +269,7 @@ std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring Name)
 {
   int Size = BinaryDataSize(Name);
   std::wstring Value;
-  Value.SetLength(Size);
+  Value.resize(Size);
   ReadBinaryData(Name, Value.c_str(), Size);
   return Value;
 }
@@ -746,7 +746,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
         int P = SubSection.find_first_of(L"\\");
         if (P)
         {
-          SubSection.SetLength(P - 1);
+          SubSection.resize(P - 1);
         }
         if (Strings->IndexOf(SubSection) < 0)
         {

@@ -1280,7 +1280,7 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
   Data.hwnd = NULL;
   Data.wFunc = FO_DELETE;
   std::wstring FileList(FileName);
-  FileList.SetLength(FileList.size() + 2);
+  FileList.resize(FileList.size() + 2);
   FileList[FileList.size() - 1] = '\0';
   FileList[FileList.size()] = '\0';
   Data.pFrom = FileList.c_str();
@@ -1407,9 +1407,9 @@ std::wstring LoadStr(int Ident, unsigned int MaxLength)
   assert(MainModule != NULL);
 
   std::wstring Result;
-  Result.SetLength(MaxLength);
+  Result.resize(MaxLength);
   int Length = LoadString(MainModule->ResInstance, Ident, Result.c_str(), MaxLength);
-  Result.SetLength(Length);
+  Result.resize(Length);
 
   return Result;
 }

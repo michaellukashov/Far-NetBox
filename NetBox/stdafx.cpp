@@ -498,3 +498,9 @@ TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S
     TDateTime result;
     return result;
 }
+
+std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
+{
+    std::wstring result;
+    return result;
+}

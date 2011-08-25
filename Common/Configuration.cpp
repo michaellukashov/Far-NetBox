@@ -358,7 +358,7 @@ void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
 std::wstring TConfiguration::BannerHash(const std::wstring & Banner)
 {
   std::wstring Result;
-  Result.SetLength(16);
+  Result.resize(16);
   md5checksum(Banner.c_str(), Banner.size(), (unsigned char*)Result.c_str());
   return Result;
 }
@@ -643,7 +643,7 @@ std::wstring TConfiguration::TrimVersion(std::wstring Version)
   while ((Version.find_first_of(L".") != Version.LastDelimiter(".")) &&
     (Version.substr(Version.size() - 1, 2) == ".0"))
   {
-    Version.SetLength(Version.size() - 2);
+    Version.resize(Version.size() - 2);
   }
   return Version;
 }

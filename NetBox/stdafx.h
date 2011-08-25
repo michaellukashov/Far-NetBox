@@ -158,3 +158,5 @@ void DecodeTime(const TDateTime &DateTime, unsigned short &H,
     unsigned short &N, unsigned short &S, unsigned short &MS);
 TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D);
 TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
+
+std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);

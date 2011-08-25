@@ -375,14 +375,14 @@ std::wstring UserModificationStr(TDateTime DateTime,
   switch (Precision)
   {
     case mfNone:
-      return "";
+      return L"";
     case mfMDY:
-      return FormatDateTime("ddddd", DateTime);
+      return FormatDateTime(L"ddddd", DateTime);
     case mfMDHM:
-      return FormatDateTime("ddddd t", DateTime);
+      return FormatDateTime(L"ddddd t", DateTime);
     case mfFull:
     default:
-      return FormatDateTime("ddddd tt", DateTime);
+      return FormatDateTime(L"ddddd tt", DateTime);
   }
 }
 //---------------------------------------------------------------------------
@@ -405,7 +405,7 @@ int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
   if (AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT))
   {
     static const size_t PartialExtLen = sizeof(PARTIAL_EXT) - 1;
-    FileName.SetLength(FileName.size() - PartialExtLen);
+    FileName.resize(FileName.size() - PartialExtLen);
   }
 
   int Icon;
@@ -1179,7 +1179,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           {
             FLinkTo = Line.substr(
               P + strlen(SYMLINKSTR), Line.size() - P + strlen(SYMLINKSTR) + 1);
-            Line.SetLength(P - 1);
+            Line.resize(P - 1);
           }
           else
           {
@@ -2083,7 +2083,7 @@ std::wstring TRights::GetText() const
   else
   {
     std::wstring Result;
-    Result.SetLength(TextLen);
+    Result.resize(TextLen);
 
     int Flag = 00001;
     int ExtendedFlag = 01000;
@@ -2178,7 +2178,7 @@ std::wstring TRights::GetOctal() const
 {
   std::wstring Result;
   unsigned short N = NumberSet; // used to be "Number"
-  Result.SetLength(4);
+  Result.resize(4);
   Result[1] = static_cast<char>('0' + ((N & 07000) >> 9));
   Result[2] = static_cast<char>('0' + ((N & 00700) >> 6));
   Result[3] = static_cast<char>('0' + ((N & 00070) >> 3));

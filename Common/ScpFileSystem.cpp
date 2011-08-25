@@ -252,7 +252,7 @@ std::wstring TCommandSet::ExtractCommand(std::wstring Command)
   int P = Command.find_first_of(L" ");
   if (P > 0)
   {
-    Command.SetLength(P-1);
+    Command.resize(P-1);
   }
   return Command;
 }
@@ -525,7 +525,7 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
     if (TryStrToInt(ReturnCodeStr, ReturnCode))
     {
       IsLastLine = true;
-      Line.SetLength(Pos - 1);
+      Line.resize(Pos - 1);
     }
   }
   return IsLastLine;
@@ -596,7 +596,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
       }
       while (!Message.empty() && (Message.LastDelimiter("\n\r") == Message.size()))
       {
-        Message.SetLength(Message.size() - 1);
+        Message.resize(Message.size() - 1);
       }
 
       bool WrongReturnCode =

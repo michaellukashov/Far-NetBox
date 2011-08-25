@@ -19,7 +19,7 @@ bool FindFile(std::wstring & Path)
     if (Len > 0)
     {
       std::wstring Paths;
-      Paths.SetLength(Len - 1);
+      Paths.resize(Len - 1);
       GetEnvironmentVariable("PATH", Paths.c_str(), Len);
 
       std::wstring NewPath = FileSearch(ExtractFileName(Path), Paths);
