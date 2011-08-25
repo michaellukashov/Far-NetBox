@@ -127,3 +127,6 @@ std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 void CheckAbortEvent(HANDLE *AbortEvent);
 
 std::wstring ExpandEnvVars(const std::wstring& str);
+
+std::wstring Trim(const std::wstring str);
+std::wstring LowerCase(const std::wstring str);

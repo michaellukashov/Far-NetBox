@@ -345,3 +345,17 @@ std::wstring ExpandEnvVars(const std::wstring& str)
     // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
     return result;
 }
+
+std::wstring Trim(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring LowerCase(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
