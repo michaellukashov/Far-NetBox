@@ -407,6 +407,12 @@ bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
+bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
 bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
 {
     // FIXME
@@ -488,6 +494,12 @@ void RaiseLastOSError()
 {
 }
 
+TDateTime Date()
+{
+    TDateTime result;
+    return result;
+}
+
 void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
     unsigned short &M, unsigned short &D)
 {
@@ -498,18 +510,6 @@ void DecodeTime(const TDateTime &DateTime, unsigned short &H,
     unsigned short &N, unsigned short &S, unsigned short &MS)
 {
     // FIXME
-}
-
-TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D)
-{
-    TDateTime result;
-    return result;
-}
-
-TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS)
-{
-    TDateTime result;
-    return result;
 }
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
@@ -529,7 +529,17 @@ int StrToInt(const std::wstring value)
     return 0;
 }
 
-int StrToInt64Def(const std::wstring value, int defval)
+__int64 ToInt(const std::wstring value)
+{
+    return 0;
+}
+
+int StrToIntDef(const std::wstring value, int defval)
+{
+    return 0;
+}
+
+__int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
     return 0;
 }

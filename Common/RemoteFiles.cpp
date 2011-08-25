@@ -1029,13 +1029,13 @@ void TRemoteFile::SetListingStr(std::wstring value)
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
-    if (double(FModification) == 0 && FileName.empty())
+    if (double(FModification) == 0 && GetFileName().empty())
     {
       FSize = ASize;
 
       bool FullTime = false;
       bool DayMonthFormat = false;
-      unsigned int Day, Month, Year, Hour, Min, Sec, P;
+      unsigned short Day, Month, Year, Hour, Min, Sec, P;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1048,19 +1048,19 @@ void TRemoteFile::SetListingStr(std::wstring value)
       Month = 0;
       #define COL2MONTH \
         for (unsigned int IMonth = 0; IMonth < 12; IMonth++) \
-          if (!Col.AnsiCompareIC(EngShortMonthNames[IMonth])) { Month = IMonth; Month++; break; }
+          if (!AnsiCompareIC(Col, ::MB2W(EngShortMonthNames[IMonth]))) { Month = IMonth; Month++; break; }
       COL2MONTH;
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
       if ((Month == 0) && (Col.size() == 10) && (Col[5] == '-') && (Col[8] == '-'))
       {
-        Year = (unsigned int)Col.substr(1, 4).ToInt();
-        Month = (unsigned int)Col.substr(6, 2).ToInt();
-        Day = (unsigned int)Col.substr(9, 2).ToInt();
+        Year = (unsigned int)ToInt(Col.substr(1, 4));
+        Month = (unsigned int)ToInt(Col.substr(6, 2));
+        Day = (unsigned int)ToInt(Col.substr(9, 2));
         GETCOL;
-        Hour = (unsigned int)Col.substr(1, 2).ToInt();
-        Min = (unsigned int)Col.substr(4, 2).ToInt();
-        Sec = (unsigned int)Col.substr(7, 2).ToInt();
+        Hour = (unsigned int)ToInt(Col.substr(1, 2));
+        Min = (unsigned int)ToInt(Col.substr(4, 2));
+        Sec = (unsigned int)ToInt(Col.substr(7, 2));
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename
@@ -1123,14 +1123,14 @@ void TRemoteFile::SetListingStr(std::wstring value)
             // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
-            Col = Line.substr(1, 6).Trim();
+            Col = Trim(Line.substr(1, 6));
             Line.erase(1, 6);
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
-          if ((P = (unsigned int)Col.Pos(':')) > 0)
+          if ((P = (unsigned int)Col.find_first_of(L':')) > 0)
           {
-            unsigned int CurrMonth, CurrDay;
+            unsigned short CurrMonth, CurrDay;
             Hour = (unsigned int)StrToInt(Col.substr(1, P-1));
             Min = (unsigned int)StrToInt(Col.substr(P+1, Col.size() - P));
             if (Hour > 23 || Hour > 59) Abort();
