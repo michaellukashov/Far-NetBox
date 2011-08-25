@@ -1361,7 +1361,7 @@ void TWinSCPFileSystem::Synchronize(const wstring LocalDirectory,
     {
       AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
         Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-        TerminalSynchronizeDirectory, Options);
+        (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory, Options);
     }
     catch(...)
     {
@@ -1377,7 +1377,7 @@ void TWinSCPFileSystem::Synchronize(const wstring LocalDirectory,
     {
       FTerminal->SynchronizeApply(AChecklist, LocalDirectory, RemoteDirectory,
         &CopyParam, Params | TTerminal::spNoConfirmation,
-        TerminalSynchronizeDirectory);
+        (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory);
     }
     catch(...)
     {
@@ -1401,8 +1401,8 @@ void TWinSCPFileSystem::Synchronize(const wstring LocalDirectory,
 bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 {
   return
-    (PanelInfo->SelectedCount > 0) ||
-    (AnotherPanelInfo->SelectedCount > 0);
+    (GetPanelInfo()->GetSelectedCount() > 0) ||
+    (GetAnotherPanelInfo()->GetSelectedCount() > 0);
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::GetSynchronizeOptions(
@@ -1411,16 +1411,16 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
     Options.Filter = new TStringList();
-    Options.Filter->CaseSensitive = false;
-    Options.Filter->Duplicates = dupAccept;
+    Options.Filter->SetCaseSensitive(false);
+    Options.Filter->SetDuplicates(dupAccept);
 
-    if (PanelInfo->SelectedCount > 0)
+    if (GetPanelInfo()->GetSelectedCount() > 0)
     {
-      CreateFileList(PanelInfo->Items, osRemote, true, "", true, Options.Filter);
+      CreateFileList(GetPanelInfo()->GetItems(), osRemote, true, L"", true, Options.Filter);
     }
-    if (AnotherPanelInfo->SelectedCount > 0)
+    if (AnotherPanelInfo->GetSelectedCount() > 0)
     {
-      CreateFileList(AnotherPanelInfo->Items, osLocal, true, "", true, Options.Filter);
+      CreateFileList(GetAnotherPanelInfo()->GetItems*(, osLocal, true, L"", true, Options.Filter);
     }
     Options.Filter->Sort();
   }
@@ -1428,7 +1428,7 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FullSynchronize(bool Source)
 {
-  TFarPanelInfo * AnotherPanel = AnotherPanelInfo;
+  TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   RequireLocalPanel(AnotherPanel, GetMsg(SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
   wstring LocalDirectory = AnotherPanel->GetCurrentDirectory();

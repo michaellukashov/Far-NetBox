@@ -509,7 +509,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                     if (Button == NULL)
                     {
                         assert(FarPlugin->FarVersion() >= FAR170ALPHA6);
-                        assert(dynamic_cast<TFarListBox *>(Item[Param1]) != NULL);
+                        assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != NULL);
                         Result = false;
                     }
                     else
