@@ -203,6 +203,7 @@
     <ClCompile Include="..\libs\tinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\libs\tinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="WebDAV.cpp" />
+    <ClCompile Include="..\Common\RemoteFiles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
