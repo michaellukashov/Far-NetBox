@@ -77,13 +77,13 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      (TObject *)FarConfiguration->DisksMenuHotKey);
+      (TObject *)FarConfiguration->GetDisksMenuHotKey());
   }
-  if (FarConfiguration->PluginsMenu)
+  if (FarConfiguration->GetPluginsMenu())
   {
     PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
   }
-  if (FarConfiguration->PluginsMenuCommands)
+  if (FarConfiguration->GetPluginsMenu()Commands)
   {
     PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
   }
@@ -241,7 +241,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
   try
   {
     if ((OpenFrom == OPEN_PLUGINSMENU) &&
-        (!FarConfiguration->PluginsMenu || (Item == 1)))
+        (!FarConfiguration->GetPluginsMenu() || (Item == 1)))
     {
       CommandsMenu(true);
     }
