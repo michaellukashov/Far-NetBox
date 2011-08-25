@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 
+#include "stdafx.h"
 #include "Classes.h"
 // #include <SysUtils.hpp>
 // #include <SysInit.hpp>
