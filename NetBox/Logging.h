@@ -34,7 +34,7 @@ public:
      * Initialize logger
      */
     static void Initialize(bool enableLogging, int loggingLevel,
-        bool logToFile, const wstring &logFileName);
+        bool logToFile, const std::wstring &logFileName);
     static void Shutdown();
 
     void Log(int level, const wchar_t *format, va_list args);
@@ -46,7 +46,7 @@ private:
     bool m_enableLogging;
     int m_loggingLevel;
     bool m_logToFile;
-    wstring m_logFileName;
+    std::wstring m_logFileName;
 };
 
 void Log1(const wchar_t *format, ...);

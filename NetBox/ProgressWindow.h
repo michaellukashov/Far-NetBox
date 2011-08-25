@@ -104,6 +104,6 @@ public:
     virtual void Hide() const;
 
 protected:
-    wstring m_Title;
-    wstring m_Text;
+    std::wstring m_Title;
+    std::wstring m_Text;
 };

@@ -21,11 +21,11 @@
 #include "Strings.h"
 
 
-wstring GetSystemErrorMessage(const DWORD errCode)
+std::wstring GetSystemErrorMessage(const DWORD errCode)
 {
     assert(errCode);
 
-    wstring errorMsg;
+    std::wstring errorMsg;
 
     wchar_t codeNum[16];
     swprintf_s(codeNum, L"[0x%08X]", errCode);
@@ -54,15 +54,15 @@ wstring GetSystemErrorMessage(const DWORD errCode)
 }
 
 
-void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned short *port, wstring *path, wstring *query, wstring *userName, wstring *password)
+void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, unsigned short *port, std::wstring *path, std::wstring *query, std::wstring *userName, std::wstring *password)
 {
     assert(url);
 
-    wstring urlParse(url);
+    std::wstring urlParse(url);
 
     //Parse scheme name
     const size_t delimScheme = urlParse.find(L"://");
-    if (delimScheme != string::npos)
+    if (delimScheme != std::string::npos)
     {
         if (scheme)
         {
@@ -74,13 +74,13 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
 
     //Parse path
     const size_t delimPath = urlParse.find(L'/');
-    if (delimPath != string::npos)
+    if (delimPath != std::string::npos)
     {
-        wstring parsePath = urlParse.substr(delimPath);
+        std::wstring parsePath = urlParse.substr(delimPath);
         urlParse.erase(delimPath);
         //Parse query
         const size_t delimQuery = parsePath.rfind(L'?');
-        if (delimQuery != string::npos)
+        if (delimQuery != std::string::npos)
         {
             if (query)
             {
@@ -100,11 +100,11 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
 
     //Parse user name/password
     const size_t delimLogin = urlParse.rfind(L'@');
-    if (delimLogin != string::npos)
+    if (delimLogin != std::string::npos)
     {
-        wstring parseLogin = urlParse.substr(0, delimLogin);
+        std::wstring parseLogin = urlParse.substr(0, delimLogin);
         const size_t delimPwd = parseLogin.rfind(L':');
-        if (delimPwd != string::npos)
+        if (delimPwd != std::string::npos)
         {
             if (password)
             {
@@ -126,11 +126,11 @@ void ParseURL(const wchar_t *url, wstring *scheme, wstring *hostName, unsigned s
     }
 
     const size_t delimPort = urlParse.rfind(L':');
-    if (delimPort != string::npos)
+    if (delimPort != std::string::npos)
     {
         if (port)
         {
-            const wstring portNum = urlParse.substr(delimPort + 1);
+            const std::wstring portNum = urlParse.substr(delimPort + 1);
             *port = static_cast<unsigned short>(_wtoi(portNum.c_str()));
         }
         urlParse.erase(delimPort);
@@ -152,23 +152,23 @@ FILETIME UnixTimeToFileTime(const time_t t)
     return ft;
 }
 
-unsigned long TextToNumber(const wstring &text)
+unsigned long TextToNumber(const std::wstring &text)
 {
     return static_cast<unsigned long>(_wtoi(text.c_str()));
 }
 
-string NumberToText(int number)
+std::string NumberToText(int number)
 {
     char codeText[16];
     _itoa_s(number, codeText, 10);
-    return string(codeText);
+    return std::string(codeText);
 }
 
-wstring NumberToWString(unsigned long number)
+std::wstring NumberToWString(unsigned long number)
 {
     wchar_t toText[16];
     _itow_s(number, toText, 10);
-    return wstring(toText);
+    return std::wstring(toText);
 }
 
 void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
@@ -247,7 +247,7 @@ void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogPar
     proxySettings.proxyPassword = dlg.GetText(params.idProxyPassword);
 }
 
-void AppendWChar(wstring &str, const wchar_t ch)
+void AppendWChar(std::wstring &str, const wchar_t ch)
 {
     if (!str.empty() && str[str.length() - 1] != ch)
     {
@@ -255,7 +255,7 @@ void AppendWChar(wstring &str, const wchar_t ch)
     }
 }
 
-void AppendChar(string &str, const char ch)
+void AppendChar(std::string &str, const char ch)
 {
     if (!str.empty() && str[str.length() - 1] != ch)
     {
@@ -263,7 +263,7 @@ void AppendChar(string &str, const char ch)
     }
 }
 
-void AppendPathDelimiterW(wstring &str)
+void AppendPathDelimiterW(std::wstring &str)
 {
     if (!str.empty() && str[str.length() - 1] != L'/' && str[str.length() - 1] != L'\\')
     {
@@ -271,7 +271,7 @@ void AppendPathDelimiterW(wstring &str)
     }
 }
 
-void AppendPathDelimiterA(string &str)
+void AppendPathDelimiterA(std::string &str)
 {
     if (!str.empty() && str[str.length() - 1] != '/' && str[str.length() - 1] != '\\')
     {
@@ -280,16 +280,16 @@ void AppendPathDelimiterA(string &str)
 }
 
 /**
- * Encoding multibyte to wide string
- * \param src source string
+ * Encoding multibyte to wide std::string
+ * \param src source std::string
  * \param cp code page
- * \return wide string
+ * \return wide std::string
  */
-wstring MB2W(const char *src, const UINT cp)
+std::wstring MB2W(const char *src, const UINT cp)
 {
     assert(src);
 
-    wstring wide;
+    std::wstring wide;
     const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
     if (reqLength)
     {
@@ -301,16 +301,16 @@ wstring MB2W(const char *src, const UINT cp)
 }
 
 /**
- * Encoding wide to multibyte string
- * \param src source string
+ * Encoding wide to multibyte std::string
+ * \param src source std::string
  * \param cp code page
- * \return multibyte string
+ * \return multibyte std::string
  */
-string W2MB(const wchar_t *src, const UINT cp)
+std::string W2MB(const wchar_t *src, const UINT cp)
 {
     assert(src);
 
-    string mb;
+    std::string mb;
     const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
     if (reqLength)
     {
@@ -337,11 +337,11 @@ void CheckAbortEvent(HANDLE *AbortEvent)
     }
 }
 
-wstring ExpandEnvVars(const wstring& str)
+std::wstring ExpandEnvVars(const std::wstring& str)
 {
     wchar_t buf[MAX_PATH];
     unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
-    wstring result = wstring(buf, size - 1);
+    std::wstring result = std::wstring(buf, size - 1);
     // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
     return result;
 }

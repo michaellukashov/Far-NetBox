@@ -446,11 +446,11 @@ public:
      * \param dlgItemId item id
      * \return item text
      */
-    inline wstring GetText(const int dlgItemId) const
+    inline std::wstring GetText(const int dlgItemId) const
     {
         assert(m_Dlg != INVALID_HANDLE_VALUE);
 
-        wstring itemText;
+        std::wstring itemText;
 
         const LONG_PTR itemTextLen = CFarPlugin::GetPSI()->SendDlgMessage(m_Dlg, DM_GETTEXTLENGTH, dlgItemId, 0);
         if (itemTextLen != 0)
@@ -505,7 +505,7 @@ private:
     }
 
     /**
-     * Access to dialog instances map
+     * Access to dialog instances std::map
      * \param dlg Far dialog handle
      * \param inst dialog class instance
      * \param removeVal true to remove value
@@ -513,10 +513,10 @@ private:
      */
     static CFarDialog *AccessDlgInstances(HANDLE dlg, CFarDialog *inst, const bool removeVal = false)
     {
-        static map<HANDLE, CFarDialog *> dlgInstances;
+        static std::map<HANDLE, CFarDialog *> dlgInstances;
         if (dlg && inst && !removeVal)
         {
-            dlgInstances.insert(make_pair(dlg, inst));
+            dlgInstances.insert(std::make_pair(dlg, inst));
             return NULL;
         }
         else if (removeVal)
@@ -525,7 +525,7 @@ private:
             return NULL;
         }
 
-        map<HANDLE, CFarDialog *>::iterator it = dlgInstances.find(dlg);
+        std::map<HANDLE, CFarDialog *>::iterator it = dlgInstances.find(dlg);
         assert(it != dlgInstances.end());
         return it->second;
     }
@@ -534,6 +534,6 @@ protected:
     HANDLE                  m_Dlg;       ///< Dialog descriptor
     int                     _Width;     ///< Dialog width
     int                     _Height;    ///< Dialog height
-    vector<FarDialogItem>   _DlgItems;  ///< Dialog items array
+    std::vector<FarDialogItem>   _DlgItems;  ///< Dialog items array
     bool                    _UseFrame;  ///< Dialog frame flag
 };

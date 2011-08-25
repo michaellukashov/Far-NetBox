@@ -44,8 +44,6 @@
 #include <assert.h>
 #pragma warning(pop)
 
-using namespace std;
-
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
@@ -54,7 +52,7 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
     va_list args;
     va_start(args, format);
     len = _vscwprintf(format, args);
-    wstring buf(len + sizeof(wchar_t), 0);
+    std::wstring buf(len + sizeof(wchar_t), 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
 
     va_end(args);
@@ -97,7 +95,7 @@ public:
         assert(title);
         assert(text);
 
-        wstring content(title);
+        std::wstring content(title);
         content += L'\n';
         content += text;
         return GetPSI()->Message(GetPSI()->ModuleNumber, FMSG_ALLINONE | flags, NULL, reinterpret_cast<const wchar_t* const *>(content.c_str()), 0, 0);
@@ -119,7 +117,7 @@ public:
      * \param ... additional params
      * \return formatted string
      */
-    static wstring GetFormattedString(const int id, ...)
+    static std::wstring GetFormattedString(const int id, ...)
     {
         const wchar_t *errFmt = GetString(id);
         assert(errFmt);
@@ -128,9 +126,9 @@ public:
         const int len = _vscwprintf(errFmt, args) + 1 /* last NULL */;
         if (len == 1)
         {
-            return wstring();
+            return std::wstring();
         }
-        wstring ret(len, 0);
+        std::wstring ret(len, 0);
         vswprintf_s(&ret[0], ret.size(), errFmt, args);
         ret.erase(ret.length() - 1);        ///Trim last NULL
         return ret;
@@ -142,7 +140,7 @@ public:
      */
     static const wchar_t *GetPluginPath()
     {
-        static wstring pluginDir;
+        static std::wstring pluginDir;
         if (pluginDir.empty())
         {
             pluginDir = GetPSI()->ModuleName;
@@ -158,7 +156,7 @@ public:
      * \param fileName processing file name
      * \return false if error
      */
-    static bool GetProcessingFileName(int openFrom, INT_PTR item, wstring &fileName)
+    static bool GetProcessingFileName(int openFrom, INT_PTR item, std::wstring &fileName)
     {
         fileName.clear();
 
@@ -189,7 +187,7 @@ public:
             {
                 return false;
             }
-            vector<unsigned char> ppiBuffer(ppiBufferLength);
+            std::vector<unsigned char> ppiBuffer(ppiBufferLength);
             PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
             if (!GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
             {

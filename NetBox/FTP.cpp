@@ -90,7 +90,7 @@ CFTP::~CFTP()
 }
 
 
-bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
+bool CFTP::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
     assert(abortEvent);
 
@@ -101,7 +101,7 @@ bool CFTP::Connect(HANDLE abortEvent, wstring &errorInfo)
     m_CURL.SetAbortEvent(abortEvent);
 
     //Check initial path existing
-    wstring path;
+    std::wstring path;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
@@ -130,12 +130,12 @@ CURLcode CFTP::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tru
     return urlCode;
 }
 
-bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo)
+bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
     isExist = false;
 
-    string ftpPath = LocalToFtpCP(path);
+    std::string ftpPath = LocalToFtpCP(path);
     if (type == ItemDirectory && ftpPath[ftpPath.length() - 1] != '/')
     {
         ftpPath += '/';
@@ -161,11 +161,11 @@ bool CFTP::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist
 }
 
 
-bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
+bool CFTP::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
 
-    const string ftpCommand = "MKD " + LocalToFtpCP(path);
+    const std::string ftpCommand = "MKD " + LocalToFtpCP(path);
     const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
     {
@@ -177,18 +177,18 @@ bool CFTP::MakeDirectory(const wchar_t *path, wstring &errorInfo)
 }
 
 
-bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
+bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
     assert(items);
     assert(itemsNum);
     // DEBUG_PRINTF(L"NetBox: GetList: m_CurrentDirectory = %s", m_CurrentDirectory.c_str());
 
-    string ftpPath = LocalToFtpCP(m_CurrentDirectory.c_str(), true);
+    std::string ftpPath = LocalToFtpCP(m_CurrentDirectory.c_str(), true);
     ::AppendChar(ftpPath, '/');
     // DEBUG_PRINTF(L"NetBox: GetList: ftpPath = %s", ::MB2W(ftpPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(ftpPath.c_str());
-    string response;
+    std::string response;
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(response, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
     if (urlCode != CURLE_OK && urlCode != CURLE_REMOTE_FILE_NOT_FOUND)
@@ -198,15 +198,15 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
         return false;
     }
 
-    //Divide string to vector by EOL
-    vector<FTPItem> ftpList;
+    //Divide std::string to std::vector by EOL
+    std::vector<FTPItem> ftpList;
     ftpList.reserve(100);
     static const char *delimiters = "\r\n";
     size_t lastPos = response.find_first_not_of(delimiters, 0);
     size_t nextPos = response.find_first_of(delimiters, lastPos);
-    while (string::npos != nextPos || string::npos != lastPos)
+    while (std::string::npos != nextPos || std::string::npos != lastPos)
     {
-        const string singleString = response.substr(lastPos, nextPos - lastPos);
+        const std::string singleString = response.substr(lastPos, nextPos - lastPos);
         if (_strnicmp(singleString.c_str(), "total ", 6))
         {
             FTPItem ftpItem;
@@ -221,8 +221,8 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             {
                 bool dirExist = true;
                 bool fileExist = true;
-                wstring errDummy;
-                wstring chkPath = ftpItem.LinkPath;
+                std::wstring errDummy;
+                std::wstring chkPath = ftpItem.LinkPath;
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     ftpItem.Type = FTPItem::Directory;
@@ -270,8 +270,8 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
             {
                 //Check link for file/dir
                 bool dirExist = true;
-                wstring errDummy;
-                wstring chkPath = ftpList[i].LinkPath;
+                std::wstring errDummy;
+                std::wstring chkPath = ftpList[i].LinkPath;
                 if (CheckExisting(chkPath.c_str(), ItemDirectory, dirExist, errDummy) && dirExist)
                 {
                     farItem.FindData.dwFileAttributes = FILE_ATTRIBUTE_DIRECTORY;
@@ -295,7 +295,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo)
 }
 
 
-bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     assert(remotePath && remotePath[0] == L'/');
     assert(localPath && *localPath);
@@ -308,7 +308,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
         return false;
     }
 
-    const string ftpFileName = LocalToFtpCP(remotePath);
+    const std::string ftpFileName = LocalToFtpCP(remotePath);
     CURLcode urlCode = CURLPrepare(ftpFileName.c_str(), false);
     CHECK_CUCALL(urlCode, m_CURL.SetOutput(&outFile, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -327,7 +327,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 }
 
 
-bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, wstring &errorInfo)
+bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
     assert(remotePath && remotePath[0] == L'/');
     assert(localPath && *localPath);
@@ -340,7 +340,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
         return false;
     }
 
-    const string ftpFileName = LocalToFtpCP(remotePath, true);
+    const std::string ftpFileName = LocalToFtpCP(remotePath, true);
     CURLcode urlCode = CURLPrepare(ftpFileName.c_str(), false);
     CHECK_CUCALL(urlCode, m_CURL.SetInput(&inFile, &m_ProgressPercent));
     CHECK_CUCALL(urlCode, m_CURL.Perform());
@@ -359,13 +359,13 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
 }
 
 
-bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo)
+bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo)
 {
     assert(srcPath && srcPath[0] == L'/');
     assert(dstPath && dstPath[0] == L'/');
 
-    const string cmd1 = "RNFR " + LocalToFtpCP(srcPath);
-    const string cmd2 = "RNTO " + LocalToFtpCP(dstPath);
+    const std::string cmd1 = "RNFR " + LocalToFtpCP(srcPath);
+    const std::string cmd2 = "RNTO " + LocalToFtpCP(dstPath);
     // DEBUG_PRINTF(L"NetBox: Rename: srcPath = %s, dstPath = %s, type = %u", srcPath, dstPath, type);
     CSlistURL slist;
     slist.Append(cmd1.c_str());
@@ -386,11 +386,11 @@ bool CFTP::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType
 }
 
 
-bool CFTP::Delete(const wchar_t *path, const ItemType type, wstring &errorInfo)
+bool CFTP::Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo)
 {
     assert(path && path[0] == L'/');
 
-    const string ftpCommand = (type == ItemDirectory ? "RMD " : "DELE ") + LocalToFtpCP(path);
+    const std::string ftpCommand = (type == ItemDirectory ? "RMD " : "DELE ") + LocalToFtpCP(path);
     // DEBUG_PRINTF(L"NetBox: Delete: ftpCommand = %s", ::MB2W(ftpCommand.c_str()).c_str());
     const CURLcode urlCode = m_CURL.ExecuteFtpCommand(ftpCommand.c_str());
     if (urlCode != CURLE_OK)
@@ -512,7 +512,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         {
             item.Type = FTPItem::Link;
             const size_t linkDelim = item.Name.find(L" -> ");
-            if (linkDelim != string::npos)
+            if (linkDelim != std::string::npos)
             {
                 item.LinkPath = item.Name.substr(linkDelim + 4);
                 item.Name.erase(linkDelim);
@@ -542,7 +542,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         {
             item.Type = FTPItem::Link;
             const size_t linkDelim = item.Name.find(L" -> ");
-            if (linkDelim != string::npos)
+            if (linkDelim != std::string::npos)
             {
                 item.LinkPath = item.Name.substr(linkDelim + 4);
                 item.Name.erase(linkDelim);
@@ -603,7 +603,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         st.wMinute = static_cast<WORD>(minutes);
         item.Name = FtpToLocalCP(name);
         const size_t delim = item.Name.find(';');
-        if (delim != string::npos)
+        if (delim != std::string::npos)
         {
             item.Name.erase(delim);
         }
@@ -621,7 +621,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         st.wMinute = static_cast<WORD>(minutes);
         item.Name = FtpToLocalCP(name);
         const size_t delim = item.Name.find(';');
-        if (delim != string::npos)
+        if (delim != std::string::npos)
         {
             item.Name.erase(delim);
         }
