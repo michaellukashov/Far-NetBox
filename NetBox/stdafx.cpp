@@ -387,6 +387,12 @@ bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
     return false;
 }
 
+int LastDelimiter(const std::wstring str1, const wchar_t delim)
+{
+    // FIXME
+    return -1;
+}
+
 bool ForceDirectories(const std::wstring Dir)
 {
     // FIXME

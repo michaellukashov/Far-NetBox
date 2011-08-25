@@ -134,6 +134,7 @@ std::wstring LowerCase(const std::wstring str);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
 bool AnsiSameText(const std::wstring str1, const std::wstring str2);
 bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size);
+int LastDelimiter(const std::wstring str1, const wchar_t delim);
 
 bool ForceDirectories(const std::wstring Dir);
 bool DeleteFile(const std::wstring File);
