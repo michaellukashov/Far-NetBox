@@ -229,15 +229,15 @@ static void CutFirstDirectory(std::wstring & S, bool Unix)
     {
       S.erase(1, 4);
     }
-    P = S.AnsiPos(Sep[1]);
+    P = ::AnsiPos(S, Sep[1]);
     if (P)
     {
       S.erase(1, P);
-      S = "..." + Sep + S;
+      S = L"..." + Sep + S;
     }
     else
     {
-      S = "";
+      S = L"";
     }
     if (Root)
     {
@@ -249,12 +249,12 @@ static void CutFirstDirectory(std::wstring & S, bool Unix)
 std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
 {
   std::wstring Drive, Dir, Name, Result;
-  std::wstring Sep = Unix ? "/" : "\\";
+  std::wstring Sep = Unix ? L"/" : L"\\";
 
   Result = FileName;
   if (Unix)
   {
-    int P = Result.LastDelimiter("/");
+    int P = ::LastDelimiter(Result, L'/');
     if (P)
     {
       Dir = Result.substr(1, P);
@@ -262,16 +262,16 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
     }
     else
     {
-      Dir = "";
+      Dir = L"";
       Name = Result;
     }
   }
   else
   {
     Dir = ExtractFilePath(Result);
-    Name = ExtractFileName(Result);
+    Name = ExtractFileName(Result, false);
 
-    if (Dir.size() >= 2 && Dir[2] == ':')
+    if (Dir.size() >= 2 && Dir[2] == L':')
     {
       Drive = Dir.substr(1, 2);
       Dir.erase(1, 2);
@@ -280,13 +280,13 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
 
   while ((!Dir.empty() || !Drive.empty()) && (Result.size() > MaxLen))
   {
-    if (Dir == Sep + "..." + Sep)
+    if (Dir == Sep + L"..." + Sep)
     {
-      Dir = "..." + Sep;
+      Dir = L"..." + Sep;
     }
-    else if (Dir == "")
+    else if (Dir == L"")
     {
-      Drive = "";
+      Drive = L"";
     }
     else
     {
@@ -305,7 +305,7 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
 std::wstring MakeFileList(TStrings * FileList)
 {
   std::wstring Result;
-  for (int Index = 0; Index < FileList->Count; Index++)
+  for (int Index = 0; Index < FileList->GetCount(); Index++)
   {
     if (!Result.empty())
     {

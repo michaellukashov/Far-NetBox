@@ -132,6 +132,7 @@ std::wstring Trim(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
+int AnsiPos(const std::wstring str, wchar_t ñ);
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
 bool AnsiSameText(const std::wstring str1, const std::wstring str2);
 bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size);
