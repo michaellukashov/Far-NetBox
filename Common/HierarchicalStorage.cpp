@@ -1,15 +1,10 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
 #include "HierarchicalStorage.h"
 #include <TextsCore.h>
 #include <vector>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define READ_REGISTRY(Method) \
   if (FRegistry->ValueExists(Name)) \

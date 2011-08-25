@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
@@ -11,8 +8,6 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,

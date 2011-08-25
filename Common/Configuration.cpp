@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include <FileInfo.h>
 
 #include "Exceptions.h"
@@ -13,8 +10,6 @@
 #include "CoreMain.h"
 #include "Security.h"
 #include <shfolder.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration()
 {

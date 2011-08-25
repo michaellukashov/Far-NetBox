@@ -9,8 +9,6 @@
 TCustomFarPlugin *FarPlugin = NULL;
 #define FAR_TITLE_SUFFIX L" - Far"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TFarMessageParams::TFarMessageParams()
 {
     MoreMessages = NULL;

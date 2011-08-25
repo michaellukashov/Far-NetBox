@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
@@ -12,8 +10,6 @@
 #include <Exceptions.h>
 #include <Terminal.h>
 #include <GUITools.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 TCustomFarPlugin * CreateFarPlugin(HWND Handle)
 {

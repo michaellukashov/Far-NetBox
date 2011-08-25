@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "Terminal.h"
 
 #include <SysUtils.hpp>
@@ -26,8 +23,6 @@
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \

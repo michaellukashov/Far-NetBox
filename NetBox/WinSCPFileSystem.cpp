@@ -19,8 +19,6 @@
 // #include <CompThread.hpp>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
   TCustomFarPanelItem()
 {

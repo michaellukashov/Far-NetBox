@@ -1,15 +1,10 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include <stdio.h>
 
 #include "Common.h"
 #include "SessionInfo.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 wstring XmlEscape(wstring Str)
 {

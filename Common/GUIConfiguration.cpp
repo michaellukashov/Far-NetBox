@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
 #include <LanguagesDEPfix.hpp>
 #include "GUIConfiguration.h"
 #include "GUITools.h"
@@ -9,8 +7,6 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 const ccLocal = ccUser;
 const ccShowResults = ccUser << 1;

@@ -1,7 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
-
 #include "SessionData.h"
 
 #include "Common.h"
@@ -11,8 +8,6 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 enum TProxyType { pxNone, pxHTTP, pxSocks, pxTelnet }; // 0.53b and older
 const char * DefaultName = "Default Settings";
