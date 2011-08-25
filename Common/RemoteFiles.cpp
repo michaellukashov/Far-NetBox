@@ -128,7 +128,7 @@ bool ExtractCommonPath(TStrings * Files, std::wstring & Path)
 //---------------------------------------------------------------------------
 bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path)
 {
-  assert(Files->GetCount(0 > 0);
+  assert(Files->GetCount() > 0);
 
   Path = UnixExtractFilePath(Files->GetString(0));
   bool Result = !Path.empty();
