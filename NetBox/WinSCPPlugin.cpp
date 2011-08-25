@@ -655,7 +655,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {
-            ButtonLabels->Strings[bi] = Params->Aliases[ai].Alias;
+            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
             break;
           }
         }
@@ -689,7 +689,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
     }
 
     FarParams.Token = &Data;
-    FarParams.ClickEvent = MessageClick;
+    // FIXME FarParams.SetClickEvent(MessageClick);
 
     wstring DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))
