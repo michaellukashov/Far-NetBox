@@ -454,7 +454,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
   }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
+bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 {
   bool Result;
   if (Connected())
@@ -518,7 +518,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TList * PanelItems, int OpMode)
           }
           else
           {
-            PanelItems->Add(new TSessionPanelItem(Data));
+            PanelItems->Add((TObject *)new TSessionPanelItem(Data));
           }
         }
       }
@@ -575,7 +575,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != NULL) && (EData != Data))
     {
-      throw exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
+      throw exception(::FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
     }
     else
     {
