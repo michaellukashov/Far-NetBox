@@ -206,6 +206,13 @@ public:
     void Sort()
     {
     }
+    size_t IndexOf(const wchar_t *value)
+    {
+        return -1;
+    }
+    void Delete(size_t Index)
+    {
+    }
 private:
     TNotifyEvent FOnChange;
 };
@@ -223,13 +230,6 @@ public:
         return 0;
     }
     void Changed()
-    {
-    }
-    size_t IndexOf(const wchar_t *value)
-    {
-        return -1;
-    }
-    void Delete(size_t Index)
     {
     }
 	void SetCaseSensitive(bool value)

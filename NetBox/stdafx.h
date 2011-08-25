@@ -129,13 +129,17 @@ void CheckAbortEvent(HANDLE *AbortEvent);
 std::wstring ExpandEnvVars(const std::wstring& str);
 
 std::wstring Trim(const std::wstring str);
+std::wstring TrimRight(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
+std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
 
 bool ForceDirectories(const std::wstring Dir);
 
 std::wstring IncludeTrailingBackslash(const std::wstring Str);
 std::wstring ExcludeTrailingBackslash(const std::wstring Str);
 std::wstring ExtractFileDir(const std::wstring Str);
+std::wstring ExtractFilePath(const std::wstring Str);
+std::wstring GetCurrentDir();
 
 std::wstring StringOfChar(const wchar_t c, size_t len);
 

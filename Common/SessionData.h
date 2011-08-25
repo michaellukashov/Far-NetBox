@@ -175,7 +175,6 @@ private:
   void SetProtocol(TProtocol value);
   void SetFSProtocol(TFSProtocol value);
   void SetLocalDirectory(std::wstring value);
-  void SetRemoteDirectory(std::wstring value);
   void SetUpdateDirectories(bool value);
   void SetCacheDirectories(bool value);
   void SetCacheDirectoryChanges(bool value);
@@ -328,6 +327,7 @@ public:
   std::wstring GetFSProtocolStr();
   // __property bool Modified  = { read=FModified, write=FModified };
   bool GetModified() { return FModified; }
+  void SetModified(bool value) { FModified = value; }
   // __property bool CanLogin  = { read=GetCanLogin };
   bool GetCanLogin();
   // __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
@@ -349,7 +349,8 @@ public:
   std::wstring GetLocalDirectory() { return FLocalDirectory; }
   // __property std::wstring RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
   std::wstring GetRemoteDirectory() { return FRemoteDirectory; }
-  // __property bool UpdateDirectories = { read=FUpdateDirectories, write=SetUpdateDirectories };
+  void SetRemoteDirectory(std::wstring value);
+    // __property bool UpdateDirectories = { read=FUpdateDirectories, write=SetUpdateDirectories };
   bool GetUpdateDirectories() { return FUpdateDirectories; }
   // __property bool CacheDirectories = { read=FCacheDirectories, write=SetCacheDirectories };
   bool GetCacheDirectories() { return FCacheDirectories; }

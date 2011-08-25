@@ -353,11 +353,25 @@ std::wstring Trim(const std::wstring str)
     return result;
 }
 
+std::wstring TrimRight(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
 std::wstring LowerCase(const std::wstring str)
 {
     // FIXME
     std::wstring result = str;
     // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    return result;
+}
+
+std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to)
+{
+    // FIXME
+    std::wstring result = str;
     return result;
 }
 
@@ -385,6 +399,20 @@ std::wstring ExtractFileDir(const std::wstring str)
 {
     // FIXME
     std::wstring result = str;
+    return result;
+}
+
+std::wstring ExtractFilePath(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring GetCurrentDir()
+{
+    // FIXME
+    std::wstring result;
     return result;
 }
 
