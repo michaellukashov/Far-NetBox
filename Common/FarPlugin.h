@@ -44,8 +44,6 @@
 #include <assert.h>
 #pragma warning(pop)
 
-using namespace std;
-
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
