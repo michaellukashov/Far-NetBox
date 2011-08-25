@@ -1314,7 +1314,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   {
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(Data,
-                      GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetString(Index), "", "");
+                      GetTerminal()->GetCurrentDirectory(), RemoteFileList->GetString(Index), L"", L"");
                     ExecuteShellAndWait(FPlugin->GetHandle(),
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent(NULL));
                   }
@@ -1322,26 +1322,26 @@ void TWinSCPFileSystem::ApplyCommand()
               }
               catch(...)
               {
-                Progress.Stop();
               }
+              // FIXME Progress.Stop();
             }
             catch(...)
             {
-              RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
             }
+            RecursiveDeleteFile(ExcludeTrailingBackslash(TempDir), false);
           }
           catch(...)
           {
+          }
             delete RemoteFileList;
             delete LocalFileList;
-          }
         }
       }
     }
     catch(...)
     {
-      delete FileList;
     }
+    delete FileList;
   }
 }
 //---------------------------------------------------------------------------
