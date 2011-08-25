@@ -217,6 +217,14 @@ public:
     {
         return -1;
     }
+    size_t IndexOfName(const wchar_t *value)
+    {
+        return -1;
+    }
+    const std::wstring GetName(int Index)
+    {
+        return L"";
+    }
     void Delete(size_t Index)
     {
     }

@@ -1587,7 +1587,7 @@ bool TRemoteDirectoryCache::HasFileList(const std::wstring Directory)
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
@@ -1596,11 +1596,11 @@ bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = dynamic_cast<TRemoteFileList *>(Objects[Index]);
-    if (FileList->Timestamp <= Timestamp)
+    TRemoteFileList * FileList = reinterpret_cast<TRemoteFileList *>(GetObject(Index));
+    if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
     }
@@ -1613,12 +1613,12 @@ bool TRemoteDirectoryCache::GetFileList(const std::wstring Directory,
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory));
+  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
   bool Result = (Index >= 0);
   if (Result)
   {
-    assert(Objects[Index] != NULL);
-    dynamic_cast<TRemoteFileList *>(Objects[Index])->DuplicateTo(FileList);
+    assert(GetObject(Index) != NULL);
+    reinterpret_cast<TRemoteFileList *>(GetObject(Index))->DuplicateTo(FileList);
   }
   return Result;
 }
@@ -1634,8 +1634,8 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal
-    DoClearFileList(FileList->Directory, false);
-    AddObject(Copy->Directory, Copy);
+    DoClearFileList(FileList->GetDirectory(), false);
+    AddObject(Copy->GetDirectory(), Copy);
   }
 }
 //---------------------------------------------------------------------------
@@ -1648,7 +1648,7 @@ void TRemoteDirectoryCache::ClearFileList(std::wstring Directory, bool SubDirs)
 void TRemoteDirectoryCache::DoClearFileList(std::wstring Directory, bool SubDirs)
 {
   Directory = UnixExcludeTrailingBackslash(Directory);
-  int Index = IndexOf(Directory);
+  int Index = IndexOf(Directory.c_str());
   if (Index >= 0)
   {
     Delete(Index);
@@ -1656,10 +1656,10 @@ void TRemoteDirectoryCache::DoClearFileList(std::wstring Directory, bool SubDirs
   if (SubDirs)
   {
     Directory = UnixIncludeTrailingBackslash(Directory);
-    Index = Count-1;
+    Index = GetCount()-1;
     while (Index >= 0)
     {
-      if (Strings[Index].substr(1, Directory.size()) == Directory)
+      if (GetString(Index).substr(1, Directory.size()) == Directory)
       {
         Delete(Index);
       }
@@ -1670,7 +1670,7 @@ void TRemoteDirectoryCache::DoClearFileList(std::wstring Directory, bool SubDirs
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Delete(int Index)
 {
-  delete (TRemoteFileList *)Objects[Index];
+  delete (TRemoteFileList *)GetObject(Index);
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
@@ -1688,23 +1688,23 @@ void TRemoteDirectoryChangesCache::Clear()
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetIsEmpty() const
 {
-  return (const_cast<TRemoteDirectoryChangesCache*>(this)->Count == 0);
+  return (const_cast<TRemoteDirectoryChangesCache*>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::SetValue(const std::wstring & Name,
   const std::wstring & Value)
 {
-  int Index = IndexOfName(Name);
+  int Index = IndexOfName(Name.c_str());
   if (Index > 0)
   {
     Delete(Index);
   }
-  Values[Name] = Value;
+  SetValue(Name, Value);
 }
 //---------------------------------------------------------------------------
 std::wstring TRemoteDirectoryChangesCache::GetValue(const std::wstring & Name)
 {
-  std::wstring Value = Values[Name];
+  std::wstring Value = GetValue(Name);
   SetValue(Name, Value);
   return Value;
 }
@@ -1714,7 +1714,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
   const std::wstring TargetDir)
 {
   assert(!TargetDir.empty());
-  SetValue(TargetDir, "//");
+  SetValue(TargetDir, L"//");
   if (TTerminal::ExpandFileName(Change, SourceDir) != TargetDir)
   {
     std::wstring Key;
@@ -1728,9 +1728,9 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
   std::wstring SourceDir)
 {
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
-    if (Names[Index].substr(1, SourceDir.size()) == SourceDir)
+    if (GetName(Index).substr(1, SourceDir.size()) == SourceDir)
     {
       Delete(Index);
       Index--;
@@ -1746,11 +1746,11 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
     UnixExtractFileName(TargetDir), Key);
 
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
-    std::wstring Name = Names[Index];
+    std::wstring Name = GetName(Index);
     if ((Name.substr(1, TargetDir.size()) == TargetDir) ||
-        (Values[Name].substr(1, TargetDir.size()) == TargetDir) ||
+        (GetValue(Name).substr(1, TargetDir.size()) == TargetDir) ||
         (!Key.empty() && (Name == Key)))
     {
       Delete(Index);
@@ -1765,12 +1765,12 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   std::wstring Key;
   bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
-  Result = (IndexOfName(Key) >= 0);
+  Result = (IndexOfName(Key.c_str()) >= 0);
   if (Result)
   {
     TargetDir = GetValue(Key);
     // TargetDir is not "//" here only when Change is full path to symbolic link
-    if (TargetDir == "//")
+    if (TargetDir == L"//")
     {
       TargetDir = Key;
     }
@@ -1793,8 +1793,8 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
 {
-  Data = "A";
-  int ACount = Count;
+  Data = L"A";
+  int ACount = GetCount();
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();
@@ -1803,19 +1803,19 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
       int Index = ACount - FMaxSize;
       while (Index < ACount)
       {
-        Limited->Add(Strings[Index]);
+        Limited->Add(GetString(Index));
         Index++;
       }
-      Data += Limited->Text;
+      Data += Limited->GetText();
     }
     catch(...)
     {
-      delete Limited;
     }
+      delete Limited;
   }
   else
   {
-    Data += Text;
+    Data += GetText();
   }
 }
 //---------------------------------------------------------------------------
@@ -1823,11 +1823,11 @@ void TRemoteDirectoryChangesCache::Deserialize(const std::wstring Data)
 {
   if (Data.empty())
   {
-    Text = "";
+    SetText(L"");
   }
   else
   {
-    Text = Data.c_str() + 1;
+    SetText(Data.c_str() + 1);
   }
 }
 //---------------------------------------------------------------------------
@@ -1848,7 +1848,7 @@ bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
       }
       else
       {
-        Key = SourceDir + "," + Change;
+        Key = SourceDir + L"," + Change;
       }
     }
   }
@@ -1865,7 +1865,7 @@ TRights::TRights()
   FAllowUndef = false;
   FSet = 0;
   FUnset = 0;
-  Number = 0;
+  SetNumber(0);
   FUnknown = true;
 }
 //---------------------------------------------------------------------------
@@ -1874,7 +1874,7 @@ TRights::TRights(unsigned short ANumber)
   FAllowUndef = false;
   FSet = 0;
   FUnset = 0;
-  Number = ANumber;
+  SetNumber(ANumber);
 }
 //---------------------------------------------------------------------------
 TRights::TRights(const TRights & Source)
@@ -1884,7 +1884,7 @@ TRights::TRights(const TRights & Source)
 //---------------------------------------------------------------------------
 void TRights::Assign(const TRights * Source)
 {
-  FAllowUndef = Source->AllowUndef;
+  FAllowUndef = Source->GetAllowUndef();
   FSet = Source->FSet;
   FUnset = Source->FUnset;
   FText = Source->FText;
@@ -1898,12 +1898,12 @@ TRights::TFlag TRights::RightToFlag(TRights::TRight Right)
 //---------------------------------------------------------------------------
 bool TRights::operator ==(const TRights & rhr) const
 {
-  if (AllowUndef || rhr.AllowUndef)
+  if (GetAllowUndef() || rhr.GetAllowUndef())
   {
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
-      if (RightUndef[static_cast<TRight>(Right)] !=
-            rhr.RightUndef[static_cast<TRight>(Right)])
+      if (GetRightUndef(static_cast<TRight>(Right)) !=
+            rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -1912,13 +1912,13 @@ bool TRights::operator ==(const TRights & rhr) const
   }
   else
   {
-    return (Number == rhr.Number);
+    return (GetNumber() == rhr.GetNumber());
   }
 }
 //---------------------------------------------------------------------------
 bool TRights::operator ==(unsigned short rhr) const
 {
-  return (Number == rhr);
+  return (GetNumber() == rhr);
 }
 //---------------------------------------------------------------------------
 bool TRights::operator !=(const TRights & rhr) const
@@ -1928,7 +1928,7 @@ bool TRights::operator !=(const TRights & rhr) const
 //---------------------------------------------------------------------------
 TRights & TRights::operator =(unsigned short rhr)
 {
-  Number = rhr;
+  SetNumber(rhr);
   return *this;
 }
 //---------------------------------------------------------------------------
@@ -1940,7 +1940,7 @@ TRights & TRights::operator =(const TRights & rhr)
 //---------------------------------------------------------------------------
 TRights TRights::operator ~() const
 {
-  TRights Result(static_cast<unsigned short>(~Number));
+  TRights Result(static_cast<unsigned short>(~GetNumber()));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1960,27 +1960,27 @@ TRights TRights::operator &(unsigned short rhr) const
 //---------------------------------------------------------------------------
 TRights & TRights::operator &=(const TRights & rhr)
 {
-  if (AllowUndef || rhr.AllowUndef)
+  if (GetAllowUndef() || rhr.GetAllowUndef())
   {
     for (int Right = rrFirst; Right <= rrLast; Right++)
     {
-      if (RightUndef[static_cast<TRight>(Right)] !=
-            rhr.RightUndef[static_cast<TRight>(Right)])
+      if (GetRightUndef(static_cast<TRight>(Right)) !=
+            rhr.GetRightUndef(static_cast<TRight>(Right)))
       {
-        RightUndef[static_cast<TRight>(Right)] = rsUndef;
+        SetRightUndef(static_cast<TRight>(Right), rsUndef);
       }
     }
   }
   else
   {
-    Number &= rhr.Number;
+    SetNumber(GetNumber() & rhr.GetNumber());
   }
   return *this;
 }
 //---------------------------------------------------------------------------
 TRights & TRights::operator &=(unsigned short rhr)
 {
-  Number &= rhr;
+  SetNumber(GetNumber() & rhr);
   return *this;
 }
 //---------------------------------------------------------------------------
@@ -2000,13 +2000,13 @@ TRights TRights::operator |(unsigned short rhr) const
 //---------------------------------------------------------------------------
 TRights & TRights::operator |=(const TRights & rhr)
 {
-  Number |= rhr.Number;
+  SetNumber(GetNumber() | rhr.GetNumber());
   return *this;
 }
 //---------------------------------------------------------------------------
 TRights & TRights::operator |=(unsigned short rhr)
 {
-  Number |= rhr;
+  SetNumber(GetNumber() | rhr);
   return *this;
 }
 //---------------------------------------------------------------------------
@@ -2021,13 +2021,13 @@ void TRights::SetAllowUndef(bool value)
 //---------------------------------------------------------------------------
 void TRights::SetText(const std::wstring & value)
 {
-  if (value != Text)
+  if (value != GetText())
   {
     if ((value.size() != TextLen) ||
-        (!AllowUndef && (value.find_first_of(UndefSymbol) > 0)) ||
+        (!GetAllowUndef() && (value.find_first_of(UndefSymbol) > 0)) ||
         (value.find_first_of(L" ") > 0))
     {
-      throw exception(FMTLOAD(RIGHTS_ERROR, (value)));
+      // FIXME throw exception(FMTLOAD(RIGHTS_ERROR, (value)));
     }
 
     FSet = 0;
@@ -2139,10 +2139,10 @@ void TRights::SetOctal(std::wstring value)
   std::wstring AValue(value);
   if (AValue.size() == 3)
   {
-    AValue = "0" + AValue;
+    AValue = L"0" + AValue;
   }
 
-  if (Octal != AValue)
+  if (GetOctal() != AValue)
   {
     bool Correct = (AValue.size() == 4);
     if (Correct)
@@ -2155,21 +2155,21 @@ void TRights::SetOctal(std::wstring value)
 
     if (!Correct)
     {
-      throw exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, (value)));
+      // FIXME throw exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, (value)));
     }
 
-    Number = static_cast<unsigned short>(
+    SetNumber(static_cast<unsigned short>(
       ((AValue[1] - '0') << 9) +
       ((AValue[2] - '0') << 6) +
       ((AValue[3] - '0') << 3) +
-      ((AValue[4] - '0') << 0));
+      ((AValue[4] - '0') << 0)));
   }
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
 unsigned long TRights::GetNumberDecadic() const
 {
-  unsigned long N = NumberSet; // used to be "Number"
+  unsigned long N = GetNumberSet(); // used to be "Number"
   unsigned long Result =
       ((N & 07000) / 01000 * 1000) +
       ((N & 00700) /  0100 *  100) +
@@ -2182,7 +2182,7 @@ unsigned long TRights::GetNumberDecadic() const
 std::wstring TRights::GetOctal() const
 {
   std::wstring Result;
-  unsigned short N = NumberSet; // used to be "Number"
+  unsigned short N = GetNumberSet(); // used to be "Number"
   Result.resize(4);
   Result[1] = static_cast<char>('0' + ((N & 07000) >> 9));
   Result[2] = static_cast<char>('0' + ((N & 00700) >> 6));
@@ -2198,34 +2198,34 @@ void TRights::SetNumber(unsigned short value)
   {
     FSet = value;
     FUnset = static_cast<unsigned short>(rfAllSpecials & ~FSet);
-    FText = "";
+    FText = L"";
   }
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
 unsigned short TRights::GetNumber() const
 {
-  assert(!IsUndef);
+  assert(!GetIsUndef());
   return FSet;
 }
 //---------------------------------------------------------------------------
 void TRights::SetRight(TRight Right, bool value)
 {
-  RightUndef[Right] = (value ? rsYes : rsNo);
+  SetRightUndef(Right, (value ? rsYes : rsNo));
 }
 //---------------------------------------------------------------------------
 bool TRights::GetRight(TRight Right) const
 {
-  TState State = RightUndef[Right];
+  TState State = GetRightUndef(Right);
   assert(State != rsUndef);
   return (State == rsYes);
 }
 //---------------------------------------------------------------------------
 void TRights::SetRightUndef(TRight Right, TState value)
 {
-  if (value != RightUndef[Right])
+  if (value != GetRightUndef(Right))
   {
-    assert((value != rsUndef) || AllowUndef);
+    assert((value != rsUndef) || GetAllowUndef());
 
     TFlag Flag = RightToFlag(Right);
 
@@ -2248,7 +2248,7 @@ void TRights::SetRightUndef(TRight Right, TState value)
         break;
     }
 
-    FText = "";
+    FText = L"";
   }
   FUnknown = false;
 }
@@ -2275,25 +2275,25 @@ TRights::TState TRights::GetRightUndef(TRight Right) const
 //---------------------------------------------------------------------------
 void TRights::SetReadOnly(bool value)
 {
-  Right[rrUserWrite] = !value;
-  Right[rrGroupWrite] = !value;
-  Right[rrOtherWrite] = !value;
+  SetRight(rrUserWrite, !value);
+  SetRight(rrGroupWrite, !value);
+  SetRight(rrOtherWrite, !value);
 }
 //---------------------------------------------------------------------------
 bool  TRights::GetReadOnly()
 {
-  return Right[rrUserWrite] && Right[rrGroupWrite] && Right[rrOtherWrite];
+  return GetRight(rrUserWrite) && GetRight(rrGroupWrite) && GetRight(rrOtherWrite);
 }
 //---------------------------------------------------------------------------
 std::wstring TRights::GetSimplestStr() const
 {
-  if (IsUndef)
+  if (GetIsUndef())
   {
-    return ModeStr;
+    return GetModeStr();
   }
   else
   {
-    return Octal;
+    return GetOctal();
   }
 }
 //---------------------------------------------------------------------------
@@ -2306,13 +2306,13 @@ std::wstring TRights::GetModeStr() const
 
   for (int Group = 0; Group < 3; Group++)
   {
-    SetModeStr = "";
-    UnsetModeStr = "";
+    SetModeStr = L"";
+    UnsetModeStr = L"";
     for (int Mode = 0; Mode < 3; Mode++)
     {
       Index = (Group * 3) + Mode;
       Right = static_cast<TRight>(rrUserRead + Index);
-      switch (RightUndef[Right])
+      switch (GetRightUndef(Right))
       {
         case rsYes:
           SetModeStr += BasicSymbols[Index];
@@ -2326,7 +2326,7 @@ std::wstring TRights::GetModeStr() const
 
     Right = static_cast<TRight>(rrUserIDExec + Group);
     Index = (Group * 3) + 2;
-    switch (RightUndef[Right])
+    switch (GetRightUndef(Right))
     {
       case rsYes:
         SetModeStr += CombinedSymbols[Index];
@@ -2346,11 +2346,11 @@ std::wstring TRights::GetModeStr() const
       Result += ModeGroups[Group];
       if (!SetModeStr.empty())
       {
-        Result += "+" + SetModeStr;
+        Result += L"+" + SetModeStr;
       }
       if (!UnsetModeStr.empty())
       {
-        Result += "-" + UnsetModeStr;
+        Result += L"-" + UnsetModeStr;
       }
     }
   }
@@ -2361,10 +2361,10 @@ void TRights::AddExecute()
 {
   for (int Group = 0; Group < 3; Group++)
   {
-    if ((RightUndef[static_cast<TRight>(rrUserRead + (Group * 3))] == rsYes) ||
-        (RightUndef[static_cast<TRight>(rrUserWrite + (Group * 3))] == rsYes))
+    if ((GetRightUndef(static_cast<TRight>(rrUserRead + (Group * 3))) == rsYes) ||
+        (GetRightUndef(static_cast<TRight>(rrUserWrite + (Group * 3))) == rsYes))
     {
-      Right[static_cast<TRight>(rrUserExec + (Group * 3))] = true;
+      SetRight(static_cast<TRight>(rrUserExec + (Group * 3)), true);
     }
   }
   FUnknown = false;
@@ -2376,7 +2376,7 @@ void TRights::AllUndef()
   {
     FSet = 0;
     FUnset = 0;
-    FText = "";
+    FText = L"";
   }
   FUnknown = false;
 }
@@ -2388,12 +2388,12 @@ bool TRights::GetIsUndef() const
 //---------------------------------------------------------------------------
 TRights::operator unsigned short() const
 {
-  return Number;
+  return GetNumber();
 }
 //---------------------------------------------------------------------------
 TRights::operator unsigned long() const
 {
-  return Number;
+  return GetNumber();
 }
 //=== TRemoteProperties -------------------------------------------------------
 TRemoteProperties::TRemoteProperties()
@@ -2417,8 +2417,8 @@ void TRemoteProperties::Default()
 {
   Valid.Clear();
   AddXToDirectories = false;
-  Rights.AllowUndef = false;
-  Rights.Number = 0;
+  Rights.SetAllowUndef(false);
+  Rights.SetNumber(0);
   Group.Clear();
   Owner.Clear();
   Recursive = false;
@@ -2454,7 +2454,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
   TRemoteProperties CommonProperties;
   for (int Index = 0; Index < FileList->Count; Index++)
   {
-    TRemoteFile * File = (TRemoteFile *)(FileList->Objects[Index]);
+    TRemoteFile * File = (TRemoteFile *)(FileList->GetObject(Index));
     assert(File);
     if (!Index)
     {

@@ -394,7 +394,7 @@ public:
   operator unsigned long() const;
 
   // __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
-  bool GetAllowUndef() { return FAllowUndef; }
+  bool GetAllowUndef() const { return FAllowUndef; }
   void SetAllowUndef(bool value);
   // __property bool IsUndef = { read = GetIsUndef };
   bool GetIsUndef() const;
@@ -445,7 +445,22 @@ enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess }
 // typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
 struct TValidProperties
 {
+public:
+    void Clear();
+    bool Contains(TValidProperty value)
+    {
+        return false;
+    }
+    bool operator == (const TValidProperties &rhs) const
+    {
+        return false;
+    }
+    bool operator != (const TValidProperties &rhs) const
+    {
+        return !(operator == (rhs));
+    }
 };
+
 
 class TRemoteProperties
 {
