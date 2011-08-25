@@ -132,6 +132,11 @@ std::wstring Trim(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
 
 bool ForceDirectories(const std::wstring Dir);
+
+std::wstring IncludeTrailingBackslash(const std::wstring Str);
 std::wstring ExcludeTrailingBackslash(const std::wstring Str);
+std::wstring ExtractFileDir(const std::wstring Str);
 
 std::wstring StringOfChar(const wchar_t c, size_t len);
+
+void RaiseLastOSError();

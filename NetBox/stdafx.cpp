@@ -371,7 +371,20 @@ std::wstring ExcludeTrailingBackslash(const std::wstring str)
 {
     // FIXME
     std::wstring result = str;
-    // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    return result;
+}
+
+std::wstring IncludeTrailingBackslash(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring ExtractFileDir(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
     return result;
 }
 
@@ -380,4 +393,8 @@ std::wstring StringOfChar(const wchar_t c, size_t len)
     // FIXME
     std::wstring result;
     return result;
+}
+
+void RaiseLastOSError()
+{
 }
