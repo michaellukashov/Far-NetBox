@@ -49,8 +49,6 @@
 
 using namespace std;
 
-#define NETBOX_DEBUG
-
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
