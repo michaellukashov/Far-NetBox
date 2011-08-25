@@ -109,6 +109,7 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
     ${PROJECT_ROOT}/NetBox/Logging.cpp
     ${PROJECT_ROOT}/NetBox/FTPS.cpp
+    ${PROJECT_ROOT}/NetBox/SCP.cpp
     ${PROJECT_ROOT}/NetBox/NetBox.def
 )
 
