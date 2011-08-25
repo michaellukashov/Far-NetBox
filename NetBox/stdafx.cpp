@@ -360,3 +360,17 @@ std::wstring LowerCase(const std::wstring str)
     // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
     return result;
 }
+
+bool ForceDirectories(const std::wstring Dir)
+{
+    // FIXME
+    return true;
+}
+
+std::wstring ExcludeTrailingBackslash(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    return result;
+}

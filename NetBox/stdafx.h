@@ -130,3 +130,6 @@ std::wstring ExpandEnvVars(const std::wstring& str);
 
 std::wstring Trim(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
+
+bool ForceDirectories(const std::wstring Dir);
+std::wstring ExcludeTrailingBackslash(const std::wstring Str);
