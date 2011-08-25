@@ -109,7 +109,7 @@ public:
         }
         else
         {
-            while(!val.empty() && val[val.length() - 1] == 0)
+            while (!val.empty() && val[val.length() - 1] == 0)
             {
                 val.erase(val.length() - 1);
             }

@@ -109,7 +109,7 @@ bool CFTP::Connect(HANDLE abortEvent, std::wstring &errorInfo)
         return false;
     }
     m_CurrentDirectory = path;
-    while(m_CurrentDirectory.size() > 1 && m_CurrentDirectory[m_CurrentDirectory.length() - 1] == L'/')
+    while (m_CurrentDirectory.size() > 1 && m_CurrentDirectory[m_CurrentDirectory.length() - 1] == L'/')
     {
         m_CurrentDirectory.erase(m_CurrentDirectory.length() - 1);
     }

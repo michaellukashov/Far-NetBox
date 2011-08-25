@@ -609,7 +609,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             remotePath += pi->FindData.lpwszFileName;
             // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: remotePath = %s", remotePath);
             size_t slash;
-            while((slash = remotePath.find(L'\\')) != std::string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::string::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -619,7 +619,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             if (isDirectory)
             {
                 //Create destination directory
-                while(!CreateDirectory(localPath.c_str(), NULL))
+                while (!CreateDirectory(localPath.c_str(), NULL))
                 {
                     const int errCode = GetLastError();
                     if (errCode == ERROR_ALREADY_EXISTS)
@@ -837,7 +837,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
             }
             remotePath += localPath.substr(localRelativePath.length());
             size_t slash;
-            while((slash = remotePath.find(L'\\')) != std::string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::string::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -908,7 +908,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 else
                 {
                     //Remove source (local) file
-                    while(!DeleteFile(localPath.c_str()))
+                    while (!DeleteFile(localPath.c_str()))
                     {
                         const int errCode = GetLastError();
                         success = (errCode == ERROR_FILE_NOT_FOUND);
@@ -945,7 +945,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     sort(dirsToRemove.begin(), dirsToRemove.end());
     for (std::vector<std::wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
     {
-        while(!RemoveDirectory(it->c_str()))
+        while (!RemoveDirectory(it->c_str()))
         {
             if (GetLastError() == ERROR_FILE_NOT_FOUND)
             {
@@ -1058,7 +1058,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
             }
             remotePath += pi->FindData.lpwszFileName;
             size_t slash;
-            while((slash = remotePath.find(L'\\')) != std::string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::string::npos)
             {
                 remotePath[slash] = L'/';
             }
