@@ -388,8 +388,8 @@ void CSession::ExportFromRegistry()
     CFarSettings settings;
     if (settings.Open(L"NetBox", true))
     {
-        const std::vector<wstring> keys = settings.EnumKeys();
-        for (vector<wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
+        const std::vector<std::wstring> keys = settings.EnumKeys();
+        for (vector<std::wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
         {
             std::wstring regName(L"NetBox");
             regName += L'\\';

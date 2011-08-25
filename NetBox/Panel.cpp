@@ -584,7 +584,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     }
 
     //Directory to remove list
-    std::vector<wstring> dirsToRemove;
+    std::vector<std::wstring> dirsToRemove;
 
     CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Receive, 1, m_ProtoClient);
     progressWnd.Show();
@@ -709,7 +709,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     //Delay directory removing
     sort(dirsToRemove.begin(), dirsToRemove.end());
     CNotificationWindow progressWndDel(CFarPlugin::GetString(StringTitle), CFarPlugin::GetString(StringPrgDelete));
-    for (vector<wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
+    for (vector<std::wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
     {
         std::wstring errInfo;
         progressWndDel.Show();
@@ -806,7 +806,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     ::AppendWChar(localRelativePath, L'\\');
 
     //Directory to remove list
-    std::vector<wstring> dirsToRemove;
+    std::vector<std::wstring> dirsToRemove;
 
     CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Send, 1, m_ProtoClient);
     progressWnd.Show();
@@ -943,7 +943,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
 
     //Delay directory removing
     sort(dirsToRemove.begin(), dirsToRemove.end());
-    for (vector<wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
+    for (vector<std::wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
     {
         while(!RemoveDirectory(it->c_str()))
         {
