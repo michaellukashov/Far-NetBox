@@ -26,7 +26,7 @@
 class CFile
 {
 public:
-    CFile() : _File(INVALID_HANDLE_VALUE), _LastError(0) {}
+    CFile() : m_File(INVALID_HANDLE_VALUE), m_LastError(0) {}
     ~CFile()
     {
         Close();
@@ -39,16 +39,16 @@ public:
      */
     bool OpenWrite(const wchar_t *fileName)
     {
-        assert(_File == INVALID_HANDLE_VALUE);
+        assert(m_File == INVALID_HANDLE_VALUE);
         assert(fileName);
-        _LastError = ERROR_SUCCESS;
+        m_LastError = ERROR_SUCCESS;
 
-        _File = CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (_File == INVALID_HANDLE_VALUE)
+        m_File = CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (m_File == INVALID_HANDLE_VALUE)
         {
-            _LastError = GetLastError();
+            m_LastError = GetLastError();
         }
-        return (_LastError == ERROR_SUCCESS);
+        return (m_LastError == ERROR_SUCCESS);
     }
 
     /**
@@ -58,16 +58,16 @@ public:
      */
     bool OpenRead(const wchar_t *fileName)
     {
-        assert(_File == INVALID_HANDLE_VALUE);
+        assert(m_File == INVALID_HANDLE_VALUE);
         assert(fileName);
-        _LastError = ERROR_SUCCESS;
+        m_LastError = ERROR_SUCCESS;
 
-        _File = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (_File == INVALID_HANDLE_VALUE)
+        m_File = CreateFile(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (m_File == INVALID_HANDLE_VALUE)
         {
-            _LastError = GetLastError();
+            m_LastError = GetLastError();
         }
-        return (_LastError == ERROR_SUCCESS);
+        return (m_LastError == ERROR_SUCCESS);
     }
 
     /**
@@ -78,20 +78,20 @@ public:
      */
     bool Read(void *buff, size_t &buffSize)
     {
-        assert(_File != INVALID_HANDLE_VALUE);
-        _LastError = ERROR_SUCCESS;
+        assert(m_File != INVALID_HANDLE_VALUE);
+        m_LastError = ERROR_SUCCESS;
 
         DWORD bytesRead = static_cast<DWORD>(buffSize);
-        if (!ReadFile(_File, buff, bytesRead, &bytesRead, NULL))
+        if (!ReadFile(m_File, buff, bytesRead, &bytesRead, NULL))
         {
-            _LastError = GetLastError();
+            m_LastError = GetLastError();
             buffSize = 0;
         }
         else
         {
             buffSize = static_cast<size_t>(bytesRead);
         }
-        return (_LastError == ERROR_SUCCESS);
+        return (m_LastError == ERROR_SUCCESS);
     }
 
     /**
@@ -102,15 +102,15 @@ public:
      */
     bool Write(const void *buff, const size_t buffSize)
     {
-        assert(_File != INVALID_HANDLE_VALUE);
-        _LastError = ERROR_SUCCESS;
+        assert(m_File != INVALID_HANDLE_VALUE);
+        m_LastError = ERROR_SUCCESS;
 
         DWORD bytesWritten;
-        if (!WriteFile(_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, NULL))
+        if (!WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, NULL))
         {
-            _LastError = GetLastError();
+            m_LastError = GetLastError();
         }
-        return (_LastError == ERROR_SUCCESS);
+        return (m_LastError == ERROR_SUCCESS);
     }
 
     /**
@@ -119,13 +119,13 @@ public:
      */
     __int64 GetFileSize()
     {
-        assert(_File != INVALID_HANDLE_VALUE);
-        _LastError = ERROR_SUCCESS;
+        assert(m_File != INVALID_HANDLE_VALUE);
+        m_LastError = ERROR_SUCCESS;
 
         LARGE_INTEGER fileSize;
-        if (!GetFileSizeEx(_File, &fileSize))
+        if (!GetFileSizeEx(m_File, &fileSize))
         {
-            _LastError = GetLastError();
+            m_LastError = GetLastError();
             return -1;
         }
         return fileSize.QuadPart;
@@ -136,10 +136,10 @@ public:
      */
     void Close()
     {
-        if (_File != INVALID_HANDLE_VALUE)
+        if (m_File != INVALID_HANDLE_VALUE)
         {
-            CloseHandle(_File);
-            _File = INVALID_HANDLE_VALUE;
+            CloseHandle(m_File);
+            m_File = INVALID_HANDLE_VALUE;
         }
     }
 
@@ -149,7 +149,7 @@ public:
      */
     DWORD LastError() const
     {
-        return _LastError;
+        return m_LastError;
     }
 
     /**
@@ -158,7 +158,7 @@ public:
      * \param fileContent file content
      * \return error code
      */
-    static DWORD SaveFile(const wchar_t *fileName, const vector<char>& fileContent)
+    static DWORD SaveFile(const wchar_t *fileName, const std::vector<char>& fileContent)
     {
         CFile f;
         if (f.OpenWrite(fileName) && !fileContent.empty())
@@ -191,7 +191,7 @@ public:
      * \param fileContent file content
      * \return error code
      */
-    static DWORD LoadFile(const wchar_t *fileName, vector<char>& fileContent)
+    static DWORD LoadFile(const wchar_t *fileName, std::vector<char>& fileContent)
     {
         fileContent.clear();
 
@@ -215,8 +215,8 @@ public:
     }
 
 private:
-    HANDLE  _File;          ///< File handle
-    DWORD   _LastError;     ///< Laset errno
+    HANDLE  m_File;          ///< File handle
+    DWORD   m_LastError;     ///< Laset errno
 };
 
 
@@ -228,7 +228,7 @@ class CCriticalSection : public CRITICAL_SECTION
 public:
     CCriticalSection(const DWORD spinCount = 1024)
     {
-        if (!InitializeCriticalSectionAndSpinCount(&_SyncObj, spinCount))
+        if (!InitializeCriticalSectionAndSpinCount(&m_SyncObj, spinCount))
         {
             throw GetLastError();
         }
@@ -236,23 +236,23 @@ public:
 
     ~CCriticalSection()
     {
-        DeleteCriticalSection(&_SyncObj);
+        DeleteCriticalSection(&m_SyncObj);
     }
 
     //Acquire the critical section
     inline void Enter()
     {
-        EnterCriticalSection(&_SyncObj);
+        EnterCriticalSection(&m_SyncObj);
     }
 
     //Release the critical section
     inline void Leave()
     {
-        LeaveCriticalSection(&_SyncObj);
+        LeaveCriticalSection(&m_SyncObj);
     }
 
 private:
-    CRITICAL_SECTION _SyncObj;
+    CRITICAL_SECTION m_SyncObj;
 };
 
 
@@ -263,15 +263,15 @@ private:
 class CLock
 {
 public:
-    CLock(CCriticalSection &syncObj) : _SyncObj(syncObj)
+    CLock(CCriticalSection &syncObj) : m_SyncObj(syncObj)
     {
-        _SyncObj.Enter();
+        m_SyncObj.Enter();
     }
     ~CLock()
     {
-        _SyncObj.Leave();
+        m_SyncObj.Leave();
     }
 private:
-    CCriticalSection &_SyncObj;
+    CCriticalSection &m_SyncObj;
 };
 #pragma warning(default: 4512)  //assignment operator could not be generated

@@ -77,16 +77,16 @@ public:
     virtual ~CSFTP();
 
     //From IProtocol
-    virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);
+    virtual bool Connect(HANDLE abortEvent, std::wstring &errorInfo);
     virtual void Close();
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
-    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
-    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
-    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
-    virtual wstring GetURL();
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
+    virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo);
+    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
+    virtual bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
+    virtual std::wstring GetURL();
 
 private:
     /**
@@ -96,20 +96,20 @@ private:
      * \param errInfo buffer to save error message
      * \return false if error
      */
-    bool OpenSSHSession(const wchar_t *hostName, const unsigned short port, wstring &errInfo);
+    bool OpenSSHSession(const wchar_t *hostName, const unsigned short port, std::wstring &errInfo);
 
     /**
      * Format error description from SSH last error
      * \return error description
      */
-    wstring FormatSSHLastErrorDescription() const;
+    std::wstring FormatSSHLastErrorDescription() const;
 
     /**
      * Convert local (unicode) charset to ftp codepage
      * \param src source path
      * \return path in ftp codepage
      */
-    inline string LocalToSftpCP(const wchar_t *src) const
+    inline std::string LocalToSftpCP(const wchar_t *src) const
     {
         assert(src && src[0] == L'/');
         return ::W2MB(src, m_Session.GetCodePage());
@@ -120,7 +120,7 @@ private:
      * \param src source path
      * \return path in local (unicode) codepage
      */
-    inline wstring SftpToLocalCP(const char *src) const
+    inline std::wstring SftpToLocalCP(const char *src) const
     {
         return ::MB2W(src, m_Session.GetCodePage());
     }

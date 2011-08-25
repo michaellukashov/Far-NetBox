@@ -78,7 +78,7 @@ void CSettings::Load()
     if (settings.Open(RegPluginName, true))
     {
         DWORD regVal;
-        wstring regStrVal;
+        std::wstring regStrVal;
         if (settings.GetNumber(RegAddToDM, regVal))
         {
             m_AddToDiskMenu = (regVal != 0);
@@ -176,7 +176,7 @@ void CSettings::Save() const
     }
 }
 
-void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId)
+void CSettings::AddMenuItem(std::vector<FarMenuItemEx> &items, DWORD flags, int titleId)
 {
     FarMenuItemEx item = {0};
     if (!(flags & MIF_SEPARATOR))
@@ -192,7 +192,7 @@ void CSettings::Configure()
     for (;;)
     {
         // Создаем меню с настройками
-        vector<FarMenuItemEx> items;
+        std::vector<FarMenuItemEx> items;
         // Main settings
         size_t MainSettingsMenuIdx = items.size();
         AddMenuItem(items, 0, StringMainSettingsMenuTitle);
@@ -260,7 +260,7 @@ void CSettings::MainConfigure()
     dlg.CreateSeparator(++topPos);
 
     dlg.CreateText(dlg.GetLeft(), ++topPos, CFarPlugin::GetString(StringCfgTimeout));
-    wstring timeoutStr = ::NumberToWString(m_Timeout);
+    std::wstring timeoutStr = ::NumberToWString(m_Timeout);
     FarDialogItem *itemEdit;
     const int idTimeout = dlg.CreateDlgItem(DI_FIXEDIT, dlg.GetLeft() + static_cast<int>(wcslen(CFarPlugin::GetString(StringCfgTimeout))) + 1,
         dlg.GetWidth(), topPos, topPos, timeoutStr.c_str(), DIF_MASKEDIT, &itemEdit);
@@ -339,7 +339,7 @@ void CSettings::LoggingConfigure()
         dlg.GetWidth(), topPos, topPos, NULL, DIF_LISTWRAPMODE, &itemLevelComboBox);
 
     FarList levelsList;
-    vector<FarListItem> levelsListItems;
+    std::vector<FarListItem> levelsListItems;
     int levelsCount = 2;
     levelsListItems.resize(levelsCount);
     ZeroMemory(&levelsListItems[0], levelsCount * sizeof(FarListItem));
@@ -393,8 +393,8 @@ void CSettings::ShowAbout()
     int topPos = dlg.GetTop();
     dlg.CreateText(dlg.GetLeft() + 5, ++topPos, CFarPlugin::GetString(StringPluginDescriptionText));
     ++topPos;
-    wstring ver = PLUGIN_VERSION_WTXT;
-    wstring version = CFarPlugin::GetFormattedString(StringPluginVersion, ver.c_str());
+    std::wstring ver = PLUGIN_VERSION_WTXT;
+    std::wstring version = CFarPlugin::GetFormattedString(StringPluginVersion, ver.c_str());
     // DEBUG_PRINTF(L"NetBox: version = %s", version.c_str());
     dlg.CreateText(dlg.GetLeft() + 16, ++topPos, version.c_str());
 
@@ -405,9 +405,9 @@ void CSettings::ShowAbout()
     dlg.DoModal();
 }
 
-wstring CSettings::GetSessionPath() const
+std::wstring CSettings::GetSessionPath() const
 {
-    wstring path = ::ExpandEnvVars(SessionPath());
+    std::wstring path = ::ExpandEnvVars(SessionPath());
     if (path.empty())
     {
         path = ::ExpandEnvVars(CFarPlugin::GetPluginPath());

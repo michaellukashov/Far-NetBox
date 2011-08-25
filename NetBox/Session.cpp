@@ -33,8 +33,8 @@
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
 
-string CSession::m_CryptKey = "NetBox";
-vector<CSession::ProtoImplInfo> CSession::m_Factory;
+std::string CSession::m_CryptKey = "NetBox";
+std::vector<CSession::ProtoImplInfo> CSession::m_Factory;
 
 static const char *ParamRoot =      "NetBox";
 static const char *ParamCrypt =     "crypt";
@@ -93,10 +93,10 @@ const wchar_t *CSession::GetDefaultScheme(const int protoId)
 }
 
 
-wstring CSession::GetSupportedPrefixes()
+std::wstring CSession::GetSupportedPrefixes()
 {
-    wstring prefixes;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
+    std::wstring prefixes;
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         if (!prefixes.empty())
         {
@@ -115,8 +115,8 @@ wstring CSession::GetSupportedPrefixes()
 
 PSession CSession::Create()
 {
-    vector<FarMenuItemEx> protos;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
+    std::vector<FarMenuItemEx> protos;
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         FarMenuItemEx item;
         ZeroMemory(&item, sizeof(item));
@@ -144,9 +144,9 @@ PSession CSession::Create(const wchar_t *prefix)
 {
     assert(prefix && *prefix);
 
-    wstring prefixCmd(prefix);
+    std::wstring prefixCmd(prefix);
     const size_t preffixDelim = prefixCmd.find(L':');
-    if (preffixDelim == string::npos)
+    if (preffixDelim == std::string::npos)
     {
         return PSession();    //wtf?
     }
@@ -161,9 +161,9 @@ PSession CSession::Create(const wchar_t *prefix)
         prefixCmd.erase(0, 1);
     }
 
-    wstring protoScheme(prefixCmd);
+    std::wstring protoScheme(prefixCmd);
     const size_t schemeDelim = protoScheme.find(L':');
-    if (schemeDelim == string::npos)
+    if (schemeDelim == std::string::npos)
     {
         return PSession();    //no scheme specified
     }
@@ -171,7 +171,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     //Search protocol by scheme
     const ProtoImplInfo *impl = NULL;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !impl && it != m_Factory.end(); ++it)
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !impl && it != m_Factory.end(); ++it)
     {
         if ((it->Schemes[0] && _wcsicmp(it->Schemes[0], protoScheme.c_str()) == 0) ||
                 (it->Schemes[1] && _wcsicmp(it->Schemes[1], protoScheme.c_str()) == 0))
@@ -221,23 +221,23 @@ PSession CSession::Load(const wchar_t *fileName)
     {
         return PSession();    //Wrong format
     }
-    string buff(buffSize, 0);
+    std::string buff(buffSize, 0);
     if (!xmlFile.Read(&buff[0], buffSize))
     {
         return PSession();
     }
 
     //Determine session name from file name
-    wstring sessionName = fileName;
+    std::wstring sessionName = fileName;
     const size_t startPos = sessionName.rfind(L'\\');
-    assert(startPos != string::npos);
-    if (startPos != string::npos)
+    assert(startPos != std::string::npos);
+    if (startPos != std::string::npos)
     {
         sessionName.erase(0, startPos + 1);
     }
     const size_t endPos = sessionName.rfind(L'.');
-    assert(endPos != string::npos);
-    if (endPos != string::npos)
+    assert(endPos != std::string::npos);
+    if (endPos != std::string::npos)
     {
         sessionName.erase(endPos);
     }
@@ -289,7 +289,7 @@ PSession CSession::Load(const wchar_t *fileName)
         const char *key = xmlNode->Value();
         const char *plainVal = xmlEl->GetText();
 
-        wstring val = plainVal ? ::MB2W(plainVal, CP_UTF8) : wstring();
+        std::wstring val = plainVal ? ::MB2W(plainVal, CP_UTF8) : std::wstring();
         const char *crypt = xmlEl->Attribute(ParamCrypt);
         if (crypt)
         {
@@ -316,23 +316,23 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     assert(fileName);
 
     //Get values from ini file
-    wstring iniUrlVal(256, 0);
+    std::wstring iniUrlVal(256, 0);
     if (!GetPrivateProfileString(L"FarFTP", L"Url", NULL, &iniUrlVal[0], static_cast<DWORD>(iniUrlVal.length()), fileName))
     {
         return PSession();
     }
-    wstring hostName;
+    std::wstring hostName;
     ParseURL(iniUrlVal.c_str(), NULL, &hostName, NULL, NULL, NULL, NULL, NULL);
     if (hostName.empty())
     {
         return PSession();
     }
-    wstring iniUsrVal(32, 0);
+    std::wstring iniUsrVal(32, 0);
     GetPrivateProfileString(L"FarFTP", L"User", NULL, &iniUsrVal[0], static_cast<DWORD>(iniUsrVal.length()), fileName);
-    wstring iniPwdVal(32, 0);
+    std::wstring iniPwdVal(32, 0);
     GetPrivateProfileString(L"FarFTP", L"Password", NULL, &iniPwdVal[0], static_cast<DWORD>(iniPwdVal.length()), fileName);
     INT iniPrPwd = GetPrivateProfileInt(L"FarFTP", L"AskLogin", 0, fileName);
-    wstring iniCPVal(32, 0);
+    std::wstring iniCPVal(32, 0);
     GetPrivateProfileString(L"FarFTP", L"CharTable", NULL, &iniCPVal[0], static_cast<DWORD>(iniCPVal.length()), fileName);
 
     PSession session = PSession(new CSessionFTP());
@@ -342,8 +342,8 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     //Decode password
     if (iniPwdVal.size() > 4 && iniPwdVal.substr(0, 4).compare(L"hex:") == 0)
     {
-        const string plainHexPwd = ::W2MB(iniPwdVal.substr(4).c_str());
-        vector<char> unhexPwd;
+        const std::string plainHexPwd = ::W2MB(iniPwdVal.substr(4).c_str());
+        std::vector<char> unhexPwd;
         for (size_t i = 0; i < plainHexPwd.size(); i += 2)
         {
             int val = 0;
@@ -352,7 +352,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
                 unhexPwd.push_back(static_cast<char>(val));
             }
         }
-        string decodedPwd;
+        std::string decodedPwd;
         const char xorMask = (unhexPwd[0] ^ unhexPwd[1]) | 80;
         for (size_t i = 2; i < unhexPwd.size(); ++i)
         {
@@ -371,7 +371,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     static_cast<CSessionFTP *>(session.get())->SetCodePage(codePage ? codePage : CP_UTF8);
 
     //Name
-    wstring sessionName;
+    std::wstring sessionName;
     sessionName = L"FarFTP (";
     sessionName += hostName;
     sessionName += L')';
@@ -388,10 +388,10 @@ void CSession::ExportFromRegistry()
     CFarSettings settings;
     if (settings.Open(L"NetBox", true))
     {
-        const vector<wstring> keys = settings.EnumKeys();
-        for (vector<wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
+        const std::vector<std::wstring> keys = settings.EnumKeys();
+        for (std::vector<std::wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
         {
-            wstring regName(L"NetBox");
+            std::wstring regName(L"NetBox");
             regName += L'\\';
             regName += *it;
             if (settings.Open(regName.c_str(), true))
@@ -411,7 +411,7 @@ void CSession::ExportFromRegistry()
                 assert(session.get());
                 session->m_ProtoId = protoId;
 
-                wstring sessionName, URL, userName, password, keyFile;
+                std::wstring sessionName, URL, userName, password, keyFile;
                 bool promptPwd = false, useKeyFile = false;
                 UINT codePage = CP_UTF8;
                 settings.GetString(L"Name", sessionName);
@@ -452,14 +452,14 @@ void CSession::ExportFromRegistry()
                     break;
                 }
 
-                size_t pos = string::npos;
-                while ((pos = sessionName.find_first_of(L"<>:\"/\\|?*")) != string::npos)
+                size_t pos = std::string::npos;
+                while ((pos = sessionName.find_first_of(L"<>:\"/\\|?*")) != std::string::npos)
                 {
                     sessionName[pos] = L'_';
                 }
                 session->SetSessionName(sessionName.c_str());
 
-                wstring savePath = m_Settings.GetSessionPath();
+                std::wstring savePath = m_Settings.GetSessionPath();
                 CreateDirectory(savePath.c_str(), NULL);
 
                 if (session->Save(savePath.c_str(), false))
@@ -495,10 +495,10 @@ bool CSession::Save(const wchar_t *fileName) const
     xmlNode->LinkEndChild(new TiXmlText(NumberToText(m_ProtoId).c_str()));
     xmlRoot->LinkEndChild(xmlNode);
 
-    for (vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
+    for (std::vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         xmlNode = new TiXmlElement(it->Name.c_str());
-        const string val = ::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
+        const std::string val = ::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
         xmlNode->LinkEndChild(new TiXmlText(val.c_str()));
         if (it->NeedCrypt)
         {
@@ -525,10 +525,10 @@ bool CSession::Save(const wchar_t *path, const bool overwrite) const
 {
     assert(path && *path);
 
-    wstring savePath = path;
+    std::wstring savePath = path;
     ::AppendPathDelimiterW(savePath);
 
-    wstring fileName = savePath;
+    std::wstring fileName = savePath;
     fileName += GetSessionName();
     fileName += L".netbox";
 
@@ -550,7 +550,7 @@ bool CSession::Save(const wchar_t *path, const bool overwrite) const
 PProtocol CSession::CreateClient()
 {
     //Check url
-    wstring hostName, userName, password;
+    std::wstring hostName, userName, password;
     ParseURL(GetURL(), NULL, &hostName, NULL, NULL, NULL, &userName, &password);
     if (hostName.empty())
     {
@@ -673,7 +673,7 @@ const wchar_t *CSession::GetProperty(const char *name, const wchar_t *defaultVal
 {
     assert(name);
 
-    for (vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
+    for (std::vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         if (strcmp(name, it->Name.c_str()) == 0)
         {
@@ -699,7 +699,7 @@ void CSession::SetProperty(const char *name, const wchar_t *val, const bool need
     assert(val);
 
     Property *prop = NULL;
-    for (vector<Property>::iterator it = m_Properties.begin(); !prop && it != m_Properties.end(); ++it)
+    for (std::vector<Property>::iterator it = m_Properties.begin(); !prop && it != m_Properties.end(); ++it)
     {
         if (strcmp(name, it->Name.c_str()) == 0)
         {
@@ -731,11 +731,11 @@ void CSession::SetProperty(const char *name, const __int64 val)
 }
 
 
-wstring CSession::Crypt(const wstring &src, const bool encrypt) const
+std::wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
 {
     if (src.empty())
     {
-        return wstring();
+        return std::wstring();
     }
 
     if (m_Settings.UseOwnKey())
@@ -762,13 +762,13 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
     EVP_CIPHER_CTX_init(&ctx);
     BIO *b64 = BIO_new(BIO_f_base64());
 
-    wstring encodedVal;
+    std::wstring encodedVal;
 
     if (encrypt)
     {
         //Encrypt
         int encryptBufferLen = static_cast<int>(src.length() * sizeof(wchar_t) + 256);
-        vector<unsigned char> encryptBuffer(static_cast<size_t>(encryptBufferLen));
+        std::vector<unsigned char> encryptBuffer(static_cast<size_t>(encryptBufferLen));
         int finalLen;
         if (EVP_EncryptInit_ex(&ctx, cipher, NULL, key, iv) &&
                 EVP_EncryptUpdate(&ctx, &encryptBuffer.front(), &encryptBufferLen, reinterpret_cast<const unsigned char *>(src.c_str()), static_cast<int>(src.length() * sizeof(wchar_t))) &&
@@ -783,18 +783,18 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
             BUF_MEM *bptr;
             if (BIO_get_mem_ptr(b64, &bptr))
             {
-                encodedVal = ::MB2W(string(static_cast<const char *>(bptr->data), bptr->length).c_str());
+                encodedVal = ::MB2W(std::string(static_cast<const char *>(bptr->data), bptr->length).c_str());
             }
         }
     }
     else
     {
         //Base64 decode
-        string base64Value = ::W2MB(src.c_str());
+        std::string base64Value = ::W2MB(src.c_str());
         BIO *bmem = BIO_new_mem_buf(&base64Value[0], static_cast<int>(base64Value.length()));
         bmem = BIO_push(b64, bmem);
 
-        vector<unsigned char> decryptBuffer(base64Value.length());
+        std::vector<unsigned char> decryptBuffer(base64Value.length());
         const int decryptBufferLen = BIO_read(bmem, &decryptBuffer.front(), static_cast<int>(decryptBuffer.size()));
         if (decryptBufferLen)
         {
@@ -822,7 +822,7 @@ wstring CSession::Crypt(const wstring &src, const bool encrypt) const
 const CSession::ProtoImplInfo *CSession::GetProtoImplInfo(const int protoId)
 {
     const ProtoImplInfo *res = NULL;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !res && it != m_Factory.end(); ++it)
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !res && it != m_Factory.end(); ++it)
     {
         if (protoId == it->ProtoId)
         {

@@ -57,7 +57,7 @@ bool CSessionEditor::EditSession()
     m_Title += L')';
     SetTitle(m_Title.c_str());
 
-    wstring url = m_Session->GetURL();
+    std::wstring url = m_Session->GetURL();
     if (!m_EditMode)
     {
         url = CSession::GetDefaultScheme(m_Session->GetProtocolId());
@@ -111,37 +111,37 @@ bool CSessionEditor::EditSession()
     }
 
     // Парсим строку URL
-    wstring scheme;
-    wstring hostName;
+    std::wstring scheme;
+    std::wstring hostName;
     unsigned short port;
-    wstring path;
-    wstring query;
-    wstring userName;
-    wstring password;
+    std::wstring path;
+    std::wstring query;
+    std::wstring userName;
+    std::wstring password;
     ::ParseURL(GetText(m_IdEditURL).c_str(), &scheme, &hostName, &port, &path, &query, &userName, &password);
 
-    wstring sessionName = GetText(m_IdEditName);
+    std::wstring sessionName = GetText(m_IdEditName);
     if (sessionName.empty())
     {
         sessionName = hostName;
     }
     m_Session->SetSessionName(sessionName.c_str());
 
-    wstring sessionUserName = GetText(m_IdEditUser);
+    std::wstring sessionUserName = GetText(m_IdEditUser);
     if (sessionUserName.empty())
     {
         sessionUserName = userName;
     }
     m_Session->SetUserName(sessionUserName.c_str());
 
-    wstring sessionPassword = GetText(m_IdEditPswHide);
+    std::wstring sessionPassword = GetText(m_IdEditPswHide);
     if (sessionPassword.empty())
     {
         sessionPassword = password;
     }
     m_Session->SetPassword(sessionPassword.c_str());
 
-    wstring sessionURL = GetText(m_IdEditURL);
+    std::wstring sessionURL = GetText(m_IdEditURL);
     if (!sessionUserName.empty() && !sessionPassword.empty())
     {
         sessionURL = scheme + L"://" + hostName + L":" + ::NumberToWString(port) + path + query;
@@ -165,8 +165,8 @@ void CSessionEditor::CreateCodePageControl(const int topPos, const UINT current,
     idCPText = CreateText(GetLeft(), topPos, CFarPlugin::GetString(StringEdCP));
 
     //Avialable codepages
-    static vector<wstring> codePages;
-    static vector<FarListItem> farListItems;
+    static std::vector<std::wstring> codePages;
+    static std::vector<FarListItem> farListItems;
     static FarList farList;
     if (codePages.empty())
     {
@@ -317,7 +317,7 @@ void CSessionEditor::ShowProxyDlgItems(const ProxySettingsDialogParams &params, 
 
 bool CSessionEditor::Validate() const
 {
-    wstring url = GetText(m_IdEditURL);
+    std::wstring url = GetText(m_IdEditURL);
     if (url.empty())
     {
         CFarPlugin::MessageBox(m_Title.c_str(), CFarPlugin::GetString(StringEdErrURLEmpty), FMSG_MB_OK | FMSG_WARNING);
@@ -325,7 +325,7 @@ bool CSessionEditor::Validate() const
     }
 
     //Check URL for valid form
-    wstring schemeName, hostName;
+    std::wstring schemeName, hostName;
     ParseURL(url.c_str(), &schemeName, NULL, NULL, NULL, NULL, NULL, NULL);
     if (schemeName.empty())
     {
@@ -339,7 +339,7 @@ bool CSessionEditor::Validate() const
         return false;
     }
 
-    wstring name = GetText(m_IdEditName);
+    std::wstring name = GetText(m_IdEditName);
     if (name.empty())
     {
         if (!m_EditMode)
@@ -356,7 +356,7 @@ bool CSessionEditor::Validate() const
     else
     {
         static const wchar_t *restrictedSymbols = L"<>:\"/\\|?*";
-        if (name.find_first_of(restrictedSymbols) != string::npos)
+        if (name.find_first_of(restrictedSymbols) != std::string::npos)
         {
             CFarPlugin::MessageBox(m_Title.c_str(), CFarPlugin::GetString(StringEdErrNameInvalid), FMSG_MB_OK | FMSG_WARNING);
             return false;

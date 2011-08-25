@@ -52,7 +52,7 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
     ResetAbortTask();
 
     bool connectionEstablished = false;
-    const wstring connectURL = m_ProtoClient->GetURL();
+    const std::wstring connectURL = m_ProtoClient->GetURL();
 
     if (IsSessionManager())
     {
@@ -65,13 +65,13 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
         notifyWnd.Show();
 
         Log1(L"connecting to %s", connectURL.c_str());
-        wstring errorMsg;
+        std::wstring errorMsg;
         while (!m_ProtoClient->Connect(m_AbortTask, errorMsg))
         {
             notifyWnd.Hide();
             if (!m_ProtoClient->TryToResolveConnectionProblem())
             {
-                wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrEstablish, connectURL.c_str());
+                std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrEstablish, connectURL.c_str());
                 taskErrorMsg += L'\n';
                 taskErrorMsg += errorMsg;
                 Log1(L"error: %s", errorMsg.c_str());
@@ -147,7 +147,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             {
                 return 1;
             }
-            vector<unsigned char> ppiBuffer(ppiBufferLength);
+            std::vector<unsigned char> ppiBuffer(ppiBufferLength);
             PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
             if (!CFarPlugin::GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
             {
@@ -163,7 +163,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
                 PProtocol proto = session->CreateClient();
 
                 //TODO: Save current session manager path - may be we fail on next operation
-                const wstring smPath = m_ProtoClient->GetCurrentDirectory();
+                const std::wstring smPath = m_ProtoClient->GetCurrentDirectory();
                 if (proto.get() && OpenConnection(proto.get()))
                 {
                     proto.release();    //From now we are the only owner!
@@ -198,7 +198,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         {
             return 0;
         }
-        vector<unsigned char> ppiBuffer(ppiBufferLength);
+        std::vector<unsigned char> ppiBuffer(ppiBufferLength);
         PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
         if (!CFarPlugin::GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
         {
@@ -206,7 +206,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         }
 
         assert(m_ProtoClient);
-        wstring cbData = m_ProtoClient->GetURL((controlState & PKF_CONTROL) && !(controlState & PKF_SHIFT));
+        std::wstring cbData = m_ProtoClient->GetURL((controlState & PKF_CONTROL) && !(controlState & PKF_SHIFT));
         cbData += m_ProtoClient->GetCurrentDirectory();
         ::AppendWChar(cbData, L'/');
         cbData += ppi->FindData.lpwszFileName;
@@ -231,7 +231,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             // DEBUG_PRINTF(L"NetBox: ProcessKey: 1: ppiBufferLength = %d", ppiBufferLength);
             return 0;
         }
-        vector<unsigned char> ppiBuffer(ppiBufferLength);
+        std::vector<unsigned char> ppiBuffer(ppiBufferLength);
         PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
         if (!CFarPlugin::GetPSI()->Control(plugin, FCTL_GETCURRENTPANELITEM, 0, reinterpret_cast<LONG_PTR>(ppi)))
         {
@@ -239,7 +239,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             return 0;
         }
         // DEBUG_PRINTF(L"NetBox: ppi->FindData.lpwszFileName = %s", ppi->FindData.lpwszFileName);
-        wstring dstPath = m_ProtoClient->GetCurrentDirectory();
+        std::wstring dstPath = m_ProtoClient->GetCurrentDirectory();
         ::AppendWChar(dstPath, L'/');
         dstPath += ppi->FindData.lpwszFileName;
         const wchar_t *destPath = dstPath.c_str();
@@ -274,7 +274,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
     const bool topDirectory = (wcscmp(L"/", m_ProtoClient->GetCurrentDirectory()) == 0);
     const bool moveUp = (wcscmp(L"..", dir) == 0);
 
-    wstring errInfo;
+    std::wstring errInfo;
     bool retStatus = false;
 
     if (topDirectory && moveUp)
@@ -298,7 +298,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
         {
             ResetAbortTask();
             // CloseConnection();
-            // wstring errorMsg;
+            // std::wstring errorMsg;
             // if (!m_ProtoClient->Connect(m_AbortTask, errorMsg))
             // {
                 // return FALSE;
@@ -342,14 +342,14 @@ int CPanel::MakeDirectory(const wchar_t **name, const int opMode)
         *name = m_LastDirName.c_str();
     }
 
-    wstring path(m_ProtoClient->GetCurrentDirectory());
+    std::wstring path(m_ProtoClient->GetCurrentDirectory());
     if (path.compare(L"/") != 0)
     {
         path += L'/';
     }
     path += *name;
 
-    wstring errInfo;
+    std::wstring errInfo;
     if (!m_ProtoClient->MakeDirectory(path.c_str(), errInfo) && !IS_SILENT(opMode))
     {
         ShowErrorDialog(0, CFarPlugin::GetFormattedString(StringErrCreateDir, *name), errInfo.c_str());
@@ -373,7 +373,7 @@ int CPanel::GetItemList(PluginPanelItem **panelItem, int *itemsNumber, const int
         // notifyWnd.Show();
     }
 
-    wstring errInfo;
+    std::wstring errInfo;
     if (!m_ProtoClient->GetList(panelItem, itemsNumber, errInfo) && !IS_SILENT(opMode))
     {
         // progressWnd.Destroy();
@@ -422,7 +422,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     if (!IS_SILENT(opMode) && panelItem)
     {
         CFarDialog dlg(70, 8, CFarPlugin::GetString(deleteSource ? StringMoveTitle : StringCopyTitle));
-        wstring fileName = panelItem->FindData.lpwszFileName;
+        std::wstring fileName = panelItem->FindData.lpwszFileName;
         if (fileName.length() > 46)
         {
             fileName = L"..." + fileName.substr(fileName.length() - 43);
@@ -452,7 +452,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
         if (!(*destPath && (wcslen(*destPath) > 2) && (*destPath)[1] == L':'))
         {
             // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: 1");
-            wstring errInfo;
+            std::wstring errInfo;
             if (itemsNumber > 1)
             {
                 // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: 2");
@@ -460,14 +460,14 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                 for (int i = 0; i < itemsNumber; ++i)
                 {
                     PluginPanelItem *pi = &panelItem[i];
-                    wstring srcPath = m_ProtoClient->GetCurrentDirectory();
+                    std::wstring srcPath = m_ProtoClient->GetCurrentDirectory();
                     if (srcPath.compare(L"/") != 0)
                     {
                         srcPath += L'/';
                     }
                     srcPath += pi->FindData.lpwszFileName;
 
-                    wstring dstPath;
+                    std::wstring dstPath;
                     if (*destPath[0] == L'/') //Full path specified by user
                     {
                         dstPath = *destPath;
@@ -483,7 +483,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     }
                     ::AppendWChar(dstPath, L'/');
                     dstPath += pi->FindData.lpwszFileName;
-                    wstring errInfo;
+                    std::wstring errInfo;
                     // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: Rename 1");
                     if (!m_ProtoClient->Rename(srcPath.c_str(), dstPath.c_str(),
                         pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ?
@@ -499,13 +499,13 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             {
                 // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: 3");
                 //Move/rename operation
-                wstring srcPath = m_ProtoClient->GetCurrentDirectory();
+                std::wstring srcPath = m_ProtoClient->GetCurrentDirectory();
                 if (srcPath.compare(L"/") != 0)
                 {
                     srcPath += L'/';
                 }
                 srcPath += panelItem->FindData.lpwszFileName;
-                wstring dstPath;
+                std::wstring dstPath;
                 if (*destPath[0] == L'/') //Full path specified by user
                 {
                     dstPath = *destPath;
@@ -546,10 +546,10 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
 
     // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: itemsNumber = %d", itemsNumber);
     //Full copied content (include subdirectories)
-    vector< pair<int, PluginPanelItem *> > subDirContent;
+    std::vector< std::pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full copied content
-    subDirContent.push_back(make_pair(itemsNumber, panelItem));
+    subDirContent.push_back(std::make_pair(itemsNumber, panelItem));
     for (int i = 0; i < itemsNumber; ++i)
     {
         PluginPanelItem *pi = &panelItem[i];
@@ -561,7 +561,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             {
                 return 0;
             }
-            subDirContent.push_back(make_pair(subItemsNum, subItems));
+            subDirContent.push_back(std::make_pair(subItemsNum, subItems));
         }
     }
 
@@ -569,7 +569,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     size_t totalFileCount = 0;
     unsigned __int64 totalFileSize = 0;
     // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: subDirContent.size = %u", subDirContent.size());
-    for (vector< pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: it->first = %u", it->first);
         for (int i = 0; i < it->first; ++i)
@@ -584,24 +584,24 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     }
 
     //Directory to remove list
-    vector<wstring> dirsToRemove;
+    std::vector<std::wstring> dirsToRemove;
 
     CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Receive, 1, m_ProtoClient);
     progressWnd.Show();
 
     //Copy content
-    for (vector< pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         for (int i = 0; i < it->first; ++i)
         {
             PluginPanelItem *pi = &it->second[i];
             const bool isDirectory = (pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
-            wstring localPath = *destPath;
+            std::wstring localPath = *destPath;
             ::AppendWChar(localPath, L'\\');
             localPath += pi->FindData.lpwszFileName;
 
-            wstring remotePath = m_ProtoClient->GetCurrentDirectory();
+            std::wstring remotePath = m_ProtoClient->GetCurrentDirectory();
             if (remotePath.compare(L"/") != 0)
             {
                 remotePath += L'/';
@@ -609,7 +609,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             remotePath += pi->FindData.lpwszFileName;
             // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: remotePath = %s", remotePath);
             size_t slash;
-            while((slash = remotePath.find(L'\\')) != string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::string::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -619,14 +619,14 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             if (isDirectory)
             {
                 //Create destination directory
-                while(!CreateDirectory(localPath.c_str(), NULL))
+                while (!CreateDirectory(localPath.c_str(), NULL))
                 {
                     const int errCode = GetLastError();
                     if (errCode == ERROR_ALREADY_EXISTS)
                     {
                         break;
                     }
-                    wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCreateDir, localPath.c_str());
+                    std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCreateDir, localPath.c_str());
                     const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_RETRYCANCEL | FMSG_WARNING | FMSG_ERRORTYPE);
                     if (retCode != 0)
                     {
@@ -638,7 +638,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             {
                 //Copy file
                 progressWnd.SetFileNames(remotePath.c_str(), localPath.c_str());
-                wstring errInfo;
+                std::wstring errInfo;
                 // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: remotePath = %s", remotePath.c_str());
                 while (!m_ProtoClient->GetFile(remotePath.c_str(), localPath.c_str(), pi->FindData.nFileSize, errInfo))
                 {
@@ -647,7 +647,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                         return -1;
                     }
 
-                    wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCopyFile, remotePath.c_str(), localPath.c_str());
+                    std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCopyFile, remotePath.c_str(), localPath.c_str());
                     taskErrorMsg += L'\n';
                     taskErrorMsg += errInfo;
                     const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_ABORTRETRYIGNORE | FMSG_WARNING);
@@ -677,11 +677,11 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
                     CNotificationWindow progressWndDel(CFarPlugin::GetString(StringTitle), CFarPlugin::GetString(StringPrgDelete));
                     progressWndDel.Show();
 
-                    wstring errInfo;
+                    std::wstring errInfo;
                     while (!m_ProtoClient->Delete(remotePath.c_str(), IProtocol::ItemFile, errInfo))
                     {
                         progressWndDel.Hide();
-                        wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteFile, remotePath.c_str());
+                        std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteFile, remotePath.c_str());
                         taskErrorMsg += L'\n';
                         taskErrorMsg += errInfo;
                         const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_ABORTRETRYIGNORE | FMSG_WARNING);
@@ -709,14 +709,14 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     //Delay directory removing
     sort(dirsToRemove.begin(), dirsToRemove.end());
     CNotificationWindow progressWndDel(CFarPlugin::GetString(StringTitle), CFarPlugin::GetString(StringPrgDelete));
-    for (vector<wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
+    for (std::vector<std::wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
     {
-        wstring errInfo;
+        std::wstring errInfo;
         progressWndDel.Show();
         while (!m_ProtoClient->Delete(it->c_str(), IProtocol::ItemDirectory, errInfo))
         {
             progressWndDel.Hide();
-            wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteDir, it->c_str());
+            std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteDir, it->c_str());
             taskErrorMsg += L'\n';
             taskErrorMsg += errInfo;
             const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_ABORTRETRYIGNORE | FMSG_WARNING);
@@ -733,7 +733,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     }
 
     //Free content
-    for (vector< pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         if (it->first > 0)
         {
@@ -756,16 +756,16 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     }
 
     //Full copied content (include subdirectories)
-    vector< pair<int, FAR_FIND_DATA *> > subDirContent;
+    std::vector< std::pair<int, FAR_FIND_DATA *> > subDirContent;
 
     //Get full copied content (top folder)
-    vector<FAR_FIND_DATA> topItems;
+    std::vector<FAR_FIND_DATA> topItems;
     for (int i = 0; i < itemsNumber; ++i)
     {
         PluginPanelItem *pi = &panelItem[i];
         topItems.push_back(pi->FindData);
     }
-    subDirContent.push_back(make_pair(static_cast<int>(topItems.size()), topItems.empty() ? NULL : &topItems.front()));
+    subDirContent.push_back(std::make_pair(static_cast<int>(topItems.size()), topItems.empty() ? NULL : &topItems.front()));
 
     //Get full copied content (sub folder)
     for (int i = 0; i < itemsNumber; ++i)
@@ -775,21 +775,21 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
         {
             FAR_FIND_DATA *subItems = NULL;
             int subItemsNum = 0;
-            wstring localPath = sourcePath;
+            std::wstring localPath = sourcePath;
             ::AppendWChar(localPath, L'\\');
             localPath += pi->FindData.lpwszFileName;
             if (!CFarPlugin::GetPSI()->GetDirList(localPath.c_str(), &subItems, &subItemsNum))
             {
                 return 0;
             }
-            subDirContent.push_back(make_pair(subItemsNum, subItems));
+            subDirContent.push_back(std::make_pair(subItemsNum, subItems));
         }
     }
 
     //Calculate total count/size and get content
     size_t totalFileCount = 0;
     unsigned __int64 totalFileSize = 0;
-    for (vector< pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         for (int i = 0; i < it->first; ++i)
         {
@@ -802,24 +802,24 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
         }
     }
 
-    wstring localRelativePath = sourcePath;
+    std::wstring localRelativePath = sourcePath;
     ::AppendWChar(localRelativePath, L'\\');
 
     //Directory to remove list
-    vector<wstring> dirsToRemove;
+    std::vector<std::wstring> dirsToRemove;
 
     CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Send, 1, m_ProtoClient);
     progressWnd.Show();
 
     //Copy content
-    for (vector< pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, FAR_FIND_DATA *> >::const_iterator it = subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         for (int i = 0; i != it->first; ++i)
         {
             FAR_FIND_DATA *fd = &it->second[i];
             const bool isDirectory = (fd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
-            wstring localPath;
+            std::wstring localPath;
             if (wcschr(fd->lpwszFileName, L'\\'))
             {
                 localPath = fd->lpwszFileName;
@@ -830,14 +830,14 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 localPath += fd->lpwszFileName;
             }
 
-            wstring remotePath = m_ProtoClient->GetCurrentDirectory();
+            std::wstring remotePath = m_ProtoClient->GetCurrentDirectory();
             if (remotePath.compare(L"/") != 0)
             {
                 remotePath += L'/';
             }
             remotePath += localPath.substr(localRelativePath.length());
             size_t slash;
-            while((slash = remotePath.find(L'\\')) != string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::string::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -849,7 +849,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
             {
                 //Create destination directory
                 bool dirExist = false;
-                wstring errInfo;
+                std::wstring errInfo;
                 // DEBUG_PRINTF(L"NetBox: PutFiles: remotePath = %s", remotePath.c_str());
                 if (!m_ProtoClient->CheckExisting(remotePath.c_str(), IProtocol::ItemDirectory, dirExist, errInfo))
                 {
@@ -860,7 +860,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 {
                     while (!m_ProtoClient->MakeDirectory(remotePath.c_str(), errInfo))
                     {
-                        wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCreateDir, remotePath.c_str());
+                        std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCreateDir, remotePath.c_str());
                         taskErrorMsg += L'\n';
                         taskErrorMsg += errInfo;
                         const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_RETRYCANCEL | FMSG_WARNING);
@@ -875,14 +875,14 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
             {
                 //Copy file
                 progressWnd.SetFileNames(localPath.c_str(), remotePath.c_str());
-                wstring errInfo;
+                std::wstring errInfo;
                 while (!m_ProtoClient->PutFile(remotePath.c_str(), localPath.c_str(), fd->nFileSize, errInfo))
                 {
                     if (WaitForSingleObject(m_AbortTask, 0) == WAIT_OBJECT_0)
                     {
                         return -1;
                     }
-                    wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCopyFile, localPath.c_str(), remotePath.c_str());
+                    std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrCopyFile, localPath.c_str(), remotePath.c_str());
                     taskErrorMsg += L'\n';
                     taskErrorMsg += errInfo;
                     const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_ABORTRETRYIGNORE | FMSG_WARNING);
@@ -908,13 +908,13 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
                 else
                 {
                     //Remove source (local) file
-                    while(!DeleteFile(localPath.c_str()))
+                    while (!DeleteFile(localPath.c_str()))
                     {
                         const int errCode = GetLastError();
                         success = (errCode == ERROR_FILE_NOT_FOUND);
                         if (!success)
                         {
-                            const wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteFile, localPath.c_str());
+                            const std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteFile, localPath.c_str());
                             const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_ABORTRETRYIGNORE | FMSG_WARNING | FMSG_ERRORTYPE);
                             if (retCode <= 0)
                             {
@@ -943,15 +943,15 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
 
     //Delay directory removing
     sort(dirsToRemove.begin(), dirsToRemove.end());
-    for (vector<wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
+    for (std::vector<std::wstring>::const_reverse_iterator it = dirsToRemove.rbegin(); it != dirsToRemove.rend(); ++it)
     {
-        while(!RemoveDirectory(it->c_str()))
+        while (!RemoveDirectory(it->c_str()))
         {
             if (GetLastError() == ERROR_FILE_NOT_FOUND)
             {
                 break;
             }
-            const wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteDir, it->c_str());
+            const std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(StringErrDeleteDir, it->c_str());
             const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_ABORTRETRYIGNORE | FMSG_WARNING | FMSG_ERRORTYPE);
             if (retCode <= 0)
             {
@@ -965,7 +965,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     }
 
     //Free content
-    for (vector< pair<int, FAR_FIND_DATA *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, FAR_FIND_DATA *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         CFarPlugin::GetPSI()->FreeDirList(it->second, it->first);
     }
@@ -986,8 +986,8 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     if (!IS_SILENT(opMode))
     {
         CFarDialog dlg(50, itemsNumber > 1 ? 7 : 8, CFarPlugin::GetString(StringDelTitle));
-        wstring question(CFarPlugin::GetString(StringDelQuestion));
-        wstring fileName;
+        std::wstring question(CFarPlugin::GetString(StringDelQuestion));
+        std::wstring fileName;
         question += L' ';
         if (itemsNumber > 1)
         {
@@ -1023,10 +1023,10 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     }
 
     //Full removed content (include subdirectories)
-    vector< pair<int, PluginPanelItem *> > subDirContent;
+    std::vector< std::pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full removed content
-    subDirContent.push_back(make_pair(itemsNumber, panelItem));
+    subDirContent.push_back(std::make_pair(itemsNumber, panelItem));
     for (int i = 0; i < itemsNumber; ++i)
     {
         PluginPanelItem *pi = &panelItem[i];
@@ -1038,27 +1038,27 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
             {
                 return 0;
             }
-            subDirContent.push_back(make_pair(subItemsNum, subItems));
+            subDirContent.push_back(std::make_pair(subItemsNum, subItems));
         }
     }
 
     //Remove content
     CNotificationWindow progressWnd(CFarPlugin::GetString(StringTitle), CFarPlugin::GetString(StringPrgDelete));
     progressWnd.Show();
-    for (vector< pair<int, PluginPanelItem *> >::const_reverse_iterator it = subDirContent.rbegin(); it != subDirContent.rend(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_reverse_iterator it = subDirContent.rbegin(); it != subDirContent.rend(); ++it)
     {
         for (int i = it->first - 1; i >= 0; --i)
         {
             PluginPanelItem *pi = &it->second[i];
 
-            wstring remotePath = m_ProtoClient->GetCurrentDirectory();
+            std::wstring remotePath = m_ProtoClient->GetCurrentDirectory();
             if (remotePath.compare(L"/") != 0)
             {
                 remotePath += L'/';
             }
             remotePath += pi->FindData.lpwszFileName;
             size_t slash;
-            while((slash = remotePath.find(L'\\')) != string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::string::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -1066,12 +1066,12 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
             const bool isDirectory = (pi->FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
             bool removed = true;
-            wstring errInfo;
+            std::wstring errInfo;
             while (!m_ProtoClient->Delete(remotePath.c_str(), isDirectory ? IProtocol::ItemDirectory : IProtocol::ItemFile, errInfo))
             {
                 progressWnd.Hide();
                 removed = false;
-                wstring taskErrorMsg = CFarPlugin::GetFormattedString(isDirectory ? StringErrDeleteDir : StringErrDeleteFile, remotePath.c_str());
+                std::wstring taskErrorMsg = CFarPlugin::GetFormattedString(isDirectory ? StringErrDeleteDir : StringErrDeleteFile, remotePath.c_str());
                 taskErrorMsg += L'\n';
                 taskErrorMsg += errInfo;
                 const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), taskErrorMsg.c_str(), FMSG_MB_ABORTRETRYIGNORE | FMSG_WARNING);
@@ -1095,7 +1095,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     }
 
     //Free content
-    for (vector< pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
+    for (std::vector< std::pair<int, PluginPanelItem *> >::const_iterator it = ++subDirContent.begin(); it != subDirContent.end(); ++it)
     {
         if (it->first > 0)
         {
@@ -1119,9 +1119,9 @@ void CPanel::UpdateTitle()
 }
 
 
-void CPanel::ShowErrorDialog(const DWORD errCode, const wstring &title, const wchar_t *info /*= NULL*/) const
+void CPanel::ShowErrorDialog(const DWORD errCode, const std::wstring &title, const wchar_t *info /*= NULL*/) const
 {
-    wstring errInfo;
+    std::wstring errInfo;
     if (!title.empty())
     {
         errInfo = title;
@@ -1147,7 +1147,7 @@ void CPanel::ShowErrorDialog(const DWORD errCode, const wstring &title, const wc
 
     //Replace all '\r\n' to '\n'
     size_t rnPos;
-    while ((rnPos = errInfo.find('\r')) != string::npos)
+    while ((rnPos = errInfo.find('\r')) != std::string::npos)
     {
         errInfo[rnPos] = ' ';
     }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <NetBox>
     <Protocol>3</Protocol>
-	<URL>ftps://ftp.secureftp-test.com:990</URL>
-	<UserName>test</UserName>
-	<Password crypt="1">hvzovYsz/Hhgn3HXZLcu1A==&#x0A;</Password>
-	<CodePage>65001</CodePage>
-	<ProxyType>0</ProxyType>
+    <URL>ftps://ftp.secureftp-test.com:990</URL>
+    <UserName>test</UserName>
+    <Password crypt="1">hvzovYsz/Hhgn3HXZLcu1A==&#x0A;</Password>
+    <CodePage>65001</CodePage>
+    <ProxyType>0</ProxyType>
 </NetBox>

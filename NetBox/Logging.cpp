@@ -22,7 +22,7 @@
 #include "Logging.h"
 #include "resource.h"
 
-CLogger m_Logger;
+CLogger _Logger;
 
 CLogger::CLogger() :
     m_first(true),
@@ -34,13 +34,13 @@ CLogger::CLogger() :
 }
 
 void CLogger::Initialize(bool enableLogging, int loggingLevel,
-    bool logToFile, const wstring &logFileName)
+    bool logToFile, const std::wstring &logFileName)
 {
     CLogger::Shutdown();
-    m_Logger.m_enableLogging = enableLogging;
-    m_Logger.m_loggingLevel = loggingLevel;
-    m_Logger.m_logToFile = logToFile;
-    m_Logger.m_logFileName = logFileName;
+    _Logger.m_enableLogging = enableLogging;
+    _Logger.m_loggingLevel = loggingLevel;
+    _Logger.m_logToFile = logToFile;
+    _Logger.m_logFileName = logFileName;
 }
 
 void CLogger::Shutdown()
@@ -79,7 +79,7 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
             st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
     // Log
     int len = _vscwprintf(format, args);
-    wstring buf(len + sizeof(wchar_t), 0);
+    std::wstring buf(len + sizeof(wchar_t), 0);
     vswprintf_s(&buf[0], buf.size(), format, args);
     fprintf_s(f, "%s\n", (char *)::W2MB(buf.c_str()).c_str());
 
@@ -137,7 +137,7 @@ void Log1(const wchar_t *format, ...)
 {
     va_list args;
     va_start(args, format);
-    m_Logger.Log(LEVEL_DEBUG1, format, args);
+    _Logger.Log(LEVEL_DEBUG1, format, args);
     va_end(args);
 }
 
@@ -145,12 +145,12 @@ void Log2(const wchar_t *format, ...)
 {
     va_list args;
     va_start(args, format);
-    m_Logger.Log(LEVEL_DEBUG2, format, args);
+    _Logger.Log(LEVEL_DEBUG2, format, args);
     va_end(args);
 }
 
 void Log2(const char *str)
 {
-    m_Logger.Log(LEVEL_DEBUG2, str);
+    _Logger.Log(LEVEL_DEBUG2, str);
 }
 

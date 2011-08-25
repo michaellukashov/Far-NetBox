@@ -7,6 +7,11 @@ Far3_x86/
 Far3_x64/
 res.txt
 svn.log
+libs/zlib/
+libs/openssl/
+libs/libssh2/
+libs/libcurl/
+libs/boost/
 ipch/
 *.opensdf
 *.sdf
@@ -23,3 +28,4 @@ ipch/
 *.7z
 *.orig
 tags
+NetBox/build

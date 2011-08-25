@@ -37,13 +37,13 @@ public:
         return m_ProgressPercent;
     }
 
-    virtual bool ChangeDirectory(const wchar_t *name, wstring &errorInfo)
+    virtual bool ChangeDirectory(const wchar_t *name, std::wstring &errorInfo)
     {
         assert(name && *name);
         // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
 
         const bool moveUp = (wcscmp(L"..", name) == 0);
-        wstring newPath;
+        std::wstring newPath;
         if (name && (L'/' == name[0]))
         {
             m_CurrentDirectory = name;
@@ -59,8 +59,8 @@ public:
             if (moveUp)
             {
                 const size_t lastSlash = newPath.rfind(L'/');
-                assert(lastSlash != string::npos);
-                if (lastSlash != string::npos && lastSlash != 0)
+                assert(lastSlash != std::string::npos);
+                if (lastSlash != std::string::npos && lastSlash != 0)
                 {
                     newPath.erase(lastSlash);
                 }
@@ -109,22 +109,22 @@ public:
         }
     }
 
-    virtual wstring GetURL(const bool includeUser = false)
+    virtual std::wstring GetURL(const bool includeUser = false)
     {
         unsigned short port = 0;
-        wstring schemeName;
-        wstring hostName;
-        wstring path;
+        std::wstring schemeName;
+        std::wstring hostName;
+        std::wstring path;
         ParseURL(m_Session.GetURL(), &schemeName, &hostName, &port, &path, NULL, NULL, NULL);
 
-        wstring ret;
+        std::wstring ret;
         ret += schemeName;
         ret += L"://";
 
         if (includeUser)
         {
-            const wstring userName = m_Session.GetUserName();
-            const wstring password = m_Session.GetPassword();
+            const std::wstring userName = m_Session.GetUserName();
+            const std::wstring password = m_Session.GetPassword();
             if (!userName.empty() || !password.empty())
             {
                 ret += userName;
@@ -161,11 +161,11 @@ protected:
      * \param info additional info
      * \return error description
      */
-    wstring FormatErrorDescription(const DWORD errCode, const wchar_t *info = NULL) const
+    std::wstring FormatErrorDescription(const DWORD errCode, const wchar_t *info = NULL) const
     {
         assert(errCode || info);
 
-        wstring errDescr;
+        std::wstring errDescr;
         if (info)
         {
             errDescr = info;
@@ -186,13 +186,13 @@ protected:
      * \param src source path
      * \return path in ftp codepage
      */
-    string LocalToFtpCP(const wchar_t *src, bool replace = false) const
+    std::string LocalToFtpCP(const wchar_t *src, bool replace = false) const
     {
         assert(src && src[0] == L'/');
-        string r = ::W2MB(src, m_Session.GetCodePage());
+        std::string r = ::W2MB(src, m_Session.GetCodePage());
         if (replace)
         {
-            while (r.find(L'#') != string::npos)
+            while (r.find(L'#') != std::string::npos)
             {
                 r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
             }
@@ -206,7 +206,7 @@ protected:
      * \param src source path
      * \return path in local (unicode) codepage
      */
-    inline wstring FtpToLocalCP(const char *src) const
+    inline std::wstring FtpToLocalCP(const char *src) const
     {
         return ::MB2W(src, m_Session.GetCodePage());
     }
@@ -215,5 +215,5 @@ protected:
 protected:
     T m_Session; ///< Session description
     int m_ProgressPercent; ///< Progress percent value
-    wstring m_CurrentDirectory; ///< Current directory name
+    std::wstring m_CurrentDirectory; ///< Current directory name
 };

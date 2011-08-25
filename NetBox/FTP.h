@@ -72,15 +72,15 @@ public:
     virtual ~CFTP();
 
     //From IProtocol
-    virtual bool Connect(HANDLE abortEvent, wstring &errorInfo);
+    virtual bool Connect(HANDLE abortEvent, std::wstring &errorInfo);
     virtual void Close();
-    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, wstring &errorInfo);
-    virtual bool MakeDirectory(const wchar_t *path, wstring &errorInfo);
-    virtual bool GetList(PluginPanelItem **items, int *itemsNum, wstring &errorInfo);
-    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, wstring &errorInfo);
-    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, wstring &errorInfo);
-    virtual bool Delete(const wchar_t *path, const ItemType type, wstring &errorInfo);
+    virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
+    virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
+    virtual bool GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo);
+    virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
+    virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
+    virtual bool Delete(const wchar_t *path, const ItemType type, std::wstring &errorInfo);
     virtual bool Aborted() const
     {
         return m_CURL.Aborted();
@@ -101,11 +101,11 @@ protected:
         {
             Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
         }
-        wstring Name;
-        wstring LinkPath;
-        wstring Owner;
-        wstring Group;
-        wstring FullText;
+        std::wstring Name;
+        std::wstring LinkPath;
+        std::wstring Owner;
+        std::wstring Group;
+        std::wstring FullText;
         ItemType Type;
         unsigned __int64 Size;
         unsigned short Permission;
