@@ -1,7 +1,5 @@
 //---------------------------------------------------------------------------
 #define NO_WIN32_LEAN_AND_MEAN
-#include <vcl.h>
-#pragma hdrstop
 
 #include <shlobj.h>
 #include <Common.h>
@@ -11,8 +9,6 @@
 #include <TextsCore.h>
 #include <CoreMain.h>
 #include <SessionData.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 bool __fastcall FindFile(AnsiString & Path)
 {
