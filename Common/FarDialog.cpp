@@ -165,7 +165,7 @@ void TFarDialog::SetHelpTopic(const std::wstring &value)
 {
     if (FHelpTopic != value)
     {
-        assert(!Handle);
+        assert(!GetHandle());
         FHelpTopic = value;
     }
 }
@@ -174,7 +174,7 @@ void TFarDialog::SetFlags(const unsigned int &value)
 {
     if (GetFlags() != value)
     {
-        assert(!Handle);
+        assert(!GetHandle());
         FFlags = value;
     }
 }
@@ -267,7 +267,7 @@ TFarDialogItem *TFarDialog::GetItem(size_t Index)
     TFarDialogItem *DialogItem;
     if (GetItemCount())
     {
-        assert(Index >= 0 && Index < FItems->Count);
+        assert(Index >= 0 && Index < FItems->GetCount());
         DialogItem = dynamic_cast<TFarDialogItem *>((*GetItems())[Index]);
         assert(DialogItem);
     }
@@ -708,8 +708,8 @@ int TFarDialog::ShowModal()
     GetFarPlugin()->FTopDialog = this;
     try
     {
-        assert(DefaultButton);
-        assert(DefaultButton->Default);
+        assert(GetDefaultButton());
+        assert(GetDefaultButton()->GetDefault());
 
         std::wstring AHelpTopic = GetHelpTopic();
 
@@ -729,7 +729,7 @@ int TFarDialog::ShowModal()
             TFarButton *Button = dynamic_cast<TFarButton *>(GetItem(BResult));
             assert(Button);
             // correct result should be already set by TFarButton
-            assert(FResult == Button->Result);
+            assert(FResult == Button->GetResult());
             FResult = Button->GetResult();
         }
         else
@@ -806,7 +806,7 @@ void TFarDialog::Change()
 //---------------------------------------------------------------------------
 long TFarDialog::SendMessage(int Msg, int Param1, int Param2)
 {
-    assert(Handle);
+    assert(GetHandle());
     TFarEnvGuard Guard;
     return GetFarPlugin()->FStartupInfo.SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
@@ -1022,12 +1022,12 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
 //---------------------------------------------------------------------------
 TFarDialogItem::~TFarDialogItem()
 {
-    assert(!Dialog);
+    assert(!GetDialog());
 }
 //---------------------------------------------------------------------------
 FarDialogItem *TFarDialogItem::GetDialogItem()
 {
-    assert(Dialog);
+    assert(GetDialog());
     return &GetDialog()->FDialogItems[GetItem()];
 }
 //---------------------------------------------------------------------------
@@ -1097,7 +1097,7 @@ void TFarDialogItem::SetFlags(unsigned int value)
 {
     if (GetFlags() != value)
     {
-        assert(!Dialog->Handle);
+        assert(!GetDialog()->GetHandle());
         UpdateFlags(value);
     }
 }
@@ -1544,7 +1544,7 @@ bool TFarDialogItem::Focused()
 void TFarDialogItem::UpdateFocused(bool value)
 {
     GetDialogItem()->Focus = value;
-    assert(Dialog);
+    assert(GetDialog());
     GetDialog()->SetItemFocused(value ? this : NULL);
 }
 //---------------------------------------------------------------------------
@@ -1949,8 +1949,8 @@ void TFarEdit::SetHistoryMask(int Index, std::wstring value)
 {
     if (GetHistoryMask(Index) != value)
     {
-        assert(!Dialog->Handle);
-        assert(&DialogItem.get()->Mask == &DialogItem.get()->History);
+        assert(!GetDialog()->GetHandle());
+        assert(&GetDialogItem()->Mask == &GetDialogItem()->History);
 
         delete[] GetDialogItem()->Mask;
         if (value.empty())
@@ -2066,7 +2066,7 @@ TFarList::TFarList(TFarDialogItem *ADialogItem) :
     TStringList()
 {
     assert((ADialogItem == NULL) ||
-           (ADialogItem.get()->Type == DI_COMBOBOX) || (ADialogItem.get()->Type == DI_LISTBOX));
+           (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
 
     FDialogItem = ADialogItem;
     FListItems = new FarList;
@@ -2206,7 +2206,7 @@ void TFarList::Changed()
 //---------------------------------------------------------------------------
 void TFarList::SetSelected(int value)
 {
-    assert(DialogItem != NULL);
+    assert(GetDialogItem() != NULL);
     if (GetSelectedInt(false) != value)
     {
         if (GetDialogItem()->GetDialog()->GetHandle())
