@@ -2240,8 +2240,8 @@ void TFarList::UpdatePosition(int Position)
 //---------------------------------------------------------------------------
 void TFarList::SetCurPos(int Position, int TopIndex)
 {
-    assert(DialogItem != NULL);
-    assert(DialogItem.get()->Dialog->Handle);
+    assert(GetDialogItem() != NULL);
+    assert(GetDialogItem()->GetDialog()->GetHandle());
     FarListPos ListPos;
     ListPos.SelectPos = Position;
     ListPos.TopPos = TopIndex;
@@ -2272,7 +2272,7 @@ int TFarList::GetTopIndex()
     else
     {
         FarListPos ListPos;
-        assert(DialogItem != NULL);
+        assert(GetDialogItem() != NULL);
         GetDialogItem()->SendMessage(DM_LISTGETCURPOS, reinterpret_cast<int>(&ListPos));
         Result = ListPos.TopPos;
     }
@@ -2294,7 +2294,7 @@ int TFarList::GetMaxLength()
 //---------------------------------------------------------------------------
 int TFarList::GetVisibleCount()
 {
-    assert(DialogItem != NULL);
+    assert(GetDialogItem() != NULL);
     return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
 //---------------------------------------------------------------------------
