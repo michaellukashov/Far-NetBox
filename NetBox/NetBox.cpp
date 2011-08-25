@@ -107,7 +107,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
 
 void WINAPI ExitFARW()
 {
-    for (vector<CPanel *>::const_iterator it = m_PanelInstances.begin(); it != m_PanelInstances.end(); ++it)
+    for (std::vector<CPanel *>::const_iterator it = m_PanelInstances.begin(); it != m_PanelInstances.end(); ++it)
     {
         delete *it;
     }

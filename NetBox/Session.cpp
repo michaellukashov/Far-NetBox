@@ -96,7 +96,7 @@ const wchar_t *CSession::GetDefaultScheme(const int protoId)
 wstring CSession::GetSupportedPrefixes()
 {
     std::wstring prefixes;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         if (!prefixes.empty())
         {
@@ -116,7 +116,7 @@ wstring CSession::GetSupportedPrefixes()
 PSession CSession::Create()
 {
     std::vector<FarMenuItemEx> protos;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         FarMenuItemEx item;
         ZeroMemory(&item, sizeof(item));
@@ -171,7 +171,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     //Search protocol by scheme
     const ProtoImplInfo *impl = NULL;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !impl && it != m_Factory.end(); ++it)
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !impl && it != m_Factory.end(); ++it)
     {
         if ((it->Schemes[0] && _wcsicmp(it->Schemes[0], protoScheme.c_str()) == 0) ||
                 (it->Schemes[1] && _wcsicmp(it->Schemes[1], protoScheme.c_str()) == 0))
@@ -389,7 +389,7 @@ void CSession::ExportFromRegistry()
     if (settings.Open(L"NetBox", true))
     {
         const std::vector<std::wstring> keys = settings.EnumKeys();
-        for (vector<std::wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
+        for (std::vector<std::wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
         {
             std::wstring regName(L"NetBox");
             regName += L'\\';
@@ -495,7 +495,7 @@ bool CSession::Save(const wchar_t *fileName) const
     xmlNode->LinkEndChild(new TiXmlText(NumberToText(m_ProtoId).c_str()));
     xmlRoot->LinkEndChild(xmlNode);
 
-    for (vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
+    for (std::vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         xmlNode = new TiXmlElement(it->Name.c_str());
         const string val = ::W2MB(it->NeedCrypt ? Crypt(it->Value, true).c_str() : it->Value.c_str(), CP_UTF8);
@@ -673,7 +673,7 @@ const wchar_t *CSession::GetProperty(const char *name, const wchar_t *defaultVal
 {
     assert(name);
 
-    for (vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
+    for (std::vector<Property>::const_iterator it = m_Properties.begin(); it != m_Properties.end(); ++it)
     {
         if (strcmp(name, it->Name.c_str()) == 0)
         {
@@ -699,7 +699,7 @@ void CSession::SetProperty(const char *name, const wchar_t *val, const bool need
     assert(val);
 
     Property *prop = NULL;
-    for (vector<Property>::iterator it = m_Properties.begin(); !prop && it != m_Properties.end(); ++it)
+    for (std::vector<Property>::iterator it = m_Properties.begin(); !prop && it != m_Properties.end(); ++it)
     {
         if (strcmp(name, it->Name.c_str()) == 0)
         {
@@ -822,7 +822,7 @@ wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
 const CSession::ProtoImplInfo *CSession::GetProtoImplInfo(const int protoId)
 {
     const ProtoImplInfo *res = NULL;
-    for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !res && it != m_Factory.end(); ++it)
+    for (std::vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); !res && it != m_Factory.end(); ++it)
     {
         if (protoId == it->ProtoId)
         {

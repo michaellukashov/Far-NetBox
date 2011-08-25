@@ -123,7 +123,7 @@ public:
     }
 
 private:
-    void AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId);
+    void AddMenuItem(std::vector<FarMenuItemEx> &items, DWORD flags, int titleId);
 
     void MainConfigure();
     void ProxyConfigure();

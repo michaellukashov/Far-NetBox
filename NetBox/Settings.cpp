@@ -176,7 +176,7 @@ void CSettings::Save() const
     }
 }
 
-void CSettings::AddMenuItem(vector<FarMenuItemEx> &items, DWORD flags, int titleId)
+void CSettings::AddMenuItem(std::vector<FarMenuItemEx> &items, DWORD flags, int titleId)
 {
     FarMenuItemEx item = {0};
     if (!(flags & MIF_SEPARATOR))
