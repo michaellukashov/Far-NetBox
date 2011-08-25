@@ -3910,9 +3910,9 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit()
 {
-  if ((GetPanelInfo()->FocusedItem != NULL) &&
-      GetPanelInfo()->FocusedItem->IsFile &&
-      (GetPanelInfo()->FocusedItem->UserData != NULL))
+  if ((GetPanelInfo()->GetFocusedItem() != NULL) &&
+      GetPanelInfo()->GetFocusedItem()->GetIsFile() &&
+      (GetPanelInfo()->GetFocusedItem()->GetUserData() != NULL))
   {
     TStrings * FileList = CreateFocusedFileList(osRemote);
     assert((FileList == NULL) || (FileList->GetCount() == 1));
@@ -3924,7 +3924,7 @@ void TWinSCPFileSystem::MultipleEdit()
         if (FileList->GetCount() == 1)
         {
           MultipleEdit(FTerminal->GetCurrentDirectory(), FileList->GetString(0),
-            (TRemoteFile*)FileList->Objects[0]);
+            (TRemoteFile*)FileList->GetObject(0));
         }
       }
       catch(...)
@@ -3976,7 +3976,7 @@ void TWinSCPFileSystem::MultipleEdit(wstring Directory,
     Aliases[2].Alias = GetMsg(EDITOR_NEW_INSTANCE_RO);
     Params.Aliases = Aliases;
     Params.AliasesCount = LENOF(Aliases);
-    switch (MoreMessageDialog(FORMAT(GetMsg(EDITOR_ALREADY_LOADED), (FullFileName)),
+    switch (MoreMessageDialog(::FORMAT(GetMsg(EDITOR_ALREADY_LOADED).c_str(), FullFileName.c_str()),
           NULL, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
       case qaYes:
@@ -4071,14 +4071,14 @@ void TWinSCPFileSystem::EditHistory()
       i++;
     }
 
-    MenuItems->Add("");
-    MenuItems->ItemFocused = MenuItems->GetCount() - 1;
+    MenuItems->Add(L"");
+    MenuItems->SetItemFocused(MenuItems->GetCount() - 1);
 
     const int BreakKeys[] = { VK_F4, 0 };
 
     int BreakCode;
     int Result = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-      GetMsg(MENU_EDIT_HISTORY), "", MenuItems, BreakKeys, BreakCode);
+      GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 
     if ((Result >= 0) && (Result < int(FEditHistories.size())))
     {
@@ -4088,33 +4088,33 @@ void TWinSCPFileSystem::EditHistory()
       FTerminal->ReadFile(FullFileName, File);
       try
       {
-        if (!File->HaveFullFileName)
+        if (!File->GetHaveFullFileName())
         {
-          File->FullFileName = FullFileName;
+          File->SetFullFileName(FullFileName);
         }
         MultipleEdit(FEditHistories[Result].Directory,
           FEditHistories[Result].FileName, File);
       }
       catch(...)
       {
-        delete File;
       }
+        delete File;
     }
   }
   catch(...)
   {
-    delete MenuItems;
   }
+    delete MenuItems;
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::IsLogging()
 {
   return
-    Connected() && FTerminal->Log->LoggingToFile;
+    Connected() && FTerminal->GetLog()->GetLoggingToFile();
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ShowLog()
 {
-  assert(Connected() && FTerminal->Log->LoggingToFile);
-  FPlugin->Viewer(FTerminal->Log->CurrentFileName, VF_NONMODAL);
+  assert(Connected() && FTerminal->GetLog()->GetLoggingToFile());
+  FPlugin->Viewer(FTerminal->GetLog()->GetCurrentFileName(), VF_NONMODAL);
 }
