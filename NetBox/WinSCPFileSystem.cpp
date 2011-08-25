@@ -15,7 +15,7 @@
 // #include <SysUtils.hpp>
 #include "ScpFileSystem.h"
 #include <Bookmarks.h>
-// #include <GUITools.h>
+#include <GUITools.h>
 // #include <CompThread.hpp>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
@@ -513,7 +513,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
             if (ChildPaths->IndexOf(Name.c_str()) < 0)
             {
               PanelItems->Add((TObject *)new TSessionFolderPanelItem(Name));
-              ChildPaths->Add((TObject *)Name);
+              //FIXME ChildPaths->AddObject((TObject *)Name);
             }
           }
           else
@@ -530,12 +530,12 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 
     if (!FNewSessionsFolder.empty())
     {
-      PanelItems->Add(new TSessionFolderPanelItem(FNewSessionsFolder));
+      PanelItems->Add((TObject *)new TSessionFolderPanelItem(FNewSessionsFolder));
     }
 
     if (PanelItems->GetCount() == 0)
     {
-      PanelItems->Add(new THintPanelItem(GetMsg(NEW_SESSION_HINT)));
+      PanelItems->Add((TObject *)new THintPanelItem(GetMsg(NEW_SESSION_HINT)));
     }
 
     TWinSCPFileSystem * OppositeFileSystem =
@@ -575,7 +575,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != NULL) && (EData != Data))
     {
-      throw exception(::FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
+      throw ExtException(::FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
     }
     else
     {
@@ -652,7 +652,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
             {
               if (StoredSessions->FindByName(Name))
               {
-                throw exception(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
+                throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
               }
               else
               {
@@ -757,7 +757,7 @@ void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, wstring Message
 {
   if (Panel->IsPlugin || (Panel->Type != ptFile))
   {
-    throw exception(Message);
+    throw ExtException(Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -765,7 +765,7 @@ void TWinSCPFileSystem::RequireCapability(int Capability)
 {
   if (!FTerminal->IsCapable[static_cast<TFSCapability>(Capability)])
   {
-    throw exception(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED),
+    throw ExtException(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED),
       (FTerminal->GetFileSystemInfo().ProtocolName)));
   }
 }
@@ -1065,7 +1065,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
   TempDir = FPlugin->TemporaryDir();
   if (TempDir.empty() || !ForceDirectories(TempDir))
   {
-    throw exception(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
+    throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
   }
 
   FTerminal->ExceptionOnFail = true;
@@ -1198,7 +1198,7 @@ void TWinSCPFileSystem::ApplyCommand()
               {
                 if ((LocalFileList == NULL) || (LocalFileList->GetCount() != 1))
                 {
-                  throw exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
+                  throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH1));
                 }
               }
               else
@@ -1208,7 +1208,7 @@ void TWinSCPFileSystem::ApplyCommand()
                      (FileList->GetCount() != 1) &&
                      (LocalFileList->GetCount() != FileList->GetCount())))
                 {
-                  throw exception(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
+                  throw ExtException(GetMsg(CUSTOM_COMMAND_SELECTED_UNMATCH));
                 }
               }
             }
@@ -1286,7 +1286,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   {
                     if (LocalFileList->GetCount() != RemoteFileList->GetCount())
                     {
-                      throw exception(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
+                      throw ExtException(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
                     }
 
                     for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
@@ -2470,7 +2470,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
     // directories and the plugin can hold data for one directory only
     if (OpMode & OPM_FIND)
     {
-      throw exception(GetMsg(VIEW_FROM_FIND_NOT_SUPPORTED));
+      throw ExtException(GetMsg(VIEW_FROM_FIND_NOT_SUPPORTED));
     }
 
     FFileList = CreateFileList(PanelItems, osRemote);
@@ -2794,7 +2794,7 @@ bool TWinSCPFileSystem::ImportSessions(TList * PanelItems, bool /*Move*/,
       }
       if (!AnyData)
       {
-        throw exception(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY), (FileName)));
+        throw ExtException(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY), (FileName)));
       }
     }
   }
@@ -3143,7 +3143,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const wstring FileName,
   if (!RecursiveDeleteFile(FileName,
         (FLAGSET(FPlugin->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
-    throw exception(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR), (FileName)));
+    throw ExtException(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR), (FileName)));
   }
 }
 //---------------------------------------------------------------------------
