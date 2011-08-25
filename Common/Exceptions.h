@@ -20,6 +20,7 @@ public:
   ExtException(exception* E);
   ExtException(exception* E, std::wstring Msg);
   // "copy the exception", just append message to the end
+  ExtException(std::wstring Msg);
   ExtException(std::wstring Msg, exception* E);
   ExtException(std::wstring Msg, std::wstring MoreMessages, std::wstring HelpKeyword = L"");
   ExtException(std::wstring Msg, TStrings* MoreMessages, bool Own);
