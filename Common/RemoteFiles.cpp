@@ -309,14 +309,14 @@ std::wstring MakeFileList(TStrings * FileList)
   {
     if (!Result.empty())
     {
-      Result += " ";
+      Result += L" ";
     }
 
-    std::wstring FileName = FileList->Strings[Index];
+    std::wstring FileName = FileList->GetString(Index);
     // currently this is used for local file only, so no delimiting is done
     if (FileName.find_first_of(L" ") > 0)
     {
-      Result += "\"" + FileName + "\"";
+      Result += L"\"" + FileName + L"\"";
     }
     else
     {

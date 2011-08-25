@@ -195,7 +195,8 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/NetBox/SFTP.cpp
     ${PROJECT_ROOT}/NetBox/FTP.cpp
     ${PROJECT_ROOT}/NetBox/SCP.cpp
-    ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/Common/RemoteFiles.cpp
+    # ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
 
 set ( TESTNETBOX_01_LIBRARIES

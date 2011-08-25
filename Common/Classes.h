@@ -248,6 +248,10 @@ public:
     {
         return 0.0;
     }
+    void operator = (double value)
+    {
+
+    }
     std::wstring TimeString() const
     {
         return std::wstring();

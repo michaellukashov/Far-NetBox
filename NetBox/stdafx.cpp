@@ -474,3 +474,27 @@ std::wstring StringOfChar(const wchar_t c, size_t len)
 void RaiseLastOSError()
 {
 }
+
+void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
+    unsigned short &M, unsigned short &D)
+{
+    // FIXME
+}
+
+void DecodeTime(const TDateTime &DateTime, unsigned short &H,
+    unsigned short &N, unsigned short &S, unsigned short &MS)
+{
+    // FIXME
+}
+
+TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D)
+{
+    TDateTime result;
+    return result;
+}
+
+TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS)
+{
+    TDateTime result;
+    return result;
+}
