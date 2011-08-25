@@ -132,8 +132,11 @@ std::wstring Trim(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
+bool AnsiSameText(const std::wstring str1, const std::wstring str2);
 
 bool ForceDirectories(const std::wstring Dir);
+bool DeleteFile(const std::wstring File);
+bool RemoveDir(const std::wstring Dir);
 
 std::wstring IncludeTrailingBackslash(const std::wstring Str);
 std::wstring ExcludeTrailingBackslash(const std::wstring Str);

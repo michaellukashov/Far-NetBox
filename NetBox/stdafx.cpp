@@ -375,7 +375,26 @@ std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, con
     return result;
 }
 
+bool AnsiSameText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
+
 bool ForceDirectories(const std::wstring Dir)
+{
+    // FIXME
+    return true;
+}
+
+bool DeleteFile(const std::wstring File)
+{
+    // FIXME
+    return true;
+}
+
+bool RemoveDir(const std::wstring Dir)
 {
     // FIXME
     return true;

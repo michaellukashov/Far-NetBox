@@ -3451,9 +3451,9 @@ wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
 {
   wstring Result;
   // OEM character set (Ansi does not have the ascii art we need)
-  Result = wstring::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
-  Result += wstring::StringOfChar('\xB0', (Width - 5) - Result.size());
-  Result += FORMAT("%4d%%", (Percentage));
+  Result = ::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
+  Result += ::StringOfChar('\xB0', (Width - 5) - Result.size());
+  Result += ::FORMAT(L"%4d%%", Percentage);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -3478,17 +3478,17 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     FQueueItemInvalidated = false;
 
     TQueueItemProxy * QueueItem;
-    for (int Index = 0; Index < FQueueStatus->ActiveCount; Index++)
+    for (int Index = 0; Index < FQueueStatus->GetActiveCount(); Index++)
     {
-      QueueItem = FQueueStatus->Items[Index];
-      if ((bool)QueueItem->UserData)
+      QueueItem = FQueueStatus->GetItem(Index);
+      if ((bool)QueueItem->GetUserData())
       {
         QueueItem->Update();
         Result = FQueueStatus;
       }
 
       if (GUIConfiguration->GetQueueAutoPopup() &&
-          TQueueItem::IsUserActionStatus(QueueItem->Status))
+          TQueueItem::IsUserActionStatus(QueueItem->GetStatus()))
       {
         QueueItem->ProcessUserAction();
       }
@@ -3497,7 +3497,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
 
   if (FRefreshRemoteDirectory)
   {
-    if ((Terminal != NULL) && GetTerminal()->GetActive())
+    if ((GetTerminal() != NULL) && GetTerminal()->GetActive())
     {
       GetTerminal()->RefreshDirectory();
       if (UpdatePanel())
@@ -3532,14 +3532,14 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     switch (Event)
     {
       case qeEmpty:
-        if (Hidden && FarConfiguration->QueueBeep)
+        if (Hidden && FarConfiguration->GetQueueBeep())
         {
           MessageBeep(MB_OK);
         }
         break;
 
       case qePendingUserAction:
-        if (Hidden && !GUIConfiguration->GetQueueAutoPopup() && FarConfiguration->QueueBeep)
+        if (Hidden && !GUIConfiguration->GetQueueAutoPopup() && FarConfiguration->GetQueueBeep())
         {
           // MB_ICONQUESTION would be more appropriate, but in default Windows Sound
           // schema it has no sound associated
@@ -3571,17 +3571,17 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 
     TQueueItemProxy * QueueItem = FQueueStatus->FindByQueueItem(Item);
 
-    if ((Item->Status == TQueueItem::qsDone) && (Terminal != NULL))
+    if ((Item->GetStatus() == TQueueItem::qsDone) && (GetTerminal() != NULL))
     {
       FRefreshLocalDirectory = (QueueItem == NULL) ||
-        (!QueueItem->Info->ModifiedLocal.empty());
+        (!QueueItem->GetInfo()->ModifiedLocal.empty());
       FRefreshRemoteDirectory = (QueueItem == NULL) ||
-        (!QueueItem->Info->ModifiedRemote.empty());
+        (!QueueItem->GetInfo()->ModifiedRemote.empty());
     }
 
     if (QueueItem != NULL)
     {
-      QueueItem->UserData = (void*)true;
+      QueueItem->SetUserData((void*)true);
       FQueueItemInvalidated = true;
     }
   }
@@ -3645,11 +3645,11 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload, wstring FileName,
 {
   assert(FFileList == NULL);
   FFileList = new TStringList();
-  assert(FTerminal->AutoReadDirectory);
-  bool PrevAutoReadDirectory = FTerminal->AutoReadDirectory;
+  assert(FTerminal->GetAutoReadDirectory());
+  bool PrevAutoReadDirectory = FTerminal->GetAutoReadDirectory();
   if (NoReload)
   {
-    FTerminal->AutoReadDirectory = false;
+    FTerminal->SetAutoReadDirectory(false);
     if (UnixComparePaths(DestPath, FTerminal->GetCurrentDirectory()))
     {
       FReloadDirectory = true;
@@ -3663,9 +3663,9 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload, wstring FileName,
   }
   catch(...)
   {
-    FTerminal->AutoReadDirectory = PrevAutoReadDirectory;
-    SAFE_DESTROY(FFileList);
   }
+    FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
+    SAFE_DESTROY(FFileList);
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::UploadOnSave(bool NoReload)
@@ -3677,10 +3677,10 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
     {
       bool NativeEdit =
         (FLastEditorID >= 0) &&
-        (FLastEditorID == Info->EditorID) &&
+        (FLastEditorID == Info->GetEditorID()) &&
         !FLastEditFile.empty();
 
-      TMultipleEdits::iterator I = FMultipleEdits.find(Info->EditorID);
+      TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
       bool MultipleEdit = (I != FMultipleEdits.end());
 
       if (NativeEdit || MultipleEdit)
@@ -3705,8 +3705,8 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
     }
     catch(...)
     {
-      delete Info;
     }
+      delete Info;
   }
 }
 //---------------------------------------------------------------------------
@@ -3733,18 +3733,18 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
       {
         try
         {
-          TMultipleEdits::iterator I = FMultipleEdits.find(Info->EditorID);
+          TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
           if (I != FMultipleEdits.end())
           {
             wstring FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
               I->second.FileName;
-            FPlugin->FarEditorControl(ECTL_SETTITLE, FullFileName.c_str());
+            FPlugin->FarEditorControl(ECTL_SETTITLE, (void *)FullFileName.c_str());
           }
         }
         catch(...)
         {
-          delete Info;
         }
+          delete Info;
       }
     }
   }
@@ -3763,7 +3763,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
           if (!FLastEditFile.empty() &&
               AnsiSameText(FLastEditFile, Info->GetFileName()))
           {
-            FLastEditorID = Info->EditorID;
+            FLastEditorID = Info->GetEditorID();
             FEditorPendingSave = false;
           }
 
@@ -3776,11 +3776,11 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
               FLastMultipleEditFile = L"";
 
               TMultipleEdit MultipleEdit;
-              MultipleEdit.FileName = ExtractFileName(Info->GetFileName());
+              MultipleEdit.FileName = ExtractFileName(Info->GetFileName(), false);
               MultipleEdit.Directory = FLastMultipleEditDirectory;
               MultipleEdit.LocalFileName = Info->GetFileName();
               MultipleEdit.PendingSave = false;
-              FMultipleEdits[Info->EditorID] = MultipleEdit;
+              FMultipleEdits[Info->GetEditorID()] = MultipleEdit;
               if (FLastMultipleEditReadOnly)
               {
                 EditorSetParameter Parameter;
@@ -3812,12 +3812,12 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
     {
       try
       {
-        if (FLastEditorID == Info->EditorID)
+        if (FLastEditorID == Info->GetEditorID())
         {
           FLastEditorID = -1;
         }
 
-        TMultipleEdits::iterator I = FMultipleEdits.find(Info->EditorID);
+        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
         if (I != FMultipleEdits.end())
         {
           if (I->second.PendingSave)
@@ -3828,11 +3828,11 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
             UpdatePanel();
           }
 
-          if (DeleteFile(Info->GetFileName()))
+          if (::DeleteFile(Info->GetFileName()))
           {
             // remove directory only if it is empty
             // (to avoid deleting another directory if user uses "save as")
-            RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
+            ::RemoveDir(ExcludeTrailingBackslash(ExtractFilePath(Info->GetFileName())));
           }
 
           FMultipleEdits.erase(I);
@@ -3851,34 +3851,34 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
     {
       try
       {
-        if ((FLastEditorID >= 0) && (FLastEditorID == Info->EditorID))
+        if ((FLastEditorID >= 0) && (FLastEditorID == Info->GetEditorID()))
         {
           // if the file is saved under different name ("save as"), we upload
           // the file back under that name
           FLastEditFile = Info->GetFileName();
 
-          if (FarConfiguration->EditorUploadOnSave)
+          if (FarConfiguration->GetEditorUploadOnSave())
           {
             FEditorPendingSave = true;
           }
         }
 
-        TMultipleEdits::iterator I = FMultipleEdits.find(Info->EditorID);
+        TMultipleEdits::iterator I = FMultipleEdits.find(Info->GetEditorID());
         if (I != FMultipleEdits.end())
         {
           if (I->second.LocalFileName != Info->GetFileName())
           {
             // update file name (after "save as")
             I->second.LocalFileName = Info->GetFileName();
-            I->second.FileName = ExtractFileName(Info->GetFileName());
+            I->second.FileName = ::ExtractFileName(Info->GetFileName(), true);
             // update editor title
             wstring FullFileName = UnixIncludeTrailingBackslash(I->second.Directory) +
               I->second.FileName;
             // note that we need to reset the title periodically (see EE_REDRAW)
-            FPlugin->FarEditorControl(ECTL_SETTITLE, FullFileName.c_str());
+            FPlugin->FarEditorControl(ECTL_SETTITLE, (void *)FullFileName.c_str());
           }
 
-          if (FarConfiguration->EditorUploadOnSave)
+          if (FarConfiguration->GetEditorUploadOnSave())
           {
             FEditorPendingSave = true;
           }
@@ -3890,22 +3890,22 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
       }
       catch(...)
       {
-        delete Info;
       }
+        delete Info;
     }
   }
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 {
-  CopyParam.FileNameCase = ncNoChange;
-  CopyParam.PreserveReadOnly = false;
-  CopyParam.ResumeSupport = rsOff;
+  CopyParam.SetFileNameCase(ncNoChange);
+  CopyParam.SetPreserveReadOnly(false);
+  CopyParam.SetResumeSupport(rsOff);
   // we have no way to give FAR back the modified filename, so make sure we
   // fail downloading file not valid on windows
-  CopyParam.ReplaceInvalidChars = false;
-  CopyParam.FileMask = L"";
-  CopyParam.ExcludeFileMask = TFileMasks();
+  CopyParam.SetReplaceInvalidChars(false);
+  CopyParam.SetFileMask(L"");
+  CopyParam.SetExcludeFileMask(TFileMasks());
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit()
