@@ -609,7 +609,7 @@ std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 {
   // no longer useful
   int P = Property.LastDelimiter(".>");
-  return Property.SubString(P + 1, Property.Length() - P);
+  return Property.substr(P + 1, Property.size() - P);
 }
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
@@ -724,7 +724,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // yet in the string). Note that FileExists may display error dialog, but as
   // it should be called only for custom users path, let's expect that the user
   // can take care of it.
-  if ((FPuttyPath.SubString(1, 1) != "\"") &&
+  if ((FPuttyPath.substr(1, 1) != "\"") &&
       (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
        FileExists(ExpandEnvironmentVariables(FPuttyPath))))
   {
@@ -781,7 +781,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     if (!NewInstance)
     {
       // Finally look for a language only translation
-      Module.SetLength(Module.Length() - 1);
+      Module.SetLength(Module.size() - 1);
       NewInstance = LoadLibraryEx(Module.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE);
       if (NewInstance)
       {
@@ -937,10 +937,10 @@ TStrings * TGUIConfiguration::GetLocales()
       while (Found)
       {
         Ext = ExtractFileExt(SearchRec.Name).UpperCase();
-        if ((Ext.Length() >= 3) && (Ext != ".EXE") && (Ext != ".COM") &&
+        if ((Ext.size() >= 3) && (Ext != ".EXE") && (Ext != ".COM") &&
             (Ext != ".DLL") && (Ext != ".INI"))
         {
-          Ext = Ext.SubString(2, Ext.Length() - 1);
+          Ext = Ext.substr(2, Ext.size() - 1);
           LocalesExts += Ext;
           Exts->Add(Ext);
         }
@@ -972,7 +972,7 @@ TStrings * TGUIConfiguration::GetLocales()
           Ext = Exts->IndexOf(Langs->Ext[Index]);
           if (Ext < 0)
           {
-            Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
+            Ext = Exts->IndexOf(Langs->Ext[Index].substr(1, 2));
             if (Ext >= 0)
             {
               Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
@@ -1012,8 +1012,8 @@ TStrings * TGUIConfiguration::GetLocales()
       for (int Index = 0; Index < Exts->Count; Index++)
       {
         if ((Exts->Objects[Index] == NULL) &&
-            (Exts->Strings[Index].Length() == 3) &&
-            SameText(Exts->Strings[Index].SubString(1, 2), AdditionaLanguagePrefix))
+            (Exts->Strings[Index].size() == 3) &&
+            SameText(Exts->Strings[Index].substr(1, 2), AdditionaLanguagePrefix))
         {
           std::wstring LangName = GetFileFileInfoString("LangName",
             ChangeFileExt(ModuleFileName(), std::wstring(".") + Exts->Strings[Index]));

@@ -16,7 +16,7 @@
 std::wstring MungeStr(const std::wstring Str)
 {
   std::wstring Result;
-  Result.SetLength(Str.Length() * 3 + 1);
+  Result.SetLength(Str.size() * 3 + 1);
   putty_mungestr(Str.c_str(), Result.c_str());
   PackStr(Result);
   return Result;
@@ -25,8 +25,8 @@ std::wstring MungeStr(const std::wstring Str)
 std::wstring UnMungeStr(const std::wstring Str)
 {
   std::wstring Result;
-  Result.SetLength(Str.Length() * 3 + 1);
-  putty_unmungestr(Str.c_str(), Result.c_str(), Result.Length());
+  Result.SetLength(Str.size() * 3 + 1);
+  putty_unmungestr(Str.c_str(), Result.c_str(), Result.size());
   PackStr(Result);
   return Result;
 }
@@ -104,7 +104,7 @@ std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
   std::wstring Result;
   if (Path)
   {
-    assert(Key.empty() || (Key[Key.Length()] != '\\'));
+    assert(Key.empty() || (Key[Key.size()] != '\\'));
     while (!Key.empty())
     {
       if (!Result.empty())
@@ -289,7 +289,7 @@ void THierarchicalStorage::WriteString(const std::wstring Name, const std::wstri
 void THierarchicalStorage::WriteBinaryData(const std::wstring Name,
   const std::wstring Value)
 {
-  WriteBinaryData(Name, Value.c_str(), Value.Length());
+  WriteBinaryData(Name, Value.c_str(), Value.size());
 }
 //---------------------------------------------------------------------------
 std::wstring THierarchicalStorage::IncludeTrailingBackslash(const std::wstring & S)
@@ -694,7 +694,7 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
       {
         Result = Sections->Find(NewKey, Index);
         if (!Result && Index < Sections->Count &&
-            Sections->Strings[Index].SubString(1, NewKey.Length()+1) == NewKey + "\\")
+            Sections->Strings[Index].substr(1, NewKey.size()+1) == NewKey + "\\")
         {
           Result = true;
         }
@@ -739,10 +739,10 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
     {
       std::wstring Section = Sections->Strings[i];
       if (AnsiCompareText(CurrentSubKey,
-          Section.SubString(1, CurrentSubKey.Length())) == 0)
+          Section.substr(1, CurrentSubKey.size())) == 0)
       {
-        std::wstring SubSection = Section.SubString(CurrentSubKey.Length() + 1,
-          Section.Length() - CurrentSubKey.Length());
+        std::wstring SubSection = Section.substr(CurrentSubKey.size() + 1,
+          Section.size() - CurrentSubKey.size());
         int P = SubSection.Pos("\\");
         if (P)
         {
@@ -788,7 +788,7 @@ bool TIniFileStorage::DeleteValue(const std::wstring Name)
 //---------------------------------------------------------------------------
 int TIniFileStorage::BinaryDataSize(const std::wstring Name)
 {
-  return ReadStringRaw(Name, "").Length() / 2;
+  return ReadStringRaw(Name, "").size() / 2;
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::ApplyOverrides()
@@ -805,10 +805,10 @@ void TIniFileStorage::ApplyOverrides()
       std::wstring Section = Sections->Strings[i];
 
       if (AnsiSameText(OverridesKey,
-            Section.SubString(1, OverridesKey.Length())))
+            Section.substr(1, OverridesKey.size())))
       {
-        std::wstring SubKey = Section.SubString(OverridesKey.Length() + 1,
-          Section.Length() - OverridesKey.Length());
+        std::wstring SubKey = Section.substr(OverridesKey.size() + 1,
+          Section.size() - OverridesKey.size());
 
         // this all uses raw names (munged)
         TStrings * Names = new TStringList;
@@ -874,7 +874,7 @@ TDateTime TIniFileStorage::ReadDateTime(const std::wstring Name, TDateTime Defau
     try
     {
       std::wstring Raw = HexToStr(Value);
-      if (Raw.Length() == sizeof(Result))
+      if (Raw.size() == sizeof(Result))
       {
         memcpy(&Result, Raw.c_str(), sizeof(Result));
       }
@@ -905,7 +905,7 @@ double TIniFileStorage::ReadFloat(const std::wstring Name, double Default)
     try
     {
       std::wstring Raw = HexToStr(Value);
-      if (Raw.Length() == sizeof(Result))
+      if (Raw.size() == sizeof(Result))
       {
         memcpy(&Result, Raw.c_str(), sizeof(Result));
       }
@@ -933,7 +933,7 @@ int TIniFileStorage::ReadBinaryData(const std::wstring Name,
   void * Buffer, int Size)
 {
   std::wstring Value = HexToStr(ReadStringRaw(Name, ""));
-  int Len = Value.Length();
+  int Len = Value.size();
   if (Size > Len)
   {
     Size = Len;

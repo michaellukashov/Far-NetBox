@@ -915,21 +915,21 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
   TFSProtocol AFSProtocol;
   int APortNumber;
   TFtps AFtps = ftpsNone;
-  if (Url.SubString(1, 4).LowerCase() == "scp:")
+  if (Url.substr(1, 4).LowerCase() == "scp:")
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     Url.Delete(1, 4);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 5).LowerCase() == "sftp:")
+  else if (Url.substr(1, 5).LowerCase() == "sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     Url.Delete(1, 5);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 4).LowerCase() == "ftp:")
+  else if (Url.substr(1, 4).LowerCase() == "ftp:")
   {
     AFSProtocol = fsFTP;
     Ftps = ftpsNone;
@@ -937,7 +937,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     Url.Delete(1, 4);
     ProtocolDefined = true;
   }
-  else if (Url.SubString(1, 5).LowerCase() == "ftps:")
+  else if (Url.substr(1, 5).LowerCase() == "ftps:")
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
@@ -946,7 +946,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (Url.SubString(1, 2) == "//"))
+  if (ProtocolDefined && (Url.substr(1, 2) == "//"))
   {
     Url.Delete(1, 2);
   }
@@ -967,7 +967,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     {
       TSessionData * AData = (TSessionData *)StoredSessions->Items[Index];
       if (AnsiSameText(AData->Name, DecodedUrl) ||
-          AnsiSameText(AData->Name + "/", DecodedUrl.SubString(1, AData->Name.Length() + 1)))
+          AnsiSameText(AData->Name + "/", DecodedUrl.substr(1, AData->Name.size() + 1)))
       {
         Data = AData;
         break;
@@ -981,12 +981,12 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       DefaultsOnly = false;
       Assign(Data);
       int P = 1;
-      while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), Data->Name))
+      while (!AnsiSameText(DecodeUrlChars(Url.substr(1, P)), Data->Name))
       {
         P++;
-        assert(P <= Url.Length());
+        assert(P <= Url.size());
       }
-      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
+      ARemoteDirectory = Url.substr(P + 1, Url.size() - P);
 
       if (StoredSessions->GetIsHidden()(Data))
       {
@@ -1004,10 +1004,10 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       int PSlash = Url.Pos("/");
       if (PSlash == 0)
       {
-        PSlash = Url.Length() + 1;
+        PSlash = Url.size() + 1;
       }
 
-      std::wstring ConnectInfo = Url.SubString(1, PSlash - 1);
+      std::wstring ConnectInfo = Url.substr(1, PSlash - 1);
 
       int P = ConnectInfo.LastDelimiter("@");
 
@@ -1016,17 +1016,17 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
       if (P > 0)
       {
-        UserInfo = ConnectInfo.SubString(1, P - 1);
-        HostInfo = ConnectInfo.SubString(P + 1, ConnectInfo.Length() - P);
+        UserInfo = ConnectInfo.substr(1, P - 1);
+        HostInfo = ConnectInfo.substr(P + 1, ConnectInfo.size() - P);
       }
       else
       {
         HostInfo = ConnectInfo;
       }
 
-      if ((HostInfo.Length() >= 2) && (HostInfo[1] == '[') && ((P = HostInfo.Pos("]")) > 0))
+      if ((HostInfo.size() >= 2) && (HostInfo[1] == '[') && ((P = HostInfo.Pos("]")) > 0))
       {
-        HostName = HostInfo.SubString(2, P - 2);
+        HostName = HostInfo.substr(2, P - 2);
         HostInfo.Delete(1, P);
         if (!HostInfo.empty() && (HostInfo[1] == ':'))
         {
@@ -1059,12 +1059,12 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       Password = DecodeUrlChars(UserInfo);
       Passwordless = Password.empty() && PasswordSeparator;
 
-      ARemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
+      ARemoteDirectory = Url.substr(PSlash, Url.size() - PSlash + 1);
     }
 
     if (!ARemoteDirectory.empty() && (ARemoteDirectory != "/"))
     {
-      if ((ARemoteDirectory[ARemoteDirectory.Length()] != '/') &&
+      if ((ARemoteDirectory[ARemoteDirectory.size()] != '/') &&
           (FileName != NULL))
       {
         *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));
@@ -1240,8 +1240,8 @@ void TSessionData::SetHostName(std::wstring value)
     int P = value.LastDelimiter("@");
     if (P > 0)
     {
-      UserName = value.SubString(1, P - 1);
-      value = value.SubString(P + 1, value.Length() - P);
+      UserName = value.substr(1, P - 1);
+      value = value.substr(P + 1, value.size() - P);
     }
     FHostName = value;
     Modify();
@@ -1250,7 +1250,7 @@ void TSessionData::SetHostName(std::wstring value)
     if (!XPassword.empty())
     {
       XPassword.Unique();
-      memset(XPassword.c_str(), 0, XPassword.Length());
+      memset(XPassword.c_str(), 0, XPassword.size());
     }
   }
 }
@@ -1299,7 +1299,7 @@ void TSessionData::SetUserName(std::wstring value)
   if (!XPassword.empty())
   {
     XPassword.Unique();
-    memset(XPassword.c_str(), 0, XPassword.Length());
+    memset(XPassword.c_str(), 0, XPassword.size());
   }
 }
 //---------------------------------------------------------------------
@@ -1934,8 +1934,8 @@ void TSessionData::SetTunnelHostName(std::wstring value)
     int P = value.LastDelimiter("@");
     if (P > 0)
     {
-      TunnelUserName = value.SubString(1, P - 1);
-      value = value.SubString(P + 1, value.Length() - P);
+      TunnelUserName = value.substr(1, P - 1);
+      value = value.substr(P + 1, value.size() - P);
     }
     FTunnelHostName = value;
     Modify();
@@ -1944,7 +1944,7 @@ void TSessionData::SetTunnelHostName(std::wstring value)
     if (!XTunnelPassword.empty())
     {
       XTunnelPassword.Unique();
-      memset(XTunnelPassword.c_str(), 0, XTunnelPassword.Length());
+      memset(XTunnelPassword.c_str(), 0, XTunnelPassword.size());
     }
   }
 }
@@ -1963,7 +1963,7 @@ void TSessionData::SetTunnelUserName(std::wstring value)
   if (!XTunnelPassword.empty())
   {
     XTunnelPassword.Unique();
-    memset(XTunnelPassword.c_str(), 0, XTunnelPassword.Length());
+    memset(XTunnelPassword.c_str(), 0, XTunnelPassword.size());
   }
 }
 //---------------------------------------------------------------------
@@ -2403,7 +2403,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
           {
             KeyName = KeyList->Strings[KeyIndex];
             int P = KeyName.Pos(HostKeyName);
-            if ((P > 0) && (P == KeyName.Length() - HostKeyName.Length() + 1))
+            if ((P > 0) && (P == KeyName.size() - HostKeyName.size() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,
                 SourceStorage->ReadStringRaw(KeyName, ""));

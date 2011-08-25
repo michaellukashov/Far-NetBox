@@ -13,7 +13,7 @@ TOptions::TOptions()
 void TOptions::Add(std::wstring Value)
 {
   if (!FNoMoreSwitches &&
-      (Value.Length() == 2) &&
+      (Value.size() == 2) &&
       (Value[1] == Value[2]) &&
       (FSwitchMarks.Pos(Value[1]) > 0))
   {
@@ -24,12 +24,12 @@ void TOptions::Add(std::wstring Value)
     bool Switch = false;
     int Index = 0; // shut up
     if (!FNoMoreSwitches &&
-        (Value.Length() >= 2) &&
+        (Value.size() >= 2) &&
         (FSwitchMarks.Pos(Value[1]) > 0))
     {
       Index = 2;
       Switch = true;
-      while (Switch && (Index <= Value.Length()))
+      while (Switch && (Index <= Value.size()))
       {
         if (Value.IsDelimiter(FSwitchValueDelimiters, Index))
         {
@@ -49,8 +49,8 @@ void TOptions::Add(std::wstring Value)
     {
       TOption Option;
       Option.Type = otSwitch;
-      Option.Name = Value.SubString(2, Index - 2);
-      Option.Value = Value.SubString(Index + 1, Value.Length());
+      Option.Name = Value.substr(2, Index - 2);
+      Option.Value = Value.substr(Index + 1, Value.size());
       Option.Used = false;
       FOptions.push_back(Option);
     }

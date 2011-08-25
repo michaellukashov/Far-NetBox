@@ -962,7 +962,7 @@ void TFarMessageDialog::Idle()
                 // FORMAT(" %s ", (FORMAT(FParams->TimeoutStr,
                                        // (FTimeoutButtonCaption, int((FParams->Timeout - Running) / 1000)))));
             // Caption += std::wstring::StringOfChar(' ',
-                                                // FTimeoutButton->Caption.Length() - Caption.Length());
+                                                // FTimeoutButton->Caption.size() - Caption.size());
             std::wstring Buffer;
             Buffer.resize(512);
             std::wstring Buffer2;

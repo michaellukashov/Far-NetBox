@@ -111,11 +111,11 @@ void TSynchronizeController::SynchronizeChange(
 
     std::wstring LocalDirectory = IncludeTrailingBackslash(Directory);
 
-    assert(LocalDirectory.SubString(1, RootLocalDirectory.Length()) ==
+    assert(LocalDirectory.substr(1, RootLocalDirectory.size()) ==
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
-      ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
-        LocalDirectory.Length() - RootLocalDirectory.Length()));
+      ToUnixPath(LocalDirectory.substr(RootLocalDirectory.size() + 1,
+        LocalDirectory.size() - RootLocalDirectory.size()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
       (ExcludeTrailingBackslash(LocalDirectory))));

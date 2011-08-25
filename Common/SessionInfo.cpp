@@ -8,7 +8,7 @@
 //---------------------------------------------------------------------------
 std::wstring XmlEscape(std::wstring Str)
 {
-  for (int i = 1; i <= Str.Length(); i++)
+  for (int i = 1; i <= Str.size(); i++)
   {
     const char * Repl = NULL;
     switch (Str[i])
@@ -611,11 +611,11 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
       {
         std::wstring Timestamp = FormatDateTime(" yyyy-mm-dd hh:nn:ss.zzz ", Now());
         fputc(LogLineMarks[Type], (FILE *)FFile);
-        fwrite(Timestamp.c_str(), Timestamp.Length(), 1, (FILE *)FFile);
+        fwrite(Timestamp.c_str(), Timestamp.size(), 1, (FILE *)FFile);
       }
       // use fwrite instead of fprintf to make sure that even
       // non-ascii data (unicode) gets in.
-      fwrite(Line.c_str(), Line.Length(), 1, (FILE *)FFile);
+      fwrite(Line.c_str(), Line.size(), 1, (FILE *)FFile);
       fputc('\n', (FILE *)FFile);
     }
   }
@@ -760,7 +760,7 @@ void TSessionLog::OpenLogFile()
     FCurrentLogFileName = FConfiguration->LogFileName;
     std::wstring NewFileName = StripPathQuotes(ExpandEnvironmentVariables(FCurrentLogFileName));
     TDateTime N = Now();
-    for (int Index = 1; Index < NewFileName.Length(); Index++)
+    for (int Index = 1; Index < NewFileName.size(); Index++)
     {
       if (NewFileName[Index] == '!')
       {
@@ -802,7 +802,7 @@ void TSessionLog::OpenLogFile()
         }
         NewFileName.Delete(Index, 2);
         NewFileName.Insert(Replacement, Index);
-        Index += Replacement.Length() - 1;
+        Index += Replacement.size() - 1;
       }
     }
     FFile = fopen(NewFileName.c_str(),

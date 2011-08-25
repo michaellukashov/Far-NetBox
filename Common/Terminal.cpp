@@ -1412,9 +1412,9 @@ std::wstring TTerminal::TranslateLockedPath(std::wstring Path, bool Lock)
 
   if (Lock)
   {
-    if (Path.SubString(1, FLockDirectory.Length()) == FLockDirectory)
+    if (Path.substr(1, FLockDirectory.size()) == FLockDirectory)
     {
-      Path.Delete(1, FLockDirectory.Length());
+      Path.Delete(1, FLockDirectory.size());
       if (Path.empty()) Path = "/";
     }
   }
@@ -3175,9 +3175,9 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
         // current directory
         if ((File != NULL) &&
             File->GetIsDirectory() &&
-            ((CurrentDirectory.SubString(1, FileList->Strings[Index].Length()) == FileList->Strings[Index]) &&
-             ((FileList->Strings[Index].Length() == CurrentDirectory.Length()) ||
-              (CurrentDirectory[FileList->Strings[Index].Length() + 1] == '/'))))
+            ((CurrentDirectory.substr(1, FileList->Strings[Index].size()) == FileList->Strings[Index]) &&
+             ((FileList->Strings[Index].size() == CurrentDirectory.size()) ||
+              (CurrentDirectory[FileList->Strings[Index].size() + 1] == '/'))))
         {
           PossiblyMoved = true;
         }
@@ -3741,7 +3741,7 @@ bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
 std::wstring TTerminal::FileUrl(const std::wstring Protocol,
   const std::wstring FileName)
 {
-  assert(FileName.Length() > 0);
+  assert(FileName.size() > 0);
   return Protocol + "://" + EncodeUrlChars(SessionData->SessionName) +
     (FileName[1] == '/' ? "" : "/") + EncodeUrlChars(FileName, "/");
 }

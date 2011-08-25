@@ -29,10 +29,10 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     {
       int N = 0, P;
       // If name already contains number parenthesis remove it (and remember it)
-      if ((Name[Name.Length()] == ')') && ((P = Name.LastDelimiter('(')) > 0))
+      if ((Name[Name.size()] == ')') && ((P = Name.LastDelimiter('(')) > 0))
         try {
-          N = StrToInt(Name.SubString(P + 1, Name.Length() - P - 1));
-          Name.Delete(P, Name.Length() - P + 1);
+          N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
+          Name.Delete(P, Name.size() - P + 1);
           Name = Name.TrimRight();
         } catch (exception &E) { N = 0; };
       Name += " (" + IntToStr(N+1) + ")";
@@ -43,7 +43,7 @@ const std::wstring TNamedObjectList::HiddenPrefix = "_!_";
 //---------------------------------------------------------------------------
 bool TNamedObjectList::IsHidden(TNamedObject * Object)
 {
-  return (Object->Name.SubString(1, HiddenPrefix.Length()) == HiddenPrefix);
+  return (Object->Name.substr(1, HiddenPrefix.size()) == HiddenPrefix);
 }
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList():

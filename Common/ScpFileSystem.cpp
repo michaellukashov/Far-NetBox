@@ -193,7 +193,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
 void TCommandSet::SetCommands(TFSCommand Cmd, std::wstring value)
 {
   CHECK_CMD;
-  strcpy(CommandSet[Cmd].Command, value.SubString(1, MaxCommandLen - 1).c_str());
+  strcpy(CommandSet[Cmd].Command, value.substr(1, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::GetCommands(TFSCommand Cmd)
@@ -504,7 +504,7 @@ bool TSCPFileSystem::IsTotalListingLine(const std::wstring Line)
 {
   // On some hosts there is not "total" but "totalt". What's the reason??
   // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-  return !Line.SubString(1, 5).AnsiCompareIC("total");
+  return !Line.substr(1, 5).AnsiCompareIC("total");
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
@@ -520,8 +520,8 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
     // 2003-07-14: There must be nothing after return code number to
     // consider string as last line. This fixes bug with 'set' command
     // in console window
-    std::wstring ReturnCodeStr = Line.SubString(Pos + LastLine.Length() + 1,
-      Line.Length() - Pos + LastLine.Length());
+    std::wstring ReturnCodeStr = Line.substr(Pos + LastLine.size() + 1,
+      Line.size() - Pos + LastLine.size());
     if (TryStrToInt(ReturnCodeStr, ReturnCode))
     {
       IsLastLine = true;
@@ -594,9 +594,9 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
         if (!Message.empty()) Message += "\n";
         Message += FOutput->Text;
       }
-      while (!Message.empty() && (Message.LastDelimiter("\n\r") == Message.Length()))
+      while (!Message.empty() && (Message.LastDelimiter("\n\r") == Message.size()))
       {
-        Message.SetLength(Message.Length() - 1);
+        Message.SetLength(Message.size() - 1);
       }
 
       bool WrongReturnCode =
@@ -857,7 +857,7 @@ void TSCPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
   std::wstring ToDir;
   if (!Directory.empty() &&
-      ((Directory[1] != '~') || (Directory.SubString(1, 2) == "~ ")))
+      ((Directory[1] != '~') || (Directory.substr(1, 2) == "~ ")))
   {
     ToDir = "\"" + DelimitStr(Directory) + "\"";
   }
@@ -2132,7 +2132,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
       // Receive control record
       std::wstring Line = FSecureShell->ReceiveLine();
 
-      if (Line.Length() == 0) FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE));
+      if (Line.size() == 0) FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE));
 
       if (IsLastLine(Line))
       {

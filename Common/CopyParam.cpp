@@ -273,8 +273,8 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
       char Char;
       if ((InvalidCharsReplacement == TokenReplacement) &&
           (*InvalidChar == TokenPrefix) &&
-          (((FileName.Length() - Pos) <= 1) ||
-           (((Char = HexToChar(FileName.SubString(Pos + 1, 2))) == '\0') ||
+          (((FileName.size() - Pos) <= 1) ||
+           (((Char = HexToChar(FileName.substr(Pos + 1, 2))) == '\0') ||
             (FTokenizibleChars.Pos(Char) == 0))))
       {
         InvalidChar++;
@@ -287,10 +287,10 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
     if (!FileName.empty() &&
-        ((FileName[FileName.Length()] == ' ') ||
-         (FileName[FileName.Length()] == '.')))
+        ((FileName[FileName.size()] == ' ') ||
+         (FileName[FileName.size()] == '.')))
     {
-      ReplaceChar(FileName, FileName.c_str() + FileName.Length() - 1);
+      ReplaceChar(FileName, FileName.c_str() + FileName.size() - 1);
     }
 
     if (IsReservedName(FileName))
@@ -298,7 +298,7 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
       int P = FileName.Pos(".");
       if (P == 0)
       {
-        P = FileName.Length() + 1;
+        P = FileName.size() + 1;
       }
       FileName.Insert("%00", P);
     }
@@ -314,24 +314,24 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
     while ((InvalidChar = strchr(InvalidChar, TokenPrefix)) != NULL)
     {
       int Index = InvalidChar - FileName.c_str() + 1;
-      if ((FileName.Length() >= Index + 2) &&
+      if ((FileName.size() >= Index + 2) &&
           (FileName.ByteType(Index) == mbSingleByte) &&
           (FileName.ByteType(Index + 1) == mbSingleByte) &&
           (FileName.ByteType(Index + 2) == mbSingleByte))
       {
-        std::wstring Hex = FileName.SubString(Index + 1, 2);
+        std::wstring Hex = FileName.substr(Index + 1, 2);
         char Char = HexToChar(Hex);
         if ((Char != '\0') &&
             ((FTokenizibleChars.Pos(Char) > 0) ||
-             (((Char == ' ') || (Char == '.')) && (Index == FileName.Length() - 2))))
+             (((Char == ' ') || (Char == '.')) && (Index == FileName.size() - 2))))
         {
           FileName[Index] = Char;
           FileName.Delete(Index + 1, 2);
           InvalidChar = FileName.c_str() + Index;
         }
         else if ((Hex == "00") &&
-                 ((Index == FileName.Length() - 2) || (FileName[Index + 3] == '.')) &&
-                 IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
+                 ((Index == FileName.size() - 2) || (FileName[Index + 3] == '.')) &&
+                 IsReservedName(FileName.substr(1, Index - 1) + FileName.substr(Index + 3, FileName.size() - Index - 3 + 1)))
         {
           FileName.Delete(Index, 3);
           InvalidChar = FileName.c_str() + Index - 1;
@@ -372,14 +372,14 @@ std::wstring TCopyParamType::Untokenize(std::wstring FileName)
   while ((Token = AnsiStrScan(Result.c_str(), TokenPrefix)) != NULL)
   {
     int Index = Token - Result.c_str() + 1;
-    if (Index > Result.Length() - 2)
+    if (Index > Result.size() - 2)
     {
       Result = FileName;
       break;
     }
     else
     {
-      char Ch = (char)HexToInt(Result.SubString(Index + 1, 2), -1);
+      char Ch = (char)HexToInt(Result.substr(Index + 1, 2), -1);
       if (Ch == '\0')
       {
         Result = FileName;
@@ -405,10 +405,10 @@ std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
   switch (FileNameCase) {
     case ncUpperCase: FileName = FileName.UpperCase(); break;
     case ncLowerCase: FileName = FileName.LowerCase(); break;
-    case ncFirstUpperCase: FileName = FileName.SubString(1, 1).UpperCase() +
-      FileName.SubString(2, FileName.Length()-1).LowerCase(); break;
+    case ncFirstUpperCase: FileName = FileName.substr(1, 1).UpperCase() +
+      FileName.substr(2, FileName.size()-1).LowerCase(); break;
     case ncLowerCaseShort:
-      if ((FileName.Length() <= 12) && (FileName.Pos(".") <= 9) &&
+      if ((FileName.size() <= 12) && (FileName.Pos(".") <= 9) &&
           (FileName == FileName.UpperCase()))
       {
         FileName = FileName.LowerCase();

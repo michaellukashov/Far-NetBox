@@ -107,7 +107,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 }
 //---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \
-  ELEM.SubString(ELEM.LastDelimiter(".>")+1, ELEM.Length() - ELEM.LastDelimiter(".>"))
+  ELEM.substr(ELEM.LastDelimiter(".>")+1, ELEM.size() - ELEM.LastDelimiter(".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
@@ -359,7 +359,7 @@ std::wstring TConfiguration::BannerHash(const std::wstring & Banner)
 {
   std::wstring Result;
   Result.SetLength(16);
-  md5checksum(Banner.c_str(), Banner.Length(), (unsigned char*)Result.c_str());
+  md5checksum(Banner.c_str(), Banner.size(), (unsigned char*)Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -641,9 +641,9 @@ std::wstring TConfiguration::GetProductVersion()
 std::wstring TConfiguration::TrimVersion(std::wstring Version)
 {
   while ((Version.Pos(".") != Version.LastDelimiter(".")) &&
-    (Version.SubString(Version.Length() - 1, 2) == ".0"))
+    (Version.substr(Version.size() - 1, 2) == ".0"))
   {
-    Version.SetLength(Version.Length() - 2);
+    Version.SetLength(Version.size() - 2);
   }
   return Version;
 }
