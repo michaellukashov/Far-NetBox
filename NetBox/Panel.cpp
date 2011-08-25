@@ -549,7 +549,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     std::vector< pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full copied content
-    subDirContent.push_back(make_pair(itemsNumber, panelItem));
+    subDirContent.push_back(std::make_pair(itemsNumber, panelItem));
     for (int i = 0; i < itemsNumber; ++i)
     {
         PluginPanelItem *pi = &panelItem[i];
@@ -561,7 +561,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             {
                 return 0;
             }
-            subDirContent.push_back(make_pair(subItemsNum, subItems));
+            subDirContent.push_back(std::make_pair(subItemsNum, subItems));
         }
     }
 
@@ -765,7 +765,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
         PluginPanelItem *pi = &panelItem[i];
         topItems.push_back(pi->FindData);
     }
-    subDirContent.push_back(make_pair(static_cast<int>(topItems.size()), topItems.empty() ? NULL : &topItems.front()));
+    subDirContent.push_back(std::make_pair(static_cast<int>(topItems.size()), topItems.empty() ? NULL : &topItems.front()));
 
     //Get full copied content (sub folder)
     for (int i = 0; i < itemsNumber; ++i)
@@ -782,7 +782,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
             {
                 return 0;
             }
-            subDirContent.push_back(make_pair(subItemsNum, subItems));
+            subDirContent.push_back(std::make_pair(subItemsNum, subItems));
         }
     }
 
@@ -1026,7 +1026,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     std::vector< pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full removed content
-    subDirContent.push_back(make_pair(itemsNumber, panelItem));
+    subDirContent.push_back(std::make_pair(itemsNumber, panelItem));
     for (int i = 0; i < itemsNumber; ++i)
     {
         PluginPanelItem *pi = &panelItem[i];
@@ -1038,7 +1038,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
             {
                 return 0;
             }
-            subDirContent.push_back(make_pair(subItemsNum, subItems));
+            subDirContent.push_back(std::make_pair(subItemsNum, subItems));
         }
     }
 

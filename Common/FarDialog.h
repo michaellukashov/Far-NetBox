@@ -516,7 +516,7 @@ private:
         static std::map<HANDLE, CFarDialog *> dlgInstances;
         if (dlg && inst && !removeVal)
         {
-            dlgInstances.insert(make_pair(dlg, inst));
+            dlgInstances.insert(std::make_pair(dlg, inst));
             return NULL;
         }
         else if (removeVal)
