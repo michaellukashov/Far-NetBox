@@ -27,7 +27,7 @@
 class CFarSettings
 {
 public:
-    CFarSettings() : _RegKey(NULL)  {}
+    CFarSettings() : m_RegKey(NULL)  {}
     ~CFarSettings()
     {
         Close();
@@ -46,8 +46,8 @@ public:
         keyName += L'\\';
         keyName += regPath;
         const DWORD status = readOnly ?
-                             RegOpenKeyEx(HKEY_CURRENT_USER, keyName.c_str(), 0, KEY_READ, &_RegKey) :
-                             RegCreateKeyEx(HKEY_CURRENT_USER, keyName.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, DELETE | KEY_READ | KEY_WRITE, NULL, &_RegKey, NULL);
+                             RegOpenKeyEx(HKEY_CURRENT_USER, keyName.c_str(), 0, KEY_READ, &m_RegKey) :
+                             RegCreateKeyEx(HKEY_CURRENT_USER, keyName.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, DELETE | KEY_READ | KEY_WRITE, NULL, &m_RegKey, NULL);
         return (status == ERROR_SUCCESS);
     }
 
@@ -56,10 +56,10 @@ public:
      */
     inline void Close()
     {
-        if (_RegKey != NULL)
+        if (m_RegKey != NULL)
         {
-            RegCloseKey(_RegKey);
-            _RegKey = NULL;
+            RegCloseKey(m_RegKey);
+            m_RegKey = NULL;
         }
     }
 
@@ -71,10 +71,10 @@ public:
      */
     inline bool GetNumber(const wchar_t *name, DWORD &val) const
     {
-        assert(_RegKey != NULL);
+        assert(m_RegKey != NULL);
 
         DWORD dataLen = sizeof(DWORD);
-        return (RegQueryValueEx(_RegKey, name, NULL, NULL, reinterpret_cast<LPBYTE>(&val), &dataLen) == ERROR_SUCCESS);
+        return (RegQueryValueEx(m_RegKey, name, NULL, NULL, reinterpret_cast<LPBYTE>(&val), &dataLen) == ERROR_SUCCESS);
     }
 
     /**
@@ -85,11 +85,11 @@ public:
      */
     inline bool GetString(const wchar_t *name, std::wstring &val) const
     {
-        assert(_RegKey != NULL);
+        assert(m_RegKey != NULL);
 
         //Get value length
         DWORD dataLen = 0;
-        if (RegQueryValueEx(_RegKey, name, NULL, NULL, NULL, &dataLen) != ERROR_SUCCESS)
+        if (RegQueryValueEx(m_RegKey, name, NULL, NULL, NULL, &dataLen) != ERROR_SUCCESS)
         {
             return false;
         }
@@ -102,7 +102,7 @@ public:
 
         //Get value
         val.resize(dataLen / sizeof(wchar_t));
-        const bool status = RegQueryValueEx(_RegKey, name, NULL, NULL, reinterpret_cast<LPBYTE>(&val[0]), &dataLen) == ERROR_SUCCESS;
+        const bool status = RegQueryValueEx(m_RegKey, name, NULL, NULL, reinterpret_cast<LPBYTE>(&val[0]), &dataLen) == ERROR_SUCCESS;
         if (!status)
         {
             val.clear();
@@ -124,7 +124,7 @@ public:
      */
     inline void SetNumber(const wchar_t *name, const DWORD val) const
     {
-        RegSetValueEx(_RegKey, name, 0, REG_DWORD, reinterpret_cast<const BYTE *>(&val), sizeof(val));
+        RegSetValueEx(m_RegKey, name, 0, REG_DWORD, reinterpret_cast<const BYTE *>(&val), sizeof(val));
     }
 
     /**
@@ -134,7 +134,7 @@ public:
      */
     inline void SetString(const wchar_t *name, const wchar_t *val) const
     {
-        RegSetValueEx(_RegKey, name, 0, REG_SZ, reinterpret_cast<const BYTE *>(val), lstrlen(val) * sizeof(wchar_t));
+        RegSetValueEx(m_RegKey, name, 0, REG_SZ, reinterpret_cast<const BYTE *>(val), lstrlen(val) * sizeof(wchar_t));
     }
 
     /**
@@ -144,7 +144,7 @@ public:
      */
     inline bool DeleteValue(const wchar_t *name) const
     {
-        return (RegDeleteValue(_RegKey, name) == ERROR_SUCCESS);
+        return (RegDeleteValue(m_RegKey, name) == ERROR_SUCCESS);
     }
 
     /**
@@ -154,14 +154,14 @@ public:
     inline std::vector<std::wstring> EnumKeys() const
     {
         DWORD subKeys = 0;
-        RegQueryInfoKey(_RegKey, NULL, NULL, NULL, &subKeys, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        RegQueryInfoKey(m_RegKey, NULL, NULL, NULL, &subKeys, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
         std::vector<std::wstring> keys;
         for (DWORD i = 0; i < subKeys; ++i)
         {
             std::wstring name(256, 0);
             DWORD nameSz = static_cast<DWORD>(name.size());
-            if (RegEnumKeyEx(_RegKey, i, &name[0], &nameSz, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+            if (RegEnumKeyEx(m_RegKey, i, &name[0], &nameSz, NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
             {
                 keys.push_back(name.substr(0, nameSz));
             }
@@ -177,7 +177,7 @@ public:
      */
     static bool DeleteTree(const wchar_t *regPath)
     {
-        //Vista and higher: return (RegDeleteTree(_RegKey, NULL) == ERROR_SUCCESS);
+        //Vista and higher: return (RegDeleteTree(m_RegKey, NULL) == ERROR_SUCCESS);
 
         bool result = false;
 
@@ -203,5 +203,5 @@ public:
     }
 
 private:
-    HKEY _RegKey;   ///< Registry key
+    HKEY m_RegKey;   ///< Registry key
 };

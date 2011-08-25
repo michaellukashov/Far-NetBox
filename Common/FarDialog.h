@@ -35,7 +35,7 @@ public:
      * \param height dialog height
      */
     explicit CFarDialog(const int width, const int height) :
-        m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(false)
+        m_Dlg(INVALID_HANDLE_VALUE), m_Width(width), m_Height(height), m_UseFrame(false)
     {
     }
 
@@ -46,7 +46,7 @@ public:
      * \param title dialog title
      */
     explicit CFarDialog(const int width, const int height, const wchar_t *title) :
-        m_Dlg(INVALID_HANDLE_VALUE), _Width(width), _Height(height), _UseFrame(true)
+        m_Dlg(INVALID_HANDLE_VALUE), m_Width(width), m_Height(height), m_UseFrame(true)
     {
         SetTitle(title);
     }
@@ -113,10 +113,10 @@ public:
     inline void SetTitle(const wchar_t *title)
     {
         assert(title);
-        assert(_DlgItems.empty());  //Must be first call!!!
+        assert(m_DlgItems.empty());  //Must be first call!!!
 
-        _UseFrame = true;
-        CreateDlgItem(DI_DOUBLEBOX, 3, _Width - 4, 1, _Height - 2, title);
+        m_UseFrame = true;
+        CreateDlgItem(DI_DOUBLEBOX, 3, m_Width - 4, 1, m_Height - 2, title);
     }
 
     /**
@@ -125,7 +125,7 @@ public:
      */
     inline int GetTop() const
     {
-        return _UseFrame ? 2 : 0;
+        return m_UseFrame ? 2 : 0;
     }
 
     /**
@@ -134,7 +134,7 @@ public:
      */
     inline int GetLeft() const
     {
-        return _UseFrame ? 5 : 0;
+        return m_UseFrame ? 5 : 0;
     }
 
     /**
@@ -143,7 +143,7 @@ public:
      */
     inline int GetWidth() const
     {
-        return _Width - (_UseFrame ? 6 : 0);
+        return m_Width - (m_UseFrame ? 6 : 0);
     }
 
     /**
@@ -152,7 +152,7 @@ public:
      */
     inline int GetHeight() const
     {
-        return _Height - (_UseFrame ? 2 : 0);
+        return m_Height - (m_UseFrame ? 2 : 0);
     }
 
     /**
@@ -163,8 +163,8 @@ public:
     inline void ResizeDialog(const int width, const int height)
     {
         assert(m_Dlg != INVALID_HANDLE_VALUE);
-        _Width = width;
-        _Height = height;
+        m_Width = width;
+        m_Height = height;
         COORD newSize;
         newSize.X = static_cast<SHORT>(width);
         newSize.Y = static_cast<SHORT>(height);
@@ -179,9 +179,9 @@ public:
     {
         if (m_Dlg == INVALID_HANDLE_VALUE)
         {
-            assert(!_DlgItems.empty());
-            m_Dlg = CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, _Width, _Height, NULL, &_DlgItems.front(), static_cast<unsigned int>(_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
-            _DlgItems.clear();  //Non actual for now
+            assert(!m_DlgItems.empty());
+            m_Dlg = CFarPlugin::GetPSI()->DialogInit(CFarPlugin::GetPSI()->ModuleNumber, -1, -1, m_Width, m_Height, NULL, &m_DlgItems.front(), static_cast<unsigned int>(m_DlgItems.size()), 0, 0, &CFarDialog::InternalDialogMessageProc, 0);
+            m_DlgItems.clear();  //Non actual for now
             if (m_Dlg == INVALID_HANDLE_VALUE)
             {
                 return -2;
@@ -246,12 +246,12 @@ public:
         item.Y2 = rowEnd;
         item.PtrData = ptrData;
 
-        _DlgItems.push_back(item);
+        m_DlgItems.push_back(item);
         if (dlgItem)
         {
-            *dlgItem = &_DlgItems.back();
+            *dlgItem = &m_DlgItems.back();
         }
-        return static_cast<int>(_DlgItems.size()) - 1;
+        return static_cast<int>(m_DlgItems.size()) - 1;
     }
 
     /**
@@ -286,7 +286,7 @@ public:
     inline int CreateText(const int row, const wchar_t *text)
     {
         const int l = lstrlen(text);
-        const int c = _Width / 2 - l / 2;
+        const int c = m_Width / 2 - l / 2;
         return CreateDlgItem(DI_TEXT, c, c + l - 1, row, row, text);
     }
 
@@ -532,8 +532,8 @@ private:
 
 protected:
     HANDLE m_Dlg; ///< Dialog descriptor
-    int _Width; ///< Dialog width
-    int _Height; ///< Dialog height
-    std::vector<FarDialogItem> _DlgItems; ///< Dialog items array
-    bool _UseFrame; ///< Dialog frame flag
+    int m_Width; ///< Dialog width
+    int m_Height; ///< Dialog height
+    std::vector<FarDialogItem> m_DlgItems; ///< Dialog items array
+    bool m_UseFrame; ///< Dialog frame flag
 };
