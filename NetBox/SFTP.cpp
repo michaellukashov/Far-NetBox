@@ -313,7 +313,7 @@ bool CSFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorI
         FILETIME            LastAccess;
         unsigned __int64    Size;
     };
-    vector<SFTPItem> sftpItems;
+    std::vector<SFTPItem> sftpItems;
 
     //Read directory content
     char fileName[512];
@@ -410,7 +410,7 @@ bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
         m_ProgressPercent = 0;
     }
 
-    vector<char> buff(4096);
+    std::vector<char> buff(4096);
     ssize_t rc;
     while ((rc = libssh2_sftp_read(sftpFile, &buff[0], buff.size())) > 0)
     {
@@ -468,7 +468,7 @@ bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
         m_ProgressPercent = 0;
     }
 
-    vector<char> buff(4096);
+    std::vector<char> buff(4096);
     size_t readSize = buff.size();
     while (readSize)
     {

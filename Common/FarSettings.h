@@ -151,12 +151,12 @@ public:
      * Enum keys
      * \return key name list
      */
-    inline vector<wstring> EnumKeys() const
+    inline std::vector<wstring> EnumKeys() const
     {
         DWORD subKeys = 0;
         RegQueryInfoKey(_RegKey, NULL, NULL, NULL, &subKeys, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-        vector<wstring> keys;
+        std::vector<wstring> keys;
         for (DWORD i = 0; i < subKeys; ++i)
         {
             std::wstring name(256, 0);

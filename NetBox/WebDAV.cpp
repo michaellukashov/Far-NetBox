@@ -176,7 +176,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &erro
         FILETIME            LastAccess;
         unsigned __int64    Size;
     };
-    vector<WebDAVItem> wdavItems;
+    std::vector<WebDAVItem> wdavItems;
 
     TiXmlDocument xmlDoc;
     xmlDoc.Parse(decodedResp.c_str());

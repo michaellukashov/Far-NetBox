@@ -198,8 +198,8 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorIn
         return false;
     }
 
-    //Divide string to vector by EOL
-    vector<FTPItem> ftpList;
+    //Divide string to std::vector by EOL
+    std::vector<FTPItem> ftpList;
     ftpList.reserve(100);
     static const char *delimiters = "\r\n";
     size_t lastPos = response.find_first_not_of(delimiters, 0);

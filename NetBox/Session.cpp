@@ -115,7 +115,7 @@ wstring CSession::GetSupportedPrefixes()
 
 PSession CSession::Create()
 {
-    vector<FarMenuItemEx> protos;
+    std::vector<FarMenuItemEx> protos;
     for (vector<ProtoImplInfo>::const_iterator it = m_Factory.begin(); it != m_Factory.end(); ++it)
     {
         FarMenuItemEx item;
@@ -343,7 +343,7 @@ PSession CSession::ImportFromFTP(const wchar_t *fileName)
     if (iniPwdVal.size() > 4 && iniPwdVal.substr(0, 4).compare(L"hex:") == 0)
     {
         const string plainHexPwd = ::W2MB(iniPwdVal.substr(4).c_str());
-        vector<char> unhexPwd;
+        std::vector<char> unhexPwd;
         for (size_t i = 0; i < plainHexPwd.size(); i += 2)
         {
             int val = 0;
@@ -388,7 +388,7 @@ void CSession::ExportFromRegistry()
     CFarSettings settings;
     if (settings.Open(L"NetBox", true))
     {
-        const vector<wstring> keys = settings.EnumKeys();
+        const std::vector<wstring> keys = settings.EnumKeys();
         for (vector<wstring>::const_iterator it = keys.begin(); it != keys.end(); ++it)
         {
             std::wstring regName(L"NetBox");
@@ -768,7 +768,7 @@ wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
     {
         //Encrypt
         int encryptBufferLen = static_cast<int>(src.length() * sizeof(wchar_t) + 256);
-        vector<unsigned char> encryptBuffer(static_cast<size_t>(encryptBufferLen));
+        std::vector<unsigned char> encryptBuffer(static_cast<size_t>(encryptBufferLen));
         int finalLen;
         if (EVP_EncryptInit_ex(&ctx, cipher, NULL, key, iv) &&
                 EVP_EncryptUpdate(&ctx, &encryptBuffer.front(), &encryptBufferLen, reinterpret_cast<const unsigned char *>(src.c_str()), static_cast<int>(src.length() * sizeof(wchar_t))) &&
@@ -794,7 +794,7 @@ wstring CSession::Crypt(const std::wstring &src, const bool encrypt) const
         BIO *bmem = BIO_new_mem_buf(&base64Value[0], static_cast<int>(base64Value.length()));
         bmem = BIO_push(b64, bmem);
 
-        vector<unsigned char> decryptBuffer(base64Value.length());
+        std::vector<unsigned char> decryptBuffer(base64Value.length());
         const int decryptBufferLen = BIO_read(bmem, &decryptBuffer.front(), static_cast<int>(decryptBuffer.size()));
         if (decryptBufferLen)
         {

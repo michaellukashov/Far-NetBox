@@ -123,7 +123,7 @@ void WINAPI ClosePluginW(HANDLE plugin)
     assert(panelInstance);
     delete panelInstance;
 
-    vector<CPanel *>::iterator it = find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin);
+    std::vector<CPanel *>::iterator it = find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin);
     assert(it != m_PanelInstances.end());
     m_PanelInstances.erase(it);
 }

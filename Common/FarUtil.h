@@ -158,7 +158,7 @@ public:
      * \param fileContent file content
      * \return error code
      */
-    static DWORD SaveFile(const wchar_t *fileName, const vector<char>& fileContent)
+    static DWORD SaveFile(const wchar_t *fileName, const std::vector<char>& fileContent)
     {
         CFile f;
         if (f.OpenWrite(fileName) && !fileContent.empty())
@@ -191,7 +191,7 @@ public:
      * \param fileContent file content
      * \return error code
      */
-    static DWORD LoadFile(const wchar_t *fileName, vector<char>& fileContent)
+    static DWORD LoadFile(const wchar_t *fileName, std::vector<char>& fileContent)
     {
         fileContent.clear();
 

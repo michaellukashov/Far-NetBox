@@ -192,7 +192,7 @@ void CSettings::Configure()
     for (;;)
     {
         // Создаем меню с настройками
-        vector<FarMenuItemEx> items;
+        std::vector<FarMenuItemEx> items;
         // Main settings
         size_t MainSettingsMenuIdx = items.size();
         AddMenuItem(items, 0, StringMainSettingsMenuTitle);
@@ -339,7 +339,7 @@ void CSettings::LoggingConfigure()
         dlg.GetWidth(), topPos, topPos, NULL, DIF_LISTWRAPMODE, &itemLevelComboBox);
 
     FarList levelsList;
-    vector<FarListItem> levelsListItems;
+    std::vector<FarListItem> levelsListItems;
     int levelsCount = 2;
     levelsListItems.resize(levelsCount);
     ZeroMemory(&levelsListItems[0], levelsCount * sizeof(FarListItem));

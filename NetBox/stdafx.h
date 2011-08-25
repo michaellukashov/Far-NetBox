@@ -81,7 +81,7 @@ struct ProxySettingsDialogParams
     FarDialogItem *proxyTypeTextItem;
     FarDialogItem *proxyTypeComboBoxItem;
     FarList proxyTypeList;
-    vector<FarListItem> proxyTypeListItems;
+    std::vector<FarListItem> proxyTypeListItems;
     FarDialogItem *separatorItem;
     FarDialogItem *proxyHostTextItem;
     FarDialogItem *proxyHostItem;

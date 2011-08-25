@@ -247,9 +247,9 @@ private:
 private:
     int m_ProtoId; ///< Unique protocol id
     std::wstring m_SessionName; ///< Session name
-    vector<Property> m_Properties; ///< Session's properties
+    std::vector<Property> m_Properties; ///< Session's properties
     struct ProxySettings m_proxySettings;
 
     static string m_CryptKey; ///< Crypt key
-    static vector<ProtoImplInfo> m_Factory; ///< Client protocol implementation factory
+    static std::vector<ProtoImplInfo> m_Factory; ///< Client protocol implementation factory
 };

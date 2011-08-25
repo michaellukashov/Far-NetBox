@@ -147,7 +147,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             {
                 return 1;
             }
-            vector<unsigned char> ppiBuffer(ppiBufferLength);
+            std::vector<unsigned char> ppiBuffer(ppiBufferLength);
             PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
             if (!CFarPlugin::GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
             {
@@ -198,7 +198,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
         {
             return 0;
         }
-        vector<unsigned char> ppiBuffer(ppiBufferLength);
+        std::vector<unsigned char> ppiBuffer(ppiBufferLength);
         PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
         if (!CFarPlugin::GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
         {
@@ -231,7 +231,7 @@ int CPanel::ProcessKey(const int key, const unsigned int controlState)
             // DEBUG_PRINTF(L"NetBox: ProcessKey: 1: ppiBufferLength = %d", ppiBufferLength);
             return 0;
         }
-        vector<unsigned char> ppiBuffer(ppiBufferLength);
+        std::vector<unsigned char> ppiBuffer(ppiBufferLength);
         PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
         if (!CFarPlugin::GetPSI()->Control(plugin, FCTL_GETCURRENTPANELITEM, 0, reinterpret_cast<LONG_PTR>(ppi)))
         {
@@ -546,7 +546,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
 
     // DEBUG_PRINTF(L"NetBox: CPanel::GetFiles: itemsNumber = %d", itemsNumber);
     //Full copied content (include subdirectories)
-    vector< pair<int, PluginPanelItem *> > subDirContent;
+    std::vector< pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full copied content
     subDirContent.push_back(make_pair(itemsNumber, panelItem));
@@ -584,7 +584,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
     }
 
     //Directory to remove list
-    vector<wstring> dirsToRemove;
+    std::vector<wstring> dirsToRemove;
 
     CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Receive, 1, m_ProtoClient);
     progressWnd.Show();
@@ -756,10 +756,10 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     }
 
     //Full copied content (include subdirectories)
-    vector< pair<int, FAR_FIND_DATA *> > subDirContent;
+    std::vector< pair<int, FAR_FIND_DATA *> > subDirContent;
 
     //Get full copied content (top folder)
-    vector<FAR_FIND_DATA> topItems;
+    std::vector<FAR_FIND_DATA> topItems;
     for (int i = 0; i < itemsNumber; ++i)
     {
         PluginPanelItem *pi = &panelItem[i];
@@ -806,7 +806,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
     ::AppendWChar(localRelativePath, L'\\');
 
     //Directory to remove list
-    vector<wstring> dirsToRemove;
+    std::vector<wstring> dirsToRemove;
 
     CProgressWindow progressWnd(m_AbortTask, deleteSource ? CProgressWindow::Move : CProgressWindow::Copy, CProgressWindow::Send, 1, m_ProtoClient);
     progressWnd.Show();
@@ -1023,7 +1023,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
     }
 
     //Full removed content (include subdirectories)
-    vector< pair<int, PluginPanelItem *> > subDirContent;
+    std::vector< pair<int, PluginPanelItem *> > subDirContent;
 
     //Get full removed content
     subDirContent.push_back(make_pair(itemsNumber, panelItem));

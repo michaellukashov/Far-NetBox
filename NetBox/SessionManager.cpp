@@ -83,7 +83,7 @@ BOOL CSessionManager::ProcessKey(HANDLE plugin, const int key, const unsigned in
         {
             return 1;
         }
-        vector<unsigned char> ppiBuffer(ppiBufferLength);
+        std::vector<unsigned char> ppiBuffer(ppiBufferLength);
         PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
         if (!CFarPlugin::GetPSI()->Control(plugin, FCTL_GETCURRENTPANELITEM, 0, reinterpret_cast<LONG_PTR>(ppi)))
         {
@@ -205,7 +205,7 @@ bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
         std::wstring             Name;
         DWORD               Attributes;
     };
-    vector<SessionItem> sessionItems;
+    std::vector<SessionItem> sessionItems;
 
     DWORD retCode = ERROR_SUCCESS;
     do

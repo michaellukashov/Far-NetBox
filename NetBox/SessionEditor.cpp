@@ -165,8 +165,8 @@ void CSessionEditor::CreateCodePageControl(const int topPos, const UINT current,
     idCPText = CreateText(GetLeft(), topPos, CFarPlugin::GetString(StringEdCP));
 
     //Avialable codepages
-    static vector<wstring> codePages;
-    static vector<FarListItem> farListItems;
+    static std::vector<wstring> codePages;
+    static std::vector<FarListItem> farListItems;
     static FarList farList;
     if (codePages.empty())
     {

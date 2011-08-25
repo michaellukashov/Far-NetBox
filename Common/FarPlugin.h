@@ -187,7 +187,7 @@ public:
             {
                 return false;
             }
-            vector<unsigned char> ppiBuffer(ppiBufferLength);
+            std::vector<unsigned char> ppiBuffer(ppiBufferLength);
             PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
             if (!GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
             {
