@@ -23,7 +23,7 @@
 #include "SessionEditor.h"
 
 class CSession;
-typedef auto_ptr<CSession> PSession;
+typedef std::auto_ptr<CSession> PSession;
 
 
 /**

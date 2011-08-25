@@ -107,4 +107,4 @@ protected:
     ProxySettingsDialogParams m_params;
 };
 
-typedef auto_ptr<CSessionEditor> PSessionEditor;
+typedef std::auto_ptr<CSessionEditor> PSessionEditor;

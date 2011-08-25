@@ -155,4 +155,4 @@ public:
     virtual bool Aborted() const = 0;
 };
 
-typedef auto_ptr<IProtocol> PProtocol;
+typedef std::auto_ptr<IProtocol> PProtocol;
