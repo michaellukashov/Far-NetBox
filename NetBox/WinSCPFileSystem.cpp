@@ -2112,7 +2112,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(wstring NewPath)
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   wstring OldPath = AnotherPanel->GetCurrentDirectory();
   // IncludeTrailingBackslash to expand C: to C:\.
-  if (!FarControl(INVALID_HANDLE_VALUE, FCTL_SETPANELDIR, 
+  if (!FarControl((int)INVALID_HANDLE_VALUE, FCTL_SETPANELDIR, 
         (LONG_PTR)IncludeTrailingBackslash(NewPath).c_str()))
   {
     Result = false;
@@ -2120,14 +2120,14 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(wstring NewPath)
   else
   {
     ResetCachedInfo();
-    SetAnotherPanel(AnotherPanelInfo);
+    AnotherPanel = GetAnotherPanelInfo();
     if (!ComparePaths(AnotherPanel->GetCurrentDirectory(), NewPath))
     {
       // FAR WORKAROUND
       // If FCTL_SETANOTHERPANELDIR above fails, Far default current
       // directory to initial (?) one. So move this back to
       // previous directory.
-      FarControl(INVALID_HANDLE_VALUE, FCTL_SETPANELDIR, (LONG_PTR)OldPath.c_str());
+      FarControl((int)INVALID_HANDLE_VALUE, FCTL_SETPANELDIR, (LONG_PTR)OldPath.c_str());
       Result = false;
     }
     else
@@ -2194,7 +2194,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
       {
         FPlugin->ShowConsoleTitle(GetMsg(CHANGING_DIRECTORY_TITLE));
       }
-      FTerminal->ExceptionOnFail = true;
+      FTerminal->SetExceptionOnFail(true);
       try
       {
         if (Dir == L"\\")
@@ -2212,19 +2212,19 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
       }
       catch(...)
       {
-        FTerminal->ExceptionOnFail = false;
+      }
+        FTerminal->SetExceptionOnFail(false);
         if (!FNoProgress)
         {
           FPlugin->ClearConsoleTitle();
         }
         FNoProgress = false;
-      }
 
       if (Normal && FSynchronisingBrowse &&
           (PrevPath != FTerminal->GetCurrentDirectory()))
       {
-        TFarPanelInfo * AnotherPanel = AnotherPanelInfo;
-        if (AnotherPanel->IsPlugin || (AnotherPanel->Type != ptFile))
+        TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
+        if (AnotherPanel->GetIsPlugin() || (AnotherPanel->GetType() != ptFile))
         {
           MoreMessageDialog(GetMsg(SYNCHRONIZE_LOCAL_PATH_REQUIRED), NULL, qtError, qaOK);
         }
@@ -2263,7 +2263,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
 
             if (!SynchronizeBrowsing(ALocalPath))
             {
-              if (MoreMessageDialog(FORMAT(GetMsg(SYNC_DIR_BROWSE_CREATE), (ALocalPath)),
+              if (MoreMessageDialog(::FORMAT(GetMsg(SYNC_DIR_BROWSE_CREATE).c_str(), ALocalPath.c_str()),
                     NULL, qtInformation, qaYes | qaNo) == qaYes)
               {
                 if (!ForceDirectories(ALocalPath))
@@ -2304,7 +2304,7 @@ int TWinSCPFileSystem::MakeDirectoryEx(wstring & Name, int OpMode)
   {
     assert(!(OpMode & OPM_SILENT) || !Name.empty());
 
-    TRemoteProperties Properties = GUIConfiguration->NewDirectoryProperties;
+    TRemoteProperties Properties = GUIConfiguration->GetNewDirectoryProperties();
     bool SaveSettings = false;
 
     if ((OpMode & OPM_SILENT) ||
@@ -2312,7 +2312,7 @@ int TWinSCPFileSystem::MakeDirectoryEx(wstring & Name, int OpMode)
     {
       if (SaveSettings)
       {
-        GUIConfiguration->NewDirectoryProperties = Properties;
+        GUIConfiguration->SetNewDirectoryProperties(Properties);
       }
 
       FPlugin->ShowConsoleTitle(GetMsg(CREATING_FOLDER));
@@ -2370,14 +2370,14 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
 {
   for (int Index = 0; Index < PanelItems->GetCount(); Index++)
   {
-    TFarPanelItem * PanelItem = (TFarPanelItem *)PanelItems->Items[Index];
+    TFarPanelItem * PanelItem = (TFarPanelItem *)PanelItems->GetItem(Index);
     assert(PanelItem);
-    if (PanelItem->IsFile)
+    if (PanelItem->GetIsFile())
     {
-      if (PanelItem->UserData != NULL)
+      if (PanelItem->GetUserData() != NULL)
       {
-        ProcessSession(static_cast<TSessionData *>(PanelItem->UserData), Param);
-        PanelItem->Selected = false;
+        // FIXME (ProcessSession)(static_cast<TSessionData *>(PanelItem->GetUserData()), Param);
+        PanelItem->SetSelected(false);
       }
       else
       {
@@ -2386,24 +2386,24 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
     }
     else
     {
-      assert(PanelItem->UserData == NULL);
+      assert(PanelItem->GetUserData() == NULL);
       wstring Folder = UnixIncludeTrailingBackslash(
         UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
       int Index = 0;
       while (Index < StoredSessions->GetCount())
       {
-        TSessionData * Data = StoredSessions->GetSessions()[Index];
+        TSessionData *Data = StoredSessions->GetSession(Index);
         if (Data->Name.substr(1, Folder.size()) == Folder)
         {
-          ProcessSession(Data, Param);
-          if (StoredSessions->GetSessions()[Index] != Data)
+          // FIXME ProcessSession(Data, Param);
+          if (StoredSessions->GetSession(Index) != Data)
           {
             Index--;
           }
         }
         Index++;
       }
-      PanelItem->Selected = false;
+      PanelItem->SetSelected(false);
     }
   }
 }
@@ -2417,20 +2417,20 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
     try
     {
       wstring Query;
-      bool Recycle = FTerminal->GetSessionData()->DeleteToRecycleBin &&
+      bool Recycle = FTerminal->GetSessionData()->GetDeleteToRecycleBin() &&
         !FTerminal->IsRecycledFile(FFileList->GetString(0));
       if (PanelItems->GetCount() > 1)
       {
-        Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM),
-          (PanelItems->GetCount()));
+        Query = ::FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
+          PanelItems->GetCount());
       }
       else
       {
-        Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM),
-          (((TFarPanelItem *)PanelItems->Items[0])->GetFileName()));
+        Query = ::FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM).c_str(),
+          ((TFarPanelItem *)PanelItems->GetItem(0))->GetFileName().c_str());
       }
 
-      if ((OpMode & OPM_SILENT) || !FarConfiguration->ConfirmDeleting ||
+      if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
         (MoreMessageDialog(Query, NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
       {
         FTerminal->DeleteFiles(FFileList);
@@ -2438,17 +2438,17 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
     }
     catch(...)
     {
+    }
       FPanelItems = NULL;
       SAFE_DESTROY(FFileList);
-    }
     return true;
   }
   else if (SessionList())
   {
-    if ((OpMode & OPM_SILENT) || !FarConfiguration->ConfirmDeleting ||
+    if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
       (MoreMessageDialog(GetMsg(DELETE_SESSIONS_CONFIRM), NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
-      ProcessSessions(PanelItems, DeleteSession, NULL);
+      // FIXME ProcessSessions(PanelItems, DeleteSession, NULL);
     }
     return true;
   }
@@ -2490,9 +2490,9 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
       bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
       bool Confirmed =
         (OpMode & OPM_SILENT) &&
-        (!EditView || FarConfiguration->EditorDownloadDefaultMode);
+        (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-      TCopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
+      TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
       if (EditView)
       {
         EditViewCopyParam(CopyParam);
@@ -2512,12 +2512,12 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
         Confirmed = CopyDialog(false, Move, FFileList, DestPath,
           &CopyParam, Options, CopyParamAttrs);
 
-        if (Confirmed && !EditView && CopyParam.Queue)
+        if (Confirmed && !EditView) // FIXME && CopyParam.Queue)
         {
           // these parameters are known only after transfer dialog
           Params |=
-            FLAGMASK(CopyParam.QueueNoConfirmation, cpNoConfirmation) |
-            FLAGMASK(CopyParam.NewerOnly, cpNewerOnly);
+            // FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
+            // FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
           QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList,
             DestPath, &CopyParam, Params));
           Confirmed = false;
@@ -2545,7 +2545,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
         // these parameters are known only after transfer dialog
         Params |=
           FLAGMASK(EditView, cpTemporary) |
-          FLAGMASK(CopyParam.NewerOnly, cpNewerOnly);
+          // FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
         FTerminal->CopyToLocal(FFileList, DestPath, &CopyParam, Params);
         Result = 1;
       }
@@ -2566,21 +2566,21 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
     wstring Prompt;
     if (PanelItems->GetCount() == 1)
     {
-      Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT),
-        (((TFarPanelItem *)PanelItems->Items[0])->GetFileName()));
+      Prompt = FORMAT(GetMsg(EXPORT_SESSION_PROMPT).c_str(),
+        ((TFarPanelItem *)PanelItems->GetItem(0))->GetFileName().c_str());
     }
     else
     {
-      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT), (PanelItems->GetCount()));
+      Prompt = ::FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->GetCount());
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
-      FPlugin->InputBox(Title, Prompt, DestPath, 0, "Copy");
+      FPlugin->InputBox(Title, Prompt, DestPath, 0, L"Copy");
     if (AResult)
     {
       TExportSessionParam Param;
       Param.DestPath = DestPath;
-      ProcessSessions(PanelItems, ExportSession, &Param);
+      // FIXME ProcessSessions(PanelItems, ExportSession, &Param);
       Result = 1;
     }
     else
@@ -2601,14 +2601,14 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 
   THierarchicalStorage * Storage = NULL;
   TSessionData * ExportData = NULL;
-  TSessionData * FactoryDefaults = new TSessionData("");
+  TSessionData * FactoryDefaults = new TSessionData(L"");
   try
   {
     ExportData = new TSessionData(Data->Name);
     ExportData->Assign(Data);
-    ExportData->Modified = true;
+    ExportData->SetModified(true);
     Storage = new TIniFileStorage(IncludeTrailingBackslash(Param.DestPath) +
-      GUIConfiguration->DefaultCopyParam.ValidLocalFileName(ExportData->Name) + ".ini");
+      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->Name) + ".ini");
     if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, true))
     {
       ExportData->Save(Storage, false, FactoryDefaults);
