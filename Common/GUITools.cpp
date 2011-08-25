@@ -10,7 +10,7 @@
 #include <CoreMain.h>
 #include <SessionData.h>
 //---------------------------------------------------------------------------
-bool __fastcall FindFile(AnsiString & Path)
+bool FindFile(std::wstring & Path)
 {
   bool Result = FileExists(Path);
   if (!Result)
@@ -18,11 +18,11 @@ bool __fastcall FindFile(AnsiString & Path)
     int Len = GetEnvironmentVariable("PATH", NULL, 0);
     if (Len > 0)
     {
-      AnsiString Paths;
+      std::wstring Paths;
       Paths.SetLength(Len - 1);
       GetEnvironmentVariable("PATH", Paths.c_str(), Len);
 
-      AnsiString NewPath = FileSearch(ExtractFileName(Path), Paths);
+      std::wstring NewPath = FileSearch(ExtractFileName(Path), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
@@ -33,20 +33,20 @@ bool __fastcall FindFile(AnsiString & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall FileExistsEx(AnsiString Path)
+bool FileExistsEx(std::wstring Path)
 {
   return FindFile(Path);
 }
 //---------------------------------------------------------------------------
-void __fastcall OpenSessionInPutty(const AnsiString PuttyPath,
-  TSessionData * SessionData, AnsiString Password)
+void OpenSessionInPutty(const std::wstring PuttyPath,
+  TSessionData * SessionData, std::wstring Password)
 {
-  AnsiString Program, Params, Dir;
+  std::wstring Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);
   Program = ExpandEnvironmentVariables(Program);
   if (FindFile(Program))
   {
-    AnsiString SessionName;
+    std::wstring SessionName;
     TRegistryStorage * Storage = NULL;
     TSessionData * ExportData = NULL;
     TRegistryStorage * SourceStorage = NULL;
@@ -128,13 +128,13 @@ void __fastcall OpenSessionInPutty(const AnsiString PuttyPath,
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShell(const AnsiString Path, const AnsiString Params)
+bool ExecuteShell(const std::wstring Path, const std::wstring Params)
 {
   return ((int)ShellExecute(NULL, "open", (char*)Path.data(),
     (char*)Params.data(), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShell(const AnsiString Path, const AnsiString Params,
+bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle)
 {
   bool Result;
@@ -156,8 +156,8 @@ bool __fastcall ExecuteShell(const AnsiString Path, const AnsiString Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShellAndWait(HWND Handle, const AnsiString Path,
-  const AnsiString Params, TProcessMessagesEvent ProcessMessages)
+bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
+  const std::wstring Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result;
 
@@ -195,31 +195,31 @@ bool __fastcall ExecuteShellAndWait(HWND Handle, const AnsiString Path,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShellAndWait(HWND Handle, const AnsiString Command,
+bool ExecuteShellAndWait(HWND Handle, const std::wstring Command,
   TProcessMessagesEvent ProcessMessages)
 {
-  AnsiString Program, Params, Dir;
+  std::wstring Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
   return ExecuteShellAndWait(Handle, Program, Params, ProcessMessages);
 }
 //---------------------------------------------------------------------------
-bool __fastcall SpecialFolderLocation(int PathID, AnsiString & Path)
+bool SpecialFolderLocation(int PathID, std::wstring & Path)
 {
   LPITEMIDLIST Pidl;
   char Buf[256];
   if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {
-    Path = AnsiString(Buf);
+    Path = std::wstring(Buf);
     return true;
   }
   return false;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall ItemsFormatString(const AnsiString SingleItemFormat,
-  const AnsiString MultiItemsFormat, int Count, const AnsiString FirstItem)
+std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
+  const std::wstring MultiItemsFormat, int Count, const std::wstring FirstItem)
 {
-  AnsiString Result;
+  std::wstring Result;
   if (Count == 1)
   {
     Result = FORMAT(SingleItemFormat, (FirstItem));
@@ -231,18 +231,18 @@ AnsiString __fastcall ItemsFormatString(const AnsiString SingleItemFormat,
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall ItemsFormatString(const AnsiString SingleItemFormat,
-  const AnsiString MultiItemsFormat, TStrings * Items)
+std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
+  const std::wstring MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->Count, (Items->Count > 0 ? Items->Strings[0] : AnsiString()));
+    Items->Count, (Items->Count > 0 ? Items->Strings[0] : std::wstring()));
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall FileNameFormatString(const AnsiString SingleFileFormat,
-  const AnsiString MultiFilesFormat, TStrings * Files, bool Remote)
+std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
+  const std::wstring MultiFilesFormat, TStrings * Files, bool Remote)
 {
   assert(Files != NULL);
-  AnsiString Item;
+  std::wstring Item;
   if (Files->Count > 0)
   {
     Item = Remote ? UnixExtractFileName(Files->Strings[0]) :
@@ -252,9 +252,9 @@ AnsiString __fastcall FileNameFormatString(const AnsiString SingleFileFormat,
     Files->Count, Item);
 }
 //---------------------------------------------------------------------
-AnsiString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
+std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
 {
-  AnsiString Result;
+  std::wstring Result;
 
   if (!UseOrders || (Bytes < __int64(100*1024)))
   {
@@ -271,10 +271,10 @@ AnsiString __fastcall FormatBytes(__int64 Bytes, bool UseOrders)
   return Result;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall UniqTempDir(const AnsiString BaseDir, const AnsiString Identity,
+std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity,
   bool Mask)
 {
-  AnsiString TempDir;
+  std::wstring TempDir;
   do
   {
     TempDir = BaseDir.IsEmpty() ? SystemTemporaryDirectory() : BaseDir;
@@ -293,7 +293,7 @@ AnsiString __fastcall UniqTempDir(const AnsiString BaseDir, const AnsiString Ide
   return TempDir;
 }
 //---------------------------------------------------------------------------
-bool __fastcall DeleteDirectory(const AnsiString DirName)
+bool DeleteDirectory(const std::wstring DirName)
 {
   TSearchRec sr;
   bool retval = true;
@@ -332,9 +332,9 @@ bool __fastcall DeleteDirectory(const AnsiString DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall FormatDateTimeSpan(const AnsiString TimeFormat, TDateTime DateTime)
+std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, TDateTime DateTime)
 {
-  AnsiString Result;
+  std::wstring Result;
   if (int(DateTime) > 0)
   {
     Result = IntToStr(int(DateTime)) + ", ";
@@ -350,20 +350,20 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-    const AnsiString & Path) :
+    const std::wstring & Path) :
   TFileCustomCommand(Data, Path)
 {
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const AnsiString & Path, const AnsiString & FileName,
-  const AnsiString & LocalFileName, const AnsiString & FileList) :
+  const std::wstring & Path, const std::wstring & FileName,
+  const std::wstring & LocalFileName, const std::wstring & FileList) :
   TFileCustomCommand(Data, Path, FileName, FileList)
 {
   FLocalFileName = LocalFileName;
 }
 //---------------------------------------------------------------------------
-int __fastcall TLocalCustomCommand::PatternLen(int Index, char PatternCmd)
+int TLocalCustomCommand::PatternLen(int Index, char PatternCmd)
 {
   int Len;
   if (PatternCmd == '^')
@@ -377,8 +377,8 @@ int __fastcall TLocalCustomCommand::PatternLen(int Index, char PatternCmd)
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::PatternReplacement(int Index,
-  const AnsiString & Pattern, AnsiString & Replacement, bool & Delimit)
+bool TLocalCustomCommand::PatternReplacement(int Index,
+  const std::wstring & Pattern, std::wstring & Replacement, bool & Delimit)
 {
   bool Result;
   if (Pattern == "!^!")
@@ -393,18 +393,18 @@ bool __fastcall TLocalCustomCommand::PatternReplacement(int Index,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TLocalCustomCommand::DelimitReplacement(
-  AnsiString & /*Replacement*/, char /*Quote*/)
+void TLocalCustomCommand::DelimitReplacement(
+  std::wstring & /*Replacement*/, char /*Quote*/)
 {
   // never delimit local commands
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::HasLocalFileName(const AnsiString & Command)
+bool TLocalCustomCommand::HasLocalFileName(const std::wstring & Command)
 {
   return FindPattern(Command, '^');
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::IsFileCommand(const AnsiString & Command)
+bool TLocalCustomCommand::IsFileCommand(const std::wstring & Command)
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }
