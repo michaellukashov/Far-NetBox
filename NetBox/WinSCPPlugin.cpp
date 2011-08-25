@@ -83,12 +83,12 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   {
     PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
   }
-  if (FarConfiguration->GetPluginsMenu()Commands)
+  if (FarConfiguration->GetPluginsMenuCommands())
   {
     PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
-  CommandPrefixes->CommaText = FarConfiguration->CommandPrefixes;
+  CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
@@ -114,7 +114,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 
     do
     {
-      Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), "", MenuItems);
+      Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems);
 
       if (Result >= 0)
       {
@@ -200,13 +200,13 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 int TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
 {
   // for performance reasons, do not pass the event to file systems on redraw
-  if ((Event != EE_REDRAW) || FarConfiguration->EditorUploadOnSave ||
-      FarConfiguration->EditorMultiple)
+  if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
+      FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem;
     for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
-      FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->Items[Index]);
+      FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Event, Param);
     }
   }
