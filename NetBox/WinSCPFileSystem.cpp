@@ -1600,11 +1600,12 @@ void TWinSCPFileSystem::Synchronize()
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
     if (SynchronizeDialog(Params, &CopyParam,
         (TSynchronizeStartStopEvent)&TSynchronizeController::StartStop, //FIXME Controller.StartStop
-        SaveSettings, Options, CopyParamAttrs, GetSynchronizeOptions) &&
+        SaveSettings, Options, CopyParamAttrs,
+        (TGetSynchronizeOptionsEvent)&TWinSCPFileSystem::GetSynchronizeOptions) &&
         SaveSettings)
     {
       GUIConfiguration->SetSynchronizeParams(Params.Params | UnusedParams);
-      GUIConfiguration->SetSynchronizeOptions(Params.Options;
+      GUIConfiguration->SetSynchronizeOptions(Params.Options);
     }
   }
   catch(...)
@@ -1661,7 +1662,7 @@ void TWinSCPFileSystem::DoSynchronizeInvalid(
   wstring Message;
   if (!Directory.empty())
   {
-    Message = FORMAT(GetMsg(WATCH_ERROR_DIRECTORY), (Directory));
+    Message = ::FORMAT(GetMsg(WATCH_ERROR_DIRECTORY).c_str(), Directory.c_str());
   }
   else
   {
@@ -1674,16 +1675,16 @@ void TWinSCPFileSystem::DoSynchronizeInvalid(
 void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   TSynchronizeController * /*Sender*/, int & MaxDirectories)
 {
-  if (MaxDirectories < GUIConfiguration->MaxWatchDirectories)
+  if (MaxDirectories < GUIConfiguration->GetMaxWatchDirectories())
   {
-    MaxDirectories = GUIConfiguration->MaxWatchDirectories;
+    MaxDirectories = GUIConfiguration->GetMaxWatchDirectories();
   }
   else
   {
     TMessageParams Params;
     Params.Params = qpNeverAskAgainCheck;
     int Result = MoreMessageDialog(
-      FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES), (MaxDirectories, MaxDirectories)), NULL,
+      ::FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), NULL,
       qtConfirmation, qaYes | qaNo, &Params);
 
     if ((Result == qaYes) || (Result == qaNeverAskAgain))
@@ -1691,7 +1692,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
       MaxDirectories *= 2;
       if (Result == qaNeverAskAgain)
       {
-        GUIConfiguration->MaxWatchDirectories = MaxDirectories;
+        GUIConfiguration->SetMaxWatchDirectories(MaxDirectories);
       }
     }
     else
@@ -1749,32 +1750,32 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
           }
           catch(...)
           {
-            PanelInfo->ApplySelection();
+          }
+            GetPanelInfo()->ApplySelection();
             if (UpdatePanel())
             {
               RedrawPanel();
             }
-          }
         }
       }
       catch(...)
       {
-        delete FileList;
       }
+        delete FileList;
     }
   }
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::RenameFile()
 {
-  TFarPanelItem * PanelItem = PanelInfo->FocusedItem;
+  TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
   assert(PanelItem != NULL);
 
-  if (!PanelItem->IsParentDirectory)
+  if (!PanelItem->GetIsParentDirectory())
   {
     RequireCapability(fcRename);
 
-    TRemoteFile * File = static_cast<TRemoteFile *>(PanelItem->UserData);
+    TRemoteFile *File = static_cast<TRemoteFile *>(PanelItem->GetUserData());
     wstring NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {
@@ -1784,11 +1785,11 @@ void TWinSCPFileSystem::RenameFile()
       }
       catch(...)
       {
+      }
         if (UpdatePanel())
         {
           RedrawPanel();
         }
-      }
     }
   }
 }
@@ -1822,13 +1823,13 @@ void TWinSCPFileSystem::FileProperties()
         CurrentProperties = TRemoteProperties::CommonProperties(FileList);
 
         int Flags = 0;
-        if (FTerminal->IsCapable[fcModeChanging]) Flags |= cpMode;
-        if (FTerminal->IsCapable[fcOwnerChanging]) Flags |= cpOwner;
-        if (FTerminal->IsCapable[fcGroupChanging]) Flags |= cpGroup;
+        if (FTerminal->GetIsCapable(fcModeChanging)) Flags |= cpMode;
+        if (FTerminal->GetIsCapable(fcOwnerChanging)) Flags |= cpOwner;
+        if (FTerminal->GetIsCapable(fcGroupChanging)) Flags |= cpGroup;
 
         TRemoteProperties NewProperties = CurrentProperties;
         if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
-            FTerminal->GetGroups(), FTerminal->Users, &NewProperties, Flags))
+            FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
         {
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
@@ -1838,7 +1839,7 @@ void TWinSCPFileSystem::FileProperties()
           }
           catch(...)
           {
-            PanelInfo->ApplySelection();
+            GetPanelInfo()->ApplySelection();
             if (UpdatePanel())
             {
               RedrawPanel();
@@ -1849,8 +1850,8 @@ void TWinSCPFileSystem::FileProperties()
     }
     catch(...)
     {
-      delete FileList;
     }
+      delete FileList;
   }
 }
 //---------------------------------------------------------------------------
@@ -1858,9 +1859,9 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(wstring Token, bool Separate)
 {
   if (!Token.empty())
   {
-    if (Token.find_first_of(" ") > 0)
+    if (Token.find_first_of(L" ") > 0)
     {
-      Token = FORMAT("\"%s\"", (Token));
+      Token = ::FORMAT(L"\"%s\"", Token.c_str());
     }
 
     if (Separate)
@@ -1874,11 +1875,11 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(wstring Token, bool Separate)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 {
-  TFarPanelItem * Focused = PanelInfo->FocusedItem;
+  TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
   if (Focused != NULL)
   {
-    TSessionData * SessionData = reinterpret_cast<TSessionData *>(Focused->UserData);
+    TSessionData * SessionData = reinterpret_cast<TSessionData *>(Focused->GetUserData());
     wstring Name;
     if (SessionData != NULL)
     {
@@ -1898,7 +1899,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 {
-  TFarPanelItem * Focused = PanelInfo->FocusedItem;
+  TFarPanelItem * Focused = GetPanelInfo()->FocusedItem;
 
   if (Focused != NULL)
   {
@@ -1953,8 +1954,8 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     }
     else
     {
-      if ((PanelInfo->SelectedCount == 0) &&
-          PanelInfo->FocusedItem->IsParentDirectory)
+      if ((GetPanelInfo()->SelectedCount == 0) &&
+          GetPanelInfo()->FocusedItem->IsParentDirectory)
       {
         FileNames->Add(UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory()));
       }
@@ -2820,7 +2821,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
   }
 
   TStrings * Result;
-  TFarPanelItem * PanelItem = PanelInfo->FocusedItem;
+  TFarPanelItem * PanelItem = GetPanelInfo()->FocusedItem;
   if (PanelItem->IsParentDirectory)
   {
     Result = NULL;
@@ -2832,7 +2833,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
     wstring FileName = PanelItem->GetFileName();
     if (Side == osLocal)
     {
-      FileName = IncludeTrailingBackslash(PanelInfo->GetCurrentDirectory()) + FileName;
+      FileName = IncludeTrailingBackslash(GetPanelInfo()->GetCurrentDirectory()) + FileName;
     }
     Result->AddObject(FileName, (TObject *)PanelItem->UserData);
   }
@@ -2848,10 +2849,10 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(
   }
 
   TStrings * Result;
-  if (PanelInfo->SelectedCount > 0)
+  if (GetPanelInfo()->SelectedCount > 0)
   {
-    Result = CreateFileList(PanelInfo->Items, Side, true,
-      PanelInfo->GetCurrentDirectory());
+    Result = CreateFileList(GetPanelInfo()->Items, Side, true,
+      GetPanelInfo()->GetCurrentDirectory());
   }
   else
   {
@@ -3286,7 +3287,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
 
     if (!FPanelItems)
     {
-      TList * PanelItems = PanelInfo->Items;
+      TList * PanelItems = GetPanelInfo()->Items;
       for (int Index = 0; Index < PanelItems->GetCount(); Index++)
       {
         if (((TFarPanelItem *)PanelItems->Items[Index])->GetFileName() == FileName)
@@ -3906,9 +3907,9 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::MultipleEdit()
 {
-  if ((PanelInfo->FocusedItem != NULL) &&
-      PanelInfo->FocusedItem->IsFile &&
-      (PanelInfo->FocusedItem->UserData != NULL))
+  if ((GetPanelInfo()->FocusedItem != NULL) &&
+      GetPanelInfo()->FocusedItem->IsFile &&
+      (GetPanelInfo()->FocusedItem->UserData != NULL))
   {
     TStrings * FileList = CreateFocusedFileList(osRemote);
     assert((FileList == NULL) || (FileList->GetCount() == 1));
