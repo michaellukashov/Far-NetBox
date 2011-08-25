@@ -32,14 +32,14 @@ TMessageParams::TMessageParams()
 TWinSCPPlugin::TWinSCPPlugin(HWND AHandle): TCustomFarPlugin(AHandle)
 {
   FInitialized = false;
-  CreateMutex(NULL, false, "WinSCPFar");
+  CreateMutex(NULL, false, L"WinSCPFar");
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
-    FarConfiguration->Plugin = NULL;
+    FarConfiguration->SetPlugin(NULL);
     CoreFinalize();
   }
 }
@@ -74,7 +74,7 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
   Flags = PF_FULLCMDLINE;
-  if (FarConfiguration->DisksMenu)
+  if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
       (TObject *)FarConfiguration->DisksMenuHotKey);
