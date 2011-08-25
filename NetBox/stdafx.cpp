@@ -375,6 +375,13 @@ std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, con
     return result;
 }
 
+std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
 bool AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
     // FIXME

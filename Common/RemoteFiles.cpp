@@ -182,7 +182,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
     int P;
     while ((P = Result.find_first_of(L"/../")) > 0)
     {
-      int P2 = ::LastDelimiter(Result.substr(1, P-1), "/");
+      int P2 = ::LastDelimiter(Result.substr(1, P-1), L'/');
       assert(P2 > 0);
       Result.erase(P2, P - P2 + 3);
     }
@@ -197,22 +197,22 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
 //---------------------------------------------------------------------------
 std::wstring FromUnixPath(const std::wstring Path)
 {
-  return StringReplace(Path, "/", "\\", TReplaceFlags() << rfReplaceAll);
+  return StringReplace(Path, L"/", L"\\"); //, TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 std::wstring ToUnixPath(const std::wstring Path)
 {
-  return StringReplace(Path, "\\", "/", TReplaceFlags() << rfReplaceAll);
+  return StringReplace(Path, L"\\", L"/"); // , TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
 static void CutFirstDirectory(std::wstring & S, bool Unix)
 {
   bool Root;
   int P;
-  std::wstring Sep = Unix ? "/" : "\\";
+  std::wstring Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
-    S = "";
+    S = L"";
   }
   else
   {
