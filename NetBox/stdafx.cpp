@@ -375,7 +375,7 @@ std::wstring ExcludeTrailingBackslash(const std::wstring str)
     return result;
 }
 
-std::wstring StringOfChar(const whacr_t c, size_t len);
+std::wstring StringOfChar(const wchar_t c, size_t len)
 {
     // FIXME
     std::wstring result;
