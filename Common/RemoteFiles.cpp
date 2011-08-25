@@ -2452,7 +2452,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
 {
   // TODO: Modification and LastAccess
   TRemoteProperties CommonProperties;
-  for (int Index = 0; Index < FileList->Count; Index++)
+  for (int Index = 0; Index < FileList->GetCount(); Index++)
   {
     TRemoteFile * File = (TRemoteFile *)(FileList->GetObject(Index));
     assert(File);
@@ -2462,29 +2462,29 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
       // previously we allowed undef implicitly for directories,
       // now we do it explicitly in properties dialog and only in combination
       // with "recursive" option
-      CommonProperties.Rights.AllowUndef = File->GetRights()->IsUndef;
+      CommonProperties.Rights.SetAllowUndef(File->GetRights()->GetIsUndef());
       CommonProperties.Valid << vpRights;
-      if (File->Owner.IsSet)
+      if (File->GetOwner().GetIsSet())
       {
-        CommonProperties.Owner = File->Owner;
+        CommonProperties.Owner = File->GetOwner();
         CommonProperties.Valid << vpOwner;
       }
-      if (File->Group.IsSet)
+      if (File->GetGroup().GetIsSet())
       {
-        CommonProperties.Group = File->Group;
+        CommonProperties.Group = File->GetGroup();
         CommonProperties.Valid << vpGroup;
       }
     }
     else
     {
-      CommonProperties.Rights.AllowUndef = true;
+      CommonProperties.Rights.SetAllowUndef(true);
       CommonProperties.Rights &= *File->GetRights();
-      if (CommonProperties.Owner != File->Owner)
+      if (CommonProperties.Owner != File->GetOwner())
       {
         CommonProperties.Owner.Clear();
         CommonProperties.Valid >> vpOwner;
       };
-      if (CommonProperties.Group != File->Group)
+      if (CommonProperties.Group != File->GetGroup())
       {
         CommonProperties.Group.Clear();
         CommonProperties.Valid >> vpGroup;
@@ -2522,14 +2522,14 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
 void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   unsigned char Buf[sizeof(Valid)];
-  if (Storage->ReadBinaryData("Valid", &Buf, sizeof(Buf)) == sizeof(Buf))
+  if (Storage->ReadBinaryData(L"Valid", &Buf, sizeof(Buf)) == sizeof(Buf))
   {
     memcpy(&Valid, Buf, sizeof(Valid));
   }
 
   if (Valid.Contains(vpRights))
   {
-    Rights.Text = Storage->ReadString("Rights", Rights.Text);
+    Rights.SetText(Storage->ReadString(L"Rights", Rights.GetText()));
   }
 
   // TODO
@@ -2537,12 +2537,12 @@ void TRemoteProperties::Load(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteBinaryData(std::wstring("Valid"),
+  Storage->WriteBinaryData(std::wstring(L"Valid"),
     static_cast<const void *>(&Valid), sizeof(Valid));
 
   if (Valid.Contains(vpRights))
   {
-    Storage->WriteString("Rights", Rights.Text);
+    Storage->WriteString(L"Rights", Rights.GetText());
   }
 
   // TODO

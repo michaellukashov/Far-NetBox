@@ -447,7 +447,7 @@ struct TValidProperties
 {
 public:
     void Clear();
-    bool Contains(TValidProperty value)
+    bool Contains(TValidProperty value) const
     {
         return false;
     }
@@ -458,6 +458,14 @@ public:
     bool operator != (const TValidProperties &rhs) const
     {
         return !(operator == (rhs));
+    }
+    TValidProperties & operator << (const TValidProperty value)
+    {
+        return *this;
+    }
+    TValidProperties & operator >> (const TValidProperty value)
+    {
+        return *this;
     }
 };
 
