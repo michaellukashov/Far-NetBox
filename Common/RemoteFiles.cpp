@@ -864,7 +864,7 @@ void TRemoteFile::SetType(char AType)
 {
   FType = AType;
   // Allow even non-standard file types (e.g. 'S')
-  // if (!std::wstring("-DL").Pos((char)toupper(FType))) Abort();
+  // if (!std::wstring("-DL").find_first_of((char)toupper(FType))) Abort();
   FIsSymLink = ((char)toupper(FType) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
@@ -1159,9 +1159,9 @@ void TRemoteFile::SetListingStr(std::wstring value)
       // adjusting default "midnight" time makes no sense
       if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
       {
-        assert(Terminal != NULL);
+        assert(GetTerminal() != NULL);
         FModification = AdjustDateTimeFromUnix(FModification,
-          Terminal->SessionData->DSTMode);
+          GetTerminal()->GetSessionData()->GetDSTMode());
       }
 
       if (double(FLastAccess) == 0)
@@ -1174,14 +1174,14 @@ void TRemoteFile::SetListingStr(std::wstring value)
       {
         int P;
 
-        FLinkTo = "";
-        if (IsSymLink)
+        FLinkTo = L"";
+        if (GetIsSymLink())
         {
-          P = Line.Pos(SYMLINKSTR);
+          P = Line.find_first_of(SYMLINKSTR);
           if (P)
           {
             FLinkTo = Line.substr(
-              P + strlen(SYMLINKSTR), Line.size() - P + strlen(SYMLINKSTR) + 1);
+              P + std::wstring(SYMLINKSTR).size(), Line.size() - P + std::wstring(SYMLINKSTR).size() + 1);
             Line.resize(P - 1);
           }
           else
@@ -1198,14 +1198,14 @@ void TRemoteFile::SetListingStr(std::wstring value)
   }
   catch (exception &E)
   {
-    throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, ARRAYOFCONST((value))));
+    // FIXME throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, ARRAYOFCONST((value))));
   }
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::Complete()
 {
-  assert(Terminal != NULL);
-  if (IsSymLink && Terminal->ResolvingSymlinks)
+  assert(GetTerminal() != NULL);
+  if (GetIsSymLink() && GetTerminal()->GetResolvingSymlinks())
   {
     FindLinkedFile();
   }
@@ -1213,19 +1213,19 @@ void TRemoteFile::Complete()
 //---------------------------------------------------------------------------
 void TRemoteFile::FindLinkedFile()
 {
-  assert(Terminal && IsSymLink);
+  assert(GetTerminal() && GetIsSymLink());
 
   if (FLinkedFile) delete FLinkedFile;
   FLinkedFile = NULL;
 
   FCyclicLink = false;
-  if (!LinkTo.empty())
+  if (!GetLinkTo().empty())
   {
     // check for cyclic link
     TRemoteFile * LinkedBy = FLinkedByFile;
     while (LinkedBy)
     {
-      if (LinkedBy->LinkTo == LinkTo)
+      if (LinkedBy->GetLinkTo() == GetLinkTo())
       {
         // this is currenly redundant information, because it is used only to
         // detect broken symlink, which would be otherwise detected
@@ -1248,23 +1248,23 @@ void TRemoteFile::FindLinkedFile()
   }
   else
   {
-    assert(Terminal->ResolvingSymlinks);
-    Terminal->ExceptionOnFail = true;
+    assert(GetTerminal()->GetResolvingSymlinks());
+    GetTerminal()->SetExceptionOnFail(true);
     try
     {
       try
       {
-        Terminal->ReadSymlink(this, FLinkedFile);
+        GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
       catch(...)
       {
-        Terminal->ExceptionOnFail = false;
       }
+      GetTerminal()->SetExceptionOnFail(false);
     }
     catch (exception &E)
     {
-      if (E.InheritsFrom(__classid(EFatal))) throw;
-        else Terminal->Log->AddException(&E);
+      // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
+        // else Terminal->Log->AddException(&E);
     }
   }
 }
@@ -1274,28 +1274,30 @@ std::wstring TRemoteFile::GetListingStr()
   // note that ModificationStr is longer than 12 for mfFull
   std::wstring LinkPart;
   // expanded from ?: to avoid memory leaks
-  if (IsSymLink)
+  if (GetIsSymLink())
   {
-    LinkPart = std::wstring(SYMLINKSTR) + LinkTo;
+    LinkPart = std::wstring(SYMLINKSTR) + GetLinkTo();
   }
-  return Format("%s%s %3s %-8s %-8s %9s %-12s %s%s", ARRAYOFCONST((
-    Type, Rights->Text, IntToStr(INodeBlocks), Owner.Name,
-    Group.Name, IntToStr(Size), ModificationStr, FileName,
-    LinkPart)));
+  return ::FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s", 
+    GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(),
+    GetOwner().GetName().c_str(),
+    GetGroup().GetName().c_str(), IntToStr(GetSize()).c_str(), GetModificationStr().c_str(),
+    GetFileName().c_str(),
+    LinkPart.c_str());
 }
 //---------------------------------------------------------------------------
 std::wstring TRemoteFile::GetFullFileName() const
 {
   if (FFullFileName.empty())
   {
-    assert(Terminal);
-    assert(Directory != NULL);
+    assert(GetTerminal());
+    assert(GetDirectory() != NULL);
     std::wstring Path;
-    if (IsParentDirectory) Path = Directory->ParentPath;
+    if (GetIsParentDirectory()) Path = GetDirectory()->GetParentPath();
       else
-    if (IsDirectory) Path = UnixIncludeTrailingBackslash(Directory->FullDirectory + FileName);
-      else Path = Directory->FullDirectory + FileName;
-    return Terminal->TranslateLockedPath(Path, true);
+    if (GetIsDirectory()) Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName());
+      else Path = GetDirectory()->GetFullDirectory() + GetFileName();
+    return GetTerminal()->TranslateLockedPath(Path, true);
   }
   else
   {
@@ -1305,14 +1307,14 @@ std::wstring TRemoteFile::GetFullFileName() const
 //---------------------------------------------------------------------------
 bool TRemoteFile::GetHaveFullFileName() const
 {
-  return !FFullFileName.empty() || (Directory != NULL);
+  return !FFullFileName.empty() || (GetDirectory() != NULL);
 }
 //---------------------------------------------------------------------------
 int TRemoteFile::GetAttr()
 {
   int Result = 0;
-  if (Rights->ReadOnly) Result |= faReadOnly;
-  if (IsHidden) Result |= faHidden;
+  if (GetRights()->GetReadOnly()) Result |= 0; // FICME faReadOnly;
+  if (GetIsHidden()) Result |= 0; // FIXME faHidden;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1321,26 +1323,26 @@ void TRemoteFile::SetTerminal(TTerminal * value)
   FTerminal = value;
   if (FLinkedFile)
   {
-    FLinkedFile->Terminal = value;
+    FLinkedFile->SetTerminal(value);
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 {
-  Modification = double(0);
-  ModificationFmt = mfNone;
-  LastAccess = Modification;
-  Type = 'D';
-  Size = 0;
+  SetModification(TDateTime(double(0)));
+  SetModificationFmt(mfNone);
+  SetLastAccess(GetModification());
+  SetType('D');
+  SetSize(0);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
   : TRemoteDirectoryFile()
 {
-  FileName = PARENTDIRECTORY;
-  Terminal = ATerminal;
+  SetFileName(PARENTDIRECTORY);
+  SetTerminal(ATerminal);
 }
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList():
@@ -2022,7 +2024,7 @@ void TRights::SetText(const std::wstring & value)
   if (value != Text)
   {
     if ((value.size() != TextLen) ||
-        (!AllowUndef && (value.Pos(UndefSymbol) > 0)) ||
+        (!AllowUndef && (value.find_first_of(UndefSymbol) > 0)) ||
         (value.find_first_of(L" ") > 0))
     {
       throw exception(FMTLOAD(RIGHTS_ERROR, (value)));

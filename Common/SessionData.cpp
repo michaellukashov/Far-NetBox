@@ -1054,7 +1054,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
         Ftps = AFtps;
       }
 
-      bool PasswordSeparator = (UserInfo.Pos(':') != 0);
+      bool PasswordSeparator = (UserInfo.find_first_of(':') != 0);
       UserName = DecodeUrlChars(CutToChar(UserInfo, ':', false));
       Password = DecodeUrlChars(UserInfo);
       Passwordless = Password.empty() && PasswordSeparator;
@@ -2402,7 +2402,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
           for (int KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
           {
             KeyName = KeyList->Strings[KeyIndex];
-            int P = KeyName.Pos(HostKeyName);
+            int P = KeyName.find_first_of(HostKeyName);
             if ((P > 0) && (P == KeyName.size() - HostKeyName.size() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,

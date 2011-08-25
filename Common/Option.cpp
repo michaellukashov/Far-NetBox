@@ -15,7 +15,7 @@ void TOptions::Add(std::wstring Value)
   if (!FNoMoreSwitches &&
       (Value.size() == 2) &&
       (Value[1] == Value[2]) &&
-      (FSwitchMarks.Pos(Value[1]) > 0))
+      (FSwitchMarks.find_first_of(Value[1]) > 0))
   {
     FNoMoreSwitches = true;
   }
@@ -25,7 +25,7 @@ void TOptions::Add(std::wstring Value)
     int Index = 0; // shut up
     if (!FNoMoreSwitches &&
         (Value.size() >= 2) &&
-        (FSwitchMarks.Pos(Value[1]) > 0))
+        (FSwitchMarks.find_first_of(Value[1]) > 0))
     {
       Index = 2;
       Switch = true;

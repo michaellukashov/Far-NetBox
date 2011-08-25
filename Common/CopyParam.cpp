@@ -275,7 +275,7 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
           (*InvalidChar == TokenPrefix) &&
           (((FileName.size() - Pos) <= 1) ||
            (((Char = HexToChar(FileName.substr(Pos + 1, 2))) == '\0') ||
-            (FTokenizibleChars.Pos(Char) == 0))))
+            (FTokenizibleChars.find_first_of(Char) == 0))))
       {
         InvalidChar++;
       }
@@ -322,7 +322,7 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
         std::wstring Hex = FileName.substr(Index + 1, 2);
         char Char = HexToChar(Hex);
         if ((Char != '\0') &&
-            ((FTokenizibleChars.Pos(Char) > 0) ||
+            ((FTokenizibleChars.find_first_of(Char) > 0) ||
              (((Char == ' ') || (Char == '.')) && (Index == FileName.size() - 2))))
         {
           FileName[Index] = Char;
