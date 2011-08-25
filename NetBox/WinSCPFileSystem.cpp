@@ -1553,12 +1553,12 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
 
     Message = LocalLabel + MinimizeName(LocalDirectory,
       ProgressWidth - LocalLabel.size(), false);
-    Message += wstring::StringOfChar(' ', ProgressWidth - Message.size()) + "\n";
+    Message += ::StringOfChar(L' ', ProgressWidth - Message.size()) + L"\n";
     Message += RemoteLabel + MinimizeName(RemoteDirectory,
-      ProgressWidth - RemoteLabel.size(), true) + "\n";
-    Message += StartTimeLabel + FSynchronizationStart.TimeString() + "\n";
+      ProgressWidth - RemoteLabel.size(), true) + L"\n";
+    Message += StartTimeLabel + FSynchronizationStart.TimeString() + L"\n";
     Message += TimeElapsedLabel +
-      FormatDateTimeSpan(Configuration->TimeFormat, Now() - FSynchronizationStart) + "\n";
+      FormatDateTimeSpan(Configuration->GetTimeFormat(), TDateTime(Now() - FSynchronizationStart)) + "\n";
 
     FPlugin->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
@@ -3026,7 +3026,7 @@ void TWinSCPFileSystem::LogAuthentication(
     wstring Message;
     if (AuthenticationLogLines->GetCount() == 0)
     {
-      Message = wstring::StringOfChar(' ', Width) + "\n";
+      Message = ::StringOfChar(' ', Width) + L"\n";
       Count = 1;
     }
     else
@@ -3037,19 +3037,19 @@ void TWinSCPFileSystem::LogAuthentication(
       }
       AuthenticationLogLines->GetString(0) =
         AuthenticationLogLines->GetString(0) +
-          wstring::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).size());
+          ::StringOfChar(L' ', Width - AuthenticationLogLines->GetString(0)).size());
       Message = AnsiReplaceStr(AuthenticationLogLines->Text, "\r", "");
       Count = AuthenticationLogLines->GetCount();
     }
 
-    Message += wstring::StringOfChar('\n', Height - Count);
+    Message += ::StringOfChar(L'\n', Height - Count);
 
     FPlugin->Message(0, GetTerminal()->GetSessionData()->GetSessionName(), Message);
   }
   catch(...)
   {
-    delete AuthenticationLogLines;
   }
+    delete AuthenticationLogLines;
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalInformation(
@@ -3391,8 +3391,8 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
       Value = FormatDateTimeSpan(Configuration->TimeFormat, ProgressData.TimeElapsed());
       StatusLine = TimeElapsedLabel +
-        wstring::StringOfChar(' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.size() - Value.size()) +
-        Value + "  ";
+        ::StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.size() - Value.size()) +
+        Value + L"  ";
 
       wstring LabelText;
       if (ProgressData.TotalSizeSet)

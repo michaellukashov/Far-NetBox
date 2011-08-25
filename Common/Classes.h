@@ -240,15 +240,23 @@ public:
 class TDateTime
 {
 public:
+    TDateTime()
+    {}
+    explicit TDateTime(double)
+    {}
     operator double()
     {
         return 0.0;
+    }
+    std::wstring TimeString() const
+    {
+        return std::wstring();
     }
 };
 
 static TDateTime Now()
 {
-    TDateTime result;
+    TDateTime result(0.0);
     return result;
 }
 
