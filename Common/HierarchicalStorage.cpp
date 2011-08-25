@@ -38,7 +38,7 @@ std::wstring PuttyMungeStr(const std::wstring Str)
 //---------------------------------------------------------------------------
 std::wstring MungeIniName(const std::wstring Str)
 {
-  int P = Str.Pos("=");
+  int P = Str.find_first_of(L"=");
   // make this fast for now
   if (P > 0)
   {
@@ -52,7 +52,7 @@ std::wstring MungeIniName(const std::wstring Str)
 //---------------------------------------------------------------------------
 std::wstring UnMungeIniName(const std::wstring Str)
 {
-  int P = Str.Pos("%3D");
+  int P = Str.find_first_of(L"%3D");
   // make this fast for now
   if (P > 0)
   {
@@ -240,7 +240,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
     {
       if (MaintainKeys)
       {
-        assert(Strings->Strings[Index].Pos("=") > 1);
+        assert(Strings->Strings[Index].find_first_of(L"=") > 1);
         WriteString(Strings->Names[Index], Strings->Values[Strings->Names[Index]]);
       }
       else
@@ -743,7 +743,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
       {
         std::wstring SubSection = Section.substr(CurrentSubKey.size() + 1,
           Section.size() - CurrentSubKey.size());
-        int P = SubSection.Pos("\\");
+        int P = SubSection.find_first_of(L"\\");
         if (P)
         {
           SubSection.SetLength(P - 1);

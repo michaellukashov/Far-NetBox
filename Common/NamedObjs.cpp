@@ -32,7 +32,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       if ((Name[Name.size()] == ')') && ((P = Name.LastDelimiter('(')) > 0))
         try {
           N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
-          Name.Delete(P, Name.size() - P + 1);
+          Name.erase(P, Name.size() - P + 1);
           Name = Name.TrimRight();
         } catch (exception &E) { N = 0; };
       Name += " (" + IntToStr(N+1) + ")";

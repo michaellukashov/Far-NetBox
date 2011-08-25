@@ -919,14 +919,14 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    Url.Delete(1, 4);
+    Url.erase(1, 4);
     ProtocolDefined = true;
   }
   else if (Url.substr(1, 5).LowerCase() == "sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    Url.Delete(1, 5);
+    Url.erase(1, 5);
     ProtocolDefined = true;
   }
   else if (Url.substr(1, 4).LowerCase() == "ftp:")
@@ -934,7 +934,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     AFSProtocol = fsFTP;
     Ftps = ftpsNone;
     APortNumber = FtpPortNumber;
-    Url.Delete(1, 4);
+    Url.erase(1, 4);
     ProtocolDefined = true;
   }
   else if (Url.substr(1, 5).LowerCase() == "ftps:")
@@ -942,13 +942,13 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    Url.Delete(1, 5);
+    Url.erase(1, 5);
     ProtocolDefined = true;
   }
 
   if (ProtocolDefined && (Url.substr(1, 2) == "//"))
   {
-    Url.Delete(1, 2);
+    Url.erase(1, 2);
   }
 
   if (AProtocolDefined != NULL)
@@ -1001,7 +1001,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       Assign(StoredSessions->DefaultSettings);
       Name = "";
 
-      int PSlash = Url.Pos("/");
+      int PSlash = Url.find_first_of(L"/");
       if (PSlash == 0)
       {
         PSlash = Url.size() + 1;
@@ -1024,13 +1024,13 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
         HostInfo = ConnectInfo;
       }
 
-      if ((HostInfo.size() >= 2) && (HostInfo[1] == '[') && ((P = HostInfo.Pos("]")) > 0))
+      if ((HostInfo.size() >= 2) && (HostInfo[1] == '[') && ((P = HostInfo.find_first_of(L"]")) > 0))
       {
         HostName = HostInfo.substr(2, P - 2);
-        HostInfo.Delete(1, P);
+        HostInfo.erase(1, P);
         if (!HostInfo.empty() && (HostInfo[1] == ':'))
         {
-          HostInfo.Delete(1, 1);
+          HostInfo.erase(1, 1);
         }
       }
       else
@@ -2069,7 +2069,7 @@ std::wstring TSessionData::GetLocalName()
   int P = Result.LastDelimiter("/");
   if (P > 0)
   {
-    Result.Delete(1, P);
+    Result.erase(1, P);
   }
   return Result;
 }

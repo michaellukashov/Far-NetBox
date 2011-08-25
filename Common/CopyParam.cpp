@@ -295,7 +295,7 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
 
     if (IsReservedName(FileName))
     {
-      int P = FileName.Pos(".");
+      int P = FileName.find_first_of(L".");
       if (P == 0)
       {
         P = FileName.size() + 1;
@@ -326,14 +326,14 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
              (((Char == ' ') || (Char == '.')) && (Index == FileName.size() - 2))))
         {
           FileName[Index] = Char;
-          FileName.Delete(Index + 1, 2);
+          FileName.erase(Index + 1, 2);
           InvalidChar = FileName.c_str() + Index;
         }
         else if ((Hex == "00") &&
                  ((Index == FileName.size() - 2) || (FileName[Index + 3] == '.')) &&
                  IsReservedName(FileName.substr(1, Index - 1) + FileName.substr(Index + 3, FileName.size() - Index - 3 + 1)))
         {
-          FileName.Delete(Index, 3);
+          FileName.erase(Index, 3);
           InvalidChar = FileName.c_str() + Index - 1;
         }
         else
@@ -388,7 +388,7 @@ std::wstring TCopyParamType::Untokenize(std::wstring FileName)
       else
       {
         Result[Index] = Ch;
-        Result.Delete(Index + 1, 2);
+        Result.erase(Index + 1, 2);
       }
     }
   }
@@ -408,7 +408,7 @@ std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
     case ncFirstUpperCase: FileName = FileName.substr(1, 1).UpperCase() +
       FileName.substr(2, FileName.size()-1).LowerCase(); break;
     case ncLowerCaseShort:
-      if ((FileName.size() <= 12) && (FileName.Pos(".") <= 9) &&
+      if ((FileName.size() <= 12) && (FileName.find_first_of(L".") <= 9) &&
           (FileName == FileName.UpperCase()))
       {
         FileName = FileName.LowerCase();

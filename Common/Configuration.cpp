@@ -640,7 +640,7 @@ std::wstring TConfiguration::GetProductVersion()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::TrimVersion(std::wstring Version)
 {
-  while ((Version.Pos(".") != Version.LastDelimiter(".")) &&
+  while ((Version.find_first_of(L".") != Version.LastDelimiter(".")) &&
     (Version.substr(Version.size() - 1, 2) == ".0"))
   {
     Version.SetLength(Version.size() - 2);

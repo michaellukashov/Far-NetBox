@@ -249,7 +249,7 @@ std::wstring TCommandSet::GetReturnVar()
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::ExtractCommand(std::wstring Command)
 {
-  int P = Command.Pos(" ");
+  int P = Command.find_first_of(L" ");
   if (P > 0)
   {
     Command.SetLength(P-1);
@@ -2172,7 +2172,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
         // First characted distinguish type of control record
         char Ctrl = Line[1];
-        Line.Delete(1, 1);
+        Line.erase(1, 1);
 
         switch (Ctrl) {
           case 1:

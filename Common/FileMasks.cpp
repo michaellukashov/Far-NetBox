@@ -352,7 +352,7 @@ bool TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const std::wstring 
   {
     Result = true;
   }
-  else if ((MaskMask.Kind == TMaskMask::NoExt) && (Str.Pos(".") == 0))
+  else if ((MaskMask.Kind == TMaskMask::NoExt) && (Str.find_first_of(L".") == 0))
   {
     Result = true;
   }
@@ -448,7 +448,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
               if ((PartStr.size() >= 1) && (PartStr[1] == '='))
               {
                 SizeMask = TMask::Close;
-                PartStr.Delete(1, 1);
+                PartStr.erase(1, 1);
               }
               else
               {
@@ -734,7 +734,7 @@ bool TInteractiveCustomCommand::PatternReplacement(int Index, const std::wstring
   if ((Pattern.size() >= 3) && (Pattern[2] == '?'))
   {
     std::wstring PromptStr;
-    int Pos = Pattern.substr(3, Pattern.size() - 2).Pos("?");
+    int Pos = Pattern.substr(3, Pattern.size() - 2).find_first_of(L"?");
     if (Pos > 0)
     {
       Replacement = Pattern.substr(3 + Pos, Pattern.size() - 3 - Pos);

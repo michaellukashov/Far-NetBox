@@ -30,7 +30,7 @@ std::wstring XmlEscape(std::wstring Str)
         break;
 
       case '\r':
-        Str.Delete(i, 1);
+        Str.erase(i, 1);
         i--;
         break;
     }
@@ -800,7 +800,7 @@ void TSessionLog::OpenLogFile()
             Replacement = std::wstring("!") + NewFileName[Index + 1];
             break;
         }
-        NewFileName.Delete(Index, 2);
+        NewFileName.erase(Index, 2);
         NewFileName.Insert(Replacement, Index);
         Index += Replacement.size() - 1;
       }

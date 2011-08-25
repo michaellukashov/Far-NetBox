@@ -180,15 +180,15 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
     int P;
-    while ((P = Result.Pos("/../")) > 0)
+    while ((P = Result.find_first_of(L"/../")) > 0)
     {
-      int P2 = Result.substr(1, P-1).LastDelimiter("/");
+      int P2 = ::LastDelimiter(Result.substr(1, P-1), "/");
       assert(P2 > 0);
-      Result.Delete(P2, P - P2 + 3);
+      Result.erase(P2, P - P2 + 3);
     }
-    while ((P = Result.Pos("/./")) > 0)
+    while ((P = Result.find_first_of(L"/./")) > 0)
     {
-      Result.Delete(P, 2);
+      Result.erase(P, 2);
     }
     Result = UnixExcludeTrailingBackslash(Result);
   }
@@ -219,7 +219,7 @@ static void CutFirstDirectory(std::wstring & S, bool Unix)
     if (S[1] == Sep[1])
     {
       Root = true;
-      S.Delete(1, 1);
+      S.erase(1, 1);
     }
     else
     {
@@ -227,12 +227,12 @@ static void CutFirstDirectory(std::wstring & S, bool Unix)
     }
     if (S[1] == '.')
     {
-      S.Delete(1, 4);
+      S.erase(1, 4);
     }
     P = S.AnsiPos(Sep[1]);
     if (P)
     {
-      S.Delete(1, P);
+      S.erase(1, P);
       S = "..." + Sep + S;
     }
     else
@@ -274,7 +274,7 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
     if (Dir.size() >= 2 && Dir[2] == ':')
     {
       Drive = Dir.substr(1, 2);
-      Dir.Delete(1, 2);
+      Dir.erase(1, 2);
     }
   }
 
@@ -314,7 +314,7 @@ std::wstring MakeFileList(TStrings * FileList)
 
     std::wstring FileName = FileList->Strings[Index];
     // currently this is used for local file only, so no delimiting is done
-    if (FileName.Pos(" ") > 0)
+    if (FileName.find_first_of(L" ") > 0)
     {
       Result += "\"" + FileName + "\"";
     }
@@ -971,12 +971,12 @@ void TRemoteFile::SetListingStr(std::wstring value)
     Line = ReplaceChar(Line, '\t', ' ');
 
     Type = Line[1];
-    Line.Delete(1, 1);
+    Line.erase(1, 1);
 
     #define GETNCOL  \
       { if (Line.empty()) throw exception(""); \
         int P = Line.Pos(' '); \
-        if (P) { Col = Line.substr(1, P-1); Line.Delete(1, P); } \
+        if (P) { Col = Line.substr(1, P-1); Line.erase(1, P); } \
           else { Col = Line; Line = ""; } \
       }
     #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
@@ -987,17 +987,17 @@ void TRemoteFile::SetListingStr(std::wstring value)
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
     Rights->Text = Line.substr(1, 9);
-    Line.Delete(1, 9);
+    Line.erase(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
     if (!Line.empty() && ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
     {
-      Line.Delete(1, 1);
+      Line.erase(1, 1);
     }
     else if ((Line.size() >= 2) && (Line[1] == ' ') &&
              ((Line[2] == '+') || (Line[2] == '@') || (Line[2] == '.')))
     {
-      Line.Delete(1, 2);
+      Line.erase(1, 2);
     }
     Line = Line.TrimLeft();
 
@@ -1121,7 +1121,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
             Col = Line.substr(1, 6).Trim();
-            Line.Delete(1, 6);
+            Line.erase(1, 6);
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
@@ -2020,7 +2020,7 @@ void TRights::SetText(const std::wstring & value)
   {
     if ((value.size() != TextLen) ||
         (!AllowUndef && (value.Pos(UndefSymbol) > 0)) ||
-        (value.Pos(" ") > 0))
+        (value.find_first_of(L" ") > 0))
     {
       throw exception(FMTLOAD(RIGHTS_ERROR, (value)));
     }

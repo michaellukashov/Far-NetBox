@@ -1414,7 +1414,7 @@ std::wstring TTerminal::TranslateLockedPath(std::wstring Path, bool Lock)
   {
     if (Path.substr(1, FLockDirectory.size()) == FLockDirectory)
     {
-      Path.Delete(1, FLockDirectory.size());
+      Path.erase(1, FLockDirectory.size());
       if (Path.empty()) Path = "/";
     }
   }
