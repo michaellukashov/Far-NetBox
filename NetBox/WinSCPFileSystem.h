@@ -114,7 +114,7 @@ protected:
   TWinSCPPlugin * WinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType & ProgressData,
     bool Force);
-  bool SessionDialog(TSessionData * Data, TSessionAction & Action);
+  bool SessionDialog(TSessionData * Data, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
   void DuplicateRenameSession(TSessionData * Data,
     bool Duplicate);

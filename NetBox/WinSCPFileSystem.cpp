@@ -607,10 +607,10 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FocusSession(TSessionData * Data)
 {
-  TFarPanelItem * SessionItem = PanelInfo->FindUserData(Data);
+  TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
   if (SessionItem != NULL)
   {
-    PanelInfo->FocusedItem = SessionItem;
+    GetPanelInfo()->SetFocusedItem(SessionItem);
   }
 }
 //---------------------------------------------------------------------------
@@ -622,7 +622,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 
   if (NewData || FillInConnect)
   {
-    Data = new TSessionData("");
+    Data = new TSessionData(L"");
   }
 
   try
@@ -633,7 +633,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
       Data->Name = L"";
     }
 
-    TSessionAction Action;
+    TSessionActionEnum Action;
     if (Edit || FillInConnect)
     {
       Action = (FillInConnect ? saConnect : (OrigData == NULL ? saAdd : saEdit));
@@ -652,7 +652,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
             {
               if (StoredSessions->FindByName(Name))
               {
-                throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR), (Name)));
+                throw ExtException(::FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
               }
               else
               {
@@ -693,20 +693,20 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
       if (UpdatePanel())
       {
         RedrawPanel();
-        if (PanelInfo->ItemCount)
+        if (GetPanelInfo()->GetItemCount())
         {
-          PanelInfo->FocusedIndex = 0;
+          GetPanelInfo()->SetFocusedIndex(0);
         }
       }
     }
   }
   catch(...)
   {
+  }
     if (NewData || FillInConnect)
     {
       delete Data;
     }
-  }
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
@@ -716,9 +716,9 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
   {
     if (Event == FE_COMMAND)
     {
-      wstring Command = (char *)Param;
-      if (!Command.Trim().empty() &&
-          (Command.substr(1, 3).LowerCase() != L"cd "))
+      std::wstring Command = (wchar_t *)Param;
+      if (!::Trim(Command).empty() &&
+          (::LowerCase(Command.substr(1, 3)) != L"cd "))
       {
         Result = ExecuteCommand(Command);
       }
