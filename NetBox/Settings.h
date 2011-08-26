@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "FarUtil.h"
+
 enum ProxyTypes
 {
     PROXY_NONE = 0,

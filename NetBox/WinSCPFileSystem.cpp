@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+#include "FarUtil.h"
 
 // #include <StrUtils.hpp>
 #include "WinSCPFileSystem.h"
@@ -476,7 +477,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       TRemoteFile * File;
       for (int Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
       {
-        File = FTerminal->GetFiles()->GetFiles(Index);
+        File = FTerminal->GetFiles()->GetFile(Index);
         PanelItems->Add((TObject *)new TRemoteFilePanelItem(File));
       }
     }

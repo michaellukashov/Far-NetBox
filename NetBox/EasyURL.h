@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "FarUtil.h"
+
 #include <curl/curl.h>
 
 #define CHECK_CUCALL(code, fc) if (code == CURLE_OK) code = fc

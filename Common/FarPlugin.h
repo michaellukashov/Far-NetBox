@@ -18,33 +18,8 @@
 
 #pragma once
 
-#ifndef _export
-#define _export __declspec(dllexport)
-#endif  //_export
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif  //_WIN32_WINNT
-
-#ifndef _WIN32_IE
-#define _WIN32_IE 0x0501
-#endif  //_WIN32_IE
-
 #pragma warning(push, 1)
-#include <plugin.hpp>
-#include <farkeys.hpp>
-#include <farcolor.hpp>
-#include <string>
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <iterator>
-#include <algorithm>
-#include <assert.h>
-
 #include "Classes.h"
-
 #pragma warning(pop)
 
 inline int __cdecl debug_printf(const wchar_t *format, ...)

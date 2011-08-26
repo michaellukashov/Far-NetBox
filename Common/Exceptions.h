@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "Classes.h"
+#include "FarUtil.h"
 // #include <SysUtils.hpp>
 // #include <SysInit.hpp>
 // #include <System.hpp>

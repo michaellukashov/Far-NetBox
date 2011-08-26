@@ -19,7 +19,6 @@
 
 #pragma once
 
-
 /**
  * Client's protocol interface
  */
