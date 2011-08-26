@@ -3,6 +3,8 @@
 
 #include <WinBase.h>
 
+#include "Classes.h"
+
 //---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(NULL, "")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
@@ -38,7 +40,7 @@ std::wstring DelimitStr(std::wstring Str, std::wstring Chars);
 std::wstring ShellDelimitStr(std::wstring Str, char Quote);
 void OemToAnsi(std::wstring & Str);
 void AnsiToOem(std::wstring & Str);
-std::wstring ExceptionLogString(exception *E);
+std::wstring ExceptionLogString(std::exception *E);
 bool IsNumber(const std::wstring Str);
 std::wstring SystemTemporaryDirectory();
 std::wstring GetShellFolderPath(int CSIdl);
