@@ -4,6 +4,8 @@
 // testnetbox_01 --run_test=testnetbox_01/test1 --log_level=all
 //------------------------------------------------------------------------------
 
+#include "stdafx.h"
+
 #include "boostdefines.hpp"
 #define BOOST_TEST_MODULE "testnetbox_01"
 #define BOOST_TEST_MAIN

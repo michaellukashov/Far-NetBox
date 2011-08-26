@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
