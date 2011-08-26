@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 2.8)
 # Устанавливаем флаги компиляции ( -DCMAKE_BUILD_TYPE=[Debug,Release] )
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32 /EHsc" )
+    "-DWIN32;_WINDOWS /EHsc" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
@@ -53,6 +53,9 @@ include_directories (
     ${PROJECT_ROOT}/NetBox
     ${PROJECT_ROOT}/PluginSDK/${FAR_VERSION}
     ${PROJECT_ROOT}/Common
+    ${PROJECT_ROOT}/Putty
+    ${PROJECT_ROOT}/Putty/windows
+    ${PROJECT_ROOT}/Putty/charset
     ${PROJECT_ROOT}/libs
     ${PROJECT_ROOT}/libs/boost
     ${PROJECT_ROOT}/libs/libcurl/include
