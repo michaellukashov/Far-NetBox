@@ -131,7 +131,7 @@ public:
   const TCopyParamRule * GetRule(int Index) const;
   // __property const TCopyParamType * CopyParams[int Index] = { read = GetCopyParam };
   const TCopyParamType * GetCopyParam(int Index) const;
-  //  __property bool Modified = { read = FModified };
+  // __property bool Modified = { read = FModified };
   bool GetModified() { return FModified; }
   // __property TStrings * NameList = { read = GetNameList };
   TStrings * GetNameList() const;
@@ -268,7 +268,7 @@ public:
   // __property TDateTime IgnoreCancelBeforeFinish = { read = FIgnoreCancelBeforeFinish, write = FIgnoreCancelBeforeFinish };
   TDateTime GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
   void SetIgnoreCancelBeforeFinish(TDateTime value) { FIgnoreCancelBeforeFinish = value; }
-  //  __property TGUICopyParamType DefaultCopyParam = { read = FDefaultCopyParam, write = SetDefaultCopyParam };
+  // __property TGUICopyParamType DefaultCopyParam = { read = FDefaultCopyParam, write = SetDefaultCopyParam };
   TGUICopyParamType GetDefaultCopyParam() { return FDefaultCopyParam; }
   void SetDefaultCopyParam(const TGUICopyParamType & value);
   // __property bool BeepOnFinish = { read = FBeepOnFinish, write = FBeepOnFinish };
