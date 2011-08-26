@@ -223,6 +223,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/Common/RemoteFiles.cpp
+    ${PROJECT_ROOT}/Common/Terminal.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
 
