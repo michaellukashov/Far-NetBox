@@ -1,8 +1,9 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include "Terminal.h"
 
-#include <SysUtils.hpp>
-#include <FileCtrl.hpp>
+// #include <SysUtils.hpp>
+// #include <FileCtrl.hpp>
 
 #include "Common.h"
 #include "PuttyTools.h"
