@@ -54,7 +54,7 @@ void CoreInitialize()
   {
     Configuration->Load();
   }
-  catch (Exception & E)
+  catch (std::exception & E)
   {
     ShowExtendedException(&E);
   }
@@ -70,7 +70,7 @@ void CoreInitialize()
   {
     StoredSessions->Load();
   }
-  catch (Exception & E)
+  catch (std::exception & E)
   {
     ShowExtendedException(&E);
   }
@@ -83,7 +83,7 @@ void CoreFinalize()
     // only modified, implicit
     Configuration->Save(false, false);
   }
-  catch(Exception & E)
+  catch(std::exception & E)
   {
     ShowExtendedException(&E);
   }

@@ -119,12 +119,12 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
 
     if (!ExecuteShell(Program, Params))
     {
-      throw Exception(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+      throw std::exception(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
     }
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, (Program)));
+    throw std::exception(FMTLOAD(FILE_NOT_FOUND, (Program)));
   }
 }
 //---------------------------------------------------------------------------
@@ -181,7 +181,7 @@ bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
         WaitResult = WaitForSingleObject(ExecuteInfo.hProcess, 200);
         if (WaitResult == WAIT_FAILED)
         {
-          throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+          throw std::exception(LoadStr(DOCUMENT_WAIT_ERROR));
         }
         ProcessMessages();
       }

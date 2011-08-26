@@ -494,7 +494,7 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
 {
   if (Output == 0xFFFFL) // see Putty's charset\internal.h
   {
-    throw Exception(LoadStr(DECODE_UTF_ERROR));
+    throw std::exception(LoadStr(DECODE_UTF_ERROR));
   }
   TUnicodeEmitParams * Params = (TUnicodeEmitParams *)AParams;
   if (Params->Pos >= Params->Len)
@@ -540,7 +540,7 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
 {
   if (Output == 0xFFFFL) // see Putty's charset\internal.h
   {
-    throw Exception(LoadStr(DECODE_UTF_ERROR));
+    throw std::exception(LoadStr(DECODE_UTF_ERROR));
   }
   TUnicodeEmitParams2 * Params = (TUnicodeEmitParams2 *)AParams;
   if (Params->Pos >= Params->Len)

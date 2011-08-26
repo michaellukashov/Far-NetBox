@@ -192,7 +192,7 @@ PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
   UINT Len;
   PVSFixedFileInfo Result;
   if (!VerQueryValue(FileInfo, "\\", (void**)&Result, &Len))
-    throw Exception("Fixed file info not available");
+    throw std::exception("Fixed file info not available");
   return Result;
 };
 */
@@ -203,7 +203,7 @@ unsigned GetTranslationCount(void * FileInfo)
   PTranslations P;
   UINT Len;
   if (!VerQueryValue(FileInfo, "\\VarFileInfo\\Translation", (void**)&P, &Len))
-    throw Exception("File info translations not available");
+    throw std::exception("File info translations not available");
   return Len / 4;
 }
 //---------------------------------------------------------------------------
@@ -214,9 +214,9 @@ TTranslation GetTranslation(void * FileInfo, unsigned i)
   UINT Len;
 
   if (!VerQueryValue(FileInfo, "\\VarFileInfo\\Translation", (void**)&P, &Len))
-    throw Exception("File info translations not available");
+    throw std::exception("File info translations not available");
   if (i * sizeof(TTranslation) >= Len)
-    throw Exception("Specified translation not available");
+    throw std::exception("Specified translation not available");
   return P[i];
 };
 //---------------------------------------------------------------------------
@@ -228,7 +228,7 @@ std::wstring GetLanguage(unsigned int Language)
 
   Len = VerLanguageName(Language, P, sizeof(P));
   if (Len > sizeof(P))
-    throw Exception("Language not available");
+    throw std::exception("Language not available");
   return std::wstring(P, Len);
 };
 //---------------------------------------------------------------------------
@@ -245,7 +245,7 @@ std::wstring GetFileInfoString(void * FileInfo,
     IntToHex(Translation.CharSet, 4) +
     "\\" + StringName).c_str(), (void**)&P, &Len))
   {
-    throw Exception("Specified file info string not available");
+    throw std::exception("Specified file info string not available");
   }
   // c_str() makes sure that returned string has only necessary bytes allocated
   std::wstring Result = std::wstring(P, Len).c_str();

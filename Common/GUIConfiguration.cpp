@@ -255,7 +255,7 @@ void TCopyParamList::ValidateName(const std::wstring Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, (Name, FInvalidChars)));
+    throw std::exception(FMTLOAD(ITEM_NAME_INVALID, (Name, FInvalidChars)));
   }
 }
 //---------------------------------------------------------------------------
@@ -796,7 +796,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, (int(ALocale))));
+    throw std::exception(FMTLOAD(LOCALE_LOAD_ERROR, (int(ALocale))));
   }
   else
   {
