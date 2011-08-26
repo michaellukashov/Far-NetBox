@@ -27,7 +27,7 @@ set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_EXE_LINK_FLAGS
-    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB /Ystdafx.h"
+    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB"
     #/NODEFAULTLIB:LIBCMTD.LIB 
 )
 
@@ -223,7 +223,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/Common/RemoteFiles.cpp
-    # ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
 
 set ( TESTNETBOX_01_LIBRARIES
@@ -238,7 +238,7 @@ set_target_properties( testnetbox_01
     LINK_FLAGS "${CMAKE_EXE_LINK_FLAGS} /NODEFAULTLIB:LIBCMTD.LIB"
 )
 # add_dependencies ( testnetbox_01 zlib libssh2 libcurl )
-use_precompiled_header ( ${TESTNETBOX_01_SOURCES} stdafx.h stdafx.cpp testnetbox_01 )
+use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
 
 # Добавить к линковке цели ${PROJECT} библиотеки ${LIBRARIES}
 target_link_libraries ( testnetbox_01 ${TESTNETBOX_01_LIBRARIES} )
