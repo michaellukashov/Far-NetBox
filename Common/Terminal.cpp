@@ -643,7 +643,7 @@ void TTerminal::ResetConnection()
     FDirectoryChangesCache = NULL;
   }
 
-  FFiles->Directory = L"";
+  FFiles->SetDirectory(L"");
   // note that we cannot clear contained files
   // as they can still be referenced in the GUI atm
 }
@@ -671,7 +671,7 @@ void TTerminal::Open()
           if (FSessionData->GetTunnel())
           {
             DoInformation(LoadStr(OPEN_TUNNEL), true);
-            LogEvent("Opening tunnel.");
+            LogEvent(L"Opening tunnel.");
             OpenTunnel();
             GetLog()->AddSeparator();
 
@@ -679,7 +679,7 @@ void TTerminal::Open()
 
             DoInformation(LoadStr(USING_TUNNEL), false);
             LogEvent(::FORMAT(L"Connecting via tunnel interface %s:%d.",
-              (FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber().c_str())));
+              FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
           }
           else
           {
@@ -688,17 +688,17 @@ void TTerminal::Open()
 
           if (FFileSystem == NULL)
           {
-            if (GetSessionData()->FSProtocol == fsFTP)
+            if (GetSessionData()->GetFSProtocol() == fsFTP)
             {
               #ifdef NO_FILEZILLA
-              LogEvent("FTP protocol is not supported by this build.");
+              LogEvent(L"FTP protocol is not supported by this build.");
               FatalError(NULL, LoadStr(FTP_UNSUPPORTED));
               #else
               FFSProtocol = cfsFTP;
               FFileSystem = new TFTPFileSystem(this);
               FFileSystem->Open();
               Log->AddSeparator();
-              LogEvent("Using FTP protocol.");
+              LogEvent(L"Using FTP protocol.");
               #endif
             }
             else
@@ -706,21 +706,21 @@ void TTerminal::Open()
               assert(FSecureShell == NULL);
               try
               {
-                FSecureShell = new TSecureShell(this, FSessionData, Log, Configuration);
+                FSecureShell = new TSecureShell(this, FSessionData, GetLog(), Configuration);
                 try
                 {
                   // there will be only one channel in this session
-                  FSecureShell->Simple = true;
+                  FSecureShell->SetSimple(true);
                   FSecureShell->Open();
                 }
                 catch(exception & E)
                 {
-                  assert(!FSecureShell->Active);
-                  if (!FSecureShell->Active && !FTunnelError.empty())
+                  assert(!FSecureShell->GetActive());
+                  if (!FSecureShell->GetActive() && !FTunnelError.empty())
                   {
                     // the only case where we expect this to happen
-                    assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
-                    FatalError(&E, FMTLOAD(TUNNEL_ERROR, (FTunnelError)));
+                    // FIXME assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
+                    // FIXME FatalError(&E, FMTLOAD(TUNNEL_ERROR, (FTunnelError)));
                   }
                   else
                   {
@@ -728,22 +728,22 @@ void TTerminal::Open()
                   }
                 }
 
-                Log->AddSeparator();
+                GetLog()->AddSeparator();
 
-                if ((GetSessionData()->FSProtocol == fsSCPonly) ||
-                    (GetSessionData()->FSProtocol == fsSFTP && FSecureShell->SshFallbackCmd()))
+                if ((GetSessionData()->GetFSProtocol() == fsSCPonly) ||
+                    (GetSessionData()->GetFSProtocol() == fsSFTP && FSecureShell->SshFallbackCmd()))
                 {
                   FFSProtocol = cfsSCP;
                   FFileSystem = new TSCPFileSystem(this, FSecureShell);
                   FSecureShell = NULL; // ownership passed
-                  LogEvent("Using SCP protocol.");
+                  LogEvent(L"Using SCP protocol.");
                 }
                 else
                 {
                   FFSProtocol = cfsSFTP;
                   FFileSystem = new TSFTPFileSystem(this, FSecureShell);
                   FSecureShell = NULL; // ownership passed
-                  LogEvent("Using SFTP protocol.");
+                  LogEvent(L"Using SFTP protocol.");
                 }
               }
               catch(...)
@@ -760,20 +760,20 @@ void TTerminal::Open()
         }
         catch(...)
         {
-          if (FSessionData->Tunnel)
+          if (FSessionData->GetTunnel())
           {
             FSessionData->RollbackTunnel();
           }
         }
 
-        if (GetSessionData()->CacheDirectoryChanges)
+        if (GetSessionData()->GetCacheDirectoryChanges())
         {
           assert(FDirectoryChangesCache == NULL);
           FDirectoryChangesCache = new TRemoteDirectoryChangesCache(
-            Configuration->CacheDirectoryChangesMaxSize);
-          if (GetSessionData()->PreserveDirectoryChanges)
+            Configuration->GetCacheDirectoryChangesMaxSize());
+          if (GetSessionData()->GetPreserveDirectoryChanges())
           {
-            Configuration->LoadDirectoryChangesCache(GetSessionData()->SessionKey,
+            Configuration->LoadDirectoryChangesCache(GetSessionData()->GetSessionKey(),
               FDirectoryChangesCache);
           }
         }
@@ -800,7 +800,7 @@ void TTerminal::Open()
       // one call with active=true
       if (FAnyInformation)
       {
-        DoInformation("", true, false);
+        DoInformation(L"", true, false);
       }
     }
   }
@@ -811,7 +811,7 @@ void TTerminal::Open()
   catch(exception & E)
   {
     // any exception while opening session is fatal
-    FatalError(&E, "");
+    FatalError(&E, L"");
   }
 }
 //---------------------------------------------------------------------------
@@ -837,49 +837,49 @@ void TTerminal::OpenTunnel()
 {
   assert(FTunnelData == NULL);
 
-  FTunnelLocalPortNumber = FSessionData->TunnelLocalPortNumber;
+  FTunnelLocalPortNumber = FSessionData->GetTunnelLocalPortNumber();
   if (FTunnelLocalPortNumber == 0)
   {
-    FTunnelLocalPortNumber = Configuration->TunnelLocalPortNumberLow;
+    FTunnelLocalPortNumber = Configuration->GetTunnelLocalPortNumberLow();
     while (!IsListenerFree(FTunnelLocalPortNumber))
     {
       FTunnelLocalPortNumber++;
-      if (FTunnelLocalPortNumber > Configuration->TunnelLocalPortNumberHigh)
+      if (FTunnelLocalPortNumber > Configuration->GetTunnelLocalPortNumberHigh())
       {
         FTunnelLocalPortNumber = 0;
-        FatalError(NULL, FMTLOAD(TUNNEL_NO_FREE_PORT,
-          (Configuration->TunnelLocalPortNumberLow, Configuration->TunnelLocalPortNumberHigh)));
+        // FIXME FatalError(NULL, FMTLOAD(TUNNEL_NO_FREE_PORT,
+          // (Configuration->GetTunnelLocalPortNumberLow(), Configuration->GetTunnelLocalPortNumberHigh())));
       }
     }
-    LogEvent(::FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber.c_str()));
+    LogEvent(::FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
   }
 
   try
   {
-    FTunnelData = new TSessionData("");
-    FTunnelData->Assign(StoredSessions->DefaultSettings);
-    FTunnelData->Name = FMTLOAD(TUNNEL_SESSION_NAME, (FSessionData->GetSessionName()));
-    FTunnelData->Tunnel = false;
-    FTunnelData->HostName = FSessionData->TunnelHostName;
-    FTunnelData->PortNumber = FSessionData->TunnelPortNumber;
-    FTunnelData->UserName = FSessionData->TunnelUserName;
-    FTunnelData->Password = FSessionData->TunnelPassword;
-    FTunnelData->PublicKeyFile = FSessionData->TunnelPublicKeyFile;
-    FTunnelData->TunnelPortFwd = ::FORMAT(L"L%d\t%s:%d",
-      FTunnelLocalPortNumber, FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber().c_str());
-    FTunnelData->ProxyMethod = FSessionData->ProxyMethod;
-    FTunnelData->ProxyHost = FSessionData->ProxyHost;
-    FTunnelData->ProxyPort = FSessionData->ProxyPort;
-    FTunnelData->ProxyUsername = FSessionData->ProxyUsername;
-    FTunnelData->ProxyPassword = FSessionData->ProxyPassword;
-    FTunnelData->ProxyTelnetCommand = FSessionData->ProxyTelnetCommand;
-    FTunnelData->ProxyLocalCommand = FSessionData->ProxyLocalCommand;
-    FTunnelData->ProxyDNS = FSessionData->ProxyDNS;
-    FTunnelData->ProxyLocalhost = FSessionData->ProxyLocalhost;
+    FTunnelData = new TSessionData(L"");
+    FTunnelData->Assign(StoredSessions->GetDefaultSettings());
+    FTunnelData->Name = L""; // FIXMEE FMTLOAD(TUNNEL_SESSION_NAME, (FSessionData->GetSessionName()));
+    FTunnelData->SetTunnel(false);
+    FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
+    FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
+    FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
+    FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
+    FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile();
+    FTunnelData->SetTunnelPortFwd(::FORMAT(L"L%d\t%s:%d",
+      FTunnelLocalPortNumber, FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber().c_str()));
+    FTunnelData->SetProxyMethod(FSessionData->GetProxyMethod());
+    FTunnelData->SetProxyHost(FSessionData->GetProxyHost());
+    FTunnelData->SetProxyPort(FSessionData->GetProxyPort());
+    FTunnelData->SetProxyUsername(FSessionData->GetProxyUsername());
+    FTunnelData->SetProxyPassword(FSessionData->GetProxyPassword());
+    FTunnelData->SetProxyTelnetCommand(FSessionData->GetProxyTelnetCommand());
+    FTunnelData->SetProxyLocalCommand(FSessionData->GetProxyLocalCommand());
+    FTunnelData->SetProxyDNS(FSessionData->GetProxyDNS());
+    FTunnelData->SetProxyLocalhost(FSessionData->GetProxyLocalhost());
 
     FTunnelLog = new TSessionLog(this, FTunnelData, Configuration);
     FTunnelLog->Parent = FLog;
-    FTunnelLog->Name = "Tunnel";
+    FTunnelLog->Name = L"Tunnel";
     FTunnelLog->ReflectSettings();
     FTunnelUI = new TTunnelUI(this);
     FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, Configuration);
@@ -1265,7 +1265,7 @@ void TTerminal::TerminalError(exception * E, std::wstring Msg)
 bool TTerminal::DoQueryReopen(exception * E)
 {
 
-  LogEvent("Connection was lost, asking what to do.");
+  LogEvent(L"Connection was lost, asking what to do.");
 
   TQueryParams Params(qpAllowContinueOnError);
   Params.Timeout = Configuration->SessionReopenAuto;
@@ -1710,7 +1710,7 @@ void TTerminal::FatalError(exception * E, std::wstring Msg)
   {
     // We log this instead of exception handler, because Close() would
     // probably cause exception handler to loose pointer to TShellLog()
-    LogEvent("Attempt to close connection due to fatal exception:");
+    LogEvent(L"Attempt to close connection due to fatal exception:");
     Log->Add(llException, Msg);
     Log->AddException(E);
 
@@ -1822,7 +1822,7 @@ bool TTerminal::HandleException(exception * E)
 //---------------------------------------------------------------------------
 void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const std::wstring Message)
 {
-  LogEvent("Closing session after completed operation (as requested by user)");
+  LogEvent(L"Closing session after completed operation (as requested by user)");
   Close();
   throw ESshTerminate(NULL,
     Message.empty() ? LoadStr(CLOSED_ON_COMPLETION) : Message,
@@ -2138,7 +2138,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
 //---------------------------------------------------------------------------
 void TTerminal::DoStartup()
 {
-  LogEvent("Doing startup conversation with host.");
+  LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
   try
   {
@@ -2163,7 +2163,7 @@ void TTerminal::DoStartup()
   {
     EndTransaction();
   }
-  LogEvent("Startup conversation with host finished.");
+  LogEvent(L"Startup conversation with host finished.");
 }
 //---------------------------------------------------------------------------
 void TTerminal::ReadCurrentDirectory()
@@ -2174,7 +2174,7 @@ void TTerminal::ReadCurrentDirectory()
     // reset flag is case we are called externally (like from console dialog)
     FReadCurrentDirectoryPending = false;
 
-    LogEvent("Getting current directory name.");
+    LogEvent(L"Getting current directory name.");
     std::wstring OldDirectory = FFileSystem->CurrentDirectory;
 
     FFileSystem->ReadCurrentDirectory();
@@ -2212,7 +2212,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
   {
     if (ReloadOnly && !ForceCache)
     {
-      LogEvent("Cached directory not reloaded.");
+      LogEvent(L"Cached directory not reloaded.");
     }
     else
     {
@@ -2228,11 +2228,11 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
       if (LoadedFromCache)
       {
-        LogEvent("Directory content loaded from cache.");
+        LogEvent(L"Directory content loaded from cache.");
       }
       else
       {
-        LogEvent("Cached Directory content has been removed.");
+        LogEvent(L"Cached Directory content has been removed.");
       }
     }
   }
@@ -2807,7 +2807,7 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
     {
       assert(GetCommandSessionOpened());
       assert(FCommandSession->FSProtocol == cfsSCP);
-      LogEvent("Executing custom command on command session.");
+      LogEvent(L"Executing custom command on command session.");
 
       FCommandSession->CurrentDirectory = CurrentDirectory;
       FCommandSession->FFileSystem->CustomCommandOnFile(FileName, File, Command,
@@ -3216,7 +3216,7 @@ void TTerminal::DoCopyFile(const std::wstring FileName,
     {
       assert(GetCommandSessionOpened());
       assert(FCommandSession->FSProtocol == cfsSCP);
-      LogEvent("Copying file on command session.");
+      LogEvent(L"Copying file on command session.");
       FCommandSession->CurrentDirectory = CurrentDirectory;
       FCommandSession->FFileSystem->CopyFile(FileName, NewName);
     }
@@ -3335,7 +3335,7 @@ void TTerminal::HomeDirectory()
   assert(FFileSystem);
   try
   {
-    LogEvent("Changing directory to home directory.");
+    LogEvent(L"Changing directory to home directory.");
     FFileSystem->HomeDirectory();
     ReactOnCommand(fsHomeDirectory);
   }
@@ -3387,7 +3387,7 @@ void TTerminal::LookupUsersGroups()
     try
     {
       FUsersGroupsLookedup = true;
-      LogEvent("Looking up groups and users.");
+      LogEvent(L"Looking up groups and users.");
       FFileSystem->LookupUsersGroups();
       ReactOnCommand(fsLookupUsersGroups);
 
@@ -3506,14 +3506,14 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     DirectoryModified(CurrentDirectory, false);
     if (IsCapable[fcAnyCommand])
     {
-      LogEvent("Executing user defined command.");
+      LogEvent(L"Executing user defined command.");
       FFileSystem->AnyCommand(Command, OutputEvent);
     }
     else
     {
       assert(GetCommandSessionOpened());
       assert(FCommandSession->FSProtocol == cfsSCP);
-      LogEvent("Executing user defined command on command session.");
+      LogEvent(L"Executing user defined command on command session.");
 
       FCommandSession->CurrentDirectory = CurrentDirectory;
       FCommandSession->FFileSystem->AnyCommand(Command, OutputEvent);
@@ -4887,7 +4887,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
       Results->Strings[0] = Password;
       if (!Results->Strings[0].empty())
       {
-        LogEvent("Using remembered password of the main session.");
+        LogEvent(L"Using remembered password of the main session.");
         AResult = true;
       }
       PasswordTried = true;

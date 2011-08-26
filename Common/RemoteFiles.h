@@ -260,12 +260,12 @@ private:
   TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
-  virtual void SetDirectory(std::wstring value);
 protected:
   virtual void Clear();
 public:
   TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
   virtual void AddFile(TRemoteFile * File);
+  virtual void SetDirectory(std::wstring value);
   virtual void DuplicateTo(TRemoteFileList * Copy);
   // __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   TTerminal *GetTerminal() { return FTerminal; }
