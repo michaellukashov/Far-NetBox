@@ -220,7 +220,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
 {
   ResetReply();
 
-  FListAll = FTerminal->SessionData->FtpListAll;
+  FListAll = FTerminal->GetSessionData()->FtpListAll;
   FFileSystemInfo.ProtocolBaseName = "FTP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
@@ -268,7 +268,7 @@ void TFTPFileSystem::Open()
   FCurrentDirectory = "";
   FHomeDirectory = "";
 
-  TSessionData * Data = FTerminal->SessionData;
+  TSessionData * Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
   FSessionInfo.ProtocolBaseName = "FTP";
@@ -301,7 +301,7 @@ void TFTPFileSystem::Open()
     try
     {
       TFileZillaIntf::TLogLevel LogLevel;
-      switch (FTerminal->Configuration->ActualLogProtocol)
+      switch (FTerminal->Configuration->->GetActualLogProtocol())
       {
         default:
         case 0:
@@ -487,8 +487,8 @@ void TFTPFileSystem::Idle()
     PoolForFatalNonCommandReply();
 
     // Keep session alive
-    if ((FTerminal->SessionData->FtpPingType != ptOff) &&
-        (double(Now() - FLastDataSent) > double(FTerminal->SessionData->FtpPingIntervalDT) * 4))
+    if ((FTerminal->GetSessionData()->FtpPingType != ptOff) &&
+        (double(Now() - FLastDataSent) > double(FTerminal->GetSessionData()->FtpPingIntervalDT) * 4))
     {
       FLastDataSent = Now();
 
@@ -504,7 +504,7 @@ void TFTPFileSystem::Idle()
         {
           // ignore non-fatal errors
           // (i.e. current directory may not exist anymore)
-          if (!FTerminal->Active)
+          if (!FTerminal->GetActive())
           {
             throw;
           }
@@ -624,7 +624,7 @@ void TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
   }
   catch(...)
   {
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       Directory = AbsolutePath(Directory, false);
     }
@@ -792,7 +792,7 @@ bool TFTPFileSystem::ConfirmOverwrite(std::wstring & FileName,
 
     // rename
     case qaIgnore:
-      if (FTerminal->PromptUser(FTerminal->SessionData, pkFileName,
+      if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
             LoadStr(RENAME_TITLE), "", LoadStr(RENAME_PROMPT2), true, 0, FileName))
       {
         OverwriteMode = omOverwrite;
@@ -994,7 +994,7 @@ void TFTPFileSystem::SinkRobust(const std::wstring FileName,
     catch(std::exception & E)
     {
       Retry = true;
-      if (FTerminal->Active ||
+      if (FTerminal->GetActive() ||
           !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
       {
         FTerminal->RollbackAction(Action, OperationProgress, &E);
@@ -1220,7 +1220,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     {
       try
       {
-        if (FTerminal->SessionData->CacheDirectories)
+        if (FTerminal->GetSessionData()->CacheDirectories)
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
@@ -1269,7 +1269,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
     catch(std::exception & E)
     {
       Retry = true;
-      if (FTerminal->Active ||
+      if (FTerminal->GetActive() ||
           !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
       {
         FTerminal->RollbackAction(Action, OperationProgress, &E);
@@ -1494,7 +1494,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
       TRemoteFile * File = NULL;
       // ignore non-fatal error when the directory already exists
       bool Rethrow =
-        !FTerminal->Active ||
+        !FTerminal->GetActive() ||
         !FTerminal->FileExists(UnixExcludeTrailingBackslash(DestFullName), &File) ||
         !File->IsDirectory;
       delete File;
@@ -1605,7 +1605,7 @@ void TFTPFileSystem::DoStartup()
   TStrings * PostLoginCommands = new TStringList();
   try
   {
-    PostLoginCommands->Text = FTerminal->SessionData->PostLoginCommands;
+    PostLoginCommands->Text = FTerminal->GetSessionData()->PostLoginCommands;
     for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
       std::wstring Command = PostLoginCommands->Strings[Index];
@@ -1809,7 +1809,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       FDoListAll = false;
       // reading the first directory has failed,
       // further try without "-a" only as the server may not support it
-      if ((FListAll == asAuto) && FTerminal->Active)
+      if ((FListAll == asAuto) && FTerminal->GetActive())
       {
         FListAll = asOff;
         Repeat = true;
@@ -1972,7 +1972,7 @@ bool TFTPFileSystem::TemporaryTransferFile(const std::wstring & /*FileName*/)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::GetStoredCredentialsTried()
 {
-  return !FTerminal->SessionData->Password.IsEmpty();
+  return !FTerminal->GetSessionData()->Password.IsEmpty();
 }
 //---------------------------------------------------------------------------
 std::wstring TFTPFileSystem::GetUserName()
@@ -1987,7 +1987,7 @@ std::wstring TFTPFileSystem::GetCurrentDirectory()
 //---------------------------------------------------------------------------
 const char * TFTPFileSystem::GetOption(int OptionID) const
 {
-  TSessionData * Data = FTerminal->SessionData;
+  TSessionData * Data = FTerminal->GetSessionData();
 
   switch (OptionID)
   {
@@ -2022,7 +2022,7 @@ const char * TFTPFileSystem::GetOption(int OptionID) const
 //---------------------------------------------------------------------------
 int TFTPFileSystem::GetOptionVal(int OptionID) const
 {
-  TSessionData * Data = FTerminal->SessionData;
+  TSessionData * Data = FTerminal->GetSessionData();
   int Result;
 
   switch (OptionID)
@@ -2074,7 +2074,7 @@ int TFTPFileSystem::GetOptionVal(int OptionID) const
 
     case OPTION_DEBUGSHOWLISTING:
       // Listing is logged on FZAPI level 5 (what is strangely LOG_APIERROR)
-      Result = (FTerminal->Configuration->ActualLogProtocol >= 1);
+      Result = (FTerminal->Configuration->->GetActualLogProtocol() >= 1);
       break;
 
     case OPTION_PASV:
@@ -2279,7 +2279,7 @@ void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCo
     // even if non-fatal error happens, we must process pending message,
     // so that we "eat" the reply message, so that it gets not mistakenly
     // associated with future connect
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       DoWaitForReply(ReplyToAwait, WantLastCode);
     }
@@ -2435,7 +2435,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
 
         if (FLastCode == 425)
         {
-          if (!FTerminal->SessionData->FtpPasvMode)
+          if (!FTerminal->GetSessionData()->FtpPasvMode)
           {
             MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION));
           }
@@ -3071,7 +3071,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     if (RequestResult == 0)
     {
-      std::wstring Buf = FTerminal->SessionData->HostKey;
+      std::wstring Buf = FTerminal->GetSessionData()->HostKey;
       while ((RequestResult == 0) && !Buf.IsEmpty())
       {
         std::wstring ExpectedKey = CutToChar(Buf, ';', false);
@@ -3296,7 +3296,7 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
   }
   else
   {
-    if (FTerminal->Configuration->ActualLogProtocol >= 1)
+    if (FTerminal->Configuration->->GetActualLogProtocol() >= 1)
     {
       FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", (int(Reply), Command)));
     }

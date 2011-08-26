@@ -1018,7 +1018,7 @@ public:
 
   virtual void Dispose()
   {
-    assert(FFileSystem->FTerminal->Active);
+    assert(FFileSystem->FTerminal->GetActive());
 
     TSFTPQueuePacket * Request;
     TSFTPPacket * Response;
@@ -1039,7 +1039,7 @@ public:
       }
       catch(std::exception & E)
       {
-        if (FFileSystem->FTerminal->Active)
+        if (FFileSystem->FTerminal->GetActive())
         {
           FFileSystem->FTerminal->LogEvent("Error while disposing the SFTP queue.");
           FFileSystem->FTerminal->Log->AddException(&E);
@@ -1060,7 +1060,7 @@ public:
 
   void DisposeSafe()
   {
-    if (FFileSystem->FTerminal->Active)
+    if (FFileSystem->FTerminal->GetActive())
     {
       Dispose();
     }
@@ -1395,7 +1395,7 @@ protected:
             PrevBufSize + BlockBuf.Size);
         }
 
-        if (FFileSystem->FTerminal->Configuration->ActualLogProtocol >= 1)
+        if (FFileSystem->FTerminal->Configuration->->GetActualLogProtocol() >= 1)
         {
           FFileSystem->FTerminal->LogEvent(FORMAT("Write request offset: %d, len: %d",
             (int(FTransfered), int(BlockBuf.Size))));
@@ -1700,7 +1700,7 @@ void TSFTPFileSystem::Close()
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::GetActive()
 {
-  return FSecureShell->Active;
+  return FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
 const TSessionInfo & TSFTPFileSystem::GetSessionInfo()
@@ -1777,10 +1777,10 @@ std::wstring TSFTPFileSystem::GetUserName()
 void TSFTPFileSystem::Idle()
 {
   // Keep session alive
-  if ((FTerminal->SessionData->PingType != ptOff) &&
-      (Now() - FSecureShell->LastDataSent > FTerminal->SessionData->PingIntervalDT))
+  if ((FTerminal->GetSessionData()->PingType != ptOff) &&
+      (Now() - FSecureShell->LastDataSent > FTerminal->GetSessionData()->PingIntervalDT))
   {
-    if ((FTerminal->SessionData->PingType == ptDummyCommand) &&
+    if ((FTerminal->GetSessionData()->PingType == ptDummyCommand) &&
         FSecureShell->Ready)
     {
       TSFTPPacket Packet(SSH_FXP_REALPATH);
@@ -1993,7 +1993,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
       if ((FPreviousLoggedPacket != SSH_FXP_READ &&
            FPreviousLoggedPacket != SSH_FXP_WRITE) ||
           (Packet->Type != FPreviousLoggedPacket) ||
-          (FTerminal->Configuration->ActualLogProtocol >= 1))
+          (FTerminal->Configuration->->GetActualLogProtocol() >= 1))
       {
         if (FNotLoggedPackets)
         {
@@ -2003,7 +2003,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
         }
         FTerminal->Log->Add(llInput, FORMAT("Type: %s, Size: %d, Number: %d",
           (Packet->TypeName, (int)Packet->Length, (int)Packet->MessageNumber)));
-        if (FTerminal->Configuration->ActualLogProtocol >= 2)
+        if (FTerminal->Configuration->->GetActualLogProtocol() >= 2)
         {
           FTerminal->Log->Add(llInput, Packet->Dump());
         }
@@ -2201,7 +2201,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         if ((FPreviousLoggedPacket != SSH_FXP_READ &&
              FPreviousLoggedPacket != SSH_FXP_WRITE) ||
             (Packet->Type != SSH_FXP_STATUS && Packet->Type != SSH_FXP_DATA) ||
-            (FTerminal->Configuration->ActualLogProtocol >= 1))
+            (FTerminal->Configuration->->GetActualLogProtocol() >= 1))
         {
           if (FNotLoggedPackets)
           {
@@ -2211,7 +2211,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           }
           FTerminal->Log->Add(llOutput, FORMAT("Type: %s, Size: %d, Number: %d",
             (Packet->TypeName, (int)Packet->Length, (int)Packet->MessageNumber)));
-          if (FTerminal->Configuration->ActualLogProtocol >= 2)
+          if (FTerminal->Configuration->->GetActualLogProtocol() >= 2)
           {
             FTerminal->Log->Add(llOutput, Packet->Dump());
           }
@@ -2388,7 +2388,7 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring Path)
   }
   catch(std::exception & E)
   {
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, (Path)));
     }
@@ -2452,7 +2452,7 @@ std::wstring TSFTPFileSystem::Canonify(std::wstring Path)
   }
   catch(...)
   {
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       TryParent = true;
     }
@@ -2480,7 +2480,7 @@ std::wstring TSFTPFileSystem::Canonify(std::wstring Path)
       }
       catch(...)
       {
-        if (FTerminal->Active)
+        if (FTerminal->GetActive())
         {
           Result = Path;
         }
@@ -2521,7 +2521,7 @@ std::wstring TSFTPFileSystem::GetHomeDirectory()
 void TSFTPFileSystem::LoadFile(TRemoteFile * File, TSFTPPacket * Packet,
   bool Complete)
 {
-  Packet->GetFile(File, FVersion, FTerminal->SessionData->DSTMode,
+  Packet->GetFile(File, FVersion, FTerminal->GetSessionData()->DSTMode,
     FUtfStrings, FSignedTS, Complete);
 }
 //---------------------------------------------------------------------------
@@ -2561,7 +2561,7 @@ void TSFTPFileSystem::DoStartup()
   FVersion = -1;
   FFileSystemInfoValid = false;
   TSFTPPacket Packet(SSH_FXP_INIT);
-  int MaxVersion = FTerminal->SessionData->SFTPMaxVersion;
+  int MaxVersion = FTerminal->GetSessionData()->SFTPMaxVersion;
   if (MaxVersion > SFTPMaxVersion)
   {
     MaxVersion = SFTPMaxVersion;
@@ -2760,8 +2760,8 @@ void TSFTPFileSystem::DoStartup()
   if (FVersion < 4)
   {
     // currently enable the bug for all servers (really known on OpenSSH)
-    FSignedTS = (FTerminal->SessionData->SFTPBug[sbSignedTS] == asOn) ||
-      (FTerminal->SessionData->SFTPBug[sbSignedTS] == asAuto);
+    FSignedTS = (FTerminal->GetSessionData()->SFTPBug[sbSignedTS] == asOn) ||
+      (FTerminal->GetSessionData()->SFTPBug[sbSignedTS] == asAuto);
     if (FSignedTS)
     {
       FTerminal->LogEvent("We believe the server has signed timestamps bug");
@@ -2775,10 +2775,10 @@ void TSFTPFileSystem::DoStartup()
   // use UTF when forced or ...
   // when "auto" and version is at least 4 and the server is not know not to use UTF
   FUtfNever = (GetSessionInfo().SshImplementation.Pos("Foxit-WAC-Server") == 1) ||
-    (FTerminal->SessionData->NotUtf == asOn);
+    (FTerminal->GetSessionData()->NotUtf == asOn);
   FUtfStrings =
-    (FTerminal->SessionData->NotUtf == asOff) ||
-    ((FTerminal->SessionData->NotUtf == asAuto) &&
+    (FTerminal->GetSessionData()->NotUtf == asOff) ||
+    ((FTerminal->GetSessionData()->NotUtf == asAuto) &&
       (FVersion >= 4) && !FUtfNever);
 
   if (FUtfStrings)
@@ -2799,7 +2799,7 @@ void TSFTPFileSystem::DoStartup()
     (GetSessionInfo().SshImplementation.Pos("OpenSSH") == 1) ||
     (GetSessionInfo().SshImplementation.Pos("Sun_SSH") == 1);
 
-  FMaxPacketSize = FTerminal->SessionData->SFTPMaxPacketSize;
+  FMaxPacketSize = FTerminal->GetSessionData()->SFTPMaxPacketSize;
   if (FMaxPacketSize == 0)
   {
     if (FOpenSSH && (FVersion == 3) && !FSupport->Loaded)
@@ -2828,7 +2828,7 @@ char * TSFTPFileSystem::GetEOL() const
   }
   else
   {
-    return EOLToStr(FTerminal->SessionData->EOLType);
+    return EOLToStr(FTerminal->GetSessionData()->EOLType);
   }
 }
 //---------------------------------------------------------------------------
@@ -2975,7 +2975,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
   catch(...)
   {
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       FileList->AddFile(new TRemoteParentDirectory(FTerminal));
     }
@@ -3012,7 +3012,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         for (unsigned long Index = 0; !isEOF && (Index < Count); Index++)
         {
           File = LoadFile(&ListingPacket, NULL, "", FileList);
-          if (FTerminal->Configuration->ActualLogProtocol >= 1)
+          if (FTerminal->Configuration->->GetActualLogProtocol() >= 1)
           {
             FTerminal->LogEvent(FORMAT("Read file '%s' from listing", (File->FileName)));
           }
@@ -3088,7 +3088,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
   __finally
   {
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       Packet.ChangeType(SSH_FXP_CLOSE);
       Packet.AddString(Handle);
@@ -3168,7 +3168,7 @@ bool TSFTPFileSystem::RemoteFileExists(const std::wstring FullPath,
   }
   catch(...)
   {
-    if (!FTerminal->Active)
+    if (!FTerminal->GetActive())
     {
       throw;
     }
@@ -3304,8 +3304,8 @@ void TSFTPFileSystem::CreateLink(const std::wstring FileName,
   assert(FVersion >= 3); // symlinks are supported with SFTP version 3 and later
   TSFTPPacket Packet(SSH_FXP_SYMLINK);
 
-  bool Buggy = (FTerminal->SessionData->SFTPBug[sbSymlink] == asOn) ||
-    ((FTerminal->SessionData->SFTPBug[sbSymlink] == asAuto) && FOpenSSH);
+  bool Buggy = (FTerminal->GetSessionData()->SFTPBug[sbSymlink] == asOn) ||
+    ((FTerminal->GetSessionData()->SFTPBug[sbSymlink] == asAuto) && FOpenSSH);
 
   if (!Buggy)
   {
@@ -3637,7 +3637,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     {
       try
       {
-        if (FTerminal->SessionData->CacheDirectories)
+        if (FTerminal->GetSessionData()->CacheDirectories)
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
@@ -3762,7 +3762,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
   }
   else if (Answer == qaIgnore)
   {
-    if (FTerminal->PromptUser(FTerminal->SessionData, pkFileName, LoadStr(RENAME_TITLE), "",
+    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName, LoadStr(RENAME_TITLE), "",
           LoadStr(RENAME_PROMPT2), true, 0, FileName))
     {
       OverwriteMode = omOverwrite;
@@ -3882,7 +3882,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
     catch(std::exception & E)
     {
       Retry = true;
-      if (FTerminal->Active ||
+      if (FTerminal->GetActive() ||
           !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
       {
         if (!ChildError)
@@ -3989,7 +3989,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       TOverwriteFileParams FileParams;
       FileParams.SourceSize = OperationProgress->LocalSize;
       FileParams.SourceTimestamp = UnixToDateTime(MTime,
-        FTerminal->SessionData->DSTMode);
+        FTerminal->GetSessionData()->DSTMode);
 
       if (ResumeAllowed)
       {
@@ -4196,7 +4196,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       }
       __finally
       {
-        if (FTerminal->Active)
+        if (FTerminal->GetActive())
         {
           // if file transfer was finished, the close request was already sent
           if (!OpenParams.RemoteFileHandle.IsEmpty())
@@ -4225,7 +4225,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
           FILE_OPERATION_LOOP(FMTLOAD(DELETE_ON_RESUME_ERROR,
               (UnixExtractFileName(DestFullName), DestFullName)),
 
-            if (FTerminal->SessionData->OverwrittenToRecycleBin)
+            if (FTerminal->GetSessionData()->OverwrittenToRecycleBin)
             {
               FTerminal->RecycleFile(DestFullName, NULL);
             }
@@ -4250,7 +4250,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
         if (CopyParam->PreserveTime)
         {
           TouchAction.reset(new TTouchSessionAction(FTerminal->Log, DestFullName,
-            UnixToDateTime(MTime, FTerminal->SessionData->DSTMode)));
+            UnixToDateTime(MTime, FTerminal->GetSessionData()->DSTMode)));
         }
         std::auto_ptr<TChmodSessionAction> ChmodAction;
         // do record chmod only if it was explicitly requested,
@@ -4401,7 +4401,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
       // when we want to preserve overwritten files, we need to find out that
       // they exist first... even if overwrite confirmation is disabled.
       // but not when we already know we are not going to overwrite (but e.g. to append)
-      if ((ConfirmOverwriting || FTerminal->SessionData->OverwrittenToRecycleBin) &&
+      if ((ConfirmOverwriting || FTerminal->GetSessionData()->OverwrittenToRecycleBin) &&
           (OpenParams->OverwriteMode == omOverwrite))
       {
         OpenType |= SSH_FXF_EXCL;
@@ -4422,7 +4422,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
     }
     catch(std::exception & E)
     {
-      if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->Active)
+      if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
       {
         bool ThrowOriginal = false;
 
@@ -4446,7 +4446,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         }
         catch(...)
         {
-          if (!FTerminal->Active)
+          if (!FTerminal->GetActive())
           {
             throw;
           }
@@ -4478,16 +4478,16 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         }
         else
         {
-          assert(FTerminal->SessionData->OverwrittenToRecycleBin);
+          assert(FTerminal->GetSessionData()->OverwrittenToRecycleBin);
         }
 
         if ((OpenParams->OverwriteMode == omOverwrite) &&
-            FTerminal->SessionData->OverwrittenToRecycleBin)
+            FTerminal->GetSessionData()->OverwrittenToRecycleBin)
         {
           FTerminal->RecycleFile(OpenParams->RemoteFileName, NULL);
         }
       }
-      else if (FTerminal->Active)
+      else if (FTerminal->GetActive())
       {
         // if file overwritting was confirmed, it means that the file already exists,
         // if not, check now
@@ -4506,7 +4506,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           }
           catch(...)
           {
-            if (!FTerminal->Active)
+            if (!FTerminal->GetActive())
             {
               throw;
             }
@@ -4569,7 +4569,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const std::wstring Handle,
     }
     catch(...)
     {
-      if (!FTerminal->Active || TransferFinished)
+      if (!FTerminal->GetActive() || TransferFinished)
       {
         throw;
       }
@@ -4595,7 +4595,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   }
   catch(...)
   {
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       // opening directory failed, it probably does not exists, try to
       // create it
@@ -4751,7 +4751,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
     catch(std::exception & E)
     {
       Retry = true;
-      if (FTerminal->Active ||
+      if (FTerminal->GetActive() ||
           !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
       {
         if (!ChildError)
@@ -4938,7 +4938,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         FileParams.SourceSize = OperationProgress->TransferSize;
         FileParams.SourceTimestamp = File->Modification;
         FileParams.DestTimestamp = UnixToDateTime(MTime,
-          FTerminal->SessionData->DSTMode);
+          FTerminal->GetSessionData()->DSTMode);
         FileParams.DestSize = DestFileSize;
         std::wstring PrevDestFileName = DestFileName;
         SFTPConfirmOverwrite(DestFileName, Params, OperationProgress, OverwriteMode, &FileParams);
@@ -5037,10 +5037,10 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           TSFTPPacket DataPacket;
 
           int QueueLen = int(File->Size / DownloadBlockSize(OperationProgress)) + 1;
-          if ((QueueLen > FTerminal->SessionData->SFTPDownloadQueue) ||
+          if ((QueueLen > FTerminal->GetSessionData()->SFTPDownloadQueue) ||
               (QueueLen < 0))
           {
-            QueueLen = FTerminal->SessionData->SFTPDownloadQueue;
+            QueueLen = FTerminal->GetSessionData()->SFTPDownloadQueue;
           }
           if (QueueLen < 1)
           {
@@ -5188,9 +5188,9 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           }
 
           FILETIME AcTime = DateTimeToFileTime(AFile->LastAccess,
-            FTerminal->SessionData->DSTMode);
+            FTerminal->GetSessionData()->DSTMode);
           FILETIME WrTime = DateTimeToFileTime(AFile->Modification,
-            FTerminal->SessionData->DSTMode);
+            FTerminal->GetSessionData()->DSTMode);
           SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
         }
         __finally
@@ -5249,7 +5249,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       }
 
       // if the transfer was finished, the file is closed already
-      if (FTerminal->Active && !RemoteHandle.IsEmpty())
+      if (FTerminal->GetActive() && !RemoteHandle.IsEmpty())
       {
         // do not wait for response
         SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,

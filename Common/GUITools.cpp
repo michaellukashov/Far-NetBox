@@ -58,9 +58,9 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
       Storage->MungeStringValues = false;
       if (Storage->OpenRootKey(true))
       {
-        if (Storage->KeyExists(SessionData->StorageKey))
+        if (Storage->KeyExists(GetSessionData()->StorageKey))
         {
-          SessionName = SessionData->SessionName;
+          SessionName = GetSessionData()->SessionName;
         }
         else
         {
@@ -74,12 +74,12 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
           }
 
           ExportData = new TSessionData("");
-          ExportData->Assign(SessionData);
+          ExportData->Assign(GetSessionData());
           ExportData->Modified = true;
           ExportData->Name = GUIConfiguration->PuttySession;
           ExportData->Password = "";
 
-          if (SessionData->FSProtocol == fsFTP)
+          if (GetSessionData()->FSProtocol == fsFTP)
           {
             if (GUIConfiguration->TelnetForFtpInPutty)
             {

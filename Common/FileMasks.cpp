@@ -769,8 +769,8 @@ TCustomCommandData::TCustomCommandData()
 //---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(TTerminal * Terminal)
 {
-  HostName = Terminal->SessionData->HostName;
-  UserName = Terminal->SessionData->UserName;
+  HostName = Terminal->GetSessionData()->HostName;
+  UserName = Terminal->GetSessionData()->UserName;
   Password = Terminal->Password;
 }
 //---------------------------------------------------------------------------
