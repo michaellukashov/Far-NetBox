@@ -17,7 +17,7 @@ bool SaveRandomSeed;
 char appname_[50];
 const char *const appname = appname_;
 //---------------------------------------------------------------------------
-void __fastcall PuttyInitialize()
+void PuttyInitialize()
 {
   SaveRandomSeed = true;
 
@@ -31,15 +31,15 @@ void __fastcall PuttyInitialize()
 
   sk_init();
 
-  AnsiString VersionString = SshVersionString();
+  std::wstring VersionString = SshVersionString();
   assert(!VersionString.IsEmpty() && (VersionString.Length() < sizeof(sshver)));
   strcpy(sshver, VersionString.c_str());
-  AnsiString AppName = AppNameString();
+  std::wstring AppName = AppNameString();
   assert(!AppName.IsEmpty() && (AppName.Length() < sizeof(appname_)));
   strcpy(appname_, AppName.c_str());
 }
 //---------------------------------------------------------------------------
-void __fastcall PuttyFinalize()
+void PuttyFinalize()
 {
   if (SaveRandomSeed)
   {
@@ -51,7 +51,7 @@ void __fastcall PuttyFinalize()
   DeleteCriticalSection(&noise_section);
 }
 //---------------------------------------------------------------------------
-void __fastcall DontSaveRandomSeed()
+void DontSaveRandomSeed()
 {
   SaveRandomSeed = false;
 }
@@ -214,7 +214,7 @@ void old_keyfile_warning(void)
 void display_banner(void * frontend, const char * banner, int size)
 {
   assert(frontend);
-  AnsiString Banner(banner, size);
+  std::wstring Banner(banner, size);
   ((TSecureShell *)frontend)->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
@@ -343,7 +343,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
 
-  AnsiString RegKey = SubKey;
+  std::wstring RegKey = SubKey;
   int PuttyKeyLen = Configuration->PuttyRegistryStorageKey.Length();
   assert(RegKey.SubString(1, PuttyKeyLen) == Configuration->PuttyRegistryStorageKey);
   RegKey = RegKey.SubString(PuttyKeyLen + 1, RegKey.Length() - PuttyKeyLen);
@@ -397,10 +397,10 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   assert(Configuration != NULL);
 
   THierarchicalStorage * Storage = static_cast<THierarchicalStorage *>(Key);
-  AnsiString Value;
+  std::wstring Value;
   if (Storage == NULL)
   {
-    if (AnsiString(ValueName) == "RandSeedFile")
+    if (std::wstring(ValueName) == "RandSeedFile")
     {
       Value = Configuration->RandomSeedFileName;
       R = ERROR_SUCCESS;
@@ -448,7 +448,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
   assert(Storage != NULL);
   if (Storage != NULL)
   {
-    AnsiString Value(reinterpret_cast<const char*>(Data), DataSize - 1);
+    std::wstring Value(reinterpret_cast<const char*>(Data), DataSize - 1);
     Storage->WriteStringRaw(ValueName, Value);
   }
 
@@ -468,7 +468,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(AnsiString FileName)
+TKeyType KeyType(std::wstring FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -477,7 +477,7 @@ TKeyType KeyType(AnsiString FileName)
   return (TKeyType)key_type(&KeyFile);
 }
 //---------------------------------------------------------------------------
-AnsiString KeyTypeName(TKeyType KeyType)
+std::wstring KeyTypeName(TKeyType KeyType)
 {
   return key_type_to_str(KeyType);
 }
@@ -485,7 +485,7 @@ AnsiString KeyTypeName(TKeyType KeyType)
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams
 {
-  WideString Buffer;
+  std::wstring Buffer;
   int Pos;
   int Len;
 };
@@ -506,12 +506,12 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
   Params->Buffer[Params->Pos] = (wchar_t)Output;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall DecodeUTF(const AnsiString UTF)
+std::wstring DecodeUTF(const std::wstring UTF)
 {
   charset_state State;
   char * Str;
   TUnicodeEmitParams Params;
-  AnsiString Result;
+  std::wstring Result;
 
   State.s0 = 0;
   Str = UTF.c_str();
@@ -531,7 +531,7 @@ AnsiString __fastcall DecodeUTF(const AnsiString UTF)
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams2
 {
-  AnsiString Buffer;
+  std::wstring Buffer;
   int Pos;
   int Len;
 };
@@ -552,10 +552,10 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
   Params->Buffer[Params->Pos] = (unsigned char)Output;
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall EncodeUTF(const WideString Source)
+std::wstring EncodeUTF(const std::wstring Source)
 {
-  // WideString::c_bstr() returns NULL for empty strings
-  // (as opposite to AnsiString::c_str() which returns "")
+  // std::wstring::c_bstr() returns NULL for empty strings
+  // (as opposite to std::wstring::c_str() which returns "")
   if (Source.IsEmpty())
   {
     return "";
@@ -565,7 +565,7 @@ AnsiString __fastcall EncodeUTF(const WideString Source)
     charset_state State;
     wchar_t * Str;
     TUnicodeEmitParams2 Params;
-    AnsiString Result;
+    std::wstring Result;
 
     State.s0 = 0;
     Str = Source.c_bstr();
@@ -584,12 +584,12 @@ AnsiString __fastcall EncodeUTF(const WideString Source)
   }
 }
 //---------------------------------------------------------------------------
-__int64 __fastcall ParseSize(AnsiString SizeStr)
+__int64 ParseSize(std::wstring SizeStr)
 {
   return parse_blocksize(SizeStr.c_str());
 }
 //---------------------------------------------------------------------------
-bool __fastcall HasGSSAPI()
+bool HasGSSAPI()
 {
   static int has = -1;
   if (has < 0)
