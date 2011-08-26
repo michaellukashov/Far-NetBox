@@ -81,7 +81,7 @@ void TSynchronizeController::StartStop(TObject * Sender,
       FSynchronizeMonitor->OnInvalid = SynchronizeInvalid;
       FSynchronizeMonitor->OnSynchronize = OnSynchronizeThreads;
       // get count before open to avoid thread issues
-      int Directories = FSynchronizeMonitor->Directories->Count;
+      int Directories = FSynchronizeMonitor->Directories->GetCount();
       FSynchronizeMonitor->Open();
 
       SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, (Directories)));
@@ -137,7 +137,7 @@ void TSynchronizeController::SynchronizeChange(
           {
             SubdirsChanged = false;
             assert(Checklist != NULL);
-            for (int Index = 0; Index < Checklist->Count; Index++)
+            for (int Index = 0; Index < Checklist->GetCount(); Index++)
             {
               const TSynchronizeChecklist::TItem * Item = Checklist->Item[Index];
               // note that there may be action saDeleteRemote even if nothing has changed

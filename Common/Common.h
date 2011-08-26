@@ -217,3 +217,5 @@ public:
 //---------------------------------------------------------------------------
 std::wstring FORMAT(const wchar_t *fmt, ...);
 //---------------------------------------------------------------------------
+
+bool CompareText(const std::wstring str1, const std::wstring str2);

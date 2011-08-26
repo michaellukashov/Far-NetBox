@@ -190,7 +190,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
   //CHECK_CMD;
   // #56: we send "echo last line" from all commands on same line
   // just as it was in 1.0
-  return True; //CommandSet[Cmd].OneLineCommand;
+  return true; //CommandSet[Cmd].OneLineCommand;
 }
 //---------------------------------------------------------------------------
 void TCommandSet::SetCommands(TFSCommand Cmd, std::wstring value)
@@ -333,7 +333,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
       try
       {
         AnyCommand("uname -a", NULL);
-        for (int Index = 0; Index < Output->Count; Index++)
+        for (int Index = 0; Index < Output->GetCount(); Index++)
         {
           if (Index > 0)
           {
@@ -592,7 +592,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
     if (Params & coRaiseExcept)
     {
       std::wstring Message = FSecureShell->GetStdError();
-      if ((Params & coExpectNoOutput) && FOutput->Count)
+      if ((Params & coExpectNoOutput) && FOutput->GetCount())
       {
         if (!Message.empty()) Message += "\n";
         Message += FOutput->Text;
@@ -611,7 +611,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
       }
         else
       if (!(Params & coOnlyReturnCode) &&
-          ((!Message.empty() && ((FOutput->Count == 0) || !(Params & coIgnoreWarnings))) ||
+          ((!Message.empty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
            WrongReturnCode))
       {
         assert(Cmd != NULL);
@@ -663,8 +663,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
   {
     Integer MinL = FCommandSet->MinLines[Cmd];
     Integer MaxL = FCommandSet->MaxLines[Cmd];
-    if (((MinL >= 0) && (MinL > FOutput->Count)) ||
-        ((MaxL >= 0) && (MaxL > FOutput->Count)))
+    if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
+        ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
         ARRAYOFCONST((FullCommand, Output->Text))));
@@ -710,7 +710,7 @@ void TSCPFileSystem::LookupUsersGroups()
   ExecCommand(fsLookupUsersGroups);
   FTerminal->FUsers.Clear();
   FTerminal->FGroups.Clear();
-  if (FOutput->Count > 0)
+  if (FOutput->GetCount() > 0)
   {
     std::wstring Groups = FOutput->Strings[0];
     while (!Groups.empty())
@@ -741,7 +741,7 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT("Trying \"$%s\".", (ReturnVars[Index])));
         ExecCommand(fsVarValue, ARRAYOFCONST((ReturnVars[Index])));
-        if ((Output->Count != 1) || (StrToIntDef(Output->Strings[0], 256) > 255))
+        if ((Output->GetCount() != 1) || (StrToIntDef(Output->Strings[0], 256) > 255))
         {
           FTerminal->LogEvent("The response is not numerical exit code");
           Abort();
@@ -787,7 +787,7 @@ void TSCPFileSystem::ClearAlias(std::wstring Alias)
   if (!Alias.empty())
   {
     // this command usually fails, because there will never be
-    // aliases on all commands -> see last False parametr
+    // aliases on all commands -> see last false parametr
     ExecCommand(fsUnalias, ARRAYOFCONST((Alias)), false);
   }
 }
@@ -801,7 +801,7 @@ void TSCPFileSystem::ClearAliases()
     TStrings * CommandList = FCommandSet->CreateCommandList();
     try
     {
-      for (int Index = 0; Index < CommandList->Count; Index++)
+      for (int Index = 0; Index < CommandList->GetCount(); Index++)
       {
         ClearAlias(CommandList->Strings[Index]);
       }
@@ -916,7 +916,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // If output is not empty, we have succesfully got file listing,
       // otherwise there was an error, in case it was "permission denied"
       // we try to get at least parent directory (see "else" statement below)
-      if (FOutput->Count > 0)
+      if (FOutput->GetCount() > 0)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
@@ -933,7 +933,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             OutputCopy->Delete(0);
           }
 
-          for (int Index = 0; Index < OutputCopy->Count; Index++)
+          for (int Index = 0; Index < OutputCopy->GetCount(); Index++)
           {
             File = CreateRemoteFile(OutputCopy->Strings[Index]);
             FileList->AddFile(File);
@@ -1052,10 +1052,10 @@ void TSCPFileSystem::CustomReadFile(const std::wstring FileName,
   ExecCommand(fsListFile,
     ARRAYOFCONST((FTerminal->SessionData->ListingCommand, Options, DelimitStr(FileName))),
     Params);
-  if (FOutput->Count)
+  if (FOutput->GetCount())
   {
     int LineIndex = 0;
-    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->Count > 1)
+    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->GetCount() > 1)
     {
       LineIndex++;
     }
@@ -1382,7 +1382,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     CopyBatchStarted = true;
 
-    for (int IFile = 0; (IFile < FilesToCopy->Count) &&
+    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       std::wstring FileName = FilesToCopy->Strings[IFile];
@@ -1959,19 +1959,19 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  bool CloseSCP = False;
+  bool CloseSCP = false;
   Params &= ~(cpAppend | cpResume);
   std::wstring Options = "";
   if (CopyParam->PreserveRights || CopyParam->PreserveTime) Options = "-p";
   if (FTerminal->SessionData->Scp1Compatibility) Options += " -1";
 
   FTerminal->LogEvent(FORMAT("Copying %d files/directories to local directory "
-    "\"%s\"", (FilesToCopy->Count, TargetDir)));
+    "\"%s\"", (FilesToCopy->GetCount(), TargetDir)));
   FTerminal->LogEvent(CopyParam->LogStr);
 
   try
   {
-    for (int IFile = 0; (IFile < FilesToCopy->Count) &&
+    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       std::wstring FileName = FilesToCopy->Strings[IFile];
@@ -1980,7 +1980,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 
       try
       {
-        bool Success = true; // Have to be set to True (see ::SCPSink)
+        bool Success = true; // Have to be set to true (see ::SCPSink)
         SendCommand(FCommandSet->FullCommand(fsCopyToLocal,
           ARRAYOFCONST((Options, DelimitStr(FileName)))));
         SkipFirstLine();
@@ -2024,7 +2024,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           catch (...)
           {
             // If user selects skip (or abort), nothing special actualy occurs
-            // we just run DoFinished with Success = False, so file won't
+            // we just run DoFinished with Success = false, so file won't
             // be deselected in panel (depends on assigned event handler)
 
             // On csCancel we would later try to close remote SCP, but it
@@ -2208,7 +2208,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
             }
               else
             {
-              SCPError(LoadStr(SCP_ILLEGAL_TIME_FORMAT), False);
+              SCPError(LoadStr(SCP_ILLEGAL_TIME_FORMAT), false);
             }
 
           case 'C':
@@ -2224,9 +2224,9 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         // We reach this point only if control record was 'C' or 'D'
         try
         {
-          FileData.RemoteRights.Octal = CutToChar(Line, ' ', True);
+          FileData.RemoteRights.Octal = CutToChar(Line, ' ', true);
           // do not trim leading spaces of the filename
-          __int64 TSize = StrToInt64(CutToChar(Line, ' ', False).TrimRight());
+          __int64 TSize = StrToInt64(CutToChar(Line, ' ', false).TrimRight());
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)

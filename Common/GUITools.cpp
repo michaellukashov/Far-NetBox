@@ -235,7 +235,7 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
   const std::wstring MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->Count, (Items->Count > 0 ? Items->Strings[0] : std::wstring()));
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->Strings[0] : std::wstring()));
 }
 //---------------------------------------------------------------------------
 std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
@@ -243,13 +243,13 @@ std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
 {
   assert(Files != NULL);
   std::wstring Item;
-  if (Files->Count > 0)
+  if (Files->GetCount() > 0)
   {
     Item = Remote ? UnixExtractFileName(Files->Strings[0]) :
       ExtractFileName(Files->Strings[0]);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    Files->Count, Item);
+    Files->GetCount(), Item);
 }
 //---------------------------------------------------------------------
 std::wstring FormatBytes(__int64 Bytes, bool UseOrders)

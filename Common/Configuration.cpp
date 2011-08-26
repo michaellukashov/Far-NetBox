@@ -5,7 +5,7 @@
 
 #include <FileInfo.h>
 
-#include "Exceptions.h"
+#include "std::exceptions.h"
 #include "Common.h"
 #include "Configuration.h"                              c
 #include "PuttyIntf.h"
@@ -259,7 +259,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
             Names->Clear();
             Source->GetValueNames(Names);
 
-            for (int Index = 0; Index < Names->Count; Index++)
+            for (int Index = 0; Index < Names->GetCount(); Index++)
             {
               Target->WriteBinaryData(Names->Strings[Index],
                 Source->ReadBinaryData(Names->Strings[Index]));
@@ -277,7 +277,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
             Names->Clear();
             Source->GetValueNames(Names);
 
-            for (int Index = 0; Index < Names->Count; Index++)
+            for (int Index = 0; Index < Names->GetCount(); Index++)
             {
               Target->WriteString(Names->Strings[Index],
                 Source->ReadString(Names->Strings[Index], ""));
@@ -300,7 +300,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
         Names->Clear();
         Source->GetValueNames(Names);
 
-        for (int Index = 0; Index < Names->Count; Index++)
+        for (int Index = 0; Index < Names->GetCount(); Index++)
         {
           Target->WriteStringRaw(Names->Strings[Index],
             Source->ReadStringRaw(Names->Strings[Index], ""));
@@ -455,9 +455,9 @@ void TConfiguration::CleanupConfiguration()
       FDontSave = true;
     }
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
-    throw ExtException(&E, CLEANUP_CONFIG_ERROR);
+    throw Extstd::exception(&E, CLEANUP_CONFIG_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -480,9 +480,9 @@ void TConfiguration::CleanupHostKeys()
   {
     CleanupRegistry(SshHostKeysSubKey);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
-    throw ExtException(&E, CLEANUP_HOSTKEYS_ERROR);
+    throw Extstd::exception(&E, CLEANUP_HOSTKEYS_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -499,9 +499,9 @@ void TConfiguration::CleanupRandomSeedFile()
       }
     }
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
-    throw ExtException(&E, CLEANUP_SEEDFILE_ERROR);
+    throw Extstd::exception(&E, CLEANUP_SEEDFILE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -521,9 +521,9 @@ void TConfiguration::CleanupIniFile()
       FDontSave = true;
     }
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
-    throw ExtException(&E, CLEANUP_INIFILE_ERROR);
+    throw Extstd::exception(&E, CLEANUP_INIFILE_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -663,9 +663,9 @@ std::wstring TConfiguration::GetVersionStr()
       HIWORD(Info->dwFileVersionLS),
       LOWORD(Info->dwFileVersionLS)));
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
-    throw ExtException(&E, "Can't get application version");
+    throw Extstd::exception(&E, "Can't get application version");
   }
 }
 //---------------------------------------------------------------------------
@@ -682,9 +682,9 @@ std::wstring TConfiguration::GetVersion()
       HIWORD(Info->dwFileVersionLS))));
     return Result;
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
-    throw ExtException(&E, "Can't get application version");
+    throw Extstd::exception(&E, "Can't get application version");
   }
 }
 //---------------------------------------------------------------------------

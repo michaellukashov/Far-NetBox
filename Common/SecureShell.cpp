@@ -424,7 +424,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 {
   // there can be zero prompts!
 
-  assert(Results->Count == Prompts->Count);
+  assert(Results->GetCount() == Prompts->GetCount());
 
   TPromptKind PromptKind;
   // beware of changing order
@@ -501,7 +501,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
   else if (Index == 6)
   {
-    assert(Prompts->Count == 1);
+    assert(Prompts->GetCount() == 1);
     Prompts->Strings[0] = LoadStr(PASSWORD_PROMPT);
     PromptKind = pkPassword;
   }
@@ -522,7 +522,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(FORMAT("Prompt (%d, %s, %s, %s)", (PromptKind, AName, Instructions, (Prompts->Count > 0 ? Prompts->Strings[0] : std::wstring("<no prompt>")))));
+  LogEvent(FORMAT("Prompt (%d, %s, %s, %s)", (PromptKind, AName, Instructions, (Prompts->GetCount() > 0 ? Prompts->Strings[0] : std::wstring("<no prompt>")))));
 
   Name = Name.Trim();
 
@@ -535,7 +535,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions = Instructions.Trim();
 
-  for (int Index = 0; Index < Prompts->Count; Index++)
+  for (int Index = 0; Index < Prompts->GetCount(); Index++)
   {
     std::wstring Prompt = Prompts->Strings[Index];
     if (PromptTranslation != NULL)
@@ -563,7 +563,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       (PromptKind == pkKeybInteractive))
   {
     if (FSessionData->AuthKIPassword && !FSessionData->Password.IsEmpty() &&
-        !FStoredPasswordTriedForKI && (Prompts->Count == 1) &&
+        !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
         !bool(Prompts->Objects[0]))
     {
       LogEvent("Using stored password.");
@@ -572,7 +572,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Results->Strings[0] = FSessionData->Password;
       FStoredPasswordTriedForKI = true;
     }
-    else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->Count == 0))
+    else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
       LogEvent("Ignoring empty SSH server authentication request");
       Result = true;
@@ -597,7 +597,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
     if (Result)
     {
-      if ((PromptKind == pkUserName) && (Prompts->Count == 1))
+      if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
       {
         FUserName = Results->Strings[0];
       }
@@ -808,7 +808,7 @@ std::wstring TSecureShell::ReceiveLine()
   unsigned Index;
   Char Ch;
   std::wstring Line;
-  Boolean EOL = False;
+  Boolean EOL = false;
 
   do
   {

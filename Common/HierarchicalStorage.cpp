@@ -85,7 +85,7 @@ void THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 std::wstring THierarchicalStorage::GetCurrentSubKeyMunged()
 {
-  if (FKeyHistory->Count) return FKeyHistory->Strings[FKeyHistory->Count-1];
+  if (FKeyHistory->GetCount()) return FKeyHistory->Strings[FKeyHistory->GetCount()-1];
     else return "";
 }
 //---------------------------------------------------------------------------
@@ -129,8 +129,8 @@ bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreat
 //---------------------------------------------------------------------------
 void THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->Count == 0) throw exception("");
-    else FKeyHistory->Delete(FKeyHistory->Count-1);
+  if (FKeyHistory->GetCount() == 0) throw exception("");
+    else FKeyHistory->Delete(FKeyHistory->GetCount()-1);
 }
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearSubKeys()
@@ -139,7 +139,7 @@ void THierarchicalStorage::ClearSubKeys()
   try
   {
     GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->Count; Index++)
+    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       RecursiveDeleteSubKey(SubKeys->Strings[Index]);
     }
@@ -167,7 +167,7 @@ bool THierarchicalStorage::HasSubKeys()
   try
   {
     GetSubKeyNames(SubKeys);
-    Result = (SubKeys->Count > 0);
+    Result = (SubKeys->GetCount() > 0);
   }
   catch(...)
   {
@@ -193,7 +193,7 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
   try
   {
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->Count; Index++)
+    for (int Index = 0; Index < Names->GetCount(); Index++)
     {
       if (MaintainKeys)
       {
@@ -218,7 +218,7 @@ void THierarchicalStorage::ClearValues()
   try
   {
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->Count; Index++)
+    for (int Index = 0; Index < Names->GetCount(); Index++)
     {
       DeleteValue(Names->Strings[Index]);
     }
@@ -236,7 +236,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
 
   if (Strings)
   {
-    for (int Index = 0; Index < Strings->Count; Index++)
+    for (int Index = 0; Index < Strings->GetCount(); Index++)
     {
       if (MaintainKeys)
       {
@@ -353,7 +353,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
     int Index = 0;
-    while ((Index < Names->Count) && Result)
+    while ((Index < Names->GetCount()) && Result)
     {
       std::wstring Name = MungeStr(Names->Strings[Index]);
       unsigned long Size = Buffer.size();
@@ -413,7 +413,7 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
   bool Result;
-  if (FKeyHistory->Count > 0) FRegistry->CloseKey();
+  if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
   std::wstring K = ExcludeTrailingBackslash(Storage + CurrentSubKey + MungeSubKey(SubKey, Path));
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
@@ -424,7 +424,7 @@ void TRegistryStorage::CloseSubKey()
 {
   FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->Count)
+  if (FKeyHistory->GetCount())
   {
     FRegistry->OpenKey(Storage + CurrentSubKey, true);
   }
@@ -433,7 +433,7 @@ void TRegistryStorage::CloseSubKey()
 bool TRegistryStorage::DeleteSubKey(const std::wstring SubKey)
 {
   std::wstring K;
-  if (FKeyHistory->Count == 0) K = Storage + CurrentSubKey;
+  if (FKeyHistory->GetCount() == 0) K = Storage + CurrentSubKey;
   K += MungeStr(SubKey);
   return FRegistry->DeleteKey(K);
 }
@@ -441,7 +441,7 @@ bool TRegistryStorage::DeleteSubKey(const std::wstring SubKey)
 void TRegistryStorage::GetSubKeyNames(TStrings* Strings)
 {
   FRegistry->GetKeyNames(Strings);
-  for (int Index = 0; Index < Strings->Count; Index++)
+  for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->Strings[Index] = UnMungeStr(Strings->Strings[Index]);
   }
@@ -690,10 +690,10 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
       FIniFile->ReadSections(Sections);
       std::wstring NewKey = ExcludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path));
       int Index = -1;
-      if (Sections->Count)
+      if (Sections->GetCount())
       {
         Result = Sections->Find(NewKey, Index);
-        if (!Result && Index < Sections->Count &&
+        if (!Result && Index < Sections->GetCount() &&
             Sections->Strings[Index].substr(1, NewKey.size()+1) == NewKey + "\\")
         {
           Result = true;
@@ -735,7 +735,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
   {
     Strings->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->Count; i++)
+    for (int i = 0; i < Sections->GetCount(); i++)
     {
       std::wstring Section = Sections->Strings[i];
       if (AnsiCompareText(CurrentSubKey,
@@ -764,7 +764,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
 void TIniFileStorage::GetValueNames(TStrings* Strings)
 {
   FIniFile->ReadSection(CurrentSection, Strings);
-  for (int Index = 0; Index < Strings->Count; Index++)
+  for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->Strings[Index] = UnMungeIniName(Strings->Strings[Index]);
   }
@@ -800,7 +800,7 @@ void TIniFileStorage::ApplyOverrides()
   {
     Sections->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->Count; i++)
+    for (int i = 0; i < Sections->GetCount(); i++)
     {
       std::wstring Section = Sections->Strings[i];
 
@@ -816,7 +816,7 @@ void TIniFileStorage::ApplyOverrides()
         {
           FIniFile->ReadSection(Section, Names);
 
-          for (int ii = 0; ii < Names->Count; ii++)
+          for (int ii = 0; ii < Names->GetCount(); ii++)
           {
             std::wstring Name = Names->Strings[ii];
             std::wstring Value = FIniFile->ReadString(Section, Name, "");

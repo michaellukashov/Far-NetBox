@@ -97,7 +97,7 @@ typedef void (TObject::*TInformationEvent)
   } while (DoRepeat); }
 
 #define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_EX(True, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_EX(true, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP };
 //---------------------------------------------------------------------------

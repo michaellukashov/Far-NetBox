@@ -346,9 +346,9 @@ void TCopyParamList::Change(int Index, const std::wstring Name,
   {
     FNames->Strings[Index] = Name;
     delete CopyParams[Index];
-    FCopyParams->Items[Index] = (reinterpret_cast<TObject *>(CopyParam));
+    FCopyParams->GetItem(Index) = (reinterpret_cast<TObject *>(CopyParam));
     delete Rules[Index];
-    FRules->Items[Index] = (reinterpret_cast<TObject *>(Rule));
+    FRules->GetItem(Index) = (reinterpret_cast<TObject *>(Rule));
     Modify();
   }
   else
@@ -384,7 +384,7 @@ int TCopyParamList::Find(const TCopyParamRuleData & Value) const
 {
   int Result = -1;
   int i = 0;
-  while ((i < FRules->Count) && (Result < 0))
+  while ((i < FRules->GetCount()) && (Result < 0))
   {
     if (FRules->Items[i] != NULL)
     {
@@ -470,17 +470,17 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 //---------------------------------------------------------------------------
 int TCopyParamList::GetCount() const
 {
-  return FCopyParams->Count;
+  return FCopyParams->GetCount();
 }
 //---------------------------------------------------------------------------
 const TCopyParamRule * TCopyParamList::GetRule(int Index) const
 {
-  return reinterpret_cast<TCopyParamRule *>(FRules->Items[Index]);
+  return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 const TCopyParamType * TCopyParamList::GetCopyParam(int Index) const
 {
-  return reinterpret_cast<TCopyParamType *>(FCopyParams->Items[Index]);
+  return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 std::wstring TCopyParamList::GetName(int Index) const
@@ -661,7 +661,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     else if (All || FCopyParamList->Modified)
     {
-      Storage->WriteInteger("CopyParamList", FCopyParamList->Count);
+      Storage->WriteInteger("CopyParamList", FCopyParamList->GetCount());
       FCopyParamList->Save(Storage);
     }
   }
@@ -962,7 +962,7 @@ TStrings * TGUIConfiguration::GetLocales()
       char LocaleStr[255];
       LCID Locale;
 
-      Count = Langs->Count;
+      Count = Langs->GetCount();
       Index = -1;
       while (Index < Count)
       {
@@ -1009,7 +1009,7 @@ TStrings * TGUIConfiguration::GetLocales()
         Index++;
       }
 
-      for (int Index = 0; Index < Exts->Count; Index++)
+      for (int Index = 0; Index < Exts->GetCount(); Index++)
       {
         if ((Exts->Objects[Index] == NULL) &&
             (Exts->Strings[Index].size() == 3) &&

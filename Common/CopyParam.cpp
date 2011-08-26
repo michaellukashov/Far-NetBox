@@ -25,7 +25,7 @@ void TCopyParamType::Default()
   PreserveReadOnly = false;
   PreserveTime = true;
   Rights.Number = TRights::rfDefault;
-  PreserveRights = false; // Was True until #106
+  PreserveRights = false; // Was true until #106
   IgnorePermErrors = false;
   AsciiFileMask.Masks = "*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
     "*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml";

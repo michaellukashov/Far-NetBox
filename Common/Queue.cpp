@@ -279,7 +279,7 @@ TTerminalQueue::~TTerminalQueue()
     TGuard Guard(FItemsSection);
 
     TTerminalItem * TerminalItem;
-    while (FTerminals->Count > 0)
+    while (FTerminals->GetCount() > 0)
     {
       TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
       FTerminals->Delete(0);
@@ -289,7 +289,7 @@ TTerminalQueue::~TTerminalQueue()
     }
     delete FTerminals;
 
-    for (int Index = 0; Index < FItems->Count; Index++)
+    for (int Index = 0; Index < FItems->GetCount(); Index++)
     {
       delete GetItem(Index);
     }
@@ -317,7 +317,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
 
       // Index may be >= FTransfersLimit also when the transfer limit was
       // recently decresed, then
-      // FTemporaryTerminals < FTerminals->Count - FTransfersLimit
+      // FTemporaryTerminals < FTerminals->GetCount() - FTransfersLimit
       if ((FTransfersLimit > 0) && (Index >= FTransfersLimit) && (FTemporaryTerminals > 0))
       {
         FTemporaryTerminals--;
@@ -416,7 +416,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item)
 
       Empty = true;
       Index = 0;
-      while (Empty && (Index < FItems->Count))
+      while (Empty && (Index < FItems->GetCount()))
       {
         Empty = (GetItem(Index)->CompleteEvent != INVALID_HANDLE_VALUE);
         Index++;
@@ -435,7 +435,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item)
 //---------------------------------------------------------------------------
 TQueueItem * TTerminalQueue::GetItem(int Index)
 {
-  return reinterpret_cast<TQueueItem*>(FItems->Items[Index]);
+  return reinterpret_cast<TQueueItem*>(FItems->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
@@ -449,7 +449,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
 
       TQueueItem * Item;
       TQueueItemProxy * ItemProxy;
-      for (int Index = 0; Index < FItems->Count; Index++)
+      for (int Index = 0; Index < FItems->GetCount(); Index++)
       {
         Item = GetItem(Index);
         if (Current != NULL)
@@ -587,7 +587,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
           FItems->Move(Index, FItemsInProcess);
         }
 
-        if ((FTransfersLimit > 0) && (FTerminals->Count >= FTransfersLimit))
+        if ((FTransfersLimit > 0) && (FTerminals->GetCount() >= FTransfersLimit))
         {
           FTemporaryTerminals++;
         }
@@ -711,7 +711,7 @@ void TTerminalQueue::Idle()
         // take the last free terminal, because TerminalFree() puts it to the
         // front, this ensures we cycle thru all free terminals
         TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[FFreeTerminals - 1]);
-        FTerminals->Move(FFreeTerminals - 1, FTerminals->Count - 1);
+        FTerminals->Move(FFreeTerminals - 1, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
     }
@@ -733,13 +733,13 @@ void TTerminalQueue::ProcessEvent()
     TerminalItem = NULL;
     Item = NULL;
 
-    if (FItems->Count > FItemsInProcess)
+    if (FItems->GetCount() > FItemsInProcess)
     {
       TGuard Guard(FItemsSection);
 
       if ((FFreeTerminals == 0) &&
           ((FTransfersLimit <= 0) ||
-           (FTerminals->Count < FTransfersLimit + FTemporaryTerminals)))
+           (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
       {
         FOverallTerminals++;
         TerminalItem = new TTerminalItem(this, FOverallTerminals);
@@ -748,7 +748,7 @@ void TTerminalQueue::ProcessEvent()
       else if (FFreeTerminals > 0)
       {
         TerminalItem = reinterpret_cast<TTerminalItem*>(FTerminals->Items[0]);
-        FTerminals->Move(0, FTerminals->Count - 1);
+        FTerminals->Move(0, FTerminals->GetCount() - 1);
         FFreeTerminals--;
       }
 
@@ -845,7 +845,7 @@ void TTerminalQueue::SetTransfersLimit(int value)
 bool TTerminalQueue::GetIsEmpty()
 {
   TGuard Guard(FItemsSection);
-  return (FItems->Count == 0);
+  return (FItems->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 // TBackgroundItem
@@ -1428,7 +1428,7 @@ bool TQueueItemProxy::Move(bool Sooner)
   }
   else
   {
-    if (I < FQueueStatus->Count - 1)
+    if (I < FQueueStatus->GetCount() - 1)
     {
       Result = FQueueStatus->Items[I + 1]->Move(this);
     }
@@ -1497,7 +1497,7 @@ TTerminalQueueStatus::TTerminalQueueStatus() :
 //---------------------------------------------------------------------------
 TTerminalQueueStatus::~TTerminalQueueStatus()
 {
-  for (int Index = 0; Index < FList->Count; Index++)
+  for (int Index = 0; Index < FList->GetCount(); Index++)
   {
     delete GetItem(Index);
   }
@@ -1516,7 +1516,7 @@ int TTerminalQueueStatus::GetActiveCount()
   {
     FActiveCount = 0;
 
-    while ((FActiveCount < FList->Count) &&
+    while ((FActiveCount < FList->GetCount()) &&
       (GetItem(FActiveCount)->Status != TQueueItem::qsPending))
     {
       FActiveCount++;
@@ -1542,19 +1542,19 @@ void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
 //---------------------------------------------------------------------------
 int TTerminalQueueStatus::GetCount()
 {
-  return FList->Count;
+  return FList->GetCount();
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::GetItem(int Index)
 {
-  return reinterpret_cast<TQueueItemProxy *>(FList->Items[Index]);
+  return reinterpret_cast<TQueueItemProxy *>(FList->GetItem(Index));
 }
 //---------------------------------------------------------------------------
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
   TQueueItem * QueueItem)
 {
   TQueueItemProxy * Item;
-  for (int Index = 0; Index < FList->Count; Index++)
+  for (int Index = 0; Index < FList->GetCount(); Index++)
   {
     Item = GetItem(Index);
     if (Item->FQueueItem == QueueItem)
@@ -1597,7 +1597,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
 
   assert(FilesToCopy != NULL);
   FFilesToCopy = new TStringList();
-  for (int Index = 0; Index < FilesToCopy->Count; Index++)
+  for (int Index = 0; Index < FilesToCopy->GetCount(); Index++)
   {
     FFilesToCopy->AddObject(FilesToCopy->Strings[Index],
       ((FilesToCopy->Objects[Index] == NULL) || (Side == osLocal)) ? NULL :
@@ -1614,7 +1614,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
 //---------------------------------------------------------------------------
 TTransferQueueItem::~TTransferQueueItem()
 {
-  for (int Index = 0; Index < FFilesToCopy->Count; Index++)
+  for (int Index = 0; Index < FFilesToCopy->GetCount(); Index++)
   {
     delete FFilesToCopy->Objects[Index];
   }
@@ -1629,7 +1629,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   const TCopyParamType * CopyParam, int Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal)
 {
-  if (FilesToCopy->Count > 1)
+  if (FilesToCopy->GetCount() > 1)
   {
     if (FLAGSET(Params, cpTemporary))
     {
@@ -1654,7 +1654,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
     }
     else
     {
-      assert(FilesToCopy->Count > 0);
+      assert(FilesToCopy->GetCount() > 0);
       FInfo->Source = FilesToCopy->Strings[0];
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? std::wstring() :
         IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
@@ -1681,7 +1681,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   const TCopyParamType * CopyParam, int Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {
-  if (FilesToCopy->Count > 1)
+  if (FilesToCopy->GetCount() > 1)
   {
     if (!UnixExtractCommonPath(FilesToCopy, FInfo->Source))
     {
@@ -1693,7 +1693,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   }
   else
   {
-    assert(FilesToCopy->Count > 0);
+    assert(FilesToCopy->GetCount() > 0);
     FInfo->Source = FilesToCopy->Strings[0];
     if (UnixExtractFilePath(FInfo->Source).empty())
     {

@@ -943,7 +943,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
   int Index = 0;
-  while (Index < FilesToCopy->Count && !OperationProgress->Cancel)
+  while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     std::wstring FileName = FilesToCopy->Strings[Index];
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
@@ -1210,7 +1210,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   std::wstring TargetDir = AbsolutePath(ATargetDir, false);
   std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
   int Index = 0;
-  while ((Index < FilesToCopy->Count) && !OperationProgress->Cancel)
+  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
     FileName = FilesToCopy->Strings[Index];
@@ -1606,7 +1606,7 @@ void TFTPFileSystem::DoStartup()
   try
   {
     PostLoginCommands->Text = FTerminal->SessionData->PostLoginCommands;
-    for (int Index = 0; Index < PostLoginCommands->Count; Index++)
+    for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
       std::wstring Command = PostLoginCommands->Strings[Index];
       if (!Command.IsEmpty())
@@ -1702,7 +1702,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
       // the only allowed 2XX code to "PWD"
       if ((Code == 257) &&
-          (Response->Count == 1))
+          (Response->GetCount() == 1))
       {
         std::wstring Path = Response->Text;
 
@@ -1776,7 +1776,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
       // We got no files with "-a", but again no files w/o "-a",
       // so it was not "-a"'s problem, revert to auto and let it decide the next time
-      if (GotNoFilesForAll && (FileList->Count == 0))
+      if (GotNoFilesForAll && (FileList->GetCount() == 0))
       {
         assert(FListAll == asOff);
         FListAll = asAuto;
@@ -1786,8 +1786,8 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // some servers take "-a" as a mask and return empty directory listing
         // (note that it's actually never empty here, there's always at least parent directory,
         // added explicitly by DoReadDirectory)
-        if ((FileList->Count == 0) ||
-            ((FileList->Count == 1) && FileList->Files[0]->IsParentDirectory))
+        if ((FileList->GetCount() == 0) ||
+            ((FileList->GetCount() == 1) && FileList->Files[0]->IsParentDirectory))
         {
           Repeat = true;
           FListAll = asOff;
@@ -1941,7 +1941,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     FFileSystemInfo.RemoteSystem = FSystem;
     FFileSystemInfo.RemoteSystem.Unique();
 
-    if (FFeatures->Count == 0)
+    if (FFeatures->GetCount() == 0)
     {
       FFileSystemInfo.AdditionalInfo = LoadStr(FTP_NO_FEATURE_INFO);
     }
@@ -1949,7 +1949,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     {
       FFileSystemInfo.AdditionalInfo =
         FORMAT("%s\r\n", (LoadStr(FTP_FEATURE_INFO)));
-      for (int Index = 0; Index < FFeatures->Count; Index++)
+      for (int Index = 0; Index < FFeatures->GetCount(); Index++)
       {
         FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", (FFeatures->Strings[Index]));
       }
@@ -2451,7 +2451,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         // see comment for FLastError
         FLastResponse->Clear();
 
-        if (MoreMessages->Count == 0)
+        if (MoreMessages->GetCount() == 0)
         {
           delete MoreMessages;
           MoreMessages = NULL;
@@ -2465,7 +2465,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
 
       if (Error.IsEmpty() && (MoreMessages != NULL))
       {
-        assert(MoreMessages->Count > 0);
+        assert(MoreMessages->GetCount() > 0);
         Error = MoreMessages->Strings[0];
         MoreMessages->Delete(0);
       }
@@ -2622,10 +2622,10 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     {
       // Response to FEAT must be multiline, where leading and trailing line
       // is "meaningless". See RFC 2389.
-      if ((FLastCode == 211) && (FLastResponse->Count > 2))
+      if ((FLastCode == 211) && (FLastResponse->GetCount() > 2))
       {
         FLastResponse->Delete(0);
-        FLastResponse->Delete(FLastResponse->Count - 1);
+        FLastResponse->Delete(FLastResponse->GetCount() - 1);
         FFeatures->Assign(FLastResponse);
       }
       else

@@ -963,9 +963,9 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (int Index = 0; Index < StoredSessions->Count + StoredSessions->HiddenCount; Index++)
+    for (int Index = 0; Index < StoredSessions->GetCount() + StoredSessions->HiddenCount; Index++)
     {
-      TSessionData * AData = (TSessionData *)StoredSessions->Items[Index];
+      TSessionData * AData = (TSessionData *)StoredSessions->GetItem(Index);
       if (AnsiSameText(AData->Name, DecodedUrl) ||
           AnsiSameText(AData->Name + "/", DecodedUrl.substr(1, AData->Name.size() + 1)))
       {
@@ -2095,7 +2095,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   try
   {
     Storage->GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->Count; Index++)
+    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       TSessionData *SessionData;
       std::wstring SessionName = SubKeys->Strings[Index];
@@ -2281,7 +2281,7 @@ void TStoredSessionList::SelectAll(bool Select)
 void TStoredSessionList::Import(TStoredSessionList * From,
   bool OnlySelected)
 {
-  for (int Index = 0; Index < From->Count; Index++)
+  for (int Index = 0; Index < From->GetCount(); Index++)
   {
     if (!OnlySelected || From->Sessions[Index]->Selected)
     {
@@ -2392,14 +2392,14 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
       TSessionData * Session;
       std::wstring HostKeyName;
       assert(Sessions != NULL);
-      for (int Index = 0; Index < Sessions->Count; Index++)
+      for (int Index = 0; Index < Sessions->GetCount(); Index++)
       {
         Session = Sessions->Sessions[Index];
         if (!OnlySelected || Session->Selected)
         {
           HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", (Session->PortNumber, Session->HostName)));
           std::wstring KeyName;
-          for (int KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
+          for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
             KeyName = KeyList->Strings[KeyIndex];
             int P = KeyName.find_first_of(HostKeyName);

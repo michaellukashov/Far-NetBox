@@ -160,7 +160,7 @@ private:
     std::wstring m_LastDirName; ///< Last created/copyed directory name (used as buffer)
     std::wstring m_Title; ///< Panel title
 
-    bool m_ExitToSessionMgr;  ///< True to exit from top folder to session manager, false to close plugin
+    bool m_ExitToSessionMgr;  ///< true to exit from top folder to session manager, false to close plugin
 
     HANDLE m_AbortTask; ///< Abort task event
 };

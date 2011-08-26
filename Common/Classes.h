@@ -145,9 +145,13 @@ private:
     bool FOwnsObjects;
 };
 
+typedef int (CompareFunc)(void * Item1, void * Item2);
+
 class TList : public TObjectList
 {
 public:
+    void Sort(CompareFunc func)
+    {}
 };
 
 enum TDuplicatesEnum
@@ -300,4 +304,11 @@ static TDateTime Now()
 
 class TSHFileInfo
 {
+};
+
+class EAbort : public std::exception
+{
+public:
+    EAbort(std::string what) : std::exception(what.c_str())
+    {}
 };

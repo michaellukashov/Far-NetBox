@@ -1687,3 +1687,10 @@ std::wstring FORMAT(const wchar_t *fmt, ...)
 	va_end(args);
 	return result;
 }
+
+bool CompareText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+

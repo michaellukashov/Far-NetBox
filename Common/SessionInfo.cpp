@@ -107,7 +107,7 @@ public:
           Attrs = " recursive=\"true\"";
         }
         FLog->Add(llAction, FORMAT("  <%s%s>", (Name,  Attrs)));
-        for (int Index = 0; Index < FNames->Count; Index++)
+        for (int Index = 0; Index < FNames->GetCount(); Index++)
         {
           std::wstring Value = FValues->Strings[Index];
           if (Value.empty())
@@ -123,7 +123,7 @@ public:
         if (FFileList != NULL)
         {
           FLog->Add(llAction, "    <files>");
-          for (int Index = 0; Index < FFileList->Count; Index++)
+          for (int Index = 0; Index < FFileList->GetCount(); Index++)
           {
             TRemoteFile * File = FFileList->Files[Index];
 
@@ -145,7 +145,7 @@ public:
           if (FErrorMessages != NULL)
           {
             FLog->Add(llAction, "    <result success=\"false\">");
-            for (int Index = 0; Index < FErrorMessages->Count; Index++)
+            for (int Index = 0; Index < FErrorMessages->GetCount(); Index++)
             {
               FLog->Add(llAction,
                 FORMAT("      <message>%s</message>", (XmlEscape(FErrorMessages->Strings[Index]))));
@@ -186,7 +186,7 @@ public:
     {
       FErrorMessages->AddStrings(EE->MoreMessages);
     }
-    if (FErrorMessages->Count == 0)
+    if (FErrorMessages->GetCount() == 0)
     {
       delete FErrorMessages;
       FErrorMessages = NULL;
@@ -547,7 +547,7 @@ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
 //---------------------------------------------------------------------------
 TSessionLog::~TSessionLog()
 {
-  assert(FPendingActions->Count == 0);
+  assert(FPendingActions->GetCount() == 0);
   delete FPendingActions;
   FClosed = true;
   ReflectSettings();
@@ -1071,7 +1071,7 @@ void TSessionLog::AddPendingAction(TSessionActionRecord * Action)
 //---------------------------------------------------------------------------
 void TSessionLog::RecordPendingActions()
 {
-  while ((FPendingActions->Count > 0) &&
+  while ((FPendingActions->GetCount() > 0) &&
          static_cast<TSessionActionRecord *>(FPendingActions->Items[0])->Record())
   {
     FPendingActions->Delete(0);
