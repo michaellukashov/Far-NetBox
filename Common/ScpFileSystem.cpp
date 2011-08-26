@@ -63,17 +63,6 @@ private:
   TCommandType CommandSet[ShellCommandCount];
   TSessionData * FSessionData;
   std::wstring FReturnVar;
-  int GetMaxLines(TFSCommand Cmd);
-  int GetMinLines(TFSCommand Cmd);
-  bool GetModifiesFiles(TFSCommand Cmd);
-  bool GetChangesDirectory(TFSCommand Cmd);
-  bool GetOneLineCommand(TFSCommand Cmd);
-  void SetCommands(TFSCommand Cmd, std::wstring value);
-  std::wstring GetCommands(TFSCommand Cmd);
-  std::wstring GetFirstLine();
-  bool GetInteractiveCommand(TFSCommand Cmd);
-  std::wstring GetLastLine();
-  std::wstring GetReturnVar();
 public:
   TCommandSet(TSessionData *aSessionData);
   void Default();
@@ -82,17 +71,31 @@ public:
   TStrings * CreateCommandList();
   std::wstring FullCommand(TFSCommand Cmd, const TVarRec * args, int size);
   static std::wstring ExtractCommand(std::wstring Command);
-  __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
-  __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
-  __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
-  __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
-  __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
-  __property std::wstring Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
-  __property std::wstring FirstLine = { read = GetFirstLine };
-  __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
-  __property std::wstring LastLine  = { read=GetLastLine };
-  __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
-  __property std::wstring ReturnVar  = { read=GetReturnVar, write=FReturnVar };
+  // __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
+  int GetMaxLines(TFSCommand Cmd);
+  // __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
+  int GetMinLines(TFSCommand Cmd);
+  // __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
+  bool GetModifiesFiles(TFSCommand Cmd);
+  // __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
+  bool GetChangesDirectory(TFSCommand Cmd);
+  // __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
+  bool GetOneLineCommand(TFSCommand Cmd);
+  // __property std::wstring Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
+  void SetCommands(TFSCommand Cmd, std::wstring value);
+  std::wstring GetCommands(TFSCommand Cmd);
+  // __property std::wstring FirstLine = { read = GetFirstLine };
+  std::wstring GetFirstLine();
+  // __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
+  bool GetInteractiveCommand(TFSCommand Cmd);
+  // __property std::wstring LastLine  = { read=GetLastLine };
+  std::wstring GetLastLine();
+  //  __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
+  TSessionData * GetSessionData() { return FSessionData; }
+  void SetSessionData(TSessionData * value) { FSessionData = value; }
+  // __property std::wstring ReturnVar  = { read=GetReturnVar, write=FReturnVar };
+  std::wstring GetReturnVar();
+  void SetReturnVar(std::wstring value) { FReturnVar = value; }
 };
 //===========================================================================
 const char NationalVars[NationalVarCount][15] =

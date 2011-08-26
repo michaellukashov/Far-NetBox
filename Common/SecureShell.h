@@ -66,7 +66,6 @@ private:
   static TCipher FuncToSsh2Cipher(const void * Cipher);
   std::wstring FuncToCompression(int SshVersion, const void * Compress) const;
   void Init();
-  void SetActive(bool value);
   void inline CheckConnection(int Message = -1);
   void WaitForData();
   void Discard();
@@ -83,7 +82,6 @@ private:
   bool EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
-  bool GetReady();
   void DispatchSendBuffer(int BufSize);
   void SendBuffer(unsigned int & Result);
   int TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
@@ -149,13 +147,23 @@ public:
   void OldKeyfileWarning();
   void PuttyLogEvent(const std::wstring & Str);
 
-  __property bool Active = { read = FActive, write = SetActive };
-  __property bool Ready = { read = GetReady };
-  __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
-  __property TDateTime LastDataSent = { read = FLastDataSent };
-  __property std::wstring LastTunnelError = { read = FLastTunnelError };
-  __property std::wstring UserName = { read = FUserName };
-  __property bool Simple = { read = FSimple, write = FSimple };
+  // __property bool Active = { read = FActive, write = SetActive };
+  bool GetActive() { return FActive; }
+  void SetActive(bool value);
+  // __property bool Ready = { read = GetReady };
+  bool GetReady();
+  // __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
+  TCaptureOutputEvent GetOnCaptureOutput() { return FOnCaptureOutput; }
+  void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
+  // __property TDateTime LastDataSent = { read = FLastDataSent };
+  TDateTime GetLastDataSent() { return FLastDataSent; }
+  // __property std::wstring LastTunnelError = { read = FLastTunnelError };
+  std::wstring GetLastTunnelError() { return FLastTunnelError; }
+  // __property std::wstring UserName = { read = FUserName };
+  std::wstring GetUserName() { return FUserName; }
+  // __property bool Simple = { read = FSimple, write = FSimple };
+  bool GetSimple() { return FSimple; }
+  void SetSimple(bool value) { FSimple = value; }
 };
 //---------------------------------------------------------------------------
 #endif
