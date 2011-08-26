@@ -111,7 +111,10 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/NetBox/FTPS.cpp
     ${PROJECT_ROOT}/NetBox/SCP.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
-    # ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
+    ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
+    # ${PROJECT_ROOT}/Common/CoreMain.cpp
+    # ${PROJECT_ROOT}/Common/Configuration.cpp
+    ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/NetBox/NetBox.def
 )
 
