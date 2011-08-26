@@ -1957,7 +1957,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
     for (int Index = 0; Index < fcCount; Index++)
     {
-      FFileSystemInfo.IsCapable[Index] = IsCapable((TFSCapability)Index);
+      FFileSystemInfo.GetIsCapable(Index] = IsCapable((TFSCapability)Index);
     }
 
     FFileSystemInfoValid = true;

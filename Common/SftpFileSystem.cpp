@@ -1750,7 +1750,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     FFileSystemInfo.ProtocolName = FMTLOAD(SFTP_PROTOCOL_NAME2, (FVersion));
     for (int Index = 0; Index < fcCount; Index++)
     {
-      FFileSystemInfo.IsCapable[Index] = IsCapable((TFSCapability)Index);
+      FFileSystemInfo.GetIsCapable(Index] = IsCapable((TFSCapability)Index);
     }
 
     FFileSystemInfoValid = true;

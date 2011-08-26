@@ -2572,7 +2572,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               {
                 // not used anymore
                 TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
+                // FIXME ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
               }
               Success = true;
             }
@@ -2641,23 +2641,23 @@ TStrings * TTerminal::GetFixedPaths()
 //---------------------------------------------------------------------------
 bool TTerminal::GetResolvingSymlinks()
 {
-  return GetSessionData()->ResolveSymlinks && IsCapable[fcResolveSymlink];
+  return GetSessionData()->ResolveSymlinks && GetIsCapable(fcResolveSymlink);
 }
 //---------------------------------------------------------------------------
 TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(int Params)
 {
   TUsableCopyParamAttrs Result;
   Result.General =
-    FLAGMASK(!IsCapable[fcTextMode], cpaNoTransferMode) |
-    FLAGMASK(!IsCapable[fcModeChanging], cpaNoRights) |
-    FLAGMASK(!IsCapable[fcModeChanging], cpaNoPreserveReadOnly) |
+    FLAGMASK(!GetIsCapable(fcTextMode), cpaNoTransferMode) |
+    FLAGMASK(!GetIsCapable(fcModeChanging), cpaNoRights) |
+    FLAGMASK(!GetIsCapable(fcModeChanging), cpaNoPreserveReadOnly) |
     FLAGMASK(FLAGSET(Params, cpDelete), cpaNoClearArchive) |
-    FLAGMASK(!IsCapable[fcIgnorePermErrors], cpaNoIgnorePermErrors);
+    FLAGMASK(!GetIsCapable(fcIgnorePermErrors), cpaNoIgnorePermErrors);
   Result.Download = Result.General | cpaNoClearArchive | cpaNoRights |
     cpaNoIgnorePermErrors;
   Result.Upload = Result.General | cpaNoPreserveReadOnly |
-    FLAGMASK(!IsCapable[fcModeChangingUpload], cpaNoRights) |
-    FLAGMASK(!IsCapable[fcPreservingTimestampUpload], cpaNoPreserveTime);
+    FLAGMASK(!GetIsCapable(fcModeChangingUpload), cpaNoRights) |
+    FLAGMASK(!GetIsCapable(fcPreservingTimestampUpload), cpaNoPreserveTime);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2799,7 +2799,7 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
 {
   try
   {
-    if (IsCapable[fcAnyCommand])
+    if (GetIsCapable(fcAnyCommand))
     {
       assert(FFileSystem);
       assert(fcShellAnyCommand);
@@ -2943,7 +2943,7 @@ void TTerminal::ChangeFilesProperties(TStrings * FileList,
 bool TTerminal::LoadFilesProperties(TStrings * FileList)
 {
   bool Result =
-    IsCapable[fcLoadingAdditionalProperties] &&
+    GetIsCapable(fcLoadingAdditionalProperties) &&
     FFileSystem->LoadFilesProperties(FileList);
   if (Result && GetSessionData()->CacheDirectories &&
       (FileList->GetCount() > 0) &&
@@ -3210,7 +3210,7 @@ void TTerminal::DoCopyFile(const std::wstring FileName,
   try
   {
     assert(FFileSystem);
-    if (IsCapable[fcRemoteCopy])
+    if (GetIsCapable(fcRemoteCopy))
     {
       FFileSystem->CopyFile(FileName, NewName);
     }
@@ -3382,7 +3382,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
 void TTerminal::LookupUsersGroups()
 {
   if (!FUsersGroupsLookedup && GetSessionData()->LookupUserGroups &&
-      IsCapable[fcUserGroupListing])
+      GetIsCapable(fcUserGroupListing))
   {
     assert(FFileSystem);
 
@@ -3506,7 +3506,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
   try
   {
     DirectoryModified(CurrentDirectory, false);
-    if (IsCapable[fcAnyCommand])
+    if (GetIsCapable(fcAnyCommand))
     {
       LogEvent(L"Executing user defined command.");
       FFileSystem->AnyCommand(Command, OutputEvent);
@@ -4572,7 +4572,7 @@ void TTerminal::FilesFind(std::wstring Directory, const TFileMasks & FileMask,
 void TTerminal::SpaceAvailable(const std::wstring Path,
   TSpaceAvailable & ASpaceAvailable)
 {
-  assert(IsCapable[fcCheckingSpaceAvailable]);
+  assert(GetIsCapable(fcCheckingSpaceAvailable));
 
   try
   {
@@ -4649,7 +4649,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   assert(FFileSystem);
   assert(FilesToCopy);
 
-  assert(IsCapable[fcNewerOnlyUpload] || FLAGCLEAR(Params, cpNewerOnly));
+  assert(GetIsCapable(fcNewerOnlyUpload) || FLAGCLEAR(Params, cpNewerOnly));
 
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;

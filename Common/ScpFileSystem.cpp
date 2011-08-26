@@ -291,7 +291,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal, TSecureShell * SecureShell
   // capabilities of SCP protocol are fixed
   for (int Index = 0; Index < fcCount; Index++)
   {
-    FFileSystemInfo.IsCapable[Index] = IsCapable((TFSCapability)Index);
+    FFileSystemInfo.GetIsCapable(Index] = IsCapable((TFSCapability)Index);
   }
 }
 //---------------------------------------------------------------------------
