@@ -105,7 +105,7 @@ protected:
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(unsigned int Reply);
   void GotReply(unsigned int Reply, unsigned int Flags = 0,
-    std::wstring Error = "", unsigned int * Code = NULL,
+    std::wstring Error = L"", unsigned int * Code = NULL,
     TStrings ** Response = NULL);
   void ResetReply();
   void HandleReplyStatus(std::wstring Response);
