@@ -1,6 +1,24 @@
 cmake_minimum_required (VERSION 2.8)
 
 #-------------------------------------------------------------------------------
+
+macro(use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME)
+    get_filename_component( PCH_HEADER ${HDR_FILE} NAME )
+    set(PCH_BINARY ${PCHNAME})
+    set( PCH_BINARY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PCH_BINARY}.pch" )
+    if (MSVC)
+        set( SRC_LIST ${${SRC_LIST_VAR}} )
+        set_source_files_properties( ${SRC_LIST} PROPERTIES
+            COMPILE_FLAGS "/Yu${PCH_HEADER} /Fp${PCH_BINARY}"
+            OBJECT_DEPENDS "${PCH_BINARY}" )
+        set_source_files_properties( ${SRC_FILE} PROPERTIES
+            COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_BINARY}"
+            OBJECT_OUTPUTS "${PCH_BINARY}"
+            OBJECT_DEPENDS "" )
+    endif(MSVC)
+endmacro( use_precompiled_header )
+
+#-------------------------------------------------------------------------------
 # Устанавливаем флаги компиляции ( -DCMAKE_BUILD_TYPE=[Debug,Release] )
 
 set ( CMAKE_CXX_FLAGS
@@ -9,7 +27,7 @@ set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_EXE_LINK_FLAGS
-    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB"
+    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB /Ystdafx.h"
     #/NODEFAULTLIB:LIBCMTD.LIB 
 )
 
@@ -202,6 +220,8 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/NetBox/SFTP.cpp
     ${PROJECT_ROOT}/NetBox/FTP.cpp
     ${PROJECT_ROOT}/NetBox/SCP.cpp
+    ${PROJECT_ROOT}/Common/Common.cpp
+    ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/Common/RemoteFiles.cpp
     # ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
@@ -218,6 +238,7 @@ set_target_properties( testnetbox_01
     LINK_FLAGS "${CMAKE_EXE_LINK_FLAGS} /NODEFAULTLIB:LIBCMTD.LIB"
 )
 # add_dependencies ( testnetbox_01 zlib libssh2 libcurl )
+use_precompiled_header ( ${TESTNETBOX_01_SOURCES} stdafx.h stdafx.cpp testnetbox_01 )
 
 # Добавить к линковке цели ${PROJECT} библиотеки ${LIBRARIES}
 target_link_libraries ( testnetbox_01 ${TESTNETBOX_01_LIBRARIES} )
