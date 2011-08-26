@@ -22,7 +22,7 @@ endmacro( use_precompiled_header )
 # Устанавливаем флаги компиляции ( -DCMAKE_BUILD_TYPE=[Debug,Release] )
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS /EHsc" )
+    "-DWIN32;_WINDOWS;NO_FILEZILLA /EHsc" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
