@@ -1,5 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+#include "FarUtil.h"
 
 // #include <StrUtils.hpp>
 #include "WinSCPFileSystem.h"
