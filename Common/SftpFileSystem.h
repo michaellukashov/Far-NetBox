@@ -90,7 +90,8 @@ protected:
   std::wstring FHomeDirectory;
   std::wstring FEOL;
   TList * FPacketReservations;
-  Variant FPacketNumbers;
+  // Variant FPacketNumbers;
+  std::vector<unsigned int> FPacketNumbers;
   char FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
@@ -188,7 +189,7 @@ protected:
   inline int PacketLength(char * LenBuf, int ExpectedType);
 
   static std::wstring DecodeUTF(const std::wstring UTF);
-  static std::wstring EncodeUTF(const WideString Source);
+  static std::wstring EncodeUTF(const std::wstring Source);
 };
 //---------------------------------------------------------------------------
 #endif // SftpFileSystemH
