@@ -502,7 +502,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   else if (Index == 6)
   {
     assert(Prompts->GetCount() == 1);
-    Prompts->Strings[0] = LoadStr(PASSWORD_PROMPT);
+    Prompts->GetString(0] = LoadStr(PASSWORD_PROMPT);
     PromptKind = pkPassword;
   }
   else if (Index == 7)
@@ -522,7 +522,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(FORMAT("Prompt (%d, %s, %s, %s)", (PromptKind, AName, Instructions, (Prompts->GetCount() > 0 ? Prompts->Strings[0] : std::wstring("<no prompt>")))));
+  LogEvent(FORMAT("Prompt (%d, %s, %s, %s)", (PromptKind, AName, Instructions, (Prompts->GetCount() > 0 ? Prompts->GetString(0] : std::wstring("<no prompt>")))));
 
   Name = Name.Trim();
 
@@ -537,14 +537,14 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   for (int Index = 0; Index < Prompts->GetCount(); Index++)
   {
-    std::wstring Prompt = Prompts->Strings[Index];
+    std::wstring Prompt = Prompts->GetString(Index);
     if (PromptTranslation != NULL)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
     }
     // some servers add leading blank line to make the prompt look prettier
     // on terminal console
-    Prompts->Strings[Index] = Prompt.Trim();
+    Prompts->GetString(Index) = Prompt.Trim();
   }
 
   bool Result = false;
@@ -555,7 +555,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       // use empty username if no username was filled on login dialog
       // and GSSAPI auth is enabled, hence there's chance that the server can
       // deduce the username otherwise
-      Results->Strings[0] = "";
+      Results->GetString(0] = "";
       Result = true;
     }
   }
@@ -564,12 +564,12 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->AuthKIPassword && !FSessionData->Password.IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        !bool(Prompts->Objects[0]))
+        !bool(Prompts->GetObject(0]))
     {
       LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->Strings[0] = FSessionData->Password;
+      Results->GetString(0] = FSessionData->Password;
       FStoredPasswordTriedForKI = true;
     }
     else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
@@ -585,7 +585,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->Strings[0] = FSessionData->Password;
+      Results->GetString(0] = FSessionData->Password;
       FStoredPasswordTried = true;
     }
   }
@@ -599,7 +599,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
       {
-        FUserName = Results->Strings[0];
+        FUserName = Results->GetString(0];
       }
     }
   }

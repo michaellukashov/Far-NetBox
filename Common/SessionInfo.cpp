@@ -109,15 +109,15 @@ public:
         FLog->Add(llAction, FORMAT("  <%s%s>", (Name,  Attrs)));
         for (int Index = 0; Index < FNames->GetCount(); Index++)
         {
-          std::wstring Value = FValues->Strings[Index];
+          std::wstring Value = FValues->GetString(Index);
           if (Value.empty())
           {
-            FLog->Add(llAction, FORMAT("    <%s />", (FNames->Strings[Index])));
+            FLog->Add(llAction, FORMAT("    <%s />", (FNames->GetString(Index))));
           }
           else
           {
             FLog->Add(llAction, FORMAT("    <%s value=\"%s\" />",
-              (FNames->Strings[Index], XmlEscape(Value))));
+              (FNames->GetString(Index), XmlEscape(Value))));
           }
         }
         if (FFileList != NULL)
@@ -148,7 +148,7 @@ public:
             for (int Index = 0; Index < FErrorMessages->GetCount(); Index++)
             {
               FLog->Add(llAction,
-                FORMAT("      <message>%s</message>", (XmlEscape(FErrorMessages->Strings[Index]))));
+                FORMAT("      <message>%s</message>", (XmlEscape(FErrorMessages->GetString(Index)))));
             }
             FLog->Add(llAction, "    </result>");
           }
@@ -235,7 +235,7 @@ public:
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->Strings[Index] = FValues->Strings[Index] + "\r\n" + Output;
+      FValues->GetString(Index) = FValues->GetString(Index) + "\r\n" + Output;
     }
     else
     {

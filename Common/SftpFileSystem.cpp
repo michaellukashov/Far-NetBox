@@ -1482,7 +1482,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
+      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex]);
       FIndex++;
 
       bool MissingRights =
@@ -1567,7 +1567,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->Objects[FIndex]);
+      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex]);
       assert(File != NULL);
       FIndex++;
 
@@ -2661,13 +2661,13 @@ void TSFTPFileSystem::DoStartup()
           for (int Index = 0; Index < FSupport->AttribExtensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
-              FORMAT("    %s", (FSupport->AttribExtensions->Strings[Index])));
+              FORMAT("    %s", (FSupport->AttribExtensions->GetString(Index))));
           }
           FTerminal->LogEvent(FORMAT(   "  Extensions (%d)\n", (FSupport->Extensions->GetCount())));
           for (int Index = 0; Index < FSupport->Extensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
-              FORMAT("    %s", (FSupport->Extensions->Strings[Index])));
+              FORMAT("    %s", (FSupport->Extensions->GetString(Index))));
           }
         }
       }
@@ -3444,7 +3444,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
   {
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
-      TRemoteFile * File = (TRemoteFile *)FileList->Objects[Index];
+      TRemoteFile * File = (TRemoteFile *)FileList->GetObject(Index);
       assert(File != NULL);
       if (File->IsDirectory && !File->IsSymLink &&
           !File->IsParentDirectory && !File->IsThisDirectory)
@@ -3628,7 +3628,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     FileNameOnly = ExtractFileName(FileName);
     assert(!FAvoidBusy);
     FAvoidBusy = true;
@@ -4694,8 +4694,8 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     Success = false;
-    FileName = FilesToCopy->Strings[Index];
-    File = (TRemoteFile *)FilesToCopy->Objects[Index];
+    FileName = FilesToCopy->GetString(Index);
+    File = (TRemoteFile *)FilesToCopy->GetObject(Index);
 
     assert(!FAvoidBusy);
     FAvoidBusy = true;

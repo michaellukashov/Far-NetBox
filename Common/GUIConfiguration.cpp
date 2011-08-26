@@ -344,7 +344,7 @@ void TCopyParamList::Change(int Index, const std::wstring Name,
 {
   if ((Name != Names[Index]) || !CompareItem(Index, CopyParam, Rule))
   {
-    FNames->Strings[Index] = Name;
+    FNames->GetString(Index) = Name;
     delete CopyParams[Index];
     FCopyParams->GetItem(Index) = (reinterpret_cast<TObject *>(CopyParam));
     delete Rules[Index];
@@ -485,7 +485,7 @@ const TCopyParamType * TCopyParamList::GetCopyParam(int Index) const
 //---------------------------------------------------------------------------
 std::wstring TCopyParamList::GetName(int Index) const
 {
-  return FNames->Strings[Index];
+  return FNames->GetString(Index);
 }
 //---------------------------------------------------------------------------
 TStrings * TCopyParamList::GetNameList() const
@@ -496,7 +496,7 @@ TStrings * TCopyParamList::GetNameList() const
 
     for (int i = 0; i < Count; i++)
     {
-      FNameList->Add(FNames->Strings[i]);
+      FNameList->Add(FNames->GetString(i));
     }
   }
   return FNameList;
@@ -981,7 +981,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
           if (Ext >= 0)
           {
-            Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
+            Exts->GetObject(Ext) = reinterpret_cast<TObject*>(Locale);
           }
           else
           {
@@ -1011,16 +1011,16 @@ TStrings * TGUIConfiguration::GetLocales()
 
       for (int Index = 0; Index < Exts->GetCount(); Index++)
       {
-        if ((Exts->Objects[Index] == NULL) &&
-            (Exts->Strings[Index].size() == 3) &&
-            SameText(Exts->Strings[Index].substr(1, 2), AdditionaLanguagePrefix))
+        if ((Exts->GetObject(Index) == NULL) &&
+            (Exts->GetString(Index).size() == 3) &&
+            SameText(Exts->GetString(Index).substr(1, 2), AdditionaLanguagePrefix))
         {
           std::wstring LangName = GetFileFileInfoString("LangName",
-            ChangeFileExt(ModuleFileName(), std::wstring(".") + Exts->Strings[Index]));
+            ChangeFileExt(ModuleFileName(), std::wstring(".") + Exts->GetString(Index)));
           if (!LangName.empty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<TObject*>(
-              AdditionaLanguageMask + Exts->Strings[Index][3]));
+              AdditionaLanguageMask + Exts->GetString(Index)[3]));
           }
         }
       }

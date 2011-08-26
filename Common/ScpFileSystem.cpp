@@ -339,7 +339,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
           {
             UName += "; ";
           }
-          UName += Output->Strings[Index];
+          UName += Output->GetString(Index);
         }
       }
       catch(...)
@@ -712,7 +712,7 @@ void TSCPFileSystem::LookupUsersGroups()
   FTerminal->FGroups.Clear();
   if (FOutput->GetCount() > 0)
   {
-    std::wstring Groups = FOutput->Strings[0];
+    std::wstring Groups = FOutput->GetString(0];
     while (!Groups.empty())
     {
       std::wstring NewGroup = CutToChar(Groups, ' ', false);
@@ -741,7 +741,7 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT("Trying \"$%s\".", (ReturnVars[Index])));
         ExecCommand(fsVarValue, ARRAYOFCONST((ReturnVars[Index])));
-        if ((Output->GetCount() != 1) || (StrToIntDef(Output->Strings[0], 256) > 255))
+        if ((Output->GetCount() != 1) || (StrToIntDef(Output->GetString(0], 256) > 255))
         {
           FTerminal->LogEvent("The response is not numerical exit code");
           Abort();
@@ -803,7 +803,7 @@ void TSCPFileSystem::ClearAliases()
     {
       for (int Index = 0; Index < CommandList->GetCount(); Index++)
       {
-        ClearAlias(CommandList->Strings[Index]);
+        ClearAlias(CommandList->GetString(Index));
       }
     }
     catch(...)
@@ -838,7 +838,7 @@ void TSCPFileSystem::ReadCurrentDirectory()
   if (FCachedDirectoryChange.empty())
   {
     ExecCommand(fsCurrentDirectory);
-    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->Strings[0]);
+    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0]);
   }
   else
   {
@@ -894,7 +894,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         FLAGMASK(FTerminal->SessionData->IgnoreLsWarnings, ecIgnoreWarnings);
       const char * Options =
         ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : "";
-      bool ListCurrentDirectory = (FileList->Directory == FTerminal->CurrentDirectory);
+      bool ListCurrentDirectory = (FileList->Directory == FTerminal->GetCurrentDirectory());
       if (ListCurrentDirectory)
       {
         FTerminal->LogEvent("Listing current directory.");
@@ -928,14 +928,14 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // delete leading "total xxx" line
           // On some hosts there is not "total" but "totalt". What's the reason??
           // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-          if (IsTotalListingLine(OutputCopy->Strings[0]))
+          if (IsTotalListingLine(OutputCopy->GetString(0]))
           {
             OutputCopy->Delete(0);
           }
 
           for (int Index = 0; Index < OutputCopy->GetCount(); Index++)
           {
-            File = CreateRemoteFile(OutputCopy->Strings[Index]);
+            File = CreateRemoteFile(OutputCopy->GetString(Index));
             FileList->AddFile(File);
           }
         }
@@ -1055,12 +1055,12 @@ void TSCPFileSystem::CustomReadFile(const std::wstring FileName,
   if (FOutput->GetCount())
   {
     int LineIndex = 0;
-    if (IsTotalListingLine(FOutput->Strings[LineIndex]) && FOutput->GetCount() > 1)
+    if (IsTotalListingLine(FOutput->GetString(LineIndex]) && FOutput->GetCount() > 1)
     {
       LineIndex++;
     }
 
-    File = CreateRemoteFile(FOutput->Strings[LineIndex], ALinkedByFile);
+    File = CreateRemoteFile(FOutput->GetString(LineIndex], ALinkedByFile);
   }
 }
 //---------------------------------------------------------------------------
@@ -1207,7 +1207,7 @@ void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
   {
     TCustomCommandData Data(FTerminal);
     std::wstring Cmd = TRemoteCustomCommand(
-      Data, FTerminal->CurrentDirectory, FileName, "").
+      Data, FTerminal->GetCurrentDirectory(), FileName, "").
       Complete(Command, true);
 
     AnyCommand(Cmd, OutputEvent);
@@ -1341,7 +1341,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   Params &= ~(cpAppend | cpResume);
   std::wstring Options = "";
-  bool CheckExistence = UnixComparePaths(TargetDir, FTerminal->CurrentDirectory) &&
+  bool CheckExistence = UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
     (FTerminal->FFiles != NULL) && FTerminal->FFiles->Loaded;
   bool CopyBatchStarted = false;
   bool Failed = true;
@@ -1385,7 +1385,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
-      std::wstring FileName = FilesToCopy->Strings[IFile];
+      std::wstring FileName = FilesToCopy->GetString(IFile];
       bool CanProceed;
 
       std::wstring FileNameOnly =
@@ -1974,8 +1974,8 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
-      std::wstring FileName = FilesToCopy->Strings[IFile];
-      TRemoteFile * File = (TRemoteFile *)FilesToCopy->Objects[IFile];
+      std::wstring FileName = FilesToCopy->GetString(IFile];
+      TRemoteFile * File = (TRemoteFile *)FilesToCopy->GetObject(IFile];
       assert(File);
 
       try

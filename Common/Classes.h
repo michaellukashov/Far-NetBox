@@ -130,6 +130,9 @@ public:
     void Remove(TObject *value)
     {
     }
+    void Delete(int Index)
+    {
+    }
     size_t IndexOf(TObject *value) const
     {
         return -1;
@@ -230,6 +233,13 @@ public:
         return L"";
     }
     void Delete(size_t Index)
+    {
+    }
+    std::wstring GetCommaText() const
+    {
+        return L"";
+    }
+    void AddStrings(TStrings *value)
     {
     }
 private:

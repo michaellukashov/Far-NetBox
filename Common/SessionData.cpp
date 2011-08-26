@@ -2098,7 +2098,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       TSessionData *SessionData;
-      std::wstring SessionName = SubKeys->Strings[Index];
+      std::wstring SessionName = SubKeys->GetString(Index);
       bool ValidName = true;
       try
       {
@@ -2401,7 +2401,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
           std::wstring KeyName;
           for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
-            KeyName = KeyList->Strings[KeyIndex];
+            KeyName = KeyList->GetString(KeyIndex];
             int P = KeyName.find_first_of(HostKeyName);
             if ((P > 0) && (P == KeyName.size() - HostKeyName.size() + 1))
             {

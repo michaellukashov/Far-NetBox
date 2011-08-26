@@ -235,7 +235,7 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
   const std::wstring MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->GetCount(), (Items->GetCount() > 0 ? Items->Strings[0] : std::wstring()));
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0] : std::wstring()));
 }
 //---------------------------------------------------------------------------
 std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
@@ -245,8 +245,8 @@ std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
   std::wstring Item;
   if (Files->GetCount() > 0)
   {
-    Item = Remote ? UnixExtractFileName(Files->Strings[0]) :
-      ExtractFileName(Files->Strings[0]);
+    Item = Remote ? UnixExtractFileName(Files->GetString(0]) :
+      ExtractFileName(Files->GetString(0]);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);

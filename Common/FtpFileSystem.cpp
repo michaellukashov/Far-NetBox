@@ -945,8 +945,8 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   int Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
-    std::wstring FileName = FilesToCopy->Strings[Index];
-    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->Objects[Index]);
+    std::wstring FileName = FilesToCopy->GetString(Index);
+    const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
     bool Success = false;
 
     try
@@ -1213,7 +1213,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
-    FileName = FilesToCopy->Strings[Index];
+    FileName = FilesToCopy->GetString(Index);
     FileNameOnly = ExtractFileName(FileName);
 
     try
@@ -1608,7 +1608,7 @@ void TFTPFileSystem::DoStartup()
     PostLoginCommands->Text = FTerminal->GetSessionData()->PostLoginCommands;
     for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
-      std::wstring Command = PostLoginCommands->Strings[Index];
+      std::wstring Command = PostLoginCommands->GetString(Index);
       if (!Command.IsEmpty())
       {
         FFileZillaIntf->CustomCommand(Command.c_str());
@@ -1951,7 +1951,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
         FORMAT("%s\r\n", (LoadStr(FTP_FEATURE_INFO)));
       for (int Index = 0; Index < FFeatures->GetCount(); Index++)
       {
-        FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", (FFeatures->Strings[Index]));
+        FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", (FFeatures->GetString(Index)));
       }
     }
 
@@ -2466,7 +2466,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       if (Error.IsEmpty() && (MoreMessages != NULL))
       {
         assert(MoreMessages->GetCount() > 0);
-        Error = MoreMessages->Strings[0];
+        Error = MoreMessages->GetString(0];
         MoreMessages->Delete(0);
       }
 

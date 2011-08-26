@@ -473,7 +473,7 @@ public:
   bool GetUseBusyCursor() { return FUseBusyCursor; }
   void SetUseBusyCursor(bool value) { FUseBusyCursor = value; }
   // __property std::wstring UserName = { read=GetUserName };
-  std::wstring GetUserName() const;
+  std::wstring GetUserName();
   // __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
   bool GetIsCapable(TFSCapability Capability) const;
   // __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
