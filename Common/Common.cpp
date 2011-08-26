@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#include <ShFolder.h>
+// #include <ShFolder.h>
+#include <shlobj.h>
 
 #include "Common.h"
 #include "Exceptions.h"

@@ -1,15 +1,18 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
+// #include <shfolder.h>
+#include <shlobj.h>
+
 #include <FileInfo.h>
 
 #include "Exceptions.h"
 #include "Common.h"
-#include "Configuration.h"
+#include "Configuration.h"                              c
 #include "PuttyIntf.h"
 #include "TextsCore.h"
 #include "Interface.h"
 #include "CoreMain.h"
 #include "Security.h"
-#include <shfolder.h>
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration()
 {
