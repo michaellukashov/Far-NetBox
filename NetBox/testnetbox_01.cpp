@@ -13,6 +13,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "stdafx.h"
+#include "FarUtil.h"
 
 using namespace boost::unit_test;
 
