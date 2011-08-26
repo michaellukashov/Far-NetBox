@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
 
 #include <Common.h>
 #include <Exceptions.h>
@@ -152,7 +150,7 @@ bool GetFileVersionInfoFix(const char * FileName, unsigned long Handle,
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void * __fastcall CreateFileInfo(AnsiString FileName)
+void * CreateFileInfo(std::wstring FileName)
 {
   unsigned long Handle;
   unsigned int Size;
@@ -179,7 +177,7 @@ void * __fastcall CreateFileInfo(AnsiString FileName)
 }
 //---------------------------------------------------------------------------
 // Free file version info block memory
-void __fastcall FreeFileInfo(void * FileInfo)
+void FreeFileInfo(void * FileInfo)
 {
   delete[] FileInfo;
 }
@@ -188,7 +186,8 @@ typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
 //---------------------------------------------------------------------------
 // Return pointer to fixed file version info
-PVSFixedFileInfo __fastcall GetFixedFileInfo(void * FileInfo)
+/* FIXME
+PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
   PVSFixedFileInfo Result;
@@ -196,9 +195,10 @@ PVSFixedFileInfo __fastcall GetFixedFileInfo(void * FileInfo)
     throw Exception("Fixed file info not available");
   return Result;
 };
+*/
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
-unsigned __fastcall GetTranslationCount(void * FileInfo)
+unsigned GetTranslationCount(void * FileInfo)
 {
   PTranslations P;
   UINT Len;
@@ -208,7 +208,7 @@ unsigned __fastcall GetTranslationCount(void * FileInfo)
 }
 //---------------------------------------------------------------------------
 // Return i-th translation in the file version info translation list
-TTranslation __fastcall GetTranslation(void * FileInfo, unsigned i)
+TTranslation GetTranslation(void * FileInfo, unsigned i)
 {
   PTranslations P;
   UINT Len;
@@ -221,7 +221,7 @@ TTranslation __fastcall GetTranslation(void * FileInfo, unsigned i)
 };
 //---------------------------------------------------------------------------
 // Return the name of the specified language
-AnsiString __fastcall GetLanguage(Word Language)
+std::wstring GetLanguage(unsigned int Language)
 {
   UINT Len;
   Char P[256];
@@ -229,18 +229,18 @@ AnsiString __fastcall GetLanguage(Word Language)
   Len = VerLanguageName(Language, P, sizeof(P));
   if (Len > sizeof(P))
     throw Exception("Language not available");
-  return AnsiString(P, Len);
+  return std::wstring(P, Len);
 };
 //---------------------------------------------------------------------------
 // Return the value of the specified file version info string using the
 // specified translation
-AnsiString __fastcall GetFileInfoString(void * FileInfo,
-  TTranslation Translation, AnsiString StringName)
+std::wstring GetFileInfoString(void * FileInfo,
+  TTranslation Translation, std::wstring StringName)
 {
   PChar P;
   UINT Len;
 
-  if (!VerQueryValue(FileInfo, (AnsiString("\\StringFileInfo\\") +
+  if (!VerQueryValue(FileInfo, (std::wstring("\\StringFileInfo\\") +
     IntToHex(Translation.Language, 4) +
     IntToHex(Translation.CharSet, 4) +
     "\\" + StringName).c_str(), (void**)&P, &Len))
@@ -248,11 +248,11 @@ AnsiString __fastcall GetFileInfoString(void * FileInfo,
     throw Exception("Specified file info string not available");
   }
   // c_str() makes sure that returned string has only necessary bytes allocated
-  AnsiString Result = AnsiString(P, Len).c_str();
+  std::wstring Result = std::wstring(P, Len).c_str();
   return Result;
 };
 //---------------------------------------------------------------------------
-int __fastcall CalculateCompoundVersion(int MajorVer,
+int CalculateCompoundVersion(int MajorVer,
   int MinorVer, int Release, int Build)
 {
   int CompoundVer = Build + 10000 * (Release + 100 * (MinorVer +
