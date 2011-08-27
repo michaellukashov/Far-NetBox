@@ -61,7 +61,7 @@ typedef void (TObject::*TInformationEvent)
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
   {                                                           \
-    TSuspendFileOperationProgress Suspend(OperationProgress); \
+    TSuspendFileOperationProgress Suspend(GetOperationProgress()); \
     Command                                                   \
   }
 

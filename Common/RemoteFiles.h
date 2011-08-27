@@ -131,7 +131,7 @@ public:
   // __property std::wstring RightsStr = { read = GetRightsStr };
   std::wstring GetRightsStr();
   // __property __int64 Size = { read = FSize, write = FSize };
-  __int64 GetSize() { return FSize; }
+  __int64 GetSize() const { return FSize; }
   void SetSize(__int64 value) { FSize = value; }
   // __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   TRemoteToken GetOwner() const { return FOwner; }
@@ -466,6 +466,10 @@ public:
     TValidProperties & operator >> (const TValidProperty value)
     {
         return *this;
+    }
+    bool Empty() const
+    {
+        return true;
     }
 };
 
