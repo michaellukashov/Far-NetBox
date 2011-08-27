@@ -1401,11 +1401,11 @@ bool TQueueItemProxy::Update()
 {
   assert(FQueueItem != NULL);
 
-  TQueueItem::TStatus PrevStatus = Status;
+  TQueueItem::TStatus PrevStatus = GetStatus();
 
   bool Result = FQueue->ItemGetData(FQueueItem, this);
 
-  if ((FQueueStatus != NULL) && (PrevStatus != Status))
+  if ((FQueueStatus != NULL) && (PrevStatus != GetStatus()))
   {
     FQueueStatus->ResetStats();
   }
@@ -1532,13 +1532,13 @@ int TTerminalQueueStatus::GetActiveCount()
 void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
 {
   ItemProxy->FQueueStatus = this;
-  FList->Add(ItemProxy);
+  FList->Add((TObject *)ItemProxy);
   ResetStats();
 }
 //---------------------------------------------------------------------------
 void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
 {
-  FList->Extract(ItemProxy);
+  FList->Extract((TObject *)ItemProxy);
   ItemProxy->FQueueStatus = NULL;
   ResetStats();
 }
@@ -1604,7 +1604,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
   {
     FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
       ((FilesToCopy->GetObject(Index) == NULL) || (Side == osLocal)) ? NULL :
-        dynamic_cast<TRemoteFile*>(FilesToCopy->GetObject(Index))->Duplicate());
+        reinterpret_cast<TRemoteFile*>(FilesToCopy->GetObject(Index))->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -1636,8 +1636,8 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = "";
-      FInfo->ModifiedLocal = "";
+      FInfo->Source = L"";
+      FInfo->ModifiedLocal = L"";
     }
     else
     {
@@ -1652,20 +1652,20 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   {
     if (FLAGSET(Params, cpTemporary))
     {
-      FInfo->Source = ExtractFileName(FilesToCopy->GetString(0]);
-      FInfo->ModifiedLocal = "";
+      FInfo->Source = ::ExtractFileName(FilesToCopy->GetString(0), true);
+      FInfo->ModifiedLocal = L"";
     }
     else
     {
       assert(FilesToCopy->GetCount() > 0);
-      FInfo->Source = FilesToCopy->GetString(0];
+      FInfo->Source = FilesToCopy->GetString(0);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? std::wstring() :
         IncludeTrailingBackslash(ExtractFilePath(FInfo->Source));
     }
   }
 
   FInfo->Destination =
-    UnixIncludeTrailingBackslash(TargetDir) + CopyParam->FileMask;
+    UnixIncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
   FInfo->ModifiedRemote = UnixIncludeTrailingBackslash(TargetDir);
 }
 //---------------------------------------------------------------------------
@@ -1697,7 +1697,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   else
   {
     assert(FilesToCopy->GetCount() > 0);
-    FInfo->Source = FilesToCopy->GetString(0];
+    FInfo->Source = FilesToCopy->GetString(0);
     if (UnixExtractFilePath(FInfo->Source).empty())
     {
       FInfo->Source = UnixIncludeTrailingBackslash(Terminal->GetCurrentDirectory()) +
@@ -1714,12 +1714,12 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
 
   if (FLAGSET(Params, cpTemporary))
   {
-    FInfo->Destination = "";
+    FInfo->Destination = L"";
   }
   else
   {
     FInfo->Destination =
-      IncludeTrailingBackslash(TargetDir) + CopyParam->FileMask;
+      IncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
   }
   FInfo->ModifiedLocal = IncludeTrailingBackslash(TargetDir);
 }

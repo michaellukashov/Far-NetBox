@@ -131,7 +131,7 @@ public:
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool value) { FCalculateSize = value; }
   // __property std::wstring FileMask = { read = FFileMask, write = FFileMask };
-  std::wstring GetFileMask() { return FFileMask; }
+  std::wstring GetFileMask() const { return FFileMask; }
   void SetFileMask(std::wstring value) { FFileMask = value; }
   // __property TFileMasks ExcludeFileMask = { read = FExcludeFileMask, write = FExcludeFileMask };
   TFileMasks GetExcludeFileMask() { return FExcludeFileMask; }
