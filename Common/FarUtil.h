@@ -421,3 +421,13 @@ int StrToInt(const std::wstring value);
 __int64 ToInt(const std::wstring value);
 int StrToIntDef(const std::wstring value, int defval);
 __int64 StrToInt64Def(const std::wstring value, __int64 defval);
+
+enum FileAttributesEnum
+{
+    faReadOnly,
+    faHidden
+};
+
+bool FileExists(const std::wstring &filename);
+int FileGetAttr(const std::wstring &filename);
+void FileSetAttr(const std::wstring &filename, int attrs);

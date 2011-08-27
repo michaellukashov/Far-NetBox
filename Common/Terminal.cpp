@@ -3506,7 +3506,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
   assert(FFileSystem);
   try
   {
-    DirectoryModified(CurrentDirectory, false);
+    DirectoryModified(GetCurrentDirectory(), false);
     if (GetIsCapable(fcAnyCommand))
     {
       LogEvent(L"Executing user defined command.");
@@ -3515,10 +3515,10 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     else
     {
       assert(GetCommandSessionOpened());
-      assert(FCommandSession->FSProtocol == cfsSCP);
+      assert(FCommandSession->GetFSProtocol() == cfsSCP);
       LogEvent(L"Executing user defined command on command session.");
 
-      FCommandSession->GetCurrentDirectory() = CurrentDirectory;
+      FCommandSession->SetCurrentDirectory(GetCurrentDirectory());
       FCommandSession->FFileSystem->AnyCommand(Command, OutputEvent);
 
       FCommandSession->FFileSystem->ReadCurrentDirectory();
@@ -3534,13 +3534,13 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     {
       RollbackAction(*Action, NULL, &E);
     }
-    if (ExceptionOnFail || (E.InheritsFrom(__classid(EFatal)))) throw;
+    if (GetExceptionOnFail()) throw; // FIXME  || (E.InheritsFrom(__classid(EFatal)))) throw;
       else HandleExtendedException(&E);
   }
 }
 //---------------------------------------------------------------------------
 bool TTerminal::DoCreateLocalFile(const std::wstring FileName,
-  TFileOperationProgressType * GetOperationProgress(), HANDLE * AHandle,
+  TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
   bool Result = true;
@@ -3559,23 +3559,24 @@ bool TTerminal::DoCreateLocalFile(const std::wstring FileName,
       {
         if (FLAGSET(FileAttr, faReadOnly))
         {
-          if (GetOperationProgress()->BatchOverwrite == boNone)
+          if (OperationProgress->BatchOverwrite == boNone)
           {
             Result = false;
           }
-          else if ((GetOperationProgress()->BatchOverwrite != boAll) && !NoConfirmation)
+          else if ((OperationProgress->BatchOverwrite != boAll) && !NoConfirmation)
           {
             int Answer;
             SUSPEND_OPERATION
             (
               Answer = QueryUser(
-                FMTLOAD(READ_ONLY_OVERWRITE, (FileName)), NULL,
+                L"", // FIXME FMTLOAD(READ_ONLY_OVERWRITE, (FileName)),
+                NULL,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, 0);
             );
             switch (Answer) {
-              case qaYesToAll: GetOperationProgress()->BatchOverwrite = boAll; break;
-              case qaCancel: GetOperationProgress()->Cancel = csCancel; // continue on next case
-              case qaNoToAll: GetOperationProgress()->BatchOverwrite = boNone;
+              case qaYesToAll: OperationProgress->BatchOverwrite = boAll; break;
+              case qaCancel: OperationProgress->Cancel = csCancel; // continue on next case
+              case qaNoToAll: OperationProgress->BatchOverwrite = boNone;
               case qaNo: Result = false; break;
             }
           }
@@ -3592,7 +3593,7 @@ bool TTerminal::DoCreateLocalFile(const std::wstring FileName,
             FLAGMASK(FLAGSET(FileAttr, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(FileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
-          FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, (FileName)),
+          FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (FileName)),
             if (FileSetAttr(FileName, FileAttr & ~(faReadOnly | faHidden)) != 0)
             {
               RaiseLastOSError();
@@ -3616,14 +3617,14 @@ bool TTerminal::DoCreateLocalFile(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 bool TTerminal::CreateLocalFile(const std::wstring FileName,
-  TFileOperationProgressType * GetOperationProgress(), HANDLE * AHandle,
+  TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
   assert(AHandle);
   bool Result = true;
 
-  FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, (FileName)),
-    Result = DoCreateLocalFile(FileName, GetOperationProgress(), AHandle, NoConfirmation);
+  FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CREATE_FILE_ERROR, (FileName)),
+    Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
   );
 
   return Result;
@@ -3637,7 +3638,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
   int Attrs = 0;
   HANDLE Handle = 0;
 
-  FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, (FileName)),
+  FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(FILE_NOT_EXISTS, (FileName)),
     Attrs = FileGetAttr(FileName);
     if (Attrs == -1) RaiseLastOSError();
   )
@@ -3652,7 +3653,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
       NoHandle = true;
     }
 
-    FILE_OPERATION_LOOP (FMTLOAD(OPENFILE_ERROR, (FileName)),
+    FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(OPENFILE_ERROR, (FileName)),
       Handle = CreateFile(FileName.c_str(), Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         NULL, OPEN_EXISTING, 0, 0);
@@ -3671,7 +3672,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
         FILETIME MTime;
         FILETIME CTime;
         // Get last file access and modification time
-        FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, (FileName)),
+        FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_GET_ATTRS, (FileName)),
           if (!GetFileTime(Handle, &CTime, &ATime, &MTime)) RaiseLastOSError();
         );
         if (ACTime)
@@ -3691,7 +3692,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
       if (ASize)
       {
         // Get file size
-        FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, (FileName)),
+        FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_GET_ATTRS, (FileName)),
           unsigned long LSize;
           unsigned long HSize;
           LSize = GetFileSize(Handle, &HSize);
@@ -3804,10 +3805,10 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
     }
   }
 
-  if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
+  if (OperationProgress && OperationProgress->Operation == foCalculateSize)
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
-    GetOperationProgress()->SetFile(FileName);
+    if (OperationProgress->GetCancel() != csContinue) Abort();
+    OperationProgress->SetFile(FileName);
   }
 }
 //---------------------------------------------------------------------------
@@ -3983,7 +3984,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
               reinterpret_cast<TObject*>(FileData));
           }
 
-          FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, (LocalDirectory)),
+          FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(LIST_DIR_ERROR, (LocalDirectory)),
             Found = (FindNext(SearchRec) == 0);
           );
         }
@@ -4473,7 +4474,7 @@ void TTerminal::SynchronizeLocalTimestamp(const std::wstring /*FileName*/,
     IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
 
-  FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, (LocalFile)),
+  FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (LocalFile)),
     HANDLE Handle;
     OpenLocalFile(LocalFile, GENERIC_WRITE, NULL, &Handle,
       NULL, NULL, NULL, NULL);
