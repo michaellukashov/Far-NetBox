@@ -2856,7 +2856,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           case omOverwrite:
             if (FileName != FileName1)
             {
-              strncpy(FileName1, FileName.c_str(), FileName1Len);
+              wcsncpy(FileName1, FileName.c_str(), FileName1Len);
               FileName1[FileName1Len - 1] = '\0';
               UserData.FileName = FileName1;
               RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;

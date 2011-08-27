@@ -33,14 +33,14 @@ enum TAddressFamily { afAuto, afIPv4, afIPv6 };
 enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
 enum TSessionSource { ssNone, ssStored, ssStoredModified };
 //---------------------------------------------------------------------------
-extern const char CipherNames[CIPHER_COUNT][10];
-extern const char KexNames[KEX_COUNT][20];
-extern const char ProtocolNames[PROTOCOL_COUNT][10];
-extern const char SshProtList[][10];
-extern const char ProxyMethodList[][10];
+extern const wchar_t CipherNames[CIPHER_COUNT][10];
+extern const wchar_t KexNames[KEX_COUNT][20];
+extern const wchar_t ProtocolNames[PROTOCOL_COUNT][10];
+extern const wchar_t SshProtList[][10];
+extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
-extern const char FSProtocolNames[FSPROTOCOL_COUNT][11];
+extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11];
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------

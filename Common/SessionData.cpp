@@ -10,17 +10,17 @@
 #include "RemoteFiles.h"
 //---------------------------------------------------------------------------
 enum TProxyType { pxNone, pxHTTP, pxSocks, pxTelnet }; // 0.53b and older
-const char * DefaultName = "Default Settings";
-const char CipherNames[CIPHER_COUNT][10] = {"WARN", "3des", "blowfish", "aes", "des", "arcfour"};
-const char KexNames[KEX_COUNT][20] = {"WARN", "dh-group1-sha1", "dh-group14-sha1", "dh-gex-sha1", "rsa" };
-const char ProtocolNames[PROTOCOL_COUNT][10] = { "raw", "telnet", "rlogin", "ssh" };
-const char SshProtList[][10] = {"1 only", "1", "2", "2 only"};
-const char ProxyMethodList[][10] = {"none", "SOCKS4", "SOCKS5", "HTTP", "Telnet", "Cmd" };
+const wchar_t * DefaultName = L"Default Settings";
+const wchar_t CipherNames[CIPHER_COUNT][10] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour"};
+const wchar_t KexNames[KEX_COUNT][20] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-gex-sha1", L"rsa" };
+const wchar_t ProtocolNames[PROTOCOL_COUNT][10] = { L"raw", L"telnet", L"rlogin", L"ssh" };
+const wchar_t SshProtList[][10] = {L"1 only", L"1", L"2", L"2 only"};
+const wchar_t ProxyMethodList[][10] = {L"none", L"SOCKS4", L"SOCKS5", L"HTTP", L"Telnet", L"Cmd" };
 const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
-const char FSProtocolNames[FSPROTOCOL_COUNT][11] = { "SCP", "SFTP (SCP)", "SFTP", "", "", "FTP" };
+const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP" };
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int FtpsImplicitPortNumber = 990;
@@ -445,7 +445,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     if (Storage->ValueExists("ProxyPassword"))
     {
       // encrypt unencrypted password
-      ProxyPassword = Storage->ReadString("ProxyPassword", "");
+      ProxyPassword = Storage->ReadString("ProxyPassword", L"");
     }
     else
     {

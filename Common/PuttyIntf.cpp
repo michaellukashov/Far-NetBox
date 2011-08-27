@@ -137,7 +137,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
-        strncpy(Prompt->result, Results->GetString(Index).c_str(), Prompt->result_len);
+        wcsncpy(Prompt->result, Results->GetString(Index).c_str(), Prompt->result_len);
         Prompt->result[Prompt->result_len - 1] = '\0';
       }
       Result = 1;
@@ -325,7 +325,7 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 {
   if (*cfg->username)
   {
-    strncpy(user, cfg->username, len);
+    wcsncpy(user, cfg->username, len);
     user[len-1] = '\0';
   }
   else
@@ -429,7 +429,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != NULL);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    strncpy(DataStr, Value.c_str(), *DataSize);
+    wcsncpy(DataStr, Value.c_str(), *DataSize);
     DataStr[*DataSize - 1] = '\0';
     *DataSize = strlen(DataStr);
   }

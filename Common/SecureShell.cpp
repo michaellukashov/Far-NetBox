@@ -88,7 +88,7 @@ inline void TSecureShell::UpdateSessionInfo()
     FSshVersion = get_ssh_version(FBackendHandle);
     FSessionInfo.ProtocolBaseName = L"SSH";
     FSessionInfo.ProtocolName =
-      ::FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName.c_str(), get_ssh_version(FBackendHandle).c_str());
+      ::FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName, get_ssh_version(FBackendHandle));
     FSessionInfo.SecurityProtocolName = FSessionInfo.ProtocolName;
 
     FSessionInfo.CSCompression =
@@ -122,8 +122,8 @@ const TSessionInfo & TSecureShell::GetSessionInfo()
 //---------------------------------------------------------------------
 void TSecureShell::ClearConfig(Config * cfg)
 {
-  StrDispose(cfg->remote_cmd_ptr);
-  StrDispose(cfg->remote_cmd_ptr2);
+  // FIXME StrDispose(cfg->remote_cmd_ptr);
+  // FIXME StrDispose(cfg->remote_cmd_ptr2);
   // clear all
   memset(cfg, 0, sizeof(*cfg));
 }
@@ -133,24 +133,24 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   ClearConfig(cfg);
 
   // user-configurable settings
-  ASCOPY(cfg->host, Data->HostName);
-  ASCOPY(cfg->username, Data->UserName);
-  cfg->port = Data->PortNumber;
+  ASCOPY(cfg->host, Data->GetHostName());
+  ASCOPY(cfg->username, Data->GetUserName());
+  cfg->port = Data->GetPortNumber();
   cfg->protocol = PROT_SSH;
   // always set 0, as we will handle keepalives ourselves to avoid
   // multi-threaded issues in putty timer list
   cfg->ping_interval = 0;
-  cfg->compression = Data->Compression;
-  cfg->tryagent = Data->TryAgent;
-  cfg->agentfwd = Data->AgentFwd;
-  cfg->addressfamily = Data->AddressFamily;
-  ASCOPY(cfg->ssh_rekey_data, Data->RekeyData);
-  cfg->ssh_rekey_time = Data->RekeyTime;
+  cfg->compression = Data->GetCompression();
+  cfg->tryagent = Data->GetTryAgent();
+  cfg->agentfwd = Data->GetAgentFwd();
+  cfg->addressfamily = Data->GetAddressFamily();
+  ASCOPY(cfg->ssh_rekey_data, Data->GetRekeyData());
+  cfg->ssh_rekey_time = Data->GetRekeyTime();
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
     int pcipher;
-    switch (Data->Cipher[c]) {
+    switch (Data->GetCipher(c)) {
       case cipWarn: pcipher = CIPHER_WARN; break;
       case cip3DES: pcipher = CIPHER_3DES; break;
       case cipBlowfish: pcipher = CIPHER_BLOWFISH; break;
@@ -165,7 +165,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   for (int k = 0; k < KEX_COUNT; k++)
   {
     int pkex;
-    switch (Data->Kex[k]) {
+    switch (Data->GetKex(k)) {
       case kexWarn: pkex = KEX_WARN; break;
       case kexDHGroup1: pkex = KEX_DHGROUP1; break;
       case kexDHGroup14: pkex = KEX_DHGROUP14; break;
@@ -176,8 +176,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
     cfg->ssh_kexlist[k] = pkex;
   }
 
-  std::wstring SPublicKeyFile = Data->PublicKeyFile;
-  if (SPublicKeyFile.IsEmpty()) SPublicKeyFile = Configuration->DefaultKeyFile;
+  std::wstring SPublicKeyFile = Data->GetPublicKeyFile();
+  if (SPublicKeyFile.GetIsEmpty()) SPublicKeyFile = Configuration->DefaultKeyFile;
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
   ASCOPY(cfg->keyfile.path, SPublicKeyFile);
   cfg->sshprot = Data->SshProt;
