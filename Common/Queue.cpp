@@ -904,12 +904,12 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   try
   {
     FTerminal->SetUseBusyCursor(false);
-
-    FTerminal->SetOnQueryUser(GetTerminalQueryUser());
-    FTerminal->SetOnPromptUser(GetTerminalPromptUser());
-    FTerminal->SetOnShowExtendedException(GetTerminalShowExtendedException());
-    FTerminal->SetOnProgress(GetOperationProgress());
-    FTerminal->SetOnFinished(GetOperationFinished());
+    // FIXME 
+    // FTerminal->SetOnQueryUser(&TTerminalItem::TerminalQueryUser);
+    // FTerminal->SetOnPromptUser(&TTerminalItem::TerminalPromptUser);
+    // FTerminal->SetOnShowExtendedException(&TTerminalItem::TerminalShowExtendedException);
+    // FTerminal->SetOnProgress(&TTerminalItem::OperationProgress);
+    // FTerminal->SetOnFinished(&TTerminalItem::OperationFinished);
   }
   catch(...)
   {
@@ -999,7 +999,7 @@ void TTerminalItem::ProcessEvent()
     FQueue->DeleteItem(Item);
   }
 
-  if (!FTerminal->Active ||
+  if (!FTerminal->GetActive() ||
       !FQueue->TerminalFree(this))
   {
     Terminate();
@@ -1010,7 +1010,7 @@ void TTerminalItem::Idle()
 {
   TGuard Guard(FCriticalSection);
 
-  assert(FTerminal->Active);
+  assert(FTerminal->GetActive());
 
   try
   {
@@ -1020,7 +1020,7 @@ void TTerminalItem::Idle()
   {
   }
 
-  if (!FTerminal->Active ||
+  if (!FTerminal->GetActive() ||
       !FQueue->TerminalFree(this))
   {
     Terminate();
@@ -1249,7 +1249,7 @@ void TTerminalItem::OperationProgress(
 bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 {
   assert(FTerminal != NULL);
-  bool Result = (FTerminal->Status < ssOpened) && (ItemStatus == TQueueItem::qsProcessing);
+  bool Result = (FTerminal->GetStatus() < ssOpened) && (ItemStatus == TQueueItem::qsProcessing);
   if (Result)
   {
     ItemStatus = TQueueItem::qsConnecting;
@@ -1421,19 +1421,19 @@ bool TQueueItemProxy::ExecuteNow()
 bool TQueueItemProxy::Move(bool Sooner)
 {
   bool Result = false;
-  int I = Index;
+  int I = GetIndex();
   if (Sooner)
   {
     if (I > 0)
     {
-      Result = Move(FQueueStatus->GetItem(I - 1]);
+      Result = Move(FQueueStatus->GetItem(I - 1));
     }
   }
   else
   {
     if (I < FQueueStatus->GetCount() - 1)
     {
-      Result = FQueueStatus->GetItem(I + 1]->Move(this);
+      Result = FQueueStatus->GetItem(I + 1)->Move(this);
     }
   }
   return Result;
@@ -1484,7 +1484,7 @@ bool TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
 int TQueueItemProxy::GetIndex()
 {
   assert(FQueueStatus != NULL);
-  int Index = FQueueStatus->FList->IndexOf(this);
+  int Index = FQueueStatus->FList->IndexOf((TObject *)this);
   assert(Index >= 0);
   return Index;
 }
@@ -1520,7 +1520,7 @@ int TTerminalQueueStatus::GetActiveCount()
     FActiveCount = 0;
 
     while ((FActiveCount < FList->GetCount()) &&
-      (GetItem(FActiveCount)->Status != TQueueItem::qsPending))
+      (GetItem(FActiveCount)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
     }
