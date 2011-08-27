@@ -242,9 +242,15 @@ public:
     void AddStrings(TStrings *value)
     {
     }
+    void Append(const std::wstring &value)
+    {
+    }
     bool Find(const std::wstring Value, int &Index)
     {
         return false;
+    }
+    void Insert(int Index, const std::wstring &value)
+    {
     }
 private:
     TNotifyEvent FOnChange;

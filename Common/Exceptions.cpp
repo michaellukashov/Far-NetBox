@@ -82,19 +82,19 @@ ExtException::ExtException(std::wstring Msg, exception* E) :
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
     std::wstring HelpKeyword) :
-  exception(::W2MB(Msg.c_str())),
+  std::exception(::W2MB(Msg.c_str()).c_str()),
   FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.empty())
   {
     FMoreMessages = new TStringList();
-    FMoreMessages->Text = MoreMessages;
+    FMoreMessages->SetText(MoreMessages);
   }
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, TStrings* MoreMessages,
   bool Own) :
-  exception(::W2MB(Msg.c_str()))
+  exception(::W2MB(Msg.c_str()).c_str())
 {
   if (Own)
   {
@@ -119,17 +119,17 @@ void ExtException::AddMoreMessages(exception* E)
     ExtException * ExtE = dynamic_cast<ExtException *>(E);
     if (ExtE != NULL)
     {
-      if (!ExtE->HelpKeyword.empty())
+      if (!ExtE->GetHelpKeyword().empty())
       {
         // we have to yet decide what to do now
-        assert(HelpKeyword.empty());
+        assert(GetHelpKeyword().empty());
 
-        FHelpKeyword = ExtE->HelpKeyword;
+        FHelpKeyword = ExtE->GetHelpKeyword();
       }
 
-      if (ExtE->MoreMessages != NULL)
+      if (ExtE->GetMoreMessages() != NULL)
       {
-        FMoreMessages->Assign(ExtE->MoreMessages);
+        FMoreMessages->Assign(ExtE->GetMoreMessages());
       }
     }
 
@@ -138,9 +138,9 @@ void ExtException::AddMoreMessages(exception* E)
 
     // new exception does not have own message, this is in fact duplication of
     // the exception data, but the exception class may being changed
-    if (Message.empty())
+    if (GetMessage().empty())
     {
-      Message = Msg;
+      SetMessage(Msg);
     }
     else if (!Msg.empty())
     {
@@ -166,7 +166,7 @@ std::wstring LastSysErrorMessage()
   std::wstring Result;
   if (LastError != 0)
   {
-    Result = FORMAT(Sysconst_SOSError, (LastError, SysErrorMessage(LastError)));
+    Result = ::FORMAT(L"System Error.  Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str()));
   }
   return Result;
 }
