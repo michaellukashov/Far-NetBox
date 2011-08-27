@@ -572,5 +572,5 @@ std::wstring SysErrorMessage(int code)
 char *StrNew(const char *str)
 {
     // FIXME 
-    return str;
+    return (char *)str;
 }
