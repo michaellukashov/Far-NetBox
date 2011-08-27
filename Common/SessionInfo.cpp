@@ -1072,7 +1072,7 @@ void TSessionLog::AddPendingAction(TSessionActionRecord * Action)
 void TSessionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->Items[0])->Record())
+         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0])->Record())
   {
     FPendingActions->Delete(0);
   }

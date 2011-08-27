@@ -127,7 +127,14 @@ public:
         m_objects.push_back(value);
         return m_objects.size() - 1;
     }
-    void Remove(TObject *value)
+    int Remove(TObject *value)
+    {
+        return 0;
+    }
+    void Extract(TObject *value)
+    {
+    }
+    void Move(int Index, int To)
     {
     }
     void Delete(int Index)
@@ -291,6 +298,10 @@ public:
     operator double() const
     {
         return 0.0;
+    }
+    TDateTime &operator - (const TDateTime &)
+    {
+        return *this;
     }
     void operator = (double value)
     {

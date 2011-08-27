@@ -1027,10 +1027,10 @@ public:
     {
       assert(FResponses->GetCount());
 
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[0]);
+      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0]);
       assert(Request);
 
-      Response = static_cast<TSFTPPacket*>(FResponses->Items[0]);
+      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0]);
       assert(Response);
 
       try
@@ -1075,7 +1075,7 @@ public:
     TSFTPPacket * Response = NULL;
     try
     {
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->Items[0]);
+      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0]);
       FRequests->Delete(0);
       assert(Request);
       if (Token != NULL)
@@ -1083,7 +1083,7 @@ public:
         *Token = Request->Token;
       }
 
-      Response = static_cast<TSFTPPacket*>(FResponses->Items[0]);
+      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0]);
       FResponses->Delete(0);
       assert(Response);
 
@@ -1801,8 +1801,8 @@ void TSFTPFileSystem::ResetConnection()
   // there must be no valid packet reservation at the end
   for (int i = 0; i < FPacketReservations->GetCount(); i++)
   {
-    assert(FPacketReservations->Items[i] == NULL);
-    delete (TSFTPPacket *)FPacketReservations->Items[i];
+    assert(FPacketReservations->GetItem(i] == NULL);
+    delete (TSFTPPacket *)FPacketReservations->GetItem(i];
   }
   FPacketReservations->Clear();
   FPacketNumbers.Clear();
@@ -2133,7 +2133,7 @@ void TSFTPFileSystem::RemoveReservation(int Reservation)
   {
     FPacketNumbers.PutElement(FPacketNumbers.GetElement(Index), Index-1);
   }
-  TSFTPPacket * Packet = (TSFTPPacket *)FPacketReservations->Items[Reservation];
+  TSFTPPacket * Packet = (TSFTPPacket *)FPacketReservations->GetItem(Reservation];
   if (Packet)
   {
     assert(Packet->ReservedBy == this);
@@ -2322,7 +2322,7 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
       // we probably do not remove the item at all, because
       // we must remember that the respose was expected, so we skip it
       // in receivepacket()
-      FPacketReservations->Items[Reservation] = NULL;
+      FPacketReservations->GetItem(Reservation] = NULL;
     }
   }
 }

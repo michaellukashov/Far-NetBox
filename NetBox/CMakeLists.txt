@@ -22,7 +22,7 @@ endmacro( use_precompiled_header )
 # Устанавливаем флаги компиляции ( -DCMAKE_BUILD_TYPE=[Debug,Release] )
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS;NO_FILEZILLA /EHsc" )
+    "-DWIN32;_WINDOWS;NO_FILEZILLA /EHsc /MP2" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
@@ -227,6 +227,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/Terminal.cpp
     ${PROJECT_ROOT}/Common/Exceptions.cpp
     ${PROJECT_ROOT}/Common/FileOperationProgress.cpp
+    ${PROJECT_ROOT}/Common/Queue.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
 

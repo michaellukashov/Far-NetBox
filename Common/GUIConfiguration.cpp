@@ -386,7 +386,7 @@ int TCopyParamList::Find(const TCopyParamRuleData & Value) const
   int i = 0;
   while ((i < FRules->GetCount()) && (Result < 0))
   {
-    if (FRules->Items[i] != NULL)
+    if (FRules->GetItem(i] != NULL)
     {
       if (Rules[i]->Matches(Value))
       {

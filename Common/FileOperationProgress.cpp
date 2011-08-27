@@ -389,7 +389,7 @@ void TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
 //---------------------------------------------------------------------------
 TDateTime TFileOperationProgressType::TimeElapsed()
 {
-  return Now() - TDateTime(StartTime);
+  return Now() - StartTime;
 }
 //---------------------------------------------------------------------------
 unsigned int TFileOperationProgressType::CPS()
