@@ -81,7 +81,6 @@ protected:
 
   // __property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
   bool GetPermanentLogging() { return FPermanentLogging; }
-  void SetLogging(bool value);
     // __property std::wstring PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
   std::wstring GetPermanentLogFileName() { return FPermanentLogFileName; }
   // __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
@@ -153,6 +152,7 @@ public:
   std::wstring GetOSVersionStr();
   // __property bool Logging  = { read=FLogging, write=SetLogging };
   bool GetLogging() { return FLogging; }
+  void SetLogging(bool value);
   // __property std::wstring LogFileName  = { read=FLogFileName, write=SetLogFileName };
   std::wstring GetLogFileName() { return FLogFileName; }
   void SetLogFileName(std::wstring value);

@@ -636,48 +636,48 @@ void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
 
   while (!Line.empty())
   {
-    (f)(Type, Prefix + CutToChar(Line, '\n', false));
+    // FIXME (f)(Type, Prefix + CutToChar(Line, '\n', false));
   }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
 {
   assert(FConfiguration);
-  if (Logging && (FConfiguration->LogActions == (Type == llAction)))
+  if (GetLogging() && (FConfiguration->GetLogActions() == (Type == llAction)))
   {
     try
     {
       if (FParent != NULL)
       {
-        DoAdd(Type, Line, &DoAddToParent);
+        // FIXME DoAdd(Type, Line, &DoAddToParent);
       }
       else
       {
         TGuard Guard(FCriticalSection);
 
-        BeginUpdate();
+        // FIXME BeginUpdate();
 
         try
         {
-          DoAdd(Type, Line, DoAddToSelf);
+          // FIXME DoAdd(Type, Line, DoAddToSelf);
         }
         catch(...)
         {
           DeleteUnnecessary();
 
-          EndUpdate();
+          // FIXME EndUpdate();
         }
       }
     }
     catch (exception &E)
     {
       // We failed logging, turn it off and notify user.
-      FConfiguration->Logging = false;
+      FConfiguration->SetLogging(false);
       try
       {
         throw ExtException(&E, LOG_GEN_ERROR);
       }
-      catch (exception &E)
+      catch (std::exception &E)
       {
         AddException(&E);
         FUI->HandleExtendedException(&E);
@@ -700,8 +700,8 @@ void TSessionLog::ReflectSettings()
 
   bool ALogging =
     !FClosed &&
-    ((FParent != NULL) || FConfiguration->Logging) &&
-    ((FParent == NULL) || !FConfiguration->LogActions);
+    ((FParent != NULL) || FConfiguration->GetLogging()) &&
+    ((FParent == NULL) || !FConfiguration->GetLogActions());
 
   bool LoggingActions = ALogging && FConfiguration->LogActions;
   if (LoggingActions && !FLoggingActions)
