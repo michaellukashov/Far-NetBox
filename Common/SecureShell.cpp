@@ -14,8 +14,6 @@
 #include <winsock2.h>
 #endif
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 #define MAX_BUFSIZE 32768
 //---------------------------------------------------------------------------
 struct TPuttyTranslation
@@ -205,7 +203,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   cfg->proxy_dns = Data->GetProxyDNS();
   cfg->even_proxy_localhost = Data->GetProxyLocalhost();
 
-  #pragma option push -w-eas
+  // #pragma option push -w-eas
   // after 0.53b values were reversed, however putty still stores
   // settings to registry in save way as before
   cfg->sshbug_ignore1 = Data->GetBug(sbIgnore1);
@@ -218,7 +216,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   // new after 0.53b
   cfg->sshbug_pksessid2 = Data->GetBug(sbPKSessID2);
   cfg->sshbug_maxpkt2 = Data->GetBug(sbMaxPkt2);
-  #pragma option pop
+  // #pragma option pop
 
   if (!Data->GetTunnelPortFwd().empty())
   {
@@ -1060,7 +1058,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   while ((P = FStdErrorTemp.find_first_of(L"\n")) > 0)
   {
     Line = FStdErrorTemp.substr(1, P-1);
-    FStdErrorTemp.Delete(1, P);
+    FStdErrorTemp.erase(1, P);
     AddStdErrorLine(Line);
   }
 }
@@ -1069,7 +1067,7 @@ void TSecureShell::AddStdErrorLine(const std::wstring & Str)
 {
   if (FAuthenticating)
   {
-    FAuthenticationLog += (FAuthenticationLog.empty() ? "" : "\n") + Str;
+    FAuthenticationLog += (FAuthenticationLog.empty() ? L"" : L"\n") + Str;
   }
   CaptureOutput(llStdError, Str);
 }
@@ -1087,12 +1085,12 @@ void TSecureShell::ClearStdError()
     if (FAuthenticating)
     {
       FAuthenticationLog +=
-        (FAuthenticationLog.empty() ? "" : "\n") + FStdErrorTemp;
+        (FAuthenticationLog.empty() ? L"" : L"\n") + FStdErrorTemp;
     }
     CaptureOutput(llStdError, FStdErrorTemp);
-    FStdErrorTemp = "";
+    FStdErrorTemp = L"";
   }
-  FStdError = "";
+  FStdError = L"";
 }
 //---------------------------------------------------------------------------
 void TSecureShell::CaptureOutput(TLogLineType Type,
@@ -1100,7 +1098,7 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
 {
   if (FOnCaptureOutput != NULL)
   {
-    FOnCaptureOutput(Line, (Type == llStdError));
+    // FIXME FOnCaptureOutput(Line, (Type == llStdError));
   }
   FLog->Add(Type, Line);
 }
@@ -1131,7 +1129,7 @@ void TSecureShell::FatalError(std::wstring Error)
 //---------------------------------------------------------------------------
 void inline TSecureShell::LogEvent(const std::wstring & Str)
 {
-  if (FLog->Logging)
+  if (FLog->GetLogging())
   {
     FLog->Add(llMessage, Str);
   }
@@ -1150,21 +1148,21 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     Events = 0;
   }
 
-  if (Configuration->ActualLogProtocol >= 2)
+  if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Selecting events %d for socket %d", (int(Events), int(Socket))));
+    LogEvent(::FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
   }
 
   if (WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
   {
-    if (Configuration->ActualLogProtocol >= 2)
+    if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Error selecting events %d for socket %d", (int(Events), int(Socket))));
+      LogEvent(::FORMAT(L"Error selecting events %d for socket %d", int(Events), int(Socket)));
     }
 
     if (Startup)
     {
-      FatalError(FMTLOAD(EVENT_SELECT_ERROR, (WSAGetLastError())));
+      FatalError(L""); // FIXME FMTLOAD(EVENT_SELECT_ERROR, (WSAGetLastError())));
     }
   }
 }
@@ -1192,7 +1190,7 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
     }
     else
     {
-      assert(FSessionData->ProxyMethod == pmCmd);
+      assert(FSessionData->GetProxyMethod() == pmCmd);
     }
 
     if (Startup)
@@ -1210,9 +1208,9 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
-  if (Configuration->ActualLogProtocol >= 2)
+  if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Updating forwarding socket %d (%d)", (int(value), int(Startup))));
+    LogEvent(::FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
   }
 
   SocketEventSelect(value, FSocketEvent, Startup);
@@ -1265,7 +1263,7 @@ void TSecureShell::Discard()
 //---------------------------------------------------------------------------
 void TSecureShell::Close()
 {
-  LogEvent("Closing connection.");
+  LogEvent(L"Closing connection.");
   assert(FActive);
 
   // this is particularly necessary when using local proxy command
@@ -1285,7 +1283,7 @@ void inline TSecureShell::CheckConnection(int Message)
     int ExitCode = get_ssh_exitcode(FBackendHandle);
     if (ExitCode >= 0)
     {
-      Str += " " + FMTLOAD(SSH_EXITCODE, (ExitCode));
+      Str += L" " + std::wstring(L""); // FIXME FMTLOAD(SSH_EXITCODE, (ExitCode));
     }
     FatalError(Str);
   }
@@ -1293,7 +1291,7 @@ void inline TSecureShell::CheckConnection(int Message)
 //---------------------------------------------------------------------------
 void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
 {
-  if (!Active)
+  if (!GetActive())
   {
     // see comment below
     Result = qaRetry;
@@ -1302,9 +1300,9 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
   {
     try
     {
-      if (Configuration->ActualLogProtocol >= 2)
+      if (Configuration->GetActualLogProtocol() >= 2)
       {
-        LogEvent("Pooling for data in case they finally arrives");
+        LogEvent(L"Pooling for data in case they finally arrives");
       }
 
       // in extreme condition it may happen that send buffer is full, but there
@@ -1312,7 +1310,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
       // do not process FD_WRITE until we receive any FD_READ
       if (EventSelectLoop(0, false, &Events))
       {
-        LogEvent("Data has arrived, closing query to user.");
+        LogEvent(L"Data has arrived, closing query to user.");
         Result = qaOK;
       }
     }
@@ -1355,20 +1353,20 @@ void TSecureShell::WaitForData()
 
   do
   {
-    if (Configuration->ActualLogProtocol >= 2)
+    if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent("Looking for incoming data");
+      LogEvent(L"Looking for incoming data");
     }
 
-    IncomingData = EventSelectLoop(FSessionData->Timeout * 1000, true, NULL);
+    IncomingData = EventSelectLoop(FSessionData->GetTimeout() * 1000, true, NULL);
     if (!IncomingData)
     {
       WSANETWORKEVENTS Events;
       memset(&Events, 0, sizeof(Events));
       TPoolForDataEvent Event(this, Events);
 
-      LogEvent("Waiting for data timed out, asking user what to do.");
-      int Answer = TimeoutPrompt(Event.PoolForData);
+      LogEvent(L"Waiting for data timed out, asking user what to do.");
+      int Answer = -1; // FIXME TimeoutPrompt(&TPoolForDataEvent::PoolForData&Event.PoolForData);
       switch (Answer)
       {
         case qaRetry:
@@ -1403,9 +1401,9 @@ bool TSecureShell::SshFallbackCmd() const
 //---------------------------------------------------------------------------
 bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
-  if (Configuration->ActualLogProtocol >= 2)
+  if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Enumerating network events for socket %d", (int(Socket))));
+    LogEvent(::FORMAT(L"Enumerating network events for socket %d", int(Socket)));
   }
 
   // see winplink.c
@@ -1424,17 +1422,17 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       }
     }
 
-    if (Configuration->ActualLogProtocol >= 2)
+    if (Configuration->GetActualLogProtocol() >= 2)
     {
       LogEvent(::FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
-        (int(AEvents.lNetworkEvents), int(Events.lNetworkEvents), int(Socket))));
+        int(AEvents.lNetworkEvents), int(Events.lNetworkEvents), int(Socket)));
     }
   }
   else
   {
-    if (Configuration->ActualLogProtocol >= 2)
+    if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Error enumerating network events for socket %d", (int(Socket))));
+      LogEvent(::FORMAT(L"Error enumerating network events for socket %d", int(Socket)));
     }
   }
 
@@ -1460,14 +1458,14 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     if (FLAGSET(Events.lNetworkEvents, EventTypes[Event].Mask))
     {
       int Err = Events.iErrorCode[EventTypes[Event].Bit];
-      if (Configuration->ActualLogProtocol >= 2)
+      if (Configuration->GetActualLogProtocol() >= 2)
       {
         LogEvent(::FORMAT(L"Handling network %s event on socket %d with error %d",
-          (EventTypes[Event].Desc, int(Socket), Err)));
+          EventTypes[Event].Desc, int(Socket), Err));
       }
-      #pragma option push -w-prc
+      // #pragma option push -w-prc
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
-      #pragma option pop
+      // #pragma option pop
       if (!select_result((WPARAM)Socket, SelectEvent))
       {
         // note that connection was closed definitely,
@@ -1496,9 +1494,9 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
 
   do
   {
-    if (Configuration->ActualLogProtocol >= 2)
+    if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent("Looking for network events");
+      LogEvent(L"Looking for network events");
     }
     unsigned int TicksBefore = GetTickCount();
     int HandleCount;
@@ -1518,9 +1516,9 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
       }
       else if (WaitResult == WAIT_OBJECT_0 + HandleCount)
       {
-        if (Configuration->ActualLogProtocol >= 1)
+        if (Configuration->GetActualLogProtocol() >= 1)
         {
-          LogEvent("Detected network event");
+          LogEvent(L"Detected network event");
         }
 
         if (Events == NULL)
@@ -1549,18 +1547,18 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
       }
       else if (WaitResult == WAIT_TIMEOUT)
       {
-        if (Configuration->ActualLogProtocol >= 2)
+        if (Configuration->GetActualLogProtocol() >= 2)
         {
-          LogEvent("Timeout waiting for network events");
+          LogEvent(L"Timeout waiting for network events");
         }
 
         MSec = 0;
       }
       else
       {
-        if (Configuration->ActualLogProtocol >= 2)
+        if (Configuration->GetActualLogProtocol() >= 2)
         {
-          LogEvent(::FORMAT(L"Unknown waiting result %d", (int(WaitResult))));
+          LogEvent(::FORMAT(L"Unknown waiting result %d", int(WaitResult)));
         }
 
         MSec = 0;
@@ -1604,7 +1602,7 @@ void TSecureShell::KeepAlive()
 {
   if (FActive && (FWaiting == 0))
   {
-    LogEvent("Sending null packet to keep session alive.");
+    LogEvent(L"Sending null packet to keep session alive.");
     SendSpecial(TS_PING);
   }
   else
@@ -1641,11 +1639,11 @@ std::wstring TSecureShell::FuncToCompression(
   enum TCompressionType { ctNone, ctZLib };
   if (SshVersion == 1)
   {
-    return get_ssh1_compressing(FBackendHandle) ? "ZLib" : "";
+    return get_ssh1_compressing(FBackendHandle) ? L"ZLib" : L"";
   }
   else
   {
-    return (ssh_compress *)Compress == &ssh_zlib ? "ZLib" : "";
+    return (ssh_compress *)Compress == &ssh_zlib ? L"ZLib" : L"";
   }
 }
 //---------------------------------------------------------------------------
@@ -1710,17 +1708,17 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   char Delimiter = ';';
   assert(KeyStr.find_first_of(Delimiter) == 0);
 
-  if (FSessionData->Tunnel)
+  if (FSessionData->GetTunnel())
   {
-    Host = FSessionData->OrigHostName;
-    Port = FSessionData->OrigPortNumber;
+    Host = FSessionData->GetOrigHostName();
+    Port = FSessionData->GetOrigPortNumber();
   }
 
   FSessionInfo.HostKeyFingerprint = Fingerprint;
 
   bool Result = false;
 
-  std::wstring Buf = FSessionData->HostKey;
+  std::wstring Buf = FSessionData->GetHostKey();
   while (!Result && !Buf.empty())
   {
     std::wstring ExpectedKey = CutToChar(Buf, Delimiter, false);
@@ -1734,8 +1732,8 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   if (!Result)
   {
     StoredKeys.resize(10240);
-    if (retrieve_host_key(Host.c_str(), Port, KeyType.c_str(),
-          StoredKeys.c_str(), StoredKeys.size()) == 0)
+    if (retrieve_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
+          (char *)::W2MB(StoredKeys.c_str()).c_str(), StoredKeys.size()) == 0)
     {
       PackStr(StoredKeys);
       std::wstring Buf = StoredKeys;
@@ -1750,13 +1748,13 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
     }
     else
     {
-      StoredKeys = "";
+      StoredKeys = L"";
     }
   }
 
   if (!Result)
   {
-    if (Configuration->DisableAcceptingHostKeys)
+    if (Configuration->GetDisableAcceptingHostKeys())
     {
       FatalError(LoadStr(KEY_NOT_VERIFIED));
     }
@@ -1772,7 +1770,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = &ClipboardHandler.Copy;
+      // FIXME Aliases[0].OnClick = &ClipboardHandler.Copy;
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)
@@ -1795,16 +1793,17 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
       int R = FUI->QueryUser(
-        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), (KeyType, Fingerprint)),
+        L"", // FIXME FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), (KeyType, Fingerprint)),
         NULL, Answers, &Params, qtWarning);
 
       switch (R) {
         case qaOK:
           assert(!Unknown);
-          KeyStr = (StoredKeys + Delimiter + KeyStr);
+          // FIXME KeyStr = (StoredKeys + Delimiter + KeyStr);
           // fall thru
         case qaYes:
-          store_host_key(Host.c_str(), Port, KeyType.c_str(), KeyStr.c_str());
+          store_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
+          (char *)::W2MB(KeyStr.c_str()).c_str());
           break;
 
         case qaCancel:
@@ -1818,22 +1817,22 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
   const std::wstring AlgName)
 {
   std::wstring Msg;
-  if (AlgType == "key-exchange algorithm")
+  if (AlgType == L"key-exchange algorithm")
   {
-    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, (AlgName));
+    Msg = L""; // FIXME FMTLOAD(KEX_BELOW_TRESHOLD, (AlgName));
   }
   else
   {
     int CipherType;
-    if (AlgType == "cipher")
+    if (AlgType == L"cipher")
     {
       CipherType = CIPHER_TYPE_BOTH;
     }
-    else if (AlgType == "client-to-server cipher")
+    else if (AlgType == L"client-to-server cipher")
     {
       CipherType = CIPHER_TYPE_CS;
     }
-    else if (AlgType == "server-to-client cipher")
+    else if (AlgType == L"server-to-client cipher")
     {
       CipherType = CIPHER_TYPE_SC;
     }
@@ -1842,7 +1841,7 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
       assert(false);
     }
 
-    Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, (LoadStr(CipherType), AlgName));
+    Msg = L""; // FIXME FMTLOAD(CIPHER_BELOW_TRESHOLD, (LoadStr(CipherType), AlgName));
   }
 
   if (FUI->QueryUser(Msg, NULL, qaYes | qaNo, NULL, qtWarning) == qaNo)
