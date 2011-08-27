@@ -568,3 +568,9 @@ std::wstring SysErrorMessage(int code)
     std::wstring result;
     return result;
 }
+
+char *StrNew(const char *str)
+{
+    // FIXME 
+    return str;
+}

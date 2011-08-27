@@ -9,7 +9,7 @@
 #define EXCEPTION throw ExtException(NULL, "")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
-  wcsncpy(dest, source, sizeof(dest)); \
+  strncpy(dest, source, sizeof(dest)); \
   dest[sizeof(dest)-1] = '\0'
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)

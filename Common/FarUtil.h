@@ -436,3 +436,5 @@ int FileGetAttr(const std::wstring &filename);
 int FileSetAttr(const std::wstring &filename, int attrs);
 
 std::wstring SysErrorMessage(int code);
+
+char *StrNew(const char *str);

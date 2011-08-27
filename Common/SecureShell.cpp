@@ -133,8 +133,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   ClearConfig(cfg);
 
   // user-configurable settings
-  ASCOPY(cfg->host, Data->GetHostName());
-  ASCOPY(cfg->username, Data->GetUserName());
+  ASCOPY(cfg->host, ::W2MB(Data->GetHostName().c_str()));
+  ASCOPY(cfg->username, ::W2MB(Data->GetUserName().c_str()));
   cfg->port = Data->GetPortNumber();
   cfg->protocol = PROT_SSH;
   // always set 0, as we will handle keepalives ourselves to avoid
@@ -144,7 +144,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   cfg->tryagent = Data->GetTryAgent();
   cfg->agentfwd = Data->GetAgentFwd();
   cfg->addressfamily = Data->GetAddressFamily();
-  ASCOPY(cfg->ssh_rekey_data, Data->GetRekeyData());
+  ASCOPY(cfg->ssh_rekey_data, ::W2MB(Data->GetRekeyData().c_str()));
   cfg->ssh_rekey_time = Data->GetRekeyTime();
 
   for (int c = 0; c < CIPHER_COUNT; c++)
@@ -177,53 +177,53 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   }
 
   std::wstring SPublicKeyFile = Data->GetPublicKeyFile();
-  if (SPublicKeyFile.GetIsEmpty()) SPublicKeyFile = Configuration->DefaultKeyFile;
+  if (SPublicKeyFile.empty()) SPublicKeyFile = Configuration->GetDefaultKeyFile();
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
-  ASCOPY(cfg->keyfile.path, SPublicKeyFile);
-  cfg->sshprot = Data->SshProt;
-  cfg->ssh2_des_cbc = Data->Ssh2DES;
-  cfg->ssh_no_userauth = Data->SshNoUserAuth;
-  cfg->try_tis_auth = Data->AuthTIS;
-  cfg->try_ki_auth = Data->AuthKI;
-  cfg->try_gssapi_auth = Data->AuthGSSAPI;
-  cfg->gssapifwd = Data->GSSAPIFwdTGT;
-  cfg->change_username = Data->ChangeUsername;
+  ASCOPY(cfg->keyfile.path, ::W2MB(SPublicKeyFile.c_str()));
+  cfg->sshprot = Data->GetSshProt();
+  cfg->ssh2_des_cbc = Data->GetSsh2DES();
+  cfg->ssh_no_userauth = Data->GetSshNoUserAuth();
+  cfg->try_tis_auth = Data->GetAuthTIS();
+  cfg->try_ki_auth = Data->GetAuthKI();
+  cfg->try_gssapi_auth = Data->GetAuthGSSAPI();
+  cfg->gssapifwd = Data->GetGSSAPIFwdTGT();
+  cfg->change_username = Data->GetChangeUsername();
 
-  cfg->proxy_type = Data->ProxyMethod;
-  ASCOPY(cfg->proxy_host, Data->ProxyHost);
-  cfg->proxy_port = Data->ProxyPort;
-  ASCOPY(cfg->proxy_username, Data->ProxyUsername);
-  ASCOPY(cfg->proxy_password, Data->ProxyPassword);
-  if (Data->ProxyMethod == pmCmd)
+  cfg->proxy_type = Data->GetProxyMethod();
+  ASCOPY(cfg->proxy_host, ::W2MB(Data->GetProxyHost().c_str()));
+  cfg->proxy_port = Data->GetProxyPort();
+  ASCOPY(cfg->proxy_username, ::W2MB(Data->GetProxyUsername().c_str()));
+  ASCOPY(cfg->proxy_password, ::W2MB(Data->GetProxyPassword().c_str()));
+  if (Data->GetProxyMethod() == pmCmd)
   {
-    ASCOPY(cfg->proxy_telnet_command, Data->ProxyLocalCommand);
+    ASCOPY(cfg->proxy_telnet_command, ::W2MB(Data->GetProxyLocalCommand().c_str()));
   }
   else
   {
-    ASCOPY(cfg->proxy_telnet_command, Data->ProxyTelnetCommand);
+    ASCOPY(cfg->proxy_telnet_command, ::W2MB(Data->GetProxyTelnetCommand().c_str()));
   }
-  cfg->proxy_dns = Data->ProxyDNS;
-  cfg->even_proxy_localhost = Data->ProxyLocalhost;
+  cfg->proxy_dns = Data->GetProxyDNS();
+  cfg->even_proxy_localhost = Data->GetProxyLocalhost();
 
   #pragma option push -w-eas
   // after 0.53b values were reversed, however putty still stores
   // settings to registry in save way as before
-  cfg->sshbug_ignore1 = Data->Bug[sbIgnore1];
-  cfg->sshbug_plainpw1 = Data->Bug[sbPlainPW1];
-  cfg->sshbug_rsa1 = Data->Bug[sbRSA1];
-  cfg->sshbug_hmac2 = Data->Bug[sbHMAC2];
-  cfg->sshbug_derivekey2 = Data->Bug[sbDeriveKey2];
-  cfg->sshbug_rsapad2 = Data->Bug[sbRSAPad2];
-  cfg->sshbug_rekey2 = Data->Bug[sbRekey2];
+  cfg->sshbug_ignore1 = Data->GetBug(sbIgnore1);
+  cfg->sshbug_plainpw1 = Data->GetBug(sbPlainPW1);
+  cfg->sshbug_rsa1 = Data->GetBug(sbRSA1);
+  cfg->sshbug_hmac2 = Data->GetBug(sbHMAC2);
+  cfg->sshbug_derivekey2 = Data->GetBug(sbDeriveKey2);
+  cfg->sshbug_rsapad2 = Data->GetBug(sbRSAPad2);
+  cfg->sshbug_rekey2 = Data->GetBug(sbRekey2);
   // new after 0.53b
-  cfg->sshbug_pksessid2 = Data->Bug[sbPKSessID2];
-  cfg->sshbug_maxpkt2 = Data->Bug[sbMaxPkt2];
+  cfg->sshbug_pksessid2 = Data->GetBug(sbPKSessID2);
+  cfg->sshbug_maxpkt2 = Data->GetBug(sbMaxPkt2);
   #pragma option pop
 
-  if (!Data->TunnelPortFwd.IsEmpty())
+  if (!Data->GetTunnelPortFwd().empty())
   {
     assert(!Simple);
-    ASCOPY(cfg->portfwd, Data->TunnelPortFwd);
+    ASCOPY(cfg->portfwd, ::W2MB(Data->GetTunnelPortFwd().c_str()));
     // when setting up a tunnel, do not open shell/sftp
     cfg->ssh_no_shell = TRUE;
   }
@@ -232,10 +232,10 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
     assert(Simple);
     cfg->ssh_simple = Simple;
 
-    if (Data->FSProtocol == fsSCPonly)
+    if (Data->GetFSProtocol() == fsSCPonly)
     {
       cfg->ssh_subsys = FALSE;
-      if (Data->Shell.IsEmpty())
+      if (Data->GetShell().empty())
       {
         // Following forces Putty to open default shell
         // see ssh.c: do_ssh2_authconn() and ssh1_protocol()
@@ -243,12 +243,12 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       }
       else
       {
-        cfg->remote_cmd_ptr = StrNew(Data->Shell.c_str());
+        ASCOPY(cfg->remote_cmd_ptr, ::W2MB(Data->GetShell().c_str()));
       }
     }
     else
     {
-      if (Data->SftpServer.IsEmpty())
+      if (Data->GetSftpServer().empty())
       {
         cfg->ssh_subsys = TRUE;
         strcpy(cfg->remote_cmd, "sftp");
@@ -256,21 +256,21 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       else
       {
         cfg->ssh_subsys = FALSE;
-        cfg->remote_cmd_ptr = StrNew(Data->SftpServer.c_str());
+        cfg->remote_cmd_ptr = ::W2MB(Data->GetSftpServer().c_str()));
       }
 
       if (Data->FSProtocol != fsSFTPonly)
       {
         cfg->ssh_subsys2 = FALSE;
-        if (Data->Shell.IsEmpty())
+        if (Data->GetShell().empty())
         {
           // Following forces Putty to open default shell
           // see ssh.c: do_ssh2_authconn() and ssh1_protocol()
-          cfg->remote_cmd_ptr2 = StrNew("\0");
+          cfg->remote_cmd_ptr2 = ::StrNew("\0");
         }
         else
         {
-          cfg->remote_cmd_ptr2 = StrNew(Data->Shell.c_str());
+          cfg->remote_cmd_ptr2 = ::StrNew(::W2MB(Data->GetShell().c_str()));
         }
       }
 
