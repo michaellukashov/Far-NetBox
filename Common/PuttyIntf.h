@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #ifndef PuttyIntfH
 #define PuttyIntfH
+
+#include <Commdlg.h>
+
 //---------------------------------------------------------------------------
 void PuttyInitialize();
 void PuttyFinalize();
