@@ -525,7 +525,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(::FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring("<no prompt>").c_str())));
+  LogEvent(::FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
 
   Name = ::Trim(Name);
 
@@ -547,48 +547,48 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
     // some servers add leading blank line to make the prompt look prettier
     // on terminal console
-    Prompts->GetString(Index) = Prompt.Trim();
+    Prompts->GetString(Index) = Trim(Prompt);
   }
 
   bool Result = false;
   if (PromptKind == pkUserName)
   {
-    if (FSessionData->AuthGSSAPI)
+    if (FSessionData->GetAuthGSSAPI())
     {
       // use empty username if no username was filled on login dialog
       // and GSSAPI auth is enabled, hence there's chance that the server can
       // deduce the username otherwise
-      Results->GetString(0] = "";
+      Results->SetString(0, L"");
       Result = true;
     }
   }
   else if ((PromptKind == pkTIS) || (PromptKind == pkCryptoCard) ||
       (PromptKind == pkKeybInteractive))
   {
-    if (FSessionData->AuthKIPassword && !FSessionData->Password.IsEmpty() &&
+    if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().empty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        !bool(Prompts->GetObject(0]))
+        !bool(Prompts->GetObject(0)))
     {
-      LogEvent("Using stored password.");
+      LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->GetString(0] = FSessionData->Password;
+      Results->SetString(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
-    else if (Instructions.IsEmpty() && !InstructionsRequired && (Prompts->GetCount() == 0))
+    else if (Instructions.empty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
-      LogEvent("Ignoring empty SSH server authentication request");
+      LogEvent(L"Ignoring empty SSH server authentication request");
       Result = true;
     }
   }
   else if (PromptKind == pkPassword)
   {
-    if (!FSessionData->Password.IsEmpty() && !FStoredPasswordTried)
+    if (!FSessionData->GetPassword().empty() && !FStoredPasswordTried)
     {
-      LogEvent("Using stored password.");
+      LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->GetString(0] = FSessionData->Password;
+      Results->SetString(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
     }
   }
@@ -602,7 +602,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     {
       if ((PromptKind == pkUserName) && (Prompts->GetCount() == 1))
       {
-        FUserName = Results->GetString(0];
+        FUserName = Results->GetString(0);
       }
     }
   }
@@ -627,11 +627,11 @@ void TSecureShell::CWrite(const char * Data, int Length)
   ResetSessionInfo();
 
   // We send only whole line at once, so we have to cache incoming data
-  FCWriteTemp += DeleteChar(std::wstring(Data, Length), '\r');
+  FCWriteTemp += DeleteChar(std::wstring(::MB2W(Data), Length), '\r');
 
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
-  while (FCWriteTemp.find_first_of("\n") > 0)
+  while (FCWriteTemp.find_first_of(L"\n") > 0)
   {
     std::wstring Line = CutToChar(FCWriteTemp, '\n', false);
 
@@ -640,7 +640,7 @@ void TSecureShell::CWrite(const char * Data, int Length)
     if (FAuthenticating)
     {
       TranslateAuthenticationMessage(Line);
-      FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? "" : "\n") + Line;
+      FAuthenticationLog += (FAuthenticationLog.empty() ? L"" : L"\n") + Line;
     }
 
     FUI->Information(Line, false);
@@ -664,16 +664,16 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
 {
   CheckConnection();
 
-  if (Configuration->ActualLogProtocol >= 1)
+  if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Received %u bytes (%d)", (Length, int(IsStdErr))));
+    LogEvent(::FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
   }
 
   // Following is taken from scp.c from_backend() and modified
 
   if (IsStdErr)
   {
-    AddStdError(std::wstring(Data, Length));
+    AddStdError(std::wstring(::MB2W(Data), Length));
   }
   else
   {
@@ -699,7 +699,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
         PendSize = PendLen + Len + 4096;
         Pending = (char *)
           (Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
-        if (!Pending) FatalError("Out of memory");
+        if (!Pending) FatalError(L"Out of memory");
       }
       memcpy(Pending + PendLen, p, Len);
       PendLen += Len;
@@ -715,11 +715,11 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
           do
           {
             FDataWhileFrozen = false;
-            FOnReceive(NULL);
+            // FIXME FOnReceive(NULL);
           }
           while (FDataWhileFrozen);
         }
-        __finally
+        catch (...)
         {
           FFrozen = false;
         }
@@ -744,7 +744,7 @@ bool TSecureShell::Peek(char *& Buf, int Len)
   return Result;
 }
 //---------------------------------------------------------------------------
-Integer TSecureShell::Receive(char * Buf, Integer Len)
+int TSecureShell::Receive(char * Buf, int Len)
 {
   CheckConnection();
 
@@ -783,9 +783,9 @@ Integer TSecureShell::Receive(char * Buf, Integer Len)
 
       while (OutLen > 0)
       {
-        if (Configuration->ActualLogProtocol >= 1)
+        if (Configuration->GetActualLogProtocol() >= 1)
         {
-          LogEvent(::FORMAT(L"Waiting for another %u bytes", (static_cast<int>(OutLen))));
+          LogEvent(::FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
         }
         WaitForData();
       }
@@ -793,15 +793,15 @@ Integer TSecureShell::Receive(char * Buf, Integer Len)
       // This seems ambiguous
       if (Len <= 0) FatalError(LoadStr(LOST_CONNECTION));
     }
-    __finally
+    catch (...)
     {
       OutPtr = NULL;
     }
   };
-  if (Configuration->ActualLogProtocol >= 1)
+  if (Configuration->GetActualLogProtocol() >= 1)
   {
     LogEvent(::FORMAT(L"Read %u bytes (%d pending)",
-      (static_cast<int>(Len), static_cast<int>(PendLen))));
+      static_cast<int>(Len), static_cast<int>(PendLen)));
   }
   return Len;
 }
@@ -809,9 +809,9 @@ Integer TSecureShell::Receive(char * Buf, Integer Len)
 std::wstring TSecureShell::ReceiveLine()
 {
   unsigned Index;
-  Char Ch;
+  char Ch;
   std::wstring Line;
-  Boolean EOL = false;
+  bool EOL = false;
 
   do
   {
@@ -824,10 +824,10 @@ std::wstring TSecureShell::ReceiveLine()
       {
         Index++;
       }
-      EOL = (Boolean)(Index && (Pending[Index-1] == '\n'));
-      Integer PrevLen = Line.size();
-      Line.SetLength(PrevLen + Index);
-      Receive(Line.c_str() + PrevLen, Index);
+      EOL = (bool)(Index && (Pending[Index-1] == '\n'));
+      int PrevLen = Line.size();
+      Line.resize(PrevLen + Index);
+      Receive((char *)::W2MB(Line.c_str()).c_str() + PrevLen, Index);
     }
 
     // If buffer don't contain end-of-line character
@@ -842,7 +842,7 @@ std::wstring TSecureShell::ReceiveLine()
   while (!EOL);
 
   // We don't want end-of-line character
-  Line.SetLength(Line.size()-1);
+  Line.resize(Line.size()-1);
   CaptureOutput(llOutput, Line);
   return Line;
 }
@@ -871,12 +871,12 @@ int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError);
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
-    Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING2, (FSessionData->Timeout));
+    Params.TimerMessage = L""; // FIXME FMTLOAD(TIMEOUT_STILL_WAITING2, (FSessionData->GetTimeout()));
     Params.TimerAnswers = qaAbort;
-    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, (FSessionData->Timeout)),
+    Answer = FUI->QueryUser(L"", // FIXME  FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, (FSessionData->GetTimeout())),
       NULL, qaRetry | qaAbort, &Params);
   }
-  __finally
+  catch (...)
   {
     FWaiting--;
   }
@@ -886,7 +886,7 @@ int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 void TSecureShell::SendBuffer(unsigned int & Result)
 {
   // for comments see PoolForData
-  if (!Active)
+  if (!GetActive())
   {
     Result = qaRetry;
   }
@@ -912,23 +912,23 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
   do
   {
     CheckConnection();
-    if (Configuration->ActualLogProtocol >= 1)
+    if (Configuration->GetActualLogProtocol() >= 1)
     {
       LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer, "
-        "need to send at least another %u bytes",
-        (BufSize, BufSize - MAX_BUFSIZE)));
+        L"need to send at least another %u bytes",
+        BufSize, BufSize - MAX_BUFSIZE));
     }
     EventSelectLoop(100, false, NULL);
     BufSize = FBackend->sendbuffer(FBackendHandle);
-    if (Configuration->ActualLogProtocol >= 1)
+    if (Configuration->GetActualLogProtocol() >= 1)
     {
-      LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", (BufSize)));
+      LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
     }
 
-    if (Now() - Start > FSessionData->TimeoutDT)
+    if (Now() - Start > FSessionData->GetTimeoutDT())
     {
-      LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
-      int Answer = TimeoutPrompt(SendBuffer);
+      LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
+      int Answer = -1; // FIXME TimeoutPrompt((TQueryParamsTimerEvent)&TSecureShell::SendBuffer);
       switch (Answer)
       {
         case qaRetry:
@@ -952,14 +952,14 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Send(const char * Buf, Integer Len)
+void TSecureShell::Send(const char * Buf, int Len)
 {
   CheckConnection();
   int BufSize = FBackend->send(FBackendHandle, (char *)Buf, Len);
-  if (Configuration->ActualLogProtocol >= 1)
+  if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Sent %u bytes", (static_cast<int>(Len))));
-    LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", (BufSize)));
+    LogEvent(::FORMAT(L"Sent %u bytes", static_cast<int>(Len)));
+    LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
@@ -974,14 +974,14 @@ void TSecureShell::Send(const char * Buf, Integer Len)
 //---------------------------------------------------------------------------
 void TSecureShell::SendNull()
 {
-  LogEvent("Sending NULL.");
+  LogEvent(L"Sending NULL.");
   Send("", 1);
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendStr(std::wstring Str)
 {
   CheckConnection();
-  Send(Str.c_str(), Str.size());
+  Send(::W2MB(Str.c_str()).c_str(), Str.size());
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendLine(std::wstring Line)
@@ -1001,7 +1001,7 @@ int TSecureShell::TranslatePuttyMessage(
     const char * Div = strchr(Original, '%');
     if (Div == NULL)
     {
-      if (strcmp(Message.c_str(), Original) == 0)
+      if (strcmp(::W2MB(Message.c_str()).c_str(), Original) == 0)
       {
         Message = LoadStr(Translation[Index].Translation);
         Result = int(Index);
@@ -1014,11 +1014,11 @@ int TSecureShell::TranslatePuttyMessage(
       size_t PrefixLen = Div - Original;
       size_t SuffixLen = OriginalLen - PrefixLen - 1;
       if (((size_t)Message.size() >= OriginalLen - 1) &&
-          (strncmp(Message.c_str(), Original, PrefixLen) == 0) &&
-          (strncmp(Message.c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
+          (strncmp(::W2MB(Message.c_str()).c_str(), Original, PrefixLen) == 0) &&
+          (strncmp(::W2MB(Message.c_str()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
-        Message = FMTLOAD(Translation[Index].Translation,
-          (Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen).TrimRight()));
+        Message = L""; // FIXME FMTLOAD(Translation[Index].Translation,
+          // (Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen).TrimRight()));
         Result = int(Index);
         break;
       }
@@ -1050,14 +1050,14 @@ void TSecureShell::AddStdError(std::wstring Str)
 {
   FStdError += Str;
 
-  Integer P;
+  int P;
   Str = DeleteChar(Str, '\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
   FStdErrorTemp += Str;
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
-  while ((P = FStdErrorTemp.find_first_of("\n")) > 0)
+  while ((P = FStdErrorTemp.find_first_of(L"\n")) > 0)
   {
     Line = FStdErrorTemp.substr(1, P-1);
     FStdErrorTemp.Delete(1, P);
@@ -1069,7 +1069,7 @@ void TSecureShell::AddStdErrorLine(const std::wstring & Str)
 {
   if (FAuthenticating)
   {
-    FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? "" : "\n") + Str;
+    FAuthenticationLog += (FAuthenticationLog.empty() ? "" : "\n") + Str;
   }
   CaptureOutput(llStdError, Str);
 }
@@ -1082,12 +1082,12 @@ const std::wstring & TSecureShell::GetStdError()
 void TSecureShell::ClearStdError()
 {
   // Flush std error cache
-  if (!FStdErrorTemp.IsEmpty())
+  if (!FStdErrorTemp.empty())
   {
     if (FAuthenticating)
     {
       FAuthenticationLog +=
-        (FAuthenticationLog.IsEmpty() ? "" : "\n") + FStdErrorTemp;
+        (FAuthenticationLog.empty() ? "" : "\n") + FStdErrorTemp;
     }
     CaptureOutput(llStdError, FStdErrorTemp);
     FStdErrorTemp = "";
@@ -1566,7 +1566,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
         MSec = 0;
       }
     }
-    __finally
+    catch (...)
     {
       sfree(Handles);
     }
@@ -1721,7 +1721,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   bool Result = false;
 
   std::wstring Buf = FSessionData->HostKey;
-  while (!Result && !Buf.IsEmpty())
+  while (!Result && !Buf.empty())
   {
     std::wstring ExpectedKey = CutToChar(Buf, Delimiter, false);
     if (ExpectedKey == Fingerprint)
@@ -1733,13 +1733,13 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   std::wstring StoredKeys;
   if (!Result)
   {
-    StoredKeys.SetLength(10240);
+    StoredKeys.resize(10240);
     if (retrieve_host_key(Host.c_str(), Port, KeyType.c_str(),
           StoredKeys.c_str(), StoredKeys.size()) == 0)
     {
       PackStr(StoredKeys);
       std::wstring Buf = StoredKeys;
-      while (!Result && !Buf.IsEmpty())
+      while (!Result && !Buf.empty())
       {
         std::wstring StoredKey = CutToChar(Buf, Delimiter, false);
         if (StoredKey == KeyStr)
@@ -1765,7 +1765,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       TClipboardHandler ClipboardHandler;
       ClipboardHandler.Text = Fingerprint;
 
-      bool Unknown = StoredKeys.IsEmpty();
+      bool Unknown = StoredKeys.empty();
 
       int Answers;
       int AliasesCount;
