@@ -242,6 +242,10 @@ public:
     void AddStrings(TStrings *value)
     {
     }
+    bool Find(const std::wstring Value, int &Index)
+    {
+        return false;
+    }
 private:
     TNotifyEvent FOnChange;
 };
@@ -322,3 +326,4 @@ public:
     EAbort(std::string what) : std::exception(what.c_str())
     {}
 };
+

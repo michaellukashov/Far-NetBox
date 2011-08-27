@@ -546,17 +546,18 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 
 bool FileExists(const std::wstring &filename)
 {
-    // FIXME 
+    // FIXME
     return false;
 }
 
 int FileGetAttr(const std::wstring &filename)
 {
-    // FIXME 
+    // FIXME
     return 0;
 }
 
-void FileSetAttr(const std::wstring &filename, int attrs)
+int FileSetAttr(const std::wstring &filename, int attrs)
 {
-    // FIXME 
+    // FIXME
+    return 0;
 }

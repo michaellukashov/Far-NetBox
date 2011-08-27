@@ -425,9 +425,12 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval);
 enum FileAttributesEnum
 {
     faReadOnly,
-    faHidden
+    faHidden,
+    faDirectory,
+    faSysFile,
+    faArchive,
 };
 
 bool FileExists(const std::wstring &filename);
 int FileGetAttr(const std::wstring &filename);
-void FileSetAttr(const std::wstring &filename, int attrs);
+int FileSetAttr(const std::wstring &filename, int attrs);

@@ -152,7 +152,7 @@ public:
   // __property std::wstring UserModificationStr = { read = GetUserModificationStr };
   std::wstring GetUserModificationStr();
   // __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
-  TModificationFmt GetModificationFmt() { return FModificationFmt; }
+  TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
   // __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
   TDateTime GetLastAccess() { return FLastAccess; }

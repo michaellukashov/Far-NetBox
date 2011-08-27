@@ -3592,8 +3592,7 @@ bool TTerminal::DoCreateLocalFile(const std::wstring FileName,
           CreateAttr |=
             FLAGMASK(FLAGSET(FileAttr, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(FileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
-
-          FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (FileName)),
+           FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (FileName)),
             if (FileSetAttr(FileName, FileAttr & ~(faReadOnly | faHidden)) != 0)
             {
               RaiseLastOSError();
@@ -3637,7 +3636,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
 {
   int Attrs = 0;
   HANDLE Handle = 0;
-
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(FILE_NOT_EXISTS, (FileName)),
     Attrs = FileGetAttr(FileName);
     if (Attrs == -1) RaiseLastOSError();
@@ -3677,15 +3676,15 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
         );
         if (ACTime)
         {
-          *ACTime = ConvertTimestampToUnixSafe(CTime, GetSessionData()->DSTMode);
+          *ACTime = ConvertTimestampToUnixSafe(CTime, GetSessionData()->GetDSTMode());
         }
         if (AATime)
         {
-          *AATime = ConvertTimestampToUnixSafe(ATime, GetSessionData()->DSTMode);
+          *AATime = ConvertTimestampToUnixSafe(ATime, GetSessionData()->GetDSTMode());
         }
         if (AMTime)
         {
-          *AMTime = ConvertTimestampToUnix(MTime, GetSessionData()->DSTMode);
+          *AMTime = ConvertTimestampToUnix(MTime, GetSessionData()->GetDSTMode());
         }
       }
 
@@ -3726,7 +3725,8 @@ bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
   {
     WIN32_FIND_DATA FindData;
     HANDLE Handle;
-    FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, (FileName)),
+    TFileOperationProgressType * OperationProgress = GetOperationProgress();
+    FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(FILE_NOT_EXISTS, (FileName)),
       Handle = FindFirstFile(FileName.c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
@@ -3748,8 +3748,8 @@ std::wstring TTerminal::FileUrl(const std::wstring Protocol,
   const std::wstring FileName)
 {
   assert(FileName.size() > 0);
-  return Protocol + "://" + EncodeUrlChars(GetSessionData()->GetSessionName()) +
-    (FileName[1] == '/' ? "" : "/") + EncodeUrlChars(FileName, "/");
+  return Protocol + L"://" + EncodeUrlChars(GetSessionData()->GetSessionName()) +
+    (FileName[1] == '/' ? L"" : L"/") + EncodeUrlChars(FileName, L"/");
 }
 //---------------------------------------------------------------------------
 std::wstring TTerminal::FileUrl(const std::wstring FileName)
@@ -3762,10 +3762,10 @@ void TTerminal::MakeLocalFileList(const std::wstring FileName,
 {
   TMakeLocalFileListParams & Params = *static_cast<TMakeLocalFileListParams*>(Param);
 
-  bool Directory = FLAGSET(Rec.Attr, faDirectory);
+  bool Directory = FLAGSET(Rec.dwFileAttributes, faDirectory);
   if (Directory && Params.Recursive)
   {
-    ProcessLocalDirectory(FileName, MakeLocalFileList, &Params);
+    // FIXME ProcessLocalDirectory(FileName, (TProcessFileEvent)&TTerminal::MakeLocalFileList, &Params);
   }
 
   if (!Directory || Params.IncludeDirs)
@@ -3779,12 +3779,12 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
 {
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams*>(Params);
 
-  bool Dir = FLAGSET(Rec.Attr, faDirectory);
+  bool Dir = FLAGSET(Rec.dwFileAttributes, faDirectory);
 
   bool AllowTransfer = (AParams->CopyParam == NULL);
   __int64 Size =
-    (static_cast<__int64>(Rec.FindData.nFileSizeHigh) << 32) +
-    Rec.FindData.nFileSizeLow;
+    (static_cast<__int64>(Rec.nFileSizeHigh) << 32) +
+    Rec.nFileSizeLow;
   if (!AllowTransfer)
   {
     TFileMasks::TParams MaskParams;
@@ -3801,23 +3801,24 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
     }
     else
     {
-      ProcessLocalDirectory(FileName, CalculateLocalFileSize, Params);
+      // FIXME ProcessLocalDirectory(FileName, (TProcessFileEvent)&TTerminal::CalculateLocalFileSize, Params);
     }
   }
 
-  if (OperationProgress && OperationProgress->Operation == foCalculateSize)
+  if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
-    if (OperationProgress->GetCancel() != csContinue) Abort();
-    OperationProgress->SetFile(FileName);
+    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    GetOperationProgress()->SetFile(FileName);
   }
 }
 //---------------------------------------------------------------------------
 void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  TFileOperationProgressType GetOperationProgress()(&DoProgress, &DoFinished);
+TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
+    (TFileOperationFinished)&TTerminal::DoFinished);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
-  GetOperationProgress().Start(foCalculateSize, osLocal, FileList->GetCount());
+  OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
   try
   {
     TCalculateSizeParams Params;
@@ -3826,7 +3827,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
     Params.CopyParam = CopyParam;
 
     assert(!FOperationProgress);
-    FOperationProgress = &GetOperationProgress();
+    FOperationProgress = &OperationProgress;
     WIN32_FIND_DATA Rec;
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
@@ -3834,7 +3835,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
       if (FileSearchRec(FileName, Rec))
       {
         CalculateLocalFileSize(FileName, Rec, &Params);
-        GetOperationProgress().Finish(FileName, true, OnceDoneOperation);
+        OperationProgress.Finish(FileName, true, OnceDoneOperation);
       }
     }
 
@@ -3843,7 +3844,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   catch(...)
   {
     FOperationProgress = NULL;
-    GetOperationProgress().Stop();
+    OperationProgress.Stop();
   }
 
   if (OnceDoneOperation != odoIdle)
@@ -3920,8 +3921,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   Data.Flags = Flags;
   Data.Checklist = Checklist;
 
-  LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
-    "mode = %d, params = %d", LocalDirectory.c_str(), RemoteDirectory.c_str(),
+  LogEvent(::FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
+    L"mode = %d, params = %d", LocalDirectory.c_str(), RemoteDirectory.c_str(),
     int(Mode), int(Params)));
 
   if (FLAGCLEAR(Params, spDelayProgress))
@@ -3934,12 +3935,12 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     bool Found;
     WIN32_FIND_DATA SearchRec;
     Data.LocalFileList = new TStringList();
-    Data.LocalFileList->Sorted = true;
-    Data.LocalFileList->CaseSensitive = false;
-
-    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, (LocalDirectory)),
+    Data.LocalFileList->SetSorted(true);
+    Data.LocalFileList->SetCaseSensitive(false);
+    TFileOperationProgressType *OperationProgress = GetOperationProgress();
+    FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(LIST_DIR_ERROR, (LocalDirectory)),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-      Found = (FindFirst(Data.LocalDirectory + "*.*", FindAttrs, SearchRec) == 0);
+      // FIXME Found = (FindFirst(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
     );
 
     if (Found)
@@ -3949,20 +3950,20 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         std::wstring FileName;
         while (Found)
         {
-          FileName = SearchRec.Name;
+          FileName = SearchRec.cFileName;
           // add dirs for recursive mode or when we are interested in newly
           // added subdirs
           int FoundIndex;
           __int64 Size =
-            (static_cast<__int64>(SearchRec.FindData.nFileSizeHigh) << 32) +
-            SearchRec.FindData.nFileSizeLow;
+            (static_cast<__int64>(SearchRec.nFileSizeHigh) << 32) +
+            SearchRec.nFileSizeLow;
           TFileMasks::TParams MaskParams;
           MaskParams.Size = Size;
           std::wstring RemoteFileName =
             CopyParam->ChangeFileName(FileName, osLocal, false);
-          if ((FileName != ".") && (FileName != "..") &&
+          if ((FileName != L".") && (FileName != L"..") &&
               CopyParam->AllowTransfer(Data.LocalDirectory + FileName, osLocal,
-                FLAGSET(SearchRec.Attr, faDirectory), MaskParams) &&
+                FLAGSET(SearchRec.dwFileAttributes, faDirectory), MaskParams) &&
               !FFileSystem->TemporaryTransferFile(FileName) &&
               (FLAGCLEAR(Flags, sfFirstLevel) ||
                (Options == NULL) || (Options->Filter == NULL) ||
@@ -3971,13 +3972,13 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           {
             TSynchronizeFileData * FileData = new TSynchronizeFileData;
 
-            FileData->GetIsDirectory() = FLAGSET(SearchRec.Attr, faDirectory);
+            FileData->IsDirectory = FLAGSET(SearchRec.dwFileAttributes, faDirectory);
             FileData->Info.FileName = FileName;
             FileData->Info.Directory = Data.LocalDirectory;
-            FileData->Info.Modification = FileTimeToDateTime(SearchRec.FindData.ftLastWriteTime);
+            FileData->Info.Modification = FileTimeToDateTime(SearchRec.ftLastWriteTime);
             FileData->Info.ModificationFmt = mfFull;
             FileData->Info.Size = Size;
-            FileData->LocalLastWriteTime = SearchRec.FindData.ftLastWriteTime;
+            FileData->LocalLastWriteTime = SearchRec.ftLastWriteTime;
             FileData->New = true;
             FileData->Modified = false;
             Data.LocalFileList->AddObject(FileName,
@@ -3985,18 +3986,18 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           }
 
           FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(LIST_DIR_ERROR, (LocalDirectory)),
-            Found = (FindNext(SearchRec) == 0);
+            // FIXME Found = (FindNext(SearchRec) == 0);
           );
         }
       }
       catch(...)
       {
-        FindClose(SearchRec);
+        // FIXME FindClose(SearchRec);
       }
 
       // can we expect that ProcessDirectory would take so little time
       // that we can pospone showing progress window until anything actually happens?
-      bool Cached = FLAGSET(Params, spUseCache) && GetSessionData()->CacheDirectories &&
+      bool Cached = FLAGSET(Params, spUseCache) && GetSessionData()->GetCacheDirectories() &&
         FDirectoryCache->HasFileList(RemoteDirectory);
 
       if (!Cached && FLAGSET(Params, spDelayProgress))
@@ -4004,7 +4005,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         DoSynchronizeProgress(Data, true);
       }
 
-      ProcessDirectory(RemoteDirectory, SynchronizeCollectFile, &Data,
+      ProcessDirectory(RemoteDirectory, (TProcessFileEvent)&TTerminal::SynchronizeCollectFile, &Data,
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
@@ -4024,7 +4025,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
           try
           {
-            ChecklistItem->GetIsDirectory() = FileData->GetIsDirectory();
+            ChecklistItem->IsDirectory = FileData->IsDirectory;
 
             ChecklistItem->Local = FileData->Info;
             ChecklistItem->FLocalLastWriteTime = FileData->LocalLastWriteTime;
@@ -4047,7 +4048,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
                 (Modified ? TSynchronizeChecklist::saUploadUpdate : TSynchronizeChecklist::saUploadNew);
               ChecklistItem->Checked =
                 (Modified || FLAGCLEAR(Params, spExistingOnly)) &&
-                (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Params, spNoRecurse) ||
+                (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
                  FLAGSET(Params, spSubDirs));
             }
             else if ((Mode == smLocal) && FLAGCLEAR(Params, spTimestamp))
@@ -4055,7 +4056,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
               ChecklistItem->Action = TSynchronizeChecklist::saDeleteLocal;
               ChecklistItem->Checked =
                 FLAGSET(Params, spDelete) &&
-                (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Params, spNoRecurse) ||
+                (!ChecklistItem->IsDirectory || FLAGCLEAR(Params, spNoRecurse) ||
                  FLAGSET(Params, spSubDirs));
             }
 
@@ -4102,11 +4103,11 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
 
   int FoundIndex;
   TFileMasks::TParams MaskParams;
-  MaskParams.Size = File->Size;
+  MaskParams.Size = File->GetSize();
   std::wstring LocalFileName =
     Data->CopyParam->ChangeFileName(File->GetFileName(), osRemote, false);
   if (Data->CopyParam->AllowTransfer(
-        UnixExcludeTrailingBackslash(File->FullFileName), osRemote,
+        UnixExcludeTrailingBackslash(File->GetFullFileName()), osRemote,
         File->GetIsDirectory(), MaskParams) &&
       !FFileSystem->TemporaryTransferFile(File->GetFileName()) &&
       (FLAGCLEAR(Data->Flags, sfFirstLevel) ||
@@ -4117,17 +4118,18 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
     try
     {
-      ChecklistItem->GetIsDirectory() = File->GetIsDirectory();
-      ChecklistItem->ImageIndex = File->IconIndex;
+      ChecklistItem->IsDirectory = File->GetIsDirectory();
+      ChecklistItem->ImageIndex = File->GetIconIndex();
+      ChecklistItem->ImageIndex = File->GetIconIndex();
 
       ChecklistItem->Remote.FileName = File->GetFileName();
       ChecklistItem->Remote.Directory = Data->RemoteDirectory;
-      ChecklistItem->Remote.Modification = File->Modification;
-      ChecklistItem->Remote.ModificationFmt = File->ModificationFmt;
-      ChecklistItem->Remote.Size = File->Size;
+      ChecklistItem->Remote.Modification = File->GetModification();
+      ChecklistItem->Remote.ModificationFmt = File->GetModificationFmt();
+      ChecklistItem->Remote.Size = File->GetSize();
 
       bool Modified = false;
-      int LocalIndex = Data->LocalFileList->IndexOf(LocalFileName);
+      int LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
       bool New = (LocalIndex < 0);
       if (!New)
       {
@@ -4136,7 +4138,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
 
         LocalData->New = false;
 
-        if (File->GetIsDirectory() != LocalData->GetIsDirectory())
+        if (File->GetIsDirectory() != LocalData->IsDirectory)
         {
           LogEvent(FORMAT(L"%s is directory on one side, but file on the another",
             File->GetFileName().c_str()));
@@ -4146,7 +4148,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
           ChecklistItem->Local = LocalData->Info;
 
           ChecklistItem->Local.Modification =
-            ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->ModificationFmt);
+            ReduceDateTimePrecision(ChecklistItem->Local.Modification, File->GetModificationFmt());
 
           bool LocalModified = false;
           // for spTimestamp+spBySize require that the file sizes are the same
@@ -4234,7 +4236,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
               (Modified ? TSynchronizeChecklist::saDownloadUpdate : TSynchronizeChecklist::saDownloadNew);
             ChecklistItem->Checked =
               (Modified || FLAGCLEAR(Data->Params, spExistingOnly)) &&
-              (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Data->Params, spNoRecurse) ||
+              (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
                FLAGSET(Data->Params, spSubDirs));
           }
         }

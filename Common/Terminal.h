@@ -89,7 +89,7 @@ typedef void (TObject::*TInformationEvent)
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (exception & E)                                                   \
+    catch (std::exception & E)                                                   \
     {                                                                       \
       TERMINAL->FileOperationLoopQuery(E, OperationProgress, MESSAGE, ALLOW_SKIP); \
       DoRepeat = true;                                                      \
