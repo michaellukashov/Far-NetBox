@@ -186,6 +186,8 @@ public:
   void FileList(TRemoteFileList * FileList);
 };
 //---------------------------------------------------------------------------
+typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring & Line);
+//---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
 friend class TSessionAction;
@@ -261,7 +263,7 @@ private:
   void OpenLogFile();
   std::wstring GetLogFileName();
   void DoAdd(TLogLineType Type, std::wstring Line,
-    void (TObject::*f)(TLogLineType Type, const std::wstring & Line));
+    TDoAddLog func);
   void DoAddToParent(TLogLineType aType, const std::wstring & aLine);
   void DoAddToSelf(TLogLineType aType, const std::wstring & aLine);
   void DoAddStartupInfo(TSessionData * Data);

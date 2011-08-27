@@ -58,7 +58,7 @@ std::wstring XmlTimestamp()
   return XmlTimestamp(Now());
 }
 //---------------------------------------------------------------------------
-#pragma warn -inl
+// #pragma warn -inl
 class TSessionActionRecord
 {
 public:
@@ -297,7 +297,7 @@ private:
   TStrings * FValues;
   TRemoteFileList * FFileList;
 };
-#pragma warn .inl
+// #pragma warn .inl
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TSessionAction::TSessionAction(TSessionLog * Log, TLogAction Action)
@@ -625,7 +625,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
-  void (TObject::*f)(TLogLineType Type, const std::wstring & Line))
+  TDoAddLog func)
 {
   std::wstring Prefix;
 
@@ -675,7 +675,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
       FConfiguration->SetLogging(false);
       try
       {
-        throw ExtException(&E, LOG_GEN_ERROR);
+        throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
       }
       catch (std::exception &E)
       {
@@ -703,20 +703,20 @@ void TSessionLog::ReflectSettings()
     ((FParent != NULL) || FConfiguration->GetLogging()) &&
     ((FParent == NULL) || !FConfiguration->GetLogActions());
 
-  bool LoggingActions = ALogging && FConfiguration->LogActions;
+  bool LoggingActions = ALogging && FConfiguration->GetLogActions();
   if (LoggingActions && !FLoggingActions)
   {
     FLoggingActions = true;
     FLogging = ALogging;
-    Add(llAction, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    Add(llAction, L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     Add(llAction, ::FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-      (XmlEscape(FSessionData->SessionName), XmlTimestamp())));
+      XmlEscape(FSessionData->GetSessionName()), XmlTimestamp()));
     StateChange();
   }
   else if (!LoggingActions && FLoggingActions)
   {
     FLoggingActions = false;
-    Add(llAction, "</session>");
+    Add(llAction, L"</session>");
     FLogging = ALogging;
     StateChange();
   }
@@ -729,7 +729,7 @@ void TSessionLog::ReflectSettings()
   // if logging to file was turned off or log file was change -> close current log file
   // but disallow changing logfilename for xml logging
   if ((FFile != NULL) &&
-      ((!LogToFile() || (FCurrentLogFileName != FConfiguration->LogFileName)) && !FLoggingActions))
+      ((!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())) && !FLoggingActions))
   {
     CloseLogFile();
   }
@@ -739,7 +739,7 @@ void TSessionLog::ReflectSettings()
 //---------------------------------------------------------------------------
 bool TSessionLog::LogToFile()
 {
-  return Logging && FConfiguration->LogToFile && (FParent == NULL);
+  return GetLogging() && FConfiguration->GetLogToFile() && (FParent == NULL);
 }
 //---------------------------------------------------------------------------
 void TSessionLog::CloseLogFile()
@@ -749,8 +749,8 @@ void TSessionLog::CloseLogFile()
     fclose((FILE *)FFile);
     FFile = NULL;
   }
-  FCurrentLogFileName = "";
-  FCurrentFileName = "";
+  FCurrentLogFileName = L"";
+  FCurrentFileName = L"";
   StateChange();
 }
 //---------------------------------------------------------------------------
@@ -760,7 +760,7 @@ void TSessionLog::OpenLogFile()
   {
     assert(FFile == NULL);
     assert(FConfiguration != NULL);
-    FCurrentLogFileName = FConfiguration->LogFileName;
+    FCurrentLogFileName = FConfiguration->GetLogFileName();
     std::wstring NewFileName = StripPathQuotes(ExpandEnvironmentVariables(FCurrentLogFileName));
     TDateTime N = Now();
     for (int Index = 1; Index < NewFileName.size(); Index++)
@@ -772,44 +772,44 @@ void TSessionLog::OpenLogFile()
         switch (tolower(NewFileName[Index + 1]))
         {
           case 'y':
-            Replacement = FormatDateTime("yyyy", N);
+            Replacement = FormatDateTime(L"yyyy", N);
             break;
 
           case 'm':
-            Replacement = FormatDateTime("mm", N);
+            Replacement = FormatDateTime(L"mm", N);
             break;
 
           case 'd':
-            Replacement = FormatDateTime("dd", N);
+            Replacement = FormatDateTime(L"dd", N);
             break;
 
           case 't':
-            Replacement = FormatDateTime("hhnnss", N);
+            Replacement = FormatDateTime(L"hhnnss", N);
             break;
 
           case '@':
-            Replacement = MakeValidFileName(FSessionData->HostName);
+            Replacement = MakeValidFileName(FSessionData->GetHostName());
             break;
 
           case 's':
-            Replacement = MakeValidFileName(FSessionData->SessionName);
+            Replacement = MakeValidFileName(FSessionData->GetSessionName());
             break;
 
           case '!':
-            Replacement = "!";
+            Replacement = L"!";
             break;
 
           default:
-            Replacement = std::wstring("!") + NewFileName[Index + 1];
+            Replacement = std::wstring(L"!") + NewFileName[Index + 1];
             break;
         }
         NewFileName.erase(Index, 2);
-        NewFileName.Insert(Replacement, Index);
+        NewFileName.insert(Index, Replacement);
         Index += Replacement.size() - 1;
       }
     }
-    FFile = fopen(NewFileName.c_str(),
-      (FConfiguration->LogFileAppend && !FLoggingActions ? "a" : "w"));
+    FFile = _wfopen(NewFileName.c_str(),
+      (FConfiguration->GetLogFileAppend() && !FLoggingActions ? L"a" : L"w"));
     if (FFile)
     {
       setvbuf((FILE *)FFile, NULL, _IONBF, BUFSIZ);
@@ -817,20 +817,20 @@ void TSessionLog::OpenLogFile()
     }
     else
     {
-      throw exception(FMTLOAD(LOG_OPENERROR, (NewFileName)));
+      throw std::exception(""); //FIXME FMTLOAD(LOG_OPENERROR, (NewFileName)));
     }
   }
   catch (exception & E)
   {
     // We failed logging to file, turn it off and notify user.
-    FCurrentLogFileName = "";
-    FCurrentFileName = "";
-    FConfiguration->LogToFile = false;
+    FCurrentLogFileName = L"";
+    FCurrentFileName = L"";
+    FConfiguration->SetLogToFile(false);
     try
     {
-      throw ExtException(&E, LOG_GEN_ERROR);
+      throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
     }
-    catch (exception & E)
+    catch (std::exception & E)
     {
       AddException(&E);
       FUI->HandleExtendedException(&E);
@@ -843,22 +843,22 @@ void TSessionLog::StateChange()
 {
   if (FOnStateChange != NULL)
   {
-    FOnStateChange(this);
+    // FIXME FOnStateChange(this);
   }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DeleteUnnecessary()
 {
-  BeginUpdate();
+  // BeginUpdate();
   try
   {
-    if (!Logging || (FParent != NULL))
+    if (!GetLogging() || (FParent != NULL))
     {
       Clear();
     }
     else
     {
-      while (!FConfiguration->LogWindowComplete && (Count > FConfiguration->LogWindowLines))
+      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
         FTopIndex++;
@@ -867,13 +867,13 @@ void TSessionLog::DeleteUnnecessary()
   }
   catch(...)
   {
-    EndUpdate();
+    // EndUpdate();
   }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddStartupInfo()
 {
-  if (Logging && !FConfiguration->LogActions)
+  if (GetLogging() && !FConfiguration->GetLogActions())
   {
     if (FParent != NULL)
     {
@@ -891,145 +891,146 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
 
-  BeginUpdate();
+  // BeginUpdate();
   try
   {
-    #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), DoAddToSelf);
+    #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), (TDoAddLog)&TSessionLog::DoAddToSelf);
     AddSeparator();
-    ADF("WinSCP %s (OS %s)", (FConfiguration->VersionStr, FConfiguration->OSVersionStr));
+    ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
     try
     {
-      ADF("Configuration: %s", (Storage->Source));
+      ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
     catch(...)
     {
       delete Storage;
     }
-    ADF("Login time: %s", (FormatDateTime("dddddd tt", Now())));
+    ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
     AddSeparator();
-    ADF("Session name: %s (%s)", (Data->SessionName, Data->Source));
-    ADF("Host name: %s (Port: %d)", (Data->HostName, Data->PortNumber));
-    ADF("User name: %s (Password: %s, Key file: %s)",
-      (Data->UserName, BooleanToEngStr(!Data->Password.empty()),
-       BooleanToEngStr(!Data->PublicKeyFile.empty())))
-    ADF("Tunnel: %s", (BooleanToEngStr(Data->Tunnel)));
-    if (Data->Tunnel)
+    ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
+    ADF(L"Host name: %s (Port: %d)", Data->GetHostName().c_str(), Data->GetPortNumber);
+    ADF(L"User name: %s (Password: %s, Key file: %s)",
+      Data->GetUserName().c_str(), BooleanToEngStr(!Data->GetPassword().empty()).c_str(),
+       BooleanToEngStr(!Data->GetPublicKeyFile().empty()).c_str())
+    ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
+    if (Data->GetTunnel())
     {
-      ADF("Tunnel: Host name: %s (Port: %d)", (Data->TunnelHostName, Data->TunnelPortNumber));
-      ADF("Tunnel: User name: %s (Password: %s, Key file: %s)",
-        (Data->TunnelUserName, BooleanToEngStr(!Data->TunnelPassword.empty()),
-         BooleanToEngStr(!Data->TunnelPublicKeyFile.empty())))
-      ADF("Tunnel: Local port number: %d", (Data->TunnelLocalPortNumber));
+      ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
+      ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
+        Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().empty()).c_str(),
+         BooleanToEngStr(!Data->GetTunnelPublicKeyFile().empty()).c_str())
+      ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
     }
-    ADF("Transfer Protocol: %s", (Data->FSProtocolStr));
-    char * PingTypes = "-NC";
+    ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
+    wchar_t * PingTypes = L"-NC";
     TPingType PingType;
     int PingInterval;
-    if (Data->FSProtocol == fsFTP)
+    if (Data->GetFSProtocol() == fsFTP)
     {
-      PingType = Data->FtpPingType;
-      PingInterval = Data->FtpPingInterval;
+      PingType = Data->GetFtpPingType();
+      PingInterval = Data->GetFtpPingInterval();
     }
     else
     {
-      PingType = Data->PingType;
-      PingInterval = Data->PingInterval;
+      PingType = Data->GetPingType();
+      PingInterval = Data->GetPingInterval();
     }
-    ADF("Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
-      (std::wstring(PingTypes[PingType]), PingInterval, Data->Timeout));
-    ADF("Proxy: %s", (ProxyMethodList[Data->ProxyMethod]));
-    if (Data->ProxyMethod != pmNone)
+    ADF(L"Ping type: %c, Ping interval: %d sec; Timeout: %d sec",
+      PingTypes[PingType], PingInterval, Data->GetTimeout());
+    ADF(L"Proxy: %s", ProxyMethodList[Data->GetProxyMethod()]);
+    if (Data->GetProxyMethod() != pmNone)
     {
-      ADF("HostName: %s (Port: %d); Username: %s; Passwd: %s",
-        (Data->ProxyHost, Data->ProxyPort,
-         Data->ProxyUsername, BooleanToEngStr(!Data->ProxyPassword.empty())));
-      if (Data->ProxyMethod == pmTelnet)
+      ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
+        (Data->GetProxyHost().c_str(), Data->GetProxyPort(),
+         Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().empty()).c_str()));
+      if (Data->GetProxyMethod() == pmTelnet)
       {
-        ADF("Telnet command: %s", (Data->ProxyTelnetCommand));
+        ADF(L"Telnet command: %s", Data->GetProxyTelnetCommand().c_str());
       }
-      if (Data->ProxyMethod == pmCmd)
+      if (Data->GetProxyMethod() == pmCmd)
       {
-        ADF("Local command: %s", (Data->ProxyLocalCommand));
+        ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
       }
     }
-    if (Data->UsesSsh)
+    if (Data->GetUsesSsh())
     {
-      ADF("SSH protocol version: %s; Compression: %s",
-        (Data->SshProtStr, BooleanToEngStr(Data->Compression)));
-      ADF("Bypass authentication: %s",
-       (BooleanToEngStr(Data->SshNoUserAuth)));
-      ADF("Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
-        (BooleanToEngStr(Data->TryAgent), BooleanToEngStr(Data->AgentFwd), BooleanToEngStr(Data->AuthTIS),
-         BooleanToEngStr(Data->AuthKI), BooleanToEngStr(Data->AuthGSSAPI)));
-      if (Data->AuthGSSAPI)
+      ADF(L"SSH protocol version: %s; Compression: %s",
+        Data->GetSshProtStr(), BooleanToEngStr(Data->GetCompression()).c_str());
+      ADF(L"Bypass authentication: %s",
+       BooleanToEngStr(Data->GetSshNoUserAuth()).c_str());
+      ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
+        BooleanToEngStr(Data->GetTryAgent()).c_str(), BooleanToEngStr(Data->GetAgentFwd()).c_str(), BooleanToEngStr(Data->GetAuthTIS()).c_str(),
+         BooleanToEngStr(Data->GetAuthKI()).c_str(), BooleanToEngStr(Data->GetAuthGSSAPI()).c_str());
+      if (Data->GetAuthGSSAPI())
       {
-        ADF("GSSAPI: Forwarding: %s; Server realm: %s",
-          (BooleanToEngStr(Data->GSSAPIFwdTGT), Data->GSSAPIServerRealm));
+        ADF(L"GSSAPI: Forwarding: %s; Server realm: %s",
+          BooleanToEngStr(Data->GetGSSAPIFwdTGT()).c_str(), Data->GetGSSAPIServerRealm().c_str());
       }
-      ADF("Ciphers: %s; Ssh2DES: %s",
-        (Data->CipherList, BooleanToEngStr(Data->Ssh2DES)));
+      ADF(L"Ciphers: %s; Ssh2DES: %s",
+        Data->GetCipherList().c_str(), BooleanToEngStr(Data->GetSsh2DES()).c_str());
       std::wstring Bugs;
-      char const * BugFlags = "A+-";
+      wchar_t const * BugFlags = L"A+-";
       for (int Index = 0; Index < BUG_COUNT; Index++)
       {
-        Bugs += std::wstring(BugFlags[Data->Bug[(TSshBug)Index]])+(Index<BUG_COUNT-1?",":"");
+        Bugs += BugFlags[Data->GetBug((TSshBug)Index)] + (Index<BUG_COUNT-1? L"," : L"");
       }
-      ADF("SSH Bugs: %s", (Bugs));
-      Bugs = "";
+      ADF(L"SSH Bugs: %s", (Bugs));
+      Bugs = L"";
       for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
       {
-        Bugs += std::wstring(BugFlags[Data->SFTPBug[(TSftpBug)Index]])+(Index<SFTP_BUG_COUNT-1?",":"");
+        Bugs += BugFlags[Data->GetSFTPBug((TSftpBug)Index)] + (Index<SFTP_BUG_COUNT-1 ? L"," : L"");
       }
-      ADF("SFTP Bugs: %s", (Bugs));
-      ADF("Return code variable: %s; Lookup user groups: %s",
-        ((Data->DetectReturnVar ? std::wstring("Autodetect") : Data->ReturnVar),
-         BooleanToEngStr(Data->LookupUserGroups)));
-      ADF("Shell: %s", ((Data->Shell.empty()? std::wstring("default") : Data->Shell)));
-      ADF("EOL: %d, UTF: %d", (Data->EOLType, Data->NotUtf));
-      ADF("Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
-        (BooleanToEngStr(Data->ClearAliases), BooleanToEngStr(Data->UnsetNationalVars),
-         BooleanToEngStr(Data->ResolveSymlinks)));
-      ADF("LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
-        (Data->ListingCommand,
-         BooleanToEngStr(Data->IgnoreLsWarnings),
-         BooleanToEngStr(Data->Scp1Compatibility)));
+      ADF(L"SFTP Bugs: %s", Bugs.c_str());
+      ADF(L"Return code variable: %s; Lookup user groups: %s",
+        (Data->GetDetectReturnVar() ? std::wstring(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
+         BooleanToEngStr(Data->GetLookupUserGroups()).c_str()));
+      ADF(L"Shell: %s", (Data->GetShell().empty()? std::wstring(L"default").c_str() : Data->GetShell().c_str()));
+      ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf);
+      ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
+        BooleanToEngStr(Data->GetClearAliases()).c_str(),
+        BooleanToEngStr(Data->GetUnsetNationalVars()).c_str(),
+         BooleanToEngStr(Data->GetResolveSymlinks()).c_str());
+      ADF(L"LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
+        Data->GetListingCommand().c_str(),
+         BooleanToEngStr(Data->GetIgnoreLsWarnings().c_str()),
+         BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
     }
-    if (Data->FSProtocol == fsFTP)
+    if (Data->GetFSProtocol() == fsFTP)
     {
       std::wstring Ftps;
-      switch (Data->Ftps)
+      switch (Data->GetFtps())
       {
         case ftpsImplicit:
-          Ftps = "Implicit SSL/TLS";
+          Ftps = L"Implicit SSL/TLS";
           break;
 
         case ftpsExplicitSsl:
-          Ftps = "Explicit SSL";
+          Ftps = L"Explicit SSL";
           break;
 
         case ftpsExplicitTls:
-          Ftps = "Explicit TLS";
+          Ftps = L"Explicit TLS";
           break;
 
         default:
-          assert(Data->Ftps == ftpsNone);
-          Ftps = "None";
+          assert(Data->GetFtps() == ftpsNone);
+          Ftps = L"None";
           break;
       }
-      ADF("FTP: FTPS: %s; Passive: %s [Force IP: %s]",
-        (Ftps, BooleanToEngStr(Data->FtpPasvMode),
-         BooleanToEngStr(Data->FtpForcePasvIp)));
+      ADF(L"FTP: FTPS: %s; Passive: %s [Force IP: %s]",
+        Ftps.c_str(), BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
+         BooleanToEngStr(Data->GetFtpForcePasvIp()).c_str());
     }
-    ADF("Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
-      ((Data->LocalDirectory.empty() ? std::wstring("default") : Data->LocalDirectory),
-       (Data->RemoteDirectory.empty() ? std::wstring("home") : Data->RemoteDirectory),
-       BooleanToEngStr(Data->UpdateDirectories),
-       BooleanToEngStr(Data->CacheDirectories)));
-    ADF("Cache directory changes: %s, Permanent: %s",
-      (BooleanToEngStr(Data->CacheDirectoryChanges),
-       BooleanToEngStr(Data->PreserveDirectoryChanges)));
-    ADF("DST mode: %d", (int(Data->DSTMode)));
+    ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
+      (Data->GetLocalDirectory().empty() ? std::wstring(L"default").c_str() : Data->GetLocalDirectory().c_str()),
+       (Data->GetRemoteDirectory().empty() ? std::wstring(L"home").c_str() : Data->GetRemoteDirectory().c_str()),
+       BooleanToEngStr(Data->GetUpdateDirectories()).c_str(),
+       BooleanToEngStr(Data->GetCacheDirectories()).c_str());
+    ADF(L"Cache directory changes: %s, Permanent: %s",
+      BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
+       BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
+    ADF(L"DST mode: %d", int(Data->GetDSTMode()));
 
     AddSeparator();
 
@@ -1039,18 +1040,18 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   {
     DeleteUnnecessary();
 
-    EndUpdate();
+    // EndUpdate();
   }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddSeparator()
 {
-  Add(llMessage, "--------------------------------------------------------------------------");
+  Add(llMessage, L"--------------------------------------------------------------------------");
 }
 //---------------------------------------------------------------------------
 int TSessionLog::GetBottomIndex()
 {
-  return (Count > 0 ? (TopIndex + Count - 1) : -1);
+  return (GetCount() > 0 ? (GetTopIndex() + GetCount() - 1) : -1);
 }
 //---------------------------------------------------------------------------
 bool TSessionLog::GetLoggingToFile()
@@ -1063,19 +1064,19 @@ void TSessionLog::Clear()
 {
   TGuard Guard(FCriticalSection);
 
-  FTopIndex += Count;
+  FTopIndex += GetCount();
   TStringList::Clear();
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddPendingAction(TSessionActionRecord * Action)
 {
-  FPendingActions->Add(Action);
+  FPendingActions->Add((TObject *)Action);
 }
 //---------------------------------------------------------------------------
 void TSessionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->GetItem(0])->Record())
+         reinterpret_cast<TSessionActionRecord *>(FPendingActions->GetItem(0))->Record())
   {
     FPendingActions->Delete(0);
   }
