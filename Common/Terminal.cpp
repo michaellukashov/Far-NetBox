@@ -3358,7 +3358,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
     // never use directory change cache during startup, this ensures, we never
     // end-up initially in non-existing directory
     if ((GetStatus() == ssOpened) &&
-        GetSessionData()->CacheDirectoryChanges &&
+        GetSessionData()->GetCacheDirectoryChanges() &&
         FDirectoryChangesCache->GetDirectoryChange(PeekCurrentDirectory(),
           Directory, CachedDirectory))
     {
@@ -3442,7 +3442,7 @@ TTerminal * TTerminal::GetCommandSession()
       FCommandSession->SetAutoReadDirectory(false);
 
       TSessionData * CommandSessionData = FCommandSession->FSessionData;
-      CommandSessionData->SetRemoteDirectory(CurrentDirectory);
+      CommandSessionData->SetRemoteDirectory(GetCurrentDirectory());
       CommandSessionData->SetFSProtocol(fsSCPonly);
       CommandSessionData->SetClearAliases(false);
       CommandSessionData->SetUnsetNationalVars(false);
@@ -3450,12 +3450,12 @@ TTerminal * TTerminal::GetCommandSession()
 
       FCommandSession->FExceptionOnFail = FExceptionOnFail;
 
-      FCommandSession->SetOnQueryUser(OnQueryUser);
-      FCommandSession->SetOnPromptUser(OnPromptUser);
-      FCommandSession->SetOnShowExtendedException(OnShowExtendedException);
-      FCommandSession->SetOnProgress(OnProgress);
-      FCommandSession->SetOnFinished(OnFinished);
-      FCommandSession->SetOnInformation(OnInformation);
+      FCommandSession->SetOnQueryUser(GetOnQueryUser());
+      FCommandSession->SetOnPromptUser(GetOnPromptUser());
+      FCommandSession->SetOnShowExtendedException(GetOnShowExtendedException());
+      FCommandSession->SetOnProgress(GetOnProgress());
+      FCommandSession->SetOnFinished(GetOnFinished());
+      FCommandSession->SetOnInformation(GetOnInformation());
       // do not copy OnDisplayBanner to avoid it being displayed
     }
     catch(...)
@@ -3486,7 +3486,7 @@ void TTerminal::AnyCommand(const std::wstring Command,
       FAction.AddOutput(Str, StdError);
       if (FOutputEvent != NULL)
       {
-        FOutputEvent(Str, StdError);
+        // FIXME FOutputEvent(Str, StdError);
       }
     }
 
@@ -3497,7 +3497,7 @@ void TTerminal::AnyCommand(const std::wstring Command,
 
   TCallSessionAction Action(GetLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  DoAnyCommand(Command, ProxyOutputEvent.Output, &Action);
+  // FIXME DoAnyCommand(Command, (TCaptureOutputEvent)&ProxyOutputEvent.Output, &Action);
 }
 //---------------------------------------------------------------------------
 void TTerminal::DoAnyCommand(const std::wstring Command,
