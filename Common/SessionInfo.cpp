@@ -1,4 +1,6 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
+
 #include <stdio.h>
 
 #include "Common.h"
@@ -10,23 +12,23 @@ std::wstring XmlEscape(std::wstring Str)
 {
   for (int i = 1; i <= Str.size(); i++)
   {
-    const char * Repl = NULL;
+    const wchar_t * Repl = NULL;
     switch (Str[i])
     {
       case '&':
-        Repl = "amp;";
+        Repl = L"amp;";
         break;
 
       case '>':
-        Repl = "gt;";
+        Repl = L"gt;";
         break;
 
       case '<':
-        Repl = "lt;";
+        Repl = L"lt;";
         break;
 
       case '"':
-        Repl = "quot;";
+        Repl = L"quot;";
         break;
 
       case '\r':
@@ -38,17 +40,17 @@ std::wstring XmlEscape(std::wstring Str)
     if (Repl != NULL)
     {
       Str[i] = '&';
-      Str.Insert(Repl, i + 1);
-      i += strlen(Repl);
+      Str.insert(i + 1, std::wstring(Repl));
+      i += wcslen(Repl);
     }
   }
-  Str = AnsiToUtf8(Str);
+  // Str = AnsiToUtf8(Str);
   return Str;
 }
 //---------------------------------------------------------------------------
 std::wstring XmlTimestamp(const TDateTime & DateTime)
 {
-  return FormatDateTime("yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
+  return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 }
 //---------------------------------------------------------------------------
 std::wstring XmlTimestamp()
@@ -104,7 +106,7 @@ public:
         std::wstring Attrs;
         if (FRecursive)
         {
-          Attrs = " recursive=\"true\"";
+          Attrs = L" recursive=\"true\"";
         }
         FLog->Add(llAction, ::FORMAT(L"  <%s%s>", (Name,  Attrs)));
         for (int Index = 0; Index < FNames->GetCount(); Index++)
@@ -122,46 +124,46 @@ public:
         }
         if (FFileList != NULL)
         {
-          FLog->Add(llAction, "    <files>");
+          FLog->Add(llAction, L"    <files>");
           for (int Index = 0; Index < FFileList->GetCount(); Index++)
           {
-            TRemoteFile * File = FFileList->Files[Index];
+            TRemoteFile * File = FFileList->GetFile(Index);
 
-            FLog->Add(llAction, "      <file>");
-            FLog->Add(llAction, ::FORMAT(L"        <filename value=\"%s\" />", (XmlEscape(File->GetFileName()))));
-            FLog->Add(llAction, ::FORMAT(L"        <type value=\"%s\" />", (XmlEscape(File->Type))));
+            FLog->Add(llAction, L"      <file>");
+            FLog->Add(llAction, ::FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName())));
+            // FIXME FLog->Add(llAction, ::FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType()))));
             if (!File->GetIsDirectory())
             {
-              FLog->Add(llAction, ::FORMAT(L"        <size value=\"%s\" />", (IntToStr(File->Size))));
+              FLog->Add(llAction, ::FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize())));
             }
-            FLog->Add(llAction, ::FORMAT(L"        <modification value=\"%s\" />", (XmlTimestamp(File->Modification))));
-            FLog->Add(llAction, ::FORMAT(L"        <permissions value=\"%s\" />", (XmlEscape(File->GetRights()->Text))));
-            FLog->Add(llAction, "      </file>");
+            FLog->Add(llAction, ::FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification())));
+            FLog->Add(llAction, ::FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText())));
+            FLog->Add(llAction, L"      </file>");
           }
-          FLog->Add(llAction, "    </files>");
+          FLog->Add(llAction, L"    </files>");
         }
         if (FState == RolledBack)
         {
           if (FErrorMessages != NULL)
           {
-            FLog->Add(llAction, "    <result success=\"false\">");
+            FLog->Add(llAction, L"    <result success=\"false\">");
             for (int Index = 0; Index < FErrorMessages->GetCount(); Index++)
             {
               FLog->Add(llAction,
-                ::FORMAT(L"      <message>%s</message>", (XmlEscape(FErrorMessages->GetString(Index)))));
+                ::FORMAT(L"      <message>%s</message>", XmlEscape(FErrorMessages->GetString(Index).c_str())));
             }
-            FLog->Add(llAction, "    </result>");
+            FLog->Add(llAction, L"    </result>");
           }
           else
           {
-            FLog->Add(llAction, "    <result success=\"false\" />");
+            FLog->Add(llAction, L"    <result success=\"false\" />");
           }
         }
         else
         {
-          FLog->Add(llAction, "    <result success=\"true\" />");
+          FLog->Add(llAction, L"    <result success=\"true\" />");
         }
-        FLog->Add(llAction, ::FORMAT(L"  </%s>", (Name)));
+        FLog->Add(llAction, ::FORMAT(L"  </%s>", Name));
       }
       delete this;
     }
@@ -173,18 +175,18 @@ public:
     Close(Committed);
   }
 
-  void Rollback(exception * E)
+  void Rollback(std::exception * E)
   {
     assert(FErrorMessages == NULL);
     FErrorMessages = new TStringList();
-    if (!E->Message.empty())
+    if (strlen(E->what()) != 0)
     {
-      FErrorMessages->Add(E->Message);
+      FErrorMessages->Add(::MB2W(E->what()));
     }
     ExtException * EE = dynamic_cast<ExtException *>(E);
-    if ((EE != NULL) && (EE->MoreMessages != NULL))
+    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
     {
-      FErrorMessages->AddStrings(EE->MoreMessages);
+      FErrorMessages->AddStrings(EE->GetMoreMessages());
     }
     if (FErrorMessages->GetCount() == 0)
     {
@@ -201,22 +203,22 @@ public:
 
   void FileName(const std::wstring & FileName)
   {
-    Parameter("filename", FileName);
+    Parameter(L"filename", FileName);
   }
 
   void Destination(const std::wstring & Destination)
   {
-    Parameter("destination", Destination);
+    Parameter(L"destination", Destination);
   }
 
   void Rights(const TRights & Rights)
   {
-    Parameter("permissions", Rights.Text);
+    Parameter(L"permissions", Rights.GetText());
   }
 
   void Modification(const TDateTime & DateTime)
   {
-    Parameter("modification", XmlTimestamp(DateTime));
+    Parameter(L"modification", XmlTimestamp(DateTime));
   }
 
   void Recursive()
@@ -226,16 +228,16 @@ public:
 
   void Command(const std::wstring & Command)
   {
-    Parameter("command", Command);
+    Parameter(L"command", Command);
   }
 
   void AddOutput(std::wstring Output, bool StdError)
   {
-    const char * Name = (StdError ? "erroroutput" : "output");
+    const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->GetString(Index) = FValues->GetString(Index) + "\r\n" + Output;
+      FValues->GetString(Index) = FValues->GetString(Index) + L"\r\n" + Output;
     }
     else
     {
@@ -279,7 +281,7 @@ protected:
     }
   }
 
-  void Parameter(const std::wstring & Name, const std::wstring & Value = "")
+  void Parameter(const std::wstring & Name, const std::wstring & Value = L"")
   {
     FNames->Add(Name);
     FValues->Add(Value);
@@ -336,7 +338,7 @@ void TSessionAction::Commit()
   }
 }
 //---------------------------------------------------------------------------
-void TSessionAction::Rollback(exception * E)
+void TSessionAction::Rollback(std::exception * E)
 {
   if (FRecord != NULL)
   {
@@ -373,7 +375,7 @@ void TFileSessionAction::FileName(const std::wstring & FileName)
 {
   if (FRecord != NULL)
   {
-    FRecord->GetFileName()(FileName);
+    FRecord->FileName(FileName);
   }
 }
 //---------------------------------------------------------------------------
@@ -436,7 +438,7 @@ void TChmodSessionAction::Rights(const TRights & Rights)
 {
   if (FRecord != NULL)
   {
-    FRecord->GetRights()(Rights);
+    FRecord->Rights(Rights);
   }
 }
 //---------------------------------------------------------------------------
@@ -538,8 +540,8 @@ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   FFile = NULL;
   FLoggedLines = 0;
   FTopIndex = -1;
-  FCurrentLogFileName = "";
-  FCurrentFileName = "";
+  FCurrentLogFileName = L"";
+  FCurrentFileName = L"";
   FLoggingActions = false;
   FClosed = false;
   FPendingActions = new TList();
@@ -568,17 +570,18 @@ void TSessionLog::Unlock()
 std::wstring TSessionLog::GetSessionName()
 {
   assert(FSessionData != NULL);
-  return FSessionData->SessionName;
+  return FSessionData->GetSessionName();
 }
 //---------------------------------------------------------------------------
 std::wstring TSessionLog::GetLine(int Index)
 {
-  return Strings[Index - FTopIndex];
+  return GetString(Index - FTopIndex);
 }
 //---------------------------------------------------------------------------
 TLogLineType TSessionLog::GetType(int Index)
 {
-  return (TLogLineType)Objects[Index - FTopIndex];
+   void *ptr = GetObject(Index - FTopIndex);
+  return (TLogLineType)(int)ptr;
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring & Line)
@@ -609,7 +612,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
     {
       if (Type != llAction)
       {
-        std::wstring Timestamp = FormatDateTime(" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+        std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
         fputc(LogLineMarks[Type], (FILE *)FFile);
         fwrite(Timestamp.c_str(), Timestamp.size(), 1, (FILE *)FFile);
       }
@@ -622,18 +625,18 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
-  void (  \1 Get\2() { return F\2; }\r\n  void Set\2(\1 value) { F\2 = value; }f)(TLogLineType Type, const std::wstring & Line))
+  void (TObject::*f)(TLogLineType Type, const std::wstring & Line))
 {
   std::wstring Prefix;
 
-  if ((Type != llAction) && !Name.empty())
+  if ((Type != llAction) && !GetName().empty())
   {
-    Prefix = "[" + Name + "] ";
+    Prefix = L"[" + GetName() + L"] ";
   }
 
   while (!Line.empty())
   {
-    f(Type, Prefix + CutToChar(Line, '\n', false));
+    (f)(Type, Prefix + CutToChar(Line, '\n', false));
   }
 }
 //---------------------------------------------------------------------------

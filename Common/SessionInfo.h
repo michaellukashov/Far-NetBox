@@ -4,6 +4,7 @@
 
 #include "SessionData.h"
 #include "Interface.h"
+// #include "Exceptions.h"
 //---------------------------------------------------------------------------
 enum TSessionStatus { ssClosed, ssOpening, ssOpened };
 //---------------------------------------------------------------------------
@@ -90,7 +91,7 @@ public:
   void Restart();
 
   void Commit();
-  void Rollback(exception * E = NULL);
+  void Rollback(std::exception *E = NULL);
   void Cancel();
 
 protected:
