@@ -563,7 +563,7 @@ std::wstring TConfiguration::GetOSVersionStr()
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = FORMAT("%d.%d.%d %s", (int(OSVersionInfo.dwMajorVersion),
+    Result = ::FORMAT(L"%d.%d.%d %s", (int(OSVersionInfo.dwMajorVersion),
       int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber),
       OSVersionInfo.szCSDVersion)).Trim();
   }
@@ -676,7 +676,7 @@ std::wstring TConfiguration::GetVersion()
   {
     TVSFixedFileInfo * Info = FixedApplicationInfo;
     std::wstring Result;
-    Result = TrimVersion(FORMAT("%d.%d.%d", (
+    Result = TrimVersion(::FORMAT(L"%d.%d.%d", (
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS))));

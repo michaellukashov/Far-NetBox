@@ -106,17 +106,17 @@ public:
         {
           Attrs = " recursive=\"true\"";
         }
-        FLog->Add(llAction, FORMAT("  <%s%s>", (Name,  Attrs)));
+        FLog->Add(llAction, ::FORMAT(L"  <%s%s>", (Name,  Attrs)));
         for (int Index = 0; Index < FNames->GetCount(); Index++)
         {
           std::wstring Value = FValues->GetString(Index);
           if (Value.empty())
           {
-            FLog->Add(llAction, FORMAT("    <%s />", (FNames->GetString(Index))));
+            FLog->Add(llAction, ::FORMAT(L"    <%s />", (FNames->GetString(Index))));
           }
           else
           {
-            FLog->Add(llAction, FORMAT("    <%s value=\"%s\" />",
+            FLog->Add(llAction, ::FORMAT(L"    <%s value=\"%s\" />",
               (FNames->GetString(Index), XmlEscape(Value))));
           }
         }
@@ -128,14 +128,14 @@ public:
             TRemoteFile * File = FFileList->Files[Index];
 
             FLog->Add(llAction, "      <file>");
-            FLog->Add(llAction, FORMAT("        <filename value=\"%s\" />", (XmlEscape(File->GetFileName()))));
-            FLog->Add(llAction, FORMAT("        <type value=\"%s\" />", (XmlEscape(File->Type))));
+            FLog->Add(llAction, ::FORMAT(L"        <filename value=\"%s\" />", (XmlEscape(File->GetFileName()))));
+            FLog->Add(llAction, ::FORMAT(L"        <type value=\"%s\" />", (XmlEscape(File->Type))));
             if (!File->GetIsDirectory())
             {
-              FLog->Add(llAction, FORMAT("        <size value=\"%s\" />", (IntToStr(File->Size))));
+              FLog->Add(llAction, ::FORMAT(L"        <size value=\"%s\" />", (IntToStr(File->Size))));
             }
-            FLog->Add(llAction, FORMAT("        <modification value=\"%s\" />", (XmlTimestamp(File->Modification))));
-            FLog->Add(llAction, FORMAT("        <permissions value=\"%s\" />", (XmlEscape(File->GetRights()->Text))));
+            FLog->Add(llAction, ::FORMAT(L"        <modification value=\"%s\" />", (XmlTimestamp(File->Modification))));
+            FLog->Add(llAction, ::FORMAT(L"        <permissions value=\"%s\" />", (XmlEscape(File->GetRights()->Text))));
             FLog->Add(llAction, "      </file>");
           }
           FLog->Add(llAction, "    </files>");
@@ -148,7 +148,7 @@ public:
             for (int Index = 0; Index < FErrorMessages->GetCount(); Index++)
             {
               FLog->Add(llAction,
-                FORMAT("      <message>%s</message>", (XmlEscape(FErrorMessages->GetString(Index)))));
+                ::FORMAT(L"      <message>%s</message>", (XmlEscape(FErrorMessages->GetString(Index)))));
             }
             FLog->Add(llAction, "    </result>");
           }
@@ -161,7 +161,7 @@ public:
         {
           FLog->Add(llAction, "    <result success=\"true\" />");
         }
-        FLog->Add(llAction, FORMAT("  </%s>", (Name)));
+        FLog->Add(llAction, ::FORMAT(L"  </%s>", (Name)));
       }
       delete this;
     }
@@ -706,7 +706,7 @@ void TSessionLog::ReflectSettings()
     FLoggingActions = true;
     FLogging = ALogging;
     Add(llAction, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    Add(llAction, FORMAT("<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
+    Add(llAction, ::FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
       (XmlEscape(FSessionData->SessionName), XmlTimestamp())));
     StateChange();
   }

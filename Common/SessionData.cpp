@@ -1210,7 +1210,7 @@ bool TSessionData::GetCanLogin()
 //---------------------------------------------------------------------------
 std::wstring TSessionData::GetSessionKey()
 {
-  return FORMAT("%s@%s", (UserName, HostName));
+  return ::FORMAT(L"%s@%s", (UserName, HostName));
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetInternalStorageKey()
@@ -1634,7 +1634,7 @@ std::wstring TSessionData::GetDefaultSessionName()
 {
   if (!HostName.empty() && !UserName.empty())
   {
-    return FORMAT("%s@%s", (UserName, HostName));
+    return ::FORMAT(L"%s@%s", (UserName, HostName));
   }
   else if (!HostName.empty())
   {
@@ -1690,7 +1690,7 @@ std::wstring TSessionData::GetSessionUrl()
 
     if (!HostName.empty() && !UserName.empty())
     {
-      Url += FORMAT("%s@%s", (UserName, HostName));
+      Url += ::FORMAT(L"%s@%s", (UserName, HostName));
     }
     else if (!HostName.empty())
     {
@@ -2397,7 +2397,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
         Session = Sessions->Sessions[Index];
         if (!OnlySelected || Session->Selected)
         {
-          HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", (Session->PortNumber, Session->HostName)));
+          HostKeyName = PuttyMungeStr(::FORMAT(L"@%d:%s", (Session->PortNumber, Session->HostName)));
           std::wstring KeyName;
           for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {

@@ -251,7 +251,7 @@ std::wstring ExceptionLogString(exception *E)
   if (true) // FIXME dynamic_cast<E>(E) != NULL) // ->InheritsFrom(__classid(exception)))
   {
     std::wstring Msg;
-    // Msg = FORMAT("(%s) %s", (E->ClassName(), E->Message));
+    // Msg = ::FORMAT(L"(%s) %s", (E->ClassName(), E->Message));
     Msg = ::MB2W(E->what());
     if (false) // FIXME E->InheritsFrom(__classid(ExtException)))
     {
@@ -758,7 +758,7 @@ TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT("%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
+    throw EConvertError(::FORMAT(L"%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
   }
   */
   return TDateTime();
@@ -774,7 +774,7 @@ TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short 
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT("%s [%d:%d:%d.%d]", (E.Message, int(Hour), int(Min), int(Sec), int(MSec))));
+    throw EConvertError(::FORMAT(L"%s [%d:%d:%d.%d]", (E.Message, int(Hour), int(Min), int(Sec), int(MSec))));
   }
   */
   return TDateTime();

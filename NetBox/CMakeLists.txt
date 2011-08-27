@@ -228,6 +228,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/Exceptions.cpp
     ${PROJECT_ROOT}/Common/FileOperationProgress.cpp
     ${PROJECT_ROOT}/Common/Queue.cpp
+    ${PROJECT_ROOT}/Common/SecureShell.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
 

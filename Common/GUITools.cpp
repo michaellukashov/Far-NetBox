@@ -113,9 +113,9 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     }
     if (!Password.IsEmpty())
     {
-      Params += FORMAT("-pw %s ", (EscapePuttyCommandParam(Password)));
+      Params += ::FORMAT(L"-pw %s ", (EscapePuttyCommandParam(Password)));
     }
-    Params += FORMAT("-load %s", (EscapePuttyCommandParam(SessionName)));
+    Params += ::FORMAT(L"-load %s", (EscapePuttyCommandParam(SessionName)));
 
     if (!ExecuteShell(Program, Params))
     {
