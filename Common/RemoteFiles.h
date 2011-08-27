@@ -145,7 +145,7 @@ public:
   // __property int INodeBlocks = { read = FINodeBlocks };
   int GetINodeBlocks() { return FINodeBlocks; };
   // __property TDateTime Modification = { read = FModification, write = SetModification };
-  TDateTime GetModification() { return FModification; }
+  TDateTime GetModification() const { return FModification; }
   void SetModification(const TDateTime & value);
   // __property std::wstring ModificationStr = { read = GetModificationStr };
   std::wstring GetModificationStr();

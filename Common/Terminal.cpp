@@ -4247,7 +4247,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
             ChecklistItem->Action = TSynchronizeChecklist::saDeleteRemote;
             ChecklistItem->Checked =
               FLAGSET(Data->Params, spDelete) &&
-              (!ChecklistItem->GetIsDirectory() || FLAGCLEAR(Data->Params, spNoRecurse) ||
+              (!ChecklistItem->IsDirectory || FLAGCLEAR(Data->Params, spNoRecurse) ||
                FLAGSET(Data->Params, spSubDirs));
           }
         }
@@ -4284,7 +4284,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   // otherwise it does not make any sense
   if (FLAGCLEAR(Params, spNotByTime))
   {
-    SyncCopyParam.PreserveTime = true;
+    SyncCopyParam.SetPreserveTime(true);
   }
 
   TStringList * DownloadList = new TStringList();
@@ -4306,21 +4306,21 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
       UploadList->Clear();
       DeleteLocalList->Clear();
 
-      ChecklistItem = Checklist->Item[IIndex];
+      ChecklistItem = Checklist->GetItem(IIndex);
 
       std::wstring CurrentLocalDirectory = ChecklistItem->Local.Directory;
       std::wstring CurrentRemoteDirectory = ChecklistItem->Remote.Directory;
 
       LogEvent(FORMAT(L"Synchronizing local directory '%s' with remote directory '%s', "
-        "params = %d", CurrentLocalDirectory.c_str(), CurrentRemoteDirectory.c_str(), int(Params)));
+        L"params = %d", CurrentLocalDirectory.c_str(), CurrentRemoteDirectory.c_str(), int(Params)));
 
       int Count = 0;
 
       while ((IIndex < Checklist->GetCount()) &&
-             (Checklist->Item[IIndex]->Local.Directory == CurrentLocalDirectory) &&
-             (Checklist->Item[IIndex]->Remote.Directory == CurrentRemoteDirectory))
+             (Checklist->GetItem(IIndex)->Local.Directory == CurrentLocalDirectory) &&
+             (Checklist->GetItem(IIndex)->Remote.Directory == CurrentRemoteDirectory))
       {
-        ChecklistItem = Checklist->Item[IIndex];
+        ChecklistItem = Checklist->GetItem(IIndex);
         if (ChecklistItem->Checked)
         {
           Count++;
@@ -4401,13 +4401,13 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           if (DownloadList->GetCount() > 0)
           {
             ProcessFiles(DownloadList, foSetProperties,
-              SynchronizeLocalTimestamp, NULL, osLocal);
+              (TProcessFileEvent)&TTerminal::SynchronizeLocalTimestamp, NULL, osLocal);
           }
 
           if (UploadList->GetCount() > 0)
           {
             ProcessFiles(UploadList, foSetProperties,
-              SynchronizeRemoteTimestamp);
+              (TProcessFileEvent)&TTerminal::SynchronizeRemoteTimestamp);
           }
         }
         else
@@ -4456,8 +4456,8 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   if (Data.OnSynchronizeDirectory != NULL)
   {
     bool Continue = true;
-    Data.OnSynchronizeDirectory(Data.LocalDirectory, Data.RemoteDirectory,
-      Continue, Collect);
+    // FIXME Data.OnSynchronizeDirectory(Data.LocalDirectory, Data.RemoteDirectory,
+      // Continue, Collect);
 
     if (!Continue)
     {
@@ -4475,13 +4475,13 @@ void TTerminal::SynchronizeLocalTimestamp(const std::wstring /*FileName*/,
   std::wstring LocalFile =
     IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
-
+  TFileOperationProgressType *OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (LocalFile)),
     HANDLE Handle;
     OpenLocalFile(LocalFile, GENERIC_WRITE, NULL, &Handle,
       NULL, NULL, NULL, NULL);
     FILETIME WrTime = DateTimeToFileTime(ChecklistItem->Remote.Modification,
-      GetSessionData()->DSTMode);
+      GetSessionData()->GetDSTMode());
     bool Result = SetFileTime(Handle, NULL, NULL, &WrTime);
     CloseHandle(Handle);
     if (!Result)
@@ -4500,7 +4500,7 @@ void TTerminal::SynchronizeRemoteTimestamp(const std::wstring /*FileName*/,
   TRemoteProperties Properties;
   Properties.Valid << vpModification;
   Properties.Modification = ConvertTimestampToUnix(ChecklistItem->FLocalLastWriteTime,
-    GetSessionData()->DSTMode);
+    GetSessionData()->GetDSTMode());
 
   ChangeFileProperties(
     UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) + ChecklistItem->Remote.FileName,
@@ -4525,9 +4525,9 @@ void TTerminal::FileFind(std::wstring FileName,
     }
 
     TFileMasks::TParams MaskParams;
-    MaskParams.Size = File->Size;
+    MaskParams.Size = File->GetSize();
 
-    std::wstring FullFileName = UnixExcludeTrailingBackslash(File->FullFileName);
+    std::wstring FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
     if (AParams->FileMask.Matches(FullFileName, false,
          File->GetIsDirectory(), &MaskParams))
     {
@@ -4553,7 +4553,7 @@ void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
     FOnFindingFile = Params.OnFindingFile;
     try
     {
-      ProcessDirectory(Directory, FileFind, &Params, false, true);
+      ProcessDirectory(Directory, (TProcessFileEvent)&TTerminal::FileFind, &Params, false, true);
     }
     catch(...)
     {
@@ -4584,7 +4584,7 @@ void TTerminal::SpaceAvailable(const std::wstring Path,
   }
   catch (exception &E)
   {
-    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, (Path)));
+    CommandError(&E, L""); // FIXME FMTLOAD(SPACE_AVAILABLE_ERROR, (Path)));
   }
 }
 //---------------------------------------------------------------------------
@@ -4604,7 +4604,7 @@ std::wstring TTerminal::GetPassword()
   // FPassword is empty also when stored password was used
   if (FPassword.empty())
   {
-    Result = GetSessionData()->Password;
+    Result = GetSessionData()->GetPassword();
   }
   else
   {
@@ -4619,7 +4619,7 @@ std::wstring TTerminal::GetTunnelPassword()
   // FTunnelPassword is empty also when stored password was used
   if (FTunnelPassword.empty())
   {
-    Result = GetSessionData()->TunnelPassword;
+    Result = GetSessionData()->GetTunnelPassword();
   }
   else
   {
@@ -4662,56 +4662,57 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   {
 
     __int64 Size;
-    if (CopyParam->CalculateSize)
+    if (CopyParam->GetCalculateSize())
     {
       // dirty trick: when moving, do not pass copy param to avoid exclude mask
       CalculateLocalFilesSize(FilesToCopy, Size,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
-    TFileOperationProgressType GetOperationProgress()(&DoProgress, &DoFinished);
-    GetOperationProgress().Start((Params & cpDelete ? foMove : foCopy), osLocal,
-      FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->CPSLimit);
+    TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
+        (TFileOperationFinished)&TTerminal::DoFinished);
+    OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
+      FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
-    FOperationProgress = &GetOperationProgress();
+    FOperationProgress = &OperationProgress;
     try
     {
-      if (CopyParam->CalculateSize)
+      if (CopyParam->GetCalculateSize())
       {
-        GetOperationProgress().SetTotalSize(Size);
+        OperationProgress.SetTotalSize(Size);
       }
 
       std::wstring UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
       BeginTransaction();
       try
       {
-        if (GetLog()->Logging)
+        if (GetLog()->GetLogging())
         {
           LogEvent(::FORMAT(L"Copying %d files/directories to remote directory "
             L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
-          LogEvent(CopyParam->LogStr);
+          LogEvent(CopyParam->GetLogStr());
         }
 
         FFileSystem->CopyToRemote(FilesToCopy, UnlockedTargetDir,
-          CopyParam, Params, &GetOperationProgress(), OnceDoneOperation);
+          CopyParam, Params, &OperationProgress, OnceDoneOperation);
       }
       catch(...)
       {
-        if (Active)
+        if (GetActive())
         {
           ReactOnCommand(fsCopyToRemote);
         }
         EndTransaction();
       }
 
-      if (GetOperationProgress().Cancel == csContinue)
+      if (OperationProgress.Cancel == csContinue)
       {
         Result = true;
       }
     }
     catch(...)
     {
-      GetOperationProgress().Stop();
+      OperationProgress.Stop();
       FOperationProgress = NULL;
     }
   }
@@ -4745,7 +4746,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
     if (OwnsFileList)
     {
       FilesToCopy = new TStringList();
-      FilesToCopy->Assign(Files->SelectedFiles);
+      FilesToCopy->Assign(GetFiles()->GetSelectedFiles());
     }
 
     BeginTransaction();
@@ -4753,11 +4754,12 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
     {
       __int64 TotalSize;
       bool TotalSizeKnown = false;
-      TFileOperationProgressType GetOperationProgress()(&DoProgress, &DoFinished);
+    TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
+        (TFileOperationFinished)&TTerminal::DoFinished);
 
-      if (CopyParam->CalculateSize)
+      if (CopyParam->GetCalculateSize())
       {
-        ExceptionOnFail = true;
+        SetExceptionOnFail(true);
         try
         {
           // dirty trick: when moving, do not pass copy param to avoid exclude mask
@@ -4767,19 +4769,19 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
         }
         catch(...)
         {
-          ExceptionOnFail = false;
+          SetExceptionOnFail(false);
         }
       }
 
-      GetOperationProgress().Start((Params & cpDelete ? foMove : foCopy), osRemote,
-        FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->CPSLimit);
+      OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osRemote,
+        FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
-      FOperationProgress = &GetOperationProgress();
+      FOperationProgress = &OperationProgress;
       try
       {
         if (TotalSizeKnown)
         {
-          GetOperationProgress().SetTotalSize(TotalSize);
+          OperationProgress.SetTotalSize(TotalSize);
         }
 
         try
@@ -4787,11 +4789,11 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
           try
           {
             FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,
-              &GetOperationProgress(), OnceDoneOperation);
+              &OperationProgress, OnceDoneOperation);
           }
           catch(...)
           {
-            if (Active)
+            if (GetActive())
             {
               ReactOnCommand(fsCopyToLocal);
             }
@@ -4803,7 +4805,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
           OnceDoneOperation = odoIdle;
         }
 
-        if (GetOperationProgress().Cancel == csContinue)
+        if (OperationProgress.Cancel == csContinue)
         {
           Result = true;
         }
@@ -4811,7 +4813,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
       catch(...)
       {
         FOperationProgress = NULL;
-        GetOperationProgress().Stop();
+        OperationProgress.Stop();
       }
     }
     catch(...)
@@ -4841,13 +4843,13 @@ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal,
   FMainTerminal(MainTerminal), FMasterPasswordTried(false),
   FMasterTunnelPasswordTried(false)
 {
-  GetLog()->Parent = FMainTerminal->Log;
-  GetLog()->Name = Name;
+  GetLog()->SetParent(FMainTerminal->GetLog());
+  GetLog()->SetName(Name);
   GetSessionData()->NonPersistant();
   assert(FMainTerminal != NULL);
-  if (!FMainTerminal->UserName.empty())
+  if (!FMainTerminal->GetUserName().empty())
   {
-    GetSessionData()->UserName = FMainTerminal->UserName;
+    GetSessionData()->SetUserName(FMainTerminal->GetUserName());
   }
 }
 //---------------------------------------------------------------------------
@@ -4884,11 +4886,11 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
       std::wstring Password;
       if (FTunnelOpening)
       {
-        Password = FMainTerminal->TunnelPassword;
+        Password = FMainTerminal->GetTunnelPassword();
       }
       else
       {
-        Password = FMainTerminal->Password;
+        Password = FMainTerminal->GetPassword();
       }
       Results->GetString(0) = Password;
       if (!Results->GetString(0).empty())
@@ -4917,7 +4919,7 @@ TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
 //---------------------------------------------------------------------------
 TTerminalList::~TTerminalList()
 {
-  assert(Count == 0);
+  assert(GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
@@ -4947,17 +4949,17 @@ void TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
 //---------------------------------------------------------------------------
 TTerminal * TTerminalList::GetTerminal(int Index)
 {
-  return dynamic_cast<TTerminal *>(Items[Index]);
+  return reinterpret_cast<TTerminal *>(GetItem(Index));
 }
 //---------------------------------------------------------------------------
 int TTerminalList::GetActiveCount()
 {
   int Result = 0;
   TTerminal * Terminal;
-  for (int i = 0; i < Count; i++)
+  for (int i = 0; i < GetCount(); i++)
   {
-    Terminal = Terminals[i];
-    if (Terminal->Active)
+    Terminal = GetTerminal(i);
+    if (Terminal->GetActive())
     {
       Result++;
     }
@@ -4968,10 +4970,10 @@ int TTerminalList::GetActiveCount()
 void TTerminalList::Idle()
 {
   TTerminal * Terminal;
-  for (int i = 0; i < Count; i++)
+  for (int i = 0; i < GetCount(); i++)
   {
-    Terminal = Terminals[i];
-    if (Terminal->Status == ssOpened)
+    Terminal = GetTerminal(i);
+    if (Terminal->GetStatus() == ssOpened)
     {
       Terminal->Idle();
     }
@@ -4980,8 +4982,8 @@ void TTerminalList::Idle()
 //---------------------------------------------------------------------------
 void TTerminalList::RecryptPasswords()
 {
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
-    Terminals[Index]->RecryptPasswords();
+    GetTerminal(Index)->RecryptPasswords();
   }
 }

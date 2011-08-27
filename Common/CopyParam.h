@@ -128,7 +128,7 @@ public:
   std::wstring GetLocalInvalidChars() { return FLocalInvalidChars; }
   void SetLocalInvalidChars(std::wstring value);
   // __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
-  bool GetCalculateSize() { return FCalculateSize; }
+  bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool value) { FCalculateSize = value; }
   // __property std::wstring FileMask = { read = FFileMask, write = FFileMask };
   std::wstring GetFileMask() { return FFileMask; }
@@ -143,7 +143,7 @@ public:
   bool GetClearArchive() { return FClearArchive; }
   void SetClearArchive(bool value) { FClearArchive = value; }
   // __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
-  unsigned long GetCPSLimit() { return FCPSLimit; }
+  unsigned long GetCPSLimit() const { return FCPSLimit; }
   void SetCPSLimit(unsigned long value) { FCPSLimit = value; }
 };
 //---------------------------------------------------------------------------
