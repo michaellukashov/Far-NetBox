@@ -434,3 +434,5 @@ enum FileAttributesEnum
 bool FileExists(const std::wstring &filename);
 int FileGetAttr(const std::wstring &filename);
 int FileSetAttr(const std::wstring &filename, int attrs);
+
+std::wstring SysErrorMessage(int code);

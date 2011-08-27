@@ -561,3 +561,10 @@ int FileSetAttr(const std::wstring &filename, int attrs)
     // FIXME
     return 0;
 }
+
+std::wstring SysErrorMessage(int code)
+{
+    // FIXME 
+    std::wstring result;
+    return result;
+}
