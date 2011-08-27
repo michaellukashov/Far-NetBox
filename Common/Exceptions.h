@@ -35,13 +35,15 @@ public:
   // inline ExtException(const std::wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
   // inline ExtException(int Ident, int AHelpContext)/* overload */ : exception(Ident, AHelpContext) { }
   // inline ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }
-
+  const std::wstring GetMessage() const { return FMessage; }
+  SetMessage(const std::wstring value) { FMessage = value; }
 protected:
   void AddMoreMessages(exception* E);
 
 private:
   TStrings *FMoreMessages;
   std::wstring FHelpKeyword;
+  const std::wstring FMessage;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \

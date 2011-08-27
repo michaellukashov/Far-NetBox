@@ -409,9 +409,9 @@ public:
   unsigned short GetNumber() const;
   void SetNumber(unsigned short value);
   // __property unsigned short NumberSet = { read = FSet };
-  unsigned short GetNumberSet() { return FSet; }
+  unsigned short GetNumberSet() const { return FSet; }
   // __property unsigned short NumberUnset = { read = FUnset };
-  unsigned short GetNumberUnset() { return FUnset; }
+  unsigned short GetNumberUnset() const { return FUnset; }
   // __property unsigned long NumberDecadic = { read = GetNumberDecadic };
   unsigned long GetNumberDecadic() const;
   // __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
@@ -436,8 +436,8 @@ private:
   std::wstring FText;
   bool FUnknown;
 
-  unsigned short GetNumberSet() const;
-  unsigned short GetNumberUnset() const;
+  // unsigned short GetNumberSet() const;
+  // unsigned short GetNumberUnset() const;
 };
 //---------------------------------------------------------------------------
 enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };

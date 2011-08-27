@@ -327,3 +327,10 @@ public:
     {}
 };
 
+class EAccessViolation : public std::exception
+{
+public:
+    EAccessViolation(std::string what) : std::exception(what.c_str())
+    {}
+};
+

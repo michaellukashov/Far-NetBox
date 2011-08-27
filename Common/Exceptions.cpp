@@ -1,10 +1,12 @@
 //---------------------------------------------------------------------------
-#include "Common.h"
+#include "stdafx.h"
+
 #include "Exceptions.h"
+#include "Common.h"
 #include "TextsCore.h"
 
 //---------------------------------------------------------------------------
-bool ExceptionMessage(exception * E, std::wstring & Message)
+bool ExceptionMessage(std::exception * E, std::wstring & Message)
 {
   bool Result = true;
   if (dynamic_cast<EAbort *>(E) != NULL)
@@ -15,13 +17,13 @@ bool ExceptionMessage(exception * E, std::wstring & Message)
   {
     Message = LoadStr(ACCESS_VIOLATION_ERROR);
   }
-  else if (E->Message.empty())
+  else if (std::string(E->what()).empty())
   {
     Result = false;
   }
   else
   {
-    Message = E->Message;
+    Message = ::MB2W(E->what());
   }
   return Result;
 }
@@ -37,7 +39,7 @@ TStrings *ExceptionToMoreMessages(exception * E)
     ExtException * ExtE = dynamic_cast<ExtException *>(E);
     if (ExtE != NULL)
     {
-      Result->AddStrings(ExtE->MoreMessages);
+      Result->AddStrings(ExtE->GetMoreMessages());
     }
   }
   return Result;
@@ -50,7 +52,7 @@ ExtException::ExtException(exception * E) :
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(exception* E, std::wstring Msg):
-  exception(::W2MB(Msg.c_str()))
+  std::exception(::W2MB(Msg.c_str()).c_str())
 {
   AddMoreMessages(E);
 }
@@ -63,9 +65,9 @@ ExtException::ExtException(std::wstring Msg, exception* E) :
   // and append message to the end to more messages
   if (!Msg.empty())
   {
-    if (Message.empty())
+    if (GetMessage().empty())
     {
-      Message = Msg;
+      SetMessage(Msg);
     }
     else
     {
