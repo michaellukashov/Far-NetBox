@@ -1,4 +1,6 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
+
 #include "Common.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -28,7 +30,7 @@ TFileOperationProgressType::~TFileOperationProgressType()
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Clear()
 {
-  FileName = "";
+  FileName = L"";
   AsciiTransfer = false;
   ResumeStatus = rsNotAvailable;
   Count = 0;
@@ -74,7 +76,7 @@ void TFileOperationProgressType::ClearTransfer()
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int ACount)
 {
-  Start(AOperation, ASide, ACount, false, "", 0);
+  Start(AOperation, ASide, ACount, false, L"", 0);
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
@@ -171,17 +173,17 @@ int TFileOperationProgressType::OverallProgress()
 void TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-  FOnProgress(*this, Cancel);
+  // FIXME FOnProgress(*this, Cancel);
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Finish(std::wstring FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
-
-  FOnFinished(Operation, Side, Temp, FileName,
-    /* TODO : There wasn't 'Success' condition, was it by mistake or by purpose? */
-    Success && (Cancel == csContinue), OnceDoneOperation);
+    // FIXME 
+/*   FOnFinished(Operation, Side, Temp, FileName,
+    // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
+    Success && (Cancel == csContinue), OnceDoneOperation); */
   FFilesFinished++;
   DoProgress();
 }
@@ -387,7 +389,7 @@ void TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
 //---------------------------------------------------------------------------
 TDateTime TFileOperationProgressType::TimeElapsed()
 {
-  return Now() - StartTime;
+  return Now() - TDateTime(StartTime);
 }
 //---------------------------------------------------------------------------
 unsigned int TFileOperationProgressType::CPS()
@@ -428,7 +430,7 @@ TDateTime TFileOperationProgressType::TimeExpected()
 {
   unsigned int CurCps = CPS();
   if (CurCps) return TDateTime((double)(((double)(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
-    else return 0;
+    else return TDateTime(0);
 }
 //---------------------------------------------------------------------------
 TDateTime TFileOperationProgressType::TotalTimeExpected()
@@ -443,7 +445,7 @@ TDateTime TFileOperationProgressType::TotalTimeExpected()
   }
   else
   {
-    return 0;
+    return TDateTime(0);
   }
 }
 //---------------------------------------------------------------------------
@@ -459,6 +461,6 @@ TDateTime TFileOperationProgressType::TotalTimeLeft()
   }
   else
   {
-    return 0;
+    return TDateTime(0);
   }
 }

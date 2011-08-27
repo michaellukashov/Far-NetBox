@@ -57,6 +57,28 @@ ExtException::ExtException(exception* E, std::wstring Msg):
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
+ExtException::ExtException(std::wstring Msg) :
+  exception("")
+{
+  // and append message to the end to more messages
+  if (!Msg.empty())
+  {
+    if (GetMessage().empty())
+    {
+      SetMessage(Msg);
+    }
+    else
+    {
+      if (FMoreMessages == NULL)
+      {
+        FMoreMessages = new TStringList();
+      }
+      FMoreMessages->Append(Msg);
+    }
+  }
+}
+
+//---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, exception* E) :
   exception("")
 {
