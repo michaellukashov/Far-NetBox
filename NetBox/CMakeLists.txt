@@ -220,6 +220,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/NetBox/SFTP.cpp
     ${PROJECT_ROOT}/NetBox/FTP.cpp
     ${PROJECT_ROOT}/NetBox/SCP.cpp
+    ${PROJECT_ROOT}/Common/Classes.cpp
     ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/Common/RemoteFiles.cpp

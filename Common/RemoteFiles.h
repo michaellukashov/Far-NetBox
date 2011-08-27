@@ -446,7 +446,8 @@ enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess }
 struct TValidProperties
 {
 public:
-    void Clear();
+    void Clear()
+    {}
     bool Contains(TValidProperty value) const
     {
         return false;
