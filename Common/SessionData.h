@@ -352,12 +352,11 @@ public:
   // __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
   bool GetResolveSymlinks() { return FResolveSymlinks; }
   // __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
-  // __property int SFTGetPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
-  int GetSFTGetPDownloadQueue() { return FSFTPDownloadQueue; }
+  int GetSFTPDownloadQueue() { return FSFTPDownloadQueue; }
   void SetSFTPDownloadQueue(int value);
   // __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
   int GetSFTPUploadQueue() { return FSFTPUploadQueue; }
-  void SetSFTPUploadQueue(int value) { FSFTPUploadQueue = value; }
+  void SetSFTPUploadQueue(int value);
   // __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
   int GetSFTPListingQueue() { return FSFTPListingQueue; }
   void SetSFTPListingQueue(int value);
@@ -495,7 +494,6 @@ public:
   void SetCustomParam1(std::wstring value);
   void SetCustomParam2(std::wstring value);
   void SetResolveSymlinks(bool value);
-  void SetSFTPUploadQueue(int value);
   void SetSFTPMaxVersion(int value);
   void SetSFTPMaxPacketSize(unsigned long value);
   void SetSCPLsFullTime(TAutoSwitch value);
