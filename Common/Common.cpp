@@ -185,7 +185,7 @@ std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs,
   int P;
   for (P = From; P <= Str.size(); P++)
   {
-    if (false) //FIXME IsDelimiter(Chs, Str, P))
+    if (::IsDelimiter(Chs, Str, P))
     {
       break;
     }
@@ -225,7 +225,7 @@ std::wstring DelimitStr(std::wstring Str, std::wstring Chars)
 {
   for (int i = 1; i <= Str.size(); i++)
   {
-    if (false) // FIXME Str.IsDelimiter(Chars, i))
+    if (::IsDelimiter(Str, Chars, i))
     {
       Str.insert(i, L"\\");
       i++;

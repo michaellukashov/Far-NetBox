@@ -31,7 +31,7 @@ void TOptions::Add(std::wstring Value)
       Switch = true;
       while (Switch && (Index <= Value.size()))
       {
-        if (Value.IsDelimiter(FSwitchValueDelimiters, Index))
+        if (::IsDelimiter(Value, FSwitchValueDelimiters, Index))
         {
           break;
         }
