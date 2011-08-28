@@ -381,7 +381,7 @@ void TFTPFileSystem::Open()
 
     // ask for username if it was not specified in advance, even on retry,
     // but keep previous one as default,
-    if (Data->UserName.IsEmpty())
+    if (Data->UserName.empty())
     {
       FTerminal->LogEvent(L"Username prompt (no username provided)");
 
@@ -404,7 +404,7 @@ void TFTPFileSystem::Open()
 
     // ask for password if it was not specified in advance,
     // on retry ask always
-    if ((Data->Password.IsEmpty() && !Data->Passwordless) || FPasswordFailed)
+    if ((Data->Password.empty() && !Data->Passwordless) || FPasswordFailed)
     {
       FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
 
@@ -551,7 +551,7 @@ std::wstring TFTPFileSystem::ActualCurrentDirectory()
 void TFTPFileSystem::EnsureLocation()
 {
   // if we do not know what's the current directory, do nothing
-  if (!FCurrentDirectory.IsEmpty())
+  if (!FCurrentDirectory.empty())
   {
     // Make sure that the FZAPI current working directory,
     // is actually our working directory.
@@ -1609,7 +1609,7 @@ void TFTPFileSystem::DoStartup()
     for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
       std::wstring Command = PostLoginCommands->GetString(Index);
-      if (!Command.IsEmpty())
+      if (!Command.empty())
       {
         FFileZillaIntf->CustomCommand(Command.c_str());
 
@@ -1687,7 +1687,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // and immediatelly after call to CWD,
   // later our current directory may be not synchronized with FZAPI current
   // directory anyway, see comments in EnsureLocation
-  if (FCurrentDirectory.IsEmpty())
+  if (FCurrentDirectory.empty())
   {
     FFileZillaIntf->CustomCommand("PWD");
 
@@ -1972,7 +1972,7 @@ bool TFTPFileSystem::TemporaryTransferFile(const std::wstring & /*FileName*/)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::GetStoredCredentialsTried()
 {
-  return !FTerminal->GetSessionData()->Password.IsEmpty();
+  return !FTerminal->GetSessionData()->Password.empty();
 }
 //---------------------------------------------------------------------------
 std::wstring TFTPFileSystem::GetUserName()
@@ -2061,7 +2061,7 @@ int TFTPFileSystem::GetOptionVal(int OptionID) const
       break;
 
     case OPTION_PROXYUSELOGON:
-      Result = !Data->ProxyUsername.IsEmpty();
+      Result = !Data->ProxyUsername.empty();
       break;
 
     case OPTION_LOGONTYPE:
@@ -2463,7 +2463,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
         throw;
       }
 
-      if (Error.IsEmpty() && (MoreMessages != NULL))
+      if (Error.empty() && (MoreMessages != NULL))
       {
         assert(MoreMessages->GetCount() > 0);
         Error = MoreMessages->GetString(0);
@@ -2473,7 +2473,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       if (Disconnected)
       {
         // for fatal error, it is essential that there is some message
-        assert(!Error.IsEmpty());
+        assert(!Error.empty());
         ExtException * E = new ExtException(Error, MoreMessages, true);
         try
         {
@@ -2600,7 +2600,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     }
     else if (FLastCommand == SYST)
     {
-      assert(FSystem.IsEmpty());
+      assert(FSystem.empty());
       // Possitive reply to "SYST" must be 215, see RFC 959
       if (FLastCode == 215)
       {
@@ -2909,7 +2909,7 @@ struct TClipboardHandler
 //---------------------------------------------------------------------------
 std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
 {
-  if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
+  if (!Entry1.empty() && !Entry2.empty())
   {
     return ::FORMAT(L"%s, %s", (Entry1, Entry2));
   }
@@ -3072,7 +3072,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     if (RequestResult == 0)
     {
       std::wstring Buf = FTerminal->GetSessionData()->HostKey;
-      while ((RequestResult == 0) && !Buf.IsEmpty())
+      while ((RequestResult == 0) && !Buf.empty())
       {
         std::wstring ExpectedKey = CutToChar(Buf, ';', false);
         if (ExpectedKey == FSessionInfo.CertificateFingerprint)

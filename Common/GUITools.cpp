@@ -23,7 +23,7 @@ bool FindFile(std::wstring & Path)
       GetEnvironmentVariable("PATH", Paths.c_str(), Len);
 
       std::wstring NewPath = FileSearch(ExtractFileName(Path), Paths);
-      Result = !NewPath.IsEmpty();
+      Result = !NewPath.empty();
       if (Result)
       {
         Path = NewPath;
@@ -107,11 +107,11 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
       delete SourceStorage;
     }
 
-    if (!Params.IsEmpty())
+    if (!Params.empty())
     {
       Params += " ";
     }
-    if (!Password.IsEmpty())
+    if (!Password.empty())
     {
       Params += ::FORMAT(L"-pw %s ", (EscapePuttyCommandParam(Password)));
     }
@@ -277,7 +277,7 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
   std::wstring TempDir;
   do
   {
-    TempDir = BaseDir.IsEmpty() ? SystemTemporaryDirectory() : BaseDir;
+    TempDir = BaseDir.empty() ? SystemTemporaryDirectory() : BaseDir;
     TempDir = IncludeTrailingBackslash(TempDir) + Identity;
     if (Mask)
     {

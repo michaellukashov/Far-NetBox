@@ -383,7 +383,7 @@ void AES256EncyptWithMAC(std::wstring Input, std::wstring Password,
   std::wstring & Salt, std::wstring & Output, std::wstring & Mac)
 {
   fcrypt_ctx aes;
-  if (Salt.IsEmpty())
+  if (Salt.empty())
   {
     Salt = AES256Salt();
   }
@@ -593,7 +593,7 @@ int PasswordMaxLength()
 //---------------------------------------------------------------------------
 int IsValidPassword(std::wstring Password)
 {
-  if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
+  if (Password.empty() || (Password.Length() > PasswordMaxLength()))
   {
     return -1;
   }
