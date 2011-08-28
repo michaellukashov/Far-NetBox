@@ -551,6 +551,11 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval)
     return 0;
 }
 
+__int64 TryStrToInt(const std::wstring value, __int64 defval)
+{
+    return 0;
+}
+
 bool FileExists(const std::wstring &filename)
 {
     // FIXME

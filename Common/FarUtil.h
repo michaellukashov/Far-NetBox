@@ -422,6 +422,7 @@ int StrToInt(const std::wstring value);
 __int64 ToInt(const std::wstring value);
 int StrToIntDef(const std::wstring value, int defval);
 __int64 StrToInt64Def(const std::wstring value, __int64 defval);
+__int64 TryStrToInt(const std::wstring value, __int64 defval);
 
 enum FileAttributesEnum
 {

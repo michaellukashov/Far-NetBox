@@ -5,6 +5,7 @@
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
+#include "Exceptions.h"
 #include "FarUtil.h"
 //---------------------------------------------------------------------------
 TCopyParamType::TCopyParamType()
@@ -566,14 +567,14 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->WriteInteger(L"CPSLimit", GetCPSLimit());
 }
 //---------------------------------------------------------------------------
-#define C(Property) (Property == rhp.Property)
+#define C(Property) (Get##Property() == rhp.Get##Property())
 bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 {
   return
     C(AddXToDirectories) &&
     C(AsciiFileMask) &&
     C(FileNameCase) &&
-    C(GetPreserveReadOnly()) &&
+    C(PreserveReadOnly) &&
     C(PreserveTime) &&
     C(PreserveRights) &&
     C(IgnorePermErrors) &&
@@ -583,10 +584,10 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
     C(ResumeThreshold) &&
     C(InvalidCharsReplacement) &&
     C(LocalInvalidChars) &&
-    C(GetCalculateSize()) &&
-    C(GetExcludeFileMask()) &&
-    C(GetNegativeExclude()) &&
-    C(GetClearArchive()) &&
+    C(CalculateSize) &&
+    C(ExcludeFileMask) &&
+    C(NegativeExclude) &&
+    C(ClearArchive) &&
     C(CPSLimit) &&
     true;
 }
@@ -605,7 +606,7 @@ unsigned long GetSpeedLimit(const std::wstring & Text)
     if (!TryStrToInt(Text, SSpeed) ||
         (SSpeed < 0))
     {
-      throw exception(FMTLOAD(SPEED_INVALID, (Text)));
+      throw ExtException(L""); // FIXME FMTLOAD(SPEED_INVALID, (Text)));
     }
     Speed = SSpeed;
   }
