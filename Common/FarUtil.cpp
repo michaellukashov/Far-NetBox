@@ -367,6 +367,13 @@ std::wstring TrimRight(const std::wstring str)
     return result;
 }
 
+std::wstring UpperCase(const std::wstring Str)
+{
+    // FIXME 
+    std::wstring result;
+    return result;
+}
+
 std::wstring LowerCase(const std::wstring str)
 {
     // FIXME
@@ -574,3 +581,11 @@ char *StrNew(const char *str)
     // FIXME 
     return (char *)str;
 }
+
+wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
+{
+    // FIXME 
+    wchar_t *result = NULL;
+    return result;
+}
+

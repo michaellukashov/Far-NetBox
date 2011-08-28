@@ -382,6 +382,7 @@ std::wstring ExpandEnvVars(const std::wstring& str);
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
+std::wstring UpperCase(const std::wstring Str);
 std::wstring LowerCase(const std::wstring str);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
 int AnsiPos(const std::wstring str, wchar_t ñ);
@@ -438,3 +439,5 @@ int FileSetAttr(const std::wstring &filename, int attrs);
 std::wstring SysErrorMessage(int code);
 
 char *StrNew(const char *str);
+
+wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix);

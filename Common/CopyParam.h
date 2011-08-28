@@ -50,12 +50,12 @@ private:
   bool FNegativeExclude;
   bool FClearArchive;
   unsigned long FCPSLimit;
-  static const char TokenPrefix = '%';
-  static const char NoReplacement = char(false);
-  static const char TokenReplacement = char(true);
+  static const wchar_t TokenPrefix = L'%';
+  static const wchar_t NoReplacement = char(false);
+  static const wchar_t TokenReplacement = char(true);
 
   static std::wstring Untokenize(std::wstring FileName);
-  char * ReplaceChar(std::wstring & FileName, char * InvalidChar) const;
+  wchar_t * ReplaceChar(std::wstring & FileName, wchar_t * InvalidChar) const;
   std::wstring RestoreChars(std::wstring FileName) const;
 
 public:
@@ -85,47 +85,48 @@ public:
   bool operator==(const TCopyParamType & rhp) const;
 
   // __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
-  TFileMasks GetAsciiFileMask() { return FAsciiFileMask; }
+  TFileMasks GetAsciiFileMask() const { return FAsciiFileMask; }
   void SetAsciiFileMask(TFileMasks value) { FAsciiFileMask = value; }
   // __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
-  TFileNameCase GetFileNameCase() { return FFileNameCase; }
+  TFileNameCase GetFileNameCase() const { return FFileNameCase; }
   void SetFileNameCase(TFileNameCase value) { FFileNameCase = value; }
   // __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
-  bool GetPreserveReadOnly() { return FPreserveReadOnly; }
+  bool GetPreserveReadOnly() const { return FPreserveReadOnly; }
   void SetPreserveReadOnly(bool value) { FPreserveReadOnly = value; }
   // __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
-  bool GetPreserveTime() { return FPreserveTime; }
+  bool GetPreserveTime() const { return FPreserveTime; }
   void SetPreserveTime(bool value) { FPreserveTime = value; }
   // __property TRights Rights = { read = FRights, write = FRights };
-  TRights GetRights() { return FRights; }
+  TRights GetRights() const { return FRights; }
   void SetRights(TRights value) { FRights = value; }
   // __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
-  TTransferMode GetTransferMode() { return FTransferMode; }
+  TTransferMode GetTransferMode() const { return FTransferMode; }
   void SetTransferMode(TTransferMode value) { FTransferMode = value; }
   // __property std::wstring LogStr  = { read=GetLogStr };
   std::wstring GetLogStr() const;
   // __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
-  bool GetAddXToDirectories() { return FAddXToDirectories; }
+  bool GetAddXToDirectories() const { return FAddXToDirectories; }
+  void SetAddXToDirectories(bool value) { FAddXToDirectories = value; }
   // __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
-  bool GetPreserveRights() { return FPreserveRights; }
+  bool GetPreserveRights() const { return FPreserveRights; }
   void SetPreserveRights(bool value) { FPreserveRights = value; }
   // __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
-  bool GetIgnorePermErrors() { return FIgnorePermErrors; }
+  bool GetIgnorePermErrors() const { return FIgnorePermErrors; }
   void SetIgnorePermErrors(bool value) { FIgnorePermErrors = value; }
   // __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
-  TResumeSupport GetResumeSupport() { return FResumeSupport; }
+  TResumeSupport GetResumeSupport() const { return FResumeSupport; }
   void SetResumeSupport(TResumeSupport value) { FResumeSupport = value; }
   // __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
-  __int64 GetResumeThreshold() { return FResumeThreshold; }
+  __int64 GetResumeThreshold() const { return FResumeThreshold; }
   void SetResumeThreshold(__int64 value) { FResumeThreshold = value; }
   // __property char InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
-  char GetInvalidCharsReplacement() { return FInvalidCharsReplacement; }
+  char GetInvalidCharsReplacement() const { return FInvalidCharsReplacement; }
   void SetInvalidCharsReplacement(char value) { FInvalidCharsReplacement = value; }
   // __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool value);
   // __property std::wstring LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
-  std::wstring GetLocalInvalidChars() { return FLocalInvalidChars; }
+  std::wstring GetLocalInvalidChars() const { return FLocalInvalidChars; }
   void SetLocalInvalidChars(std::wstring value);
   // __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
   bool GetCalculateSize() const { return FCalculateSize; }
@@ -134,13 +135,13 @@ public:
   std::wstring GetFileMask() const { return FFileMask; }
   void SetFileMask(std::wstring value) { FFileMask = value; }
   // __property TFileMasks ExcludeFileMask = { read = FExcludeFileMask, write = FExcludeFileMask };
-  TFileMasks GetExcludeFileMask() { return FExcludeFileMask; }
+  TFileMasks GetExcludeFileMask() const { return FExcludeFileMask; }
   void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }
   // __property bool NegativeExclude = { read = FNegativeExclude, write = FNegativeExclude };
-  bool GetNegativeExclude() { return FNegativeExclude; }
+  bool GetNegativeExclude() const { return FNegativeExclude; }
   void SetNegativeExclude(bool value) { FNegativeExclude = value; }
   // __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };
-  bool GetClearArchive() { return FClearArchive; }
+  bool GetClearArchive() const { return FClearArchive; }
   void SetClearArchive(bool value) { FClearArchive = value; }
   // __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   unsigned long GetCPSLimit() const { return FCPSLimit; }
