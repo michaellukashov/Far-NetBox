@@ -2331,7 +2331,7 @@ void TStoredSessionList::Cleanup()
 int TStoredSessionList::IndexOf(TSessionData * Data)
 {
   for (int Index = 0; Index < GetCount(); Index++)
-    if (Data == GetSessions(Index)) return Index;
+    if (Data == GetSession(Index)) return Index;
   return -1;
 }
 //---------------------------------------------------------------------------
@@ -2341,18 +2341,18 @@ TSessionData * TStoredSessionList::NewSession(
   TSessionData * DuplicateSession = (TSessionData*)FindByName(SessionName);
   if (!DuplicateSession)
   {
-    DuplicateSession = new TSessionData("");
+    DuplicateSession = new TSessionData(L"");
     DuplicateSession->Assign(Session);
     DuplicateSession->Name = SessionName;
     // make sure, that new stored session is saved to registry
-    DuplicateSession->Modified = true;
+    DuplicateSession->SetModified(true);
     Add(DuplicateSession);
   }
     else
   {
     DuplicateSession->Assign(Session);
     DuplicateSession->Name = SessionName;
-    DuplicateSession->Modified = true;
+    DuplicateSession->SetModified(true);
   }
   // list was saved here before to default storage, but it would not allow
   // to work with special lists (export/import) not using default storage
@@ -2385,7 +2385,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
   {
     SourceStorage = new TRegistryStorage(SourceKey);
     TargetStorage = new TRegistryStorage(TargetKey);
-    TargetStorage->AccessMode = smReadWrite;
+    TargetStorage->SetAccessMode(smReadWrite);
     KeyList = new TStringList();
 
     if (SourceStorage->OpenRootKey(false) &&
@@ -2398,19 +2398,19 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
       assert(Sessions != NULL);
       for (int Index = 0; Index < Sessions->GetCount(); Index++)
       {
-        Session = Sessions->Sessions[Index];
-        if (!OnlySelected || Session->Selected)
+        Session = Sessions->GetSession(Index);
+        if (!OnlySelected || Session->GetSelected())
         {
-          HostKeyName = PuttyMungeStr(::FORMAT(L"@%d:%s", (Session->PortNumber, Session->HostName)));
+          HostKeyName = PuttyMungeStr(::FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName()));
           std::wstring KeyName;
           for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
-            KeyName = KeyList->GetString(KeyIndex];
+            KeyName = KeyList->GetString(KeyIndex);
             int P = KeyName.find_first_of(HostKeyName);
             if ((P > 0) && (P == KeyName.size() - HostKeyName.size() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,
-                SourceStorage->ReadStringRaw(KeyName, ""));
+                SourceStorage->ReadStringRaw(KeyName, L""));
             }
           }
         }
@@ -2429,7 +2429,7 @@ TSessionData * TStoredSessionList::ParseUrl(std::wstring Url,
   TOptions * Options, bool & DefaultsOnly, std::wstring * FileName,
   bool * AProtocolDefined)
 {
-  TSessionData * Data = new TSessionData("");
+  TSessionData * Data = new TSessionData(L"");
   try
   {
     Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined);
