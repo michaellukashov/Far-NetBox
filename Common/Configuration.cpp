@@ -5,9 +5,9 @@
 
 #include <FileInfo.h>
 
-#include "std::exceptions.h"
+#include "Exceptions.h"
 #include "Common.h"
-#include "Configuration.h"                              c
+#include "Configuration.h"
 #include "PuttyIntf.h"
 #include "TextsCore.h"
 #include "Interface.h"
