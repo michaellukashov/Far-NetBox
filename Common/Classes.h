@@ -352,5 +352,28 @@ class EAccessViolation : public std::exception
 public:
     EAccessViolation(std::string what) : std::exception(what.c_str())
     {}
+
 };
 
+//---------------------------------------------------------------------------
+
+enum SeekEnum
+{
+    soFromBeginning
+};
+
+//---------------------------------------------------------------------------
+class TStream
+{
+};
+
+//---------------------------------------------------------------------------
+
+class TMemoryStream : public TStream
+{
+public:
+    void Seek(int seek, int from)
+    {}
+    void Clear()
+    {}
+};

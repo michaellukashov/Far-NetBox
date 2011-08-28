@@ -546,6 +546,11 @@ int StrToIntDef(const std::wstring value, int defval)
     return 0;
 }
 
+__int64 StrToInt64(const std::wstring value)
+{
+    return 0;
+}
+
 __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
     return 0;
