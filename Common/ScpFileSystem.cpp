@@ -52,7 +52,7 @@ struct TCommandType
 extern const TCommandType DefaultCommandSet[];
 
 #define NationalVarCount 10
-extern const char NationalVars[NationalVarCount][15];
+extern const wchar_t NationalVars[NationalVarCount][15];
 
 #define CHECK_CMD assert((Cmd >=0) && (Cmd <= MaxShellCommand))
 
@@ -99,10 +99,10 @@ public:
   void SetReturnVar(std::wstring value) { FReturnVar = value; }
 };
 //===========================================================================
-const char NationalVars[NationalVarCount][15] =
-  {"LANG", "LANGUAGE", "LC_CTYPE", "LC_COLLATE", "LC_MONETARY", "LC_NUMERIC",
-   "LC_TIME", "LC_MESSAGES", "LC_ALL", "HUMAN_BLOCKS" };
-const char FullTimeOption[] = "--full-time";
+const wchar_t NationalVars[NationalVarCount][15] =
+  {L"LANG", L"LANGUAGE", L"LC_CTYPE", L"LC_COLLATE", L"LC_MONETARY", L"LC_NUMERIC",
+   L"LC_TIME", L"LC_MESSAGES", L"LC_ALL", L"HUMAN_BLOCKS" };
+const wchar_t FullTimeOption[] = L"--full-time";
 //---------------------------------------------------------------------------
 #define F false
 #define T true
@@ -610,11 +610,11 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
       }
 
       bool WrongReturnCode =
-        (ReturnCode > 1) || (ReturnCode == 1 && !(Params & coIgnoreWarnings));
+        (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
 
       if (Params & coOnlyReturnCode && WrongReturnCode)
       {
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, (ReturnCode)));
+        FTerminal->TerminalError(L""); // FMTLOAD(COMMAND_FAILED_CODEONLY, (ReturnCode)));
       }
         else
       if (!(Params & coOnlyReturnCode) &&
@@ -622,7 +622,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
            WrongReturnCode))
       {
         assert(Cmd != NULL);
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, (*Cmd, ReturnCode, Message)));
+        FTerminal->TerminalError(L""); // FMTLOAD(COMMAND_FAILED, (*Cmd, ReturnCode, Message)));
       }
     }
   }
@@ -636,7 +636,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
   const std::wstring & CmdString)
 {
   if (Params < 0) Params = ecDefault;
-  if (FTerminal->UseBusyCursor)
+  if (FTerminal->GetUseBusyCursor())
   {
     Busy(true);
   }
@@ -652,7 +652,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
   }
   catch(...)
   {
-    if (FTerminal->UseBusyCursor)
+    if (FTerminal->GetUseBusyCursor())
     {
       Busy(false);
     }
@@ -662,18 +662,21 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
 void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
 {
   if (Params < 0) Params = ecDefault;
-  std::wstring FullCommand = FCommandSet->FullCommand(Cmd, args, size);
-  std::wstring Command = FCommandSet->Command(Cmd, args, size);
+  va_list args;
+  va_start(args, Params);
+  std::wstring FullCommand = FCommandSet->FullCommand(Cmd, args);
+  std::wstring Command = FCommandSet->Command(Cmd, args);
   ExecCommand(FullCommand, Params, Command);
+  va_end(args);
   if (Params & ecRaiseExcept)
   {
-    Integer MinL = FCommandSet->MinLines[Cmd];
-    Integer MaxL = FCommandSet->MaxLines[Cmd];
+    int MinL = FCommandSet->GetMinLines(Cmd);
+    int MaxL = FCommandSet->GetMaxLines(Cmd);
     if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
         ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
-      FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
-        ARRAYOFCONST((FullCommand, Output->Text))));
+      FTerminal->TerminalError(L""); // FIXME FmtLoadStr(INVALID_OUTPUT_ERROR,
+        // FullCommand.c_str(), GetOutput()->GetText().c_str()));
     }
   }
 }
@@ -687,12 +690,12 @@ void TSCPFileSystem::DoStartup()
 {
   // SkipStartupMessage and DetectReturnVar must succeed,
   // otherwise session is to be closed.
-  FTerminal->ExceptionOnFail = true;
+  FTerminal->SetExceptionOnFail (true);
   SkipStartupMessage();
-  if (FTerminal->SessionData->DetectReturnVar) DetectReturnVar();
-  FTerminal->ExceptionOnFail = false;
+  if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
+  FTerminal->SetExceptionOnFail (false);
 
-  #define COND_OPER(OPER) if (FTerminal->SessionData->OPER) OPER()
+  #define COND_OPER(OPER) if (FTerminal->GetSessionData()->Get##OPER()) OPER()
   COND_OPER(ClearAliases);
   COND_OPER(UnsetNationalVars);
   #undef COND_OPER
@@ -702,8 +705,8 @@ void TSCPFileSystem::SkipStartupMessage()
 {
   try
   {
-    FTerminal->LogEvent("Skipping host startup message (if any).");
-    ExecCommand(fsNull, NULL, 0, 0);
+    FTerminal->LogEvent(L"Skipping host startup message (if any).");
+    ExecCommand(fsNull, 0, NULL);
   }
   catch (std::exception & E)
   {
@@ -718,7 +721,7 @@ void TSCPFileSystem::LookupUsersGroups()
   FTerminal->FGroups.Clear();
   if (FOutput->GetCount() > 0)
   {
-    std::wstring Groups = FOutput->GetString(0];
+    std::wstring Groups = FOutput->GetString(0);
     while (!Groups.empty())
     {
       std::wstring NewGroup = CutToChar(Groups, ' ', false);
@@ -736,20 +739,20 @@ void TSCPFileSystem::DetectReturnVar()
   try
   {
     // #60 17.10.01: "status" and "?" switched
-    std::wstring ReturnVars[2] = { "status", "?" };
-    std::wstring NewReturnVar = "";
-    FTerminal->LogEvent("Detecting variable containing return code of last command.");
+    std::wstring ReturnVars[2] = { L"status", L"?" };
+    std::wstring NewReturnVar = L"";
+    FTerminal->LogEvent(L"Detecting variable containing return code of last command.");
     for (int Index = 0; Index < 2; Index++)
     {
       bool Success = true;
 
       try
       {
-        FTerminal->LogEvent(::FORMAT(L"Trying \"$%s\".", (ReturnVars[Index])));
-        ExecCommand(fsVarValue, ReturnVars[Index]);
-        if ((Output->GetCount() != 1) || (StrToIntDef(Output->GetString(0], 256) > 255))
+        FTerminal->LogEvent(::FORMAT(L"Trying \"$%s\".", ReturnVars[Index]));
+        ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
+        if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
         {
-          FTerminal->LogEvent("The response is not numerical exit code");
+          FTerminal->LogEvent(L"The response is not numerical exit code");
           Abort();
         }
       }
@@ -777,9 +780,9 @@ void TSCPFileSystem::DetectReturnVar()
     }
       else
     {
-      FCommandSet->ReturnVar = NewReturnVar;
+      FCommandSet->SetReturnVar (NewReturnVar);
       FTerminal->LogEvent(::FORMAT(L"Return code variable \"%s\" selected.",
-        (FCommandSet->ReturnVar)));
+        FCommandSet->GetReturnVar().c_str()));
     }
   }
   catch (std::exception &E)
@@ -794,7 +797,7 @@ void TSCPFileSystem::ClearAlias(std::wstring Alias)
   {
     // this command usually fails, because there will never be
     // aliases on all commands -> see last false parametr
-    ExecCommand(fsUnalias, Alias, false);
+    ExecCommand(fsUnalias, 0, Alias.c_str(), false);
   }
 }
 //---------------------------------------------------------------------------
@@ -802,8 +805,8 @@ void TSCPFileSystem::ClearAliases()
 {
   try
   {
-    FTerminal->LogEvent("Clearing all aliases.");
-    ClearAlias(TCommandSet::ExtractCommand(FTerminal->SessionData->ListingCommand));
+    FTerminal->LogEvent(L"Clearing all aliases.");
+    ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
     TStrings * CommandList = FCommandSet->CreateCommandList();
     try
     {
@@ -827,10 +830,10 @@ void TSCPFileSystem::UnsetNationalVars()
 {
   try
   {
-    FTerminal->LogEvent("Clearing national user variables.");
+    FTerminal->LogEvent(L"Clearing national user variables.");
     for (int Index = 0; Index < NationalVarCount; Index++)
     {
-      ExecCommand(fsUnset, NationalVars[Index], false);
+      ExecCommand(fsUnset, 0, NationalVars[Index], false);
     }
   }
   catch (std::exception &E)
@@ -844,7 +847,7 @@ void TSCPFileSystem::ReadCurrentDirectory()
   if (FCachedDirectoryChange.empty())
   {
     ExecCommand(fsCurrentDirectory);
-    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0]);
+    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
   }
   else
   {
@@ -866,16 +869,16 @@ void TSCPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
   std::wstring ToDir;
   if (!Directory.empty() &&
-      ((Directory[1] != '~') || (Directory.substr(1, 2) == "~ ")))
+      ((Directory[1] != L'~') || (Directory.substr(1, 2) == L"~ ")))
   {
-    ToDir = "\"" + DelimitStr(Directory) + "\"";
+    ToDir = L"\"" + DelimitStr(Directory) + L"\"";
   }
   else
   {
     ToDir = DelimitStr(Directory);
   }
-  ExecCommand(fsChangeDirectory, ToDir);
-  FCachedDirectoryChange = "";
+  ExecCommand(fsChangeDirectory, 0, ToDir.c_str());
+  FCachedDirectoryChange = L"";
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CachedChangeDirectory(const std::wstring Directory)
@@ -897,23 +900,23 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     try
     {
       int Params = ecDefault | ecReadProgress |
-        FLAGMASK(FTerminal->SessionData->IgnoreLsWarnings, ecIgnoreWarnings);
-      const char * Options =
-        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : "";
-      bool ListCurrentDirectory = (FileList->Directory == FTerminal->GetCurrentDirectory());
+        FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
+      const wchar_t * Options =
+        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : L"";
+      bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrentDirectory());
       if (ListCurrentDirectory)
       {
-        FTerminal->LogEvent("Listing current directory.");
+        FTerminal->LogEvent(L"Listing current directory.");
         ExecCommand(fsListCurrentDirectory,
-          FTerminal->SessionData->ListingCommand, Options, Params);
+          0, FTerminal->GetSessionData()->GetListingCommand(), Options, Params);
       }
         else
       {
         FTerminal->LogEvent(::FORMAT(L"Listing directory \"%s\".",
-          (FileList->Directory)));
+          (FileList->GetDirectory())));
         ExecCommand(fsListDirectory,
-          FTerminal->SessionData->ListingCommand, Options,
-            DelimitStr(FileList->Directory),
+          0, FTerminal->GetSessionData()->GetListingCommand(), Options,
+            DelimitStr(FileList->GetDirectory()),
           Params);
       }
 
@@ -934,7 +937,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // delete leading "total xxx" line
           // On some hosts there is not "total" but "totalt". What's the reason??
           // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-          if (IsTotalListingLine(OutputCopy->GetString(0]))
+          if (IsTotalListingLine(OutputCopy->GetString(0)))
           {
             OutputCopy->Delete(0);
           }
@@ -958,12 +961,12 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           // Empty file list -> probably "permision denied", we
           // at least get link to parent directory ("..")
           FTerminal->ReadFile(
-            UnixIncludeTrailingBackslash(FTerminal->FFiles->Directory) +
+            UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
               PARENTDIRECTORY, File);
           Empty = (File == NULL);
           if (!Empty)
           {
-            assert(File->IsParentDirectory);
+            assert(File->GetIsParentDirectory());
             FileList->AddFile(File);
           }
         }
@@ -974,7 +977,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         if (Empty)
         {
-          throw std::exception(FMTLOAD(EMPTY_DIRECTORY, (FileList->Directory)));
+          throw ExtException(L""); // FIXME FMTLOAD(EMPTY_DIRECTORY, (FileList->Directory)));
         }
       }
 
@@ -982,14 +985,14 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
           FTerminal->LogEvent(
             ::FORMAT(L"Directory listing with %s succeed, next time all errors during "
-              "directory listing will be displayed immediatelly.",
-              (FullTimeOption)));
+              L"directory listing will be displayed immediatelly.",
+              FullTimeOption));
           FLsFullTime = asOn;
       }
     }
     catch(std::exception & E)
     {
-      if (FTerminal->Active)
+      if (FTerminal->GetActive())
       {
         if (FLsFullTime == asAuto)
         {
@@ -998,7 +1001,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           Again = true;
           FTerminal->LogEvent(
             ::FORMAT(L"Directory listing with %s failed, try again regular listing.",
-            (FullTimeOption)));
+            FullTimeOption));
         }
         else
         {
@@ -1017,7 +1020,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 void TSCPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& File)
 {
-  CustomReadFile(SymlinkFile->LinkTo, File, SymlinkFile);
+  CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ReadFile(const std::wstring FileName,
@@ -1032,9 +1035,9 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   TRemoteFile * File = new TRemoteFile(LinkedByFile);
   try
   {
-    File->Terminal = FTerminal;
-    File->ListingStr = ListingStr;
-    File->ShiftTime(FTerminal->SessionData->TimeDifference);
+    File->SetTerminal (FTerminal);
+    File->SetListingStr (ListingStr);
+    File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
     File->Complete();
   }
   catch(...)
@@ -1051,22 +1054,21 @@ void TSCPFileSystem::CustomReadFile(const std::wstring FileName,
 {
   File = NULL;
   int Params = ecDefault |
-    FLAGMASK(FTerminal->SessionData->IgnoreLsWarnings, ecIgnoreWarnings);
+    FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
   // the auto-detection of --full-time support is not implemented for fsListFile,
   // so we use it only if we already know that it is supported (asOn).
-  const char * Options = (FLsFullTime == asOn) ? FullTimeOption : "";
+  const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
   ExecCommand(fsListFile,
-    FTerminal->SessionData->ListingCommand, Options, DelimitStr(FileName),
-    Params);
+    Params, FTerminal->GetSessionData()->GetListingCommand(), Options, DelimitStr(FileName).c_str());
   if (FOutput->GetCount())
   {
     int LineIndex = 0;
-    if (IsTotalListingLine(FOutput->GetString(LineIndex]) && FOutput->GetCount() > 1)
+    if (IsTotalListingLine(FOutput->GetString(LineIndex)) && FOutput->GetCount() > 1)
     {
       LineIndex++;
     }
 
-    File = CreateRemoteFile(FOutput->GetString(LineIndex], ALinkedByFile);
+    File = CreateRemoteFile(FOutput->GetString(LineIndex), ALinkedByFile);
   }
 }
 //---------------------------------------------------------------------------
@@ -1076,31 +1078,31 @@ void TSCPFileSystem::DeleteFile(const std::wstring FileName,
   USEDPARAM(File);
   USEDPARAM(Params);
   Action.Recursive();
-  assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->IsSymLink));
-  ExecCommand(fsDeleteFile, DelimitStr(FileName));
+  assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
+  ExecCommand(fsDeleteFile, 0, DelimitStr(FileName));
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ExecCommand(fsRenameFile, DelimitStr(FileName), DelimitStr(NewName));
+  ExecCommand(fsRenameFile, 0, DelimitStr(FileName), DelimitStr(NewName));
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CopyFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ExecCommand(fsCopyFile, DelimitStr(FileName), DelimitStr(NewName));
+  ExecCommand(fsCopyFile, 0, DelimitStr(FileName), DelimitStr(NewName));
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CreateDirectory(const std::wstring DirName)
 {
-  ExecCommand(fsCreateDirectory, DelimitStr(DirName));
+  ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName));
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CreateLink(const std::wstring FileName,
   const std::wstring PointTo, bool Symbolic)
 {
-  ExecCommand(fsCreateLink,
+  ExecCommand(fsCreateLink, 0, 
     Symbolic ? L"-s" : L"", DelimitStr(PointTo), DelimitStr(FileName));
 }
 //---------------------------------------------------------------------------
@@ -1108,18 +1110,18 @@ void TSCPFileSystem::ChangeFileToken(const std::wstring & DelimitedName,
   const TRemoteToken & Token, TFSCommand Cmd, const std::wstring & RecursiveStr)
 {
   std::wstring Str;
-  if (Token.IDValid)
+  if (Token.GetIDValid())
   {
-    Str = IntToStr(Token.ID);
+    Str = IntToStr(Token.GetID());
   }
   else if (Token.GetNameValid())
   {
-    Str = Token.Name;
+    Str = Token.GetName();
   }
 
   if (!Str.empty())
   {
-    ExecCommand(Cmd, RecursiveStr, Str, DelimitedName);
+    ExecCommand(Cmd, 0, RecursiveStr, Str, DelimitedName);
   }
 }
 //---------------------------------------------------------------------------
@@ -1130,7 +1132,7 @@ void TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
   assert(Properties);
   bool IsDirectory = File && File->GetIsDirectory();
   bool Recursive = Properties->Recursive && IsDirectory;
-  std::wstring RecursiveStr = Recursive ? "-R" : "";
+  std::wstring RecursiveStr = Recursive ? L"-R" : L"";
 
   std::wstring DelimitedName = DelimitStr(FileName);
   // change group before permissions as chgrp change permissions
@@ -1144,7 +1146,7 @@ void TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
   }
   if (Properties->Valid.Contains(vpRights))
   {
-    TRights Rights = Properties->GetRights();
+    TRights Rights = Properties->Rights;
 
     // if we don't set modes recursively, we may add X at once with other
     // options. Otherwise we have to add X after recusive command
@@ -1157,10 +1159,10 @@ void TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
       Action.Recursive();
     }
 
-    if ((Rights.NumberSet | Rights.NumberUnset) != TRights::rfNo)
+    if ((Rights.GetNumberSet() | Rights.GetNumberUnset()) != TRights::rfNo)
     {
       ExecCommand(fsChangeMode,
-        RecursiveStr, Rights.SimplestStr, DelimitedName);
+        0, RecursiveStr, Rights.GetSimplestStr(), DelimitedName);
     }
 
     // if file is directory and we do recursive mode settings with
@@ -1169,7 +1171,7 @@ void TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
     {
       Rights.AddExecute();
       ExecCommand(fsChangeMode,
-        "", Rights.SimplestStr, DelimitedName);
+        0, L"", Rights.GetSimplestStr(), DelimitedName);
     }
   }
   else
@@ -1198,22 +1200,22 @@ void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
     TCaptureOutputEvent OutputEvent)
 {
   assert(File);
-  bool Dir = File->GetIsDirectory() && !File->IsSymLink;
+  bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
     TCustomCommandParams AParams;
     AParams.Command = Command;
     AParams.Params = Params;
     AParams.OutputEvent = OutputEvent;
-    FTerminal->ProcessDirectory(FileName, FTerminal->CustomCommandOnFile,
-      &AParams);
+    // FIXME FTerminal->ProcessDirectory(FileName, FTerminal->CustomCommandOnFile,
+      // &AParams);
   }
 
   if (!Dir || (Params & ccApplyToDirectories))
   {
     TCustomCommandData Data(FTerminal);
     std::wstring Cmd = TRemoteCustomCommand(
-      Data, FTerminal->GetCurrentDirectory(), FileName, "").
+      Data, FTerminal->GetCurrentDirectory(), FileName, L"").
       Complete(Command, true);
 
     AnyCommand(Cmd, OutputEvent);
@@ -1229,35 +1231,35 @@ void TSCPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError
       !Line.empty())
   {
     assert(FOnCaptureOutput != NULL);
-    FOnCaptureOutput(Line, StdError);
+    // FIXME FOnCaptureOutput(Line, StdError);
   }
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::AnyCommand(const std::wstring Command,
   TCaptureOutputEvent OutputEvent)
 {
-  assert(FSecureShell->OnCaptureOutput == NULL);
+  assert(FSecureShell->GetOnCaptureOutput() == NULL);
   if (OutputEvent != NULL)
   {
-    FSecureShell->OnCaptureOutput = CaptureOutput;
+    // FSecureShell->SetOnCaptureOutput(CaptureOutput);
     FOnCaptureOutput = OutputEvent;
   }
 
   try
   {
-    ExecCommand(fsAnyCommand, Command,
+    ExecCommand(fsAnyCommand, 0, Command,
       ecDefault | ecIgnoreWarnings);
   }
   catch(...)
   {
     FOnCaptureOutput = NULL;
-    FSecureShell->OnCaptureOutput = NULL;
+    FSecureShell->SetOnCaptureOutput (NULL);
   }
 }
 //---------------------------------------------------------------------------
 std::wstring TSCPFileSystem::FileUrl(const std::wstring FileName)
 {
-  return FTerminal->FileUrl("scp", FileName);
+  return FTerminal->FileUrl(L"scp", FileName);
 }
 //---------------------------------------------------------------------------
 TStrings * TSCPFileSystem::GetFixedPaths()
@@ -1283,7 +1285,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
   switch (Resp)
   {
     case 0:     /* ok */
-      FTerminal->LogEvent("SCP remote side confirmation (0)");
+      FTerminal->LogEvent(L"SCP remote side confirmation (0)");
       return;
 
     default:
@@ -1291,7 +1293,8 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
     case 2:     /* fatal error */
       // pscp adds 'Resp' to 'Msg', why?
       std::wstring Msg = FSecureShell->ReceiveLine();
-      std::wstring Line = std::wstring(Resp) + Msg;
+      // FIXME std::wstring Line = std::wstring(Resp) + Msg;
+      std::wstring Line = Msg;
       if (IsLastLine(Line))
       {
         if (GotLastLine != NULL)
@@ -1319,11 +1322,11 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
         else
       if (Resp == 1)
       {
-        FTerminal->LogEvent("SCP remote side error (1):");
+        FTerminal->LogEvent(L"SCP remote side error (1):");
       }
         else
       {
-        FTerminal->LogEvent("SCP remote side fatal error (2):");
+        FTerminal->LogEvent(L"SCP remote side fatal error (2):");
       }
 
       if (Resp == 1)
@@ -1346,20 +1349,20 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   assert(FilesToCopy && OperationProgress);
 
   Params &= ~(cpAppend | cpResume);
-  std::wstring Options = "";
+  std::wstring Options = L"";
   bool CheckExistence = UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
-    (FTerminal->FFiles != NULL) && FTerminal->FFiles->Loaded;
+    (FTerminal->FFiles != NULL) && FTerminal->FFiles->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;
   bool GotLastLine = false;
 
   std::wstring TargetDirFull = UnixIncludeTrailingBackslash(TargetDir);
 
-  if (CopyParam->PreserveRights) Options = "-p";
-  if (FTerminal->SessionData->Scp1Compatibility) Options += " -1";
+  if (CopyParam->GetPreserveRights()) Options = L"-p";
+  if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    ARRAYOFCONST((Options, DelimitStr(UnixExcludeTrailingBackslash(TargetDir))))));
+    0, Options, DelimitStr(UnixExcludeTrailingBackslash(TargetDir))));
   SkipFirstLine();
 
   try
@@ -1377,7 +1380,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     catch(std::exception & E)
     {
-      if (GotLastLine && FTerminal->Active)
+      if (GotLastLine && FTerminal->GetActive())
       {
         FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
       }
@@ -1391,11 +1394,11 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
-      std::wstring FileName = FilesToCopy->GetString(IFile];
+      std::wstring FileName = FilesToCopy->GetString(IFile);
       bool CanProceed;
 
       std::wstring FileNameOnly =
-        CopyParam->ChangeFileName(ExtractFileName(FileName), osLocal, true);
+        CopyParam->ChangeFileName(ExtractFileName(FileName, true), osLocal, true);
 
       if (CheckExistence)
       {
@@ -1409,7 +1412,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           int Answer;
           if (File->GetIsDirectory())
           {
-            std::wstring Message = FMTLOAD(DIRECTORY_OVERWRITE, (FileNameOnly));
+            std::wstring Message = L""; // FIXME FMTLOAD(DIRECTORY_OVERWRITE, (FileNameOnly));
             TQueryParams QueryParams(qpNeverAskAgainCheck);
             SUSPEND_OPERATION
             (
@@ -1427,9 +1430,9 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
               NULL, NULL, NULL, &MTime, NULL,
               &FileParams.SourceSize);
             FileParams.SourceTimestamp = UnixToDateTime(MTime,
-              FTerminal->SessionData->DSTMode);
-            FileParams.DestSize = File->Size;
-            FileParams.DestTimestamp = File->Modification;
+              FTerminal->GetSessionData()->GetDSTMode());
+            FileParams.DestSize = File->GetSize();
+            FileParams.DestTimestamp = File->GetModification();
 
             TQueryButtonAlias Aliases[1];
             Aliases[0].Button = qaAll;
@@ -1475,7 +1478,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
       if (CanProceed)
       {
-        if (FTerminal->SessionData->CacheDirectories)
+        if (FTerminal->GetSessionData()->GetCacheDirectories())
         {
           FTerminal->DirectoryModified(TargetDir, false);
 

@@ -383,7 +383,7 @@ void TFTPFileSystem::Open()
     // but keep previous one as default,
     if (Data->UserName.IsEmpty())
     {
-      FTerminal->LogEvent("Username prompt (no username provided)");
+      FTerminal->LogEvent(L"Username prompt (no username provided)");
 
       if (!FPasswordFailed && !PromptedForCredentials)
       {
@@ -406,7 +406,7 @@ void TFTPFileSystem::Open()
     // on retry ask always
     if ((Data->Password.IsEmpty() && !Data->Passwordless) || FPasswordFailed)
     {
-      FTerminal->LogEvent("Password prompt (no password provided or last login attempt failed)");
+      FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
 
       if (!FPasswordFailed && !PromptedForCredentials)
       {
@@ -2466,7 +2466,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       if (Error.IsEmpty() && (MoreMessages != NULL))
       {
         assert(MoreMessages->GetCount() > 0);
-        Error = MoreMessages->GetString(0];
+        Error = MoreMessages->GetString(0);
         MoreMessages->Delete(0);
       }
 
@@ -2609,7 +2609,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
         if ((FListAll == asAuto) &&
             (FSystem.Pos("Personal FTP Server") > 0))
         {
-          FTerminal->LogEvent("Server is known not to support LIST -a");
+          FTerminal->LogEvent(L"Server is known not to support LIST -a");
           FListAll = asOff;
         }
       }

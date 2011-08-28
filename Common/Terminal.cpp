@@ -2584,6 +2584,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           }
           catch(EScpSkipFile & E)
           {
+            TFileOperationProgressType * OperationProgress = GetOperationProgress();
             SUSPEND_OPERATION (
               if (!HandleException(&E)) throw;
             );

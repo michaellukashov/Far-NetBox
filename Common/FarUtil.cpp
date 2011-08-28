@@ -562,6 +562,12 @@ bool FileExists(const std::wstring &filename)
     return false;
 }
 
+bool DirectoryExists(const std::wstring &filename)
+{
+    // FIXME
+    return false;
+}
+
 int FileGetAttr(const std::wstring &filename)
 {
     // FIXME
