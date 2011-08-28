@@ -85,10 +85,10 @@ void TGUICopyParamType::Save(THierarchicalStorage * Storage)
 {
   TCopyParamType::Save(Storage);
 
-  Storage->WriteBool("Queue", Queue);
-  Storage->WriteBool("QueueNoConfirmation", QueueNoConfirmation);
-  Storage->WriteBool("QueueIndividually", QueueIndividually);
-  Storage->WriteBool("NewerOnly", NewerOnly);
+  Storage->Writebool("Queue", Queue);
+  Storage->Writebool("QueueNoConfirmation", QueueNoConfirmation);
+  Storage->Writebool("QueueIndividually", QueueIndividually);
+  Storage->Writebool("NewerOnly", NewerOnly);
 }
 //---------------------------------------------------------------------------
 TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
@@ -454,7 +454,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
 
         Storage->WriteString("Name", Names[Index]);
         CopyParam->Save(Storage);
-        Storage->WriteBool("HasRule", (Rule != NULL));
+        Storage->Writebool("HasRule", (Rule != NULL));
         if (Rule != NULL)
         {
           Rule->Save(Storage);
@@ -657,11 +657,11 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     if (FCopyParamListDefaults)
     {
       assert(!FCopyParamList->Modified);
-      Storage->WriteInteger("CopyParamList", -1);
+      Storage->Writeint("CopyParamList", -1);
     }
     else if (All || FCopyParamList->Modified)
     {
-      Storage->WriteInteger("CopyParamList", FCopyParamList->GetCount());
+      Storage->Writeint("CopyParamList", FCopyParamList->GetCount());
       FCopyParamList->Save(Storage);
     }
   }

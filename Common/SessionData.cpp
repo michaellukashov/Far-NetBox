@@ -500,7 +500,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
 
     SetProtocolStr(Storage->ReadString(L"Protocol", GetProtocolStr()));
 
-    SetTunnel(Storage->ReadBool(L"Tunnel", Tunnel));
+    SetTunnel(Storage->ReadBool(L"Tunnel", GetTunnel()));
     SetTunnelPortNumber(Storage->ReadInteger(L"TunnelPortNumber", GetTunnelPortNumber()));
     SetTunnelUserName(Storage->ReadString(L"TunnelUserName", GetTunnelUserName()));
     // must be loaded after TunnelUserName,
@@ -511,7 +511,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
       if (Storage->ValueExists(L"TunnelPasswordPlain"))
       {
         SetTunnelPassword(Storage->ReadString(L"TunnelPasswordPlain", GetTunnelPassword()));
-        SetRewritePassword(true);
+        RewritePassword = true;
       }
       else
       {
@@ -522,37 +522,37 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     SetTunnelLocalPortNumber(Storage->ReadInteger(L"TunnelLocalPortNumber", GetTunnelLocalPortNumber()));
 
     // Ftp prefix
-    SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", FtpPasvMode));
-    SetFtpForcePasvIp(Storage->ReadBool(L"FtpForcePasvIp", FtpForcePasvIp));
-    SetFtpAccount(Storage->ReadString(L"FtpAccount", FtpAccount));
-    SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", FtpPingInterval));
-    SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", FtpPingType)));
-    SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", Ftps)));
+    SetFtpPasvMode(Storage->ReadBool(L"FtpPasvMode", GetFtpPasvMode()));
+    SetFtpForcePasvIp(Storage->ReadBool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
+    SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
+    SetFtpPingInterval(Storage->ReadInteger(L"FtpPingInterval", GetFtpPingInterval()));
+    SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger(L"FtpPingType", GetFtpPingType())));
+    SetFtps(static_cast<TFtps>(Storage->ReadInteger(L"Ftps", GetFtps())));
 
-    SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", FtpProxyLogonType);
+    SetFtpProxyLogonType(Storage->ReadInteger(L"FtpProxyLogonType", GetFtpProxyLogonType()));
 
-    SetCustomParam1(Storage->ReadString(L"CustomParam1", CustomParam1);
-    SetCustomParam2(Storage->ReadString(L"CustomParam2", CustomParam2);
+    SetCustomParam1(Storage->ReadString(L"CustomParam1", GetCustomParam1()));
+    SetCustomParam2(Storage->ReadString(L"CustomParam2", GetCustomParam2()));
 
     Storage->CloseSubKey();
   };
 
-  if (GetRewritePassword())
+  if (RewritePassword)
   {
-    TStorageAccessMode AccessMode = Storage->AccessMode;
-    Storage->AccessMode = smReadWrite;
+    TStorageAccessMode AccessMode = Storage->GetAccessMode();
+    Storage->SetAccessMode(smReadWrite);
 
     try
     {
-      if (Storage->OpenSubKey(InternalStorageKey, true))
+      if (Storage->OpenSubKey(GetInternalStorageKey(), true))
       {
         Storage->DeleteValue(L"PasswordPlain");
-        if (!Password.empty())
+        if (!GetPassword().empty())
         {
           Storage->WriteString(L"Password", FPassword);
         }
         Storage->DeleteValue(L"TunnelPasswordPlain");
-        if (!TunnelPassword.empty())
+        if (!GetTunnelPassword().empty())
         {
           Storage->WriteString(L"TunnelPassword", FTunnelPassword);
         }
@@ -564,7 +564,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
       // ignore errors (like read-only INI file)
     }
 
-    Storage->AccessMode = AccessMode;
+    Storage->SetAccessMode(AccessMode);
   }
 
   FModified = false;
@@ -574,126 +574,126 @@ void TSessionData::Load(THierarchicalStorage * Storage)
 void TSessionData::Save(THierarchicalStorage * Storage,
   bool PuttyExport, const TSessionData * Default)
 {
-  if (Storage->OpenSubKey(InternalStorageKey, true))
+  if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
     #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
       if ((Default != NULL) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
       { \
-        Storage->DeleteValue(NAME); \
+        Storage->DeleteValue(std::wstring(::MB2W(NAME))); \
       } \
       else \
       { \
-        Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+        Storage->Write##TYPE(std::wstring(::MB2W(NAME)), CONV(PROPERTY)); \
       }
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
     #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, PROPERTY, )
 
-    WRITE_DATA(String, HostName);
-    WRITE_DATA(int, PortNumber);
-    WRITE_DATA(bool, Passwordless);
-    WRITE_DATA_EX(int, "PingInterval", PingInterval / 60, );
-    WRITE_DATA_EX(int, "PingIntervalSecs", PingInterval % 60, );
-    Storage->DeleteValue("PingIntervalSec"); // obsolete
+    WRITE_DATA(String, GetHostName());
+    WRITE_DATA(int, GetPortNumber());
+    WRITE_DATA(bool, GetPasswordless());
+    WRITE_DATA_EX(int, "PingInterval", GetPingInterval() / 60, );
+    WRITE_DATA_EX(int, "PingIntervalSecs", GetPingInterval() % 60, );
+    Storage->DeleteValue(L"PingIntervalSec"); // obsolete
     // when PingInterval is stored always store PingType not to attempt to
     // deduce PingType from PingInterval (backward compatibility with pre 3.5)
-    if (((Default != NULL) && (PingType != Default->PingType)) ||
-        Storage->ValueExists("PingInterval"))
+    if (((Default != NULL) && (GetPingType() != Default->GetPingType())) ||
+        Storage->ValueExists(L"PingInterval"))
     {
-      Storage->WriteInteger("PingType", PingType);
+      Storage->Writeint(L"PingType", GetPingType());
     }
     else
     {
-      Storage->DeleteValue("PingType");
+      Storage->DeleteValue(L"PingType");
     }
-    WRITE_DATA(int, Timeout);
-    WRITE_DATA(bool, TryAgent);
-    WRITE_DATA(bool, AgentFwd);
-    WRITE_DATA(bool, AuthTIS);
-    WRITE_DATA(bool, AuthKI);
-    WRITE_DATA(bool, AuthKIPassword);
+    WRITE_DATA(int, GetTimeout());
+    WRITE_DATA(bool, GetTryAgent());
+    WRITE_DATA(bool, GetAgentFwd());
+    WRITE_DATA(bool, GetAuthTIS());
+    WRITE_DATA(bool, GetAuthKI());
+    WRITE_DATA(bool, GetAuthKIPassword());
 
-    WRITE_DATA(bool, AuthGSSAPI);
-    WRITE_DATA(bool, GSSAPIFwdTGT);
-    WRITE_DATA(String, GSSAPIServerRealm);
-    Storage->DeleteValue("TryGSSKEX");
-    Storage->DeleteValue("UserNameFromEnvironment");
-    Storage->DeleteValue("GSSAPIServerChoosesUserName");
-    Storage->DeleteValue("GSSAPITrustDNS");
+    WRITE_DATA(bool, GetAuthGSSAPI());
+    WRITE_DATA(bool, GetGSSAPIFwdTGT());
+    WRITE_DATA(String, GetGSSAPIServerRealm());
+    Storage->DeleteValue(L"TryGSSKEX");
+    Storage->DeleteValue(L"UserNameFromEnvironment");
+    Storage->DeleteValue(L"GSSAPIServerChoosesUserName");
+    Storage->DeleteValue(L"GSSAPITrustDNS");
     if (PuttyExport)
     {
       // duplicate kerberos setting with keys of the vintela quest putty
-      WRITE_DATA_EX(bool, "AuthSSPI", AuthGSSAPI, );
-      WRITE_DATA_EX(bool, "SSPIFwdTGT", GSSAPIFwdTGT, );
-      WRITE_DATA_EX(String, "KerbPrincipal", GSSAPIServerRealm, );
+      WRITE_DATA_EX(bool, "AuthSSPI", GetAuthGSSAPI(), );
+      WRITE_DATA_EX(bool, "SSPIFwdTGT", GetGSSAPIFwdTGT(), );
+      WRITE_DATA_EX(String, "KerbPrincipal", GetGSSAPIServerRealm(), );
       // duplicate kerberos setting with keys of the official putty
-      WRITE_DATA_EX(bool, "GssapiFwd", GSSAPIFwdTGT, );
+      WRITE_DATA_EX(bool, "GssapiFwd", GetGSSAPIFwdTGT(), );
     }
 
-    WRITE_DATA(bool, ChangeUsername);
-    WRITE_DATA(bool, Compression);
-    WRITE_DATA(int, SshProt);
-    WRITE_DATA(bool, Ssh2DES);
-    WRITE_DATA(bool, SshNoUserAuth);
-    WRITE_DATA_EX(String, "Cipher", CipherList, );
-    WRITE_DATA_EX(String, "KEX", KexList, );
-    WRITE_DATA(int, AddressFamily);
-    WRITE_DATA_EX(String, "RekeyBytes", RekeyData, );
-    WRITE_DATA(int, RekeyTime);
+    WRITE_DATA(bool, GetChangeUsername());
+    WRITE_DATA(bool, GetCompression());
+    WRITE_DATA(int, GetSshProt());
+    WRITE_DATA(bool, GetSsh2DES());
+    WRITE_DATA(bool, GetSshNoUserAuth());
+    WRITE_DATA_EX(String, "Cipher", GetCipherList(), );
+    WRITE_DATA_EX(String, "KEX", GetKexList(), );
+    WRITE_DATA(int, GetAddressFamily());
+    WRITE_DATA_EX(String, "RekeyBytes", GetRekeyData(), );
+    WRITE_DATA(int, GetRekeyTime());
 
-    WRITE_DATA(bool, TcpNoDelay);
+    WRITE_DATA(bool, GetTcpNoDelay());
 
     if (PuttyExport)
     {
-      WRITE_DATA(StringRaw, UserName);
-      WRITE_DATA(StringRaw, PublicKeyFile);
+      WRITE_DATA(StringRaw, GetUserName());
+      WRITE_DATA(StringRaw, GetPublicKeyFile());
     }
     else
     {
-      WRITE_DATA(String, UserName);
-      WRITE_DATA(String, PublicKeyFile);
-      WRITE_DATA(int, FSProtocol);
-      WRITE_DATA(String, LocalDirectory);
-      WRITE_DATA(String, RemoteDirectory);
-      WRITE_DATA(bool, UpdateDirectories);
-      WRITE_DATA(bool, CacheDirectories);
-      WRITE_DATA(bool, CacheDirectoryChanges);
-      WRITE_DATA(bool, PreserveDirectoryChanges);
+      WRITE_DATA(String, GetUserName());
+      WRITE_DATA(String, GetPublicKeyFile());
+      WRITE_DATA(int, GetFSProtocol());
+      WRITE_DATA(String, GetLocalDirectory());
+      WRITE_DATA(String, GetRemoteDirectory());
+      WRITE_DATA(bool, GetUpdateDirectories());
+      WRITE_DATA(bool, GetCacheDirectories());
+      WRITE_DATA(bool, GetCacheDirectoryChanges());
+      WRITE_DATA(bool, GetPreserveDirectoryChanges());
 
-      WRITE_DATA(bool, ResolveSymlinks);
-      WRITE_DATA_EX(int, "ConsiderDST", DSTMode, );
-      WRITE_DATA(bool, LockInHome);
+      WRITE_DATA(bool, GetResolveSymlinks());
+      WRITE_DATA_EX(int, "ConsiderDST", GetDSTMode(), );
+      WRITE_DATA(bool, GetLockInHome());
       // Special is never stored (if it would, login dialog must be modified not to
       // duplicate Special parameter when Special session is loaded and then stored
       // under different name)
-      // WRITE_DATA(bool, Special);
-      WRITE_DATA(String, Shell);
-      WRITE_DATA(bool, ClearAliases);
-      WRITE_DATA(bool, UnsetNationalVars);
-      WRITE_DATA(String, ListingCommand);
-      WRITE_DATA(bool, IgnoreLsWarnings);
-      WRITE_DATA(int, SCPLsFullTime);
-      WRITE_DATA(int, FtpListAll);
-      WRITE_DATA(bool, Scp1Compatibility);
-      WRITE_DATA(Float, TimeDifference);
-      WRITE_DATA(bool, DeleteToRecycleBin);
-      WRITE_DATA(bool, OverwrittenToRecycleBin);
-      WRITE_DATA(String, RecycleBinPath);
-      WRITE_DATA(String, PostLoginCommands);
+      // WRITE_DATA(bool, GetSpecial());
+      WRITE_DATA(String, GetShell());
+      WRITE_DATA(bool, GetClearAliases());
+      WRITE_DATA(bool, GetUnsetNationalVars());
+      WRITE_DATA(String, GetListingCommand());
+      WRITE_DATA(bool, GetIgnoreLsWarnings());
+      WRITE_DATA(int, GetSCPLsFullTime());
+      WRITE_DATA(int, GetFtpListAll());
+      WRITE_DATA(bool, GetScp1Compatibility());
+      WRITE_DATA(Float, GetTimeDifference());
+      WRITE_DATA(bool, GetDeleteToRecycleBin());
+      WRITE_DATA(bool, GetOverwrittenToRecycleBin());
+      WRITE_DATA(String, GetRecycleBinPath());
+      WRITE_DATA(String, GetPostLoginCommands());
 
-      WRITE_DATA(String, ReturnVar);
-      WRITE_DATA(bool, LookupUserGroups);
-      WRITE_DATA(int, EOLType);
-      Storage->DeleteValue("SFTPUtfBug");
-      WRITE_DATA_EX(int, "Utf", NotUtf, );
+      WRITE_DATA(String, GetReturnVar());
+      WRITE_DATA(bool, GetLookupUserGroups());
+      WRITE_DATA(int, GetEOLType());
+      Storage->DeleteValue(L"SFTPUtfBug");
+      WRITE_DATA_EX(int, "Utf", GetNotUtf(), );
     }
 
-    WRITE_DATA(int, ProxyMethod);
+    WRITE_DATA(int, GetProxyMethod());
     if (PuttyExport)
     {
       // support for Putty 0.53b and older
       int ProxyType;
       int ProxySOCKSVersion = 5;
-      switch (ProxyMethod) {
+      switch (GetProxyMethod()) {
         case pmHTTP:
           ProxyType = pxHTTP;
           break;
@@ -713,32 +713,32 @@ void TSessionData::Save(THierarchicalStorage * Storage,
           ProxyType = pxNone;
           break;
       }
-      Storage->WriteInteger("ProxyType", ProxyType);
-      Storage->WriteInteger("ProxySOCKSVersion", ProxySOCKSVersion);
+      Storage->Writeint(L"ProxyType", ProxyType);
+      Storage->Writeint(L"ProxySOCKSVersion", ProxySOCKSVersion);
     }
     else
     {
-      Storage->DeleteValue("ProxyType");
-      Storage->DeleteValue("ProxySOCKSVersion");
+      Storage->DeleteValue(L"ProxyType");
+      Storage->DeleteValue(L"ProxySOCKSVersion");
     }
-    WRITE_DATA(String, ProxyHost);
-    WRITE_DATA(int, ProxyPort);
-    WRITE_DATA(String, ProxyUsername);
-    if (ProxyMethod == pmCmd)
+    WRITE_DATA(String, GetProxyHost());
+    WRITE_DATA(int, GetProxyPort());
+    WRITE_DATA(String, GetProxyUsername());
+    if (GetProxyMethod() == pmCmd)
     {
-      WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", ProxyLocalCommand, );
+      WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyLocalCommand(), );
     }
     else
     {
-      WRITE_DATA(StringRaw, ProxyTelnetCommand);
+      WRITE_DATA(StringRaw, GetProxyTelnetCommand());
     }
     #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
-    WRITE_DATA_CONV(int, "ProxyDNS", ProxyDNS);
+    WRITE_DATA_CONV(int, "ProxyDNS", GetProxyDNS());
     #undef WRITE_DATA_CONV_FUNC
-    WRITE_DATA(bool, ProxyLocalhost);
+    WRITE_DATA(bool, GetProxyLocalhost());
 
     #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, "Bug" #BUG, Bug[sb##BUG]);
+    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, L"Bug" + std::wstring(::MB2W(L"##BUG")), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -761,36 +761,36 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     if (!PuttyExport)
     {
-      WRITE_DATA(String, SftpServer);
+      WRITE_DATA(String, GetSftpServer());
 
       #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, "SFTP" #BUG "Bug", SFTPBug[sb##BUG], );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
       #undef WRITE_SFTP_BUG
 
-      WRITE_DATA(int, SFTPMaxVersion);
-      WRITE_DATA(int, SFTPMaxPacketSize);
+      WRITE_DATA(int, GetSFTPMaxVersion());
+      WRITE_DATA(int, GetSFTPMaxPacketSize());
 
-      WRITE_DATA(int, Color);
+      WRITE_DATA(int, GetColor());
 
-      WRITE_DATA(bool, Tunnel);
-      WRITE_DATA(String, TunnelHostName);
-      WRITE_DATA(int, TunnelPortNumber);
-      WRITE_DATA(String, TunnelUserName);
-      WRITE_DATA(String, TunnelPublicKeyFile);
-      WRITE_DATA(int, TunnelLocalPortNumber);
+      WRITE_DATA(bool, GetTunnel());
+      WRITE_DATA(String, GetTunnelHostName());
+      WRITE_DATA(int, GetTunnelPortNumber());
+      WRITE_DATA(String, GetTunnelUserName());
+      WRITE_DATA(String, GetTunnelPublicKeyFile());
+      WRITE_DATA(int, GetTunnelLocalPortNumber());
 
-      WRITE_DATA(bool, FtpPasvMode);
-      WRITE_DATA(bool, FtpForcePasvIp);
-      WRITE_DATA(String, FtpAccount);
-      WRITE_DATA(int, FtpPingInterval);
-      WRITE_DATA(int, FtpPingType);
-      WRITE_DATA(int, Ftps);
+      WRITE_DATA(bool, GetFtpPasvMode());
+      WRITE_DATA(bool, GetFtpForcePasvIp());
+      WRITE_DATA(String, GetFtpAccount());
+      WRITE_DATA(int, GetFtpPingInterval());
+      WRITE_DATA(int, GetFtpPingType());
+      WRITE_DATA(int, GetFtps());
 
-      WRITE_DATA(int, FtpProxyLogonType);
+      WRITE_DATA(int, GetFtpProxyLogonType());
 
-      WRITE_DATA(String, CustomParam1);
-      WRITE_DATA(String, CustomParam2);
+      WRITE_DATA(String, GetCustomParam1());
+      WRITE_DATA(String, GetCustomParam2());
     }
 
     SavePasswords(Storage, PuttyExport);

@@ -541,9 +541,9 @@ int TRegistryStorage::ReadBinaryData(const std::wstring Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBool(const std::wstring Name, bool Value)
+void TRegistryStorage::Writebool(const std::wstring Name, bool Value)
 {
-  WRITE_REGISTRY(WriteBool);
+  WRITE_REGISTRY(Writebool);
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::WriteDateTime(const std::wstring Name, TDateTime Value)
@@ -561,9 +561,9 @@ void TRegistryStorage::WriteStringRaw(const std::wstring Name, const std::wstrin
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteInteger(const std::wstring Name, int Value)
+void TRegistryStorage::Writeint(const std::wstring Name, int Value)
 {
-  WRITE_REGISTRY(WriteInteger);
+  WRITE_REGISTRY(Writeint);
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::WriteInt64(const std::wstring Name, __int64 Value)
@@ -943,14 +943,14 @@ int TIniFileStorage::ReadBinaryData(const std::wstring Name,
   return Size;
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteBool(const std::wstring Name, bool Value)
+void TIniFileStorage::Writebool(const std::wstring Name, bool Value)
 {
-  FIniFile->WriteBool(CurrentSection, MungeIniName(Name), Value);
+  FIniFile->Writebool(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void TIniFileStorage::WriteInteger(const std::wstring Name, int Value)
+void TIniFileStorage::Writeint(const std::wstring Name, int Value)
 {
-  FIniFile->WriteInteger(CurrentSection, MungeIniName(Name), Value);
+  FIniFile->Writeint(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::WriteInt64(const std::wstring Name, __int64 Value)

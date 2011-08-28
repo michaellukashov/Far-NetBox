@@ -547,24 +547,24 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TCopyParamType::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteBool(L"AddXToDirectories", GetAddXToDirectories());
+  Storage->Writebool(L"AddXToDirectories", GetAddXToDirectories());
   Storage->WriteString(L"Masks", GetAsciiFileMask().GetMasks());
-  Storage->WriteInteger(L"FileNameCase", GetFileNameCase());
-  Storage->WriteBool(L"GetPreserveReadOnly()", GetPreserveReadOnly());
-  Storage->WriteBool(L"PreserveTime", GetPreserveTime());
-  Storage->WriteBool(L"PreserveRights", GetPreserveRights());
-  Storage->WriteBool(L"IgnorePermErrors", GetIgnorePermErrors());
+  Storage->Writeint(L"FileNameCase", GetFileNameCase());
+  Storage->Writebool(L"GetPreserveReadOnly()", GetPreserveReadOnly());
+  Storage->Writebool(L"PreserveTime", GetPreserveTime());
+  Storage->Writebool(L"PreserveRights", GetPreserveRights());
+  Storage->Writebool(L"IgnorePermErrors", GetIgnorePermErrors());
   Storage->WriteString(L"Text", GetRights().GetText());
-  Storage->WriteInteger(L"TransferMode", GetTransferMode());
-  Storage->WriteInteger(L"ResumeSupport", GetResumeSupport());
+  Storage->Writeint(L"TransferMode", GetTransferMode());
+  Storage->Writeint(L"ResumeSupport", GetResumeSupport());
   Storage->WriteInt64(L"ResumeThreshold", GetResumeThreshold());
-  Storage->WriteInteger(L"ReplaceInvalidChars", (unsigned char)GetInvalidCharsReplacement());
+  Storage->Writeint(L"ReplaceInvalidChars", (unsigned char)GetInvalidCharsReplacement());
   Storage->WriteString(L"LocalInvalidChars", GetLocalInvalidChars());
-  Storage->WriteBool(L"GetCalculateSize()", GetCalculateSize());
+  Storage->Writebool(L"GetCalculateSize()", GetCalculateSize());
   Storage->WriteString(L"GetExcludeFileMask()", GetExcludeFileMask().GetMasks());
-  Storage->WriteBool(L"GetNegativeExclude()", GetNegativeExclude());
-  Storage->WriteBool(L"GetClearArchive()", GetClearArchive());
-  Storage->WriteInteger(L"CPSLimit", GetCPSLimit());
+  Storage->Writebool(L"GetNegativeExclude()", GetNegativeExclude());
+  Storage->Writebool(L"GetClearArchive()", GetClearArchive());
+  Storage->Writeint(L"CPSLimit", GetCPSLimit());
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Get##Property() == rhp.Get##Property())

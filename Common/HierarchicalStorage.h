@@ -46,9 +46,9 @@ public:
   virtual std::wstring ReadString(std::wstring Name, std::wstring Default);
   std::wstring ReadBinaryData(const std::wstring Name);
 
-  virtual void WriteBool(const std::wstring Name, bool Value) = 0;
+  virtual void Writebool(const std::wstring Name, bool Value) = 0;
   virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value) = 0;
-  virtual void WriteInteger(const std::wstring Name, int Value) = 0;
+  virtual void Writeint(const std::wstring Name, int Value) = 0;
   virtual void WriteInt64(const std::wstring Name, __int64 Value) = 0;
   virtual void WriteDateTime(const std::wstring Name, TDateTime Value) = 0;
   virtual void WriteFloat(const std::wstring Name, double Value) = 0;
@@ -113,8 +113,8 @@ public:
   virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
   virtual int ReadBinaryData(const std::wstring Name, void * Buffer, int Size);
 
-  virtual void WriteBool(const std::wstring Name, bool Value);
-  virtual void WriteInteger(const std::wstring Name, int Value);
+  virtual void Writebool(const std::wstring Name, bool Value);
+  virtual void Writeint(const std::wstring Name, int Value);
   virtual void WriteInt64(const std::wstring Name, __int64 Value);
   virtual void WriteDateTime(const std::wstring Name, TDateTime Value);
   virtual void WriteFloat(const std::wstring Name, double Value);
@@ -161,8 +161,8 @@ public:
   virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
   virtual int ReadBinaryData(const std::wstring Name, void * Buffer, int Size);
 
-  virtual void WriteBool(const std::wstring Name, bool Value);
-  virtual void WriteInteger(const std::wstring Name, int Value);
+  virtual void Writebool(const std::wstring Name, bool Value);
+  virtual void Writeint(const std::wstring Name, int Value);
   virtual void WriteInt64(std::wstring Name, __int64 Value);
   virtual void WriteDateTime(const std::wstring Name, TDateTime Value);
   virtual void WriteFloat(const std::wstring Name, double Value);
