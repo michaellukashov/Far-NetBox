@@ -389,13 +389,13 @@ std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, con
     return result;
 }
 
-int AnsiPos(const std::wstring str, wchar_t ñ)
+int AnsiPos(const std::wstring str, wchar_t c)
 {
     // FIXME
     return -1;
 }
 
-int Pos(const std::wstring str, wchar_t ñ)
+int Pos(const std::wstring str, const std::wstring substr)
 {
     // FIXME
     return -1;

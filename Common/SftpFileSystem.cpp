@@ -2285,7 +2285,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
     }
     else if (ExpectedType != Packet->GetType())
     {
-      FTerminal->FatalError(NULL, L""); // FIXME FMTLOAD(SFTP_INVALID_TYPE, ((int)Packet->Type)));
+      FTerminal->FatalError(NULL, L""); // FIXME FMTLOAD(SFTP_INVALID_TYPE, ((int)Packet->GetType())));
     }
   }
 
@@ -2830,7 +2830,7 @@ char * TSFTPFileSystem::GetEOL() const
   if (FVersion >= 4)
   {
     assert(!FEOL.empty());
-    return ::W2MB(FEOL.c_str());
+    return (char *)::W2MB(FEOL.c_str()).c_str();
   }
   else
   {
@@ -3017,10 +3017,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         for (unsigned long Index = 0; !isEOF && (Index < Count); Index++)
         {
-          File = LoadFile(&ListingPacket, NULL, "", FileList);
+          File = LoadFile(&ListingPacket, NULL, L"", FileList);
           if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
           {
-            FTerminal->LogEvent(::FORMAT(L"Read file '%s' from listing", (File->FileName)));
+            FTerminal->LogEvent(::FORMAT(L"Read file '%s' from listing", File->GetFileName().c_str()));
           }
           FileList->AddFile(File);
           Total++;
@@ -3041,13 +3041,13 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           isEOF = true;
         }
       }
-      else if (Response.Type == SSH_FXP_STATUS)
+      else if (Response.GetType() == SSH_FXP_STATUS)
       {
         isEOF = (GotStatusPacket(&Response, asEOF) == SSH_FX_EOF);
       }
       else
       {
-        FTerminal->FatalError(NULL, FMTLOAD(SFTP_INVALID_TYPE, ((int)Response.Type)));
+        FTerminal->FatalError(NULL, L""); // FIXME FMTLOAD(SFTP_INVALID_TYPE, ((int)Response.Type)));
       }
     }
     while (!isEOF);
@@ -3058,22 +3058,23 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // at least get link to parent directory ("..")
       try
       {
-        FTerminal->ExceptionOnFail = true;
+        FTerminal->SetExceptionOnFail(true);
         try
         {
           File = NULL;
           FTerminal->ReadFile(
-            UnixIncludeTrailingBackslash(FileList->Directory) + PARENTDIRECTORY, File);
+            UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
         }
         catch (...)
         {
-          FTerminal->ExceptionOnFail = false;
+          FTerminal->SetExceptionOnFail(false);
         }
       }
       catch(std::exception &E)
       {
-        if (E.InheritsFrom(__classid(EFatal))) throw;
-          else File = NULL;
+        // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
+          // else File = NULL;
+        throw;
       }
 
       // on some systems even getting ".." fails, we create dummy ".." instead
@@ -3083,12 +3084,12 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         File = new TRemoteParentDirectory(FTerminal);
       }
 
-      assert(File && File->IsParentDirectory);
+      assert(File && File->GetIsParentDirectory());
       FileList->AddFile(File);
 
       if (Failure)
       {
-        throw std::exception(FMTLOAD(EMPTY_DIRECTORY, (FileList->Directory)));
+        throw ExtException(L""); // FIXME FMTLOAD(EMPTY_DIRECTORY, (FileList->Directory)));
       }
     }
   }
@@ -3108,13 +3109,13 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& File)
 {
-  assert(SymlinkFile && SymlinkFile->IsSymLink);
+  assert(SymlinkFile && SymlinkFile->GetIsSymLink());
   assert(FVersion >= 3); // symlinks are supported with SFTP version 3 and later
 
   // need to use full filename when resolving links within subdirectory
   // (i.e. for download)
   std::wstring FileName = LocalCanonify(
-    SymlinkFile->Directory != NULL ? SymlinkFile->FullFileName : SymlinkFile->FileName);
+    SymlinkFile->GetDirectory() != NULL ? SymlinkFile->GetFullFileName() : SymlinkFile->GetFileName());
 
   TSFTPPacket ReadLinkPacket(SSH_FXP_READLINK);
   ReadLinkPacket.AddPathString(FileName, FUtfStrings);
@@ -3135,14 +3136,14 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   ReceiveResponse(&ReadLinkPacket, &ReadLinkPacket, SSH_FXP_NAME);
   if (ReadLinkPacket.GetCardinal() != 1)
   {
-    FTerminal->FatalError(NULL, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
+    FTerminal->FatalError(NULL, L""); // FIXME LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
   }
-  SymlinkFile->LinkTo = ReadLinkPacket.GetPathString(FUtfStrings);
+  SymlinkFile->SetLinkTo(ReadLinkPacket.GetPathString(FUtfStrings));
 
   ReceiveResponse(&AttrsPacket, &AttrsPacket, SSH_FXP_ATTRS);
   // SymlinkFile->FileName was used instead SymlinkFile->LinkTo before, why?
   File = LoadFile(&AttrsPacket, SymlinkFile,
-    UnixExtractFileName(SymlinkFile->LinkTo));
+    UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::ReadFile(const std::wstring FileName,
@@ -3186,13 +3187,13 @@ bool TSFTPFileSystem::RemoteFileExists(const std::wstring FullPath,
 void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
   TSFTPPacket * Response, const std::wstring FileName, unsigned long Flags)
 {
-  if ((Packet->Type == SSH_FXP_STAT) || (Packet->Type == SSH_FXP_LSTAT))
+  if ((Packet->GetType() == SSH_FXP_STAT) || (Packet->GetType() == SSH_FXP_LSTAT))
   {
     Packet->AddPathString(LocalCanonify(FileName), FUtfStrings);
   }
   else
   {
-    assert(Packet->Type == SSH_FXP_FSTAT);
+    assert(Packet->GetType() == SSH_FXP_FSTAT);
     // actualy handle, not filename
     Packet->AddString(FileName);
   }
@@ -3216,7 +3217,7 @@ void TSFTPFileSystem::CustomReadFile(const std::wstring FileName,
   SendCustomReadFile(&Packet, &Packet, FileName, Flags);
   ReceiveResponse(&Packet, &Packet, SSH_FXP_ATTRS, AllowStatus);
 
-  if (Packet.Type == SSH_FXP_ATTRS)
+  if (Packet.GetType() == SSH_FXP_ATTRS)
   {
     File = LoadFile(&Packet, ALinkedByFile, UnixExtractFileName(FileName));
   }
@@ -3239,13 +3240,14 @@ void TSFTPFileSystem::DeleteFile(const std::wstring FileName,
   const TRemoteFile * File, int Params, TRmSessionAction & Action)
 {
   char Type;
-  if (File && File->IsDirectory && !File->IsSymLink)
+  if (File && File->GetIsDirectory() && !File->GetIsSymLink())
   {
     if (FLAGCLEAR(Params, dfNoRecursive))
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, FTerminal->DeleteFile, &Params);
+        // FTerminal->ProcessDirectory(FileName, FTerminal->DeleteFile, &Params);
+        FTerminal->ProcessDirectory(FileName, (TProcessFileEvent)&TTerminal::DeleteFile, &Params);
       }
       catch(...)
       {
@@ -3310,8 +3312,8 @@ void TSFTPFileSystem::CreateLink(const std::wstring FileName,
   assert(FVersion >= 3); // symlinks are supported with SFTP version 3 and later
   TSFTPPacket Packet(SSH_FXP_SYMLINK);
 
-  bool Buggy = (FTerminal->GetSessionData()->SFTPBug[sbSymlink] == asOn) ||
-    ((FTerminal->GetSessionData()->SFTPBug[sbSymlink] == asAuto) && FOpenSSH);
+  bool Buggy = (FTerminal->GetSessionData()->GetSFTPBug(sbSymlink) == asOn) ||
+    ((FTerminal->GetSessionData()->GetSFTPBug(sbSymlink) == asAuto) && FOpenSSH);
 
   if (!Buggy)
   {
@@ -3342,11 +3344,11 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
   {
     assert(File);
 
-    if (File->IsDirectory && !File->IsSymLink && AProperties->Recursive)
+    if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, FTerminal->ChangeFileProperties,
+        FTerminal->ProcessDirectory(FileName, (TProcessFileEvent)&TTerminal::ChangeFileProperties,
           (void*)AProperties);
       }
       catch(...)
@@ -3363,19 +3365,19 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
     if (Properties.Valid.Contains(vpGroup) &&
         !Properties.Valid.Contains(vpOwner))
     {
-      Properties.Owner = File->Owner;
+      Properties.Owner = File->GetOwner();
       Properties.Valid << vpOwner;
     }
     else if (Properties.Valid.Contains(vpOwner) &&
              !Properties.Valid.Contains(vpGroup))
     {
-      Properties.Group = File->Group;
+      Properties.Group = File->GetGroup();
       Properties.Valid << vpGroup;
     }
 
     TSFTPPacket Packet(SSH_FXP_SETSTAT);
     Packet.AddPathString(RealFileName, FUtfStrings);
-    Packet.AddProperties(&Properties, *File->Rights, File->IsDirectory, FVersion, FUtfStrings, &Action);
+    Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
   catch (...)
@@ -3390,7 +3392,9 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded)
   {
-    TFileOperationProgressType Progress(&FTerminal->DoProgress, &FTerminal->DoFinished);
+    // TFileOperationProgressType Progress(&FTerminal->DoProgress, &FTerminal->DoFinished);
+    TFileOperationProgressType Progress((TFileOperationProgressEvent)&TTerminal::DoProgress,
+        (TFileOperationFinished)&TTerminal::DoFinished);
     Progress.Start(foGetProperties, osRemote, FileList->GetCount());
 
     FTerminal->FOperationProgress = &Progress;
@@ -3407,15 +3411,15 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
         do
         {
           Next = Queue.ReceivePacket(&Packet, File);
-          assert((Packet.Type == SSH_FXP_ATTRS) || (Packet.Type == SSH_FXP_STATUS));
-          if (Packet.Type == SSH_FXP_ATTRS)
+          assert((Packet.GetType() == SSH_FXP_ATTRS) || (Packet.GetType() == SSH_FXP_STATUS));
+          if (Packet.GetType() == SSH_FXP_ATTRS)
           {
-            Progress.SetFile(File->FileName);
+            Progress.SetFile(File->GetFileName());
             assert(File != NULL);
             LoadFile(File, &Packet);
             Result = true;
             TOnceDoneOperation OnceDoneOperation;
-            Progress.Finish(File->FileName, true, OnceDoneOperation);
+            Progress.Finish(File->GetFileName(), true, OnceDoneOperation);
           }
 
           if (Progress.Cancel != csContinue)
@@ -3452,12 +3456,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
     {
       TRemoteFile * File = (TRemoteFile *)FileList->GetObject(Index);
       assert(File != NULL);
-      if (File->IsDirectory && !File->IsSymLink &&
-          !File->IsParentDirectory && !File->IsThisDirectory)
+      if (File->GetIsDirectory() && !File->GetIsSymLink() &&
+          !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
       {
-        OperationProgress->SetFile(File->FileName);
+        OperationProgress->SetFile(File->GetFileName());
         TRemoteFileList * SubFiles =
-          FTerminal->CustomReadDirectoryListing(File->FullFileName, false);
+          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false);
 
         if (SubFiles != NULL)
         {
@@ -3465,12 +3469,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
           bool Success = false;
           try
           {
-            OperationProgress->SetFile(File->FileName);
+            OperationProgress->SetFile(File->GetFileName());
 
             for (int Index = 0; Index < SubFiles->GetCount(); Index++)
             {
-              TRemoteFile * SubFile = SubFiles->Files[Index];
-              SubFileList->AddObject(SubFile->FullFileName, SubFile);
+              TRemoteFile * SubFile = SubFiles->GetFile(Index);
+              SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 
             // do not collect checksums for files in subdirectories,
@@ -3487,7 +3491,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
             if (FirstLevel)
             {
-              OperationProgress->Finish(File->FileName, Success, OnceDoneOperation);
+              OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
             }
           }
         }
@@ -3515,34 +3519,34 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
           try
           {
             Next = Queue.ReceivePacket(&Packet, File);
-            assert(Packet.Type == SSH_FXP_EXTENDED_REPLY);
+            assert(Packet.GetType() == SSH_FXP_EXTENDED_REPLY);
 
-            OperationProgress->SetFile(File->FileName);
+            OperationProgress->SetFile(File->GetFileName());
 
             Alg = Packet.GetString();
-            Checksum = StrToHex(std::wstring(Packet.GetNextData(Packet.RemainingLength), Packet.RemainingLength));
-            OnCalculatedChecksum(File->FileName, Alg, Checksum);
+            Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
+            // FIXME OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
 
             Success = true;
           }
           catch (std::exception & E)
           {
-            FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
-              (File != NULL ? File->FullFileName : std::wstring(""))));
+            FTerminal->CommandError(&E, L""); // FIXME FMTLOAD(CHECKSUM_ERROR,
+              // (File != NULL ? File->GetFullFileName (): std::wstring(L""))));
             // TODO: retries? resume?
             Next = false;
           }
 
           if (Checksums != NULL)
           {
-            Checksums->Add("");
+            Checksums->Add(L"");
           }
         }
         catch (...)
         {
           if (FirstLevel)
           {
-            OperationProgress->Finish(File->FileName, Success, OnceDoneOperation);
+            OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
           }
         }
 
@@ -3565,7 +3569,9 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressType Progress(&FTerminal->DoProgress, &FTerminal->DoFinished);
+  // TFileOperationProgressType Progress(&FTerminal->DoProgress, &FTerminal->DoFinished);
+    TFileOperationProgressType Progress((TFileOperationProgressEvent)&TTerminal::DoProgress,
+        (TFileOperationFinished)&TTerminal::DoFinished);
   Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->FOperationProgress = &Progress;
@@ -3597,7 +3603,7 @@ void TSFTPFileSystem::AnyCommand(const std::wstring /*Command*/,
 //---------------------------------------------------------------------------
 std::wstring TSFTPFileSystem::FileUrl(const std::wstring FileName)
 {
-  return FTerminal->FileUrl("sftp", FileName);
+  return FTerminal->FileUrl(L"sftp", FileName);
 }
 //---------------------------------------------------------------------------
 TStrings * TSFTPFileSystem::GetFixedPaths()
@@ -3635,7 +3641,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
-    FileNameOnly = ExtractFileName(FileName);
+    FileNameOnly = ExtractFileName(FileName, true);
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
@@ -3643,7 +3649,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     {
       try
       {
-        if (FTerminal->GetSessionData()->CacheDirectories)
+        if (FTerminal->GetSessionData()->GetCacheDirectories())
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
@@ -5079,7 +5085,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
               Queue.ReceivePacket(&DataPacket, BlockSize);
             }
 
-            if (DataPacket.Type == SSH_FXP_STATUS)
+            if (DataPacket.GetType() == SSH_FXP_STATUS)
             {
               // must be SSH_FX_EOF, any other status packet would raise exception
               Eof = true;
@@ -5186,7 +5192,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         try
         {
           // ignore errors
-          if (RemoteFilePacket.Type == SSH_FXP_ATTRS)
+          if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
           {
             // load file, avoid completion (resolving symlinks) as we do not need that
             AFile = LoadFile(&RemoteFilePacket, NULL, UnixExtractFileName(FileName),
