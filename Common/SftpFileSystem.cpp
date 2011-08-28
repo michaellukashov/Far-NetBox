@@ -5041,7 +5041,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       );
 
       TSFTPPacket RemoteFilePacket(SSH_FXP_FSTAT);
-      if (CopyParam->PreserveTime)
+      if (CopyParam->GetPreserveTime())
       {
         SendCustomReadFile(&RemoteFilePacket, &RemoteFilePacket, RemoteHandle,
           SSH_FILEXFER_ATTR_MODIFYTIME);
@@ -5116,7 +5116,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                 FTerminal->LogEvent(::FORMAT(
                   L"Received incomplete data packet before end of file, "
                   L"offset: %s, size: %d, requested: %d",
-                  IntToStr(OperationProgress->GetTransferedSize()).c_str(), int(DataLen),
+                  IntToStr(OperationProgress->TransferedSize).c_str(), int(DataLen),
                   int(BlockSize)));
                 FTerminal->TerminalError(NULL, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
               }
@@ -5159,14 +5159,14 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
               {
                 assert(!ResumeTransfer && !ResumeAllowed);
 
-                unsigned int PrevBlockSize = BlockBuf.Size;
-                BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType, 0, ConvertToken);
+                unsigned int PrevBlockSize = BlockBuf.GetSize();
+                BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
                 OperationProgress->SetLocalSize(
-                  OperationProgress->LocalSize - PrevBlockSize + BlockBuf.Size);
+                  OperationProgress->LocalSize - PrevBlockSize + BlockBuf.GetSize());
               }
 
-              FILE_OPERATION_LOOP (FMTLOAD(WRITE_ERROR, (LocalFileName)),
-                BlockBuf.WriteToStream(FileStream, BlockBuf.Size);
+              FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(WRITE_ERROR, (LocalFileName)),
+                BlockBuf.WriteToStream(FileStream, BlockBuf.GetSize());
               );
 
               OperationProgress->AddLocalyUsed(BlockBuf.GetSize());
@@ -5208,7 +5208,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           }
 
           FILETIME AcTime = DateTimeToFileTime(AFile->GetLastAccess(),
-            FTerminal->GetSessionData()->DSTMode);
+            FTerminal->GetSessionData()->GetDSTMode());
           FILETIME WrTime = DateTimeToFileTime(AFile->GetModification(),
             FTerminal->GetSessionData()->GetDSTMode());
           SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
@@ -5228,13 +5228,13 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       if (ResumeAllowed)
       {
         FILE_OPERATION_LOOP(L"", // FIXME FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            (ExtractFileName(DestPartinalFullName, true), DestFileName)),
+            // (ExtractFileName(DestPartinalFullName, true), DestFileName)),
 
           if (FileExists(DestFullName))
           {
             THROWOSIFFALSE(::DeleteFile(DestFullName));
           }
-          if (!Sysutils::RenameFile(DestPartinalFullName, DestFullName))
+          if (!::RenameFile(DestPartinalFullName, DestFullName))
           {
             RaiseLastOSError();
           }

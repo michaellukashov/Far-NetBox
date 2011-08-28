@@ -155,7 +155,7 @@ public:
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
   // __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
-  TDateTime GetLastAccess() { return FLastAccess; }
+  TDateTime GetLastAccess() const { return FLastAccess; }
   void SetLastAccess(TDateTime value) { FLastAccess = value; }
   // __property bool IsSymLink = { read = FIsSymLink };
   bool GetIsSymLink() const { return FIsSymLink; }

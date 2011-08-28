@@ -436,6 +436,7 @@ enum FileAttributesEnum
 };
 
 bool FileExists(const std::wstring &filename);
+bool RenameFile(const std::wstring &from, const std::wstring &to);
 bool DirectoryExists(const std::wstring &dir);
 
 int FileGetAttr(const std::wstring &filename);

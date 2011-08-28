@@ -573,6 +573,12 @@ bool FileExists(const std::wstring &filename)
     return false;
 }
 
+bool RenameFile(const std::wstring &from, const std::wstring &to)
+{
+    // FIXME 
+    return false;
+}
+
 bool DirectoryExists(const std::wstring &filename)
 {
     // FIXME
