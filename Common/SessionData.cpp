@@ -124,7 +124,7 @@ void TSessionData::Default()
   SetListingCommand(L"ls -la");
   SetIgnoreLsWarnings(true);
   SetScp1Compatibility(false);
-  SetTimeDifference(0);
+  SetTimeDifference(TDateTime(0));
   SetSCPLsFullTime(asAuto);
   SetNotUtf(asAuto);
   SetFtpListAll(asAuto);
@@ -137,7 +137,7 @@ void TSessionData::Default()
   SetSFTPMaxVersion(5);
   SetSFTPMaxPacketSize(0);
 
-  for (int Index(0); Index < LENOF(FSFTPBugs)); Index++)
+  for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
   {
     SetSFTPBug((TSftpBug)Index, asAuto);
   }
@@ -164,8 +164,8 @@ void TSessionData::Default()
   SetCustomParam1(L"");
   SetCustomParam2(L"");
 
-  SetSelected(false);
-  SetFModified(false);
+  FSelected = false;
+  FModified = false;
   FSource = ::ssNone;
 
   // add also to TSessionLog::AddStartupInfo()
@@ -173,15 +173,15 @@ void TSessionData::Default()
 //---------------------------------------------------------------------
 void TSessionData::NonPersistant()
 {
-  UpdateDirectories = false;
-  PreserveDirectoryChanges = false;
+  SetUpdateDirectories(false);
+  SetPreserveDirectoryChanges(false);
 }
 //---------------------------------------------------------------------
 void TSessionData::Assign(TPersistent * Source)
 {
-  if (Source && Source->InheritsFrom(__classid(TSessionData)))
+  if (Source) // FIXME  && Source->InheritsFrom(__classid(TSessionData)))
   {
-    #define DUPL(P) P = ((TSessionData *)Source)->P
+    #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
     DUPL(Name);
     DUPL(HostName);
     DUPL(PortNumber);
@@ -258,7 +258,8 @@ void TSessionData::Assign(TPersistent * Source)
 
     for (int Index = 0; Index < LENOF(FBugs); Index++)
     {
-      DUPL(Bug[(TSshBug)Index]);
+      // DUPL(Bug[(TSshBug)Index]);
+      ((TSessionData *)Source)->SetBug((TSshBug)Index, GetBug((TSshBug)Index));
     }
 
     // SFTP
@@ -271,7 +272,8 @@ void TSessionData::Assign(TPersistent * Source)
 
     for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
     {
-      DUPL(SFTPBug[(TSftpBug)Index]);
+      // DUPL(SFTPBug[(TSftpBug)Index]);
+      ((TSessionData *)Source)->SetSFTPBug((TSftpBug)Index, GetSFTPBug((TSftpBug)Index));
     }
 
     DUPL(Color);
@@ -298,7 +300,7 @@ void TSessionData::Assign(TPersistent * Source)
     DUPL(CustomParam2);
 
     #undef DUPL
-    FModified = ((TSessionData *)Source)->Modified;
+    FModified = ((TSessionData *)Source)->GetModified();
     FSource = ((TSessionData *)Source)->FSource;
   }
   else
@@ -310,18 +312,18 @@ void TSessionData::Assign(TPersistent * Source)
 void TSessionData::Load(THierarchicalStorage * Storage)
 {
   bool RewritePassword = false;
-  if (Storage->OpenSubKey(InternalStorageKey, false))
+  if (Storage->OpenSubKey(GetInternalStorageKey(), false))
   {
-    PortNumber = Storage->ReadInteger("PortNumber", PortNumber);
-    UserName = Storage->ReadString("UserName", UserName);
+    SetPortNumber(Storage->ReadInteger(L"PortNumber", GetPortNumber()));
+    SetUserName(Storage->ReadString(L"UserName", GetUserName()));
     // must be loaded after UserName, because HostName may be in format user@host
-    HostName = Storage->ReadString("HostName", HostName);
+    SetHostName(Storage->ReadString("HostName", GetHostName());
 
     if (!Configuration->DisablePasswordStoring)
     {
       if (Storage->ValueExists("PasswordPlain"))
       {
-        Password = Storage->ReadString("PasswordPlain", Password);
+        SetPassword(Storage->ReadString("PasswordPlain", GetPassword());
         RewritePassword = true;
       }
       else
@@ -329,19 +331,19 @@ void TSessionData::Load(THierarchicalStorage * Storage)
         FPassword = Storage->ReadString("Password", FPassword);
       }
     }
-    Passwordless = Storage->ReadBool("Passwordless", Passwordless);
+    SetPasswordless(Storage->ReadBool("Passwordless", GetPasswordless());
     // Putty uses PingIntervalSecs
     int PingIntervalSecs = Storage->ReadInteger("PingIntervalSecs", -1);
     if (PingIntervalSecs < 0)
     {
-      PingIntervalSecs = Storage->ReadInteger("PingIntervalSec", PingInterval%60);
+      PingIntervalSecs = Storage->ReadInteger("PingIntervalSec", GetPingInterval()%60);
     }
-    PingInterval =
-      Storage->ReadInteger("PingInterval", PingInterval/60)*60 +
+    PiSetngInterval (=
+      Storage->ReadInteger("PingInterval", GetPingInterval()/60)*60 +
       PingIntervalSecs;
-    if (PingInterval == 0)
+    if (GetPingInterval ()== 0)
     {
-      PingInterval = 30;
+      SetPingInterval(30;
     }
     // PingType has not existed before 3.5, where PingInterval > 0 meant today's ptNullPacket
     // Since 3.5, until 4.1 PingType was stored unconditionally.
@@ -351,75 +353,75 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     {
       if (Storage->ReadInteger("PingInterval", 0) > 0)
       {
-        PingType = ptNullPacket;
+        SetPingType(ptNullPacket;
       }
     }
     else
     {
-      PingType = static_cast<TPingType>(Storage->ReadInteger("PingType", ptOff));
+      SetPingType(static_cast<TPingType>(Storage->ReadInteger("PingType", ptOff));
     }
-    Timeout = Storage->ReadInteger("Timeout", Timeout);
-    TryAgent = Storage->ReadBool("TryAgent", TryAgent);
-    AgentFwd = Storage->ReadBool("AgentFwd", AgentFwd);
-    AuthTIS = Storage->ReadBool("AuthTIS", AuthTIS);
-    AuthKI = Storage->ReadBool("AuthKI", AuthKI);
-    AuthKIPassword = Storage->ReadBool("AuthKIPassword", AuthKIPassword);
+    SetTimeout(Storage->ReadInteger("Timeout", Timeout);
+    SetTryAgent(Storage->ReadBool("TryAgent", TryAgent);
+    SetAgentFwd(Storage->ReadBool("AgentFwd", AgentFwd);
+    SetAuthTIS(Storage->ReadBool("AuthTIS", AuthTIS);
+    SetAuthKI(Storage->ReadBool("AuthKI", AuthKI);
+    SetAuthKIPassword(Storage->ReadBool("AuthKIPassword", AuthKIPassword);
     // Continue to use setting keys of previous kerberos implementation (vaclav tomec),
     // but fallback to keys of other implementations (official putty and vintela quest putty),
     // to allow imports from all putty versions.
     // Both vaclav tomec and official putty use AuthGSSAPI
-    AuthGSSAPI = Storage->ReadBool("AuthGSSAPI", Storage->ReadBool("AuthSSPI", AuthGSSAPI));
-    GSSAPIFwdTGT = Storage->ReadBool("GSSAPIFwdTGT", Storage->ReadBool("GssapiFwd", Storage->ReadBool("SSPIFwdTGT", GSSAPIFwdTGT)));
-    GSSAPIServerRealm = Storage->ReadString("GSSAPIServerRealm", Storage->ReadString("KerbPrincipal", GSSAPIServerRealm));
-    ChangeUsername = Storage->ReadBool("ChangeUsername", ChangeUsername);
-    Compression = Storage->ReadBool("Compression", Compression);
-    SshProt = (TSshProt)Storage->ReadInteger("SshProt", SshProt);
-    Ssh2DES = Storage->ReadBool("Ssh2DES", Ssh2DES);
-    SshNoUserAuth = Storage->ReadBool("SshNoUserAuth", SshNoUserAuth);
-    CipherList = Storage->ReadString("Cipher", CipherList);
-    KexList = Storage->ReadString("KEX", KexList);
-    PublicKeyFile = Storage->ReadString("PublicKeyFile", PublicKeyFile);
-    AddressFamily = static_cast<TAddressFamily>
-      (Storage->ReadInteger("AddressFamily", AddressFamily));
-    RekeyData = Storage->ReadString("RekeyBytes", RekeyData);
-    RekeyTime = Storage->ReadInteger("RekeyTime", RekeyTime);
+    SetAuthGSSAPI(Storage->ReadBool("AuthGSSAPI", Storage->ReadBool("AuthSSPI", AuthGSSAPI)));
+    SetGSSAPIFwdTGT(Storage->ReadBool("GSSAPIFwdTGT", Storage->ReadBool("GssapiFwd", Storage->ReadBool("SSPIFwdTGT", GSSAPIFwdTGT))));
+    SetGSSAPIServerRealm(Storage->ReadString("GSSAPIServerRealm", Storage->ReadString("KerbPrincipal", GSSAPIServerRealm)));
+    SetChangeUsername(Storage->ReadBool("ChangeUsername", ChangeUsername));
+    SetCompression(Storage->ReadBool("Compression", Compression));
+    SetSshProt((TSshProt)Storage->ReadInteger("SshProt", SshProt));
+    SetSsh2DES(Storage->ReadBool("Ssh2DES", Ssh2DES));
+    SetSshNoUserAuth(Storage->ReadBool("SshNoUserAuth", SshNoUserAuth));
+    SetCipherList(Storage->ReadString("Cipher", CipherList));
+    SetKexList(Storage->ReadString("KEX", KexList));
+    SetPublicKeyFile(Storage->ReadString("PublicKeyFile", PublicKeyFile));
+    SetAddressFamily(static_cast<TAddressFamily>
+    Set  (Storage->ReadInteger("AddressFamily", AddressFamily)));
+    SetRekeyData(Storage->ReadString("RekeyBytes", RekeyData));
+    SetRekeyTime(Storage->ReadInteger("RekeyTime", RekeyTime));
 
-    FSProtocol = (TFSProtocol)Storage->ReadInteger("FSProtocol", FSProtocol);
-    LocalDirectory = Storage->ReadString("LocalDirectory", LocalDirectory);
-    RemoteDirectory = Storage->ReadString("RemoteDirectory", RemoteDirectory);
-    UpdateDirectories = Storage->ReadBool("UpdateDirectories", UpdateDirectories);
-    CacheDirectories = Storage->ReadBool("CacheDirectories", CacheDirectories);
-    CacheDirectoryChanges = Storage->ReadBool("CacheDirectoryChanges", CacheDirectoryChanges);
-    PreserveDirectoryChanges = Storage->ReadBool("PreserveDirectoryChanges", PreserveDirectoryChanges);
+    SetFSProtocol((TFSProtocol)Storage->ReadInteger("FSProtocol", FSProtocol));
+    SetLocalDirectory(Storage->ReadString("LocalDirectory", LocalDirectory));
+    SetRemoteDirectory(Storage->ReadString("RemoteDirectory", RemoteDirectory));
+    SetUpdateDirectories(Storage->ReadBool("UpdateDirectories", UpdateDirectories));
+    SetCacheDirectories(Storage->ReadBool("CacheDirectories", CacheDirectories));
+    SetCacheDirectoryChanges(Storage->ReadBool("CacheDirectoryChanges", CacheDirectoryChanges));
+    SetPreserveDirectoryChanges(Storage->ReadBool("PreserveDirectoryChanges", PreserveDirectoryChanges));
 
-    ResolveSymlinks = Storage->ReadBool("ResolveSymlinks", ResolveSymlinks);
-    DSTMode = (TDSTMode)Storage->ReadInteger("ConsiderDST", DSTMode);
-    LockInHome = Storage->ReadBool("LockInHome", LockInHome);
-    Special = Storage->ReadBool("Special", Special);
-    Shell = Storage->ReadString("Shell", Shell);
-    ClearAliases = Storage->ReadBool("ClearAliases", ClearAliases);
-    UnsetNationalVars = Storage->ReadBool("UnsetNationalVars", UnsetNationalVars);
-    ListingCommand = Storage->ReadString("ListingCommand",
-      Storage->ReadBool("AliasGroupList", false) ? std::wstring("ls -gla") : ListingCommand);
-    IgnoreLsWarnings = Storage->ReadBool("IgnoreLsWarnings", IgnoreLsWarnings);
-    SCPLsFullTime = TAutoSwitch(Storage->ReadInteger("SCPLsFullTime", SCPLsFullTime));
-    FtpListAll = TAutoSwitch(Storage->ReadInteger("FtpListAll", FtpListAll));
-    Scp1Compatibility = Storage->ReadBool("Scp1Compatibility", Scp1Compatibility);
-    TimeDifference = Storage->ReadFloat("TimeDifference", TimeDifference);
-    DeleteToRecycleBin = Storage->ReadBool("DeleteToRecycleBin", DeleteToRecycleBin);
-    OverwrittenToRecycleBin = Storage->ReadBool("OverwrittenToRecycleBin", OverwrittenToRecycleBin);
-    RecycleBinPath = Storage->ReadString("RecycleBinPath", RecycleBinPath);
-    PostLoginCommands = Storage->ReadString("PostLoginCommands", PostLoginCommands);
+    SetResolveSymlinks(Storage->ReadBool("ResolveSymlinks", ResolveSymlinks));
+    SetDSTMode((TDSTMode)Storage->ReadInteger("ConsiderDST", DSTMode));
+    SetLockInHome(Storage->ReadBool("LockInHome", LockInHome));
+    SetSpecial(Storage->ReadBool("Special", Special));
+    SetShell(Storage->ReadString("Shell", Shell));
+    SetClearAliases(Storage->ReadBool("ClearAliases", ClearAliases));
+    SetUnsetNationalVars(Storage->ReadBool("UnsetNationalVars", UnsetNationalVars));
+    SetListingCommand(Storage->ReadString("ListingCommand",
+    Set  Storage->ReadBool("AliasGroupList", false) ? std::wstring("ls -gla") : ListingCommand));
+    SetIgnoreLsWarnings(Storage->ReadBool("IgnoreLsWarnings", IgnoreLsWarnings));
+    SetSCPLsFullTime(TAutoSwitch(Storage->ReadInteger("SCPLsFullTime", SCPLsFullTime)));
+    SetFtpListAll(TAutoSwitch(Storage->ReadInteger("FtpListAll", FtpListAll)));
+    SetScp1Compatibility(Storage->ReadBool("Scp1Compatibility", Scp1Compatibility));
+    SetTimeDifference(Storage->ReadFloat("TimeDifference", TimeDifference));
+    SetDeleteToRecycleBin(Storage->ReadBool("DeleteToRecycleBin", DeleteToRecycleBin));
+    SetOverwrittenToRecycleBin(Storage->ReadBool("OverwrittenToRecycleBin", OverwrittenToRecycleBin));
+    SetRecycleBinPath(Storage->ReadString("RecycleBinPath", RecycleBinPath));
+    SetPostLoginCommands(Storage->ReadString("PostLoginCommands", PostLoginCommands));
 
-    ReturnVar = Storage->ReadString("ReturnVar", ReturnVar);
-    LookupUserGroups = Storage->ReadBool("LookupUserGroups", LookupUserGroups);
-    EOLType = (TEOLType)Storage->ReadInteger("EOLType", EOLType);
-    NotUtf = TAutoSwitch(Storage->ReadInteger("Utf", Storage->ReadInteger("SFTPUtfBug", NotUtf)));
+    SetReturnVar(Storage->ReadString("ReturnVar", ReturnVar));
+    SetLookupUserGroups(Storage->ReadBool("LookupUserGroups", LookupUserGroups));
+    SetEOLType((TEOLType)Storage->ReadInteger("EOLType", EOLType));
+    SetNotUtf(TAutoSwitch(Storage->ReadInteger("Utf", Storage->ReadInteger("SFTPUtfBug", NotUtf))));
 
-    TcpNoDelay = Storage->ReadBool("TcpNoDelay", TcpNoDelay);
+    SetTcpNoDelay(Storage->ReadBool("TcpNoDelay", TcpNoDelay));
 
-    ProxyMethod = (TProxyMethod)Storage->ReadInteger("ProxyMethod", -1);
-    if (ProxyMethod < 0)
+    SetProxyMethod((TProxyMethod)Storage->ReadInteger("ProxyMethod", -1));
+    if (GetProxyMethod() < 0)
     {
       int ProxyType = Storage->ReadInteger("ProxyType", pxNone);
       int ProxySOCKSVersion;
@@ -440,33 +442,33 @@ void TSessionData::Load(THierarchicalStorage * Storage)
           break;
       }
     }
-    ProxyHost = Storage->ReadString("ProxyHost", ProxyHost);
-    ProxyPort = Storage->ReadInteger("ProxyPort", ProxyPort);
-    ProxyUsername = Storage->ReadString("ProxyUsername", ProxyUsername);
+    SetProxyHost(Storage->ReadString("ProxyHost", ProxyHost);
+    SetProxyPort(Storage->ReadInteger("ProxyPort", ProxyPort);
+    SetProxyUsername(Storage->ReadString("ProxyUsername", ProxyUsername);
     if (Storage->ValueExists("ProxyPassword"))
     {
       // encrypt unencrypted password
-      ProxyPassword = Storage->ReadString("ProxyPassword", L"");
+      SetProxyPassword(Storage->ReadString("ProxyPassword", L"");
     }
     else
     {
       // load encrypted password
       FProxyPassword = Storage->ReadString("ProxyPasswordEnc", FProxyPassword);
     }
-    if (ProxyMethod == pmCmd)
+    if (GetProxyMethod ()== pmCmd)
     {
-      ProxyLocalCommand = Storage->ReadStringRaw("ProxyTelnetCommand", ProxyLocalCommand);
+      SetProxyLocalCommand(Storage->ReadStringRaw("ProxyTelnetCommand", GetProxyLocalCommand());
     }
     else
     {
-      ProxyTelnetCommand = Storage->ReadStringRaw("ProxyTelnetCommand", ProxyTelnetCommand);
+      SetProxyTelnetCommand(Storage->ReadStringRaw("ProxyTelnetCommand", GetProxyTelnetCommand());
     }
-    ProxyDNS = TAutoSwitch((Storage->ReadInteger("ProxyDNS", (ProxyDNS + 2) % 3) + 1) % 3);
-    ProxyLocalhost = Storage->ReadBool("ProxyLocalhost", ProxyLocalhost);
+    SetProxyDNS(TAutoSwitch((Storage->ReadInteger("ProxyDNS", (GetProxyDNS() + 2) % 3) + 1) % 3);
+    SetProxyLocalhost(Storage->ReadBool("ProxyLocalhost", GetProxyLocalhost());
 
     #define READ_BUG(BUG) \
-      Bug[sb##BUG] = TAutoSwitch(2 - Storage->ReadInteger("Bug"#BUG, \
-        2 - Bug[sb##BUG]));
+      SetBug(sb##BUG], TAutoSwitch(2 - Storage->ReadInteger(L"Bug"#BUG, \
+        2 - GetBug(sb##BUG)));
     READ_BUG(Ignore1);
     READ_BUG(PlainPW1);
     READ_BUG(RSA1);
@@ -478,59 +480,59 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     READ_BUG(MaxPkt2);
     #undef READ_BUG
 
-    if ((Bug[sbHMAC2] == asAuto) &&
-        Storage->ReadBool("BuggyMAC", false))
+    if ((GetBug(sbHMAC2) == asAuto) &&
+        Storage->ReadBool(L"BuggyMAC", false))
     {
-        Bug[sbHMAC2] = asOn;
+        SetBug(sbHMAC2, asOn);
     }
 
-    SftpServer = Storage->ReadString("SftpServer", SftpServer);
+    SetSftpServer(Storage->ReadString("SftpServer", SftpServer);
     #define READ_SFTP_BUG(BUG) \
-      SFTPBug[sb##BUG] = TAutoSwitch(Storage->ReadInteger("SFTP" #BUG "Bug", SFTPBug[sb##BUG]));
+      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(L"SFTP" #BUG "Bug", GetSFTPBug(sb##BUG)));
     READ_SFTP_BUG(Symlink);
     READ_SFTP_BUG(SignedTS);
     #undef READ_SFTP_BUG
 
-    SFTPMaxVersion = Storage->ReadInteger("SFTPMaxVersion", SFTPMaxVersion);
-    SFTPMaxPacketSize = Storage->ReadInteger("SFTPMaxPacketSize", SFTPMaxPacketSize);
+    SetSFTPMaxVersion(Storage->ReadInteger("SFTPMaxVersion", SFTPMaxVersion);
+    SetSFTPMaxPacketSize(Storage->ReadInteger("SFTPMaxPacketSize", SFTPMaxPacketSize);
 
-    Color = Storage->ReadInteger("Color", Color);
+    SetColor(Storage->ReadInteger("Color", Color);
 
-    ProtocolStr = Storage->ReadString("Protocol", ProtocolStr);
+    SetProtocolStr(Storage->ReadString("Protocol", ProtocolStr);
 
-    Tunnel = Storage->ReadBool("Tunnel", Tunnel);
-    TunnelPortNumber = Storage->ReadInteger("TunnelPortNumber", TunnelPortNumber);
-    TunnelUserName = Storage->ReadString("TunnelUserName", TunnelUserName);
+    SetTunnel(Storage->ReadBool("Tunnel", Tunnel);
+    SetTunnelPortNumber(Storage->ReadInteger("TunnelPortNumber", TunnelPortNumber);
+    SetTunnelUserName(Storage->ReadString("TunnelUserName", TunnelUserName);
     // must be loaded after TunnelUserName,
     // because TunnelHostName may be in format user@host
-    TunnelHostName = Storage->ReadString("TunnelHostName", TunnelHostName);
+    SetTunnelHostName(Storage->ReadString("TunnelHostName", TunnelHostName);
     if (!Configuration->DisablePasswordStoring)
     {
       if (Storage->ValueExists("TunnelPasswordPlain"))
       {
-        TunnelPassword = Storage->ReadString("TunnelPasswordPlain", TunnelPassword);
-        RewritePassword = true;
+        SetTunnelPassword(Storage->ReadString("TunnelPasswordPlain", TunnelPassword);
+        SetRewritePassword(true;
       }
       else
       {
         FTunnelPassword = Storage->ReadString("TunnelPassword", FTunnelPassword);
       }
     }
-    TunnelPublicKeyFile = Storage->ReadString("TunnelPublicKeyFile", TunnelPublicKeyFile);
-    TunnelLocalPortNumber = Storage->ReadInteger("TunnelLocalPortNumber", TunnelLocalPortNumber);
+    SetTunnelPublicKeyFile(Storage->ReadString("TunnelPublicKeyFile", TunnelPublicKeyFile);
+    SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", TunnelLocalPortNumber);
 
     // Ftp prefix
-    FtpPasvMode = Storage->ReadBool("FtpPasvMode", FtpPasvMode);
-    FtpForcePasvIp = Storage->ReadBool("FtpForcePasvIp", FtpForcePasvIp);
-    FtpAccount = Storage->ReadString("FtpAccount", FtpAccount);
-    FtpPingInterval = Storage->ReadInteger("FtpPingInterval", FtpPingInterval);
-    FtpPingType = static_cast<TPingType>(Storage->ReadInteger("FtpPingType", FtpPingType));
-    Ftps = static_cast<TFtps>(Storage->ReadInteger("Ftps", Ftps));
+    SetFtpPasvMode(Storage->ReadBool("FtpPasvMode", FtpPasvMode);
+    SetFtpForcePasvIp(Storage->ReadBool("FtpForcePasvIp", FtpForcePasvIp);
+    SetFtpAccount(Storage->ReadString("FtpAccount", FtpAccount);
+    SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", FtpPingInterval);
+    SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger("FtpPingType", FtpPingType));
+    SetFtps(static_cast<TFtps>(Storage->ReadInteger("Ftps", Ftps));
 
-    FtpProxyLogonType = Storage->ReadInteger("FtpProxyLogonType", FtpProxyLogonType);
+    SetFtpProxyLogonType(Storage->ReadInteger("FtpProxyLogonType", FtpProxyLogonType);
 
-    CustomParam1 = Storage->ReadString("CustomParam1", CustomParam1);
-    CustomParam2 = Storage->ReadString("CustomParam2", CustomParam2);
+    SetCustomParam1(Storage->ReadString("CustomParam1", CustomParam1);
+    SetCustomParam2(Storage->ReadString("CustomParam2", CustomParam2);
 
     Storage->CloseSubKey();
   };

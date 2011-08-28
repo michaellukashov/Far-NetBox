@@ -12,6 +12,8 @@ class TNamedObject : public TPersistent
 {
 public:
   std::wstring Name;
+  std::wstring GetName() { return Name; }
+  void SetName(std::wstring value) { Name = value; }
   TNamedObject(): TPersistent() {};
   int CompareName(std::wstring aName, bool CaseSensitive = false);
   TNamedObject(std::wstring aName): TPersistent(), Name(aName) {}

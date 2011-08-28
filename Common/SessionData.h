@@ -280,6 +280,7 @@ public:
   bool GetSpecial() { return FSpecial; }
   // __property bool Selected  = { read=FSelected, write=FSelected };
   bool GetSelected() { return FSelected; }
+  void SetSelected(bool value) { FSelected = value; }
   // __property std::wstring InfoTip  = { read=GetInfoTip };
   std::wstring GetInfoTip();
   // __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
@@ -356,8 +357,10 @@ public:
   void SetSFTPDownloadQueue(int value);
   // __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
   int GetSFTPUploadQueue() { return FSFTPUploadQueue; }
+  void SetSFTPUploadQueue(int value) { FSFTPUploadQueue = value; }
   // __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
   int GetSFTPListingQueue() { return FSFTPListingQueue; }
+  void SetSFTPListingQueue(int value);
   // __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   int GetSFTPMaxVersion() { return FSFTPMaxVersion; }
   // __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
@@ -493,7 +496,6 @@ public:
   void SetCustomParam2(std::wstring value);
   void SetResolveSymlinks(bool value);
   void SetSFTPUploadQueue(int value);
-  void SetSFTPListingQueue(int value);
   void SetSFTPMaxVersion(int value);
   void SetSFTPMaxPacketSize(unsigned long value);
   void SetSCPLsFullTime(TAutoSwitch value);
