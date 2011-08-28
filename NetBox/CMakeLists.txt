@@ -235,6 +235,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/CopyParam.cpp
     ${PROJECT_ROOT}/Common/SessionData.cpp
     ${PROJECT_ROOT}/Common/Configuration.cpp
+    ${PROJECT_ROOT}/Common/ScpFileSystem.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
 
