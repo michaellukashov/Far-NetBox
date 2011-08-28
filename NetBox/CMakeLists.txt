@@ -230,6 +230,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/Queue.cpp
     ${PROJECT_ROOT}/Common/SecureShell.cpp
     ${PROJECT_ROOT}/Common/SessionInfo.cpp
+    ${PROJECT_ROOT}/Common/CoreMain.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
 )
 
