@@ -454,5 +454,6 @@ std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext);
 std::wstring ExtractFileExt(std::wstring FileName);
 std::wstring ExpandUNCFileName(std::wstring FileName);
 
-
-
+static void FileSeek(HANDLE file, __int64 offset, __int64 size)
+{
+}

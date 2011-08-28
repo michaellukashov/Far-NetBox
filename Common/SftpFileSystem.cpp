@@ -3742,7 +3742,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
       TQueryParams Params(0, HELP_APPEND_OR_RESUME);
       SUSPEND_OPERATION
       (
-        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME), (FileName)),
+        Answer = FTerminal->QueryUser(L"", // FIXME FORMAT(LoadStr(APPEND_OR_RESUME), (FileName)),
           NULL, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
       );
 
@@ -3774,8 +3774,9 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
   }
   else if (Answer == qaIgnore)
   {
-    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName, LoadStr(RENAME_TITLE), "",
-          LoadStr(RENAME_PROMPT2), true, 0, FileName))
+    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName, LoadStr(RENAME_TITLE), L"",
+          L"", // FIXME LoadStr(RENAME_PROMPT2),
+          true, 0, FileName))
     {
       OverwriteMode = omOverwrite;
     }
@@ -3819,7 +3820,8 @@ bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
     (
       TQueryParams Params(qpAllowContinueOnError, HELP_PARTIAL_BIGGER_THAN_SOURCE);
       Answer = FTerminal->QueryUser(
-        FMTLOAD(PARTIAL_BIGGER_THAN_SOURCE, (DestFileName)), NULL,
+        L"", // FIXME FMTLOAD(PARTIAL_BIGGER_THAN_SOURCE, (DestFileName)),
+        NULL,
           qaOK | qaAbort, &Params, qtWarning);
     )
 
@@ -3833,7 +3835,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
     }
     ResumeTransfer = false;
   }
-  else if (FTerminal->Configuration->ConfirmResume)
+  else if (FTerminal->GetConfiguration()->GetConfirmResume())
   {
     int Answer;
     SUSPEND_OPERATION
@@ -3842,13 +3844,14 @@ bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
         HELP_RESUME_TRANSFER);
       // "abort" replaced with "cancel" to unify with "append/resume" query
       Answer = FTerminal->QueryUser(
-        FMTLOAD(RESUME_TRANSFER, (DestFileName)), NULL, qaYes | qaNo | qaCancel,
+        L"", // FIXME FMTLOAD(RESUME_TRANSFER, (DestFileName)),
+        NULL, qaYes | qaNo | qaCancel,
         &Params);
     );
 
     switch (Answer) {
       case qaNeverAskAgain:
-        FTerminal->Configuration->ConfirmResume = false;
+        FTerminal->GetConfiguration()->SetConfirmResume(false);
       case qaYes:
         ResumeTransfer = true;
         break;
@@ -3880,7 +3883,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
   // the same in TFTPFileSystem
   bool Retry;
 
-  TUploadSessionAction Action(FTerminal->Log);
+  TUploadSessionAction Action(FTerminal->GetLog());
 
   do
   {
@@ -3963,7 +3966,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       // File is regular file (not directory)
       assert(File);
 
-      std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName),
+      std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, true),
         osLocal, FLAGSET(Flags, tfFirstLevel));
       std::wstring DestFullName = LocalCanonify(TargetDir + DestFileName);
       std::wstring DestPartinalFullName;
@@ -3989,8 +3992,8 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       OperationProgress->SetAsciiTransfer(
         CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
       FTerminal->LogEvent(
-        std::wstring((OperationProgress->AsciiTransfer ? "Ascii" : "Binary")) +
-          " transfer mode selected.");
+        std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+          L" transfer mode selected.");
 
       // should we check for interrupted transfer?
       ResumeAllowed = !OperationProgress->AsciiTransfer &&
@@ -4001,11 +4004,11 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       TOverwriteFileParams FileParams;
       FileParams.SourceSize = OperationProgress->LocalSize;
       FileParams.SourceTimestamp = UnixToDateTime(MTime,
-        FTerminal->GetSessionData()->DSTMode);
+        FTerminal->GetSessionData()->GetDSTMode());
 
       if (ResumeAllowed)
       {
-        DestPartinalFullName = DestFullName + FTerminal->Configuration->PartialExt;
+        DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
 
         if (FLAGCLEAR(Flags, tfNewDirectory))
         {
@@ -4014,10 +4017,10 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
           DestFileExists = RemoteFileExists(DestFullName, &File);
           if (DestFileExists)
           {
-            OpenParams.DestFileSize = File->Size;
+            OpenParams.DestFileSize = File->GetSize();
             FileParams.DestSize = OpenParams.DestFileSize;
-            FileParams.DestTimestamp = File->Modification;
-            DestRights = *File->Rights;
+            FileParams.DestTimestamp = File->GetModification();
+            DestRights = *File->GetRights();
             // if destination file is symlink, never do resumable transfer,
             // as it would delete the symlink.
             // also bit of heuristics to detect symlink on SFTP-3 and older
@@ -4025,10 +4028,10 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
             // if file has all permissions and is small, then it is likely symlink.
             // also it is not likely that such a small file (if it is not symlink)
             // gets overwritten by large file (that would trigger resumable transfer).
-            if (File->IsSymLink ||
+            if (File->GetIsSymLink() ||
                 ((FVersion < 4) &&
-                 ((*File->Rights & TRights::rfAll) == TRights::rfAll) &&
-                 (File->Size < 100)))
+                 ((*File->GetRights() & (unsigned short)TRights::rfAll) == (unsigned short)TRights::rfAll) &&
+                 (File->GetSize() < 100)))
             {
               ResumeAllowed = false;
               OperationProgress->SetResumeStatus(rsDisabled);
@@ -4043,7 +4046,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
             FTerminal->LogEvent(L"Checking existence of partially transfered file.");
             if (RemoteFileExists(DestPartinalFullName, &File))
             {
-              ResumeOffset = File->Size;
+              ResumeOffset = File->GetSize();
               delete File;
               File = NULL;
 
@@ -4080,7 +4083,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
                 {
                   // update paths in case user changes the file name
                   DestFullName = LocalCanonify(TargetDir + DestFileName);
-                  DestPartinalFullName = DestFullName + FTerminal->Configuration->PartialExt;
+                  DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
                   FTerminal->LogEvent(L"Checking existence of new file.");
                   DestFileExists = RemoteFileExists(DestFullName, NULL);
                 }
@@ -4104,8 +4107,8 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       OpenParams.Confirmed = false;
 
       FTerminal->LogEvent(L"Opening remote file.");
-      FTerminal->FileOperationLoop(SFTPOpenRemote, OperationProgress, true,
-        FMTLOAD(SFTP_CREATE_FILE_ERROR, (OpenParams.RemoteFileName)),
+      FTerminal->FileOperationLoop((TFileOperationEvent)&TSFTPFileSystem::SFTPOpenRemote, OperationProgress, true,
+        L"", // FIXME FMTLOAD(SFTP_CREATE_FILE_ERROR, (OpenParams.RemoteFileName)),
         &OpenParams);
 
       if (OpenParams.RemoteFileName != RemoteFileName)
@@ -4123,15 +4126,15 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       bool TransferFinished = false;
       __int64 DestWriteOffset = 0;
       TSFTPPacket CloseRequest;
-      bool SetRights = ((DoResume && DestFileExists) || CopyParam->PreserveRights);
-      bool SetProperties = (CopyParam->PreserveTime || SetRights);
+      bool SetRights = ((DoResume && DestFileExists) || CopyParam->GetPreserveRights());
+      bool SetProperties = (CopyParam->GetPreserveTime() || SetRights);
       TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT);
       TSFTPPacket PropertiesResponse;
       TRights Rights;
       if (SetProperties)
       {
         PropertiesRequest.AddPathString(DestFullName, FUtfStrings);
-        if (CopyParam->PreserveRights)
+        if (CopyParam->GetPreserveRights())
         {
           Rights = CopyParam->RemoteFileRights(OpenParams.LocalFileAttrs);
         }
@@ -4144,11 +4147,11 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
           assert(!SetRights);
         }
 
-        unsigned short RightsNumber = Rights.NumberSet;
+        unsigned short RightsNumber = Rights.GetNumberSet();
         PropertiesRequest.AddProperties(
           SetRights ? &RightsNumber : NULL, NULL, NULL,
-          CopyParam->PreserveTime ? &MTime : NULL,
-          CopyParam->PreserveTime ? &ATime : NULL,
+          CopyParam->GetPreserveTime() ? &MTime : NULL,
+          CopyParam->GetPreserveTime() ? &ATime : NULL,
           NULL, false, FVersion, FUtfStrings);
       }
 
@@ -4166,7 +4169,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
             FTerminal->LogEvent(L"Resuming file transfer (append style).");
             ResumeOffset = OpenParams.DestFileSize;
           }
-          FileSeek((THandle)File, ResumeOffset, 0);
+          FileSeek((HANDLE)File, ResumeOffset, 0);
           OperationProgress->AddResumed(ResumeOffset);
         }
 
@@ -4188,7 +4191,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
           // send close request before waiting for pending read responses
           SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
             OperationProgress, false, true, &CloseRequest);
-          OpenParams.RemoteFileHandle = "";
+          OpenParams.RemoteFileHandle = L"";
 
           // when resuming is disabled, we can send "set properties"
           // request before waiting for pending read/close responses
@@ -4901,7 +4904,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     {
       if (ResumeAllowed)
       {
-        DestPartinalFullName = DestFullName + FTerminal->Configuration->PartialExt;
+        DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt;
         LocalFileName = DestPartinalFullName;
 
         FTerminal->LogEvent(L"Checking existence of partially transfered file.");
@@ -4957,7 +4960,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         if (PrevDestFileName != DestFileName)
         {
           DestFullName = TargetDir + DestFileName;
-          DestPartinalFullName = DestFullName + FTerminal->Configuration->PartialExt;
+          DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt;
           if (ResumeAllowed)
           {
             if (FileExists(DestPartinalFullName))
@@ -5152,7 +5155,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                 assert(!ResumeTransfer && !ResumeAllowed);
 
                 unsigned int PrevBlockSize = BlockBuf.Size;
-                BlockBuf.Convert(GetEOL(), FTerminal->Configuration->LocalEOLType, 0, ConvertToken);
+                BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType, 0, ConvertToken);
                 OperationProgress->SetLocalSize(
                   OperationProgress->LocalSize - PrevBlockSize + BlockBuf.Size);
               }
