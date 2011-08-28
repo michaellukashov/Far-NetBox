@@ -820,50 +820,37 @@ public:
     return *this;
   }
 
-  __property unsigned int Length = { read = FLength };
-  __property unsigned int RemainingLength = { read = GetRemainingLength };
-  __property char * Data = { read = FData };
-  __property char * SendData = { read = GetSendData };
-  __property unsigned int SendLength = { read = GetSendLength };
-  __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
-  __property unsigned char Type = { read = FType };
-  __property unsigned char RequestType = { read = GetRequestType };
-  __property unsigned int MessageNumber = { read = FMessageNumber, write = FMessageNumber };
-  __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
-  __property std::wstring TypeName = { read = GetTypeName };
-
-private:
-  char * FData;
-  unsigned int FLength;
-  unsigned int FCapacity;
-  unsigned int FPosition;
-  unsigned char FType;
-  unsigned int FMessageNumber;
-  TSFTPFileSystem * FReservedBy;
-
-  static int FMessageCounter;
-  static const FSendPrefixLen = 4;
-
-  void Init()
+  // __property unsigned int Length = { read = FLength };
+  unsigned int GetLength() const { return FLength; }
+  // __property unsigned int RemainingLength = { read = GetRemainingLength };
+  unsigned int GetRemainingLength() const
   {
-    FData = NULL;
-    FCapacity = 0;
-    FLength = 0;
-    FPosition = 0;
-    FMessageNumber = SFTPNoMessageNumber;
-    FType = -1;
-    FReservedBy = NULL;
+    return Length - FPosition;
   }
 
-  void AssignNumber()
+  // __property char * Data = { read = FData };
+  char * GetData() const { return FData; }
+  // __property char * SendData = { read = GetSendData };
+  char * GetSendData() const
   {
-    // this is not strictly thread-safe, but as it is accessed from multiple
-    // threads only for multiple connection, it is not problem if two threads get
-    // the same number
-    FMessageNumber = (FMessageCounter << 8) + FType;
-    FMessageCounter++;
+    char * Result = FData - FSendPrefixLen;
+    // this is not strictly const-object operation
+    PUT_32BIT(Result, Length);
+    return Result;
   }
 
+  // __property unsigned int SendLength = { read = GetSendLength };
+  unsigned int GetSendLength() const
+  {
+    return FSendPrefixLen + Length;
+  }
+
+  // __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
+  unsigned int GetCapacity() const { return FCapacity; }
+  void SetCapacity(unsigned int value) { FCapacity = value; }
+  // __property unsigned char Type = { read = FType };
+  unsigned char GetType() const { return FType; }
+  // __property unsigned char RequestType = { read = GetRequestType };
   unsigned char GetRequestType()
   {
     if (FMessageNumber != SFTPNoMessageNumber)
@@ -877,41 +864,13 @@ private:
     }
   }
 
-  inline void Add(const void * AData, int ALength)
-  {
-    if (Length + ALength > Capacity)
-    {
-      Capacity = Length + ALength + SFTP_PACKET_ALLOC_DELTA;
-    }
-    memcpy(FData + Length, AData, ALength);
-    FLength += ALength;
-  }
-
-  void SetCapacity(unsigned int ACapacity)
-  {
-    if (ACapacity != Capacity)
-    {
-      FCapacity = ACapacity;
-      if (FCapacity > 0)
-      {
-        char * NData = (new char[FCapacity + FSendPrefixLen]) + FSendPrefixLen;
-        if (FData)
-        {
-          memcpy(NData - FSendPrefixLen, FData - FSendPrefixLen,
-            (FLength < FCapacity ? FLength : FCapacity) + FSendPrefixLen);
-          delete[] (FData - FSendPrefixLen);
-        }
-        FData = NData;
-      }
-      else
-      {
-        if (FData) delete[] (FData - FSendPrefixLen);
-        FData = NULL;
-      }
-      if (FLength > FCapacity) FLength = FCapacity;
-    }
-  }
-
+  // __property unsigned int MessageNumber = { read = FMessageNumber, write = FMessageNumber };
+  unsigned int GetMessageNumber() const { return FMessageNumber; }
+  void SetMessageNumber(unsigned int value) { FMessageNumber = value; }
+  // __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
+  TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
+  void SetReservedBy(TSFTPFileSystem * value) { FReservedBy = value; }
+  // __property std::wstring TypeName = { read = GetTypeName };
   std::wstring GetTypeName() const
   {
     #define TYPE_CASE(TYPE) case TYPE: return #TYPE
@@ -948,22 +907,72 @@ private:
     }
   }
 
-  char * GetSendData() const
+
+private:
+  char * FData;
+  unsigned int FLength;
+  unsigned int FCapacity;
+  unsigned int FPosition;
+  unsigned char FType;
+  unsigned int FMessageNumber;
+  TSFTPFileSystem * FReservedBy;
+
+  static int FMessageCounter;
+  static const FSendPrefixLen = 4;
+
+  void Init()
   {
-    char * Result = FData - FSendPrefixLen;
-    // this is not strictly const-object operation
-    PUT_32BIT(Result, Length);
-    return Result;
+    FData = NULL;
+    FCapacity = 0;
+    FLength = 0;
+    FPosition = 0;
+    FMessageNumber = SFTPNoMessageNumber;
+    FType = -1;
+    FReservedBy = NULL;
   }
 
-  unsigned int GetSendLength() const
+  void AssignNumber()
   {
-    return FSendPrefixLen + Length;
+    // this is not strictly thread-safe, but as it is accessed from multiple
+    // threads only for multiple connection, it is not problem if two threads get
+    // the same number
+    FMessageNumber = (FMessageCounter << 8) + FType;
+    FMessageCounter++;
   }
 
-  unsigned int GetRemainingLength() const
+  inline void Add(const void * AData, int ALength)
   {
-    return Length - FPosition;
+    if (Length + ALength > Capacity)
+    {
+      Capacity = Length + ALength + SFTP_PACKET_ALLOC_DELTA;
+    }
+    memcpy(FData + Length, AData, ALength);
+    FLength += ALength;
+  }
+
+  void SetCapacity(unsigned int ACapacity)
+  {
+    if (ACapacity != Capacity)
+    {
+      FCapacity = ACapacity;
+      if (FCapacity > 0)
+      {
+        char * NData = (new char[FCapacity + FSendPrefixLen]) + FSendPrefixLen;
+        if (FData)
+        {
+          memcpy(NData - FSendPrefixLen, FData - FSendPrefixLen,
+            (FLength < FCapacity ? FLength : FCapacity) + FSendPrefixLen);
+          delete[] (FData - FSendPrefixLen);
+        }
+        FData = NData;
+      }
+      else
+      {
+        if (FData) delete[] (FData - FSendPrefixLen);
+        FData = NULL;
+      }
+      if (FLength > FCapacity) FLength = FCapacity;
+    }
   }
 
   inline void Need(unsigned int Size)
