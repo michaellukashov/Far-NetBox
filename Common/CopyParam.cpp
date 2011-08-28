@@ -1,4 +1,6 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
+
 #include "Common.h"
 #include "CopyParam.h"
 #include "HierarchicalStorage.h"
@@ -21,13 +23,13 @@ TCopyParamType::~TCopyParamType()
 void TCopyParamType::Default()
 {
   // when changing defaults, make sure GetInfoStr() can handle it
-  FileNameCase = ncNoChange;
-  PreserveReadOnly = false;
-  PreserveTime = true;
-  Rights.Number = TRights::rfDefault;
-  PreserveRights = false; // Was true until #106
-  IgnorePermErrors = false;
-  AsciiFileMask.Masks = "*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
+  SetFileNameCase(ncNoChange);
+  SetPreserveReadOnly(false);
+  SetPreserveTime(true);
+  GetRights().Number = TRights::rfDefault;
+  SetPreserveRights(false); // Was true until #106
+  SetIgnorePermErrors(false);
+  FAsciiFileMask.Masks = L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
     "*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml";
   TransferMode = tmAutomatic;
   AddXToDirectories = true;
