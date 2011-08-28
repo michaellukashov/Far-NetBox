@@ -1400,23 +1400,28 @@ TPasLibModule * FindModule(void * Instance)
   }
   return CurModule;
 }
+*/
 //---------------------------------------------------------------------------
 std::wstring LoadStr(int Ident, unsigned int MaxLength)
 {
+    // FIXME
+  std::wstring Result;
+  /*
   TPasLibModule * MainModule = FindModule(HInstance);
   assert(MainModule != NULL);
 
-  std::wstring Result;
   Result.resize(MaxLength);
   int Length = LoadString(MainModule->ResInstance, Ident, Result.c_str(), MaxLength);
   Result.resize(Length);
-
+*/
   return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring LoadStrPart(int Ident, int Part)
 {
+    // FIXME
   std::wstring Result;
+  /*
   std::wstring Str = LoadStr(Ident);
 
   while (Part > 0)
@@ -1424,9 +1429,10 @@ std::wstring LoadStrPart(int Ident, int Part)
     Result = CutToChar(Str, '|', false);
     Part--;
   }
+  */
   return Result;
 }
-*/
+
 //---------------------------------------------------------------------------
 std::wstring DecodeUrlChars(std::wstring S)
 {

@@ -71,10 +71,7 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin);
 int CancelAnswer(int Answers);
 int AbortAnswer(int Answers);
 int ContinueAnswer(int Answers);
-static std::wstring LoadStr(int Ident, unsigned int MaxLength = 0)
-{
-    return L"";
-}
+std::wstring LoadStr(int Ident, unsigned int MaxLength = 0);
 std::wstring LoadStrPart(int Ident, int Part);
 std::wstring EscapeHotkey(const std::wstring & Caption);
 bool CutToken(std::wstring & Str, std::wstring & Token);
