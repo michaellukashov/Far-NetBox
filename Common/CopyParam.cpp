@@ -546,24 +546,24 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TCopyParamType::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteBool("AddXToDirectories", GetAddXToDirectories());
-  Storage->WriteString("Masks", GetAsciiFileMask().GetMasks());
-  Storage->WriteInteger("FileNameCase", GetFileNameCase());
-  Storage->WriteBool("GetPreserveReadOnly()", GetPreserveReadOnly());
-  Storage->WriteBool("PreserveTime", GetPreserveTime());
-  Storage->WriteBool("PreserveRights", GetPreserveRights());
-  Storage->WriteBool("IgnorePermErrors", GetIgnorePermErrors());
-  Storage->WriteString("Text", GetRights().GetText());
-  Storage->WriteInteger("TransferMode", GetTransferMode());
-  Storage->WriteInteger("ResumeSupport", GetResumeSupport());
-  Storage->WriteInt64("ResumeThreshold", GetResumeThreshold());
-  Storage->WriteInteger("ReplaceInvalidChars", (unsigned char)GetInvalidCharsReplacement());
-  Storage->WriteString("LocalInvalidChars", GetLocalInvalidChars());
-  Storage->WriteBool("GetCalculateSize()", GetCalculateSize());
-  Storage->WriteString("GetExcludeFileMask()", GetExcludeFileMask().GetMasks());
-  Storage->WriteBool("GetNegativeExclude()", GetNegativeExclude());
-  Storage->WriteBool("GetClearArchive()", GetClearArchive());
-  Storage->WriteInteger("CPSLimit", GetCPSLimit());
+  Storage->WriteBool(L"AddXToDirectories", GetAddXToDirectories());
+  Storage->WriteString(L"Masks", GetAsciiFileMask().GetMasks());
+  Storage->WriteInteger(L"FileNameCase", GetFileNameCase());
+  Storage->WriteBool(L"GetPreserveReadOnly()", GetPreserveReadOnly());
+  Storage->WriteBool(L"PreserveTime", GetPreserveTime());
+  Storage->WriteBool(L"PreserveRights", GetPreserveRights());
+  Storage->WriteBool(L"IgnorePermErrors", GetIgnorePermErrors());
+  Storage->WriteString(L"Text", GetRights().GetText());
+  Storage->WriteInteger(L"TransferMode", GetTransferMode());
+  Storage->WriteInteger(L"ResumeSupport", GetResumeSupport());
+  Storage->WriteInt64(L"ResumeThreshold", GetResumeThreshold());
+  Storage->WriteInteger(L"ReplaceInvalidChars", (unsigned char)GetInvalidCharsReplacement());
+  Storage->WriteString(L"LocalInvalidChars", GetLocalInvalidChars());
+  Storage->WriteBool(L"GetCalculateSize()", GetCalculateSize());
+  Storage->WriteString(L"GetExcludeFileMask()", GetExcludeFileMask().GetMasks());
+  Storage->WriteBool(L"GetNegativeExclude()", GetNegativeExclude());
+  Storage->WriteBool(L"GetClearArchive()", GetClearArchive());
+  Storage->WriteInteger(L"CPSLimit", GetCPSLimit());
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Property == rhp.Property)
