@@ -1499,7 +1499,8 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         {
           TQueryParams Params(qpAllowContinueOnError);
           SUSPEND_OPERATION (
-            if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, (FileName)), &E,
+            if (FTerminal->QueryUserException(L"", // FIXME FMTLOAD(COPY_ERROR, (FileName)),
+                &E,
               qaOK | qaAbort, &Params, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
@@ -1528,7 +1529,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   catch(...)
   {
     // Tell remote side, that we're done.
-    if (FTerminal->Active)
+    if (FTerminal->GetActive())
     {
       try
       {
@@ -1538,7 +1539,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           {
             // What about case, remote side sends fatal error ???
             // (Not sure, if it causes remote side to terminate scp)
-            FSecureShell->SendLine("E");
+            FSecureShell->SendLine(L"E");
             SCPResponse();
           };
           /* TODO 1 : Show stderror to user? */
@@ -1552,7 +1553,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       {
         // Only log error message (it should always succeed, but
         // some pending error maybe in queque) }
-        FTerminal->Log->AddException(&E);
+        FTerminal->GetLog()->AddException(&E);
       }
     }
   }
@@ -1563,7 +1564,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
   TFileOperationProgressType * OperationProgress, int Level)
 {
   std::wstring DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(FileName), osLocal, Level == 0);
+    ExtractFileName(FileName, true), osLocal, Level == 0);
 
   FTerminal->LogEvent(::FORMAT(L"File: \"%s\"", (FileName)));
 
@@ -1571,7 +1572,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    FTerminal->LogEvent(::FORMAT(L"File \"%s\" excluded from transfer", (FileName)));
+    FTerminal->LogEvent(::FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
     THROW_SKIP_FILE_NULL;
   }
 
@@ -1584,7 +1585,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
     &Attrs, &File, NULL, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(Attrs, faDirectory);
-  TStream * Stream = new TSafeHandleStream((THandle)File);
+  TSafeHandleStream * Stream = new TSafeHandleStream((HANDLE)File);
   try
   {
     OperationProgress->SetFileInProgress();
@@ -1615,10 +1616,10 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
       OperationProgress->SetAsciiTransfer(
         CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
       FTerminal->LogEvent(
-        std::wstring((OperationProgress->AsciiTransfer ? "Ascii" : "Binary")) +
-          " transfer mode selected.");
+        std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+          L" transfer mode selected.");
 
-      TUploadSessionAction Action(FTerminal->Log);
+      TUploadSessionAction Action(FTerminal->GetLog());
       Action.FileName(ExpandUNCFileName(FileName));
       Action.Destination(AbsoluteFileName);
 

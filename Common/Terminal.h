@@ -67,7 +67,7 @@ typedef void (TObject::*TInformationEvent)
 
 #define THROW_SKIP_FILE(EXCEPTION, MESSAGE) \
   throw EScpSkipFile(EXCEPTION, MESSAGE)
-#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(NULL, "")
+#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(NULL, L"")
 
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION) { \

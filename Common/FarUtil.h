@@ -450,6 +450,7 @@ std::wstring DecryptPassword(std::wstring Password, std::wstring Key);
 
 std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext);
 std::wstring ExtractFileExt(std::wstring FileName);
+std::wstring ExpandUNCFileName(std::wstring FileName);
 
 
 

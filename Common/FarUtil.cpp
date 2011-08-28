@@ -627,3 +627,10 @@ std::wstring ExtractFileExt(std::wstring FileName)
     std::wstring result;
     return result;
 }
+
+std::wstring ExpandUNCFileName(std::wstring FileName)
+{
+    // FIXME 
+    std::wstring result;
+    return result;
+}

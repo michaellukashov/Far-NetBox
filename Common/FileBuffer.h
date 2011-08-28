@@ -43,15 +43,20 @@ private:
 
 };
 //---------------------------------------------------------------------------
-/*
-class TSafeHandleStream : public THandleStream
+class TStream
+{
+};
+
+//---------------------------------------------------------------------------
+
+class TSafeHandleStream : public TStream // FIXME  : public THandleStream
 {
 public:
-  TSafeHandleStream(int AHandle);
+  TSafeHandleStream(HANDLE AHandle);
   virtual int Read(void * Buffer, int Count);
   virtual int Write(const void * Buffer, int Count);
 };
-*/
+
 //---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------
