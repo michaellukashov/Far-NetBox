@@ -442,3 +442,12 @@ std::wstring SysErrorMessage(int code);
 char *StrNew(const char *str);
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix);
+
+std::wstring EncryptPassword(std::wstring Password, std::wstring Key);
+std::wstring DecryptPassword(std::wstring Password, std::wstring Key);
+
+std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext);
+std::wstring ExtractFileExt(std::wstring FileName);
+
+
+

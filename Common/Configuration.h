@@ -8,7 +8,7 @@
 #include "HierarchicalStorage.h"
 //---------------------------------------------------------------------------
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
-  if (PROPERTY != value) { F ## PROPERTY = value; Changed(); APPLY; }
+  if (Get##PROPERTY() != value) { F ## PROPERTY = value; Changed(); APPLY; }
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
 //---------------------------------------------------------------------------
@@ -81,10 +81,13 @@ protected:
 
   // __property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
   bool GetPermanentLogging() { return FPermanentLogging; }
+  void SetPermanentLogging(bool value) { FPermanentLogging = value; }
     // __property std::wstring PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
   std::wstring GetPermanentLogFileName() { return FPermanentLogFileName; }
+  void SetPermanentLogFileName(std::wstring value) { FPermanentLogFileName = value; }
   // __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
   bool GetPermanentLogActions() { return FPermanentLogActions; }
+  void SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
 
 public:
   TConfiguration();
@@ -242,7 +245,13 @@ public:
 // FIXME
 class TShortCut
 {
+public:
+    inline bool operator < (const TShortCut &rhs) const
+    {
+        return false;
+    }
 };
+
 //---------------------------------------------------------------------------
 class TShortCuts
 {
