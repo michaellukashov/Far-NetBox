@@ -419,7 +419,7 @@ bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
     return false;
 }
 
-int LastDelimiter(const std::wstring str1, const wchar_t delim)
+int LastDelimiter(const std::wstring str1, const std::wstring delim)
 {
     // FIXME
     return -1;

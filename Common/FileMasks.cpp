@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include "FileMasks.h"
 
 #include "Common.h"
@@ -9,7 +10,7 @@
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
     std::wstring Message, int AErrorStart, int AErrorLen) :
-  exception(Message)
+  std::exception(::W2MB(Message.c_str()).c_str())
 {
   ErrorStart = AErrorStart;
   ErrorLen = AErrorLen;
@@ -65,13 +66,13 @@ std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool
 //---------------------------------------------------------------------------
 std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
 {
-  if (!Mask.empty() && (Mask != "*") && (Mask != "*.*"))
+  if (!Mask.empty() && (Mask != L"*") && (Mask != L"*.*"))
   {
     bool Masked;
-    int P = Mask.LastDelimiter(".");
+    int P = ::LastDelimiter(Mask, L".");
     if (P > 0)
     {
-      int P2 = FileName.LastDelimiter(".");
+      int P2 = ::LastDelimiter(FileName, L".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
       std::wstring FileExt = P2 > 1 ?
@@ -129,7 +130,7 @@ std::wstring TFileMasks::TParams::ToString() const
 //---------------------------------------------------------------------------
 bool TFileMasks::IsMask(const std::wstring Mask)
 {
-  return (Mask.LastDelimiter("?*[") > 0);
+  return (::LastDelimiter(Mask, L"?*[") > 0);
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::IsAnyMask(const std::wstring & Mask)
@@ -460,14 +461,14 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
           }
           else if (!PartStr.empty())
           {
-            int D = PartStr.LastDelimiter("\\/");
+            int D = ::LastDelimiter(PartStr, L"\\/");
 
             Mask.DirectoryOnly = (D > 0) && (D == PartStr.size());
 
             if (Mask.DirectoryOnly)
             {
               PartStr.resize(PartStr.size() - 1);
-              D = PartStr.LastDelimiter("\\/");
+              D = ::LastDelimiter(PartStr, L"\\/");
             }
 
             if (D > 0)

@@ -4,8 +4,9 @@
 //---------------------------------------------------------------------------
 #include <vector>
 // #include <Masks.hpp>
+#include "Classes.h"
 //---------------------------------------------------------------------------
-class EFileMasksException : public exception
+class EFileMasksException : public std::exception
 {
 public:
   EFileMasksException(std::wstring Message, int ErrorStart, int ErrorLen);

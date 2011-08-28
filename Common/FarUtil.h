@@ -390,7 +390,7 @@ bool AnsiSameText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size);
-int LastDelimiter(const std::wstring str1, const wchar_t delim);
+int LastDelimiter(const std::wstring str1, const std::wstring delim);
 
 bool ForceDirectories(const std::wstring Dir);
 bool DeleteFile(const std::wstring File);
