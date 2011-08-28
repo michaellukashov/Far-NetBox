@@ -113,3 +113,19 @@ void CoreSetResourceModule(void * ResourceHandle)
   #endif
 }
 //---------------------------------------------------------------------------
+TConfiguration * CreateConfiguration()
+{
+    // FIXME
+  TConfiguration * Configuration = NULL; // new TWinConfiguration();
+/*
+  TProgramParams * Params = TProgramParams::Instance();
+  std::wstring IniFileName = Params->SwitchValue("ini");
+  if (!IniFileName.IsEmpty())
+  {
+    IniFileName = ExpandFileName(ExpandEnvironmentVariables(IniFileName));
+    Configuration->IniFileStorageName = IniFileName;
+  }
+ */
+  return Configuration;
+}
+//---------------------------------------------------------------------------
