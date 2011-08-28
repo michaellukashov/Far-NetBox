@@ -75,10 +75,10 @@ void TGUICopyParamType::Load(THierarchicalStorage * Storage)
 {
   TCopyParamType::Load(Storage);
 
-  Queue = Storage->ReadBool("Queue", Queue);
-  QueueNoConfirmation = Storage->ReadBool("QueueNoConfirmation", QueueNoConfirmation);
-  QueueIndividually = Storage->ReadBool("QueueIndividually", QueueIndividually);
-  NewerOnly = Storage->ReadBool("NewerOnly", NewerOnly);
+  Queue = Storage->Readbool("Queue", Queue);
+  QueueNoConfirmation = Storage->Readbool("QueueNoConfirmation", QueueNoConfirmation);
+  QueueIndividually = Storage->Readbool("QueueIndividually", QueueIndividually);
+  NewerOnly = Storage->Readbool("NewerOnly", NewerOnly);
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Save(THierarchicalStorage * Storage)
@@ -414,7 +414,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
           Name = Storage->ReadString("Name", Name);
           CopyParam->Load(Storage);
 
-          if (Storage->ReadBool("HasRule", false))
+          if (Storage->Readbool("HasRule", false))
           {
             Rule = new TCopyParamRule();
             Rule->Load(Storage);
@@ -698,7 +698,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
-    int CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+    int CopyParamListCount = Storage->Readint("CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {

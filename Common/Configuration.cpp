@@ -22,11 +22,11 @@ TConfiguration::TConfiguration()
   FDontSave = false;
   FApplicationInfo = NULL;
 
-  char Buf[10];
+  wchar_t Buf[10];
   std::wstring RandomSeedPath;
-  if (GetEnvironmentVariable("APPDATA", Buf, sizeof(Buf)) > 0)
+  if (GetEnvironmentVariable(L"APPDATA", Buf, sizeof(Buf)) > 0)
   {
-    RandomSeedPath = "%APPDATA%";
+    RandomSeedPath = L"%APPDATA%";
   }
   else
   {
@@ -37,7 +37,7 @@ TConfiguration::TConfiguration()
     }
   }
 
-  FDefaultRandomSeedFile = IncludeTrailingBackslash(RandomSeedPath) + "winscp.rnd";
+  FDefaultRandomSeedFile = IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
 }
 //---------------------------------------------------------------------------
 void TConfiguration::Default()
@@ -49,7 +49,7 @@ void TConfiguration::Default()
   FDisableAcceptingHostKeys = false;
 
   TRegistryStorage * AdminStorage;
-  AdminStorage = new TRegistryStorage(RegistryStorageKey, HKEY_LOCAL_MACHINE);
+  AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
   try
   {
     if (AdminStorage->OpenRootKey(false))
@@ -63,8 +63,8 @@ void TConfiguration::Default()
     delete AdminStorage;
   }
 
-  RandomSeedFile = FDefaultRandomSeedFile;
-  PuttyRegistryStorageKey = "Software\\SimonTatham\\PuTTY";
+  SetRandomSeedFile(FDefaultRandomSeedFile);
+  SetPuttyRegistryStorageKey(L"Software\\SimonTatham\\PuTTY");
   FConfirmOverwriting = true;
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;
@@ -78,8 +78,8 @@ void TConfiguration::Default()
 
   FLogging = false;
   FPermanentLogging = false;
-  FLogFileName = "";
-  FPermanentLogFileName = "";
+  FLogFileName = L"";
+  FPermanentLogFileName = L"";
   FLogFileAppend = true;
   FLogWindowLines = 100;
   FLogProtocol = 0;
@@ -99,23 +99,23 @@ TConfiguration::~TConfiguration()
 //---------------------------------------------------------------------------
 THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 {
-  if (Storage == stRegistry)
+  if (GetStorage() == stRegistry)
   {
-    return new TRegistryStorage(RegistryStorageKey);
+    return new TRegistryStorage(GetRegistryStorageKey());
   }
   else
   {
-    return new TIniFileStorage(IniFileStorageName);
+    return new TIniFileStorage(GetIniFileStorageName());
   }
 }
 //---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \
-  ELEM.substr(ELEM.LastDelimiter(".>")+1, ELEM.size() - ELEM.LastDelimiter(".>"))
+  ELEM.substr(::LastDelimiter(ELEM, L".>")+1, ELEM.size() - LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
 #define REGCONFIG(CANCREATE) \
-  BLOCK("Interface", CANCREATE, \
+  BLOCK(L"Interface", CANCREATE, \
     KEY(String,   RandomSeedFile); \
     KEY(String,   PuttyRegistryStorageKey); \
     KEY(bool,     ConfirmOverwriting); \
@@ -127,9 +127,9 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(int,  TunnelLocalPortNumberLow); \
     KEY(int,  TunnelLocalPortNumberHigh); \
     KEY(int,  CacheDirectoryChangesMaxSize); \
-    KEY(bool,     ShowFtpWelcomeMessage); \
+    KEY(bool, ShowFtpWelcomeMessage); \
   ); \
-  BLOCK("Logging", CANCREATE, \
+  BLOCK(L"Logging", CANCREATE, \
     KEYEX(bool,  PermanentLogging, Logging); \
     KEYEX(String,PermanentLogFileName, LogFileName); \
     KEY(bool,    LogFileAppend); \
@@ -140,7 +140,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(std::wstring(#NAME)), VAR)
+  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(std::wstring(::MB2W("##NAME"))), Get##VAR())
   REGCONFIG(true);
   #undef KEYEX
 }
@@ -152,9 +152,9 @@ void TConfiguration::Save(bool All, bool Explicit)
   THierarchicalStorage * AStorage = CreateScpStorage(false);
   try
   {
-    AStorage->AccessMode = smReadWrite;
-    AStorage->Explicit = Explicit;
-    if (AStorage->OpenSubKey(ConfigurationSubKey, true))
+    AStorage->SetAccessMode(smReadWrite);
+    AStorage->SetExplicit(Explicit);
+    if (AStorage->OpenSubKey(GetConfigurationSubKey(), true))
     {
       SaveData(AStorage, All);
     }
@@ -172,7 +172,7 @@ void TConfiguration::Save(bool All, bool Explicit)
   }
 
   // clean up as last, so that if it fails (read only INI), the saving can proceed
-  if (Storage == stRegistry)
+  if (GetStorage() == stRegistry)
   {
     CleanupIniFile();
   }
@@ -185,15 +185,15 @@ void TConfiguration::Export(const std::wstring FileName)
   try
   {
     ExportStorage = new TIniFileStorage(FileName);
-    ExportStorage->AccessMode = smReadWrite;
-    ExportStorage->Explicit = true;
+    ExportStorage->SetAccessMode(smReadWrite);
+    ExportStorage->SetExplicit(true);
 
     Storage = CreateScpStorage(false);
-    Storage->AccessMode = smRead;
+    Storage->SetAccessMode(smRead);
 
     CopyData(Storage, ExportStorage);
 
-    if (ExportStorage->OpenSubKey(ConfigurationSubKey, true))
+    if (ExportStorage->OpenSubKey(GetConfigurationSubKey(), true))
     {
       SaveData(ExportStorage, true);
     }
@@ -209,7 +209,7 @@ void TConfiguration::Export(const std::wstring FileName)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) VAR = Storage->Read ## TYPE(LASTELEM(std::wstring(#NAME)), VAR)
+  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(std::wstring(::MB2W("##NAME"))), Get##VAR()))
   #pragma warn -eas
   REGCONFIG(false);
   #pragma warn +eas
@@ -218,9 +218,9 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
-  FDisablePasswordStoring = Storage->ReadBool("DisablePasswordStoring", FDisablePasswordStoring);
-  FForceBanners = Storage->ReadBool("ForceBanners", FForceBanners);
-  FDisableAcceptingHostKeys = Storage->ReadBool("DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
+  FDisablePasswordStoring = Storage->Readbool("DisablePasswordStoring", FDisablePasswordStoring);
+  FForceBanners = Storage->Readbool("ForceBanners", FForceBanners);
+  FDisableAcceptingHostKeys = Storage->Readbool("DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
 }
 //---------------------------------------------------------------------------
 void TConfiguration::Load()

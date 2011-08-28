@@ -476,9 +476,9 @@ int TRegistryStorage::BinaryDataSize(const std::wstring Name)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::ReadBool(const std::wstring Name, bool Default)
+bool TRegistryStorage::Readbool(const std::wstring Name, bool Default)
 {
-  READ_REGISTRY(ReadBool);
+  READ_REGISTRY(Readbool);
 }
 //---------------------------------------------------------------------------
 TDateTime TRegistryStorage::ReadDateTime(const std::wstring Name, TDateTime Default)
@@ -491,9 +491,9 @@ double TRegistryStorage::ReadFloat(const std::wstring Name, double Default)
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::ReadInteger(const std::wstring Name, int Default)
+int TRegistryStorage::Readint(const std::wstring Name, int Default)
 {
-  READ_REGISTRY(ReadInteger);
+  READ_REGISTRY(Readint);
 }
 //---------------------------------------------------------------------------
 __int64 TRegistryStorage::ReadInt64(const std::wstring Name, __int64 Default)
@@ -838,14 +838,14 @@ void TIniFileStorage::ApplyOverrides()
   }
 }
 //---------------------------------------------------------------------------
-bool TIniFileStorage::ReadBool(const std::wstring Name, bool Default)
+bool TIniFileStorage::Readbool(const std::wstring Name, bool Default)
 {
-  return FIniFile->ReadBool(CurrentSection, MungeIniName(Name), Default);
+  return FIniFile->Readbool(CurrentSection, MungeIniName(Name), Default);
 }
 //---------------------------------------------------------------------------
-int TIniFileStorage::ReadInteger(const std::wstring Name, int Default)
+int TIniFileStorage::Readint(const std::wstring Name, int Default)
 {
-  int Result = FIniFile->ReadInteger(CurrentSection, MungeIniName(Name), Default);
+  int Result = FIniFile->Readint(CurrentSection, MungeIniName(Name), Default);
   return Result;
 }
 //---------------------------------------------------------------------------

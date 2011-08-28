@@ -20,6 +20,7 @@
 #pragma once
 
 #define WIN32_LEAN_AND_MEAN
+#define SECURITY_WIN32
 #include <windows.h>
 #include <winsock2.h>
 #include <time.h>

@@ -35,8 +35,8 @@ public:
 
   virtual int BinaryDataSize(const std::wstring Name) = 0;
 
-  virtual bool ReadBool(const std::wstring Name, bool Default) = 0;
-  virtual int ReadInteger(const std::wstring Name, int Default) = 0;
+  virtual bool Readbool(const std::wstring Name, bool Default) = 0;
+  virtual int Readint(const std::wstring Name, int Default) = 0;
   virtual __int64 ReadInt64(const std::wstring Name, __int64 Default) = 0;
   virtual TDateTime ReadDateTime(const std::wstring Name, TDateTime Default) = 0;
   virtual double ReadFloat(const std::wstring Name, double Default) = 0;
@@ -105,8 +105,8 @@ public:
 
   virtual int BinaryDataSize(const std::wstring Name);
 
-  virtual bool ReadBool(const std::wstring Name, bool Default);
-  virtual int ReadInteger(const std::wstring Name, int Default);
+  virtual bool Readbool(const std::wstring Name, bool Default);
+  virtual int Readint(const std::wstring Name, int Default);
   virtual __int64 ReadInt64(const std::wstring Name, __int64 Default);
   virtual TDateTime ReadDateTime(const std::wstring Name, TDateTime Default);
   virtual double ReadFloat(const std::wstring Name, double Default);
@@ -153,8 +153,8 @@ public:
 
   virtual int BinaryDataSize(const std::wstring Name);
 
-  virtual bool ReadBool(const std::wstring Name, bool Default);
-  virtual int ReadInteger(const std::wstring Name, int Default);
+  virtual bool Readbool(const std::wstring Name, bool Default);
+  virtual int Readint(const std::wstring Name, int Default);
   virtual __int64 ReadInt64(const std::wstring Name, __int64 Default);
   virtual TDateTime ReadDateTime(const std::wstring Name, TDateTime Default);
   virtual double ReadFloat(const std::wstring Name, double Default);

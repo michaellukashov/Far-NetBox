@@ -524,25 +524,25 @@ bool TCopyParamType::AllowTransfer(std::wstring FileName,
 //---------------------------------------------------------------------------
 void TCopyParamType::Load(THierarchicalStorage * Storage)
 {
-  SetAddXToDirectories(Storage->ReadBool(L"AddXToDirectories", GetAddXToDirectories()));
+  SetAddXToDirectories(Storage->Readbool(L"AddXToDirectories", GetAddXToDirectories()));
   GetAsciiFileMask().SetMasks(Storage->ReadString(L"Masks", GetAsciiFileMask().GetMasks()));
-  SetFileNameCase((TFileNameCase)Storage->ReadInteger(L"FileNameCase", GetFileNameCase()));
-  SetPreserveReadOnly(Storage->ReadBool(L"GetPreserveReadOnly()", GetPreserveReadOnly()));
-  SetPreserveTime(Storage->ReadBool(L"PreserveTime", GetPreserveTime()));
-  SetPreserveRights(Storage->ReadBool(L"PreserveRights", GetPreserveRights()));
-  SetIgnorePermErrors(Storage->ReadBool(L"IgnorePermErrors", GetIgnorePermErrors()));
+  SetFileNameCase((TFileNameCase)Storage->Readint(L"FileNameCase", GetFileNameCase()));
+  SetPreserveReadOnly(Storage->Readbool(L"GetPreserveReadOnly()", GetPreserveReadOnly()));
+  SetPreserveTime(Storage->Readbool(L"PreserveTime", GetPreserveTime()));
+  SetPreserveRights(Storage->Readbool(L"PreserveRights", GetPreserveRights()));
+  SetIgnorePermErrors(Storage->Readbool(L"IgnorePermErrors", GetIgnorePermErrors()));
   GetRights().SetText(Storage->ReadString(L"Text", GetRights().GetText()));
-  SetTransferMode((TTransferMode)Storage->ReadInteger(L"TransferMode", GetTransferMode()));
-  SetResumeSupport((TResumeSupport)Storage->ReadInteger(L"ResumeSupport", GetResumeSupport()));
+  SetTransferMode((TTransferMode)Storage->Readint(L"TransferMode", GetTransferMode()));
+  SetResumeSupport((TResumeSupport)Storage->Readint(L"ResumeSupport", GetResumeSupport()));
   SetResumeThreshold(Storage->ReadInt64(L"ResumeThreshold", GetResumeThreshold()));
-  SetInvalidCharsReplacement((char)Storage->ReadInteger(L"ReplaceInvalidChars",
+  SetInvalidCharsReplacement((char)Storage->Readint(L"ReplaceInvalidChars",
     (unsigned char)GetInvalidCharsReplacement()));
   SetLocalInvalidChars(Storage->ReadString(L"LocalInvalidChars", GetLocalInvalidChars()));
-  SetCalculateSize(Storage->ReadBool(L"GetCalculateSize()", GetCalculateSize()));
+  SetCalculateSize(Storage->Readbool(L"GetCalculateSize()", GetCalculateSize()));
   GetExcludeFileMask().SetMasks(Storage->ReadString(L"GetExcludeFileMask()", GetExcludeFileMask().GetMasks()));
-  SetNegativeExclude(Storage->ReadBool(L"GetNegativeExclude()", GetNegativeExclude()));
-  SetClearArchive(Storage->ReadBool(L"GetClearArchive()", GetClearArchive()));
-  SetCPSLimit(Storage->ReadInteger(L"CPSLimit", GetCPSLimit()));
+  SetNegativeExclude(Storage->Readbool(L"GetNegativeExclude()", GetNegativeExclude()));
+  SetClearArchive(Storage->Readbool(L"GetClearArchive()", GetClearArchive()));
+  SetCPSLimit(Storage->Readint(L"CPSLimit", GetCPSLimit()));
 }
 //---------------------------------------------------------------------------
 void TCopyParamType::Save(THierarchicalStorage * Storage) const
