@@ -27,7 +27,7 @@ TQueryParams::TQueryParams(unsigned int AParams, std::wstring AHelpKeyword)
   AliasesCount = 0;
   Timer = 0;
   TimerEvent = NULL;
-  TimerMessage = "";
+  TimerMessage = L"";
   TimerAnswers = 0;
   Timeout = 0;
   TimeoutAnswer = 0;
@@ -45,7 +45,8 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 //---------------------------------------------------------------------------
 void CoreInitialize()
 {
-  Randomize();
+  // Randomize();
+  srand (time(NULL));
   CryptographyInitialize();
 
   // configuration needs to be created and loaded before putty is initialized,
