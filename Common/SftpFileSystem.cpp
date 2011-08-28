@@ -120,17 +120,17 @@
 
 #define SFTP_MAX_PACKET_LEN   1024000
 //---------------------------------------------------------------------------
-#define SFTP_EXT_OWNER_GROUP "owner-group-query@generic-extensions"
-#define SFTP_EXT_OWNER_GROUP_REPLY "owner-group-query-reply@generic-extensions"
-#define SFTP_EXT_NEWLINE "newline"
-#define SFTP_EXT_SUPPORTED "supported"
-#define SFTP_EXT_SUPPORTED2 "supported2"
-#define SFTP_EXT_FSROOTS "fs-roots@vandyke.com"
-#define SFTP_EXT_VENDOR_ID "vendor-id"
-#define SFTP_EXT_VERSIONS "versions"
-#define SFTP_EXT_SPACE_AVAILABLE "space-available"
-#define SFTP_EXT_CHECK_FILE "check-file"
-#define SFTP_EXT_CHECK_FILE_NAME "check-file-name"
+#define SFTP_EXT_OWNER_GROUP L"owner-group-query@generic-extensions"
+#define SFTP_EXT_OWNER_GROUP_REPLY L"owner-group-query-reply@generic-extensions"
+#define SFTP_EXT_NEWLINE L"newline"
+#define SFTP_EXT_SUPPORTED L"supported"
+#define SFTP_EXT_SUPPORTED2 L"supported2"
+#define SFTP_EXT_FSROOTS L"fs-roots@vandyke.com"
+#define SFTP_EXT_VENDOR_ID L"vendor-id"
+#define SFTP_EXT_VERSIONS L"versions"
+#define SFTP_EXT_SPACE_AVAILABLE L"space-available"
+#define SFTP_EXT_CHECK_FILE L"check-file"
+#define SFTP_EXT_CHECK_FILE_NAME L"check-file-name"
 //---------------------------------------------------------------------------
 #define OGQ_LIST_OWNERS 0x01
 #define OGQ_LIST_GROUPS 0x02
@@ -231,16 +231,16 @@ public:
   {
     Init();
     FLength = Len;
-    Capacity = FLength;
-    memcpy(Data, Source, Len);
+    SetCapacity (FLength);
+    memcpy(GetData(), Source, Len);
   }
 
   TSFTPPacket(const std::wstring & Source)
   {
     Init();
-    FLength = Source.Length();
-    Capacity = FLength;
-    memcpy(Data, Source.c_str(), Source.Length());
+    FLength = Source.size();
+    SetCapacity (FLength);
+    memcpy(GetData(), Source.c_str(), Source.size());
   }
 
   ~TSFTPPacket()
@@ -256,7 +256,7 @@ public:
   {
     FPosition = 0;
     FLength = 0;
-    Capacity = 0;
+    SetCapacity (0);
     FType = AType;
     AddByte(FType);
     if ((FType != 1) && (FType != SSH_FXP_INIT))
@@ -270,7 +270,7 @@ public:
   {
     AssignNumber();
 
-    assert(Length >= 5);
+    assert(GetLength() >= 5);
 
     // duplicated in AddCardinal()
     unsigned char Buf[4];
@@ -306,8 +306,8 @@ public:
 
   void AddString(const std::wstring Value)
   {
-    AddCardinal(Value.Length());
-    Add(Value.c_str(), Value.Length());
+    AddCardinal(Value.size());
+    Add(Value.c_str(), Value.size());
   }
 
   inline void AddUtfString(const std::wstring Value)
@@ -348,12 +348,12 @@ public:
     {
       if (Version < 4)
       {
-        assert(Owner->IDValid && Group->IDValid);
+        assert(Owner->GetIDValid() && Group->GetIDValid());
         Flags |= SSH_FILEXFER_ATTR_UIDGID;
       }
       else
       {
-        assert(Owner->NameValid && Group->NameValid);
+        assert(Owner->GetNameValid() && Group->GetNameValid());
         Flags |= SSH_FILEXFER_ATTR_OWNERGROUP;
       }
     }
@@ -390,15 +390,15 @@ public:
     {
       if (Version < 4)
       {
-        assert(Owner->IDValid && Group->IDValid);
-        AddCardinal(Owner->ID);
-        AddCardinal(Group->ID);
+        assert(Owner->GetIDValid() && Group->GetIDValid());
+        AddCardinal(Owner->GetID());
+        AddCardinal(Group->GetID());
       }
       else
       {
-        assert(Owner->NameValid && Group->NameValid);
-        AddString(Owner->Name, Utf);
-        AddString(Group->Name, Utf);
+        assert(Owner->GetNameValid() && Group->GetNameValid());
+        AddString(Owner->GetName(), Utf);
+        AddString(Group->GetName(), Utf);
       }
     }
 
@@ -429,8 +429,9 @@ public:
     unsigned short BaseRights, bool IsDirectory, int Version, bool Utf,
     TChmodSessionAction * Action)
   {
-    enum { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
-      valMTime = 0x08, valATime = 0x10 } Valid = valNone;
+    enum ValidEnum { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
+      valMTime = 0x08, valATime = 0x10 };
+    int Valid = valNone;
     unsigned short RightsNum = 0;
     TRemoteToken Owner;
     TRemoteToken Group;
@@ -455,8 +456,8 @@ public:
       {
         Valid |= valRights;
         TRights Rights = BaseRights;
-        Rights |= Properties->Rights.NumberSet;
-        Rights &= (unsigned short)~Properties->Rights.NumberUnset;
+        Rights |= Properties->Rights.GetNumberSet();
+        Rights &= (unsigned short)~Properties->Rights.GetNumberUnset();
         if (IsDirectory && Properties->AddXToDirectories)
         {
           Rights.AddExecute();
@@ -531,8 +532,8 @@ public:
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
-    Result.SetLength(Len);
-    memcpy(Result.c_str(), FData + FPosition, Len);
+    Result.resize(Len);
+    memcpy((void *)Result.c_str(), FData + FPosition, Len);
     FPosition += Len;
     return Result;
   }
@@ -568,9 +569,9 @@ public:
     std::wstring ListingStr;
     unsigned long Permissions = 0;
     bool ParsingFailed = false;
-    if (Type != SSH_FXP_ATTRS)
+    if (GetType() != SSH_FXP_ATTRS)
     {
-      File->FileName = GetPathString(Utf);
+      File->SetFileName(GetPathString(Utf));
       if (Version < 4)
       {
         ListingStr = GetString();
@@ -588,26 +589,26 @@ public:
       static char* Types = "U-DLSUOCBF";
       if (FXType < 0 || FXType > (char)strlen(Types))
       {
-        throw std::exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, (int(FXType))));
+        throw ExtException(L""); //FIXME FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, (int(FXType))));
       }
-      File->Type = Types[FXType];
+      File->SetType(Types[FXType]);
     }
     if (Flags & SSH_FILEXFER_ATTR_SIZE)
     {
-      File->Size = GetInt64();
+      File->SetSize(GetInt64());
     }
     // SSH-2.0-3.2.0 F-SECURE SSH - Process Software MultiNet
     // sets SSH_FILEXFER_ATTR_UIDGID for v4, but does not include the UID/GUID
     if ((Flags & SSH_FILEXFER_ATTR_UIDGID) && (Version < 4))
     {
-      File->Owner.ID = GetCardinal();
-      File->Group.ID = GetCardinal();
+      File->GetOwner().SetID(GetCardinal());
+      File->GetGroup().SetID(GetCardinal());
     }
     if (Flags & SSH_FILEXFER_ATTR_OWNERGROUP)
     {
       assert(Version >= 4);
-      File->Owner.Name = GetString(Utf);
-      File->Group.Name = GetString(Utf);
+      File->GetOwner().SetName(GetString(Utf));
+      File->GetGroup().SetName(GetString(Utf));
     }
     if (Flags & SSH_FILEXFER_ATTR_PERMISSIONS)
     {
@@ -617,23 +618,23 @@ public:
     {
       if (Flags & SSH_FILEXFER_ATTR_ACMODTIME)
       {
-        File->LastAccess = UnixToDateTime(
+        File->SetLastAccess(UnixToDateTime(
           SignedTS ?
             static_cast<__int64>(static_cast<signed long>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
-          DSTMode);
-        File->Modification = UnixToDateTime(
+          DSTMode));
+        File->SetModification(UnixToDateTime(
           SignedTS ?
             static_cast<__int64>(static_cast<signed long>(GetCardinal())) :
             static_cast<__int64>(GetCardinal()),
-          DSTMode);
+          DSTMode));
       }
     }
     else
     {
       if (Flags & SSH_FILEXFER_ATTR_ACCESSTIME)
       {
-        File->LastAccess = UnixToDateTime(GetInt64(), DSTMode);
+        File->SetLastAccess(UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip access time subseconds
@@ -641,7 +642,7 @@ public:
       }
       else
       {
-        File->LastAccess = Now();
+        File->SetLastAccess(Now());
       }
       if (Flags & SSH_FILEXFER_ATTR_CREATETIME)
       {
@@ -653,7 +654,7 @@ public:
       }
       if (Flags & SSH_FILEXFER_ATTR_MODIFYTIME)
       {
-        File->Modification = UnixToDateTime(GetInt64(), DSTMode);
+        File->SetModification(UnixToDateTime(GetInt64(), DSTMode));
         if (Flags & SSH_FILEXFER_ATTR_SUBSECOND_TIMES)
         {
           GetCardinal(); // skip modification time subseconds
@@ -661,7 +662,7 @@ public:
       }
       else
       {
-        File->Modification = Now();
+        File->SetModification(Now());
       }
     }
 
@@ -677,17 +678,17 @@ public:
       unsigned long Bits = GetCardinal();
       if (FLAGSET(Bits, SSH_FILEXFER_ATTR_FLAGS_HIDDEN))
       {
-        File->IsHidden = true;
+        File->SetIsHidden(true);
       }
     }
 
-    if ((Version < 4) && (Type != SSH_FXP_ATTRS))
+    if ((Version < 4) && (GetType() != SSH_FXP_ATTRS))
     {
       try
       {
         // update permissions and user/group name
         // modification time and filename is ignored
-        File->ListingStr = ListingStr;
+        File->SetListingStr(ListingStr);
       }
       catch(...)
       {
@@ -697,12 +698,12 @@ public:
       }
     }
 
-    if (Type == SSH_FXP_ATTRS || Version >= 4 || ParsingFailed)
+    if (GetType() == SSH_FXP_ATTRS || Version >= 4 || ParsingFailed)
     {
-      Char Type = '-';
+      char Type = '-';
       if (FLAGSET(Flags, SSH_FILEXFER_ATTR_PERMISSIONS))
       {
-        File->Rights->Number = (unsigned short)(Permissions & TRights::rfAllSpecials);
+        File->GetRights()->SetNumber((unsigned short)(Permissions & TRights::rfAllSpecials));
         if (FLAGSET(Permissions, TRights::rfDirectory))
         {
           Type = FILETYPE_DIRECTORY;
@@ -711,7 +712,7 @@ public:
 
       if (Version < 4)
       {
-        File->Type = Type;
+        File->SetType(Type);
       }
     }
 
@@ -762,19 +763,19 @@ public:
     try
     {
       DumpLines->LoadFromFile(FileName);
-      Dump = DumpLines->Text;
+      Dump = DumpLines->GetText();
     }
-    __finally
+    catch (...)
     {
       delete DumpLines;
     }
 
-    Capacity = 20480;
-    char Byte[3];
+    SetCapacity(20480);
+    wchar_t Byte[3];
     memset(Byte, '\0', sizeof(Byte));
     int Index = 1;
     unsigned int Length = 0;
-    while (Index < Dump.Length())
+    while (Index < Dump.size())
     {
       char C = Dump[Index];
       if (((C >= '0') && (C <= '9')) || ((C >= 'A') && (C <= 'Z')))
@@ -786,26 +787,26 @@ public:
         else
         {
           Byte[1] = C;
-          assert(Length < Capacity);
-          Data[Length] = static_cast<unsigned char>(HexToInt(Byte));
+          assert(GetLength() < GetCapacity());
+          GetData()[GetLength()] = static_cast<unsigned char>(HexToInt(Byte));
           Length++;
           memset(Byte, '\0', sizeof(Byte));
         }
       }
       Index++;
     }
-    DataUpdated(Length);
+    DataUpdated(GetLength());
   }
 
   std::wstring Dump() const
   {
     std::wstring Result;
-    for (unsigned int Index = 0; Index < Length; Index++)
+    for (unsigned int Index = 0; Index < GetLength(); Index++)
     {
-      Result += CharToHex(Data[Index]) + ",";
+      Result += CharToHex(GetData()[Index]) + L",";
       if (((Index + 1) % 25) == 0)
       {
-        Result += "\n";
+        Result += L"\n";
       }
     }
     return Result;
@@ -813,19 +814,19 @@ public:
 
   TSFTPPacket & operator = (const TSFTPPacket & Source)
   {
-    Capacity = 0;
-    Add(Source.Data, Source.Length);
-    DataUpdated(Source.Length);
+    SetCapacity(0);
+    Add(Source.GetData(), Source.GetLength());
+    DataUpdated(Source.GetLength());
     FPosition = Source.FPosition;
     return *this;
   }
 
-  // __property unsigned int Length = { read = FLength };
+  // __property unsigned int GetLength() = { read = FLength };
   unsigned int GetLength() const { return FLength; }
   // __property unsigned int RemainingLength = { read = GetRemainingLength };
   unsigned int GetRemainingLength() const
   {
-    return Length - FPosition;
+    return GetLength() - FPosition;
   }
 
   // __property char * Data = { read = FData };
@@ -835,19 +836,43 @@ public:
   {
     char * Result = FData - FSendPrefixLen;
     // this is not strictly const-object operation
-    PUT_32BIT(Result, Length);
+    PUT_32BIT(Result, GetLength());
     return Result;
   }
 
   // __property unsigned int SendLength = { read = GetSendLength };
   unsigned int GetSendLength() const
   {
-    return FSendPrefixLen + Length;
+    return FSendPrefixLen + GetLength();
   }
 
   // __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
   unsigned int GetCapacity() const { return FCapacity; }
-  void SetCapacity(unsigned int value) { FCapacity = value; }
+  void SetCapacity(unsigned int ACapacity)
+  {
+    if (ACapacity != GetCapacity())
+    {
+      FCapacity = ACapacity;
+      if (FCapacity > 0)
+      {
+        char * NData = (new char[FCapacity + FSendPrefixLen]) + FSendPrefixLen;
+        if (FData)
+        {
+          memcpy(NData - FSendPrefixLen, FData - FSendPrefixLen,
+            (FLength < FCapacity ? FLength : FCapacity) + FSendPrefixLen);
+          delete[] (FData - FSendPrefixLen);
+        }
+        FData = NData;
+      }
+      else
+      {
+        if (FData) delete[] (FData - FSendPrefixLen);
+        FData = NULL;
+      }
+      if (FLength > FCapacity) FLength = FCapacity;
+    }
+  }
+
   // __property unsigned char Type = { read = FType };
   unsigned char GetType() const { return FType; }
   // __property unsigned char RequestType = { read = GetRequestType };
@@ -859,7 +884,7 @@ public:
     }
     else
     {
-      assert(Type == SSH_FXP_VERSION);
+      assert(GetType() == SSH_FXP_VERSION);
       return SSH_FXP_INIT;
     }
   }
@@ -873,8 +898,8 @@ public:
   // __property std::wstring TypeName = { read = GetTypeName };
   std::wstring GetTypeName() const
   {
-    #define TYPE_CASE(TYPE) case TYPE: return #TYPE
-    switch (Type) {
+    #define TYPE_CASE(TYPE) case TYPE: return std::wstring(::MB2W("##TYPE"))
+    switch (GetType()) {
       TYPE_CASE(SSH_FXP_INIT);
       TYPE_CASE(SSH_FXP_VERSION);
       TYPE_CASE(SSH_FXP_OPEN);
@@ -903,7 +928,7 @@ public:
       TYPE_CASE(SSH_FXP_EXTENDED);
       TYPE_CASE(SSH_FXP_EXTENDED_REPLY);
       default:
-        return ::FORMAT(L"Unknown message (%d)", (int(Type)));
+        return ::FORMAT(L"Unknown message (%d)", int(GetType()));
     }
   }
 
@@ -918,7 +943,7 @@ private:
   TSFTPFileSystem * FReservedBy;
 
   static int FMessageCounter;
-  static const FSendPrefixLen = 4;
+  static const int FSendPrefixLen = 4;
 
   void Init()
   {
@@ -942,44 +967,19 @@ private:
 
   inline void Add(const void * AData, int ALength)
   {
-    if (Length + ALength > Capacity)
+    if (GetLength() + ALength > GetCapacity())
     {
-      Capacity = Length + ALength + SFTP_PACKET_ALLOC_DELTA;
+      SetCapacity(GetLength() + ALength + SFTP_PACKET_ALLOC_DELTA);
     }
-    memcpy(FData + Length, AData, ALength);
+    memcpy(FData + GetLength(), AData, ALength);
     FLength += ALength;
-  }
-
-  void SetCapacity(unsigned int ACapacity)
-  {
-    if (ACapacity != Capacity)
-    {
-      FCapacity = ACapacity;
-      if (FCapacity > 0)
-      {
-        char * NData = (new char[FCapacity + FSendPrefixLen]) + FSendPrefixLen;
-        if (FData)
-        {
-          memcpy(NData - FSendPrefixLen, FData - FSendPrefixLen,
-            (FLength < FCapacity ? FLength : FCapacity) + FSendPrefixLen);
-          delete[] (FData - FSendPrefixLen);
-        }
-        FData = NData;
-      }
-      else
-      {
-        if (FData) delete[] (FData - FSendPrefixLen);
-        FData = NULL;
-      }
-      if (FLength > FCapacity) FLength = FCapacity;
-    }
   }
 
   inline void Need(unsigned int Size)
   {
     if (FPosition + Size > FLength)
     {
-      throw std::exception(FMTLOAD(SFTP_PACKET_ERROR, (int(FPosition), int(Size), int(FLength))));
+      throw ExtException(L""); // FIXME FMTLOAD(SFTP_PACKET_ERROR, (int(FPosition), int(Size), int(FLength))));
     }
   }
 };
@@ -1005,11 +1005,11 @@ public:
     assert(FResponses->GetCount() == FRequests->GetCount());
     for (int Index = 0; Index < FRequests->GetCount(); Index++)
     {
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
+      Request = reinterpret_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
       assert(Request);
       delete Request;
 
-      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(Index));
+      Response = reinterpret_cast<TSFTPPacket*>(FResponses->GetItem(Index));
       assert(Response);
       delete Response;
     }
@@ -1033,10 +1033,10 @@ public:
     {
       assert(FResponses->GetCount());
 
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0]);
+      Request = reinterpret_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
       assert(Request);
 
-      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0]);
+      Response = reinterpret_cast<TSFTPPacket*>(FResponses->GetItem(0));
       assert(Response);
 
       try
@@ -1048,7 +1048,7 @@ public:
         if (FFileSystem->FTerminal->GetActive())
         {
           FFileSystem->FTerminal->LogEvent(L"Error while disposing the SFTP queue.");
-          FFileSystem->FTerminal->Log->AddException(&E);
+          FFileSystem->FTerminal->GetLog()->AddException(&E);
         }
         else
         {
@@ -1081,7 +1081,7 @@ public:
     TSFTPPacket * Response = NULL;
     try
     {
-      Request = static_cast<TSFTPQueuePacket*>(FRequests->GetItem(0]);
+      Request = reinterpret_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
       FRequests->Delete(0);
       assert(Request);
       if (Token != NULL)
@@ -1089,7 +1089,7 @@ public:
         *Token = Request->Token;
       }
 
-      Response = static_cast<TSFTPPacket*>(FResponses->GetItem(0]);
+      Response = reinterpret_cast<TSFTPPacket*>(FResponses->GetItem(0));
       FResponses->Delete(0);
       assert(Response);
 
@@ -1107,7 +1107,7 @@ public:
         SendRequests();
       }
     }
-    __finally
+    catch (...)
     {
       delete Request;
       delete Response;
@@ -1171,8 +1171,8 @@ protected:
     if (Request != NULL)
     {
       TSFTPPacket * Response = new TSFTPPacket();
-      FRequests->Add(Request);
-      FResponses->Add(Response);
+      FRequests->Add((TObject *)Request);
+      FResponses->Add((TObject *)Response);
 
       // make sure the response is reserved before actually ending the message
       // as we may receive response asynchronously before SendPacket finishes
@@ -1220,7 +1220,7 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 public:
   TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem) : TSFTPQueue(AFileSystem)
   {
-    FFileSystem->FSecureShell->RegisterReceiveHandler(ReceiveHandler);
+    FFileSystem->FSecureShell->RegisterReceiveHandler((TNotifyEvent)&TSFTPAsynchronousQueue::ReceiveHandler);
     FReceiveHandlerRegistered = true;
   }
 
@@ -1267,7 +1267,7 @@ protected:
     if (FReceiveHandlerRegistered)
     {
       FReceiveHandlerRegistered = false;
-      FFileSystem->FSecureShell->UnregisterReceiveHandler(ReceiveHandler);
+      FFileSystem->FSecureShell->UnregisterReceiveHandler((TNotifyEvent)&TSFTPAsynchronousQueue::ReceiveHandler);
     }
   }
 
@@ -1328,7 +1328,7 @@ protected:
 
   virtual bool End(TSFTPPacket * Response)
   {
-    return (Response->Type != SSH_FXP_DATA);
+    return (Response->GetType() != SSH_FXP_DATA);
   }
 
 private:
@@ -1360,7 +1360,7 @@ public:
     const std::wstring AHandle, __int64 ATransfered)
   {
     FFileName = AFileName;
-    FStream = new TSafeHandleStream((THandle)AFile);
+    FStream = new TSafeHandleStream((HANDLE)AFile);
     OperationProgress = AOperationProgress;
     FHandle = AHandle;
     FTransfered = ATransfered;
@@ -1380,40 +1380,40 @@ protected:
 
     if (Result)
     {
-      FILE_OPERATION_LOOP(FMTLOAD(READ_ERROR, (FFileName)),
+      FILE_OPERATION_LOOP(L"", // FIXME FMTLOAD(READ_ERROR, (FFileName)),
         BlockBuf.LoadStream(FStream, BlockSize, false);
       );
 
-      FEnd = (BlockBuf.Size == 0);
+      FEnd = (BlockBuf.GetSize() == 0);
       Result = !FEnd;
       if (Result)
       {
-        OperationProgress->AddLocalyUsed(BlockBuf.Size);
+        OperationProgress->AddLocalyUsed(BlockBuf.GetSize());
 
         // We do ASCII transfer: convert EOL of current block
         if (OperationProgress->AsciiTransfer)
         {
-          __int64 PrevBufSize = BlockBuf.Size;
-          BlockBuf.Convert(FTerminal->Configuration->LocalEOLType,
+          __int64 PrevBufSize = BlockBuf.GetSize();
+          BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
             FFileSystem->GetEOL(), cpRemoveCtrlZ | cpRemoveBOM, FConvertToken);
           // update transfer size with difference arised from EOL conversion
           OperationProgress->ChangeTransferSize(OperationProgress->TransferSize -
-            PrevBufSize + BlockBuf.Size);
+            PrevBufSize + BlockBuf.GetSize());
         }
 
-        if (FFileSystem->FTerminal->Configuration->->GetActualLogProtocol() >= 1)
+        if (FFileSystem->FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
         {
           FFileSystem->FTerminal->LogEvent(::FORMAT(L"Write request offset: %d, len: %d",
-            (int(FTransfered), int(BlockBuf.Size))));
+            int(FTransfered), int(BlockBuf.GetSize())));
         }
 
         Request->ChangeType(SSH_FXP_WRITE);
         Request->AddString(FHandle);
         Request->AddInt64(FTransfered);
-        Request->AddData(BlockBuf.Data, BlockBuf.Size);
-        FLastBlockSize = BlockBuf.Size;
+        Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
+        FLastBlockSize = BlockBuf.GetSize();
 
-        FTransfered += BlockBuf.Size;
+        FTransfered += BlockBuf.GetSize();
       }
     }
 
@@ -1488,21 +1488,21 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex]);
+      TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
       FIndex++;
 
       bool MissingRights =
         (FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_PERMISSIONS) &&
-           File->Rights->Unknown);
+           File->GetRights()->GetUnknown());
       bool MissingOwnerGroup =
         (FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
-           !File->Owner.IsSet || !File->Group.IsSet);
+           !File->GetOwner().GetIsSet() || !File->GetGroup().GetIsSet());
 
       Result = (MissingRights || MissingOwnerGroup);
       if (Result)
       {
         Request->ChangeType(SSH_FXP_LSTAT);
-        Request->AddPathString(FFileSystem->LocalCanonify(File->FileName),
+        Request->AddPathString(FFileSystem->LocalCanonify(File->GetFileName()),
           FFileSystem->FUtfStrings);
         if (FFileSystem->FVersion >= 4)
         {
@@ -1560,7 +1560,7 @@ public:
     {
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
     }
-    __finally
+    catch (...)
     {
       File = static_cast<TRemoteFile *>(Token);
     }
@@ -1573,18 +1573,18 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex]);
+      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
       assert(File != NULL);
       FIndex++;
 
-      Result = !File->IsDirectory;
+      Result = !File->GetIsDirectory();
       if (Result)
       {
-        assert(!File->IsParentDirectory && !File->IsThisDirectory);
+        assert(!File->GetIsParentDirectory() && !File->GetIsThisDirectory());
 
         Request->ChangeType(SSH_FXP_EXTENDED);
         Request->AddString(SFTP_EXT_CHECK_FILE_NAME);
-        Request->AddPathString(FFileSystem->LocalCanonify(File->FullFileName),
+        Request->AddPathString(FFileSystem->LocalCanonify(File->GetFullFileName()),
           FFileSystem->FUtfStrings);
         Request->AddString(FAlg);
         Request->AddInt64(0); // offset
@@ -1670,7 +1670,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal,
 {
   FSecureShell = SecureShell;
   FPacketReservations = new TList();
-  FPacketNumbers = VarArrayCreate(OPENARRAY(int, (0, 1)), varLongWord);
+  // FPacketNumbers = VarArrayCreate(OPENARRAY(int, (0, 1)), varLongWord);
   FPreviousLoggedPacket = 0;
   FNotLoggedPackets = 0;
   FBusy = 0;
@@ -1718,11 +1718,11 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   if (!FFileSystemInfoValid)
   {
-    FFileSystemInfo.AdditionalInfo = "";
+    FFileSystemInfo.AdditionalInfo = L"";
 
     if (!IsCapable(fcRename))
     {
-      FFileSystemInfo.AdditionalInfo += LoadStr(FS_RENAME_NOT_SUPPORTED) + "\r\n\r\n";
+      FFileSystemInfo.AdditionalInfo += L""; // FIXME LoadStr(FS_RENAME_NOT_SUPPORTED) + "\r\n\r\n";
     }
 
     if (FExtensions->GetCount() > 0)
@@ -1730,13 +1730,13 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       std::wstring Name;
       std::wstring Value;
       std::wstring Line;
-      FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + "\r\n";
+      FFileSystemInfo.AdditionalInfo += L""; // FIXME LoadStr(SFTP_EXTENSION_INFO) + "\r\n";
       for (int Index = 0; Index < FExtensions->GetCount(); Index++)
       {
-        std::wstring Name = FExtensions->Names[Index];
-        std::wstring Value = FExtensions->Values[Name];
+        std::wstring Name = FExtensions->GetName(Index);
+        std::wstring Value = FExtensions->GetValue(Name);
         std::wstring Line;
-        if (Value.IsEmpty())
+        if (Value.empty())
         {
           Line = Name;
         }
@@ -1749,14 +1749,14 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     }
     else
     {
-      FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_NO_EXTENSION_INFO) + "\r\n";
+      FFileSystemInfo.AdditionalInfo += L""; // FIXME LoadStr(SFTP_NO_EXTENSION_INFO) + "\r\n";
     }
 
-    FFileSystemInfo.ProtocolBaseName = "SFTP";
-    FFileSystemInfo.ProtocolName = FMTLOAD(SFTP_PROTOCOL_NAME2, (FVersion));
+    FFileSystemInfo.ProtocolBaseName = L"SFTP";
+    FFileSystemInfo.ProtocolName = L""; // FIXME FMTLOAD(SFTP_PROTOCOL_NAME2, (FVersion));
     for (int Index = 0; Index < fcCount; Index++)
     {
-      FFileSystemInfo.GetIsCapable(Index] = IsCapable((TFSCapability)Index);
+      FFileSystemInfo.IsCapable[Index] = IsCapable((TFSCapability)Index);
     }
 
     FFileSystemInfoValid = true;
@@ -1777,20 +1777,20 @@ bool TSFTPFileSystem::GetStoredCredentialsTried()
 //---------------------------------------------------------------------------
 std::wstring TSFTPFileSystem::GetUserName()
 {
-  return FSecureShell->UserName;
+  return FSecureShell->GetUserName();
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::Idle()
 {
   // Keep session alive
-  if ((FTerminal->GetSessionData()->PingType != ptOff) &&
-      (Now() - FSecureShell->LastDataSent > FTerminal->GetSessionData()->PingIntervalDT))
+  if ((FTerminal->GetSessionData()->GetPingType() != ptOff) &&
+      (Now() - FSecureShell->GetLastDataSent() > FTerminal->GetSessionData()->GetPingIntervalDT()))
   {
-    if ((FTerminal->GetSessionData()->PingType == ptDummyCommand) &&
-        FSecureShell->Ready)
+    if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand) &&
+        FSecureShell->GetReady())
     {
       TSFTPPacket Packet(SSH_FXP_REALPATH);
-      Packet.AddPathString("/", FUtfStrings);
+      Packet.AddPathString(L"/", FUtfStrings);
       SendPacketAndReceiveResponse(&Packet, &Packet);
     }
     else
@@ -1807,8 +1807,8 @@ void TSFTPFileSystem::ResetConnection()
   // there must be no valid packet reservation at the end
   for (int i = 0; i < FPacketReservations->GetCount(); i++)
   {
-    assert(FPacketReservations->GetItem(i] == NULL);
-    delete (TSFTPPacket *)FPacketReservations->GetItem(i];
+    assert(FPacketReservations->GetItem(i) == NULL);
+    delete (TSFTPPacket *)FPacketReservations->GetItem(i);
   }
   FPacketReservations->Clear();
   FPacketNumbers.Clear();
@@ -1974,7 +1974,7 @@ unsigned long TSFTPFileSystem::UploadBlockSize(const std::wstring & Handle,
   // handle length + offset + data size
   const unsigned long UploadPacketOverhead =
     sizeof(unsigned long) + sizeof(__int64) + sizeof(unsigned long);
-  return TransferBlockSize(UploadPacketOverhead + Handle.Length(), OperationProgress);
+  return TransferBlockSize(UploadPacketOverhead + Handle.size(), OperationProgress);
 }
 //---------------------------------------------------------------------------
 unsigned long TSFTPFileSystem::DownloadBlockSize(
@@ -2008,7 +2008,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
           FNotLoggedPackets = 0;
         }
         FTerminal->Log->Add(llInput, ::FORMAT(L"Type: %s, Size: %d, Number: %d",
-          (Packet->TypeName, (int)Packet->Length, (int)Packet->MessageNumber)));
+          (Packet->TypeName, (int)Packet->GetLength(), (int)Packet->MessageNumber)));
         if (FTerminal->Configuration->->GetActualLogProtocol() >= 2)
         {
           FTerminal->Log->Add(llInput, Packet->Dump());
@@ -2022,7 +2022,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
     }
     FSecureShell->Send(Packet->SendData, Packet->SendLength);
   }
-  __finally
+  catch (...)
   {
     BusyEnd();
   }
@@ -2150,11 +2150,11 @@ void TSFTPFileSystem::RemoveReservation(int Reservation)
 //---------------------------------------------------------------------------
 inline int TSFTPFileSystem::PacketLength(char * LenBuf, int ExpectedType)
 {
-  int Length = GET_32BIT(LenBuf);
-  if (Length > SFTP_MAX_PACKET_LEN)
+  int GetLength() = GET_32BIT(LenBuf);
+  if (GetLength() > SFTP_MAX_PACKET_LEN)
   {
     std::wstring Message = FMTLOAD(SFTP_PACKET_TOO_BIG, (
-      int(Length), SFTP_MAX_PACKET_LEN));
+      int(GetLength()), SFTP_MAX_PACKET_LEN));
     if (ExpectedType == SSH_FXP_VERSION)
     {
       std::wstring LenString(LenBuf, 4);
@@ -2163,7 +2163,7 @@ inline int TSFTPFileSystem::PacketLength(char * LenBuf, int ExpectedType)
     }
     FTerminal->FatalError(NULL, Message);
   }
-  return Length;
+  return GetLength();
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::PeekPacket()
@@ -2173,8 +2173,8 @@ bool TSFTPFileSystem::PeekPacket()
   Result = FSecureShell->Peek(Buf, 4);
   if (Result)
   {
-    int Length = PacketLength(Buf, -1);
-    Result = FSecureShell->Peek(Buf, 4 + Length);
+    int GetLength() = PacketLength(Buf, -1);
+    Result = FSecureShell->Peek(Buf, 4 + GetLength());
   }
   return Result;
 }
@@ -2197,10 +2197,10 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       assert(Packet);
       char LenBuf[4];
       FSecureShell->Receive(LenBuf, sizeof(LenBuf));
-      int Length = PacketLength(LenBuf, ExpectedType);
-      Packet->Capacity = Length;
-      FSecureShell->Receive(Packet->Data, Length);
-      Packet->DataUpdated(Length);
+      int GetLength() = PacketLength(LenBuf, ExpectedType);
+      Packet->Capacity = GetLength();
+      FSecureShell->Receive(Packet->Data, GetLength());
+      Packet->DataUpdated(GetLength());
 
       if (FTerminal->Log->Logging)
       {
@@ -2216,7 +2216,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             FNotLoggedPackets = 0;
           }
           FTerminal->Log->Add(llOutput, ::FORMAT(L"Type: %s, Size: %d, Number: %d",
-            (Packet->TypeName, (int)Packet->Length, (int)Packet->MessageNumber)));
+            (Packet->TypeName, (int)Packet->GetLength(), (int)Packet->MessageNumber)));
           if (FTerminal->Configuration->->GetActualLogProtocol() >= 2)
           {
             FTerminal->Log->Add(llOutput, Packet->Dump());
@@ -2349,7 +2349,7 @@ int TSFTPFileSystem::ReceiveResponse(
         ((int)AResponse->MessageNumber, (int)MessageNumber)));
     }
   }
-  __finally
+  catch (...)
   {
     if (!Response)
     {
@@ -2609,7 +2609,7 @@ void TSFTPFileSystem::DoStartup()
         FEOL = ExtensionData;
         FTerminal->LogEvent(::FORMAT(L"Server requests EOL sequence %s.",
           (ExtensionDisplayData)));
-        if (FEOL.Length() < 1 || FEOL.Length() > 2)
+        if (FEOL.size() < 1 || FEOL.size() > 2)
         {
           FTerminal->FatalError(NULL, FMTLOAD(SFTP_INVALID_EOL, (ExtensionDisplayData)));
         }
@@ -3065,7 +3065,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FTerminal->ReadFile(
             UnixIncludeTrailingBackslash(FileList->Directory) + PARENTDIRECTORY, File);
         }
-        __finally
+        catch (...)
         {
           FTerminal->ExceptionOnFail = false;
         }
@@ -3092,7 +3092,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
     }
   }
-  __finally
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -3378,7 +3378,7 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
     Packet.AddProperties(&Properties, *File->Rights, File->IsDirectory, FVersion, FUtfStrings, &Action);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
-  __finally
+  catch (...)
   {
     delete File;
   }
@@ -3426,7 +3426,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
         while (Next);
       }
     }
-    __finally
+    catch (...)
     {
       Queue.DisposeSafe();
       FTerminal->FOperationProgress = NULL;
@@ -3480,7 +3480,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
             Success = true;
           }
-          __finally
+          catch (...)
           {
             delete SubFiles;
             delete SubFileList;
@@ -3538,7 +3538,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
             Checksums->Add("");
           }
         }
-        __finally
+        catch (...)
         {
           if (FirstLevel)
           {
@@ -3554,7 +3554,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
       while (Next);
     }
   }
-  __finally
+  catch (...)
   {
     Queue.DisposeSafe();
   }
@@ -3575,7 +3575,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
     DoCalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
   }
-  __finally
+  catch (...)
   {
     FTerminal->FOperationProgress = NULL;
     Progress.Stop();
@@ -3667,7 +3667,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         );
       }
     }
-    __finally
+    catch (...)
     {
       FAvoidBusy = false;
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -4192,7 +4192,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
             ReserveResponse(&PropertiesRequest, &PropertiesResponse);
           }
         }
-        __finally
+        catch (...)
         {
           Queue.DisposeSafe();
         }
@@ -4200,7 +4200,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
         TransferFinished = true;
         // queue is discarded here
       }
-      __finally
+      catch (...)
       {
         if (FTerminal->GetActive())
         {
@@ -4242,7 +4242,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
           );
         }
 
-        // originally this was before CLOSE (last __finally statement),
+        // originally this was before CLOSE (last catch (...) statement),
         // on VShell it failed
         FILE_OPERATION_LOOP(FMTLOAD(RENAME_AFTER_RESUME_ERROR,
             (UnixExtractFileName(OpenParams.RemoteFileName), DestFileName)),
@@ -4306,7 +4306,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       }
     }
   }
-  __finally
+  catch (...)
   {
     if (File != NULL)
     {
@@ -4663,7 +4663,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
       );
     };
   }
-  __finally
+  catch (...)
   {
     FindClose(SearchRec);
   }
@@ -4726,7 +4726,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         throw;
       }
     }
-    __finally
+    catch (...)
     {
       FAvoidBusy = false;
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -5086,7 +5086,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
               // close file right away, before waiting for pending responses
               SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
                 true, true, NULL);
-              RemoteHandle = ""; // do not close file again in __finally block
+              RemoteHandle = ""; // do not close file again in catch (...) block
             }
 
             if (!Eof)
@@ -5171,7 +5171,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
               (GapFillCount, GapCount)));
           }
         }
-        __finally
+        catch (...)
         {
           Queue.DisposeSafe();
         }
@@ -5199,7 +5199,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
             FTerminal->GetSessionData()->DSTMode);
           SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
         }
-        __finally
+        catch (...)
         {
           if (AFile != File)
           {
@@ -5242,7 +5242,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       }
 
     }
-    __finally
+    catch (...)
     {
       if (LocalHandle) CloseHandle(LocalHandle);
       if (FileStream) delete FileStream;

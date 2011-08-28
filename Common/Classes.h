@@ -239,6 +239,10 @@ public:
     {
         return L"";
     }
+    const std::wstring GetValue(const std::wstring Name)
+    {
+        return L"";
+    }
     void Delete(size_t Index)
     {
     }
@@ -286,6 +290,9 @@ public:
     }
       // SetDuplicates(dupError);
       // SetCaseSensitive(true);
+    void LoadFromFile(const std::wstring &FileName)
+    {
+    }
 };
 
 class TDateTime
