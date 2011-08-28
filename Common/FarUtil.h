@@ -386,6 +386,7 @@ std::wstring UpperCase(const std::wstring Str);
 std::wstring LowerCase(const std::wstring str);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
 int AnsiPos(const std::wstring str, wchar_t ñ);
+int Pos(const std::wstring str, wchar_t ñ);
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
 bool AnsiSameText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareText(const std::wstring str1, const std::wstring str2);

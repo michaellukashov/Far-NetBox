@@ -121,6 +121,9 @@ public:
     {
         return m_objects[Index];
     }
+    void SetItem(size_t Index, TObject *Value)
+    {
+    }
 
     size_t Add(TObject *value)
     {
@@ -242,6 +245,10 @@ public:
     const std::wstring GetValue(const std::wstring Name)
     {
         return L"";
+    }
+    void SetValue(const std::wstring Name, const std::wstring Value)
+    {
+
     }
     void Delete(size_t Index)
     {

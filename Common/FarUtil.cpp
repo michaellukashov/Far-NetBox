@@ -395,6 +395,12 @@ int AnsiPos(const std::wstring str, wchar_t ñ)
     return -1;
 }
 
+int Pos(const std::wstring str, wchar_t ñ)
+{
+    // FIXME
+    return -1;
+}
+
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
 {
     // FIXME

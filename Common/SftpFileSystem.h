@@ -89,7 +89,7 @@ protected:
   std::wstring FDirectoryToChangeTo;
   std::wstring FHomeDirectory;
   std::wstring FEOL;
-  TList * FPacketReservations;
+  TObjectList * FPacketReservations;
   // Variant FPacketNumbers;
   std::vector<unsigned int> FPacketNumbers;
   char FPreviousLoggedPacket;
