@@ -32,7 +32,7 @@ set ( CMAKE_EXE_LINK_FLAGS
 )
 
 # Дополнительные флаги компиляции
-add_definitions ( "-D_UNICODE;UNICODE;NETBOX_DEBUG;USE_FASTFLOW;CURL_STATICLIB;_USRDLL;NETBOX_EXPORTS" )
+add_definitions ( "-DNETBOX_DEBUG;USE_FASTFLOW;CURL_STATICLIB;_USRDLL;NETBOX_EXPORTS" )
 add_definitions ( "-D_FF_WIN_XP" )
 
 #include (${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
@@ -164,7 +164,7 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/Putty/SSHAES_.C
     ${PROJECT_ROOT}/Putty/SSHARCF.C
     ${PROJECT_ROOT}/Putty/SSHBLOWF.C
-    ${PROJECT_ROOT}/Putty/SSHBN.C
+    # ${PROJECT_ROOT}/Putty/SSHBN.C
     ${PROJECT_ROOT}/Putty/SSHCRC.C
     ${PROJECT_ROOT}/Putty/SSHCRCDA.C
     ${PROJECT_ROOT}/Putty/SSHDES.C
@@ -197,7 +197,7 @@ add_library (libputty STATIC
 
 set_target_properties( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -D_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;MPEXT;_WINDOWS"
+    COMPILE_FLAGS "/TC -DLibrary;_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;MPEXT;_WINDOWS"
 )
 
 #-------------------------------------------------------------------------------
@@ -228,7 +228,7 @@ set ( NETBOX_LIBRARIES
 add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
 set_target_properties( NetBox
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} /MTd"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
     LINK_FLAGS ${CMAKE_EXE_LINK_FLAGS}
 )
 
@@ -301,7 +301,7 @@ set ( TESTNETBOX_01_LIBRARIES
 add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
 set_target_properties( testnetbox_01
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} /MDd"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MDd"
     LINK_FLAGS "${CMAKE_EXE_LINK_FLAGS} /NODEFAULTLIB:LIBCMTD.LIB"
 )
 # add_dependencies ( testnetbox_01 zlib libssh2 libcurl )
