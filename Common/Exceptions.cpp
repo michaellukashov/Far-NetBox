@@ -4,6 +4,7 @@
 #include "Exceptions.h"
 #include "Common.h"
 #include "TextsCore.h"
+#include "Terminal.h"
 
 //---------------------------------------------------------------------------
 bool ExceptionMessage(std::exception * E, std::wstring & Message)
@@ -196,4 +197,122 @@ std::wstring LastSysErrorMessage()
 EOSExtException::EOSExtException(std::wstring Msg) :
   ExtException(Msg, LastSysErrorMessage())
 {
+}
+
+//---------------------------------------------------------------------------
+void ShowExtendedExceptionEx(TTerminal * Terminal,
+  std::exception * E)
+{
+/* FIXME
+  std::wstring Message; // not used
+  if (ExceptionMessage(E, Message))
+  {
+    TTerminalManager * Manager = TTerminalManager::Instance(false);
+
+    TQueryType Type;
+    ESshTerminate * Terminate = dynamic_cast<ESshTerminate*>(E);
+    bool CloseOnCompletion = (Terminate != NULL);
+    Type = CloseOnCompletion ? qtInformation : qtError;
+
+    if (E->InheritsFrom(__classid(EFatal)) && (Terminal != NULL) &&
+        (Manager != NULL) && (Manager->ActiveTerminal == Terminal))
+    {
+      if (CloseOnCompletion)
+      {
+        Manager->DisconnectActiveTerminal();
+      }
+
+      int SessionReopenTimeout = 0;
+      TManagedTerminal * ManagedTerminal = dynamic_cast<TManagedTerminal *>(Terminal);
+      if ((ManagedTerminal != NULL) &&
+          ((Configuration->SessionReopenTimeout == 0) ||
+           ((double)ManagedTerminal->ReopenStart == 0) ||
+           (int(double(Now() - ManagedTerminal->ReopenStart) * 24*60*60*1000) < Configuration->SessionReopenTimeout)))
+      {
+        SessionReopenTimeout = GUIConfiguration->SessionReopenAutoIdle;
+      }
+
+      int Result;
+      if (CloseOnCompletion)
+      {
+        if (WinConfiguration->ConfirmExitOnCompletion)
+        {
+          TMessageParams Params(mpNeverAskAgainCheck);
+          Result = FatalExceptionMessageDialog(E, Type, 0,
+            (Manager->GetCount() > 1) ?
+              FMTLOAD(DISCONNECT_ON_COMPLETION, (Manager->GetCount() - 1)) :
+              LoadStr(EXIT_ON_COMPLETION),
+            qaYes | qaNo, HELP_NONE, &Params);
+
+          if (Result == qaNeverAskAgain)
+          {
+            Result = qaYes;
+            WinConfiguration->ConfirmExitOnCompletion = false;
+          }
+        }
+        else
+        {
+          Result = qaYes;
+        }
+      }
+      else
+      {
+        Result = FatalExceptionMessageDialog(E, Type, SessionReopenTimeout);
+      }
+
+      if (Result == qaYes)
+      {
+        assert(Terminate != NULL);
+        assert(Terminate->Operation != odoIdle);
+        Application->Terminate();
+
+        switch (Terminate->Operation)
+        {
+          case odoDisconnect:
+            break;
+
+          case odoShutDown:
+            ShutDownWindows();
+            break;
+
+          default:
+            assert(false);
+        }
+      }
+      else if (Result == qaRetry)
+      {
+        Manager->ReconnectActiveTerminal();
+      }
+      else
+      {
+        Manager->FreeActiveTerminal();
+      }
+    }
+    else
+    {
+      if (CloseOnCompletion)
+      {
+        if (WinConfiguration->ConfirmExitOnCompletion)
+        {
+          TMessageParams Params(mpNeverAskAgainCheck);
+          if (ExceptionMessageDialog(E, Type, "", qaOK, HELP_NONE, &Params) ==
+                qaNeverAskAgain)
+          {
+            WinConfiguration->ConfirmExitOnCompletion = false;
+          }
+        }
+      }
+      else
+      {
+        ExceptionMessageDialog(E, Type);
+      }
+    }
+  }
+  */
+}
+
+//---------------------------------------------------------------------------
+void ShowExtendedException(std::exception * E)
+{
+  ShowExtendedExceptionEx(NULL, E);
 }
