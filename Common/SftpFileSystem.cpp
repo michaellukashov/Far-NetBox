@@ -5031,7 +5031,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       DeleteLocalFile = true;
 
       FTerminal->LogEvent(L"Opening remote file.");
-      FILE_OPERATION_LOOP (FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName)),
+      FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName)),
         int OpenType = SSH_FXF_READ;
         if ((FVersion >= 4) && OperationProgress->AsciiTransfer)
         {
@@ -5047,7 +5047,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           SSH_FILEXFER_ATTR_MODIFYTIME);
       }
 
-      FileStream = new TSafeHandleStream((THandle)LocalHandle);
+      FileStream = new TSafeHandleStream((HANDLE)LocalHandle);
 
       // at end of this block queue is discarded
       {
@@ -5056,11 +5056,11 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         {
           TSFTPPacket DataPacket;
 
-          int QueueLen = int(File->Size / DownloadBlockSize(OperationProgress)) + 1;
-          if ((QueueLen > FTerminal->GetSessionData()->SFTPDownloadQueue) ||
+          int QueueLen = int(File->GetSize() / DownloadBlockSize(OperationProgress)) + 1;
+          if ((QueueLen > FTerminal->GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {
-            QueueLen = FTerminal->GetSessionData()->SFTPDownloadQueue;
+            QueueLen = FTerminal->GetSessionData()->GetSFTPDownloadQueue();
           }
           if (QueueLen < 1)
           {
@@ -5100,7 +5100,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
               // close file right away, before waiting for pending responses
               SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress,
                 true, true, NULL);
-              RemoteHandle = ""; // do not close file again in catch (...) block
+              RemoteHandle = L""; // do not close file again in catch (...) block
             }
 
             if (!Eof)
@@ -5113,11 +5113,11 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                 // Can happen only when filesize has changed since directory
                 // listing and server returns less bytes than requested and
                 // file has some special file size.
-                FTerminal->LogEvent(FORMAT(
-                  "Received incomplete data packet before end of file, "
-                  "offset: %s, size: %d, requested: %d",
-                  (IntToStr(OperationProgress->TransferedSize), int(DataLen),
-                  int(BlockSize))));
+                FTerminal->LogEvent(::FORMAT(
+                  L"Received incomplete data packet before end of file, "
+                  L"offset: %s, size: %d, requested: %d",
+                  IntToStr(OperationProgress->GetTransferedSize()).c_str(), int(DataLen),
+                  int(BlockSize)));
                 FTerminal->TerminalError(NULL, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
               }
 
@@ -5169,7 +5169,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                 BlockBuf.WriteToStream(FileStream, BlockBuf.Size);
               );
 
-              OperationProgress->AddLocalyUsed(BlockBuf.Size);
+              OperationProgress->AddLocalyUsed(BlockBuf.GetSize());
             }
 
             if (OperationProgress->Cancel == csCancel)
@@ -5181,8 +5181,8 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           if (GapCount > 0)
           {
             FTerminal->LogEvent(FORMAT(
-              "%d requests to fill %d data gaps were issued.",
-              (GapFillCount, GapCount)));
+              L"%d requests to fill %d data gaps were issued.",
+              GapFillCount, GapCount));
           }
         }
         catch (...)
@@ -5192,7 +5192,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         // queue is discarded here
       }
 
-      if (CopyParam->PreserveTime)
+      if (CopyParam->GetPreserveTime())
       {
         ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
 
@@ -5207,10 +5207,10 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
               NULL, false);
           }
 
-          FILETIME AcTime = DateTimeToFileTime(AFile->LastAccess,
+          FILETIME AcTime = DateTimeToFileTime(AFile->GetLastAccess(),
             FTerminal->GetSessionData()->DSTMode);
-          FILETIME WrTime = DateTimeToFileTime(AFile->Modification,
-            FTerminal->GetSessionData()->DSTMode);
+          FILETIME WrTime = DateTimeToFileTime(AFile->GetModification(),
+            FTerminal->GetSessionData()->GetDSTMode());
           SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
         }
         catch (...)
@@ -5227,12 +5227,12 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
 
       if (ResumeAllowed)
       {
-        FILE_OPERATION_LOOP(FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            (ExtractFileName(DestPartinalFullName), DestFileName)),
+        FILE_OPERATION_LOOP(L"", // FIXME FMTLOAD(RENAME_AFTER_RESUME_ERROR,
+            (ExtractFileName(DestPartinalFullName, true), DestFileName)),
 
           if (FileExists(DestFullName))
           {
-            THROWOSIFFALSE(Sysutils::DeleteFile(DestFullName));
+            THROWOSIFFALSE(::DeleteFile(DestFullName));
           }
           if (!Sysutils::RenameFile(DestPartinalFullName, DestFullName))
           {
@@ -5247,10 +5247,10 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       {
         Attrs = faArchive;
       }
-      int NewAttrs = CopyParam->LocalFileAttrs(*File->Rights);
+      int NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
       if ((NewAttrs & Attrs) != NewAttrs)
       {
-        FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, (DestFullName)),
+        FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (DestFullName)),
           THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs | NewAttrs) == 0);
         );
       }
@@ -5263,8 +5263,8 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocalyUsed == 0) &&
           (OverwriteMode == omOverwrite))
       {
-        FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, (LocalFileName)),
-          THROWOSIFFALSE(Sysutils::DeleteFile(LocalFileName));
+        FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(DELETE_LOCAL_FILE_ERROR, (LocalFileName)),
+          THROWOSIFFALSE(::DeleteFile(LocalFileName));
         )
       }
 
