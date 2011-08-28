@@ -123,8 +123,8 @@ public:
 
   virtual void GetValueNames(TStrings* Strings);
 
-protected:
   virtual void SetAccessMode(TStorageAccessMode value);
+protected:
   virtual std::wstring GetSource();
 
   // __property int Failed  = { read=GetFailed, write=FFailed };

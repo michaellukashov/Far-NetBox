@@ -80,8 +80,8 @@ TNamedObject * TNamedObjectList::FindByName(std::wstring Name,
   bool CaseSensitive)
 {
   for (int Index = 0; Index < TObjectList::Count; Index++)
-    if (!((TNamedObject *)Items[Index])->CompareName(Name, CaseSensitive))
-      return (TNamedObject *)Items[Index];
+    if (!((TNamedObject *)GetItem(Index))->CompareName(Name, CaseSensitive))
+      return (TNamedObject *)GetItem(Index);
   return NULL;
 }
 //---------------------------------------------------------------------------

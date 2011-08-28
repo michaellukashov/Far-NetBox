@@ -738,7 +738,8 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     WRITE_DATA(bool, GetProxyLocalhost());
 
     #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, L"Bug" + std::wstring(::MB2W(L"##BUG")), GetBug(sb##BUG));
+    // #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, L"Bug" + std::wstring(::MB2W("##BUG")), GetBug(sb##BUG));
+    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, "Bug##BUG", GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
@@ -751,19 +752,19 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     #undef WRITE_BUG
     #undef WRITE_DATA_CONV_FUNC
 
-    Storage->DeleteValue("BuggyMAC");
-    Storage->DeleteValue("AliasGroupList");
+    Storage->DeleteValue(L"BuggyMAC");
+    Storage->DeleteValue(L"AliasGroupList");
 
     if (PuttyExport)
     {
-      WRITE_DATA_EX(String, "Protocol", ProtocolStr, );
+      WRITE_DATA_EX(String, "Protocol", GetProtocolStr(), );
     }
 
     if (!PuttyExport)
     {
       WRITE_DATA(String, GetSftpServer());
 
-      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, "SFTP" #BUG "Bug", SFTPBug[sb##BUG], );
+      #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, "SFTP" #BUG "Bug", GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
       #undef WRITE_SFTP_BUG
@@ -801,50 +802,50 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
 {
-  if (!Configuration->DisablePasswordStoring && !PuttyExport && !FPassword.empty())
+  if (!Configuration->GetDisablePasswordStoring() && !PuttyExport && !FPassword.empty())
   {
-    Storage->WriteString("Password", StronglyRecryptPassword(FPassword, UserName+HostName));
+    Storage->WriteString(L"Password", StronglyRecryptPassword(FPassword, GetUserName() + GetHostName()));
   }
   else
   {
-    Storage->DeleteValue("Password");
+    Storage->DeleteValue(L"Password");
   }
-  Storage->DeleteValue("PasswordPlain");
+  Storage->DeleteValue(L"PasswordPlain");
 
   if (PuttyExport)
   {
     // save password unencrypted
-    Storage->WriteString("ProxyPassword", ProxyPassword);
+    Storage->WriteString(L"ProxyPassword", GetProxyPassword());
   }
   else
   {
     // save password encrypted
     if (!FProxyPassword.empty())
     {
-      Storage->WriteString("ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, ProxyUsername+ProxyHost));
+      Storage->WriteString(L"ProxyPasswordEnc", StronglyRecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost()));
     }
     else
     {
-      Storage->DeleteValue("ProxyPasswordEnc");
+      Storage->DeleteValue(L"ProxyPasswordEnc");
     }
-    Storage->DeleteValue("ProxyPassword");
+    Storage->DeleteValue(L"ProxyPassword");
 
-    if (!Configuration->DisablePasswordStoring && !FTunnelPassword.empty())
+    if (!Configuration->GetDisablePasswordStoring() && !FTunnelPassword.empty())
     {
-      Storage->WriteString("TunnelPassword", StronglyRecryptPassword(FTunnelPassword, TunnelUserName+TunnelHostName));
+      Storage->WriteString(L"TunnelPassword", StronglyRecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName()));
     }
     else
     {
-      Storage->DeleteValue("TunnelPassword");
+      Storage->DeleteValue(L"TunnelPassword");
     }
   }
 }
 //---------------------------------------------------------------------
 void TSessionData::RecryptPasswords()
 {
-  Password = Password;
-  ProxyPassword = ProxyPassword;
-  TunnelPassword = TunnelPassword;
+  SetPassword(GetPassword());
+  SetProxyPassword(GetProxyPassword());
+  SetTunnelPassword(GetTunnelPassword());
 }
 //---------------------------------------------------------------------
 bool TSessionData::HasAnyPassword()
@@ -866,23 +867,23 @@ std::wstring TSessionData::GetSource()
   switch (FSource)
   {
     case ::ssNone:
-      return "Ad-Hoc session";
+      return L"Ad-Hoc session";
 
     case ssStored:
-      return "Stored session";
+      return L"Stored session";
 
     case ssStoredModified:
-      return "Modified stored session";
+      return L"Modified stored session";
 
     default:
       assert(false);
-      return "";
+      return L"";
   }
 }
 //---------------------------------------------------------------------
 void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 {
-  if (Storage->OpenSubKey(InternalStorageKey, true))
+  if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
     RecryptPasswords();
 
@@ -897,10 +898,10 @@ void TSessionData::Remove()
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try
   {
-    Storage->Explicit = true;
-    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
+    Storage->SetExplicit(true);
+    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
     {
-      Storage->RecursiveDeleteSubKey(InternalStorageKey);
+      Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
     }
   }
   catch(...)
@@ -918,29 +919,29 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
   TFSProtocol AFSProtocol;
   int APortNumber;
   TFtps AFtps = ftpsNone;
-  if (Url.substr(1, 4).LowerCase() == "scp:")
+  if (LowerCase(Url.substr(1, 4)) == L"scp:")
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     Url.erase(1, 4);
     ProtocolDefined = true;
   }
-  else if (Url.substr(1, 5).LowerCase() == "sftp:")
+  else if (LowerCase(Url.substr(1, 5)) == L"sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     Url.erase(1, 5);
     ProtocolDefined = true;
   }
-  else if (Url.substr(1, 4).LowerCase() == "ftp:")
+  else if (LowerCase(Url.substr(1, 4)) == L"ftp:")
   {
     AFSProtocol = fsFTP;
-    Ftps = ftpsNone;
+    SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
     Url.erase(1, 4);
     ProtocolDefined = true;
   }
-  else if (Url.substr(1, 5).LowerCase() == "ftps:")
+  else if (LowerCase(Url.substr(1, 5)) == L"ftps:")
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
@@ -949,7 +950,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (Url.substr(1, 2) == "//"))
+  if (ProtocolDefined && (Url.substr(1, 2) == L"//"))
   {
     Url.erase(1, 2);
   }
@@ -966,11 +967,11 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (int Index = 0; Index < StoredSessions->GetCount() + StoredSessions->HiddenCount; Index++)
+    for (int Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); Index++)
     {
       TSessionData * AData = (TSessionData *)StoredSessions->GetItem(Index);
       if (AnsiSameText(AData->Name, DecodedUrl) ||
-          AnsiSameText(AData->Name + "/", DecodedUrl.substr(1, AData->Name.size() + 1)))
+          AnsiSameText(AData->Name + L"/", DecodedUrl.substr(1, AData->Name.size() + 1)))
       {
         Data = AData;
         break;
@@ -991,7 +992,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       }
       ARemoteDirectory = Url.substr(P + 1, Url.size() - P);
 
-      if (StoredSessions->GetIsHidden()(Data))
+      if (StoredSessions->IsHidden(Data))
       {
         Data->Remove();
         StoredSessions->Remove(Data);
@@ -1001,8 +1002,8 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     }
     else
     {
-      Assign(StoredSessions->DefaultSettings);
-      Name = "";
+      Assign(StoredSessions->GetDefaultSettings());
+      Name = L"";
 
       int PSlash = Url.find_first_of(L"/");
       if (PSlash == 0)
@@ -1012,7 +1013,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
       std::wstring ConnectInfo = Url.substr(1, PSlash - 1);
 
-      int P = ConnectInfo.LastDelimiter("@");
+      int P = ::LastDelimiter(ConnectInfo, L"@");
 
       std::wstring UserInfo;
       std::wstring HostInfo;
@@ -1029,7 +1030,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
       if ((HostInfo.size() >= 2) && (HostInfo[1] == '[') && ((P = HostInfo.find_first_of(L"]")) > 0))
       {
-        HostName = HostInfo.substr(2, P - 2);
+        SetHostName(HostInfo.substr(2, P - 2));
         HostInfo.erase(1, P);
         if (!HostInfo.empty() && (HostInfo[1] == ':'))
         {
@@ -1038,34 +1039,34 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       }
       else
       {
-        HostName = DecodeUrlChars(CutToChar(HostInfo, ':', true));
+        SetHostName(DecodeUrlChars(CutToChar(HostInfo, ':', true)));
       }
 
       // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.empty())
       {
-        PortNumber = StrToIntDef(DecodeUrlChars(HostInfo), -1);
+        SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
         PortNumberDefined = true;
       }
       else if (ProtocolDefined)
       {
-        PortNumber = APortNumber;
+        SetPortNumber(APortNumber);
       }
 
       if (ProtocolDefined)
       {
-        Ftps = AFtps;
+        SetFtps(AFtps);
       }
 
       bool PasswordSeparator = (UserInfo.find_first_of(':') != 0);
-      UserName = DecodeUrlChars(CutToChar(UserInfo, ':', false));
-      Password = DecodeUrlChars(UserInfo);
-      Passwordless = Password.empty() && PasswordSeparator;
+      SetUserName(DecodeUrlChars(CutToChar(UserInfo, ':', false)));
+      SetPassword(DecodeUrlChars(UserInfo));
+      SetPasswordless(GetPassword().empty() && PasswordSeparator);
 
       ARemoteDirectory = Url.substr(PSlash, Url.size() - PSlash + 1);
     }
 
-    if (!ARemoteDirectory.empty() && (ARemoteDirectory != "/"))
+    if (!ARemoteDirectory.empty() && (ARemoteDirectory != L"/"))
     {
       if ((ARemoteDirectory[ARemoteDirectory.size()] != '/') &&
           (FileName != NULL))
@@ -1073,21 +1074,21 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
         *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = UnixExtractFilePath(ARemoteDirectory);
       }
-      RemoteDirectory = DecodeUrlChars(ARemoteDirectory);
+      SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
     }
 
     DefaultsOnly = false;
   }
   else
   {
-    Assign(StoredSessions->DefaultSettings);
+    Assign(StoredSessions->GetDefaultSettings());
 
     DefaultsOnly = true;
   }
 
   if (ProtocolDefined)
   {
-    FSProtocol = AFSProtocol;
+    SetFSProtocol(AFSProtocol);
   }
 
   if (Options != NULL)
@@ -1096,48 +1097,48 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     // as the option should not make session "connectable"
 
     std::wstring Value;
-    if (Options->FindSwitch("privatekey", Value))
+    if (Options->FindSwitch(L"privatekey", Value))
     {
-      PublicKeyFile = Value;
+      SetPublicKeyFile(Value);
     }
-    if (Options->FindSwitch("timeout", Value))
+    if (Options->FindSwitch(L"timeout", Value))
     {
-      Timeout = StrToInt(Value);
+      SetTimeout(StrToInt(Value));
     }
-    if (Options->FindSwitch("hostkey", Value) ||
-        Options->FindSwitch("certificate", Value))
+    if (Options->FindSwitch(L"hostkey", Value) ||
+        Options->FindSwitch(L"certificate", Value))
     {
-      HostKey = Value;
+      SetHostKey(Value);
     }
-    if (Options->FindSwitch("passive", Value))
+    if (Options->FindSwitch(L"passive", Value))
     {
-      FtpPasvMode = (StrToIntDef(Value, 1) != 0);
+      SetFtpPasvMode((StrToIntDef(Value, 1) != 0));
     }
-    if (Options->FindSwitch("implicit", Value))
+    if (Options->FindSwitch(L"implicit", Value))
     {
       bool Enabled = (StrToIntDef(Value, 1) != 0);
-      Ftps = Enabled ? ftpsImplicit : ftpsNone;
+      SetFtps(Enabled ? ftpsImplicit : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
-        PortNumber = FtpsImplicitPortNumber;
+        SetPortNumber(FtpsImplicitPortNumber);
       }
     }
-    if (Options->FindSwitch("explicitssl", Value))
+    if (Options->FindSwitch(L"explicitssl", Value))
     {
       bool Enabled = (StrToIntDef(Value, 1) != 0);
-      Ftps = Enabled ? ftpsExplicitSsl : ftpsNone;
+      SetFtps(Enabled ? ftpsExplicitSsl : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
-        PortNumber = FtpPortNumber;
+        SetPortNumber(FtpPortNumber);
       }
     }
-    if (Options->FindSwitch("explicittls", Value))
+    if (Options->FindSwitch(L"explicittls", Value))
     {
       bool Enabled = (StrToIntDef(Value, 1) != 0);
-      Ftps = Enabled ? ftpsExplicitTls : ftpsNone;
+      SetFtps(Enabled ? ftpsExplicitTls : ftpsNone);
       if (!PortNumberDefined && Enabled)
       {
-        PortNumber = FtpPortNumber;
+        SetPortNumber(FtpPortNumber);
       }
     }
   }
@@ -1147,26 +1148,26 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 //---------------------------------------------------------------------
 void TSessionData::ConfigureTunnel(int APortNumber)
 {
-  FOrigHostName = HostName;
-  FOrigPortNumber = PortNumber;
-  FOrigProxyMethod = ProxyMethod;
+  FOrigHostName = GetHostName();
+  FOrigPortNumber = GetPortNumber();
+  FOrigProxyMethod = GetProxyMethod();
 
-  HostName = "127.0.0.1";
-  PortNumber = APortNumber;
+  SetHostName(L"127.0.0.1");
+  SetPortNumber(APortNumber);
   // proxy settings is used for tunnel
-  ProxyMethod = pmNone;
+  SetProxyMethod(pmNone);
 }
 //---------------------------------------------------------------------
 void TSessionData::RollbackTunnel()
 {
-  HostName = FOrigHostName;
-  PortNumber = FOrigPortNumber;
-  ProxyMethod = FOrigProxyMethod;
+  SetHostName(FOrigHostName);
+  SetPortNumber(FOrigPortNumber);
+  SetProxyMethod(FOrigProxyMethod);
 }
 //---------------------------------------------------------------------
 void TSessionData::ExpandEnvironmentVariables()
 {
-  PublicKeyFile = ::ExpandEnvironmentVariables(PublicKeyFile);
+  SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
 }
 //---------------------------------------------------------------------
 void TSessionData::ValidatePath(const std::wstring Path)
@@ -1176,9 +1177,9 @@ void TSessionData::ValidatePath(const std::wstring Path)
 //---------------------------------------------------------------------
 void TSessionData::ValidateName(const std::wstring Name)
 {
-  if (Name.LastDelimiter("/") > 0)
+  if (::LastDelimiter(Name, L"/") > 0)
   {
-    throw exception(FMTLOAD(ITEM_NAME_INVALID, (Name, "/")));
+    throw ExtException(L""); // FIXME FMTLOAD(ITEM_NAME_INVALID, (Name, "/")));
   }
 }
 //---------------------------------------------------------------------
@@ -1213,14 +1214,14 @@ bool TSessionData::GetCanLogin()
 //---------------------------------------------------------------------------
 std::wstring TSessionData::GetSessionKey()
 {
-  return ::FORMAT(L"%s@%s", (UserName, HostName));
+  return ::FORMAT(L"%s@%s", GetUserName(), GetHostName());
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetInternalStorageKey()
 {
   if (Name.empty())
   {
-    return SessionKey;
+    return GetSessionKey();
   }
   else
   {
@@ -1230,7 +1231,7 @@ std::wstring TSessionData::GetInternalStorageKey()
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetStorageKey()
 {
-  return SessionName;
+  return GetSessionName();
 }
 //---------------------------------------------------------------------
 void TSessionData::SetHostName(std::wstring value)
@@ -1238,22 +1239,22 @@ void TSessionData::SetHostName(std::wstring value)
   if (FHostName != value)
   {
     // HostName is key for password encryption
-    std::wstring XPassword = Password;
+    std::wstring XPassword = GetPassword();
 
-    int P = value.LastDelimiter("@");
+    int P = ::LastDelimiter(value, L"@");
     if (P > 0)
     {
-      UserName = value.substr(1, P - 1);
+      SetUserName(value.substr(1, P - 1));
       value = value.substr(P + 1, value.size() - P);
     }
     FHostName = value;
     Modify();
 
-    Password = XPassword;
+    SetPassword(XPassword);
     if (!XPassword.empty())
     {
-      XPassword.Unique();
-      memset(XPassword.c_str(), 0, XPassword.size());
+      // FIXME ::Unique(XPassword());
+      memset((void *)XPassword.c_str(), 0, XPassword.size());
     }
   }
 }
@@ -1296,13 +1297,13 @@ void TSessionData::SetUnsetNationalVars(bool value)
 void TSessionData::SetUserName(std::wstring value)
 {
   // UserName is key for password encryption
-  std::wstring XPassword = Password;
+  std::wstring XPassword = GetPassword();
   SET_SESSION_PROPERTY(UserName);
-  Password = XPassword;
+  SetPassword(XPassword);
   if (!XPassword.empty())
   {
-    XPassword.Unique();
-    memset(XPassword.c_str(), 0, XPassword.size());
+    // FIXME ::Unique(XPassword);
+    memset((void *)XPassword.c_str(), 0, XPassword.size());
   }
 }
 //---------------------------------------------------------------------
@@ -1310,15 +1311,15 @@ void TSessionData::SetPassword(std::wstring value)
 {
   if (!value.empty())
   {
-    Passwordless = false;
+    SetPasswordless(false);
   }
-  value = EncryptPassword(value, UserName+HostName);
+  value = EncryptPassword(value, GetUserName() + GetHostName());
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetPassword()
 {
-  return DecryptPassword(FPassword, UserName+HostName);
+  return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }
 //---------------------------------------------------------------------
 void TSessionData::SetPasswordless(bool value)
@@ -1403,7 +1404,7 @@ std::wstring TSessionData::GetSshProtStr()
 //---------------------------------------------------------------------
 bool TSessionData::GetUsesSsh()
 {
-  return (FSProtocol != fsFTP);
+  return (GetFSProtocol() != fsFTP);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(int Index, TCipher value)
@@ -1430,9 +1431,9 @@ void TSessionData::SetCipherList(std::wstring value)
     CipherStr = CutToChar(value, ',', true);
     for (int C = 0; C < CIPHER_COUNT; C++)
     {
-      if (!CipherStr.AnsiCompareIC(CipherNames[C]))
+      if (!::AnsiCompareIC(CipherStr, CipherNames[C]))
       {
-        Cipher[Index] = (TCipher)C;
+        SetCipher(Index, (TCipher)C);
         Used[C] = true;
         Index++;
         break;
@@ -1442,7 +1443,7 @@ void TSessionData::SetCipherList(std::wstring value)
 
   for (int C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
   {
-    if (!Used[DefaultCipherList[C]]) Cipher[Index++] = DefaultCipherList[C];
+    if (!Used[DefaultCipherList[C]]) SetCipher(Index++, DefaultCipherList[C]);
   }
 }
 //---------------------------------------------------------------------
@@ -1451,7 +1452,7 @@ std::wstring TSessionData::GetCipherList() const
   std::wstring Result;
   for (int Index = 0; Index < CIPHER_COUNT; Index++)
   {
-    Result += std::wstring(Index ? "," : "") + CipherNames[Cipher[Index]];
+    Result += std::wstring(Index ? L"," : L"") + CipherNames[GetCipher(Index)];
   }
   return Result;
 }
@@ -1480,9 +1481,9 @@ void TSessionData::SetKexList(std::wstring value)
     KexStr = CutToChar(value, ',', true);
     for (int K = 0; K < KEX_COUNT; K++)
     {
-      if (!KexStr.AnsiCompareIC(KexNames[K]))
+      if (!::AnsiCompareIC(KexStr, KexNames[K]))
       {
-        Kex[Index] = (TKex)K;
+        SetKex(Index, (TKex)K);
         Used[K] = true;
         Index++;
         break;
@@ -1492,7 +1493,7 @@ void TSessionData::SetKexList(std::wstring value)
 
   for (int K = 0; K < KEX_COUNT && Index < KEX_COUNT; K++)
   {
-    if (!Used[DefaultKexList[K]]) Kex[Index++] = DefaultKexList[K];
+    if (!Used[DefaultKexList[K]]) SetKex(Index++, DefaultKexList[K]);
   }
 }
 //---------------------------------------------------------------------
@@ -1501,7 +1502,7 @@ std::wstring TSessionData::GetKexList() const
   std::wstring Result;
   for (int Index = 0; Index < KEX_COUNT; Index++)
   {
-    Result += std::wstring(Index ? "," : "") + KexNames[Kex[Index]];
+    Result += std::wstring(Index ? L"," : L"") + KexNames[GetKex(Index)];
   }
   return Result;
 }
@@ -1532,7 +1533,7 @@ void TSessionData::SetEOLType(TEOLType value)
 //---------------------------------------------------------------------------
 TDateTime TSessionData::GetTimeoutDT()
 {
-  return SecToDateTime(Timeout);
+  return SecToDateTime(GetTimeout());
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetTimeout(int value)
@@ -1552,34 +1553,34 @@ void TSessionData::SetFSProtocol(TFSProtocol value)
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetFSProtocolStr()
 {
-  assert(FSProtocol >= 0 && FSProtocol < FSPROTOCOL_COUNT);
-  return FSProtocolNames[FSProtocol];
+  assert(GetFSProtocol() >= 0 && GetFSProtocol() < FSPROTOCOL_COUNT);
+  return FSProtocolNames[GetFSProtocol()];
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetDetectReturnVar(bool value)
 {
-  if (value != DetectReturnVar)
+  if (value != GetDetectReturnVar())
   {
-    ReturnVar = value ? "" : "$?";
+    SetReturnVar(value ? L"" : L"$?");
   }
 }
 //---------------------------------------------------------------------------
 bool TSessionData::GetDetectReturnVar()
 {
-  return ReturnVar.empty();
+  return GetReturnVar().empty();
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetDefaultShell(bool value)
 {
-  if (value != DefaultShell)
+  if (value != GetDefaultShell())
   {
-    Shell = value ? "" : "/bin/bash";
+    SetShell(value ? L"" : L"/bin/bash");
   }
 }
 //---------------------------------------------------------------------------
 bool TSessionData::GetDefaultShell()
 {
-  return Shell.empty();
+  return GetShell().empty();
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetProtocolStr(std::wstring value)
@@ -1587,7 +1588,7 @@ void TSessionData::SetProtocolStr(std::wstring value)
   FProtocol = ptRaw;
   for (int Index = 0; Index < PROTOCOL_COUNT; Index++)
   {
-    if (value.AnsiCompareIC(ProtocolNames[Index]) == 0)
+    if (::AnsiCompareIC(value, ProtocolNames[Index]) == 0)
     {
       FProtocol = TProtocol(Index);
       break;
@@ -1597,20 +1598,20 @@ void TSessionData::SetProtocolStr(std::wstring value)
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetProtocolStr() const
 {
-  return ProtocolNames[Protocol];
+  return ProtocolNames[GetProtocol()];
 }
 //---------------------------------------------------------------------
 void TSessionData::SetPingIntervalDT(TDateTime value)
 {
   unsigned short hour, min, sec, msec;
 
-  value.DecodeTime(&hour, &min, &sec, &msec);
-  PingInterval = ((int)hour)*60*60 + ((int)min)*60 + sec;
+  value.DecodeTime(hour, min, sec, msec);
+  SetPingInterval(((int)hour)*60*60 + ((int)min)*60 + sec);
 }
 //---------------------------------------------------------------------------
 TDateTime TSessionData::GetPingIntervalDT()
 {
-  return SecToDateTime(PingInterval);
+  return SecToDateTime(GetPingInterval());
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetPingType(TPingType value)
@@ -1635,17 +1636,17 @@ void TSessionData::SetRekeyTime(unsigned int value)
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetDefaultSessionName()
 {
-  if (!HostName.empty() && !UserName.empty())
+  if (!GetHostName().empty() && !GetUserName().empty())
   {
-    return ::FORMAT(L"%s@%s", (UserName, HostName));
+    return ::FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
   }
-  else if (!HostName.empty())
+  else if (!GetHostName().empty())
   {
-    return HostName;
+    return GetHostName();
   }
   else
   {
-    return "session";
+    return L"session";
   }
 }
 //---------------------------------------------------------------------
@@ -1658,7 +1659,7 @@ std::wstring TSessionData::GetSessionName()
   }
   else
   {
-    return DefaultSessionName;
+    return GetDefaultSessionName();
   }
 }
 //---------------------------------------------------------------------
@@ -1672,10 +1673,10 @@ std::wstring TSessionData::GetSessionUrl()
   }
   else
   {
-    switch (FSProtocol)
+    switch (GetFSProtocol())
     {
       case fsSCPonly:
-        Url = "scp://";
+        Url = L"scp://";
         break;
 
       default:
@@ -1683,25 +1684,25 @@ std::wstring TSessionData::GetSessionUrl()
         // fallback
       case fsSFTP:
       case fsSFTPonly:
-        Url = "sftp://";
+        Url = L"sftp://";
         break;
 
       case fsFTP:
-        Url = "ftp://";
+        Url = L"ftp://";
         break;
     }
 
-    if (!HostName.empty() && !UserName.empty())
+    if (!GetHostName().empty() && !GetUserName().empty())
     {
-      Url += ::FORMAT(L"%s@%s", (UserName, HostName));
+      Url += ::FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
     }
-    else if (!HostName.empty())
+    else if (!GetHostName().empty())
     {
-      Url += HostName;
+      Url += GetHostName();
     }
     else
     {
-      Url = "";
+      Url = L"";
     }
   }
   return Url;
@@ -1814,13 +1815,13 @@ void TSessionData::SetProxyUsername(std::wstring value)
 //---------------------------------------------------------------------
 void TSessionData::SetProxyPassword(std::wstring value)
 {
-  value = EncryptPassword(value, ProxyUsername+ProxyHost);
+  value = EncryptPassword(value, GetProxyUsername() + GetProxyHost());
   SET_SESSION_PROPERTY(ProxyPassword);
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetProxyPassword() const
 {
-  return DecryptPassword(FProxyPassword, ProxyUsername+ProxyHost);
+  return DecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost());
 }
 //---------------------------------------------------------------------
 void TSessionData::SetProxyTelnetCommand(std::wstring value)
@@ -1932,22 +1933,22 @@ void TSessionData::SetTunnelHostName(std::wstring value)
   if (FTunnelHostName != value)
   {
     // HostName is key for password encryption
-    std::wstring XTunnelPassword = TunnelPassword;
+    std::wstring XTunnelPassword = GetTunnelPassword();
 
-    int P = value.LastDelimiter("@");
+    int P = ::LastDelimiter(value, L"@");
     if (P > 0)
     {
-      TunnelUserName = value.substr(1, P - 1);
+      SetTunnelUserName(value.substr(1, P - 1));
       value = value.substr(P + 1, value.size() - P);
     }
     FTunnelHostName = value;
     Modify();
 
-    TunnelPassword = XTunnelPassword;
+    SetTunnelPassword(XTunnelPassword);
     if (!XTunnelPassword.empty())
     {
-      XTunnelPassword.Unique();
-      memset(XTunnelPassword.c_str(), 0, XTunnelPassword.size());
+      // FIXME ::Unique(XTunnelPassword);
+      memset((void *)XTunnelPassword.c_str(), 0, XTunnelPassword.size());
     }
   }
 }
@@ -1960,25 +1961,25 @@ void TSessionData::SetTunnelPortNumber(int value)
 void TSessionData::SetTunnelUserName(std::wstring value)
 {
   // TunnelUserName is key for password encryption
-  std::wstring XTunnelPassword = TunnelPassword;
+  std::wstring XTunnelPassword = GetTunnelPassword();
   SET_SESSION_PROPERTY(TunnelUserName);
-  TunnelPassword = XTunnelPassword;
+  SetTunnelPassword(XTunnelPassword);
   if (!XTunnelPassword.empty())
   {
-    XTunnelPassword.Unique();
-    memset(XTunnelPassword.c_str(), 0, XTunnelPassword.size());
+    // FIXME ::Unique(XTunnelPassword);
+    memset((void *)XTunnelPassword.c_str(), 0, XTunnelPassword.size());
   }
 }
 //---------------------------------------------------------------------
 void TSessionData::SetTunnelPassword(std::wstring value)
 {
-  value = EncryptPassword(value, TunnelUserName+TunnelHostName);
+  value = EncryptPassword(value, GetTunnelUserName() + GetTunnelHostName());
   SET_SESSION_PROPERTY(TunnelPassword);
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetTunnelPassword()
 {
-  return DecryptPassword(FTunnelPassword, TunnelUserName+TunnelHostName);
+  return DecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName());
 }
 //---------------------------------------------------------------------
 void TSessionData::SetTunnelPublicKeyFile(std::wstring value)
@@ -2027,7 +2028,7 @@ void TSessionData::SetFtpPingInterval(int value)
 //---------------------------------------------------------------------------
 TDateTime TSessionData::GetFtpPingIntervalDT()
 {
-  return SecToDateTime(FtpPingInterval);
+  return SecToDateTime(GetFtpPingInterval());
 }
 //---------------------------------------------------------------------------
 void TSessionData::SetFtpPingType(TPingType value)
@@ -2052,24 +2053,24 @@ void TSessionData::SetHostKey(std::wstring value)
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetInfoTip()
 {
-  if (UsesSsh)
+  if (GetUsesSsh())
   {
-    return FMTLOAD(SESSION_INFO_TIP,
-        (HostName, UserName,
-         (PublicKeyFile.empty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
-         SshProtStr, FSProtocolStr));
+    return L""; // FIXME FMTLOAD(SESSION_INFO_TIP,
+        // GetHostName().c_str(), GetUserName().c_str(),
+         // (PublicKeyFile.empty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
+         // GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
   }
   else
   {
-    return FMTLOAD(SESSION_INFO_TIP_NO_SSH,
-      (HostName, UserName, FSProtocolStr));
+    return L""; // FIXME FMTLOAD(SESSION_INFO_TIP_NO_SSH,
+      // GetHostName().c_str(), GetUserName().c_str(), GetFSProtocolStr().c_str()));
   }
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetLocalName()
 {
   std::wstring Result = Name;
-  int P = Result.LastDelimiter("/");
+  int P = ::LastDelimiter(Result, L"/");
   if (P > 0)
   {
     Result.erase(1, P);
@@ -2120,19 +2121,19 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
         {
           if (!SessionData)
           {
-            SessionData = new TSessionData("");
+            SessionData = new TSessionData(L"");
             if (UseDefaults)
             {
-              SessionData->Assign(DefaultSettings);
+              SessionData->Assign(GetDefaultSettings());
             }
-            SessionData->Name = SessionName;
+            SessionData->SetName(SessionName);
             Add(SessionData);
           }
           Loaded->Add(SessionData);
           SessionData->Load(Storage);
           if (AsModified)
           {
-            SessionData->Modified = true;
+            SessionData->SetModified(true);
           }
         }
       }
@@ -2140,9 +2141,9 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 
     if (!AsModified)
     {
-      for (int Index = 0; Index < TObjectList::Count; Index++)
+      for (int Index = 0; Index < TObjectList::GetCount(); Index++)
       {
-        if (Loaded->IndexOf(Items[Index]) < 0)
+        if (Loaded->IndexOf(GetItem(Index)) < 0)
         {
           Delete(Index);
           Index--;
@@ -2171,7 +2172,7 @@ void TStoredSessionList::Load()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try {
-    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
+    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
       Load(Storage);
   } catch(...) {
     delete Storage;
@@ -2182,7 +2183,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   TSessionData * Data, bool All, bool RecryptPasswordOnly,
   TSessionData * FactoryDefaults)
 {
-  if (All || Data->Modified)
+  if (All || Data->GetModified())
   {
     if (RecryptPasswordOnly)
     {
@@ -2198,13 +2199,13 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
-  TSessionData * FactoryDefaults = new TSessionData("");
+  TSessionData * FactoryDefaults = new TSessionData(L"");
   try
   {
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
-    for (int Index = 0; Index < Count+HiddenCount; Index++)
+    for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
     {
-      TSessionData * SessionData = (TSessionData *)Items[Index];
+      TSessionData * SessionData = (TSessionData *)GetItem(Index);
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
@@ -2224,9 +2225,9 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   try
   {
-    Storage->AccessMode = smReadWrite;
-    Storage->Explicit = Explicit;
-    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, true))
+    Storage->SetAccessMode(smReadWrite);
+    Storage->SetExplicit(Explicit);
+    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       DoSave(Storage, All, RecryptPasswordOnly);
     }
@@ -2251,10 +2252,10 @@ void TStoredSessionList::RecryptPasswords()
 //---------------------------------------------------------------------
 void TStoredSessionList::Saved()
 {
-  FDefaultSettings->Modified = false;
-  for (int Index = 0; Index < Count + HiddenCount; Index++)
+  FDefaultSettings->SetModified(false);
+  for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
   {
-    ((TSessionData *)Items[Index])->Modified = false;
+    ((TSessionData *)GetItem(Index))->SetModified(false);
   }
 }
 //---------------------------------------------------------------------
@@ -2263,8 +2264,8 @@ void TStoredSessionList::Export(const std::wstring FileName)
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   try
   {
-    Storage->AccessMode = smReadWrite;
-    if (Storage->OpenSubKey(Configuration->StoredSessionsSubKey, true))
+    Storage->SetAccessMode(smReadWrite);
+    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       Save(Storage, true);
     }
@@ -2277,8 +2278,8 @@ void TStoredSessionList::Export(const std::wstring FileName)
 //---------------------------------------------------------------------
 void TStoredSessionList::SelectAll(bool Select)
 {
-  for (int Index = 0; Index < Count; Index++)
-    Sessions[Index]->Selected = Select;
+  for (int Index = 0; Index < GetCount(); Index++)
+    GetSession(Index)->SetSelected(Select);
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Import(TStoredSessionList * From,
@@ -2286,11 +2287,11 @@ void TStoredSessionList::Import(TStoredSessionList * From,
 {
   for (int Index = 0; Index < From->GetCount(); Index++)
   {
-    if (!OnlySelected || From->Sessions[Index]->Selected)
+    if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
-      TSessionData *Session = new TSessionData("");
-      Session->Assign(From->Sessions[Index]);
-      Session->Modified = true;
+      TSessionData *Session = new TSessionData(L"");
+      Session->Assign(From->GetSession(Index));
+      Session->SetModified(true);
       Session->MakeUniqueIn(this);
       Add(Session);
     }
@@ -2302,35 +2303,35 @@ void TStoredSessionList::Import(TStoredSessionList * From,
 void TStoredSessionList::SelectSessionsToImport
   (TStoredSessionList * Dest, bool SSHOnly)
 {
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
-    Sessions[Index]->Selected =
-      (!SSHOnly || (Sessions[Index]->Protocol == ptSSH)) &&
-      !Dest->FindByName(Sessions[Index]->Name);
+    GetSession(Index)->SetSelected(
+      (!SSHOnly || (GetSession(Index)->GetProtocol() == ptSSH)) &&
+      !Dest->FindByName(GetSession(Index)->Name));
   }
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Cleanup()
 {
   try {
-    if (Configuration->Storage == stRegistry) Clear();
-    TRegistryStorage * Storage = new TRegistryStorage(Configuration->RegistryStorageKey);
+    if (Configuration->GetStorage() == stRegistry) Clear();
+    TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
     try {
-      Storage->AccessMode = smReadWrite;
+      Storage->SetAccessMode(smReadWrite);
       if (Storage->OpenRootKey(false))
-        Storage->RecursiveDeleteSubKey(Configuration->StoredSessionsSubKey);
+        Storage->RecursiveDeleteSubKey(Configuration->GetStoredSessionsSubKey());
     } catch(...) {
       delete Storage;
     }
   } catch (exception &E) {
-    throw ExtException(&E, CLEANUP_SESSIONS_ERROR);
+    throw ExtException(&E); // FIXME, CLEANUP_SESSIONS_ERROR);
   }
 }
 //---------------------------------------------------------------------------
 int TStoredSessionList::IndexOf(TSessionData * Data)
 {
-  for (int Index = 0; Index < Count; Index++)
-    if (Data == Sessions[Index]) return Index;
+  for (int Index = 0; Index < GetCount(); Index++)
+    if (Data == GetSessions(Index)) return Index;
   return -1;
 }
 //---------------------------------------------------------------------------
