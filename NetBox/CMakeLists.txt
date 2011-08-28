@@ -150,6 +150,58 @@ add_library (ssleay32 SHARED IMPORTED)
 set_property (TARGET ssleay32
     PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/out32dll/ssleay32.lib )
 
+#-------------------------------------------------------------------------------
+
+add_library (libputty STATIC
+    ${PROJECT_ROOT}/Putty/CPROXY.C
+    ${PROJECT_ROOT}/Putty/INT64.C
+    ${PROJECT_ROOT}/Putty/LOGGING.C
+    ${PROJECT_ROOT}/Putty/MISC.C
+    ${PROJECT_ROOT}/Putty/PGSSAPI.C
+    ${PROJECT_ROOT}/Putty/PORTFWD_.C
+    ${PROJECT_ROOT}/Putty/PROXY.C
+    ${PROJECT_ROOT}/Putty/SSH_.C
+    ${PROJECT_ROOT}/Putty/SSHAES_.C
+    ${PROJECT_ROOT}/Putty/SSHARCF.C
+    ${PROJECT_ROOT}/Putty/SSHBLOWF.C
+    ${PROJECT_ROOT}/Putty/SSHBN.C
+    ${PROJECT_ROOT}/Putty/SSHCRC.C
+    ${PROJECT_ROOT}/Putty/SSHCRCDA.C
+    ${PROJECT_ROOT}/Putty/SSHDES.C
+    ${PROJECT_ROOT}/Putty/SSHDH.C
+    ${PROJECT_ROOT}/Putty/SSHDSS.C
+    ${PROJECT_ROOT}/Putty/SSHGSSC.C
+    ${PROJECT_ROOT}/Putty/SSHMD5.C
+    ${PROJECT_ROOT}/Putty/SSHPUBK.C
+    ${PROJECT_ROOT}/Putty/SSHRAND.C
+    ${PROJECT_ROOT}/Putty/SSHRSA.C
+    ${PROJECT_ROOT}/Putty/SSHSH256.C
+    ${PROJECT_ROOT}/Putty/SSHSH512.C
+    ${PROJECT_ROOT}/Putty/SSHSHA_.C
+    ${PROJECT_ROOT}/Putty/SSHZLIB.C
+    ${PROJECT_ROOT}/Putty/TREE234.C
+    ${PROJECT_ROOT}/Putty/CHARSET/UTF8.C
+    ${PROJECT_ROOT}/Putty/WILDCARD.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINGSS.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINHANDL.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINMISC.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINNET.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINNOISE.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINNOJMP.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINPGNTC.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINPROXY.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINSTORE_.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/WINTIME.C
+    ${PROJECT_ROOT}/Putty/X11FWD.C
+)
+
+set_target_properties( libputty
+    PROPERTIES
+    COMPILE_FLAGS "-D_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;MPEXT;_WINDOWS"
+)
+
+#-------------------------------------------------------------------------------
+
 # список библиотек к линковке
 set ( NETBOX_LIBRARIES
     libssh2.lib
@@ -242,6 +294,7 @@ set ( TESTNETBOX_01_SOURCES
 
 set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
+    libputty
     ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
 )
 
