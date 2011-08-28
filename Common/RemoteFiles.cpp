@@ -45,7 +45,7 @@ bool UnixIsChildPath(std::wstring Parent, std::wstring Child)
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileDir(const std::wstring Path)
 {
-  int Pos = ::LastDelimiter(Path, L'/');
+  int Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -60,14 +60,14 @@ std::wstring UnixExtractFileDir(const std::wstring Path)
 // must return trailing backslash
 std::wstring UnixExtractFilePath(const std::wstring Path)
 {
-  int Pos = ::LastDelimiter(Path, L'/');
+  int Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
   return (Pos > 0) ? Path.substr(1, Pos) : std::wstring();
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileName(const std::wstring Path)
 {
-  int Pos = ::LastDelimiter(Path, L'/');
+  int Pos = ::LastDelimiter(Path, L"/");
   std::wstring Result;
   if (Pos > 0)
   {
@@ -83,7 +83,7 @@ std::wstring UnixExtractFileName(const std::wstring Path)
 std::wstring UnixExtractFileExt(const std::wstring Path)
 {
   std::wstring FileName = UnixExtractFileName(Path);
-  int Pos = ::LastDelimiter(FileName, '.');
+  int Pos = ::LastDelimiter(FileName, L".");
   return (Pos > 0) ? Path.substr(Pos, Path.size() - Pos + 1) : std::wstring();
 }
 //---------------------------------------------------------------------------
@@ -254,7 +254,7 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
   Result = FileName;
   if (Unix)
   {
-    int P = ::LastDelimiter(Result, L'/');
+    int P = ::LastDelimiter(Result, L"/");
     if (P)
     {
       Dir = Result.substr(1, P);
