@@ -291,6 +291,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/SftpFileSystem.cpp
     ${PROJECT_ROOT}/Common/PuttyIntf.cpp
     ${PROJECT_ROOT}/Common/Cryptography.cpp
+    ${PROJECT_ROOT}/Common/FileBuffer.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
 )
