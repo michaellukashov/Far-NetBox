@@ -42,13 +42,13 @@ struct TCommandType
   bool ModifiesFiles;
   bool ChangesDirectory;
   bool InteractiveCommand;
-  char Command[MaxCommandLen];
+  wchar_t Command[MaxCommandLen];
 };
 
 // Only one character! See TSCPFileSystem::ReadCommandOutput()
-#define LastLineSeparator ":"
-#define LAST_LINE "WinSCP: this is end-of-file"
-#define FIRST_LINE "WinSCP: this is begin-of-file"
+#define LastLineSeparator L":"
+#define LAST_LINE L"WinSCP: this is end-of-file"
+#define FIRST_LINE L"WinSCP: this is begin-of-file"
 extern const TCommandType DefaultCommandSet[];
 
 #define NationalVarCount 10
@@ -68,9 +68,9 @@ public:
   TCommandSet(TSessionData *aSessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
-  std::wstring Command(TFSCommand Cmd, const TVarRec * args, int size);
+  std::wstring Command(TFSCommand Cmd, ...);
   TStrings * CreateCommandList();
-  std::wstring FullCommand(TFSCommand Cmd, const TVarRec * args, int size);
+  std::wstring FullCommand(TFSCommand Cmd, ...);
   static std::wstring ExtractCommand(std::wstring Command);
   // __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
   int GetMaxLines(TFSCommand Cmd);
@@ -83,8 +83,8 @@ public:
   // __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
   bool GetOneLineCommand(TFSCommand Cmd);
   // __property std::wstring Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
-  void SetCommands(TFSCommand Cmd, std::wstring value);
-  std::wstring GetCommands(TFSCommand Cmd);
+  std::wstring GetCommand(TFSCommand Cmd);
+  void SetCommand(TFSCommand Cmd, std::wstring value);
   // __property std::wstring FirstLine = { read = GetFirstLine };
   std::wstring GetFirstLine();
   // __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
@@ -109,37 +109,37 @@ const char FullTimeOption[] = "--full-time";
 // TODO: remove "mf" and "cd", it is implemented in TTerminal already
 const TCommandType DefaultCommandSet[ShellCommandCount] = {
 //                       min max mf cd ia  command
-/*Null*/                { -1, -1, F, F, F, "" },
-/*VarValue*/            { -1, -1, F, F, F, "echo \"$%s\"" /* variable */ },
-/*LastLine*/            { -1, -1, F, F, F, "echo \"%s" LastLineSeparator "%s\"" /* last line, return var */ },
-/*FirstLine*/           { -1, -1, F, F, F, "echo \"%s\"" /* first line */ },
-/*CurrentDirectory*/    {  1,  1, F, F, F, "pwd" },
-/*ChangeDirectory*/     {  0,  0, F, T, F, "cd %s" /* directory */ },
+/*Null*/                { -1, -1, F, F, F, L"" },
+/*VarValue*/            { -1, -1, F, F, F, L"echo \"$%s\"" /* variable */ },
+/*LastLine*/            { -1, -1, F, F, F, L"echo \"%s" LastLineSeparator L"%s\"" /* last line, return var */ },
+/*FirstLine*/           { -1, -1, F, F, F, L"echo \"%s\"" /* first line */ },
+/*CurrentDirectory*/    {  1,  1, F, F, F, L"pwd" },
+/*ChangeDirectory*/     {  0,  0, F, T, F, L"cd %s" /* directory */ },
 // list directory can be empty on permission denied, this is handled in ReadDirectory
-/*ListDirectory*/       { -1, -1, F, F, F, "%s %s \"%s\"" /* listing command, options, directory */ },
-/*ListCurrentDirectory*/{ -1, -1, F, F, F, "%s %s" /* listing command, options */ },
-/*ListFile*/            {  1,  1, F, F, F, "%s -d %s \"%s\"" /* listing command, options, file/directory */ },
-/*LookupUserGroups*/    {  0,  1, F, F, F, "groups" },
-/*CopyToRemote*/        { -1, -1, T, F, T, "scp -r %s -d -t \"%s\"" /* options, directory */ },
-/*CopyToLocal*/         { -1, -1, F, F, T, "scp -r %s -d -f \"%s\"" /* options, file */ },
-/*DeleteFile*/          {  0,  0, T, F, F, "rm -f -r \"%s\"" /* file/directory */},
-/*RenameFile*/          {  0,  0, T, F, F, "mv -f \"%s\" \"%s\"" /* file/directory, new name*/},
-/*CreateDirectory*/     {  0,  0, T, F, F, "mkdir \"%s\"" /* new directory */},
-/*ChangeMode*/          {  0,  0, T, F, F, "chmod %s %s \"%s\"" /* options, mode, filename */},
-/*ChangeGroup*/         {  0,  0, T, F, F, "chgrp %s \"%s\" \"%s\"" /* options, group, filename */},
-/*ChangeOwner*/         {  0,  0, T, F, F, "chown %s \"%s\" \"%s\"" /* options, owner, filename */},
-/*HomeDirectory*/       {  0,  0, F, T, F, "cd" },
-/*Unset*/               {  0,  0, F, F, F, "unset \"%s\"" /* variable */ },
-/*Unalias*/             {  0,  0, F, F, F, "unalias \"%s\"" /* alias */ },
-/*CreateLink*/          {  0,  0, T, F, F, "ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
-/*CopyFile*/            {  0,  0, T, F, F, "cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
-/*AnyCommand*/          {  0, -1, T, T, F, "%s" }
+/*ListDirectory*/       { -1, -1, F, F, F, L"%s %s \"%s\"" /* listing command, options, directory */ },
+/*ListCurrentDirectory*/{ -1, -1, F, F, F, L"%s %s" /* listing command, options */ },
+/*ListFile*/            {  1,  1, F, F, F, L"%s -d %s \"%s\"" /* listing command, options, file/directory */ },
+/*LookupUserGroups*/    {  0,  1, F, F, F, L"groups" },
+/*CopyToRemote*/        { -1, -1, T, F, T, L"scp -r %s -d -t \"%s\"" /* options, directory */ },
+/*CopyToLocal*/         { -1, -1, F, F, T, L"scp -r %s -d -f \"%s\"" /* options, file */ },
+/*DeleteFile*/          {  0,  0, T, F, F, L"rm -f -r \"%s\"" /* file/directory */},
+/*RenameFile*/          {  0,  0, T, F, F, L"mv -f \"%s\" \"%s\"" /* file/directory, new name*/},
+/*CreateDirectory*/     {  0,  0, T, F, F, L"mkdir \"%s\"" /* new directory */},
+/*ChangeMode*/          {  0,  0, T, F, F, L"chmod %s %s \"%s\"" /* options, mode, filename */},
+/*ChangeGroup*/         {  0,  0, T, F, F, L"chgrp %s \"%s\" \"%s\"" /* options, group, filename */},
+/*ChangeOwner*/         {  0,  0, T, F, F, L"chown %s \"%s\" \"%s\"" /* options, owner, filename */},
+/*HomeDirectory*/       {  0,  0, F, T, F, L"cd" },
+/*Unset*/               {  0,  0, F, F, F, L"unset \"%s\"" /* variable */ },
+/*Unalias*/             {  0,  0, F, F, F, L"unalias \"%s\"" /* alias */ },
+/*CreateLink*/          {  0,  0, T, F, F, L"ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
+/*CopyFile*/            {  0,  0, T, F, F, L"cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
+/*AnyCommand*/          {  0, -1, T, T, F, L"%s" }
 };
 #undef F
 #undef T
 //---------------------------------------------------------------------------
 TCommandSet::TCommandSet(TSessionData *aSessionData):
-  FSessionData(aSessionData), FReturnVar("")
+  FSessionData(aSessionData), FReturnVar(L"")
 {
   assert(FSessionData);
   Default();
@@ -194,25 +194,28 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
   return true; //CommandSet[Cmd].OneLineCommand;
 }
 //---------------------------------------------------------------------------
-void TCommandSet::SetCommands(TFSCommand Cmd, std::wstring value)
+void TCommandSet::SetCommand(TFSCommand Cmd, std::wstring value)
 {
   CHECK_CMD;
-  strcpy(CommandSet[Cmd].Command, value.substr(1, MaxCommandLen - 1).c_str());
+  wcscpy((wchar_t *)CommandSet[Cmd].Command, value.substr(1, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::GetCommands(TFSCommand Cmd)
+std::wstring TCommandSet::GetCommand(TFSCommand Cmd)
 {
   CHECK_CMD;
   return CommandSet[Cmd].Command;
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::Command(TFSCommand Cmd, const TVarRec * args, int size)
+std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
 {
-  if (args) return Format(Commands[Cmd], args, size);
+  va_list args;
+  va_start(args, Cmd);
+  if (args) return ::FORMAT(GetCommand(Cmd).c_str(), args);
     else return Commands[Cmd];
+  va_end(args);
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::FullCommand(TFSCommand Cmd, const TVarRec * args, int size)
+std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
 {
   std::wstring Separator;
   if (OneLineCommand[Cmd]) Separator = " ; ";
