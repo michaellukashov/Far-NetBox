@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include "ScpFileSystem.h"
 
 #include "Terminal.h"
@@ -13,17 +14,17 @@
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
-const coRaiseExcept = 1;
-const coExpectNoOutput = 2;
-const coWaitForLastLine = 4;
-const coOnlyReturnCode = 8;
-const coIgnoreWarnings = 16;
-const coReadProgress = 32;
+const int coRaiseExcept = 1;
+const int coExpectNoOutput = 2;
+const int coWaitForLastLine = 4;
+const int coOnlyReturnCode = 8;
+const int coIgnoreWarnings = 16;
+const int coReadProgress = 32;
 
-const ecRaiseExcept = 1;
-const ecIgnoreWarnings = 2;
-const ecReadProgress = 4;
-const ecDefault = ecRaiseExcept;
+const int ecRaiseExcept = 1;
+const int ecIgnoreWarnings = 2;
+const int ecReadProgress = 4;
+const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
 #define THROW_FILE_SKIPPED(EXCEPTION, MESSAGE) \
   throw EScpFileSkipped(EXCEPTION, MESSAGE)
