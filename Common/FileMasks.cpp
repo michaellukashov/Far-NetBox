@@ -99,7 +99,7 @@ std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
 bool IsFileNameMask(const std::wstring Mask)
 {
   bool Masked = false;
-  MaskFilePart("", Mask, Masked);
+  MaskFilePart(L"", Mask, Masked);
   return Masked;
 }
 //---------------------------------------------------------------------------
@@ -107,9 +107,9 @@ std::wstring DelimitFileNameMask(std::wstring Mask)
 {
   for (int i = 1; i <= Mask.size(); i++)
   {
-    if (strchr(L"\\*?", Mask[i]) != NULL)
+    if (wcschr(L"\\*?", Mask[i]) != NULL)
     {
-      Mask.Insert(i, L"\\", i);
+      Mask.insert(i, L"\\");
       i++;
     }
   }
@@ -283,24 +283,24 @@ bool TFileMasks::Matches(const std::wstring FileName, bool Local,
 //---------------------------------------------------------------------------
 bool TFileMasks::operator ==(const TFileMasks & rhm) const
 {
-  return (Masks == rhm.GetMasks());
+  return (GetMasks() == rhm.GetMasks());
 }
 //---------------------------------------------------------------------------
 TFileMasks & TFileMasks::operator =(const std::wstring & rhs)
 {
-  Masks = rhs;
+  SetMasks(rhs);
   return *this;
 }
 //---------------------------------------------------------------------------
 TFileMasks & TFileMasks::operator =(const TFileMasks & rhm)
 {
-  Masks = rhm.GetMasks();
+  SetMasks(rhm.GetMasks());
   return *this;
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::operator ==(const std::wstring & rhs) const
 {
-  return (Masks == rhs);
+  return (GetMasks() == rhs);
 }
 //---------------------------------------------------------------------------
 void TFileMasks::ThrowError(int Start, int End)
@@ -546,21 +546,21 @@ void TCustomCommand::GetToken(
 
     if (Len < 0)
     {
-      throw exception(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNKNOWN, (PatternCmd, Index)));
+      throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNKNOWN, (PatternCmd, Index)));
     }
     else if (Len > 0)
     {
       if ((Command.size() - Index + 1) < Len)
       {
-        throw exception(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
+        throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
       }
     }
     else if (Len == 0)
     {
-      const char * PatternEnd = strchr(Ptr + 1, '!');
+      const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
       if (PatternEnd == NULL)
       {
-        throw exception(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
+        throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -568,7 +568,7 @@ void TCustomCommand::GetToken(
   else
   {
     PatternCmd = TEXT_TOKEN;
-    const char * NextPattern = strchr(Ptr, '!');
+    const wchar_t * NextPattern = wcschr(Ptr, L'!');
     if (NextPattern == NULL)
     {
       Len = Command.size() - Index + 1;
@@ -832,7 +832,7 @@ bool TFileCustomCommand::PatternReplacement(int /*Index*/,
   }
   else if (AnsiSameText(Pattern, L"!p"))
   {
-    Replacement = FData.GetPassword();
+    Replacement = FData.Password;
   }
   else if (Pattern == L"!/")
   {
@@ -859,7 +859,7 @@ void TFileCustomCommand::Validate(const std::wstring & Command)
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
-    throw exception(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
+    throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
       // (Found[1], Found[0])));
   }
 }

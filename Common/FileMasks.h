@@ -14,9 +14,16 @@ public:
   int ErrorLen;
 };
 //---------------------------------------------------------------------------
+namespace Masks {
+
 class TMask
 {
+public:
+    TMask(const std::wstring Mask)
+    {}
 };
+
+} // namespace Masks
 
 //---------------------------------------------------------------------------
 class TFileMasks
@@ -51,7 +58,7 @@ public:
     const TParams * Params = NULL) const;
 
   // __property std::wstring Masks = { read = FStr, write = SetMasks };
-  std::wstring GetMasks() { return FStr; }
+  std::wstring GetMasks() const { return FStr; }
   void SetMasks(const std::wstring value);
   
 private:

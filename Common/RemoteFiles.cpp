@@ -182,7 +182,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
     int P;
     while ((P = Result.find_first_of(L"/../")) > 0)
     {
-      int P2 = ::LastDelimiter(Result.substr(1, P-1), L'/');
+      int P2 = ::LastDelimiter(Result.substr(1, P-1), L"/");
       assert(P2 > 0);
       Result.erase(P2, P - P2 + 3);
     }
