@@ -370,27 +370,27 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     // but fallback to keys of other implementations (official putty and vintela quest putty),
     // to allow imports from all putty versions.
     // Both vaclav tomec and official putty use AuthGSSAPI
-    SetAuthGSSAPI(Storage->ReadBool(L"AuthGSSAPI", Storage->ReadBool(L"AuthSSPI", GetAuthGSSAPI()))));
-    SetGSSAPIFwdTGT(Storage->ReadBool(L"GSSAPIFwdTGT", Storage->ReadBool(L"GssapiFwd", Storage->ReadBool(L"SSPIFwdTGT", GSSAPIGetFwdTGT())))));
-    SetGSSAPIServerRealm(Storage->ReadString(L"GSSAPIServerRealm", Storage->ReadString(L"KerbPrincipal", GetGSSAPIServerRealm()))));
-    SetChangeUsername(Storage->ReadBool(L"ChangeUsername", GetChangeUsername())));
-    SetCompression(Storage->ReadBool(L"Compression", GetCompression())));
-    SetSshProt((TSshProt)Storage->ReadInteger(L"SshProt", GetSshProt())));
-    SetSsh2DES(Storage->ReadBool(L"Ssh2DES", GetSsh2DES())));
-    SetSshNoUserAuth(Storage->ReadBool(L"SshNoUserAuth", GetSshNoUserAuth())));
-    SetCipherList(Storage->ReadString(L"Cipher", GetCipherList())));
-    SetKexList(Storage->ReadString(L"KEX", GetKexList())));
-    SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile())));
+    SetAuthGSSAPI(Storage->ReadBool(L"AuthGSSAPI", Storage->ReadBool(L"AuthSSPI", GetAuthGSSAPI())));
+    SetGSSAPIFwdTGT(Storage->ReadBool(L"GSSAPIFwdTGT", Storage->ReadBool(L"GssapiFwd", Storage->ReadBool(L"SSPIFwdTGT", GetGSSAPIFwdTGT()))));
+    SetGSSAPIServerRealm(Storage->ReadString(L"GSSAPIServerRealm", Storage->ReadString(L"KerbPrincipal", GetGSSAPIServerRealm())));
+    SetChangeUsername(Storage->ReadBool(L"ChangeUsername", GetChangeUsername()));
+    SetCompression(Storage->ReadBool(L"Compression", GetCompression()));
+    SetSshProt((TSshProt)Storage->ReadInteger(L"SshProt", GetSshProt()));
+    SetSsh2DES(Storage->ReadBool(L"Ssh2DES", GetSsh2DES()));
+    SetSshNoUserAuth(Storage->ReadBool(L"SshNoUserAuth", GetSshNoUserAuth()));
+    SetCipherList(Storage->ReadString(L"Cipher", GetCipherList()));
+    SetKexList(Storage->ReadString(L"KEX", GetKexList()));
+    SetPublicKeyFile(Storage->ReadString(L"PublicKeyFile", GetPublicKeyFile()));
     SetAddressFamily(static_cast<TAddressFamily>
-    Set  (Storage->ReadInteger(L"AddressFamily", GetAddressFamily()))));
+        (Storage->ReadInteger(L"AddressFamily", GetAddressFamily())));
     SetRekeyData(Storage->ReadString(L"RekeyBytes", GetRekeyData()));
     SetRekeyTime(Storage->ReadInteger(L"RekeyTime", GetRekeyTime()));
 
-    SetFSProtocol((TFSProtocol)Storage->ReadInteger(L"FSProtocol", FSProtocol)));
+    SetFSProtocol((TFSProtocol)Storage->ReadInteger(L"FSProtocol", GetFSProtocol()));
     SetLocalDirectory(Storage->ReadString(L"LocalDirectory", GetLocalDirectory()));
     SetRemoteDirectory(Storage->ReadString(L"RemoteDirectory", GetRemoteDirectory()));
     SetUpdateDirectories(Storage->ReadBool(L"UpdateDirectories", GetUpdateDirectories()));
-    SetCacheDirectories(Storage->ReadBool(L"CacheDirectories", CacheDirectorieGets()));
+    SetCacheDirectories(Storage->ReadBool(L"CacheDirectories", GetCacheDirectories()));
     SetCacheDirectoryChanges(Storage->ReadBool(L"CacheDirectoryChanges", GetCacheDirectoryChanges()));
     SetPreserveDirectoryChanges(Storage->ReadBool(L"PreserveDirectoryChanges", GetPreserveDirectoryChanges()));
 
@@ -402,16 +402,16 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     SetClearAliases(Storage->ReadBool(L"ClearAliases", GetClearAliases()));
     SetUnsetNationalVars(Storage->ReadBool(L"UnsetNationalVars", GetUnsetNationalVars()));
     SetListingCommand(Storage->ReadString(L"ListingCommand",
-    Set  Storage->ReadBool(L"AliasGroupList", false) ? std::wstring(L"ls -gla") : GetListingCommand()));
+        Storage->ReadBool(L"AliasGroupList", false) ? std::wstring(L"ls -gla") : GetListingCommand()));
     SetIgnoreLsWarnings(Storage->ReadBool(L"IgnoreLsWarnings", GetIgnoreLsWarnings()));
     SetSCPLsFullTime(TAutoSwitch(Storage->ReadInteger(L"SCPLsFullTime", GetSCPLsFullTime())));
     SetFtpListAll(TAutoSwitch(Storage->ReadInteger(L"FtpListAll", GetFtpListAll())));
     SetScp1Compatibility(Storage->ReadBool(L"Scp1Compatibility", GetScp1Compatibility()));
-    SetTimeDifference(Storage->ReadFloat(L"TimeDifference", GetTimeDifference()));
-    SetDeleteToRecycleBin(Storage->ReadBool(L"DeleteToRecycleBin", DeleteToReGetcycleBin()));
+    SetTimeDifference(TDateTime(Storage->ReadFloat(L"TimeDifference", GetTimeDifference())));
+    SetDeleteToRecycleBin(Storage->ReadBool(L"DeleteToRecycleBin", GetDeleteToRecycleBin()));
     SetOverwrittenToRecycleBin(Storage->ReadBool(L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin()));
     SetRecycleBinPath(Storage->ReadString(L"RecycleBinPath", GetRecycleBinPath()));
-    SetPostLoginCommands(Storage->ReadString(L"PostLoginCommands", PostLoginCommaGetnds()));
+    SetPostLoginCommands(Storage->ReadString(L"PostLoginCommands", GetPostLoginCommands()));
 
     SetReturnVar(Storage->ReadString(L"ReturnVar", GetReturnVar()));
     SetLookupUserGroups(Storage->ReadBool(L"LookupUserGroups", GetLookupUserGroups()));
@@ -420,25 +420,25 @@ void TSessionData::Load(THierarchicalStorage * Storage)
 
     SetTcpNoDelay(Storage->ReadBool(L"TcpNoDelay", GetTcpNoDelay()));
 
-    SetProxyMethod((TProxyMethod)Storage->ReadInteger(L"ProxyMethod", -1)));
+    SetProxyMethod((TProxyMethod)Storage->ReadInteger(L"ProxyMethod", -1));
     if (GetProxyMethod() < 0)
     {
       int ProxyType = Storage->ReadInteger(L"ProxyType", pxNone);
       int ProxySOCKSVersion;
       switch (ProxyType) {
         case pxHTTP:
-          ProxyMethod = pmHTTP;
+          SetProxyMethod(pmHTTP);
           break;
         case pxTelnet:
-          ProxyMethod = pmTelnet;
+          SetProxyMethod(pmTelnet);
           break;
         case pxSocks:
           ProxySOCKSVersion = Storage->ReadInteger(L"ProxySOCKSVersion", 5);
-          ProxyMethod = ProxySOCKSVersion == 5 ? pmSocks5 : pmSocks4;
+          SetProxyMethod(ProxySOCKSVersion == 5 ? pmSocks5 : pmSocks4);
           break;
         default:
         case pxNone:
-          ProxyMethod = pmNone;
+          SetProxyMethod(pmNone);
           break;
       }
     }
@@ -467,7 +467,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     SetProxyLocalhost(Storage->ReadBool(L"ProxyLocalhost", GetProxyLocalhost()));
 
     #define READ_BUG(BUG) \
-      SetBug(sb##BUG], TAutoSwitch(2 - Storage->ReadInteger(L"Bug"#BUG, \
+      SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(L"Bug" + std::wstring(::MB2W("##BUG")), \
         2 - GetBug(sb##BUG))));
     READ_BUG(Ignore1);
     READ_BUG(PlainPW1);
@@ -486,9 +486,9 @@ void TSessionData::Load(THierarchicalStorage * Storage)
         SetBug(sbHMAC2, asOn);
     }
 
-    SetSftpServer(Storage->ReadString(L"SftpServer", SftpServeGetr());
+    SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
     #define READ_SFTP_BUG(BUG) \
-      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(L"SFTP" #BUG "Bug", GetSFTPBug(sb##BUG))));
+      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadInteger(L"SFTP" + std::wstring(::MB2W("##BUG")) + L"Bug", GetSFTPBug(sb##BUG))));
     READ_SFTP_BUG(Symlink);
     READ_SFTP_BUG(SignedTS);
     #undef READ_SFTP_BUG
