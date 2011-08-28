@@ -2542,7 +2542,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
 
   bool HasCodePrefix =
     (Response.Length() >= 3) &&
-    TryStrToInt(Response.SubString(1, 3), Code) &&
+    TryStrToInt(Response.substr(1, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == ' ') || (Response[4] == '-'));
 
@@ -2552,7 +2552,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     FLastResponse->Clear();
     if (Response.Length() >= 5)
     {
-      FLastResponse->Add(Response.SubString(5, Response.Length() - 4));
+      FLastResponse->Add(Response.substr(5, Response.Length() - 4));
     }
     SetLastCode(Code);
   }
@@ -2577,7 +2577,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     // Intermediate empty lines are being added
     if (FMultineResponse || (Response.Length() >= Start))
     {
-      FLastResponse->Add(Response.SubString(Start, Response.Length() - Start + 1));
+      FLastResponse->Add(Response.substr(Start, Response.Length() - Start + 1));
     }
   }
 
@@ -2649,7 +2649,7 @@ std::wstring TFTPFileSystem::ExtractStatusMessage(std::wstring Status)
       int P3 = Status.Pos("   caller=0x");
       if ((P3 > 0) && (P3 > P1))
       {
-        Status = Status.SubString(P1 + 3, P3 - P1 - 3);
+        Status = Status.substr(P1 + 3, P3 - P1 - 3);
       }
     }
   }
@@ -2677,7 +2677,7 @@ bool TFTPFileSystem::HandleStatus(const char * AStatus, int Type)
       {
         FLastCommand = FEAT;
       }
-      else if (Status.SubString(1, 5) == "PASS ")
+      else if (Status.substr(1, 5) == "PASS ")
       {
         FLastCommand = PASS;
       }
@@ -3386,7 +3386,7 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
         {
           assert(false);
           // no quoted string
-          Str.SetLength(0);
+          Str.resize(0);
         }
         break;
 
@@ -3410,7 +3410,7 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
         else
         {
           // end of quoted string, trim the rest
-          Str.SetLength(Index - 1);
+          Str.resize(Index - 1);
           State = DONE;
         }
         break;
