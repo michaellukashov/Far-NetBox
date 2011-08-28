@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include "stdafx.h"
 
 #include "SftpFileSystem.h"
 
@@ -14,8 +13,6 @@
 #include "SecureShell.h"
 
 #include <memory>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
