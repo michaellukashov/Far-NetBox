@@ -44,8 +44,16 @@ private:
 };
 
 //---------------------------------------------------------------------------
+class THandleStream : public TStream
+{
+public:
+  THandleStream(HANDLE AHandle)
+  {}
+};
 
-class TSafeHandleStream : public TStream // FIXME  : public THandleStream
+//---------------------------------------------------------------------------
+
+class TSafeHandleStream : public THandleStream
 {
 public:
   TSafeHandleStream(HANDLE AHandle);

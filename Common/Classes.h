@@ -373,7 +373,8 @@ public:
 
 enum SeekEnum
 {
-    soFromBeginning
+    soFromBeginning,
+    soFromCurrent
 };
 
 //---------------------------------------------------------------------------

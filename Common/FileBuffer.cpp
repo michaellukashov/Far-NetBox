@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include "Common.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
@@ -27,19 +28,19 @@ void TFileBuffer::SetSize(int value)
 {
   if (FSize != value)
   {
-    FMemory->Size = value;
+    FMemory->SetSize(value);
     FSize = value;
   }
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::SetPosition(int value)
 {
-  FMemory->Position = value;
+  FMemory->SetPosition(value);
 }
 //---------------------------------------------------------------------------
 int TFileBuffer::GetPosition() const
 {
-  return (int)FMemory->Position;
+  return (int)FMemory->GetPosition();
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::SetMemory(TMemoryStream * value)
@@ -56,25 +57,25 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
   DWORD Result;
   try
   {
-    Size = Position + Len;
+    SetSize(GetPosition() + Len);
     // C++5
     // FMemory->SetSize(FMemory->Position + Len);
     if (ForceLen)
     {
-      Stream->ReadBuffer(Data + Position, Len);
+      Stream->ReadBuffer(GetData() + GetPosition(), Len);
       Result = Len;
     }
     else
     {
-      Result = Stream->Read(Data + Position, Len);
+      Result = Stream->Read(GetData() + GetPosition(), Len);
     }
     if (Result != Len)
     {
-      Size = Size - Len + Result;
+      SetSize(GetSize() - Len + Result);
     }
     FMemory->Seek(Len, soFromCurrent);
   }
-  catch(EReadError &)
+  catch (EReadError &)
   {
     RaiseLastOSError();
   }
@@ -93,15 +94,15 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
   assert(strlen(Source) <= 2);
   assert(strlen(Dest) <= 2);
 
-  if (FLAGSET(Params, cpRemoveBOM) && (Size >= 3) &&
-      (memcmp(Data, "\xEF\xBB\xBF", 3) == 0))
+  if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
+      (memcmp(GetData(), "\xEF\xBB\xBF", 3) == 0))
   {
     Delete(0, 3);
   }
 
-  if (FLAGSET(Params, cpRemoveCtrlZ) && (Size > 0) && ((*(Data + Size - 1)) == '\x1A'))
+  if (FLAGSET(Params, cpRemoveCtrlZ) && (GetSize() > 0) && ((*(GetData() + GetSize() - 1)) == '\x1A'))
   {
-    Delete(Size-1, 1);
+    Delete(GetSize() - 1, 1);
   }
 
   if (strcmp(Source, Dest) == 0)
@@ -109,7 +110,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
     return;
   }
 
-  char * Ptr = Data;
+  char * Ptr = GetData();
 
   // one character source EOL
   if (!Source[1])
@@ -120,10 +121,10 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
     Token = false;
     #endif
 
-    for (int Index = 0; Index < Size; Index++)
+    for (int Index = 0; Index < GetSize(); Index++)
     {
       // EOL already in wanted format, make sure to pass unmodified
-      if ((Index < Size - 1) && (*Ptr == Dest[0]) && (*(Ptr+1) == Dest[1]))
+      if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr+1) == Dest[1]))
       {
         Index++;
         Ptr++;
@@ -140,7 +141,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
       else if (*Ptr == Source[0])
       {
         #if 0
-        if ((*Ptr == Dest[0]) && (Index == Size - 1))
+        if ((*Ptr == Dest[0]) && (Index == GetSize() - 1))
         {
           Token = true;
         }
@@ -151,7 +152,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
         {
           Insert(Index+1, Dest+1, 1);
           Index++;
-          Ptr = Data + Index;
+          Ptr = GetData() + Index;
         }
       }
       Ptr++;
@@ -161,7 +162,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
   else
   {
     int Index;
-    for (Index = 0; Index < Size - 1; Index++)
+    for (Index = 0; Index < GetSize() - 1; Index++)
     {
       if ((*Ptr == Source[0]) && (*(Ptr+1) == Source[1]))
       {
@@ -174,12 +175,12 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
         else
         {
           Delete(Index+1, 1);
-          Ptr = Data + Index;
+          Ptr = GetData() + Index;
         }
       }
       Ptr++;
     }
-    if ((Index < Size) && (*Ptr == Source[0]))
+    if ((Index < GetSize()) && (*Ptr == Source[0]))
     {
       Delete(Index, 1);
     }
@@ -206,22 +207,22 @@ void TFileBuffer::Convert(TEOLType Source, char * Dest, int Params,
 //---------------------------------------------------------------------------
 void TFileBuffer::Insert(int Index, const char * Buf, int Len)
 {
-  Size += Len;
-  memmove(Data + Index + Len, Data + Index, Size - Index - Len);
-  memmove(Data + Index, Buf, Len);
+  SetSize(GetSize() + Len);
+  memmove(GetData() + Index + Len, GetData() + Index, GetSize() - Index - Len);
+  memmove(GetData() + Index, Buf, Len);
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::Delete(int Index, int Len)
 {
-  memmove(Data + Index, Data + Index + Len, Size - Index - Len);
-  Size -= Len;
+  memmove(GetData() + Index, GetData() + Index + Len, GetSize() - Index - Len);
+  SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::WriteToStream(TStream * Stream, const DWORD Len)
 {
   try
   {
-    Stream->WriteBuffer(Data + Position, Len);
+    Stream->WriteBuffer(GetData() + GetPosition(), Len);
     FMemory->Seek(Len, soFromCurrent);
   }
   catch(EWriteError &)
@@ -231,7 +232,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const DWORD Len)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSafeHandleStream::TSafeHandleStream(int AHandle) :
+TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
   THandleStream(AHandle)
 {
 }
