@@ -21,6 +21,10 @@ class TMask
 public:
     TMask(const std::wstring Mask)
     {}
+    bool GetMatches(const std::wstring Str)
+    {
+        return false;
+    }
 };
 
 } // namespace Masks
@@ -67,7 +71,7 @@ private:
   struct TMaskMask
   {
     enum { Any, NoExt, Regular } Kind;
-    TMask * Mask;
+    Masks::TMask * Mask;
   };
 
   struct TMask
