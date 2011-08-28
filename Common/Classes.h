@@ -295,6 +295,9 @@ public:
     {}
     explicit TDateTime(double)
     {}
+    explicit TDateTime(unsigned int Hour, 
+        unsigned int Min, unsigned int Sec, unsigned int MSec)
+    {}
     operator double() const
     {
         return 0.0;

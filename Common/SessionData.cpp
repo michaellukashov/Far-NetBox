@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include "SessionData.h"
 
 #include "Common.h"
@@ -40,131 +41,131 @@ TSessionData::TSessionData(std::wstring aName):
 //---------------------------------------------------------------------
 void TSessionData::Default()
 {
-  HostName = "";
-  PortNumber = SshPortNumber;
-  UserName = "";
-  Password = "";
-  Passwordless = false;
-  PingInterval = 30;
+  SetHostName(L"");
+  SetPortNumber(SshPortNumber);
+  SetUserName(L"");
+  SetPassword(L"");
+  SetPasswordless(false);
+  SetPingInterval(30);
   // when changing default, update load/save logic
-  PingType = ptOff;
-  Timeout = 15;
-  TryAgent = true;
-  AgentFwd = false;
-  AuthTIS = false;
-  AuthKI = true;
-  AuthKIPassword = true;
-  AuthGSSAPI = false;
-  GSSAPIFwdTGT = false;
-  GSSAPIServerRealm = "";
-  ChangeUsername = false;
-  Compression = false;
-  SshProt = ssh2;
-  Ssh2DES = false;
-  SshNoUserAuth = false;
+  SetPingType(ptOff);
+  SetTimeout(15);
+  SetTryAgent(true);
+  SetAgentFwd(false);
+  SetAuthTIS(false);
+  SetAuthKI(true);
+  SetAuthKIPassword(true);
+  SetAuthGSSAPI(false);
+  SetGSSAPIFwdTGT(false);
+  SetGSSAPIServerRealm(L"");
+  SetChangeUsername(false);
+  SetCompression(false);
+  SetSshProt(ssh2);
+  SetSsh2DES(false);
+  SetSshNoUserAuth(false);
   for (int Index = 0; Index < CIPHER_COUNT; Index++)
   {
-    Cipher[Index] = DefaultCipherList[Index];
+    SetCipher(Index, DefaultCipherList[Index]);
   }
   for (int Index = 0; Index < KEX_COUNT; Index++)
   {
-    Kex[Index] = DefaultKexList[Index];
+    SetKex(Index, DefaultKexList[Index]);
   }
-  PublicKeyFile = "";
+  SetPublicKeyFile(L"");
   FProtocol = ptSSH;
-  TcpNoDelay = true;
-  HostKey = "";
+  SetTcpNoDelay(true);
+  SetHostKey(L"");
 
-  ProxyMethod = pmNone;
-  ProxyHost = "proxy";
-  ProxyPort = 80;
-  ProxyUsername = "";
-  ProxyPassword = "";
-  ProxyTelnetCommand = "connect %host %port\\n";
-  ProxyLocalCommand = "";
-  ProxyDNS = asAuto;
-  ProxyLocalhost = false;
+  SetProxyMethod(pmNone);
+  SetProxyHost(L"proxy");
+  SetProxyPort(80);
+  SetProxyUsername(L"");
+  SetProxyPassword(L"");
+  SetProxyTelnetCommand(L"connect %host %port\\n");
+  SetProxyLocalCommand(L"");
+  SetProxyDNS(asAuto);
+  SetProxyLocalhost(false);
 
   for (int Index = 0; Index < LENOF(FBugs); Index++)
   {
-    Bug[(TSshBug)Index] = asAuto;
+    SetBug((TSshBug)Index, asAuto);
   }
 
-  Special = false;
-  FSProtocol = fsSFTP;
-  AddressFamily = afAuto;
-  RekeyData = "1G";
-  RekeyTime = 60;
+  SetSpecial(false);
+  SetFSProtocol(fsSFTP);
+  SetAddressFamily(afAuto);
+  SetRekeyData(L"1G");
+  SetRekeyTime(60);
 
   // FS common
-  LocalDirectory = "";
-  RemoteDirectory = "";
-  UpdateDirectories = false;
-  CacheDirectories = true;
-  CacheDirectoryChanges = true;
-  PreserveDirectoryChanges = true;
-  LockInHome = false;
-  ResolveSymlinks = true;
-  DSTMode = dstmUnix;
-  DeleteToRecycleBin = false;
-  OverwrittenToRecycleBin = false;
-  RecycleBinPath = "/tmp";
-  Color = 0;
-  PostLoginCommands = "";
+  SetLocalDirectory(L"");
+  SetRemoteDirectory(L"");
+  SetUpdateDirectories(false);
+  SetCacheDirectories(true);
+  SetCacheDirectoryChanges(true);
+  SetPreserveDirectoryChanges(true);
+  SetLockInHome(false);
+  SetResolveSymlinks(true);
+  SetDSTMode(dstmUnix);
+  SetDeleteToRecycleBin(false);
+  SetOverwrittenToRecycleBin(false);
+  SetRecycleBinPath(L"/tmp");
+  SetColor(0);
+  SetPostLoginCommands(L"");
 
   // SCP
-  ReturnVar = "";
-  LookupUserGroups = true;
-  EOLType = eolLF;
-  Shell = ""; //default shell
-  ReturnVar = "";
-  ClearAliases = true;
-  UnsetNationalVars = true;
-  ListingCommand = "ls -la";
-  IgnoreLsWarnings = true;
-  Scp1Compatibility = false;
-  TimeDifference = 0;
-  SCPLsFullTime = asAuto;
-  NotUtf = asAuto;
-  FtpListAll = asAuto;
+  SetReturnVar(L"");
+  SetLookupUserGroups(true);
+  SetEOLType(eolLF);
+  SetShell(L""); //default shell
+  SetReturnVar(L"");
+  SetClearAliases(true);
+  SetUnsetNationalVars(true);
+  SetListingCommand(L"ls -la");
+  SetIgnoreLsWarnings(true);
+  SetScp1Compatibility(false);
+  SetTimeDifference(0);
+  SetSCPLsFullTime(asAuto);
+  SetNotUtf(asAuto);
+  SetFtpListAll(asAuto);
 
   // SFTP
-  SftpServer = "";
-  SFTPDownloadQueue = 4;
-  SFTPUploadQueue = 4;
-  SFTPListingQueue = 2;
-  SFTPMaxVersion = 5;
-  SFTPMaxPacketSize = 0;
+  SetSftpServer(L"");
+  SetSFTPDownloadQueue(4);
+  SetSFTPUploadQueue(4);
+  SetSFTPListingQueue(2);
+  SetSFTPMaxVersion(5);
+  SetSFTPMaxPacketSize(0);
 
-  for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
+  for (int Index(0); Index < LENOF(FSFTPBugs)); Index++)
   {
-    SFTPBug[(TSftpBug)Index] = asAuto;
+    SetSFTPBug((TSftpBug)Index, asAuto);
   }
 
-  Tunnel = false;
-  TunnelHostName = "";
-  TunnelPortNumber = SshPortNumber;
-  TunnelUserName = "";
-  TunnelPassword = "";
-  TunnelPublicKeyFile = "";
-  TunnelLocalPortNumber = 0;
-  TunnelPortFwd = "";
+  SetTunnel(false);
+  SetTunnelHostName(L"");
+  SetTunnelPortNumber(SshPortNumber);
+  SetTunnelUserName(L"");
+  SetTunnelPassword(L"");
+  SetTunnelPublicKeyFile(L"");
+  SetTunnelLocalPortNumber(0);
+  SetTunnelPortFwd(L"");
 
   // FTP
-  FtpPasvMode = true;
-  FtpForcePasvIp = false;
-  FtpAccount = "";
-  FtpPingInterval = 30;
-  FtpPingType = ptDummyCommand;
-  Ftps = ftpsNone;
+  SetFtpPasvMode(true);
+  SetFtpForcePasvIp(false);
+  SetFtpAccount(L"");
+  SetFtpPingInterval(30);
+  SetFtpPingType(ptDummyCommand);
+  SetFtps(ftpsNone);
 
-  FtpProxyLogonType = 0; // none
+  SetFtpProxyLogonType(0); // none
 
-  CustomParam1 = "";
-  CustomParam2 = "";
+  SetCustomParam1(L"");
+  SetCustomParam2(L"");
 
-  Selected = false;
-  FModified = false;
+  SetSelected(false);
+  SetFModified(false);
   FSource = ::ssNone;
 
   // add also to TSessionLog::AddStartupInfo()
