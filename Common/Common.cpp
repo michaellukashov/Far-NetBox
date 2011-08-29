@@ -1700,3 +1700,20 @@ bool CompareText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
+//---------------------------------------------------------------------------
+
+void RaiseLastOSError()
+{
+}
+
+//---------------------------------------------------------------------------
+
+unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
+{
+    return 0;
+}
+
+unsigned long FileWrite(HANDLE Handle, void *Buffer, unsigned long Count)
+{
+    return 0;
+}

@@ -44,14 +44,6 @@ private:
 };
 
 //---------------------------------------------------------------------------
-class THandleStream : public TStream
-{
-public:
-  THandleStream(HANDLE AHandle)
-  {}
-};
-
-//---------------------------------------------------------------------------
 
 class TSafeHandleStream : public THandleStream
 {

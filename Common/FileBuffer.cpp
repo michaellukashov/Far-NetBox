@@ -225,7 +225,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const DWORD Len)
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
     FMemory->Seek(Len, soFromCurrent);
   }
-  catch(EWriteError &)
+  catch (EWriteError &)
   {
     RaiseLastOSError();
   }
@@ -237,9 +237,9 @@ TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
 {
 }
 //---------------------------------------------------------------------------
-int TSafeHandleStream::Read(void * Buffer, int Count)
+int TSafeHandleStream::Read(void *Buffer, int Count)
 {
-  int Result = FileRead(FHandle, Buffer, Count);
+  int Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == -1)
   {
     RaiseLastOSError();

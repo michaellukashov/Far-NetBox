@@ -216,3 +216,10 @@ std::wstring FORMAT(const wchar_t *fmt, ...);
 //---------------------------------------------------------------------------
 
 bool CompareText(const std::wstring str1, const std::wstring str2);
+
+void RaiseLastOSError();
+
+//---------------------------------------------------------------------------
+
+unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count);
+unsigned long FileWrite(HANDLE Handle, void *Buffer, unsigned long Count);

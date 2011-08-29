@@ -25,5 +25,15 @@ void TStream::ReadBuffer(void *Buffer, unsigned long int Count)
 
 unsigned long TStream::Read(void *Buffer, unsigned long int Count)
 {
+    return 0;
+}
+
+void TStream::WriteBuffer(void *Buffer, unsigned long int Count)
+{
+}
+
+unsigned long TStream::Write(void *Buffer, unsigned long int Count)
+{
+    return 0;
 }
 

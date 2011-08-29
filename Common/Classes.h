@@ -387,9 +387,23 @@ public:
     void SetSize(__int64 value) { FSize = value; }
     void ReadBuffer(void *Buffer, unsigned long int Count);
     unsigned long Read(void *Buffer, unsigned long int Count);
+    void WriteBuffer(void *Buffer, unsigned long int Count);
+    unsigned long Write(void *Buffer, unsigned long int Count);
 private:
     __int64 FPosition;
     __int64 FSize;
+};
+
+//---------------------------------------------------------------------------
+
+class THandleStream : public TStream
+{
+public:
+  THandleStream(HANDLE AHandle)
+  {}
+  unsigned long int FileRead(FHandle, Buffer, Count);
+protected:
+  HANDLE FHandle;
 };
 
 //---------------------------------------------------------------------------
@@ -401,4 +415,12 @@ public:
     {}
     void Clear()
     {}
+};
+
+class EReadError : public std::exception
+{
+};
+
+class EWriteError : public std::exception
+{
 };
