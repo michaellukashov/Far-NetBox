@@ -380,6 +380,16 @@ enum SeekEnum
 //---------------------------------------------------------------------------
 class TStream
 {
+public:
+    __int64 GetPosition() const { return FPosition; }
+    void SetPosition(__int64 value) { FPosition = value; }
+    __int64 GetSize() const { return FSize; }
+    void SetSize(__int64 value) { FSize = value; }
+    void ReadBuffer(void *Buffer, unsigned long int Count);
+    unsigned long Read(void *Buffer, unsigned long int Count);
+private:
+    __int64 FPosition;
+    __int64 FSize;
 };
 
 //---------------------------------------------------------------------------

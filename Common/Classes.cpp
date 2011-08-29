@@ -17,3 +17,13 @@ void TDateTime::DecodeTime(unsigned short &H,
     ::DecodeTime(*this, H, N, S, MS);
 }
 
+//---------------------------------------------------------------------------
+
+void TStream::ReadBuffer(void *Buffer, unsigned long int Count)
+{
+}
+
+unsigned long TStream::Read(void *Buffer, unsigned long int Count)
+{
+}
+
