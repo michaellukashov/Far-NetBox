@@ -1713,7 +1713,7 @@ unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
     return 0;
 }
 
-unsigned long FileWrite(HANDLE Handle, void *Buffer, unsigned long Count)
+unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
 {
     return 0;
 }

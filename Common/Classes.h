@@ -401,7 +401,6 @@ class THandleStream : public TStream
 public:
   THandleStream(HANDLE AHandle)
   {}
-  unsigned long int FileRead(FHandle, Buffer, Count);
 protected:
   HANDLE FHandle;
 };

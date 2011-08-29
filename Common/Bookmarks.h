@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #ifndef BookmarksH
 #define BookmarksH
+
+#include "Classes.h"
+
 //---------------------------------------------------------------------------
 class THierarchicalStorage;
 class TBookmarkList;

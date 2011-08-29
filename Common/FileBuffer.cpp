@@ -247,9 +247,9 @@ int TSafeHandleStream::Read(void *Buffer, int Count)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TSafeHandleStream::Write(const void * Buffer, int Count)
+int TSafeHandleStream::Write(const void *Buffer, int Count)
 {
-  int Result = FileWrite(FHandle, Buffer, Count);
+  int Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
     RaiseLastOSError();
