@@ -1,9 +1,11 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "Common.h"
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
 #include "FarPlugin.h"
-#include <Common.h>
+#include "FarUtil.h"
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
@@ -27,30 +29,30 @@ void TFarConfiguration::Default()
   FConfirmOverwritingOverride = false;
   FConfirmSynchronizedBrowsing = true;
 
-  DisksMenu = true;
-  DisksMenuHotKey = 0;
-  PluginsMenu = true;
-  PluginsMenuCommands = true;
-  CommandPrefixes = "winscp,scp,sftp";
-  HostNameInTitle = true;
-  EditorDownloadDefaultMode = true;
-  EditorUploadSameOptions = true;
+  SetDisksMenu(true);
+  SetDisksMenuHotKey(0);
+  SetPluginsMenu(true);
+  SetPluginsMenuCommands(true);
+  SetCommandPrefixes(L"winscp,scp,sftp");
+  SetHostNameInTitle(true);
+  SetEditorDownloadDefaultMode(true);
+  SetEditorUploadSameOptions(true);
   FEditorUploadOnSave = false;
   FEditorMultiple = false;
   FQueueBeep = true;
 
-  CustomPanelModeDetailed = true;
-  FullScreenDetailed = true;
-  ColumnTypesDetailed = "N,S,DM,O,G,R";
-  ColumnWidthsDetailed = "0,8,14,0,0,9";
-  StatusColumnTypesDetailed = "NR";
-  StatusColumnWidthsDetailed = "0";
+  SetCustomPanelModeDetailed(true);
+  SetFullScreenDetailed(true);
+  SetColumnTypesDetailed(L"N,S,DM,O,G,R");
+  SetColumnWidthsDetailed(L"0,8,14,0,0,9");
+  SetStatusColumnTypesDetailed(L"NR");
+  SetStatusColumnWidthsDetailed(L"0");
 
-  ApplyCommandCommand = "";
-  ApplyCommandParams = 0;
+  SetApplyCommandCommand(L"");
+  SetApplyCommandParams(0);
 
-  PuttygenPath = FormatCommand(ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", "");
-  PageantPath = FormatCommand(ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", "");
+  SetPuttygenPath(FormatCommand(ExtractFilePath(ModuleFileName()) + L"putty\\puttygen.exe", L""));
+  SetPageantPath(FormatCommand(ExtractFilePath(ModuleFileName()) + L"putty\\pageant.exe", L""));
 
   FBookmarks->Clear();
 }
@@ -63,11 +65,11 @@ void TFarConfiguration::Saved()
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #define LASTELEM(ELEM) \
-  ELEM.substr(ELEM.LastDelimiter(".>")+1, ELEM.size() - ELEM.LastDelimiter(".>"))
+  ELEM.substr(LastDelimiter(ELEM, L".>")+1, ELEM.size() - LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
-  BLOCK("Far", CANCREATE, \
+  BLOCK(L"Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
     KEY(Integer,  DisksMenuHotKey); \
     KEY(Bool,     PluginsMenu); \
@@ -99,7 +101,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(wstring(#VAR)), VAR)
+  #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(std::wstring(::MB2W("##VAR"))), Get##VAR())
   REGCONFIG(true);
   #undef KEY
 
