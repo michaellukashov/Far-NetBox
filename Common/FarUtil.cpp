@@ -503,9 +503,9 @@ std::wstring StringOfChar(const wchar_t c, size_t len)
     return result;
 }
 
-void RaiseLastOSError()
-{
-}
+// void RaiseLastOSError()
+// {
+// }
 
 TDateTime Date()
 {
