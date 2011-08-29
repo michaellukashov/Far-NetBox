@@ -423,3 +423,16 @@ class EReadError : public std::exception
 class EWriteError : public std::exception
 {
 };
+
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+// FIXME
+class TShortCut
+{
+public:
+    inline bool operator < (const TShortCut &rhs) const
+    {
+        return false;
+    }
+};

@@ -3,6 +3,7 @@
 
 #include <set>
 
+#include "Classes.h"
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -240,16 +241,6 @@ public:
   bool GetDisableAcceptingHostKeys() { return FDisableAcceptingHostKeys; }
   // __property bool GSSAPIInstalled = { read = GetGSSAPIInstalled };
   bool GetGSSAPIInstalled();
-};
-//---------------------------------------------------------------------------
-// FIXME
-class TShortCut
-{
-public:
-    inline bool operator < (const TShortCut &rhs) const
-    {
-        return false;
-    }
 };
 
 //---------------------------------------------------------------------------
