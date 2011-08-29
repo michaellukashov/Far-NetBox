@@ -70,29 +70,29 @@ void TFarConfiguration::Saved()
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Far", CANCREATE, \
-    KEY(Bool,     DisksMenu); \
-    KEY(Integer,  DisksMenuHotKey); \
-    KEY(Bool,     PluginsMenu); \
-    KEY(Bool,     PluginsMenuCommands); \
+    KEY(bool,     DisksMenu); \
+    KEY(int,  DisksMenuHotKey); \
+    KEY(bool,     PluginsMenu); \
+    KEY(bool,     PluginsMenuCommands); \
     KEY(String,   CommandPrefixes); \
-    KEY(Bool,     CustomPanelModeDetailed); \
-    KEY(Bool,     FullScreenDetailed); \
+    KEY(bool,     CustomPanelModeDetailed); \
+    KEY(bool,     FullScreenDetailed); \
     KEY(String,   ColumnTypesDetailed); \
     KEY(String,   ColumnWidthsDetailed); \
     KEY(String,   StatusColumnTypesDetailed); \
     KEY(String,   StatusColumnWidthsDetailed); \
-    KEY(Bool,     HostNameInTitle); \
-    KEY(Bool,     ConfirmOverwritingOverride); \
-    KEY(Bool,     EditorDownloadDefaultMode); \
-    KEY(Bool,     EditorUploadSameOptions); \
-    KEY(Bool,     EditorUploadOnSave); \
-    KEY(Bool,     EditorMultiple); \
-    KEY(Bool,     QueueBeep); \
+    KEY(bool,     HostNameInTitle); \
+    KEY(bool,     ConfirmOverwritingOverride); \
+    KEY(bool,     EditorDownloadDefaultMode); \
+    KEY(bool,     EditorUploadSameOptions); \
+    KEY(bool,     EditorUploadOnSave); \
+    KEY(bool,     EditorMultiple); \
+    KEY(bool,     QueueBeep); \
     KEY(String,   PuttygenPath); \
     KEY(String,   PageantPath); \
     KEY(String,   ApplyCommandCommand); \
-    KEY(Integer,  ApplyCommandParams); \
-    KEY(Bool,     ConfirmSynchronizedBrowsing); \
+    KEY(int,  ApplyCommandParams); \
+    KEY(bool,     ConfirmSynchronizedBrowsing); \
   );
 //---------------------------------------------------------------------------
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
@@ -105,7 +105,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
   REGCONFIG(true);
   #undef KEY
 
-  if (Storage->OpenSubKey("Bookmarks", true))
+  if (Storage->OpenSubKey(L"Bookmarks", true))
   {
     FBookmarks->Save(Storage, All);
 
@@ -118,13 +118,13 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) VAR = Storage->Read ## TYPE(LASTELEM(wstring(#VAR)), VAR)
+  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(std::wstring(::MB2W("##VAR"))), Get##VAR()))
   #pragma warn -eas
   REGCONFIG(false);
   #pragma warn +eas
   #undef KEY
 
-  if (Storage->OpenSubKey("Bookmarks", false))
+  if (Storage->OpenSubKey(L"Bookmarks", false))
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();
@@ -159,23 +159,23 @@ void TFarConfiguration::Save(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void TFarConfiguration::SetPlugin(TCustomFarPlugin * value)
 {
-  if (Plugin != value)
+  if (GetPlugin() != value)
   {
-    assert(!Plugin || !value);
+    assert(!GetPlugin() || !value);
     FPlugin = value;
   }
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::CacheFarSettings()
 {
-  FFarConfirmations = Plugin->FarAdvControl(ACTL_GETCONFIRMATIONS);
+  FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
 }
 //---------------------------------------------------------------------------
 int TFarConfiguration::FarConfirmations()
 {
-  if (GetCurrentThreadId() == Plugin->FarThread)
+  if (GetCurrentThreadId() == GetPlugin()->FarThread)
   {
-    return Plugin->FarAdvControl(ACTL_GETCONFIRMATIONS);
+    return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }
   else
   {
@@ -192,7 +192,7 @@ bool TFarConfiguration::GetConfirmOverwriting()
   }
   else
   {
-    assert(Plugin);
+    assert(GetPlugin());
     return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
   }
 }
@@ -205,7 +205,7 @@ void TFarConfiguration::SetConfirmOverwriting(bool value)
   }
   else
   {
-    if (ConfirmOverwriting != value)
+    if (GetConfirmOverwriting() != value)
     {
       FConfirmOverwritingOverride = true;
       TGUIConfiguration::SetConfirmOverwriting(value);
@@ -215,24 +215,24 @@ void TFarConfiguration::SetConfirmOverwriting(bool value)
 //---------------------------------------------------------------------------
 bool TFarConfiguration::GetConfirmDeleting()
 {
-  assert(Plugin);
+  assert(GetPlugin());
   return (FarConfirmations() & FCS_DELETE) != 0;
 }
 //---------------------------------------------------------------------------
 wstring TFarConfiguration::ModuleFileName()
 {
-  assert(Plugin);
-  return Plugin->ModuleName;
+  assert(GetPlugin());
+  return GetPlugin()->ModuleName;
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::SetBookmark(wstring Key,
   TBookmarkList * value)
 {
-  FBookmarks->Bookmarks[Key] = value;
+  FBookmarks->SetBookmarks(Key, value);
   Changed();
 }
 //---------------------------------------------------------------------------
 TBookmarkList * TFarConfiguration::GetBookmark(wstring Key)
 {
-  return FBookmarks->Bookmarks[Key];
+  return FBookmarks->GetBookmarks(Key);
 }
