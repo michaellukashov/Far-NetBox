@@ -254,7 +254,7 @@ target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
 set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/NetBox )
 
 set ( TESTNETBOX_01_HEADERS
-    )
+)
 
 set ( TESTNETBOX_01_SOURCES
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
@@ -292,8 +292,9 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/PuttyIntf.cpp
     ${PROJECT_ROOT}/Common/Cryptography.cpp
     ${PROJECT_ROOT}/Common/FileBuffer.cpp
-    ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/NetBox/FarConfiguration.cpp
 )
 
 set ( TESTNETBOX_01_LIBRARIES

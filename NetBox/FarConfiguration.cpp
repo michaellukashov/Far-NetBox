@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
 #include "FarPlugin.h"
