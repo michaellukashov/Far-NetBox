@@ -429,6 +429,58 @@ class EWriteError : public std::exception
 };
 
 //---------------------------------------------------------------------------
+class TRegistry
+{
+public:
+    void SetAccess(int access)
+    {}
+    void SetRootKey(HKEY ARootKey)
+    {}
+    void GetValueNames(TStrings * Names)
+    {}
+    void GetKeyNames(TStrings * Names)
+    {}
+    HKEY GetCurrentKey() const { return 0; }
+    HKEY GetRootKey() const { return 0; }
+    void CloseKey() {}
+    bool OpenKey(const std::wstring &key, bool CanCreate) { return false; }
+    bool DeleteKey(const std::wstring &key) { return false; }
+    bool DeleteValue(const std::wstring &value) { return false; }
+    bool KeyExists(const std::wstring SubKey) { return false; }
+    bool ValueExists(const std::wstring Value) { return false; }
+    int GetDataSize(const std::wstring Name) { return 0; }
+    bool Readbool(const std::wstring Name, bool Default) { return false; }
+    TDateTime ReadDateTime(const std::wstring Name, TDateTime Default) { return Default; }
+    double ReadFloat(const std::wstring Name, double Default)
+    { return 0; }
+    int Readint(const std::wstring Name, int Default)
+    { return 0; }
+    __int64 ReadInt64(const std::wstring Name, __int64 Default)
+    { return 0; }
+    std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default)
+    { return L""; }
+    int ReadBinaryData(const std::wstring Name,
+      void * Buffer, int Size)
+    { return 0; }
+
+  void Writebool(const std::wstring Name, bool Value)
+  {}
+  void WriteDateTime(const std::wstring Name, TDateTime Value)
+  {}
+  void WriteFloat(const std::wstring Name, double Value)
+  {}
+  void WriteStringRaw(const std::wstring Name, const std::wstring Value)
+  {}
+  void Writeint(const std::wstring Name, int Value)
+  {}
+  void WriteInt64(const std::wstring Name, __int64 Value)
+  {}
+  void WriteBinaryData(const std::wstring Name,
+      const void * Buffer, int Size)
+  {}
+};
+
+//---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 // FIXME
