@@ -855,7 +855,7 @@ __int64 TIniFileStorage::ReadInt64(const std::wstring Name, __int64 Default)
 {
   __int64 Result = Default;
   std::wstring Str;
-  Str = ReadStringRaw(Name, Ä"");
+  Str = ReadStringRaw(Name, L"");
   if (!Str.empty())
   {
     Result = StrToInt64Def(Str, Default);
@@ -897,7 +897,7 @@ TDateTime TIniFileStorage::ReadDateTime(const std::wstring Name, TDateTime Defau
 double TIniFileStorage::ReadFloat(const std::wstring Name, double Default)
 {
   double Result;
-  std::wstring Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), "");
+  std::wstring Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.empty())
   {
     Result = Default;
