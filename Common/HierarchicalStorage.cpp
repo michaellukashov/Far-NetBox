@@ -750,7 +750,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
         {
           SubSection.resize(P - 1);
         }
-        if (Strings->IndexOf(SubSection) < 0)
+        if (Strings->IndexOf(SubSection.c_str()) < 0)
         {
           Strings->Add(UnMungeStr(SubSection));
         }
@@ -765,7 +765,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
 //---------------------------------------------------------------------------
 void TIniFileStorage::GetValueNames(TStrings* Strings)
 {
-  FIniFile->ReadSection(CurrentSection, Strings);
+  FIniFile->ReadSection(GetCurrentSection(), Strings);
   for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->GetString(Index) = UnMungeIniName(Strings->GetString(Index));
@@ -779,7 +779,7 @@ bool TIniFileStorage::KeyExists(const std::wstring SubKey)
 //---------------------------------------------------------------------------
 bool TIniFileStorage::ValueExists(const std::wstring Value)
 {
-  return FIniFile->ValueExists(CurrentSection, MungeIniName(Value));
+  return FIniFile->ValueExists(GetCurrentSection(), MungeIniName(Value));
 }
 //---------------------------------------------------------------------------
 bool TIniFileStorage::DeleteValue(const std::wstring Name)
@@ -790,12 +790,12 @@ bool TIniFileStorage::DeleteValue(const std::wstring Name)
 //---------------------------------------------------------------------------
 int TIniFileStorage::BinaryDataSize(const std::wstring Name)
 {
-  return ReadStringRaw(Name, "").size() / 2;
+  return ReadStringRaw(Name, L"").size() / 2;
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::ApplyOverrides()
 {
-  std::wstring OverridesKey = IncludeTrailingBackslash("Override");
+  std::wstring OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
   try
@@ -820,8 +820,8 @@ void TIniFileStorage::ApplyOverrides()
 
           for (int ii = 0; ii < Names->GetCount(); ii++)
           {
-            std::wstring Name = Names->GetString(ii];
-            std::wstring Value = FIniFile->ReadString(Section, Name, "");
+            std::wstring Name = Names->GetString(ii);
+            std::wstring Value = FIniFile->ReadString(Section, Name, L"");
             FIniFile->WriteString(SubKey, Name, Value);
           }
         }

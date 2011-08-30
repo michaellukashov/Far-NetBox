@@ -492,6 +492,23 @@ public:
 
 class TMemIniFile
 {
+public:
+    TMemIniFile(const std::wstring AFileName)
+    {}
+    void GetStrings(TStrings *Strings)
+    {}
+    std::wstring ReadString(std::wstring Section, std::wstring Name, std::wstring Default)
+    { return L""; }
+    std::wstring Writetring(std::wstring Section, std::wstring Name, std::wstring Value)
+    { return L""; }
+    void ReadSections(TStrings *Strings)
+    {}
+    void ReadSection(std::wstring Section, TStrings *Strings)
+    {}
+    bool SectionExists(std::wstring Section) { return false; }
+    bool ValueExists(std::wstring Section) { return false; }
+    bool DeleteKey(std::wstring Section, std::wstring Name)
+    {}
 };
 
 //---------------------------------------------------------------------------
