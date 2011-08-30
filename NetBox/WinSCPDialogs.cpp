@@ -1506,7 +1506,7 @@ public:
   enum TSessionTab { tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
     tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabCount };
 
-  TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionAction Action);
+  TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
 
   bool Execute(TSessionData * Data, TSessionAction & Action);
 
@@ -1515,7 +1515,7 @@ protected:
   virtual bool CloseQuery();
 
 private:
-  TSessionAction FAction;
+  TSessionActionEnum FAction;
   TSessionData * FSessionData;
   int FTransferProtocolIndex;
 
@@ -1662,7 +1662,7 @@ private:
 static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP };
 //---------------------------------------------------------------------------
 TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
-  TSessionAction Action) : TTabbedDialog(AFarPlugin, tabCount),
+  TSessionActionEnum Action) : TTabbedDialog(AFarPlugin, tabCount),
   FAction(Action)
 {
   TPoint S = TPoint(67, 23);
@@ -2481,9 +2481,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(LOGIN_CIPHER));
 
   CipherListBox = new TFarListBox(this);
-  CipherListBox->SetRight(CipherListBox->GeRight() - 15);
+  CipherListBox->SetRight(CipherListBox->GetRight() - 15);
   CipherListBox->SetHeight(1 + CIPHER_COUNT + 1);
-  Pos = CipherListBox->Bottom;
+  Pos = CipherListBox->GetBottom();
 
   SetNextItemPosition(ipRight);
 
@@ -2555,7 +2555,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   KexListBox = new TFarListBox(this);
-  KexListBox->SetRight(KexListBox->GeRight() - 15);
+  KexListBox->SetRight(KexListBox->GetRight() - 15);
   KexListBox->SetHeight(1 + KEX_COUNT + 1);
   KexListBox->SetEnabledDependencyNegative(SshProt1onlyButton);
 
@@ -2604,7 +2604,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   AuthGSSAPICheck2 = new TFarCheckBox(this);
   AuthGSSAPICheck2->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI));
-  AuthGSSAPICheck2->SetOnAllowChange(AuthGSSAPICheckAllowChange);
+  // FIXME AuthGSSAPICheck2->SetOnAllowChange(AuthGSSAPICheckAllowChange);
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_AUTH_PARAMS_GROUP));
@@ -2674,9 +2674,9 @@ void TSessionDialog::Change()
 {
   TTabbedDialog::Change();
 
-  if (Handle && !ChangesLocked())
+  if (GetHandle() && !ChangesLocked())
   {
-    if (FTransferProtocolIndex != TransferProtocolCombo->GetItems()->Selected)
+    if (FTransferProtocolIndex != TransferProtocolCombo->GetItems()->GetSelected())
     {
       TransferProtocolComboChange();
     }
@@ -2699,19 +2699,19 @@ void TSessionDialog::TransferProtocolComboChange()
   // even if user cancels the dialog
   SavePing(FSessionData);
 
-  FTransferProtocolIndex = TransferProtocolCombo->GetItems()->Selected;
+  FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
 
   LoadPing(FSessionData);
   if (GetFSProtocol() == fsFTP)
   {
-    if (PortNumberEdit->AsInteger == 22)
+    if (PortNumberEdit->GetAsInteger() == 22)
     {
       PortNumberEdit->SetAsInteger(21);
     }
   }
   else
   {
-    if (PortNumberEdit->AsInteger == 21)
+    if (PortNumberEdit->GetAsInteger() == 21)
     {
       PortNumberEdit->SetAsInteger(22);
     }
@@ -2728,18 +2728,18 @@ void TSessionDialog::UpdateControls()
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   bool FtpProtocol = (FSProtocol == fsFTP);
 
-  ConnectButton->SetEnabled(!HostNameEdit->IsEmpty);
+  ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
   // Basic tab
-  AllowScpFallbackCheck->Visible =
-    TransferProtocolCombo->Visible &&
-    (IndexToFSProtocol(TransferProtocolCombo->GetItems()->Selected, false) == fsSFTPonly);
-  InsecureLabel->SetVisible(TransferProtocolCombo->Visible && !SshProtocol);
+  AllowScpFallbackCheck->SetVisible(
+    TransferProtocolCombo->GetVisible() &&
+    (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
-  if (FtpProtocol && (FtpProxyMethodCombo->GetItems()->Selected != pmNone) && !FtpPasvModeCheck->GetChecked())
+  if (FtpProtocol && (FtpProxyMethodCombo->GetItems()->GetSelected() != pmNone) && !FtpPasvModeCheck->GetChecked())
   {
     FtpPasvModeCheck->SetChecked(true);
     TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin*>(FarPlugin);
@@ -2757,9 +2757,9 @@ void TSessionDialog::UpdateControls()
 
   // SSH tab
   SshTab->SetEnabled(SshProtocol);
-  CipherUpButton->SetEnabled(CipherListBox->GetItems()->Selected);
-  CipherDownButton->GetEnabled() =
-    CipherListBox->GetItems()->Selected < CipherListBox->GetItems()->GetCount() - 1;
+  CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetSelected());
+  CipherDownButton->SetEnabled(
+    CipherListBox->GetItems()->GetSelected() < CipherListBox->GetItems()->GetCount() - 1);
 
   // Authentication tab
   AuthenticatonTab->SetEnabled(SshProtocol);
@@ -2768,20 +2768,20 @@ void TSessionDialog::UpdateControls()
   TryAgentCheck->SetEnabled(Authentication);
   AuthTISCheck->SetEnabled(Authentication && !SshProt2onlyButton->GetChecked());
   AuthKICheck->SetEnabled(Authentication && !SshProt1onlyButton->GetChecked());
-  AuthKIPasswordCheck->GetEnabled() =
+  AuthKIPasswordCheck->SetEnabled(
     Authentication &&
     ((AuthTISCheck->GetEnabled() && AuthTISCheck->GetChecked()) ||
-     (AuthKICheck->GetEnabled() && AuthKICheck->GetChecked()));
-  AuthGSSAPICheck2->GetEnabled() =
-    Authentication && !SshProt1onlyButton->GetChecked();
-  GSSAPIServerRealmEdit->GetEnabled() =
-    AuthGSSAPICheck2->GetEnabled() && AuthGSSAPICheck2->GetChecked();
+     (AuthKICheck->GetEnabled() && AuthKICheck->GetChecked())));
+  AuthGSSAPICheck2->SetEnabled(
+    Authentication && !SshProt1onlyButton->GetChecked());
+  GSSAPIServerRealmEdit->SetEnabled(
+    AuthGSSAPICheck2->GetEnabled() && AuthGSSAPICheck2->GetChecked());
 
   // Directories tab
-  CacheDirectoryChangesCheck->GetEnabled() =
-    (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked();
-  PreserveDirectoryChangesCheck->GetEnabled() =
-    CacheDirectoryChangesCheck->IsEnabled && CacheDirectoryChangesCheck->GetChecked();
+  CacheDirectoryChangesCheck->SetEnabled(
+    (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked());
+  PreserveDirectoryChangesCheck->SetEnabled(
+    CacheDirectoryChangesCheck->GetIsEnabled() && CacheDirectoryChangesCheck->GetChecked());
   ResolveSymlinksCheck->SetEnabled((FSProtocol != fsFTP));
 
   // Environment tab
@@ -2790,18 +2790,18 @@ void TSessionDialog::UpdateControls()
   TimeDifferenceEdit->SetEnabled(((FSProtocol == fsFTP) || (FSProtocol == fsSCPonly)));
 
   // Recycle bin tab
-  OverwrittenToRecycleBinCheck->GetEnabled() = (FSProtocol != fsSCPonly) &&
-    (FSProtocol != fsFTP);
-  RecycleBinPathEdit->GetEnabled() =
-    (DeleteToRecycleBinCheck->IsEnabled && DeleteToRecycleBinCheck->GetChecked()) ||
-    (OverwrittenToRecycleBinCheck->IsEnabled && OverwrittenToRecycleBinCheck->GetChecked());
+  OverwrittenToRecycleBinCheck->SetEnabled((FSProtocol != fsSCPonly) &&
+    (FSProtocol != fsFTP));
+  RecycleBinPathEdit->SetEnabled(
+    (DeleteToRecycleBinCheck->GetIsEnabled() && DeleteToRecycleBinCheck->GetChecked()) ||
+    (OverwrittenToRecycleBinCheck->GetIsEnabled() && OverwrittenToRecycleBinCheck->GetChecked()));
 
   // Kex tab
-  KexTab->GetEnabled() = SshProtocol && !SshProt1onlyButton->GetChecked() &&
-    (BugRekey2Combo->GetItems()->Selected != 2);
-  KexUpButton->SetEnabled((KexListBox->GetItems()->Selected > 0));
-  KexDownButton->GetEnabled() =
-    (KexListBox->GetItems()->Selected < KexListBox->GetItems()->GetCount() - 1);
+  KexTab->SetEnabled(SshProtocol && !SshProt1onlyButton->GetChecked() &&
+    (BugRekey2Combo->GetItems()->GetSelected() != 2));
+  KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
+  KexDownButton->SetEnabled(
+    (KexListBox->GetItems()->GetSelected() < KexListBox->GetItems()->GetCount() - 1));
 
   // Bugs tab
   BugsTab->SetEnabled(SshProtocol);
@@ -2824,7 +2824,7 @@ void TSessionDialog::UpdateControls()
   ProxyMethodCombo->SetVisible((Tab == ProxyMethodCombo->Group));
   TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
-  if (ProxyMethodCombo->GetItems()->Selected >= OtherProxyMethodCombo->GetItems()->GetCount())
+  if (ProxyMethodCombo->GetItems()->GetSelected() >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
     OtherProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -2833,35 +2833,35 @@ void TSessionDialog::UpdateControls()
     OtherProxyMethodCombo->GetItems()->SetSelected(ProxyMethodCombo->GetItems()->GetSelected();
   }
 
-  bool Proxy = (ProxyMethodCombo->GetItems()->Selected != pmNone);
+  bool Proxy = (ProxyMethodCombo->GetItems()->GetSelected() != pmNone);
   std::wstring ProxyCommand =
-    ((ProxyMethodCombo->GetItems()->Selected == pmCmd) ?
+    ((ProxyMethodCombo->GetItems()->GetSelected() == pmCmd) ?
       ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText());
-  ProxyHostEdit->GetEnabled() = Proxy &&
-    ((ProxyMethodCombo->GetItems()->Selected != pmCmd) ||
-     AnsiContainsText(ProxyCommand, "%proxyhost"));
-  ProxyPortEdit->GetEnabled() = Proxy &&
-    ((ProxyMethodCombo->GetItems()->Selected != pmCmd) ||
-     AnsiContainsText(ProxyCommand, "%proxyport"));
-  ProxyUsernameEdit->GetEnabled() = Proxy &&
+  ProxyHostEdit->SetEnabled(Proxy &&
+    ((ProxyMethodCombo->GetItems()->GetSelected() != pmCmd) ||
+     AnsiContainsText(ProxyCommand, L"%proxyhost")));
+  ProxyPortEdit->SetEnabled(Proxy &&
+    ((ProxyMethodCombo->GetItems()->GetSelected() != pmCmd) ||
+     AnsiContainsText(ProxyCommand, L"%proxyport")));
+  ProxyUsernameEdit->SetEnabled(Proxy &&
     // FZAPI does not support username for SOCKS4
-    (((ProxyMethodCombo->GetItems()->Selected == pmSocks4) && SshProtocol) ||
-     (ProxyMethodCombo->GetItems()->Selected == pmSocks5) ||
-     (ProxyMethodCombo->GetItems()->Selected == pmHTTP) ||
-     (((ProxyMethodCombo->GetItems()->Selected == pmTelnet) ||
-       (ProxyMethodCombo->GetItems()->Selected == pmCmd)) &&
-      AnsiContainsText(ProxyCommand, "%user")));
-  ProxyPasswordEdit->GetEnabled() = Proxy &&
-    ((ProxyMethodCombo->GetItems()->Selected == pmSocks5) ||
-     (ProxyMethodCombo->GetItems()->Selected == pmHTTP) ||
-     (((ProxyMethodCombo->GetItems()->Selected == pmTelnet) ||
-       (ProxyMethodCombo->GetItems()->Selected == pmCmd)) &&
-      AnsiContainsText(ProxyCommand, "%pass")));
+    (((ProxyMethodCombo->GetItems()->GetSelected() == pmSocks4) && SshProtocol) ||
+     (ProxyMethodCombo->GetItems()->GetSelected() == pmSocks5) ||
+     (ProxyMethodCombo->GetItems()->GetSelected() == pmHTTP) ||
+     (((ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet) ||
+       (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd)) &&
+      AnsiContainsText(ProxyCommand, L"%user"))));
+  ProxyPasswordEdit->SetEnabled(Proxy &&
+    ((ProxyMethodCombo->GetItems()->GetSelected() == pmSocks5) ||
+     (ProxyMethodCombo->GetItems()->GetSelected() == pmHTTP) ||
+     (((ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet) ||
+       (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd)) &&
+      AnsiContainsText(ProxyCommand, L"%pass"))));
   bool ProxySettings = Proxy && SshProtocol;
-  ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethodCombo->GetItems()->Selected == pmTelnet));
-  ProxyLocalCommandEdit->SetVisible((Tab == ProxyMethodCombo->Group) && (ProxyMethodCombo->GetItems()->Selected == pmCmd));
+  ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet));
+  ProxyLocalCommandEdit->SetVisible((Tab == ProxyMethodCombo->Group) && (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd));
   ProxyLocalCommandLabel->SetVisible(ProxyLocalCommandEdit->GetVisible());
-  ProxyTelnetCommandEdit->SetVisible((Tab == ProxyMethodCombo->Group) && (ProxyMethodCombo->GetItems()->Selected != pmCmd));
+  ProxyTelnetCommandEdit->SetVisible((Tab == ProxyMethodCombo->Group) && (ProxyMethodCombo->GetItems()->GetSelected() != pmCmd));
   ProxyTelnetCommandLabel->SetVisible(ProxyTelnetCommandEdit->GetVisible());
   ProxyLocalhostCheck->SetEnabled(ProxySettings);
   ProxyDNSOffButton->SetEnabled(ProxySettings);
@@ -2876,7 +2876,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   Caption = GetMsg(Captions[Action]);
 
   FSessionData = SessionData;
-  FTransferProtocolIndex = TransferProtocolCombo->GetItems()->Selected;
+  FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
 
   HideTabs();
   SelectTab(tabSession);
@@ -2891,7 +2891,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
 
   bool AllowScpFallback;
-  TransferProtocolCombo->GetItems()->Selected =
+  TransferProtocolCombo->GetItems()->GetSelected() =
     FSProtocolToIndex(SessionData->FSProtocol, AllowScpFallback);
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
 
@@ -2982,7 +2982,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   // SFTP tab
 
   #define TRISTATE(COMBO, PROP, MSG) \
-    COMBO->GetItems()->Selected = 2 - SessionData->PROP
+    COMBO->GetItems()->GetSelected() = 2 - SessionData->PROP
   SFTP_BUGS();
 
   if (SessionData->SftpServer.empty())
@@ -3176,9 +3176,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
       else
     if (DSTModeKeepCheck->GetChecked()) SessionData->SetDSTMode(dstmKeep);
       else SessionData->SetDSTMode(dstmWin);
-    if (EOLTypeCombo->GetItems()->Selected == 0) SessionData->SetEOLType(eolLF);
+    if (EOLTypeCombo->GetItems()->GetSelected() == 0) SessionData->SetEOLType(eolLF);
       else SessionData->SetEOLType(eolCRLF);
-    switch (UtfCombo->GetItems()->Selected)
+    switch (UtfCombo->GetItems()->GetSelected())
     {
       case 1:
         SessionData->SetUtf(asOn);
@@ -3275,7 +3275,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
     }
 
     // Proxy tab
-    SessionData->SetProxyMethod((TProxyMethod)SshProxyMethodCombo->GetItems()->Selected);
+    SessionData->SetProxyMethod((TProxyMethod)SshProxyMethodCombo->GetItems()->GetSelected());
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
     SessionData->SetProxyPort(ProxyPortEdit->GetAsInteger());
     SessionData->SetProxyUsername(ProxyUsernameEdit->GetText());
@@ -3425,7 +3425,7 @@ int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
 //---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::GetFSProtocol()
 {
-  return IndexToFSProtocol(TransferProtocolCombo->GetItems()->Selected,
+  return IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(),
     AllowScpFallbackCheck->GetChecked());
 }
 //---------------------------------------------------------------------------
@@ -3526,7 +3526,7 @@ void TSessionDialog::CipherButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
   {
-    int Source = CipherListBox->GetItems()->Selected;
+    int Source = CipherListBox->GetItems()->GetSelected();
     int Dest = Source + Sender->Result;
 
     CipherListBox->GetItems()->Move(Source, Dest);
@@ -3540,7 +3540,7 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
   {
-    int Source = KexListBox->GetItems()->Selected;
+    int Source = KexListBox->GetItems()->GetSelected();
     int Dest = Source + Sender->Result;
 
     KexListBox->GetItems()->Move(Source, Dest);
@@ -3776,14 +3776,14 @@ void TRightsContainer::OctalEditExit(TObject * /*Sender*/)
 //---------------------------------------------------------------------------
 void TRightsContainer::UpdateControls()
 {
-  if (Dialog->Handle)
+  if (Dialog->GetHandle())
   {
     TRights R = Rights;
 
     if (DirectoriesXCheck)
     {
-      DirectoriesXCheck->GetEnabled() =
-        !((R.NumberSet & TRights::rfExec) == TRights::rfExec);
+      DirectoriesXCheck->SetEnabled(
+        !((R.NumberSet & TRights::rfExec) == TRights::rfExec));
     }
 
     if (!OctalEdit->Focused())
@@ -3807,7 +3807,7 @@ void TRightsContainer::Change()
 {
   TFarDialogContainer::Change();
 
-  if (Dialog->Handle)
+  if (Dialog->GetHandle())
   {
     UpdateControls();
   }
@@ -3824,7 +3824,7 @@ TRights::TState TRightsContainer::GetStates(TRights::TRight Right)
   TFarCheckBox * CheckBox = Checks[Right];
   if (CheckBox != NULL)
   {
-    switch (CheckBox->Selected) {
+    switch (CheckBox->GetSelected()) {
       case BSTATE_UNCHECKED: return TRights::rsNo;
       case BSTATE_CHECKED: return TRights::rsYes;
       case BSTATE_3STATE:
@@ -4100,7 +4100,7 @@ void TPropertiesDialog::Change()
 {
   TFarDialog::Change();
 
-  if (Handle)
+  if (GetHandle())
   {
     TRemoteProperties FileProperties;
     UpdateProperties(FileProperties);
@@ -4122,7 +4122,7 @@ void TPropertiesDialog::Change()
       RightsContainer->SetAllowUndef(AllowUndef);
     }
 
-    OkButton->GetEnabled() =
+    OkButton->SetEnabled(
       // group name is specified or we set multiple-file properties and
       // no valid group was specified (there are at least two different groups)
       (!GroupComboBox->GetText().empty() ||
@@ -4132,7 +4132,7 @@ void TPropertiesDialog::Change()
       (!OwnerComboBox->GetText().empty() ||
        (FMultiple && !FOrigProperties.Valid.Contains(vpOwner)) ||
        (FOrigProperties.Owner == OwnerComboBox->GetText())) &&
-      ((FileProperties != FOrigProperties) || (RecursiveCheck && RecursiveCheck->GetChecked()));
+      ((FileProperties != FOrigProperties) || (RecursiveCheck && RecursiveCheck->GetChecked())));
   }
 }
 //---------------------------------------------------------------------------
@@ -4292,7 +4292,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box = new TFarBox(Dialog);
   Add(Box);
   Box->GetLeft() -= 2;
-  Box->GeRight();++;
+  Box->GetRight();++;
   Box->SetCaption(GetMsg(TRANSFER_UPLOAD_OPTIONS));
 
   Dialog->SetNextItemPosition(ipNewLine);
@@ -4302,9 +4302,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(TMTextButton);
   TMTop = TMTextButton->GetTop();
   TMTextButton->SetCaption(GetMsg(TRANSFER_MODE_TEXT));
-  TMTextButton->GetEnabled() =
+  TMTextButton->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly);
+    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
 
   TMBinaryButton = new TFarRadioButton(Dialog);
   TMBinaryButton->SetLeft(1);
@@ -4393,9 +4393,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(PreserveReadOnlyCheck);
   PreserveReadOnlyCheck->SetLeft(1);
   PreserveReadOnlyCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_READONLY));
-  PreserveReadOnlyCheck->GetEnabled() =
+  PreserveReadOnlyCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly) &&
-    FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly);
+    FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly));
   TMBottom = PreserveReadOnlyCheck->GetTop();
 
   PreserveRightsCheck = new TFarCheckBox(Dialog);
@@ -4404,9 +4404,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveRightsCheck->SetTop(TMTop);
   PreserveRightsCheck->SetBottom(TMTop);
   PreserveRightsCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_RIGHTS));
-  PreserveRightsCheck->GetEnabled() =
+  PreserveRightsCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly) &&
-    FLAGCLEAR(CopyParamAttrs, cpaNoRights);
+    FLAGCLEAR(CopyParamAttrs, cpaNoRights));
 
   Dialog->SetNextItemPosition(ipBelow);
 
@@ -4426,10 +4426,10 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(ClearArchiveCheck);
   ClearArchiveCheck->SetTop(TMTop + 7);
   ClearArchiveCheck->SetCaption(GetMsg(TRANSFER_CLEAR_ARCHIVE));
-  ClearArchiveCheck->GetEnabled() =
+  ClearArchiveCheck->SetEnabled(
     FLAGCLEAR(FOptions, coTempTransfer) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoClearArchive) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly);
+    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
 
   Box = new TFarBox(Dialog);
   Box->SetTop(TMTop + 8);
@@ -4442,9 +4442,9 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(PreserveTimeCheck);
   PreserveTimeCheck->SetLeft(TMWidth + 3);
   PreserveTimeCheck->SetCaption(GetMsg(TRANSFER_PRESERVE_TIMESTAMP));
-  PreserveTimeCheck->GetEnabled() =
+  PreserveTimeCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveTime) &&
-    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly);
+    FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly));
 
   CalculateSizeCheck = new TFarCheckBox(Dialog);
   CalculateSizeCheck->SetCaption(GetMsg(TRANSFER_CALCULATE_SIZE));
@@ -4465,10 +4465,10 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   NegativeExcludeCombo->GetItems()->Add(GetMsg(TRANSFER_INCLUDE));
   NegativeExcludeCombo->SetDropDownList(true);
   NegativeExcludeCombo->ResizeToFitContent();
-  NegativeExcludeCombo->GetEnabled() =
+  NegativeExcludeCombo->SetEnabled(
     FLAGCLEAR(FOptions, coTempTransfer) &&
     (FLAGCLEAR(CopyParamAttrs, cpaNoExcludeMask) ||
-     FLAGSET(CopyParamAttrs, cpaExcludeMaskOnly));
+     FLAGSET(CopyParamAttrs, cpaExcludeMaskOnly)));
 
   Dialog->SetNextItemPosition(ipRight);
 
@@ -4510,7 +4510,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Dialog->SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(Dialog);
-  Separator->SetPosition(ExcludeFileMaskCombo->Bottom + 1);
+  Separator->SetPosition(ExcludeFileMaskCombo->GetBottom() + 1);
   Separator->SetLeft(0);
   Add(Separator);
 }
@@ -4519,11 +4519,11 @@ void TCopyParamsContainer::UpdateControls()
 {
   if (IgnorePermErrorsCheck != NULL)
   {
-    IgnorePermErrorsCheck->GetEnabled() =
+    IgnorePermErrorsCheck->SetEnabled(
       ((PreserveRightsCheck->GetEnabled() && PreserveRightsCheck->GetChecked()) ||
        (PreserveTimeCheck->GetEnabled() && PreserveTimeCheck->GetChecked())) &&
       FLAGCLEAR(FCopyParamAttrs, cpaNoIgnorePermErrors) &&
-      FLAGCLEAR(FCopyParamAttrs, cpaExcludeMaskOnly);
+      FLAGCLEAR(FCopyParamAttrs, cpaExcludeMaskOnly));
   }
 }
 //---------------------------------------------------------------------------
@@ -4531,7 +4531,7 @@ void TCopyParamsContainer::Change()
 {
   TFarDialogContainer::Change();
 
-  if (Dialog->Handle)
+  if (Dialog->GetHandle())
   {
     UpdateControls();
   }
@@ -4644,7 +4644,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
 
   Result.ClearArchive = ClearArchiveCheck->GetChecked();
 
-  Result.NegativeExclude = (NegativeExcludeCombo->GetItems()->Selected == 1);
+  Result.NegativeExclude = (NegativeExcludeCombo->GetItems()->GetSelected() == 1);
   Result.ExcludeFileMask.Masks = ExcludeFileMaskCombo->GetText();
 
   Result.PreserveTime = PreserveTimeCheck->GetChecked();
@@ -4910,7 +4910,7 @@ void TCopyDialog::Change()
 {
   TFarDialog::Change();
 
-  if (Handle)
+  if (GetHandle())
   {
     std::wstring InfoStr = FCopyParams.GetInfoStr(L"; ", FCopyParamAttrs);
     TStringList * InfoStrLines = new TStringList();
@@ -4918,7 +4918,7 @@ void TCopyDialog::Change()
     {
       FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GeRight() - (CopyParamLister->GetScrollBar(); ? 0 : 1));
+      CopyParamLister->SetRight(BorderBox->GetRight() - (CopyParamLister->GetScrollBar(); ? 0 : 1));
     }
     catch (...)
     {
@@ -5087,10 +5087,10 @@ void TLinkDialog::Change()
 {
   TFarDialog::Change();
 
-  if (Handle)
+  if (GetHandle())
   {
-    OkButton->GetEnabled() = !FileNameEdit->GetText().empty() &&
-      !PointToEdit->GetText().empty();
+    OkButton->SetEnabled(!FileNameEdit->GetText().empty() &&
+      !PointToEdit->GetText().empty());
   }
 }
 //---------------------------------------------------------------------------
@@ -5277,7 +5277,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipRight);
 
   SpaceAvailablePathEdit = new TFarEdit(this);
-  SpaceAvailablePathEdit->GeRight() =
+  SpaceAvailablePathEdit->GetRight() =
     - (GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11);
 
   Button = new TFarButton(this);
@@ -5541,7 +5541,7 @@ void TFileSystemInfoDialog::FeedControls()
 {
   FLastFeededControl = NULL;
   Feed(ControlsAddItem);
-  InfoLister->SetRight(BorderBox->GeRight() - (InfoLister->GetScrollBar() ? 0 : 1));
+  InfoLister->SetRight(BorderBox->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 //---------------------------------------------------------------------------
 void TFileSystemInfoDialog::SelectTab(int Tab)
@@ -5596,7 +5596,7 @@ void TFileSystemInfoDialog::Change()
 {
   TTabbedDialog::Change();
 
-  if (Handle)
+  if (GetHandle())
   {
     UpdateControls();
   }
@@ -5943,7 +5943,7 @@ void TApplyCommandDialog::Change()
 {
   TWinSCPDialog::Change();
 
-  if (Handle)
+  if (GetHandle())
   {
     bool RemoteCommand = RemoteCommandButton->GetChecked();
     bool AllowRecursive = true;
@@ -6259,7 +6259,7 @@ void TFullSynchronizeDialog::Change()
 {
   TWinSCPDialog::Change();
 
-  if (Handle)
+  if (GetHandle())
   {
     if (SynchronizeTimestampsButton->GetChecked())
     {
@@ -6280,10 +6280,10 @@ void TFullSynchronizeDialog::Change()
       SynchronizeByTimeCheck->SetChecked(true);
     }
     MirrorFilesButton->SetEnabled(!SynchronizeBothButton->GetChecked());
-    SynchronizeDeleteCheck->GetEnabled() = !SynchronizeBothButton->GetChecked() &&
-      !SynchronizeTimestampsButton->GetChecked();
-    SynchronizeByTimeCheck->GetEnabled() = !SynchronizeBothButton->GetChecked() &&
-      !SynchronizeTimestampsButton->GetChecked() && !MirrorFilesButton->GetChecked();
+    SynchronizeDeleteCheck->SetEnabled(!SynchronizeBothButton->GetChecked() &&
+      !SynchronizeTimestampsButton->GetChecked());
+    SynchronizeByTimeCheck->SetEnabled(!SynchronizeBothButton->GetChecked() &&
+      !SynchronizeTimestampsButton->GetChecked() && !MirrorFilesButton->GetChecked());
     SynchronizeBySizeCheck->Caption = SynchronizeTimestampsButton->GetChecked() ?
       GetMsg(SYNCHRONIZE_SAME_SIZE) : GetMsg(SYNCHRONIZE_BY_SIZE);
 
@@ -6306,7 +6306,7 @@ void TFullSynchronizeDialog::Change()
     {
       FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GeRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
+      CopyParamLister->SetRight(BorderBox->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
@@ -6966,7 +6966,7 @@ void TSynchronizeChecklistDialog::VideoModeButtonClick(
 void TSynchronizeChecklistDialog::ListBoxClick(
   TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/)
 {
-  int Index = ListBox->GetItems()->Selected;
+  int Index = ListBox->GetItems()->GetSelected();
   if (Index >= 0)
   {
     if (ListBox->GetItems()->Checked[Index])
@@ -6997,7 +6997,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
     else if ((KeyCode == KEY_SPACE) || (KeyCode == KEY_INS) ||
              (KeyCode == KEY_ADD) || (KeyCode == KEY_SUBTRACT))
     {
-      int Index = ListBox->GetItems()->Selected;
+      int Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
       {
         if (ListBox->GetItems()->Checked[Index] && (KeyCode != KEY_ADD))
@@ -7306,7 +7306,7 @@ bool TSynchronizeDialog::Execute(TSynchronizeParamType & Params,
   SynchronizeExistingOnlyCheck->SetChecked(FLAGSET(Params.Params, TTerminal::spExistingOnly));
   SynchronizeSelectedOnlyCheck->SetChecked(FLAGSET(Params.Params, spSelectedOnly));
   SynchronizeRecursiveCheck->SetChecked(FLAGSET(Params.Options, soRecurse));
-  SynchronizeSynchronizeCheck->Selected =
+  SynchronizeSynchronizeCheck->GetSelected() =
     FLAGSET(Params.Options, soSynchronizeAsk) ? BSTATE_3STATE :
       (FLAGSET(Params.Options, soSynchronize) ? BSTATE_CHECKED : BSTATE_UNCHECKED);
   SaveSettingsCheck->SetChecked(SaveSettings);
@@ -7336,8 +7336,8 @@ TSynchronizeParamType TSynchronizeDialog::GetParams()
   Result.Options =
     (Result.Options & ~(soRecurse | soSynchronize | soSynchronizeAsk)) |
     FLAGMASK(SynchronizeRecursiveCheck->GetChecked(), soRecurse) |
-    FLAGMASK(SynchronizeSynchronizeCheck->Selected == BSTATE_CHECKED, soSynchronize) |
-    FLAGMASK(SynchronizeSynchronizeCheck->Selected == BSTATE_3STATE, soSynchronizeAsk);
+    FLAGMASK(SynchronizeSynchronizeCheck->GetSelected() == BSTATE_CHECKED, soSynchronize) |
+    FLAGMASK(SynchronizeSynchronizeCheck->GetSelected() == BSTATE_3STATE, soSynchronizeAsk);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -7412,7 +7412,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
 {
   bool Synchronize;
   bool Continue = true;
-  if (SynchronizeSynchronizeCheck->Selected == BSTATE_3STATE)
+  if (SynchronizeSynchronizeCheck->GetSelected() == BSTATE_3STATE)
   {
     TMessageParams Params;
     Params.Params = qpNeverAskAgainCheck;
@@ -7487,7 +7487,7 @@ void TSynchronizeDialog::Change()
 {
   TFarDialog::Change();
 
-  if (Handle && !ChangesLocked())
+  if (GetHandle() && !ChangesLocked())
   {
     UpdateControls();
 
@@ -7497,7 +7497,7 @@ void TSynchronizeDialog::Change()
     {
       FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GeRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
+      CopyParamLister->SetRight(BorderBox->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
@@ -7524,8 +7524,8 @@ void TSynchronizeDialog::UpdateControls()
   StopButton->SetEnabled(FSynchronizing);
   CloseButton->SetEnabled(!FSynchronizing);
   EnableGroup(1, !FSynchronizing);
-  SynchronizeSelectedOnlyCheck->GetEnabled() =
-    !FSynchronizing && FLAGSET(FOptions, soAllowSelectedOnly);
+  SynchronizeSelectedOnlyCheck->SetEnabled(
+    !FSynchronizing && FLAGSET(FOptions, soAllowSelectedOnly));
 }
 //---------------------------------------------------------------------------
 TCopyParamType TSynchronizeDialog::GetCopyParams()
@@ -7645,7 +7645,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(QUEUE_HEADER));
 
   Separator = new TFarSeparator(this);
-  ListTop = Separator->Bottom;
+  ListTop = Separator->GetBottom();
 
   Separator = new TFarSeparator(this);
   Separator->Move(0, ListHeight);
@@ -7691,10 +7691,10 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
   TQueueItemProxy * QueueItem;
-  if (QueueListBox->GetItems()->Selected >= 0)
+  if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
-      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->Selected));
+      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
     {
@@ -7781,10 +7781,10 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 void TQueueDialog::UpdateControls()
 {
   TQueueItemProxy * QueueItem = NULL;
-  if (QueueListBox->GetItems()->Selected >= 0)
+  if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
-      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->Selected));
+      QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
   }
 
   if ((QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsProcessing))
@@ -7805,15 +7805,15 @@ void TQueueDialog::UpdateControls()
   else
   {
     ExecuteButton->SetCaption(GetMsg(QUEUE_EXECUTE));
-    ExecuteButton->GetEnabled() =
+    ExecuteButton->SetEnabled(
       (QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsPending);
   }
-  DeleteButton->GetEnabled() = (QueueItem != NULL) &&
+  DeleteButton->SetEnabled( (QueueItem != NULL) &&
     (QueueItem->Status != TQueueItem::qsDone);
-  MoveUpButton->GetEnabled() = (QueueItem != NULL) &&
+  MoveUpButton->SetEnabled( (QueueItem != NULL) &&
     (QueueItem->Status == TQueueItem::qsPending) &&
     (QueueItem->Index > FStatus->ActiveCount);
-  MoveDownButton->GetEnabled() = (QueueItem != NULL) &&
+  MoveDownButton->SetEnabled( (QueueItem != NULL) &&
     (QueueItem->Status == TQueueItem::qsPending) &&
     (QueueItem->Index < FStatus->GetCount() - 1);
 }
@@ -7862,7 +7862,7 @@ void TQueueDialog::Change()
 {
   TFarDialog::Change();
 
-  if (Handle)
+  if (GetHandle())
   {
     UpdateControls();
   }
