@@ -71,6 +71,7 @@ include_directories (
     ${PROJECT_ROOT}/NetBox
     ${PROJECT_ROOT}/PluginSDK/${FAR_VERSION}
     ${PROJECT_ROOT}/core
+    ${PROJECT_ROOT}/windows
     ${PROJECT_ROOT}/Putty
     ${PROJECT_ROOT}/Common
     ${PROJECT_ROOT}/Putty/windows
@@ -321,7 +322,8 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/Common/FarDialog.cpp
-    ${PROJECT_ROOT}/Common/GUIConfiguration.cpp
+    ${PROJECT_ROOT}/windows/GUIConfiguration.cpp
+    # ${PROJECT_ROOT}/windows/GUITools.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/NetBox/FarInterface.cpp
