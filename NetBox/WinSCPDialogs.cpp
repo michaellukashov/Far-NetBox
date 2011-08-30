@@ -1107,11 +1107,11 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     (GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_ABOUT))));
 
   Text = new TFarText(this);
-  Text->Caption = Configuration->GetFileInfoString(L"FileDescription");
+  Text->SetCaption(Configuration->GetFileInfoString(L"FileDescription"));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->Caption = FORMAT(GetMsg(ABOUT_VERSION), (Configuration->Version));
+  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION), (Configuration->Version)));
   Text->SetCenterGroup(true);
 
   if (!ProductName.empty())
@@ -1139,7 +1139,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text = new TFarText(this);
     Text->Move(0, 1);
-    Text->Caption = Configuration->GetFileInfoString(L"LegalCopyright");
+    Text->SetCaption(Configuration->GetFileInfoString(L"LegalCopyright"));
     Text->SetCenterGroup(true);
   }
 
@@ -1173,20 +1173,20 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->Caption = FMTLOAD(PUTTY_BASED_ON, (LoadStr(PUTTY_VERSION)));
+  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, (LoadStr(PUTTY_VERSION))));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->Caption = ReplaceCopyright(LoadStr(PUTTY_COPYRIGHT));
+  Text->SetCaption(ReplaceCopyright(LoadStr(PUTTY_COPYRIGHT)));
   Text->SetCenterGroup(true);
 
   #ifndef NO_FILEZILLA
   Text = new TFarText(this);
-  Text->Caption = FMTLOAD(FILEZILLA_BASED_ON, (LoadStr(FILEZILLA_VERSION)));
+  Text->SetCaption(FMTLOAD(FILEZILLA_BASED_ON, (LoadStr(FILEZILLA_VERSION))));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->Caption = ReplaceCopyright(LoadStr(FILEZILLA_COPYRIGHT));
+  Text->SetCaption(ReplaceCopyright(LoadStr(FILEZILLA_COPYRIGHT)));
   Text->SetCenterGroup(true);
   #endif
 
@@ -1407,7 +1407,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (int Index = 0; Index < FEdits->Count; Index++)
     {
-      Results->Strings[Index] = reinterpret_cast<TFarEdit *>(FEdits->Items[Index])->Text;
+      Results->SetString(Index, reinterpret_cast<TFarEdit *>(FEdits->Items[Index])->Text);
     }
 
     if ((SavePasswordCheck != NULL) && SavePasswordCheck->Checked)
@@ -1448,7 +1448,7 @@ bool TWinSCPFileSystem::BannerDialog(std::wstring SessionName,
   try
   {
     Dialog->SetSize(TPoint(70, 21));
-    Dialog->Caption = FORMAT(GetMsg(BANNER_TITLE), (SessionName));
+    Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE), (SessionName)));
 
     TFarLister * Lister = new TFarLister(Dialog);
     FarWrapText(Banner, Lister->Items, Dialog->BorderBox->Width - 4);
@@ -2139,7 +2139,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
   {
     TFarEdit * Edit = new TFarEdit(this);
-    PostLoginCommandsEdits[Index] = Edit;
+    SetPostLoginCommandsEdits(Index, Edit);
   }
 
   new TFarSeparator(this);
@@ -3321,7 +3321,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
 
     for (int Index = 0; Index < CIPHER_COUNT; Index++)
     {
-      SessionData->Cipher[Index] = (TCipher)CipherListBox->GetItems()->GetObject(Index);
+      SessionData->SetCipher(Index, (TCipher)CipherListBox->GetItems()->GetObject(Index));
     }
 
     // KEX tab
@@ -3331,7 +3331,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
 
     for (int Index = 0; Index < KEX_COUNT; Index++)
     {
-      SessionData->Kex[Index] = (TKex)KexListBox->GetItems()->GetObject(Index);
+      SessionData->SetKex(Index, (TKex)KexListBox->GetItems()->GetObject(Index));
     }
 
     // Authentication tab
@@ -3668,7 +3668,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     Text->SetLeft(0);
     Add(Text);
     Text->SetEnabledDependency(EnabledDependency);
-    Text->Caption = GetMsg(RowLabels[RowIndex]);
+    Text->SetCaption(GetMsg(RowLabels[RowIndex]));
 
     Dialog->SetNextItemPosition(ipRight);
 
@@ -3678,7 +3678,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
       FCheckBoxes[(RowIndex + 1)* 3 + ColIndex] = CheckBox;
       Add(CheckBox);
       CheckBox->SetEnabledDependency(EnabledDependency);
-      CheckBox->Caption = GetMsg(ColLabels[ColIndex]);
+      CheckBox->SetCaption(GetMsg(ColLabels[ColIndex]));
     }
 
     if (ShowSpecials)
@@ -3687,13 +3687,13 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
       Add(CheckBox);
       CheckBox->SetVisible(ShowSpecials);
       CheckBox->SetEnabledDependency(EnabledDependency);
-      CheckBox->Caption = GetMsg(SpecialLabels[RowIndex]);
-      FCheckBoxes[RowIndex] = CheckBox;
+      CheckBox->SetCaption(GetMsg(SpecialLabels[RowIndex]));
+      SetFCheckBoxes(RowIndex, CheckBox);
     }
     else
     {
-      FCheckBoxes[RowIndex] = NULL;
-      FFixedStates[RowIndex] = TRights::rsNo;
+      SetFCheckBoxes(RowIndex, NULL);
+      SetFFixedStates(RowIndex, TRights::rsNo);
     }
   }
 
@@ -3851,7 +3851,7 @@ void TRightsContainer::SetStates(TRights::TRight Right,
   }
   else
   {
-    FFixedStates[Right]= value;
+    SetFFixedStates(Right, value);
   }
 }
 //---------------------------------------------------------------------------
@@ -4016,11 +4016,11 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     Text->SetCenterGroup(true);
     if (FileList->Count > 1)
     {
-      Text->Caption = FORMAT(GetMsg(PROPERTIES_PROMPT_FILES), (FileList->Count));
+      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES), (FileList->Count)));
     }
     else
     {
-      Text->Caption = MinimizeName(FileList->Strings[0], ClientSize.x, true);
+      Text->SetCaption(MinimizeName(FileList->Strings[0], ClientSize.x, true));
     }
 
     new TFarSeparator(this);
@@ -5457,7 +5457,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
       TFarText * Text = reinterpret_cast<TFarText *>(List->Items[FLastListItem]);
       FLastListItem++;
 
-      Text->Caption = FORMAT(L"%-*s  %s", (List->MaxLen, GetMsg(Label), (Value)));
+      Text->SetCaption(FORMAT(L"%-*s  %s", (List->MaxLen, GetMsg(Label), (Value))));
     }
   }
 }
@@ -6536,7 +6536,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   int Action = 0;
   while (!Actions.empty() && (Action < LENOF(FActions)))
   {
-    FActions[Action] = CutToChar(Actions, '|', false);
+    SetFActions(Action, CutToChar(Actions, '|', false));
     Action++;
   }
 
@@ -6671,13 +6671,13 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = static_cast<float>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      FWidths[Index] = floor(W);
-      Temp[Index] = W - FWidths[Index];
+      SetFWidths(Index, floor(W));
+      SetTemp(Index, W - FWidths[Index]);
     }
     else
     {
-      FWidths[Index] = -Ratio[Index];
-      Temp[Index] = 0;
+      SetFWidths(Index, -Ratio[Index]);
+      SetTemp(Index, 0);
     }
     TotalAssigned += FWidths[Index];
   }
@@ -6698,7 +6698,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     assert(MaxMissing > 0.0);
 
     FWidths[GrowIndex]++;
-    Temp[GrowIndex] = 0.0;
+    SetTemp(GrowIndex, 0.0);
     TotalAssigned++;
   }
 
@@ -6761,7 +6761,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     S = ChecklistItem->Local.Directory;
     if (AnsiSameText(FLocalDirectory, S.substr(1, FLocalDirectory.Length())))
     {
-      S[1] = '.';
+      SetS(1, '.');
       S.Delete(2, FLocalDirectory.Length() - 1);
     }
     else
@@ -6804,7 +6804,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     S = ChecklistItem->Remote.Directory;
     if (AnsiSameText(FRemoteDirectory, S.substr(1, FRemoteDirectory.Length())))
     {
-      S[1] = '.';
+      SetS(1, '.');
       S.Delete(2, FRemoteDirectory.Length() - 1);
     }
     else
@@ -6856,7 +6856,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     {
       const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->Item[Index];
 
-      List->Checked[Index] = ChecklistItem->Checked;
+      List->SetChecked(Index, ChecklistItem->Checked);
       if (ChecklistItem->Checked)
       {
         FChecked++;
@@ -6896,7 +6896,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
         const TSynchronizeChecklist::TItem * ChecklistItem =
           reinterpret_cast<TSynchronizeChecklist::TItem *>(List->Objects[Index]);
 
-        List->Strings[Index] = ItemLine(ChecklistItem);
+        List->SetString(Index, ItemLine(ChecklistItem));
       }
     }
   }
@@ -6933,7 +6933,7 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
     int Count = List->Count;
     for (int Index = 0; Index < Count; Index++)
     {
-      List->Checked[Index] = Check;
+      List->SetChecked(Index, Check);
     }
 
     FChecked = (Check ? Count : 0);
@@ -6971,12 +6971,12 @@ void TSynchronizeChecklistDialog::ListBoxClick(
   {
     if (ListBox->GetItems()->Checked[Index])
     {
-      ListBox->GetItems()->Checked[Index] = false;
+      ListBox->GetItems()->SetChecked(Index, false);
       FChecked--;
     }
     else if (!ListBox->GetItems()->Checked[Index])
     {
-      ListBox->GetItems()->Checked[Index] = true;
+      ListBox->GetItems()->SetChecked(Index, true);
       FChecked++;
     }
 
@@ -7002,12 +7002,12 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
       {
         if (ListBox->GetItems()->Checked[Index] && (KeyCode != KEY_ADD))
         {
-          ListBox->GetItems()->Checked[Index] = false;
+          ListBox->GetItems()->SetChecked(Index, false);
           FChecked--;
         }
         else if (!ListBox->GetItems()->Checked[Index] && (KeyCode != KEY_SUBTRACT))
         {
-          ListBox->GetItems()->Checked[Index] = true;
+          ListBox->GetItems()->SetChecked(Index, true);
           FChecked++;
         }
 
@@ -8019,12 +8019,12 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
     if ((ProgressData != NULL) &&
         (ProgressData->Operation == Info->Operation))
     {
-      Values[1] = FormatBytes(ProgressData->TotalTransfered);
+      SetValues(1, FormatBytes(ProgressData->TotalTransfered));
     }
   }
   else if (Index == 1)
   {
-    Values[0] = MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal));
+    SetValues(0, MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal)));
 
     if (ProgressStr.empty())
     {
@@ -8032,17 +8032,17 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
       {
         if (ProgressData->Operation == Info->Operation)
         {
-          Values[1] = FORMAT(L"%d%%", (ProgressData->OverallProgress()));
+          SetValues(1, FORMAT(L"%d%%", (ProgressData->OverallProgress())));
         }
         else if (ProgressData->Operation == foCalculateSize)
         {
-          Values[1] = GetMsg(QUEUE_CALCULATING_SIZE);
+          SetValues(1, GetMsg(QUEUE_CALCULATING_SIZE));
         }
       }
     }
     else if (!BlinkHide)
     {
-      Values[1] = ProgressStr;
+      SetValues(1, ProgressStr);
     }
   }
   else
@@ -8053,12 +8053,12 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
         (Info->Side == osRemote));
       if (ProgressData->Operation == Info->Operation)
       {
-        Values[1] = FORMAT(L"%d%%", (ProgressData->TransferProgress()));
+        SetValues(1, FORMAT(L"%d%%", (ProgressData->TransferProgress())));
       }
     }
     else
     {
-      Values[0] = ProgressStr;
+      SetValues(0, ProgressStr);
     }
   }
 
