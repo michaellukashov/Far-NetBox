@@ -1018,7 +1018,7 @@ TStrings * TGUIConfiguration::GetLocales()
             SameText(Exts->GetString(Index).substr(1, 2), AdditionaLanguagePrefix))
         {
           std::wstring LangName = GetFileFileInfoString(L"LangName",
-            ChangeFileExt(ModuleFileName(), std::wstring(".") + Exts->GetString(Index)));
+            ChangeFileExt(ModuleFileName(), std::wstring(L".") + Exts->GetString(Index)));
           if (!LangName.empty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<TObject*>(
@@ -1097,7 +1097,7 @@ void TGUIConfiguration::SetCopyParamCurrent(std::wstring value)
 //---------------------------------------------------------------------------
 TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
 {
-  return GetCopyParamPreset(CopyParamCurrent);
+  return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
 TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(std::wstring Name)
@@ -1114,9 +1114,9 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(std::wstring Name)
       Result.Assign(Preset); // overwrite all but GUI options
       // reset all options known not to be configurable per-preset
       // kind of hack
-      Result.ResumeSupport = FDefaultCopyParam.ResumeSupport;
-      Result.ResumeThreshold = FDefaultCopyParam.ResumeThreshold;
-      Result.LocalInvalidChars = FDefaultCopyParam.LocalInvalidChars;
+      Result.SetResumeSupport(FDefaultCopyParam.GetResumeSupport());
+      Result.SetResumeThreshold(FDefaultCopyParam.GetResumeThreshold());
+      Result.SetLocalInvalidChars(FDefaultCopyParam.GetLocalInvalidChars());
     }
   }
   return Result;
