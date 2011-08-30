@@ -82,7 +82,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 TNamedObject * TNamedObjectList::FindByName(std::wstring Name,
   bool CaseSensitive)
 {
-  for (int Index = 0; Index < TObjectList::Count; Index++)
+  for (int Index = 0; Index < TObjectList::GetCount(); Index++)
     if (!((TNamedObject *)GetItem(Index))->CompareName(Name, CaseSensitive))
       return (TNamedObject *)GetItem(Index);
   return NULL;
@@ -95,5 +95,5 @@ void TNamedObjectList::SetCount(int value)
 //---------------------------------------------------------------------------
 int TNamedObjectList::GetCount()
 {
-  return TObjectList::Count - HiddenCount;
+  return TObjectList::GetCount() - GetHiddenCount();
 }

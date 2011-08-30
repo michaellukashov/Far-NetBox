@@ -114,6 +114,8 @@ class TObjectList : public TPersistent
 {
 public:
     size_t GetCount() const { return m_objects.size(); }
+    void SetCount(size_t value)
+    {}
 
     TObject * operator [](size_t Index) const
     {
@@ -156,6 +158,8 @@ public:
     void SetOwnsObjects(bool value) { FOwnsObjects = value; }
 
     void Sort(CompareFunc func)
+    {}
+    void Notify(void *Ptr, int Action)
     {}
 private:
     vector<TObject *> m_objects;
