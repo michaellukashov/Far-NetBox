@@ -603,7 +603,7 @@ int TRegistryStorage::GetFailed()
 TIniFileStorage::TIniFileStorage(const std::wstring AStorage):
   THierarchicalStorage(AStorage)
 {
-  FIniFile = new TMemIniFile(Storage);
+  FIniFile = new TMemIniFile(GetStorage());
   FOriginal = new TStringList();
   FIniFile->GetStrings(FOriginal);
   ApplyOverrides();
@@ -619,22 +619,22 @@ TIniFileStorage::~TIniFileStorage()
     {
       int Attr;
       // preserve attributes (especially hidden)
-      if (FileExists(Storage))
+      if (FileExists(GetStorage()))
       {
-        Attr = GetFileAttributes(Storage.c_str());
+        Attr = GetFileAttributes(GetStorage().c_str());
       }
       else
       {
         Attr = FILE_ATTRIBUTE_NORMAL;
       }
 
-      HANDLE Handle = CreateFile(Storage.c_str(), GENERIC_READ | GENERIC_WRITE,
+      HANDLE Handle = CreateFile(GetStorage().c_str(), GENERIC_READ | GENERIC_WRITE,
         0, NULL, CREATE_ALWAYS, Attr, 0);
 
       if (Handle == INVALID_HANDLE_VALUE)
       {
         // "access denied" errors upon implicit saves are ignored
-        if (Explicit || (GetLastError() != ERROR_ACCESS_DENIED))
+        if (GetExplicits() || (GetLastError() != ERROR_ACCESS_DENIED))
         {
           try
           {
@@ -642,13 +642,13 @@ TIniFileStorage::~TIniFileStorage()
           }
           catch(exception & E)
           {
-            throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (Storage)));
+            throw ExtException(&E); // FIXME , FMTLOAD(CREATE_FILE_ERROR, (Storage)));
           }
         }
       }
       else
       {
-        TStream * Stream = new THandleStream(int(Handle));
+        TStream * Stream = new THandleStream(Handle);
         try
         {
           Strings->SaveToStream(Stream);

@@ -177,6 +177,8 @@ enum TDuplicatesEnum
     dupError
 };
 
+class TStream;
+
 class TStrings : public TPersistent
 {
 public:
@@ -274,6 +276,8 @@ public:
     void Insert(int Index, const std::wstring &value)
     {
     }
+    void SaveToStream(TStream *Stream)
+    {}
 private:
     TNotifyEvent FOnChange;
 };
@@ -449,15 +453,17 @@ public:
     bool KeyExists(const std::wstring SubKey) { return false; }
     bool ValueExists(const std::wstring Value) { return false; }
     int GetDataSize(const std::wstring Name) { return 0; }
-    bool Readbool(const std::wstring Name, bool Default) { return false; }
-    TDateTime ReadDateTime(const std::wstring Name, TDateTime Default) { return Default; }
-    double ReadFloat(const std::wstring Name, double Default)
+    bool Readbool(const std::wstring Name) { return false; }
+    TDateTime ReadDateTime(const std::wstring Name) { return TDateTime(); }
+    double ReadFloat(const std::wstring Name)
     { return 0; }
-    int Readint(const std::wstring Name, int Default)
+    int Readint(const std::wstring Name)
     { return 0; }
-    __int64 ReadInt64(const std::wstring Name, __int64 Default)
+    __int64 ReadInt64(const std::wstring Name)
     { return 0; }
-    std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default)
+    std::wstring ReadString(const std::wstring Name)
+    { return L""; }
+    std::wstring ReadStringRaw(const std::wstring Name)
     { return L""; }
     int ReadBinaryData(const std::wstring Name,
       void * Buffer, int Size)
@@ -469,6 +475,8 @@ public:
   {}
   void WriteFloat(const std::wstring Name, double Value)
   {}
+  void WriteString(const std::wstring Name, const std::wstring Value)
+  {}
   void WriteStringRaw(const std::wstring Name, const std::wstring Value)
   {}
   void Writeint(const std::wstring Name, int Value)
@@ -478,6 +486,12 @@ public:
   void WriteBinaryData(const std::wstring Name,
       const void * Buffer, int Size)
   {}
+};
+
+//---------------------------------------------------------------------------
+
+class TMemIniFile
+{
 };
 
 //---------------------------------------------------------------------------
