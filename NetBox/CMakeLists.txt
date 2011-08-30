@@ -28,7 +28,7 @@ set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_EXE_LINK_FLAGS
     "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB"
-    #/NODEFAULTLIB:LIBCMTD.LIB 
+    #/NODEFAULTLIB:LIBCMTD.LIB
 )
 
 # Дополнительные флаги компиляции
@@ -79,7 +79,7 @@ include_directories (
     ${PROJECT_ROOT}/libs/libcurl/include
     ${PROJECT_ROOT}/libs/libssh2/include
     ${PROJECT_ROOT}/libs/tinyXML
-    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include 
+    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include
     ${PROJECT_ROOT}/libs/zlib/src
 )
 
@@ -112,7 +112,7 @@ set ( NETBOX_HEADERS ${NETBOX_ALL_HEADERS}
 )
 
 set ( NETBOX_SOURCES
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp 
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
@@ -259,7 +259,7 @@ set ( TESTNETBOX_01_HEADERS
 
 set ( TESTNETBOX_01_SOURCES
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp 
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
@@ -299,6 +299,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/FileInfo.cpp
     ${PROJECT_ROOT}/Common/FileSystems.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/Common/FarDialog.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/NetBox/FarInterface.cpp
     ${PROJECT_ROOT}/NetBox/FarConfiguration.cpp

@@ -2096,7 +2096,7 @@ void TFarList::Assign(TPersistent *Source)
 //---------------------------------------------------------------------------
 void TFarList::UpdateItem(int Index)
 {
-    FarListItem *ListItem = &FListItems->GetItem(Index);
+    FarListItem *ListItem = &FListItems->Items[Index];
     std::wstring value = GetString(Index).substr(1, sizeof(ListItem->Text) - 1);
     wcscpy_s((wchar_t *)ListItem->Text,
         value.size(),
@@ -2158,10 +2158,10 @@ void TFarList::Changed()
                 FListItems->Items = new FarListItem[GetCount()];
                 for (int Index = 0; Index < GetCount(); Index++)
                 {
-                    memset(&FListItems->GetItem(Index), 0, sizeof(FListItems->GetItem(Index)));
+                    memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
                     if (Index < FListItems->ItemsNumber)
                     {
-                        FListItems->GetItem(Index).Flags = Items[Index].Flags;
+                        FListItems->Items[Index].Flags = Items[Index].Flags;
                     }
                 }
             }
@@ -2332,14 +2332,14 @@ int TFarList::GetSelected()
 //---------------------------------------------------------------------------
 unsigned int TFarList::GetFlags(int Index)
 {
-    return FListItems->GetItem(Index).Flags;
+    return FListItems->Items[Index].Flags;
 }
 //---------------------------------------------------------------------------
 void TFarList::SetFlags(int Index, unsigned int value)
 {
-    if (FListItems->GetItem(Index).Flags != value)
+    if (FListItems->Items[Index].Flags != value)
     {
-        FListItems->GetItem(Index).Flags = value;
+        FListItems->Items[Index].Flags = value;
         if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle() && (GetUpdateCount() == 0))
         {
             UpdateItem(Index);
