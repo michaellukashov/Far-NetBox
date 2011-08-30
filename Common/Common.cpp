@@ -1859,6 +1859,12 @@ bool AnsiSameText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
+bool SameText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
 bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
     // FIXME

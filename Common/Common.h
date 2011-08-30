@@ -235,6 +235,7 @@ bool CompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompare(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareStr(const std::wstring str1, const std::wstring str2);
 bool AnsiSameText(const std::wstring str1, const std::wstring str2);
+bool SameText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 
