@@ -634,7 +634,7 @@ TIniFileStorage::~TIniFileStorage()
       if (Handle == INVALID_HANDLE_VALUE)
       {
         // "access denied" errors upon implicit saves are ignored
-        if (GetExplicits() || (GetLastError() != ERROR_ACCESS_DENIED))
+        if (GetExplicit() || (GetLastError() != ERROR_ACCESS_DENIED))
         {
           try
           {
@@ -671,7 +671,7 @@ TIniFileStorage::~TIniFileStorage()
 //---------------------------------------------------------------------------
 std::wstring TIniFileStorage::GetSource()
 {
-  return Storage;
+  return GetStorage();
 }
 //---------------------------------------------------------------------------
 std::wstring TIniFileStorage::GetCurrentSection()
@@ -688,15 +688,15 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
     TStringList * Sections = new TStringList();
     try
     {
-      Sections->Sorted = true;
+      Sections->SetSorted(true);
       FIniFile->ReadSections(Sections);
-      std::wstring NewKey = ExcludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path));
+      std::wstring NewKey = ExcludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path));
       int Index = -1;
       if (Sections->GetCount())
       {
         Result = Sections->Find(NewKey, Index);
         if (!Result && Index < Sections->GetCount() &&
-            Sections->GetString(Index).substr(1, NewKey.size()+1) == NewKey + "\\")
+            Sections->GetString(Index).substr(1, NewKey.size()+1) == NewKey + L"\\")
         {
           Result = true;
         }
@@ -720,7 +720,7 @@ bool TIniFileStorage::DeleteSubKey(const std::wstring SubKey)
   bool Result;
   try
   {
-    FIniFile->EraseSection(CurrentSubKey + MungeStr(SubKey));
+    FIniFile->EraseSection(GetCurrentSubKey() + MungeStr(SubKey));
     Result = true;
   }
   catch (...)
@@ -740,11 +740,11 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
     for (int i = 0; i < Sections->GetCount(); i++)
     {
       std::wstring Section = Sections->GetString(i);
-      if (AnsiCompareText(CurrentSubKey,
-          Section.substr(1, CurrentSubKey.size())) == 0)
+      if (AnsiCompareText(GetCurrentSubKey(),
+          Section.substr(1, GetCurrentSubKey().size())) == 0)
       {
-        std::wstring SubSection = Section.substr(CurrentSubKey.size() + 1,
-          Section.size() - CurrentSubKey.size());
+        std::wstring SubSection = Section.substr(GetCurrentSubKey().size() + 1,
+          Section.size() - GetCurrentSubKey().size());
         int P = SubSection.find_first_of(L"\\");
         if (P)
         {
@@ -774,7 +774,7 @@ void TIniFileStorage::GetValueNames(TStrings* Strings)
 //---------------------------------------------------------------------------
 bool TIniFileStorage::KeyExists(const std::wstring SubKey)
 {
-  return FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey));
+  return FIniFile->SectionExists(GetCurrentSubKey() + MungeStr(SubKey));
 }
 //---------------------------------------------------------------------------
 bool TIniFileStorage::ValueExists(const std::wstring Value)
