@@ -312,7 +312,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
 }
 
 //---------------------------------------------------------------------------
-void ShowExtendedException(std::exception * E)
-{
-  ShowExtendedExceptionEx(NULL, E);
-}
+// void ShowExtendedException(std::exception * E)
+// {
+  // ShowExtendedExceptionEx(NULL, E);
+// }
