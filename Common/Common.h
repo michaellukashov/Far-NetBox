@@ -108,6 +108,7 @@ enum TDSTMode
 bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day);
 TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec);
+TDateTime StrToDateTime(std::wstring Value);
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
 FILETIME DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
 TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
@@ -246,6 +247,9 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval);
 __int64 TryStrToInt(const std::wstring value, __int64 defval);
 
 //---------------------------------------------------------------------------
+double StrToFloat(std::wstring Value);
+//---------------------------------------------------------------------------
 
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count);
 unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count);
+

@@ -779,6 +779,12 @@ TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short 
   */
   return TDateTime();
 }
+
+TDateTime StrToDateTime(std::wstring Value)
+{
+  return TDateTime();
+}
+
 //---------------------------------------------------------------------------
 struct TDateTimeParams
 {
@@ -1849,6 +1855,12 @@ bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 
 void RaiseLastOSError()
 {
+}
+
+//---------------------------------------------------------------------------
+double StrToFloat(std::wstring Value)
+{
+    return 0;
 }
 
 //---------------------------------------------------------------------------

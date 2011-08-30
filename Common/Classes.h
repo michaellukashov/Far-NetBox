@@ -499,16 +499,35 @@ public:
     {}
     std::wstring ReadString(std::wstring Section, std::wstring Name, std::wstring Default)
     { return L""; }
+    void WriteString(std::wstring SubKey, std::wstring Name, std::wstring Value);
     std::wstring Writetring(std::wstring Section, std::wstring Name, std::wstring Value)
     { return L""; }
     void ReadSections(TStrings *Strings)
     {}
     void ReadSection(std::wstring Section, TStrings *Strings)
     {}
+    void EraseSection(std::wstring Section)
+    {}
     bool SectionExists(std::wstring Section) { return false; }
-    bool ValueExists(std::wstring Section) { return false; }
+    bool ValueExists(std::wstring Section, std::wstring Name) { return false; }
     bool DeleteKey(std::wstring Section, std::wstring Name)
     {}
+    bool Readbool(const std::wstring Name) { return false; }
+    int Readint(const std::wstring Name)
+    { return 0; }
+
+    void Writebool(const std::wstring Name, bool Value)
+    {}
+  void WriteDateTime(const std::wstring Name, TDateTime Value)
+  {}
+  void WriteFloat(const std::wstring Name, double Value)
+  {}
+  void WriteString(const std::wstring Name, const std::wstring Value)
+  {}
+  void WriteStringRaw(const std::wstring Name, const std::wstring Value)
+  {}
+  void Writeint(const std::wstring Name, int Value)
+  {}
 };
 
 //---------------------------------------------------------------------------
