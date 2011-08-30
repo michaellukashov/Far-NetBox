@@ -1,20 +1,18 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include "stdafx.h"
 
-#include <Common.h>
-#include <CoreMain.h>
+#include "Common.h"
+#include "CoreMain.h"
 #include "FarConfiguration.h"
 #include "WinSCPPlugin.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
-TConfiguration * __fastcall CreateConfiguration()
+
+TConfiguration * CreateConfiguration()
 {
   return new TFarConfiguration(FarPlugin);
 }
 //---------------------------------------------------------------------------
-void __fastcall ShowExtendedException(Exception * E)
+void ShowExtendedException(std::exception * E)
 {
   assert(FarPlugin != NULL);
   TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
@@ -22,30 +20,31 @@ void __fastcall ShowExtendedException(Exception * E)
   WinSCPPlugin->ShowExtendedException(E);
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall GetRegistryKey()
+std::wstring GetRegistryKey()
 {
-  return "Software\\Martin Prikryl\\WinSCP 2";
+  return L"Software\\Martin Prikryl\\WinSCP 2";
 }
 //---------------------------------------------------------------------------
-void __fastcall Busy(bool /*Start*/)
+void Busy(bool /*Start*/)
 {
   // nothing
 }
 //---------------------------------------------------------------------------
-AnsiString __fastcall SshVersionString()
+std::wstring SshVersionString()
 {
-  return FORMAT("WinSCP-FAR-release-%s", (Configuration->Version));
+  return ::FORMAT(L"WinSCP-FAR-release-%s", Configuration->GetVersion().c_str());
 }
 //---------------------------------------------------------------------------
-int __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
+int StartThread(void * SecurityAttributes, unsigned StackSize,
   TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
   unsigned & ThreadId)
 {
-  return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
-    CreationFlags, ThreadId);
+  // FIXME return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
+    // CreationFlags, ThreadId);
+  return 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall CopyToClipboard(AnsiString Text)
+void CopyToClipboard(std::wstring Text)
 {
   assert(FarPlugin != NULL);
   FarPlugin->FarCopyToClipboard(Text);

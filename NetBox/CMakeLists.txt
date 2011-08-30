@@ -297,6 +297,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/Option.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/NetBox/FarInterface.cpp
     ${PROJECT_ROOT}/NetBox/FarConfiguration.cpp
 )
 
