@@ -750,7 +750,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
         {
           SubSection.resize(P - 1);
         }
-        if (Strings->IndexOf(SubSection) < 0)
+        if (Strings->IndexOf(SubSection.c_str()) < 0)
         {
           Strings->Add(UnMungeStr(SubSection));
         }
@@ -765,7 +765,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
 //---------------------------------------------------------------------------
 void TIniFileStorage::GetValueNames(TStrings* Strings)
 {
-  FIniFile->ReadSection(CurrentSection, Strings);
+  FIniFile->ReadSection(GetCurrentSection(), Strings);
   for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->GetString(Index) = UnMungeIniName(Strings->GetString(Index));
@@ -779,23 +779,23 @@ bool TIniFileStorage::KeyExists(const std::wstring SubKey)
 //---------------------------------------------------------------------------
 bool TIniFileStorage::ValueExists(const std::wstring Value)
 {
-  return FIniFile->ValueExists(CurrentSection, MungeIniName(Value));
+  return FIniFile->ValueExists(GetCurrentSection(), MungeIniName(Value));
 }
 //---------------------------------------------------------------------------
 bool TIniFileStorage::DeleteValue(const std::wstring Name)
 {
-  FIniFile->DeleteKey(CurrentSection, MungeIniName(Name));
+  FIniFile->DeleteKey(GetCurrentSection(), MungeIniName(Name));
   return true;
 }
 //---------------------------------------------------------------------------
 int TIniFileStorage::BinaryDataSize(const std::wstring Name)
 {
-  return ReadStringRaw(Name, "").size() / 2;
+  return ReadStringRaw(Name, L"").size() / 2;
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::ApplyOverrides()
 {
-  std::wstring OverridesKey = IncludeTrailingBackslash("Override");
+  std::wstring OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
   try
@@ -820,8 +820,8 @@ void TIniFileStorage::ApplyOverrides()
 
           for (int ii = 0; ii < Names->GetCount(); ii++)
           {
-            std::wstring Name = Names->GetString(ii];
-            std::wstring Value = FIniFile->ReadString(Section, Name, "");
+            std::wstring Name = Names->GetString(ii);
+            std::wstring Value = FIniFile->ReadString(Section, Name, L"");
             FIniFile->WriteString(SubKey, Name, Value);
           }
         }
@@ -842,12 +842,12 @@ void TIniFileStorage::ApplyOverrides()
 //---------------------------------------------------------------------------
 bool TIniFileStorage::Readbool(const std::wstring Name, bool Default)
 {
-  return FIniFile->Readbool(CurrentSection, MungeIniName(Name), Default);
+  return FIniFile->Readbool(GetCurrentSection(), MungeIniName(Name), Default);
 }
 //---------------------------------------------------------------------------
 int TIniFileStorage::Readint(const std::wstring Name, int Default)
 {
-  int Result = FIniFile->Readint(CurrentSection, MungeIniName(Name), Default);
+  int Result = FIniFile->Readint(GetCurrentSection(), MungeIniName(Name), Default);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -855,7 +855,7 @@ __int64 TIniFileStorage::ReadInt64(const std::wstring Name, __int64 Default)
 {
   __int64 Result = Default;
   std::wstring Str;
-  Str = ReadStringRaw(Name, "");
+  Str = ReadStringRaw(Name, L"");
   if (!Str.empty())
   {
     Result = StrToInt64Def(Str, Default);
@@ -866,7 +866,7 @@ __int64 TIniFileStorage::ReadInt64(const std::wstring Name, __int64 Default)
 TDateTime TIniFileStorage::ReadDateTime(const std::wstring Name, TDateTime Default)
 {
   TDateTime Result;
-  std::wstring Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
+  std::wstring Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.empty())
   {
     Result = Default;
@@ -897,7 +897,7 @@ TDateTime TIniFileStorage::ReadDateTime(const std::wstring Name, TDateTime Defau
 double TIniFileStorage::ReadFloat(const std::wstring Name, double Default)
 {
   double Result;
-  std::wstring Value = FIniFile->ReadString(CurrentSection, MungeIniName(Name), "");
+  std::wstring Value = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), L"");
   if (Value.empty())
   {
     Result = Default;
@@ -927,14 +927,14 @@ double TIniFileStorage::ReadFloat(const std::wstring Name, double Default)
 //---------------------------------------------------------------------------
 std::wstring TIniFileStorage::ReadStringRaw(const std::wstring Name, std::wstring Default)
 {
-  std::wstring Result = FIniFile->ReadString(CurrentSection, MungeIniName(Name), Default);
+  std::wstring Result = FIniFile->ReadString(GetCurrentSection(), MungeIniName(Name), Default);
   return Result;
 }
 //---------------------------------------------------------------------------
 int TIniFileStorage::ReadBinaryData(const std::wstring Name,
   void * Buffer, int Size)
 {
-  std::wstring Value = HexToStr(ReadStringRaw(Name, ""));
+  std::wstring Value = HexToStr(ReadStringRaw(Name, L""));
   int Len = Value.size();
   if (Size > Len)
   {
@@ -947,12 +947,12 @@ int TIniFileStorage::ReadBinaryData(const std::wstring Name,
 //---------------------------------------------------------------------------
 void TIniFileStorage::Writebool(const std::wstring Name, bool Value)
 {
-  FIniFile->Writebool(CurrentSection, MungeIniName(Name), Value);
+  FIniFile->Writebool(GetCurrentSection(), MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::Writeint(const std::wstring Name, int Value)
 {
-  FIniFile->Writeint(CurrentSection, MungeIniName(Name), Value);
+  FIniFile->Writeint(GetCurrentSection(), MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::WriteInt64(const std::wstring Name, __int64 Value)
@@ -972,11 +972,11 @@ void TIniFileStorage::WriteFloat(const std::wstring Name, double Value)
 //---------------------------------------------------------------------------
 void TIniFileStorage::WriteStringRaw(const std::wstring Name, const std::wstring Value)
 {
-  FIniFile->WriteString(CurrentSection, MungeIniName(Name), Value);
+  FIniFile->WriteString(GetCurrentSection(), MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
 void TIniFileStorage::WriteBinaryData(const std::wstring Name,
   const void * Buffer, int Size)
 {
-  WriteStringRaw(Name, StrToHex(std::wstring(static_cast<const char*>(Buffer), Size)));
+  WriteStringRaw(Name, StrToHex(std::wstring(static_cast<const wchar_t*>(Buffer), Size)));
 }

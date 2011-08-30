@@ -692,6 +692,12 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
   }
   return Result;
 }
+
+std::wstring IntToHex(unsigned int Int, int MinChars)
+{
+    return L"";
+}
+
 //---------------------------------------------------------------------------
 char HexToChar(const std::wstring Hex, int MinChars)
 {
@@ -779,6 +785,12 @@ TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short 
   */
   return TDateTime();
 }
+
+TDateTime StrToDateTime(std::wstring Value)
+{
+  return TDateTime();
+}
+
 //---------------------------------------------------------------------------
 struct TDateTimeParams
 {
@@ -1769,6 +1781,20 @@ std::wstring LowerCase(const std::wstring str)
     return result;
 }
 
+//---------------------------------------------------------------------------
+
+wchar_t UpCase(const wchar_t c)
+{
+    return c;
+}
+
+wchar_t LowCase(const wchar_t c)
+{
+    return c;
+}
+
+//---------------------------------------------------------------------------
+
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to)
 {
     // FIXME
@@ -1833,6 +1859,12 @@ bool AnsiSameText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
+bool SameText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
 bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
     // FIXME
@@ -1849,6 +1881,12 @@ bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 
 void RaiseLastOSError()
 {
+}
+
+//---------------------------------------------------------------------------
+double StrToFloat(std::wstring Value)
+{
+    return 0;
 }
 
 //---------------------------------------------------------------------------

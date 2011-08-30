@@ -19,7 +19,6 @@ macro(use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME)
 endmacro( use_precompiled_header )
 
 #-------------------------------------------------------------------------------
-# Устанавливаем флаги компиляции ( -DCMAKE_BUILD_TYPE=[Debug,Release] )
 
 set ( CMAKE_CXX_FLAGS
     "-DWIN32;_WINDOWS;NO_FILEZILLA /EHsc /MP2" )
@@ -28,10 +27,10 @@ set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_EXE_LINK_FLAGS
     "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB"
-    #/NODEFAULTLIB:LIBCMTD.LIB 
+    #/NODEFAULTLIB:LIBCMTD.LIB
 )
 
-# Дополнительные флаги компиляции
+# definitions
 add_definitions ( "-DNETBOX_DEBUG;USE_FASTFLOW;CURL_STATICLIB;_USRDLL;NETBOX_EXPORTS" )
 add_definitions ( "-D_FF_WIN_XP" )
 
@@ -40,12 +39,8 @@ add_definitions ( "-D_FF_WIN_XP" )
 
 #-------------------------------------------------------
 
-set (PROJECT NetBox )
+project ( NetBox )
 
-# задать имя проекта
-project (${PROJECT})
-
-# Настройки Release/Debug
 set ( CMAKE_BUILD_TYPE Debug )
 
 set ( PLATFORM x86 )
@@ -55,23 +50,20 @@ set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------
 
-# задать папку для выходных бинарников
 set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-
-# задать папку для выходных динамических библиотек
 set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-
-# задать папку для выходных статических библиотек
 set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------------------------------
 
-# добавить пути для поиска файлов проекта
 include_directories (
     ${PROJECT_ROOT}/NetBox
     ${PROJECT_ROOT}/PluginSDK/${FAR_VERSION}
-    ${PROJECT_ROOT}/Common
+    ${PROJECT_ROOT}/core
+    ${PROJECT_ROOT}/windows
+    ${PROJECT_ROOT}/resource
     ${PROJECT_ROOT}/Putty
+    ${PROJECT_ROOT}/Common
     ${PROJECT_ROOT}/Putty/windows
     ${PROJECT_ROOT}/Putty/charset
     ${PROJECT_ROOT}/libs
@@ -79,7 +71,7 @@ include_directories (
     ${PROJECT_ROOT}/libs/libcurl/include
     ${PROJECT_ROOT}/libs/libssh2/include
     ${PROJECT_ROOT}/libs/tinyXML
-    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include 
+    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include
     ${PROJECT_ROOT}/libs/zlib/src
 )
 
@@ -92,8 +84,6 @@ link_directories (
 
 #-------------------------------------------------------------------------------
 
-# выполнить подпроект [PROJECT] и положить результат в [PATH]
-# EXCLUDE_FROM_ALL - собрать только необходимые цели
 #add_subdirectory ( ${DICTIONARY_PATH}
 #                   bin/sub_projects
 #                   EXCLUDE_FROM_ALL
@@ -112,7 +102,7 @@ set ( NETBOX_HEADERS ${NETBOX_ALL_HEADERS}
 )
 
 set ( NETBOX_SOURCES
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp 
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
@@ -133,8 +123,28 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/NetBox/SCP.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
-    ${PROJECT_ROOT}/Common/CoreMain.cpp
-    ${PROJECT_ROOT}/Common/Configuration.cpp
+    ${PROJECT_ROOT}/core/RemoteFiles.cpp
+    ${PROJECT_ROOT}/core/Terminal.cpp
+    ${PROJECT_ROOT}/core/Exceptions.cpp
+    ${PROJECT_ROOT}/core/FileOperationProgress.cpp
+    ${PROJECT_ROOT}/core/Queue.cpp
+    ${PROJECT_ROOT}/core/SecureShell.cpp
+    ${PROJECT_ROOT}/core/SessionInfo.cpp
+    ${PROJECT_ROOT}/core/CoreMain.cpp
+    ${PROJECT_ROOT}/core/FileMasks.cpp
+    ${PROJECT_ROOT}/core/CopyParam.cpp
+    ${PROJECT_ROOT}/core/SessionData.cpp
+    ${PROJECT_ROOT}/core/Configuration.cpp
+    ${PROJECT_ROOT}/core/ScpFileSystem.cpp
+    ${PROJECT_ROOT}/core/SftpFileSystem.cpp
+    ${PROJECT_ROOT}/core/PuttyIntf.cpp
+    ${PROJECT_ROOT}/core/Cryptography.cpp
+    ${PROJECT_ROOT}/core/FileBuffer.cpp
+    ${PROJECT_ROOT}/core/NamedObjs.cpp
+    ${PROJECT_ROOT}/core/HierarchicalStorage.cpp
+    ${PROJECT_ROOT}/core/Option.cpp
+    ${PROJECT_ROOT}/core/FileInfo.cpp
+    ${PROJECT_ROOT}/core/FileSystems.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/NetBox/NetBox.def
@@ -202,12 +212,12 @@ set_target_properties( libputty
 
 #-------------------------------------------------------------------------------
 
-# список библиотек к линковке
 set ( NETBOX_LIBRARIES
     libssh2.lib
     zlib.lib
     ws2_32.lib
     winhttp.lib
+    Version.lib
     # kernel32.lib
     # user32.lib
     # gdi32.lib
@@ -232,7 +242,7 @@ set_target_properties( NetBox
     LINK_FLAGS ${CMAKE_EXE_LINK_FLAGS}
 )
 
-#move from NetBox/Debug to NetBox/
+# move from NetBox/Debug to NetBox/
 string(REPLACE "/" "\\" outdir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 add_custom_command ( TARGET NetBox
     POST_BUILD
@@ -258,7 +268,7 @@ set ( TESTNETBOX_01_HEADERS
 
 set ( TESTNETBOX_01_SOURCES
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp 
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
@@ -272,30 +282,38 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/NetBox/SFTP.cpp
     ${PROJECT_ROOT}/NetBox/FTP.cpp
     ${PROJECT_ROOT}/NetBox/SCP.cpp
+    ${PROJECT_ROOT}/core/RemoteFiles.cpp
+    ${PROJECT_ROOT}/core/Terminal.cpp
+    ${PROJECT_ROOT}/core/Exceptions.cpp
+    ${PROJECT_ROOT}/core/FileOperationProgress.cpp
+    ${PROJECT_ROOT}/core/Queue.cpp
+    ${PROJECT_ROOT}/core/SecureShell.cpp
+    ${PROJECT_ROOT}/core/SessionInfo.cpp
+    ${PROJECT_ROOT}/core/CoreMain.cpp
+    ${PROJECT_ROOT}/core/FileMasks.cpp
+    ${PROJECT_ROOT}/core/CopyParam.cpp
+    ${PROJECT_ROOT}/core/SessionData.cpp
+    ${PROJECT_ROOT}/core/Configuration.cpp
+    ${PROJECT_ROOT}/core/ScpFileSystem.cpp
+    ${PROJECT_ROOT}/core/SftpFileSystem.cpp
+    ${PROJECT_ROOT}/core/PuttyIntf.cpp
+    ${PROJECT_ROOT}/core/Cryptography.cpp
+    ${PROJECT_ROOT}/core/FileBuffer.cpp
+    ${PROJECT_ROOT}/core/NamedObjs.cpp
+    ${PROJECT_ROOT}/core/HierarchicalStorage.cpp
+    ${PROJECT_ROOT}/core/Option.cpp
+    ${PROJECT_ROOT}/core/FileInfo.cpp
+    ${PROJECT_ROOT}/core/FileSystems.cpp
     ${PROJECT_ROOT}/Common/Classes.cpp
     ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
-    ${PROJECT_ROOT}/Common/RemoteFiles.cpp
-    ${PROJECT_ROOT}/Common/Terminal.cpp
-    ${PROJECT_ROOT}/Common/Exceptions.cpp
-    ${PROJECT_ROOT}/Common/FileOperationProgress.cpp
-    ${PROJECT_ROOT}/Common/Queue.cpp
-    ${PROJECT_ROOT}/Common/SecureShell.cpp
-    ${PROJECT_ROOT}/Common/SessionInfo.cpp
-    ${PROJECT_ROOT}/Common/CoreMain.cpp
-    ${PROJECT_ROOT}/Common/FileMasks.cpp
-    ${PROJECT_ROOT}/Common/CopyParam.cpp
-    ${PROJECT_ROOT}/Common/SessionData.cpp
-    ${PROJECT_ROOT}/Common/Configuration.cpp
-    ${PROJECT_ROOT}/Common/ScpFileSystem.cpp
-    ${PROJECT_ROOT}/Common/SftpFileSystem.cpp
-    ${PROJECT_ROOT}/Common/PuttyIntf.cpp
-    ${PROJECT_ROOT}/Common/Cryptography.cpp
-    ${PROJECT_ROOT}/Common/FileBuffer.cpp
-    ${PROJECT_ROOT}/Common/NamedObjs.cpp
-    ${PROJECT_ROOT}/Common/HierarchicalStorage.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/Common/FarDialog.cpp
+    ${PROJECT_ROOT}/windows/GUIConfiguration.cpp
+    # ${PROJECT_ROOT}/windows/GUITools.cpp
+    ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/NetBox/FarInterface.cpp
     ${PROJECT_ROOT}/NetBox/FarConfiguration.cpp
 )
 
@@ -303,6 +321,7 @@ set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
     libputty
     ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
+    Version.lib
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
@@ -314,6 +333,5 @@ set_target_properties( testnetbox_01
 # add_dependencies ( testnetbox_01 zlib libssh2 libcurl )
 use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
 
-# Добавить к линковке цели ${PROJECT} библиотеки ${LIBRARIES}
 target_link_libraries ( testnetbox_01 ${TESTNETBOX_01_LIBRARIES} )
 

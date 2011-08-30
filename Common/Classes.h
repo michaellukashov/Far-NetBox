@@ -147,6 +147,9 @@ public:
     void Delete(int Index)
     {
     }
+    void Insert(int Index, TObject *value)
+    {
+    }
     size_t IndexOf(TObject *value) const
     {
         return -1;
@@ -236,6 +239,9 @@ public:
     void Sort()
     {
     }
+    void Move(int Index, int To)
+    {
+    }
     size_t IndexOf(const wchar_t *value)
     {
         return -1;
@@ -303,8 +309,6 @@ public:
     void SetSorted(bool value)
     {
     }
-      // SetDuplicates(dupError);
-      // SetCaseSensitive(true);
     void LoadFromFile(const std::wstring &FileName)
     {
     }
@@ -492,6 +496,40 @@ public:
 
 class TMemIniFile
 {
+public:
+    TMemIniFile(const std::wstring AFileName)
+    {}
+    void GetStrings(TStrings *Strings)
+    {}
+    void ReadSections(TStrings *Strings)
+    {}
+    void ReadSection(std::wstring Section, TStrings *Strings)
+    {}
+    void EraseSection(std::wstring Section)
+    {}
+    bool SectionExists(std::wstring Section) { return false; }
+    bool ValueExists(std::wstring Section, std::wstring Name) { return false; }
+    bool DeleteKey(std::wstring Section, std::wstring Name)
+    { return false; }
+    bool Readbool(const std::wstring Section, const std::wstring Name, const bool Default)
+    { return false; }
+    int Readint(const std::wstring Section, const std::wstring Name, int Default)
+    { return 0; }
+    std::wstring ReadString(const std::wstring Section, const std::wstring Name, const std::wstring Default)
+    { return L""; }
+
+    void Writebool(const std::wstring Section, const std::wstring Name, bool Value)
+    {}
+    void WriteDateTime(const std::wstring Section, const std::wstring Name, TDateTime Value)
+    {}
+    void WriteFloat(const std::wstring Section, const std::wstring Name, double Value)
+    {}
+    void WriteString(const std::wstring Section, const std::wstring Name, const std::wstring Value)
+    {}
+    void WriteStringRaw(const std::wstring Section, const std::wstring Name, const std::wstring Value)
+    {}
+    void Writeint(const std::wstring Section, const std::wstring Name, int Value)
+    {}
 };
 
 //---------------------------------------------------------------------------

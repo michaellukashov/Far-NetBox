@@ -35,16 +35,16 @@ public:
   TGUICopyParamType & operator =(const TCopyParamType & rhp);
 
   // __property bool Queue = { read = FQueue, write = FQueue };
-  bool GetQueue() { return FQueue; }
+  bool GetQueue() const { return FQueue; }
   void SetQueue(bool value) { FQueue = value; }
   // __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
-  bool GetQueueNoConfirmation() { return FQueueNoConfirmation; }
+  bool GetQueueNoConfirmation() const { return FQueueNoConfirmation; }
   void SetQueueNoConfirmation(bool value) { FQueueNoConfirmation = value; }
   // __property bool QueueIndividually = { read = FQueueIndividually, write = FQueueIndividually };
-  bool GetQueueIndividually() { return FQueueIndividually; }
+  bool GetQueueIndividually() const { return FQueueIndividually; }
   void SetQueueIndividually(bool value) { FQueueIndividually = value; }
   // __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
-  bool GetNewerOnly() { return FNewerOnly; }
+  bool GetNewerOnly() const { return FNewerOnly; }
   void SetNewerOnly(bool value) { FNewerOnly = value; }
 
 protected:
@@ -140,8 +140,8 @@ public:
 
 private:
   static std::wstring FInvalidChars;
-  TList * FRules;
-  TList * FCopyParams;
+  TObjectList * FRules;
+  TObjectList * FCopyParams;
   TStrings * FNames;
   mutable TStrings * FNameList;
   bool FModified;

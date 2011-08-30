@@ -63,6 +63,7 @@ std::wstring CharToHex(char Ch, bool UpperCase = true);
 std::wstring StrToHex(const std::wstring Str, bool UpperCase = true, char Separator = '\0');
 std::wstring HexToStr(const std::wstring Hex);
 unsigned int HexToInt(const std::wstring Hex, int MinChars = 0);
+std::wstring IntToHex(unsigned int Int, int MinChars = 0);
 char HexToChar(const std::wstring Hex, int MinChars = 0);
 std::wstring DecodeUrlChars(std::wstring S);
 std::wstring EncodeUrlChars(std::wstring S, std::wstring Ignore = L"");
@@ -108,6 +109,7 @@ enum TDSTMode
 bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day);
 TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec);
+TDateTime StrToDateTime(std::wstring Value);
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
 FILETIME DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
 TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
@@ -219,6 +221,8 @@ std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
 std::wstring UpperCase(const std::wstring Str);
 std::wstring LowerCase(const std::wstring str);
+wchar_t UpCase(const wchar_t c);
+wchar_t LowCase(const wchar_t c);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
 int AnsiPos(const std::wstring str, wchar_t c);
 int Pos(const std::wstring str, const std::wstring substr);
@@ -231,6 +235,7 @@ bool CompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompare(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareStr(const std::wstring str1, const std::wstring str2);
 bool AnsiSameText(const std::wstring str1, const std::wstring str2);
+bool SameText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 
@@ -246,6 +251,9 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval);
 __int64 TryStrToInt(const std::wstring value, __int64 defval);
 
 //---------------------------------------------------------------------------
+double StrToFloat(std::wstring Value);
+//---------------------------------------------------------------------------
 
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count);
 unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count);
+
