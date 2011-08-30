@@ -1,5 +1,7 @@
 //---------------------------------------------------------------------------
-#include <LanguagesDEPfix.hpp>
+#include "stdafx.h"
+
+// #include <LanguagesDEPfix.hpp>
 #include "GUIConfiguration.h"
 #include "GUITools.h"
 #include <Common.h>
@@ -8,15 +10,13 @@
 #include <Terminal.h>
 #include <CoreMain.h>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
-const ccLocal = ccUser;
-const ccShowResults = ccUser << 1;
-const ccCopyResults = ccUser << 2;
-const ccSet = 0x80000000;
+const int ccLocal = ccUser;
+const int ccShowResults = ccUser << 1;
+const int ccCopyResults = ccUser << 2;
+const int ccSet = 0x80000000;
 //---------------------------------------------------------------------------
 static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
-static const std::wstring AdditionaLanguagePrefix("XX");
+static const std::wstring AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
@@ -50,10 +50,10 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 //---------------------------------------------------------------------------
 void TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
 {
-  Queue = Source->Queue;
-  QueueNoConfirmation = Source->QueueNoConfirmation;
-  QueueIndividually = Source->QueueIndividually;
-  NewerOnly = Source->NewerOnly;
+  SetQueue(Source->GetQueue());
+  SetQueueNoConfirmation(Source->GetQueueNoConfirmation());
+  SetQueueIndividually(Source->GetQueueIndividually());
+  SetNewerOnly(Source->GetNewerOnly());
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Default()
@@ -65,30 +65,30 @@ void TGUICopyParamType::Default()
 //---------------------------------------------------------------------------
 void TGUICopyParamType::GUIDefault()
 {
-  Queue = false;
-  QueueNoConfirmation = true;
-  QueueIndividually = false;
-  NewerOnly = false;
+  SetQueue(false);
+  SetQueueNoConfirmation(true);
+  SetQueueIndividually(false);
+  SetNewerOnly(false);
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Load(THierarchicalStorage * Storage)
 {
   TCopyParamType::Load(Storage);
 
-  Queue = Storage->Readbool("Queue", Queue);
-  QueueNoConfirmation = Storage->Readbool("QueueNoConfirmation", QueueNoConfirmation);
-  QueueIndividually = Storage->Readbool("QueueIndividually", QueueIndividually);
-  NewerOnly = Storage->Readbool("NewerOnly", NewerOnly);
+  SetQueue(Storage->Readbool(L"Queue", GetQueue()));
+  SetQueueNoConfirmation(Storage->Readbool(L"QueueNoConfirmation", GetQueueNoConfirmation()));
+  SetQueueIndividually(Storage->Readbool(L"QueueIndividually", GetQueueIndividually()));
+  SetNewerOnly(Storage->Readbool(L"NewerOnly", GetNewerOnly()));
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Save(THierarchicalStorage * Storage)
 {
   TCopyParamType::Save(Storage);
 
-  Storage->Writebool("Queue", Queue);
-  Storage->Writebool("QueueNoConfirmation", QueueNoConfirmation);
-  Storage->Writebool("QueueIndividually", QueueIndividually);
-  Storage->Writebool("NewerOnly", NewerOnly);
+  Storage->Writebool(L"Queue", GetQueue());
+  Storage->Writebool(L"QueueNoConfirmation", GetQueueNoConfirmation());
+  Storage->Writebool(L"QueueIndividually", GetQueueIndividually());
+  Storage->Writebool(L"NewerOnly", GetNewerOnly());
 }
 //---------------------------------------------------------------------------
 TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
@@ -106,10 +106,10 @@ TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
 //---------------------------------------------------------------------------
 void TCopyParamRuleData::Default()
 {
-  HostName = "";
-  UserName = "";
-  RemoteDirectory = "";
-  LocalDirectory = "";
+  HostName = L"";
+  UserName = L"";
+  RemoteDirectory = L"";
+  LocalDirectory = L"";
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -176,18 +176,18 @@ bool TCopyParamRule::Matches(const TCopyParamRuleData & Value) const
 //---------------------------------------------------------------------------
 void TCopyParamRule::Load(THierarchicalStorage * Storage)
 {
-  FData.HostName = Storage->ReadString("HostName", FData.HostName);
-  FData.UserName = Storage->ReadString("UserName", FData.UserName);
-  FData.RemoteDirectory = Storage->ReadString("RemoteDirectory", FData.RemoteDirectory);
-  FData.LocalDirectory = Storage->ReadString("LocalDirectory", FData.LocalDirectory);
+  FData.HostName = Storage->ReadString(L"HostName", FData.HostName);
+  FData.UserName = Storage->ReadString(L"UserName", FData.UserName);
+  FData.RemoteDirectory = Storage->ReadString(L"RemoteDirectory", FData.RemoteDirectory);
+  FData.LocalDirectory = Storage->ReadString(L"LocalDirectory", FData.LocalDirectory);
 }
 //---------------------------------------------------------------------------
 void TCopyParamRule::Save(THierarchicalStorage * Storage) const
 {
-  Storage->WriteString("HostName", FData.HostName);
-  Storage->WriteString("UserName", FData.UserName);
-  Storage->WriteString("RemoteDirectory", FData.RemoteDirectory);
-  Storage->WriteString("LocalDirectory", FData.LocalDirectory);
+  Storage->WriteString(L"HostName", FData.HostName);
+  Storage->WriteString(L"UserName", FData.UserName);
+  Storage->WriteString(L"RemoteDirectory", FData.RemoteDirectory);
+  Storage->WriteString(L"LocalDirectory", FData.LocalDirectory);
 }
 //---------------------------------------------------------------------------
 bool TCopyParamRule::GetEmpty() const
@@ -204,7 +204,8 @@ std::wstring TCopyParamRule::GetInfoStr(std::wstring Separator) const
   std::wstring Result;
   #define ADD(FMT, ELEM) \
     if (!FData.ELEM.empty()) \
-      Result += (Result.empty() ? std::wstring() : Separator) + FMTLOAD(FMT, (FData.ELEM));
+      Result += (Result.empty() ? std::wstring() : Separator);
+// FIXME + FMTLOAD(FMT, (FData.ELEM));
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
@@ -214,7 +215,7 @@ std::wstring TCopyParamRule::GetInfoStr(std::wstring Separator) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-std::wstring TCopyParamList::FInvalidChars("/\\[]");
+std::wstring TCopyParamList::FInvalidChars(L"/\\[]");
 //---------------------------------------------------------------------------
 TCopyParamList::TCopyParamList()
 {
@@ -223,8 +224,8 @@ TCopyParamList::TCopyParamList()
 //---------------------------------------------------------------------------
 void TCopyParamList::Init()
 {
-  FCopyParams = new TList();
-  FRules = new TList();
+  FCopyParams = new TObjectList();
+  FRules = new TObjectList();
   FNames = new TStringList();
   FNameList = NULL;
   FModified = false;
@@ -253,9 +254,9 @@ void TCopyParamList::Modify()
 //---------------------------------------------------------------------
 void TCopyParamList::ValidateName(const std::wstring Name)
 {
-  if (Name.LastDelimiter(FInvalidChars) > 0)
+  if (::LastDelimiter(Name, FInvalidChars) > 0)
   {
-    throw std::exception(FMTLOAD(ITEM_NAME_INVALID, (Name, FInvalidChars)));
+    throw ExtException(L""); // FIXME FMTLOAD(ITEM_NAME_INVALID, (Name, FInvalidChars)));
   }
 }
 //---------------------------------------------------------------------------
@@ -263,15 +264,15 @@ void TCopyParamList::operator=(const TCopyParamList & rhl)
 {
   Clear();
 
-  for (int Index = 0; Index < rhl.Count; Index++)
+  for (int Index = 0; Index < rhl.GetCount(); Index++)
   {
-    TCopyParamType * CopyParam = new TCopyParamType(*rhl.CopyParams[Index]);
+    TCopyParamType * CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
     TCopyParamRule * Rule = NULL;
-    if (rhl.Rules[Index] != NULL)
+    if (rhl.GetRule(Index) != NULL)
     {
-      Rule = new TCopyParamRule(*rhl.Rules[Index]);
+      Rule = new TCopyParamRule(*rhl.GetRule(Index));
     }
-    Add(rhl.Names[Index], CopyParam, Rule);
+    Add(rhl.GetName(Index), CopyParam, Rule);
   }
   // there should be comparison of with the assigned list, be we rely on caller
   // to do it instead (TGUIConfiguration::SetCopyParamList)
@@ -280,15 +281,15 @@ void TCopyParamList::operator=(const TCopyParamList & rhl)
 //---------------------------------------------------------------------------
 bool TCopyParamList::operator==(const TCopyParamList & rhl) const
 {
-  bool Result = (Count == rhl.Count);
+  bool Result = (GetCount() == rhl.GetCount());
   if (Result)
   {
     int i = 0;
-    while ((i < Count) && Result)
+    while ((i < GetCount()) && Result)
     {
       Result =
-        (Names[i] == rhl.Names[i]) &&
-        CompareItem(i, rhl.CopyParams[i], rhl.Rules[i]);
+        (GetName(i) == rhl.GetName(i)) &&
+        CompareItem(i, rhl.GetCopyParam(i), rhl.GetRule(i));
       i++;
     }
   }
@@ -297,25 +298,25 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
 //---------------------------------------------------------------------------
 int TCopyParamList::IndexOfName(const std::wstring Name) const
 {
-  return FNames->IndexOf(Name);
+  return FNames->IndexOf(Name.c_str());
 }
 //---------------------------------------------------------------------------
 bool TCopyParamList::CompareItem(int Index,
   const TCopyParamType * CopyParam, const TCopyParamRule * Rule) const
 {
   return
-    ((*CopyParams[Index]) == *CopyParam) &&
-    ((Rules[Index] == NULL) ?
+    ((*GetCopyParam(Index)) == *CopyParam) &&
+    ((GetRule(Index) == NULL) ?
       (Rule == NULL) :
-      ((Rule != NULL) && (*Rules[Index]) == (*Rule)));
+      ((Rule != NULL) && (*GetRule(Index)) == (*Rule)));
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-  for (int i = 0; i < Count; i++)
+  for (int i = 0; i < GetCount(); i++)
   {
-    delete CopyParams[i];
-    delete Rules[i];
+    delete GetCopyParam(i);
+    delete GetRule(i);
   }
   FCopyParams->Clear();
   FRules->Clear();
@@ -325,13 +326,13 @@ void TCopyParamList::Clear()
 void TCopyParamList::Add(const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-  Insert(Count, Name, CopyParam, Rule);
+  Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Insert(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-  assert(FNames->IndexOf(Name) < 0);
+  assert(FNames->IndexOf(Name.c_str()) < 0);
   FNames->Insert(Index, Name);
   assert(CopyParam != NULL);
   FCopyParams->Insert(Index, reinterpret_cast<TObject *>(CopyParam));
@@ -342,12 +343,12 @@ void TCopyParamList::Insert(int Index, const std::wstring Name,
 void TCopyParamList::Change(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-  if ((Name != Names[Index]) || !CompareItem(Index, CopyParam, Rule))
+  if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
     FNames->GetString(Index) = Name;
-    delete CopyParams[Index];
+    delete GetCopyParam(Index);
     FCopyParams->GetItem(Index) = (reinterpret_cast<TObject *>(CopyParam));
-    delete Rules[Index];
+    delete GetRule(Index);
     FRules->GetItem(Index) = (reinterpret_cast<TObject *>(Rule));
     Modify();
   }
@@ -373,9 +374,9 @@ void TCopyParamList::Delete(int Index)
 {
   assert((Index >= 0) && (Index < Count));
   FNames->Delete(Index);
-  delete CopyParams[Index];
+  delete GetCopyParam(Index);
   FCopyParams->Delete(Index);
-  delete Rules[Index];
+  delete GetRule(Index);
   FRules->Delete(Index);
   Modify();
 }
@@ -388,7 +389,7 @@ int TCopyParamList::Find(const TCopyParamRuleData & Value) const
   {
     if (FRules->GetItem(i] != NULL)
     {
-      if (Rules[i]->Matches(Value))
+      if (GetRule(i)->Matches(Value))
       {
         Result = i;
       }
@@ -449,10 +450,10 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
     {
       try
       {
-        const TCopyParamType * CopyParam = CopyParams[Index];
-        const TCopyParamRule * Rule = Rules[Index];
+        const TCopyParamType * CopyParam = GetCopyParam(Index);
+        const TCopyParamRule * Rule = GetRule(Index);
 
-        Storage->WriteString("Name", Names[Index]);
+        Storage->WriteString("Name", GetName(Index));
         CopyParam->Save(Storage);
         Storage->Writebool("HasRule", (Rule != NULL));
         if (Rule != NULL)
@@ -508,7 +509,7 @@ bool TCopyParamList::GetAnyRule() const
   int i = 0;
   while ((i < Count) && !Result)
   {
-    Result = (Rules[i] != NULL);
+    Result = (GetRule(i) != NULL);
     i++;
   }
   return Result;
@@ -1107,7 +1108,7 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(std::wstring Name)
     assert(Index >= 0);
     if (Index >= 0)
     {
-      const TCopyParamType * Preset = FCopyParamList->CopyParams[Index];
+      const TCopyParamType * Preset = FCopyParamList->GetCopyParam(Index);
       assert(Preset != NULL);
       Result.Assign(Preset); // overwrite all but GUI options
       // reset all options known not to be configurable per-preset

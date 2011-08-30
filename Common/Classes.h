@@ -147,6 +147,9 @@ public:
     void Delete(int Index)
     {
     }
+    void Insert(int Index, TObject *value)
+    {
+    }
     size_t IndexOf(TObject *value) const
     {
         return -1;
