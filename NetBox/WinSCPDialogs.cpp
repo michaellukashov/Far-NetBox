@@ -1508,7 +1508,7 @@ public:
 
   TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
 
-  bool Execute(TSessionData * Data, TSessionAction & Action);
+  bool Execute(TSessionData * Data, TSessionActionEnum & Action);
 
 protected:
   virtual void Change();
@@ -2859,9 +2859,9 @@ void TSessionDialog::UpdateControls()
       AnsiContainsText(ProxyCommand, L"%pass"))));
   bool ProxySettings = Proxy && SshProtocol;
   ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet));
-  ProxyLocalCommandEdit->SetVisible((GetTab == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd));
+  ProxyLocalCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd));
   ProxyLocalCommandLabel->SetVisible(ProxyLocalCommandEdit->GetVisible());
-  ProxyTelnetCommandEdit->SetVisible((GetTab == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() != pmCmd));
+  ProxyTelnetCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() != pmCmd));
   ProxyTelnetCommandLabel->SetVisible(ProxyTelnetCommandEdit->GetVisible());
   ProxyLocalhostCheck->SetEnabled(ProxySettings);
   ProxyDNSOffButton->SetEnabled(ProxySettings);
@@ -2870,10 +2870,10 @@ void TSessionDialog::UpdateControls()
   TunnelTab->SetEnabled(InternalSshProtocol);
 }
 //---------------------------------------------------------------------------
-bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action)
+bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
 {
   int Captions[] = { LOGIN_ADD, LOGIN_EDIT, LOGIN_CONNECT };
-  Caption = GetMsg(Captions[Action]);
+  SetCaption(GetMsg(Captions[Action]));
 
   FSessionData = SessionData;
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
@@ -2891,8 +2891,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
 
   bool AllowScpFallback;
-  TransferProtocolCombo->GetItems()->GetSelected() =
-    FSProtocolToIndex(SessionData->FSProtocol, AllowScpFallback);
+  TransferProtocolCombo->GetItems()->SetSelected(
+    FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
 
   // Directories tab
@@ -2904,7 +2904,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   ResolveSymlinksCheck->SetChecked(SessionData->GetResolveSymlinks());
 
   // Environment tab
-  if (SessionData->EOLType == eolLF)
+  if (SessionData->GetEOLType() == eolLF)
   {
     EOLTypeCombo->GetItems()->SetSelected(0);
   }
@@ -2912,7 +2912,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   {
     EOLTypeCombo->GetItems()->SetSelected(1);
   }
-  switch (SessionData->Utf)
+  switch (SessionData->GetNotUtf())
   {
     case asOn:
       UtfCombo->GetItems()->SetSelected(1);
@@ -2927,7 +2927,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
       break;
   }
 
-  switch (SessionData->DSTMode)
+  switch (SessionData->GetDSTMode())
   {
     case dstmWin:
       DSTModeWinCheck->SetChecked(true);
@@ -2948,7 +2948,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   RecycleBinPathEdit->SetText(SessionData->GetRecycleBinPath());
 
   // Shell tab
-  if (SessionData->DefaultShell)
+  if (SessionData->GetDefaultShell())
   {
     ShellEdit->SetText(ShellEdit->GetItems()->GetString(0));
   }
@@ -2956,7 +2956,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   {
     ShellEdit->SetText(SessionData->GetShell());
   }
-  if (SessionData->DetectReturnVar)
+  if (SessionData->GetDetectReturnVar())
   {
     ReturnVarEdit->SetText(ReturnVarEdit->GetItems()->GetString(0));
   }
@@ -2970,8 +2970,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionAction & Action
   Scp1CompatibilityCheck->SetChecked(SessionData->GetScp1Compatibility());
   UnsetNationalVarsCheck->SetChecked(SessionData->GetUnsetNationalVars());
   ListingCommandEdit->SetText(SessionData->GetListingCommand());
-  SCPLsFullTimeAutoCheck->SetChecked((SessionData->SCPLsFullTime != asOff));
-  int TimeDifferenceMin = DateTimeToTimeStamp(SessionData->TimeDifference).Time / 60000;
+  SCPLsFullTimeAutoCheck->SetChecked((SessionData->GetSCPLsFullTime() != asOff));
+  int TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).GetTime() / 60000;
   if (double(SessionData->TimeDifference) < 0)
   {
     TimeDifferenceMin = -TimeDifferenceMin;
