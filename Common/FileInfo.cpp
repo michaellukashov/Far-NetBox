@@ -1,8 +1,10 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
+#include <Windows.h>
 
 #include <Common.h>
 #include <Exceptions.h>
-#include <Windows.hpp>
+// #include <Windows.hpp>
 #include "FileInfo.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------
@@ -18,7 +20,7 @@ struct VS_VERSION_INFO_STRUCT32
   WCHAR szKey[1];
 };
 //---------------------------------------------------------------------------
-unsigned int VERSION_GetFileVersionInfo_PE(const char * FileName, unsigned int DataSize, void * Data)
+unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int DataSize, void * Data)
 {
   unsigned int Len;
 
@@ -94,7 +96,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const char * FileName, unsigned int D
   return Len;
 }
 //---------------------------------------------------------------------------
-unsigned int GetFileVersionInfoSizeFix(const char * FileName, unsigned long * Handle)
+unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long * Handle)
 {
   unsigned int Len;
   if (IsWin7())
@@ -109,13 +111,13 @@ unsigned int GetFileVersionInfoSizeFix(const char * FileName, unsigned long * Ha
   }
   else
   {
-    Len = GetFileVersionInfoSize((char *)FileName, Handle);
+    Len = GetFileVersionInfoSize((wchar_t *)FileName, Handle);
   }
 
   return Len;
 }
 //---------------------------------------------------------------------------
-bool GetFileVersionInfoFix(const char * FileName, unsigned long Handle,
+bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   unsigned int DataSize, void * Data)
 {
   bool Result;
@@ -130,20 +132,20 @@ bool GetFileVersionInfoFix(const char * FileName, unsigned long Handle,
     Result = (Len != 0);
     if (Result)
     {
-      static const char Signature[] = "FE2X";
+      static const wchar_t Signature[] = L"FE2X";
       unsigned int BufSize = VersionInfo->wLength + strlen(Signature);
       unsigned int ConvBuf;
 
       if (DataSize >= BufSize)
       {
         ConvBuf = DataSize - VersionInfo->wLength;
-        memcpy(((char*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
+        memcpy(((wchar_t*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
       }
     }
   }
   else
   {
-    Result = GetFileVersionInfo((char *)FileName, Handle, DataSize, Data);
+    Result = GetFileVersionInfo((wchar_t *)FileName, Handle, DataSize, Data);
   }
 
   return Result;
@@ -162,7 +164,7 @@ void * CreateFileInfo(std::wstring FileName)
   // If size is valid
   if (Size > 0)
   {
-    Result = new char[Size];
+    Result = new wchar_t[Size];
     // Get file version info block
     if (!GetFileVersionInfoFix(FileName.c_str(), Handle, Size, Result))
     {
