@@ -19,7 +19,6 @@ macro(use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME)
 endmacro( use_precompiled_header )
 
 #-------------------------------------------------------------------------------
-# Устанавливаем флаги компиляции ( -DCMAKE_BUILD_TYPE=[Debug,Release] )
 
 set ( CMAKE_CXX_FLAGS
     "-DWIN32;_WINDOWS;NO_FILEZILLA /EHsc /MP2" )
@@ -31,7 +30,7 @@ set ( CMAKE_EXE_LINK_FLAGS
     #/NODEFAULTLIB:LIBCMTD.LIB
 )
 
-# Дополнительные флаги компиляции
+# definitions
 add_definitions ( "-DNETBOX_DEBUG;USE_FASTFLOW;CURL_STATICLIB;_USRDLL;NETBOX_EXPORTS" )
 add_definitions ( "-D_FF_WIN_XP" )
 
@@ -40,12 +39,8 @@ add_definitions ( "-D_FF_WIN_XP" )
 
 #-------------------------------------------------------
 
-set (PROJECT NetBox )
+project ( NetBox )
 
-# задать имя проекта
-project (${PROJECT})
-
-# Настройки Release/Debug
 set ( CMAKE_BUILD_TYPE Debug )
 
 set ( PLATFORM x86 )
@@ -55,18 +50,12 @@ set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------
 
-# задать папку для выходных бинарников
 set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-
-# задать папку для выходных динамических библиотек
 set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-
-# задать папку для выходных статических библиотек
 set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------------------------------
 
-# добавить пути для поиска файлов проекта
 include_directories (
     ${PROJECT_ROOT}/NetBox
     ${PROJECT_ROOT}/PluginSDK/${FAR_VERSION}
@@ -95,8 +84,6 @@ link_directories (
 
 #-------------------------------------------------------------------------------
 
-# выполнить подпроект [PROJECT] и положить результат в [PATH]
-# EXCLUDE_FROM_ALL - собрать только необходимые цели
 #add_subdirectory ( ${DICTIONARY_PATH}
 #                   bin/sub_projects
 #                   EXCLUDE_FROM_ALL
@@ -225,7 +212,6 @@ set_target_properties( libputty
 
 #-------------------------------------------------------------------------------
 
-# список библиотек к линковке
 set ( NETBOX_LIBRARIES
     libssh2.lib
     zlib.lib
@@ -256,7 +242,7 @@ set_target_properties( NetBox
     LINK_FLAGS ${CMAKE_EXE_LINK_FLAGS}
 )
 
-#move from NetBox/Debug to NetBox/
+# move from NetBox/Debug to NetBox/
 string(REPLACE "/" "\\" outdir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 add_custom_command ( TARGET NetBox
     POST_BUILD
@@ -347,6 +333,5 @@ set_target_properties( testnetbox_01
 # add_dependencies ( testnetbox_01 zlib libssh2 libcurl )
 use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
 
-# Добавить к линковке цели ${PROJECT} библиотеки ${LIBRARIES}
 target_link_libraries ( testnetbox_01 ${TESTNETBOX_01_LIBRARIES} )
 
