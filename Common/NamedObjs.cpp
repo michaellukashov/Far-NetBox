@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 #include "NamedObjs.h"
+#include "Common.h"
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2)
 {
