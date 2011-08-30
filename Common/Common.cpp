@@ -692,6 +692,12 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
   }
   return Result;
 }
+
+std::wstring IntToHex(unsigned int Int, int MinChars)
+{
+    return L"";
+}
+
 //---------------------------------------------------------------------------
 char HexToChar(const std::wstring Hex, int MinChars)
 {

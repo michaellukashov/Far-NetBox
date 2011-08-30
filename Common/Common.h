@@ -63,6 +63,7 @@ std::wstring CharToHex(char Ch, bool UpperCase = true);
 std::wstring StrToHex(const std::wstring Str, bool UpperCase = true, char Separator = '\0');
 std::wstring HexToStr(const std::wstring Hex);
 unsigned int HexToInt(const std::wstring Hex, int MinChars = 0);
+std::wstring IntToHex(unsigned int Int, int MinChars = 0);
 char HexToChar(const std::wstring Hex, int MinChars = 0);
 std::wstring DecodeUrlChars(std::wstring S);
 std::wstring EncodeUrlChars(std::wstring S, std::wstring Ignore = L"");
