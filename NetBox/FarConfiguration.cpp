@@ -173,7 +173,7 @@ void TFarConfiguration::CacheFarSettings()
 //---------------------------------------------------------------------------
 int TFarConfiguration::FarConfirmations()
 {
-  if (GetCurrentThreadId() == GetPlugin()->FarThread)
+  if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {
     return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }
@@ -222,7 +222,7 @@ bool TFarConfiguration::GetConfirmDeleting()
 wstring TFarConfiguration::ModuleFileName()
 {
   assert(GetPlugin());
-  return GetPlugin()->ModuleName;
+  return GetPlugin()->GetModuleName();
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::SetBookmark(wstring Key,

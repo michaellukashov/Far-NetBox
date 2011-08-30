@@ -1694,7 +1694,152 @@ std::wstring FORMAT(const wchar_t *fmt, ...)
 	return result;
 }
 
+//---------------------------------------------------------------------------
+std::wstring IntToStr(int value)
+{
+    std::wstring result;
+    return result;
+}
+
+int StrToInt(const std::wstring value)
+{
+    return 0;
+}
+
+__int64 ToInt(const std::wstring value)
+{
+    return 0;
+}
+
+int StrToIntDef(const std::wstring value, int defval)
+{
+    return 0;
+}
+
+__int64 StrToInt64(const std::wstring value)
+{
+    return 0;
+}
+
+__int64 StrToInt64Def(const std::wstring value, __int64 defval)
+{
+    return 0;
+}
+
+__int64 TryStrToInt(const std::wstring value, __int64 defval)
+{
+    return 0;
+}
+
+//---------------------------------------------------------------------------
+
+std::wstring Trim(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring TrimLeft(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring TrimRight(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring UpperCase(const std::wstring Str)
+{
+    // FIXME 
+    std::wstring result;
+    return result;
+}
+
+std::wstring LowerCase(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    return result;
+}
+
+std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+int AnsiPos(const std::wstring str, wchar_t c)
+{
+    // FIXME
+    return -1;
+}
+
+int Pos(const std::wstring str, const std::wstring substr)
+{
+    // FIXME
+    return -1;
+}
+
+std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
+{
+    // FIXME
+    return false;
+}
+
+int LastDelimiter(const std::wstring str1, const std::wstring delim)
+{
+    // FIXME
+    return -1;
+}
+
+//---------------------------------------------------------------------------
+
 bool CompareText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
+bool AnsiCompare(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
+bool AnsiCompareStr(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
+bool AnsiSameText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
+bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
+bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
     // FIXME
     return false;

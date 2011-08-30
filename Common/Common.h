@@ -214,10 +214,36 @@ public:
 //---------------------------------------------------------------------------
 std::wstring FORMAT(const wchar_t *fmt, ...);
 //---------------------------------------------------------------------------
+std::wstring Trim(const std::wstring str);
+std::wstring TrimLeft(const std::wstring str);
+std::wstring TrimRight(const std::wstring str);
+std::wstring UpperCase(const std::wstring Str);
+std::wstring LowerCase(const std::wstring str);
+std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
+int AnsiPos(const std::wstring str, wchar_t c);
+int Pos(const std::wstring str, const std::wstring substr);
+std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
+bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size);
+int LastDelimiter(const std::wstring str1, const std::wstring delim);
+//---------------------------------------------------------------------------
 
 bool CompareText(const std::wstring str1, const std::wstring str2);
+bool AnsiCompare(const std::wstring str1, const std::wstring str2);
+bool AnsiCompareStr(const std::wstring str1, const std::wstring str2);
+bool AnsiSameText(const std::wstring str1, const std::wstring str2);
+bool AnsiCompareText(const std::wstring str1, const std::wstring str2);
+bool AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 
 void RaiseLastOSError();
+
+//---------------------------------------------------------------------------
+std::wstring IntToStr(int value);
+int StrToInt(const std::wstring value);
+__int64 ToInt(const std::wstring value);
+int StrToIntDef(const std::wstring value, int defval);
+__int64 StrToInt64(const std::wstring value);
+__int64 StrToInt64Def(const std::wstring value, __int64 defval);
+__int64 TryStrToInt(const std::wstring value, __int64 defval);
 
 //---------------------------------------------------------------------------
 

@@ -292,6 +292,8 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/PuttyIntf.cpp
     ${PROJECT_ROOT}/Common/Cryptography.cpp
     ${PROJECT_ROOT}/Common/FileBuffer.cpp
+    ${PROJECT_ROOT}/Common/NamedObjs.cpp
+    ${PROJECT_ROOT}/Common/HierarchicalStorage.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/NetBox/FarConfiguration.cpp

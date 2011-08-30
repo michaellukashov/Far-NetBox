@@ -1,4 +1,6 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
@@ -17,7 +19,7 @@ std::wstring MungeStr(const std::wstring Str)
 {
   std::wstring Result;
   Result.resize(Str.size() * 3 + 1);
-  putty_mungestr(Str.c_str(), Result.c_str());
+  putty_mungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)::W2MB(Result.c_str()).c_str());
   PackStr(Result);
   return Result;
 }
@@ -26,7 +28,7 @@ std::wstring UnMungeStr(const std::wstring Str)
 {
   std::wstring Result;
   Result.resize(Str.size() * 3 + 1);
-  putty_unmungestr(Str.c_str(), Result.c_str(), Result.size());
+  putty_unmungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)::W2MB(Result.c_str()).c_str(), Result.size());
   PackStr(Result);
   return Result;
 }
@@ -42,7 +44,7 @@ std::wstring MungeIniName(const std::wstring Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, "=", "%3D", TReplaceFlags() << rfReplaceAll);
+    return ::StringReplace(Str, L"=", L"%3D"); // , TReplaceFlags() << rfReplaceAll);
   }
   else
   {
@@ -56,7 +58,7 @@ std::wstring UnMungeIniName(const std::wstring Str)
   // make this fast for now
   if (P > 0)
   {
-    return StringReplace(Str, "%3D", "=", TReplaceFlags() << rfReplaceAll);
+    return ::StringReplace(Str, L"%3D", L"="); // , TReplaceFlags() << rfReplaceAll);
   }
   else
   {
@@ -68,9 +70,9 @@ THierarchicalStorage::THierarchicalStorage(const std::wstring AStorage)
 {
   FStorage = AStorage;
   FKeyHistory = new TStringList();
-  AccessMode = smRead;
-  Explicit = false;
-  MungeStringValues = true;
+  SetAccessMode(smRead);
+  SetExplicit(false);
+  SetMungeStringValues(true);
 }
 //---------------------------------------------------------------------------
 THierarchicalStorage::~THierarchicalStorage()
@@ -85,8 +87,8 @@ void THierarchicalStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 std::wstring THierarchicalStorage::GetCurrentSubKeyMunged()
 {
-  if (FKeyHistory->GetCount()) return FKeyHistory->GetString(FKeyHistory->GetCount()-1];
-    else return "";
+  if (FKeyHistory->GetCount()) return FKeyHistory->GetString(FKeyHistory->GetCount()-1);
+    else return L"";
 }
 //---------------------------------------------------------------------------
 std::wstring THierarchicalStorage::GetCurrentSubKey()
@@ -96,7 +98,7 @@ std::wstring THierarchicalStorage::GetCurrentSubKey()
 //---------------------------------------------------------------------------
 bool THierarchicalStorage::OpenRootKey(bool CanCreate)
 {
-  return OpenSubKey("", CanCreate);
+  return OpenSubKey(L"", CanCreate);
 }
 //---------------------------------------------------------------------------
 std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
@@ -123,7 +125,7 @@ std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
 //---------------------------------------------------------------------------
 bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreate*/, bool Path)
 {
-  FKeyHistory->Add(IncludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path)));
+  FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path)));
   return true;
 }
 //---------------------------------------------------------------------------
@@ -198,11 +200,11 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
       if (MaintainKeys)
       {
         Strings->Add(::FORMAT(L"%s=%s", (Names->GetString(Index),
-          ReadString(Names->GetString(Index), ""))));
+          ReadString(Names->GetString(Index), L""))));
       }
       else
       {
-        Strings->Add(ReadString(Names->GetString(Index), ""));
+        Strings->Add(ReadString(Names->GetString(Index), L""));
       }
     }
   }
@@ -241,7 +243,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
       if (MaintainKeys)
       {
         assert(Strings->GetString(Index).find_first_of(L"=") > 1);
-        WriteString(Strings->Names[Index], Strings->Values[Strings->Names[Index]]);
+        WriteString(Strings->GetName(Index), Strings->GetValue(Strings->GetName(Index)));
       }
       else
       {
@@ -254,7 +256,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
 std::wstring THierarchicalStorage::ReadString(const std::wstring Name, const std::wstring Default)
 {
   std::wstring Result;
-  if (MungeStringValues)
+  if (GetMungeStringValues())
   {
     Result = UnMungeStr(ReadStringRaw(Name, MungeStr(Default)));
   }
@@ -270,13 +272,13 @@ std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring Name)
   int Size = BinaryDataSize(Name);
   std::wstring Value;
   Value.resize(Size);
-  ReadBinaryData(Name, Value.c_str(), Size);
+  ReadBinaryData(Name, (void *)Value.c_str(), Size);
   return Value;
 }
 //---------------------------------------------------------------------------
 void THierarchicalStorage::WriteString(const std::wstring Name, const std::wstring Value)
 {
-  if (MungeStringValues)
+  if (GetMungeStringValues())
   {
     WriteStringRaw(Name, MungeStr(Value));
   }
@@ -328,14 +330,14 @@ TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey):
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   Init();
-  FRegistry->RootKey = ARootKey;
+  FRegistry->SetRootKey(ARootKey);
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::Init()
 {
   FFailed = 0;
-  FRegistry = new TRegistry();
-  FRegistry->Access = KEY_READ;
+  FRegistry = new TRegistry;
+  FRegistry->SetAccess(KEY_READ);
 }
 //---------------------------------------------------------------------------
 TRegistryStorage::~TRegistryStorage()
@@ -361,7 +363,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       int RegResult;
       do
       {
-        RegResult = RegQueryValueEx(Registry->CurrentKey, Name.c_str(), NULL,
+        RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
           &Type, &Buffer[0], &Size);
         if (Result == ERROR_MORE_DATA)
         {
@@ -372,7 +374,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       Result = (RegResult == ERROR_SUCCESS);
       if (Result)
       {
-        RegResult = RegSetValueEx(FRegistry->CurrentKey, Name.c_str(), NULL, Type,
+        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), NULL, Type,
           &Buffer[0], Size);
         Result = (RegResult == ERROR_SUCCESS);
       }
@@ -389,7 +391,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 //---------------------------------------------------------------------------
 std::wstring TRegistryStorage::GetSource()
 {
-  return RootKeyToStr(FRegistry->RootKey) + "\\" + Storage;
+  return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
@@ -397,14 +399,14 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   THierarchicalStorage::SetAccessMode(value);
   if (FRegistry)
   {
-    switch (AccessMode) {
+    switch (GetAccessMode()) {
       case smRead:
-        FRegistry->Access = KEY_READ;
+        FRegistry->SetAccess(KEY_READ);
         break;
 
       case smReadWrite:
       default:
-        FRegistry->Access = KEY_READ | KEY_WRITE;
+        FRegistry->SetAccess(KEY_READ | KEY_WRITE);
         break;
     }
   }
@@ -414,7 +416,7 @@ bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, boo
 {
   bool Result;
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
-  std::wstring K = ExcludeTrailingBackslash(Storage + CurrentSubKey + MungeSubKey(SubKey, Path));
+  std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey ()+ MungeSubKey(SubKey, Path));
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
   return Result;
@@ -426,14 +428,14 @@ void TRegistryStorage::CloseSubKey()
   THierarchicalStorage::CloseSubKey();
   if (FKeyHistory->GetCount())
   {
-    FRegistry->OpenKey(Storage + CurrentSubKey, true);
+    FRegistry->OpenKey(GetStorage() + GetCurrentSubKey(), true);
   }
 }
 //---------------------------------------------------------------------------
 bool TRegistryStorage::DeleteSubKey(const std::wstring SubKey)
 {
   std::wstring K;
-  if (FKeyHistory->GetCount() == 0) K = Storage + CurrentSubKey;
+  if (FKeyHistory->GetCount() == 0) K = GetStorage() + GetCurrentSubKey();
   K += MungeStr(SubKey);
   return FRegistry->DeleteKey(K);
 }
@@ -601,7 +603,7 @@ int TRegistryStorage::GetFailed()
 TIniFileStorage::TIniFileStorage(const std::wstring AStorage):
   THierarchicalStorage(AStorage)
 {
-  FIniFile = new TMemIniFile(Storage);
+  FIniFile = new TMemIniFile(GetStorage());
   FOriginal = new TStringList();
   FIniFile->GetStrings(FOriginal);
   ApplyOverrides();
@@ -617,22 +619,22 @@ TIniFileStorage::~TIniFileStorage()
     {
       int Attr;
       // preserve attributes (especially hidden)
-      if (FileExists(Storage))
+      if (FileExists(GetStorage()))
       {
-        Attr = GetFileAttributes(Storage.c_str());
+        Attr = GetFileAttributes(GetStorage().c_str());
       }
       else
       {
         Attr = FILE_ATTRIBUTE_NORMAL;
       }
 
-      HANDLE Handle = CreateFile(Storage.c_str(), GENERIC_READ | GENERIC_WRITE,
+      HANDLE Handle = CreateFile(GetStorage().c_str(), GENERIC_READ | GENERIC_WRITE,
         0, NULL, CREATE_ALWAYS, Attr, 0);
 
       if (Handle == INVALID_HANDLE_VALUE)
       {
         // "access denied" errors upon implicit saves are ignored
-        if (Explicit || (GetLastError() != ERROR_ACCESS_DENIED))
+        if (GetExplicit() || (GetLastError() != ERROR_ACCESS_DENIED))
         {
           try
           {
@@ -640,13 +642,13 @@ TIniFileStorage::~TIniFileStorage()
           }
           catch(exception & E)
           {
-            throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, (Storage)));
+            throw ExtException(&E); // FIXME , FMTLOAD(CREATE_FILE_ERROR, (Storage)));
           }
         }
       }
       else
       {
-        TStream * Stream = new THandleStream(int(Handle));
+        TStream * Stream = new THandleStream(Handle);
         try
         {
           Strings->SaveToStream(Stream);
@@ -669,7 +671,7 @@ TIniFileStorage::~TIniFileStorage()
 //---------------------------------------------------------------------------
 std::wstring TIniFileStorage::GetSource()
 {
-  return Storage;
+  return GetStorage();
 }
 //---------------------------------------------------------------------------
 std::wstring TIniFileStorage::GetCurrentSection()
@@ -686,15 +688,15 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
     TStringList * Sections = new TStringList();
     try
     {
-      Sections->Sorted = true;
+      Sections->SetSorted(true);
       FIniFile->ReadSections(Sections);
-      std::wstring NewKey = ExcludeTrailingBackslash(CurrentSubKey+MungeSubKey(SubKey, Path));
+      std::wstring NewKey = ExcludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path));
       int Index = -1;
       if (Sections->GetCount())
       {
         Result = Sections->Find(NewKey, Index);
         if (!Result && Index < Sections->GetCount() &&
-            Sections->GetString(Index).substr(1, NewKey.size()+1) == NewKey + "\\")
+            Sections->GetString(Index).substr(1, NewKey.size()+1) == NewKey + L"\\")
         {
           Result = true;
         }
@@ -718,7 +720,7 @@ bool TIniFileStorage::DeleteSubKey(const std::wstring SubKey)
   bool Result;
   try
   {
-    FIniFile->EraseSection(CurrentSubKey + MungeStr(SubKey));
+    FIniFile->EraseSection(GetCurrentSubKey() + MungeStr(SubKey));
     Result = true;
   }
   catch (...)
@@ -738,11 +740,11 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
     for (int i = 0; i < Sections->GetCount(); i++)
     {
       std::wstring Section = Sections->GetString(i);
-      if (AnsiCompareText(CurrentSubKey,
-          Section.substr(1, CurrentSubKey.size())) == 0)
+      if (AnsiCompareText(GetCurrentSubKey(),
+          Section.substr(1, GetCurrentSubKey().size())) == 0)
       {
-        std::wstring SubSection = Section.substr(CurrentSubKey.size() + 1,
-          Section.size() - CurrentSubKey.size());
+        std::wstring SubSection = Section.substr(GetCurrentSubKey().size() + 1,
+          Section.size() - GetCurrentSubKey().size());
         int P = SubSection.find_first_of(L"\\");
         if (P)
         {
@@ -772,7 +774,7 @@ void TIniFileStorage::GetValueNames(TStrings* Strings)
 //---------------------------------------------------------------------------
 bool TIniFileStorage::KeyExists(const std::wstring SubKey)
 {
-  return FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey));
+  return FIniFile->SectionExists(GetCurrentSubKey() + MungeStr(SubKey));
 }
 //---------------------------------------------------------------------------
 bool TIniFileStorage::ValueExists(const std::wstring Value)
