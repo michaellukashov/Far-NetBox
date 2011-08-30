@@ -1779,17 +1779,17 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   // Sesion tab
 
   SetNextItemPosition(ipNewLine);
-  DefaultGroup = tabSession;
+  SetDefaultGroup(tabSession);
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_GROUP_SESSION));
-  GroupTop = Separator->Top;
+  GroupTop = Separator->GetTop();
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
   HostNameEdit = new TFarEdit(this);
-  HostNameEdit->Right = CRect.Right - 12 - 2;
+  HostNameEdit->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipRight);
 
@@ -1809,7 +1809,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(LOGIN_USER_NAME));
 
   UserNameEdit = new TFarEdit(this);
-  UserNameEdit->Width = UserNameEdit->Width / 2 - 1;
+  UserNameEdit->SeWidth(UserNameEdit->GetWidth() / 2 - 1);
 
   SetNextItemPosition(ipRight);
 
@@ -1867,7 +1867,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   // Environment tab
 
-  DefaultGroup = tabEnvironment;
+  SetDefaultGroup(tabEnvironment);
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
@@ -1963,7 +1963,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   // Directories tab
 
-  DefaultGroup = tabDirectories;
+  SetDefaultGroup(tabDirectories);
   SetNextItemPosition(ipNewLine);
 
   Separator = new TFarSeparator(this);
@@ -2001,7 +2001,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  DefaultGroup = tabSCP;
+  SetDefaultGroup(tabSCP);
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
@@ -2085,7 +2085,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  DefaultGroup = tabSFTP;
+  SetDefaultGroup(tabSFTP);
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
@@ -2127,7 +2127,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  DefaultGroup = tabFTP;
+  SetDefaultGroup(tabFTP);
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
@@ -2148,7 +2148,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  DefaultGroup = tabConnection;
+  SetDefaultGroup(tabConnection);
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
@@ -2221,7 +2221,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   // Proxy tab
 
-  DefaultGroup = tabProxy;
+  SetDefaultGroup(tabProxy);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(LOGIN_PROXY_GROUP));
@@ -2237,7 +2237,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS4));
   FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_SOCKS5));
   FtpProxyMethodCombo->GetItems()->Add(GetMsg(LOGIN_PROXY_HTTP));
-  FtpProxyMethodCombo->Right = CRect.Right - 12 - 2;
+  FtpProxyMethodCombo->SetRight(CRect.Right - 12 - 2);
 
   SshProxyMethodCombo = new TFarComboBox(this);
   SshProxyMethodCombo->SetLeft(FtpProxyMethodCombo->GetLeft());
@@ -2278,7 +2278,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(LOGIN_PROXY_USERNAME));
 
   ProxyUsernameEdit = new TFarEdit(this);
-  ProxyUsernameEdit->Width = ProxyUsernameEdit->Width / 2 - 1;
+  ProxyUsernameEdit->SeWidth(ProxyUsernameEdit->GetWidth(); / 2 - 1);
   Text->SetEnabledFollow(ProxyUsernameEdit);
 
   SetNextItemPosition(ipRight);
@@ -2347,7 +2347,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  DefaultGroup = tabTunnel;
+  SetDefaultGroup(tabTunnel);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(LOGIN_TUNNEL_GROUP));
@@ -2363,7 +2363,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetEnabledDependency(TunnelCheck);
 
   TunnelHostNameEdit = new TFarEdit(this);
-  TunnelHostNameEdit->Right = CRect.Right - 12 - 2;
+  TunnelHostNameEdit->SetRight(CRect.Right - 12 - 2);
   TunnelHostNameEdit->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipRight);
@@ -2387,7 +2387,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetEnabledDependency(TunnelCheck);
 
   TunnelUserNameEdit = new TFarEdit(this);
-  TunnelUserNameEdit->Width = TunnelUserNameEdit->Width / 2 - 1;
+  TunnelUserNameEdit->SeWidth(TunnelUserNameEdit->GetWidth(); / 2 - 1);
   TunnelUserNameEdit->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipRight);
@@ -2447,7 +2447,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  DefaultGroup = tabSsh;
+  SetDefaultGroup(tabSsh);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(LOGIN_SSH_GROUP));
@@ -2481,7 +2481,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(LOGIN_CIPHER));
 
   CipherListBox = new TFarListBox(this);
-  CipherListBox->Right = CipherListBox->Right - 15;
+  CipherListBox->SetRight(CipherListBox->GeRight(); - 15);
   CipherListBox->Height = 1 + CIPHER_COUNT + 1;
   Pos = CipherListBox->Bottom;
 
@@ -2516,7 +2516,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   // KEX tab
 
-  DefaultGroup = tabKex;
+  SetDefaultGroup(tabKex);
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(LOGIN_KEX_REEXCHANGE_GROUP));
@@ -2555,7 +2555,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   KexListBox = new TFarListBox(this);
-  KexListBox->Right = KexListBox->Right - 15;
+  KexListBox->SetRight(KexListBox->GeRight(); - 15);
   KexListBox->Height = 1 + KEX_COUNT + 1;
   KexListBox->SetEnabledDependencyNegative(SshProt1onlyButton);
 
@@ -2578,7 +2578,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   // Authentication tab
 
-  DefaultGroup = tabAuthentication;
+  SetDefaultGroup(tabAuthentication);
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
@@ -2621,7 +2621,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   // Bugs tab
 
-  DefaultGroup = tabBugs;
+  SetDefaultGroup(tabBugs);
 
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
@@ -2645,7 +2645,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   // Buttons
 
   SetNextItemPosition(ipNewLine);
-  DefaultGroup = 0;
+  SetDefaultGroup(0);
 
   Separator = new TFarSeparator(this);
   Separator->Position = CRect.Bottom - 1;
@@ -4061,7 +4061,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     if (FAnyDirectories)
     {
       Separator = new TFarSeparator(this);
-      Separator->Position = Separator->Position + RightsContainer->Top;
+      Separator->Position = Separator->Position + RightsContainer->GetTop();
 
       RecursiveCheck = new TFarCheckBox(this);
       RecursiveCheck->SetCaption(GetMsg(PROPERTIES_RECURSIVE));
@@ -4284,7 +4284,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetTop(0);
   Box->SetHeight(1);
   Add(Box);
-  Box->Width = TMWidth + 2;
+  Box->SeWidth(TMWidth + 2);
   Box->SetCaption(GetMsg(TRANSFER_MODE));
 
   Dialog->SetNextItemPosition(ipRight);
@@ -4292,7 +4292,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box = new TFarBox(Dialog);
   Add(Box);
   Box->Left -= 2;
-  Box->Right++;
+  Box->GeRight();++;
   Box->SetCaption(GetMsg(TRANSFER_UPLOAD_OPTIONS));
 
   Dialog->SetNextItemPosition(ipNewLine);
@@ -4300,7 +4300,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TMTextButton = new TFarRadioButton(Dialog);
   TMTextButton->SetLeft(1);
   Add(TMTextButton);
-  TMTop = TMTextButton->Top;
+  TMTop = TMTextButton->GetTop();
   TMTextButton->SetCaption(GetMsg(TRANSFER_MODE_TEXT));
   TMTextButton->GetEnabled() =
     FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode) &&
@@ -4335,7 +4335,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box = new TFarBox(Dialog);
   Box->SetLeft(0);
   Add(Box);
-  Box->Width = TMWidth + 2;
+  Box->SeWidth(TMWidth + 2);
   Box->SetCaption(GetMsg(TRANSFER_FILENAME_MODIFICATION));
 
   CCNoChangeButton = new TFarRadioButton(Dialog);
@@ -4386,7 +4386,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box = new TFarBox(Dialog);
   Box->SetLeft(0);
   Add(Box);
-  Box->Width = TMWidth + 2;
+  Box->SeWidth(TMWidth + 2);
   Box->SetCaption(GetMsg(TRANSFER_DOWNLOAD_OPTIONS));
 
   PreserveReadOnlyCheck = new TFarCheckBox(Dialog);
@@ -4396,7 +4396,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   PreserveReadOnlyCheck->GetEnabled() =
     FLAGCLEAR(CopyParamAttrs, cpaExcludeMaskOnly) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly);
-  TMBottom = PreserveReadOnlyCheck->Top;
+  TMBottom = PreserveReadOnlyCheck->GetTop();
 
   PreserveRightsCheck = new TFarCheckBox(Dialog);
   Add(PreserveRightsCheck);
@@ -4916,9 +4916,9 @@ void TCopyDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     try
     {
-      FarWrapText(InfoStr, InfoStrLines, BorderBox->Width - 4);
+      FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth(); - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->Right = BorderBox->Right - (CopyParamLister->ScrollBar ? 0 : 1);
+      CopyParamLister->SetRight(BorderBox->GeRight(); - (CopyParamLister->GetScrollBar(); ? 0 : 1));
     }
     catch (...)
     {
@@ -5230,11 +5230,11 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   // Server tab
 
   SetNextItemPosition(ipNewLine);
-  DefaultGroup = tabProtocol;
+  SetDefaultGroup(tabProtocol);
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(SERVER_INFORMATION_GROUP));
-  GroupTop = Separator->Top;
+  GroupTop = Separator->GetTop();
 
   ServerLabels = CreateLabelArray(5);
 
@@ -5247,7 +5247,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   // Protocol tab
 
-  DefaultGroup = tabCapabilities;
+  SetDefaultGroup(tabCapabilities);
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(PROTOCOL_INFORMATION_GROUP));
@@ -5265,7 +5265,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   // Space available tab
 
-  DefaultGroup = tabSpaceAvailable;
+  SetDefaultGroup(tabSpaceAvailable);
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(SPACE_AVAILABLE_GROUP));
@@ -5277,7 +5277,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipRight);
 
   SpaceAvailablePathEdit = new TFarEdit(this);
-  SpaceAvailablePathEdit->Right =
+  SpaceAvailablePathEdit->GeRight(); =
     - (GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11);
 
   Button = new TFarButton(this);
@@ -5293,7 +5293,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   // Buttons
 
-  DefaultGroup = 0;
+  SetDefaultGroup(0);
 
   Separator = new TFarSeparator(this);
   Separator->Position = ClientRect.Bottom - 1;
@@ -5541,7 +5541,7 @@ void TFileSystemInfoDialog::FeedControls()
 {
   FLastFeededControl = NULL;
   Feed(ControlsAddItem);
-  InfoLister->Right = BorderBox->Right - (InfoLister->ScrollBar ? 0 : 1);
+  InfoLister->SetRight(BorderBox->GeRight(); - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 //---------------------------------------------------------------------------
 void TFileSystemInfoDialog::SelectTab(int Tab)
@@ -6304,9 +6304,9 @@ void TFullSynchronizeDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     try
     {
-      FarWrapText(InfoStr, InfoStrLines, BorderBox->Width - 4);
+      FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth(); - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->Right = BorderBox->Right - (CopyParamLister->ScrollBar ? 0 : 1);
+      CopyParamLister->SetRight(BorderBox->GeRight(); - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
@@ -6648,7 +6648,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 
   static const Ratio[FColumns] = { 140, 100, 80, 150, -2, 100, 80, 150 };
 
-  int Width = ListBox->Width - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
+  int Width = ListBox->GetWidth(); - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
   double Temp[FColumns];
 
   int TotalRatio = 0;
@@ -7170,7 +7170,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   Size = TPoint(76, 20);
 
-  DefaultGroup = 1;
+  SetDefaultGroup(1);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(SYNCHRONIZE_LOCAL_LABEL));
@@ -7230,7 +7230,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetOnMouseClick(CopyParamListerClick);
   // Right edge is adjusted in Change
 
-  DefaultGroup = 0;
+  SetDefaultGroup(0);
 
   // align buttons with bottom of the window
   Separator = new TFarSeparator(this);
@@ -7495,9 +7495,9 @@ void TSynchronizeDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     try
     {
-      FarWrapText(InfoStr, InfoStrLines, BorderBox->Width - 4);
+      FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth(); - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->Right = BorderBox->Right - (CopyParamLister->ScrollBar ? 0 : 1);
+      CopyParamLister->SetRight(BorderBox->GeRight(); - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
