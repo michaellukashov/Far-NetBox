@@ -208,6 +208,7 @@ set ( NETBOX_LIBRARIES
     zlib.lib
     ws2_32.lib
     winhttp.lib
+    Version.lib
     # kernel32.lib
     # user32.lib
     # gdi32.lib
@@ -307,6 +308,7 @@ set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
     libputty
     ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
+    Version.lib
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
