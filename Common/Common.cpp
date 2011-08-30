@@ -1877,6 +1877,12 @@ bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
+bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
+{
+    // FIXME
+    return false;
+}
+
 //---------------------------------------------------------------------------
 
 void RaiseLastOSError()

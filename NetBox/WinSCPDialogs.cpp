@@ -2821,7 +2821,7 @@ void TSessionDialog::UpdateControls()
 
   // Connection/Proxy tab
   TFarComboBox * ProxyMethodCombo = (SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
-  ProxyMethodCombo->SetVisible((Tab == ProxyMethodCombo->Group));
+  ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
   TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
   if (ProxyMethodCombo->GetItems()->GetSelected() >= OtherProxyMethodCombo->GetItems()->GetCount())
@@ -2830,7 +2830,7 @@ void TSessionDialog::UpdateControls()
   }
   else
   {
-    OtherProxyMethodCombo->GetItems()->SetSelected(ProxyMethodCombo->GetItems()->GetSelected();
+    OtherProxyMethodCombo->GetItems()->SetSelected(ProxyMethodCombo->GetItems()->GetSelected());
   }
 
   bool Proxy = (ProxyMethodCombo->GetItems()->GetSelected() != pmNone);
@@ -2859,9 +2859,9 @@ void TSessionDialog::UpdateControls()
       AnsiContainsText(ProxyCommand, L"%pass"))));
   bool ProxySettings = Proxy && SshProtocol;
   ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethodCombo->GetItems()->GetSelected() == pmTelnet));
-  ProxyLocalCommandEdit->SetVisible((Tab == ProxyMethodCombo->Group) && (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd));
+  ProxyLocalCommandEdit->SetVisible((GetTab == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() == pmCmd));
   ProxyLocalCommandLabel->SetVisible(ProxyLocalCommandEdit->GetVisible());
-  ProxyTelnetCommandEdit->SetVisible((Tab == ProxyMethodCombo->Group) && (ProxyMethodCombo->GetItems()->GetSelected() != pmCmd));
+  ProxyTelnetCommandEdit->SetVisible((GetTab == ProxyMethodCombo->GetGroup()) && (ProxyMethodCombo->GetItems()->GetSelected() != pmCmd));
   ProxyTelnetCommandLabel->SetVisible(ProxyTelnetCommandEdit->GetVisible());
   ProxyLocalhostCheck->SetEnabled(ProxySettings);
   ProxyDNSOffButton->SetEnabled(ProxySettings);
@@ -3982,9 +3982,9 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       File = dynamic_cast<TRemoteFile *>(FileList->GetObject(Index));
       assert(File);
-      if (UsedGroupList && !File->Group.empty())
+      if (UsedGroupList && !File->GetGroup().empty())
       {
-        UsedGroupList->Add(File->Group);
+        UsedGroupList->Add(File->GetGroup());
       }
       if (UsedUserList && !File->Owner.empty())
       {
@@ -4182,7 +4182,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
   OwnerComboBox->GetText() = Properties->Valid.Contains(vpOwner) ?
     Properties->Owner : std::wstring();
   GroupComboBox->GetText() = Properties->Valid.Contains(vpGroup) ?
-    Properties->Group : std::wstring();
+    Properties->GetGroup() : std::wstring();
   if (RecursiveCheck)
   {
     RecursiveCheck->SetChecked(Properties->GetRecursive());
