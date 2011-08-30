@@ -72,6 +72,7 @@ include_directories (
     ${PROJECT_ROOT}/PluginSDK/${FAR_VERSION}
     ${PROJECT_ROOT}/core
     ${PROJECT_ROOT}/windows
+    ${PROJECT_ROOT}/resource
     ${PROJECT_ROOT}/Putty
     ${PROJECT_ROOT}/Common
     ${PROJECT_ROOT}/Putty/windows
