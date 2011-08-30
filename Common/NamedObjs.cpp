@@ -12,16 +12,16 @@ int NamedObjectSortProc(void * Item1, void * Item2)
     else
   if (!HasPrefix1 && HasPrefix2) return 1;
     else
-  return AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
+  return ::AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
 }
 //--- TNamedObject ----------------------------------------------------------
 int TNamedObject::CompareName(std::wstring aName,
   bool CaseSensitive)
 {
   if (CaseSensitive)
-    return Name.AnsiCompare(aName);
+    return ::AnsiCompare(Name, aName);
   else
-    return Name.AnsiCompareIC(aName);
+    return ::AnsiCompareIC(Name, aName);
 }
 //---------------------------------------------------------------------------
 void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
@@ -32,17 +32,17 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     {
       int N = 0, P;
       // If name already contains number parenthesis remove it (and remember it)
-      if ((Name[Name.size()] == ')') && ((P = Name.LastDelimiter('(')) > 0))
+      if ((Name[Name.size()] == L')') && ((P = ::LastDelimiter(Name, L"(")) > 0))
         try {
           N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
           Name.erase(P, Name.size() - P + 1);
-          Name = Name.TrimRight();
+          Name = ::TrimRight(Name);
         } catch (exception &E) { N = 0; };
-      Name += " (" + IntToStr(N+1) + ")";
+      Name += L" (" + IntToStr(N+1) + L")";
     }
 }
 //--- TNamedObjectList ------------------------------------------------------
-const std::wstring TNamedObjectList::HiddenPrefix = "_!_";
+const std::wstring TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
 bool TNamedObjectList::IsHidden(TNamedObject * Object)
 {
@@ -57,13 +57,13 @@ TNamedObjectList::TNamedObjectList():
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(int Index)
 {
-  return (TNamedObject *)Items[Index+HiddenCount];
+  return (TNamedObject *)GetItem(Index+GetHiddenCount());
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
   int i = 0;
-  while ((i < TObjectList::Count) && IsHidden((TNamedObject *)Items[i])) i++;
+  while ((i < TObjectList::GetCount()) && IsHidden((TNamedObject *)GetItem(i))) i++;
   FHiddenCount = i;
 }
 //---------------------------------------------------------------------------

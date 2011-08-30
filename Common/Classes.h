@@ -108,6 +108,8 @@ public:
     {}
 };
 
+typedef int (CompareFunc)(void * Item1, void * Item2);
+
 class TObjectList : public TPersistent
 {
 public:
@@ -153,18 +155,16 @@ public:
     bool GetOwnsObjects() { return FOwnsObjects; }
     void SetOwnsObjects(bool value) { FOwnsObjects = value; }
 
+    void Sort(CompareFunc func)
+    {}
 private:
     vector<TObject *> m_objects;
     bool FOwnsObjects;
 };
 
-typedef int (CompareFunc)(void * Item1, void * Item2);
-
 class TList : public TObjectList
 {
 public:
-    void Sort(CompareFunc func)
-    {}
 };
 
 enum TDuplicatesEnum
