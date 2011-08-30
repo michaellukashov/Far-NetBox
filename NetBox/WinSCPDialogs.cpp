@@ -2428,8 +2428,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   try
   {
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
-    for (int Index = Configuration->TunnelLocalPortNumberLow;
-         Index <= Configuration->TunnelLocalPortNumberHigh; Index++)
+    for (int Index = Configuration->GetTunnelLocalPortNumberLow();
+         Index <= Configuration->GetTunnelLocalPortNumberHigh(); Index++)
     {
       TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(Index));
     }
@@ -2481,7 +2481,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(LOGIN_CIPHER));
 
   CipherListBox = new TFarListBox(this);
-  CipherListBox->SetRight(CipherListBox->GeRight(); - 15);
+  CipherListBox->SetRight(CipherListBox->GeRight() - 15);
   CipherListBox->SetHeight(1 + CIPHER_COUNT + 1);
   Pos = CipherListBox->Bottom;
 
@@ -2555,7 +2555,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   KexListBox = new TFarListBox(this);
-  KexListBox->SetRight(KexListBox->GeRight(); - 15);
+  KexListBox->SetRight(KexListBox->GeRight() - 15);
   KexListBox->SetHeight(1 + KEX_COUNT + 1);
   KexListBox->SetEnabledDependencyNegative(SshProt1onlyButton);
 
@@ -4918,7 +4918,7 @@ void TCopyDialog::Change()
     {
       FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GeRight(); - (CopyParamLister->GetScrollBar(); ? 0 : 1));
+      CopyParamLister->SetRight(BorderBox->GeRight() - (CopyParamLister->GetScrollBar(); ? 0 : 1));
     }
     catch (...)
     {
@@ -5277,7 +5277,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipRight);
 
   SpaceAvailablePathEdit = new TFarEdit(this);
-  SpaceAvailablePathEdit->GeRight(); =
+  SpaceAvailablePathEdit->GeRight() =
     - (GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11);
 
   Button = new TFarButton(this);
@@ -5541,7 +5541,7 @@ void TFileSystemInfoDialog::FeedControls()
 {
   FLastFeededControl = NULL;
   Feed(ControlsAddItem);
-  InfoLister->SetRight(BorderBox->GeRight(); - (InfoLister->GetScrollBar() ? 0 : 1));
+  InfoLister->SetRight(BorderBox->GeRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 //---------------------------------------------------------------------------
 void TFileSystemInfoDialog::SelectTab(int Tab)
@@ -6306,7 +6306,7 @@ void TFullSynchronizeDialog::Change()
     {
       FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GeRight(); - (CopyParamLister->GetScrollBar() ? 0 : 1));
+      CopyParamLister->SetRight(BorderBox->GeRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
@@ -7497,7 +7497,7 @@ void TSynchronizeDialog::Change()
     {
       FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GeRight(); - (CopyParamLister->GetScrollBar() ? 0 : 1));
+      CopyParamLister->SetRight(BorderBox->GeRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
