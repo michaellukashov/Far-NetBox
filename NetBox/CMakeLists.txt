@@ -296,6 +296,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/HierarchicalStorage.cpp
     ${PROJECT_ROOT}/Common/Option.cpp
     ${PROJECT_ROOT}/Common/FileInfo.cpp
+    ${PROJECT_ROOT}/Common/FileSystems.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/NetBox/FarInterface.cpp
