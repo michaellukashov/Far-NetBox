@@ -19,6 +19,11 @@ void ShowExtendedException(std::exception * E)
   assert(WinSCPPlugin != NULL);
   WinSCPPlugin->ShowExtendedException(E);
 }
+std::wstring AppNameString()
+{
+  return L"WinSCP";
+}
+
 //---------------------------------------------------------------------------
 std::wstring GetRegistryKey()
 {
@@ -34,6 +39,7 @@ std::wstring SshVersionString()
 {
   return ::FORMAT(L"WinSCP-FAR-release-%s", Configuration->GetVersion().c_str());
 }
+
 //---------------------------------------------------------------------------
 int StartThread(void * SecurityAttributes, unsigned StackSize,
   TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
