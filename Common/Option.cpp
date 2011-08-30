@@ -1,11 +1,12 @@
 //---------------------------------------------------------------------------
-#include <Common.h>
+#include "stdafx.h"
+#include "Common.h"
 #include "Option.h"
 //---------------------------------------------------------------------------
 TOptions::TOptions()
 {
-  FSwitchMarks = "-/";
-  FSwitchValueDelimiters = ":=";
+  FSwitchMarks = L"-/";
+  FSwitchValueDelimiters = L":=";
   FNoMoreSwitches = false;
   FParamCount = 0;
 }
@@ -36,7 +37,7 @@ void TOptions::Add(std::wstring Value)
           break;
         }
         // this is to treat /home/martin as parameter, not as switch
-        else if ((Value[Index] != '?') && ((UpCase(Value[Index]) < 'A') || (UpCase(Value[Index]) > 'Z')))
+        else if ((Value[Index] != '?') && ((::UpCase(Value[Index]) < 'A') || (UpCase(Value[Index]) > 'Z')))
         {
           Switch = false;
           break;
@@ -169,7 +170,7 @@ bool TOptions::FindSwitch(const std::wstring Switch,
     int Index = 0;
     while (Index < ParamsCount)
     {
-      Params->Add(Param[ParamsStart + Index]);
+      Params->Add(GetParam(ParamsStart + Index));
       Index++;
     }
     ParamsProcessed(ParamsStart, ParamsCount);

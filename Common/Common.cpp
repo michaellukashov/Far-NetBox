@@ -1775,6 +1775,20 @@ std::wstring LowerCase(const std::wstring str)
     return result;
 }
 
+//---------------------------------------------------------------------------
+
+wchar_t UpCase(const wchar_t c)
+{
+    return c;
+}
+
+wchar_t LowCase(const wchar_t c)
+{
+    return c;
+}
+
+//---------------------------------------------------------------------------
+
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to)
 {
     // FIXME

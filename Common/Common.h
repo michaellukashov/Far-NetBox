@@ -220,6 +220,8 @@ std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
 std::wstring UpperCase(const std::wstring Str);
 std::wstring LowerCase(const std::wstring str);
+wchar_t UpCase(const wchar_t c);
+wchar_t LowCase(const wchar_t c);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
 int AnsiPos(const std::wstring str, wchar_t c);
 int Pos(const std::wstring str, const std::wstring substr);
