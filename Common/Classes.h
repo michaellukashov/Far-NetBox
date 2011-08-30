@@ -239,6 +239,9 @@ public:
     void Sort()
     {
     }
+    void Move(int Index, int To)
+    {
+    }
     size_t IndexOf(const wchar_t *value)
     {
         return -1;
@@ -306,8 +309,6 @@ public:
     void SetSorted(bool value)
     {
     }
-      // SetDuplicates(dupError);
-      // SetCaseSensitive(true);
     void LoadFromFile(const std::wstring &FileName)
     {
     }

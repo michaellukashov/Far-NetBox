@@ -347,9 +347,9 @@ void TCopyParamList::Change(int Index, const std::wstring Name,
   {
     FNames->GetString(Index) = Name;
     delete GetCopyParam(Index);
-    FCopyParams->GetItem(Index) = (reinterpret_cast<TObject *>(CopyParam));
+    FCopyParams->SetItem(Index, (reinterpret_cast<TObject *>(CopyParam)));
     delete GetRule(Index);
-    FRules->GetItem(Index) = (reinterpret_cast<TObject *>(Rule));
+    FRules->SetItem(Index, (reinterpret_cast<TObject *>(Rule)));
     Modify();
   }
   else
@@ -372,7 +372,7 @@ void TCopyParamList::Move(int CurIndex, int NewIndex)
 //---------------------------------------------------------------------------
 void TCopyParamList::Delete(int Index)
 {
-  assert((Index >= 0) && (Index < Count));
+  assert((Index >= 0) && (Index < GetCount()));
   FNames->Delete(Index);
   delete GetCopyParam(Index);
   FCopyParams->Delete(Index);
@@ -387,7 +387,7 @@ int TCopyParamList::Find(const TCopyParamRuleData & Value) const
   int i = 0;
   while ((i < FRules->GetCount()) && (Result < 0))
   {
-    if (FRules->GetItem(i] != NULL)
+    if (FRules->GetItem(i) != NULL)
     {
       if (GetRule(i)->Matches(Value))
       {
@@ -412,10 +412,10 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
       {
         try
         {
-          Name = Storage->ReadString("Name", Name);
+          Name = Storage->ReadString(L"Name", Name);
           CopyParam->Load(Storage);
 
-          if (Storage->Readbool("HasRule", false))
+          if (Storage->Readbool(L"HasRule", false))
           {
             Rule = new TCopyParamRule();
             Rule->Load(Storage);
@@ -444,7 +444,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
 void TCopyParamList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
-  for (int Index = 0; Index < Count; Index++)
+  for (int Index = 0; Index < GetCount(); Index++)
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
@@ -453,9 +453,9 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
         const TCopyParamType * CopyParam = GetCopyParam(Index);
         const TCopyParamRule * Rule = GetRule(Index);
 
-        Storage->WriteString("Name", GetName(Index));
+        Storage->WriteString(L"Name", GetName(Index));
         CopyParam->Save(Storage);
-        Storage->Writebool("HasRule", (Rule != NULL));
+        Storage->Writebool(L"HasRule", (Rule != NULL));
         if (Rule != NULL)
         {
           Rule->Save(Storage);
@@ -495,7 +495,7 @@ TStrings * TCopyParamList::GetNameList() const
   {
     FNameList = new TStringList();
 
-    for (int i = 0; i < Count; i++)
+    for (int i = 0; i < GetCount(); i++)
     {
       FNameList->Add(FNames->GetString(i));
     }
@@ -507,7 +507,7 @@ bool TCopyParamList::GetAnyRule() const
 {
   bool Result = false;
   int i = 0;
-  while ((i < Count) && !Result)
+  while ((i < GetCount()) && !Result)
   {
     Result = (GetRule(i) != NULL);
     i++;
@@ -520,9 +520,9 @@ TGUIConfiguration::TGUIConfiguration(): TConfiguration()
 {
   FLocale = 0;
   FLocales = new TStringList();
-  FLastLocalesExts = "*";
-  dynamic_cast<TStringList*>(FLocales)->Sorted = true;
-  dynamic_cast<TStringList*>(FLocales)->CaseSensitive = false;
+  FLastLocalesExts = L"*";
+  dynamic_cast<TStringList*>(FLocales)->SetSorted(true);
+  dynamic_cast<TStringList*>(FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(GetResourceModule());
 }
@@ -556,19 +556,19 @@ void TGUIConfiguration::Default()
   FQueueRememberPassword = false;
   std::wstring ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-  FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + "PuTTY\\putty.exe";
-  FDefaultPuttyPath = FormatCommand("%PROGRAMFILES%\\PuTTY\\putty.exe", "");
+  FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+  FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", "");
   FPuttyPath = FDefaultPuttyPath;
-  PSftpPath = FormatCommand("%PROGRAMFILES%\\PuTTY\\psftp.exe", "");
+  PSftpPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", "");
   FPuttyPassword = false;
   FTelnetForFtpInPutty = true;
-  FPuttySession = "WinSCP temporary session";
+  FPuttySession = L"WinSCP temporary session";
   FBeepOnFinish = false;
   FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
   FSynchronizeBrowsing = false;
-  FCopyParamCurrent = "";
+  FCopyParamCurrent = L"";
   FKeepUpToDateChangeDelay = 500;
-  FChecksumAlg = "md5";
+  FChecksumAlg = L"md5";
   FSessionReopenAutoIdle = 5000;
 
   FNewDirectoryProperties.Default();
@@ -589,16 +589,16 @@ void TGUIConfiguration::DefaultLocalized()
       TCopyParamType * CopyParam;
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->TransferMode = tmAscii;
+      CopyParam->SetTransferMode(tmAscii);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->TransferMode = tmBinary;
+      CopyParam->SetTransferMode(tmBinary);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->ExcludeFileMask.Masks = "*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*";
-      CopyParam->NegativeExclude = false; // just for sure
+      CopyParam->GetExcludeFileMask().Masks = L"*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*";
+      CopyParam->SetNegativeExclude(false); // just for sure
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE), CopyParam, NULL);
     }
 
@@ -609,7 +609,7 @@ void TGUIConfiguration::DefaultLocalized()
 std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 {
   // no longer useful
-  int P = Property.LastDelimiter(".>");
+  int P = ::LastDelimiter(Property, L".>");
   return Property.substr(P + 1, Property.size() - P);
 }
 //---------------------------------------------------------------------------
@@ -617,28 +617,28 @@ std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
-  BLOCK("Interface", CANCREATE, \
-    KEY(Bool,     ContinueOnError); \
-    KEY(Bool,     ConfirmCommandSession); \
-    KEY(Integer,  SynchronizeParams); \
-    KEY(Integer,  SynchronizeOptions); \
-    KEY(Integer,  SynchronizeModeAuto); \
-    KEY(Integer,  SynchronizeMode); \
-    KEY(Integer,  MaxWatchDirectories); \
-    KEY(Integer,  QueueTransfersLimit); \
-    KEY(Bool,     QueueAutoPopup); \
-    KEY(Bool,     QueueRememberPassword); \
+  BLOCK(L"Interface", CANCREATE, \
+    KEY(bool,     ContinueOnError); \
+    KEY(bool,     ConfirmCommandSession); \
+    KEY(int,  SynchronizeParams); \
+    KEY(int,  SynchronizeOptions); \
+    KEY(int,  SynchronizeModeAuto); \
+    KEY(int,  SynchronizeMode); \
+    KEY(int,  MaxWatchDirectories); \
+    KEY(int,  QueueTransfersLimit); \
+    KEY(bool,     QueueAutoPopup); \
+    KEY(bool,     QueueRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
-    KEY(Bool,     PuttyPassword); \
-    KEY(Bool,     TelnetForFtpInPutty); \
+    KEY(bool,     PuttyPassword); \
+    KEY(bool,     TelnetForFtpInPutty); \
     KEY(DateTime, IgnoreCancelBeforeFinish); \
-    KEY(Bool,     BeepOnFinish); \
+    KEY(bool,     BeepOnFinish); \
     KEY(DateTime, BeepOnFinishAfter); \
-    KEY(Bool,     SynchronizeBrowsing); \
-    KEY(Integer,  KeepUpToDateChangeDelay); \
+    KEY(bool,     SynchronizeBrowsing); \
+    KEY(int,  KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
-    KEY(Integer,  SessionReopenAutoIdle); \
+    KEY(int,  SessionReopenAutoIdle); \
   ); \
 //---------------------------------------------------------------------------
 void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
@@ -646,7 +646,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   TConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(#VAR), VAR)
+  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(::MB2W("##VAR")), Get##VAR())
   REGCONFIG(true);
   #undef KEY
 
