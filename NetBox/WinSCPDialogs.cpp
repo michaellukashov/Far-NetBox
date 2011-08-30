@@ -248,7 +248,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   TFarButton(Dialog)
 {
   SetCenterGroup(true);
-  SetOnClick(Dialog->GetTabButtonClick());
+  // FIXME SetOnClick(&TTabbedDialog::TabButtonClick); // Dialog->
 }
 //---------------------------------------------------------------------------
 void TTabButton::SetTabName(std::wstring value)
@@ -266,7 +266,7 @@ void TTabButton::SetTabName(std::wstring value)
     {
       C = value;
     }
-    Caption = C;
+    SetCaption(C);
     FTabName = StripHotKey(value);
   }
 }
@@ -281,8 +281,8 @@ bool TWinSCPPlugin::ConfigurationDialog()
     TFarText * Text;
 
     Dialog->SetSize(TPoint(67, 23));
-    Dialog->SetCaption(FORMAT(L"%s - %s");
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_INTERFACE)));
+    Dialog->SetCaption(FORMAT(L"%s - %s",
+      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_INTERFACE))));
 
     TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
     DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
@@ -305,11 +305,11 @@ bool TWinSCPPlugin::ConfigurationDialog()
     TFarEdit * HotKeyEdit = new TFarEdit(Dialog);
     HotKeyEdit->SetWidth(1);
     HotKeyEdit->SetFixed(true);
-    HotKeyEdit->SetMask("9");
+    HotKeyEdit->SetMask(L"9");
     HotKeyEdit->SetEnabledDependency(ManualHotKeyButton);
 
     Text = new TFarText(Dialog);
-    Text->Caption = "(1 - 9)";
+    Text->SetCaption(L"(1 - 9)");
     Text->SetEnabledDependency(ManualHotKeyButton);
 
     Dialog->SetNextItemPosition(ipNewLine);
