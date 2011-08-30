@@ -1,4 +1,6 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
+
 #include "FileSystems.h"
 #include "RemoteFiles.h"
 #include "Common.h"
