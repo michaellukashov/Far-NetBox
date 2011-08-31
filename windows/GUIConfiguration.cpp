@@ -555,7 +555,7 @@ void TGUIConfiguration::Default()
   FQueueAutoPopup = true;
   FQueueRememberPassword = false;
   std::wstring ProgramsFolder;
-  SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
+  // SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
   FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
   FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
   FPuttyPath = FDefaultPuttyPath;
@@ -884,7 +884,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID value)
 //---------------------------------------------------------------------------
 void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {
-  TPasLibModule * MainModule = FindModule(0); // FIXME HInstance);
+  TPasLibModule * MainModule = NULL; // FindModule(0); // FIXME HInstance);
   if (Instance != MainModule->Instance)
   {
     FreeLibrary(static_cast<HMODULE>(Instance));
@@ -897,7 +897,7 @@ HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
   {
     Instance = 0; // FIXME HInstance;
   }
-  TPasLibModule * MainModule = FindModule(0); // FIXME HInstance);
+  TPasLibModule * MainModule = NULL; // FindModule(0); // FIXME HInstance);
   HANDLE Result = MainModule->ResInstance;
   MainModule->ResInstance = Instance;
   CoreSetResourceModule(Instance);
@@ -906,7 +906,7 @@ HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
 //---------------------------------------------------------------------------
 HANDLE TGUIConfiguration::GetResourceModule()
 {
-  return FindModule(0/*HInstance*/)->ResInstance;
+  return 0; // FindModule(0/*HInstance*/)->ResInstance;
 }
 //---------------------------------------------------------------------------
 void TGUIConfiguration::SetResourceModule(HANDLE Instance)

@@ -311,6 +311,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/FarDialog.cpp
     ${PROJECT_ROOT}/windows/GUIConfiguration.cpp
     # ${PROJECT_ROOT}/windows/GUITools.cpp
+    ${PROJECT_ROOT}/NetBox/WinSCPDialogs.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
     ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/NetBox/FarInterface.cpp
