@@ -177,7 +177,8 @@ public:
 enum TDuplicatesEnum
 {
     dupAccept,
-    dupError
+    dupError,
+    dupIgnore
 };
 
 class TStream;
