@@ -149,7 +149,10 @@ protected:
   bool ExecuteCommand(const wstring Command);
   void TerminalCaptureLog(const wstring & AddedLine, bool StdError);
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
-    wstring & TargetDirectory, TCopyParamType * Params, int Options,
+    wstring & TargetDirectory, 
+    // TGUICopyParamType * Params,
+    TCopyParamType * Params,
+    int Options,
     int CopyParamAttrs);
   bool LinkDialog(wstring & FileName, wstring & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);

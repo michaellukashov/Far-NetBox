@@ -4901,7 +4901,7 @@ bool TCopyDialog::CloseQuery()
           if (!ForceDirectories(Directory))
           {
             DirectoryEdit->SetFocus();
-            throw Exception(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), (Directory)));
+            throw ExtException(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), (Directory)));
           }
         }
         else
@@ -4927,7 +4927,7 @@ void TCopyDialog::Change()
     {
       FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar(); ? 0 : 1));
+      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
@@ -4963,7 +4963,10 @@ void TCopyDialog::CustomCopyParam()
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, TStrings * FileList,
-  std::wstring & TargetDirectory, TGUICopyParamType * Params, int Options,
+  std::wstring & TargetDirectory, 
+  // TGUICopyParamType * Params,
+  TCopyParamType * Params,
+  int Options,
   int CopyParamAttrs)
 {
   bool Result;
@@ -4971,7 +4974,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
     Move, FileList, Options, CopyParamAttrs);
   try
   {
-    Result = Dialog->Execute(TargetDirectory, Params);
+    Result = Dialog->Execute(TargetDirectory, (TGUICopyParamType *)Params);
   }
   catch (...)
   {
@@ -4995,7 +4998,7 @@ bool TWinSCPPlugin::CopyParamDialog(std::wstring Caption,
     TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
       Dialog, 0, CopyParamAttrs);
 
-    Dialog->SetSize(TPoint(78, 2 + CopyParamsContainer->Height + 3));
+    Dialog->SetSize(TPoint(78, 2 + CopyParamsContainer->GetHeight() + 3));
 
     Dialog->SetNextItemPosition(ipNewLine);
 
@@ -5007,7 +5010,7 @@ bool TWinSCPPlugin::CopyParamDialog(std::wstring Caption,
 
     if (Result)
     {
-      CopyParam = CopyParamsContainer->Params;
+      CopyParam = CopyParamsContainer->GetParams();
     }
   }
   catch (...)
@@ -5050,10 +5053,10 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   TFarSeparator * Separator;
   TFarText * Text;
 
-  Size = TPoint(76, 12);
-  TRect CRect = ClientRect;
+  SetSize(TPoint(76, 12));
+  TRect CRect = GetClientRect();
 
-  Caption = GetMsg(Edit ? LINK_EDIT_CAPTION : LINK_ADD_CAPTION);
+  SetCaption(GetMsg(Edit ? LINK_EDIT_CAPTION : LINK_ADD_CAPTION));
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LINK_FILE));
@@ -5138,7 +5141,7 @@ bool TWinSCPFileSystem::LinkDialog(std::wstring & FileName,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-typedef void (__closure *TFeedFileSystemData)
+typedef void (TObject::*TFeedFileSystemData)
   (TObject * Control, int Label, std::wstring Value);
 //---------------------------------------------------------------------------
 class TLabelList;
@@ -5219,8 +5222,8 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   TTabButton * Tab;
   int GroupTop;
 
-  Size = TPoint(73, 22);
-  Caption = GetMsg(SERVER_PROTOCOL_INFORMATION);
+  SetSize(TPoint(73, 22));
+  SetCaption(GetMsg(SERVER_PROTOCOL_INFORMATION));
 
   Tab = new TTabButton(this);
   Tab->SetTabName(GetMsg(SERVER_PROTOCOL_TAB_PROTOCOL));
@@ -5269,7 +5272,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   InfoLister = new TFarLister(this);
   InfoLister->SetHeight(4);
-  InfoLister->SetLeft(BorderBox->GetLeft() + 1);
+  InfoLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   // Right edge is adjusted in FeedControls
 
   // Space available tab
@@ -5286,8 +5289,8 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipRight);
 
   SpaceAvailablePathEdit = new TFarEdit(this);
-  SpaceAvailablePathEdit->GetRight() =
-    - (GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11);
+  SpaceAvailablePathEdit->SetRight(
+    - (GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11));
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
@@ -5305,7 +5308,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetDefaultGroup(0);
 
   Separator = new TFarSeparator(this);
-  Separator->SetPosition(ClientRect.Bottom - 1);
+  Separator->SetPosition(GetClientRect().Bottom - 1);
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SERVER_PROTOCOL_COPY_CLIPBOARD));
