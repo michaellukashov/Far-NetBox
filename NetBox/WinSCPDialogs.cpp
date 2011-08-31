@@ -4444,7 +4444,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetTop(TMTop + 8);
   Add(Box);
   Box->SetBottom(Box->GetTop());
-  Box->SetLeft(TMWidth + 3 - 1)
+  Box->SetLeft(TMWidth + 3 - 1);
   Box->SetCaption(GetMsg(TRANSFER_COMMON_OPTIONS));
 
   PreserveTimeCheck = new TFarCheckBox(GetDialog());
@@ -4493,7 +4493,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(ExcludeFileMaskCombo);
   ExcludeFileMaskCombo->SetWidth(TMWidth);
   ExcludeFileMaskCombo->SetHistory(EXCLUDE_FILE_MASK_HISTORY);
-  ExcludeFileMaskCombo->SetOnExit(ValidateMaskComboExit);
+  // FIXME ExcludeFileMaskCombo->SetOnExit(ValidateMaskComboExit);
   ExcludeFileMaskCombo->SetEnabled(NegativeExcludeCombo->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -4514,7 +4514,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
     SpeedCombo->GetItems()->Add(IntToStr(Speed));
     Speed = Speed / 2;
   }
-  SpeedCombo->SetOnExit(ValidateSpeedComboExit);
+  // FIXME SpeedCombo->SetOnExit(ValidateSpeedComboExit);
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
@@ -4540,7 +4540,7 @@ void TCopyParamsContainer::Change()
 {
   TFarDialogContainer::Change();
 
-  if (Dialog->GetHandle())
+  if (GetDialog()->GetHandle())
   {
     UpdateControls();
   }
@@ -4550,7 +4550,7 @@ void TCopyParamsContainer::SetParams(TCopyParamType value)
 {
   if (TMBinaryButton->GetEnabled())
   {
-    switch (value.TransferMode)
+    switch (value.GetTransferMode())
     {
       case tmAscii:
         TMTextButton->SetChecked(true);
@@ -4570,9 +4570,9 @@ void TCopyParamsContainer::SetParams(TCopyParamType value)
     TMBinaryButton->SetChecked(true);
   }
 
-  AsciiFileMaskEdit->SetText(value.AsciiFileMask.Masks);
+  AsciiFileMaskEdit->SetText(value.GetAsciiFileMask().GetMasks());
 
-  switch (value.FileNameCase)
+  switch (value.GetFileNameCase())
   {
     case ncLowerCase:
       CCLowerCaseButton->SetChecked(true);
@@ -4596,24 +4596,24 @@ void TCopyParamsContainer::SetParams(TCopyParamType value)
       break;
   }
 
-  RightsContainer->SetAddXToDirectories(value.AddXToDirectories);
-  RightsContainer->SetRights(value.Rights);
-  PreserveRightsCheck->SetChecked(value.PreserveRights);
-  IgnorePermErrorsCheck->SetChecked(value.IgnorePermErrors);
+  RightsContainer->SetAddXToDirectories(value.GetAddXToDirectories());
+  RightsContainer->SetRights(value.GetRights());
+  PreserveRightsCheck->SetChecked(value.GetPreserveRights());
+  IgnorePermErrorsCheck->SetChecked(value.GetIgnorePermErrors());
 
-  PreserveReadOnlyCheck->SetChecked(value.PreserveReadOnly);
-  ReplaceInvalidCharsCheck->GetChecked() =
-    (value.InvalidCharsReplacement != TCopyParamType::NoReplacement);
+  PreserveReadOnlyCheck->SetChecked(value.GetPreserveReadOnly());
+  ReplaceInvalidCharsCheck->SetChecked(
+    value.GetInvalidCharsReplacement() != TCopyParamType::NoReplacement);
 
-  ClearArchiveCheck->SetChecked(value.ClearArchive);
+  ClearArchiveCheck->SetChecked(value.GetClearArchive());
 
-  NegativeExcludeCombo->GetItems()->SetSelected((value.NegativeExclude ? 1 : 0));
-  ExcludeFileMaskCombo->SetText(value.ExcludeFileMask.Masks);
+  NegativeExcludeCombo->GetItems()->SetSelected((value.GetNegativeExclude() ? 1 : 0));
+  ExcludeFileMaskCombo->SetText(value.GetExcludeFileMask().GetMasks());
 
-  PreserveTimeCheck->SetChecked(value.PreserveTime);
-  CalculateSizeCheck->SetChecked(value.CalculateSize);
+  PreserveTimeCheck->SetChecked(value.GetPreserveTime());
+  CalculateSizeCheck->SetChecked(value.GetCalculateSize());
 
-  SpeedCombo->SetText(SetSpeedLimit(value.CPSLimit));
+  SpeedCombo->SetText(SetSpeedLimit(value.GetCPSLimit()));
 
   FParams = value;
 }
@@ -4623,43 +4623,43 @@ TCopyParamType TCopyParamsContainer::GetParams()
   TCopyParamType Result = FParams;
 
   assert(TMTextButton->GetChecked() || TMBinaryButton->GetChecked() || TMAutomaticButton->GetChecked());
-  if (TMTextButton->GetChecked()) Result.TransferMode = tmAscii;
+  if (TMTextButton->GetChecked()) Result.SetTransferMode(tmAscii);
     else
-  if (TMAutomaticButton->GetChecked()) Result.TransferMode = tmAutomatic;
-    else Result.TransferMode = tmBinary;
+  if (TMAutomaticButton->GetChecked()) Result.SetTransferMode(tmAutomatic);
+    else Result.SetTransferMode(tmBinary);
 
-  if (Result.TransferMode == tmAutomatic)
+  if (Result.GetTransferMode() == tmAutomatic)
   {
-    Result.AsciiFileMask.Masks = AsciiFileMaskEdit->GetText();
-    assert(Result.AsciiFileMask.IsValid());
+    Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
+    assert(Result.GetAsciiFileMask().GetIsValid(0,0));
   }
 
-  if (CCLowerCaseButton->GetChecked()) Result.FileNameCase = ncLowerCase;
+  if (CCLowerCaseButton->GetChecked()) Result.SetFileNameCase(ncLowerCase);
     else
-  if (CCUpperCaseButton->GetChecked()) Result.FileNameCase = ncUpperCase;
+  if (CCUpperCaseButton->GetChecked()) Result.SetFileNameCase(ncUpperCase);
     else
-  if (CCFirstUpperCaseButton->GetChecked()) Result.FileNameCase = ncFirstUpperCase;
+  if (CCFirstUpperCaseButton->GetChecked()) Result.SetFileNameCase(ncFirstUpperCase);
     else
-  if (CCLowerCaseShortButton->GetChecked()) Result.FileNameCase = ncLowerCaseShort;
-    else Result.FileNameCase = ncNoChange;
+  if (CCLowerCaseShortButton->GetChecked()) Result.SetFileNameCase(ncLowerCaseShort);
+    else Result.SetFileNameCase(ncNoChange);
 
-  Result.AddXToDirectories = RightsContainer->AddXToDirectories;
-  Result.Rights = RightsContainer->Rights;
-  Result.PreserveRights = PreserveRightsCheck->GetChecked();
-  Result.IgnorePermErrors = IgnorePermErrorsCheck->GetChecked();
+  Result.SetAddXToDirectories(RightsContainer->GetAddXToDirectories());
+  Result.SetRights(RightsContainer->GetRights());
+  Result.SetPreserveRights(PreserveRightsCheck->GetChecked());
+  Result.SetIgnorePermErrors(IgnorePermErrorsCheck->GetChecked());
 
-  Result.ReplaceInvalidChars = ReplaceInvalidCharsCheck->GetChecked();
-  Result.PreserveReadOnly = PreserveReadOnlyCheck->GetChecked();
+  Result.SetReplaceInvalidChars(ReplaceInvalidCharsCheck->GetChecked());
+  Result.SetPreserveReadOnly(PreserveReadOnlyCheck->GetChecked());
 
-  Result.ClearArchive = ClearArchiveCheck->GetChecked();
+  Result.SetClearArchive(ClearArchiveCheck->GetChecked());
 
-  Result.NegativeExclude = (NegativeExcludeCombo->GetItems()->GetSelected() == 1);
-  Result.ExcludeFileMask.Masks = ExcludeFileMaskCombo->GetText();
+  Result.SetNegativeExclude((NegativeExcludeCombo->GetItems()->GetSelected() == 1));
+  Result.GetExcludeFileMask().SetMasks(ExcludeFileMaskCombo->GetText());
 
-  Result.PreserveTime = PreserveTimeCheck->GetChecked();
-  Result.CalculateSize = CalculateSizeCheck->GetChecked();
+  Result.SetPreserveTime(PreserveTimeCheck->GetChecked());
+  Result.SetCalculateSize(CalculateSizeCheck->GetChecked());
 
-  Result.CPSLimit = GetSpeedLimit(SpeedCombo->GetText());
+  Result.SetCPSLimit(GetSpeedLimit(SpeedCombo->GetText()));
 
   return Result;
 }
@@ -4670,10 +4670,10 @@ void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
   assert(Edit != NULL);
   TFileMasks Masks = Edit->GetText();
   int Start, Length;
-  if (!Masks.IsValid(Start, Length))
+  if (!Masks.GetIsValid(Start, Length))
   {
     Edit->SetFocus();
-    throw Exception(FORMAT(GetMsg(MASK_ERROR), (Masks.Masks.substr(Start+1, Length))));
+    throw ExtException(FORMAT(GetMsg(MASK_ERROR).c_str(), (Masks.GetMasks().substr(Start+1, Length))));
   }
 }
 //---------------------------------------------------------------------------
@@ -4738,22 +4738,22 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   TFarSeparator * Separator;
   TFarText * Text;
 
-  Size = TPoint(78, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0));
-  TRect CRect = ClientRect;
+  SetSize(TPoint(78, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
+  TRect CRect = GetClientRect();
 
-  Caption = GetMsg(Move ? MOVE_TITLE : COPY_TITLE);
+  SetCaption(GetMsg(Move ? MOVE_TITLE : COPY_TITLE));
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
     std::wstring Prompt;
     if (FileList->GetCount() > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT), (FileList->GetCount()));
+      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), (FileList->GetCount()));
     }
     else
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT),
-        (ToRemote ? ExtractFileName(FileList->GetString(0)) :
+      Prompt = FORMAT(GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT).c_str(),
+        (ToRemote ? ExtractFileName(FileList->GetString(0), true) :
             UnixExtractFileName(FileList->GetString(0))));
     }
 
@@ -4761,7 +4761,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     Text->SetCaption(Prompt);
 
     DirectoryEdit = new TFarEdit(this);
-    DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : "Copy");
+    DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : L"Copy");
   }
 
   Separator = new TFarSeparator(this);
@@ -4769,9 +4769,9 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 
   CopyParamLister = new TFarLister(this);
   CopyParamLister->SetHeight(3);
-  CopyParamLister->SetLeft(BorderBox->GetLeft() + 1);
+  CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  CopyParamLister->SetOnMouseClick(CopyParamListerClick);
+  // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
 
   new TFarSeparator(this);
 
@@ -4815,8 +4815,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetDefault(true);
   Button->SetResult(brOK);
   Button->SetCenterGroup(true);
-  Button->GetEnabled()Dependency =
-    ((Options & coTempTransfer) == 0) ? DirectoryEdit : NULL;
+  Button->SetEnabledDependency(
+    ((Options & coTempTransfer) == 0) ? DirectoryEdit : NULL);
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
@@ -4831,11 +4831,11 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
-    NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->NewerOnly);
+    NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
     DirectoryEdit->GetText() =
       (FToRemote ? UnixIncludeTrailingBackslash(TargetDirectory) :
-        IncludeTrailingBackslash(TargetDirectory)) + Params->FileMask;
+        IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask();
 
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
@@ -4856,7 +4856,7 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
       }
       else
       {
-        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText()));
+        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText(), true));
         TargetDirectory = ExtractFilePath(DirectoryEdit->GetText());
       }
 
@@ -4886,7 +4886,7 @@ bool TCopyDialog::CloseQuery()
 {
   bool CanClose = TFarDialog::CloseQuery();
 
-  if (CanClose && Result >= 0)
+  if (CanClose && GetResult() >= 0)
   {
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
@@ -4895,13 +4895,13 @@ bool TCopyDialog::CloseQuery()
       {
         TWinSCPPlugin* WinSCPPlugin = dynamic_cast<TWinSCPPlugin*>(FarPlugin);
 
-        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY), (Directory)),
+        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), (Directory)),
               NULL, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!ForceDirectories(Directory))
           {
             DirectoryEdit->SetFocus();
-            throw Exception(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR), (Directory)));
+            throw Exception(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), (Directory)));
           }
         }
         else
@@ -4925,9 +4925,9 @@ void TCopyDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     try
     {
-      FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
+      FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GetRight() - (CopyParamLister->GetScrollBar(); ? 0 : 1));
+      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar(); ? 0 : 1));
     }
     catch (...)
     {

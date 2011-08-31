@@ -50,15 +50,16 @@ private:
   bool FNegativeExclude;
   bool FClearArchive;
   unsigned long FCPSLimit;
-  static const wchar_t TokenPrefix = L'%';
-  static const wchar_t NoReplacement = char(false);
-  static const wchar_t TokenReplacement = char(true);
 
   static std::wstring Untokenize(std::wstring FileName);
   wchar_t * ReplaceChar(std::wstring & FileName, wchar_t * InvalidChar) const;
   std::wstring RestoreChars(std::wstring FileName) const;
 
 public:
+  static const wchar_t TokenPrefix = L'%';
+  static const wchar_t NoReplacement = char(false);
+  static const wchar_t TokenReplacement = char(true);
+
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);
   virtual ~TCopyParamType();

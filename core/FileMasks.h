@@ -60,7 +60,7 @@ public:
     const std::wstring Path = L"", const TParams * Params = NULL) const;
   bool Matches(const std::wstring FileName, bool Local, bool Directory,
     const TParams * Params = NULL) const;
-
+  bool GetIsValid(int Start, int Length) const { return false; }
   // __property std::wstring Masks = { read = FStr, write = SetMasks };
   std::wstring GetMasks() const { return FStr; }
   void SetMasks(const std::wstring value);
