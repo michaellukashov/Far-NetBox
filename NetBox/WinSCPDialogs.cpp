@@ -1643,7 +1643,7 @@ private:
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
-  TRISTATE(PREFIX ## Bug ## BUGID ## Combo, PREFIX ## GetBug(sb ## BUGID), MSG)
+  TRISTATE(PREFIX ## Bug ## BUGID ## Combo, PREFIX ## Bug(sb ## BUGID), MSG)
 #define BUGS() \
   BUG(Ignore1, LOGIN_BUGS_IGNORE1, ); \
   BUG(PlainPW1, LOGIN_BUGS_PLAIN_PW1, ); \
@@ -2972,7 +2972,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ListingCommandEdit->SetText(SessionData->GetListingCommand());
   SCPLsFullTimeAutoCheck->SetChecked((SessionData->GetSCPLsFullTime() != asOff));
   int TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
-  if (double(SessionData->TimeDifference) < 0)
+  if (double(SessionData->GetTimeDifference()) < 0)
   {
     TimeDifferenceMin = -TimeDifferenceMin;
   }
@@ -2982,10 +2982,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // SFTP tab
 
   #define TRISTATE(COMBO, PROP, MSG) \
-    COMBO->GetItems()->GetSelected() = 2 - SessionData->PROP
+    COMBO->GetItems()->SetSelected(2 - SessionData->Get ## PROP)
   SFTP_BUGS();
 
-  if (SessionData->SftpServer.empty())
+  if (SessionData->GetSftpServer().empty())
   {
     SftpServerEdit->SetText(SftpServerEdit->GetItems()->GetString(0));
   }
@@ -3016,7 +3016,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   LoadPing(SessionData);
   TimeoutEdit->SetAsInteger(SessionData->GetTimeout());
 
-  switch (SessionData->AddressFamily)
+  switch (SessionData->GetAddressFamily())
   {
     case afIPv4:
       IPv4Button->SetChecked(true);
@@ -3034,7 +3034,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // Proxy tab
   SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
-  if (SessionData->ProxyMethod >= FtpProxyMethodCombo->GetItems()->GetCount())
+  if (SessionData->GetProxyMethod() >= FtpProxyMethodCombo->GetItems()->GetCount())
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -3049,7 +3049,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ProxyTelnetCommandEdit->SetText(SessionData->GetProxyTelnetCommand());
   ProxyLocalCommandEdit->SetText(SessionData->GetProxyLocalCommand());
   ProxyLocalhostCheck->SetChecked(SessionData->GetProxyLocalhost());
-  switch (SessionData->ProxyDNS) {
+  switch (SessionData->GetProxyDNS()) {
     case asOn: ProxyDNSOnButton->SetChecked(true); break;
     case asOff: ProxyDNSOffButton->SetChecked(true); break;
     default: ProxyDNSAutoButton->SetChecked(true); break;
@@ -3062,13 +3062,13 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   TunnelHostNameEdit->SetText(SessionData->GetTunnelHostName());
   TunnelPasswordEdit->SetText(SessionData->GetTunnelPassword());
   TunnelPrivateKeyEdit->SetText(SessionData->GetTunnelPublicKeyFile());
-  if (SessionData->TunnelAutoassignLocalPortNumber)
+  if (SessionData->GetTunnelAutoassignLocalPortNumber())
   {
     TunnelLocalPortNumberEdit->SetText(TunnelLocalPortNumberEdit->GetItems()->GetString(0));
   }
   else
   {
-    TunnelLocalPortNumberEdit->SetText(IntToStr(SessionData->TunnelLocalPortNumber));
+    TunnelLocalPortNumberEdit->SetText(IntToStr(SessionData->GetTunnelLocalPortNumber()));
   }
 
   // SSH tab
@@ -3078,7 +3078,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     Ssh2DESCheck->SetChecked(SessionData->GetSsh2DES());
   }
 
-  switch (SessionData->SshProt) {
+  switch (SessionData->GetSshProt()) {
     case ssh1only:  SshProt1onlyButton->SetChecked(true); break;
     case ssh1:      SshProt1Button->SetChecked(true); break;
     case ssh2:      SshProt2Button->SetChecked(true); break;
@@ -3115,8 +3115,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     for (int Index = 0; Index < KEX_COUNT; Index++)
     {
       KexListBox->GetItems()->AddObject(
-        GetMsg(KEX_NAME_WARN + int(SessionData->Kex[Index])),
-        (TObject*)SessionData->Kex[Index]);
+        GetMsg(KEX_NAME_WARN + int(SessionData->GetKex(Index))),
+        (TObject*)SessionData->GetKex(Index));
     }
   }
   catch (...)
@@ -3181,15 +3181,15 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     switch (UtfCombo->GetItems()->GetSelected())
     {
       case 1:
-        SessionData->SetUtf(asOn);
+        SessionData->SetNotUtf(asOn);
         break;
 
       case 2:
-        SessionData->SetUtf(asOff);
+        SessionData->SetNotUtf(asOff);
         break;
 
       default:
-        SessionData->SetUtf(asAuto);
+        SessionData->SetNotUtf(asAuto);
         break;
     }
 
@@ -3198,10 +3198,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetRecycleBinPath(RecycleBinPathEdit->GetText());
 
     // SCP tab
-    SessionData->SetDefaultShell((ShellEdit->SetText(= ShellEdit->GetItems()->GetString(0))));
-    SessionData->SetShell((SessionData->DefaultShell ? std::wstring() : ShellEdit->GetText()));
-    SessionData->SetDetectReturnVar((ReturnVarEdit->SetText(= ReturnVarEdit->GetItems()->GetString(0))));
-    SessionData->SetReturnVar((SessionData->DetectReturnVar ? std::wstring() : ReturnVarEdit->GetText()));
+    SessionData->SetDefaultShell(ShellEdit->GetText() == ShellEdit->GetItems()->GetString(0));
+    SessionData->SetShell((SessionData->GetDefaultShell() ? std::wstring() : ShellEdit->GetText()));
+    SessionData->SetDetectReturnVar(ReturnVarEdit->GetText() == ReturnVarEdit->GetItems()->GetString(0));
+    SessionData->SetReturnVar((SessionData->GetDetectReturnVar() ? std::wstring() : ReturnVarEdit->GetText()));
     SessionData->SetLookupUserGroups(LookupUserGroupsCheck->GetChecked());
     SessionData->SetClearAliases(ClearAliasesCheck->GetChecked());
     SessionData->SetIgnoreLsWarnings(IgnoreLsWarningsCheck->GetChecked());
@@ -3209,20 +3209,21 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetUnsetNationalVars(UnsetNationalVarsCheck->GetChecked());
     SessionData->SetListingCommand(ListingCommandEdit->GetText());
     SessionData->SetSCPLsFullTime(SCPLsFullTimeAutoCheck->GetChecked() ? asAuto : asOff);
-    SessionData->TimeDifference =
-      (double(TimeDifferenceEdit->AsInteger) / 24) +
-      (double(TimeDifferenceMinutesEdit->AsInteger) / 24 / 60);
+    SessionData->SetTimeDifference(TDateTime(
+      (double(TimeDifferenceEdit->GetAsInteger()) / 24) +
+      (double(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
 
     // SFTP tab
-
     #define TRISTATE(COMBO, PROP, MSG) \
-      SessionData->Set##PROP((TAutoSwitch)(2 - COMBO->GetItems()->GetSelected()));
-    SFTP_BUGS();
+      SessionData->Set##PROP(sb##PROP, (TAutoSwitch)(2 - COMBO->GetItems()->GetSelected()));
+    // SFTP_BUGS();
+    SessionData->SetSFTPBug(sbSymlink, (TAutoSwitch)(2 - SFTPBugSymlinkCombo->GetItems()->GetSelected()));
+    SessionData->SetSFTPBug(sbSignedTS, (TAutoSwitch)(2 - SFTPBugSignedTSCombo->GetItems()->GetSelected()));
 
-    SessionData->SftpServer =
-      ((SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
+    SessionData->SetSftpServer(
+        (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
         std::wstring() : SftpServerEdit->GetText());
-    SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItems()->GetSelected();
+    SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItems()->GetSelected());
 
     // FTP tab
     TStrings * PostLoginCommands = new TStringList;
@@ -3321,7 +3322,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (int Index = 0; Index < CIPHER_COUNT; Index++)
     {
-      SessionData->SetCipher(Index, (TCipher)CipherListBox->GetItems()->GetObject(Index));
+      SessionData->SetCipher(Index, *(TCipher *)(TObject *)CipherListBox->GetItems()->GetObject(Index));
     }
 
     // KEX tab
@@ -3331,7 +3332,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (int Index = 0; Index < KEX_COUNT; Index++)
     {
-      SessionData->SetKex(Index, (TKex)KexListBox->GetItems()->GetObject(Index));
+      SessionData->SetKex(Index, *(TKex *)KexListBox->GetItems()->GetObject(Index));
     }
 
     // Authentication tab
@@ -3345,9 +3346,16 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetGSSAPIServerRealm(GSSAPIServerRealmEdit->GetText());
 
     // Bugs tab
-
-    BUGS();
+    // BUGS();
     #undef TRISTATE
+    SessionData->SetBug(sbIgnore1, (TAutoSwitch)(2 - BugIgnore1Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbPlainPW1, (TAutoSwitch)(2 - BugPlainPW1Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbRSA1, (TAutoSwitch)(2 - BugRSA1Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbHMAC2, (TAutoSwitch)(2 - BugHMAC2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbDeriveKey2, (TAutoSwitch)(2 - BugDeriveKey2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbRSAPad2, (TAutoSwitch)(2 - BugRSAPad2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbPKSessID2, (TAutoSwitch)(2 - BugPKSessID2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbRekey2, (TAutoSwitch)(2 - BugRekey2Combo->GetItems()->GetSelected()));
   }
 
   return Result;
