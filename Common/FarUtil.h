@@ -379,9 +379,7 @@ void CheckAbortEvent(HANDLE *AbortEvent);
 
 std::wstring ExpandEnvVars(const std::wstring& str);
 
-bool ForceDirectories(const std::wstring Dir);
-bool DeleteFile(const std::wstring File);
-bool RemoveDir(const std::wstring Dir);
+//---------------------------------------------------------------------------
 
 std::wstring IncludeTrailingBackslash(const std::wstring Str);
 std::wstring ExcludeTrailingBackslash(const std::wstring Str);
@@ -402,22 +400,6 @@ void DecodeTime(const TDateTime &DateTime, unsigned short &H,
 // TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
-
-enum FileAttributesEnum
-{
-    faReadOnly,
-    faHidden,
-    faDirectory,
-    faSysFile,
-    faArchive,
-};
-
-bool FileExists(const std::wstring &filename);
-bool RenameFile(const std::wstring &from, const std::wstring &to);
-bool DirectoryExists(const std::wstring &dir);
-
-int FileGetAttr(const std::wstring &filename);
-int FileSetAttr(const std::wstring &filename, int attrs);
 
 std::wstring SysErrorMessage(int code);
 

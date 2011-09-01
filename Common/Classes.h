@@ -221,6 +221,9 @@ public:
     void AddObject(std::wstring str, TObject *obj)
     {
     }
+    void InsertObject(int Index, std::wstring Key, TObject *obj)
+    {
+    }
 
     TNotifyEvent GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
@@ -545,6 +548,11 @@ struct TTimeStamp
 class TShortCut
 {
 public:
+    explicit TShortCut()
+    {}
+    explicit TShortCut(int value)
+    {}
+    operator int() const { return 0; }
     inline bool operator < (const TShortCut &rhs) const
     {
         return false;

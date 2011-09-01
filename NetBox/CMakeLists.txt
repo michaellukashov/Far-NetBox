@@ -121,8 +121,8 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/NetBox/Logging.cpp
     ${PROJECT_ROOT}/NetBox/FTPS.cpp
     ${PROJECT_ROOT}/NetBox/SCP.cpp
-    ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
-    ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPFileSystem.cpp
     ${PROJECT_ROOT}/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/core/Terminal.cpp
     ${PROJECT_ROOT}/core/Exceptions.cpp
@@ -304,18 +304,20 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/core/Option.cpp
     ${PROJECT_ROOT}/core/FileInfo.cpp
     ${PROJECT_ROOT}/core/FileSystems.cpp
+    ${PROJECT_ROOT}/core/Bookmarks.cpp
+    ${PROJECT_ROOT}/core/SynchronizeController.cpp
     ${PROJECT_ROOT}/Common/Classes.cpp
     ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/Common/FarDialog.cpp
     ${PROJECT_ROOT}/windows/GUIConfiguration.cpp
-    # ${PROJECT_ROOT}/windows/GUITools.cpp
-    ${PROJECT_ROOT}/NetBox/WinSCPDialogs.cpp
-    ${PROJECT_ROOT}/NetBox/WinSCPFileSystem.cpp
-    ${PROJECT_ROOT}/NetBox/WinSCPPlugin.cpp
-    ${PROJECT_ROOT}/NetBox/FarInterface.cpp
-    ${PROJECT_ROOT}/NetBox/FarConfiguration.cpp
+    ${PROJECT_ROOT}/windows/GUITools.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPDialogs.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPFileSystem.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/WinSCP/FarInterface.cpp
+    ${PROJECT_ROOT}/WinSCP/FarConfiguration.cpp
 )
 
 set ( TESTNETBOX_01_LIBRARIES

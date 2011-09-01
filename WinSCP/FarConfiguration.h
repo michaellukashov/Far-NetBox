@@ -86,10 +86,10 @@ public:
   void SetApplyCommandParams(int value) { FApplyCommandParams = value; }
 
   // __property wstring PageantPath = { read = FPageantPath, write = FPageantPath };
-  wstring GetPageantPath();
+  wstring GetPageantPath() const { return FPageantPath; }
   void SetPageantPath(wstring value) { FPageantPath = value; }
   // __property wstring PuttygenPath = { read = FPuttygenPath, write = FPuttygenPath };
-  wstring GetPuttygenPath();
+  wstring GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(wstring value) { FPuttygenPath = value; }
   // __property TBookmarkList * Bookmarks[wstring Key] = { read = GetBookmarks, write = SetBookmarks };
   TBookmarkList * GetBookmark(wstring Key);

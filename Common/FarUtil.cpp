@@ -346,23 +346,7 @@ std::wstring ExpandEnvVars(const std::wstring& str)
     return result;
 }
 
-bool ForceDirectories(const std::wstring Dir)
-{
-    // FIXME
-    return true;
-}
-
-bool DeleteFile(const std::wstring File)
-{
-    // FIXME
-    return true;
-}
-
-bool RemoveDir(const std::wstring Dir)
-{
-    // FIXME
-    return true;
-}
+//---------------------------------------------------------------------------
 
 std::wstring ExcludeTrailingBackslash(const std::wstring str)
 {
@@ -437,36 +421,6 @@ std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
 {
     std::wstring result;
     return result;
-}
-
-bool FileExists(const std::wstring &filename)
-{
-    // FIXME
-    return false;
-}
-
-bool RenameFile(const std::wstring &from, const std::wstring &to)
-{
-    // FIXME 
-    return false;
-}
-
-bool DirectoryExists(const std::wstring &filename)
-{
-    // FIXME
-    return false;
-}
-
-int FileGetAttr(const std::wstring &filename)
-{
-    // FIXME
-    return 0;
-}
-
-int FileSetAttr(const std::wstring &filename, int attrs)
-{
-    // FIXME
-    return 0;
 }
 
 std::wstring SysErrorMessage(int code)

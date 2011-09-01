@@ -228,11 +228,11 @@ wstring TFarConfiguration::ModuleFileName()
 void TFarConfiguration::SetBookmark(wstring Key,
   TBookmarkList * value)
 {
-  FBookmarks->SetBookmarks(Key, value);
+  FBookmarks->SetBookmark(Key, value);
   Changed();
 }
 //---------------------------------------------------------------------------
 TBookmarkList * TFarConfiguration::GetBookmark(wstring Key)
 {
-  return FBookmarks->GetBookmarks(Key);
+  return FBookmarks->GetBookmark(Key);
 }

@@ -1829,8 +1829,8 @@ void TWinSCPFileSystem::FileProperties()
         if (FTerminal->GetIsCapable(fcGroupChanging)) Flags |= cpGroup;
 
         TRemoteProperties NewProperties = CurrentProperties;
-        if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
-            FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
+        // ??? FIXME if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
+            // FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
         {
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
