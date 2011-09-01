@@ -1,8 +1,9 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-#include <DiscMon.hpp>
+// #include <DiscMon.hpp>
 #include <Exceptions.h>
 #include "GUIConfiguration.h"
 #include "CoreMain.h"
@@ -44,9 +45,9 @@ void TSynchronizeController::StartStop(TObject * Sender,
       if (FLAGSET(Params.Options, soSynchronize) &&
           (FOnSynchronize != NULL))
       {
-        FOnSynchronize(this, Params.LocalDirectory,
-          Params.RemoteDirectory, CopyParam,
-          Params, NULL, FOptions, true);
+        // FIXME FOnSynchronize(this, Params.LocalDirectory,
+          // Params.RemoteDirectory, CopyParam,
+          // Params, NULL, FOptions, true);
       }
 
       FCopyParam = CopyParam;
@@ -58,9 +59,10 @@ void TSynchronizeController::StartStop(TObject * Sender,
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
       {
         SynchronizeLog(slScan,
-          FMTLOAD(SYNCHRONIZE_SCAN, (FSynchronizeParams.LocalDirectory)));
+          L""); // FIXME FMTLOAD(SYNCHRONIZE_SCAN, (FSynchronizeParams.LocalDirectory)));
       }
-
+/*
+      // FIXME 
       FSynchronizeMonitor = new TDiscMonitor(dynamic_cast<TComponent*>(Sender));
       FSynchronizeMonitor->SubTree = false;
       TMonitorFilters Filters;
@@ -83,19 +85,19 @@ void TSynchronizeController::StartStop(TObject * Sender,
       // get count before open to avoid thread issues
       int Directories = FSynchronizeMonitor->Directories->GetCount();
       FSynchronizeMonitor->Open();
-
-      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, (Directories)));
+*/
+      SynchronizeLog(slStart, L""); // FIXME FMTLOAD(SYNCHRONIZE_START, (Directories)));
     }
     catch(...)
     {
-      SAFE_DESTROY(FSynchronizeMonitor);
+      // SAFE_DESTROY((TObject *)FSynchronizeMonitor);
       throw;
     }
   }
   else
   {
     FOptions = NULL;
-    SAFE_DESTROY(FSynchronizeMonitor);
+    // SAFE_DESTROY((TObject *)FSynchronizeMonitor);
   }
 }
 //---------------------------------------------------------------------------
@@ -117,8 +119,8 @@ void TSynchronizeController::SynchronizeChange(
       ToUnixPath(LocalDirectory.substr(RootLocalDirectory.size() + 1,
         LocalDirectory.size() - RootLocalDirectory.size()));
 
-    SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
-      (ExcludeTrailingBackslash(LocalDirectory))));
+    SynchronizeLog(slChange, L""); // FIXME FMTLOAD(SYNCHRONIZE_CHANGE,
+      // (ExcludeTrailingBackslash(LocalDirectory))));
 
     if (FOnSynchronize != NULL)
     {
@@ -127,8 +129,8 @@ void TSynchronizeController::SynchronizeChange(
       TSynchronizeOptions * Options =
         ((LocalDirectory == RootLocalDirectory) ? FOptions : NULL);
       TSynchronizeChecklist * Checklist = NULL;
-      FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
-        FSynchronizeParams, &Checklist, Options, false);
+      // FIXME FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
+        // FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
         try
@@ -139,10 +141,10 @@ void TSynchronizeController::SynchronizeChange(
             assert(Checklist != NULL);
             for (int Index = 0; Index < Checklist->GetCount(); Index++)
             {
-              const TSynchronizeChecklist::TItem * Item = Checklist->Item[Index];
+              const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
               // note that there may be action saDeleteRemote even if nothing has changed
               // so this is sub-optimal
-              if (Item->GetIsDirectory())
+              if (Item->IsDirectory)
               {
                 if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
                     (Item->Action == TSynchronizeChecklist::saDeleteRemote))
@@ -179,10 +181,10 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 {
   if (FSynchronizeMonitor != NULL)
   {
-    FSynchronizeMonitor->Close();
+    // FIXME FSynchronizeMonitor->Close();
   }
   assert(FSynchronizeAbort);
-  FSynchronizeAbort(NULL, Close);
+  // FIXME FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
@@ -194,7 +196,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   {
     case soDelete:
       Entry = slDelete;
-      Message = FMTLOAD(SYNCHRONIZE_DELETED, (FileName));
+      Message = L""; // FIXME FMTLOAD(SYNCHRONIZE_DELETED, (FileName));
       break;
 
     default:
@@ -203,7 +205,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 
     case soUpload:
       Entry = slUpload;
-      Message = FMTLOAD(SYNCHRONIZE_UPLOADED, (FileName));
+      Message = L""; // FIXME FMTLOAD(SYNCHRONIZE_UPLOADED, (FileName));
       break;
   }
   SynchronizeLog(Entry, Message);
@@ -214,7 +216,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 {
   if (FSynchronizeLog != NULL)
   {
-    FSynchronizeLog(this, Entry, Message);
+    // FIXME FSynchronizeLog(this, Entry, Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -227,7 +229,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
           IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       int FoundIndex;
-      Add = FOptions->Filter->Find(ExtractFileName(DirectoryName), FoundIndex);
+      Add = FOptions->Filter->Find(ExtractFileName(DirectoryName, true), FoundIndex);
     }
   }
   TFileMasks::TParams MaskParams; // size does not matter for directories
@@ -239,7 +241,7 @@ void TSynchronizeController::SynchronizeInvalid(
 {
   if (FOnSynchronizeInvalid != NULL)
   {
-    FOnSynchronizeInvalid(this, Directory, ErrorStr);
+    // FIXME FOnSynchronizeInvalid(this, Directory, ErrorStr);
   }
 
   SynchronizeAbort(false);
@@ -250,12 +252,12 @@ void TSynchronizeController::SynchronizeTooManyDirectories(
 {
   if (FOnTooManyDirectories != NULL)
   {
-    FOnTooManyDirectories(this, MaxDirectories);
+    // FIXME FOnTooManyDirectories(this, MaxDirectories);
   }
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeDirectoriesChange(
   TObject * /*Sender*/, int Directories)
 {
-  SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, (Directories)));
+  SynchronizeLog(slDirChange, L""); // FIXME FMTLOAD(SYNCHRONIZE_START, (Directories)));
 }
