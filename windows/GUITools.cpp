@@ -10,6 +10,7 @@
 #include <TextsCore.h>
 #include <CoreMain.h>
 #include <SessionData.h>
+#include <Exceptions.h>
 //---------------------------------------------------------------------------
 bool FindFile(std::wstring & Path)
 {
@@ -21,7 +22,7 @@ bool FindFile(std::wstring & Path)
     {
       std::wstring Paths;
       Paths.resize(Len - 1);
-      GetEnvironmentVariable(L"PATH", Paths.c_str(), Len);
+      // FIXME GetEnvironmentVariable(L"PATH", Paths.c_str(), Len);
 
       std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
       Result = !NewPath.empty();
@@ -59,49 +60,49 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
       Storage->SetMungeStringValues(false);
       if (Storage->OpenRootKey(true))
       {
-        if (Storage->KeyExists(GetSessionData()->StorageKey))
+        if (Storage->KeyExists(SessionData->GetStorageKey()))
         {
-          SessionName = GetSessionData()->SessionName;
+          SessionName = SessionData->GetSessionName();
         }
         else
         {
-          SourceStorage = new TRegistryStorage(Configuration->PuttySessionsKey);
-          SourceStorage->MungeStringValues = false;
-          if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
-              Storage->OpenSubKey(GUIConfiguration->PuttySession, true))
+          SourceStorage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+          SourceStorage->SetMungeStringValues(false);
+          if (SourceStorage->OpenSubKey(StoredSessions->GetDefaultSettings()->GetName(), false) &&
+              Storage->OpenSubKey(GUIConfiguration->GetPuttySession(), true))
           {
             Storage->Copy(SourceStorage);
             Storage->CloseSubKey();
           }
 
-          ExportData = new TSessionData("");
-          ExportData->Assign(GetSessionData());
-          ExportData->Modified = true;
-          ExportData->Name = GUIConfiguration->PuttySession;
-          ExportData->Password = "";
+          ExportData = new TSessionData(L"");
+          ExportData->Assign(SessionData);
+          ExportData->SetModified(true);
+          ExportData->SetName(GUIConfiguration->GetPuttySession());
+          ExportData->SetPassword(L"");
 
-          if (GetSessionData()->FSProtocol == fsFTP)
+          if (SessionData->GetFSProtocol() == fsFTP)
           {
-            if (GUIConfiguration->TelnetForFtpInPutty)
+            if (GUIConfiguration->GetTelnetForFtpInPutty())
             {
-              ExportData->Protocol = ptTelnet;
-              ExportData->PortNumber = 23;
+              ExportData->SetProtocol(ptTelnet);
+              ExportData->SetPortNumber(23);
               // PuTTY  does not allow -pw for telnet
-              Password = "";
+              Password = L"";
             }
             else
             {
-              ExportData->Protocol = ptSSH;
-              ExportData->PortNumber = 22;
+              ExportData->SetProtocol(ptSSH);
+              ExportData->SetPortNumber(22);
             }
           }
 
           ExportData->Save(Storage, true);
-          SessionName = GUIConfiguration->PuttySession;
+          SessionName = GUIConfiguration->GetPuttySession();
         }
       }
     }
-    __finally
+    catch (...)
     {
       delete Storage;
       delete ExportData;
@@ -110,7 +111,7 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
 
     if (!Params.empty())
     {
-      Params += " ";
+      Params += L" ";
     }
     if (!Password.empty())
     {
@@ -120,26 +121,26 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
 
     if (!ExecuteShell(Program, Params))
     {
-      throw std::exception(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+      throw ExtException(L""); // FIXME FMTLOAD(EXECUTE_APP_ERROR, (Program)));
     }
   }
   else
   {
-    throw std::exception(FMTLOAD(FILE_NOT_FOUND, (Program)));
+    throw ExtException(L""); // FIXME FMTLOAD(FILE_NOT_FOUND, (Program)));
   }
 }
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring Path, const std::wstring Params)
 {
-  return ((int)ShellExecute(NULL, "open", (char*)Path.data(),
-    (char*)Params.data(), NULL, SW_SHOWNORMAL) > 32);
+  return false; // FIXME ((int)ShellExecute(NULL, L"open", (char*)Path.data(),
+    // (char*)Params.data(), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle)
 {
   bool Result;
-
+/* // FIXME
   TShellExecuteInfo ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
@@ -154,6 +155,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   {
     Handle = ExecuteInfo.hProcess;
   }
+  */
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -161,7 +163,7 @@ bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
   const std::wstring Params, TProcessMessagesEvent ProcessMessages)
 {
   bool Result;
-
+/* // FIXME 
   TShellExecuteInfo ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
@@ -193,6 +195,7 @@ bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
       WaitForSingleObject(ExecuteInfo.hProcess, INFINITE);
     }
   }
+  */
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -208,12 +211,14 @@ bool SpecialFolderLocation(int PathID, std::wstring & Path)
 {
   LPITEMIDLIST Pidl;
   char Buf[256];
+  /* // FIXME 
   if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {
     Path = std::wstring(Buf);
     return true;
   }
+  */
   return false;
 }
 //---------------------------------------------------------------------------
@@ -223,11 +228,11 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
   std::wstring Result;
   if (Count == 1)
   {
-    Result = FORMAT(SingleItemFormat, (FirstItem));
+    Result = FORMAT(SingleItemFormat.c_str(), FirstItem);
   }
   else
   {
-    Result = FORMAT(MultiItemsFormat, (Count));
+    Result = FORMAT(MultiItemsFormat.c_str(), Count);
   }
   return Result;
 }
@@ -247,7 +252,7 @@ std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
   if (Files->GetCount() > 0)
   {
     Item = Remote ? UnixExtractFileName(Files->GetString(0)) :
-      ExtractFileName(Files->GetString(0));
+      ExtractFileName(Files->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
     Files->GetCount(), Item);
@@ -259,15 +264,15 @@ std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
 
   if (!UseOrders || (Bytes < __int64(100*1024)))
   {
-    Result = FormatFloat("#,##0 \"B\"", Bytes);
+    Result = FormatFloat(L"#,##0 \"B\"", Bytes);
   }
   else if (Bytes < __int64(100*1024*1024))
   {
-    Result = FormatFloat("#,##0 \"KiB\"", Bytes / 1024);
+    Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
   }
   else
   {
-    Result = FormatFloat("#,##0 \"MiB\"", Bytes / (1024*1024));
+    Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
   }
   return Result;
 }
@@ -282,11 +287,11 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
     TempDir = IncludeTrailingBackslash(TempDir) + Identity;
     if (Mask)
     {
-      TempDir += "?????";
+      TempDir += L"?????";
     }
     else
     {
-      TempDir += IncludeTrailingBackslash(FormatDateTime("nnzzz", Now()));
+      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
     };
   }
   while (!Mask && DirectoryExists(TempDir));
@@ -296,18 +301,19 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
 //---------------------------------------------------------------------------
 bool DeleteDirectory(const std::wstring DirName)
 {
-  TSearchRec sr;
   bool retval = true;
-  if (FindFirst(DirName + "\\*", faAnyFile, sr) == 0) // VCL Function
+  /* // FIXME 
+  TSearchRec sr;
+  if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
   {
     if (FLAGSET(sr.Attr, faDirectory))
     {
-      if (sr.Name != "." && sr.Name != "..")
-        retval = DeleteDirectory(DirName + "\\" + sr.Name);
+      if (sr.Name != L"." && sr.Name != L"..")
+        retval = DeleteDirectory(DirName + L"\\" + sr.Name);
     }
     else
     {
-      retval = DeleteFile(DirName + "\\" + sr.Name);
+      retval = DeleteFile(DirName + L"\\" + sr.Name);
     }
 
     if (retval)
@@ -316,12 +322,12 @@ bool DeleteDirectory(const std::wstring DirName)
       { // VCL Function
         if (FLAGSET(sr.Attr, faDirectory))
         {
-          if (sr.Name != "." && sr.Name != "..")
-            retval = DeleteDirectory(DirName + "\\" + sr.Name);
+          if (sr.Name != "." && sr.Name != L"..")
+            retval = DeleteDirectory(DirName + L"\\" + sr.Name);
         }
         else
         {
-          retval = DeleteFile(DirName + "\\" + sr.Name);
+          retval = DeleteFile(DirName + L"\\" + sr.Name);
         }
 
         if (!retval) break;
@@ -330,6 +336,7 @@ bool DeleteDirectory(const std::wstring DirName)
   }
   FindClose(sr);
   if (retval) retval = RemoveDir(DirName); // VCL function
+  */
   return retval;
 }
 //---------------------------------------------------------------------------
@@ -338,11 +345,11 @@ std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, TDateTime DateTim
   std::wstring Result;
   if (int(DateTime) > 0)
   {
-    Result = IntToStr(int(DateTime)) + ", ";
+    Result = IntToStr(int(DateTime)) + L", ";
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs
-  Result += FormatDateTime(TimeFormat, DateTime - int(DateTime));
+  Result += FormatDateTime(TimeFormat, TDateTime(DateTime - int(DateTime)));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -382,7 +389,7 @@ bool TLocalCustomCommand::PatternReplacement(int Index,
   const std::wstring & Pattern, std::wstring & Replacement, bool & Delimit)
 {
   bool Result;
-  if (Pattern == "!^!")
+  if (Pattern == L"!^!")
   {
     Replacement = FLocalFileName;
     Result = true;
