@@ -21,7 +21,7 @@ public:
   void Clear();
 
   // __property TBookmarkList * Bookmarks[std::wstring Index] = { read = GetBookmarks, write = SetBookmarks };
-  TBookmarkList * GetBookmarks(std::wstring Index);
+  TBookmarkList * GetBookmark(std::wstring Index);
   void SetBookmarks(std::wstring Index, TBookmarkList * value);
   // __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
   TBookmarkList * GetSharedBookmarks();
@@ -60,7 +60,7 @@ public:
   // __property int Count = { read = GetCount };
   int GetCount();
   // __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
-  TBookmark * GetBookmarks(int Index);
+  TBookmark * GetBookmark(int Index);
   // __property bool NodeOpened[std::wstring Index] = { read = GetNodeOpened, write = SetNodeOpened };
   bool GetNodeOpened(std::wstring Index);
   void SetNodeOpened(std::wstring Index, bool value);

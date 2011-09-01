@@ -1895,6 +1895,11 @@ double StrToFloat(std::wstring Value)
     return 0;
 }
 
+std::wstring FormatFloat(std::wstring Format, double value)
+{
+    return std::wstring(L"");
+}
+
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {

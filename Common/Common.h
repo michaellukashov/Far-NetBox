@@ -253,6 +253,7 @@ __int64 TryStrToInt(const std::wstring value, __int64 defval);
 
 //---------------------------------------------------------------------------
 double StrToFloat(std::wstring Value);
+std::wstring FormatFloat(std::wstring Format, double value);
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------

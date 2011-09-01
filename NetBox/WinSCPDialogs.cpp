@@ -5559,7 +5559,7 @@ void TFileSystemInfoDialog::FeedControls()
 void TFileSystemInfoDialog::SelectTab(int Tab)
 {
   TTabbedDialog::SelectTab(Tab);
-  if (InfoLister->Visible)
+  if (InfoLister->GetVisible())
   {
     // At first the dialog border box hides the eventual scrollbar of infolister,
     // so redraw to reshow it.
@@ -5581,7 +5581,7 @@ void TFileSystemInfoDialog::Execute(
   SpaceAvailablePathEdit->SetText(SpaceAvailablePath);
   UpdateControls();
 
-  Feed(CalculateMaxLenAddItem);
+  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::CalculateMaxLenAddItem);
   FeedControls();
   HideTabs();
   SelectTab(tabProtocol);
@@ -5624,8 +5624,8 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
 {
   NeedSpaceAvailable();
   FLastFeededControl = NULL;
-  FClipboard = "";
-  Feed(ClipboardAddItem);
+  FClipboard = L"";
+  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::ClipboardAddItem);
   FarPlugin->FarCopyToClipboard(FClipboard);
   Close = false;
 }
@@ -5646,7 +5646,7 @@ void TFileSystemInfoDialog::CheckSpaceAvailable()
 
   bool DoClose = false;
 
-  FOnGetSpaceAvailable(SpaceAvailablePathEdit->GetText(), FSpaceAvailable, DoClose);
+  // FIXME FOnGetSpaceAvailable(SpaceAvailablePathEdit->GetText(), FSpaceAvailable, DoClose);
 
   FeedControls();
   if (DoClose)
@@ -5724,9 +5724,9 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         BookmarkDirectories->SetSorted(true);
         for (int i = 0; i < BookmarkList->GetCount(); i++)
         {
-          TBookmark * Bookmark = BookmarkList->Bookmarks[i];
-          std::wstring RemoteDirectory = Bookmark->Remote;
-          if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory) < 0))
+          TBookmark * Bookmark = BookmarkList->GetBookmark(i);
+          std::wstring RemoteDirectory = Bookmark->GetRemote();
+          if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) < 0))
           {
             int Pos;
             Pos = BookmarkDirectories->Add(RemoteDirectory);
@@ -5811,7 +5811,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
           assert(ItemFocused >= 0);
           if (ItemFocused >= BookmarksOffset)
           {
-            TBookmark * Bookmark = static_cast<TBookmark *>(Bookmarks->Items[ItemFocused - BookmarksOffset]);
+            TBookmark * Bookmark = static_cast<TBookmark *>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
             BookmarkList->Delete(Bookmark);
           }
           else
@@ -5823,7 +5823,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         }
         else if (BreakCode == 2)
         {
-          FarControl(FCTL_INSERTCMDLINE, BookmarkPaths->GetString(ItemFocused).c_str());
+          FarControl(FCTL_INSERTCMDLINE, 0, (LONG_PTR)BookmarkPaths->GetString(ItemFocused).c_str());
         }
         else if (BreakCode == 3 || BreakCode == 4)
         {
@@ -5889,8 +5889,8 @@ TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
 {
   TFarText * Text;
 
-  Size = TPoint(76, 18);
-  Caption = GetMsg(APPLY_COMMAND_TITLE);
+  SetSize(TPoint(76, 18));
+  SetCaption(GetMsg(APPLY_COMMAND_TITLE));
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(APPLY_COMMAND_PROMPT));
@@ -5926,8 +5926,8 @@ TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
   SetNextItemPosition(ipNewLine);
 
   ApplyToDirectoriesCheck = new TFarCheckBox(this);
-  ApplyToDirectoriesCheck->Caption =
-    GetMsg(APPLY_COMMAND_APPLY_TO_DIRECTORIES);
+  ApplyToDirectoriesCheck->SetCaption(
+    GetMsg(APPLY_COMMAND_APPLY_TO_DIRECTORIES));
 
   SetNextItemPosition(ipRight);
 
@@ -6090,8 +6090,8 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   TFarText * Text;
   TFarSeparator * Separator;
 
-  Size = TPoint(78, 25);
-  Caption = GetMsg(FULL_SYNCHRONIZE_TITLE);
+  SetSize(TPoint(78, 25));
+  SetCaption(GetMsg(FULL_SYNCHRONIZE_TITLE));
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(FULL_SYNCHRONIZE_LOCAL_LABEL));
@@ -6188,9 +6188,9 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
 
   CopyParamLister = new TFarLister(this);
   CopyParamLister->SetHeight(3);
-  CopyParamLister->SetLeft(BorderBox->GetLeft() + 1);
+  CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  CopyParamLister->SetOnMouseClick(CopyParamListerClick);
+  // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
   CopyParamLister->SetGroup(1);
   // Right edge is adjusted in Change
 
@@ -6208,17 +6208,17 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
 
   AddStandardButtons(0, true);
 
-  FFullHeight = Size.y;
+  FFullHeight = GetSize().y;
   AdaptSize();
 }
 //---------------------------------------------------------------------------
 void TFullSynchronizeDialog::AdaptSize()
 {
-  bool ShowCopyParam = (FFullHeight <= MaxSize.y);
-  if (ShowCopyParam != CopyParamLister->Visible)
+  bool ShowCopyParam = (FFullHeight <= GetMaxSize().y);
+  if (ShowCopyParam != CopyParamLister->GetVisible())
   {
     ShowGroup(1, ShowCopyParam);
-    Height = FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->Height + 1);
+    Height = FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1);
   }
 }
 //---------------------------------------------------------------------------
@@ -6296,8 +6296,8 @@ void TFullSynchronizeDialog::Change()
       !SynchronizeTimestampsButton->GetChecked());
     SynchronizeByTimeCheck->SetEnabled(!SynchronizeBothButton->GetChecked() &&
       !SynchronizeTimestampsButton->GetChecked() && !MirrorFilesButton->GetChecked());
-    SynchronizeBySizeCheck->Caption = SynchronizeTimestampsButton->GetChecked() ?
-      GetMsg(SYNCHRONIZE_SAME_SIZE) : GetMsg(SYNCHRONIZE_BY_SIZE);
+    SynchronizeBySizeCheck->SetCaption(SynchronizeTimestampsButton->GetChecked() ?
+      GetMsg(SYNCHRONIZE_SAME_SIZE) : GetMsg(SYNCHRONIZE_BY_SIZE));
 
     if (!SynchronizeBySizeCheck->GetChecked() && !SynchronizeByTimeCheck->GetChecked())
     {
@@ -6316,9 +6316,9 @@ void TFullSynchronizeDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     try
     {
-      FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
+      FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
+      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
@@ -6361,7 +6361,7 @@ bool TFullSynchronizeDialog::CloseQuery()
 {
   bool CanClose = TWinSCPDialog::CloseQuery();
 
-  if (CanClose && (Result == brOK) &&
+  if (CanClose && (GetResult() == brOK) &&
       SaveSettingsCheck->GetChecked() && (FOrigMode != GetMode()) && !FSaveMode)
   {
     TWinSCPPlugin* WinSCPPlugin = dynamic_cast<TWinSCPPlugin*>(FarPlugin);
@@ -6541,14 +6541,14 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetNoBox(true);
   // align list with bottom of the window
   ListBox->SetBottom(-5);
-  ListBox->SetOnMouseClick(ListBoxClick);
+  // FIXME ListBox->SetOnMouseClick(ListBoxClick);
   ListBox->SetOem(true);
 
   std::wstring Actions = GetMsg(CHECKLIST_ACTIONS);
   int Action = 0;
   while (!Actions.empty() && (Action < LENOF(FActions)))
   {
-    SetFActions(Action, CutToChar(Actions, '|', false));
+    FActions[Action] = CutToChar(Actions, '|', false);
     Action++;
   }
 
@@ -6601,11 +6601,11 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring & List,
     {
       Added += Width - Len;
     }
-    List += std::wstring::StringOfChar(' ', Added) + Value;
+    List += ::StringOfChar(' ', Added) + Value;
     Added += Value.size();
     if (Width > Added)
     {
-      List += std::wstring::StringOfChar(' ', Width - Added);
+      List += ::StringOfChar(' ', Width - Added);
     }
     if (!LastCol)
     {
@@ -6652,13 +6652,13 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring & List,
 void TSynchronizeChecklistDialog::AdaptSize()
 {
   FScroll = 0;
-  Size = MaxSize;
+  SetSize(GetMaxSize());
 
-  VideoModeButton->Caption = GetMsg(
+  VideoModeButton->SetCaption(GetMsg(
     FarPlugin->ConsoleWindowState() == SW_SHOWMAXIMIZED ?
-      CHECKLIST_RESTORE : CHECKLIST_MAXIMIZE);
+      CHECKLIST_RESTORE : CHECKLIST_MAXIMIZE));
 
-  static const Ratio[FColumns] = { 140, 100, 80, 150, -2, 100, 80, 150 };
+  static const int Ratio[FColumns] = { 140, 100, 80, 150, -2, 100, 80, 150 };
 
   int Width = ListBox->GetWidth() - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
   double Temp[FColumns];
@@ -6683,13 +6683,13 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = static_cast<float>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      SetFWidths(Index, floor(W));
-      SetTemp(Index, W - FWidths[Index]);
+      Widths[Index] = floor(W);
+      Temp[Index] = W - FWidths[Index];
     }
     else
     {
-      SetFWidths(Index, -Ratio[Index]);
-      SetTemp(Index, 0);
+      FWidths[Index] = -Ratio[Index];
+      Temp[Index] = 0;
     }
     TotalAssigned += FWidths[Index];
   }
@@ -6710,7 +6710,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     assert(MaxMissing > 0.0);
 
     FWidths[GrowIndex]++;
-    SetTemp(GrowIndex, 0.0);
+    Temp[GrowIndex] = 0.0;
     TotalAssigned++;
   }
 
@@ -6755,8 +6755,8 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
   std::wstring Line;
   std::wstring S;
 
-  S = ChecklistItem->FileName;
-  if (ChecklistItem->IsDirectory)
+  S = ChecklistItem->GetFileName();
+  if (ChecklistItem->GetIsDirectory())
   {
     S = IncludeTrailingBackslash(S);
   }
@@ -6764,17 +6764,17 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
 
   if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteRemote)
   {
-    AddColumn(Line, "", 1);
-    AddColumn(Line, "", 2);
-    AddColumn(Line, "", 3);
+    AddColumn(Line, L"", 1);
+    AddColumn(Line, L"", 2);
+    AddColumn(Line, L"", 3);
   }
   else
   {
     S = ChecklistItem->Local.Directory;
     if (AnsiSameText(FLocalDirectory, S.substr(1, FLocalDirectory.size())))
     {
-      SetS(1, '.');
-      S.Delete(2, FLocalDirectory.size() - 1);
+      S[1] = '.';
+      S.erase(2, FLocalDirectory.size() - 1);
     }
     else
     {
@@ -6783,14 +6783,14 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     AddColumn(Line, S, 1);
     if (ChecklistItem->Action == TSynchronizeChecklist::saDownloadNew)
     {
-      AddColumn(Line, "", 2);
-      AddColumn(Line, "", 3);
+      AddColumn(Line, L"", 2);
+      AddColumn(Line, L"", 3);
     }
     else
     {
-      if (ChecklistItem->IsDirectory)
+      if (ChecklistItem->GetIsDirectory())
       {
-        AddColumn(Line, "", 2);
+        AddColumn(Line, L"", 2);
       }
       else
       {
@@ -6807,17 +6807,17 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
 
   if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteLocal)
   {
-    AddColumn(Line, "", 5);
-    AddColumn(Line, "", 6);
-    AddColumn(Line, "", 7);
+    AddColumn(Line, L"", 5);
+    AddColumn(Line, L"", 6);
+    AddColumn(Line, L"", 7);
   }
   else
   {
     S = ChecklistItem->Remote.Directory;
     if (AnsiSameText(FRemoteDirectory, S.substr(1, FRemoteDirectory.size())))
     {
-      SetS(1, '.');
-      S.Delete(2, FRemoteDirectory.size() - 1);
+      S[1] = '.';
+      S.erase(2, FRemoteDirectory.size() - 1);
     }
     else
     {
@@ -6826,14 +6826,14 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     AddColumn(Line, S, 5);
     if (ChecklistItem->Action == TSynchronizeChecklist::saUploadNew)
     {
-      AddColumn(Line, "", 6);
-      AddColumn(Line, "", 7);
+      AddColumn(Line, L"", 6);
+      AddColumn(Line, L"", 7);
     }
     else
     {
-      if (ChecklistItem->IsDirectory)
+      if (ChecklistItem->GetIsDirectory())
       {
-        AddColumn(Line, "", 6);
+        AddColumn(Line, L"", 6);
       }
       else
       {
@@ -6856,7 +6856,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     // List->BeginUpdate();
     for (int Index = 0; Index < FChecklist->GetCount(); Index++)
     {
-      const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->Item[Index];
+      const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
 
       List->AddObject(ItemLine(ChecklistItem),
         const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem)));
@@ -6868,8 +6868,8 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     {
       const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->Item[Index];
 
-      List->SetChecked(Index, ChecklistItem->GetChecked());
-      if (ChecklistItem->GetChecked())
+      List->SetChecked(Index, ChecklistItem->Checked);
+      if (ChecklistItem->Checked)
       {
         FChecked++;
       }
@@ -6888,7 +6888,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 {
   std::wstring HeaderStr = GetMsg(CHECKLIST_HEADER);
-  std::wstring HeaderCaption(std::wstring::StringOfChar(' ', 2));
+  std::wstring HeaderCaption(::StringOfChar(' ', 2));
 
   for (int Index = 0; Index < FColumns; Index++)
   {
@@ -6897,13 +6897,13 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   Header->SetCaption(HeaderCaption);
 
   FCanScrollRight = false;
-  TFarList * List = ListBox->Items;
+  TFarList * List = ListBox->GetItems();
   // List->BeginUpdate();
   try
   {
     for (int Index = 0; Index < List->GetCount(); Index++)
     {
-      if (!Scroll || (List->GetString(Index).LastDelimiter(L"{}") > 0))
+      if (!Scroll || (LastDelimiter(List->GetString(Index), L"{}") > 0))
       {
         const TSynchronizeChecklist::TItem * ChecklistItem =
           reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
@@ -6920,8 +6920,8 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 //---------------------------------------------------------------------------
 void TSynchronizeChecklistDialog::UpdateControls()
 {
-  ButtonSeparator->Caption =
-    FORMAT(GetMsg(CHECKLIST_CHECKED), (FChecked, ListBox->GetItems()->GetCount()));
+  ButtonSeparator->SetCaption(
+    FORMAT(GetMsg(CHECKLIST_CHECKED), (FChecked, ListBox->GetItems()->GetCount())));
   CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->GetCount()));
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
@@ -6938,7 +6938,7 @@ long TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, long Param2)
 //---------------------------------------------------------------------------
 void TSynchronizeChecklistDialog::CheckAll(bool Check)
 {
-  TFarList * List = ListBox->Items;
+  TFarList * List = ListBox->GetItems();
   // List->BeginUpdate();
   try
   {
@@ -6981,12 +6981,12 @@ void TSynchronizeChecklistDialog::ListBoxClick(
   int Index = ListBox->GetItems()->GetSelected();
   if (Index >= 0)
   {
-    if (ListBox->GetItems()->Checked[Index])
+    if (ListBox->GetItems()->GetChecked(Index))
     {
       ListBox->GetItems()->SetChecked(Index, false);
       FChecked--;
     }
-    else if (!ListBox->GetItems()->Checked[Index])
+    else if (!ListBox->GetItems()->GetChecked(Index))
     {
       ListBox->GetItems()->SetChecked(Index, true);
       FChecked++;
@@ -7012,12 +7012,12 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
       int Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
       {
-        if (ListBox->GetItems()->Checked[Index] && (KeyCode != KEY_ADD))
+        if (ListBox->GetItems()->GetChecked(Index) && (KeyCode != KEY_ADD))
         {
           ListBox->GetItems()->SetChecked(Index, false);
           FChecked--;
         }
-        else if (!ListBox->GetItems()->Checked[Index] && (KeyCode != KEY_SUBTRACT))
+        else if (!ListBox->GetItems()->GetChecked(Index) && (KeyCode != KEY_SUBTRACT))
         {
           ListBox->GetItems()->SetChecked(Index, true);
           FChecked++;
@@ -7071,13 +7071,13 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
 
   if (Result)
   {
-    TFarList * List = ListBox->Items;
+    TFarList * List = ListBox->GetItems();
     int Count = List->GetCount();
     for (int Index = 0; Index < Count; Index++)
     {
       TSynchronizeChecklist::TItem * ChecklistItem =
         reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
-      ChecklistItem->SetChecked(List->GetChecked()[Index]);
+      ChecklistItem->SetChecked(List->GetChecked(Index));
     }
   }
 
@@ -7237,7 +7237,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   CopyParamLister = new TFarLister(this);
   CopyParamLister->SetHeight(3);
-  CopyParamLister->SetLeft(BorderBox->GetLeft() + 1);
+  CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
   CopyParamLister->SetOnMouseClick(CopyParamListerClick);
   // Right edge is adjusted in Change
@@ -7507,9 +7507,9 @@ void TSynchronizeDialog::Change()
     TStringList * InfoStrLines = new TStringList();
     try
     {
-      FarWrapText(InfoStr, InfoStrLines, BorderBox->GetWidth() - 4);
+      FarWrapText(InfoStr, InfoStrLines, GetBorderBox()->GetWidth() - 4);
       CopyParamLister->SetItems(InfoStrLines);
-      CopyParamLister->SetRight(BorderBox->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
+      CopyParamLister->SetRight(GetBorderBox()->GetRight() - (CopyParamLister->GetScrollBar() ? 0 : 1));
     }
     catch (...)
     {
