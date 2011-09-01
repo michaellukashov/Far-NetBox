@@ -7911,7 +7911,7 @@ void TQueueDialog::RefreshQueue()
       }
 
       if (QueueItemNeedsFrequentRefresh(QueueItem) &&
-          !QueueItem->ProcessingUserAction)
+          !QueueItem->GetProcessingUserAction())
       {
         FillQueueItemLine(Line, QueueItem, ILine);
         if (QueueListBox->GetItems()->GetString(Index) != Line)
@@ -7947,7 +7947,7 @@ void TQueueDialog::LoadQueue()
       while (FillQueueItemLine(Line, QueueItem, ILine))
       {
         List->AddObject(Line, reinterpret_cast<TObject*>(QueueItem));
-        List->Disabled[List->GetCount() - 1] = (ILine > 0);
+        List->SetDisabled(List->GetCount() - 1, (ILine > 0));
         ILine++;
       }
     }
@@ -8000,14 +8000,14 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
   }
 
   bool BlinkHide = QueueItemNeedsFrequentRefresh(QueueItem) &&
-    !QueueItem->ProcessingUserAction &&
+    !QueueItem->GetProcessingUserAction() &&
     ((GetTickCount() % 2000) >= 1000);
 
   std::wstring Operation;
   std::wstring Direction;
   std::wstring Values[2];
-  TFileOperationProgressType * ProgressData = QueueItem->ProgressData;
-  TQueueItem::TInfo * Info = QueueItem->Info;
+  TFileOperationProgressType * ProgressData = QueueItem->GetProgressData();
+  TQueueItem::TInfo * Info = QueueItem->GetInfo();
 
   if (Index == 0)
   {
@@ -8031,12 +8031,12 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
     if ((ProgressData != NULL) &&
         (ProgressData->Operation == Info->Operation))
     {
-      SetValues(1, FormatBytes(ProgressData->TotalTransfered));
+      Values[1] = FormatBytes(ProgressData->TotalTransfered);
     }
   }
   else if (Index == 1)
   {
-    SetValues(0, MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal)));
+    Values[0] = MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal));
 
     if (ProgressStr.empty())
     {
@@ -8044,17 +8044,17 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
       {
         if (ProgressData->Operation == Info->Operation)
         {
-          SetValues(1, FORMAT(L"%d%%", (ProgressData->OverallProgress())));
+          Values[1] = FORMAT(L"%d%%", (ProgressData->OverallProgress()));
         }
         else if (ProgressData->Operation == foCalculateSize)
         {
-          SetValues(1, GetMsg(QUEUE_CALCULATING_SIZE));
+          Values[1] = GetMsg(QUEUE_CALCULATING_SIZE);
         }
       }
     }
     else if (!BlinkHide)
     {
-      SetValues(1, ProgressStr);
+      Values[1] = ProgressStr;
     }
   }
   else
@@ -8065,12 +8065,12 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
         (Info->Side == osRemote));
       if (ProgressData->Operation == Info->Operation)
       {
-        SetValues(1, FORMAT(L"%d%%", (ProgressData->TransferProgress())));
+        Values[1] = FORMAT(L"%d%%", (ProgressData->TransferProgress()));
       }
     }
     else
     {
-      SetValues(0, ProgressStr);
+      Values[0] = ProgressStr;
     }
   }
 
@@ -8157,7 +8157,7 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(std::wstring & Directory,
     assert(Properties != NULL);
     SetRightsCheck->SetChecked(Properties->Valid.Contains(vpRights));
     // expect sensible value even if rights are not set valid
-    RightsContainer->SetRights(Properties->GetRights());
+    RightsContainer->SetRights(Properties->Rights);
 
     Result = (Dialog->ShowModal() == brOK);
 
@@ -8167,12 +8167,12 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(std::wstring & Directory,
       SaveSettings = SaveSettingsCheck->GetChecked();
       if (SetRightsCheck->GetChecked())
       {
-        Properties->SetValid(Properties->Valid << vpRights);
-        Properties->SetRights(RightsContainer->GetRights());
+        Properties->Valid = Properties->Valid << vpRights;
+        Properties->Rights = RightsContainer->GetRights();
       }
       else
       {
-        Properties->SetValid(Properties->Valid >> vpRights);
+        Properties->Valid = Properties->Valid >> vpRights;
       }
     }
   }
