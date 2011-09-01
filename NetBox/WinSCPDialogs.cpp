@@ -6218,7 +6218,7 @@ void TFullSynchronizeDialog::AdaptSize()
   if (ShowCopyParam != CopyParamLister->GetVisible())
   {
     ShowGroup(1, ShowCopyParam);
-    Height = FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1);
+    SetHeight(FFullHeight - (ShowCopyParam ? 0 : CopyParamLister->GetHeight() + 1));
   }
 }
 //---------------------------------------------------------------------------
@@ -6532,7 +6532,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   FScroll(0),
   FCanScrollRight(false)
 {
-  Caption = GetMsg(CHECKLIST_TITLE);
+  SetCaption(GetMsg(CHECKLIST_TITLE));
 
   Header = new TFarText(this);
   Header->SetOem(true);
@@ -6683,7 +6683,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = static_cast<float>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      Widths[Index] = floor(W);
+      FWidths[Index] = floor(W);
       Temp[Index] = W - FWidths[Index];
     }
     else
@@ -6756,7 +6756,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
   std::wstring S;
 
   S = ChecklistItem->GetFileName();
-  if (ChecklistItem->GetIsDirectory())
+  if (ChecklistItem->IsDirectory)
   {
     S = IncludeTrailingBackslash(S);
   }
@@ -6788,7 +6788,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     }
     else
     {
-      if (ChecklistItem->GetIsDirectory())
+      if (ChecklistItem->IsDirectory)
       {
         AddColumn(Line, L"", 2);
       }
@@ -6831,7 +6831,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     }
     else
     {
-      if (ChecklistItem->GetIsDirectory())
+      if (ChecklistItem->IsDirectory)
       {
         AddColumn(Line, L"", 6);
       }
@@ -6866,7 +6866,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     // items must be checked in second pass once the internal array is allocated
     for (int Index = 0; Index < FChecklist->GetCount(); Index++)
     {
-      const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->Item[Index];
+      const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
 
       List->SetChecked(Index, ChecklistItem->Checked);
       if (ChecklistItem->Checked)
@@ -6921,7 +6921,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(CHECKLIST_CHECKED), (FChecked, ListBox->GetItems()->GetCount())));
+    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), (FChecked, ListBox->GetItems()->GetCount())));
   CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->GetCount()));
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
@@ -7077,7 +7077,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
     {
       TSynchronizeChecklist::TItem * ChecklistItem =
         reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
-      ChecklistItem->SetChecked(List->GetChecked(Index));
+      ChecklistItem->Checked = List->GetChecked(Index);
     }
   }
 
@@ -7180,7 +7180,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   FSynchronizeOptions = NULL;
   FCopyParamAttrs = CopyParamAttrs;
 
-  Size = TPoint(76, 20);
+  SetSize(TPoint(76, 20));
 
   SetDefaultGroup(1);
 
@@ -7239,7 +7239,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  CopyParamLister->SetOnMouseClick(CopyParamListerClick);
+  // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
   // Right edge is adjusted in Change
 
   SetDefaultGroup(0);
@@ -7318,9 +7318,9 @@ bool TSynchronizeDialog::Execute(TSynchronizeParamType & Params,
   SynchronizeExistingOnlyCheck->SetChecked(FLAGSET(Params.Params, TTerminal::spExistingOnly));
   SynchronizeSelectedOnlyCheck->SetChecked(FLAGSET(Params.Params, spSelectedOnly));
   SynchronizeRecursiveCheck->SetChecked(FLAGSET(Params.Options, soRecurse));
-  SynchronizeSynchronizeCheck->GetSelected() =
+  SynchronizeSynchronizeCheck->SetSelected(
     FLAGSET(Params.Options, soSynchronizeAsk) ? BSTATE_3STATE :
-      (FLAGSET(Params.Options, soSynchronize) ? BSTATE_CHECKED : BSTATE_UNCHECKED);
+      (FLAGSET(Params.Options, soSynchronize) ? BSTATE_CHECKED : BSTATE_UNCHECKED));
   SaveSettingsCheck->SetChecked(SaveSettings);
 
   FParams = Params;
@@ -7365,10 +7365,10 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
     {
       delete FSynchronizeOptions;
       FSynchronizeOptions = new TSynchronizeOptions;
-      FOnGetOptions(SParams.Params, *FSynchronizeOptions);
+      // FIXME FOnGetOptions(SParams.Params, *FSynchronizeOptions);
     }
-    FOnStartStop(this, Start, SParams, GetCopyParams(), FSynchronizeOptions, DoAbort,
-      DoSynchronizeThreads, DoLog);
+    // FIXME FOnStartStop(this, Start, SParams, GetCopyParams(), FSynchronizeOptions, DoAbort,
+      // DoSynchronizeThreads, DoLog);
   }
 }
 //---------------------------------------------------------------------------
@@ -7469,7 +7469,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
       StopButton->SetFocus();
       FStarted = true;
     }
-    catch(Exception & E)
+    catch (ExtException & E)
     {
       FSynchronizing = false;
       UpdateControls();
@@ -7531,7 +7531,7 @@ bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::UpdateControls()
 {
-  Caption = GetMsg(FSynchronizing ? SYNCHRONIZE_SYCHRONIZING : SYNCHRONIZE_TITLE);
+  SetCaption(GetMsg(FSynchronizing ? SYNCHRONIZE_SYCHRONIZING : SYNCHRONIZE_TITLE));
   StartButton->SetEnabled(!FSynchronizing);
   StopButton->SetEnabled(FSynchronizing);
   CloseButton->SetEnabled(!FSynchronizing);
@@ -7543,7 +7543,7 @@ void TSynchronizeDialog::UpdateControls()
 TCopyParamType TSynchronizeDialog::GetCopyParams()
 {
   TCopyParamType Result = FCopyParams;
-  Result.PreserveTime = true;
+  Result.SetPreserveTime(true);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -7595,8 +7595,8 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * FileList,
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
   std::wstring & NewName)
 {
-  return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE),
-    FORMAT(GetMsg(RENAME_FILE), (File->FileName)), NewName, 0) &&
+  return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
+    FORMAT(GetMsg(RENAME_FILE).c_str(), (File->GetFileName())), NewName, 0) &&
     !NewName.empty();
 }
 //---------------------------------------------------------------------------
@@ -7646,12 +7646,12 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   TFarSeparator * Separator;
   TFarText * Text;
 
-  Size = TPoint(80, 23);
-  TRect CRect = ClientRect;
+  SetSize(TPoint(80, 23));
+  TRect CRect = GetClientRect();
   int ListTop;
-  int ListHeight = ClientSize.y - 4;
+  int ListHeight = GetClientSize().y - 4;
 
-  Caption = GetMsg(QUEUE_TITLE);
+  SetCaption(GetMsg(QUEUE_TITLE));
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(QUEUE_HEADER));
@@ -7710,19 +7710,19 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 
     if (Sender == ExecuteButton)
     {
-      if (QueueItem->Status == TQueueItem::qsProcessing)
+      if (QueueItem->GetStatus() == TQueueItem::qsProcessing)
       {
         QueueItem->Pause();
       }
-      else if (QueueItem->Status == TQueueItem::qsPaused)
+      else if (QueueItem->GetStatus() == TQueueItem::qsPaused)
       {
         QueueItem->Resume();
       }
-      else if (QueueItem->Status == TQueueItem::qsPending)
+      else if (QueueItem->GetStatus() == TQueueItem::qsPending)
       {
         QueueItem->ExecuteNow();
       }
-      else if (TQueueItem::IsUserActionStatus(QueueItem->Status))
+      else if (TQueueItem::IsUserActionStatus(QueueItem->GetStatus()))
       {
         QueueItem->ProcessUserAction();
       }
@@ -7799,17 +7799,17 @@ void TQueueDialog::UpdateControls()
       QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
   }
 
-  if ((QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsProcessing))
+  if ((QueueItem != NULL) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
   {
     ExecuteButton->SetCaption(GetMsg(QUEUE_PAUSE));
     ExecuteButton->SetEnabled(true);
   }
-  else if ((QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsPaused))
+  else if ((QueueItem != NULL) && (QueueItem->GetStatus() == TQueueItem::qsPaused))
   {
     ExecuteButton->SetCaption(GetMsg(QUEUE_RESUME));
     ExecuteButton->SetEnabled(true);
   }
-  else if ((QueueItem != NULL) && TQueueItem::IsUserActionStatus(QueueItem->Status))
+  else if ((QueueItem != NULL) && TQueueItem::IsUserActionStatus(QueueItem->GetStatus()))
   {
     ExecuteButton->SetCaption(GetMsg(QUEUE_SHOW));
     ExecuteButton->SetEnabled(true);
@@ -7818,16 +7818,16 @@ void TQueueDialog::UpdateControls()
   {
     ExecuteButton->SetCaption(GetMsg(QUEUE_EXECUTE));
     ExecuteButton->SetEnabled(
-      (QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsPending);
+      (QueueItem != NULL) && (QueueItem->GetStatus() == TQueueItem::qsPending));
   }
-  DeleteButton->SetEnabled( (QueueItem != NULL) &&
-    (QueueItem->Status != TQueueItem::qsDone);
-  MoveUpButton->SetEnabled( (QueueItem != NULL) &&
-    (QueueItem->Status == TQueueItem::qsPending) &&
-    (QueueItem->Index > FStatus->ActiveCount);
-  MoveDownButton->SetEnabled( (QueueItem != NULL) &&
-    (QueueItem->Status == TQueueItem::qsPending) &&
-    (QueueItem->Index < FStatus->GetCount() - 1);
+  DeleteButton->SetEnabled((QueueItem != NULL) &&
+    (QueueItem->GetStatus() != TQueueItem::qsDone));
+  MoveUpButton->SetEnabled((QueueItem != NULL) &&
+    (QueueItem->GetStatus() == TQueueItem::qsPending) &&
+    (QueueItem->GetIndex() > FStatus->GetActiveCount()));
+  MoveDownButton->SetEnabled((QueueItem != NULL) &&
+    (QueueItem->GetStatus() == TQueueItem::qsPending) &&
+    (QueueItem->GetIndex() < FStatus->GetCount() - 1));
 }
 //---------------------------------------------------------------------------
 void TQueueDialog::Idle()
@@ -7885,7 +7885,7 @@ void TQueueDialog::RefreshQueue()
   if (QueueListBox->GetItems()->GetCount() > 0)
   {
     bool Change = false;
-    int TopIndex = QueueListBox->GetItems()->TopIndex;
+    int TopIndex = QueueListBox->GetItems()->GetTopIndex();
     int Index = TopIndex;
 
     int ILine = 0;
@@ -7900,7 +7900,7 @@ void TQueueDialog::RefreshQueue()
     TQueueItemProxy * QueueItem;
     std::wstring Line;
     while ((Index < QueueListBox->GetItems()->GetCount()) &&
-           (Index < TopIndex + QueueListBox->Height))
+           (Index < TopIndex + QueueListBox->GetHeight()))
     {
       QueueItem = reinterpret_cast<TQueueItemProxy*>(
         QueueListBox->GetItems()->GetObject(Index));
@@ -7965,14 +7965,14 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
   int PathMaxLen = 49;
 
   if ((Index > 2) ||
-      ((Index == 2) && (QueueItem->Status == TQueueItem::qsPending)))
+      ((Index == 2) && (QueueItem->GetStatus() == TQueueItem::qsPending)))
   {
     return false;
   }
 
   std::wstring ProgressStr;
 
-  switch (QueueItem->Status)
+  switch (QueueItem->GetStatus())
   {
     case TQueueItem::qsPending:
       ProgressStr = GetMsg(QUEUE_PENDING);
@@ -8084,8 +8084,8 @@ bool TQueueDialog::QueueItemNeedsFrequentRefresh(
   TQueueItemProxy * QueueItem)
 {
   return
-    (TQueueItem::IsUserActionStatus(QueueItem->Status) ||
-     (QueueItem->Status == TQueueItem::qsPaused));
+    (TQueueItem::IsUserActionStatus(QueueItem->GetStatus()) ||
+     (QueueItem->GetStatus() == TQueueItem::qsPaused));
 }
 //---------------------------------------------------------------------------
 bool TQueueDialog::Execute(TTerminalQueueStatus * Status)
