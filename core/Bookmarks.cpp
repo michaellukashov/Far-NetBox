@@ -86,7 +86,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring Ke
     Storage->GetValueNames(Names);
     std::wstring Name;
     std::wstring Directory;
-    TShortCut ShortCut;
+    TShortCut ShortCut(0);
     for (int i = 0; i < Names->GetCount(); i++)
     {
       Name = Names->GetString(i);

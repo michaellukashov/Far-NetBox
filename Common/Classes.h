@@ -545,8 +545,11 @@ struct TTimeStamp
 class TShortCut
 {
 public:
+    explicit TShortCut()
+    {}
     explicit TShortCut(int value)
     {}
+    operator int() const { return 0; }
     inline bool operator < (const TShortCut &rhs) const
     {
         return false;
