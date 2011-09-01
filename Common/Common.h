@@ -261,3 +261,26 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count);
 unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count);
 
+//---------------------------------------------------------------------------
+
+enum FileAttributesEnum
+{
+    faReadOnly,
+    faHidden,
+    faDirectory,
+    faSysFile,
+    faArchive,
+};
+
+bool FileExists(const std::wstring &filename);
+bool RenameFile(const std::wstring &from, const std::wstring &to);
+bool DirectoryExists(const std::wstring &dir);
+std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList);
+
+int FileGetAttr(const std::wstring &filename);
+int FileSetAttr(const std::wstring &filename, int attrs);
+
+bool ForceDirectories(const std::wstring Dir);
+bool DeleteFile(const std::wstring File);
+bool RemoveDir(const std::wstring Dir);
+

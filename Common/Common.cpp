@@ -1918,3 +1918,62 @@ unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
 {
     return 0;
 }
+
+//---------------------------------------------------------------------------
+
+bool FileExists(const std::wstring &filename)
+{
+    // FIXME
+    return false;
+}
+
+bool RenameFile(const std::wstring &from, const std::wstring &to)
+{
+    // FIXME 
+    return false;
+}
+
+bool DirectoryExists(const std::wstring &filename)
+{
+    // FIXME
+    return false;
+}
+
+std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList)
+{
+    // FIXME
+    return std::wstring(L"");
+}
+
+
+int FileGetAttr(const std::wstring &filename)
+{
+    // FIXME
+    return 0;
+}
+
+int FileSetAttr(const std::wstring &filename, int attrs)
+{
+    // FIXME
+    return 0;
+}
+
+bool ForceDirectories(const std::wstring Dir)
+{
+    // FIXME
+    return true;
+}
+
+bool DeleteFile(const std::wstring File)
+{
+    // FIXME
+    return true;
+}
+
+bool RemoveDir(const std::wstring Dir)
+{
+    // FIXME
+    return true;
+}
+
+//---------------------------------------------------------------------------

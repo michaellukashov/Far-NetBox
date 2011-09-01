@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #define NO_WIN32_LEAN_AND_MEAN
 
 #include <shlobj.h>
@@ -15,14 +16,14 @@ bool FindFile(std::wstring & Path)
   bool Result = FileExists(Path);
   if (!Result)
   {
-    int Len = GetEnvironmentVariable("PATH", NULL, 0);
+    int Len = GetEnvironmentVariable(L"PATH", NULL, 0);
     if (Len > 0)
     {
       std::wstring Paths;
       Paths.resize(Len - 1);
-      GetEnvironmentVariable("PATH", Paths.c_str(), Len);
+      GetEnvironmentVariable(L"PATH", Paths.c_str(), Len);
 
-      std::wstring NewPath = FileSearch(ExtractFileName(Path), Paths);
+      std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
       Result = !NewPath.empty();
       if (Result)
       {
@@ -52,10 +53,10 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     TRegistryStorage * SourceStorage = NULL;
     try
     {
-      Storage = new TRegistryStorage(Configuration->PuttySessionsKey);
-      Storage->AccessMode = smReadWrite;
+      Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
+      Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
-      Storage->MungeStringValues = false;
+      Storage->SetMungeStringValues(false);
       if (Storage->OpenRootKey(true))
       {
         if (Storage->KeyExists(GetSessionData()->StorageKey))
