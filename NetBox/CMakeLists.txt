@@ -304,6 +304,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/core/Option.cpp
     ${PROJECT_ROOT}/core/FileInfo.cpp
     ${PROJECT_ROOT}/core/FileSystems.cpp
+    ${PROJECT_ROOT}/core/Bookmarks.cpp
     ${PROJECT_ROOT}/Common/Classes.cpp
     ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
