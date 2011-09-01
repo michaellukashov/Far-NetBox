@@ -221,6 +221,9 @@ public:
     void AddObject(std::wstring str, TObject *obj)
     {
     }
+    void InsertObject(int Index, std::wstring Key, TObject *obj)
+    {
+    }
 
     TNotifyEvent GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
