@@ -22,7 +22,7 @@ public:
 
   // __property TBookmarkList * Bookmarks[std::wstring Index] = { read = GetBookmarks, write = SetBookmarks };
   TBookmarkList * GetBookmark(std::wstring Index);
-  void SetBookmarks(std::wstring Index, TBookmarkList * value);
+  void SetBookmark(std::wstring Index, TBookmarkList * value);
   // __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * value);

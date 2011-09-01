@@ -4204,9 +4204,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
   }
   return Result;
 }
-  // bool PropertiesDialog(TStrings * FileList,
-    // const wstring Directory, const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
-    // TRemoteProperties * Properties, int AllowedChanges);
+
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
   const std::wstring Directory, TStrings * GroupList, TStrings * UserList,
