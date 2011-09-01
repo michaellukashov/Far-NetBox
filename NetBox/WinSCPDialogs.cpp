@@ -5374,32 +5374,32 @@ std::wstring TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::Feed(TFeedFileSystemData AddItem)
 {
-  AddItem(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
-  AddItem(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
-  AddItem(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
+  // FIXME AddItem(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
+  // FIXME AddItem(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
+  // FIXME AddItem(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
 
   std::wstring Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
     Str += FORMAT(L"/%s", (FSessionInfo.SCCipher));
   }
-  AddItem(ServerLabels, SERVER_CIPHER, Str);
+  // AddItem(ServerLabels, SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
     Str += FORMAT(L"/%s", (DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR))));
   }
-  AddItem(ServerLabels, SERVER_COMPRESSION, Str);
+  // FIXME AddItem(ServerLabels, SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
   {
-    AddItem(ServerLabels, SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
+    // FIXME AddItem(ServerLabels, SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
-  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
+  // FIXME AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
 
-  AddItem(ProtocolLabels, PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
-  AddItem(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
   std::wstring AnyCommand;
   if (!FFileSystemInfo.IsCapable[fcShellAnyCommand] &&
       FFileSystemInfo.IsCapable[fcAnyCommand])
@@ -5410,21 +5410,21 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemData AddItem)
   {
     AnyCommand = CapabilityStr(fcAnyCommand);
   }
-  AddItem(ProtocolLabels, PROTOCOL_ANY_COMMAND, AnyCommand);
-  AddItem(ProtocolLabels, PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
-  AddItem(ProtocolLabels, PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
-  AddItem(ProtocolLabels, PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
-  AddItem(ProtocolLabels, PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
-  AddItem(ProtocolLabels, PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
-  AddItem(ProtocolLabels, PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_ANY_COMMAND, AnyCommand);
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
+  // FIXME AddItem(ProtocolLabels, PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
 
-  AddItem(InfoLister, 0, FFileSystemInfo.AdditionalInfo);
+  // FIXME AddItem(InfoLister, 0, FFileSystemInfo.AdditionalInfo);
 
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
-  AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
+  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
+  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
+  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
+  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
+  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
@@ -5483,7 +5483,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
     std::wstring S = GetMsg(Label);
     if (List->MaxLen < S.size())
     {
-      List->SetMaxLen(S.size());
+      List->MaxLen = S.size();
     }
   }
 }
@@ -5503,7 +5503,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     {
       if (FLastFeededControl != NULL)
       {
-        FClipboard += std::wstring::StringOfChar('-', 60) + "\r\n";
+        FClipboard += StringOfChar('-', 60) + L"\r\n";
       }
       FLastFeededControl = AControl;
     }
@@ -5517,7 +5517,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       }
       else if (Control == InfoLister)
       {
-        LabelStr = GetMsg(PROTOCOL_INFO_GROUP).Trim();
+        LabelStr = Trim(GetMsg(PROTOCOL_INFO_GROUP));
       }
       else
       {
@@ -5529,7 +5529,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         LabelStr.resize(LabelStr.size() - 1);
       }
 
-      if ((Value.size() >= 2) && (Value.substr(Value.size() - 1, 2) == "\r\n"))
+      if ((Value.size() >= 2) && (Value.substr(Value.size() - 1, 2) == L"\r\n"))
       {
         Value.resize(Value.size() - 2);
       }
@@ -5552,8 +5552,8 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 void TFileSystemInfoDialog::FeedControls()
 {
   FLastFeededControl = NULL;
-  Feed(ControlsAddItem);
-  InfoLister->SetRight(BorderBox->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
+  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::ControlsAddItem);
+  InfoLister->SetRight(GetBorderBox()->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 //---------------------------------------------------------------------------
 void TFileSystemInfoDialog::SelectTab(int Tab)
