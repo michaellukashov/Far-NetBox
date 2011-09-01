@@ -1896,6 +1896,13 @@ double StrToFloat(std::wstring Value)
 }
 
 //---------------------------------------------------------------------------
+TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
+{
+    TTimeStamp result;
+    return result;
+}
+
+//---------------------------------------------------------------------------
 
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
 {

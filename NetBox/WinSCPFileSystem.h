@@ -142,12 +142,17 @@ protected:
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing();
   bool PropertiesDialog(TStrings * FileList,
-    const wstring Directory, const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
+    const wstring Directory, 
+    // const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
+    TStrings * GroupList, TStrings * UserList,
     TRemoteProperties * Properties, int AllowedChanges);
   bool ExecuteCommand(const wstring Command);
   void TerminalCaptureLog(const wstring & AddedLine, bool StdError);
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
-    wstring & TargetDirectory, TCopyParamType * Params, int Options,
+    wstring & TargetDirectory, 
+    // TGUICopyParamType * Params,
+    TCopyParamType * Params,
+    int Options,
     int CopyParamAttrs);
   bool LinkDialog(wstring & FileName, wstring & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);

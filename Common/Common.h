@@ -254,6 +254,8 @@ __int64 TryStrToInt(const std::wstring value, __int64 defval);
 //---------------------------------------------------------------------------
 double StrToFloat(std::wstring Value);
 //---------------------------------------------------------------------------
+TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
+//---------------------------------------------------------------------------
 
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count);
 unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count);

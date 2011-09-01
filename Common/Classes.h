@@ -177,7 +177,8 @@ public:
 enum TDuplicatesEnum
 {
     dupAccept,
-    dupError
+    dupError,
+    dupIgnore
 };
 
 class TStream;
@@ -533,6 +534,11 @@ public:
 };
 
 //---------------------------------------------------------------------------
+struct TTimeStamp
+{
+    int Time;
+    int Date;
+};
 
 //---------------------------------------------------------------------------
 // FIXME
