@@ -45,7 +45,7 @@ typedef unsigned __int64 BignumDblInt;
 /* Note: MASM interprets array subscripts in the macro arguments as
  * assembler syntax, which gives the wrong answer. Don't supply them.
  * <http://msdn2.microsoft.com/en-us/library/bf1dw62z.aspx> */
-#ifdef MPEXT
+#if defined MPEXT && defined BORLAND
 // BCC requires semicolons
 #define DIVMOD_WORD(q, r, hi, lo, w) do { \
     __asm mov edx, hi; \

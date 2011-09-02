@@ -12,7 +12,7 @@ void DontSaveRandomSeed();
 //---------------------------------------------------------------------------
 #include "PuttyTools.h"
 //---------------------------------------------------------------------------
-#define MPEXT
+// #define MPEXT
 extern "C"
 {
 #include <putty.h>

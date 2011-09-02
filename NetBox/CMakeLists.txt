@@ -21,7 +21,7 @@ endmacro( use_precompiled_header )
 #-------------------------------------------------------------------------------
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS;NO_FILEZILLA /EHsc /MP2" )
+    "-DWIN32;_WINDOWS /EHsc /MP2" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
@@ -31,8 +31,8 @@ set ( CMAKE_EXE_LINK_FLAGS
 )
 
 # definitions
-add_definitions ( "-DNETBOX_DEBUG;USE_FASTFLOW;CURL_STATICLIB;_USRDLL;NETBOX_EXPORTS" )
-add_definitions ( "-D_FF_WIN_XP" )
+add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL" )
+add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT" )
 
 #include (${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 #message (" system: ${CMAKE_SYSTEM_NAME}")
