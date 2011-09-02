@@ -106,23 +106,6 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
-    ${PROJECT_ROOT}/NetBox/Panel.cpp
-    ${PROJECT_ROOT}/NetBox/FTP.cpp
-    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
-    ${PROJECT_ROOT}/NetBox/stdafx.cpp
-    ${PROJECT_ROOT}/NetBox/WebDAV.cpp
-    ${PROJECT_ROOT}/NetBox/Settings.cpp
-    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
-    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
-    ${PROJECT_ROOT}/NetBox/NetBox.cpp
-    ${PROJECT_ROOT}/NetBox/Session.cpp
-    ${PROJECT_ROOT}/NetBox/SFTP.cpp
-    ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
-    ${PROJECT_ROOT}/NetBox/Logging.cpp
-    ${PROJECT_ROOT}/NetBox/FTPS.cpp
-    ${PROJECT_ROOT}/NetBox/SCP.cpp
-    ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
-    ${PROJECT_ROOT}/WinSCP/WinSCPFileSystem.cpp
     ${PROJECT_ROOT}/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/core/Terminal.cpp
     ${PROJECT_ROOT}/core/Exceptions.cpp
@@ -145,8 +128,36 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/core/Option.cpp
     ${PROJECT_ROOT}/core/FileInfo.cpp
     ${PROJECT_ROOT}/core/FileSystems.cpp
-    ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/core/Bookmarks.cpp
+    ${PROJECT_ROOT}/core/SynchronizeController.cpp
+    ${PROJECT_ROOT}/Common/Classes.cpp
+    ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
+    ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/Common/FarDialog.cpp
+    ${PROJECT_ROOT}/windows/GUIConfiguration.cpp
+    ${PROJECT_ROOT}/windows/GUITools.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPDialogs.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPFileSystem.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/WinSCP/FarInterface.cpp
+    ${PROJECT_ROOT}/WinSCP/FarConfiguration.cpp
+    ${PROJECT_ROOT}/NetBox/stdafx.cpp
+    ${PROJECT_ROOT}/NetBox/Logging.cpp
+    ${PROJECT_ROOT}/NetBox/Settings.cpp
+    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
+    ${PROJECT_ROOT}/NetBox/Session.cpp
+    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
+    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
+    ${PROJECT_ROOT}/NetBox/FTP.cpp
+    ${PROJECT_ROOT}/NetBox/SFTP.cpp
+    ${PROJECT_ROOT}/NetBox/FTPS.cpp
+    ${PROJECT_ROOT}/NetBox/SCP.cpp
+    ${PROJECT_ROOT}/NetBox/Panel.cpp
+    ${PROJECT_ROOT}/NetBox/WebDAV.cpp
+    ${PROJECT_ROOT}/NetBox/Session.cpp
+    ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
+    ${PROJECT_ROOT}/NetBox/NetBox.cpp
     ${PROJECT_ROOT}/NetBox/NetBox.def
 )
 
@@ -231,6 +242,7 @@ set ( NETBOX_LIBRARIES
     # uuid.lib
     # odbc32.lib
     # odbccp32.lib
+    libputty
     libcurl
     libeay32
     ssleay32
@@ -323,7 +335,6 @@ set ( TESTNETBOX_01_SOURCES
 
 set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
-    libputty
     ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
 )
 
