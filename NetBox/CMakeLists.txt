@@ -162,7 +162,7 @@ set_property (TARGET ssleay32
 
 #-------------------------------------------------------------------------------
 
-add_library (libputty STATIC
+add_library (libputty.lib STATIC
     ${PROJECT_ROOT}/Putty/CPROXY.C
     ${PROJECT_ROOT}/Putty/INT64.C
     ${PROJECT_ROOT}/Putty/LOGGING.C
@@ -171,6 +171,7 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/Putty/PORTFWD_.C
     ${PROJECT_ROOT}/Putty/PROXY.C
     ${PROJECT_ROOT}/Putty/SSH_.C
+    ${PROJECT_ROOT}/Putty/SSH.C
     ${PROJECT_ROOT}/Putty/SSHAES_.C
     ${PROJECT_ROOT}/Putty/SSHARCF.C
     ${PROJECT_ROOT}/Putty/SSHBLOWF.C
@@ -205,7 +206,7 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/Putty/X11FWD.C
 )
 
-set_target_properties( libputty
+set_target_properties( libputty.lib
     PROPERTIES
     COMPILE_FLAGS "/TC -DLibrary;_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;MPEXT;_WINDOWS"
 )
@@ -322,9 +323,8 @@ set ( TESTNETBOX_01_SOURCES
 
 set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
-    libputty
+    libputty.lib
     ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
-    Version.lib
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
