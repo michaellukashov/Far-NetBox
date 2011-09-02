@@ -21,7 +21,7 @@ endmacro( use_precompiled_header )
 #-------------------------------------------------------------------------------
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS;NO_FILEZILLA /EHsc /MP2" )
+    "-DWIN32;_WINDOWS /EHsc /MP2" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
@@ -31,8 +31,8 @@ set ( CMAKE_EXE_LINK_FLAGS
 )
 
 # definitions
-add_definitions ( "-DNETBOX_DEBUG;USE_FASTFLOW;CURL_STATICLIB;_USRDLL;NETBOX_EXPORTS" )
-add_definitions ( "-D_FF_WIN_XP" )
+add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL" )
+add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT" )
 
 #include (${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 #message (" system: ${CMAKE_SYSTEM_NAME}")
@@ -106,23 +106,6 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
-    ${PROJECT_ROOT}/NetBox/Panel.cpp
-    ${PROJECT_ROOT}/NetBox/FTP.cpp
-    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
-    ${PROJECT_ROOT}/NetBox/stdafx.cpp
-    ${PROJECT_ROOT}/NetBox/WebDAV.cpp
-    ${PROJECT_ROOT}/NetBox/Settings.cpp
-    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
-    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
-    ${PROJECT_ROOT}/NetBox/NetBox.cpp
-    ${PROJECT_ROOT}/NetBox/Session.cpp
-    ${PROJECT_ROOT}/NetBox/SFTP.cpp
-    ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
-    ${PROJECT_ROOT}/NetBox/Logging.cpp
-    ${PROJECT_ROOT}/NetBox/FTPS.cpp
-    ${PROJECT_ROOT}/NetBox/SCP.cpp
-    ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
-    ${PROJECT_ROOT}/WinSCP/WinSCPFileSystem.cpp
     ${PROJECT_ROOT}/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/core/Terminal.cpp
     ${PROJECT_ROOT}/core/Exceptions.cpp
@@ -145,8 +128,36 @@ set ( NETBOX_SOURCES
     ${PROJECT_ROOT}/core/Option.cpp
     ${PROJECT_ROOT}/core/FileInfo.cpp
     ${PROJECT_ROOT}/core/FileSystems.cpp
-    ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/core/Bookmarks.cpp
+    ${PROJECT_ROOT}/core/SynchronizeController.cpp
+    ${PROJECT_ROOT}/Common/Classes.cpp
+    ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/Common/FarUtil.cpp
+    ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/Common/FarDialog.cpp
+    ${PROJECT_ROOT}/windows/GUIConfiguration.cpp
+    ${PROJECT_ROOT}/windows/GUITools.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPDialogs.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPFileSystem.cpp
+    ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/WinSCP/FarInterface.cpp
+    ${PROJECT_ROOT}/WinSCP/FarConfiguration.cpp
+    ${PROJECT_ROOT}/NetBox/stdafx.cpp
+    ${PROJECT_ROOT}/NetBox/Logging.cpp
+    ${PROJECT_ROOT}/NetBox/Settings.cpp
+    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
+    ${PROJECT_ROOT}/NetBox/Session.cpp
+    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
+    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
+    ${PROJECT_ROOT}/NetBox/FTP.cpp
+    ${PROJECT_ROOT}/NetBox/SFTP.cpp
+    ${PROJECT_ROOT}/NetBox/FTPS.cpp
+    ${PROJECT_ROOT}/NetBox/SCP.cpp
+    ${PROJECT_ROOT}/NetBox/Panel.cpp
+    ${PROJECT_ROOT}/NetBox/WebDAV.cpp
+    ${PROJECT_ROOT}/NetBox/Session.cpp
+    ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
+    ${PROJECT_ROOT}/NetBox/NetBox.cpp
     ${PROJECT_ROOT}/NetBox/NetBox.def
 )
 
@@ -171,10 +182,11 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/Putty/PORTFWD_.C
     ${PROJECT_ROOT}/Putty/PROXY.C
     ${PROJECT_ROOT}/Putty/SSH_.C
+    # ${PROJECT_ROOT}/Putty/SSH.C
     ${PROJECT_ROOT}/Putty/SSHAES_.C
     ${PROJECT_ROOT}/Putty/SSHARCF.C
     ${PROJECT_ROOT}/Putty/SSHBLOWF.C
-    # ${PROJECT_ROOT}/Putty/SSHBN.C
+    ${PROJECT_ROOT}/Putty/SSHBN.C
     ${PROJECT_ROOT}/Putty/SSHCRC.C
     ${PROJECT_ROOT}/Putty/SSHCRCDA.C
     ${PROJECT_ROOT}/Putty/SSHDES.C
@@ -207,7 +219,7 @@ add_library (libputty STATIC
 
 set_target_properties( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -DLibrary;_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;MPEXT;_WINDOWS"
+    COMPILE_FLAGS "/TC -DLibrary;_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;_WINDOWS"
 )
 
 #-------------------------------------------------------------------------------
@@ -230,6 +242,7 @@ set ( NETBOX_LIBRARIES
     # uuid.lib
     # odbc32.lib
     # odbccp32.lib
+    libputty
     libcurl
     libeay32
     ssleay32
@@ -267,21 +280,10 @@ set ( TESTNETBOX_01_HEADERS
 )
 
 set ( TESTNETBOX_01_SOURCES
-    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
-    ${PROJECT_ROOT}/NetBox/stdafx.cpp
-    ${PROJECT_ROOT}/NetBox/Logging.cpp
-    ${PROJECT_ROOT}/NetBox/Settings.cpp
-    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
-    ${PROJECT_ROOT}/NetBox/Session.cpp
-    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
-    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
-    ${PROJECT_ROOT}/NetBox/SFTP.cpp
-    ${PROJECT_ROOT}/NetBox/FTP.cpp
-    ${PROJECT_ROOT}/NetBox/SCP.cpp
     ${PROJECT_ROOT}/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/core/Terminal.cpp
     ${PROJECT_ROOT}/core/Exceptions.cpp
@@ -318,13 +320,22 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/WinSCP/FarInterface.cpp
     ${PROJECT_ROOT}/WinSCP/FarConfiguration.cpp
+    ${PROJECT_ROOT}/NetBox/stdafx.cpp
+    ${PROJECT_ROOT}/NetBox/Logging.cpp
+    ${PROJECT_ROOT}/NetBox/Settings.cpp
+    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
+    ${PROJECT_ROOT}/NetBox/Session.cpp
+    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
+    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
+    ${PROJECT_ROOT}/NetBox/SFTP.cpp
+    ${PROJECT_ROOT}/NetBox/FTP.cpp
+    ${PROJECT_ROOT}/NetBox/SCP.cpp
+    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
 )
 
 set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
-    libputty
     ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
-    Version.lib
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )

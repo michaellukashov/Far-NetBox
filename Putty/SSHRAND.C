@@ -34,7 +34,7 @@ void noise_get_light(void (*func) (void *, int));
 #define POOLSIZE 1200		       /* size of random pool */
 
 #ifdef MPEXT
-extern CRITICAL_SECTION noise_section;
+CRITICAL_SECTION noise_section;
 #endif MPEXT
 
 struct RandPool {
