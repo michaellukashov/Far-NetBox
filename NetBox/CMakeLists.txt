@@ -175,7 +175,7 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/Putty/SSHAES_.C
     ${PROJECT_ROOT}/Putty/SSHARCF.C
     ${PROJECT_ROOT}/Putty/SSHBLOWF.C
-    # ${PROJECT_ROOT}/Putty/SSHBN.C
+    ${PROJECT_ROOT}/Putty/SSHBN.C
     ${PROJECT_ROOT}/Putty/SSHCRC.C
     ${PROJECT_ROOT}/Putty/SSHCRCDA.C
     ${PROJECT_ROOT}/Putty/SSHDES.C
@@ -208,7 +208,7 @@ add_library (libputty STATIC
 
 set_target_properties( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -DLibrary;_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;MPEXT;_WINDOWS"
+    COMPILE_FLAGS "/TC -DLibrary;_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;_WINDOWS"
 )
 
 #-------------------------------------------------------------------------------
