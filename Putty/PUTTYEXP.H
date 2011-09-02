@@ -1,6 +1,10 @@
 #ifndef PUTTY_PUTTYEXP_H
 #define PUTTY_PUTTYEXP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* C++ */
+
 // from ssh.c
 
 void ssh_close(void * handle);
@@ -81,5 +85,9 @@ void call_aes_decrypt(void * ctx, unsigned int * block);
 // from sshsha.c
 
 void call_sha1_key_internal(void * handle, unsigned char * key, int len);
+
+#ifdef __cplusplus
+}
+#endif /* C++ */
 
 #endif
