@@ -268,21 +268,10 @@ set ( TESTNETBOX_01_HEADERS
 )
 
 set ( TESTNETBOX_01_SOURCES
-    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
-    ${PROJECT_ROOT}/NetBox/stdafx.cpp
-    ${PROJECT_ROOT}/NetBox/Logging.cpp
-    ${PROJECT_ROOT}/NetBox/Settings.cpp
-    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
-    ${PROJECT_ROOT}/NetBox/Session.cpp
-    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
-    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
-    ${PROJECT_ROOT}/NetBox/SFTP.cpp
-    ${PROJECT_ROOT}/NetBox/FTP.cpp
-    ${PROJECT_ROOT}/NetBox/SCP.cpp
     ${PROJECT_ROOT}/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/core/Terminal.cpp
     ${PROJECT_ROOT}/core/Exceptions.cpp
@@ -319,6 +308,17 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
     ${PROJECT_ROOT}/WinSCP/FarInterface.cpp
     ${PROJECT_ROOT}/WinSCP/FarConfiguration.cpp
+    ${PROJECT_ROOT}/NetBox/stdafx.cpp
+    ${PROJECT_ROOT}/NetBox/Logging.cpp
+    ${PROJECT_ROOT}/NetBox/Settings.cpp
+    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
+    ${PROJECT_ROOT}/NetBox/Session.cpp
+    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
+    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
+    ${PROJECT_ROOT}/NetBox/SFTP.cpp
+    ${PROJECT_ROOT}/NetBox/FTP.cpp
+    ${PROJECT_ROOT}/NetBox/SCP.cpp
+    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
 )
 
 set ( TESTNETBOX_01_LIBRARIES
