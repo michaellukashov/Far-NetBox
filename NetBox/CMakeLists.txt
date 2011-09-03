@@ -343,7 +343,6 @@ set ( TESTNETBOX_01_SOURCES
 
 set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
-    # ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
@@ -353,7 +352,6 @@ set_target_properties( testnetbox_01
     LINK_FLAGS "${CMAKE_EXE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
     #/NODEFAULTLIB:LIBCPMTD.LIB"
     # /NODEFAULTLIB:MSVCPRTD.LIB"
-    #/NODEFAULTLIB:LIBCMTD.LIB 
 )
 add_dependencies ( testnetbox_01 
     libputty
