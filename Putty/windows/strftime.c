@@ -9,18 +9,14 @@
 *******************************************************************************/
 
 #include <windows.h>
-// #include <string.h>
 
 #include <io.h>
-// #include <printf.h>
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>
 
-// size_t _RTLENTRY _EXPFUNC
-// extern "C" size_t __cdecl
 size_t
 strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
 {
@@ -262,7 +258,7 @@ the_switch:
                 goto the_switch;
 
 
-           /* time zone */
+            /* time zone */
             case 'z':
             case 'Z':
                p = _tzname[ t->tm_isdst ];
