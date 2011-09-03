@@ -276,7 +276,8 @@ add_dependencies ( NetBox
     libputty
     #zlib libssh2 libcurl
 )
-# add_dependencies ( NetBox zlib libssh2 libcurl )
+
+# use_precompiled_header ( NETBOX_SOURCES stdafx.h stdafx.cpp netbox )
 
 #-------------------------------------------------------
 # target testnetbox_01
@@ -342,16 +343,23 @@ set ( TESTNETBOX_01_SOURCES
 
 set ( TESTNETBOX_01_LIBRARIES
     ${NETBOX_LIBRARIES}
-    ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
+    # ${PROJECT_ROOT}/libs/boost/stage/libboost_exception-vc100-mt-gd-1_48.lib
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
 set_target_properties( testnetbox_01
     PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MDd"
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    LINK_FLAGS "${CMAKE_EXE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+    #/NODEFAULTLIB:LIBCPMTD.LIB"
+    # /NODEFAULTLIB:MSVCPRTD.LIB"
+    #/NODEFAULTLIB:LIBCMTD.LIB 
 )
-# add_dependencies ( testnetbox_01 zlib libssh2 libcurl )
-use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
+add_dependencies ( testnetbox_01 
+    libputty
+    # zlib libssh2 libcurl
+)
+# use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
 
 target_link_libraries ( testnetbox_01 ${TESTNETBOX_01_LIBRARIES} )
 
