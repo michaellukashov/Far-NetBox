@@ -50,31 +50,31 @@ the_switch:
             {
 
             /* abbreviated day */
-            case 'a':
-                if (t->tm_wday == 0)
-                    p = (char *) _getLocaleTimeInfo(LOCALE_SABBREVDAYNAME7);
-                else
-                    p = (char *) _getLocaleTimeInfo(LOCALE_SABBREVDAYNAME1 + t->tm_wday - 1);
-                break;
+            // case 'a':
+                // if (t->tm_wday == 0)
+                    // p = (char *) _getLocaleTimeInfo(LOCALE_SABBREVDAYNAME7);
+                // else
+                    // p = (char *) _getLocaleTimeInfo(LOCALE_SABBREVDAYNAME1 + t->tm_wday - 1);
+                // break;
 
             /* full day */
-            case 'A':
-                if (t->tm_wday == 0)
-                    p = (char *) _getLocaleTimeInfo(LOCALE_SDAYNAME7);
-                else
-                    p = (char *) _getLocaleTimeInfo(LOCALE_SDAYNAME1 + t->tm_wday - 1);
-                break;
+            // case 'A':
+                // if (t->tm_wday == 0)
+                    // p = (char *) _getLocaleTimeInfo(LOCALE_SDAYNAME7);
+                // else
+                    // p = (char *) _getLocaleTimeInfo(LOCALE_SDAYNAME1 + t->tm_wday - 1);
+                // break;
 
             /* abbreviated month */
-            case 'b':
-            case 'h':   /* POSIX  */
-                p = (char *) _getLocaleTimeInfo(LOCALE_SABBREVMONTHNAME1 + t->tm_mon);
-                break;
+            // case 'b':
+            // case 'h':   /* POSIX  */
+                // p = (char *) _getLocaleTimeInfo(LOCALE_SABBREVMONTHNAME1 + t->tm_mon);
+                // break;
 
-            /* full month */
-            case 'B':
-                p = (char *) _getLocaleTimeInfo(LOCALE_SMONTHNAME1 + t->tm_mon);
-                break;
+            // /* full month */
+            // case 'B':
+                // p = (char *) _getLocaleTimeInfo(LOCALE_SMONTHNAME1 + t->tm_mon);
+                // break;
 
             /* date and time */
             case 'c':
@@ -82,7 +82,7 @@ the_switch:
                 p = s;
 
                 /* recurse */
-                strftime( p, maxsize, "%x %X", t );
+                strftime2( p, maxsize, "%x %X", t );
                 break;
 
             /* month date */
@@ -90,14 +90,17 @@ the_switch:
                 __utoa( t->tm_mday, buf + (t->tm_mday < 10));
                 break;
 
+            /*
             case 'g':
                 strcpy(p, "");
                 _getLocaleEra(buf, sizeof(buf), t);
                 break;
+            */
 
             /* hour (24) */
             case 'H':
-                __utoa( t->tm_hour, buf + (t->tm_hour < 10));
+                // __utoa( t->tm_hour, buf + (t->tm_hour < 10));
+                itoa( t->tm_hour, buf + (t->tm_hour < 10), 10);
                 break;
 
             /* hour (12) */
@@ -130,6 +133,7 @@ the_switch:
                 break;
 
             /* am/pm */
+            /*
             case 'p':
                 if (t->tm_hour / 12 > 0)
                     p = (char *) _getLocaleTimeInfo(LOCALE_S2359);
@@ -137,7 +141,7 @@ the_switch:
                     p = (char *) _getLocaleTimeInfo(LOCALE_S1159);
 
                 break;
-
+            */
             /* seconds */
             case 'S':
                 __utoa( t->tm_sec, buf + (t->tm_sec < 10) );
@@ -174,23 +178,22 @@ the_switch:
                 break;
 
             /* date */
-            case 'x':
-            case 'D':       /* POSIX */
-                /* set p to current s position */
-                p = s;
+            // case 'x':
+            // case 'D':       /* POSIX */
+                // /* set p to current s position */
+                // p = s;
 
-                /* recurse */
-                strftime( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_SSHORTDATE), t );
+                // /* recurse */
+                // strftime2( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_SSHORTDATE), t );
 
-                break;
-
+                // break;
             /* time */
 	    case 'r':
 	        /* set p to current s position */
 	        p = s;
 
 		/* recurse */
-	        strftime( p, maxsize, "%I:%M:%S %p", t);
+	        strftime2( p, maxsize, "%I:%M:%S %p", t);
 
 	        break;
 	      
@@ -199,7 +202,7 @@ the_switch:
 	        p = s;
 	      
 	        /* recurse */
-	        strftime(p, maxsize, "%H:%M", t);
+	        strftime2(p, maxsize, "%H:%M", t);
 
 	        break;
 	    
@@ -210,18 +213,18 @@ the_switch:
 	        p = s;
 
 	        /* recurse */
-	        strftime(p, maxsize, "%H:%M:%S", t);
+	        strftime2(p, maxsize, "%H:%M:%S", t);
 
 	        break;
 
-            case 'X':
-                /* set p to current s position */
-                p = s;
+            // case 'X':
+                // /* set p to current s position */
+                // p = s;
 
-                /* recurse */
-                strftime( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_STIMEFORMAT), t );
+                // /* recurse */
+                // strftime2( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_STIMEFORMAT), t );
 
-                break;
+                // break;
 
             /* year (no century) */
             case 'y':
@@ -262,15 +265,15 @@ the_switch:
             	switch( *++fmt )
                 {
 
-                case  'c' :
-                    strcpy(FormatBuff, (char *) _getLocaleTimeInfo(LOCALE_SLONGDATE));
-                    strcat ( FormatBuff, " %X");
-                	strftime( p, maxsize, FormatBuff, t );
-                    break;
+                // case  'c' :
+                    // strcpy(FormatBuff, (char *) _getLocaleTimeInfo(LOCALE_SLONGDATE));
+                    // strcat ( FormatBuff, " %X");
+                	// strftime2( p, maxsize, FormatBuff, t );
+                    // break;
 
-                case 'x' :
-                	strftime( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_SLONGDATE), t );
-                    break;
+                // case 'x' :
+                	// strftime2( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_SLONGDATE), t );
+                    // break;
 
                 default :
                 	break;
