@@ -276,7 +276,7 @@ add_custom_command ( TARGET NetBox
 target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
 
 add_dependencies ( NetBox 
-    libcurl
+    libputty
     #zlib libssh2 libcurl
 )
 # add_dependencies ( NetBox zlib libssh2 libcurl )
