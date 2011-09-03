@@ -87,7 +87,8 @@ the_switch:
 
             /* month date */
             case 'd':
-                __utoa( t->tm_mday, buf + (t->tm_mday < 10));
+                // __utoa( t->tm_mday, buf + (t->tm_mday < 10));
+                _itoa_s( t->tm_mday, buf + (t->tm_mday < 10), 0, 10);
                 break;
 
             /*
@@ -100,7 +101,7 @@ the_switch:
             /* hour (24) */
             case 'H':
                 // __utoa( t->tm_hour, buf + (t->tm_hour < 10));
-                itoa( t->tm_hour, buf + (t->tm_hour < 10), 10);
+                _itoa_s( t->tm_hour, buf + (t->tm_hour < 10), 0, 10);
                 break;
 
             /* hour (12) */
@@ -110,26 +111,30 @@ the_switch:
                 if (i == 0)
                     i = 12;
 
-                __utoa( i, buf + (i < 10) );
+                // __utoa( i, buf + (i < 10) );
+                _itoa_s( i, buf + (i < 10), 0, 10 );
                 break;
 
             /* year day */
             case 'j':
                 i = t->tm_yday + 1;
 
-                __utoa( i, buf + (i < 10) + (i < 100) );
+                // __utoa( i, buf + (i < 10) + (i < 100) );
+                _itoa_s( i, buf + (i < 10) + (i < 100), 0, 10 );
                 break;
 
             /* month */
             case 'm':
                 i = t->tm_mon + 1;
 
-                __utoa( i, buf + (i < 10) );
+                // __utoa( i, buf + (i < 10) );
+                _itoa_s( i, buf + (i < 10), 0, 10 );
                 break;
 
             /* minute */
             case 'M':
-                __utoa( t->tm_min, buf + (t->tm_min < 10) );
+                // __utoa( t->tm_min, buf + (t->tm_min < 10) );
+                _itoa_s( t->tm_min, buf + (t->tm_min < 10), 0, 10 );
                 break;
 
             /* am/pm */
@@ -144,7 +149,8 @@ the_switch:
             */
             /* seconds */
             case 'S':
-                __utoa( t->tm_sec, buf + (t->tm_sec < 10) );
+                // __utoa( t->tm_sec, buf + (t->tm_sec < 10) );
+                _itoa_s( t->tm_sec, buf + (t->tm_sec < 10), 0, 10 );
                 break;
 
             /* week of year (Sunday) */
@@ -156,12 +162,14 @@ the_switch:
                 // Adjust week to be positive (first week)
                 i = (t->tm_yday - i + 7) / 7;
 
-                __utoa( i, buf + (i < 10) );
+                // __utoa( i, buf + (i < 10) );
+                _itoa_s( i, buf + (i < 10), 0, 10 );
                 break;
 
             /* day of week */
             case 'w':
-                __utoa( t->tm_wday, buf );
+                // __utoa( t->tm_wday, buf );
+                _itoa_s( t->tm_wday, buf, 0, 10 );
 
                 break;
 
@@ -174,7 +182,8 @@ the_switch:
                 // Adjust week to be positive (first week)
                 i = (t->tm_yday - i + 7) / 7;
 
-                __utoa( i, buf + (i < 10) );
+                // __utoa( i, buf + (i < 10) );
+                _itoa_s( i, buf + (i < 10), 0, 10 );
                 break;
 
             /* date */
@@ -196,16 +205,16 @@ the_switch:
 	        strftime2( p, maxsize, "%I:%M:%S %p", t);
 
 	        break;
-	      
+
 	    case 'R':
 	        /*set p to current s position */
 	        p = s;
-	      
+
 	        /* recurse */
 	        strftime2(p, maxsize, "%H:%M", t);
 
 	        break;
-	    
+
 	    /* POSIX */
 	    case 'T':
 
@@ -230,18 +239,21 @@ the_switch:
             case 'y':
                 i = t->tm_year % 100;
 
-                __utoa( i, buf + (i < 10) );
+                // __utoa( i, buf + (i < 10) );
+                _itoa_s( i, buf + (i < 10), 0, 10 );
                 break;
 
             /* year (with century) */
             case 'Y':
-	        __utoa( 1900 + t->tm_year, buf );
+                // __utoa( 1900 + t->tm_year, buf );
+                _itoa_s( 1900 + t->tm_year, buf, 0, 10 );
                 break;
 
             /* century */
             case 'C':       /* POSIX */
-	        __utoa( t->tm_year/100 + 19, buf);
-		break;
+                // __utoa( t->tm_year/100 + 19, buf);
+                _itoa_s( t->tm_year/100 + 19, buf, 0, 10);
+                break;
 
             case '+' :
                 pad = *++fmt;
