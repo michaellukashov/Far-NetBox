@@ -64,6 +64,7 @@ include_directories (
     ${PROJECT_ROOT}/resource
     ${PROJECT_ROOT}/Putty
     ${PROJECT_ROOT}/Common
+    ${PROJECT_ROOT}/Putty
     ${PROJECT_ROOT}/Putty/windows
     ${PROJECT_ROOT}/Putty/charset
     ${PROJECT_ROOT}/libs
@@ -214,12 +215,17 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/Putty/WINDOWS/WINPROXY.C
     ${PROJECT_ROOT}/Putty/WINDOWS/WINSTORE_.C
     ${PROJECT_ROOT}/Putty/WINDOWS/WINTIME.C
+    ${PROJECT_ROOT}/Putty/WINDOWS/strftime.c
     ${PROJECT_ROOT}/Putty/X11FWD.C
 )
 
 set_target_properties( libputty
     PROPERTIES
-    COMPILE_FLAGS "/TC -DLibrary;_RTLDLL;NO_STRICT;SECURITY_WIN32;NET_SETUP_DIAGNOSTICS;_WINDOWS"
+    COMPILE_FLAGS "/TC -DLibrary;NET_SETUP_DIAGNOSTICS;_WINDOWS" # -ID:/VS2010/VC/crt/src"
+    #_CRTBLD;_INTERNAL_IFSTRIP_;_ASSERT_OK
+    # COMPILE_FLAGS "${COMPILE_FLAGS} -D_CRTBLD;_INTERNAL_IFSTRIP_;_ASSERT_OK -ID:/VS2010/VC/crt/src"
+    # INCLUDE_DIRECTORIES "D:/VS2010/VC/crt/src"
+    # LINKER_LANGUAGE "C"
 )
 
 #-------------------------------------------------------------------------------
@@ -269,6 +275,10 @@ add_custom_command ( TARGET NetBox
 
 target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
 
+add_dependencies ( NetBox 
+    libcurl
+    #zlib libssh2 libcurl
+)
 # add_dependencies ( NetBox zlib libssh2 libcurl )
 
 #-------------------------------------------------------
@@ -342,7 +352,6 @@ add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} 
 set_target_properties( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MDd"
-    LINK_FLAGS "${CMAKE_EXE_LINK_FLAGS} /NODEFAULTLIB:LIBCMTD.LIB"
 )
 # add_dependencies ( testnetbox_01 zlib libssh2 libcurl )
 use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
