@@ -197,34 +197,34 @@ the_switch:
 
                 // break;
             /* time */
-	    case 'r':
-	        /* set p to current s position */
-	        p = s;
+        case 'r':
+            /* set p to current s position */
+            p = s;
 
-		/* recurse */
-	        strftime2( p, maxsize, "%I:%M:%S %p", t);
+        /* recurse */
+            strftime2( p, maxsize, "%I:%M:%S %p", t);
 
-	        break;
+            break;
 
-	    case 'R':
-	        /*set p to current s position */
-	        p = s;
+        case 'R':
+            /*set p to current s position */
+            p = s;
 
-	        /* recurse */
-	        strftime2(p, maxsize, "%H:%M", t);
+            /* recurse */
+            strftime2(p, maxsize, "%H:%M", t);
 
-	        break;
+            break;
 
-	    /* POSIX */
-	    case 'T':
+        /* POSIX */
+        case 'T':
 
-	        /* set p to current s position */
-	        p = s;
+            /* set p to current s position */
+            p = s;
 
-	        /* recurse */
-	        strftime2(p, maxsize, "%H:%M:%S", t);
+            /* recurse */
+            strftime2(p, maxsize, "%H:%M:%S", t);
 
-	        break;
+            break;
 
             // case 'X':
                 // /* set p to current s position */
@@ -274,21 +274,21 @@ the_switch:
                 break;
 
             case '#' :
-            	switch( *++fmt )
+                switch( *++fmt )
                 {
 
                 // case  'c' :
                     // strcpy(FormatBuff, (char *) _getLocaleTimeInfo(LOCALE_SLONGDATE));
                     // strcat ( FormatBuff, " %X");
-                	// strftime2( p, maxsize, FormatBuff, t );
+                    // strftime2( p, maxsize, FormatBuff, t );
                     // break;
 
                 // case 'x' :
-                	// strftime2( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_SLONGDATE), t );
+                    // strftime2( p, maxsize, (char *) _getLocaleTimeInfo(LOCALE_SLONGDATE), t );
                     // break;
 
                 default :
-                	break;
+                    break;
 
                 }
                 break;
