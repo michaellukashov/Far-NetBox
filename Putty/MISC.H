@@ -129,4 +129,7 @@ void debug_memdump(void *buf, int len, int L);
   (cp)[0] = (unsigned char)((value) >> 8), \
   (cp)[1] = (unsigned char)(value) )
 
+size_t
+strftime( char *s, size_t maxsize, const char *fmt, const struct tm *t );
+
 #endif
