@@ -186,7 +186,6 @@ add_library (libputty STATIC
     ${PROJECT_ROOT}/Putty/PORTFWD_.C
     ${PROJECT_ROOT}/Putty/PROXY.C
     ${PROJECT_ROOT}/Putty/SSH_.C
-    # ${PROJECT_ROOT}/Putty/SSH.C
     ${PROJECT_ROOT}/Putty/SSHAES_.C
     ${PROJECT_ROOT}/Putty/SSHARCF.C
     ${PROJECT_ROOT}/Putty/SSHBLOWF.C
@@ -236,18 +235,6 @@ set ( NETBOX_LIBRARIES
     ws2_32.lib
     winhttp.lib
     Version.lib
-    # kernel32.lib
-    # user32.lib
-    # gdi32.lib
-    # winspool.lib
-    # comdlg32.lib
-    # advapi32.lib
-    # shell32.lib
-    # ole32.lib
-    # oleaut32.lib
-    # uuid.lib
-    # odbc32.lib
-    # odbccp32.lib
     libputty
     libcurl
     libeay32
