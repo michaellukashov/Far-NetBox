@@ -2,24 +2,6 @@ cmake_minimum_required (VERSION 2.8)
 
 #-------------------------------------------------------------------------------
 
-macro(use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME)
-    get_filename_component( PCH_HEADER ${HDR_FILE} NAME )
-    set(PCH_BINARY ${PCHNAME})
-    set( PCH_BINARY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PCH_BINARY}.pch" )
-    if (MSVC)
-        set( SRC_LIST ${${SRC_LIST_VAR}} )
-        set_source_files_properties( ${SRC_LIST} PROPERTIES
-            COMPILE_FLAGS "/Yu${PCH_HEADER} /Fp${PCH_BINARY}"
-            OBJECT_DEPENDS "${PCH_BINARY}" )
-        set_source_files_properties( ${SRC_FILE} PROPERTIES
-            COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_BINARY}"
-            OBJECT_OUTPUTS "${PCH_BINARY}"
-            OBJECT_DEPENDS "" )
-    endif(MSVC)
-endmacro( use_precompiled_header )
-
-#-------------------------------------------------------------------------------
-
 set ( CMAKE_CXX_FLAGS
     "-DWIN32;_WINDOWS /EHsc /MP2" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
@@ -36,6 +18,24 @@ add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT" 
 
 #include (${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 #message (" system: ${CMAKE_SYSTEM_NAME}")
+
+#-------------------------------------------------------------------------------
+
+macro(use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME)
+    get_filename_component( PCH_HEADER ${HDR_FILE} NAME )
+    set(PCH_BINARY ${PCHNAME})
+    set( PCH_BINARY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PCH_BINARY}.pch" )
+    if (MSVC)
+        set( SRC_LIST ${${SRC_LIST_VAR}} )
+        set_source_files_properties( ${SRC_LIST} PROPERTIES
+            COMPILE_FLAGS "/Yu${PCH_HEADER} /Fp${PCH_BINARY}"
+            OBJECT_DEPENDS "${PCH_BINARY}" )
+        set_source_files_properties( ${SRC_FILE} PROPERTIES
+            COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_BINARY}"
+            OBJECT_OUTPUTS "${PCH_BINARY}"
+            OBJECT_DEPENDS "" )
+    endif(MSVC)
+endmacro( use_precompiled_header )
 
 #-------------------------------------------------------
 
