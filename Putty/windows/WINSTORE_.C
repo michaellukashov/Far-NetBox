@@ -1,13 +1,13 @@
 #include "puttyexp.h"
 
-#pragma(warning(disable:4005)) 
+#pragma warning(disable:4005)
 #define RegOpenKey reg_open_winscp_key
 #define RegCreateKey reg_create_winscp_key
 #define RegCreateKey reg_create_winscp_key
 #define RegQueryValueEx reg_query_winscp_value_ex
 #define RegSetValueEx reg_set_winscp_value_ex
 #define RegCloseKey reg_close_winscp_key
-#pragma(warning(pop)) 
+#pragma warning(pop)
 
 #include "winstore.c"
 
