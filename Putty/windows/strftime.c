@@ -22,7 +22,7 @@
 // size_t _RTLENTRY _EXPFUNC
 // extern "C" size_t __cdecl
 size_t
-strftime( char *s, size_t maxsize, const char *fmt, const struct tm *t )
+strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
 {
     char buf[ 255 ];
 
