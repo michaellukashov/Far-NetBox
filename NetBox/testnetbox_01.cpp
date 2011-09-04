@@ -57,9 +57,14 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     
     char buf[256];
     struct tm tm = ltime();
-    BOOST_TEST_MESSAGE("buf = " << buf << ", sizeof(buf) = " << sizeof(buf));
+    time_t t = time(0);
+
+    char buf2[256];
+    _snprintf(buf2, sizeof(buf2) - 1, "%04d.%02d.%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     strftime2(buf, sizeof(buf) - 1, "%Y.%m.%d %H:%M:%S", &tm);
-    // BOOST_CHECK(buf == "2011.09.04 10:07:37");
+    BOOST_TEST_MESSAGE("buf = " << buf); //  << ", sizeof(buf) = " << sizeof(buf));
+    BOOST_TEST_MESSAGE("buf2 = " << buf2);
+    BOOST_CHECK(0 == strcmp(buf, buf2));
     log_eventlog(ctx, "test2: end");
     logfclose(ctx);
     log_free(ctx);
