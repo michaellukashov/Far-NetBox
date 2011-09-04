@@ -17,8 +17,7 @@
 #include <stdlib.h>
 #include <locale.h>
 
-size_t
-strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
+size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
 {
     char buf[ 255 ];
 

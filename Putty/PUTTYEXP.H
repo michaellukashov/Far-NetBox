@@ -86,6 +86,10 @@ void call_aes_decrypt(void * ctx, unsigned int * block);
 
 void call_sha1_key_internal(void * handle, unsigned char * key, int len);
 
+// from strftime.c
+
+size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t );
+
 #ifdef __cplusplus
 }
 #endif /* C++ */
