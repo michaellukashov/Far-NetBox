@@ -16,6 +16,28 @@
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>
+/*
+static int debug_printf(const char *format, ...)
+{
+    int len = 0;
+#ifdef NETBOX_DEBUG
+    va_list args;
+    va_start(args, format);
+    len = sprintf(format, args);
+    char buf(len + sizeof(char), 0);
+    snprintfs(buf, sizeof(buf, format, args);
+    va_end(args);
+    OutputDebugString(buf);
+#endif
+    return len;
+}
+*/
+
+#ifdef NETBOX_DEBUG
+#define DEBUG_PRINTF(format, ...) debug_printf(format, __VA_ARGS__);
+#else
+#define DEBUG_PRINTF(format, ...)
+#endif
 
 size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
 {
@@ -25,7 +47,7 @@ size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
     char pad;
     size_t  i, len;
     char FormatBuff[128];
-
+    OutputDebugString("NetBox: 1");
 
     for ( len = 1; len < maxsize && *fmt; ++fmt, p = buf )
     {
@@ -41,6 +63,7 @@ size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
             strcpy( buf, "00" );
 
 the_switch:
+            OutputDebugString("NetBox: 2");
             switch( *++fmt )
             {
 
@@ -83,7 +106,7 @@ the_switch:
             /* month date */
             case 'd':
                 // __utoa( t->tm_mday, buf + (t->tm_mday < 10));
-                _itoa_s( t->tm_mday, buf + (t->tm_mday < 10), 0, 10);
+                _itoa_s( t->tm_mday, buf + (t->tm_mday < 10), maxsize, 10 );
                 break;
 
             /*
@@ -96,7 +119,7 @@ the_switch:
             /* hour (24) */
             case 'H':
                 // __utoa( t->tm_hour, buf + (t->tm_hour < 10));
-                _itoa_s( t->tm_hour, buf + (t->tm_hour < 10), 0, 10);
+                _itoa_s( t->tm_hour, buf + (t->tm_hour < 10), maxsize, 10 );
                 break;
 
             /* hour (12) */
@@ -107,7 +130,7 @@ the_switch:
                     i = 12;
 
                 // __utoa( i, buf + (i < 10) );
-                _itoa_s( i, buf + (i < 10), 0, 10 );
+                _itoa_s( i, buf + (i < 10), maxsize, 10 );
                 break;
 
             /* year day */
@@ -115,7 +138,7 @@ the_switch:
                 i = t->tm_yday + 1;
 
                 // __utoa( i, buf + (i < 10) + (i < 100) );
-                _itoa_s( i, buf + (i < 10) + (i < 100), 0, 10 );
+                _itoa_s( i, buf + (i < 10) + (i < 100), maxsize, 10 );
                 break;
 
             /* month */
@@ -123,13 +146,13 @@ the_switch:
                 i = t->tm_mon + 1;
 
                 // __utoa( i, buf + (i < 10) );
-                _itoa_s( i, buf + (i < 10), 0, 10 );
+                _itoa_s( i, buf + (i < 10), maxsize, 10 );
                 break;
 
             /* minute */
             case 'M':
                 // __utoa( t->tm_min, buf + (t->tm_min < 10) );
-                _itoa_s( t->tm_min, buf + (t->tm_min < 10), 0, 10 );
+                _itoa_s( t->tm_min, buf + (t->tm_min < 10), maxsize, 10 );
                 break;
 
             /* am/pm */
@@ -145,7 +168,7 @@ the_switch:
             /* seconds */
             case 'S':
                 // __utoa( t->tm_sec, buf + (t->tm_sec < 10) );
-                _itoa_s( t->tm_sec, buf + (t->tm_sec < 10), 0, 10 );
+                _itoa_s( t->tm_sec, buf + (t->tm_sec < 10), maxsize, 10 );
                 break;
 
             /* week of year (Sunday) */
@@ -158,13 +181,13 @@ the_switch:
                 i = (t->tm_yday - i + 7) / 7;
 
                 // __utoa( i, buf + (i < 10) );
-                _itoa_s( i, buf + (i < 10), 0, 10 );
+                _itoa_s( i, buf + (i < 10), maxsize, 10 );
                 break;
 
             /* day of week */
             case 'w':
                 // __utoa( t->tm_wday, buf );
-                _itoa_s( t->tm_wday, buf, 0, 10 );
+                _itoa_s( t->tm_wday, buf, maxsize, 10 );
 
                 break;
 
@@ -178,7 +201,7 @@ the_switch:
                 i = (t->tm_yday - i + 7) / 7;
 
                 // __utoa( i, buf + (i < 10) );
-                _itoa_s( i, buf + (i < 10), 0, 10 );
+                _itoa_s( i, buf + (i < 10), maxsize, 10 );
                 break;
 
             /* date */
@@ -235,19 +258,21 @@ the_switch:
                 i = t->tm_year % 100;
 
                 // __utoa( i, buf + (i < 10) );
-                _itoa_s( i, buf + (i < 10), 0, 10 );
+                _itoa_s( i, buf + (i < 10), maxsize, 10 );
                 break;
 
             /* year (with century) */
             case 'Y':
+                OutputDebugString("NetBox: 2_1");
                 // __utoa( 1900 + t->tm_year, buf );
-                _itoa_s( 1900 + t->tm_year, buf, 0, 10 );
+                _itoa_s( 1900 + t->tm_year, buf, maxsize, 10 );
+                OutputDebugString("NetBox: 2_2");
                 break;
 
             /* century */
             case 'C':       /* POSIX */
                 // __utoa( t->tm_year/100 + 19, buf);
-                _itoa_s( t->tm_year/100 + 19, buf, 0, 10);
+                _itoa_s( t->tm_year/100 + 19, buf, maxsize, 10 );
                 break;
 
             case '+' :
@@ -288,6 +313,7 @@ the_switch:
                 }
                 break;
             }
+            OutputDebugString("NetBox: 3");
 
             i = min( strlen( p ), maxsize - len );
             strncpy( s, p, i );
@@ -296,9 +322,11 @@ the_switch:
 
         } /* if-else */
 
+        OutputDebugString("NetBox: 4");
     } /* for */
 
     *s = '\0';
+    OutputDebugString("NetBox: 5");
 
     if( *fmt )
         return( 0 );
