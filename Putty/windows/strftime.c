@@ -16,28 +16,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <locale.h>
-/*
-static int debug_printf(const char *format, ...)
-{
-    int len = 0;
-#ifdef NETBOX_DEBUG
-    va_list args;
-    va_start(args, format);
-    len = sprintf(format, args);
-    char buf(len + sizeof(char), 0);
-    snprintfs(buf, sizeof(buf, format, args);
-    va_end(args);
-    OutputDebugString(buf);
-#endif
-    return len;
-}
-*/
-
-#ifdef NETBOX_DEBUG
-#define DEBUG_PRINTF(format, ...) debug_printf(format, __VA_ARGS__);
-#else
-#define DEBUG_PRINTF(format, ...)
-#endif
 
 size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
 {
@@ -47,7 +25,6 @@ size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
     char pad;
     size_t  i, len;
     char FormatBuff[128];
-    OutputDebugString("NetBox: 1");
 
     for ( len = 1; len < maxsize && *fmt; ++fmt, p = buf )
     {
@@ -63,7 +40,6 @@ size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t )
             strcpy( buf, "00" );
 
 the_switch:
-            OutputDebugString("NetBox: 2");
             switch( *++fmt )
             {
 
@@ -263,10 +239,8 @@ the_switch:
 
             /* year (with century) */
             case 'Y':
-                OutputDebugString("NetBox: 2_1");
                 // __utoa( 1900 + t->tm_year, buf );
                 _itoa_s( 1900 + t->tm_year, buf, maxsize, 10 );
-                OutputDebugString("NetBox: 2_2");
                 break;
 
             /* century */
@@ -313,7 +287,6 @@ the_switch:
                 }
                 break;
             }
-            OutputDebugString("NetBox: 3");
 
             i = min( strlen( p ), maxsize - len );
             strncpy( s, p, i );
@@ -322,11 +295,9 @@ the_switch:
 
         } /* if-else */
 
-        OutputDebugString("NetBox: 4");
     } /* for */
 
     *s = '\0';
-    OutputDebugString("NetBox: 5");
 
     if( *fmt )
         return( 0 );
