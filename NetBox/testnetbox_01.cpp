@@ -47,11 +47,22 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
 {
+    Config cfg; //  = new Config();
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.logtype = LGTYP_ASCII;
+    void *ctx = log_init(NULL, &cfg);
+    // strcpy(&ctx->currlogfilename.path, "putty.log");
+    logfopen(ctx);
+    log_eventlog(ctx, "test2: start");
+    
     char buf[256];
     struct tm tm = ltime();
+    BOOST_TEST_MESSAGE("buf = " << buf << ", sizeof(buf) = " << sizeof(buf));
     strftime2(buf, sizeof(buf) - 1, "%Y.%m.%d %H:%M:%S", &tm);
-    BOOST_TEST_MESSAGE("buf = %s" << buf);
     // BOOST_CHECK(buf == "2011.09.04 10:07:37");
+    log_eventlog(ctx, "test2: end");
+    logfclose(ctx);
+    log_free(ctx);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
