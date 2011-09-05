@@ -1,10 +1,8 @@
 //---------------------------------------------------------------------------
+#include "stdafx.h"
 #include <map>
-#include <farkeys.hpp>
-#include <farcolor.hpp>
 #include <math.h>
 
-#include "stdafx.h"
 #include "FarDialog.h"
 
 // #include <Common.h>

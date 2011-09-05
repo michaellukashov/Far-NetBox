@@ -458,7 +458,8 @@ enum { DEL, OPEN_R, OPEN_W };
 static int try_random_seed(char const *path, int action, HANDLE *ret)
 {
     if (action == DEL) {
-	remove(path);
+	// remove(path);
+    RemoveDirectory((LPTSTR)path);
 	*ret = INVALID_HANDLE_VALUE;
 	return FALSE;		       /* so we'll do the next ones too */
     }
