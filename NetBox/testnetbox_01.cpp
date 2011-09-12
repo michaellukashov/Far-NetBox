@@ -82,6 +82,10 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 {
+}
+
+BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
+{
     std::string host = "localhost";
     int port = 2222;
     std::string user = "testuser";
