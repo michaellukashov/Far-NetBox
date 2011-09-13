@@ -17,6 +17,8 @@
 #include "puttyexp.h"
 #include "FarUtil.h"
 
+#include "delegate.h"
+
 using namespace boost::unit_test;
 
 /*******************************************************************************
@@ -80,8 +82,46 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     log_free(ctx);
 }
 
+class App
+{
+public:
+    // Определяем делегат Callback,
+    // который принимает 1 параметр и ничего не возвращает.
+    typedef CDelegate1<void, string> Callback;
+
+    // Это метод класса App.
+    void OutputToConsole(string str)
+    {
+        cout << str << endl;
+    }
+
+    // А это статический метод класса App.
+    static void OutputToFile(string str)
+    {
+        ofstream fout("output.txt", ios::out | ios::app);
+        fout << str << endl;
+        fout.close();
+    }
+};
+
 BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 {
+    App app;
+
+    // Создаём делегат.
+    App::Callback callback = NULL;
+    if (!callback.IsNull()) callback("1");
+
+    // Добавляем ссылку на OutputToFile.
+    // Вызываем её через делегата.
+    callback += NewDelegate(App::OutputToFile);
+    if (!callback.IsNull()) callback("2");
+
+    // Добавляем ссылку на OutputToConsole.
+    // Вызывается вся цепочка:
+    // сначала OutputToFile, потом OutputToConsole.
+    callback += NewDelegate(&app, &App::OutputToConsole);
+    if (!callback.IsNull()) callback("3");
 }
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
