@@ -6,6 +6,9 @@
 
 #include "stdafx.h"
 #include <time.h>
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
 
 #include "boostdefines.hpp"
 #define BOOST_TEST_MODULE "testnetbox_01"
@@ -16,6 +19,8 @@
 #include "winstuff.h"
 #include "puttyexp.h"
 #include "FarUtil.h"
+
+#include "delegate.h"
 
 using namespace boost::unit_test;
 
@@ -80,7 +85,60 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     log_free(ctx);
 }
 
+static const std::string filename = "output.txt";
+
+class App
+{
+public:
+    App()
+    {
+        std::remove(filename.c_str());
+    }
+    // Определяем делегат Callback,
+    // который принимает 1 параметр и ничего не возвращает.
+    typedef CDelegate1<void, string> Callback;
+
+    // Это метод класса App.
+    void OutputToConsole(string str)
+    {
+        cout << str << endl;
+    }
+
+    // А это статический метод класса App.
+    static void OutputToFile(string str)
+    {
+        ofstream fout(filename, ios::out | ios::ate | ios::app);
+        fout << str << endl;
+        fout.close();
+    }
+};
+
 BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
+{
+    App app;
+    // Создаём делегат.
+    App::Callback callback = NULL;
+    BOOST_REQUIRE(callback.IsNull());
+    if (!callback.IsNull()) callback("1");
+
+    // Добавляем ссылку на OutputToFile.
+    // Вызываем её через делегата.
+    callback += NewDelegate(App::OutputToFile);
+    BOOST_REQUIRE(!callback.IsNull());
+    if (!callback.IsNull()) callback("2");
+
+    // Добавляем ссылку на OutputToConsole.
+    // Вызывается вся цепочка:
+    // сначала OutputToFile, потом OutputToConsole.
+    callback += NewDelegate(&app, &App::OutputToConsole);
+    BOOST_REQUIRE(!callback.IsNull());
+    if (!callback.IsNull()) callback("3");
+    std::ifstream is;
+    is.open(filename.c_str(), ios::in);
+    BOOST_CHECK(!is.fail());
+}
+
+BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
 {
     std::string host = "localhost";
     int port = 2222;
