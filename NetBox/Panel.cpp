@@ -85,6 +85,7 @@ bool CPanel::OpenConnection(IProtocol *protoImpl)
                     break;
                 }
             }
+            m_ProtoClient->Close();
             notifyWnd.Show();
             ResetEvent(m_AbortTask);
         }

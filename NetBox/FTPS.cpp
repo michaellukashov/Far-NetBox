@@ -53,7 +53,7 @@ CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tr
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, m_SSL_VERIFYPEER));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 1));
 
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USE_SSL, CURLUSESSL_CONTROL));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USE_SSL, m_SSL_VERIFYPEER ? CURLUSESSL_CONTROL : CURLUSESSL_NONE));
     }
     return urlCode;
 }
