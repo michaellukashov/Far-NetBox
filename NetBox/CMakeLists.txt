@@ -7,17 +7,19 @@ set ( CMAKE_CXX_FLAGS
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
-set ( CMAKE_EXE_LINK_FLAGS
+set ( CMAKE_LINK_FLAGS
     "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB"
     #/NODEFAULTLIB:LIBCMTD.LIB
+    #/NODEFAULTLIB:LIBCPMTD.LIB"
+    # /NODEFAULTLIB:MSVCPRTD.LIB"
 )
 
 # definitions
 add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL" )
 add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT" )
 
-#include (${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
-#message (" system: ${CMAKE_SYSTEM_NAME}")
+include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
+message ( "system: ${CMAKE_SYSTEM_NAME}" )
 
 #-------------------------------------------------------------------------------
 
@@ -85,10 +87,10 @@ link_directories (
 
 #-------------------------------------------------------------------------------
 
-#add_subdirectory ( ${DICTIONARY_PATH}
-#                   bin/sub_projects
-#                   EXCLUDE_FROM_ALL
-#                 )
+# add_subdirectory ( ${PROJECT_ROOT}
+#     libs/libcurl
+#     EXCLUDE_FROM_ALL
+# )
 
 #-------------------------------------------------------------------------------
 
@@ -224,7 +226,6 @@ add_library (libputty STATIC
 set_target_properties( libputty
     PROPERTIES
     COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS"
-    # LINKER_LANGUAGE "C"
 )
 
 #-------------------------------------------------------------------------------
@@ -245,7 +246,7 @@ add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
 set_target_properties( NetBox
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
-    LINK_FLAGS ${CMAKE_EXE_LINK_FLAGS}
+    LINK_FLAGS ${CMAKE_LINK_FLAGS}
 )
 
 # move from NetBox/Debug to NetBox/
@@ -289,9 +290,7 @@ add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} 
 set_target_properties( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
-    LINK_FLAGS "${CMAKE_EXE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
-    #/NODEFAULTLIB:LIBCPMTD.LIB"
-    # /NODEFAULTLIB:MSVCPRTD.LIB"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
 )
 add_dependencies ( testnetbox_01 
     libputty
