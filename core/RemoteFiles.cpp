@@ -1699,13 +1699,13 @@ void TRemoteDirectoryChangesCache::SetValue(const std::wstring & Name,
   {
     Delete(Index);
   }
-  SetValue(Name, Value);
+  TStringList::SetValue(Name, Value);
 }
 //---------------------------------------------------------------------------
 std::wstring TRemoteDirectoryChangesCache::GetValue(const std::wstring & Name)
 {
-  std::wstring Value = GetValue(Name);
-  SetValue(Name, Value);
+  std::wstring Value = TStringList::GetValue(Name);
+  TStringList::SetValue(Name, Value);
   return Value;
 }
 //---------------------------------------------------------------------------
