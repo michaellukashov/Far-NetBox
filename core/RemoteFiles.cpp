@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 // #include <SysUtils.hpp>
 #include "stdafx.h"
+#include <ShellAPI.h>
 
 #include "RemoteFiles.h"
 #include "Common.h"
@@ -8,6 +9,158 @@
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
+//---------------------------------------------------------------------------
+CUseShGetFileInfo::CUseShGetFileInfo()
+{
+
+}
+
+CUseShGetFileInfo::~CUseShGetFileInfo()
+{
+}
+
+
+HIMAGELIST  CUseShGetFileInfo::GetSystemImageListHandle( BOOL bSmallIcon )
+{
+    HIMAGELIST  hSystemImageList; 
+    SHFILEINFO    ssfi; 
+
+    if (bSmallIcon)
+    {
+        hSystemImageList = (HIMAGELIST)SHGetFileInfo( 
+            (LPCTSTR)std::wstring(L"c:\\").c_str(), 
+             0, 
+             &ssfi, 
+             sizeof(SHFILEINFO), 
+             SHGFI_SYSICONINDEX | SHGFI_SMALLICON); 
+    }
+    else
+    {
+        hSystemImageList = (HIMAGELIST)SHGetFileInfo( 
+            (LPCTSTR)std::wstring(L"c:\\").c_str(), 
+             0, 
+             &ssfi, 
+             sizeof(SHFILEINFO), 
+             SHGFI_SYSICONINDEX | SHGFI_LARGEICON); 
+    }
+    return hSystemImageList;
+}
+
+
+int CUseShGetFileInfo::GetFileIconIndex( std::wstring strFileName , BOOL bSmallIcon )
+{
+    SHFILEINFO    sfi;
+
+    if (bSmallIcon)
+    {
+        SHGetFileInfo(
+           (LPCTSTR)strFileName.c_str(), 
+           FILE_ATTRIBUTE_NORMAL,
+           &sfi, 
+           sizeof(SHFILEINFO), 
+           SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+    }
+    else
+    {
+        SHGetFileInfo(
+           (LPCTSTR)strFileName.c_str(), 
+           FILE_ATTRIBUTE_NORMAL,
+           &sfi, 
+           sizeof(SHFILEINFO), 
+           SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
+    }
+
+    return sfi.iIcon;
+
+}
+
+int CUseShGetFileInfo::GetDirIconIndex(BOOL bSmallIcon )
+{
+    SHFILEINFO    sfi;
+    if (bSmallIcon)
+    {
+         SHGetFileInfo(
+             (LPCTSTR)L"Doesn't matter", 
+             FILE_ATTRIBUTE_DIRECTORY,
+             &sfi, 
+             sizeof(SHFILEINFO), 
+             SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+    }
+    else
+    {
+         SHGetFileInfo(
+             (LPCTSTR)L"Doesn't matter", 
+             FILE_ATTRIBUTE_DIRECTORY,
+             &sfi, 
+             sizeof(SHFILEINFO), 
+             SHGFI_SYSICONINDEX | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
+    }
+    return sfi.iIcon;
+}
+HICON CUseShGetFileInfo::GetFileIconHandle(std::wstring strFileName, BOOL bSmallIcon)
+{
+    SHFILEINFO    sfi;
+    if (bSmallIcon)
+    {
+        SHGetFileInfo(
+           (LPCTSTR)strFileName.c_str(), 
+           FILE_ATTRIBUTE_NORMAL,
+           &sfi, 
+           sizeof(SHFILEINFO), 
+           SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+    }
+    else
+    {
+        SHGetFileInfo(
+           (LPCTSTR)strFileName.c_str(), 
+           FILE_ATTRIBUTE_NORMAL,
+           &sfi, 
+           sizeof(SHFILEINFO), 
+           SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
+    }
+    return sfi.hIcon;
+}
+
+HICON CUseShGetFileInfo::GetFolderIconHandle(BOOL bSmallIcon )
+{
+    SHFILEINFO    sfi;
+    if (bSmallIcon)
+    {
+         SHGetFileInfo(
+         (LPCTSTR)"Doesn't matter", 
+         FILE_ATTRIBUTE_DIRECTORY,
+         &sfi, 
+         sizeof(SHFILEINFO), 
+         SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+    }
+    else
+    {
+         SHGetFileInfo(
+         (LPCTSTR)"Does not matter", 
+         FILE_ATTRIBUTE_DIRECTORY,
+         &sfi, 
+         sizeof(SHFILEINFO), 
+         SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
+    }
+    return sfi.hIcon;
+}
+
+std::wstring CUseShGetFileInfo::GetFileType(std::wstring strFileName)
+{
+	SHFILEINFO    sfi;
+	
+	SHGetFileInfo(
+     (LPCTSTR)strFileName.c_str(), 
+     FILE_ATTRIBUTE_NORMAL,
+     &sfi, 
+     sizeof(SHFILEINFO), 
+     	SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES);
+     
+	return sfi.szTypeName;
+
+}
+//---------------------------------------------------------------------------
+
 /* TODO 1 : Path class instead of std::wstring (handle relativity...) */
 //---------------------------------------------------------------------------
 std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
