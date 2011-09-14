@@ -304,6 +304,7 @@ int CPanel::ChangeDirectory(const wchar_t *dir, const int opMode)
             // {
                 // return FALSE;
             // }
+            return FALSE;
         }
         retStatus = m_ProtoClient->ChangeDirectory(dir, errInfo);
     }
