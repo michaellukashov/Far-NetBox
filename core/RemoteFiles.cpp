@@ -408,7 +408,7 @@ int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
     FileName.resize(FileName.size() - PartialExtLen);
   }
 
-  int Icon;
+  int Icon = -1;
   // FIXME
   /*
   if (SHGetFileInfo(FileName.c_str(),
