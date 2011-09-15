@@ -287,6 +287,14 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
         BOOST_CHECK_EQUAL(::AnsiPos(str, 'A'), 0);
         BOOST_CHECK_EQUAL(::AnsiPos(str, 'B'), 1);
     }
+    {
+        std::wstring str = ::LowerCase(L"AA");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "aa");
+    }
+    {
+        std::wstring str = ::UpperCase(L"aa");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "AA");
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

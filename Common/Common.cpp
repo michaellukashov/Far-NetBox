@@ -1811,18 +1811,19 @@ std::wstring TrimRight(const std::wstring str)
     return result;
 }
 
-std::wstring UpperCase(const std::wstring Str)
+std::wstring UpperCase(const std::wstring str)
 {
-    // FIXME 
     std::wstring result;
+    result.resize(str.size());
+    std::transform(str.begin(), str.end(), result.begin(), ::toupper);
     return result;
 }
 
 std::wstring LowerCase(const std::wstring str)
 {
-    // FIXME
-    std::wstring result = str;
-    // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    std::wstring result;
+    result.resize(str.size());
+    std::transform(str.begin(), str.end(), result.begin(), ::tolower);
     return result;
 }
 

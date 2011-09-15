@@ -250,7 +250,7 @@ public:
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
-std::wstring UpperCase(const std::wstring Str);
+std::wstring UpperCase(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
 wchar_t UpCase(const wchar_t c);
 wchar_t LowCase(const wchar_t c);
