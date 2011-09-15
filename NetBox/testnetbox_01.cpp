@@ -208,17 +208,17 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
         BOOST_CHECK_EQUAL(::W2MB(str2.c_str()), std::string("part 2"));
     }
     {
-        std::wstring str = LoadStr(CONST_TEST_STRING);
+        std::wstring str = ::LoadStr(CONST_TEST_STRING);
         BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
     }
     {
-        std::wstring str = LoadStrPart(CONST_TEST_STRING2, 1);
+        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 1);
         BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("test string part 1"));
     }
     {
-        std::wstring str = LoadStrPart(CONST_TEST_STRING2, 2);
+        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 2);
         BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("part 2"));
     }
