@@ -159,12 +159,13 @@ std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default)
 //---------------------------------------------------------------------------
 std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
 {
+  // std::wstring str = Str;
   int P = Str.find_first_of(Ch, 0);
   std::wstring Result;
   if (P)
   {
-    Result = Str.substr(1, P-1);
-    Str.erase(1, P);
+    Result = Str.substr(0, P);
+    Str.erase(0, P + 1);
   }
   else
   {
@@ -173,9 +174,10 @@ std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
   }
   if (Trim)
   {
-    // Result = Result.TrimRight();
-    // Str = Str.TrimLeft();
+    Str = TrimLeft(Str);
+    Result = TrimRight(Str);
   }
+  // DEBUG_PRINTF(L"NetBox: Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1431,17 +1433,16 @@ std::wstring LoadStr(int Ident, unsigned int MaxLength)
 //---------------------------------------------------------------------------
 std::wstring LoadStrPart(int Ident, int Part)
 {
-    // FIXME
   std::wstring Result;
-  /*
+
   std::wstring Str = LoadStr(Ident);
+  // DEBUG_PRINTF(L"NetBox: Str = %s", Str.c_str());
 
   while (Part > 0)
   {
-    Result = CutToChar(Str, '|', false);
+    Result = ::CutToChar(Str, '|', false);
     Part--;
   }
-  */
   return Result;
 }
 
