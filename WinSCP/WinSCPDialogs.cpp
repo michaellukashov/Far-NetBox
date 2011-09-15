@@ -183,7 +183,7 @@ void TTabbedDialog::SelectTab(int Tab)
   {
     FOrigCaption = GetCaption();
   }
-  SetCaption(::FORMAT(L"%s - %s", (TabName(Tab), FOrigCaption)));
+  SetCaption(FORMAT(L"%s - %s", (TabName(Tab), FOrigCaption)));
 }
 //---------------------------------------------------------------------------
 TTabButton * TTabbedDialog::TabButton(int Tab)

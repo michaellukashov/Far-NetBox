@@ -38,7 +38,7 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define ASCOPY(dest, source) SCOPY(dest, source.c_str())
-// #define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
+#define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
 #define FMTLOAD(I, ...) ::FmtLoadStr(I, __VA_ARGS__)
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
@@ -238,7 +238,7 @@ public:
   bool GetTerminated() { return true; }
 };
 //---------------------------------------------------------------------------
-std::wstring FORMAT(const wchar_t *fmt, ...);
+// std::wstring FORMAT(const wchar_t *fmt, ...);
 //---------------------------------------------------------------------------
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);

@@ -66,11 +66,11 @@ std::wstring TCopyParamType::GetInfoStr(std::wstring Separator, int Options) con
   if ((GetTransferMode() != Defaults.GetTransferMode()) ||
       ((GetTransferMode() == tmAutomatic) && !(GetAsciiFileMask() == Defaults.GetAsciiFileMask())))
   {
-    std::wstring S = ::FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE, 1).c_str(),
+    std::wstring S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE, 1).c_str(),
       LoadStrPart(COPY_INFO_TRANSFER_TYPE, GetTransferMode() + 2).c_str());
     if (GetTransferMode() == tmAutomatic)
     {
-      S = ::FORMAT(S.c_str(), GetAsciiFileMask().GetMasks().c_str());
+      S = FORMAT(S.c_str(), GetAsciiFileMask().GetMasks().c_str());
     }
     ADD(S, cpaExcludeMaskOnly | cpaNoTransferMode);
   }

@@ -199,7 +199,7 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
     {
       if (MaintainKeys)
       {
-        Strings->Add(::FORMAT(L"%s=%s", (Names->GetString(Index),
+        Strings->Add(FORMAT(L"%s=%s", (Names->GetString(Index),
           ReadString(Names->GetString(Index), L""))));
       }
       else

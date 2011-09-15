@@ -86,7 +86,7 @@ inline void TSecureShell::UpdateSessionInfo()
     FSshVersion = get_ssh_version(FBackendHandle);
     FSessionInfo.ProtocolBaseName = L"SSH";
     FSessionInfo.ProtocolName =
-      ::FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName, get_ssh_version(FBackendHandle));
+      FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName, get_ssh_version(FBackendHandle));
     FSessionInfo.SecurityProtocolName = FSessionInfo.ProtocolName;
 
     FSessionInfo.CSCompression =
@@ -523,7 +523,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(::FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
+  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
 
   Name = ::Trim(Name);
 
@@ -664,7 +664,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
 
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
+    LogEvent(FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
   }
 
   // Following is taken from scp.c from_backend() and modified
@@ -783,7 +783,7 @@ int TSecureShell::Receive(char * Buf, int Len)
       {
         if (Configuration->GetActualLogProtocol() >= 1)
         {
-          LogEvent(::FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
+          LogEvent(FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
         }
         WaitForData();
       }
@@ -798,7 +798,7 @@ int TSecureShell::Receive(char * Buf, int Len)
   };
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Read %u bytes (%d pending)",
+    LogEvent(FORMAT(L"Read %u bytes (%d pending)",
       static_cast<int>(Len), static_cast<int>(PendLen)));
   }
   return Len;
@@ -847,7 +847,7 @@ std::wstring TSecureShell::ReceiveLine()
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(int Code)
 {
-  LogEvent(::FORMAT(L"Sending special code: %d", (Code)));
+  LogEvent(FORMAT(L"Sending special code: %d", (Code)));
   CheckConnection();
   FBackend->special(FBackendHandle, (Telnet_Special)Code);
   CheckConnection();
@@ -912,7 +912,7 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     CheckConnection();
     if (Configuration->GetActualLogProtocol() >= 1)
     {
-      LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer, "
+      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer, "
         L"need to send at least another %u bytes",
         BufSize, BufSize - MAX_BUFSIZE));
     }
@@ -920,7 +920,7 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     BufSize = FBackend->sendbuffer(FBackendHandle);
     if (Configuration->GetActualLogProtocol() >= 1)
     {
-      LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
     }
 
     if (Now() - Start > FSessionData->GetTimeoutDT())
@@ -956,8 +956,8 @@ void TSecureShell::Send(const char * Buf, int Len)
   int BufSize = FBackend->send(FBackendHandle, (char *)Buf, Len);
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Sent %u bytes", static_cast<int>(Len)));
-    LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+    LogEvent(FORMAT(L"Sent %u bytes", static_cast<int>(Len)));
+    LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
@@ -1150,14 +1150,14 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
   if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
+    LogEvent(FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
   }
 
   if (WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
   {
     if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Error selecting events %d for socket %d", int(Events), int(Socket)));
+      LogEvent(FORMAT(L"Error selecting events %d for socket %d", int(Events), int(Socket)));
     }
 
     if (Startup)
@@ -1210,7 +1210,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
   if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
+    LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
   }
 
   SocketEventSelect(value, FSocketEvent, Startup);
@@ -1403,7 +1403,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Enumerating network events for socket %d", int(Socket)));
+    LogEvent(FORMAT(L"Enumerating network events for socket %d", int(Socket)));
   }
 
   // see winplink.c
@@ -1424,7 +1424,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
     if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
+      LogEvent(FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
         int(AEvents.lNetworkEvents), int(Events.lNetworkEvents), int(Socket)));
     }
   }
@@ -1432,7 +1432,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   {
     if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Error enumerating network events for socket %d", int(Socket)));
+      LogEvent(FORMAT(L"Error enumerating network events for socket %d", int(Socket)));
     }
   }
 
@@ -1460,7 +1460,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       int Err = Events.iErrorCode[EventTypes[Event].Bit];
       if (Configuration->GetActualLogProtocol() >= 2)
       {
-        LogEvent(::FORMAT(L"Handling network %s event on socket %d with error %d",
+        LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, int(Socket), Err));
       }
       // #pragma option push -w-prc
@@ -1558,7 +1558,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
       {
         if (Configuration->GetActualLogProtocol() >= 2)
         {
-          LogEvent(::FORMAT(L"Unknown waiting result %d", int(WaitResult)));
+          LogEvent(FORMAT(L"Unknown waiting result %d", int(WaitResult)));
         }
 
         MSec = 0;

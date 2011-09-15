@@ -678,7 +678,7 @@ void TTerminal::Open()
             FSessionData->ConfigureTunnel(FTunnelLocalPortNumber);
 
             DoInformation(LoadStr(USING_TUNNEL), false);
-            LogEvent(::FORMAT(L"Connecting via tunnel interface %s:%d.",
+            LogEvent(FORMAT(L"Connecting via tunnel interface %s:%d.",
               FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
           }
           else
@@ -851,7 +851,7 @@ void TTerminal::OpenTunnel()
           // (Configuration->GetTunnelLocalPortNumberLow(), Configuration->GetTunnelLocalPortNumberHigh())));
       }
     }
-    LogEvent(::FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
+    LogEvent(FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
   }
 
   try
@@ -865,7 +865,7 @@ void TTerminal::OpenTunnel()
     FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
     FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
     FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
-    FTunnelData->SetTunnelPortFwd(::FORMAT(L"L%d\t%s:%d",
+    FTunnelData->SetTunnelPortFwd(FORMAT(L"L%d\t%s:%d",
       FTunnelLocalPortNumber, FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
     FTunnelData->SetProxyMethod(FSessionData->GetProxyMethod());
     FTunnelData->SetProxyHost(FSessionData->GetProxyHost());
@@ -1057,7 +1057,7 @@ int TTerminal::QueryUser(const std::wstring Query,
   TStrings * MoreMessages, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  LogEvent(::FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
+  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
   int Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
@@ -2454,7 +2454,7 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   assert(FFileSystem);
   try
   {
-    LogEvent(::FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
+    LogEvent(FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
@@ -2471,7 +2471,7 @@ void TTerminal::ReadFile(const std::wstring FileName,
   File = NULL;
   try
   {
-    LogEvent(::FORMAT(L"Listing file \"%s\".", FileName.c_str()));
+    LogEvent(FORMAT(L"Listing file \"%s\".", FileName.c_str()));
     FFileSystem->ReadFile(FileName, File);
     ReactOnCommand(fsListFile);
   }
@@ -2684,12 +2684,12 @@ void TTerminal::RecycleFile(std::wstring FileName,
 
   if (!IsRecycledFile(FileName))
   {
-    LogEvent(::FORMAT(L"Moving file \"%s\" to remote recycle bin '%s'.",
+    LogEvent(FORMAT(L"Moving file \"%s\" to remote recycle bin '%s'.",
       FileName.c_str(), GetSessionData()->GetRecycleBinPath().c_str()));
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
-    Params.FileMask = ::FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
+    Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
 
     MoveFile(FileName, File, &Params);
   }
@@ -2717,7 +2717,7 @@ void TTerminal::DeleteFile(std::wstring FileName,
   }
   else
   {
-    LogEvent(::FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
+    LogEvent(FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
     if (File) FileModified(File, FileName, true);
     DoDeleteFile(FileName, File, Params);
     ReactOnCommand(fsDeleteFile);
@@ -2787,7 +2787,7 @@ void TTerminal::CustomCommandOnFile(std::wstring FileName,
     if (GetOperationProgress()->Cancel != csContinue) Abort();
     GetOperationProgress()->SetFile(FileName);
   }
-  LogEvent(::FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
+  LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
     Params->Command.c_str(), Params->Params, FileName.c_str()));
   if (File) FileModified(File, FileName);
   DoCustomCommandOnFile(FileName, File, Params->Command, Params->Params,
@@ -2883,11 +2883,11 @@ void TTerminal::ChangeFileProperties(std::wstring FileName,
   }
   if (GetLog()->GetLogging())
   {
-    LogEvent(::FORMAT(L"Changing properties of \"%s\" (%s)",
+    LogEvent(FORMAT(L"Changing properties of \"%s\" (%s)",
       FileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
     if (RProperties->Valid.Contains(vpRights))
     {
-      LogEvent(::FORMAT(L" - mode: \"%s\"", RProperties->Rights.GetModeStr().c_str()));
+      LogEvent(FORMAT(L" - mode: \"%s\"", RProperties->Rights.GetModeStr().c_str()));
     }
     if (RProperties->Valid.Contains(vpGroup))
     {
@@ -2905,7 +2905,7 @@ void TTerminal::ChangeFileProperties(std::wstring FileName,
     }
     if (RProperties->Valid.Contains(vpLastAccess))
     {
-      LogEvent(::FORMAT(L" - last access: \"%s\"",
+      LogEvent(FORMAT(L" - last access: \"%s\"",
         FormatDateTime(L"dddddd tt",
            UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
     }
@@ -2985,7 +2985,7 @@ void TTerminal::CalculateFileSize(std::wstring FileName,
     {
       if (!File->GetIsSymLink())
       {
-        LogEvent(::FORMAT(L"Getting size of directory \"%s\"", FileName.c_str()));
+        LogEvent(FORMAT(L"Getting size of directory \"%s\"", FileName.c_str()));
         // pass in full path so we get it back in file list for AllowTransfer() exclusion
         DoCalculateDirectorySize(File->GetFullFileName(), File, AParams);
       }
@@ -3922,7 +3922,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   Data.Flags = Flags;
   Data.Checklist = Checklist;
 
-  LogEvent(::FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
+  LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
     L"mode = %d, params = %d", LocalDirectory.c_str(), RemoteDirectory.c_str(),
     int(Mode), int(Params)));
 
@@ -4689,7 +4689,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
       {
         if (GetLog()->GetLogging())
         {
-          LogEvent(::FORMAT(L"Copying %d files/directories to remote directory "
+          LogEvent(FORMAT(L"Copying %d files/directories to remote directory "
             L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
           LogEvent(CopyParam->GetLogStr());
         }

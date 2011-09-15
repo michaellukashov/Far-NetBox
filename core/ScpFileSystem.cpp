@@ -210,7 +210,7 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
 {
   va_list args;
   va_start(args, Cmd);
-  if (args) return ::FORMAT(GetCommand(Cmd).c_str(), args);
+  if (args) return FORMAT(GetCommand(Cmd).c_str(), args);
     else return GetCommand(Cmd);
   va_end(args);
 }
@@ -232,9 +232,9 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
 
   std::wstring Result;
   if (!Line.empty())
-    Result = ::FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
+    Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
   else
-    Result = ::FORMAT(L"%s%s", FirstLineCmd, LastLineCmd);
+    Result = FORMAT(L"%s%s", FirstLineCmd, LastLineCmd);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -472,7 +472,7 @@ void TSCPFileSystem::EnsureLocation()
 {
   if (!FCachedDirectoryChange.empty())
   {
-    FTerminal->LogEvent(::FORMAT(L"Locating to cached directory \"%s\".",
+    FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
       (FCachedDirectoryChange)));
     std::wstring Directory = FCachedDirectoryChange;
     FCachedDirectoryChange = L"";
@@ -748,7 +748,7 @@ void TSCPFileSystem::DetectReturnVar()
 
       try
       {
-        FTerminal->LogEvent(::FORMAT(L"Trying \"$%s\".", ReturnVars[Index]));
+        FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index]));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
         if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
         {
@@ -781,7 +781,7 @@ void TSCPFileSystem::DetectReturnVar()
       else
     {
       FCommandSet->SetReturnVar (NewReturnVar);
-      FTerminal->LogEvent(::FORMAT(L"Return code variable \"%s\" selected.",
+      FTerminal->LogEvent(FORMAT(L"Return code variable \"%s\" selected.",
         FCommandSet->GetReturnVar().c_str()));
     }
   }
@@ -912,7 +912,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
         else
       {
-        FTerminal->LogEvent(::FORMAT(L"Listing directory \"%s\".",
+        FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
           (FileList->GetDirectory())));
         ExecCommand(fsListDirectory,
           0, FTerminal->GetSessionData()->GetListingCommand(), Options,
@@ -984,7 +984,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       if (FLsFullTime == asAuto)
       {
           FTerminal->LogEvent(
-            ::FORMAT(L"Directory listing with %s succeed, next time all errors during "
+            FORMAT(L"Directory listing with %s succeed, next time all errors during "
               L"directory listing will be displayed immediatelly.",
               FullTimeOption));
           FLsFullTime = asOn;
@@ -1000,7 +1000,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FLsFullTime = asOff;
           Again = true;
           FTerminal->LogEvent(
-            ::FORMAT(L"Directory listing with %s failed, try again regular listing.",
+            FORMAT(L"Directory listing with %s failed, try again regular listing.",
             FullTimeOption));
         }
         else
@@ -1566,13 +1566,13 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
   std::wstring DestFileName = CopyParam->ChangeFileName(
     ExtractFileName(FileName, true), osLocal, Level == 0);
 
-  FTerminal->LogEvent(::FORMAT(L"File: \"%s\"", (FileName)));
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", (FileName)));
 
   OperationProgress->SetFile(FileName, false);
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    FTerminal->LogEvent(::FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
     THROW_SKIP_FILE_NULL;
   }
 
@@ -1601,7 +1601,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
       assert(File);
 
       // File is regular file (not directory)
-      FTerminal->LogEvent(::FORMAT(L"Copying \"%s\" to remote directory started.", (FileName)));
+      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", (FileName)));
 
       OperationProgress->SetLocalSize(Size);
 
@@ -1712,7 +1712,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             /* TODO : We can't send file above 32bit size in ASCII mode! */
             if (OperationProgress->AsciiTransfer)
             {
-              FTerminal->LogEvent(::FORMAT(L"Sending ASCII data (%u bytes)",
+              FTerminal->LogEvent(FORMAT(L"Sending ASCII data (%u bytes)",
                 (AsciiBuf.GetSize())));
               // Should be equal, just in case it's rounded (see above)
               OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
@@ -1736,12 +1736,12 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
           {
             if (!OperationProgress->TransferedSize)
             {
-              FTerminal->LogEvent(::FORMAT(L"Sending BINARY data (first block, %u bytes)",
+              FTerminal->LogEvent(FORMAT(L"Sending BINARY data (first block, %u bytes)",
                 BlockBuf.GetSize()));
             }
             else if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
             {
-              FTerminal->LogEvent(::FORMAT(L"Sending BINARY data (%u bytes)",
+              FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
                 (BlockBuf.GetSize())));
             }
             FSecureShell->Send(BlockBuf.GetData(), BlockBuf.GetSize());
@@ -1847,7 +1847,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
     )
   }
 
-  FTerminal->LogEvent(::FORMAT(L"Copying \"%s\" to remote directory finished.", FileName.c_str()));
+  FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory finished.", FileName.c_str()));
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
@@ -1856,7 +1856,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
 {
   int Attrs;
 
-  FTerminal->LogEvent(::FORMAT(L"Entering directory \"%s\".", (DirectoryName)));
+  FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", (DirectoryName)));
 
   OperationProgress->SetFile(DirectoryName);
   std::wstring DestFileName = CopyParam->ChangeFileName(
@@ -1875,7 +1875,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
   /* TODO 1: maybe send filetime */
 
   // Send directory modes (rights), filesize and file name
-  Buf = ::FORMAT(L"D%s 0 %s",
+  Buf = FORMAT(L"D%s 0 %s",
     (CopyParam->RemoteFileRights(Attrs).GetOctal(), DestFileName));
   FSecureShell->SendLine(Buf);
   SCPResponse();
@@ -1960,7 +1960,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     if (FTerminal->GetActive())
     {
       // Tell remote side, that we're done.
-      FTerminal->LogEvent(::FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
+      FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
       FSecureShell->SendLine(L"E");
       SCPResponse();
     }
@@ -1978,7 +1978,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime()) Options = L"-p";
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
-  FTerminal->LogEvent(::FORMAT(L"Copying %d files/directories to local directory "
+  FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
     L"\"%s\"", (FilesToCopy->GetCount(), TargetDir)));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
@@ -2100,7 +2100,7 @@ void TSCPFileSystem::SCPError(const std::wstring Message, bool Fatal)
 void TSCPFileSystem::SCPSendError(const std::wstring Message, bool Fatal)
 {
   char ErrorLevel = (char)(Fatal ? 2 : 1);
-  FTerminal->LogEvent(::FORMAT(L"Sending SCP error (%d) to remote side:",
+  FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
     ((int)ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
@@ -2246,7 +2246,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           std::wstring OnlyFileName = UnixExtractFileName(Line);
           if (Line != OnlyFileName)
           {
-            FTerminal->LogEvent(::FORMAT(L"Warning: Remote host set a compound pathname '%s'", (Line)));
+            FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", (Line)));
           }
 
           OperationProgress->SetFile(OnlyFileName);
@@ -2271,7 +2271,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         std::wstring SourceFullName = SourceDir + OperationProgress->FileName;
         if (!CopyParam->AllowTransfer(SourceFullName, osRemote, Dir, MaskParams))
         {
-          FTerminal->LogEvent(::FORMAT(L"File \"%s\" excluded from transfer",
+          FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer",
             AbsoluteFileName.c_str()));
           SkipConfirmed = true;
           SCPError(L"", false);

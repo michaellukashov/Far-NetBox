@@ -37,7 +37,7 @@ void Busy(bool /*Start*/)
 //---------------------------------------------------------------------------
 std::wstring SshVersionString()
 {
-  return ::FORMAT(L"WinSCP-FAR-release-%s", Configuration->GetVersion().c_str());
+  return FORMAT(L"WinSCP-FAR-release-%s", Configuration->GetVersion().c_str());
 }
 
 //---------------------------------------------------------------------------

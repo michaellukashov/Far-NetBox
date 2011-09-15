@@ -510,7 +510,7 @@ void TWinSCPPlugin::ShowExtendedException(exception * E)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::OldFar()
 {
-  throw ExtException(::FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
+  throw ExtException(FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(exception * E, int OpMode)
