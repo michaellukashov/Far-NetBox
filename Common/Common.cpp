@@ -3,12 +3,16 @@
 // #include <ShFolder.h>
 #include <shlobj.h>
 
+#include <boost/algorithm/string.hpp>
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
 // #include <StrUtils.hpp>
 // #include <math.h>
+
+namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1857,8 +1861,8 @@ int Pos(const std::wstring str, const std::wstring substr)
 
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
 {
-    // FIXME
     std::wstring result = str;
+    alg::replace_all(result, from, to);
     return result;
 }
 
