@@ -1199,7 +1199,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
   }
   catch (exception &E)
   {
-    throw ETerminal(&E, FmtLoadStr(LIST_LINE_ERROR, value.c_str()));
+    throw ETerminal(&E, ::FmtLoadStr(LIST_LINE_ERROR, value.c_str()));
   }
 }
 //---------------------------------------------------------------------------
