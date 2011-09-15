@@ -249,30 +249,28 @@ std::wstring ShellDelimitStr(std::wstring Str, char Quote)
 std::wstring ExceptionLogString(exception *E)
 {
   assert(E);
-  // if (E->InheritsFrom(__classid(exception)))
-  if (true) // FIXME dynamic_cast<E>(E) != NULL) // ->InheritsFrom(__classid(exception)))
+  if (::InheritsFrom<std::exception, std::exception>(*E)) // ->(__classid(exception)))
+  // if (true) // FIXME dynamic_cast<E>(E) != NULL) // ->InheritsFrom(__classid(exception)))
   {
     std::wstring Msg;
     // Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message));
     Msg = ::MB2W(E->what());
-    if (false) // FIXME E->InheritsFrom(__classid(ExtException)))
+    if (::InheritsFrom<std::exception, ExtException>(*E)) // FIXME E->InheritsFrom(__classid(ExtException)))
     {
-      /*
-      TStrings * MoreMessages = ((ExtException*)E)->MoreMessages;
+      TStrings * MoreMessages = ((ExtException *)E)->GetMoreMessages();
       if (MoreMessages)
       {
-        Msg += "\n" +
-          StringReplace(MoreMessages->Text, "\r", "", TReplaceFlags() << rfReplaceAll);
+        Msg += L"\n" +
+          ::StringReplace(MoreMessages->GetText(), L"\r", L""); //, TReplaceFlags() << rfReplaceAll);
       }
-      */
     }
     return Msg;
   }
   else
   {
-    wchar_t Buffer[1024];
-    // ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
-    return std::wstring(Buffer);
+    // wchar_t Buffer[1024] = {0};
+    // FIXME ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
+    return std::wstring(E->what());
   }
 }
 //---------------------------------------------------------------------------
