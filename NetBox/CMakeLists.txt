@@ -116,6 +116,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/core/SessionData.cpp
     ${PROJECT_ROOT}/core/Configuration.cpp
     ${PROJECT_ROOT}/core/ScpFileSystem.cpp
+    ${PROJECT_ROOT}/core/FtpFileSystem.cpp
     ${PROJECT_ROOT}/core/SftpFileSystem.cpp
     ${PROJECT_ROOT}/core/PuttyIntf.cpp
     ${PROJECT_ROOT}/core/Cryptography.cpp
