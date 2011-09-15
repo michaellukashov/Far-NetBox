@@ -275,6 +275,10 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
         BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "BB");
     }
     {
+        std::wstring str = ::AnsiReplaceStr(L"AA", L"A", L"B");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "BB");
+    }
+    {
         std::wstring str = L"ABC";
         BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), -1);
         BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 0);

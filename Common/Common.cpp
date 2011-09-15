@@ -1842,8 +1842,8 @@ wchar_t LowCase(const wchar_t c)
 
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to)
 {
-    // FIXME
     std::wstring result = str;
+    alg::replace_all(result, from, to);
     return result;
 }
 
