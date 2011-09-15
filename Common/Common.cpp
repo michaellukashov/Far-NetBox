@@ -253,7 +253,6 @@ std::wstring ExceptionLogString(exception *E)
   {
     std::wstring Msg;
     Msg = FORMAT(L"(%s) %s", L"exception", ::MB2W(E->what()).c_str());
-    // Msg = ::MB2W(E->what());
     if (::InheritsFrom<std::exception, ExtException>(E))
     {
       TStrings * MoreMessages = ((ExtException *)E)->GetMoreMessages();
