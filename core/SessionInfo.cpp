@@ -894,7 +894,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   // FIXME BeginUpdate();
   try
   {
-    #define ADF(S, __VA_ARGS__) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), (TDoAddLog)&TSessionLog::DoAddToSelf);
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), (TDoAddLog)&TSessionLog::DoAddToSelf);
     AddSeparator();
     ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
@@ -909,7 +909,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
     AddSeparator();
     ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
-    ADF(L"Host name: %s (Port: %d)", Data->GetHostName().c_str(), Data->GetPortNumber);
+    ADF(L"Host name: %s (Port: %d)", Data->GetHostName().c_str(), Data->GetPortNumber());
     ADF(L"User name: %s (Password: %s, Key file: %s)",
       Data->GetUserName().c_str(), BooleanToEngStr(!Data->GetPassword().empty()).c_str(),
        BooleanToEngStr(!Data->GetPublicKeyFile().empty()).c_str())
@@ -984,17 +984,17 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"SFTP Bugs: %s", Bugs.c_str());
       ADF(L"Return code variable: %s; Lookup user groups: %s",
         (Data->GetDetectReturnVar() ? std::wstring(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
-         BooleanToEngStr(Data->GetLookupUserGroups()).c_str()));
+        BooleanToEngStr(Data->GetLookupUserGroups()).c_str()));
       ADF(L"Shell: %s", (Data->GetShell().empty()? std::wstring(L"default").c_str() : Data->GetShell().c_str()));
-      ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf);
+      ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
       ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
         BooleanToEngStr(Data->GetClearAliases()).c_str(),
         BooleanToEngStr(Data->GetUnsetNationalVars()).c_str(),
-         BooleanToEngStr(Data->GetResolveSymlinks()).c_str());
+        BooleanToEngStr(Data->GetResolveSymlinks()).c_str());
       ADF(L"LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
         Data->GetListingCommand().c_str(),
-         BooleanToEngStr(Data->GetIgnoreLsWarnings().c_str()),
-         BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
+        BooleanToEngStr(Data->GetIgnoreLsWarnings()).c_str(),
+        BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
     }
     if (Data->GetFSProtocol() == fsFTP)
     {
