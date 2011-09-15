@@ -595,14 +595,14 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 //---------------------------------------------------------------------------
 unsigned long GetSpeedLimit(const std::wstring & Text)
 {
-  unsigned long Speed;
+  unsigned long Speed = 0;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
   {
     Speed = 0;
   }
   else
   {
-    int SSpeed;
+    int SSpeed = 0;
     if (!TryStrToInt(Text, SSpeed) ||
         (SSpeed < 0))
     {

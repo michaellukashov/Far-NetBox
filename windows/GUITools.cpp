@@ -139,7 +139,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params)
 bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle)
 {
-  bool Result;
+  bool Result = false;
 /* // FIXME
   TShellExecuteInfo ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
@@ -162,7 +162,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
 bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
   const std::wstring Params, TProcessMessagesEvent ProcessMessages)
 {
-  bool Result;
+  bool Result = false;
 /* // FIXME 
   TShellExecuteInfo ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));

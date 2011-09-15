@@ -1885,7 +1885,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     // TSearchRec SearchRec;
     WIN32_FIND_DATA SearchRec;
-    bool FindOK;
+    bool FindOK = false;
 // FIXME 
     // FILE_OPERATION_LOOP (L"", // FIXME MTLOAD(LIST_DIR_ERROR, (DirectoryName)),
       // FindOK = (bool)(FindFirst(IncludeTrailingBackslash(DirectoryName) + L"*.*",

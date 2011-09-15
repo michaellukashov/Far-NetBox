@@ -365,7 +365,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       {
         RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
           &Type, &Buffer[0], &Size);
-        if (Result == ERROR_MORE_DATA)
+        if (RegResult == ERROR_MORE_DATA)
         {
           Buffer.resize(Size);
         }

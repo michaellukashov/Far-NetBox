@@ -4629,7 +4629,8 @@ TCopyParamType TCopyParamsContainer::GetParams()
   if (Result.GetTransferMode() == tmAutomatic)
   {
     Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
-    assert(Result.GetAsciiFileMask().GetIsValid(0,0));
+    int Start, Length;
+    assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
   }
 
   if (CCLowerCaseButton->GetChecked()) Result.SetFileNameCase(ncLowerCase);

@@ -988,7 +988,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
   else
   {
     unsigned short Year, Month, Day;
-    // DecodeDate(DateTime, Year, Month, Day);
+    ::DecodeDate(DateTime, Year, Month, Day);
 
     TDSTCache * CurrentCache = &DSTCache[0];
 
@@ -1948,7 +1948,7 @@ std::wstring FormatFloat(std::wstring Format, double value)
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
-    TTimeStamp result;
+    TTimeStamp result = {0, 0};
     return result;
 }
 
