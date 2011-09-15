@@ -1064,7 +1064,7 @@ private:
 //---------------------------------------------------------------------------
 std::wstring ReplaceCopyright(std::wstring S)
 {
-  return StringReplace(S, L"©", L"(c)"); // , TReplaceFlags() << rfReplaceAll << rfIgnoreCase);
+  return ::StringReplace(S, L"©", L"(c)");
 }
 //---------------------------------------------------------------------------
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :

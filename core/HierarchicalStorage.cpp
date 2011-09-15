@@ -44,7 +44,7 @@ std::wstring MungeIniName(const std::wstring Str)
   // make this fast for now
   if (P > 0)
   {
-    return ::StringReplace(Str, L"=", L"%3D"); // , TReplaceFlags() << rfReplaceAll);
+    return ::StringReplace(Str, L"=", L"%3D");
   }
   else
   {
@@ -58,7 +58,7 @@ std::wstring UnMungeIniName(const std::wstring Str)
   // make this fast for now
   if (P > 0)
   {
-    return ::StringReplace(Str, L"%3D", L"="); // , TReplaceFlags() << rfReplaceAll);
+    return ::StringReplace(Str, L"%3D", L"=");
   }
   else
   {

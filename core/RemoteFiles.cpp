@@ -200,12 +200,12 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
 //---------------------------------------------------------------------------
 std::wstring FromUnixPath(const std::wstring Path)
 {
-  return StringReplace(Path, L"/", L"\\"); //, TReplaceFlags() << rfReplaceAll);
+  return ::StringReplace(Path, L"/", L"\\");
 }
 //---------------------------------------------------------------------------
 std::wstring ToUnixPath(const std::wstring Path)
 {
-  return StringReplace(Path, L"\\", L"/"); // , TReplaceFlags() << rfReplaceAll);
+  return ::StringReplace(Path, L"\\", L"/");
 }
 //---------------------------------------------------------------------------
 static void CutFirstDirectory(std::wstring & S, bool Unix)

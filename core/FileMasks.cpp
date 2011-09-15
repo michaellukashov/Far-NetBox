@@ -624,7 +624,7 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
       {
         if (!LastPass)
         {
-          Replacement = ::StringReplace(Replacement, L"!", L"!!"); // TReplaceFlags() << rfReplaceAll);
+          Replacement = ::StringReplace(Replacement, L"!", L"!!");
         }
         if (Delimit)
         {

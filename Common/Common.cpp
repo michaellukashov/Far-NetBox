@@ -1602,7 +1602,7 @@ void AnsiToOem(std::wstring & Str)
 //---------------------------------------------------------------------------
 std::wstring EscapeHotkey(const std::wstring & Caption)
 {
-  return Caption; // FIXME StringReplace(Caption, "&", "&&", TReplaceFlags() << rfReplaceAll);
+  return ::StringReplace(Caption, L"&", L"&&");
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
