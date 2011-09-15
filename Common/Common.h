@@ -238,8 +238,6 @@ public:
   bool GetTerminated() { return true; }
 };
 //---------------------------------------------------------------------------
-// std::wstring FORMAT(const wchar_t *fmt, ...);
-//---------------------------------------------------------------------------
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);

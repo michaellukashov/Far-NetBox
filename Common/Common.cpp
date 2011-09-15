@@ -1971,18 +1971,6 @@ bool InheritsFrom(const exception &E1, const exception &from)
 }
 
 //---------------------------------------------------------------------------
-// std::wstring FORMAT(const wchar_t *fmt, ...)
-// {
-    // va_list args;
-    // va_start(args, fmt);
-    // int len = _vscwprintf(fmt, args);
-    // std::wstring result(len + sizeof(wchar_t), 0);
-    // vswprintf_s(&result[0], result.size(), fmt, args);
-    // va_end(args);
-    // return result;
-// }
-
-//---------------------------------------------------------------------------
 
 std::wstring Format(const wchar_t *format, ...)
 {
