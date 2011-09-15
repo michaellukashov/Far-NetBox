@@ -121,12 +121,12 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
 
     if (!ExecuteShell(Program, Params))
     {
-      throw ExtException(L""); // FIXME FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+      throw ExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
     }
   }
   else
   {
-    throw ExtException(L""); // FIXME FMTLOAD(FILE_NOT_FOUND, (Program)));
+    throw ExtException(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
   }
 }
 //---------------------------------------------------------------------------

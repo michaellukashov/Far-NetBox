@@ -362,7 +362,7 @@ void TSecureShell::Init()
     {
       if (FAuthenticating && !FAuthenticationLog.empty())
       {
-        FUI->FatalError(&E, L""); // FIXME FMTLOAD(AUTHENTICATION_LOG, (FAuthenticationLog)));
+        FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog.c_str()));
       }
       else
       {
@@ -869,9 +869,9 @@ int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError);
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
-    Params.TimerMessage = L""; // FIXME FMTLOAD(TIMEOUT_STILL_WAITING2, (FSessionData->GetTimeout()));
+    Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING2, FSessionData->GetTimeout());
     Params.TimerAnswers = qaAbort;
-    Answer = FUI->QueryUser(L"", // FIXME  FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, (FSessionData->GetTimeout())),
+    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
   }
   catch (...)
@@ -1015,8 +1015,8 @@ int TSecureShell::TranslatePuttyMessage(
           (strncmp(::W2MB(Message.c_str()).c_str(), Original, PrefixLen) == 0) &&
           (strncmp(::W2MB(Message.c_str()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
-        Message = L""; // FIXME FMTLOAD(Translation[Index].Translation,
-          // (Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen).TrimRight()));
+        Message = FMTLOAD(Translation[Index].Translation,
+          ::TrimRight(Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen)).c_str());
         Result = int(Index);
         break;
       }
@@ -1162,7 +1162,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
     if (Startup)
     {
-      FatalError(L""); // FIXME FMTLOAD(EVENT_SELECT_ERROR, (WSAGetLastError())));
+      FatalError(FMTLOAD(EVENT_SELECT_ERROR, WSAGetLastError()));
     }
   }
 }
@@ -1283,7 +1283,7 @@ void inline TSecureShell::CheckConnection(int Message)
     int ExitCode = get_ssh_exitcode(FBackendHandle);
     if (ExitCode >= 0)
     {
-      Str += L" " + std::wstring(L""); // FIXME FMTLOAD(SSH_EXITCODE, (ExitCode));
+      Str += L" " + std::wstring(FMTLOAD(SSH_EXITCODE, ExitCode));
     }
     FatalError(Str);
   }
@@ -1798,7 +1798,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
       int R = FUI->QueryUser(
-        L"", // FIXME FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), (KeyType, Fingerprint)),
+        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType, Fingerprint.c_str()),
         NULL, Answers, &Params, qtWarning);
 
       switch (R) {
@@ -1824,7 +1824,7 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
   std::wstring Msg;
   if (AlgType == L"key-exchange algorithm")
   {
-    Msg = L""; // FIXME FMTLOAD(KEX_BELOW_TRESHOLD, (AlgName));
+    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName.c_str());
   }
   else
   {
@@ -1846,7 +1846,7 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
       assert(false);
     }
 
-    Msg = L""; // FIXME FMTLOAD(CIPHER_BELOW_TRESHOLD, (LoadStr(CipherType), AlgName));
+    Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
   }
 
   if (FUI->QueryUser(Msg, NULL, qaYes | qaNo, NULL, qtWarning) == qaNo)

@@ -642,7 +642,7 @@ TIniFileStorage::~TIniFileStorage()
           }
           catch(exception & E)
           {
-            throw ExtException(&E); // FIXME , FMTLOAD(CREATE_FILE_ERROR, (Storage)));
+            throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()));
           }
         }
       }

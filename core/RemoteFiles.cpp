@@ -2028,7 +2028,7 @@ void TRights::SetText(const std::wstring & value)
         (!GetAllowUndef() && (value.find_first_of(UndefSymbol) > 0)) ||
         (value.find_first_of(L" ") > 0))
     {
-      // FIXME throw exception(FMTLOAD(RIGHTS_ERROR, (value)));
+      throw ExtException(FMTLOAD(RIGHTS_ERROR, value.c_str()));
     }
 
     FSet = 0;
@@ -2156,7 +2156,7 @@ void TRights::SetOctal(std::wstring value)
 
     if (!Correct)
     {
-      // FIXME throw exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, (value)));
+      throw ExtException(FMTLOAD(INVALID_OCTAL_PERMISSIONS, value.c_str()));
     }
 
     SetNumber(static_cast<unsigned short>(

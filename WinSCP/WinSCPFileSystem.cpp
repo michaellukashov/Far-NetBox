@@ -1066,7 +1066,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
   TempDir = FPlugin->TemporaryDir();
   if (TempDir.empty() || !ForceDirectories(TempDir))
   {
-    // FIXME throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
+    throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
   }
 
   FTerminal->SetExceptionOnFail(true);

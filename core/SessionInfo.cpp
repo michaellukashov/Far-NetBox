@@ -817,7 +817,7 @@ void TSessionLog::OpenLogFile()
     }
     else
     {
-      throw std::exception(""); //FIXME FMTLOAD(LOG_OPENERROR, (NewFileName)));
+      throw ExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
     }
   }
   catch (exception & E)

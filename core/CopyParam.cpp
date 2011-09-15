@@ -167,7 +167,7 @@ std::wstring TCopyParamType::GetInfoStr(std::wstring Separator, int Options) con
 
   if (GetCPSLimit() > 0)
   {
-    // FIXME ADD(FMTLOAD(COPY_INFO_CPS_LIMIT, (int(GetCPSLimit() / 1024))).c_str(), cpaExcludeMaskOnly);
+    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT, int(GetCPSLimit() / 1024)).c_str(), cpaExcludeMaskOnly);
     ADD(L"", cpaExcludeMaskOnly);
   }
 
@@ -606,7 +606,7 @@ unsigned long GetSpeedLimit(const std::wstring & Text)
     if (!TryStrToInt(Text, SSpeed) ||
         (SSpeed < 0))
     {
-      throw ExtException(L""); // FIXME FMTLOAD(SPEED_INVALID, (Text)));
+      throw ExtException(FMTLOAD(SPEED_INVALID, Text.c_str()));
     }
     Speed = SSpeed;
   }

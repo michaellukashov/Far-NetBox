@@ -560,7 +560,7 @@ void TSCPFileSystem::SkipFirstLine()
   std::wstring Line = FSecureShell->ReceiveLine();
   if (Line != FCommandSet->GetFirstLine())
   {
-    FTerminal->TerminalError(NULL, L""); // FIXME FMTLOAD(FIRST_LINE_EXPECTED, (Line)));
+    FTerminal->TerminalError(NULL, FMTLOAD(FIRST_LINE_EXPECTED, Line.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -614,7 +614,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
 
       if (Params & coOnlyReturnCode && WrongReturnCode)
       {
-        FTerminal->TerminalError(L""); // FMTLOAD(COMMAND_FAILED_CODEONLY, (ReturnCode)));
+        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
         else
       if (!(Params & coOnlyReturnCode) &&
@@ -622,7 +622,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
            WrongReturnCode))
       {
         assert(Cmd != NULL);
-        FTerminal->TerminalError(L""); // FMTLOAD(COMMAND_FAILED, (*Cmd, ReturnCode, Message)));
+        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, *Cmd, GetReturnCode(), Message.c_str()));
       }
     }
   }
@@ -977,7 +977,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
         if (Empty)
         {
-          throw ExtException(L""); // FIXME FMTLOAD(EMPTY_DIRECTORY, (FileList->Directory)));
+          throw ExtException(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
         }
       }
 
@@ -1412,7 +1412,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           int Answer;
           if (File->GetIsDirectory())
           {
-            std::wstring Message = L""; // FIXME FMTLOAD(DIRECTORY_OVERWRITE, (FileNameOnly));
+            std::wstring Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
             TQueryParams QueryParams(qpNeverAskAgainCheck);
             SUSPEND_OPERATION
             (
@@ -1499,7 +1499,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         {
           TQueryParams Params(qpAllowContinueOnError);
           SUSPEND_OPERATION (
-            if (FTerminal->QueryUserException(L"", // FIXME FMTLOAD(COPY_ERROR, (FileName)),
+            if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                 &E,
               qaOK | qaAbort, &Params, qtError) == qaAbort)
             {
@@ -1639,7 +1639,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
 
           // This is crucial, if it fails during file transfer, it's fatal error
           FILE_OPERATION_LOOP_EX (!OperationProgress->TransferingFile,
-              L"", // FIXME FMTLOAD(READ_ERROR, (FileName)),
+              FMTLOAD(READ_ERROR, FileName.c_str()),
             BlockBuf.LoadStream(Stream, OperationProgress->LocalBlockSize(), true);
           );
 
@@ -1797,7 +1797,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
         // Every exception during file transfer is fatal
         if (OperationProgress->TransferingFile)
         {
-          FTerminal->FatalError(&E, L""); // FIXME , FMTLOAD(COPY_FATAL, (FileName)));
+          FTerminal->FatalError(&E, FMTLOAD(COPY_FATAL, FileName.c_str()));
         }
         else
         {
@@ -1835,14 +1835,14 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(DELETE_LOCAL_FILE_ERROR, (FileName)),
+      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
         THROWOSIFFALSE(::DeleteFile(FileName));
       )
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
   {
-    FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (FileName)),
+    FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
       THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
     )
   }
@@ -1863,7 +1863,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     ExtractFileName(DirectoryName, true), osLocal, Level == 0);
 
   // Get directory attributes
-  FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_GET_ATTRS, (DirectoryName)),
+  FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
     Attrs = FileGetAttr(DirectoryName);
     if (Attrs == -1) RaiseLastOSError();
   )
@@ -1911,7 +1911,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         {
           TQueryParams Params(qpAllowContinueOnError);
           SUSPEND_OPERATION (
-            if (FTerminal->QueryUserException(L"", // FIXME FMTLOAD(COPY_ERROR, (FileName)),
+            if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                 &E,
                   qaOK | qaAbort, &Params, qtError) == qaAbort)
             {
@@ -1928,7 +1928,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
           );
         }
 // FIXME 
-        // FILE_OPERATION_LOOP (L"", // FMTLOAD(LIST_DIR_ERROR, (DirectoryName)),
+        // FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
           // FindOK = (FindNext(SearchRec) == 0);
         // );
       };
@@ -1949,7 +1949,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
       else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
       {
       // FIXME
-        // FILE_OPERATION_LOOP (L"", // FMTLOAD(CANT_SET_ATTRS, (DirectoryName)),
+        // FILE_OPERATION_LOOP (L"", FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
           // THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
         // )
       }
@@ -2193,7 +2193,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         switch (Ctrl) {
           case 1:
             // Error (already logged by ReceiveLine())
-            THROW_FILE_SKIPPED(NULL, L""); // FIXME FMTLOAD(REMOTE_ERROR, (Line)));
+            THROW_FILE_SKIPPED(NULL, FMTLOAD(REMOTE_ERROR, Line.c_str()));
 
           case 2:
             // Fatal error, terminate copying
@@ -2229,7 +2229,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
             break; // continue pass switch{}
 
           default:
-            FTerminal->FatalError(NULL, L""); // FIXME FMTLOAD(SCP_INVALID_CONTROL_RECORD, (Ctrl, Line)));
+            FTerminal->FatalError(NULL, FMTLOAD(SCP_INVALID_CONTROL_RECORD, Ctrl, Line.c_str()));
         }
 
         TFileMasks::TParams MaskParams;
@@ -2289,14 +2289,14 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         {
           if (FileData.Exists && !(FileData.Attrs & faDirectory))
           {
-            SCPError(L"", // FIXME FMTLOAD(NOT_DIRECTORY_ERROR, (DestFileName)),
+            SCPError(FMTLOAD(NOT_DIRECTORY_ERROR, DestFileName.c_str()),
                 false);
           }
 
           if (!FileData.Exists)
           {
             // FIXME
-            // FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CREATE_DIR_ERROR, (DestFileName)),
+            // FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFileName.c_str()),
               // if (!ForceDirectories(DestFileName)) RaiseLastOSError();
             // );
             /* SCP: can we set the timestamp for directories ? */
@@ -2418,7 +2418,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
                   // This is crucial, if it fails during file transfer, it's fatal error
                   // FIXME
-                  // FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, (DestFileName)),
+                  // FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
                     // BlockBuf.WriteToStream(FileStream, BlockBuf.Size);
                   // );
 
@@ -2436,7 +2436,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
               {
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
-                  L""); // FIXME FMTLOAD(COPY_FATAL, (OperationProgress->GetFileName())));
+                  FMTLOAD(COPY_FATAL, OperationProgress->FileName.c_str()));
               }
 
               OperationProgress->TransferingFile = false;
@@ -2489,7 +2489,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           if ((NewAttrs & FileData.Attrs) != NewAttrs)
           {
             // FIXME
-            // FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, (DestFileName)),
+            // FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
               // THROWOSIFFALSE(FileSetAttr(DestFileName, FileData.Attrs | NewAttrs) == 0);
             // );
           }
@@ -2502,7 +2502,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
       {
         SUSPEND_OPERATION (
           TQueryParams Params(qpAllowContinueOnError);
-          if (FTerminal->QueryUserException(L"", // FIXME FMTLOAD(COPY_ERROR, (AbsoluteFileName)),
+          if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
                 &E, qaOK | qaAbort, &Params, qtError) == qaAbort)
           {
             OperationProgress->Cancel = csCancel;

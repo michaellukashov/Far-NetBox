@@ -661,11 +661,11 @@ std::wstring TConfiguration::GetVersionStr()
   {
   /* FIXME 
     TVSFixedFileInfo * Info = FixedApplicationInfo;
-    return FMTLOAD(VERSION, (
+    return FMTLOAD(VERSION,
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS),
-      LOWORD(Info->dwFileVersionLS)));
+      LOWORD(Info->dwFileVersionLS));
    */
     return L"";
   }

@@ -362,7 +362,7 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     }
     else
     {
-      throw exception(); // FIXME FMTLOAD(INVALID_SHELL_COMMAND, ("\"" + Command)));
+      throw ExtException(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + Command).c_str()));
     }
   }
   else
