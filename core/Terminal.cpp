@@ -1913,11 +1913,11 @@ int TTerminal::ConfirmFileOverwrite(const std::wstring FileName,
     }
     if (FileParams != NULL)
     {
-      Message = FMTLOAD(FILE_OVERWRITE_DETAILS, (Message,
-        IntToStr(FileParams->SourceSize),
+      Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
+        IntToStr(FileParams->SourceSize).c_str(),
         UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
         IntToStr(FileParams->DestSize).c_str(),
-        UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str()));
+        UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
     }
     Result = QueryUser(Message, NULL, Answers, QueryParams);
     switch (Result)
