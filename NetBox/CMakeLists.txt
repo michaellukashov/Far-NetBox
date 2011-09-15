@@ -281,6 +281,7 @@ set ( TESTNETBOX_01_HEADERS
 
 set ( TESTNETBOX_01_SOURCES ${COMMON_SOURCES}
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
+    ${PROJECT_ROOT}/resource/testnetbox_01.rc
 )
 
 set ( TESTNETBOX_01_LIBRARIES
