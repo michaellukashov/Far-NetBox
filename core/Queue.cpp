@@ -900,7 +900,7 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   FCriticalSection = new TCriticalSection();
 
   FTerminal = new TBackgroundTerminal(FQueue->FTerminal, Queue->FSessionData,
-    FQueue->FConfiguration, this, ::FORMAT(L"Background %d", Index));
+    FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
   try
   {
     FTerminal->SetUseBusyCursor(false);

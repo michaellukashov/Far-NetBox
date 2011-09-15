@@ -678,7 +678,7 @@ void TTerminal::Open()
             FSessionData->ConfigureTunnel(FTunnelLocalPortNumber);
 
             DoInformation(LoadStr(USING_TUNNEL), false);
-            LogEvent(::FORMAT(L"Connecting via tunnel interface %s:%d.",
+            LogEvent(FORMAT(L"Connecting via tunnel interface %s:%d.",
               FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
           }
           else
@@ -720,7 +720,7 @@ void TTerminal::Open()
                   {
                     // the only case where we expect this to happen
                     // FIXME assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
-                    // FIXME FatalError(&E, FMTLOAD(TUNNEL_ERROR, (FTunnelError)));
+                    FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
                   }
                   else
                   {
@@ -847,25 +847,25 @@ void TTerminal::OpenTunnel()
       if (FTunnelLocalPortNumber > Configuration->GetTunnelLocalPortNumberHigh())
       {
         FTunnelLocalPortNumber = 0;
-        // FIXME FatalError(NULL, FMTLOAD(TUNNEL_NO_FREE_PORT,
-          // (Configuration->GetTunnelLocalPortNumberLow(), Configuration->GetTunnelLocalPortNumberHigh())));
+        FatalError(NULL, FMTLOAD(TUNNEL_NO_FREE_PORT,
+          Configuration->GetTunnelLocalPortNumberLow(), Configuration->GetTunnelLocalPortNumberHigh()));
       }
     }
-    LogEvent(::FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
+    LogEvent(FORMAT(L"Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
   }
 
   try
   {
     FTunnelData = new TSessionData(L"");
     FTunnelData->Assign(StoredSessions->GetDefaultSettings());
-    FTunnelData->Name = L""; // FIXMEE FMTLOAD(TUNNEL_SESSION_NAME, (FSessionData->GetSessionName()));
+    FTunnelData->Name = FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str());
     FTunnelData->SetTunnel(false);
     FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
     FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
     FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
     FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
     FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
-    FTunnelData->SetTunnelPortFwd(::FORMAT(L"L%d\t%s:%d",
+    FTunnelData->SetTunnelPortFwd(FORMAT(L"L%d\t%s:%d",
       FTunnelLocalPortNumber, FSessionData->GetHostName().c_str(), FSessionData->GetPortNumber()));
     FTunnelData->SetProxyMethod(FSessionData->GetProxyMethod());
     FTunnelData->SetProxyHost(FSessionData->GetProxyHost());
@@ -1057,7 +1057,7 @@ int TTerminal::QueryUser(const std::wstring Query,
   TStrings * MoreMessages, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  LogEvent(::FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
+  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
   int Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
@@ -1908,16 +1908,16 @@ int TTerminal::ConfirmFileOverwrite(const std::wstring FileName,
   {
     if (Message.empty())
     {
-      Message = L""; // FIXME FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
-        // REMOTE_FILE_OVERWRITE), (FileName));
+      Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE :
+        REMOTE_FILE_OVERWRITE), FileName.c_str());
     }
     if (FileParams != NULL)
     {
-      Message = L""; // FIXME FMTLOAD(FILE_OVERWRITE_DETAILS, (Message,
-        // IntToStr(FileParams->SourceSize),
-        // UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision),
-        // IntToStr(FileParams->DestSize),
-        // UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision)));
+      Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
+        IntToStr(FileParams->SourceSize).c_str(),
+        UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
+        IntToStr(FileParams->DestSize).c_str(),
+        UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
     }
     Result = QueryUser(Message, NULL, Answers, QueryParams);
     switch (Result)
@@ -2103,8 +2103,8 @@ void TTerminal::EnsureNonExistence(const std::wstring FileName)
     TRemoteFile *File = FFiles->FindFile(FileName);
     if (File)
     {
-      if (File->GetIsDirectory()) throw ECommand(NULL, L""); // FIXME FMTLOAD(RENAME_CREATE_DIR_EXISTS, (FileName)));
-        else throw ECommand(NULL, L""); // FIXME FMTLOAD(RENAME_CREATE_FILE_EXISTS, (FileName)));
+      if (File->GetIsDirectory()) throw ECommand(NULL, FMTLOAD(RENAME_CREATE_DIR_EXISTS, FileName.c_str()));
+        else throw ECommand(NULL, FMTLOAD(RENAME_CREATE_FILE_EXISTS, FileName.c_str()));
     }
   }
 }
@@ -2270,7 +2270,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     }
     catch (exception &E)
     {
-      CommandError(&E, L""); // FIXME FmtLoadStr(LIST_DIR_ERROR, ARRAYOFCONST((FFiles->Directory))));
+      CommandError(&E, ::FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
   }
 }
@@ -2444,7 +2444,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * FileList)
   }
   catch (exception &E)
   {
-    CommandError(&E, L""); // FIXME FmtLoadStr(LIST_DIR_ERROR, ARRAYOFCONST((FileList->Directory))));
+    CommandError(&E, ::FmtLoadStr(LIST_DIR_ERROR, FileList->GetDirectory().c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2454,13 +2454,13 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   assert(FFileSystem);
   try
   {
-    LogEvent(::FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
+    LogEvent(FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
   catch (exception &E)
   {
-    CommandError(&E, L""); // FIXME FMTLOAD(READ_SYMLINK_ERROR, (SymlinkFile->GetFileName())));
+    CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, SymlinkFile->GetFileName().c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2471,7 +2471,7 @@ void TTerminal::ReadFile(const std::wstring FileName,
   File = NULL;
   try
   {
-    LogEvent(::FORMAT(L"Listing file \"%s\".", FileName.c_str()));
+    LogEvent(FORMAT(L"Listing file \"%s\".", FileName.c_str()));
     FFileSystem->ReadFile(FileName, File);
     ReactOnCommand(fsListFile);
   }
@@ -2479,7 +2479,7 @@ void TTerminal::ReadFile(const std::wstring FileName,
   {
     if (File) delete File;
     File = NULL;
-    CommandError(&E, L""); // FIXME FMTLOAD(CANT_GET_ATTRS, (FileName)));
+    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2684,12 +2684,12 @@ void TTerminal::RecycleFile(std::wstring FileName,
 
   if (!IsRecycledFile(FileName))
   {
-    LogEvent(::FORMAT(L"Moving file \"%s\" to remote recycle bin '%s'.",
+    LogEvent(FORMAT(L"Moving file \"%s\" to remote recycle bin '%s'.",
       FileName.c_str(), GetSessionData()->GetRecycleBinPath().c_str()));
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
-    Params.FileMask = ::FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
+    Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
 
     MoveFile(FileName, File, &Params);
   }
@@ -2717,7 +2717,7 @@ void TTerminal::DeleteFile(std::wstring FileName,
   }
   else
   {
-    LogEvent(::FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
+    LogEvent(FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
     if (File) FileModified(File, FileName, true);
     DoDeleteFile(FileName, File, Params);
     ReactOnCommand(fsDeleteFile);
@@ -2738,7 +2738,7 @@ void TTerminal::DoDeleteFile(const std::wstring FileName,
   {
     COMMAND_ERROR_ARI_ACTION
     (
-      L"", // FIXME FMTLOAD(DELETE_FILE_ERROR, (FileName)),
+      FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
       DoDeleteFile(FileName, File, Params),
       Action
     );
@@ -2760,7 +2760,7 @@ void TTerminal::DeleteLocalFile(std::wstring FileName,
   {
     if (!RecursiveDeleteFile(FileName, false))
     {
-      throw ExtException(L""); // FIXME FMTLOAD(DELETE_FILE_ERROR, (FileName)));
+      throw ExtException(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()));
     }
   }
   else
@@ -2787,7 +2787,7 @@ void TTerminal::CustomCommandOnFile(std::wstring FileName,
     if (GetOperationProgress()->Cancel != csContinue) Abort();
     GetOperationProgress()->SetFile(FileName);
   }
-  LogEvent(::FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
+  LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
     Params->Command.c_str(), Params->Params, FileName.c_str()));
   if (File) FileModified(File, FileName);
   DoCustomCommandOnFile(FileName, File, Params->Command, Params->Params,
@@ -2822,7 +2822,7 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
   {
     COMMAND_ERROR_ARI
     (
-      L"", // FIXME FMTLOAD(CUSTOM_COMMAND_ERROR, (Command, FileName)),
+      FMTLOAD(CUSTOM_COMMAND_ERROR, Command, FileName.c_str()),
       DoCustomCommandOnFile(FileName, File, Command, Params, OutputEvent)
     );
   }
@@ -2883,11 +2883,11 @@ void TTerminal::ChangeFileProperties(std::wstring FileName,
   }
   if (GetLog()->GetLogging())
   {
-    LogEvent(::FORMAT(L"Changing properties of \"%s\" (%s)",
+    LogEvent(FORMAT(L"Changing properties of \"%s\" (%s)",
       FileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
     if (RProperties->Valid.Contains(vpRights))
     {
-      LogEvent(::FORMAT(L" - mode: \"%s\"", RProperties->Rights.GetModeStr().c_str()));
+      LogEvent(FORMAT(L" - mode: \"%s\"", RProperties->Rights.GetModeStr().c_str()));
     }
     if (RProperties->Valid.Contains(vpGroup))
     {
@@ -2905,7 +2905,7 @@ void TTerminal::ChangeFileProperties(std::wstring FileName,
     }
     if (RProperties->Valid.Contains(vpLastAccess))
     {
-      LogEvent(::FORMAT(L" - last access: \"%s\"",
+      LogEvent(FORMAT(L" - last access: \"%s\"",
         FormatDateTime(L"dddddd tt",
            UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
     }
@@ -2928,7 +2928,7 @@ void TTerminal::DoChangeFileProperties(const std::wstring FileName,
   {
     COMMAND_ERROR_ARI_ACTION
     (
-      L"", // FIXME FMTLOAD(CHANGE_PROPERTIES_ERROR, (FileName)),
+      FMTLOAD(CHANGE_PROPERTIES_ERROR, FileName.c_str()),
       DoChangeFileProperties(FileName, File, Properties),
       Action
     );
@@ -2985,7 +2985,7 @@ void TTerminal::CalculateFileSize(std::wstring FileName,
     {
       if (!File->GetIsSymLink())
       {
-        LogEvent(::FORMAT(L"Getting size of directory \"%s\"", FileName.c_str()));
+        LogEvent(FORMAT(L"Getting size of directory \"%s\"", FileName.c_str()));
         // pass in full path so we get it back in file list for AllowTransfer() exclusion
         DoCalculateDirectorySize(File->GetFullFileName(), File, AParams);
       }
@@ -3035,7 +3035,7 @@ void TTerminal::DoCalculateDirectorySize(const std::wstring FileName,
     {
       COMMAND_ERROR_ARI
       (
-        L"", // FIXME FMTLOAD(CALCULATE_SIZE_ERROR, (FileName)),
+        FMTLOAD(CALCULATE_SIZE_ERROR, FileName.c_str()),
         DoCalculateDirectorySize(FileName, File, Params)
       );
     }
@@ -3122,7 +3122,7 @@ void TTerminal::DoRenameFile(const std::wstring FileName,
   {
     COMMAND_ERROR_ARI_ACTION
     (
-      L"", // FIXME FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, (FileName, NewName)),
+      FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, FileName.c_str(), NewName.c_str()),
       DoRenameFile(FileName, NewName, Move),
       Action
     );
@@ -3229,7 +3229,7 @@ void TTerminal::DoCopyFile(const std::wstring FileName,
   {
     COMMAND_ERROR_ARI
     (
-      L"", // FIXME FMTLOAD(COPY_FILE_ERROR, (FileName, NewName)),
+      FMTLOAD(COPY_FILE_ERROR, FileName.c_str(), NewName.c_str()),
       DoCopyFile(FileName, NewName)
     );
   }
@@ -3293,7 +3293,7 @@ void TTerminal::DoCreateDirectory(const std::wstring DirName)
   {
     COMMAND_ERROR_ARI_ACTION
     (
-      L"", // FIXME FMTLOAD(CREATE_DIR_ERROR, (DirName)),
+      FMTLOAD(CREATE_DIR_ERROR, DirName.c_str()),
       DoCreateDirectory(DirName),
       Action
     );
@@ -3328,7 +3328,7 @@ void TTerminal::DoCreateLink(const std::wstring FileName,
   {
     COMMAND_ERROR_ARI
     (
-      L"", // FIXME FMTLOAD(CREATE_LINK_ERROR, (FileName)),
+      FMTLOAD(CREATE_LINK_ERROR, FileName.c_str()),
       DoCreateLink(FileName, PointTo, Symbolic);
     );
   }
@@ -3377,7 +3377,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
   }
   catch (exception &E)
   {
-    CommandError(&E, L""); // FIXME FMTLOAD(CHANGE_DIR_ERROR, (Directory)));
+    CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -3570,7 +3570,7 @@ bool TTerminal::DoCreateLocalFile(const std::wstring FileName,
             SUSPEND_OPERATION
             (
               Answer = QueryUser(
-                L"", // FIXME FMTLOAD(READ_ONLY_OVERWRITE, (FileName)),
+                FMTLOAD(READ_ONLY_OVERWRITE, FileName.c_str()),
                 NULL,
                 qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, 0);
             );
@@ -3593,7 +3593,7 @@ bool TTerminal::DoCreateLocalFile(const std::wstring FileName,
           CreateAttr |=
             FLAGMASK(FLAGSET(FileAttr, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(FileAttr, faReadOnly), FILE_ATTRIBUTE_READONLY);
-           FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (FileName)),
+            FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
             if (FileSetAttr(FileName, FileAttr & ~(faReadOnly | faHidden)) != 0)
             {
               RaiseLastOSError();
@@ -3623,7 +3623,7 @@ bool TTerminal::CreateLocalFile(const std::wstring FileName,
   assert(AHandle);
   bool Result = true;
 
-  FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CREATE_FILE_ERROR, (FileName)),
+  FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
     Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
   );
 
@@ -3638,7 +3638,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
   int Attrs = 0;
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
-  FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(FILE_NOT_EXISTS, (FileName)),
+  FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = FileGetAttr(FileName);
     if (Attrs == -1) RaiseLastOSError();
   )
@@ -3653,7 +3653,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
       NoHandle = true;
     }
 
-    FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(OPENFILE_ERROR, (FileName)),
+    FILE_OPERATION_LOOP (FMTLOAD(OPENFILE_ERROR, FileName.c_str()),
       Handle = CreateFile(FileName.c_str(), Access,
         Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
         NULL, OPEN_EXISTING, 0, 0);
@@ -3672,7 +3672,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
         FILETIME MTime;
         FILETIME CTime;
         // Get last file access and modification time
-        FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_GET_ATTRS, (FileName)),
+        FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
           if (!GetFileTime(Handle, &CTime, &ATime, &MTime)) RaiseLastOSError();
         );
         if (ACTime)
@@ -3692,7 +3692,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
       if (ASize)
       {
         // Get file size
-        FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_GET_ATTRS, (FileName)),
+        FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, FileName.c_str()),
           unsigned long LSize;
           unsigned long HSize;
           LSize = GetFileSize(Handle, &HSize);
@@ -3727,7 +3727,7 @@ bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
     WIN32_FIND_DATA FindData;
     HANDLE Handle;
     TFileOperationProgressType * OperationProgress = GetOperationProgress();
-    FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(FILE_NOT_EXISTS, (FileName)),
+    FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
       Handle = FindFirstFile(FileName.c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
@@ -3922,7 +3922,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   Data.Flags = Flags;
   Data.Checklist = Checklist;
 
-  LogEvent(::FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
+  LogEvent(FORMAT(L"Collecting synchronization list for local directory '%s' and remote directory '%s', "
     L"mode = %d, params = %d", LocalDirectory.c_str(), RemoteDirectory.c_str(),
     int(Mode), int(Params)));
 
@@ -3939,7 +3939,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     Data.LocalFileList->SetSorted(true);
     Data.LocalFileList->SetCaseSensitive(false);
     TFileOperationProgressType *OperationProgress = GetOperationProgress();
-    FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(LIST_DIR_ERROR, (LocalDirectory)),
+    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       // FIXME Found = (FindFirst(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
     );
@@ -3986,7 +3986,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
               reinterpret_cast<TObject*>(FileData));
           }
 
-          FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(LIST_DIR_ERROR, (LocalDirectory)),
+          FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
             // FIXME Found = (FindNext(SearchRec) == 0);
           );
         }
@@ -4477,7 +4477,7 @@ void TTerminal::SynchronizeLocalTimestamp(const std::wstring /*FileName*/,
     IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
   TFileOperationProgressType *OperationProgress = GetOperationProgress();
-  FILE_OPERATION_LOOP (L"", // FIXME FMTLOAD(CANT_SET_ATTRS, (LocalFile)),
+  FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, LocalFile.c_str()),
     HANDLE Handle;
     OpenLocalFile(LocalFile, GENERIC_WRITE, NULL, &Handle,
       NULL, NULL, NULL, NULL);
@@ -4585,7 +4585,7 @@ void TTerminal::SpaceAvailable(const std::wstring Path,
   }
   catch (exception &E)
   {
-    CommandError(&E, L""); // FIXME FMTLOAD(SPACE_AVAILABLE_ERROR, (Path)));
+    CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, Path.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -4689,7 +4689,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
       {
         if (GetLog()->GetLogging())
         {
-          LogEvent(::FORMAT(L"Copying %d files/directories to remote directory "
+          LogEvent(FORMAT(L"Copying %d files/directories to remote directory "
             L"\"%s\"", FilesToCopy->GetCount(), TargetDir.c_str()));
           LogEvent(CopyParam->GetLogStr());
         }

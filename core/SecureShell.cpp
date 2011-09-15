@@ -86,7 +86,7 @@ inline void TSecureShell::UpdateSessionInfo()
     FSshVersion = get_ssh_version(FBackendHandle);
     FSessionInfo.ProtocolBaseName = L"SSH";
     FSessionInfo.ProtocolName =
-      ::FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName, get_ssh_version(FBackendHandle));
+      FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName, get_ssh_version(FBackendHandle));
     FSessionInfo.SecurityProtocolName = FSessionInfo.ProtocolName;
 
     FSessionInfo.CSCompression =
@@ -362,7 +362,7 @@ void TSecureShell::Init()
     {
       if (FAuthenticating && !FAuthenticationLog.empty())
       {
-        FUI->FatalError(&E, L""); // FIXME FMTLOAD(AUTHENTICATION_LOG, (FAuthenticationLog)));
+        FUI->FatalError(&E, FMTLOAD(AUTHENTICATION_LOG, FAuthenticationLog.c_str()));
       }
       else
       {
@@ -523,7 +523,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(::FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
+  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
 
   Name = ::Trim(Name);
 
@@ -664,7 +664,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
 
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
+    LogEvent(FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
   }
 
   // Following is taken from scp.c from_backend() and modified
@@ -783,7 +783,7 @@ int TSecureShell::Receive(char * Buf, int Len)
       {
         if (Configuration->GetActualLogProtocol() >= 1)
         {
-          LogEvent(::FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
+          LogEvent(FORMAT(L"Waiting for another %u bytes", static_cast<int>(OutLen)));
         }
         WaitForData();
       }
@@ -798,7 +798,7 @@ int TSecureShell::Receive(char * Buf, int Len)
   };
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Read %u bytes (%d pending)",
+    LogEvent(FORMAT(L"Read %u bytes (%d pending)",
       static_cast<int>(Len), static_cast<int>(PendLen)));
   }
   return Len;
@@ -847,7 +847,7 @@ std::wstring TSecureShell::ReceiveLine()
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(int Code)
 {
-  LogEvent(::FORMAT(L"Sending special code: %d", (Code)));
+  LogEvent(FORMAT(L"Sending special code: %d", (Code)));
   CheckConnection();
   FBackend->special(FBackendHandle, (Telnet_Special)Code);
   CheckConnection();
@@ -869,9 +869,9 @@ int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError);
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
-    Params.TimerMessage = L""; // FIXME FMTLOAD(TIMEOUT_STILL_WAITING2, (FSessionData->GetTimeout()));
+    Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING2, FSessionData->GetTimeout());
     Params.TimerAnswers = qaAbort;
-    Answer = FUI->QueryUser(L"", // FIXME  FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, (FSessionData->GetTimeout())),
+    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
   }
   catch (...)
@@ -912,7 +912,7 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     CheckConnection();
     if (Configuration->GetActualLogProtocol() >= 1)
     {
-      LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer, "
+      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer, "
         L"need to send at least another %u bytes",
         BufSize, BufSize - MAX_BUFSIZE));
     }
@@ -920,7 +920,7 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     BufSize = FBackend->sendbuffer(FBackendHandle);
     if (Configuration->GetActualLogProtocol() >= 1)
     {
-      LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+      LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
     }
 
     if (Now() - Start > FSessionData->GetTimeoutDT())
@@ -956,8 +956,8 @@ void TSecureShell::Send(const char * Buf, int Len)
   int BufSize = FBackend->send(FBackendHandle, (char *)Buf, Len);
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(::FORMAT(L"Sent %u bytes", static_cast<int>(Len)));
-    LogEvent(::FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
+    LogEvent(FORMAT(L"Sent %u bytes", static_cast<int>(Len)));
+    LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
   // among other forces receive of pending data to free the servers's send buffer
@@ -1015,8 +1015,8 @@ int TSecureShell::TranslatePuttyMessage(
           (strncmp(::W2MB(Message.c_str()).c_str(), Original, PrefixLen) == 0) &&
           (strncmp(::W2MB(Message.c_str()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
-        Message = L""; // FIXME FMTLOAD(Translation[Index].Translation,
-          // (Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen).TrimRight()));
+        Message = FMTLOAD(Translation[Index].Translation,
+          ::TrimRight(Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen)).c_str());
         Result = int(Index);
         break;
       }
@@ -1150,19 +1150,19 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
   if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
+    LogEvent(FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
   }
 
   if (WSAEventSelect(Socket, (WSAEVENT)Event, Events) == SOCKET_ERROR)
   {
     if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Error selecting events %d for socket %d", int(Events), int(Socket)));
+      LogEvent(FORMAT(L"Error selecting events %d for socket %d", int(Events), int(Socket)));
     }
 
     if (Startup)
     {
-      FatalError(L""); // FIXME FMTLOAD(EVENT_SELECT_ERROR, (WSAGetLastError())));
+      FatalError(FMTLOAD(EVENT_SELECT_ERROR, WSAGetLastError()));
     }
   }
 }
@@ -1210,7 +1210,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
   if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
+    LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
   }
 
   SocketEventSelect(value, FSocketEvent, Startup);
@@ -1283,7 +1283,7 @@ void inline TSecureShell::CheckConnection(int Message)
     int ExitCode = get_ssh_exitcode(FBackendHandle);
     if (ExitCode >= 0)
     {
-      Str += L" " + std::wstring(L""); // FIXME FMTLOAD(SSH_EXITCODE, (ExitCode));
+      Str += L" " + std::wstring(FMTLOAD(SSH_EXITCODE, ExitCode));
     }
     FatalError(Str);
   }
@@ -1403,7 +1403,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   if (Configuration->GetActualLogProtocol() >= 2)
   {
-    LogEvent(::FORMAT(L"Enumerating network events for socket %d", int(Socket)));
+    LogEvent(FORMAT(L"Enumerating network events for socket %d", int(Socket)));
   }
 
   // see winplink.c
@@ -1424,7 +1424,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
     if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
+      LogEvent(FORMAT(L"Enumerated %d network events making %d cumulative events for socket %d",
         int(AEvents.lNetworkEvents), int(Events.lNetworkEvents), int(Socket)));
     }
   }
@@ -1432,7 +1432,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   {
     if (Configuration->GetActualLogProtocol() >= 2)
     {
-      LogEvent(::FORMAT(L"Error enumerating network events for socket %d", int(Socket)));
+      LogEvent(FORMAT(L"Error enumerating network events for socket %d", int(Socket)));
     }
   }
 
@@ -1460,7 +1460,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
       int Err = Events.iErrorCode[EventTypes[Event].Bit];
       if (Configuration->GetActualLogProtocol() >= 2)
       {
-        LogEvent(::FORMAT(L"Handling network %s event on socket %d with error %d",
+        LogEvent(FORMAT(L"Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, int(Socket), Err));
       }
       // #pragma option push -w-prc
@@ -1558,7 +1558,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
       {
         if (Configuration->GetActualLogProtocol() >= 2)
         {
-          LogEvent(::FORMAT(L"Unknown waiting result %d", int(WaitResult)));
+          LogEvent(FORMAT(L"Unknown waiting result %d", int(WaitResult)));
         }
 
         MSec = 0;
@@ -1798,7 +1798,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
       int R = FUI->QueryUser(
-        L"", // FIXME FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), (KeyType, Fingerprint)),
+        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType, Fingerprint.c_str()),
         NULL, Answers, &Params, qtWarning);
 
       switch (R) {
@@ -1824,7 +1824,7 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
   std::wstring Msg;
   if (AlgType == L"key-exchange algorithm")
   {
-    Msg = L""; // FIXME FMTLOAD(KEX_BELOW_TRESHOLD, (AlgName));
+    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName.c_str());
   }
   else
   {
@@ -1846,7 +1846,7 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
       assert(false);
     }
 
-    Msg = L""; // FIXME FMTLOAD(CIPHER_BELOW_TRESHOLD, (LoadStr(CipherType), AlgName));
+    Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType).c_str(), AlgName.c_str());
   }
 
   if (FUI->QueryUser(Msg, NULL, qaYes | qaNo, NULL, qtWarning) == qaNo)

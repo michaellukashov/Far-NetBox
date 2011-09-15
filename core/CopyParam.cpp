@@ -66,11 +66,11 @@ std::wstring TCopyParamType::GetInfoStr(std::wstring Separator, int Options) con
   if ((GetTransferMode() != Defaults.GetTransferMode()) ||
       ((GetTransferMode() == tmAutomatic) && !(GetAsciiFileMask() == Defaults.GetAsciiFileMask())))
   {
-    std::wstring S = ::FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE, 1).c_str(),
+    std::wstring S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE, 1).c_str(),
       LoadStrPart(COPY_INFO_TRANSFER_TYPE, GetTransferMode() + 2).c_str());
     if (GetTransferMode() == tmAutomatic)
     {
-      S = ::FORMAT(S.c_str(), GetAsciiFileMask().GetMasks().c_str());
+      S = FORMAT(S.c_str(), GetAsciiFileMask().GetMasks().c_str());
     }
     ADD(S, cpaExcludeMaskOnly | cpaNoTransferMode);
   }
@@ -167,7 +167,7 @@ std::wstring TCopyParamType::GetInfoStr(std::wstring Separator, int Options) con
 
   if (GetCPSLimit() > 0)
   {
-    // FIXME ADD(FMTLOAD(COPY_INFO_CPS_LIMIT, (int(GetCPSLimit() / 1024))).c_str(), cpaExcludeMaskOnly);
+    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT, int(GetCPSLimit() / 1024)).c_str(), cpaExcludeMaskOnly);
     ADD(L"", cpaExcludeMaskOnly);
   }
 
@@ -606,7 +606,7 @@ unsigned long GetSpeedLimit(const std::wstring & Text)
     if (!TryStrToInt(Text, SSpeed) ||
         (SSpeed < 0))
     {
-      throw ExtException(L""); // FIXME FMTLOAD(SPEED_INVALID, (Text)));
+      throw ExtException(FMTLOAD(SPEED_INVALID, Text.c_str()));
     }
     Speed = SSpeed;
   }

@@ -22,29 +22,6 @@
 #include "Classes.h"
 #pragma warning(pop)
 
-inline int __cdecl debug_printf(const wchar_t *format, ...)
-{
-    (void)format;
-    int len = 0;
-#ifdef NETBOX_DEBUG
-    va_list args;
-    va_start(args, format);
-    len = _vscwprintf(format, args);
-    std::wstring buf(len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[0], buf.size(), format, args);
-
-    va_end(args);
-    OutputDebugStringW(buf.c_str());
-#endif
-    return len;
-}
-
-#ifdef NETBOX_DEBUG
-#define DEBUG_PRINTF(format, ...) debug_printf(format, __VA_ARGS__);
-#else
-#define DEBUG_PRINTF(format, ...)
-#endif
-
 class CFarPlugin
 {
 public:

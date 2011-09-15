@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include "SessionEditor.h"
 #include "Session.h"
+#include "Common.h"
 #include "Strings.h"
 
 CSessionEditor::CSessionEditor(CSession *session, const int width, const int height) :

@@ -563,7 +563,7 @@ std::wstring TConfiguration::GetOSVersionStr()
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = ::Trim(::FORMAT(L"%d.%d.%d %s", int(OSVersionInfo.dwMajorVersion),
+    Result = ::Trim(FORMAT(L"%d.%d.%d %s", int(OSVersionInfo.dwMajorVersion),
       int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber),
       OSVersionInfo.szCSDVersion));
   }
@@ -661,11 +661,11 @@ std::wstring TConfiguration::GetVersionStr()
   {
   /* FIXME 
     TVSFixedFileInfo * Info = FixedApplicationInfo;
-    return FMTLOAD(VERSION, (
+    return FMTLOAD(VERSION,
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS),
-      LOWORD(Info->dwFileVersionLS)));
+      LOWORD(Info->dwFileVersionLS));
    */
     return L"";
   }
@@ -683,7 +683,7 @@ std::wstring TConfiguration::GetVersion()
     std::wstring Result;
     /* FIXME
     TVSFixedFileInfo * Info = GetFixedApplicationInfo();
-    Result = TrimVersion(::FORMAT(L"%d.%d.%d", (
+    Result = TrimVersion(FORMAT(L"%d.%d.%d", (
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS))));

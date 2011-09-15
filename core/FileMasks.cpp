@@ -306,7 +306,7 @@ bool TFileMasks::operator ==(const std::wstring & rhs) const
 void TFileMasks::ThrowError(int Start, int End)
 {
   throw EFileMasksException(
-    L"", // FIXME FMTLOAD(MASK_ERROR, (Masks.substr(Start, End - Start + 1))),
+    FMTLOAD(MASK_ERROR, GetMasks().substr(Start, End - Start + 1).c_str()),
     Start, End - Start + 1);
 }
 //---------------------------------------------------------------------------
@@ -546,13 +546,13 @@ void TCustomCommand::GetToken(
 
     if (Len < 0)
     {
-      throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNKNOWN, (PatternCmd, Index)));
+      throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
     else if (Len > 0)
     {
       if ((Command.size() - Index + 1) < Len)
       {
-        throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
+        throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
       }
     }
     else if (Len == 0)
@@ -560,7 +560,7 @@ void TCustomCommand::GetToken(
       const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
       if (PatternEnd == NULL)
       {
-        throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, (PatternCmd, Index)));
+        throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, PatternCmd, Index));
       }
       Len = PatternEnd - Ptr + 1;
     }
@@ -859,8 +859,8 @@ void TFileCustomCommand::Validate(const std::wstring & Command)
   CustomValidate(Command, &Found);
   if ((Found[0] > 0) && (Found[1] > 0))
   {
-    throw ExtException(L""); // FIXME FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
-      // (Found[1], Found[0])));
+    throw ExtException(FMTLOAD(CUSTOM_COMMAND_FILELIST_ERROR,
+      Found[1], Found[0]));
   }
 }
 //---------------------------------------------------------------------------

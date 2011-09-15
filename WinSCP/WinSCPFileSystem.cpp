@@ -432,13 +432,13 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
     Format = FTerminal->GetSessionData()->GetSessionName();
     if (FarConfiguration->GetHostNameInTitle())
     {
-      PanelTitle = ::FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
+      PanelTitle = FORMAT(L" %s:%s ", Format.c_str(), CurDir.c_str());
     }
     else
     {
-      PanelTitle = ::FORMAT(L" %s ", CurDir.c_str());
+      PanelTitle = FORMAT(L" %s ", CurDir.c_str());
     }
-    ShortcutData = ::FORMAT(L"%s\1%s", FTerminal->GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
+    ShortcutData = FORMAT(L"%s\1%s", FTerminal->GetSessionData()->GetSessionUrl().c_str(), CurDir.c_str());
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -448,7 +448,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
     CurDir = FSessionsFolder;
     Format = L"winscp";
     Flags = OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
-    PanelTitle = ::FORMAT(L" %s ", GetMsg(STORED_SESSION_TITLE).c_str());
+    PanelTitle = FORMAT(L" %s ", GetMsg(STORED_SESSION_TITLE).c_str());
 
     TSessionPanelItem::SetPanelModes(PanelModes);
     TSessionPanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -576,7 +576,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != NULL) && (EData != Data))
     {
-      throw ExtException(::FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+      throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
     }
     else
     {
@@ -653,7 +653,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
             {
               if (StoredSessions->FindByName(Name))
               {
-                throw ExtException(::FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
+                throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
               }
               else
               {
@@ -766,7 +766,7 @@ void TWinSCPFileSystem::RequireCapability(int Capability)
 {
   if (!FTerminal->GetIsCapable(static_cast<TFSCapability>(Capability)))
   {
-    throw ExtException(::FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
+    throw ExtException(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
       (FTerminal->GetFileSystemInfo().ProtocolName)));
   }
 }
@@ -786,7 +786,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params;
       Params.Params = qpNeverAskAgainCheck;
-      int Answer = MoreMessageDialog(::FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
+      int Answer = MoreMessageDialog(FORMAT(GetMsg(PERFORM_ON_COMMAND_SESSION).c_str(),
         FTerminal->GetFileSystemInfo().ProtocolName.c_str(),
          FTerminal->GetFileSystemInfo().ProtocolName.c_str()), NULL,
         qtConfirmation, qaOK | qaCancel, &Params);
@@ -1066,7 +1066,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
   TempDir = FPlugin->TemporaryDir();
   if (TempDir.empty() || !ForceDirectories(TempDir))
   {
-    // FIXME throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TempDir)));
+    throw ExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, TempDir.c_str()));
   }
 
   FTerminal->SetExceptionOnFail(true);
@@ -1663,7 +1663,7 @@ void TWinSCPFileSystem::DoSynchronizeInvalid(
   wstring Message;
   if (!Directory.empty())
   {
-    Message = ::FORMAT(GetMsg(WATCH_ERROR_DIRECTORY).c_str(), Directory.c_str());
+    Message = FORMAT(GetMsg(WATCH_ERROR_DIRECTORY).c_str(), Directory.c_str());
   }
   else
   {
@@ -1685,7 +1685,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
     TMessageParams Params;
     Params.Params = qpNeverAskAgainCheck;
     int Result = MoreMessageDialog(
-      ::FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), NULL,
+      FORMAT(GetMsg(TOO_MANY_WATCH_DIRECTORIES).c_str(), MaxDirectories, MaxDirectories), NULL,
       qtConfirmation, qaYes | qaNo, &Params);
 
     if ((Result == qaYes) || (Result == qaNeverAskAgain))
@@ -1862,7 +1862,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(wstring Token, bool Separate)
   {
     if (Token.find_first_of(L" ") > 0)
     {
-      Token = ::FORMAT(L"\"%s\"", Token.c_str());
+      Token = FORMAT(L"\"%s\"", Token.c_str());
     }
 
     if (Separate)
@@ -2264,7 +2264,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const wstring Dir, int OpMode)
 
             if (!SynchronizeBrowsing(ALocalPath))
             {
-              if (MoreMessageDialog(::FORMAT(GetMsg(SYNC_DIR_BROWSE_CREATE).c_str(), ALocalPath.c_str()),
+              if (MoreMessageDialog(FORMAT(GetMsg(SYNC_DIR_BROWSE_CREATE).c_str(), ALocalPath.c_str()),
                     NULL, qtInformation, qaYes | qaNo) == qaYes)
               {
                 if (!ForceDirectories(ALocalPath))
@@ -2422,12 +2422,12 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
         !FTerminal->IsRecycledFile(FFileList->GetString(0));
       if (PanelItems->GetCount() > 1)
       {
-        Query = ::FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
+        Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILES_CONFIRM : DELETE_FILES_CONFIRM).c_str(),
           PanelItems->GetCount());
       }
       else
       {
-        Query = ::FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM).c_str(),
+        Query = FORMAT(GetMsg(Recycle ? RECYCLE_FILE_CONFIRM : DELETE_FILE_CONFIRM).c_str(),
           ((TFarPanelItem *)PanelItems->GetItem(0))->GetFileName().c_str());
       }
 
@@ -2572,7 +2572,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
     }
     else
     {
-      Prompt = ::FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->GetCount());
+      Prompt = FORMAT(GetMsg(EXPORT_SESSIONS_PROMPT).c_str(), PanelItems->GetCount());
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
@@ -2807,7 +2807,7 @@ bool TWinSCPFileSystem::ImportSessions(TList * PanelItems, bool /*Move*/,
       }
       if (!AnyData)
       {
-        throw ExtException(::FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY).c_str(), FileName.c_str()));
+        throw ExtException(FORMAT(GetMsg(IMPORT_SESSIONS_EMPTY).c_str(), FileName.c_str()));
       }
     }
   }
@@ -3138,7 +3138,7 @@ void TWinSCPFileSystem::TerminalReadDirectoryProgress(
     if (!FNoProgress)
     {
       FPlugin->UpdateConsoleTitle(
-        ::FORMAT(L"%s (%d)", GetMsg(READING_DIRECTORY_TITLE).c_str(), Progress));
+        FORMAT(L"%s (%d)", GetMsg(READING_DIRECTORY_TITLE).c_str(), Progress));
     }
   }
 }
@@ -3158,7 +3158,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const wstring FileName,
   if (!RecursiveDeleteFile(FileName,
         (FLAGSET(FPlugin->FarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
   {
-    throw ExtException(::FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
+    throw ExtException(FORMAT(GetMsg(DELETE_LOCAL_FILE_ERROR).c_str(), FileName.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -3193,7 +3193,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   {
     if (Params->Params & qpFatalAbort)
     {
-      AQuery = ::FORMAT(GetMsg(WARN_FATAL_ERROR).c_str(), AQuery.c_str());
+      AQuery = FORMAT(GetMsg(WARN_FATAL_ERROR).c_str(), AQuery.c_str());
     }
 
     AParams.Aliases = Params->Aliases;
@@ -3423,7 +3423,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       StatusLine = BytesTransferedLabel +
         ::StringOfChar(' ', ProgressWidth / 2 - 1 - BytesTransferedLabel.size() - Value.size()) +
         Value + L"  ";
-      Value = ::FORMAT(L"%s/s", FormatBytes(ProgressData.CPS()).c_str());
+      Value = FORMAT(L"%s/s", FormatBytes(ProgressData.CPS()).c_str());
       StatusLine = StatusLine + CPSLabel +
         ::StringOfChar(' ', ProgressWidth - StatusLine.size() -
         CPSLabel.size() - Value.size()) +
@@ -3454,7 +3454,7 @@ wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
   // OEM character set (Ansi does not have the ascii art we need)
   Result = ::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
   Result += ::StringOfChar('\xB0', (Width - 5) - Result.size());
-  Result += ::FORMAT(L"%4d%%", Percentage);
+  Result += FORMAT(L"%4d%%", Percentage);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -3977,7 +3977,7 @@ void TWinSCPFileSystem::MultipleEdit(wstring Directory,
     Aliases[2].Alias = GetMsg(EDITOR_NEW_INSTANCE_RO);
     Params.Aliases = Aliases;
     Params.AliasesCount = LENOF(Aliases);
-    switch (MoreMessageDialog(::FORMAT(GetMsg(EDITOR_ALREADY_LOADED).c_str(), FullFileName.c_str()),
+    switch (MoreMessageDialog(FORMAT(GetMsg(EDITOR_ALREADY_LOADED).c_str(), FullFileName.c_str()),
           NULL, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
       case qaYes:

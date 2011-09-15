@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include <stdafx.h>
 
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
@@ -18,8 +17,6 @@
 #define OPENSSL_NO_ECDSA
 #define OPENSSL_NO_ECDH
 #include <openssl/x509_vfy.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
@@ -561,7 +558,7 @@ void TFTPFileSystem::EnsureLocation()
     // makes FAPI change its current directory (and not restoring it back afterwards)
     if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
     {
-      FTerminal->LogEvent(::FORMAT(L"Synchronizing current directory \"%s\".",
+      FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
         (FCurrentDirectory)));
       DoChangeDirectory(FCurrentDirectory);
     }
@@ -602,7 +599,7 @@ void TFTPFileSystem::AnnounceFileListOperation()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
 {
-  std::wstring Command = ::FORMAT(L"CWD %s", (Directory));
+  std::wstring Command = FORMAT(L"CWD %s", (Directory));
   FFileZillaIntf->CustomCommand(Command.c_str());
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
@@ -906,7 +903,7 @@ void TFTPFileSystem::FileTransfer(const std::wstring & FileName,
   const std::wstring & RemotePath, bool Get, __int64 Size, int Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, (FileName)),
+  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
       RemotePath.c_str(), Get, Size, Type, &UserData);
     // we may actually catch reponse code of the listing
@@ -1033,12 +1030,12 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
 
   if (!CopyParam->AllowTransfer(FileName, osRemote, File->IsDirectory, MaskParams))
   {
-    FTerminal->LogEvent(::FORMAT(L"File \"%s\" excluded from transfer", (FileName)));
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", (FileName)));
     THROW_SKIP_FILE_NULL;
   }
 
   assert(File);
-  FTerminal->LogEvent(::FORMAT(L"File: \"%s\"", (FileName)));
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", (FileName)));
 
   OperationProgress->SetFile(OnlyFileName);
 
@@ -1051,7 +1048,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
     Action.Cancel();
     if (!File->IsSymLink)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, (DestFullName)),
+      FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
         int Attrs = FileGetAttr(DestFullName);
         if (FLAGCLEAR(Attrs, faDirectory))
         {
@@ -1059,7 +1056,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
         }
       );
 
-      FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, (DestFullName)),
+      FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
         if (!ForceDirectories(DestFullName))
         {
           RaiseLastOSError();
@@ -1092,7 +1089,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
   }
   else
   {
-    FTerminal->LogEvent(::FORMAT(L"Copying \"%s\" to local directory started.", (FileName)));
+    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", (FileName)));
 
     // Will we use ASCII of BINARY file tranfer?
     OperationProgress->SetAsciiTransfer(
@@ -1105,7 +1102,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
     int Attrs;
-    FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, (DestFullName)),
+    FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       Attrs = FileGetAttr(DestFullName);
       if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
       {
@@ -1152,7 +1149,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
     int NewAttrs = CopyParam->LocalFileAttrs(*File->Rights);
     if ((NewAttrs & Attrs) != NewAttrs)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, (DestFullName)),
+      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
         THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs | NewAttrs) == 0);
       );
     }
@@ -1295,7 +1292,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TUploadSessionAction & Action)
 {
-  FTerminal->LogEvent(::FORMAT(L"File: \"%s\"", (FileName)));
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", (FileName)));
 
   Action.FileName(ExpandUNCFileName(FileName));
 
@@ -1303,7 +1300,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    FTerminal->LogEvent(::FORMAT(L"File \"%s\" excluded from transfer", (FileName)));
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", (FileName)));
     THROW_SKIP_FILE_NULL;
   }
 
@@ -1327,7 +1324,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
     std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName),
       osLocal, FLAGSET(Flags, tfFirstLevel));
 
-    FTerminal->LogEvent(::FORMAT(L"Copying \"%s\" to remote directory started.", (FileName)));
+    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", (FileName)));
 
     OperationProgress->SetLocalSize(Size);
 
@@ -1394,14 +1391,14 @@ void TFTPFileSystem::Source(const std::wstring FileName,
   {
     if (!Dir)
     {
-      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, (FileName)),
+      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
         THROWOSIFFALSE(Sysutils::DeleteFile(FileName));
       )
     }
   }
   else if (CopyParam->ClearArchive && FLAGSET(Attrs, faArchive))
   {
-    FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, (FileName)),
+    FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
       THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
     )
   }
@@ -1422,7 +1419,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
   TSearchRec SearchRec;
   bool FindOK;
 
-  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, (DirectoryName)),
+  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     FindOK = (bool)(FindFirst(DirectoryName + "*.*",
       FindAttrs, SearchRec) == 0);
   );
@@ -1458,7 +1455,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
         );
       }
 
-      FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, (DirectoryName)),
+      FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
         FindOK = (FindNext(SearchRec) == 0);
       );
     };
@@ -1515,7 +1512,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
     }
     else if (CopyParam->ClearArchive && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, (DirectoryName)),
+      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
         THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
       )
     }
@@ -1730,7 +1727,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
       else
       {
-        throw std::exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, (Response->Text)));
+        throw std::exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->Text.c_str()));
       }
     }
     __finally
@@ -1855,7 +1852,7 @@ void TFTPFileSystem::ReadFile(const std::wstring FileName,
     if (AFile == NULL)
     {
       File = NULL;
-      throw std::exception(FMTLOAD(FILE_NOT_EXISTS, (FileName)));
+      throw std::exception(FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()));
     }
   }
 
@@ -1948,10 +1945,10 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     else
     {
       FFileSystemInfo.AdditionalInfo =
-        ::FORMAT(L"%s\r\n", (LoadStr(FTP_FEATURE_INFO)));
+        FORMAT(L"%s\r\n", (LoadStr(FTP_FEATURE_INFO)));
       for (int Index = 0; Index < FFeatures->GetCount(); Index++)
       {
-        FFileSystemInfo.AdditionalInfo += ::FORMAT(L"  %s\r\n", (FFeatures->GetString(Index)));
+        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", (FFeatures->GetString(Index)));
       }
     }
 
@@ -2198,7 +2195,7 @@ void TFTPFileSystem::WaitForMessages()
   unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
-    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, ("ftp#1", IntToStr(Result))));
+    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2376,7 +2373,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
            TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
            TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, ("ftp#2", ::FORMAT(L"0x%x", (int(Reply))))));
+      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", int(Reply)).c_str()));
     }
     else
     {
@@ -2911,7 +2908,7 @@ std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
 {
   if (!Entry1.empty() && !Entry2.empty())
   {
-    return ::FORMAT(L"%s, %s", (Entry1, Entry2));
+    return FORMAT(L"%s, %s", (Entry1, Entry2));
   }
   else
   {
@@ -3038,17 +3035,17 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     std::wstring Summary = LoadStr(VerificationResultStr);
     if (Data.VerificationResult != X509_V_OK)
     {
-      Summary += " " + FMTLOAD(CERT_ERRDEPTH, (Data.VerificationDepth + 1));
+      Summary += " " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
     }
 
     FSessionInfo.Certificate =
-      FMTLOAD(CERT_TEXT, (
-        FormatContact(Data.Subject),
-        FormatContact(Data.Issuer),
-        FormatValidityTime(Data.ValidFrom),
-        FormatValidityTime(Data.ValidUntil),
-        FSessionInfo.CertificateFingerprint,
-        Summary));
+      FMTLOAD(CERT_TEXT,
+        FormatContact(Data.Subject).c_str(),
+        FormatContact(Data.Issuer).c_str(),
+        FormatValidityTime(Data.ValidFrom).c_str(),
+        FormatValidityTime(Data.ValidUntil).c_str(),
+        FSessionInfo.CertificateFingerprint.c_str(),
+        Summary.c_str());
 
     RequestResult = 0;
 
@@ -3098,7 +3095,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       Params.Aliases = Aliases;
       Params.AliasesCount = LENOF(Aliases);
       int Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT2, (FSessionInfo.Certificate)),
+        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str()),
         NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
       switch (Answer)
@@ -3253,11 +3250,11 @@ bool TFTPFileSystem::HandleListData(const char * Path,
       {
         delete File;
         std::wstring EntryData =
-          ::FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+          FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
             (Entry->Name, Entry->Permissions, Entry->OwnerGroup, IntToStr(Entry->Size),
              int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
              Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate)));
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, (EntryData)));
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
       }
 
       FFileList->AddFile(File);
@@ -3298,7 +3295,7 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
   {
     if (FTerminal->Configuration->->GetActualLogProtocol() >= 1)
     {
-      FTerminal->LogEvent(::FORMAT(L"Got reply %x to the command %d", (int(Reply), Command)));
+      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", (int(Reply), Command)));
     }
 
     // reply with Command 0 is not associated with current operation
@@ -3349,7 +3346,7 @@ bool TFTPFileSystem::CheckError(int ReturnCode, const char * Context)
   else
   {
     FTerminal->FatalError(NULL,
-      FMTLOAD(INTERNAL_ERROR, (::FORMAT(L"fz#%s", (Context)), IntToHex(ReturnCode, 4))));
+      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context.c_str()).c_str(), IntToHex(ReturnCode, 4)));
     assert(false);
   }
 

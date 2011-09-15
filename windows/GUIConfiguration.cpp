@@ -204,8 +204,7 @@ std::wstring TCopyParamRule::GetInfoStr(std::wstring Separator) const
   std::wstring Result;
   #define ADD(FMT, ELEM) \
     if (!FData.ELEM.empty()) \
-      Result += (Result.empty() ? std::wstring() : Separator);
-// FIXME + FMTLOAD(FMT, (FData.ELEM));
+      Result += (Result.empty() ? std::wstring() : Separator) + FMTLOAD(FMT, FData.ELEM.c_str());
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
@@ -256,7 +255,7 @@ void TCopyParamList::ValidateName(const std::wstring Name)
 {
   if (::LastDelimiter(Name, FInvalidChars) > 0)
   {
-    throw ExtException(L""); // FIXME FMTLOAD(ITEM_NAME_INVALID, (Name, FInvalidChars)));
+    throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -797,7 +796,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw ExtException(L""); // FIXME FMTLOAD(LOCALE_LOAD_ERROR, (int(ALocale))));
+    throw ExtException(FMTLOAD(LOCALE_LOAD_ERROR, int(ALocale)));
   }
   else
   {

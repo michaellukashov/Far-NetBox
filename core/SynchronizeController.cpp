@@ -59,8 +59,9 @@ void TSynchronizeController::StartStop(TObject * Sender,
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
       {
         SynchronizeLog(slScan,
-          L""); // FIXME FMTLOAD(SYNCHRONIZE_SCAN, (FSynchronizeParams.LocalDirectory)));
+          FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
       }
+      int Directories = 0;
 /*
       // FIXME 
       FSynchronizeMonitor = new TDiscMonitor(dynamic_cast<TComponent*>(Sender));
@@ -83,14 +84,14 @@ void TSynchronizeController::StartStop(TObject * Sender,
       FSynchronizeMonitor->OnInvalid = SynchronizeInvalid;
       FSynchronizeMonitor->OnSynchronize = OnSynchronizeThreads;
       // get count before open to avoid thread issues
-      int Directories = FSynchronizeMonitor->Directories->GetCount();
+      Directories = FSynchronizeMonitor->Directories->GetCount();
       FSynchronizeMonitor->Open();
 */
-      SynchronizeLog(slStart, L""); // FIXME FMTLOAD(SYNCHRONIZE_START, (Directories)));
+      SynchronizeLog(slStart, FMTLOAD(SYNCHRONIZE_START, Directories));
     }
     catch(...)
     {
-      // SAFE_DESTROY((TObject *)FSynchronizeMonitor);
+      // FIXME SAFE_DESTROY((TObject *)FSynchronizeMonitor);
       throw;
     }
   }
@@ -119,8 +120,8 @@ void TSynchronizeController::SynchronizeChange(
       ToUnixPath(LocalDirectory.substr(RootLocalDirectory.size() + 1,
         LocalDirectory.size() - RootLocalDirectory.size()));
 
-    SynchronizeLog(slChange, L""); // FIXME FMTLOAD(SYNCHRONIZE_CHANGE,
-      // (ExcludeTrailingBackslash(LocalDirectory))));
+    SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
+      ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
     if (FOnSynchronize != NULL)
     {
@@ -196,7 +197,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   {
     case soDelete:
       Entry = slDelete;
-      Message = L""; // FIXME FMTLOAD(SYNCHRONIZE_DELETED, (FileName));
+      Message = FMTLOAD(SYNCHRONIZE_DELETED, FileName.c_str());
       break;
 
     default:
@@ -205,7 +206,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 
     case soUpload:
       Entry = slUpload;
-      Message = L""; // FIXME FMTLOAD(SYNCHRONIZE_UPLOADED, (FileName));
+      Message = FMTLOAD(SYNCHRONIZE_UPLOADED, FileName.c_str());
       break;
   }
   SynchronizeLog(Entry, Message);
@@ -259,5 +260,5 @@ void TSynchronizeController::SynchronizeTooManyDirectories(
 void TSynchronizeController::SynchronizeDirectoriesChange(
   TObject * /*Sender*/, int Directories)
 {
-  SynchronizeLog(slDirChange, L""); // FIXME FMTLOAD(SYNCHRONIZE_START, (Directories)));
+  SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }

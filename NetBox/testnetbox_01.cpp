@@ -21,6 +21,8 @@
 #include "FarUtil.h"
 
 #include "delegate.h"
+#include "TestTexts.h"
+#include "Common.h"
 
 using namespace boost::unit_test;
 
@@ -139,6 +141,90 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 }
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
+{
+    // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
+    {
+        std::wstring str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
+        // BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        // BOOST_TEST_MESSAGE("length = " << str.size());
+        BOOST_CHECK(::W2MB(str.c_str()) == "test string: \"lalala\" 42");
+    }
+    {
+        std::wstring str2 = FMTLOAD(CONST_TEST_STRING, L"lalala", 42);
+        // BOOST_TEST_MESSAGE("str2 = " << ::W2MB(str2.c_str()));
+        BOOST_CHECK(::W2MB(str2.c_str()) == "test string: \"lalala\" 42");
+    }
+    {
+        std::wstring str2 = ::Format(L"test: %s %d", L"lalala", 42);
+        BOOST_TEST_MESSAGE("str2 = " << ::W2MB(str2.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str2.c_str()), std::string("test: lalala 42"));
+    }
+    {
+        std::wstring str3 = FORMAT(L"test: %s %d", L"lalala", 42);
+        BOOST_TEST_MESSAGE("str3 = " << ::W2MB(str3.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str3.c_str()), std::string("test: lalala 42"));
+    }
+    {
+        std::wstring str = ::TrimLeft(L"");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string(""));
+    }
+    {
+        std::wstring str = ::TrimLeft(L"1");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
+    }
+    {
+        std::wstring str = ::TrimLeft(L" 1");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
+    }
+    {
+        std::wstring str = ::TrimRight(L"");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string(""));
+    }
+    {
+        std::wstring str = ::TrimRight(L"1");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
+    }
+    {
+        std::wstring str = ::TrimRight(L"1 ");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
+    }
+    {
+        // std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
+        std::wstring Str1 = L" part 1 | part 2 ";
+        std::wstring str1 = ::CutToChar(Str1, '|', false);
+        BOOST_TEST_MESSAGE("str1 = \"" << ::W2MB(str1.c_str()) << "\"");
+        // BOOST_TEST_MESSAGE("Str1 = \"" << ::W2MB(Str1.c_str()) << "\"");
+        // DEBUG_PRINTF(L"NetBox: str1 = \"%s\"", str1.c_str());
+        BOOST_CHECK_EQUAL(::W2MB(str1.c_str()), std::string(" part 1 "));
+
+        std::wstring str2 = ::CutToChar(Str1, '|', true);
+        BOOST_TEST_MESSAGE("str2 = \"" << ::W2MB(str2.c_str()) << "\"");
+        BOOST_CHECK_EQUAL(::W2MB(str2.c_str()), std::string("part 2"));
+    }
+    {
+        std::wstring str = LoadStr(CONST_TEST_STRING);
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
+    }
+    {
+        std::wstring str = LoadStrPart(CONST_TEST_STRING2, 1);
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("test string part 1"));
+    }
+    {
+        std::wstring str = LoadStrPart(CONST_TEST_STRING2, 2);
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("part 2"));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
 {
     std::string host = "localhost";
     int port = 2222;

@@ -183,7 +183,7 @@ void TTabbedDialog::SelectTab(int Tab)
   {
     FOrigCaption = GetCaption();
   }
-  SetCaption(::FORMAT(L"%s - %s", (TabName(Tab), FOrigCaption)));
+  SetCaption(FORMAT(L"%s - %s", (TabName(Tab), FOrigCaption)));
 }
 //---------------------------------------------------------------------------
 TTabButton * TTabbedDialog::TabButton(int Tab)
@@ -1173,7 +1173,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->SetCaption(L""); // FIXME FMTLOAD(PUTTY_BASED_ON, (LoadStr(PUTTY_VERSION))));
+  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, LoadStr(PUTTY_VERSION)).c_str());
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1182,7 +1182,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   #ifndef NO_FILEZILLA
   Text = new TFarText(this);
-  Text->SetCaption(L""); // FIXME FMTLOAD(FILEZILLA_BASED_ON, (LoadStr(FILEZILLA_VERSION))));
+  Text->SetCaption(FMTLOAD(FILEZILLA_BASED_ON, LoadStr(FILEZILLA_VERSION).c_str()));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -3470,11 +3470,11 @@ bool TSessionDialog::VerifyKey(std::wstring FileName, bool TypeOnly)
     switch (Type)
     {
       case ktOpenSSH:
-        Message = L""; // FIXME FMTLOAD(KEY_TYPE_UNSUPPORTED, (FileName, "OpenSSH SSH-2"));
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, FileName.c_str(), L"OpenSSH SSH-2");
         break;
 
       case ktSSHCom:
-        Message = L""; // FIXME FMTLOAD(KEY_TYPE_UNSUPPORTED, (FileName, "ssh.com SSH-2"));
+        Message = FMTLOAD(KEY_TYPE_UNSUPPORTED, FileName.c_str(), L"ssh.com SSH-2");
         break;
 
       case ktSSH1:
@@ -3484,8 +3484,8 @@ bool TSessionDialog::VerifyKey(std::wstring FileName, bool TypeOnly)
           if ((Type == ktSSH1) !=
                 (SshProt1onlyButton->GetChecked() || SshProt1Button->GetChecked()))
           {
-            Message = L""; // FIXME FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-              // (FileName, (Type == ktSSH1 ? "SSH-1" : "PuTTY SSH-2")));
+            Message = FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
+              FileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
           }
         }
         break;
@@ -3495,7 +3495,7 @@ bool TSessionDialog::VerifyKey(std::wstring FileName, bool TypeOnly)
         // fallthru
       case ktUnopenable:
       case ktUnknown:
-        Message = L""; // FIXME FMTLOAD(KEY_TYPE_UNKNOWN, (FileName));
+        Message = FMTLOAD(KEY_TYPE_UNKNOWN, FileName.c_str());
         break;
     }
 

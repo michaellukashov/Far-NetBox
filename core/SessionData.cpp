@@ -1179,7 +1179,7 @@ void TSessionData::ValidateName(const std::wstring Name)
 {
   if (::LastDelimiter(Name, L"/") > 0)
   {
-    throw ExtException(L""); // FIXME FMTLOAD(ITEM_NAME_INVALID, (Name, "/")));
+    throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }
 }
 //---------------------------------------------------------------------
@@ -1214,7 +1214,7 @@ bool TSessionData::GetCanLogin()
 //---------------------------------------------------------------------------
 std::wstring TSessionData::GetSessionKey()
 {
-  return ::FORMAT(L"%s@%s", GetUserName(), GetHostName());
+  return FORMAT(L"%s@%s", GetUserName(), GetHostName());
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetInternalStorageKey()
@@ -1638,7 +1638,7 @@ std::wstring TSessionData::GetDefaultSessionName()
 {
   if (!GetHostName().empty() && !GetUserName().empty())
   {
-    return ::FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
+    return FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
   }
   else if (!GetHostName().empty())
   {
@@ -1694,7 +1694,7 @@ std::wstring TSessionData::GetSessionUrl()
 
     if (!GetHostName().empty() && !GetUserName().empty())
     {
-      Url += ::FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
+      Url += FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
     }
     else if (!GetHostName().empty())
     {
@@ -2055,15 +2055,15 @@ std::wstring TSessionData::GetInfoTip()
 {
   if (GetUsesSsh())
   {
-    return L""; // FIXME FMTLOAD(SESSION_INFO_TIP,
-        // GetHostName().c_str(), GetUserName().c_str(),
-         // (PublicKeyFile.empty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
-         // GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
+    return FMTLOAD(SESSION_INFO_TIP,
+        GetHostName().c_str(), GetUserName().c_str(),
+        (GetPublicKeyFile().empty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
+        GetSshProtStr().c_str(), GetFSProtocolStr().c_str());
   }
   else
   {
-    return L""; // FIXME FMTLOAD(SESSION_INFO_TIP_NO_SSH,
-      // GetHostName().c_str(), GetUserName().c_str(), GetFSProtocolStr().c_str()));
+    return FMTLOAD(SESSION_INFO_TIP_NO_SSH,
+      GetHostName().c_str(), GetUserName().c_str(), GetFSProtocolStr().c_str());
   }
 }
 //---------------------------------------------------------------------
@@ -2401,7 +2401,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
         Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
-          HostKeyName = PuttyMungeStr(::FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName()));
+          HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName()));
           std::wstring KeyName;
           for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {

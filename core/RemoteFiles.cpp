@@ -561,7 +561,7 @@ std::wstring TRemoteToken::GetDisplayText() const
 //---------------------------------------------------------------------------
 std::wstring TRemoteToken::GetLogText() const
 {
-  return ::FORMAT(L"\"%s\" [%d]", FName.c_str(), int(FID));
+  return FORMAT(L"\"%s\" [%d]", FName.c_str(), int(FID));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -680,7 +680,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const char * Title)
 {
   if (!FTokens.empty())
   {
-    Terminal->LogEvent(::FORMAT(L"Following %s found:", Title));
+    Terminal->LogEvent(FORMAT(L"Following %s found:", Title));
     for (size_t Index = 0; Index < FTokens.size(); Index++)
     {
       Terminal->LogEvent(std::wstring(L"  ") + FTokens[Index].GetLogText());
@@ -688,7 +688,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const char * Title)
   }
   else
   {
-    Terminal->LogEvent(::FORMAT(L"No %s found.", Title));
+    Terminal->LogEvent(FORMAT(L"No %s found.", Title));
   }
 }
 //---------------------------------------------------------------------------
@@ -931,10 +931,10 @@ std::wstring TRemoteFile::GetModificationStr()
       return L"";
 
     case mfMDY:
-      return ::FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
 
     case mfMDHM:
-      return ::FORMAT(L"%3s %2d %2d:%2.2d",
+      return FORMAT(L"%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month-1], Day, Hour, Min);
 
     default:
@@ -1199,7 +1199,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
   }
   catch (exception &E)
   {
-    throw ETerminal(&E, L""); // FIXME FmtLoadStr(LIST_LINE_ERROR, ARRAYOFCONST((value))));
+    throw ETerminal(&E, ::FmtLoadStr(LIST_LINE_ERROR, value.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -1279,7 +1279,7 @@ std::wstring TRemoteFile::GetListingStr()
   {
     LinkPart = std::wstring(SYMLINKSTR) + GetLinkTo();
   }
-  return ::FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s", 
+  return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s", 
     GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(),
     GetOwner().GetName().c_str(),
     GetGroup().GetName().c_str(), IntToStr(GetSize()).c_str(), GetModificationStr().c_str(),
@@ -2028,7 +2028,7 @@ void TRights::SetText(const std::wstring & value)
         (!GetAllowUndef() && (value.find_first_of(UndefSymbol) > 0)) ||
         (value.find_first_of(L" ") > 0))
     {
-      // FIXME throw exception(FMTLOAD(RIGHTS_ERROR, (value)));
+      throw ExtException(FMTLOAD(RIGHTS_ERROR, value.c_str()));
     }
 
     FSet = 0;
@@ -2156,7 +2156,7 @@ void TRights::SetOctal(std::wstring value)
 
     if (!Correct)
     {
-      // FIXME throw exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, (value)));
+      throw ExtException(FMTLOAD(INVALID_OCTAL_PERMISSIONS, value.c_str()));
     }
 
     SetNumber(static_cast<unsigned short>(

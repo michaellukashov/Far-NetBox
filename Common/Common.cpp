@@ -159,12 +159,13 @@ std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default)
 //---------------------------------------------------------------------------
 std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
 {
+  // std::wstring str = Str;
   int P = Str.find_first_of(Ch, 0);
   std::wstring Result;
   if (P)
   {
-    Result = Str.substr(1, P-1);
-    Str.erase(1, P);
+    Result = Str.substr(0, P);
+    Str.erase(0, P + 1);
   }
   else
   {
@@ -173,9 +174,10 @@ std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
   }
   if (Trim)
   {
-    // Result = Result.TrimRight();
-    // Str = Str.TrimLeft();
+    Str = TrimLeft(Str);
+    Result = TrimRight(Str);
   }
+  // DEBUG_PRINTF(L"NetBox: Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -251,7 +253,7 @@ std::wstring ExceptionLogString(exception *E)
   if (true) // FIXME dynamic_cast<E>(E) != NULL) // ->InheritsFrom(__classid(exception)))
   {
     std::wstring Msg;
-    // Msg = ::FORMAT(L"(%s) %s", (E->ClassName(), E->Message));
+    // Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message));
     Msg = ::MB2W(E->what());
     if (false) // FIXME E->InheritsFrom(__classid(ExtException)))
     {
@@ -362,7 +364,7 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     }
     else
     {
-      throw exception(); // FIXME FMTLOAD(INVALID_SHELL_COMMAND, ("\"" + Command)));
+      throw ExtException(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + Command).c_str()));
     }
   }
   else
@@ -506,6 +508,56 @@ std::wstring ExtractShortPathName(const std::wstring & Path1)
     return Path1; //FIXME
 }
 
+std::wstring ExtractDirectory(const std::wstring &path, wchar_t delimiter)
+  //
+  // Returns everything, including the trailing path separator, except the filename
+  // part of the path.
+  //
+  // "/foo/bar/baz.txt" --> "/foo/bar/"
+{
+  return path.substr(0,path.find_last_of(delimiter) + 1);
+}
+
+std::wstring ExtractFilename(const std::wstring &path, wchar_t delimiter)
+//
+// Returns only the filename part of the path.
+//
+// "/foo/bar/baz.txt" --> "baz.txt"
+{
+    return path.substr(path.find_last_of(delimiter) + 1);
+}
+
+std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter)
+//
+// Returns the file's extension, if any. The period is considered part
+// of the extension.
+//
+// "/foo/bar/baz.txt" --> ".txt"
+// "/foo/bar/baz" --> ""
+{
+    std::wstring filename = ExtractFilename(path, delimiter);
+    std::wstring::size_type n = filename.find_last_of('.');
+    if (n != wstring::npos)
+        return filename.substr(n);
+    return wstring();
+}
+
+std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter)
+  //
+  // Modifies the filename's extension. The period is considered part
+  // of the extension.
+  //
+  // "/foo/bar/baz.txt", ".dat" --> "/foo/bar/baz.dat"
+  // "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
+  // "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
+  //
+{
+  std::wstring filename = ExtractFilename(path, delimiter);
+  return ExtractDirectory(path, delimiter)
+       + filename.substr(0, filename.find_last_of('.'))
+       + ext;
+}
+  
 //---------------------------------------------------------------------------
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2)
 {
@@ -764,7 +816,7 @@ TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(::FORMAT(L"%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
+    throw EConvertError(FORMAT(L"%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
   }
   */
   return TDateTime();
@@ -780,7 +832,7 @@ TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short 
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(::FORMAT(L"%s [%d:%d:%d.%d]", (E.Message, int(Hour), int(Min), int(Sec), int(MSec))));
+    throw EConvertError(FORMAT(L"%s [%d:%d:%d.%d]", (E.Message, int(Hour), int(Min), int(Sec), int(MSec))));
   }
   */
   return TDateTime();
@@ -1416,32 +1468,31 @@ TPasLibModule * FindModule(void * Instance)
 //---------------------------------------------------------------------------
 std::wstring LoadStr(int Ident, unsigned int MaxLength)
 {
-    // FIXME
-  std::wstring Result;
-  /*
-  TPasLibModule * MainModule = FindModule(HInstance);
-  assert(MainModule != NULL);
+    std::wstring Result;
+    // TPasLibModule * MainModule = FindModule(HInstance);
+    // assert(MainModule != NULL);
+    HINSTANCE hInstance = GetModuleHandle(0);
+    assert(hInstance != 0);
 
-  Result.resize(MaxLength);
-  int Length = LoadString(MainModule->ResInstance, Ident, Result.c_str(), MaxLength);
-  Result.resize(Length);
-*/
-  return Result;
+    Result.resize(MaxLength > 0 ? MaxLength : 255);
+    int Length = ::LoadString(hInstance, Ident, (LPWSTR)Result.c_str(), Result.size());
+    Result.resize(Length);
+
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring LoadStrPart(int Ident, int Part)
 {
-    // FIXME
   std::wstring Result;
-  /*
+
   std::wstring Str = LoadStr(Ident);
+  // DEBUG_PRINTF(L"NetBox: Str = %s", Str.c_str());
 
   while (Part > 0)
   {
-    Result = CutToChar(Str, '|', false);
+    Result = ::CutToChar(Str, '|', false);
     Part--;
   }
-  */
   return Result;
 }
 
@@ -1694,18 +1745,6 @@ return false;
   // return Result;
 }
 
-std::wstring FORMAT(const wchar_t *fmt, ...)
-{
-	std::wstring result;
-	va_list args;
-	va_start(args, fmt);
-	int len = _vscwprintf(fmt, args);
-	std::wstring buf(len + sizeof(wchar_t), 0);
-	vswprintf_s(&buf[0], buf.size(), fmt, args);
-	va_end(args);
-	return result;
-}
-
 //---------------------------------------------------------------------------
 std::wstring IntToStr(int value)
 {
@@ -1754,15 +1793,21 @@ std::wstring Trim(const std::wstring str)
 
 std::wstring TrimLeft(const std::wstring str)
 {
-    // FIXME
     std::wstring result = str;
+    while (result.size() > 0 && result[0] == ' ')
+    {
+        result = result.substr(1, result.size() - 1);
+    }
     return result;
 }
 
 std::wstring TrimRight(const std::wstring str)
 {
-    // FIXME
     std::wstring result = str;
+    while (result.size() > 0 && result[result.size() - 1] == ' ')
+    {
+        result.resize(result.size() - 1);
+    }
     return result;
 }
 
@@ -1982,4 +2027,59 @@ bool InheritsFrom(const exception &E1, const exception &from)
     return false;
 }
 
+//---------------------------------------------------------------------------
+
+std::wstring Format(const wchar_t *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    int len = _vscwprintf(format, args);
+    std::wstring result(len + sizeof(wchar_t), 0);
+    vswprintf_s(&result[0], result.size(), format, args);
+    va_end(args);
+    return result;
+}
+
+//---------------------------------------------------------------------------
+std::wstring FmtLoadStr(int id, ...)
+{
+    std::wstring result;
+    std::wstring format;
+    HINSTANCE hInstance = GetModuleHandle(0);
+    // DEBUG_PRINTF(L"NetBox: hInstance = %u", hInstance);
+    format.resize(255);
+    int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
+    format.resize(Length);
+    // DEBUG_PRINTF(L"NetBox: format = %s", format.c_str());
+    if (!Length)
+    {
+        // TRACE(_T("Unknown resource string id : %d"), id);
+        DEBUG_PRINTF(L"NetBox: Unknown resource string id: %d\n", id);
+    }
+    else
+    {
+        va_list args;
+        va_start(args, id);
+        /*
+        LPTSTR lpszTemp;
+        if (::FormatMessage(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+                            (LPCVOID)format.c_str(), 0, 0, (LPTSTR)&lpszTemp, 0, &args) == 0 ||
+            lpszTemp == NULL)
+        {
+          // AfxThrowMemoryException();
+            DEBUG_PRINTF(L"NetBox: FormatMessage error");
+        }
+        // DEBUG_PRINTF(L"NetBox: lpszTemp = %s", lpszTemp);
+        result = lpszTemp;
+        ::LocalFree(lpszTemp);
+        */
+        int len = _vscwprintf(format.c_str(), args);
+        std::wstring buf(len + sizeof(wchar_t), 0);
+        vswprintf_s(&buf[0], buf.size(), format.c_str(), args);
+        va_end(args);
+        result = buf;
+    }
+    // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
+    return result;
+}
 //---------------------------------------------------------------------------

@@ -115,18 +115,18 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     }
     if (!Password.empty())
     {
-      Params += ::FORMAT(L"-pw %s ", (EscapePuttyCommandParam(Password)));
+      Params += FORMAT(L"-pw %s ", (EscapePuttyCommandParam(Password)));
     }
-    Params += ::FORMAT(L"-load %s", (EscapePuttyCommandParam(SessionName)));
+    Params += FORMAT(L"-load %s", (EscapePuttyCommandParam(SessionName)));
 
     if (!ExecuteShell(Program, Params))
     {
-      throw ExtException(L""); // FIXME FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+      throw ExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
     }
   }
   else
   {
-    throw ExtException(L""); // FIXME FMTLOAD(FILE_NOT_FOUND, (Program)));
+    throw ExtException(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
   }
 }
 //---------------------------------------------------------------------------

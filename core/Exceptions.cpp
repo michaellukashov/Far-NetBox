@@ -189,7 +189,7 @@ std::wstring LastSysErrorMessage()
   std::wstring Result;
   if (LastError != 0)
   {
-    Result = ::FORMAT(L"System Error.  Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
+    Result = FORMAT(L"System Error.  Code: %d.\r\n%s", LastError, SysErrorMessage(LastError).c_str());
   }
   return Result;
 }
@@ -240,7 +240,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
           TMessageParams Params(mpNeverAskAgainCheck);
           Result = FatalExceptionMessageDialog(E, Type, 0,
             (Manager->GetCount() > 1) ?
-              FMTLOAD(DISCONNECT_ON_COMPLETION, (Manager->GetCount() - 1)) :
+              FMTLOAD(DISCONNECT_ON_COMPLETION, Manager->GetCount() - 1) :
               LoadStr(EXIT_ON_COMPLETION),
             qaYes | qaNo, HELP_NONE, &Params);
 

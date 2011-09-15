@@ -6,6 +6,30 @@
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
+inline int __cdecl debug_printf(const wchar_t *format, ...)
+{
+    (void)format;
+    int len = 0;
+#ifdef NETBOX_DEBUG
+    va_list args;
+    va_start(args, format);
+    len = _vscwprintf(format, args);
+    std::wstring buf(len + sizeof(wchar_t), 0);
+    vswprintf_s(&buf[0], buf.size(), format, args);
+
+    va_end(args);
+    OutputDebugStringW(buf.c_str());
+#endif
+    return len;
+}
+
+#ifdef NETBOX_DEBUG
+#define DEBUG_PRINTF(format, ...) debug_printf(format, __VA_ARGS__);
+#else
+#define DEBUG_PRINTF(format, ...)
+#endif
+
+//---------------------------------------------------------------------------
 #define EXCEPTION throw ExtException(NULL, "")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
@@ -14,8 +38,8 @@
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
 #define ASCOPY(dest, source) SCOPY(dest, source.c_str())
-// #define FORMAT(S, F) Format(S, ARRAYOFCONST(F))
-#define FMTLOAD(I, F) FmtLoadStr(I, ARRAYOFCONST(F))
+#define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
+#define FMTLOAD(I, ...) ::FmtLoadStr(I, __VA_ARGS__)
 #define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
@@ -55,6 +79,13 @@ std::wstring ExpandFileNameCommand(const std::wstring Command,
 void ReformatFileNameCommand(std::wstring & Command);
 std::wstring EscapePuttyCommandParam(std::wstring Param);
 std::wstring ExpandEnvironmentVariables(const std::wstring & Str);
+
+std::wstring ExtractShortPathName(const std::wstring & Path1);
+std::wstring ExtractDirectory(const std::wstring &path, wchar_t delimiter = '/');
+std::wstring ExtractFilename(const std::wstring &path, wchar_t delimiter = '/');
+std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter = '/');
+std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter = '/');
+
 bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2);
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2);
 bool IsReservedName(std::wstring FileName);
@@ -214,8 +245,6 @@ public:
   bool GetTerminated() { return true; }
 };
 //---------------------------------------------------------------------------
-std::wstring FORMAT(const wchar_t *fmt, ...);
-//---------------------------------------------------------------------------
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
@@ -287,4 +316,7 @@ bool RemoveDir(const std::wstring Dir);
 //---------------------------------------------------------------------------
 bool InheritsFrom(const exception &E1, const exception &from);
 
+//---------------------------------------------------------------------------
+std::wstring Format(const wchar_t *format, ...);
+std::wstring FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------

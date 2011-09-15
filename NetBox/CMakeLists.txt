@@ -19,7 +19,7 @@ add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL" )
 add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT" )
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
-message ( "system: ${CMAKE_SYSTEM_NAME}" )
+# message ( "system: ${CMAKE_SYSTEM_NAME}" )
 
 #-------------------------------------------------------------------------------
 
@@ -116,6 +116,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/core/SessionData.cpp
     ${PROJECT_ROOT}/core/Configuration.cpp
     ${PROJECT_ROOT}/core/ScpFileSystem.cpp
+    ${PROJECT_ROOT}/core/FtpFileSystem.cpp
     ${PROJECT_ROOT}/core/SftpFileSystem.cpp
     ${PROJECT_ROOT}/core/PuttyIntf.cpp
     ${PROJECT_ROOT}/core/Cryptography.cpp
@@ -154,6 +155,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/NetBox/WebDAV.cpp
     ${PROJECT_ROOT}/NetBox/Session.cpp
     ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
+    ${PROJECT_ROOT}/resource/TextsCore1.rc
 )
 
 #-------------------------------------------------------------------------------
@@ -280,6 +282,7 @@ set ( TESTNETBOX_01_HEADERS
 
 set ( TESTNETBOX_01_SOURCES ${COMMON_SOURCES}
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
+    ${PROJECT_ROOT}/resource/testnetbox_01.rc
 )
 
 set ( TESTNETBOX_01_LIBRARIES
