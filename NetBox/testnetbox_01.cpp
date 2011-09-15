@@ -26,6 +26,9 @@
 
 using namespace boost::unit_test;
 
+#define TEST_CASE_TODO(exp) \
+    std::cerr << "TODO: " << #exp << std::endl
+
 /*******************************************************************************
             test suite
 *******************************************************************************/
@@ -230,7 +233,28 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
     int port = 2222;
     std::string user = "testuser";
     std::string password = "testpassword";
-    BOOST_CHECK(scp_test(host, port, user, password));
+    TEST_CASE_TODO(scp_test(host, port, user, password));
+}
+
+class TBaseClass1
+{
+};
+
+class TDerivedClass1 : public TBaseClass1
+{
+};
+
+class TBaseClass2
+{
+};
+
+BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
+{
+    TBaseClass1 E1;
+    TDerivedClass1 E2;
+    TBaseClass2 E3;
+    BOOST_CHECK(::InheritsFrom(E1, E2);
+    BOOST_CHECK(!::InheritsFrom(E1, E3);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
