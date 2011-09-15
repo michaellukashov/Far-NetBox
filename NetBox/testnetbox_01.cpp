@@ -239,6 +239,9 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
 
 class TBaseClass1
 {
+public:
+    virtual ~TBaseClass1()
+    {}
 };
 
 class TDerivedClass1 : public TBaseClass1
@@ -247,6 +250,9 @@ class TDerivedClass1 : public TBaseClass1
 
 class TBaseClass2
 {
+public:
+    virtual ~TBaseClass2()
+    {}
 };
 
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
@@ -257,9 +263,9 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
     // typedef boost::is_base_of<TBaseClass1, TDerivedClass1>::type t1;
     // bool res = ::InheritsFrom<TBaseClass1, TBaseClass1>(E1);
     // BOOST_CHECK(!res);
-    BOOST_CHECK((::InheritsFrom<TBaseClass1, TBaseClass1>(E1)));
-    BOOST_CHECK((::InheritsFrom<TBaseClass1, TDerivedClass1>(E2)));
-    // BOOST_CHECK(!(::InheritsFrom<TBaseClass2, TDerivedClass1>(E2)));
+    BOOST_CHECK((::InheritsFrom<TBaseClass1, TBaseClass1>(&E1)));
+    BOOST_CHECK((::InheritsFrom<TBaseClass1, TDerivedClass1>(&E2)));
+    // BOOST_CHECK(!(::InheritsFrom<TBaseClass2, TDerivedClass1>(&E2)));
     // BOOST_CHECK(!(::InheritsFrom<TDerivedClass1, TBaseClass1>(E1)));
     // BOOST_CHECK(!(::InheritsFrom<TBaseClass1, TBaseClass2>(E3)));
 }

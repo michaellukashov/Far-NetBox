@@ -249,13 +249,12 @@ std::wstring ShellDelimitStr(std::wstring Str, char Quote)
 std::wstring ExceptionLogString(exception *E)
 {
   assert(E);
-  if (::InheritsFrom<std::exception, std::exception>(*E)) // ->(__classid(exception)))
-  // if (true) // FIXME dynamic_cast<E>(E) != NULL) // ->InheritsFrom(__classid(exception)))
+  if (::InheritsFrom<std::exception, std::exception>(E))
   {
     std::wstring Msg;
-    // Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message));
-    Msg = ::MB2W(E->what());
-    if (::InheritsFrom<std::exception, ExtException>(*E)) // FIXME E->InheritsFrom(__classid(ExtException)))
+    Msg = FORMAT(L"(%s) %s", L"exception", ::MB2W(E->what()).c_str());
+    // Msg = ::MB2W(E->what());
+    if (::InheritsFrom<std::exception, ExtException>(E))
     {
       TStrings * MoreMessages = ((ExtException *)E)->GetMoreMessages();
       if (MoreMessages)
@@ -270,7 +269,7 @@ std::wstring ExceptionLogString(exception *E)
   {
     // wchar_t Buffer[1024] = {0};
     // FIXME ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
-    return std::wstring(E->what());
+    return std::wstring(::MB2W(E->what()));
   }
 }
 //---------------------------------------------------------------------------
