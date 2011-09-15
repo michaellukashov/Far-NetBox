@@ -1743,15 +1743,21 @@ std::wstring Trim(const std::wstring str)
 
 std::wstring TrimLeft(const std::wstring str)
 {
-    // FIXME
     std::wstring result = str;
+    while (result.size() > 0 && result[0] == ' ')
+    {
+        result = result.substr(1, result.size() - 1);
+    }
     return result;
 }
 
 std::wstring TrimRight(const std::wstring str)
 {
-    // FIXME
     std::wstring result = str;
+    while (result.size() > 0 && result[result.size() - 1] == ' ')
+    {
+        result.resize(result.size() - 1);
+    }
     return result;
 }
 

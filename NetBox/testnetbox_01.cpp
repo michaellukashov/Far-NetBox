@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
 {
-    // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar
+    // Тесты на ::FmtLoadStr FMTLOAD ::Format ::LoadStr ::LoadStrPart ::CutToChar ::TrimLeft ::TrimRight
     {
         std::wstring str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
         // BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
@@ -163,6 +163,36 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
         std::wstring str3 = FORMAT(L"test: %s %d", L"lalala", 42);
         BOOST_TEST_MESSAGE("str3 = " << ::W2MB(str3.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str3.c_str()), std::string("test: lalala 42"));
+    }
+    {
+        std::wstring str = ::TrimLeft(L"");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string(""));
+    }
+    {
+        std::wstring str = ::TrimLeft(L"1");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
+    }
+    {
+        std::wstring str = ::TrimLeft(L" 1");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
+    }
+    {
+        std::wstring str = ::TrimRight(L"");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string(""));
+    }
+    {
+        std::wstring str = ::TrimRight(L"1");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
+    }
+    {
+        std::wstring str = ::TrimRight(L"1 ");
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("1"));
     }
     {
         // std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
