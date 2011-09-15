@@ -1932,22 +1932,26 @@ bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 
 void RaiseLastOSError()
 {
+    // FIXME
 }
 
 //---------------------------------------------------------------------------
 double StrToFloat(std::wstring Value)
 {
+    // FIXME
     return 0;
 }
 
 std::wstring FormatFloat(std::wstring Format, double value)
 {
+    // FIXME
     return std::wstring(L"");
 }
 
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
+    // FIXME
     TTimeStamp result = {0, 0};
     return result;
 }
@@ -1956,11 +1960,13 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
 {
+    // FIXME
     return 0;
 }
 
 unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
 {
+    // FIXME
     return 0;
 }
 
