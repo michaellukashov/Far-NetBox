@@ -1988,12 +1988,11 @@ std::wstring FmtLoadStr(int id, ...)
     std::wstring result;
     std::wstring format;
     HINSTANCE hInstance = GetModuleHandle(0);
-    DEBUG_PRINTF(L"NetBox: hInstance = %u", hInstance);
+    // DEBUG_PRINTF(L"NetBox: hInstance = %u", hInstance);
     format.resize(255);
     int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
-    DEBUG_PRINTF(L"NetBox: Length = %d", Length);
     format.resize(Length);
-    DEBUG_PRINTF(L"NetBox: format = %s", format.c_str());
+    // DEBUG_PRINTF(L"NetBox: format = %s", format.c_str());
     if (!Length)
     {
         // TRACE(_T("Unknown resource string id : %d"), id);
@@ -2012,7 +2011,7 @@ std::wstring FmtLoadStr(int id, ...)
           // AfxThrowMemoryException();
             DEBUG_PRINTF(L"NetBox: FormatMessage error");
         }
-        DEBUG_PRINTF(L"NetBox: lpszTemp = %s", lpszTemp);
+        // DEBUG_PRINTF(L"NetBox: lpszTemp = %s", lpszTemp);
         result = lpszTemp;
         ::LocalFree(lpszTemp);
         */
@@ -2022,7 +2021,7 @@ std::wstring FmtLoadStr(int id, ...)
         va_end(args);
         result = buf;
     }
-    DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
+    // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
     return result;
 }
 //---------------------------------------------------------------------------
