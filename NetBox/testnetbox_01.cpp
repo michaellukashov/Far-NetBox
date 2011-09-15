@@ -15,6 +15,7 @@
 #define BOOST_TEST_MAIN
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+// #include <boost/type_traits/is_base_of.hpp>
 
 #include "winstuff.h"
 #include "puttyexp.h"
@@ -253,8 +254,14 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
     TBaseClass1 E1;
     TDerivedClass1 E2;
     TBaseClass2 E3;
-    BOOST_CHECK(::InheritsFrom(E1, E2);
-    BOOST_CHECK(!::InheritsFrom(E1, E3);
+    // typedef boost::is_base_of<TBaseClass1, TDerivedClass1>::type t1;
+    // bool res = ::InheritsFrom<TBaseClass1, TBaseClass1>(E1);
+    // BOOST_CHECK(!res);
+    BOOST_CHECK((::InheritsFrom<TBaseClass1, TBaseClass1>(E1)));
+    BOOST_CHECK((::InheritsFrom<TBaseClass1, TDerivedClass1>(E2)));
+    // BOOST_CHECK(!(::InheritsFrom<TBaseClass2, TDerivedClass1>(E2)));
+    // BOOST_CHECK(!(::InheritsFrom<TDerivedClass1, TBaseClass1>(E1)));
+    // BOOST_CHECK(!(::InheritsFrom<TBaseClass1, TBaseClass2>(E3)));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
