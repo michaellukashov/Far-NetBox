@@ -1786,8 +1786,7 @@ __int64 TryStrToInt(const std::wstring value, __int64 defval)
 
 std::wstring Trim(const std::wstring str)
 {
-    // FIXME
-    std::wstring result = str;
+    std::wstring result = TrimRight(TrimLeft(str));
     return result;
 }
 
