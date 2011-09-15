@@ -284,3 +284,7 @@ bool ForceDirectories(const std::wstring Dir);
 bool DeleteFile(const std::wstring File);
 bool RemoveDir(const std::wstring Dir);
 
+//---------------------------------------------------------------------------
+bool InheritsFrom(const exception &E1, const exception &from);
+
+//---------------------------------------------------------------------------
