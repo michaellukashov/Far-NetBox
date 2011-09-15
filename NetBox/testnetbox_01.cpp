@@ -279,6 +279,9 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
         BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), -1);
         BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 0);
         BOOST_CHECK_EQUAL(::Pos(str, L"BC"), 1);
+        BOOST_CHECK_EQUAL(::AnsiPos(str, 'D'), -1);
+        BOOST_CHECK_EQUAL(::AnsiPos(str, 'A'), 0);
+        BOOST_CHECK_EQUAL(::AnsiPos(str, 'B'), 1);
     }
 }
 
