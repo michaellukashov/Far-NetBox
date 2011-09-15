@@ -3933,7 +3933,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
 
   try
   {
-    bool Found;
+    bool Found = false;
     WIN32_FIND_DATA SearchRec;
     Data.LocalFileList = new TStringList();
     Data.LocalFileList->SetSorted(true);

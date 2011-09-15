@@ -891,10 +891,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
 
-  // BeginUpdate();
+  // FIXME BeginUpdate();
   try
   {
-    #define ADF(S, F) DoAdd(llMessage, FORMAT(S, F), (TDoAddLog)&TSessionLog::DoAddToSelf);
+    #define ADF(S, __VA_ARGS__) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), (TDoAddLog)&TSessionLog::DoAddToSelf);
     AddSeparator();
     ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
