@@ -18,6 +18,7 @@
  **************************************************************************/
 
 #include "stdafx.h"
+#include "Common.h"
 #include "SFTP.h"
 #include "Settings.h"
 #include "Logging.h"
