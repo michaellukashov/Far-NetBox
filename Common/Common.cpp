@@ -1983,3 +1983,9 @@ bool InheritsFrom(const exception &E1, const exception &from)
 }
 
 //---------------------------------------------------------------------------
+std::wstring FmtLoadStr(int id, ...)
+{
+    std::wstring result;
+    return result;
+}
+//---------------------------------------------------------------------------

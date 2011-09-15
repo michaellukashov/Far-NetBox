@@ -288,3 +288,5 @@ bool RemoveDir(const std::wstring Dir);
 bool InheritsFrom(const exception &E1, const exception &from);
 
 //---------------------------------------------------------------------------
+std::wstring FmtLoadStr(int id, ...);
+//---------------------------------------------------------------------------
