@@ -218,7 +218,7 @@ std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs,
   }
   if (Trim)
   {
-    // Result = Result.TrimRight();
+    Result = ::TrimRight(Result);
     while ((P <= Str.size()) && (Str[P] == L' '))
     {
       P++;
@@ -350,7 +350,7 @@ std::wstring ReplaceStrAll(std::wstring Str, std::wstring What, std::wstring ByW
 void SplitCommand(std::wstring Command, std::wstring &Program,
   std::wstring & Params, std::wstring & Dir)
 {
-  // Command = Command.Trim(); //FIXME
+  Command = ::Trim(Command);
   Params = L"";
   Dir = L"";
   if (!Command.empty() && (Command[1] == L'\"'))
@@ -359,8 +359,8 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     int P = Command.find_first_of(L'"');
     if (P)
     {
-      Program = Command.substr(1, P-1); // .Trim();
-      Params = Command.substr(P + 1, Command.size() - P); //.Trim();
+      Program = ::Trim(Command.substr(1, P-1));
+      Params = ::Trim(Command.substr(P + 1, Command.size() - P));
     }
     else
     {
@@ -372,8 +372,8 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     int P = Command.find_first_of(L" ");
     if (P)
     {
-      Program = Command.substr(1, P); // .Trim();
-      Params = Command.substr(P + 1, Command.size() - P); // .Trim();
+      Program = ::Trim(Command.substr(1, P));
+      Params = ::Trim(Command.substr(P + 1, Command.size() - P));
     }
     else
     {
@@ -383,14 +383,14 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
   int B = Program.find_last_of(L"\\");
   if (B)
   {
-    Dir = Program.substr(1, B); // .Trim();
+    Dir = ::Trim(Program.substr(1, B));
   }
   else
   {
     B = Program.find_last_of(L"/");
     if (B)
     {
-      Dir = Program.substr(1, B); // .Trim();
+      Dir = ::Trim(Program.substr(1, B));
     }
   }
 }
@@ -408,8 +408,8 @@ std::wstring ExtractProgram(std::wstring Command)
 //---------------------------------------------------------------------------
 std::wstring FormatCommand(std::wstring Program, std::wstring Params)
 {
-  // Program = Program.Trim();
-  // Params = Params.Trim();
+  Program = ::Trim(Program);
+  Params = ::Trim(Params);
   if (!Params.empty()) Params = L" " + Params;
   if (Program.find_first_of(L" ")) Program = L"\"" + Program + L"\"";
   return Program + Params;

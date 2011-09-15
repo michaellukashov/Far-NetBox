@@ -857,7 +857,7 @@ void TConfiguration::SetRandomSeedFile(std::wstring value)
 //---------------------------------------------------------------------
 std::wstring TConfiguration::GetRandomSeedFileName()
 {
-  return StripPathQuotes(Trim(ExpandEnvironmentVariables(FRandomSeedFile)));
+  return StripPathQuotes(::Trim(ExpandEnvironmentVariables(FRandomSeedFile)));
 }
 //---------------------------------------------------------------------
 void TConfiguration::SetPuttyRegistryStorageKey(std::wstring value)

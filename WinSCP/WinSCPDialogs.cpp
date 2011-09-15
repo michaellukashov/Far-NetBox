@@ -5516,7 +5516,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       }
       else if (Control == InfoLister)
       {
-        LabelStr = Trim(GetMsg(PROTOCOL_INFO_GROUP));
+        LabelStr = ::Trim(GetMsg(PROTOCOL_INFO_GROUP));
       }
       else
       {

@@ -3029,7 +3029,7 @@ void TWinSCPFileSystem::LogAuthentication(
   {
     int Width = 42;
     int Height = 11;
-    FarWrapText(TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
+    FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
     int Count;
     wstring Message;
     if (AuthenticationLogLines->GetCount() == 0)

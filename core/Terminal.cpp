@@ -3411,7 +3411,7 @@ void TTerminal::LookupUsersGroups()
 //---------------------------------------------------------------------------
 bool TTerminal::AllowedAnyCommand(const std::wstring Command)
 {
-  return !Trim(Command).empty();
+  return !::Trim(Command).empty();
 }
 //---------------------------------------------------------------------------
 bool TTerminal::GetCommandSessionOpened()

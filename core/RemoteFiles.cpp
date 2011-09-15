@@ -983,7 +983,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         if (P) { Col = Line.substr(1, P-1); Line.erase(1, P); } \
           else { Col = Line; Line = L""; } \
       }
-    #define GETCOL { GETNCOL; Line = TrimLeft(Line); }
+    #define GETCOL { GETNCOL; Line = ::TrimLeft(Line); }
 
     // Rights string may contain special permission attributes (S,t, ...)
     // (TODO: maybe no longer necessary, once we can handle the special permissions)
@@ -1003,7 +1003,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
     {
       Line.erase(1, 2);
     }
-    Line = TrimLeft(Line);
+    Line = ::TrimLeft(Line);
 
     GETCOL;
     FINodeBlocks = StrToInt(Col);

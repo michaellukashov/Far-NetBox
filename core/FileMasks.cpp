@@ -342,7 +342,7 @@ void TFileMasks::TrimEx(std::wstring & Str, int & Start, int & End)
 {
   std::wstring Buf = TrimLeft(Str);
   Start += Str.size() - Buf.size();
-  Str = TrimRight(Buf);
+  Str = ::TrimRight(Buf);
   End -= Buf.size() - Str.size();
 }
 //---------------------------------------------------------------------------
