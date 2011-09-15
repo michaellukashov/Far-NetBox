@@ -154,6 +154,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/NetBox/WebDAV.cpp
     ${PROJECT_ROOT}/NetBox/Session.cpp
     ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
+    ${PROJECT_ROOT}/resource/TextsCore1.rc
 )
 
 #-------------------------------------------------------------------------------
