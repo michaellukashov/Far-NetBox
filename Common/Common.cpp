@@ -1694,18 +1694,6 @@ return false;
   // return Result;
 }
 
-std::wstring FORMAT(const wchar_t *fmt, ...)
-{
-	std::wstring result;
-	va_list args;
-	va_start(args, fmt);
-	int len = _vscwprintf(fmt, args);
-	std::wstring buf(len + sizeof(wchar_t), 0);
-	vswprintf_s(&buf[0], buf.size(), fmt, args);
-	va_end(args);
-	return result;
-}
-
 //---------------------------------------------------------------------------
 std::wstring IntToStr(int value)
 {
@@ -1980,6 +1968,31 @@ bool RemoveDir(const std::wstring Dir)
 bool InheritsFrom(const exception &E1, const exception &from)
 {
     return false;
+}
+
+//---------------------------------------------------------------------------
+std::wstring FORMAT(const wchar_t *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    int len = _vscwprintf(fmt, args);
+    std::wstring result(len + sizeof(wchar_t), 0);
+    vswprintf_s(&result[0], result.size(), fmt, args);
+    va_end(args);
+    return result;
+}
+
+//---------------------------------------------------------------------------
+
+std::wstring Format(const wchar_t *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    int len = _vscwprintf(format, args);
+    std::wstring result(len + sizeof(wchar_t), 0);
+    vswprintf_s(&result[0], result.size(), format, args);
+    va_end(args);
+    return result;
 }
 
 //---------------------------------------------------------------------------
