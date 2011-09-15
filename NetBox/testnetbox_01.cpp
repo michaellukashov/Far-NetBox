@@ -163,6 +163,11 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
         BOOST_TEST_MESSAGE("str3 = " << ::W2MB(str3.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str3.c_str()), std::string("test: lalala 42"));
     }
+    {
+        std::wstring str = LoadStr(CONST_TEST_STRING);
+        BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)

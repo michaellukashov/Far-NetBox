@@ -1416,17 +1416,17 @@ TPasLibModule * FindModule(void * Instance)
 //---------------------------------------------------------------------------
 std::wstring LoadStr(int Ident, unsigned int MaxLength)
 {
-    // FIXME
-  std::wstring Result;
-  /*
-  TPasLibModule * MainModule = FindModule(HInstance);
-  assert(MainModule != NULL);
+    std::wstring Result;
+    // TPasLibModule * MainModule = FindModule(HInstance);
+    // assert(MainModule != NULL);
+    HINSTANCE hInstance = GetModuleHandle(0);
+    assert(hInstance != 0);
 
-  Result.resize(MaxLength);
-  int Length = LoadString(MainModule->ResInstance, Ident, Result.c_str(), MaxLength);
-  Result.resize(Length);
-*/
-  return Result;
+    Result.resize(MaxLength > 0 ? MaxLength : 255);
+    int Length = ::LoadString(hInstance, Ident, (LPWSTR)Result.c_str(), Result.size());
+    Result.resize(Length);
+
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring LoadStrPart(int Ident, int Part)
