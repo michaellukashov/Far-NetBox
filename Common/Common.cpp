@@ -2022,10 +2022,10 @@ bool RemoveDir(const std::wstring Dir)
 }
 
 //---------------------------------------------------------------------------
-bool InheritsFrom(const exception &E1, const exception &from)
-{
-    return false;
-}
+// bool InheritsFrom(const exception &E1, const exception &from)
+// {
+    // return false;
+// }
 
 //---------------------------------------------------------------------------
 

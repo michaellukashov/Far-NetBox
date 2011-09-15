@@ -3,6 +3,8 @@
 
 #include <WinBase.h>
 
+// #include <boost/type_traits/is_base_of.hpp>
+
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
@@ -314,7 +316,12 @@ bool DeleteFile(const std::wstring File);
 bool RemoveDir(const std::wstring Dir);
 
 //---------------------------------------------------------------------------
-bool InheritsFrom(const exception &E1, const exception &from);
+template <class Base, class Derived>
+bool InheritsFrom(const Derived &t)
+{
+    return dynamic_cast<const Base *>(&t) != NULL;
+    // return boost::is_base_of<Base, Derived>::value == true;
+}
 
 //---------------------------------------------------------------------------
 std::wstring Format(const wchar_t *format, ...);
