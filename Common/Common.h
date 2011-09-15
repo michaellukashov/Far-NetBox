@@ -79,6 +79,13 @@ std::wstring ExpandFileNameCommand(const std::wstring Command,
 void ReformatFileNameCommand(std::wstring & Command);
 std::wstring EscapePuttyCommandParam(std::wstring Param);
 std::wstring ExpandEnvironmentVariables(const std::wstring & Str);
+
+std::wstring ExtractShortPathName(const std::wstring & Path1);
+std::wstring ExtractDirectory(const std::wstring &path, wchar_t delimiter = '/');
+std::wstring ExtractFilename(const std::wstring &path, wchar_t delimiter = '/');
+std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter = '/');
+std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter = '/');
+
 bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2);
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2);
 bool IsReservedName(std::wstring FileName);

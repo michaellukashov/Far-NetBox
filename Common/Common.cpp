@@ -508,6 +508,56 @@ std::wstring ExtractShortPathName(const std::wstring & Path1)
     return Path1; //FIXME
 }
 
+std::wstring ExtractDirectory(const std::wstring &path, wchar_t delimiter)
+  //
+  // Returns everything, including the trailing path separator, except the filename
+  // part of the path.
+  //
+  // "/foo/bar/baz.txt" --> "/foo/bar/"
+{
+  return path.substr(0,path.find_last_of(delimiter) + 1);
+}
+
+std::wstring ExtractFilename(const std::wstring &path, wchar_t delimiter)
+//
+// Returns only the filename part of the path.
+//
+// "/foo/bar/baz.txt" --> "baz.txt"
+{
+    return path.substr(path.find_last_of(delimiter) + 1);
+}
+
+std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter)
+//
+// Returns the file's extension, if any. The period is considered part
+// of the extension.
+//
+// "/foo/bar/baz.txt" --> ".txt"
+// "/foo/bar/baz" --> ""
+{
+    std::wstring filename = ExtractFilename(path, delimiter);
+    std::wstring::size_type n = filename.find_last_of('.');
+    if (n != wstring::npos)
+        return filename.substr(n);
+    return wstring();
+}
+
+std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter)
+  //
+  // Modifies the filename's extension. The period is considered part
+  // of the extension.
+  //
+  // "/foo/bar/baz.txt", ".dat" --> "/foo/bar/baz.dat"
+  // "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
+  // "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
+  //
+{
+  std::wstring filename = ExtractFilename(path, delimiter);
+  return ExtractDirectory(path, delimiter)
+       + filename.substr(0, filename.find_last_of('.'))
+       + ext;
+}
+  
 //---------------------------------------------------------------------------
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2)
 {
