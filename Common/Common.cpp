@@ -1267,15 +1267,15 @@ std::wstring FixedLenDateTimeFormat(const std::wstring & Format)
     }
     else if (!AsIs && ((F == L'a') || (F == L'A')))
     {
-      if (Result.substr(Index, 5)/*.LowerCase()*/ == L"am/pm")
+      if (::LowerCase(Result.substr(Index, 5)) == L"am/pm")
       {
         Index += 5;
       }
-      else if (Result.substr(Index, 3)/*.LowerCase()*/ == L"a/p")
+      else if (::LowerCase(Result.substr(Index, 3)) == L"a/p")
       {
         Index += 3;
       }
-      else if (Result.substr(Index, 4)/*.LowerCase()*/ == L"ampm")
+      else if (::LowerCase(Result.substr(Index, 4)) == L"ampm")
       {
         Index += 4;
       }

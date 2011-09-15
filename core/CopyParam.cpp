@@ -409,15 +409,15 @@ std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
     FileName = MaskFileName(FileName, GetFileMask());
   }
   switch (GetFileNameCase()) {
-    case ncUpperCase: FileName = UpperCase(FileName); break;
-    case ncLowerCase: FileName = LowerCase(FileName); break;
-    case ncFirstUpperCase: FileName = UpperCase(FileName.substr(1, 1)) +
-      LowerCase(FileName.substr(2, FileName.size()-1)); break;
+    case ncUpperCase: FileName = ::UpperCase(FileName); break;
+    case ncLowerCase: FileName = ::LowerCase(FileName); break;
+    case ncFirstUpperCase: FileName = ::UpperCase(FileName.substr(1, 1)) +
+      ::LowerCase(FileName.substr(2, FileName.size()-1)); break;
     case ncLowerCaseShort:
       if ((FileName.size() <= 12) && (FileName.find_first_of(L".") <= 9) &&
-          (FileName == UpperCase(FileName)))
+          (FileName == ::UpperCase(FileName)))
       {
-        FileName = LowerCase(FileName);
+        FileName = ::LowerCase(FileName);
       }
       break;
     case ncNoChange:
