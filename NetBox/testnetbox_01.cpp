@@ -270,8 +270,16 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 {
-    std::wstring str = ::StringReplace(L"AA", L"A", L"B");
-    BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "BB");
+    {
+        std::wstring str = ::StringReplace(L"AA", L"A", L"B");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "BB");
+    }
+    {
+        std::wstring str = L"ABC";
+        BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), -1);
+        BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 0);
+        BOOST_CHECK_EQUAL(::Pos(str, L"BC"), 1);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

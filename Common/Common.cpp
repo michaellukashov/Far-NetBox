@@ -1855,8 +1855,8 @@ int AnsiPos(const std::wstring str, wchar_t c)
 
 int Pos(const std::wstring str, const std::wstring substr)
 {
-    // FIXME
-    return -1;
+    int result = str.find_first_of(substr);
+    return result == std::wstring::npos ? -1 : result;
 }
 
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
