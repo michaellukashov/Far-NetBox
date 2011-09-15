@@ -268,4 +268,10 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
     // BOOST_CHECK(!(::InheritsFrom<TBaseClass1, TBaseClass2>(E3)));
 }
 
+BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
+{
+    std::wstring str = ::StringReplace(L"AA", L"A", L"B");
+    BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "BB");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
