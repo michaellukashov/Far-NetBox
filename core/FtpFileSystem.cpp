@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#include <vcl.h>
-#pragma hdrstop
+#include <stdafx.h>
 
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
@@ -18,8 +17,6 @@
 #define OPENSSL_NO_ECDSA
 #define OPENSSL_NO_ECDH
 #include <openssl/x509_vfy.h>
-//---------------------------------------------------------------------------
-#pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
