@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 // #include <SysUtils.hpp>
 #include "stdafx.h"
+#include <ShellAPI.h>
 
 #include "RemoteFiles.h"
 #include "Common.h"
@@ -389,7 +390,7 @@ std::wstring UserModificationStr(TDateTime DateTime,
 }
 //---------------------------------------------------------------------------
 int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
-  std::wstring * TypeName)
+  std::wstring *TypeName)
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
@@ -411,27 +412,25 @@ int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
   }
 
   int Icon = -1;
-  // FIXME
-  /*
-  if (SHGetFileInfo(FileName.c_str(),
-        Attrs, &SHFileInfo, sizeof(SHFileInfo),
+  SHFILEINFO ssfi;
+  if (SHGetFileInfo((LPCTSTR)std::wstring(FileName).c_str(), 
+        Attrs, &ssfi, sizeof(SHFILEINFO),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
     if (TypeName != NULL)
     {
-      *TypeName = SHFileInfo.szTypeName;
+      *TypeName = SHFileInfo.GetFileType(FileName);
     }
-    Icon = SHFileInfo.iIcon;
+    Icon = SHFileInfo.GetFileIconIndex(FileName, true);
   }
   else
   {
     if (TypeName != NULL)
     {
-      *TypeName = "";
+      *TypeName = L"";
     }
     Icon = -1;
   }
-  */
 
   return Icon;
 }
