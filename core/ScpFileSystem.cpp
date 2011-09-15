@@ -675,8 +675,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
     if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
         ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
-      FTerminal->TerminalError(L""); // FIXME FmtLoadStr(INVALID_OUTPUT_ERROR,
-        // FullCommand.c_str(), GetOutput()->GetText().c_str()));
+      FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
+        FullCommand.c_str(), GetOutput()->GetText().c_str()));
     }
   }
 }

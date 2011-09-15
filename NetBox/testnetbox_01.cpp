@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
 {
-    std::wstring str = FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
+    std::wstring str = ::FmtLoadStr(CONST_TEST_STRING, L"lalala", 42);
     // BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
     // BOOST_TEST_MESSAGE("length = " << str.size());
     BOOST_CHECK(::W2MB(str.c_str()) == "test string: \"lalala\" 42");
