@@ -2,7 +2,6 @@
 #ifndef RemoteFilesH
 #define RemoteFilesH
 //---------------------------------------------------------------------------
-#include <CommCtrl.h>
 
 #include <vector>
 #include <map>
@@ -23,28 +22,6 @@ class TTerminal;
 class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
-
-//---------------------------------------------------------------------------
-class CUseShGetFileInfo
-{
-public:
-    CUseShGetFileInfo();
-    virtual ~CUseShGetFileInfo();
-
-    //get the system's image list
-    HIMAGELIST GetSystemImageListHandle(BOOL bSmallIcon);
-
-    //get the image's index in the system's image list
-    int GetFileIconIndex( std::wstring strFileName, BOOL bSmallIcon);
-    int GetDirIconIndex(BOOL bSmallIcon);
-
-    //get a handle to the icon
-    HICON GetFileIconHandle(std::wstring strFileName, BOOL bSmallIcon);
-    HICON GetFolderIconHandle(BOOL bSmallIcon );
-
-    //get file type
-    std::wstring GetFileType(std::wstring strFileName);
-};
 
 //---------------------------------------------------------------------------
 class TRemoteToken
