@@ -1986,6 +1986,43 @@ bool InheritsFrom(const exception &E1, const exception &from)
 std::wstring FmtLoadStr(int id, ...)
 {
     std::wstring result;
+    std::wstring format;
+    HINSTANCE hInstance = GetModuleHandle(0);
+    DEBUG_PRINTF(L"NetBox: hInstance = %u", hInstance);
+    format.resize(255);
+    int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
+    DEBUG_PRINTF(L"NetBox: Length = %d", Length);
+    format.resize(Length);
+    DEBUG_PRINTF(L"NetBox: format = %s", format.c_str());
+    if (!Length)
+    {
+        // TRACE(_T("Unknown resource string id : %d"), id);
+        DEBUG_PRINTF(L"NetBox: Unknown resource string id: %d\n", id);
+    }
+    else
+    {
+        va_list args;
+        va_start(args, id);
+        /*
+        LPTSTR lpszTemp;
+        if (::FormatMessage(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+                            (LPCVOID)format.c_str(), 0, 0, (LPTSTR)&lpszTemp, 0, &args) == 0 ||
+            lpszTemp == NULL)
+        {
+          // AfxThrowMemoryException();
+            DEBUG_PRINTF(L"NetBox: FormatMessage error");
+        }
+        DEBUG_PRINTF(L"NetBox: lpszTemp = %s", lpszTemp);
+        result = lpszTemp;
+        ::LocalFree(lpszTemp);
+        */
+        int len = _vscwprintf(format.c_str(), args);
+        std::wstring buf(len + sizeof(wchar_t), 0);
+        vswprintf_s(&buf[0], buf.size(), format.c_str(), args);
+        va_end(args);
+        result = buf;
+    }
+    DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
     return result;
 }
 //---------------------------------------------------------------------------
