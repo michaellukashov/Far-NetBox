@@ -201,9 +201,10 @@ bool TFileMasks::MatchesMasks(const std::wstring FileName, bool Directory,
   bool Result = false;
 
   TMasks::const_iterator I = Masks.begin();
+  DEBUG_PRINTF(L"NetBox: Masks.size = %d", Masks.size());
   while (!Result && (I != Masks.end()))
   {
-    const TMask & Mask = *I;
+    const TMask &Mask = *I;
     Result =
       (!Mask.DirectoryOnly || Directory) &&
       MatchesMaskMask(Mask.DirectoryMask, Path) &&
