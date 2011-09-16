@@ -481,6 +481,23 @@ bool TFileMasks::Matches(const std::wstring FileName, bool Local,
   return Result;
 }
 //---------------------------------------------------------------------------
+bool TFileMasks::GetIsValid(int &Start, int &Length) const
+{
+    if (IsMask(FStr))
+    {
+        Start = 0;
+        Length = FStr.size();
+        return true;
+    }
+    else
+    {
+        Start = -1;
+        Length = 0;
+        return false;
+    }
+}
+
+//---------------------------------------------------------------------------
 bool TFileMasks::operator ==(const TFileMasks & rhm) const
 {
   return (GetMasks() == rhm.GetMasks());
