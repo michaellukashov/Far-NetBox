@@ -199,7 +199,7 @@ namespace Masks {
 bool TMask::GetMatches(const std::wstring Str)
 {
     DEBUG_PRINTF(L"NetBox: GetMatches: FMask = %s, Str = %s", FMask.c_str(), Str.c_str());
-    return false;
+    return CmpName(FMask.c_str(), Str.c_str(), true, true);
 }
 
 } // namespace Masks
