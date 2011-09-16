@@ -1882,7 +1882,7 @@ bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
 
 int LastDelimiter(const std::wstring str, const std::wstring delim)
 {
-    for (int i = 0; i < str.size(); i++)
+    for (int i = str.size() - 1; i >= 0; i--)
     {
         if (::IsDelimiter(str, delim, i))
         {

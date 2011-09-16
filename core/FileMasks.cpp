@@ -130,7 +130,9 @@ std::wstring TFileMasks::TParams::ToString() const
 //---------------------------------------------------------------------------
 bool TFileMasks::IsMask(const std::wstring Mask)
 {
-  return (::LastDelimiter(Mask, L"?*[") > 0);
+    int result = ::LastDelimiter(Mask, L"?*[");
+    // DEBUG_PRINTF(L"NetBox: isMask: result = %d", result);
+    return result != -1;
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::IsAnyMask(const std::wstring & Mask)
