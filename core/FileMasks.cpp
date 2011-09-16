@@ -8,6 +8,203 @@
 #include "PuttyTools.h"
 #include "Terminal.h"
 //---------------------------------------------------------------------------
+
+inline int IsSlash(wchar_t x) { return x==L'\\' || x==L'/'; }
+inline int __cdecl StrCmpI(const wchar_t *s1, const wchar_t *s2) { return CompareString(0,NORM_IGNORECASE|SORT_STRINGSORT,s1,-1,s2,-1)-2; }
+inline wchar_t __cdecl Upper(wchar_t Ch) { CharUpperBuff(&Ch, 1); return Ch; }
+inline wchar_t __cdecl Lower(wchar_t Ch) { CharLowerBuff(&Ch, 1); return Ch; }
+
+const wchar_t* PointToName(const wchar_t *lpwszPath,const wchar_t *lpwszEndPtr)
+{
+    if (!lpwszPath)
+        return NULL;
+
+    if (*lpwszPath && *(lpwszPath+1)==L':') lpwszPath+=2;
+
+    const wchar_t *lpwszNamePtr = lpwszEndPtr;
+
+    if (!lpwszNamePtr)
+    {
+        lpwszNamePtr=lpwszPath;
+
+        while (*lpwszNamePtr) lpwszNamePtr++;
+    }
+
+    while (lpwszNamePtr != lpwszPath)
+    {
+        if (IsSlash(*lpwszNamePtr))
+            return lpwszNamePtr+1;
+
+        lpwszNamePtr--;
+    }
+
+    if (IsSlash(*lpwszPath))
+        return lpwszPath+1;
+    else
+        return lpwszPath;
+}
+
+const wchar_t* PointToName(const wchar_t *lpwszPath)
+{
+    return PointToName(lpwszPath, NULL);
+}
+
+const wchar_t* PointToName(std::wstring& strPath)
+{
+    const wchar_t *lpwszPath = strPath.c_str();
+    const wchar_t *lpwszEndPtr = lpwszPath + strPath.size();
+    return PointToName(lpwszPath, lpwszEndPtr);
+}
+
+static int CmpName(const wchar_t *pattern,const wchar_t *str, bool skippath, bool CmpNameSearchMode);
+
+static int CmpName_Body(const wchar_t *pattern,const wchar_t *str, bool CmpNameSearchMode)
+{
+    wchar_t stringc,patternc,rangec;
+    int match;
+
+    for (;; ++str)
+    {
+        /* $ 01.05.2001 DJ
+           используем инлайновые версии
+        */
+        stringc=Upper(*str);
+        patternc=Upper(*pattern++);
+
+        switch (patternc)
+        {
+            case 0:
+                return !stringc;
+            case L'?':
+
+                if (!stringc)
+                    return FALSE;
+
+                break;
+            case L'*':
+
+                if (!*pattern)
+                    return TRUE;
+
+                /* $ 01.05.2001 DJ
+                   оптимизированная ветка работает и для имен с несколькими
+                   точками
+                */
+                if (*pattern==L'.')
+                {
+                    if (pattern[1]==L'*' && !pattern[2])
+                        return TRUE;
+
+                    if (!wcspbrk(pattern, L"*?["))
+                    {
+                        const wchar_t *dot = wcsrchr(str, L'.');
+
+                        if (!pattern[1])
+                            return (!dot || !dot[1]);
+
+                        const wchar_t *patdot = wcschr(pattern+1, L'.');
+
+                        if (patdot  && !dot)
+                            return FALSE;
+
+                        if (!patdot && dot )
+                            return !StrCmpI(pattern+1,dot+1);
+                    }
+                }
+
+                do
+                {
+                    if(CmpName(pattern,str,false,CmpNameSearchMode))
+                        return TRUE;
+                }
+                while (*str++);
+
+                return FALSE;
+            case L'[':
+
+                if (!wcschr(pattern,L']'))
+                {
+                    if (patternc != stringc)
+                        return (FALSE);
+
+                    break;
+                }
+
+                if (*pattern && *(pattern+1)==L']')
+                {
+                    if (*pattern!=*str)
+                        return FALSE;
+
+                    pattern+=2;
+                    break;
+                }
+
+                match = 0;
+
+                while ((rangec = Upper(*pattern++)))
+                {
+                    if (rangec == L']')
+                    {
+                        if (match)
+                            break;
+                        else
+                            return FALSE;
+                    }
+
+                    if (match)
+                        continue;
+
+                    if (rangec == L'-' && *(pattern - 2) != L'[' && *pattern != L']')
+                    {
+                        match = (stringc <= Upper(*pattern) &&
+                                 Upper(*(pattern - 2)) <= stringc);
+                        pattern++;
+                    }
+                    else
+                        match = (stringc == rangec);
+                }
+
+                if (!rangec)
+                    return FALSE;
+
+                break;
+            default:
+
+                if (patternc != stringc)
+                {
+                    if (patternc==L'.' && !stringc && !CmpNameSearchMode)
+                        return(*pattern!=L'.' && CmpName(pattern,str,true,CmpNameSearchMode));
+                    else
+                        return FALSE;
+                }
+
+                break;
+        }
+    }
+}
+
+int CmpName(const wchar_t *pattern,const wchar_t *str, bool skippath, bool CmpNameSearchMode)
+{
+    if (!pattern || !str)
+        return FALSE;
+
+    if (skippath)
+        str = PointToName(str);
+
+    return CmpName_Body(pattern,str,CmpNameSearchMode);
+}
+
+namespace Masks {
+
+bool TMask::GetMatches(const std::wstring Str)
+{
+    DEBUG_PRINTF(L"NetBox: GetMatches: FMask = %s, Str = %s", FMask.c_str(), Str.c_str());
+    return false;
+}
+
+} // namespace Masks
+
+//---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
     std::wstring Message, int AErrorStart, int AErrorLen) :
   std::exception(::W2MB(Message.c_str()).c_str())
@@ -349,7 +546,7 @@ void TFileMasks::TrimEx(std::wstring &Str, int &Start, int &End)
   End -= Buf.size() - Str.size();
 }
 //---------------------------------------------------------------------------
-bool TFileMasks::MatchesMaskMask(const TMaskMask & MaskMask, const std::wstring & Str)
+bool TFileMasks::MatchesMaskMask(const TMaskMask &MaskMask, const std::wstring & Str)
 {
   bool Result;
   if (MaskMask.Kind == TMaskMask::Any)
