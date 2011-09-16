@@ -304,20 +304,29 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
-    BOOST_CHECK_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
-    // BOOST_CHECK_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
-    TFileMasks m(L"*.txt;*.log");
-    BOOST_CHECK_EQUAL(false, m.Matches(L"test.exe"));
-    return;
-    BOOST_CHECK_EQUAL(true, m.Matches(L"test.txt"));
-    BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
+    if (0)
+    {
+        BOOST_CHECK_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
+        // BOOST_CHECK_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
+        TFileMasks m(L"*.txt;*.log");
+        BOOST_CHECK_EQUAL(false, m.Matches(L"test.exe"));
+    }
+    {
+        TFileMasks m(L"*.txt;*.log");
+        BOOST_CHECK_EQUAL(true, m.Matches(L"test.txt"));
+    }
+    if (0)
+    {
+        TFileMasks m(L"*.txt;*.log");
+        BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
 
-    int Start, Length;
-    BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
-    m.SetMask(L"*.exe");
-    BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
-    BOOST_CHECK_EQUAL(false, m.Matches(L"test.txt"));
-    BOOST_CHECK_EQUAL(false, m.Matches(L"test.log"));
+        int Start, Length;
+        BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
+        m.SetMask(L"*.exe");
+        BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
+        BOOST_CHECK_EQUAL(false, m.Matches(L"test.txt"));
+        BOOST_CHECK_EQUAL(false, m.Matches(L"test.log"));
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
