@@ -338,7 +338,7 @@ void TFileMasks::ReleaseMaskMask(TMaskMask & MaskMask)
   delete MaskMask.Mask;
 }
 //---------------------------------------------------------------------------
-void TFileMasks::TrimEx(std::wstring & Str, int & Start, int & End)
+void TFileMasks::TrimEx(std::wstring &Str, int &Start, int &End)
 {
   std::wstring Buf = TrimLeft(Str);
   Start += Str.size() - Buf.size();
@@ -385,7 +385,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
     FStr = Str;
     Clear();
 
-    int NextMaskFrom = 1;
+    int NextMaskFrom = 0;
     bool Include = true;
     while (NextMaskFrom <= Str.size())
     {
@@ -401,6 +401,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
       else
       {
         MaskStr = ::CopyToChars(Str, NextMaskFrom, L";,|", false, &NextMaskDelimiter);
+        DEBUG_PRINTF(L"NetBox: MaskStr = %s, NextMaskDelimiter = %c", MaskStr.c_str(), NextMaskDelimiter);
       }
       int MaskEnd = NextMaskFrom - 1;
 
@@ -419,12 +420,14 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         Mask.LowSizeMask = TMask::None;
 
         char NextPartDelimiter = '\0';
-        int NextPartFrom = 1;
+        int NextPartFrom = 0;
         while (NextPartFrom <= MaskStr.size())
         {
+          DEBUG_PRINTF(L"NetBox: NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
           char PartDelimiter = NextPartDelimiter;
           int PartFrom = NextPartFrom;
           std::wstring PartStr = ::CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
+          DEBUG_PRINTF(L"NetBox: PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
 
           int PartStart = MaskStart + PartFrom - 1;
           int PartEnd = MaskStart + NextPartFrom - 2;
