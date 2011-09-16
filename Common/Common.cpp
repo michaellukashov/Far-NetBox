@@ -195,7 +195,7 @@ std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
       break;
     }
   }
-  DEBUG_PRINTF(L"NetBox: CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
+  // DEBUG_PRINTF(L"NetBox: CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
 
   std::wstring Result;
   if (P <= Str.size())
@@ -224,7 +224,7 @@ std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
       P++;
     }
   }
-  DEBUG_PRINTF(L"NetBox: CopyToChars: Result = %s", Result.c_str());
+  // DEBUG_PRINTF(L"NetBox: CopyToChars: Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
