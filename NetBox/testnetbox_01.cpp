@@ -42,7 +42,7 @@ public:
         TObject(),
         OnChangeNotifyEventTriggered(false)
     {
-        BOOST_TEST_MESSAGE("base_fixture_t ctor");
+        // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     }
 
     virtual ~base_fixture_t()
@@ -346,7 +346,7 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
 {
     if (1)
     {
-        TStrings strings;
+        TStringList strings;
         strings.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
         strings.Add(L"line 1");
         BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
