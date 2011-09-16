@@ -3411,7 +3411,7 @@ void TTerminal::LookupUsersGroups()
 //---------------------------------------------------------------------------
 bool TTerminal::AllowedAnyCommand(const std::wstring Command)
 {
-  return !Trim(Command).empty();
+  return !::Trim(Command).empty();
 }
 //---------------------------------------------------------------------------
 bool TTerminal::GetCommandSessionOpened()
@@ -3933,7 +3933,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
 
   try
   {
-    bool Found;
+    bool Found = false;
     WIN32_FIND_DATA SearchRec;
     Data.LocalFileList = new TStringList();
     Data.LocalFileList->SetSorted(true);

@@ -44,7 +44,7 @@ std::wstring MungeIniName(const std::wstring Str)
   // make this fast for now
   if (P > 0)
   {
-    return ::StringReplace(Str, L"=", L"%3D"); // , TReplaceFlags() << rfReplaceAll);
+    return ::StringReplace(Str, L"=", L"%3D");
   }
   else
   {
@@ -58,7 +58,7 @@ std::wstring UnMungeIniName(const std::wstring Str)
   // make this fast for now
   if (P > 0)
   {
-    return ::StringReplace(Str, L"%3D", L"="); // , TReplaceFlags() << rfReplaceAll);
+    return ::StringReplace(Str, L"%3D", L"=");
   }
   else
   {
@@ -365,7 +365,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
       {
         RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
           &Type, &Buffer[0], &Size);
-        if (Result == ERROR_MORE_DATA)
+        if (RegResult == ERROR_MORE_DATA)
         {
           Buffer.resize(Size);
         }

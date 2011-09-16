@@ -1885,7 +1885,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     // TSearchRec SearchRec;
     WIN32_FIND_DATA SearchRec;
-    bool FindOK;
+    bool FindOK = false;
 // FIXME 
     // FILE_OPERATION_LOOP (L"", // FIXME MTLOAD(LIST_DIR_ERROR, (DirectoryName)),
       // FindOK = (bool)(FindFirst(IncludeTrailingBackslash(DirectoryName) + L"*.*",
@@ -2239,7 +2239,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         {
           FileData.RemoteRights.SetOctal (CutToChar(Line, ' ', true));
           // do not trim leading spaces of the filename
-          __int64 TSize = StrToInt64(TrimRight(CutToChar(Line, ' ', false)));
+          __int64 TSize = StrToInt64(::TrimRight(CutToChar(Line, ' ', false)));
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)

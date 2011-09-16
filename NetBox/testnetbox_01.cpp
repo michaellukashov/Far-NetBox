@@ -15,6 +15,7 @@
 #define BOOST_TEST_MAIN
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+// #include <boost/type_traits/is_base_of.hpp>
 
 #include "winstuff.h"
 #include "puttyexp.h"
@@ -23,8 +24,12 @@
 #include "delegate.h"
 #include "TestTexts.h"
 #include "Common.h"
+#include "FileMasks.h"
 
 using namespace boost::unit_test;
+
+#define TEST_CASE_TODO(exp) \
+    std::cerr << "TODO: " << #exp << std::endl
 
 /*******************************************************************************
             test suite
@@ -208,17 +213,17 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
         BOOST_CHECK_EQUAL(::W2MB(str2.c_str()), std::string("part 2"));
     }
     {
-        std::wstring str = LoadStr(CONST_TEST_STRING);
+        std::wstring str = ::LoadStr(CONST_TEST_STRING);
         BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("test string: \"%s\" %d"));
     }
     {
-        std::wstring str = LoadStrPart(CONST_TEST_STRING2, 1);
+        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 1);
         BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("test string part 1"));
     }
     {
-        std::wstring str = LoadStrPart(CONST_TEST_STRING2, 2);
+        std::wstring str = ::LoadStrPart(CONST_TEST_STRING2, 2);
         BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
         BOOST_CHECK_EQUAL(::W2MB(str.c_str()), std::string("part 2"));
     }
@@ -230,7 +235,88 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
     int port = 2222;
     std::string user = "testuser";
     std::string password = "testpassword";
-    BOOST_CHECK(scp_test(host, port, user, password));
+    TEST_CASE_TODO(scp_test(host, port, user, password));
+}
+
+class TBaseClass1
+{
+public:
+    virtual ~TBaseClass1()
+    {}
+};
+
+class TDerivedClass1 : public TBaseClass1
+{
+};
+
+class TBaseClass2
+{
+public:
+    virtual ~TBaseClass2()
+    {}
+};
+
+BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
+{
+    TBaseClass1 E1;
+    TDerivedClass1 E2;
+    TBaseClass2 E3;
+    // typedef boost::is_base_of<TBaseClass1, TDerivedClass1>::type t1;
+    BOOST_CHECK((::InheritsFrom<TBaseClass1, TBaseClass1>(&E1)));
+    BOOST_CHECK((::InheritsFrom<TBaseClass1, TDerivedClass1>(&E2)));
+    // BOOST_CHECK(!(::InheritsFrom<TBaseClass2, TDerivedClass1>(&E2)));
+    // BOOST_CHECK(!(::InheritsFrom<TDerivedClass1, TBaseClass1>(E1)));
+    // BOOST_CHECK(!(::InheritsFrom<TBaseClass1, TBaseClass2>(E3)));
+}
+
+BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
+{
+    {
+        std::wstring str = ::StringReplace(L"AA", L"A", L"B");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "BB");
+    }
+    {
+        std::wstring str = ::AnsiReplaceStr(L"AA", L"A", L"B");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "BB");
+    }
+    {
+        std::wstring str = L"ABC";
+        BOOST_CHECK_EQUAL(::Pos(str, L"DEF"), -1);
+        BOOST_CHECK_EQUAL(::Pos(str, L"AB"), 0);
+        BOOST_CHECK_EQUAL(::Pos(str, L"BC"), 1);
+        BOOST_CHECK_EQUAL(::AnsiPos(str, 'D'), -1);
+        BOOST_CHECK_EQUAL(::AnsiPos(str, 'A'), 0);
+        BOOST_CHECK_EQUAL(::AnsiPos(str, 'B'), 1);
+    }
+    {
+        std::wstring str = ::LowerCase(L"AA");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "aa");
+    }
+    {
+        std::wstring str = ::UpperCase(L"aa");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "AA");
+    }
+    {
+        std::wstring str = ::Trim(L" aa ");
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()).c_str(), "aa");
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
+{
+    BOOST_CHECK_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
+    // BOOST_CHECK_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
+    TFileMasks m(L"*.txt;*.log");
+    BOOST_CHECK_EQUAL(false, m.Matches(L"test.exe"));
+    BOOST_CHECK_EQUAL(true, m.Matches(L"test.txt"));
+    BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
+
+    int Start, Length;
+    BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
+    m.SetMask(L"*.exe");
+    BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
+    BOOST_CHECK_EQUAL(false, m.Matches(L"test.txt"));
+    BOOST_CHECK_EQUAL(false, m.Matches(L"test.log"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -545,7 +545,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     }
     // some servers add leading blank line to make the prompt look prettier
     // on terminal console
-    Prompts->GetString(Index) = Trim(Prompt);
+    Prompts->GetString(Index) = ::Trim(Prompt);
   }
 
   bool Result = false;

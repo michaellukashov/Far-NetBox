@@ -3,12 +3,16 @@
 // #include <ShFolder.h>
 #include <shlobj.h>
 
+#include <boost/algorithm/string.hpp>
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
 // #include <StrUtils.hpp>
 // #include <math.h>
+
+namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -159,7 +163,6 @@ std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default)
 //---------------------------------------------------------------------------
 std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
 {
-  // std::wstring str = Str;
   int P = Str.find_first_of(Ch, 0);
   std::wstring Result;
   if (P)
@@ -181,27 +184,28 @@ std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs, bool Trim,
-  char * Delimiter)
+std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chars, bool Trim,
+  char *Delimiter)
 {
   int P;
-  for (P = From; P <= Str.size(); P++)
+  for (P = From; P < Str.size(); P++)
   {
-    if (::IsDelimiter(Chs, Str, P))
+    if (::IsDelimiter(Str, Chars, P))
     {
       break;
     }
   }
+  DEBUG_PRINTF(L"NetBox: CopyToChars: P = %d", P);
 
   std::wstring Result;
-  if (P <= Str.size())
+  if (P < Str.size())
   {
     if (Delimiter != NULL)
     {
       *Delimiter = Str[P];
     }
-    Result = Str.substr(From, P-From);
-    From = P+1;
+    Result = Str.substr(From, P - From);
+    From = P + 1;
   }
   else
   {
@@ -214,12 +218,13 @@ std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs,
   }
   if (Trim)
   {
-    // Result = Result.TrimRight();
+    Result = ::TrimRight(Result);
     while ((P <= Str.size()) && (Str[P] == L' '))
     {
       P++;
     }
   }
+  DEBUG_PRINTF(L"NetBox: CopyToChars: Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -249,30 +254,26 @@ std::wstring ShellDelimitStr(std::wstring Str, char Quote)
 std::wstring ExceptionLogString(exception *E)
 {
   assert(E);
-  // if (E->InheritsFrom(__classid(exception)))
-  if (true) // FIXME dynamic_cast<E>(E) != NULL) // ->InheritsFrom(__classid(exception)))
+  if (::InheritsFrom<std::exception, std::exception>(E))
   {
     std::wstring Msg;
-    // Msg = FORMAT(L"(%s) %s", (E->ClassName(), E->Message));
-    Msg = ::MB2W(E->what());
-    if (false) // FIXME E->InheritsFrom(__classid(ExtException)))
+    Msg = FORMAT(L"(%s) %s", L"exception", ::MB2W(E->what()).c_str());
+    if (::InheritsFrom<std::exception, ExtException>(E))
     {
-      /*
-      TStrings * MoreMessages = ((ExtException*)E)->MoreMessages;
+      TStrings * MoreMessages = ((ExtException *)E)->GetMoreMessages();
       if (MoreMessages)
       {
-        Msg += "\n" +
-          StringReplace(MoreMessages->Text, "\r", "", TReplaceFlags() << rfReplaceAll);
+        Msg += L"\n" +
+          ::StringReplace(MoreMessages->GetText(), L"\r", L""); //, TReplaceFlags() << rfReplaceAll);
       }
-      */
     }
     return Msg;
   }
   else
   {
-    wchar_t Buffer[1024];
-    // ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
-    return std::wstring(Buffer);
+    // wchar_t Buffer[1024] = {0};
+    // FIXME ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
+    return std::wstring(::MB2W(E->what()));
   }
 }
 //---------------------------------------------------------------------------
@@ -350,7 +351,7 @@ std::wstring ReplaceStrAll(std::wstring Str, std::wstring What, std::wstring ByW
 void SplitCommand(std::wstring Command, std::wstring &Program,
   std::wstring & Params, std::wstring & Dir)
 {
-  // Command = Command.Trim(); //FIXME
+  Command = ::Trim(Command);
   Params = L"";
   Dir = L"";
   if (!Command.empty() && (Command[1] == L'\"'))
@@ -359,8 +360,8 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     int P = Command.find_first_of(L'"');
     if (P)
     {
-      Program = Command.substr(1, P-1); // .Trim();
-      Params = Command.substr(P + 1, Command.size() - P); //.Trim();
+      Program = ::Trim(Command.substr(1, P-1));
+      Params = ::Trim(Command.substr(P + 1, Command.size() - P));
     }
     else
     {
@@ -372,8 +373,8 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     int P = Command.find_first_of(L" ");
     if (P)
     {
-      Program = Command.substr(1, P); // .Trim();
-      Params = Command.substr(P + 1, Command.size() - P); // .Trim();
+      Program = ::Trim(Command.substr(1, P));
+      Params = ::Trim(Command.substr(P + 1, Command.size() - P));
     }
     else
     {
@@ -383,14 +384,14 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
   int B = Program.find_last_of(L"\\");
   if (B)
   {
-    Dir = Program.substr(1, B); // .Trim();
+    Dir = ::Trim(Program.substr(1, B));
   }
   else
   {
     B = Program.find_last_of(L"/");
     if (B)
     {
-      Dir = Program.substr(1, B); // .Trim();
+      Dir = ::Trim(Program.substr(1, B));
     }
   }
 }
@@ -408,8 +409,8 @@ std::wstring ExtractProgram(std::wstring Command)
 //---------------------------------------------------------------------------
 std::wstring FormatCommand(std::wstring Program, std::wstring Params)
 {
-  // Program = Program.Trim();
-  // Params = Params.Trim();
+  Program = ::Trim(Program);
+  Params = ::Trim(Params);
   if (!Params.empty()) Params = L" " + Params;
   if (Program.find_first_of(L" ")) Program = L"\"" + Program + L"\"";
   return Program + Params;
@@ -988,7 +989,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
   else
   {
     unsigned short Year, Month, Day;
-    // DecodeDate(DateTime, Year, Month, Day);
+    ::DecodeDate(DateTime, Year, Month, Day);
 
     TDSTCache * CurrentCache = &DSTCache[0];
 
@@ -1267,15 +1268,15 @@ std::wstring FixedLenDateTimeFormat(const std::wstring & Format)
     }
     else if (!AsIs && ((F == L'a') || (F == L'A')))
     {
-      if (Result.substr(Index, 5)/*.LowerCase()*/ == L"am/pm")
+      if (::LowerCase(Result.substr(Index, 5)) == L"am/pm")
       {
         Index += 5;
       }
-      else if (Result.substr(Index, 3)/*.LowerCase()*/ == L"a/p")
+      else if (::LowerCase(Result.substr(Index, 3)) == L"a/p")
       {
         Index += 3;
       }
-      else if (Result.substr(Index, 4)/*.LowerCase()*/ == L"ampm")
+      else if (::LowerCase(Result.substr(Index, 4)) == L"ampm")
       {
         Index += 4;
       }
@@ -1602,7 +1603,7 @@ void AnsiToOem(std::wstring & Str)
 //---------------------------------------------------------------------------
 std::wstring EscapeHotkey(const std::wstring & Caption)
 {
-  return Caption; // FIXME StringReplace(Caption, "&", "&&", TReplaceFlags() << rfReplaceAll);
+  return ::StringReplace(Caption, L"&", L"&&");
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
@@ -1786,8 +1787,7 @@ __int64 TryStrToInt(const std::wstring value, __int64 defval)
 
 std::wstring Trim(const std::wstring str)
 {
-    // FIXME
-    std::wstring result = str;
+    std::wstring result = TrimRight(TrimLeft(str));
     return result;
 }
 
@@ -1811,18 +1811,19 @@ std::wstring TrimRight(const std::wstring str)
     return result;
 }
 
-std::wstring UpperCase(const std::wstring Str)
+std::wstring UpperCase(const std::wstring str)
 {
-    // FIXME 
     std::wstring result;
+    result.resize(str.size());
+    std::transform(str.begin(), str.end(), result.begin(), ::toupper);
     return result;
 }
 
 std::wstring LowerCase(const std::wstring str)
 {
-    // FIXME
-    std::wstring result = str;
-    // std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    std::wstring result;
+    result.resize(str.size());
+    std::transform(str.begin(), str.end(), result.begin(), ::tolower);
     return result;
 }
 
@@ -1842,39 +1843,52 @@ wchar_t LowCase(const wchar_t c)
 
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to)
 {
-    // FIXME
     std::wstring result = str;
+    alg::replace_all(result, from, to);
     return result;
 }
 
 int AnsiPos(const std::wstring str, wchar_t c)
 {
-    // FIXME
-    return -1;
+    int result = str.find_first_of(c);
+    return result == std::wstring::npos ? -1 : result;
 }
 
 int Pos(const std::wstring str, const std::wstring substr)
 {
-    // FIXME
-    return -1;
+    int result = str.find_first_of(substr);
+    return result == std::wstring::npos ? -1 : result;
 }
 
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
 {
-    // FIXME
     std::wstring result = str;
+    alg::replace_all(result, from, to);
     return result;
 }
 
-bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
+bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
 {
-    // FIXME
+    wchar_t c = str[index];
+    for (int i = 0; i < delim.size(); i++)
+    {
+        if (delim[i] == c)
+        {
+            return true;
+        }
+    }
     return false;
 }
 
-int LastDelimiter(const std::wstring str1, const std::wstring delim)
+int LastDelimiter(const std::wstring str, const std::wstring delim)
 {
-    // FIXME
+    for (int i = 0; i < str.size(); i++)
+    {
+        if (::IsDelimiter(str, delim, i))
+        {
+            return i;
+        }
+    }
     return -1;
 }
 
@@ -1932,23 +1946,27 @@ bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 
 void RaiseLastOSError()
 {
+    // FIXME
 }
 
 //---------------------------------------------------------------------------
 double StrToFloat(std::wstring Value)
 {
+    // FIXME
     return 0;
 }
 
 std::wstring FormatFloat(std::wstring Format, double value)
 {
+    // FIXME
     return std::wstring(L"");
 }
 
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
-    TTimeStamp result;
+    // FIXME
+    TTimeStamp result = {0, 0};
     return result;
 }
 
@@ -1956,11 +1974,13 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
 {
+    // FIXME
     return 0;
 }
 
 unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
 {
+    // FIXME
     return 0;
 }
 
@@ -2022,10 +2042,10 @@ bool RemoveDir(const std::wstring Dir)
 }
 
 //---------------------------------------------------------------------------
-bool InheritsFrom(const exception &E1, const exception &from)
-{
-    return false;
-}
+// bool InheritsFrom(const exception &E1, const exception &from)
+// {
+    // return false;
+// }
 
 //---------------------------------------------------------------------------
 

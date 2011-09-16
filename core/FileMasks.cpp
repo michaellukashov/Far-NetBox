@@ -342,7 +342,7 @@ void TFileMasks::TrimEx(std::wstring & Str, int & Start, int & End)
 {
   std::wstring Buf = TrimLeft(Str);
   Start += Str.size() - Buf.size();
-  Str = TrimRight(Buf);
+  Str = ::TrimRight(Buf);
   End -= Buf.size() - Str.size();
 }
 //---------------------------------------------------------------------------
@@ -400,7 +400,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
       }
       else
       {
-        MaskStr = CopyToChars(Str, NextMaskFrom, L";,|", false, &NextMaskDelimiter);
+        MaskStr = ::CopyToChars(Str, NextMaskFrom, L";,|", false, &NextMaskDelimiter);
       }
       int MaskEnd = NextMaskFrom - 1;
 
@@ -424,7 +424,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         {
           char PartDelimiter = NextPartDelimiter;
           int PartFrom = NextPartFrom;
-          std::wstring PartStr = CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
+          std::wstring PartStr = ::CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
 
           int PartStart = MaskStart + PartFrom - 1;
           int PartEnd = MaskStart + NextPartFrom - 2;
@@ -624,7 +624,7 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
       {
         if (!LastPass)
         {
-          Replacement = ::StringReplace(Replacement, L"!", L"!!"); // TReplaceFlags() << rfReplaceAll);
+          Replacement = ::StringReplace(Replacement, L"!", L"!!");
         }
         if (Delimit)
         {

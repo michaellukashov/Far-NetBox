@@ -2493,7 +2493,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
         (OpMode & OPM_SILENT) &&
         (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-      TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
       if (EditView)
       {
         EditViewCopyParam(CopyParam);
@@ -2546,7 +2546,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
         // these parameters are known only after transfer dialog
         Params |=
           FLAGMASK(EditView, cpTemporary) |
-          // FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+          FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
         FTerminal->CopyToLocal(FFileList, DestPath, &CopyParam, Params);
         Result = 1;
       }
@@ -3029,7 +3029,7 @@ void TWinSCPFileSystem::LogAuthentication(
   {
     int Width = 42;
     int Height = 11;
-    FarWrapText(TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
+    FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
     int Count;
     wstring Message;
     if (AuthenticationLogLines->GetCount() == 0)

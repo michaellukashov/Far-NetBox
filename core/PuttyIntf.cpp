@@ -185,7 +185,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
 }
 //---------------------------------------------------------------------------
 int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
-  char * keystr, char * fingerprint, void (*/*callback*/)(void * ctx, int result),
+  char * keystr, char * fingerprint, void (* /*callback*/)(void * ctx, int result),
   void * /*ctx*/)
 {
   assert(frontend != NULL);
@@ -196,7 +196,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
 }
 //---------------------------------------------------------------------------
 int askalg(void * frontend, const char * algtype, const char * algname,
-  void (*/*callback*/)(void * ctx, int result), void * /*ctx*/)
+  void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   assert(frontend != NULL);
   ((TSecureShell *)frontend)->AskAlg(::MB2W(algtype), ::MB2W(algname));
@@ -251,7 +251,7 @@ void cleanup_exit(int /*code*/)
 }
 //---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename /*filename*/,
-  void (*/*callback*/)(void * ctx, int result), void * /*ctx*/)
+  void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   // this is called from logging.c of putty, which is never used with WinSCP
   assert(false);

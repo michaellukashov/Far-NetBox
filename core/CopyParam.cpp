@@ -409,15 +409,15 @@ std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
     FileName = MaskFileName(FileName, GetFileMask());
   }
   switch (GetFileNameCase()) {
-    case ncUpperCase: FileName = UpperCase(FileName); break;
-    case ncLowerCase: FileName = LowerCase(FileName); break;
-    case ncFirstUpperCase: FileName = UpperCase(FileName.substr(1, 1)) +
-      LowerCase(FileName.substr(2, FileName.size()-1)); break;
+    case ncUpperCase: FileName = ::UpperCase(FileName); break;
+    case ncLowerCase: FileName = ::LowerCase(FileName); break;
+    case ncFirstUpperCase: FileName = ::UpperCase(FileName.substr(1, 1)) +
+      ::LowerCase(FileName.substr(2, FileName.size()-1)); break;
     case ncLowerCaseShort:
       if ((FileName.size() <= 12) && (FileName.find_first_of(L".") <= 9) &&
-          (FileName == UpperCase(FileName)))
+          (FileName == ::UpperCase(FileName)))
       {
-        FileName = LowerCase(FileName);
+        FileName = ::LowerCase(FileName);
       }
       break;
     case ncNoChange:
@@ -595,14 +595,14 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 //---------------------------------------------------------------------------
 unsigned long GetSpeedLimit(const std::wstring & Text)
 {
-  unsigned long Speed;
+  unsigned long Speed = 0;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
   {
     Speed = 0;
   }
   else
   {
-    int SSpeed;
+    int SSpeed = 0;
     if (!TryStrToInt(Text, SSpeed) ||
         (SSpeed < 0))
     {

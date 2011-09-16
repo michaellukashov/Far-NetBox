@@ -909,8 +909,8 @@ public:
     virtual void SetOnAllowChange(TFarAllowChange value) { FOnAllowChange = value; }
     bool GetChecked() { return TFarDialogItem::GetChecked(); }
     void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
-    bool GetSelected() { return TFarDialogItem::GetSelected(); }
-    void SetSelected(bool value) { TFarDialogItem::SetSelected(value); }
+    int GetSelected() { return TFarDialogItem::GetSelected(); }
+    void SetSelected(int value) { TFarDialogItem::SetSelected(value); }
 
 protected:
     TFarAllowChange FOnAllowChange;

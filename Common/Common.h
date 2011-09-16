@@ -3,6 +3,8 @@
 
 #include <WinBase.h>
 
+// #include <boost/type_traits/is_base_of.hpp>
+
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
@@ -248,7 +250,7 @@ public:
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
-std::wstring UpperCase(const std::wstring Str);
+std::wstring UpperCase(const std::wstring str);
 std::wstring LowerCase(const std::wstring str);
 wchar_t UpCase(const wchar_t c);
 wchar_t LowCase(const wchar_t c);
@@ -256,8 +258,8 @@ std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, con
 int AnsiPos(const std::wstring str, wchar_t c);
 int Pos(const std::wstring str, const std::wstring substr);
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
-bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size);
-int LastDelimiter(const std::wstring str1, const std::wstring delim);
+bool IsDelimiter(const std::wstring str, const std::wstring delim, int index);
+int LastDelimiter(const std::wstring str, const std::wstring delim);
 //---------------------------------------------------------------------------
 
 bool CompareText(const std::wstring str1, const std::wstring str2);
@@ -314,7 +316,12 @@ bool DeleteFile(const std::wstring File);
 bool RemoveDir(const std::wstring Dir);
 
 //---------------------------------------------------------------------------
-bool InheritsFrom(const exception &E1, const exception &from);
+template <class Base, class Derived>
+bool InheritsFrom(const Base *t)
+{
+    // return boost::is_base_of<Base, Derived>::value == true;
+    return dynamic_cast<const Derived *>(t) != NULL;
+}
 
 //---------------------------------------------------------------------------
 std::wstring Format(const wchar_t *format, ...);

@@ -158,7 +158,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
             COMPOSESTRINGARRAY(PluginMenuStrings);
             COMPOSESTRINGARRAY(PluginConfigStrings);
 
-#undef COMPOSESTRINGARRAY(NAME)
+#undef COMPOSESTRINGARRAY
 
             if (DiskMenuStrings->GetCount())
             {

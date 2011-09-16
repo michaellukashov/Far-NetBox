@@ -2601,7 +2601,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
       // Possitive reply to "SYST" must be 215, see RFC 959
       if (FLastCode == 215)
       {
-        FSystem = FLastResponse->Text.TrimRight();
+        FSystem = ::TrimRight(FLastResponse->Text);
         // full name is "Personal FTP Server PRO K6.0"
         if ((FListAll == asAuto) &&
             (FSystem.Pos("Personal FTP Server") > 0))

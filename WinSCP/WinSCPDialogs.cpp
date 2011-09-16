@@ -1064,7 +1064,7 @@ private:
 //---------------------------------------------------------------------------
 std::wstring ReplaceCopyright(std::wstring S)
 {
-  return StringReplace(S, L"©", L"(c)"); // , TReplaceFlags() << rfReplaceAll << rfIgnoreCase);
+  return ::StringReplace(S, L"©", L"(c)");
 }
 //---------------------------------------------------------------------------
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
@@ -4629,7 +4629,8 @@ TCopyParamType TCopyParamsContainer::GetParams()
   if (Result.GetTransferMode() == tmAutomatic)
   {
     Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
-    assert(Result.GetAsciiFileMask().GetIsValid(0,0));
+    int Start, Length;
+    assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
   }
 
   if (CCLowerCaseButton->GetChecked()) Result.SetFileNameCase(ncLowerCase);
@@ -5515,7 +5516,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       }
       else if (Control == InfoLister)
       {
-        LabelStr = Trim(GetMsg(PROTOCOL_INFO_GROUP));
+        LabelStr = ::Trim(GetMsg(PROTOCOL_INFO_GROUP));
       }
       else
       {

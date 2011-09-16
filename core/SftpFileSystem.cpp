@@ -164,8 +164,6 @@ const int tfNewDirectory = 0x02;
 //---------------------------------------------------------------------------
 #define SFTP_PACKET_ALLOC_DELTA 256
 //---------------------------------------------------------------------------
-#pragma warn -inl
-//---------------------------------------------------------------------------
 struct TSFTPSupport
 {
   TSFTPSupport() :
@@ -1616,8 +1614,6 @@ private:
   TStrings * FFileList;
   int FIndex;
 };
-//---------------------------------------------------------------------------
-#pragma warn .inl
 //---------------------------------------------------------------------------
 class TSFTPBusy
 {
@@ -4637,7 +4633,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   // TSearchRec SearchRec;
   WIN32_FIND_DATA SearchRec;
-  bool FindOK;
+  bool FindOK = false;
     // FIXME 
   // FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     // FindOK = (bool)(FindFirst(DirectoryName + L"*.*",
@@ -4887,8 +4883,8 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       CopyParam->AllowResume(OperationProgress->TransferSize);
     OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
-    int Attrs;
-    // FIXME s`
+    int Attrs = 0;
+    // FIXME
     // FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       // Attrs = FileGetAttr(DestFullName);
       // if ((Attrs >= 0) && (Attrs & faDirectory)) EXCEPTION;
