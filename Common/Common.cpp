@@ -163,7 +163,6 @@ std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default)
 //---------------------------------------------------------------------------
 std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
 {
-  // std::wstring str = Str;
   int P = Str.find_first_of(Ch, 0);
   std::wstring Result;
   if (P)
@@ -185,27 +184,28 @@ std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs, bool Trim,
-  char * Delimiter)
+std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chars, bool Trim,
+  char *Delimiter)
 {
   int P;
-  for (P = From; P <= Str.size(); P++)
+  for (P = From; P < Str.size(); P++)
   {
-    if (::IsDelimiter(Chs, Str, P))
+    if (::IsDelimiter(Str, Chars, P))
     {
       break;
     }
   }
+  DEBUG_PRINTF(L"NetBox: CopyToChars: P = %d", P);
 
   std::wstring Result;
-  if (P <= Str.size())
+  if (P < Str.size())
   {
     if (Delimiter != NULL)
     {
       *Delimiter = Str[P];
     }
-    Result = Str.substr(From, P-From);
-    From = P+1;
+    Result = Str.substr(From, P - From);
+    From = P + 1;
   }
   else
   {
@@ -224,6 +224,7 @@ std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs,
       P++;
     }
   }
+  DEBUG_PRINTF(L"NetBox: CopyToChars: Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1866,15 +1867,28 @@ std::wstring StringReplace(const std::wstring str, const std::wstring from, cons
     return result;
 }
 
-bool IsDelimiter(const std::wstring str1, const std::wstring delim, int size)
+bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
 {
-    // FIXME
+    wchar_t c = str[index];
+    for (int i = 0; i < delim.size(); i++)
+    {
+        if (delim[i] == c)
+        {
+            return true;
+        }
+    }
     return false;
 }
 
-int LastDelimiter(const std::wstring str1, const std::wstring delim)
+int LastDelimiter(const std::wstring str, const std::wstring delim)
 {
-    // FIXME
+    for (int i = 0; i < str.size(); i++)
+    {
+        if (::IsDelimiter(str, delim, i))
+        {
+            return i;
+        }
+    }
     return -1;
 }
 

@@ -304,6 +304,8 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
+    BOOST_CHECK_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
+    // BOOST_CHECK_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
     TFileMasks m(L"*.txt;*.log");
     BOOST_CHECK_EQUAL(false, m.Matches(L"test.exe"));
     BOOST_CHECK_EQUAL(true, m.Matches(L"test.txt"));

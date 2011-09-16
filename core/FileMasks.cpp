@@ -400,7 +400,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
       }
       else
       {
-        MaskStr = CopyToChars(Str, NextMaskFrom, L";,|", false, &NextMaskDelimiter);
+        MaskStr = ::CopyToChars(Str, NextMaskFrom, L";,|", false, &NextMaskDelimiter);
       }
       int MaskEnd = NextMaskFrom - 1;
 
@@ -424,7 +424,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         {
           char PartDelimiter = NextPartDelimiter;
           int PartFrom = NextPartFrom;
-          std::wstring PartStr = CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
+          std::wstring PartStr = ::CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
 
           int PartStart = MaskStart + PartFrom - 1;
           int PartEnd = MaskStart + NextPartFrom - 2;
