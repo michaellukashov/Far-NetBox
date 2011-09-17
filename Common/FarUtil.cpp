@@ -306,8 +306,8 @@ std::wstring ExpandEnvVars(const std::wstring& str)
 
 std::wstring StringOfChar(const wchar_t c, size_t len)
 {
-    // FIXME
     std::wstring result;
+    result.resize(len, c);
     return result;
 }
 
