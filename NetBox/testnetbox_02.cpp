@@ -131,16 +131,16 @@ public:
     }
     // Определяем делегат Callback,
     // который принимает 1 параметр и ничего не возвращает.
-    typedef CDelegate1<void, string> Callback;
+    typedef CDelegate1<void, std::string> Callback;
 
     // Это метод класса App.
-    void OutputToConsole(string str)
+    void OutputToConsole(std::string str)
     {
         cout << str << endl;
     }
 
     // А это статический метод класса App.
-    static void OutputToFile(string str)
+    static void OutputToFile(std::string str)
     {
         ofstream fout(filename, ios::out | ios::ate | ios::app);
         fout << str << endl;
