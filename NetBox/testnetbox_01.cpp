@@ -16,7 +16,7 @@
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 // #include <boost/type_traits/is_base_of.hpp>
-#include <boost/signal.hpp>
+#include <boost/signals/signal1.hpp>
 #include <boost/bind.hpp>
 
 #include "winstuff.h"
@@ -353,6 +353,9 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 
 class TClass1 : TObject
 {
+  typedef boost::signal1<void, TObject *> click_signal_type;
+  typedef click_signal_type::slot_type click_slot_type;
+
 public:
     TClass1() :
         FOnChange(NULL),
@@ -377,7 +380,10 @@ public:
     }
 
     // boost::function<void (TObject *)> GetOnClick() { return m_OnClick; }
-    void SetOnClick(boost::function<void (TObject *)> onClick)
+  // boost::signals::connection on_click_connect(const click_slot_type& s)
+    // { return on_click.connect(s); }
+    // void SetOnClick(boost::function<void (TObject *)> onClick)
+    void SetOnClick(const click_slot_type& onClick)
     {
         m_OnClick.connect(onClick);
     }
@@ -390,10 +396,11 @@ public:
     bool OnClickTriggered;
 private:
     TNotifyEvent FOnChange;
-    boost::signal<void (TObject *)> m_OnClick;
+    // boost::signal1<void (TObject *)> m_OnClick;
+    click_signal_type m_OnClick;
 };
 
-class TClass2 : TObject
+class TClass2 // : TObject
 {
 public:
     TClass2() :
@@ -436,7 +443,9 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
         BOOST_CHECK_EQUAL(true, cl1.OnClickTriggered);
 
         TClass2 cl2;
-        cl1.SetOnClick(boost::bind(&TClass2::ClickEventHandler, &cl2));
+        // cl1.SetOnClick(boost::bind(&TClass2::ClickEventHandler, &cl2));
+        // boost::bind(&print_string::print, ps, _1)
+        cl1.SetOnClick(boost::bind(&TClass2::ClickEventHandler, &cl2, _1));
         cl1.Click();
         BOOST_CHECK_EQUAL(true, cl2.ClickEventHandlerTriggered);
     }
