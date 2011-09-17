@@ -320,7 +320,6 @@ public:
     TStringList() :
         FOnChange(NULL),
         FOnChanging(NULL),
-        FCount(0),
         FSorted(false)
     {
     }
@@ -334,7 +333,7 @@ public:
     {
           if (GetSorted())
             ::Error(SSortedListError, 0);
-          if ((Index < 0) || (Index >= FCount))
+          if ((Index < 0) || (Index >= FList.size()))
             ::Error(SListIndexError, Index);
           Changing();
           FList[Index].FString = S;
@@ -355,7 +354,8 @@ public:
     }
     virtual std::wstring GetString(int Index)
     {
-          if ((Index < 0) || (Index >= FCount))
+        // DEBUG_PRINTF(L"NetBox: GetString: Index = %d", Index);
+          if ((Index < 0) || (Index >= FList.size()))
             ::Error(SListIndexError, Index);
           std::wstring Result = FList[Index].FString;
           return Result;
@@ -387,7 +387,7 @@ public:
 
     virtual void PutObject(int Index, TObject *AObject)
     {
-          if ((Index < 0) || (Index >= FCount))
+          if ((Index < 0) || (Index >= FList.size()))
             ::Error(SListIndexError, Index);
           Changing();
           FList[Index].FObject = AObject;
@@ -416,7 +416,7 @@ private:
     TNotifyEvent FOnChange;
     TNotifyEvent FOnChanging;
     notify_signal_type m_OnChange;
-    int FCount;
+    // int FCount;
     TStringItemList FList;
     bool FSorted;
 };
