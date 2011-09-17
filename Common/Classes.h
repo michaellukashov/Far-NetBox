@@ -285,9 +285,41 @@ public:
         }
         return Result;
     }
-    void SetText(std::wstring S)
+    virtual void SetText(std::wstring Text)
     {
-        ::Error(SNotImplemented, 0);
+        SetTextStr(Text);
+    }
+    virtual void SetTextStr(std::wstring Text)
+    {
+        wchar_t *P, *Start;
+        std::wstring S;
+        BeginUpdate();
+        try
+        {
+          Clear();
+          P = (wchar_t *)Text.c_str();
+          if (P != NULL)
+          {
+            while (*P != '\0')
+            {
+              Start = P;
+              while (!((*P == '\0') || (*P == 0x0A) || (*P == 0x0D)))
+              {
+                  P++;
+              }
+              // SetString(S, Start, P - Start);
+              S.resize(P - Start);
+              memcpy((wchar_t *)S.c_str(), P, P - Start);
+              Add(S);
+              if (*P == 0x0D) P++;
+              if (*P == 0x0A) P++;
+            };
+          }
+        }
+        catch (...)
+        {
+          EndUpdate();
+        };
     }
     void SetCommaText(std::wstring S)
     {
