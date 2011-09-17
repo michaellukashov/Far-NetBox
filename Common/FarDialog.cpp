@@ -431,7 +431,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                 {
                     Result = I->ItemProc(Msg, Param2);
                 }
-                catch(exception &E)
+                catch (std::exception &E)
                 {
                     Handled = true;
                     GetFarPlugin()->HandleException(&E);
@@ -545,7 +545,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
             Change();
         }
     }
-    catch(exception &E)
+    catch (std::exception &E)
     {
         GetFarPlugin()->HandleException(&E);
         if (!Handled)

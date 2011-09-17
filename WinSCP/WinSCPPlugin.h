@@ -18,7 +18,7 @@ struct TMessageParams
   unsigned int Params;
   unsigned int Timer;
   TQueryParamsTimerEvent TimerEvent;
-  wstring TimerMessage;
+  std::wstring TimerMessage;
   unsigned int TimerAnswers;
   unsigned int Timeout;
   unsigned int TimeoutAnswer;
@@ -33,7 +33,7 @@ public:
   virtual int GetMinFarVersion();
 
   virtual void HandleException(exception * E, int OpMode = 0);
-  int MoreMessageDialog(wstring Str, TStrings * MoreMessages,
+  int MoreMessageDialog(std::wstring Str, TStrings * MoreMessages,
     TQueryType Type, int Answers, const TMessageParams * Params = NULL);
   void ShowExtendedException(exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
@@ -50,7 +50,7 @@ protected:
   virtual int ProcessEditorEventEx(int Event, void * Param);
   virtual int ProcessEditorInputEx(const INPUT_RECORD * Rec);
   virtual void OldFar();
-  bool CopyParamDialog(wstring Caption, TCopyParamType & CopyParam,
+  bool CopyParamDialog(std::wstring Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
   void MessageClick(void * Token, int Result, bool & Close);
 

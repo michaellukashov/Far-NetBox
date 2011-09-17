@@ -257,8 +257,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       }
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
-        wstring Directory;
-        wstring Name = (wchar_t *)Item;
+        std::wstring Directory;
+        std::wstring Name = (wchar_t *)Item;
         if (OpenFrom == OPEN_SHORTCUT)
         {
           int P = Name.find_first_of(L"\1");
@@ -443,9 +443,9 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
       else if (Result == MPageant || Result == MPuttygen)
       {
-        wstring Path = (Result == MPageant) ?
+        std::wstring Path = (Result == MPageant) ?
           FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
-        wstring Program, Params, Dir;
+        std::wstring Program, Params, Dir;
         SplitCommand(Path, Program, Params, Dir);
         ExecuteShell(Program, Params);
       }
@@ -496,7 +496,7 @@ void TWinSCPPlugin::ShowExtendedException(exception * E)
           MoreMessages = ((ExtException *)E)->MoreMessages;
         }
 
-        wstring Message = TranslateExceptionMessage(E);
+        std::wstring Message = TranslateExceptionMessage(E);
         MoreMessageDialog(Message, MoreMessages, Type, qaOK);
       }
     }
@@ -555,7 +555,7 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::MoreMessageDialog(wstring Str,
+int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
@@ -692,7 +692,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
     FarParams.Token = &Data;
     // FIXME FarParams.SetClickEvent(MessageClick);
 
-    wstring DialogStr = Str;
+    std::wstring DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))
     {
       FarParams.MoreMessages = MoreMessages;

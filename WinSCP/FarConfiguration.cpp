@@ -223,14 +223,14 @@ wstring TFarConfiguration::ModuleFileName()
   return GetPlugin()->GetModuleName();
 }
 //---------------------------------------------------------------------------
-void TFarConfiguration::SetBookmark(wstring Key,
+void TFarConfiguration::SetBookmark(std::wstring Key,
   TBookmarkList * value)
 {
   FBookmarks->SetBookmark(Key, value);
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * TFarConfiguration::GetBookmark(wstring Key)
+TBookmarkList * TFarConfiguration::GetBookmark(std::wstring Key)
 {
   return FBookmarks->GetBookmark(Key);
 }
