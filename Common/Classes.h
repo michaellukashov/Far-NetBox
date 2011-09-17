@@ -19,6 +19,8 @@
 #include <boost/signals/signal1.hpp>
 #include <boost/bind.hpp>
 
+#include <rtlconsts.h>
+
 #pragma warning(pop)
 
 //TODO: remove
@@ -200,17 +202,17 @@ public:
         Insert(Result, S);
         return Result;
     }
-    virtual size_t GetCount()
+    virtual size_t GetCount() = 0;
+    virtual void Delete(int Index) = 0;
+    std::wstring GetString(int Index) = 0;
+    virtual std::wstring GetText()
     {
-        return 0;
+        return GetTextStr();
     }
-    std::wstring GetString(int Index)
+    virtual std::wstring GetTextStr()
     {
-        return L"";
-    }
-    std::wstring GetText()
-    {
-        return L"";
+        std::wstring Result;
+        return Result;
     }
     void SetText(std::wstring S)
     {
@@ -219,13 +221,6 @@ public:
     {
     }
     void SetString(int Index, std::wstring S)
-    {
-    }
-    void *GetObject(int Index)
-    {
-        return NULL;
-    }
-    void SetObject(int Index, TObject *obj)
     {
     }
     int AddObject(std::wstring S, TObject *AObject)
@@ -245,8 +240,18 @@ public:
     virtual void Clear()
     {
     }
+    virtual TObject *GetObject(int Index)
+    {
+        return NULL;
+    }
     virtual void PutObject(int Index, TObject *AObject)
     {
+    }
+    virtual void Put(int Index, std::wstring S)
+    {
+        TObject *TempObject = GetObject(Index);
+        Delete(Index);
+        InsertObject(Index, S, TempObject);
     }
     void SetDuplicates(TDuplicatesEnum value)
     {
@@ -312,8 +317,32 @@ class TStringList : public TStrings
 public:
     virtual void Assign(TPersistent *Source)
     {}
-    void Put(int Index, std::wstring value)
+    virtual size_t GetCount();
     {
+        return FList.size();
+    }
+    virtual void Put(int Index, std::wstring value)
+    {
+    }
+    virtual void Delete(int Index)
+    {
+      if ((Index < 0) or (Index >= FList.size()))
+        ::Error(SListIndexError, Index);
+      Changing();
+      // Finalize(FList^[Index]);
+      // Dec(FCount);
+      // if Index < FCount then
+        // System.Move(FList^[Index + 1], FList^[Index],
+          // (FCount - Index) * SizeOf(TStringItem));
+      FList.erase(Index);
+      Changed();
+    }
+    std::wstring GetString(int Index);
+    {
+          if ((Index < 0) or (Index >= FCount))
+            ::Error(SListIndexError, Index);
+          std::wstring Result = FList[Index].FString;
+          return Result;
     }
     int GetUpdateCount()
     {
@@ -339,7 +368,7 @@ public:
     virtual void PutObject(int Index, TObject *AObject)
     {
           if ((Index < 0) || (Index >= FCount))
-            ; // FIXME Error(@SListIndexError, Index);
+            ::FIXME Error(SListIndexError, Index);
           Changing();
           FList[Index].FObject = AObject;
           Changed();
