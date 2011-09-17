@@ -364,7 +364,10 @@ public:
           if ((Index < 0) || (Index >= FList.size()))
             ::Error(SListIndexError, Index);
           Changing();
-          FList[Index].FString = S;
+          TStringItem item;
+          item.FString = S;
+          item.FObject = NULL;
+          FList.insert(FList.begin() + Index, item);
           Changed();
     }
     virtual void Delete(int Index)
@@ -382,7 +385,7 @@ public:
     }
     virtual std::wstring GetString(int Index)
     {
-        DEBUG_PRINTF(L"NetBox: GetString: Index = %d", Index);
+        DEBUG_PRINTF(L"NetBox: GetString: Index = %d, FList.size = %d", Index, FList.size());
         if ((Index < 0) || (Index >= FList.size()))
             ::Error(SListIndexError, Index);
         std::wstring Result = FList[Index].FString;
@@ -434,10 +437,12 @@ public:
         */
         m_OnChange(this);
     }
-    virtual void Insert(int Index, const std::wstring AString)
+    virtual void Insert(int Index, const std::wstring S)
     {
-          // FList[Index].FString = AString;
-          // FList[Index].FObject = AObject;
+        TStringItem item;
+        item.FString = S;
+        item.FObject = NULL;
+        FList.insert(FList.begin() + Index, item);
         Changed();
     }
 private:
