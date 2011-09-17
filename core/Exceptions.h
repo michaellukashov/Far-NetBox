@@ -31,7 +31,7 @@ public:
 
   // inline ExtException(const std::wstring Msg, const TVarRec * Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) { }
   // inline ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::exception(Ident, Args, Args_Size) { }
-  inline ExtException(const std::wstring Msg, int AHelpContext) : exception(::W2MB(Msg.c_str()).c_str(), AHelpContext) { }
+  ExtException(const std::wstring Msg, int AHelpContext);
   // inline ExtException(const std::wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
   // inline ExtException(int Ident, int AHelpContext)/* overload */ : exception(Ident, AHelpContext) { }
   // inline ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }

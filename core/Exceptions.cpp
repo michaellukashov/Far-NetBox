@@ -46,6 +46,11 @@ TStrings *ExceptionToMoreMessages(exception * E)
   return Result;
 }
 //---------------------------------------------------------------------------
+ExtException::ExtException(const std::wstring Msg, int AHelpContext) :
+    exception(::W2MB(Msg.c_str()).c_str(), AHelpContext)
+{
+}
+//---------------------------------------------------------------------------
 ExtException::ExtException(exception * E) :
   exception("")
 {
