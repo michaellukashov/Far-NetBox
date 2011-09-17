@@ -302,7 +302,7 @@ private:
     TOperationSide Side, bool DragDrop, const std::wstring & FileName, bool Success,
     bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
-  TStrings * CreateFileList(TObjectList * PanelItems,
+  TStrings * CreateFileList(TList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, std::wstring Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = NULL);
   TStrings * CreateSelectedFileList(TOperationSide Side,

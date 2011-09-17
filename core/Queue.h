@@ -117,7 +117,7 @@ protected:
   int FItemsInProcess;
   TCriticalSection * FItemsSection;
   int FFreeTerminals;
-  TObjectList * FTerminals;
+  TList * FTerminals;
   int FTemporaryTerminals;
   int FOverallTerminals;
   int FTransfersLimit;
