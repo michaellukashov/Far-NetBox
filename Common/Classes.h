@@ -386,8 +386,11 @@ class TStream;
 class TStrings : public TPersistent
 {
 public:
-    TStrings()
-    {}
+    TStrings() :
+        FDelimiter(L','),
+        FQuoteChar(L'"')
+    {
+    }
     virtual ~TStrings()
     {}
     size_t Add(std::wstring S)
@@ -396,9 +399,9 @@ public:
         Insert(Result, S);
         return Result;
     }
-    virtual size_t GetCount() = 0;
+    virtual size_t GetCount() const = 0;
     virtual void Delete(size_t Index) = 0;
-    virtual std::wstring GetString(int Index) = 0;
+    virtual std::wstring GetString(int Index) const = 0;
     virtual std::wstring GetText()
     {
         return GetTextStr();
@@ -473,9 +476,11 @@ public:
           EndUpdate();
         };
     }
-    void SetCommaText(std::wstring S)
+    void SetCommaText(std::wstring Value)
     {
-        ::Error(SNotImplemented, 0);
+        SetDelimiter(L',');
+        SetQuoteChar(L'"');
+        SetDelimitedText(Value);
     }
     virtual void BeginUpdate()
     {
@@ -553,8 +558,22 @@ public:
     }
     std::wstring GetCommaText() const
     {
-        ::Error(SNotImplemented, 0);
-        return L"";
+        wchar_t LOldDelimiter = GetDelimiter();
+        wchar_t LOldQuoteChar = GetQuoteChar();
+        FDelimiter = L',';
+        FQuoteChar = L'"';
+        std::wstring Result;
+        try
+        {
+            Result = GetDelimitedText();
+        }
+        catch (...)
+        {
+            DEBUG_PRINTF(L"Unknown error");
+        }
+        FDelimiter = LOldDelimiter;
+        FQuoteChar = LOldQuoteChar;
+        return Result;
     }
     void AddStrings(TStrings *value)
     {
@@ -574,6 +593,21 @@ public:
     {
         ::Error(SNotImplemented, 0);
     }
+    wchar_t GetDelimiter() const { return FDelimiter; }
+    void SetDelimiter(wchar_t value)
+    {
+        FDelimiter = value;
+    }
+    wchar_t GetQuoteChar() const { return FQuoteChar; }
+    void SetQuoteChar(wchar_t value)
+    {
+        FQuoteChar = value;
+    }
+    std::wstring GetDelimitedText() const;
+    void SetDelimitedText(const std::wstring Value);
+private:
+    mutable wchar_t FDelimiter;
+    mutable wchar_t FQuoteChar;
 };
 
 struct TStringItem
@@ -599,7 +633,7 @@ public:
     {
         ::Error(SNotImplemented, 0);
     }
-    virtual size_t GetCount()
+    virtual size_t GetCount() const
     {
         return FList.size();
     }
@@ -646,7 +680,7 @@ public:
       // DEBUG_PRINTF(L"FList.size2 = %d", FList.size());
       Changed();
     }
-    virtual std::wstring GetString(int Index)
+    virtual std::wstring GetString(int Index) const
     {
         // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
         if ((Index < 0) || (Index >= FList.size()))
@@ -687,13 +721,13 @@ public:
 
     virtual void PutObject(int Index, TObject *AObject)
     {
-          if ((Index < 0) || (Index >= FList.size()))
-          {
-            ::Error(SListIndexError, Index);
-          }
-          Changing();
-          FList[Index].FObject = AObject;
-          Changed();
+        if ((Index < 0) || (Index >= FList.size()))
+        {
+          ::Error(SListIndexError, Index);
+        }
+        Changing();
+        FList[Index].FObject = AObject;
+        Changed();
     }
     virtual void Changing()
     {
