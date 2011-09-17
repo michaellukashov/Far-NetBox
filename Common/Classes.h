@@ -284,12 +284,17 @@ public:
         FList.clear();
     }
 
-    void Sort(CompareFunc func)
+    virtual void Sort(CompareFunc func)
     {
         ::Error(SNotImplemented, 0);
     }
     virtual void Notify(void *Ptr, int Action)
     {
+    }
+    virtual void Sort()
+    {
+      // if (FList.size() > 1)
+        // QuickSort(FList, 0, GetCount() - 1, Compare);
     }
 private:
     std::vector<void *> FList;
@@ -355,7 +360,7 @@ public:
     bool GetOwnsObjects() { return FOwnsObjects; }
     void SetOwnsObjects(bool value) { FOwnsObjects = value; }
 
-    void Sort(CompareFunc func)
+    virtual void Sort(CompareFunc func)
     {
         parent::Sort(func);
     }
@@ -498,7 +503,7 @@ public:
         PutObject(Result, AObject);
         return Result;
     }
-    void InsertObject(int Index, std::wstring Key, TObject *AObject)
+    virtual void InsertObject(int Index, std::wstring Key, TObject *AObject)
     {
         Insert(Index, Key);
         PutObject(Index, AObject);
@@ -520,10 +525,6 @@ public:
         InsertObject(Index, S, TempObject);
     }
     void SetDuplicates(TDuplicatesEnum value)
-    {
-        ::Error(SNotImplemented, 0);
-    }
-    void Sort()
     {
         ::Error(SNotImplemented, 0);
     }
@@ -604,6 +605,7 @@ public:
     }
     std::wstring GetDelimitedText() const;
     void SetDelimitedText(const std::wstring Value);
+    virtual int CompareStrings(const std::wstring &S1, const std::wstring &S2);
 private:
     mutable wchar_t FDelimiter;
     mutable wchar_t FQuoteChar;
@@ -615,10 +617,13 @@ struct TStringItem
     TObject *FObject;
 };
 
+class TStringList;
 typedef std::vector<TStringItem> TStringItemList;
+typedef int (TStringListSortCompare)(TStringList *List, int Index1, int Index2);
 
 class TStringList : public TStrings
 {
+    friend int StringListCompareStrings(TStringList *List, int Index1, int Index2);
 public:
     TStringList() :
         FOnChange(NULL),
@@ -686,6 +691,33 @@ public:
         }
         return FList[Index].FObject;
     }
+    virtual void InsertObject(int Index, std::wstring Key, TObject *AObject)
+    {
+        if (GetSorted())
+        {
+            ::Error(SSortedListError, 0);
+        }
+        if ((Index < 0) || (Index > GetCount()))
+        {
+            ::Error(SListIndexError, Index);
+        }
+        InsertItem(Index, Key, AObject);
+    }
+    void InsertItem(int Index, const std::wstring S, TObject *AObject)
+    {
+      Changing();
+      // if FCount = FCapacity then Grow;
+      TStringItem item;
+      item.FString = S;
+      item.FObject = AObject;
+      if (Index < GetCount())
+      {
+        // System.Move(FList^[Index], FList^[Index + 1],
+          // (FCount - Index) * SizeOf(TStringItem));
+      }
+      FList.insert(FList.begin() + Index, item);
+      Changed();
+    }
     virtual std::wstring GetString(int Index) const
     {
         // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
@@ -731,6 +763,10 @@ public:
             FSorted = value;
         }
     }
+    virtual void Sort();
+    virtual void CustomSort(TStringListSortCompare CompareFunc);
+    void QuickSort(int L, int R, TStringListSortCompare SCompare);
+
     void LoadFromFile(const std::wstring &FileName)
     {
         ::Error(SNotImplemented, 0);
@@ -781,6 +817,9 @@ public:
       FList.insert(FList.begin() + Index, item);
       Changed();
     }
+    virtual int CompareStrings(const std::wstring &S1, const std::wstring &S2);
+private:
+    void ExchangeItems(int Index1, int Index2);
 private:
     TNotifyEvent FOnChange;
     TNotifyEvent FOnChanging;
