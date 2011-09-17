@@ -8,6 +8,24 @@
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
+#define EXCEPTION throw ExtException(NULL, "")
+#define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
+#define SCOPY(dest, source) \
+  strncpy(dest, source, sizeof(dest)); \
+  dest[sizeof(dest)-1] = '\0'
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define ASCOPY(dest, source) SCOPY(dest, source.c_str())
+#define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
+#define FMTLOAD(I, ...) ::FmtLoadStr(I, __VA_ARGS__)
+#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
+#define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
+#define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
+#define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
+#define SWAP(TYPE, FIRST, SECOND) \
+  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+
+//---------------------------------------------------------------------------
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
@@ -31,23 +49,6 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
 #define DEBUG_PRINTF(format, ...)
 #endif
 
-//---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(NULL, "")
-#define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
-#define SCOPY(dest, source) \
-  strncpy(dest, source, sizeof(dest)); \
-  dest[sizeof(dest)-1] = '\0'
-#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
-#define ASCOPY(dest, source) SCOPY(dest, source.c_str())
-#define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
-#define FMTLOAD(I, ...) ::FmtLoadStr(I, __VA_ARGS__)
-#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
-#define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
-#define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
-#define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
-#define SWAP(TYPE, FIRST, SECOND) \
-  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 //---------------------------------------------------------------------------
 extern const char EngShortMonthNames[12][4];
 //---------------------------------------------------------------------------
