@@ -140,6 +140,10 @@ struct TRect
 class TPersistent : public TObject
 {
 public:
+    TPersistent()
+    {}
+    virtual ~TPersistent()
+    {}
     virtual void Assign(TPersistent *Source)
     {}
 };
@@ -149,6 +153,10 @@ typedef int (CompareFunc)(void * Item1, void * Item2);
 class TList : public TObject
 {
 public:
+    TList()
+    {}
+    virtual ~TList()
+    {}
     size_t GetCount() const { return m_objects.size(); }
     void SetCount(size_t value)
     {}
@@ -168,14 +176,15 @@ public:
 
     size_t Add(TObject *value)
     {
+        size_t Result = m_objects.size();
         m_objects.push_back(value);
-        return m_objects.size() - 1;
+        return Result;
     }
-    int Remove(TObject *value)
+    TObject * Extract(TObject *value)
     {
-        return 0;
+        ::Error(SNotImplemented, 0);
     }
-    void Extract(TObject *value)
+    int Remove(TObject *item)
     {
         ::Error(SNotImplemented, 0);
     }
@@ -196,7 +205,7 @@ public:
         ::Error(SNotImplemented, 0);
         return -1;
     }
-    void Clear()
+    virtual void Clear()
     {
         ::Error(SNotImplemented, 0);
     }
@@ -220,6 +229,9 @@ public:
         FOwnsObjects(false)
     {
     }
+    virtual ~TObjectList()
+    {
+    }
     size_t GetCount() const { return m_objects.size(); }
     void SetCount(size_t value)
     {}
@@ -267,7 +279,7 @@ public:
         ::Error(SNotImplemented, 0);
         return -1;
     }
-    void Clear()
+    virtual void Clear()
     {
         ::Error(SNotImplemented, 0);
     }
@@ -299,6 +311,10 @@ class TStream;
 class TStrings : public TPersistent
 {
 public:
+    TStrings()
+    {}
+    virtual ~TStrings()
+    {}
     size_t Add(std::wstring S)
     {
         int Result = GetCount();
@@ -502,6 +518,8 @@ public:
         FSorted(false)
     {
     }
+    virtual ~TStringList()
+    {}
     virtual void Assign(TPersistent *Source)
     {
         ::Error(SNotImplemented, 0);
