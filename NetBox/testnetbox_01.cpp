@@ -396,14 +396,39 @@ private:
 
 class TClass2
 {
+  typedef boost::signal1<void, TClass2 *> click_signal_type;
+  typedef click_signal_type::slot_type click_slot_type;
+
 public:
     TClass2() :
+        OnClickTriggered(false)
+    {
+    }
+    
+    void SetOnClick(const click_slot_type& onClick)
+    {
+        m_OnClick.connect(onClick);
+    }
+    void Click()
+    {
+        m_OnClick(this);
+        OnClickTriggered = true;
+    }
+    bool OnClickTriggered;
+private:
+    click_signal_type m_OnClick;
+};
+
+class TClass3
+{
+public:
+    TClass3() :
         ClickEventHandlerTriggered(false)
     {
     }
-    void ClickEventHandler(TObject *Sender)
+    void ClickEventHandler(TClass2 *Sender)
     {
-        BOOST_TEST_MESSAGE("TClass2: ClickEventHandler triggered");
+        BOOST_TEST_MESSAGE("TClass3: ClickEventHandler triggered");
         ClickEventHandlerTriggered = true;
     }
 public:
@@ -429,17 +454,19 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
     }
     if (1)
     {
-        TClass1 cl1;
-        BOOST_CHECK_EQUAL(false, ClickEventHandlerTriggered);
-        BOOST_CHECK_EQUAL(false, cl1.OnClickTriggered);
-        cl1.Click();
-        BOOST_CHECK_EQUAL(false, ClickEventHandlerTriggered);
-        BOOST_CHECK_EQUAL(true, cl1.OnClickTriggered);
-
+        TClass1 cl2;
+        BOOST_CHECK_EQUAL(false, cl2.OnClickTriggered);
+        cl2.Click();
+        BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
+    }
+    if (1)
+    {
         TClass2 cl2;
-        cl1.SetOnClick(boost::bind(&TClass2::ClickEventHandler, &cl2, _1));
-        cl1.Click();
-        BOOST_CHECK_EQUAL(true, cl2.ClickEventHandlerTriggered);
+        TClass3 cl3;
+        cl2.SetOnClick(boost::bind(&TClass3::ClickEventHandler, &cl3, _1));
+        cl2.Click();
+        BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
+        BOOST_CHECK_EQUAL(true, cl3.ClickEventHandlerTriggered);
     }
 }
 
