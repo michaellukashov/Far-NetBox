@@ -258,7 +258,7 @@ std::wstring ShellDelimitStr(std::wstring Str, char Quote)
   return DelimitStr(Str, Chars);
 }
 //---------------------------------------------------------------------------
-std::wstring ExceptionLogString(exception *E)
+std::wstring ExceptionLogString(std::exception *E)
 {
   assert(E);
   if (::InheritsFrom<std::exception, std::exception>(E))
@@ -553,9 +553,9 @@ std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter)
 {
     std::wstring filename = ExtractFilename(path, delimiter);
     std::wstring::size_type n = filename.find_last_of('.');
-    if (n != wstring::npos)
+    if (n != std::wstring::npos)
         return filename.substr(n);
-    return wstring();
+    return std::wstring();
 }
 
 std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter)
@@ -950,7 +950,7 @@ static TDateTimeParams * GetDateTimeParams()
 
         case TIME_ZONE_ID_INVALID:
         default:
-          throw exception(); // FIXME (TIMEZONE_ERROR);
+          throw std::exception(); // FIXME (TIMEZONE_ERROR);
       }
       // Is it same as SysUtils::UnixDateDelta = 25569 ??
       DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
@@ -2124,7 +2124,7 @@ bool RemoveDir(const std::wstring Dir)
 }
 
 //---------------------------------------------------------------------------
-// bool InheritsFrom(const exception &E1, const exception &from)
+// bool InheritsFrom(const std::exception &E1, const std::exception &from)
 // {
     // return false;
 // }

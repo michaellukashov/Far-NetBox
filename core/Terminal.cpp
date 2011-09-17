@@ -43,7 +43,7 @@
     { \
       Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
     } \
-    catch(exception & E2) \
+    catch(std::exception & E2) \
     { \
       RollbackAction(ACTION, NULL, &E2); \
       throw; \
@@ -240,7 +240,7 @@ void TTunnelThread::Execute()
     {
       FSecureShell->Close();
     }
-    // do not pass exception out of thread's proc
+    // do not pass std::exception out of thread's proc
   }
 }
 //---------------------------------------------------------------------------
@@ -254,14 +254,14 @@ public:
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual int QueryUserException(const std::wstring Query,
-    exception * E, int Answers, const TQueryParams * Params,
+    std::exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions, TStrings * Prompts,
     TStrings * Results);
   virtual void DisplayBanner(const std::wstring & Banner);
-  virtual void FatalError(exception * E, std::wstring Msg);
-  virtual void HandleExtendedException(exception * E);
+  virtual void FatalError(std::exception * E, std::wstring Msg);
+  virtual void HandleExtendedException(std::exception * E);
   virtual void Closed();
 
 private:
@@ -300,7 +300,7 @@ int TTunnelUI::QueryUser(const std::wstring Query,
 }
 //---------------------------------------------------------------------------
 int TTunnelUI::QueryUserException(const std::wstring Query,
-  exception * E, int Answers, const TQueryParams * Params,
+  std::exception * E, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   int Result;
@@ -345,12 +345,12 @@ void TTunnelUI::DisplayBanner(const std::wstring & Banner)
   }
 }
 //---------------------------------------------------------------------------
-void TTunnelUI::FatalError(exception * E, std::wstring Msg)
+void TTunnelUI::FatalError(std::exception * E, std::wstring Msg)
 {
   throw ESshFatal(E, Msg);
 }
 //---------------------------------------------------------------------------
-void TTunnelUI::HandleExtendedException(exception * E)
+void TTunnelUI::HandleExtendedException(std::exception * E)
 {
   if (GetCurrentThreadId() == FTerminalThread)
   {
@@ -370,7 +370,7 @@ public:
   inline TCallbackGuard(TTerminal * FTerminal);
   inline ~TCallbackGuard();
 
-  void FatalError(exception * E, const std::wstring & Msg);
+  void FatalError(std::exception * E, const std::wstring & Msg);
   inline void Verify();
   void Dismiss();
 
@@ -410,13 +410,13 @@ public:
   }
 };
 //---------------------------------------------------------------------------
-void TCallbackGuard::FatalError(exception * E, const std::wstring & Msg)
+void TCallbackGuard::FatalError(std::exception * E, const std::wstring & Msg)
 {
   assert(FGuarding);
 
-  // make sure we do not bother about getting back the silent abort exception
-  // we issued outselves. this may happen when there is an exception handler
-  // that converts any exception to fatal one (such as in TTerminal::Open).
+  // make sure we do not bother about getting back the silent abort std::exception
+  // we issued outselves. this may happen when there is an std::exception handler
+  // that converts any std::exception to fatal one (such as in TTerminal::Open).
   if (dynamic_cast<ECallbackGuardAbort *>(E) == NULL)
   {
     assert(FFatalError == NULL);
@@ -425,8 +425,8 @@ void TCallbackGuard::FatalError(exception * E, const std::wstring & Msg)
   }
 
   // silently abort what we are doing.
-  // non-silent exception would be catched probably by default application
-  // exception handler, which may not do an appropriate action
+  // non-silent std::exception would be catched probably by default application
+  // std::exception handler, which may not do an appropriate action
   // (particularly it will not resume broken transfer).
   throw ECallbackGuardAbort();
 }
@@ -550,7 +550,7 @@ void TTerminal::Idle()
       {
         FCommandSession->Idle();
       }
-      catch(exception & E)
+      catch(std::exception & E)
       {
         // If the secondary session is dropped, ignore the error and let
         // it be reconnected when needed.
@@ -713,7 +713,7 @@ void TTerminal::Open()
                   FSecureShell->SetSimple(true);
                   FSecureShell->Open();
                 }
-                catch(exception & E)
+                catch(std::exception & E)
                 {
                   assert(!FSecureShell->GetActive());
                   if (!FSecureShell->GetActive() && !FTunnelError.empty())
@@ -808,9 +808,9 @@ void TTerminal::Open()
   {
     throw;
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
-    // any exception while opening session is fatal
+    // any std::exception while opening session is fatal
     FatalError(&E, L"");
   }
 }
@@ -1069,7 +1069,7 @@ int TTerminal::QueryUser(const std::wstring Query,
 }
 //---------------------------------------------------------------------------
 int TTerminal::QueryUserException(const std::wstring Query,
-  exception * E, int Answers, const TQueryParams * Params,
+  std::exception * E, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   int Result;
@@ -1119,7 +1119,7 @@ void TTerminal::DisplayBanner(const std::wstring & Banner)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::HandleExtendedException(exception * E)
+void TTerminal::HandleExtendedException(std::exception * E)
 {
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != NULL)
@@ -1132,7 +1132,7 @@ void TTerminal::HandleExtendedException(exception * E)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::ShowExtendedException(exception * E)
+void TTerminal::ShowExtendedException(std::exception * E)
 {
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != NULL)
@@ -1257,12 +1257,12 @@ void TTerminal::TerminalError(std::wstring Msg)
   TerminalError(NULL, Msg);
 }
 //---------------------------------------------------------------------------
-void TTerminal::TerminalError(exception * E, std::wstring Msg)
+void TTerminal::TerminalError(std::exception * E, std::wstring Msg)
 {
   throw ETerminal(E, Msg);
 }
 //---------------------------------------------------------------------------
-bool TTerminal::DoQueryReopen(exception * E)
+bool TTerminal::DoQueryReopen(std::exception * E)
 {
 
   LogEvent(L"Connection was lost, asking what to do.");
@@ -1278,7 +1278,7 @@ bool TTerminal::DoQueryReopen(exception * E)
   return (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
 }
 //---------------------------------------------------------------------------
-bool TTerminal::QueryReopen(exception * E, int Params,
+bool TTerminal::QueryReopen(std::exception * E, int Params,
   TFileOperationProgressType * OperationProgress)
 {
   TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -1294,7 +1294,7 @@ bool TTerminal::QueryReopen(exception * E, int Params,
       {
         Reopen(Params);
       }
-      catch(exception & E)
+      catch(std::exception & E)
       {
         if (!GetActive())
         {
@@ -1315,7 +1315,7 @@ bool TTerminal::QueryReopen(exception * E, int Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::FileOperationLoopQuery(exception & E,
+bool TTerminal::FileOperationLoopQuery(std::exception & E,
   TFileOperationProgressType * OperationProgress, const std::wstring Message,
   bool AllowSkip, std::wstring SpecialRetry)
 {
@@ -1688,7 +1688,7 @@ void TTerminal::SetExceptionOnFail(bool value)
     else
   {
     if (FExceptionOnFail == 0)
-      throw exception("ExceptionOnFail is already zero.");
+      throw std::exception("ExceptionOnFail is already zero.");
     FExceptionOnFail--;
   }
 
@@ -1703,14 +1703,14 @@ bool TTerminal::GetExceptionOnFail() const
   return (bool)(FExceptionOnFail > 0);
 }
 //---------------------------------------------------------------------------
-void TTerminal::FatalError(exception * E, std::wstring Msg)
+void TTerminal::FatalError(std::exception * E, std::wstring Msg)
 {
   bool SecureShellActive = (FSecureShell != NULL) && FSecureShell->GetActive();
   if (GetActive() || SecureShellActive)
   {
-    // We log this instead of exception handler, because Close() would
-    // probably cause exception handler to loose pointer to TShellLog()
-    LogEvent(L"Attempt to close connection due to fatal exception:");
+    // We log this instead of std::exception handler, because Close() would
+    // probably cause std::exception handler to loose pointer to TShellLog()
+    LogEvent(L"Attempt to close connection due to fatal std::exception:");
     GetLog()->Add(llException, Msg);
     GetLog()->AddException(E);
 
@@ -1738,12 +1738,12 @@ void TTerminal::FatalError(exception * E, std::wstring Msg)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::CommandError(exception * E, const std::wstring Msg)
+void TTerminal::CommandError(std::exception * E, const std::wstring Msg)
 {
   CommandError(E, Msg, 0);
 }
 //---------------------------------------------------------------------------
-int TTerminal::CommandError(exception * E, const std::wstring Msg,
+int TTerminal::CommandError(std::exception * E, const std::wstring Msg,
   int Answers)
 {
   // may not be, particularly when TTerminal::Reopen is being called
@@ -1756,7 +1756,7 @@ int TTerminal::CommandError(exception * E, const std::wstring Msg,
   }
   else if (E) // && E->InheritsFrom(__classid(EAbort)))
   {
-    // resent EAbort exception
+    // resent EAbort std::exception
     // Abort();
   }
   else if (GetExceptionOnFail())
@@ -1807,7 +1807,7 @@ int TTerminal::CommandError(exception * E, const std::wstring Msg,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::HandleException(exception * E)
+bool TTerminal::HandleException(std::exception * E)
 {
   if (GetExceptionOnFail())
   {
@@ -2118,7 +2118,7 @@ void inline TTerminal::LogEvent(const std::wstring & Str)
 }
 //---------------------------------------------------------------------------
 void TTerminal::RollbackAction(TSessionAction & Action,
-  TFileOperationProgressType * OperationProgress, exception * E)
+  TFileOperationProgressType * OperationProgress, std::exception * E)
 {
   // EScpSkipFile without "cancel" is file skip,
   // and we do not want to record skipped actions.
@@ -2198,7 +2198,7 @@ void TTerminal::ReadCurrentDirectory()
     }
     if (OldDirectory != FFileSystem->GetCurrentDirectory()) DoChangeDirectory();
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     CommandError(&E, LoadStr(READ_CURRENT_DIR_ERROR));
   }
@@ -2268,7 +2268,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         }
       }
     }
-    catch (exception &E)
+    catch (std::exception &E)
     {
       CommandError(&E, ::FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
@@ -2309,7 +2309,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const 
       Action.FileList(FileList);
     }
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     /* FIXME
     COMMAND_ERROR_ARI_ACTION
@@ -2330,7 +2330,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(std::wstring Directory, 
   {
     FileList = DoReadDirectoryListing(Directory, UseCache);
   }
-  catch(exception & E)
+  catch(std::exception & E)
   { // FIXME
 /*     COMMAND_ERROR_ARI
     (
@@ -2442,7 +2442,7 @@ void TTerminal::ReadDirectory(TRemoteFileList * FileList)
   {
     CustomReadDirectory(FileList);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     CommandError(&E, ::FmtLoadStr(LIST_DIR_ERROR, FileList->GetDirectory().c_str()));
   }
@@ -2458,7 +2458,7 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     CommandError(&E, FMTLOAD(READ_SYMLINK_ERROR, SymlinkFile->GetFileName().c_str()));
   }
@@ -2475,7 +2475,7 @@ void TTerminal::ReadFile(const std::wstring FileName,
     FFileSystem->ReadFile(FileName, File);
     ReactOnCommand(fsListFile);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     if (File) delete File;
     File = NULL;
@@ -2734,7 +2734,7 @@ void TTerminal::DoDeleteFile(const std::wstring FileName,
     // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
     FFileSystem->DeleteFile(FileName, File, Params, Action);
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -2818,7 +2818,7 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
         Params, OutputEvent);
     }
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -2924,7 +2924,7 @@ void TTerminal::DoChangeFileProperties(const std::wstring FileName,
     assert(FFileSystem);
     FFileSystem->ChangeFileProperties(FileName, File, Properties, Action);
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3029,7 +3029,7 @@ void TTerminal::DoCalculateDirectorySize(const std::wstring FileName,
   {
     ProcessDirectory(FileName, (TProcessFileEvent)&TTerminal::CalculateFileSize, Params);
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     if (!GetActive() || ((Params->Params & csIgnoreErrors) == 0))
     {
@@ -3118,7 +3118,7 @@ void TTerminal::DoRenameFile(const std::wstring FileName,
     assert(FFileSystem);
     FFileSystem->RenameFile(FileName, NewName);
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3225,7 +3225,7 @@ void TTerminal::DoCopyFile(const std::wstring FileName,
       FCommandSession->FFileSystem->CopyFile(FileName, NewName);
     }
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -3289,7 +3289,7 @@ void TTerminal::DoCreateDirectory(const std::wstring DirName)
     assert(FFileSystem);
     FFileSystem->CreateDirectory(DirName);
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     COMMAND_ERROR_ARI_ACTION
     (
@@ -3324,7 +3324,7 @@ void TTerminal::DoCreateLink(const std::wstring FileName,
     assert(FFileSystem);
     FFileSystem->CreateLink(FileName, PointTo, Symbolic);
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     COMMAND_ERROR_ARI
     (
@@ -3343,7 +3343,7 @@ void TTerminal::HomeDirectory()
     FFileSystem->HomeDirectory();
     ReactOnCommand(fsHomeDirectory);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     CommandError(&E, LoadStr(CHANGE_HOMEDIR_ERROR));
   }
@@ -3375,7 +3375,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
     FLastDirectoryChange = Directory;
     ReactOnCommand(fsChangeDirectory);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
@@ -3402,7 +3402,7 @@ void TTerminal::LookupUsersGroups()
         FGroups.Log(this, "users");
       }
     }
-    catch (exception &E)
+    catch (std::exception &E)
     {
       CommandError(&E, LoadStr(LOOKUP_GROUPS_ERROR));
     }
@@ -3529,7 +3529,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     }
     ReactOnCommand(fsAnyCommand);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     if (Action != NULL)
     {
@@ -4583,7 +4583,7 @@ void TTerminal::SpaceAvailable(const std::wstring Path,
   {
     FFileSystem->SpaceAvailable(Path, ASpaceAvailable);
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     CommandError(&E, FMTLOAD(SPACE_AVAILABLE_ERROR, Path.c_str()));
   }
@@ -4717,7 +4717,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
       FOperationProgress = NULL;
     }
   }
-  catch (exception &E)
+  catch (std::exception &E)
   {
     CommandError(&E, LoadStr(TOREMOTE_COPY_ERROR));
     OnceDoneOperation = odoIdle;
@@ -4800,7 +4800,7 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
             }
           }
         }
-        catch (exception &E)
+        catch (std::exception &E)
         {
           CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
           OnceDoneOperation = odoIdle;

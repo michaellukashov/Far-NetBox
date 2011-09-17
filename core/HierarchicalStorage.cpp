@@ -131,7 +131,7 @@ bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreat
 //---------------------------------------------------------------------------
 void THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->GetCount() == 0) throw exception("");
+  if (FKeyHistory->GetCount() == 0) throw std::exception("");
     else FKeyHistory->Delete(FKeyHistory->GetCount()-1);
 }
 //---------------------------------------------------------------------------
@@ -640,7 +640,7 @@ TIniFileStorage::~TIniFileStorage()
           {
             RaiseLastOSError();
           }
-          catch(exception & E)
+          catch (std::exception & E)
           {
             throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()));
           }

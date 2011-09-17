@@ -10,7 +10,7 @@ typedef int (TObject::*TThreadFunc)(void *Parameter);
 //---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration();
 
-void ShowExtendedException(exception * E);
+void ShowExtendedException(std::exception * E);
 
 std::wstring GetRegistryKey();
 void Busy(bool Start);

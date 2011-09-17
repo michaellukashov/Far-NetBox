@@ -172,7 +172,7 @@ void TSynchronizeController::SynchronizeChange(
       }
     }
   }
-  catch(exception & E)
+  catch(std::exception & E)
   {
     SynchronizeAbort(dynamic_cast<EFatal*>(&E) != NULL);
   }

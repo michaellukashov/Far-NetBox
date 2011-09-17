@@ -39,7 +39,7 @@ typedef void (TObject::*TDisplayBannerEvent)
   (TTerminal * Terminal, std::wstring SessionName, const std::wstring & Banner,
    bool & NeverShowAgain, int Options);
 typedef void (TObject::*TExtendedExceptionEvent)
-  (TTerminal * Terminal, exception * E, void * Arg);
+  (TTerminal * Terminal, std::exception * E, void * Arg);
 typedef void (TObject::*TReadDirectoryEvent)(TObject * Sender, bool ReloadOnly);
 typedef void (TObject::*TReadDirectoryProgressEvent)(
   TObject* Sender, int Progress, bool & Cancel);
@@ -199,8 +199,8 @@ private:
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
 
-  void CommandError(exception * E, const std::wstring Msg);
-  int CommandError(exception * E, const std::wstring Msg, int Answers);
+  void CommandError(std::exception * E, const std::wstring Msg);
+  int CommandError(std::exception * E, const std::wstring Msg, int Answers);
   void ReactOnCommand(int /*TFSCommand*/ Cmd);
   void ClearCachedFileList(const std::wstring Path, bool SubDirs);
   void AddCachedFileList(TRemoteFileList * FileList);
@@ -252,7 +252,7 @@ protected:
     int * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(std::wstring FileName, const TCopyParamType * CopyParam);
-  bool HandleException(exception * E);
+  bool HandleException(std::exception * E);
   void CalculateFileSize(std::wstring FileName,
     const TRemoteFile * File, /*TCalculateSizeParams*/ void * Size);
   void DoCalculateDirectorySize(const std::wstring FileName,
@@ -284,8 +284,8 @@ protected:
     const TRemoteFile * File, void * Param);
   void RecycleFile(std::wstring FileName, const TRemoteFile * File);
   void DoStartup();
-  virtual bool DoQueryReopen(exception * E);
-  virtual void FatalError(exception * E, std::wstring Msg);
+  virtual bool DoQueryReopen(std::exception * E);
+  virtual void FatalError(std::exception * E, std::wstring Msg);
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions, TStrings * Prompts,
@@ -308,19 +308,19 @@ protected:
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual int QueryUserException(const std::wstring Query,
-    exception * E, int Answers, const TQueryParams * Params,
+    std::exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions, TStrings * Prompts, TStrings * Results);
   virtual void DisplayBanner(const std::wstring & Banner);
   virtual void Closed();
-  virtual void HandleExtendedException(exception * E);
+  virtual void HandleExtendedException(std::exception * E);
   bool IsListenerFree(unsigned int PortNumber);
   void DoProgress(TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
-    TFileOperationProgressType * OperationProgress, exception * E = NULL);
+    TFileOperationProgressType * OperationProgress, std::exception * E = NULL);
   void DoAnyCommand(const std::wstring Command, TCaptureOutputEvent OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(std::wstring Directory, bool UseCache);
@@ -338,7 +338,7 @@ public:
   void Reopen(int Params);
   virtual void DirectoryModified(const std::wstring Path, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
-  void ShowExtendedException(exception * E);
+  void ShowExtendedException(std::exception * E);
   void Idle();
   void RecryptPasswords();
   bool AllowedAnyCommand(const std::wstring Command);
@@ -378,7 +378,7 @@ public:
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * FileList);
   void TerminalError(std::wstring Msg);
-  void TerminalError(exception * E, std::wstring Msg);
+  void TerminalError(std::exception * E, std::wstring Msg);
   void ReloadDirectory();
   void RefreshDirectory();
   void RenameFile(const std::wstring FileName, const std::wstring NewName);
@@ -412,11 +412,11 @@ public:
   void MakeLocalFileList(const std::wstring FileName,
     const WIN32_FIND_DATA Rec, void * Param);
   std::wstring FileUrl(const std::wstring FileName);
-  bool FileOperationLoopQuery(exception & E,
+  bool FileOperationLoopQuery(std::exception & E,
     TFileOperationProgressType * OperationProgress, const std::wstring Message,
     bool AllowSkip, std::wstring SpecialRetry = L"");
   TUsableCopyParamAttrs UsableCopyParamAttrs(int Params);
-  bool QueryReopen(exception * E, int Params,
+  bool QueryReopen(std::exception * E, int Params,
     TFileOperationProgressType * OperationProgress);
   std::wstring PeekCurrentDirectory();
 
