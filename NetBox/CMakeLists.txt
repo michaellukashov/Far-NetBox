@@ -317,9 +317,6 @@ set ( TESTNETBOX_02_HEADERS
 
 set ( TESTNETBOX_02_SOURCES ${COMMON_SOURCES}
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
-    ${PROJECT_ROOT}/resource/TextsCore1.rc
-    ${PROJECT_ROOT}/resource/rtlconsts.rc
-    ${PROJECT_ROOT}/resource/testnetbox_02.rc
 )
 
 set ( TESTNETBOX_02_LIBRARIES
@@ -339,4 +336,42 @@ add_dependencies ( testnetbox_02
 # use_precompiled_header ( TESTNETBOX_02_SOURCES stdafx.h stdafx.cpp testnetbox_02 )
 
 target_link_libraries ( testnetbox_02 ${TESTNETBOX_02_LIBRARIES} )
+
+#-------------------------------------------------------
+# target testnetbox_03
+
+set ( TESTNETBOX_03_DIR ${PROJECT_ROOT}/NetBox )
+
+set ( TESTNETBOX_03_HEADERS
+)
+
+set ( TESTNETBOX_03_SOURCES
+    ${PROJECT_ROOT}/Common/Classes.cpp
+    ${PROJECT_ROOT}/Common/Common.cpp
+    ${PROJECT_ROOT}/Common/FarUtil.cpp
+    ${PROJECT_ROOT}/Common/FarDialog.cpp
+    ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/core/Exceptions.cpp
+    ${PROJECT_ROOT}/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/resource/rtlconsts.rc
+    ${TESTNETBOX_03_DIR}/testnetbox_03.cpp
+)
+
+set ( TESTNETBOX_03_LIBRARIES
+    ${NETBOX_LIBRARIES}
+)
+
+add_executable( testnetbox_03 ${TESTNETBOX_03_HEADERS} ${TESTNETBOX_03_SOURCES} )
+set_target_properties( testnetbox_03
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+)
+add_dependencies ( testnetbox_03 
+    libputty
+    # zlib libssh2 libcurl
+)
+# use_precompiled_header ( TESTNETBOX_03_SOURCES stdafx.h stdafx.cpp testnetbox_03 )
+
+target_link_libraries ( testnetbox_03 ${TESTNETBOX_03_LIBRARIES} )
 
