@@ -29,8 +29,7 @@ using namespace boost::unit_test;
 class base_fixture_t
 {
 public:
-    base_fixture_t() :
-        TObject(),
+    base_fixture_t()
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     }
@@ -38,8 +37,6 @@ public:
     virtual ~base_fixture_t()
     {
     }
-
-
 public:
 protected:
 };
@@ -56,8 +53,15 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
         BOOST_CHECK_EQUAL(0, strings.GetCount());
         strings.Add(L"line 1");
         BOOST_CHECK_EQUAL(1, strings.GetCount());
-        std::wstring str = strings.GetString(0);
-        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 1");
+        {
+            std::wstring str = strings.GetString(0);
+            BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 1");
+        }
+        strings.PutString(0, L"line 0");
+        {
+            std::wstring str = strings.GetString(0);
+            BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 0");
+        }
     }
     if (0)
     {
