@@ -3,11 +3,64 @@
 #include "stdafx.h"
 #include <ShellAPI.h>
 
+#include "boostdefines.hpp"
+#include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
+
 #include "Classes.h"
 #include "Common.h"
 
+namespace alg = boost::algorithm;
+
 //---------------------------------------------------------------------------
 const std::wstring sLineBreak = L"\n";
+
+//---------------------------------------------------------------------------
+
+std::wstring TStrings::GetDelimitedText() const
+{
+    std::wstring Result;
+    DEBUG_PRINTF(L"Result = %s", Result.c_str());
+    int Count = GetCount();
+    if ((Count == 1) && GetString(0).empty())
+    {
+      Result = GetQuoteChar() + GetQuoteChar();
+    }
+    else
+    {
+        for (int i = 0; i < GetCount(); i++)
+        {
+            std::wstring line = GetString(i);
+            Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
+        }
+        Result.resize(Result.size() - 1);
+    }
+    return Result;
+}
+void TStrings::SetDelimitedText(const std::wstring Value)
+{
+  BeginUpdate();
+  try
+  {
+    Clear();
+    std::vector<std::wstring> lines;
+    std::wstring delim = std::wstring(1, GetDelimiter());
+    delim.append(1, L'\n');
+    alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
+    std::wstring line;
+    // for (std::vector<std::wstring>::const_iterator it = lines.begin(); it != lines.end(); ++it)
+    BOOST_FOREACH(line, lines)
+    {
+        Add(line);
+    }
+  }
+  catch (...)
+  {
+    DEBUG_PRINTF(L"Unknown error");
+  }
+  EndUpdate();
+}
+
 //---------------------------------------------------------------------------
 /**
  * Encoding multibyte to wide std::string

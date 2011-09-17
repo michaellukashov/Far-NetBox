@@ -2863,7 +2863,7 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
+TStrings * TWinSCPFileSystem::CreateFileList(TList * PanelItems,
   TOperationSide Side, bool SelectedOnly, std::wstring Directory, bool FileNameOnly,
   TStrings * AFileList)
 {
