@@ -178,4 +178,37 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
     BOOST_CHECK_EQUAL("\"text\",\" text text\",\" text text1\",\"text text text\",\" text text2\",\"\"", ::W2MB(Text2.c_str()).c_str());
 }
 
+BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
+{
+    TStringList Lines;
+    TObject obj1;
+    Lines.InsertObject(0, L"line 1", &obj1);
+    BOOST_CHECK(&obj1 == Lines.GetObject(0));
+}
+
+BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
+{
+    TStringList Lines;
+    Lines.Add(L"bbb");
+    Lines.Add(L"aaa");
+    // BOOST_TEST_MESSAGE("Lines = " << ::W2MB(Lines.GetText().c_str()).c_str());
+    {
+        Lines.SetSorted(true);
+        // BOOST_TEST_MESSAGE("Lines = " << ::W2MB(Lines.GetText().c_str()).c_str());
+        BOOST_CHECK_EQUAL("aaa", ::W2MB(Lines.GetString(0).c_str()).c_str());
+        BOOST_CHECK_EQUAL(2, Lines.GetCount());
+    }
+    {
+        Lines.SetSorted(false);
+        Lines.Add(L"Aaa");
+        Lines.SetCaseSensitive(true);
+        Lines.SetSorted(true);
+        BOOST_CHECK_EQUAL(3, Lines.GetCount());
+        // BOOST_TEST_MESSAGE("Lines = " << ::W2MB(Lines.GetText().c_str()).c_str());
+        BOOST_CHECK_EQUAL("aaa", ::W2MB(Lines.GetString(0).c_str()).c_str());
+        BOOST_CHECK_EQUAL("Aaa", ::W2MB(Lines.GetString(1).c_str()).c_str());
+        BOOST_CHECK_EQUAL("bbb", ::W2MB(Lines.GetString(2).c_str()).c_str());
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
