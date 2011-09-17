@@ -5,6 +5,7 @@
 #include <vector>
 // #include <Masks.hpp>
 #include "Classes.h"
+#include "Common.h"
 //---------------------------------------------------------------------------
 class EFileMasksException : public std::exception
 {
@@ -19,12 +20,13 @@ namespace Masks {
 class TMask
 {
 public:
-    TMask(const std::wstring Mask)
-    {}
-    bool GetMatches(const std::wstring Str)
+    TMask(const std::wstring Mask) :
+        FMask(Mask)
     {
-        return false;
     }
+    bool GetMatches(const std::wstring Str);
+private:
+    std::wstring FMask;
 };
 
 } // namespace Masks
@@ -60,7 +62,7 @@ public:
     const std::wstring Path = L"", const TParams * Params = NULL) const;
   bool Matches(const std::wstring FileName, bool Local, bool Directory,
     const TParams * Params = NULL) const;
-  bool GetIsValid(int &Start, int &Length) const { return false; }
+  bool GetIsValid(int &Start, int &Length) const;
   // __property std::wstring Masks = { read = FStr, write = SetMasks };
   std::wstring GetMasks() const { return FStr; }
   void SetMasks(const std::wstring value);

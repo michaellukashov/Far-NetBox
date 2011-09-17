@@ -35,11 +35,14 @@ using namespace boost::unit_test;
             test suite
 *******************************************************************************/
 
-class base_fixture_t
+class base_fixture_t : TObject
 {
 public:
-    base_fixture_t()
+    base_fixture_t() :
+        TObject(),
+        OnChangeNotifyEventTriggered(false)
     {
+        // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     }
 
     virtual ~base_fixture_t()
@@ -47,6 +50,16 @@ public:
     }
 
     bool scp_test(std::string host, int port, std::string user, std::string password);
+
+public:
+    // TNotifyEvent OnChangeNotifyEvent;
+    void OnChangeNotifyEvent(TObject *Sender)
+    {
+        BOOST_TEST_MESSAGE("OnChangeNotifyEvent triggered");
+        OnChangeNotifyEventTriggered = true;
+    }
+protected:
+    bool OnChangeNotifyEventTriggered;
 };
 
 //------------------------------------------------------------------------------
@@ -76,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     // strcpy(&ctx->currlogfilename.path, "putty.log");
     logfopen(ctx);
     log_eventlog(ctx, "test2: start");
-    
+
     char buf[256];
     struct tm tm = ltime();
     time_t t = time(0);
@@ -304,19 +317,40 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
-    BOOST_CHECK_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
-    // BOOST_CHECK_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
-    TFileMasks m(L"*.txt;*.log");
-    BOOST_CHECK_EQUAL(false, m.Matches(L"test.exe"));
-    BOOST_CHECK_EQUAL(true, m.Matches(L"test.txt"));
-    BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
+    if (1)
+    {
+        BOOST_CHECK_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
+        // BOOST_CHECK_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
+        TFileMasks m(L"*.txt;*.log");
+        BOOST_CHECK_EQUAL(false, m.Matches(L"test.exe"));
+    }
+    {
+        TFileMasks m(L"*.txt;*.log");
+        BOOST_CHECK_EQUAL(true, m.Matches(L"test.txt"));
+    }
+    if (1)
+    {
+        TFileMasks m(L"*.txt;*.log");
+        BOOST_CHECK_EQUAL(true, m.Matches(L"test.log"));
 
-    int Start, Length;
-    BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
-    m.SetMask(L"*.exe");
-    BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
-    BOOST_CHECK_EQUAL(false, m.Matches(L"test.txt"));
-    BOOST_CHECK_EQUAL(false, m.Matches(L"test.log"));
+        int Start, Length;
+        BOOST_CHECK_EQUAL(true, m.GetIsValid(Start, Length));
+        m.SetMask(L"*.exe");
+        BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
+        BOOST_CHECK_EQUAL(false, m.Matches(L"test.txt"));
+        BOOST_CHECK_EQUAL(false, m.Matches(L"test.log"));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
+{
+    if (1)
+    {
+        TStringList strings;
+        strings.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
+        strings.Add(L"line 1");
+        BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

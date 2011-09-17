@@ -184,21 +184,21 @@ std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chars, bool Trim,
-  char *Delimiter)
+std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
+    bool Trim, char *Delimiter)
 {
   int P;
-  for (P = From; P < Str.size(); P++)
+  for (P = From; P <= Str.size(); P++)
   {
     if (::IsDelimiter(Str, Chars, P))
     {
       break;
     }
   }
-  DEBUG_PRINTF(L"NetBox: CopyToChars: P = %d", P);
+  // DEBUG_PRINTF(L"NetBox: CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
 
   std::wstring Result;
-  if (P < Str.size())
+  if (P <= Str.size())
   {
     if (Delimiter != NULL)
     {
@@ -224,7 +224,7 @@ std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Char
       P++;
     }
   }
-  DEBUG_PRINTF(L"NetBox: CopyToChars: Result = %s", Result.c_str());
+  // DEBUG_PRINTF(L"NetBox: CopyToChars: Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1882,7 +1882,7 @@ bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
 
 int LastDelimiter(const std::wstring str, const std::wstring delim)
 {
-    for (int i = 0; i < str.size(); i++)
+    for (int i = str.size() - 1; i >= 0; i--)
     {
         if (::IsDelimiter(str, delim, i))
         {

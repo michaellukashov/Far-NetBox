@@ -148,7 +148,7 @@ public:
     void Delete(int Index)
     {
     }
-    void Insert(int Index, TObject *value)
+    virtual void Insert(int Index, TObject *value)
     {
     }
     size_t IndexOf(TObject *value) const
@@ -187,9 +187,11 @@ class TStream;
 class TStrings : public TPersistent
 {
 public:
-    size_t Add(std::wstring value)
+    size_t Add(std::wstring S)
     {
-        return -1;
+        int Result = GetCount();
+        Insert(Result, S);
+        return Result;
     }
     virtual size_t GetCount()
     {
@@ -219,15 +221,16 @@ public:
     void SetObject(int Index, TObject *obj)
     {
     }
-    void AddObject(std::wstring str, TObject *obj)
+    int AddObject(std::wstring S, TObject *AObject)
     {
+          int Result = Add(S);
+          PutObject(Result, AObject);
+          return Result;
     }
     void InsertObject(int Index, std::wstring Key, TObject *obj)
     {
     }
 
-    TNotifyEvent GetOnChange() { return FOnChange; }
-    void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
     bool Equals(TStrings *value)
     {
         return false;
@@ -284,14 +287,18 @@ public:
     {
         return false;
     }
-    void Insert(int Index, const std::wstring &value)
-    {
-    }
+    virtual void Insert(int Index, const std::wstring AString) = 0;
     void SaveToStream(TStream *Stream)
     {}
-private:
-    TNotifyEvent FOnChange;
 };
+
+struct TStringItem
+{
+    std::wstring FString;
+    TObject *FObject;
+};
+
+typedef std::vector<TStringItem> TStringItemList;
 
 class TStringList : public TStrings
 {
@@ -305,18 +312,46 @@ public:
     {
         return 0;
     }
-    void Changed()
+    void SetCaseSensitive(bool value)
     {
     }
-	void SetCaseSensitive(bool value)
-	{
-	}
     void SetSorted(bool value)
     {
     }
     void LoadFromFile(const std::wstring &FileName)
     {
     }
+    TNotifyEvent GetOnChange() { return FOnChange; }
+    void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
+    virtual void PutObject(int Index, TObject *AObject)
+    {
+          if ((Index < 0) || (Index >= FCount))
+            ; // FIXME Error(@SListIndexError, Index);
+          Changing();
+          FList[Index].FObject = AObject;
+          Changed();
+    }
+    virtual void Changing()
+    {
+    }
+    virtual void Changed()
+    {
+        if (FOnChange)
+        {
+            ((*this).*FOnChange)(this);
+        }
+    }
+    virtual void Insert(int Index, const std::wstring AString)
+    {
+          // FList[Index].FString = AString;
+          // FList[Index].FObject = AObject;
+        Changed();
+    }
+private:
+    TNotifyEvent FOnChange;
+    TNotifyEvent FOnChanging;
+    int FCount;
+    TStringItemList FList;
 };
 
 class TDateTime
