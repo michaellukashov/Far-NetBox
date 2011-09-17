@@ -58,14 +58,14 @@ public:
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual int QueryUserException(const std::wstring Query,
-    exception * E, int Answers, const TQueryParams * Params,
+    std::exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions, TStrings * Prompts,
     TStrings * Results) = 0;
   virtual void DisplayBanner(const std::wstring & Banner) = 0;
-  virtual void FatalError(exception * E, std::wstring Msg) = 0;
-  virtual void HandleExtendedException(exception * E) = 0;
+  virtual void FatalError(std::exception * E, std::wstring Msg) = 0;
+  virtual void HandleExtendedException(std::exception * E) = 0;
   virtual void Closed() = 0;
 };
 //---------------------------------------------------------------------------
@@ -198,7 +198,7 @@ public:
   ~TSessionLog();
   virtual void Add(TLogLineType Type, const std::wstring & Line);
   void AddStartupInfo();
-  void AddException(exception * E);
+  void AddException(std::exception * E);
   void AddSeparator();
 
   virtual void Clear();

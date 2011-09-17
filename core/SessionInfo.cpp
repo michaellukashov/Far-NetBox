@@ -669,7 +669,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
         }
       }
     }
-    catch (exception &E)
+    catch (std::exception &E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
@@ -686,7 +686,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::AddException(exception * E)
+void TSessionLog::AddException(std::exception * E)
 {
   if (E != NULL)
   {
@@ -820,7 +820,7 @@ void TSessionLog::OpenLogFile()
       throw ExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
     }
   }
-  catch (exception & E)
+  catch (std::exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
