@@ -66,7 +66,8 @@ ExtException::ExtException(exception* E, std::wstring Msg):
 ExtException::ExtException(std::wstring Msg) :
   exception("")
 {
-  // and append message to the end to more messages
+  // append message to the end to more messages
+  // DEBUG_PRINTF(L"ExtException");
   if (!Msg.empty())
   {
     if (GetMessage().empty())
@@ -185,6 +186,7 @@ void ExtException::AddMoreMessages(exception* E)
 //---------------------------------------------------------------------------
 ExtException::~ExtException()
 {
+    DEBUG_PRINTF(L"~ExtException");
   delete FMoreMessages;
 }
 //---------------------------------------------------------------------------
