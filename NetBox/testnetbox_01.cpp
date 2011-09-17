@@ -54,28 +54,21 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
         BOOST_CHECK_EQUAL(0, strings.GetCount());
         BOOST_CHECK_EQUAL(0, strings.Add(L"line 1"));
         BOOST_CHECK_EQUAL(1, strings.GetCount());
-        {
-            str = strings.GetString(0);
-            // DEBUG_PRINTF(L"str = %s", str.c_str());
-            BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 1");
-        }
+        str = strings.GetString(0);
+        // DEBUG_PRINTF(L"str = %s", str.c_str());
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 1");
         strings.PutString(0, L"line 0");
-        {
-            str = strings.GetString(0);
-            BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 0");
-        }
-        {
-            strings.PutString(0, L"line 00");
-            BOOST_CHECK_EQUAL(::W2MB(strings.GetString(0).c_str()), "line 00");
-        }
-        {
-            strings.PutString(1, L"line 11");
-            BOOST_CHECK_EQUAL(::W2MB(strings.GetString(1).c_str()), "line 11");
-        }
-        {
-            strings.Delete(1);
-            BOOST_CHECK_EQUAL(1, strings.GetCount());
-        }
+        BOOST_CHECK_EQUAL(1, strings.GetCount());
+        str = strings.GetString(0);
+        BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 0");
+        strings.PutString(0, L"line 00");
+        BOOST_CHECK_EQUAL(1, strings.GetCount());
+        BOOST_CHECK_EQUAL(::W2MB(strings.GetString(0).c_str()), "line 00");
+        strings.Add(L"line 11");
+        BOOST_CHECK_EQUAL(2, strings.GetCount());
+        BOOST_CHECK_EQUAL(::W2MB(strings.GetString(1).c_str()), "line 11");
+        strings.Delete(1);
+        BOOST_CHECK_EQUAL(1, strings.GetCount());
     }
     TStringList strings;
     if (1)
