@@ -349,10 +349,12 @@ public:
     }
     virtual void Changed()
     {
+        /*
         if (FOnChange)
         {
             ((*this).*FOnChange)(this);
         }
+        */
         m_OnChange(this);
     }
     virtual void Insert(int Index, const std::wstring AString)
