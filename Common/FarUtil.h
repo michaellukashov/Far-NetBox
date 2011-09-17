@@ -382,18 +382,6 @@ std::wstring StringOfChar(const wchar_t c, size_t len);
 
 void RaiseLastOSError();
 
-TDateTime Date();
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-    unsigned short &M, unsigned short &D);
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-    unsigned short &N, unsigned short &S, unsigned short &MS);
-// TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D);
-// TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
-
-std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
-
-std::wstring SysErrorMessage(int code);
-
 char *StrNew(const char *str);
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix);

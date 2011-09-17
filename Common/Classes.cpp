@@ -4,7 +4,7 @@
 #include <ShellAPI.h>
 
 #include "Classes.h"
-#include "FarUtil.h"
+#include "Common.h"
 
 //---------------------------------------------------------------------------
 

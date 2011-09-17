@@ -315,37 +315,6 @@ std::wstring StringOfChar(const wchar_t c, size_t len)
 // {
 // }
 
-TDateTime Date()
-{
-    TDateTime result;
-    return result;
-}
-
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-    unsigned short &M, unsigned short &D)
-{
-    // FIXME
-}
-
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-    unsigned short &N, unsigned short &S, unsigned short &MS)
-{
-    // FIXME
-}
-
-std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
-{
-    std::wstring result;
-    return result;
-}
-
-std::wstring SysErrorMessage(int code)
-{
-    // FIXME 
-    std::wstring result;
-    return result;
-}
-
 char *StrNew(const char *str)
 {
     // FIXME 

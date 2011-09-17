@@ -338,6 +338,14 @@ std::wstring SystemTemporaryDirectory()
   TempDir.resize(GetTempPath(MAX_PATH, (wchar_t *)TempDir.c_str()));
   return TempDir;
 }
+
+std::wstring SysErrorMessage(int code)
+{
+    // FIXME 
+    std::wstring result;
+    return result;
+}
+
 //---------------------------------------------------------------------------
 std::wstring GetShellFolderPath(int CSIdl)
 {
@@ -1425,6 +1433,31 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   */
   return 0;
 }
+
+TDateTime Date()
+{
+    TDateTime result;
+    return result;
+}
+
+void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
+    unsigned short &M, unsigned short &D)
+{
+    // FIXME
+}
+
+void DecodeTime(const TDateTime &DateTime, unsigned short &H,
+    unsigned short &N, unsigned short &S, unsigned short &MS)
+{
+    // FIXME
+}
+
+std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
+{
+    std::wstring result;
+    return result;
+}
+
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
 {

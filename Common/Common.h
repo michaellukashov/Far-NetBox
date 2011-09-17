@@ -70,6 +70,7 @@ void AnsiToOem(std::wstring & Str);
 std::wstring ExceptionLogString(std::exception *E);
 bool IsNumber(const std::wstring Str);
 std::wstring SystemTemporaryDirectory();
+std::wstring SysErrorMessage(int code);
 std::wstring GetShellFolderPath(int CSIdl);
 std::wstring StripPathQuotes(const std::wstring Path);
 std::wstring AddPathQuotes(std::wstring Path);
@@ -162,6 +163,17 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 std::wstring FixedLenDateTimeFormat(const std::wstring & Format);
 int CompareFileTime(TDateTime T1, TDateTime T2);
+
+TDateTime Date();
+void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
+    unsigned short &M, unsigned short &D);
+void DecodeTime(const TDateTime &DateTime, unsigned short &H,
+    unsigned short &N, unsigned short &S, unsigned short &MS);
+// TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D);
+// TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
+
+std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
+
 //---------------------------------------------------------------------------
 struct TMethod
 {
