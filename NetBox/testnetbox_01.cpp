@@ -16,6 +16,8 @@
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 // #include <boost/type_traits/is_base_of.hpp>
+#include <boost/signal.hpp>
+#include <boost/bind.hpp>
 
 #include "winstuff.h"
 #include "puttyexp.h"
@@ -40,7 +42,8 @@ class base_fixture_t : TObject
 public:
     base_fixture_t() :
         TObject(),
-        OnChangeNotifyEventTriggered(false)
+        OnChangeNotifyEventTriggered(false),
+        ClickEventHandlerTriggered(false)
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     }
@@ -58,8 +61,14 @@ public:
         BOOST_TEST_MESSAGE("OnChangeNotifyEvent triggered");
         OnChangeNotifyEventTriggered = true;
     }
+    void ClickEventHandler(TObject *Sender)
+    {
+        BOOST_TEST_MESSAGE("ClickEventHandler triggered");
+        ClickEventHandlerTriggered = true;
+    }
 protected:
     bool OnChangeNotifyEventTriggered;
+    bool ClickEventHandlerTriggered;
 };
 
 //------------------------------------------------------------------------------
@@ -347,7 +356,8 @@ class TClass1 : TObject
 public:
     TClass1() :
         FOnChange(NULL),
-        OnChangeNotifyEventTriggered(false)
+        OnChangeNotifyEventTriggered(false),
+        OnClickTriggered(false)
     {
     }
     
@@ -365,9 +375,38 @@ public:
     {
         Changed();
     }
+
+    // boost::function<void (TObject *)> GetOnClick() { return m_OnClick; }
+    void SetOnClick(boost::function<void (TObject *)> onClick)
+    {
+        m_OnClick.connect(onClick);
+    }
+    void Click()
+    {
+        m_OnClick(this);
+        OnClickTriggered = true;
+    }
     bool OnChangeNotifyEventTriggered;
+    bool OnClickTriggered;
 private:
     TNotifyEvent FOnChange;
+    boost::signal<void (TObject *)> m_OnClick;
+};
+
+class TClass2 : TObject
+{
+public:
+    TClass2() :
+        ClickEventHandlerTriggered(false)
+    {
+    }
+    void ClickEventHandler(TObject *Sender)
+    {
+        BOOST_TEST_MESSAGE("TClass2: ClickEventHandler triggered");
+        ClickEventHandlerTriggered = true;
+    }
+public:
+    bool ClickEventHandlerTriggered;
 };
 
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
@@ -386,6 +425,20 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
         cl1.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
         cl1.Change(L"line 1");
         BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
+    }
+    if (1)
+    {
+        TClass1 cl1;
+        BOOST_CHECK_EQUAL(false, ClickEventHandlerTriggered);
+        BOOST_CHECK_EQUAL(false, cl1.OnClickTriggered);
+        cl1.Click();
+        BOOST_CHECK_EQUAL(false, ClickEventHandlerTriggered);
+        BOOST_CHECK_EQUAL(true, cl1.OnClickTriggered);
+
+        TClass2 cl2;
+        cl1.SetOnClick(boost::bind(&TClass2::ClickEventHandler, &cl2));
+        cl1.Click();
+        BOOST_CHECK_EQUAL(true, cl2.ClickEventHandlerTriggered);
     }
 }
 
