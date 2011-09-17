@@ -1151,6 +1151,6 @@ private:
     void ItemsChange(TObject *Sender);
 };
 //---------------------------------------------------------------------------
-wstring StripHotKey(std::wstring Text);
+std::wstring StripHotKey(std::wstring Text);
 TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------
