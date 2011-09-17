@@ -926,7 +926,7 @@ TFarDialogContainer::TFarDialogContainer(TFarDialog *ADialog) :
     assert(ADialog);
 
     FItems = new TObjectList();
-    FItems->OwnsObjects(false);
+    FItems->SetOwnsObjects(false);
     FDialog = ADialog;
     FEnabled = true;
 
