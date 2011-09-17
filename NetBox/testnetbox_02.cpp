@@ -136,14 +136,14 @@ public:
     // Это метод класса App.
     void OutputToConsole(std::string str)
     {
-        cout << str << endl;
+        std::cout << str << std::endl;
     }
 
     // А это статический метод класса App.
     static void OutputToFile(std::string str)
     {
-        ofstream fout(filename, ios::out | ios::ate | ios::app);
-        fout << str << endl;
+        std::ofstream fout(filename, std::ios::out | std::ios::ate | std::ios::app);
+        fout << str << std::endl;
         fout.close();
     }
 };
@@ -169,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
     BOOST_REQUIRE(!callback.IsNull());
     if (!callback.IsNull()) callback("3");
     std::ifstream is;
-    is.open(filename.c_str(), ios::in);
+    is.open(filename.c_str(), std::ios::in);
     BOOST_CHECK(!is.fail());
 }
 
