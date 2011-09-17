@@ -16,6 +16,18 @@
 namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
+
+inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
+{
+    return ::CompareString(0, SORT_STRINGSORT, s1, -1, s2, -1) - 2;
+}
+
+inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
+{
+    return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
+}
+
+//---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
 {
     std::wstring Msg = FMTLOAD(ErrorID, data);
@@ -1989,34 +2001,30 @@ bool AnsiCompare(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
-bool AnsiCompareStr(const std::wstring str1, const std::wstring str2)
+// Case-sensitive compare
+int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 bool AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool SameText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
-bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
+int AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
