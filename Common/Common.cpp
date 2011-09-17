@@ -15,6 +15,12 @@
 namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
+void Error(int ErrorID, int data)
+{
+    std::wstring Msg = FORMAT(ErrorID, data);
+    throw ExtException(Msg);
+}
+
 //---------------------------------------------------------------------------
 // TCriticalSection
 //---------------------------------------------------------------------------

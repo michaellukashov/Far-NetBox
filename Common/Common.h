@@ -237,6 +237,8 @@ static void Abort()
     throw std::exception();
 }
 //---------------------------------------------------------------------------
+void Error(int ErrorID, int data);
+//---------------------------------------------------------------------------
 class TCompThread : public TObject
 {
 public:
