@@ -553,9 +553,9 @@ std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter)
 {
     std::wstring filename = ExtractFilename(path, delimiter);
     std::wstring::size_type n = filename.find_last_of('.');
-    if (n != wstring::npos)
+    if (n != std::wstring::npos)
         return filename.substr(n);
-    return wstring();
+    return std::wstring();
 }
 
 std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter)

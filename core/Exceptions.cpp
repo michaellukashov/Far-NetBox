@@ -29,7 +29,7 @@ bool ExceptionMessage(std::exception * E, std::wstring & Message)
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings *ExceptionToMoreMessages(exception * E)
+TStrings *ExceptionToMoreMessages(std::exception * E)
 {
   TStrings *Result = NULL;
   std::wstring Message;
@@ -47,24 +47,24 @@ TStrings *ExceptionToMoreMessages(exception * E)
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::wstring Msg, int AHelpContext) :
-    exception(::W2MB(Msg.c_str()).c_str(), AHelpContext)
+    std::exception(::W2MB(Msg.c_str()).c_str(), AHelpContext)
 {
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(exception * E) :
-  exception("")
+ExtException::ExtException(std::exception * E) :
+  std::exception("")
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(exception* E, std::wstring Msg):
+ExtException::ExtException(std::exception* E, std::wstring Msg):
   std::exception(::W2MB(Msg.c_str()).c_str())
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg) :
-  exception("")
+  std::exception("")
 {
   // append message to the end to more messages
   // DEBUG_PRINTF(L"ExtException");
@@ -86,10 +86,10 @@ ExtException::ExtException(std::wstring Msg) :
 }
 
 //---------------------------------------------------------------------------
-ExtException::ExtException(std::wstring Msg, exception* E) :
-  exception("")
+ExtException::ExtException(std::wstring Msg, std::exception* E) :
+  std::exception("")
 {
-  // "copy exception"
+  // "copy std::exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
   if (!Msg.empty())
@@ -123,7 +123,7 @@ ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, TStrings* MoreMessages,
   bool Own) :
-  exception(::W2MB(Msg.c_str()).c_str())
+  std::exception(::W2MB(Msg.c_str()).c_str())
 {
   if (Own)
   {
@@ -136,7 +136,7 @@ ExtException::ExtException(std::wstring Msg, TStrings* MoreMessages,
   }
 }
 //---------------------------------------------------------------------------
-void ExtException::AddMoreMessages(exception* E)
+void ExtException::AddMoreMessages(std::exception* E)
 {
   if (E != NULL)
   {
@@ -165,8 +165,8 @@ void ExtException::AddMoreMessages(exception* E)
     std::wstring Msg;
     ExceptionMessage(E, Msg);
 
-    // new exception does not have own message, this is in fact duplication of
-    // the exception data, but the exception class may being changed
+    // new std::exception does not have own message, this is in fact duplication of
+    // the std::exception data, but the std::exception class may being changed
     if (GetMessage().empty())
     {
       SetMessage(Msg);

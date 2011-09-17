@@ -23,9 +23,6 @@
 
 #pragma warning(pop)
 
-//TODO: remove
-using namespace std;
-
 //---------------------------------------------------------------------------
 extern const std::wstring sLineBreak;
 //---------------------------------------------------------------------------
@@ -218,7 +215,7 @@ public:
         ::Error(SNotImplemented, 0);
     }
 private:
-    vector<TObject *> m_objects;
+    std::vector<TObject *> m_objects;
     bool FOwnsObjects;
 };
 
