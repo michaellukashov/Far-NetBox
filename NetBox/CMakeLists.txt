@@ -281,6 +281,9 @@ set ( TESTNETBOX_01_HEADERS
 )
 
 set ( TESTNETBOX_01_SOURCES
+    ${PROJECT_ROOT}/Common/Classes.cpp
+    ${PROJECT_ROOT}/Common/Common.cpp
+    ${PROJECT_ROOT}/core/Exceptions.cpp
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
 )
 
