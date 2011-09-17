@@ -342,14 +342,50 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
     }
 }
 
+class TClass1 : TObject
+{
+public:
+    TClass1() :
+        FOnChange(NULL),
+        OnChangeNotifyEventTriggered(false)
+    {
+    }
+    
+    TNotifyEvent GetOnChange() { return FOnChange; }
+    void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
+    virtual void Changed()
+    {
+        if (FOnChange)
+        {
+            ((*this).*FOnChange)(this);
+            OnChangeNotifyEventTriggered = true;
+        }
+    }
+    void Change(std::wstring str)
+    {
+        Changed();
+    }
+    bool OnChangeNotifyEventTriggered;
+private:
+    TNotifyEvent FOnChange;
+};
+
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
 {
-    if (1)
+    if (0)
     {
         TStringList strings;
         strings.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
         strings.Add(L"line 1");
         BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
+    }
+    if (1)
+    {
+        TClass1 cl1;
+        BOOST_CHECK_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
+        cl1.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
+        cl1.Change(L"line 1");
+        BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
     }
 }
 
