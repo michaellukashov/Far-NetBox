@@ -3243,7 +3243,7 @@ void TWinSCPFileSystem::TerminalDisplayBanner(
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalShowExtendedException(
-  TTerminal * /*Terminal*/, exception * E, void * /*Arg*/)
+  TTerminal * /*Terminal*/, std::exception * E, void * /*Arg*/)
 {
   WinSCPPlugin()->ShowExtendedException(E);
 }
@@ -3448,7 +3448,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
   }
 }
 //---------------------------------------------------------------------------
-wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
+std::wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
 {
   std::wstring Result;
   // OEM character set (Ansi does not have the ascii art we need)
