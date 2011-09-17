@@ -43,7 +43,8 @@ public:
     base_fixture_t() :
         TObject(),
         OnChangeNotifyEventTriggered(false),
-        ClickEventHandlerTriggered(false)
+        ClickEventHandlerTriggered(false),
+        onStringListChangeTriggered(false)
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     }
@@ -68,6 +69,13 @@ public:
 protected:
     bool OnChangeNotifyEventTriggered;
     bool ClickEventHandlerTriggered;
+    bool onStringListChangeTriggered;
+private:
+    void onStringListChange(TObject *Sender)
+    {
+        BOOST_TEST_MESSAGE("onStringListChange triggered");
+        onStringListChangeTriggered = true;
+    }
 };
 
 //------------------------------------------------------------------------------
@@ -422,13 +430,6 @@ public:
 
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
 {
-    if (0)
-    {
-        TStringList strings;
-        strings.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
-        strings.Add(L"line 1");
-        BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
-    }
     if (1)
     {
         TClass1 cl1;
@@ -452,6 +453,19 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
         cl2.Click();
         BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
         BOOST_CHECK_EQUAL(true, cl3.ClickEventHandlerTriggered);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
+{
+    if (1)
+    {
+        TStringList strings;
+        // strings.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
+        strings.SetOnChange(boost::bind(&base_fixture_t::onStringListChange, this, _1));
+        strings.Add(L"line 1");
+        // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
+        BOOST_CHECK_EQUAL(true, onStringListChangeTriggered);
     }
 }
 
