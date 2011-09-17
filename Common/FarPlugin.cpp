@@ -3,6 +3,7 @@
 
 #include "FarPlugin.h"
 #include "FarDialog.h"
+#include "FarUtil.h"
 #include "Common.h"
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
@@ -2872,45 +2873,44 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
 void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
 {
     int TabSize = 8;
-    TStringList *Lines = NULL;
-    TStringList *WrappedLines = NULL;
     try
     {
-        Lines = new TStringList();
-        Lines->SetText(Text);
-        WrappedLines = new TStringList();
-        for (int Index = 0; Index < Lines->GetCount(); Index++)
+        TStringList Lines;
+        Lines.SetText(Text);
+        TStringList WrappedLines;
+        for (int Index = 0; Index < Lines.GetCount(); Index++)
         {
-            std::wstring WrappedLine = Lines->GetString(Index);
+            std::wstring WrappedLine = Lines.GetString(Index);
             if (!WrappedLine.empty())
             {
-                WrappedLine = ReplaceChar(WrappedLine, '\'', '\3');
-                WrappedLine = ReplaceChar(WrappedLine, '\"', '\4');
-                // WrappedLine = WrapText(WrappedLine, MaxWidth);
-                WrappedLine = ReplaceChar(WrappedLine, '\3', '\'');
-                WrappedLine = ReplaceChar(WrappedLine, '\4', '\"');
-                WrappedLines->SetText(WrappedLine);
-                for (int WrappedIndex = 0; WrappedIndex < WrappedLines->GetCount(); WrappedIndex++)
+                WrappedLine = ::ReplaceChar(WrappedLine, '\'', '\3');
+                WrappedLine = ::ReplaceChar(WrappedLine, '\"', '\4');
+                // FIXME WrappedLine = ::WrapText(WrappedLine, MaxWidth);
+                WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
+                WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
+                WrappedLines.SetText(WrappedLine);
+                for (int WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); WrappedIndex++)
                 {
-                    std::wstring FullLine = WrappedLines->GetString(WrappedIndex);
+                    std::wstring FullLine = WrappedLines.GetString(WrappedIndex);
                     do
                     {
                         // WrapText does not wrap when not possible, enforce it
                         // (it also does not wrap when the line is longer than maximum only
                         // because of trailing dot or similar)
-                        std::wstring Line = FullLine.substr(1, MaxWidth);
-                        FullLine.erase(1, MaxWidth);
+                        std::wstring Line = FullLine.substr(0, MaxWidth);
+                        FullLine.erase(0, MaxWidth);
 
                         int P;
-                        while ((P = Line.find_first_of(L"\t")) > 0)
+                        while ((P = Line.find_first_of(L"\t")) >= 0)
                         {
                             Line.erase(P, 1);
-                            // std::wstring::StringOfChar(' ',
-                            // ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1)
+                            Line.insert(P, ::StringOfChar(' ',
+                                ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1));
                             std::wstring s;
                             s.resize(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
                             Line.append(s.c_str(), P);
                         }
+                        // DEBUG_PRINTF(L"Line = %s", Line.c_str());
                         Result->Add(Line);
                     }
                     while (!FullLine.empty());
@@ -2924,9 +2924,8 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
     }
     catch (...)
     {
+        DEBUG_PRINTF(L"Unknown error");
     }
-    delete Lines;
-    delete WrappedLines;
 }
 //---------------------------------------------------------------------------
 std::wstring StrFromFar(const char *S)

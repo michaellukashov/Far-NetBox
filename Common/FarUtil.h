@@ -21,7 +21,6 @@
 #include "FarPlugin.h"
 #include "FarSettings.h"
 #include "FarDialog.h"
-#include "FarUtil.h"
 
 /**
  * File read/write wrapper
