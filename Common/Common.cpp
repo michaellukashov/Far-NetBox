@@ -85,7 +85,7 @@ const char EngShortMonthNames[12][4] =
 std::wstring ReplaceChar(std::wstring Str, char A, char B)
 {
   for (int Index = 0; Index < Str.size(); Index++)
-    if (Str[Index+1] == A) Str[Index+1] = B;
+    if (Str[Index] == A) Str[Index] = B;
   return Str;
 }
 //---------------------------------------------------------------------------
@@ -110,7 +110,7 @@ std::wstring MakeValidFileName(std::wstring FileName)
   std::wstring IllegalChars = L":;,=+<>|\"[] \\/?*";
   for (int Index = 0; Index < IllegalChars.size(); Index++)
   {
-    FileName = ReplaceChar(FileName, IllegalChars[Index+1], L'-');
+    FileName = ReplaceChar(FileName, IllegalChars[Index], L'-');
   }
   return FileName;
 }
