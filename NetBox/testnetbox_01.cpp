@@ -65,12 +65,16 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
             BOOST_CHECK_EQUAL(::W2MB(str.c_str()), "line 0");
         }
         {
-            strings.SetString(0, L"line 00");
+            strings.PutString(0, L"line 00");
             BOOST_CHECK_EQUAL(::W2MB(strings.GetString(0).c_str()), "line 00");
         }
         {
-            strings.SetString(1, L"line 11");
+            strings.PutString(1, L"line 11");
             BOOST_CHECK_EQUAL(::W2MB(strings.GetString(1).c_str()), "line 11");
+        }
+        {
+            strings.Delete(1);
+            BOOST_CHECK_EQUAL(1, strings.GetCount());
         }
     }
     TStringList strings;
