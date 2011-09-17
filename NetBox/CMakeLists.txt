@@ -273,6 +273,35 @@ add_dependencies ( NetBox
 # use_precompiled_header ( NETBOX_SOURCES stdafx.h stdafx.cpp netbox )
 
 #-------------------------------------------------------
+# target testnetbox_01
+
+set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/NetBox )
+
+set ( TESTNETBOX_01_HEADERS
+)
+
+set ( TESTNETBOX_01_SOURCES
+    ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
+)
+
+set ( TESTNETBOX_01_LIBRARIES
+)
+
+add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
+set_target_properties( testnetbox_01
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+)
+add_dependencies ( testnetbox_01 
+    libputty
+    # zlib libssh2 libcurl
+)
+# use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
+
+target_link_libraries ( testnetbox_01 ${TESTNETBOX_01_LIBRARIES} )
+
+#-------------------------------------------------------
 # target testnetbox_02
 
 set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/NetBox )
