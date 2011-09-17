@@ -15,6 +15,10 @@
 #include <algorithm>
 #include <assert.h>
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal1.hpp>
+#include <boost/bind.hpp>
+
 #pragma warning(pop)
 
 //TODO: remove
@@ -24,6 +28,9 @@ using namespace std;
 class TObject;
 typedef void (TObject::*TThreadMethod)();
 typedef void (TObject::*TNotifyEvent)(TObject *);
+
+typedef boost::signal1<void, TObject *> notify_signal_type;
+typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------
 class TObject
 {
@@ -323,6 +330,12 @@ public:
     }
     TNotifyEvent GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
+
+    void SetOnChange(const notify_slot_type &onChange)
+    {
+        m_OnChange.connect(onChange);
+    }
+
     virtual void PutObject(int Index, TObject *AObject)
     {
           if ((Index < 0) || (Index >= FCount))
@@ -340,6 +353,7 @@ public:
         {
             ((*this).*FOnChange)(this);
         }
+        m_OnChange(this);
     }
     virtual void Insert(int Index, const std::wstring AString)
     {
@@ -350,6 +364,7 @@ public:
 private:
     TNotifyEvent FOnChange;
     TNotifyEvent FOnChanging;
+    notify_signal_type m_OnChange;
     int FCount;
     TStringItemList FList;
 };
