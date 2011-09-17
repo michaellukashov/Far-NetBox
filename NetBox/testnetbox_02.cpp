@@ -467,4 +467,18 @@ BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
+{
+    if (1)
+    {
+        std::wstring Message = L"long long long long long long long long long text";
+        // TStrings *MessageLines = new TStringList();
+        TStringList MessageLines;
+        int MaxMessageWidth = 20;
+        FarWrapText(Message, &MessageLines, MaxMessageWidth);
+        BOOST_TEST_MESSAGE("MessageLines = %s", ::W2MB(Message.GetText().c_str()).c_str());
+        BOOST_CHECK_EQUAL(3, MessageLines.GetCount());
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
