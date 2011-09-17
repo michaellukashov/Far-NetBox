@@ -34,6 +34,8 @@ typedef void (TObject::*TNotifyEvent)(TObject *);
 typedef boost::signal1<void, TObject *> notify_signal_type;
 typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------
+void Error(int ErrorID, int data);
+//---------------------------------------------------------------------------
 class TObject
 {
 public:
@@ -204,7 +206,7 @@ public:
     }
     virtual size_t GetCount() = 0;
     virtual void Delete(int Index) = 0;
-    std::wstring GetString(int Index) = 0;
+    virtual std::wstring GetString(int Index) = 0;
     virtual std::wstring GetText()
     {
         return GetTextStr();
@@ -247,7 +249,7 @@ public:
     virtual void PutObject(int Index, TObject *AObject)
     {
     }
-    virtual void Put(int Index, std::wstring S)
+    virtual void PutString(int Index, std::wstring S)
     {
         TObject *TempObject = GetObject(Index);
         Delete(Index);
@@ -315,18 +317,32 @@ typedef std::vector<TStringItem> TStringItemList;
 class TStringList : public TStrings
 {
 public:
+    TStringList() :
+        FOnChange(NULL),
+        FOnChanging(NULL),
+        FCount(0),
+        FSorted(false)
+    {
+    }
     virtual void Assign(TPersistent *Source)
     {}
-    virtual size_t GetCount();
+    virtual size_t GetCount()
     {
         return FList.size();
     }
-    virtual void Put(int Index, std::wstring value)
+    virtual void PutString(int Index, std::wstring S)
     {
+          if (GetSorted())
+            ::Error(SSortedListError, 0);
+          if ((Index < 0) || (Index >= FCount))
+            ::Error(SListIndexError, Index);
+          Changing();
+          FList[Index].FString = S;
+          Changed();
     }
     virtual void Delete(int Index)
     {
-      if ((Index < 0) or (Index >= FList.size()))
+      if ((Index < 0) || (Index >= FList.size()))
         ::Error(SListIndexError, Index);
       Changing();
       // Finalize(FList^[Index]);
@@ -334,12 +350,12 @@ public:
       // if Index < FCount then
         // System.Move(FList^[Index + 1], FList^[Index],
           // (FCount - Index) * SizeOf(TStringItem));
-      FList.erase(Index);
+      FList.erase(FList.begin() + Index);
       Changed();
     }
-    std::wstring GetString(int Index);
+    virtual std::wstring GetString(int Index)
     {
-          if ((Index < 0) or (Index >= FCount))
+          if ((Index < 0) || (Index >= FCount))
             ::Error(SListIndexError, Index);
           std::wstring Result = FList[Index].FString;
           return Result;
@@ -350,6 +366,10 @@ public:
     }
     void SetCaseSensitive(bool value)
     {
+    }
+    bool GetSorted() const
+    {
+        return FSorted;
     }
     void SetSorted(bool value)
     {
@@ -368,7 +388,7 @@ public:
     virtual void PutObject(int Index, TObject *AObject)
     {
           if ((Index < 0) || (Index >= FCount))
-            ::FIXME Error(SListIndexError, Index);
+            ::Error(SListIndexError, Index);
           Changing();
           FList[Index].FObject = AObject;
           Changed();
@@ -398,6 +418,7 @@ private:
     notify_signal_type m_OnChange;
     int FCount;
     TStringItemList FList;
+    bool FSorted;
 };
 
 class TDateTime
@@ -407,7 +428,7 @@ public:
     {}
     explicit TDateTime(double)
     {}
-    explicit TDateTime(unsigned int Hour, 
+    explicit TDateTime(unsigned int Hour,
         unsigned int Min, unsigned int Sec, unsigned int MSec)
     {}
     operator double() const
