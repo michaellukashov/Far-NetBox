@@ -378,12 +378,6 @@ std::wstring ExpandEnvVars(const std::wstring& str);
 
 //---------------------------------------------------------------------------
 
-std::wstring IncludeTrailingBackslash(const std::wstring Str);
-std::wstring ExcludeTrailingBackslash(const std::wstring Str);
-std::wstring ExtractFileDir(const std::wstring Str);
-std::wstring ExtractFilePath(const std::wstring Str);
-std::wstring GetCurrentDir();
-
 std::wstring StringOfChar(const wchar_t c, size_t len);
 
 void RaiseLastOSError();

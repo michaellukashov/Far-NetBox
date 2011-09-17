@@ -609,6 +609,48 @@ std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &e
 }
   
 //---------------------------------------------------------------------------
+
+std::wstring ExcludeTrailingBackslash(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring IncludeTrailingBackslash(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    if (str[str.size() - 1] != L'/' ||
+        str[str.size() - 1] != L'\\')
+    {
+        result += L'\\';
+    }
+    return result;
+}
+
+std::wstring ExtractFileDir(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring ExtractFilePath(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring GetCurrentDir()
+{
+    // FIXME
+    std::wstring result;
+    return result;
+}
+
+//---------------------------------------------------------------------------
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2)
 {
   std::wstring ShortPath1 = ExtractShortPathName(Path1);

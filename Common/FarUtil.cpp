@@ -304,48 +304,6 @@ std::wstring ExpandEnvVars(const std::wstring& str)
     return result;
 }
 
-//---------------------------------------------------------------------------
-
-std::wstring ExcludeTrailingBackslash(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    return result;
-}
-
-std::wstring IncludeTrailingBackslash(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    if (str[str.size() - 1] != L'/' ||
-        str[str.size() - 1] != L'\\')
-    {
-        result += L'\\';
-    }
-    return result;
-}
-
-std::wstring ExtractFileDir(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    return result;
-}
-
-std::wstring ExtractFilePath(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    return result;
-}
-
-std::wstring GetCurrentDir()
-{
-    // FIXME
-    std::wstring result;
-    return result;
-}
-
 std::wstring StringOfChar(const wchar_t c, size_t len)
 {
     // FIXME
