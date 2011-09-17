@@ -352,14 +352,10 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 
 class TClass1 : TObject
 {
-  typedef boost::signal1<void, TObject *> click_signal_type;
-  typedef click_signal_type::slot_type click_slot_type;
-
 public:
     TClass1() :
         FOnChange(NULL),
-        OnChangeNotifyEventTriggered(false),
-        OnClickTriggered(false)
+        OnChangeNotifyEventTriggered(false)
     {
     }
     
@@ -378,20 +374,9 @@ public:
         Changed();
     }
 
-    void SetOnClick(const click_slot_type& onClick)
-    {
-        m_OnClick.connect(onClick);
-    }
-    void Click()
-    {
-        m_OnClick(this);
-        OnClickTriggered = true;
-    }
     bool OnChangeNotifyEventTriggered;
-    bool OnClickTriggered;
 private:
     TNotifyEvent FOnChange;
-    click_signal_type m_OnClick;
 };
 
 class TClass2
@@ -454,7 +439,7 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
     }
     if (1)
     {
-        TClass1 cl2;
+        TClass2 cl2;
         BOOST_CHECK_EQUAL(false, cl2.OnClickTriggered);
         cl2.Click();
         BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
