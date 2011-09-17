@@ -285,31 +285,29 @@ public:
         }
         return Result;
     }
-    virtual void SetText(std::wstring Text)
+    virtual void SetText(const std::wstring Text)
     {
         SetTextStr(Text);
     }
-    virtual void SetTextStr(std::wstring Text)
+    virtual void SetTextStr(const std::wstring Text)
     {
-        wchar_t *P, *Start;
-        std::wstring S;
         BeginUpdate();
         try
         {
           Clear();
-          P = (wchar_t *)Text.c_str();
+          const wchar_t *P = Text.c_str();
           if (P != NULL)
           {
-            while (*P != '\0')
+            while (*P != 0x00)
             {
-              Start = P;
-              while (!((*P == '\0') || (*P == 0x0A) || (*P == 0x0D)))
+              const wchar_t *Start = P;
+              while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
               {
                   P++;
               }
-              // SetString(S, Start, P - Start);
-              S.resize(P - Start);
-              memcpy((wchar_t *)S.c_str(), P, P - Start);
+              std::wstring S;
+              S.resize(P - Start + 1);
+              memcpy((wchar_t *)S.c_str(), Start, (P - Start) * sizeof(wchar_t));
               Add(S);
               if (*P == 0x0D) P++;
               if (*P == 0x0A) P++;
@@ -324,6 +322,12 @@ public:
     void SetCommaText(std::wstring S)
     {
         ::Error(SNotImplemented, 0);
+    }
+    virtual void BeginUpdate()
+    {
+    }
+    virtual void EndUpdate()
+    {
     }
     int AddObject(std::wstring S, TObject *AObject)
     {
@@ -341,10 +345,7 @@ public:
         ::Error(SNotImplemented, 0);
         return false;
     }
-    virtual void Clear()
-    {
-        ::Error(SNotImplemented, 0);
-    }
+    virtual void Clear() = 0;
     virtual TObject *GetObject(int Index)
     {
         ::Error(SNotImplemented, 0);
@@ -445,6 +446,12 @@ public:
     virtual size_t GetCount()
     {
         return FList.size();
+    }
+    virtual void Clear()
+    {
+        FList.clear();
+          // SetCount(0);
+          // SetCapacity(0);
     }
     virtual void PutString(int Index, std::wstring S)
     {
