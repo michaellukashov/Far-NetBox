@@ -7,6 +7,8 @@
 #include "Common.h"
 
 //---------------------------------------------------------------------------
+const std::wstring sLineBreak = L"\n";
+//---------------------------------------------------------------------------
 /**
  * Encoding multibyte to wide std::string
  * \param src source std::string

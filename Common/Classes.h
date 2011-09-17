@@ -27,6 +27,8 @@
 using namespace std;
 
 //---------------------------------------------------------------------------
+extern const std::wstring sLineBreak;
+//---------------------------------------------------------------------------
 std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
@@ -242,6 +244,37 @@ public:
     virtual std::wstring GetTextStr()
     {
         std::wstring Result;
+        int I, L, Size, Count;
+        wchar_t *P;
+        std::wstring S, LB;
+
+        Count = GetCount();
+        // DEBUG_PRINTF(L"Count = %d", Count);
+        Size = 0;
+        LB = sLineBreak;
+        for (I = 0; I < Count; I++)
+        {
+            Size += GetString(I).size() + LB.size();
+        }
+        Result.resize(Size);
+        P = (wchar_t *)Result.c_str();
+        for (I = 0; I < Count; I++)
+        {
+          S = GetString(I);
+          // DEBUG_PRINTF(L"  S = %s", S.c_str());
+          L = S.size() * sizeof(wchar_t);
+          if (L != 0)
+          {
+            memcpy(P, S.c_str(), L);
+            P += S.size();
+          };
+          L = LB.size() * sizeof(wchar_t);
+          if (L != 0)
+          {
+            memcpy(P, LB.c_str(), L);
+            P += LB.size();
+          };
+        }
         return Result;
     }
     void SetText(std::wstring S)
@@ -255,9 +288,9 @@ public:
     }
     int AddObject(std::wstring S, TObject *AObject)
     {
-          int Result = Add(S);
-          PutObject(Result, AObject);
-          return Result;
+        int Result = Add(S);
+        PutObject(Result, AObject);
+        return Result;
     }
     void InsertObject(int Index, std::wstring Key, TObject *obj)
     {
@@ -375,17 +408,12 @@ public:
       if ((Index < 0) || (Index >= FList.size()))
         ::Error(SListIndexError, Index);
       Changing();
-      // Finalize(FList^[Index]);
-      // Dec(FCount);
-      // if Index < FCount then
-        // System.Move(FList^[Index + 1], FList^[Index],
-          // (FCount - Index) * SizeOf(TStringItem));
       FList.erase(FList.begin() + Index);
       Changed();
     }
     virtual std::wstring GetString(int Index)
     {
-        DEBUG_PRINTF(L"NetBox: GetString: Index = %d, FList.size = %d", Index, FList.size());
+        // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
         if ((Index < 0) || (Index >= FList.size()))
             ::Error(SListIndexError, Index);
         std::wstring Result = FList[Index].FString;
@@ -449,7 +477,6 @@ private:
     TNotifyEvent FOnChange;
     TNotifyEvent FOnChanging;
     notify_signal_type m_OnChange;
-    // int FCount;
     TStringItemList FList;
     bool FSorted;
 };
