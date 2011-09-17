@@ -1,6 +1,7 @@
 #include "rtlconsts.h"
 
 STRINGTABLE
+BEGIN
   SAncestorNotFound, "Ancestor for ""%s"" not found"
   SAssignError, "Cannot assign a %s to a %s"
   SBitsIndexError, "Bits index out of range"
