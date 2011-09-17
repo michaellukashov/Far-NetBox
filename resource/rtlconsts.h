@@ -109,3 +109,6 @@
 #define sSocketIOError 2103
 #define sSocketRead 2104
 #define sSocketWrite 2105
+
+#define SNotImplemented 2106
+

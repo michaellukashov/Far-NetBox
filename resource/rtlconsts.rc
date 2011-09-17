@@ -111,4 +111,6 @@ BEGIN
   sSocketIOError, "%s error %d, %s"
   sSocketRead, "Read"
   sSocketWrite, "Write"
+
+  SNotImplemented, "Not implemented"
 END
