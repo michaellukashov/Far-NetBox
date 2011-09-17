@@ -20,7 +20,6 @@ const std::wstring sLineBreak = L"\n";
 std::wstring TStrings::GetDelimitedText() const
 {
     std::wstring Result;
-    DEBUG_PRINTF(L"Result = %s", Result.c_str());
     int Count = GetCount();
     if ((Count == 1) && GetString(0).empty())
     {

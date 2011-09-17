@@ -488,15 +488,20 @@ public:
     virtual void EndUpdate()
     {
     }
+    virtual TObject *GetObject(int Index)
+    {
+        return NULL;
+    }
     int AddObject(std::wstring S, TObject *AObject)
     {
         int Result = Add(S);
         PutObject(Result, AObject);
         return Result;
     }
-    void InsertObject(int Index, std::wstring Key, TObject *obj)
+    void InsertObject(int Index, std::wstring Key, TObject *AObject)
     {
-        ::Error(SNotImplemented, 0);
+        Insert(Index, Key);
+        PutObject(Index, AObject);
     }
 
     bool Equals(TStrings *value)
@@ -505,14 +510,8 @@ public:
         return false;
     }
     virtual void Clear() = 0;
-    virtual TObject *GetObject(int Index)
-    {
-        ::Error(SNotImplemented, 0);
-        return NULL;
-    }
     virtual void PutObject(int Index, TObject *AObject)
     {
-        ::Error(SNotImplemented, 0);
     }
     virtual void PutString(int Index, std::wstring S)
     {
@@ -680,6 +679,14 @@ public:
       // DEBUG_PRINTF(L"FList.size2 = %d", FList.size());
       Changed();
     }
+    virtual TObject *GetObject(int Index)
+    {
+        if ((Index < 0) || (Index >= FList.size()))
+        {
+            ::Error(SListIndexError, Index);
+        }
+        return FList[Index].FObject;
+    }
     virtual std::wstring GetString(int Index) const
     {
         // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
@@ -726,7 +733,10 @@ public:
           ::Error(SListIndexError, Index);
         }
         Changing();
-        FList[Index].FObject = AObject;
+        TStringItem item;
+        item.FString = FList[Index].FString;
+        item.FObject = AObject;
+        FList[Index] = item;
         Changed();
     }
     virtual void Changing()
