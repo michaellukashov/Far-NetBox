@@ -66,18 +66,15 @@ void Error(int ErrorID, int data);
 class TObject
 {
 public:
-    TObject() :
-        FOwnsObjects(false)
+    TObject()
     {}
     virtual ~TObject()
     {}
 
     virtual void Change()
     {}
-    void OwnsObjects(bool value) { FOwnsObjects = value; }
 
 private:
-    bool FOwnsObjects;
 };
 
 struct TPoint
@@ -149,9 +146,80 @@ public:
 
 typedef int (CompareFunc)(void * Item1, void * Item2);
 
-class TObjectList : public TPersistent
+class TList : public TObject
 {
 public:
+    size_t GetCount() const { return m_objects.size(); }
+    void SetCount(size_t value)
+    {}
+
+    TObject * operator [](size_t Index) const
+    {
+        return m_objects[Index];
+    }
+    TObject * GetItem(size_t Index) const
+    {
+        return m_objects[Index];
+    }
+    void SetItem(size_t Index, TObject *Value)
+    {
+        ::Error(SNotImplemented, 0);
+    }
+
+    size_t Add(TObject *value)
+    {
+        m_objects.push_back(value);
+        return m_objects.size() - 1;
+    }
+    int Remove(TObject *value)
+    {
+        return 0;
+    }
+    void Extract(TObject *value)
+    {
+        ::Error(SNotImplemented, 0);
+    }
+    void Move(size_t Index, size_t To)
+    {
+        ::Error(SNotImplemented, 0);
+    }
+    void Delete(size_t Index)
+    {
+        ::Error(SNotImplemented, 0);
+    }
+    virtual void Insert(size_t Index, TObject *value)
+    {
+        ::Error(SNotImplemented, 0);
+    }
+    size_t IndexOf(TObject *value) const
+    {
+        ::Error(SNotImplemented, 0);
+        return -1;
+    }
+    void Clear()
+    {
+        ::Error(SNotImplemented, 0);
+    }
+
+    void Sort(CompareFunc func)
+    {
+        ::Error(SNotImplemented, 0);
+    }
+    void Notify(void *Ptr, int Action)
+    {
+        ::Error(SNotImplemented, 0);
+    }
+private:
+    std::vector<TObject *> m_objects;
+};
+
+class TObjectList : public TList
+{
+public:
+    TObjectList() :
+        FOwnsObjects(false)
+    {
+    }
     size_t GetCount() const { return m_objects.size(); }
     void SetCount(size_t value)
     {}
@@ -217,11 +285,6 @@ public:
 private:
     std::vector<TObject *> m_objects;
     bool FOwnsObjects;
-};
-
-class TList : public TObjectList
-{
-public:
 };
 
 enum TDuplicatesEnum
