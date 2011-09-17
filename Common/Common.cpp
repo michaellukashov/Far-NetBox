@@ -3,6 +3,7 @@
 // #include <ShFolder.h>
 #include <shlobj.h>
 
+#include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
 
 #include "Common.h"
