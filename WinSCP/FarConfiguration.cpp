@@ -217,7 +217,7 @@ bool TFarConfiguration::GetConfirmDeleting()
   return (FarConfirmations() & FCS_DELETE) != 0;
 }
 //---------------------------------------------------------------------------
-wstring TFarConfiguration::ModuleFileName()
+std::wstring TFarConfiguration::ModuleFileName()
 {
   assert(GetPlugin());
   return GetPlugin()->GetModuleName();

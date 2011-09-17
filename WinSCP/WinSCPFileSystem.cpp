@@ -114,7 +114,7 @@ void TRemoteFilePanelItem::GetData(
   CustomColumnNumber = 4;
 }
 //---------------------------------------------------------------------------
-wstring TRemoteFilePanelItem::CustomColumnData(int Column)
+std::wstring TRemoteFilePanelItem::CustomColumnData(int Column)
 {
   switch (Column) {
     case 0: return FRemoteFile->GetGroup().GetName();
@@ -348,7 +348,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
   SAFE_DESTROY(FTerminal);
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::HandleException(exception * E, int OpMode)
+void TWinSCPFileSystem::HandleException(std::exception * E, int OpMode)
 {
   if ((GetTerminal() != NULL)) // FIXME && E->InheritsFrom(__classid(EFatal)))
   {
@@ -1649,7 +1649,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch(exception & E)
+  catch (std::exception & E)
   {
     HandleException(&E);
     throw;
@@ -1981,7 +1981,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const std::wstring Path,
     {
       GetTerminal()->SpaceAvailable(Path, ASpaceAvailable);
     }
-    catch(exception & E)
+    catch (std::exception & E)
     {
       if (!GetTerminal()->GetActive())
       {
@@ -2285,7 +2285,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
               }
             }
           }
-          catch(exception & E)
+          catch (std::exception & E)
           {
             FSynchronisingBrowse = false;
             WinSCPPlugin()->ShowExtendedException(&E);
@@ -2996,7 +2996,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 
     Result = true;
   }
-  catch(exception &E)
+  catch (std::exception &E)
   {
     FTerminal->ShowExtendedException(&E);
     SAFE_DESTROY(FTerminal);
