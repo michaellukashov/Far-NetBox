@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
-// testnetbox_01.cpp
+// testnetbox_02.cpp
 // Тесты для NetBox
-// testnetbox_01 --run_test=testnetbox_01/test1 --log_level=all
+// testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all
 //------------------------------------------------------------------------------
 
 #include "stdafx.h"
@@ -11,7 +11,7 @@
 #include <fstream>
 
 #include "boostdefines.hpp"
-#define BOOST_TEST_MODULE "testnetbox_01"
+#define BOOST_TEST_MODULE "testnetbox_02"
 #define BOOST_TEST_MAIN
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
@@ -86,7 +86,7 @@ bool base_fixture_t::scp_test(std::string host, int port, std::string user, std:
 
 //------------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(testnetbox_01)
+BOOST_AUTO_TEST_SUITE(testnetbox_02)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
 {
