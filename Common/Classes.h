@@ -623,7 +623,8 @@ public:
     TStringList() :
         FOnChange(NULL),
         FOnChanging(NULL),
-        FSorted(false)
+        FSorted(false),
+        FCaseSensitive(false)
     {
     }
     virtual ~TStringList()
@@ -674,9 +675,7 @@ public:
         ::Error(SListIndexError, Index);
       }
       Changing();
-      // DEBUG_PRINTF(L"FList.size1 = %d", FList.size());
       FList.erase(FList.begin() + Index);
-      // DEBUG_PRINTF(L"FList.size2 = %d", FList.size());
       Changed();
     }
     virtual TObject *GetObject(int Index)
@@ -702,9 +701,20 @@ public:
         ::Error(SNotImplemented, 0);
         return 0;
     }
+    bool GetCaseSensitive() const
+    {
+        return FCaseSensitive;
+    }
     void SetCaseSensitive(bool value)
     {
-        ::Error(SNotImplemented, 0);
+        if (value != FCaseSensitive)
+        {
+            FCaseSensitive = value;
+            if (GetSorted())
+            {
+                Sort();
+            }
+        }
     }
     bool GetSorted() const
     {
@@ -712,7 +722,14 @@ public:
     }
     void SetSorted(bool value)
     {
-        FSorted = value;
+        if (value != FSorted)
+        {
+            if (value)
+            {
+                Sort();
+            }
+            FSorted = value;
+        }
     }
     void LoadFromFile(const std::wstring &FileName)
     {
@@ -770,6 +787,7 @@ private:
     notify_signal_type m_OnChange;
     TStringItemList FList;
     bool FSorted;
+    bool FCaseSensitive;
 };
 
 class TDateTime
