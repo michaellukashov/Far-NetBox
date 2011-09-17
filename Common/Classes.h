@@ -27,6 +27,9 @@
 using namespace std;
 
 //---------------------------------------------------------------------------
+std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
+std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
+//---------------------------------------------------------------------------
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
@@ -379,11 +382,11 @@ public:
     }
     virtual std::wstring GetString(int Index)
     {
-        // DEBUG_PRINTF(L"NetBox: GetString: Index = %d", Index);
-          if ((Index < 0) || (Index >= FList.size()))
+        DEBUG_PRINTF(L"NetBox: GetString: Index = %d", Index);
+        if ((Index < 0) || (Index >= FList.size()))
             ::Error(SListIndexError, Index);
-          std::wstring Result = FList[Index].FString;
-          return Result;
+        std::wstring Result = FList[Index].FString;
+        return Result;
     }
     int GetUpdateCount()
     {

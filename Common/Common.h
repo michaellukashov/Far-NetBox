@@ -237,10 +237,6 @@ static void Abort()
 void Error(int ErrorID, int data);
 
 //---------------------------------------------------------------------------
-std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
-std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
-
-//---------------------------------------------------------------------------
 class TCompThread : public TObject
 {
 public:
