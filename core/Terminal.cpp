@@ -827,7 +827,7 @@ bool TTerminal::IsListenerFree(unsigned int PortNumber)
     Address.sin_family = AF_INET;
     Address.sin_port = htons(static_cast<short>(PortNumber));
     Address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    Result = (bind(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) == 0);
+    Result = (::bind(Socket, reinterpret_cast<sockaddr *>(&Address), sizeof(Address)) == 0);
     closesocket(Socket);
   }
   return Result;
