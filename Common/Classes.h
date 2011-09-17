@@ -66,16 +66,33 @@ void Error(int ErrorID, int data);
 class TObject
 {
 public:
-    TObject()
+    TObject() :
+        FDestroyed(false)
     {}
     virtual ~TObject()
-    {}
+    {
+        Free();
+    }
 
     virtual void Change()
     {}
+    void Free()
+    {
+        if (this && !FDestroyed)
+        {
+            Destroy();
+        }
+    }
+    virtual void Destroy()
+    {
+        FDestroyed = true;
+    }
 
 private:
+    bool FDestroyed;
 };
+
+//---------------------------------------------------------------------------
 
 struct TPoint
 {
@@ -90,6 +107,8 @@ struct TPoint
         y(y)
     {}
 };
+
+//---------------------------------------------------------------------------
 
 struct TRect
 {
@@ -137,6 +156,8 @@ struct TRect
     }
 };
 
+//---------------------------------------------------------------------------
+
 class TPersistent : public TObject
 {
 public:
@@ -148,6 +169,15 @@ public:
     {}
 };
 
+//---------------------------------------------------------------------------
+
+enum TListNotification
+{
+  lnAdded,
+  lnExtracted,
+  lnDeleted,
+};
+
 typedef int (CompareFunc)(void * Item1, void * Item2);
 
 class TList : public TObject
@@ -157,73 +187,117 @@ public:
     {}
     virtual ~TList()
     {}
-    size_t GetCount() const { return m_objects.size(); }
+    size_t GetCount() const { return FList.size(); }
     void SetCount(size_t value)
-    {}
-
-    TObject * operator [](size_t Index) const
     {
-        return m_objects[Index];
-    }
-    TObject * GetItem(size_t Index) const
-    {
-        return m_objects[Index];
-    }
-    void SetItem(size_t Index, TObject *Value)
-    {
-        ::Error(SNotImplemented, 0);
+        FList.resize(value);
     }
 
-    size_t Add(TObject *value)
+    void *operator [](size_t Index) const
     {
-        size_t Result = m_objects.size();
-        m_objects.push_back(value);
+        return FList[Index];
+    }
+    void *GetItem(size_t Index) const
+    {
+        return FList[Index];
+    }
+    void SetItem(size_t Index, void *Item)
+    {
+        if ((Index < 0) || (Index > FList.size()))
+        {
+          ::Error(SListIndexError, Index);
+        }
+        FList.insert(FList.begin() + Index, Item);
+    }
+
+    size_t Add(void *value)
+    {
+        size_t Result = FList.size();
+        FList.push_back(value);
         return Result;
     }
-    TObject * Extract(TObject *value)
+    void *Extract(void *item)
     {
-        ::Error(SNotImplemented, 0);
+        if (Remove(item) >= 0)
+            return item;
+        else
+            return NULL;
     }
-    int Remove(TObject *item)
+    int Remove(void *item)
     {
-        ::Error(SNotImplemented, 0);
+        size_t Result = IndexOf(item);
+        if (Result >= 0)
+        {
+            Delete(Result);
+        }
+        return Result;
     }
-    void Move(size_t Index, size_t To)
+    void Move(size_t CurIndex, size_t NewIndex)
     {
-        ::Error(SNotImplemented, 0);
+      if (CurIndex != NewIndex)
+      {
+        if ((NewIndex < 0) || (NewIndex >= FList.size()))
+        {
+          ::Error(SListIndexError, NewIndex);
+        }
+        void *Item = GetItem(CurIndex);
+        FList[CurIndex] = NULL;
+        Delete(CurIndex);
+        Insert(NewIndex, NULL);
+        FList[NewIndex] = Item;
+      }
     }
     void Delete(size_t Index)
     {
-        ::Error(SNotImplemented, 0);
+        if ((Index < 0) || (Index >= FList.size()))
+        {
+          ::Error(SListIndexError, Index);
+        }
+        FList.erase(FList.begin() + Index);
     }
-    virtual void Insert(size_t Index, TObject *value)
+    virtual void Insert(size_t Index, void *Item)
     {
-        ::Error(SNotImplemented, 0);
+        if ((Index < 0) || (Index > FList.size()))
+        {
+          ::Error(SListIndexError, Index);
+        }
+        // if (FCount == FCapacity)
+          // Grow();
+        if (Index <= FList.size())
+        {
+            FList.insert(FList.begin() + Index, Item);
+        }
+        if (Item != NULL)
+          Notify(Item, lnAdded);
     }
-    size_t IndexOf(TObject *value) const
+    size_t IndexOf(void *value) const
     {
-        ::Error(SNotImplemented, 0);
-        return -1;
+        size_t Result = 0;
+        while ((Result < FList.size()) && (FList[Result] != value))
+          Result++;
+        if (Result == FList.size())
+          Result = (size_t)-1;
+        return Result;
     }
     virtual void Clear()
     {
-        ::Error(SNotImplemented, 0);
+        FList.clear();
     }
 
     void Sort(CompareFunc func)
     {
         ::Error(SNotImplemented, 0);
     }
-    void Notify(void *Ptr, int Action)
+    virtual void Notify(void *Ptr, int Action)
     {
-        ::Error(SNotImplemented, 0);
     }
 private:
-    std::vector<TObject *> m_objects;
+    std::vector<void *> FList;
 };
 
 class TObjectList : public TList
 {
+    typedef TList parent;
 public:
     TObjectList() :
         FOwnsObjects(false)
@@ -232,70 +306,71 @@ public:
     virtual ~TObjectList()
     {
     }
-    size_t GetCount() const { return m_objects.size(); }
-    void SetCount(size_t value)
-    {}
 
-    TObject * operator [](size_t Index) const
+    TObject *operator [](size_t Index) const
     {
-        return m_objects[Index];
+        return (TObject *)parent::operator[](Index);
     }
     TObject * GetItem(size_t Index) const
     {
-        return m_objects[Index];
+        return (TObject *)parent::GetItem(Index);
     }
     void SetItem(size_t Index, TObject *Value)
     {
-        ::Error(SNotImplemented, 0);
+        parent::SetItem(Index, Value);
     }
 
     size_t Add(TObject *value)
     {
-        m_objects.push_back(value);
-        return m_objects.size() - 1;
+        return parent::Add(value);
     }
     int Remove(TObject *value)
     {
-        return 0;
+        return parent::Remove(value);
     }
     void Extract(TObject *value)
     {
-        ::Error(SNotImplemented, 0);
+        parent::Extract(value);
     }
     void Move(size_t Index, size_t To)
     {
-        ::Error(SNotImplemented, 0);
+        parent::Move(Index, To);
     }
     void Delete(size_t Index)
     {
-        ::Error(SNotImplemented, 0);
+        parent::Delete(Index);
     }
     virtual void Insert(size_t Index, TObject *value)
     {
-        ::Error(SNotImplemented, 0);
+        parent::Insert(Index, value);
     }
     size_t IndexOf(TObject *value) const
     {
-        ::Error(SNotImplemented, 0);
-        return -1;
+        return parent::IndexOf(value);
     }
     virtual void Clear()
     {
-        ::Error(SNotImplemented, 0);
+        parent::Clear();
     }
     bool GetOwnsObjects() { return FOwnsObjects; }
     void SetOwnsObjects(bool value) { FOwnsObjects = value; }
 
     void Sort(CompareFunc func)
     {
-        ::Error(SNotImplemented, 0);
+        parent::Sort(func);
     }
-    void Notify(void *Ptr, int Action)
+    virtual void Notify(void *Ptr, int Action)
     {
-        ::Error(SNotImplemented, 0);
+      if (GetOwnsObjects())
+      {
+        if (Action == lnDeleted)
+        {
+          ((TObject *)Ptr)->Free();
+        }
+      }
+        parent::Notify(Ptr, Action);
     }
 private:
-    std::vector<TObject *> m_objects;
     bool FOwnsObjects;
 };
 
