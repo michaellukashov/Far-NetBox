@@ -96,4 +96,20 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
+{
+    std::wstring Text = L"text text text text text1\ntext text text text text2\n";
+    TStringList Lines;
+    Lines.SetText(Text);
+    BOOST_CHECK_EQUAL(2, Lines.GetCount());
+    BOOST_TEST_MESSAGE("Lines 0 = " << ::W2MB(Lines.GetString(0).c_str()));
+    BOOST_TEST_MESSAGE("Lines 1 = " << ::W2MB(Lines.GetString(1).c_str()));
+    BOOST_CHECK_EQUAL("text text text text text1", ::W2MB(Lines.GetString(0).c_str()).c_str());
+    BOOST_CHECK_EQUAL("text text text text text2", ::W2MB(Lines.GetString(1).c_str()).c_str());
+}
+
+BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
+{
+}
+
 BOOST_AUTO_TEST_SUITE_END()
