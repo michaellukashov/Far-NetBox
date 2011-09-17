@@ -2118,7 +2118,7 @@ void TFarList::Put(int Index, const std::wstring S)
         FNoDialogUpdate = true;
         try
         {
-            TStringList::Put(Index, S);
+            TStringList::PutString(Index, S);
             if (GetUpdateCount() == 0)
             {
                 UpdateItem(Index);
@@ -2131,7 +2131,7 @@ void TFarList::Put(int Index, const std::wstring S)
     }
     else
     {
-        TStringList::Put(Index, S);
+        TStringList::PutString(Index, S);
     }
 }
 //---------------------------------------------------------------------------

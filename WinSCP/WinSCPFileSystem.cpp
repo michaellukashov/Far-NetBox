@@ -2732,7 +2732,7 @@ int TWinSCPFileSystem::PutFilesEx(TList * PanelItems, bool Move, int OpMode)
         else
         {
           // just in case file was saved under different name
-          FFileList->SetString(0, FLastEditFile);
+          FFileList->PutString(0, FLastEditFile);
 
           FOriginalEditFile = L"";
           FLastEditFile = L"";

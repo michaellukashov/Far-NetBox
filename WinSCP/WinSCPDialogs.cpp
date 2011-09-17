@@ -1407,7 +1407,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (int Index = 0; Index < FEdits->GetCount(); Index++)
     {
-      Results->SetString(Index, reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText());
+      Results->PutString(Index, reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText());
     }
 
     if ((SavePasswordCheck != NULL) && SavePasswordCheck->GetChecked())
@@ -6907,7 +6907,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
         const TSynchronizeChecklist::TItem * ChecklistItem =
           reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
 
-        List->SetString(Index, ItemLine(ChecklistItem));
+        List->PutString(Index, ItemLine(ChecklistItem));
       }
     }
   }

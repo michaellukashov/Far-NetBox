@@ -411,7 +411,7 @@ void TBookmarkList::KeyChanged(int Index)
   {
     throw ExtException(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
-  FBookmarks->SetString(Index, Bookmark->GetKey());
+  FBookmarks->PutString(Index, Bookmark->GetKey());
 }
 //---------------------------------------------------------------------------
 TBookmark * TBookmarkList::FindByName(const std::wstring Node, const std::wstring Name)

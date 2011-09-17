@@ -503,7 +503,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   else if (Index == 6)
   {
     assert(Prompts->GetCount() == 1);
-    Prompts->SetString(0, LoadStr(PASSWORD_PROMPT));
+    Prompts->PutString(0, LoadStr(PASSWORD_PROMPT));
     PromptKind = pkPassword;
   }
   else if (Index == 7)
@@ -556,7 +556,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       // use empty username if no username was filled on login dialog
       // and GSSAPI auth is enabled, hence there's chance that the server can
       // deduce the username otherwise
-      Results->SetString(0, L"");
+      Results->PutString(0, L"");
       Result = true;
     }
   }
@@ -570,7 +570,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->SetString(0, FSessionData->GetPassword());
+      Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
     else if (Instructions.empty() && !InstructionsRequired && (Prompts->GetCount() == 0))
@@ -586,7 +586,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->SetString(0, FSessionData->GetPassword());
+      Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
     }
   }

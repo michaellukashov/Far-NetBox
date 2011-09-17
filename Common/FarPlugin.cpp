@@ -1090,7 +1090,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         for (int Index = 0; Index < MessageLines->GetCount(); Index++)
         {
             std::wstring S = MessageLines->GetString(Index);
-            MessageLines->SetString(Index, StrToFar(S));
+            MessageLines->PutString(Index, StrToFar(S));
             Items[Index] = (wchar_t *)MessageLines->GetString(Index).c_str();
         }
 
@@ -1195,9 +1195,9 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
             Result = MenuItems[ResultItem].UserData;
             if (Selected >= 0)
             {
-                Items->SetObject(Selected, (TObject *)(int(Items->GetObject(Selected)) & ~MIF_SELECTED));
+                Items->PutObject(Selected, (TObject *)(int(Items->GetObject(Selected)) & ~MIF_SELECTED));
             }
-            Items->SetObject(Result, (TObject *)(int(Items->GetObject(Result)) | MIF_SELECTED));
+            Items->PutObject(Result, (TObject *)(int(Items->GetObject(Result)) | MIF_SELECTED));
         }
         else
         {
@@ -2785,7 +2785,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
         {
             F &= ~Flag;
         }
-        SetObject(Index, (TObject *)F);
+        PutObject(Index, (TObject *)F);
     }
 }
 //---------------------------------------------------------------------------

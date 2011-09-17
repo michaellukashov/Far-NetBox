@@ -1568,7 +1568,7 @@ void TRemoteDirectoryCache::Clear()
     for (int Index = 0; Index < GetCount(); Index++)
     {
       delete (TRemoteFileList *)GetObject(Index);
-      SetObject(Index, NULL);
+      PutObject(Index, NULL);
     }
   }
   catch(...)

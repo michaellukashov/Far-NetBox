@@ -623,7 +623,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->SetObject(ButtonLabels->GetCount() - 1, (TObject*)true); \
+          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, (TObject*)true); \
           NeverAskAgainPending = false; \
         } \
       }
@@ -656,7 +656,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {
-            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+            ButtonLabels->PutString(bi, Params->Aliases[ai].Alias);
             break;
           }
         }
