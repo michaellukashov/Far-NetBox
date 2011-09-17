@@ -169,6 +169,7 @@ public:
     }
     void SetItem(size_t Index, TObject *Value)
     {
+        ::Error(SNotImplemented, 0);
     }
 
     size_t Add(TObject *value)
@@ -182,30 +183,40 @@ public:
     }
     void Extract(TObject *value)
     {
+        ::Error(SNotImplemented, 0);
     }
     void Move(int Index, int To)
     {
+        ::Error(SNotImplemented, 0);
     }
     void Delete(int Index)
     {
+        ::Error(SNotImplemented, 0);
     }
     virtual void Insert(int Index, TObject *value)
     {
+        ::Error(SNotImplemented, 0);
     }
     size_t IndexOf(TObject *value) const
     {
+        ::Error(SNotImplemented, 0);
         return -1;
     }
     void Clear()
     {
+        ::Error(SNotImplemented, 0);
     }
     bool GetOwnsObjects() { return FOwnsObjects; }
     void SetOwnsObjects(bool value) { FOwnsObjects = value; }
 
     void Sort(CompareFunc func)
-    {}
+    {
+        ::Error(SNotImplemented, 0);
+    }
     void Notify(void *Ptr, int Action)
-    {}
+    {
+        ::Error(SNotImplemented, 0);
+    }
 private:
     vector<TObject *> m_objects;
     bool FOwnsObjects;
@@ -235,7 +246,7 @@ public:
         return Result;
     }
     virtual size_t GetCount() = 0;
-    virtual void Delete(int Index) = 0;
+    virtual void Delete(size_t Index) = 0;
     virtual std::wstring GetString(int Index) = 0;
     virtual std::wstring GetText()
     {
@@ -279,12 +290,11 @@ public:
     }
     void SetText(std::wstring S)
     {
+        ::Error(SNotImplemented, 0);
     }
     void SetCommaText(std::wstring S)
     {
-    }
-    void SetString(int Index, std::wstring S)
-    {
+        ::Error(SNotImplemented, 0);
     }
     int AddObject(std::wstring S, TObject *AObject)
     {
@@ -294,21 +304,26 @@ public:
     }
     void InsertObject(int Index, std::wstring Key, TObject *obj)
     {
+        ::Error(SNotImplemented, 0);
     }
 
     bool Equals(TStrings *value)
     {
+        ::Error(SNotImplemented, 0);
         return false;
     }
     virtual void Clear()
     {
+        ::Error(SNotImplemented, 0);
     }
     virtual TObject *GetObject(int Index)
     {
+        ::Error(SNotImplemented, 0);
         return NULL;
     }
     virtual void PutObject(int Index, TObject *AObject)
     {
+        ::Error(SNotImplemented, 0);
     }
     virtual void PutString(int Index, std::wstring S)
     {
@@ -318,53 +333,63 @@ public:
     }
     void SetDuplicates(TDuplicatesEnum value)
     {
+        ::Error(SNotImplemented, 0);
     }
     void Sort()
     {
+        ::Error(SNotImplemented, 0);
     }
     void Move(int Index, int To)
     {
+        ::Error(SNotImplemented, 0);
     }
     size_t IndexOf(const wchar_t *value)
     {
+        ::Error(SNotImplemented, 0);
         return -1;
     }
     size_t IndexOfName(const wchar_t *value)
     {
+        ::Error(SNotImplemented, 0);
         return -1;
     }
     const std::wstring GetName(int Index)
     {
+        ::Error(SNotImplemented, 0);
         return L"";
     }
     const std::wstring GetValue(const std::wstring Name)
     {
+        ::Error(SNotImplemented, 0);
         return L"";
     }
     void SetValue(const std::wstring Name, const std::wstring Value)
     {
-
-    }
-    void Delete(size_t Index)
-    {
+        ::Error(SNotImplemented, 0);
     }
     std::wstring GetCommaText() const
     {
+        ::Error(SNotImplemented, 0);
         return L"";
     }
     void AddStrings(TStrings *value)
     {
+        ::Error(SNotImplemented, 0);
     }
     void Append(const std::wstring &value)
     {
+        ::Error(SNotImplemented, 0);
     }
     bool Find(const std::wstring Value, int &Index)
     {
+        ::Error(SNotImplemented, 0);
         return false;
     }
     virtual void Insert(int Index, const std::wstring AString) = 0;
     void SaveToStream(TStream *Stream)
-    {}
+    {
+        ::Error(SNotImplemented, 0);
+    }
 };
 
 struct TStringItem
@@ -385,7 +410,9 @@ public:
     {
     }
     virtual void Assign(TPersistent *Source)
-    {}
+    {
+        ::Error(SNotImplemented, 0);
+    }
     virtual size_t GetCount()
     {
         return FList.size();
@@ -421,10 +448,12 @@ public:
     }
     int GetUpdateCount()
     {
+        ::Error(SNotImplemented, 0);
         return 0;
     }
     void SetCaseSensitive(bool value)
     {
+        ::Error(SNotImplemented, 0);
     }
     bool GetSorted() const
     {
@@ -432,9 +461,11 @@ public:
     }
     void SetSorted(bool value)
     {
+        FSorted = value;
     }
     void LoadFromFile(const std::wstring &FileName)
     {
+        ::Error(SNotImplemented, 0);
     }
     TNotifyEvent GetOnChange() { return FOnChange; }
     void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
