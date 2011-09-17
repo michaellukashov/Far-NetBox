@@ -156,6 +156,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/NetBox/Session.cpp
     ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
     ${PROJECT_ROOT}/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/resource/rtlconsts.rc
 )
 
 #-------------------------------------------------------------------------------
@@ -285,6 +286,8 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/Common/Common.cpp
     ${PROJECT_ROOT}/core/Exceptions.cpp
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
+    ${PROJECT_ROOT}/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/resource/rtlconsts.rc
 )
 
 set ( TESTNETBOX_01_LIBRARIES
@@ -314,6 +317,8 @@ set ( TESTNETBOX_02_HEADERS
 
 set ( TESTNETBOX_02_SOURCES ${COMMON_SOURCES}
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
+    ${PROJECT_ROOT}/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/resource/rtlconsts.rc
     ${PROJECT_ROOT}/resource/testnetbox_02.rc
 )
 
