@@ -55,7 +55,6 @@ public:
     bool scp_test(std::string host, int port, std::string user, std::string password);
 
 public:
-    // TNotifyEvent OnChangeNotifyEvent;
     void OnChangeNotifyEvent(TObject *Sender)
     {
         BOOST_TEST_MESSAGE("OnChangeNotifyEvent triggered");
@@ -379,10 +378,6 @@ public:
         Changed();
     }
 
-    // boost::function<void (TObject *)> GetOnClick() { return m_OnClick; }
-  // boost::signals::connection on_click_connect(const click_slot_type& s)
-    // { return on_click.connect(s); }
-    // void SetOnClick(boost::function<void (TObject *)> onClick)
     void SetOnClick(const click_slot_type& onClick)
     {
         m_OnClick.connect(onClick);
@@ -396,11 +391,10 @@ public:
     bool OnClickTriggered;
 private:
     TNotifyEvent FOnChange;
-    // boost::signal1<void (TObject *)> m_OnClick;
     click_signal_type m_OnClick;
 };
 
-class TClass2 // : TObject
+class TClass2
 {
 public:
     TClass2() :
@@ -443,8 +437,6 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
         BOOST_CHECK_EQUAL(true, cl1.OnClickTriggered);
 
         TClass2 cl2;
-        // cl1.SetOnClick(boost::bind(&TClass2::ClickEventHandler, &cl2));
-        // boost::bind(&print_string::print, ps, _1)
         cl1.SetOnClick(boost::bind(&TClass2::ClickEventHandler, &cl2, _1));
         cl1.Click();
         BOOST_CHECK_EQUAL(true, cl2.ClickEventHandlerTriggered);
