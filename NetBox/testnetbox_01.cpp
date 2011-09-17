@@ -66,16 +66,15 @@ public:
         BOOST_TEST_MESSAGE("ClickEventHandler triggered");
         ClickEventHandlerTriggered = true;
     }
-protected:
-    bool OnChangeNotifyEventTriggered;
-    bool ClickEventHandlerTriggered;
-    bool onStringListChangeTriggered;
-private:
     void onStringListChange(TObject *Sender)
     {
         BOOST_TEST_MESSAGE("onStringListChange triggered");
         onStringListChangeTriggered = true;
     }
+protected:
+    bool OnChangeNotifyEventTriggered;
+    bool ClickEventHandlerTriggered;
+    bool onStringListChangeTriggered;
 };
 
 //------------------------------------------------------------------------------
