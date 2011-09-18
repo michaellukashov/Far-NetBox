@@ -393,7 +393,8 @@ class TStrings : public TPersistent
 public:
     TStrings() :
         FDelimiter(L','),
-        FQuoteChar(L'"')
+        FQuoteChar(L'"'),
+        FUpdateCount(0)
     {
     }
     virtual ~TStrings()
@@ -609,6 +610,7 @@ public:
 private:
     mutable wchar_t FDelimiter;
     mutable wchar_t FQuoteChar;
+    int FUpdateCount;
 };
 
 struct TStringItem
