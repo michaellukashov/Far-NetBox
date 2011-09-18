@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 2.8)
 #-------------------------------------------------------------------------------
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS" )
+    "-DWIN32;_WINDOWS /Y3 /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
