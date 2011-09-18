@@ -3804,8 +3804,12 @@ TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerm
     (TFileOperationFinished)&TTerminal::DoFinished);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
+    {
+      Self->FOperationProgress = NULL;
+      OperationProgress.Stop();
+    } BOOST_SCOPE_EXIT_END
     TCalculateSizeParams Params;
     Params.Size = 0;
     Params.Params = 0;
@@ -3825,11 +3829,6 @@ TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerm
     }
 
     Size = Params.Size;
-  }
-  catch (...)
-  {
-    FOperationProgress = NULL;
-    OperationProgress.Stop();
   }
 
   if (OnceDoneOperation != odoIdle)
