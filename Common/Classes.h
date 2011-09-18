@@ -452,36 +452,7 @@ public:
     {
         SetTextStr(Text);
     }
-    virtual void SetTextStr(const std::wstring Text)
-    {
-        BeginUpdate();
-        try
-        {
-          Clear();
-          const wchar_t *P = Text.c_str();
-          if (P != NULL)
-          {
-            while (*P != 0x00)
-            {
-              const wchar_t *Start = P;
-              while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
-              {
-                  P++;
-              }
-              std::wstring S;
-              S.resize(P - Start + 1);
-              memcpy((wchar_t *)S.c_str(), Start, (P - Start) * sizeof(wchar_t));
-              Add(S);
-              if (*P == 0x0D) P++;
-              if (*P == 0x0A) P++;
-            };
-          }
-        }
-        catch (...)
-        {
-          EndUpdate();
-        };
-    }
+    virtual void SetTextStr(const std::wstring Text);
     void SetCommaText(std::wstring Value)
     {
         SetDelimiter(L',');
@@ -566,25 +537,7 @@ public:
     {
         ::Error(SNotImplemented, 0);
     }
-    std::wstring GetCommaText() const
-    {
-        wchar_t LOldDelimiter = GetDelimiter();
-        wchar_t LOldQuoteChar = GetQuoteChar();
-        FDelimiter = L',';
-        FQuoteChar = L'"';
-        std::wstring Result;
-        try
-        {
-            Result = GetDelimitedText();
-        }
-        catch (...)
-        {
-            DEBUG_PRINTF(L"Unknown error");
-        }
-        FDelimiter = LOldDelimiter;
-        FQuoteChar = LOldQuoteChar;
-        return Result;
-    }
+    std::wstring GetCommaText() const;
     void AddStrings(TStrings *value)
     {
         ::Error(SNotImplemented, 0);

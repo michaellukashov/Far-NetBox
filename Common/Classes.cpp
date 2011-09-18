@@ -18,6 +18,51 @@ const std::wstring sLineBreak = L"\n";
 
 //---------------------------------------------------------------------------
 
+void TStrings::SetTextStr(const std::wstring Text)
+{
+    TStrings *Self = this;
+    Self->BeginUpdate();
+    BOOST_SCOPE_EXIT( (&Self) )
+    {
+        Self->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
+    Clear();
+    const wchar_t *P = Text.c_str();
+    if (P != NULL)
+    {
+      while (*P != 0x00)
+      {
+        const wchar_t *Start = P;
+        while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
+        {
+            P++;
+        }
+        std::wstring S;
+        S.resize(P - Start + 1);
+        memcpy((wchar_t *)S.c_str(), Start, (P - Start) * sizeof(wchar_t));
+        Add(S);
+        if (*P == 0x0D) P++;
+        if (*P == 0x0A) P++;
+      };
+    }
+}
+
+std::wstring TStrings::GetCommaText() const
+{
+    wchar_t LOldDelimiter = GetDelimiter();
+    wchar_t LOldQuoteChar = GetQuoteChar();
+    FDelimiter = L',';
+    FQuoteChar = L'"';
+
+    BOOST_SCOPE_EXIT( (&FDelimiter) (&FQuoteChar) (LOldDelimiter) (LOldQuoteChar) )
+    {
+        FDelimiter = LOldDelimiter;
+        FQuoteChar = LOldQuoteChar;
+    } BOOST_SCOPE_EXIT_END
+
+    std::wstring Result = GetDelimitedText();
+    return Result;
+}
 std::wstring TStrings::GetDelimitedText() const
 {
     std::wstring Result;
@@ -39,23 +84,23 @@ std::wstring TStrings::GetDelimitedText() const
 }
 void TStrings::SetDelimitedText(const std::wstring Value)
 {
-  TStrings *Self = this;
-  Self->BeginUpdate();
-  BOOST_SCOPE_EXIT( (&FUpdateCount) (&Self) )
-  {
-      Self->EndUpdate();
-  } BOOST_SCOPE_EXIT_END
-  Clear();
-  std::vector<std::wstring> lines;
-  std::wstring delim = std::wstring(1, GetDelimiter());
-  delim.append(1, L'\n');
-  alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
-  std::wstring line;
-  // for (std::vector<std::wstring>::const_iterator it = lines.begin(); it != lines.end(); ++it)
-  BOOST_FOREACH(line, lines)
-  {
-      Add(line);
-  }
+    TStrings *Self = this;
+    Self->BeginUpdate();
+    BOOST_SCOPE_EXIT( (&Self) )
+    {
+        Self->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
+    Clear();
+    std::vector<std::wstring> lines;
+    std::wstring delim = std::wstring(1, GetDelimiter());
+    delim.append(1, L'\n');
+    alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
+    std::wstring line;
+    // for (std::vector<std::wstring>::const_iterator it = lines.begin(); it != lines.end(); ++it)
+    BOOST_FOREACH(line, lines)
+    {
+        Add(line);
+    }
 }
 
 int TStrings::CompareStrings(const std::wstring &S1, const std::wstring &S2)
