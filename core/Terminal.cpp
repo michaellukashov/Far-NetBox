@@ -4097,8 +4097,12 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
         Data->Options->Filter->Find(LocalFileName, FoundIndex)))
   {
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-    try
     {
+      BOOST_SCOPE_EXIT ( (&ChecklistItem) )
+      {
+        delete ChecklistItem;
+      }
+      BOOST_SCOPE_EXIT_END
       ChecklistItem->IsDirectory = File->GetIsDirectory();
       ChecklistItem->ImageIndex = File->GetIconIndex();
       ChecklistItem->ImageIndex = File->GetIconIndex();
@@ -4241,10 +4245,6 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
         }
       }
     }
-    catch (...)
-    {
-      delete ChecklistItem;
-    }
   }
 }
 //---------------------------------------------------------------------------
@@ -4275,8 +4275,17 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
   BeginTransaction();
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&DownloadList) (&DeleteRemoteList)
+      (&UploadList) (&DeleteLocalList) )
+    {
+        delete DownloadList;
+        delete DeleteRemoteList;
+        delete UploadList;
+        delete DeleteLocalList;
+
+        Self->EndTransaction();
+    } BOOST_SCOPE_EXIT_END
     int IIndex = 0;
     while (IIndex < Checklist->GetCount())
     {
@@ -4419,15 +4428,6 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
         }
       }
     }
-  }
-  catch (...)
-  {
-    delete DownloadList;
-    delete DeleteRemoteList;
-    delete UploadList;
-    delete DeleteLocalList;
-
-    EndTransaction();
   }
 }
 //---------------------------------------------------------------------------
