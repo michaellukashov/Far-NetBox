@@ -388,6 +388,7 @@ protected:
     bool FValidFarSystemSettings;
     unsigned int FFarSystemSettings;
     TPoint FNormalConsoleSize;
+    TCustomFarPlugin *Self;
 
     virtual bool HandlesFunction(THandlesFunction Function);
     virtual void GetPluginInfoEx(long unsigned &Flags,
