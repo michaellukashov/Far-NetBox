@@ -490,8 +490,17 @@ public:
     }
     virtual void BeginUpdate()
     {
+        if (FUpdateCount == 0) 
+          SetUpdateState(true);
+        FUpdateCount++;
     }
     virtual void EndUpdate()
+    {
+        FUpdateCount--;
+        if (FUpdateCount == 0)
+            SetUpdateState(false);
+    }
+    virtual void SetUpdateState(bool Updating)
     {
     }
     virtual TObject *GetObject(int Index)
@@ -607,6 +616,7 @@ public:
     std::wstring GetDelimitedText() const;
     void SetDelimitedText(const std::wstring Value);
     virtual int CompareStrings(const std::wstring &S1, const std::wstring &S2);
+    int GetUpdateCount() const { return FUpdateCount; }
 private:
     mutable wchar_t FDelimiter;
     mutable wchar_t FQuoteChar;
@@ -707,18 +717,17 @@ public:
     }
     void InsertItem(int Index, const std::wstring S, TObject *AObject)
     {
-      Changing();
-      // if FCount = FCapacity then Grow;
-      TStringItem item;
-      item.FString = S;
-      item.FObject = AObject;
-      if (Index < GetCount())
-      {
-        // System.Move(FList^[Index], FList^[Index + 1],
-          // (FCount - Index) * SizeOf(TStringItem));
-      }
-      FList.insert(FList.begin() + Index, item);
-      Changed();
+        if ((Index < 0) || (Index > GetCount()))
+        {
+            ::Error(SListIndexError, Index);
+        }
+        Changing();
+        // if (FCount == FCapacity) Grow();
+        TStringItem item;
+        item.FString = S;
+        item.FObject = AObject;
+        FList.insert(FList.begin() + Index, item);
+        Changed();
     }
     virtual std::wstring GetString(int Index) const
     {
@@ -729,11 +738,6 @@ public:
         }
         std::wstring Result = FList[Index].FString;
         return Result;
-    }
-    int GetUpdateCount()
-    {
-        ::Error(SNotImplemented, 0);
-        return 0;
     }
     bool GetCaseSensitive() const
     {
@@ -780,6 +784,10 @@ public:
     {
         m_OnChange.connect(onChange);
     }
+    void SetOnChanging(const notify_slot_type &onChanging)
+    {
+        m_OnChanging.connect(onChanging);
+    }
 
     virtual void PutObject(int Index, TObject *AObject)
     {
@@ -794,18 +802,22 @@ public:
         FList[Index] = item;
         Changed();
     }
+    virtual void SetUpdateState(bool Updating)
+    {
+        if (Updating) 
+            Changing();
+        else
+            Changed();
+    }
     virtual void Changing()
     {
+      if (GetUpdateCount() == 0)
+        m_OnChanging(this);
     }
     virtual void Changed()
     {
-        /*
-        if (FOnChange)
-        {
-            ((*this).*FOnChange)(this);
-        }
-        */
-        m_OnChange(this);
+        if (GetUpdateCount() == 0)
+            m_OnChange(this);
     }
     virtual void Insert(int Index, const std::wstring S)
     {
@@ -826,6 +838,7 @@ private:
     TNotifyEvent FOnChange;
     TNotifyEvent FOnChanging;
     notify_signal_type m_OnChange;
+    notify_signal_type m_OnChanging;
     TStringItemList FList;
     bool FSorted;
     bool FCaseSensitive;
