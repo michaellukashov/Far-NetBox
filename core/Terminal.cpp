@@ -4655,8 +4655,12 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress;
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
+      {
+        OperationProgress.Stop();
+        Self->FOperationProgress = NULL;
+      } BOOST_SCOPE_EXIT_END
       if (CopyParam->GetCalculateSize())
       {
         OperationProgress.SetTotalSize(Size);
@@ -4688,11 +4692,6 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
       {
         Result = true;
       }
-    }
-    catch (...)
-    {
-      OperationProgress.Stop();
-      FOperationProgress = NULL;
     }
   }
   catch (const std::exception &E)
