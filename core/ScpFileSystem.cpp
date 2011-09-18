@@ -1249,7 +1249,7 @@ void TSCPFileSystem::AnyCommand(const std::wstring Command,
     BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FOnCaptureOutput = NULL;
-      Self->FSecureShell->SetOnCaptureOutput (NULL);
+      Self->FSecureShell->SetOnCaptureOutput(NULL);
     } BOOST_SCOPE_EXIT_END
     ExecCommand(fsAnyCommand, 0, Command,
       ecDefault | ecIgnoreWarnings);
