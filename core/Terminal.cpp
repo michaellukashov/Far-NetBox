@@ -893,13 +893,12 @@ void TTerminal::OpenTunnel()
     FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, Configuration);
 
     FTunnelOpening = true;
-    try
     {
+      BOOST_SCOPE_EXIT (( &Self) )
+      {
+        Self->FTunnelOpening = false;
+      } BOOST_SCOPE_EXIT_END
       FTunnel->Open();
-    }
-    catch (...)
-    {
-      FTunnelOpening = false;
     }
 
     FTunnelThread = new TTunnelThread(FTunnel);
@@ -952,8 +951,19 @@ void TTerminal::Reopen(int Params)
   // but it can happen, e.g. when we are downloading file to execute it.
   // however I'm not sure why we mind having excaption-on-fail enabled here
   int PrevExceptionOnFail = FExceptionOnFail;
-  try
   {
+    BOOST_SCOPE_EXIT (( &Self) (PrevRemoteDirectory)
+        (OrigFSProtocol) (PrevAutoReadDirectory) (PrevReadCurrentDirectoryPending)
+        (PrevReadDirectoryPending) (PrevExceptionOnFail) )
+    {
+        Self->GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
+        Self->GetSessionData()->SetFSProtocol(OrigFSProtocol);
+        Self->FAutoReadDirectory = PrevAutoReadDirectory;
+        Self->FReadCurrentDirectoryPending = PrevReadCurrentDirectoryPending;
+        Self->FReadDirectoryPending = PrevReadDirectoryPending;
+        Self->FSuspendTransaction = false;
+        Self->FExceptionOnFail = PrevExceptionOnFail;
+    } BOOST_SCOPE_EXIT_END
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
     FSuspendTransaction = true;
@@ -984,16 +994,6 @@ void TTerminal::Reopen(int Params)
     }
 
     Open();
-  }
-  catch (...)
-  {
-    GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
-    GetSessionData()->SetFSProtocol(OrigFSProtocol);
-    FAutoReadDirectory = PrevAutoReadDirectory;
-    FReadCurrentDirectoryPending = PrevReadCurrentDirectoryPending;
-    FReadDirectoryPending = PrevReadDirectoryPending;
-    FSuspendTransaction = false;
-    FExceptionOnFail = PrevExceptionOnFail;
   }
 }
 //---------------------------------------------------------------------------
