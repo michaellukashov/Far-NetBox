@@ -1760,13 +1760,12 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   else if (!Answers)
   {
     ECommand * ECmd = new ECommand(E, Msg);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&ECmd) )
+      {
+        delete ECmd;
+      } BOOST_SCOPE_EXIT_END
       HandleExtendedException(ECmd);
-    }
-    catch (...)
-    {
-      delete ECmd;
     }
   }
   else
