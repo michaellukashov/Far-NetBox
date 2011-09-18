@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
@@ -134,8 +138,11 @@ void TSynchronizeController::SynchronizeChange(
         // FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
-        try
         {
+          BOOST_SCOPE_EXIT ( (&Checklist) )
+          {
+            delete Checklist;
+          } BOOST_SCOPE_EXIT_END
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
             SubdirsChanged = false;
@@ -164,10 +171,6 @@ void TSynchronizeController::SynchronizeChange(
           {
             SubdirsChanged = false;
           }
-        }
-        catch(...)
-        {
-          delete Checklist;
         }
       }
     }
