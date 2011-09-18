@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "Common.h"
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
@@ -10,6 +13,7 @@
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
 {
+  Self = this;
   FFarConfirmations = -1;
   FPlugin = APlugin;
   FBookmarks = new TBookmarks();
@@ -67,7 +71,14 @@ void TFarConfiguration::Saved()
 #define LASTELEM(ELEM) \
   ELEM.substr(LastDelimiter(ELEM, L".>")+1, ELEM.size() - LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  { \
+      BOOST_SCOPE_EXIT ( (&Storage) ) \
+      { \
+        Storage->CloseSubKey(); \
+      } BOOST_SCOPE_EXIT_END \
+      BLOCK \
+  }
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Far", CANCREATE, \
     KEY(bool,     DisksMenu); \
@@ -132,26 +143,24 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 void TFarConfiguration::Load()
 {
   FForceInheritance = true;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+        Self->FForceInheritance = false;
+    } BOOST_SCOPE_EXIT_END
     TGUIConfiguration::Load();
-  }
-  catch(...)
-  {
-    FForceInheritance = false;
   }
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+        Self->FForceInheritance = false;
+    } BOOST_SCOPE_EXIT_END
     TGUIConfiguration::Save(All, Explicit);
-  }
-  catch(...)
-  {
-    FForceInheritance = false;
   }
 }
 //---------------------------------------------------------------------------

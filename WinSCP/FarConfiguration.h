@@ -140,6 +140,7 @@ private:
   std::wstring FStatusColumnWidthsDetailed;
 
   TBookmarks * FBookmarks;
+  TFarConfiguration *Self;
 
   int FarConfirmations();
 };
