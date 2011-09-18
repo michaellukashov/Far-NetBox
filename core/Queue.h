@@ -123,6 +123,7 @@ protected:
   int FTransfersLimit;
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
+  TTerminalQueue *Self;
 
   TQueueItem * GetItem(int Index);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy);
@@ -189,6 +190,7 @@ protected:
   TTerminalQueue * FQueue;
   HANDLE FCompleteEvent;
   long FCPSLimit;
+  TQueueItem *Self;
 
   TQueueItem();
   virtual ~TQueueItem();
@@ -242,6 +244,7 @@ private:
   TQueueItem::TInfo * FInfo;
   bool FProcessingUserAction;
   void * FUserData;
+  TQueueItemProxy *Self;
 
   TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem);
   virtual ~TQueueItemProxy();

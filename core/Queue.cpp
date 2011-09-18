@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "Common.h"
 #include "Terminal.h"
 #include "Queue.h"
@@ -96,6 +99,7 @@ protected:
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
+  TTerminalItem *Self;
 
   virtual void ProcessEvent();
   virtual void Finished();
@@ -270,6 +274,7 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals = new TList();
 
   FItemsSection = new TCriticalSection();
+  Self = this;
 
   Start();
 }
@@ -446,8 +451,14 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
   TTerminalQueueStatus * Status = new TTerminalQueueStatus();
   try
   {
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Current) )
+        {
+          if (Current != NULL)
+          {
+            delete Current;
+          }
+        } BOOST_SCOPE_EXIT_END
       TGuard Guard(FItemsSection);
 
       TQueueItem * Item;
@@ -474,13 +485,6 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
         {
           Status->Add(new TQueueItemProxy(this, Item));
         }
-      }
-    }
-    catch(...)
-    {
-      if (Current != NULL)
-      {
-        delete Current;
       }
     }
   }
@@ -898,6 +902,7 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   FCriticalSection(NULL), FUserAction(NULL)
 {
   FCriticalSection = new TCriticalSection();
+  Self = this;
 
   FTerminal = new TBackgroundTerminal(FQueue->FTerminal, Queue->FSessionData,
     FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
@@ -1090,21 +1095,18 @@ bool TTerminalItem::WaitForUserAction(
 
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) )
+    {
+      Self->FUserAction = NULL;
+      Self->FItem->SetStatus(PrevStatus);
+    } BOOST_SCOPE_EXIT_END
     FUserAction = UserAction;
-
     FItem->SetStatus(ItemStatus);
     FQueue->DoEvent(qePendingUserAction);
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
   }
-  catch(...)
-  {
-    FUserAction = NULL;
-    FItem->SetStatus(PrevStatus);
-  }
-
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1217,16 +1219,15 @@ void TTerminalItem::OperationProgress(
     FPause = false;
     ProgressData.Suspend();
 
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) (&ProgressData) )
+      {
+        Self->FItem->SetStatus(PrevStatus);
+        ProgressData.Resume();
+      } BOOST_SCOPE_EXIT_END
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
-    }
-    catch(...)
-    {
-      FItem->SetStatus(PrevStatus);
-      ProgressData.Resume();
     }
   }
 
@@ -1266,6 +1267,7 @@ TQueueItem::TQueueItem() :
 {
   FSection = new TCriticalSection();
   FInfo = new TInfo();
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TQueueItem::~TQueueItem()
@@ -1348,22 +1350,21 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
 //---------------------------------------------------------------------------
 void TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      {
+        TGuard Guard(Self->FSection);
+        delete Self->FProgressData;
+        Self->FProgressData = NULL;
+      }
+    } BOOST_SCOPE_EXIT_END
     {
       assert(FProgressData == NULL);
       TGuard Guard(FSection);
       FProgressData = new TFileOperationProgressType();
     }
     DoExecute(TerminalItem->FTerminal);
-  }
-  catch(...)
-  {
-    {
-      TGuard Guard(FSection);
-      delete FProgressData;
-      FProgressData = NULL;
-    }
   }
 }
 //---------------------------------------------------------------------------
@@ -1382,6 +1383,7 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
 {
   FProgressData = new TFileOperationProgressType();
   FInfo = new TQueueItem::TInfo();
+  Self = this;
 
   Update();
 }
@@ -1465,13 +1467,12 @@ bool TQueueItemProxy::ProcessUserAction(void * Arg)
 
   bool Result;
   FProcessingUserAction = true;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FProcessingUserAction = false;
+    } BOOST_SCOPE_EXIT_END
     Result = FQueue->ItemProcessUserAction(FQueueItem, Arg);
-  }
-  catch(...)
-  {
-    FProcessingUserAction = false;
   }
   return Result;
 }
