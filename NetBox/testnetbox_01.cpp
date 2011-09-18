@@ -16,6 +16,7 @@
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 // #include <boost/type_traits/is_base_of.hpp>
+#include <boost/scope_exit.hpp>
 
 #include "TestTexts.h"
 #include "Common.h"
@@ -208,6 +209,98 @@ BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
         BOOST_CHECK_EQUAL("aaa", ::W2MB(Lines.GetString(0).c_str()).c_str());
         BOOST_CHECK_EQUAL("Aaa", ::W2MB(Lines.GetString(1).c_str()).c_str());
         BOOST_CHECK_EQUAL("bbb", ::W2MB(Lines.GetString(2).c_str()).c_str());
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
+{
+    TStringList Lines;
+    {
+        Lines.Add(L"bbb");
+        BOOST_TEST_MESSAGE("before try");
+        try
+        {
+            BOOST_TEST_MESSAGE("before BOOST_SCOPE_EXIT");
+            BOOST_SCOPE_EXIT( (&Lines) )
+            {
+                BOOST_TEST_MESSAGE("in BOOST_SCOPE_EXIT");
+                BOOST_CHECK(1 == Lines.GetCount());
+            } BOOST_SCOPE_EXIT_END
+            // throw std::exception("");
+            BOOST_TEST_MESSAGE("after BOOST_SCOPE_EXIT_END");
+        }
+        catch (...)
+        {
+            BOOST_TEST_MESSAGE("in catch(...) block");
+        }
+        BOOST_TEST_MESSAGE("after try");
+        Lines.Add(L"aaa");
+        BOOST_CHECK(2 == Lines.GetCount());
+    }
+    Lines.Clear();
+    Lines.BeginUpdate();
+    {
+        Lines.Add(L"bbb");
+        BOOST_TEST_MESSAGE("before block");
+        {
+            BOOST_TEST_MESSAGE("before BOOST_SCOPE_EXIT");
+            BOOST_SCOPE_EXIT( (&Lines) )
+            {
+                BOOST_TEST_MESSAGE("in BOOST_SCOPE_EXIT");
+                BOOST_CHECK(1 == Lines.GetCount());
+                Lines.EndUpdate();
+            } BOOST_SCOPE_EXIT_END
+            // throw std::exception("");
+            BOOST_TEST_MESSAGE("after BOOST_SCOPE_EXIT_END");
+        }
+        BOOST_TEST_MESSAGE("after block");
+        Lines.Add(L"aaa");
+        BOOST_CHECK(2 == Lines.GetCount());
+    }
+    Lines.Clear();
+    int cnt = 0;
+    TStringList *Lines1 = new TStringList();
+    int cnt1 = 0;
+    TStringList *Lines2 = new TStringList();
+    {
+        Lines.BeginUpdate();
+        cnt++;
+        Lines1->BeginUpdate();
+        cnt1++;
+        Lines2->Add(L"bbb");
+        BOOST_TEST_MESSAGE("before block");
+        try
+        {
+            BOOST_TEST_MESSAGE("before BOOST_SCOPE_EXIT");
+            BOOST_SCOPE_EXIT( (&Lines) (&Lines1) (&Lines2) (&cnt) (&cnt1) )
+            {
+                BOOST_TEST_MESSAGE("in BOOST_SCOPE_EXIT");
+                Lines.EndUpdate();
+                cnt--;
+                Lines1->EndUpdate();
+                cnt1--;
+                delete Lines1;
+                Lines1 = NULL;
+                delete Lines2;
+                Lines2 = NULL;
+            } BOOST_SCOPE_EXIT_END
+            BOOST_CHECK(1 == cnt);
+            BOOST_CHECK(1 == cnt1);
+            BOOST_CHECK(1 == Lines2->GetCount());
+            throw std::exception("");
+            BOOST_TEST_MESSAGE("after BOOST_SCOPE_EXIT_END");
+        }
+        catch (const std::exception &ex)
+        {
+            BOOST_TEST_MESSAGE("in catch block");
+            BOOST_CHECK(NULL == Lines1);
+            BOOST_CHECK(NULL == Lines2);
+        }
+        BOOST_TEST_MESSAGE("after block");
+        BOOST_CHECK(0 == cnt);
+        BOOST_CHECK(0 == cnt1);
+        BOOST_CHECK(NULL == Lines1);
+        BOOST_CHECK(NULL == Lines2);
     }
 }
 
