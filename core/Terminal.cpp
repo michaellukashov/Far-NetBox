@@ -1001,21 +1001,15 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   std::wstring Name, std::wstring Instructions, std::wstring Prompt, bool Echo, int MaxLen, std::wstring & Result)
 {
   bool AResult;
-  TStrings * Prompts = new TStringList;
-  TStrings * Results = new TStringList;
-  try
+  TStringList Prompts;
+  TStringList Results;
   {
-    Prompts->AddObject(Prompt, (TObject *)Echo);
-    Results->AddObject(Result, (TObject *)MaxLen);
+    Prompts.AddObject(Prompt, (TObject *)Echo);
+    Results.AddObject(Result, (TObject *)MaxLen);
 
-    AResult = PromptUser(Data, Kind, Name, Instructions, Prompts, Results);
+    AResult = PromptUser(Data, Kind, Name, Instructions, &Prompts, &Results);
 
-    Result = Results->GetString(0);
-  }
-  catch (...)
-  {
-    delete Prompts;
-    delete Results;
+    Result = Results.GetString(0);
   }
 
   return AResult;
