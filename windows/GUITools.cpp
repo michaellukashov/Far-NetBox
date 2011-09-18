@@ -5,6 +5,9 @@
 #include <shlobj.h>
 #include <Common.h>
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "GUITools.h"
 #include "GUIConfiguration.h"
 #include <TextsCore.h>
@@ -52,8 +55,13 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     TRegistryStorage * Storage = NULL;
     TSessionData * ExportData = NULL;
     TRegistryStorage * SourceStorage = NULL;
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
+        {
+          delete Storage;
+          delete ExportData;
+          delete SourceStorage;
+        } BOOST_SCOPE_EXIT_END
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
@@ -101,12 +109,6 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
           SessionName = GUIConfiguration->GetPuttySession();
         }
       }
-    }
-    catch (...)
-    {
-      delete Storage;
-      delete ExportData;
-      delete SourceStorage;
     }
 
     if (!Params.empty())
