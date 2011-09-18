@@ -235,7 +235,7 @@ void TTunnelThread::Execute()
 {
   try
   {
-    BOOST_SCOPE_EXIT (( &Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
         if (Self->FSecureShell->GetActive())
         {
@@ -664,7 +664,7 @@ void TTerminal::Open()
   try
   {
     {
-      BOOST_SCOPE_EXIT (( &Self) )
+      BOOST_SCOPE_EXIT ( (&Self) )
       {
         // Prevent calling Information with active=false unless there was at least
         // one call with active=true
@@ -679,7 +679,7 @@ void TTerminal::Open()
         FStatus = ssOpening;
 
         {
-          BOOST_SCOPE_EXIT (( &Self) )
+          BOOST_SCOPE_EXIT ( (&Self) )
           {
             if (Self->FSessionData->GetTunnel())
             {
@@ -730,7 +730,7 @@ void TTerminal::Open()
             {
               assert(FSecureShell == NULL);
               {
-                BOOST_SCOPE_EXIT (( &Self) )
+                BOOST_SCOPE_EXIT ( (&Self) )
                 {
                   delete Self->FSecureShell;
                   Self->FSecureShell = NULL;
@@ -894,7 +894,7 @@ void TTerminal::OpenTunnel()
 
     FTunnelOpening = true;
     {
-      BOOST_SCOPE_EXIT (( &Self) )
+      BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->FTunnelOpening = false;
       } BOOST_SCOPE_EXIT_END
@@ -952,7 +952,7 @@ void TTerminal::Reopen(int Params)
   // however I'm not sure why we mind having excaption-on-fail enabled here
   int PrevExceptionOnFail = FExceptionOnFail;
   {
-    BOOST_SCOPE_EXIT (( &Self) (PrevRemoteDirectory)
+    BOOST_SCOPE_EXIT ( (&Self) (PrevRemoteDirectory)
         (OrigFSProtocol) (PrevAutoReadDirectory) (PrevReadCurrentDirectoryPending)
         (PrevReadDirectoryPending) (PrevExceptionOnFail) )
     {
@@ -1658,15 +1658,14 @@ void TTerminal::EndTransaction()
   {
     if (FInTransaction == 0)
     {
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+          Self->FReadCurrentDirectoryPending = false;
+          Self->FReadDirectoryPending = false;
+        } BOOST_SCOPE_EXIT_END
         if (FReadCurrentDirectoryPending) ReadCurrentDirectory();
         if (FReadDirectoryPending) ReadDirectory(!FReadCurrentDirectoryPending);
-      }
-      catch (...)
-      {
-        FReadCurrentDirectoryPending = false;
-        FReadDirectoryPending = false;
       }
     }
   }
