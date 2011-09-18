@@ -2133,8 +2133,11 @@ void TTerminal::DoStartup()
 {
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->EndTransaction();
+    } BOOST_SCOPE_EXIT_END
     DoInformation(LoadStr(STATUS_STARTUP), true);
 
     // Make sure that directory would be loaded at last
@@ -2151,10 +2154,6 @@ void TTerminal::DoStartup()
       ChangeDirectory(GetSessionData()->GetRemoteDirectory());
     }
 
-  }
-  catch (...)
-  {
-    EndTransaction();
   }
   LogEvent(L"Startup conversation with host finished.");
 }
