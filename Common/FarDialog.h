@@ -18,6 +18,9 @@
 
 #pragma once
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal1.hpp>
+
 #include "FarPlugin.h"
 #include "stdafx.h"
 
@@ -862,6 +865,9 @@ public:
 };
 //---------------------------------------------------------------------------
 typedef void (TObject::*TFarButtonClick)(TFarButton *Sender, bool &Close);
+// typedef boost::signal1<void, TFarButton *, bool &> button_click_signal_type;
+// typedef button_click_signal_type::slot_type button_click_slot_type;
+
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem
