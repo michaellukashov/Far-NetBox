@@ -1879,8 +1879,17 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&DirectoryName) )
+    {
+      if (Self->FTerminal->GetActive())
+      {
+        // Tell remote side, that we're done.
+        Self->FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
+        Self->FSecureShell->SendLine(L"E");
+        Self->SCPResponse();
+      }
+    } BOOST_SCOPE_EXIT_END
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     // TSearchRec SearchRec;
     WIN32_FIND_DATA SearchRec;
@@ -1891,8 +1900,11 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         // FindAttrs, SearchRec) == 0);
     // );
 
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        // FIXME FindClose(SearchRec);
+      } BOOST_SCOPE_EXIT_END
       while (FindOK && !OperationProgress->Cancel)
       {
         std::wstring FileName = IncludeTrailingBackslash(DirectoryName) + SearchRec.cFileName;
@@ -1926,15 +1938,11 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
             if (!FTerminal->HandleException(&E)) throw;
           );
         }
-// FIXME 
-        // FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-          // FindOK = (FindNext(SearchRec) == 0);
-        // );
+        FindOK = false;
+        FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+          // FIXME FindOK = (FindNext(SearchRec) == 0);
+        );
       };
-    }
-    catch (...)
-    {
-      // FIXME FindClose(SearchRec);
     }
 
     /* TODO : Delete also read-only directories. */
@@ -1954,16 +1962,6 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
       }
     }
   }
-  catch (...)
-  {
-    if (FTerminal->GetActive())
-    {
-      // Tell remote side, that we're done.
-      FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
-      FSecureShell->SendLine(L"E");
-      SCPResponse();
-    }
-  }
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
@@ -1981,8 +1979,35 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     L"\"%s\"", (FilesToCopy->GetCount(), TargetDir)));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&CloseSCP) (&OperationProgress) )
+    {
+      // In case that copying doesn't cause fatal error (ie. connection is
+      // still active) but wasn't succesful (exception or user termination)
+      // we need to ensure, that SCP on remote side is closed
+      if (Self->FTerminal->GetActive() && (CloseSCP ||
+          (OperationProgress->Cancel == csCancel) ||
+          (OperationProgress->Cancel == csCancelTransfer)))
+      {
+        bool LastLineRead;
+
+        // If we get LastLine, it means that remote side 'scp' is already
+        // terminated, so we need not to terminate it. There is also
+        // possibility that remote side waits for confirmation, so it will hang.
+        // This should not happen (hope)
+        std::wstring Line = Self->FSecureShell->ReceiveLine();
+        LastLineRead = Self->IsLastLine(Line);
+        if (!LastLineRead)
+        {
+          Self->SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"std::exception"), true);
+        }
+        // Just in case, remote side already sent some more data (it's probable)
+        // but we don't want to raise exception (user asked to terminate, it's not error)
+        int ECParams = coOnlyReturnCode;
+        if (!LastLineRead) ECParams |= coWaitForLastLine;
+        Self->ReadCommandOutput(ECParams);
+      }
+    } BOOST_SCOPE_EXIT_END
     for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
@@ -2016,17 +2041,16 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           try
           {
             FTerminal->SetExceptionOnFail (true);
-            try
             {
+              BOOST_SCOPE_EXIT ( (&Self) )
+              {
+                Self->FTerminal->SetExceptionOnFail(false);
+              } BOOST_SCOPE_EXIT_END
               FILE_OPERATION_LOOP(L"", // FFIXME MTLOAD(DELETE_FILE_ERROR, (FileName)),
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
                 FTerminal->DeleteFile(FileName, File)
               );
-            }
-            catch (...)
-            {
-              FTerminal->SetExceptionOnFail (false);
             }
           }
           catch (EFatal &E)
@@ -2058,34 +2082,6 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         CloseSCP = (OperationProgress->Cancel != csRemoteAbort);
         throw;
       }
-    }
-  }
-  catch (...)
-  {
-    // In case that copying doesn't cause fatal error (ie. connection is
-    // still active) but wasn't succesful (exception or user termination)
-    // we need to ensure, that SCP on remote side is closed
-    if (FTerminal->GetActive() && (CloseSCP ||
-        (OperationProgress->Cancel == csCancel) ||
-        (OperationProgress->Cancel == csCancelTransfer)))
-    {
-      bool LastLineRead;
-
-      // If we get LastLine, it means that remote side 'scp' is already
-      // terminated, so we need not to terminate it. There is also
-      // possibility that remote side waits for confirmation, so it will hang.
-      // This should not happen (hope)
-      std::wstring Line = FSecureShell->ReceiveLine();
-      LastLineRead = IsLastLine(Line);
-      if (!LastLineRead)
-      {
-        SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"std::exception"), true);
-      }
-      // Just in case, remote side already sent some more data (it's probable)
-      // but we don't want to raise exception (user asked to terminate, it's not error)
-      int ECParams = coOnlyReturnCode;
-      if (!LastLineRead) ECParams |= coWaitForLastLine;
-      ReadCommandOutput(ECParams);
     }
   }
 }
