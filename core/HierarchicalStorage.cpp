@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "PuttyIntf.h"
@@ -138,17 +141,16 @@ void THierarchicalStorage::CloseSubKey()
 void THierarchicalStorage::ClearSubKeys()
 {
   TStringList *SubKeys = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    {
+      delete SubKeys;
+    } BOOST_SCOPE_EXIT_END
     GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       RecursiveDeleteSubKey(SubKeys->GetString(Index));
     }
-  }
-  catch(...)
-  {
-    delete SubKeys;
   }
 }
 //---------------------------------------------------------------------------
@@ -166,14 +168,13 @@ bool THierarchicalStorage::HasSubKeys()
 {
   bool Result;
   TStrings * SubKeys = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    {
+      delete SubKeys;
+    } BOOST_SCOPE_EXIT_END
     GetSubKeyNames(SubKeys);
     Result = (SubKeys->GetCount() > 0);
-  }
-  catch(...)
-  {
-    delete SubKeys;
   }
   return Result;
 }
@@ -192,8 +193,11 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
   bool MaintainKeys)
 {
   TStrings * Names = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Names) )
+    {
+      delete Names;
+    } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
     for (int Index = 0; Index < Names->GetCount(); Index++)
     {
@@ -208,26 +212,21 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
       }
     }
   }
-  catch(...)
-  {
-    delete Names;
-  }
 }
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearValues()
 {
   TStrings * Names = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Names) )
+    {
+      delete Names;
+    } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
     for (int Index = 0; Index < Names->GetCount(); Index++)
     {
       DeleteValue(Names->GetString(Index));
     }
-  }
-  catch(...)
-  {
-    delete Names;
   }
 }
 //---------------------------------------------------------------------------
@@ -350,8 +349,11 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   TRegistry * Registry = Storage->FRegistry;
   bool Result = true;
   TStrings * Names = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Names) )
+    {
+      delete Names;
+    } BOOST_SCOPE_EXIT_END
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
     int Index = 0;
@@ -381,10 +383,6 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 
       ++Index;
     }
-  }
-  catch(...)
-  {
-    delete Names;
   }
   return Result;
 }
@@ -605,6 +603,7 @@ TIniFileStorage::TIniFileStorage(const std::wstring AStorage):
 {
   FIniFile = new TMemIniFile(GetStorage());
   FOriginal = new TStringList();
+  Self = this;
   FIniFile->GetStrings(FOriginal);
   ApplyOverrides();
 }
@@ -612,8 +611,13 @@ TIniFileStorage::TIniFileStorage(const std::wstring AStorage):
 TIniFileStorage::~TIniFileStorage()
 {
   TStrings * Strings = new TStringList;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&Strings) )
+    {
+      delete Self->FOriginal;
+      delete Strings;
+      delete Self->FIniFile;
+    } BOOST_SCOPE_EXIT_END
     FIniFile->GetStrings(Strings);
     if (!Strings->Equals(FOriginal))
     {
@@ -649,23 +653,16 @@ TIniFileStorage::~TIniFileStorage()
       else
       {
         TStream * Stream = new THandleStream(Handle);
-        try
         {
+          BOOST_SCOPE_EXIT ( (&Handle) (&Stream) )
+          {
+            ::CloseHandle(Handle);
+            delete Stream;
+          } BOOST_SCOPE_EXIT_END
           Strings->SaveToStream(Stream);
-        }
-        catch(...)
-        {
-          CloseHandle(Handle);
-          delete Stream;
         }
       }
     }
-  }
-  catch(...)
-  {
-    delete FOriginal;
-    delete Strings;
-    delete FIniFile;
   }
 }
 //---------------------------------------------------------------------------
@@ -686,8 +683,11 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
   if (!Result)
   {
     TStringList * Sections = new TStringList();
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Sections) )
+      {
+        delete Sections;
+      } BOOST_SCOPE_EXIT_END
       Sections->SetSorted(true);
       FIniFile->ReadSections(Sections);
       std::wstring NewKey = ExcludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path));
@@ -701,10 +701,6 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
           Result = true;
         }
       }
-    }
-    catch(...)
-    {
-      delete Sections;
     }
   }
 
@@ -733,8 +729,11 @@ bool TIniFileStorage::DeleteSubKey(const std::wstring SubKey)
 void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Sections) )
+    {
+      delete Sections;
+    } BOOST_SCOPE_EXIT_END
     Strings->Clear();
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->GetCount(); i++)
@@ -756,10 +755,6 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
         }
       }
     }
-  }
-  catch(...)
-  {
-    delete Sections;
   }
 }
 //---------------------------------------------------------------------------
@@ -798,8 +793,11 @@ void TIniFileStorage::ApplyOverrides()
   std::wstring OverridesKey = IncludeTrailingBackslash(L"Override");
 
   TStrings * Sections = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Sections) )
+    {
+      delete Sections;
+    } BOOST_SCOPE_EXIT_END
     Sections->Clear();
     FIniFile->ReadSections(Sections);
     for (int i = 0; i < Sections->GetCount(); i++)
@@ -814,8 +812,11 @@ void TIniFileStorage::ApplyOverrides()
 
         // this all uses raw names (munged)
         TStrings * Names = new TStringList;
-        try
         {
+            BOOST_SCOPE_EXIT ( (&Names) )
+            {
+              delete Names;
+            } BOOST_SCOPE_EXIT_END
           FIniFile->ReadSection(Section, Names);
 
           for (int ii = 0; ii < Names->GetCount(); ii++)
@@ -825,18 +826,10 @@ void TIniFileStorage::ApplyOverrides()
             FIniFile->WriteString(SubKey, Name, Value);
           }
         }
-        catch(...)
-        {
-          delete Names;
-        }
 
         FIniFile->EraseSection(Section);
       }
     }
-  }
-  catch(...)
-  {
-    delete Sections;
   }
 }
 //---------------------------------------------------------------------------
