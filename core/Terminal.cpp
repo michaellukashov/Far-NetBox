@@ -1075,27 +1075,20 @@ int TTerminal::QueryUserException(const std::wstring Query,
   TQueryType QueryType)
 {
   int Result;
-  TStrings * MoreMessages = new TStringList();
-  try
+  TStringList MoreMessages;
+  if (!std::string(E->what()).empty() && !Query.empty())
   {
-    if (!std::string(E->what()).empty() && !Query.empty())
-    {
-      MoreMessages->Add(std::wstring(::MB2W(E->what())));
-    }
+    MoreMessages.Add(std::wstring(::MB2W(E->what())));
+  }
 
-    const ExtException * EE = dynamic_cast<const ExtException*>(E);
-    if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
-    {
-      MoreMessages->AddStrings(EE->GetMoreMessages());
-    }
-    Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
-      MoreMessages->GetCount() ? MoreMessages : NULL,
-      Answers, Params, QueryType);
-  }
-  catch (...)
+  const ExtException *EE = dynamic_cast<const ExtException*>(E);
+  if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
   {
-    delete MoreMessages;
+    MoreMessages.AddStrings(EE->GetMoreMessages());
   }
+  Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
+    MoreMessages.GetCount() ? &MoreMessages : NULL,
+    Answers, Params, QueryType);
   return Result;
 }
 //---------------------------------------------------------------------------
