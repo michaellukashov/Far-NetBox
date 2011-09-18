@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include "FarPlugin.h"
 #include "FarDialog.h"
@@ -818,7 +819,8 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             Button = new TFarButton(this);
             Button->SetDefault(Index == 0);
             Button->SetBrackets(brNone);
-            Button->SetOnClick((TFarButtonClick)&TFarMessageDialog::ButtonClick);
+            // Button->SetOnClick((TFarButtonClick)&TFarMessageDialog::ButtonClick);
+            Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
             if ((Params->Timeout > 0) &&
                     (Params->TimeoutButton == (unsigned int)Index))

@@ -865,7 +865,6 @@ public:
     virtual void SetDouble(bool value) { SetAlterType(DI_DOUBLEBOX, value); }
 };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TFarButtonClick)(TFarButton *Sender, bool &Close);
 typedef boost::signal2<void, TFarButton *, bool &> button_click_signal_type;
 typedef button_click_signal_type::slot_type button_click_slot_type;
 
@@ -886,8 +885,8 @@ public:
     void SetBrackets(TFarButtonBrackets value);
     bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
     void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
-    virtual TFarButtonClick GetOnClick() { return FOnClick; }
-    virtual void SetOnClick(TFarButtonClick value) { FOnClick = value; }
+    virtual const button_click_signal_type &GetOnClick() const { return FOnClick; }
+    virtual void SetOnClick(const button_click_slot_type &value) { FOnClick.connect(value); }
 
 protected:
     virtual void SetDataInternal(const std::wstring value);
@@ -897,7 +896,7 @@ protected:
 
 private:
     int FResult;
-    TFarButtonClick FOnClick;
+    button_click_signal_type FOnClick;
     TFarButtonBrackets FBrackets;
 };
 //---------------------------------------------------------------------------

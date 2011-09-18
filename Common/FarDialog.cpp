@@ -458,10 +458,10 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                     ((Param1 < 0) ||
                      ((Param1 >= 0) && (dynamic_cast<TFarButton *>(GetItem(Param1)) == NULL))) &&
                     GetDefaultButton()->GetEnabled() &&
-                    (GetDefaultButton()->GetOnClick() != NULL))
+                    (GetDefaultButton()->GetOnClick().num_slots() > 0))
             {
                 bool Close = (GetDefaultButton()->GetResult() != 0);
-                ((*this).*(GetDefaultButton()->GetOnClick()))(GetDefaultButton(), Close);
+                GetDefaultButton()->GetOnClick()(GetDefaultButton(), Close);
                 Handled = true;
                 if (!Close)
                 {
@@ -1785,9 +1785,9 @@ long TFarButton::ItemProc(int Msg, long Param)
         else
         {
             bool Close = (GetResult() != 0);
-            if (FOnClick)
+            if (FOnClick.num_slots() > 0)
             {
-                ((*this).*FOnClick)(this, Close);
+                FOnClick(this, Close);
             }
             if (!Close)
             {
@@ -1808,9 +1808,9 @@ bool TFarButton::HotKey(char HotKey)
     if (Result)
     {
         bool Close = (GetResult() != 0);
-        if (FOnClick)
+        if (FOnClick.num_slots() > 0)
         {
-            ((*this).*FOnClick)(this, Close);
+            FOnClick(this, Close);
         }
 
         if (Close)
