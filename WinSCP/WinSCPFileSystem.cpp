@@ -1084,13 +1084,6 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
       }
       throw;
     }
-      try
-      {
-        RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
-      }
-      catch (...)
-      {
-      }
   }
 }
 //---------------------------------------------------------------------------
@@ -1357,12 +1350,11 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
     FSynchronizationStart = Now();
     FSynchronizationCompare = true;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (&LocalDirectory) (&RemoteDirectory)
-            (&Mode) (&CopyParam) (&Params) (&Options) )
-        {
-          Self->FPlugin->ClearConsoleTitle();
-          Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
-        } BOOST_SCOPE_EXIT_END
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FPlugin->ClearConsoleTitle();
+        Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
+      } BOOST_SCOPE_EXIT_END
       AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
         Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
         (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory, Options);
