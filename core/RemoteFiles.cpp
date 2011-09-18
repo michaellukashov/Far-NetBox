@@ -3,6 +3,9 @@
 #include "stdafx.h"
 #include <ShellAPI.h>
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "RemoteFiles.h"
 #include "Common.h"
 #include "Exceptions.h"
@@ -715,6 +718,7 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
   FTerminal = NULL;
   FDirectory = NULL;
   FIsHidden = -1;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TRemoteFile::~TRemoteFile()
@@ -1253,14 +1257,13 @@ void TRemoteFile::FindLinkedFile()
     GetTerminal()->SetExceptionOnFail(true);
     try
     {
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+            Self->GetTerminal()->SetExceptionOnFail(false);
+        } BOOST_SCOPE_EXIT_END
         GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
-      catch(...)
-      {
-      }
-      GetTerminal()->SetExceptionOnFail(false);
     }
     catch (const std::exception &E)
     {
@@ -1548,6 +1551,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   FSection = new TCriticalSection();
+  Self = this;
   SetSorted(true);
   SetDuplicates(dupError);
   SetCaseSensitive(true);
@@ -1563,18 +1567,17 @@ void TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->TStringList::Clear();
+    } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < GetCount(); Index++)
     {
       delete (TRemoteFileList *)GetObject(Index);
       PutObject(Index, NULL);
     }
   }
-  catch(...)
-  {
-  }
-    TStringList::Clear();
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmpty() const
