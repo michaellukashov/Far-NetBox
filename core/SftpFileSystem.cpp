@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "SftpFileSystem.h"
 
 #include "PuttyTools.h"
@@ -756,16 +759,15 @@ public:
 
   void LoadFromFile(const std::wstring FileName)
   {
-    TStringList * DumpLines = new TStringList();
+    TStringList *DumpLines = new TStringList();
     std::wstring Dump;
-    try
     {
+      BOOST_SCOPE_EXIT ( (&DumpLines) )
+      {
+        delete DumpLines;
+      } BOOST_SCOPE_EXIT_END
       DumpLines->LoadFromFile(FileName);
       Dump = DumpLines->GetText();
-    }
-    catch (...)
-    {
-      delete DumpLines;
     }
 
     SetCapacity(20480);
@@ -942,6 +944,7 @@ private:
 
   static int FMessageCounter;
   static const int FSendPrefixLen = 4;
+  TSFTPPacket *Self;
 
   void Init()
   {
@@ -952,6 +955,7 @@ private:
     FMessageNumber = SFTPNoMessageNumber;
     FType = -1;
     FReservedBy = NULL;
+    Self = this;
   }
 
   void AssignNumber()
@@ -1077,8 +1081,12 @@ public:
     bool Result;
     TSFTPQueuePacket * Request = NULL;
     TSFTPPacket * Response = NULL;
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Request) (&Response) )
+      {
+        delete Request;
+        delete Response;
+      } BOOST_SCOPE_EXIT_END
       Request = reinterpret_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
       FRequests->Delete(0);
       assert(Request);
@@ -1104,11 +1112,6 @@ public:
       {
         SendRequests();
       }
-    }
-    catch (...)
-    {
-      delete Request;
-      delete Response;
     }
 
     return Result;
@@ -1554,13 +1557,12 @@ public:
   {
     void * Token;
     bool Result;
-    try
     {
+      BOOST_SCOPE_EXIT ( (&File) (Token) )
+      {
+        File = static_cast<TRemoteFile *>(Token);
+      } BOOST_SCOPE_EXIT_END
       Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
-    }
-    catch (...)
-    {
-      File = static_cast<TRemoteFile *>(Token);
     }
     return Result;
   }
@@ -1571,7 +1573,7 @@ protected:
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
+      TRemoteFile *File = static_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
       assert(File != NULL);
       FIndex++;
 
@@ -1678,6 +1680,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal,
   FExtensions = new TStringList();
   FFixedPaths = NULL;
   FFileSystemInfoValid = false;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TSFTPFileSystem::~TSFTPFileSystem()
@@ -1988,8 +1991,11 @@ unsigned long TSFTPFileSystem::DownloadBlockSize(
 void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 {
   BusyStart();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->BusyEnd();
+    } BOOST_SCOPE_EXIT_END
     if (FTerminal->GetLog()->GetLogging())
     {
       if ((FPreviousLoggedPacket != SSH_FXP_READ &&
@@ -2017,10 +2023,6 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
       }
     }
     FSecureShell->Send(Packet->GetSendData(), Packet->GetSendLength());
-  }
-  catch (...)
-  {
-    BusyEnd();
   }
 }
 //---------------------------------------------------------------------------
@@ -2336,20 +2338,19 @@ int TSFTPFileSystem::ReceiveResponse(
   int Result;
   unsigned int MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket());
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (Response) (&AResponse) )
+    {
+        if (!Response)
+        {
+          delete AResponse;
+        }
+    } BOOST_SCOPE_EXIT_END
     Result = ReceivePacket(AResponse, ExpectedType, AllowStatus);
     if (MessageNumber != AResponse->GetMessageNumber())
     {
       FTerminal->FatalError(NULL, FMTLOAD(SFTP_MESSAGE_NUMBER,
         (int)AResponse->GetMessageNumber(), (int)MessageNumber));
-    }
-  }
-  catch (...)
-  {
-    if (!Response)
-    {
-      delete AResponse;
     }
   }
   return Result;
@@ -3055,15 +3056,14 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       try
       {
         FTerminal->SetExceptionOnFail(true);
-        try
         {
+            BOOST_SCOPE_EXIT ( (&Self) )
+            {
+              Self->FTerminal->SetExceptionOnFail(false);
+            } BOOST_SCOPE_EXIT_END
           File = NULL;
           FTerminal->ReadFile(
             UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
-        }
-        catch (...)
-        {
-          FTerminal->SetExceptionOnFail(false);
         }
       }
       catch (const std::exception &E)
