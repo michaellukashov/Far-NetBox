@@ -16,6 +16,7 @@
 // #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <boost/signals/signal1.hpp>
+#include <boost/signals/signal2.hpp>
 #include <boost/bind.hpp>
 
 #include "FarUtil.h"
@@ -71,10 +72,12 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     }
 }
 
-class TClass2
+class TClass2 : public boost::signals::trackable
 {
-  typedef boost::signal1<void, TClass2 *, int> click_signal_type;
+  typedef void result_type;
+  typedef boost::signal2<void, TClass2 *, int> click_signal_type;
   typedef click_signal_type::slot_type click_slot_type;
+  // typedef click_signal_type::slot_function_type click_slot_type;
 
 public:
     TClass2() :
@@ -83,14 +86,14 @@ public:
     }
     
     const click_signal_type &GetOnClick() const { return m_OnClick; }
-    void SetOnClick(const click_slot_type& onClick)
+    boost::signals::connection SetOnClick(const click_slot_type& onClick)
     {
-        m_OnClick.connect(onClick);
+        return m_OnClick.connect(onClick);
         // DEBUG_PRINTF(L"m_OnClick.num_slots = %d", m_OnClick.num_slots());
     }
     void Click()
     {
-        m_OnClick(this);
+        m_OnClick(this, 1);
         OnClickTriggered = true;
     }
     bool OnClickTriggered;
