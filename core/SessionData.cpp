@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "SessionData.h"
 
 #include "Common.h"
@@ -896,17 +900,16 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 void TSessionData::Remove()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
     Storage->SetExplicit(true);
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
     {
       Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
     }
-  }
-  catch(...)
-  {
-    delete Storage;
   }
 }
 //---------------------------------------------------------------------
@@ -2096,8 +2099,12 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 {
   TStringList *SubKeys = new TStringList();
   TList * Loaded = new TList;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&SubKeys) (&Loaded) )
+    {
+      delete SubKeys;
+      delete Loaded;
+    } BOOST_SCOPE_EXIT_END
     Storage->GetSubKeyNames(SubKeys);
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
@@ -2151,31 +2158,30 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
     }
   }
-  catch(...)
-  {
-    delete SubKeys;
-    delete Loaded;
-  }
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(std::wstring aKey, bool UseDefaults)
 {
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
-  try {
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
     if (Storage->OpenRootKey(false)) Load(Storage, false, UseDefaults);
-  } catch(...) {
-    delete Storage;
   }
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  try {
+  {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false))
       Load(Storage);
-  } catch(...) {
-    delete Storage;
   }
 }
 //---------------------------------------------------------------------
@@ -2200,18 +2206,17 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
   TSessionData * FactoryDefaults = new TSessionData(L"");
-  try
   {
+    BOOST_SCOPE_EXIT ( (&FactoryDefaults) )
+    {
+      delete FactoryDefaults;
+    } BOOST_SCOPE_EXIT_END
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
     for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
     {
       TSessionData * SessionData = (TSessionData *)GetItem(Index);
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
-  }
-  catch(...)
-  {
-    delete FactoryDefaults;
   }
 }
 //---------------------------------------------------------------------
@@ -2223,18 +2228,17 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       DoSave(Storage, All, RecryptPasswordOnly);
     }
-  }
-  catch(...)
-  {
-    delete Storage;
   }
 
   Saved();
@@ -2262,17 +2266,16 @@ void TStoredSessionList::Saved()
 void TStoredSessionList::Export(const std::wstring FileName)
 {
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      delete Storage;
+    } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       Save(Storage, true);
     }
-  }
-  catch(...)
-  {
-    delete Storage;
   }
 }
 //---------------------------------------------------------------------
@@ -2313,18 +2316,22 @@ void TStoredSessionList::SelectSessionsToImport
 //---------------------------------------------------------------------
 void TStoredSessionList::Cleanup()
 {
-  try {
+  try
+  {
     if (Configuration->GetStorage() == stRegistry) Clear();
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
-    try {
+    {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
       Storage->SetAccessMode(smReadWrite);
       if (Storage->OpenRootKey(false))
         Storage->RecursiveDeleteSubKey(Configuration->GetStoredSessionsSubKey());
-    } catch(...) {
-      delete Storage;
     }
-  } catch (const std::exception &E) {
-    throw ExtException(&E); // FIXME, CLEANUP_SESSIONS_ERROR);
+  } catch (const std::exception &E)
+  {
+    throw ExtException(&E); //FIXME , CLEANUP_SESSIONS_ERROR);
   }
 }
 //---------------------------------------------------------------------------
@@ -2381,8 +2388,13 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
   TRegistryStorage * SourceStorage = NULL;
   TRegistryStorage * TargetStorage = NULL;
   TStringList * KeyList = NULL;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) (&KeyList) )
+    {
+      delete SourceStorage;
+      delete TargetStorage;
+      delete KeyList;
+    } BOOST_SCOPE_EXIT_END
     SourceStorage = new TRegistryStorage(SourceKey);
     TargetStorage = new TRegistryStorage(TargetKey);
     TargetStorage->SetAccessMode(smReadWrite);
@@ -2416,12 +2428,6 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
         }
       }
     }
-  }
-  catch(...)
-  {
-    delete SourceStorage;
-    delete TargetStorage;
-    delete KeyList;
   }
 }
 //---------------------------------------------------------------------------
