@@ -3068,8 +3068,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       catch (const std::exception &E)
       {
-        // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
-          // else File = NULL;
+        if (::InheritsFrom<std::exception, EFatal>(&E))
+            throw;
+        else
+          File = NULL;
         throw;
       }
 
