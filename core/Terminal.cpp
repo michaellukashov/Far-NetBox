@@ -2531,15 +2531,26 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
     Progress.Start(Operation, Side, FileList->GetCount());
 
     FOperationProgress = &Progress;
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
+      {
+        Self->FOperationProgress = NULL;
+        Progress.Stop();
+      }
+      BOOST_SCOPE_EXIT_END
       if (Side == osRemote)
       {
         BeginTransaction();
       }
 
-      try
       {
+          BOOST_SCOPE_EXIT ( (&Self) (Side) )
+          {
+            if (Side == osRemote)
+            {
+              Self->EndTransaction();
+            }
+          } BOOST_SCOPE_EXIT_END
         int Index = 0;
         std::wstring FileName;
         bool Success;
@@ -2577,23 +2588,11 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           Index++;
         }
       }
-      catch (...)
-      {
-        if (Side == osRemote)
-        {
-          EndTransaction();
-        }
-      }
 
       if (Progress.Cancel == csContinue)
       {
         Result = true;
       }
-    }
-    catch (...)
-    {
-      FOperationProgress = NULL;
-      Progress.Stop();
     }
   }
   catch (...)
