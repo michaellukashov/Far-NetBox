@@ -6,6 +6,7 @@
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
+#include <boost/scope_exit.hpp>
 
 #include "Classes.h"
 #include "Common.h"
@@ -38,26 +39,23 @@ std::wstring TStrings::GetDelimitedText() const
 }
 void TStrings::SetDelimitedText(const std::wstring Value)
 {
-  BeginUpdate();
-  try
+  TStrings *Self = this;
+  Self->BeginUpdate();
+  BOOST_SCOPE_EXIT( (&FUpdateCount) (&Self) )
   {
-    Clear();
-    std::vector<std::wstring> lines;
-    std::wstring delim = std::wstring(1, GetDelimiter());
-    delim.append(1, L'\n');
-    alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
-    std::wstring line;
-    // for (std::vector<std::wstring>::const_iterator it = lines.begin(); it != lines.end(); ++it)
-    BOOST_FOREACH(line, lines)
-    {
-        Add(line);
-    }
-  }
-  catch (...)
+      Self->EndUpdate();
+  } BOOST_SCOPE_EXIT_END
+  Clear();
+  std::vector<std::wstring> lines;
+  std::wstring delim = std::wstring(1, GetDelimiter());
+  delim.append(1, L'\n');
+  alg::split(lines, Value, alg::is_any_of(delim), alg::token_compress_on);
+  std::wstring line;
+  // for (std::vector<std::wstring>::const_iterator it = lines.begin(); it != lines.end(); ++it)
+  BOOST_FOREACH(line, lines)
   {
-    DEBUG_PRINTF(L"Unknown error");
+      Add(line);
   }
-  EndUpdate();
 }
 
 int TStrings::CompareStrings(const std::wstring &S1, const std::wstring &S2)
