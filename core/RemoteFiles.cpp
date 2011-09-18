@@ -1802,8 +1802,11 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Limited) )
+      {
+        delete Limited;
+      } BOOST_SCOPE_EXIT_END
       int Index = ACount - FMaxSize;
       while (Index < ACount)
       {
@@ -1812,10 +1815,6 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
       }
       Data += Limited->GetText();
     }
-    catch(...)
-    {
-    }
-      delete Limited;
   }
   else
   {
