@@ -618,9 +618,9 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
 bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
 {
     bool Result = false;
-    if (FOnKey)
+    if (FOnKey.num_slots() > 0)
     {
-        ((*this).*FOnKey)(this, Item, KeyCode, Result);
+        FOnKey(this, Item, KeyCode, Result);
     }
     return Result;
 }

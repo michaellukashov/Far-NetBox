@@ -21,6 +21,7 @@
 #include "boostdefines.hpp"
 #include <boost/signals/signal1.hpp>
 #include <boost/signals/signal2.hpp>
+#include <boost/signals/signal4.hpp>
 
 #include "FarPlugin.h"
 #include "stdafx.h"
@@ -554,8 +555,12 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TFarKeyEvent)
-    (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
+// typedef void (TObject::*TFarKeyEvent)
+    // (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
+typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
+typedef key_signal_type::slot_type key_slot_type;
+
+
 typedef void (TObject::*TFarMouseClickEvent) 
     (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
@@ -611,8 +616,8 @@ public:
     int GetResult() const { return FResult; }
     TPoint GetMaxSize();
     
-    TFarKeyEvent GetOnKey() const { return FOnKey; }
-    void SetOnKey(const TFarKeyEvent &value) { FOnKey = value; }
+    const key_signal_type &GetOnKey() const { return FOnKey; }
+    void SetOnKey(const key_slot_type &value) { FOnKey.connect(value); }
 
     void Redraw();
     void LockChanges();
@@ -665,7 +670,7 @@ private:
     int FDefaultGroup;
     int FTag;
     TFarDialogItem *FItemFocused;
-    TFarKeyEvent FOnKey;
+    key_signal_type FOnKey;
     FarDialogItem *FDialogItems;
     int FDialogItemsCapacity;
     int FChangesLocked;
