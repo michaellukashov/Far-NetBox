@@ -2348,13 +2348,12 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(std::wstring Directory, bool
       FileList->SetDirectory(Directory);
 
       SetExceptionOnFail(true);
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+          Self->SetExceptionOnFail(false);
+        } BOOST_SCOPE_EXIT_END
         ReadDirectory(FileList);
-      }
-      catch (...)
-      {
-        SetExceptionOnFail(false);
       }
 
       if (Cache)
@@ -2378,8 +2377,11 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
   if (IgnoreErrors)
   {
     SetExceptionOnFail(true);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->SetExceptionOnFail(false);
+      } BOOST_SCOPE_EXIT_END
       try
       {
         FileList = CustomReadDirectoryListing(DirName, UseCache);
@@ -2392,10 +2394,6 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
         }
       }
     }
-    catch (...)
-    {
-      SetExceptionOnFail(false);
-    }
   }
   else
   {
@@ -2405,11 +2403,14 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
   // skip if directory listing fails and user selects "skip"
   if (FileList)
   {
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
+      {
+        delete FileList;
+      } BOOST_SCOPE_EXIT_END
       std::wstring Directory = UnixIncludeTrailingBackslash(DirName);
 
-      TRemoteFile * File;
+      TRemoteFile *File;
       for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
         File = FileList->GetFile(Index);
@@ -2418,10 +2419,6 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
           // FIXME CallBackFunc(Directory + File->GetFileName(), File, Param);
         }
       }
-    }
-    catch (...)
-    {
-      delete FileList;
     }
   }
 }
