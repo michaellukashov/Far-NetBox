@@ -2209,13 +2209,12 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     else
     {
       DoStartReadDirectory();
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Self) (ReloadOnly) )
+        {
+          Self->DoReadDirectory(ReloadOnly);
+        } BOOST_SCOPE_EXIT_END
         LoadedFromCache = FDirectoryCache->GetFileList(GetCurrentDirectory(), FFiles);
-      }
-      catch (...)
-      {
-        DoReadDirectory(ReloadOnly);
       }
 
       if (LoadedFromCache)
