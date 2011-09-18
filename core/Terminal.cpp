@@ -2237,26 +2237,25 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
     try
     {
-      TRemoteDirectory * Files = new TRemoteDirectory(this, FFiles);
-      try
+      TRemoteDirectory *Files = new TRemoteDirectory(this, FFiles);
       {
+        BOOST_SCOPE_EXIT ( (&Self) (&Files) (Cancel) (ReloadOnly) )
+        {
+          Self->DoReadDirectoryProgress(-1, Cancel);
+          Self->FReadingCurrentDirectory = false;
+          delete Self->FFiles;
+          Self->FFiles = Files;
+          Self->DoReadDirectory(ReloadOnly);
+          if (Self->GetActive())
+          {
+            if (Self->GetSessionData()->GetCacheDirectories())
+            {
+              Self->DirectoryLoaded(Self->FFiles);
+            }
+          }
+        } BOOST_SCOPE_EXIT_END
         Files->SetDirectory(GetCurrentDirectory());
         CustomReadDirectory(Files);
-      }
-      catch (...)
-      {
-        DoReadDirectoryProgress(-1, Cancel);
-        FReadingCurrentDirectory = false;
-        delete FFiles;
-        FFiles = Files;
-        DoReadDirectory(ReloadOnly);
-        if (GetActive())
-        {
-          if (GetSessionData()->GetCacheDirectories())
-          {
-            DirectoryLoaded(FFiles);
-          }
-        }
       }
     }
     catch (const std::exception &E)
