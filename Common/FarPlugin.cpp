@@ -824,15 +824,15 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                     (Params->TimeoutButton == (unsigned int)Index))
             {
                 FTimeoutButtonCaption = Caption;
-                // Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
-                // Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
+                // FIXME Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
+                // FIXME Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
                 std::wstring Buffer;
                 Buffer.resize(512);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
                 SetCaption(Buffer);
                 FTimeoutButton = Button;
             }
-            // Button->Caption = FORMAT(L" %s ", (Caption));
+            // FIXME Button->Caption = FORMAT(L" %s ", (Caption));
             std::wstring Buffer;
             Buffer.resize(512);
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Caption.c_str(), int(Params->Timeout / 1000));
@@ -948,6 +948,7 @@ void TFarMessageDialog::Idle()
         }
         else
         {
+            // FIXME 
             // std::wstring Caption =
                 // FORMAT(L" %s ", (FORMAT(FParams->TimeoutStr,
                                        // (FTimeoutButtonCaption, int((FParams->Timeout - Running) / 1000)))));
@@ -1500,6 +1501,7 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
     std::wstring Title;
     if (FCurrentProgress >= 0)
     {
+        // FIXME 
         // Title = FORMAT(L"{%d%%} %s", (FCurrentProgress, FCurrentTitle));
         std::wstring Buffer;
         Buffer.resize(512);
@@ -1702,6 +1704,7 @@ int TCustomFarPlugin::FarVersion()
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::FormatFarVersion(int Version)
 {
+    // FIXME 
     // return FORMAT(L"%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
     std::wstring Buffer;
     Buffer.resize(512);
