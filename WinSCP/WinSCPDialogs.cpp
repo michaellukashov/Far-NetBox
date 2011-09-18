@@ -474,9 +474,9 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
     {
       Configuration->BeginUpdate();
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
         Configuration->SetAutoReadDirectoryAfterOp(AutoReadDirectoryAfterOpCheck->GetChecked());
       }
@@ -570,9 +570,9 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
     {
       Configuration->BeginUpdate();
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
         Configuration->SetLogging(LoggingCheck->GetChecked());
         Configuration->SetLogProtocol(LogProtocolCombo->GetItems()->GetSelected());
@@ -690,9 +690,9 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
     {
       Configuration->BeginUpdate();
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
         TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
@@ -764,9 +764,9 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     {
       Configuration->BeginUpdate();
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
         TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
@@ -801,6 +801,7 @@ private:
   TFarRadioButton * EditorDownloadOptionsButton;
   TFarRadioButton * EditorUploadSameButton;
   TFarRadioButton * EditorUploadOptionsButton;
+  TTransferEditorConfigurationDialog *Self;
 
   virtual void UpdateControls();
 };
@@ -809,6 +810,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
     TCustomFarPlugin * AFarPlugin) :
   TWinSCPDialog(AFarPlugin)
 {
+  Self = this;
   TFarSeparator * Separator;
 
   SetSize(TPoint(55, 14));
@@ -857,9 +859,9 @@ bool TTransferEditorConfigurationDialog::Execute()
   {
     Configuration->BeginUpdate();
     {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
       FarConfiguration->SetEditorDownloadDefaultMode(EditorDownloadDefaultButton->GetChecked());
       FarConfiguration->SetEditorUploadSameOptions(EditorUploadSameButton->GetChecked());
@@ -953,9 +955,9 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
     {
       Configuration->BeginUpdate();
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
         FarConfiguration->SetConfirmOverwritingOverride(
           ConfirmOverwritingCheck->GetSelected() != BSTATE_3STATE);
@@ -1024,9 +1026,9 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
     {
       Configuration->BeginUpdate();
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
         GUIConfiguration->SetPuttyPath(PuttyPathEdit->GetText());
         GUIConfiguration->SetPuttyPassword(PuttyPasswordCheck->GetChecked());
@@ -1610,6 +1612,7 @@ private:
   TFarRadioButton * IPv4Button;
   TFarRadioButton * IPv6Button;
   TFarCheckBox * FtpPasvModeCheck;
+  TSessionDialog *Self;
 
   void LoadPing(TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
@@ -1649,6 +1652,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   TSessionActionEnum Action) : TTabbedDialog(AFarPlugin, tabCount),
   FAction(Action)
 {
+  Self = this;
   TPoint S = TPoint(67, 23);
   bool Limited = (S.y > GetMaxSize().y);
   if (Limited)
@@ -1657,8 +1661,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   }
   SetSize(S);
 
-    /* COMBO->GetItems()->BeginUpdate();*/
-      /* COMBO->GetItems()->EndUpdate();*/
   #define TRISTATE(COMBO, PROP, MSG) \
     Text = new TFarText(this); \
     Text->SetCaption(GetMsg(MSG)); \
@@ -1666,10 +1668,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
     COMBO = new TFarComboBox(this); \
     COMBO->SetDropDownList(true); \
     COMBO->SetWidth(7); \
+    COMBO->GetItems()->BeginUpdate(); \
     { \
-        BOOST_SCOPE_EXIT ( (&Self) ) \
+        BOOST_SCOPE_EXIT ( (&COMBO) ) \
         { \
-          Self->COMBO->Items->EndUpdate(); \
+          COMBO->GetItems()->EndUpdate(); \
         } BOOST_SCOPE_EXIT_END \
       COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_AUTO)); \
       COMBO->GetItems()->Add(GetMsg(LOGIN_BUGS_OFF)); \
@@ -3090,7 +3093,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   KexListBox->GetItems()->BeginUpdate();
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (&KexListBox) )
       {
         KexListBox->GetItems()->EndUpdate();
       } BOOST_SCOPE_EXIT_END
@@ -3614,6 +3617,7 @@ protected:
   TRights::TState FFixedStates[12];
   TFarEdit * OctalEdit;
   TFarCheckBox * DirectoriesXCheck;
+  TRightsContainer *Self;
 
   virtual void Change();
   void UpdateControls();
@@ -3628,6 +3632,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   bool ShowSpecials, TFarDialogItem * EnabledDependency) :
   TFarDialogContainer(ADialog)
 {
+  Self = this;
   FAnyDirectories = AAnyDirectories;
 
   TFarButton * Button;
@@ -4842,9 +4847,9 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
 
     Configuration->BeginUpdate();
     {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (&Configuration) )
           {
-            Self->Configuration->EndUpdate();
+            Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
       if (SaveSettingsCheck->GetChecked())
       {
