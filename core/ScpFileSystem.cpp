@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "ScpFileSystem.h"
 
 #include "Terminal.h"
@@ -336,8 +340,11 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
   {
     std::wstring UName;
     FTerminal->SetExceptionOnFail(true);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FTerminal->SetExceptionOnFail (false);
+      } BOOST_SCOPE_EXIT_END
       try
       {
         AnyCommand(L"uname -a", NULL);
@@ -357,10 +364,6 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
           throw;
         }
       }
-    }
-    catch (...)
-    {
-      FTerminal->SetExceptionOnFail (false);
     }
 
     FFileSystemInfo.RemoteSystem = UName;
@@ -567,8 +570,11 @@ void TSCPFileSystem::SkipFirstLine()
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
 {
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FProcessingCommand = false;
+    } BOOST_SCOPE_EXIT_END
     if (Params & coWaitForLastLine)
     {
       std::wstring Line;
@@ -627,10 +633,6 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
       }
     }
   }
-  catch (...)
-  {
-    FProcessingCommand = false;
-  }
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
@@ -639,10 +641,16 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
   if (Params < 0) Params = ecDefault;
   if (FTerminal->GetUseBusyCursor())
   {
-    Busy(true);
+    ::Busy(true);
   }
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      if (Self->FTerminal->GetUseBusyCursor())
+      {
+        ::Busy(false);
+      }
+    } BOOST_SCOPE_EXIT_END
     SendCommand(Cmd);
 
     int COParams = coWaitForLastLine;
@@ -650,13 +658,6 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
     if (Params & ecIgnoreWarnings) COParams |= coIgnoreWarnings;
     if (Params & ecReadProgress) COParams |= coReadProgress;
     ReadCommandOutput(COParams, &CmdString);
-  }
-  catch (...)
-  {
-    if (FTerminal->GetUseBusyCursor())
-    {
-      Busy(false);
-    }
   }
 }
 //---------------------------------------------------------------------------
@@ -809,16 +810,15 @@ void TSCPFileSystem::ClearAliases()
     FTerminal->LogEvent(L"Clearing all aliases.");
     ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
     TStrings * CommandList = FCommandSet->CreateCommandList();
-    try
     {
+      BOOST_SCOPE_EXIT ( (&CommandList) )
+      {
+        delete CommandList;
+      } BOOST_SCOPE_EXIT_END
       for (int Index = 0; Index < CommandList->GetCount(); Index++)
       {
         ClearAlias(CommandList->GetString(Index));
       }
-    }
-    catch (...)
-    {
-      delete CommandList;
     }
   }
   catch (const std::exception &E)
@@ -931,8 +931,11 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
         TStringList * OutputCopy = new TStringList();
-        try
         {
+          BOOST_SCOPE_EXIT ( (&OutputCopy) )
+          {
+            delete OutputCopy;
+          } BOOST_SCOPE_EXIT_END
           OutputCopy->Assign(FOutput);
 
           // delete leading "total xxx" line
@@ -948,10 +951,6 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             File = CreateRemoteFile(OutputCopy->GetString(Index));
             FileList->AddFile(File);
           }
-        }
-        catch (...)
-        {
-          delete OutputCopy;
         }
       }
       else
@@ -1246,15 +1245,14 @@ void TSCPFileSystem::AnyCommand(const std::wstring Command,
     FOnCaptureOutput = OutputEvent;
   }
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FOnCaptureOutput = NULL;
+      Self->FSecureShell->SetOnCaptureOutput (NULL);
+    } BOOST_SCOPE_EXIT_END
     ExecCommand(fsAnyCommand, 0, Command,
       ecDefault | ecIgnoreWarnings);
-  }
-  catch (...)
-  {
-    FOnCaptureOutput = NULL;
-    FSecureShell->SetOnCaptureOutput (NULL);
   }
 }
 //---------------------------------------------------------------------------
@@ -1366,8 +1364,39 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     0, Options, DelimitStr(UnixExcludeTrailingBackslash(TargetDir))));
   SkipFirstLine();
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&GotLastLine) (&CopyBatchStarted)
+        (&Failed) )
+    {
+        // Tell remote side, that we're done.
+        if (Self->FTerminal->GetActive())
+        {
+          try
+          {
+            if (!GotLastLine)
+            {
+              if (CopyBatchStarted)
+              {
+                // What about case, remote side sends fatal error ???
+                // (Not sure, if it causes remote side to terminate scp)
+                Self->FSecureShell->SendLine(L"E");
+                Self->SCPResponse();
+              };
+              /* TODO 1 : Show stderror to user? */
+              Self->FSecureShell->ClearStdError();
+
+              Self->ReadCommandOutput(coExpectNoOutput | coWaitForLastLine | coOnlyReturnCode |
+                (Failed ? 0 : coRaiseExcept));
+            }
+          }
+          catch (const std::exception &E)
+          {
+            // Only log error message (it should always succeed, but
+            // some pending error maybe in queque) }
+            Self->FTerminal->GetLog()->AddException(&E);
+          }
+        }
+    } BOOST_SCOPE_EXIT_END
     try
     {
       SCPResponse(&GotLastLine);
@@ -1496,7 +1525,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             CopyParam, Params, OperationProgress, 0);
           OperationProgress->Finish(FileName, true, OnceDoneOperation);
         }
-        catch (EScpFileSkipped &E)
+        catch (const EScpFileSkipped &E)
         {
           TQueryParams Params(qpAllowContinueOnError);
           SUSPEND_OPERATION (
@@ -1510,7 +1539,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             if (!FTerminal->HandleException(&E)) throw;
           );
         }
-        catch (EScpSkipFile &E)
+        catch (const EScpSkipFile &E)
         {
           OperationProgress->Finish(FileName, false, OnceDoneOperation);
           // If ESkipFile occurs, just log it and continue with next file
@@ -1527,38 +1556,8 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     Failed = false;
   }
-  catch (...)
-  {
-    // Tell remote side, that we're done.
-    if (FTerminal->GetActive())
-    {
-      try
-      {
-        if (!GotLastLine)
-        {
-          if (CopyBatchStarted)
-          {
-            // What about case, remote side sends fatal error ???
-            // (Not sure, if it causes remote side to terminate scp)
-            FSecureShell->SendLine(L"E");
-            SCPResponse();
-          };
-          /* TODO 1 : Show stderror to user? */
-          FSecureShell->ClearStdError();
-
-          ReadCommandOutput(coExpectNoOutput | coWaitForLastLine | coOnlyReturnCode |
-            (Failed ? 0 : coRaiseExcept));
-        }
-      }
-      catch (const std::exception &E)
-      {
-        // Only log error message (it should always succeed, but
-        // some pending error maybe in queque) }
-        FTerminal->GetLog()->AddException(&E);
-      }
-    }
-  }
 }
+
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSource(const std::wstring FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
