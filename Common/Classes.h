@@ -16,6 +16,7 @@
 #include <assert.h>
 
 #include "boostdefines.hpp"
+#include <boost/signals/signal0.hpp>
 #include <boost/signals/signal1.hpp>
 #include <boost/bind.hpp>
 
@@ -55,9 +56,11 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
 
 //---------------------------------------------------------------------------
 class TObject;
-typedef void (TObject::*TThreadMethod)();
-typedef void (TObject::*TNotifyEvent)(TObject *);
+// typedef void (TObject::*TThreadMethod)();
+typedef boost::signal0<void> threadmethod_signal_type;
+typedef threadmethod_signal_type::slot_type threadmethod_slot_type;
 
+typedef void (TObject::*TNotifyEvent)(TObject *);
 typedef boost::signal1<void, TObject *> notify_signal_type;
 typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------

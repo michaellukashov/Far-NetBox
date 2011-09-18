@@ -18,7 +18,7 @@ class TSynchronizeChecklist;
 typedef void (TObject::* TSynchronizeAbortEvent)
   (TObject * Sender, bool Close);
 typedef void (TObject::* TSynchronizeThreadsEvent)
-  (TObject* Sender, TThreadMethod Method);
+  (TObject* Sender, const threadmethod_slot_type &slot);
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
 typedef void (TObject::* TSynchronizeLog)
   (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const std::wstring Message);

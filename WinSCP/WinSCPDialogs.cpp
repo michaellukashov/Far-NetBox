@@ -7091,7 +7091,7 @@ protected:
   void DoAbort(TObject * Sender, bool Close);
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const std::wstring Message);
-  void DoSynchronizeThreads(TObject * Sender, TThreadMethod Method);
+  void DoSynchronizeThreads(TObject * Sender, const threadmethod_slot_type &slot);
   virtual long DialogProc(int Msg, int Param1, long Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
@@ -7337,11 +7337,11 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
-  TThreadMethod Method)
+  const threadmethod_slot_type &slot)
 {
   if (FStarted)
   {
-    Synchronize(Method);
+    Synchronize(slot);
   }
 }
 //---------------------------------------------------------------------------
