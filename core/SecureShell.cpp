@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "PuttyIntf.h"
 #include "Exceptions.h"
 #include "Interface.h"
@@ -44,6 +47,7 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   FSocketEvent = CreateEvent(NULL, false, false, NULL);
   FFrozen = false;
   FSimple = false;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TSecureShell::~TSecureShell()
@@ -708,18 +712,17 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
       if (!FFrozen)
       {
         FFrozen = true;
-        try
         {
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->FFrozen = false;
+          } BOOST_SCOPE_EXIT_END
           do
           {
             FDataWhileFrozen = false;
             // FIXME FOnReceive(NULL);
           }
           while (FDataWhileFrozen);
-        }
-        catch (...)
-        {
-          FFrozen = false;
         }
       }
       else
@@ -753,8 +756,11 @@ int TSecureShell::Receive(char * Buf, int Len)
     OutPtr = Buf;
     OutLen = Len;
 
-    try
     {
+        BOOST_SCOPE_EXIT ( (&OutPtr) )
+        {
+          OutPtr = NULL;
+        } BOOST_SCOPE_EXIT_END
       /*
        * See if the pending-input block contains some of what we
        * need.
@@ -790,10 +796,6 @@ int TSecureShell::Receive(char * Buf, int Len)
 
       // This seems ambiguous
       if (Len <= 0) FatalError(LoadStr(LOST_CONNECTION));
-    }
-    catch (...)
-    {
-      OutPtr = NULL;
     }
   };
   if (Configuration->GetActualLogProtocol() >= 1)
@@ -864,8 +866,11 @@ int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   FWaiting++;
 
   int Answer;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FWaiting--;
+    } BOOST_SCOPE_EXIT_END
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError);
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
@@ -873,10 +878,6 @@ int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Params.TimerAnswers = qaAbort;
     Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
-  }
-  catch (...)
-  {
-    FWaiting--;
   }
   return Answer;
 }
@@ -1502,8 +1503,11 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Handles) )
+      {
+        sfree(Handles);
+      } BOOST_SCOPE_EXIT_END
       Handles = sresize(Handles, HandleCount + 1, HANDLE);
       Handles[HandleCount] = FSocketEvent;
       unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
@@ -1563,10 +1567,6 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
 
         MSec = 0;
       }
-    }
-    catch (...)
-    {
-      sfree(Handles);
     }
 
     unsigned int TicksAfter = GetTickCount();

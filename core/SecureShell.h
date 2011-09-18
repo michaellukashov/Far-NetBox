@@ -61,6 +61,7 @@ private:
   std::wstring FAuthenticationLog;
   std::wstring FLastTunnelError;
   std::wstring FUserName;
+  TSecureShell *Self;
 
   static TCipher FuncToSsh1Cipher(const void * Cipher);
   static TCipher FuncToSsh2Cipher(const void * Cipher);
