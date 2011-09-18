@@ -1586,8 +1586,15 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
 
   bool Dir = FLAGSET(Attrs, faDirectory);
   TSafeHandleStream * Stream = new TSafeHandleStream((HANDLE)File);
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&File) (&Stream) )
+    {
+      if (File != NULL)
+      {
+        ::CloseHandle(File);
+      }
+      delete Stream;
+    } BOOST_SCOPE_EXIT_END
     OperationProgress->SetFileInProgress();
 
     if (Dir)
@@ -1820,14 +1827,6 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
           Rights);
       }
     }
-  }
-  catch (...)
-  {
-    if (File != NULL)
-    {
-      CloseHandle(File);
-    }
-    delete Stream;
   }
 
   /* TODO : Delete also read-only files. */
