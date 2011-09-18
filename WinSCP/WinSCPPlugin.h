@@ -68,6 +68,7 @@ protected:
 
 private:
   bool FInitialized;
+  TWinSCPPlugin *Self;
 };
 //---------------------------------------------------------------------------
 #endif

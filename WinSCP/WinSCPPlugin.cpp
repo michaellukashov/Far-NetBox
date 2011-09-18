@@ -37,6 +37,7 @@ TMessageParams::TMessageParams()
 TWinSCPPlugin::TWinSCPPlugin(HWND AHandle): TCustomFarPlugin(AHandle)
 {
   FInitialized = false;
+  Self = this;
   CreateMutex(NULL, false, L"WinSCPFar");
 }
 //---------------------------------------------------------------------------
