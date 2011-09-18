@@ -87,6 +87,7 @@ private:
   bool FProcessingCommand;
   int FLsFullTime;
   TCaptureOutputEvent FOnCaptureOutput;
+  TSCPFileSystem *Self;
 
   void ClearAliases();
   void ClearAlias(std::wstring Alias);

@@ -18,7 +18,7 @@
 #include <memory>
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 #define SSH_FX_OK                                 0
 #define SSH_FX_EOF                                1
@@ -1349,6 +1349,7 @@ public:
     FLastBlockSize = 0;
     FEnd = false;
     FConvertToken = false;
+    Self = this;
   }
 
   virtual ~TSFTPUploadQueue()
@@ -1372,7 +1373,7 @@ public:
 protected:
   virtual bool InitRequest(TSFTPQueuePacket * Request)
   {
-    TTerminal * FTerminal = FFileSystem->FTerminal;
+    FTerminal = FFileSystem->FTerminal;
     // Buffer for one block of data
     TFileBuffer BlockBuf;
 
@@ -1417,7 +1418,7 @@ protected:
         FTransfered += BlockBuf.GetSize();
       }
     }
-
+    FTerminal = NULL;
     return Result;
   }
 
@@ -1449,7 +1450,7 @@ protected:
   }
 
 private:
-  TStream * FStream;
+  TStream *FStream;
   TFileOperationProgressType * OperationProgress;
   std::wstring FFileName;
   unsigned long FLastBlockSize;
@@ -1457,6 +1458,8 @@ private:
   __int64 FTransfered;
   std::wstring FHandle;
   bool FConvertToken;
+  TTerminal *FTerminal;
+  TSFTPUploadQueue *Self;
 };
 //---------------------------------------------------------------------------
 class TSFTPLoadFilesPropertiesQueue : public TSFTPFixedLenQueue

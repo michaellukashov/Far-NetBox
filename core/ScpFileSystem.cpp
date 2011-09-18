@@ -12,7 +12,7 @@
 #include <stdio.h>
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 const int coRaiseExcept = 1;
 const int coExpectNoOutput = 2;
@@ -292,6 +292,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal, TSecureShell * SecureShell
   FOutput = new TStringList();
   FProcessingCommand = false;
   FOnCaptureOutput = NULL;
+  Self = this;
 
   FFileSystemInfo.ProtocolBaseName = L"SCP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
