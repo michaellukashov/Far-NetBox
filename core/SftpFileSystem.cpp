@@ -4821,15 +4821,15 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     Action.Cancel();
     if (!File->GetIsSymLink())
     {
-        // FIXME
-      // FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        // int Attrs = FileGetAttr(DestFullName);
-        // if ((Attrs & faDirectory) == 0) EXCEPTION;
-      // );
+      int Attrs = 0;
+      FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
+        // FIXME int Attrs = FileGetAttr(DestFullName);
+        if ((Attrs & faDirectory) == 0) EXCEPTION;
+      );
 
-      // FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
-        // if (!ForceDirectories(DestFullName)) RaiseLastOSError();
-      // );
+      FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
+        if (!::ForceDirectories(DestFullName)) RaiseLastOSError();
+      );
 
       TSinkFileParams SinkFileParams;
       SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
@@ -4882,11 +4882,10 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
     int Attrs = 0;
-    // FIXME
-    // FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-      // Attrs = FileGetAttr(DestFullName);
-      // if ((Attrs >= 0) && (Attrs & faDirectory)) EXCEPTION;
-    // );
+    FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
+      // FIXME Attrs = FileGetAttr(DestFullName);
+      if ((Attrs >= 0) && (Attrs & faDirectory)) EXCEPTION;
+    );
 
     OperationProgress->TransferingFile = false; // not set with SFTP protocol
 
@@ -4899,7 +4898,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
 
     {
       BOOST_SCOPE_EXIT ( (&Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
-        (&ResumeAllowed)  (&OverwriteMode) (&LocalFileName)
+        (&ResumeAllowed) (&OverwriteMode) (&LocalFileName)
         (&DestFileName) (&RemoteHandle)
         (&OperationProgress) )
       {
@@ -4947,10 +4946,9 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           {
             CloseHandle(LocalHandle);
             LocalHandle = NULL;
-            // FIXME 
-            // FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
-              // THROWOSIFFALSE(Sysutils::DeleteFile(DestPartinalFullName));
-            // )
+            FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
+              THROWOSIFFALSE(::DeleteFile(DestPartinalFullName));
+            )
           }
           else
           {
@@ -4985,10 +4983,9 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           {
             if (FileExists(DestPartinalFullName))
             {
-                // FIXME 
-              // FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
-                // THROWOSIFFALSE(Sysutils::DeleteFile(DestPartinalFullName));
-              // )
+              FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
+                THROWOSIFFALSE(::DeleteFile(DestPartinalFullName));
+              )
             }
             LocalFileName = DestPartinalFullName;
           }
