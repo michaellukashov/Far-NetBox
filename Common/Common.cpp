@@ -2117,19 +2117,19 @@ int FileSetAttr(const std::wstring &filename, int attrs)
 bool ForceDirectories(const std::wstring Dir)
 {
     // FIXME
-    return true;
+    return false;
 }
 
 bool DeleteFile(const std::wstring File)
 {
     // FIXME
-    return true;
+    return false;
 }
 
 bool RemoveDir(const std::wstring Dir)
 {
     // FIXME
-    return true;
+    return false;
 }
 
 //---------------------------------------------------------------------------
