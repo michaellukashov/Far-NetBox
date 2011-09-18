@@ -3143,49 +3143,49 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
   DirectoryModified(Target, true);
   bool Result;
   BeginTransaction();
-  try
   {
-    Result = ProcessFiles(FileList, foRemoteMove, (TProcessFileEvent)&TTerminal::MoveFile, &Params);
-  }
-  catch (...)
-  {
-    if (GetActive())
+    BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
     {
-      std::wstring WithTrailing = UnixIncludeTrailingBackslash(GetCurrentDirectory());
-      bool PossiblyMoved = false;
-      // check if we was moving current directory.
-      // this is just optimization to avoid checking existence of current
-      // directory after each move operation.
-      for (int Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
-      {
-        const TRemoteFile * File =
-          reinterpret_cast<const TRemoteFile *>(FileList->GetObject(Index));
-        // File can be NULL, and filename may not be full path,
-        // but currently this is the only way we can move (at least in GUI)
-        // current directory
-        if ((File != NULL) &&
-            File->GetIsDirectory() &&
-            ((GetCurrentDirectory().substr(1, FileList->GetString(Index).size()) == FileList->GetString(Index)) &&
-             ((FileList->GetString(Index).size() == GetCurrentDirectory().size()) ||
-              (GetCurrentDirectory()[FileList->GetString(Index).size() + 1] == '/'))))
+        if (Self->GetActive())
         {
-          PossiblyMoved = true;
-        }
-      }
+          std::wstring WithTrailing = UnixIncludeTrailingBackslash(Self->GetCurrentDirectory());
+          bool PossiblyMoved = false;
+          // check if we was moving current directory.
+          // this is just optimization to avoid checking existence of current
+          // directory after each move operation.
+          std::wstring curDirectory = Self->GetCurrentDirectory();
+          for (int Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
+          {
+            const TRemoteFile *File =
+              reinterpret_cast<const TRemoteFile *>(FileList->GetObject(Index));
+            // File can be NULL, and filename may not be full path,
+            // but currently this is the only way we can move (at least in GUI)
+            // current directory
+            if ((File != NULL) &&
+                File->GetIsDirectory() &&
+                ((curDirectory.substr(1, FileList->GetString(Index).size()) == FileList->GetString(Index)) &&
+                 ((FileList->GetString(Index).size() == curDirectory.size()) ||
+                  (curDirectory[FileList->GetString(Index).size() + 1] == '/'))))
+            {
+              PossiblyMoved = true;
+            }
+          }
 
-      if (PossiblyMoved && !FileExists(GetCurrentDirectory()))
-      {
-        std::wstring NearestExisting = GetCurrentDirectory();
-        do
-        {
-          NearestExisting = UnixExtractFileDir(NearestExisting);
-        }
-        while (!IsUnixRootPath(NearestExisting) && !FileExists(NearestExisting));
+          if (PossiblyMoved && !Self->FileExists(curDirectory))
+          {
+            std::wstring NearestExisting = curDirectory;
+            do
+            {
+              NearestExisting = UnixExtractFileDir(NearestExisting);
+            }
+            while (!IsUnixRootPath(NearestExisting) && !Self->FileExists(NearestExisting));
 
-        ChangeDirectory(NearestExisting);
-      }
-    }
-    EndTransaction();
+            Self->ChangeDirectory(NearestExisting);
+          }
+        }
+        Self->EndTransaction();
+    } BOOST_SCOPE_EXIT_END
+    Result = ProcessFiles(FileList, foRemoteMove, (TProcessFileEvent)&TTerminal::MoveFile, &Params);
   }
   return Result;
 }
