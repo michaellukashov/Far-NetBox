@@ -4532,13 +4532,12 @@ void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
     // of the directory listing, so we at least reset the handler in
     // FileFind
     FOnFindingFile = Params.OnFindingFile;
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FOnFindingFile = NULL;
+      } BOOST_SCOPE_EXIT_END
       ProcessDirectory(Directory, (TProcessFileEvent)&TTerminal::FileFind, &Params, false, true);
-    }
-    catch (...)
-    {
-      FOnFindingFile = NULL;
     }
   }
 }
@@ -4665,8 +4664,15 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
 
       std::wstring UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
       BeginTransaction();
-      try
       {
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            if (Self->GetActive())
+            {
+              Self->ReactOnCommand(fsCopyToRemote);
+            }
+            Self->EndTransaction();
+          } BOOST_SCOPE_EXIT_END
         if (GetLog()->GetLogging())
         {
           LogEvent(FORMAT(L"Copying %d files/directories to remote directory "
@@ -4676,14 +4682,6 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
 
         FFileSystem->CopyToRemote(FilesToCopy, UnlockedTargetDir,
           CopyParam, Params, &OperationProgress, OnceDoneOperation);
-      }
-      catch (...)
-      {
-        if (GetActive())
-        {
-          ReactOnCommand(fsCopyToRemote);
-        }
-        EndTransaction();
       }
 
       if (OperationProgress.Cancel == csContinue)
