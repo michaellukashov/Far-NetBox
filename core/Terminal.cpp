@@ -209,12 +209,14 @@ protected:
 private:
   TSecureShell * FSecureShell;
   bool FTerminated;
+  TTunnelThread *Self;
 };
 //---------------------------------------------------------------------------
 TTunnelThread::TTunnelThread(TSecureShell * SecureShell) :
   FSecureShell(SecureShell),
   FTerminated(false)
 {
+  Self = this;
   Start();
 }
 //---------------------------------------------------------------------------
@@ -233,6 +235,13 @@ void TTunnelThread::Execute()
 {
   try
   {
+    BOOST_SCOPE_EXIT (( &Self) )
+    {
+        if (Self->FSecureShell->GetActive())
+        {
+          Self->FSecureShell->Close();
+        }
+    } BOOST_SCOPE_EXIT_END
     while (!FTerminated)
     {
       FSecureShell->Idle(250);
@@ -240,10 +249,6 @@ void TTunnelThread::Execute()
   }
   catch (...)
   {
-    if (FSecureShell->GetActive())
-    {
-      FSecureShell->Close();
-    }
     // do not pass std::exception out of thread's proc
   }
 }
@@ -658,15 +663,30 @@ void TTerminal::Open()
   FLog->ReflectSettings();
   try
   {
-    try
     {
+      BOOST_SCOPE_EXIT (( &Self) )
+      {
+        // Prevent calling Information with active=false unless there was at least
+        // one call with active=true
+        if (Self->FAnyInformation)
+        {
+          Self->DoInformation(L"", true, false);
+        }
+      } BOOST_SCOPE_EXIT_END
       try
       {
         ResetConnection();
         FStatus = ssOpening;
 
-        try
         {
+          BOOST_SCOPE_EXIT (( &Self) )
+          {
+            if (Self->FSessionData->GetTunnel())
+            {
+              Self->FSessionData->RollbackTunnel();
+            }
+          } BOOST_SCOPE_EXIT_END
+        
           if (FFileSystem == NULL)
           {
             GetLog()->AddStartupInfo();
@@ -709,8 +729,12 @@ void TTerminal::Open()
             else
             {
               assert(FSecureShell == NULL);
-              try
               {
+                BOOST_SCOPE_EXIT (( &Self) )
+                {
+                  delete Self->FSecureShell;
+                  Self->FSecureShell = NULL;
+                } BOOST_SCOPE_EXIT_END
                 FSecureShell = new TSecureShell(this, FSessionData, GetLog(), Configuration);
                 try
                 {
@@ -751,23 +775,11 @@ void TTerminal::Open()
                   LogEvent(L"Using SFTP protocol.");
                 }
               }
-              catch (...)
-              {
-                delete FSecureShell;
-                FSecureShell = NULL;
-              }
             }
           }
           else
           {
             FFileSystem->Open();
-          }
-        }
-        catch (...)
-        {
-          if (FSessionData->GetTunnel())
-          {
-            FSessionData->RollbackTunnel();
           }
         }
 
@@ -791,21 +803,12 @@ void TTerminal::Open()
       catch (...)
       {
         // rollback
-        if (FDirectoryChangesCache != NULL)
+        if (Self->FDirectoryChangesCache != NULL)
         {
-          delete FDirectoryChangesCache;
-          FDirectoryChangesCache = NULL;
+          delete Self->FDirectoryChangesCache;
+          Self->FDirectoryChangesCache = NULL;
         }
         throw;
-      }
-    }
-    catch (...)
-    {
-      // Prevent calling Information with active=false unless there was at least
-      // one call with active=true
-      if (FAnyInformation)
-      {
-        DoInformation(L"", true, false);
       }
     }
   }
