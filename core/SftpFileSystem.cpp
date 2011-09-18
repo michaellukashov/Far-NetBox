@@ -3067,10 +3067,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         FTerminal->SetExceptionOnFail(true);
         {
-            BOOST_SCOPE_EXIT ( (&Self) )
-            {
-              Self->FTerminal->SetExceptionOnFail(false);
-            } BOOST_SCOPE_EXIT_END
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->FTerminal->SetExceptionOnFail(false);
+          } BOOST_SCOPE_EXIT_END
           File = NULL;
           FTerminal->ReadFile(
             UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
@@ -3398,12 +3398,12 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this);
     {
-        BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
-        {
-          Queue.DisposeSafe();
-          Self->FTerminal->FOperationProgress = NULL;
-          Progress.Stop();
-        } BOOST_SCOPE_EXIT_END
+      BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
+      {
+        Queue.DisposeSafe();
+        Self->FTerminal->FOperationProgress = NULL;
+        Progress.Stop();
+      } BOOST_SCOPE_EXIT_END
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
       {
         TRemoteFile * File;
@@ -3462,8 +3462,19 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
         {
           TStrings * SubFileList = new TStringList();
           bool Success = false;
-          try
           {
+            BOOST_SCOPE_EXIT ( (&Self) (&SubFiles) (&SubFileList) (FirstLevel)
+                (&File) (&Success) (&OnceDoneOperation) (&OperationProgress) )
+            {
+              delete SubFiles;
+              delete SubFileList;
+
+              if (FirstLevel)
+              {
+                OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
+              }
+            } BOOST_SCOPE_EXIT_END
+              
             OperationProgress->SetFile(File->GetFileName());
 
             for (int Index = 0; Index < SubFiles->GetCount(); Index++)
@@ -3478,16 +3489,6 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
               OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
-          }
-          catch (...)
-          {
-            delete SubFiles;
-            delete SubFileList;
-
-            if (FirstLevel)
-            {
-              OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
-            }
           }
         }
       }
