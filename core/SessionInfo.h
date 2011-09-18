@@ -257,6 +257,7 @@ private:
   bool FClosed;
   TList * FPendingActions;
   TNotifyEvent FOnStateChange;
+  TSessionLog *Self;
 
   void DeleteUnnecessary();
   void StateChange();

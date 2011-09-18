@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include <stdio.h>
 
 #include "Common.h"
@@ -545,6 +548,7 @@ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   FLoggingActions = false;
   FClosed = false;
   FPendingActions = new TList();
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TSessionLog::~TSessionLog()
@@ -655,17 +659,14 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
       {
         TGuard Guard(FCriticalSection);
 
-        // FIXME BeginUpdate();
-
-        try
+        BeginUpdate();
         {
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->DeleteUnnecessary();
+            Self->EndUpdate();
+          } BOOST_SCOPE_EXIT_END
           // FIXME DoAdd(Type, Line, DoAddToSelf);
-        }
-        catch(...)
-        {
-          DeleteUnnecessary();
-
-          // FIXME EndUpdate();
         }
       }
     }
@@ -849,9 +850,12 @@ void TSessionLog::StateChange()
 //---------------------------------------------------------------------------
 void TSessionLog::DeleteUnnecessary()
 {
-  // BeginUpdate();
-  try
+  BeginUpdate();
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
     if (!GetLogging() || (FParent != NULL))
     {
       Clear();
@@ -864,10 +868,6 @@ void TSessionLog::DeleteUnnecessary()
         FTopIndex++;
       }
     }
-  }
-  catch(...)
-  {
-    // EndUpdate();
   }
 }
 //---------------------------------------------------------------------------
@@ -891,20 +891,24 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
 
-  // FIXME BeginUpdate();
-  try
+  BeginUpdate();
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->DeleteUnnecessary();
+
+      Self->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), (TDoAddLog)&TSessionLog::DoAddToSelf);
     AddSeparator();
     ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
-    }
-    catch(...)
-    {
-      delete Storage;
     }
     ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
     AddSeparator();
@@ -1035,12 +1039,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     AddSeparator();
 
     #undef ADF
-  }
-  catch(...)
-  {
-    DeleteUnnecessary();
-
-    // EndUpdate();
   }
 }
 //---------------------------------------------------------------------------
