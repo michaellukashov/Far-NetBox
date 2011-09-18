@@ -2986,8 +2986,18 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
 
   TSFTPPacket Response;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&Packet) (Handle) )
+    {
+      if (Self->FTerminal->GetActive())
+      {
+        Packet.ChangeType(SSH_FXP_CLOSE);
+        Packet.AddString(Handle);
+        Self->SendPacket(&Packet);
+        // we are not interested in the response, do not wait for it
+        Self->ReserveResponse(&Packet, NULL);
+      }
+    } BOOST_SCOPE_EXIT_END
     bool isEOF = false;
     int Total = 0;
     TRemoteFile * File;
@@ -3089,17 +3099,6 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         throw ExtException(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
       }
-    }
-  }
-  catch (...)
-  {
-    if (FTerminal->GetActive())
-    {
-      Packet.ChangeType(SSH_FXP_CLOSE);
-      Packet.AddString(Handle);
-      SendPacket(&Packet);
-      // we are not interested in the response, do not wait for it
-      ReserveResponse(&Packet, NULL);
     }
   }
 }
@@ -3338,8 +3337,11 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
   std::wstring RealFileName = LocalCanonify(FileName);
   ReadFile(RealFileName, File);
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&File) )
+    {
+        delete File;
+    } BOOST_SCOPE_EXIT_END
     assert(File);
 
     if (File->GetIsDirectory() && !File->GetIsSymLink() && AProperties->Recursive)
@@ -3378,10 +3380,6 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
     Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
-  catch (...)
-  {
-    delete File;
-  }
 }
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
@@ -3399,8 +3397,13 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
 
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this);
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
+        {
+          Queue.DisposeSafe();
+          Self->FTerminal->FOperationProgress = NULL;
+          Progress.Stop();
+        } BOOST_SCOPE_EXIT_END
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
       {
         TRemoteFile * File;
@@ -3427,12 +3430,6 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
         }
         while (Next);
       }
-    }
-    catch (...)
-    {
-      Queue.DisposeSafe();
-      FTerminal->FOperationProgress = NULL;
-      Progress.Stop();
     }
     // queue is discarded here
   }
