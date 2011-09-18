@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include <Common.h>
 #include "NamedObjs.h"
 #include "Bookmarks.h"
@@ -41,8 +45,11 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
     if (Storage->OpenSubKey(Keys[i], false))
     {
       TStrings * BookmarkKeys = new TStringList();
-      try
       {
+        BOOST_SCOPE_EXIT ( (&BookmarkKeys) )
+        {
+          delete BookmarkKeys;
+        } BOOST_SCOPE_EXIT_END
         Storage->GetSubKeyNames(BookmarkKeys);
         for (int Index = 0; Index < BookmarkKeys->GetCount(); Index++)
         {
@@ -67,10 +74,6 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
           }
         }
       }
-      catch (...)
-      {
-        delete BookmarkKeys;
-      }
       Storage->CloseSubKey();
     }
   }
@@ -82,8 +85,11 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring Ke
   int Index, TBookmarkList * BookmarkList)
 {
   TStrings * Names = new TStringList();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Names) )
+      {
+        delete Names;
+      } BOOST_SCOPE_EXIT_END
     Storage->GetValueNames(Names);
     std::wstring Name;
     std::wstring Directory;
@@ -149,10 +155,6 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring Ke
         Storage->CloseSubKey();
       }
     }
-  }
-  catch (...)
-  {
-    delete Names;
   }
 }
 //---------------------------------------------------------------------------
