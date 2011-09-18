@@ -3888,9 +3888,9 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const std::wstring LocalDi
 //---------------------------------------------------------------------------
 void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   const std::wstring RemoteDirectory, TSynchronizeMode Mode,
-  const TCopyParamType * CopyParam, int Params,
-  TSynchronizeDirectory OnSynchronizeDirectory, TSynchronizeOptions * Options,
-  int Flags, TSynchronizeChecklist * Checklist)
+  const TCopyParamType *CopyParam, int Params,
+  TSynchronizeDirectory OnSynchronizeDirectory, TSynchronizeOptions *Options,
+  int Flags, TSynchronizeChecklist *Checklist)
 {
   TSynchronizeData Data;
 
@@ -3914,8 +3914,20 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     DoSynchronizeProgress(Data, true);
   }
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&Data) )
+    {
+      if (Data.LocalFileList != NULL)
+      {
+        for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+        {
+          TSynchronizeFileData *FileData = reinterpret_cast<TSynchronizeFileData*>
+            (Data.LocalFileList->GetObject(Index));
+          delete FileData;
+        }
+        delete Data.LocalFileList;
+      }
+    } BOOST_SCOPE_EXIT_END
     bool Found = false;
     WIN32_FIND_DATA SearchRec;
     Data.LocalFileList = new TStringList();
@@ -4061,19 +4073,6 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           }
         }
       }
-    }
-  }
-  catch (...)
-  {
-    if (Data.LocalFileList != NULL)
-    {
-      for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
-      {
-        TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData*>
-          (Data.LocalFileList->GetObject(Index));
-        delete FileData;
-      }
-      delete Data.LocalFileList;
     }
   }
 }
