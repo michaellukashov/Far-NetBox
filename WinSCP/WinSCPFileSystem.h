@@ -264,6 +264,7 @@ private:
   TStrings * FCapturedLog;
   bool FOutputLog;
   TStrings * FAuthenticationLog;
+  TWinSCPFileSystem *Self;
   typedef std::map<int, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
   bool FLoadingSessionList;
