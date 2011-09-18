@@ -402,7 +402,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
             try
             {
                 FNeedsSynchronize = false;
-                ((*this).*FSynchronizeMethod)();
+                FSynchronizeMethod();
                 ReleaseSemaphore(FSynchronizeObjects[0], 1, NULL);
                 BreakSynchronize();
             }
@@ -753,14 +753,15 @@ void TFarDialog::BreakSynchronize()
     SetEvent(FSynchronizeObjects[1]);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::Synchronize(TThreadMethod Method)
+void TFarDialog::Synchronize(const threadmethod_slot_type &slot)
 {
     if (FSynchronizeObjects[0] == INVALID_HANDLE_VALUE)
     {
         FSynchronizeObjects[0] = CreateSemaphore(NULL, 0, 2, NULL);
         FSynchronizeObjects[1] = CreateEvent(NULL, false, false, NULL);
     }
-    FSynchronizeMethod = Method;
+    FSynchronizeMethod.disconnect_all_slots();
+    FSynchronizeMethod.connect(Method);
     FNeedsSynchronize = true;
     WaitForMultipleObjects(LENOF(FSynchronizeObjects),
                            reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);

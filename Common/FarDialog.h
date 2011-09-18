@@ -649,7 +649,7 @@ protected:
     void RefreshBounds();
     virtual void Idle();
     void BreakSynchronize();
-    void Synchronize(TThreadMethod Method);
+    void Synchronize(const threadmethod_slot_type &slot);
     void Close(TFarButton *Button);
     void ProcessGroup(int Group, const processgroupevent_slot_type &Callback, void *Arg);
     void ShowItem(TFarDialogItem *Item, void *Arg);
@@ -682,7 +682,7 @@ private:
     int FResult;
     bool FNeedsSynchronize;
     HANDLE FSynchronizeObjects[2];
-    TThreadMethod FSynchronizeMethod;
+    threadmethod_signal_type FSynchronizeMethod;
     TFarDialog *Self;
 };
 //---------------------------------------------------------------------------
