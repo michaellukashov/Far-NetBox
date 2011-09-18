@@ -8,7 +8,7 @@
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(NULL, "")
+#define EXCEPTION throw ExtException(NULL, L"")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
   strncpy(dest, source, sizeof(dest)); \
