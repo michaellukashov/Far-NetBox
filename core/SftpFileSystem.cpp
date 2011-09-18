@@ -3463,7 +3463,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
           TStrings * SubFileList = new TStringList();
           bool Success = false;
           {
-            BOOST_SCOPE_EXIT ( (&Self) (&SubFiles) (&SubFileList) (FirstLevel)
+            BOOST_SCOPE_EXIT ( (&Self) (&SubFiles) (&SubFileList) (&FirstLevel)
                 (&File) (&Success) (&OnceDoneOperation) (&OperationProgress) )
             {
               delete SubFiles;
@@ -3510,8 +3510,15 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
         std::wstring Checksum;
         TRemoteFile * File = NULL;
 
-        try
         {
+          BOOST_SCOPE_EXIT ( (&Self) (&FirstLevel) (&File)
+            (&Success) (&OnceDoneOperation) (&OperationProgress) )
+          {
+            if (FirstLevel)
+            {
+              OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
+            }
+          } BOOST_SCOPE_EXIT_END
           try
           {
             Next = Queue.ReceivePacket(&Packet, File);
@@ -3536,13 +3543,6 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
           if (Checksums != NULL)
           {
             Checksums->Add(L"");
-          }
-        }
-        catch (...)
-        {
-          if (FirstLevel)
-          {
-            OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
           }
         }
 
