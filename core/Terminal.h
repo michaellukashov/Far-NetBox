@@ -198,6 +198,7 @@ private:
   bool FAnyInformation;
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
+  TTerminal *Self;
 
   void CommandError(const std::exception * E, const std::wstring Msg);
   int CommandError(const std::exception * E, const std::wstring Msg, int Answers);

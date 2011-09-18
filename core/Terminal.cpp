@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "Terminal.h"
 
 // #include <SysUtils.hpp>
@@ -497,6 +501,7 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FTunnelUI = NULL;
   FTunnelOpening = false;
   FCallbackGuard = NULL;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TTerminal::~TTerminal()
@@ -4731,8 +4736,8 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params)
+bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
+  const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params)
 {
   assert(FFileSystem);
 
@@ -4742,92 +4747,82 @@ bool TTerminal::CopyToLocal(TStrings * FilesToCopy,
   bool OwnsFileList = (FilesToCopy == NULL);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  try
+  BOOST_SCOPE_EXIT( (OwnsFileList) (&FilesToCopy) )
   {
-    if (OwnsFileList)
+    if (OwnsFileList) delete FilesToCopy;
+  } BOOST_SCOPE_EXIT_END
+  if (OwnsFileList)
+  {
+    FilesToCopy = new TStringList();
+    FilesToCopy->Assign(GetFiles()->GetSelectedFiles());
+  }
+
+  BeginTransaction();
+  {
+    BOOST_SCOPE_EXIT( (&Self) )
     {
-      FilesToCopy = new TStringList();
-      FilesToCopy->Assign(GetFiles()->GetSelectedFiles());
+        // If session is still active (no fatal error) we reload directory
+        // by calling EndTransaction
+        Self->EndTransaction();
+    } BOOST_SCOPE_EXIT_END
+    __int64 TotalSize;
+    bool TotalSizeKnown = false;
+    TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
+      (TFileOperationFinished)&TTerminal::DoFinished);
+
+    if (CopyParam->GetCalculateSize())
+    {
+      SetExceptionOnFail(true);
+      {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+          Self->SetExceptionOnFail(false);
+        } BOOST_SCOPE_EXIT_END
+        // dirty trick: when moving, do not pass copy param to avoid exclude mask
+        CalculateFilesSize(FilesToCopy, TotalSize, csIgnoreErrors,
+          (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
+        TotalSizeKnown = true;
+      }
     }
 
-    BeginTransaction();
-    try
+    OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osRemote,
+      FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
+
+    FOperationProgress = &OperationProgress;
     {
-      __int64 TotalSize;
-      bool TotalSizeKnown = false;
-    TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
-        (TFileOperationFinished)&TTerminal::DoFinished);
-
-      if (CopyParam->GetCalculateSize())
-      {
-        SetExceptionOnFail(true);
-        try
-        {
-          // dirty trick: when moving, do not pass copy param to avoid exclude mask
-          CalculateFilesSize(FilesToCopy, TotalSize, csIgnoreErrors,
-            (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
-          TotalSizeKnown = true;
-        }
-        catch (...)
-        {
-          SetExceptionOnFail(false);
-        }
-      }
-
-      OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osRemote,
-        FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
-
-      FOperationProgress = &OperationProgress;
-      try
-      {
-        if (TotalSizeKnown)
-        {
-          OperationProgress.SetTotalSize(TotalSize);
-        }
-
-        try
-        {
-          try
-          {
-            FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,
-              &OperationProgress, OnceDoneOperation);
-          }
-          catch (...)
-          {
-            if (GetActive())
-            {
-              ReactOnCommand(fsCopyToLocal);
-            }
-          }
-        }
-        catch (const std::exception &E)
-        {
-          CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
-          OnceDoneOperation = odoIdle;
-        }
-
-        if (OperationProgress.Cancel == csContinue)
-        {
-          Result = true;
-        }
-      }
-      catch (...)
+      BOOST_SCOPE_EXIT ( (&FOperationProgress) (&OperationProgress) )
       {
         FOperationProgress = NULL;
         OperationProgress.Stop();
+      } BOOST_SCOPE_EXIT_END
+      if (TotalSizeKnown)
+      {
+        OperationProgress.SetTotalSize(TotalSize);
+      }
+
+      try
+      {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+            if (Self->GetActive())
+            {
+              Self->ReactOnCommand(fsCopyToLocal);
+            }
+        } BOOST_SCOPE_EXIT_END
+        FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,
+          &OperationProgress, OnceDoneOperation);
+      }
+      catch (const std::exception &E)
+      {
+        CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
+        OnceDoneOperation = odoIdle;
+      }
+
+      if (OperationProgress.Cancel == csContinue)
+      {
+        Result = true;
       }
     }
-    catch (...)
-    {
-      // If session is still active (no fatal error) we reload directory
-      // by calling EndTransaction
-      EndTransaction();
-    }
-
-  }
-  catch (...)
-  {
-    if (OwnsFileList) delete FilesToCopy;
   }
 
   if (OnceDoneOperation != odoIdle)
