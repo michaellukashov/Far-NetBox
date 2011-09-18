@@ -2477,13 +2477,12 @@ bool TTerminal::FileExists(const std::wstring FileName, TRemoteFile ** AFile)
   try
   {
     SetExceptionOnFail(true);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->SetExceptionOnFail(false);
+      } BOOST_SCOPE_EXIT_END
       ReadFile(FileName, File);
-    }
-    catch (...)
-    {
-      SetExceptionOnFail(false);
     }
 
     if (AFile != NULL)
@@ -2549,8 +2548,11 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           FileName = FileList->GetString(Index);
           try
           {
-            try
             {
+              BOOST_SCOPE_EXIT ( (&Self) (&Progress) (FileName) (Success) (OnceDoneOperation) )
+              {
+                Progress.Finish(FileName, Success, OnceDoneOperation);
+              } BOOST_SCOPE_EXIT_END
               Success = false;
               if (!Ex)
               {
@@ -2563,10 +2565,6 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
                 // FIXME ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
               }
               Success = true;
-            }
-            catch (...)
-            {
-              Progress.Finish(FileName, Success, OnceDoneOperation);
             }
           }
           catch (const EScpSkipFile & E)
