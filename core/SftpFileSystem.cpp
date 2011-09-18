@@ -3571,7 +3571,6 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
 
   FTerminal->FOperationProgress = &Progress;
 
-  try
   {
     BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
     {
@@ -3640,8 +3639,13 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
+        (&OperationProgress) )
+      {
+        Self->FAvoidBusy = false;
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      } BOOST_SCOPE_EXIT_END
       try
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
@@ -3667,11 +3671,6 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           };
         );
       }
-    }
-    catch (...)
-    {
-      FAvoidBusy = false;
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     Index++;
   }
@@ -4150,8 +4149,31 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
           NULL, false, FVersion, FUtfStrings);
       }
 
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Self) (&TransferFinished) (&OpenParams)
+            (&CloseRequest) (&DoResume) (&DestFileName) (&OperationProgress) )
+        {
+          if (Self->FTerminal->GetActive())
+          {
+            // if file transfer was finished, the close request was already sent
+            if (!OpenParams.RemoteFileHandle.empty())
+            {
+              Self->SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
+                OperationProgress, TransferFinished, true, &CloseRequest);
+            }
+            // wait for the response
+            Self->SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
+              OperationProgress, TransferFinished, false, &CloseRequest);
+
+            // delete file if transfer was not completed, resuming was not allowed and
+            // we were not appending (incl. alternate resume),
+            // shortly after plain transfer completes (eq. !ResumeAllowed)
+            if (!TransferFinished && !DoResume && (OpenParams.OverwriteMode == omOverwrite))
+            {
+              Self->DoDeleteFile(OpenParams.RemoteFileName, SSH_FXP_REMOVE);
+            }
+          }
+        } BOOST_SCOPE_EXIT_END
         if (OpenParams.OverwriteMode == omAppend)
         {
           FTerminal->LogEvent(L"Appending file.");
@@ -4169,8 +4191,11 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
         }
 
         TSFTPUploadQueue Queue(this);
-        try
         {
+          BOOST_SCOPE_EXIT ( (&Queue) )
+          {
+            Queue.DisposeSafe();
+          } BOOST_SCOPE_EXIT_END
           Queue.Init(FileName, File, OperationProgress,
             OpenParams.RemoteFileHandle,
             DestWriteOffset + OperationProgress->TransferedSize);
@@ -4196,36 +4221,9 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
             ReserveResponse(&PropertiesRequest, &PropertiesResponse);
           }
         }
-        catch (...)
-        {
-          Queue.DisposeSafe();
-        }
 
         TransferFinished = true;
         // queue is discarded here
-      }
-      catch (...)
-      {
-        if (FTerminal->GetActive())
-        {
-          // if file transfer was finished, the close request was already sent
-          if (!OpenParams.RemoteFileHandle.empty())
-          {
-            SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
-              OperationProgress, TransferFinished, true, &CloseRequest);
-          }
-          // wait for the response
-          SFTPCloseRemote(OpenParams.RemoteFileHandle, DestFileName,
-            OperationProgress, TransferFinished, false, &CloseRequest);
-
-          // delete file if transfer was not completed, resuming was not allowed and
-          // we were not appending (incl. alternate resume),
-          // shortly after plain transfer completes (eq. !ResumeAllowed)
-          if (!TransferFinished && !DoResume && (OpenParams.OverwriteMode == omOverwrite))
-          {
-            DoDeleteFile(OpenParams.RemoteFileName, SSH_FXP_REMOVE);
-          }
-        }
       }
 
       if (DoResume)
