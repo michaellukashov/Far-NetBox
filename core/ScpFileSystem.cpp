@@ -2314,8 +2314,12 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
             /* TODO 1 : Turn off read-only attr */
 
-            try
             {
+              BOOST_SCOPE_EXIT ( (&Self) (&File) (&FileStream) )
+              {
+                if (File) CloseHandle(File);
+                if (FileStream) delete FileStream;
+              } BOOST_SCOPE_EXIT_END
               try
               {
                 if (FileExists(DestFileName))
@@ -2459,11 +2463,6 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
               {
                 SetFileTime(File, NULL, &FileData.AcTime, &FileData.WrTime);
               }
-            }
-            catch (...)
-            {
-              if (File) CloseHandle(File);
-              if (FileStream) delete FileStream;
             }
           }
           catch (const std::exception & E)
