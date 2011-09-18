@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include <map>
 #include <math.h>
@@ -823,16 +824,15 @@ void TFarDialog::Redraw()
 //---------------------------------------------------------------------------
 void TFarDialog::ShowGroup(int Group, bool Show)
 {
-    // ((*this).*OnKey.get())(this, Item, KeyCode, Result);
-    ProcessGroup(Group, (TFarProcessGroupEvent)&TFarDialog::ShowItem, &Show);
+    ProcessGroup(Group, boost::bind(&TFarDialog::ShowItem, this, _1, _2), &Show);
 }
 //---------------------------------------------------------------------------
 void TFarDialog::EnableGroup(int Group, bool Enable)
 {
-    ProcessGroup(Group, (TFarProcessGroupEvent)&TFarDialog::EnableItem, &Enable);
+    ProcessGroup(Group, boost::bind(&TFarDialog::EnableItem, this, _1, _2), &Enable);
 }
 //---------------------------------------------------------------------------
-void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
+void TFarDialog::ProcessGroup(int Group, const processgroupevent_slot_type &Callback,
         void *Arg)
 {
     LockChanges();
@@ -841,13 +841,14 @@ void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
         {
             Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
+        processgroupevent_signal_type processgroupevent;
+        processgroupevent.connect(Callback);
         for (int i = 0; i < GetItemCount(); i++)
         {
             TFarDialogItem *I = GetItem(i);
             if (I->GetGroup() == Group)
             {
-                // Callback(I, Arg);
-                ((*this).*Callback)(I, Arg);
+                processgroupevent(I, Arg);
             }
         }
     }

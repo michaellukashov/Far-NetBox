@@ -565,7 +565,9 @@ typedef key_signal_type::slot_type key_slot_type;
 typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
 typedef mouse_click_signal_type::slot_type mouse_click_slot_type;
 
-typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
+// typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
+typedef boost::signal2<void, TFarDialogItem *, void *> processgroupevent_signal_type;
+typedef processgroupevent_signal_type::slot_type processgroupevent_slot_type;
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
 {
@@ -649,7 +651,7 @@ protected:
     void BreakSynchronize();
     void Synchronize(TThreadMethod Method);
     void Close(TFarButton *Button);
-    void ProcessGroup(int Group, TFarProcessGroupEvent Callback, void *Arg);
+    void ProcessGroup(int Group, const processgroupevent_slot_type &Callback, void *Arg);
     void ShowItem(TFarDialogItem *Item, void *Arg);
     void EnableItem(TFarDialogItem *Item, void *Arg);
     bool ChangesLocked();
