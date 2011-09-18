@@ -127,68 +127,55 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
     {
         ResetCachedInfo();
         Info->StructSize = sizeof(PluginInfo);
-        TStrings *DiskMenuStrings = NULL;
-        TStrings *PluginMenuStrings = NULL;
-        TStrings *PluginConfigStrings = NULL;
-        TStrings *CommandPrefixes = NULL;
-        try
-        {
-            DiskMenuStrings = new TStringList();
-            PluginMenuStrings = new TStringList();
-            PluginConfigStrings = new TStringList();
-            CommandPrefixes = new TStringList();
+        TStringList DiskMenuStrings;
+        TStringList PluginMenuStrings;
+        TStringList PluginConfigStrings;
+        TStringList CommandPrefixes;
 
-            ClearPluginInfo(FPluginInfo);
+        ClearPluginInfo(FPluginInfo);
 
-            GetPluginInfoEx(FPluginInfo.Flags, DiskMenuStrings, PluginMenuStrings,
-                            PluginConfigStrings, CommandPrefixes);
+        GetPluginInfoEx(FPluginInfo.Flags, &DiskMenuStrings, &PluginMenuStrings,
+                        &PluginConfigStrings, &CommandPrefixes);
 
 #define COMPOSESTRINGARRAY(NAME) \
-        if (NAME->GetCount()) \
+        if (NAME.GetCount()) \
         { \
-          wchar_t ** StringArray = new wchar_t *[NAME->GetCount()]; \
+          wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
           FPluginInfo.NAME = StringArray; \
-          FPluginInfo.NAME ## Number = NAME->GetCount(); \
-          for (int Index = 0; Index < NAME->GetCount(); Index++) \
+          FPluginInfo.NAME ## Number = NAME.GetCount(); \
+          for (int Index = 0; Index < NAME.GetCount(); Index++) \
           { \
-            StringArray[Index] = StrToFar(DuplicateStr(NAME->GetString(Index))); \
+            StringArray[Index] = StrToFar(DuplicateStr(NAME.GetString(Index))); \
           } \
         }
 
-            COMPOSESTRINGARRAY(DiskMenuStrings);
-            COMPOSESTRINGARRAY(PluginMenuStrings);
-            COMPOSESTRINGARRAY(PluginConfigStrings);
+        COMPOSESTRINGARRAY(DiskMenuStrings);
+        COMPOSESTRINGARRAY(PluginMenuStrings);
+        COMPOSESTRINGARRAY(PluginConfigStrings);
 
 #undef COMPOSESTRINGARRAY
 
-            if (DiskMenuStrings->GetCount())
-            {
-                wchar_t *NumberArray = new wchar_t[DiskMenuStrings->GetCount()];
-                FPluginInfo.DiskMenuStrings = &NumberArray;
-                for (int Index = 0; Index < DiskMenuStrings->GetCount(); Index++)
-                {
-                    NumberArray[Index] = (int)DiskMenuStrings->GetObject(Index);
-                }
-            }
-
-            std::wstring CommandPrefix;
-            for (int Index = 0; Index < CommandPrefixes->GetCount(); Index++)
-            {
-                CommandPrefix = CommandPrefix + (CommandPrefix.empty() ? L"" : L":") +
-                                CommandPrefixes->GetString(Index);
-            }
-            FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix));
-        }
-        catch (...)
+        if (DiskMenuStrings.GetCount())
         {
+            wchar_t *NumberArray = new wchar_t[DiskMenuStrings.GetCount()];
+            FPluginInfo.DiskMenuStrings = &NumberArray;
+            for (int Index = 0; Index < DiskMenuStrings.GetCount(); Index++)
+            {
+                NumberArray[Index] = (int)DiskMenuStrings.GetObject(Index);
+            }
         }
-        delete DiskMenuStrings;
-        delete PluginMenuStrings;
-        delete PluginConfigStrings;
-        delete CommandPrefixes;
+
+        std::wstring CommandPrefix;
+        for (int Index = 0; Index < CommandPrefixes.GetCount(); Index++)
+        {
+            CommandPrefix = CommandPrefix + (CommandPrefix.empty() ? L"" : L":") +
+                            CommandPrefixes.GetString(Index);
+        }
+        FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix));
+
         memcpy(Info, &FPluginInfo, sizeof(FPluginInfo));
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleException(&E);
     }
