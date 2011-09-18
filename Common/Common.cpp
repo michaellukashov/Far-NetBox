@@ -858,8 +858,11 @@ void ProcessLocalDirectory(std::wstring DirName,
   DirName = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName + "*.*", FindAttrs, SearchRec) == 0)
   {
-    try
     {
+        BOOST_SCOPE_EXIT ( (&SearchRec) )
+        {
+            ::FindClose(SearchRec);
+        }
       do
       {
         if ((SearchRec.Name != ".") && (SearchRec.Name != ".."))
@@ -869,10 +872,6 @@ void ProcessLocalDirectory(std::wstring DirName,
 
       } while (FindNext(SearchRec) == 0);
     }
-    catch (...)
-    {
-    }
-    FindClose(SearchRec);
   }
   */
 }
