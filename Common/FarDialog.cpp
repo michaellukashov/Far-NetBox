@@ -1007,7 +1007,7 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
     FEnabled = true;
     FIsEnabled = true;
     FOnExit = NULL;
-    FOnMouseClick = NULL;
+    // FOnMouseClick = NULL;
     FColors = 0;
     FColorMask = 0;
 
@@ -1608,9 +1608,9 @@ TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
 {
-    if (FOnMouseClick)
+    if (FOnMouseClick.num_slots() > 0)
     {
-        ((*this).*FOnMouseClick)(this, Event);
+        FOnMouseClick(this, Event);
     }
     return DefaultItemProc(DN_MOUSECLICK, reinterpret_cast<long>(Event));
 }

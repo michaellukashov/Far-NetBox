@@ -560,9 +560,11 @@ enum TItemPosition { ipNewLine, ipBelow, ipRight };
 typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
 typedef key_signal_type::slot_type key_slot_type;
 
+// typedef void (TObject::*TFarMouseClickEvent) 
+    // (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
+typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
+typedef mouse_click_signal_type::slot_type mouse_click_slot_type;
 
-typedef void (TObject::*TFarMouseClickEvent) 
-    (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
@@ -766,8 +768,8 @@ public:
 
     TNotifyEvent GetOnExit() { return FOnExit; }
     void SetOnExit(TNotifyEvent value) { FOnExit = value; }
-    TFarMouseClickEvent GetOnMouseClick() { return FOnMouseClick; }
-    void SetOnMouseClick(TFarMouseClickEvent value) { FOnMouseClick = value; }
+    const mouse_click_signal_type &GetOnMouseClick() const { return FOnMouseClick; }
+    void SetOnMouseClick(const mouse_click_slot_type &value) { FOnMouseClick.connect(value); }
 
     void Move(int DeltaX, int DeltaY);
     void MoveAt(int X, int Y);
@@ -782,7 +784,7 @@ protected:
     int FGroup;
     int FTag;
     TNotifyEvent FOnExit;
-    TFarMouseClickEvent FOnMouseClick;
+    mouse_click_signal_type FOnMouseClick;
 
     TFarDialogItem(TFarDialog *ADialog, int AType);
     ~TFarDialogItem();
