@@ -300,28 +300,6 @@ add_dependencies ( testnetbox_01
 target_link_libraries ( testnetbox_01 )
 
 #-------------------------------------------------------
-# target testnetbox_10
-
-set ( TESTNETBOX_10_DIR ${PROJECT_ROOT}/NetBox )
-
-set ( TESTNETBOX_10_SOURCES ${COMMON_SOURCES}
-    ${PROJECT_ROOT}/resource/testnetbox_10.rc
-    ${TESTNETBOX_10_DIR}/testnetbox_10.cpp
-)
-
-add_executable( testnetbox_10 ${TESTNETBOX_10_SOURCES} )
-set_target_properties( testnetbox_10
-    PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
-)
-add_dependencies ( testnetbox_10
-    libputty
-)
-
-target_link_libraries ( testnetbox_10 ${NETBOX_LIBRARIES} )
-
-#-------------------------------------------------------
 # target testnetbox_03
 
 set ( TESTNETBOX_03_DIR ${PROJECT_ROOT}/NetBox )
@@ -350,4 +328,26 @@ add_dependencies ( testnetbox_03
 )
 
 target_link_libraries ( testnetbox_03 ${NETBOX_LIBRARIES} )
+
+#-------------------------------------------------------
+# target testnetbox_10
+
+set ( TESTNETBOX_10_DIR ${PROJECT_ROOT}/NetBox )
+
+set ( TESTNETBOX_10_SOURCES ${COMMON_SOURCES}
+    ${PROJECT_ROOT}/resource/testnetbox_10.rc
+    ${TESTNETBOX_10_DIR}/testnetbox_10.cpp
+)
+
+add_executable( testnetbox_10 ${TESTNETBOX_10_SOURCES} )
+set_target_properties( testnetbox_10
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+)
+add_dependencies ( testnetbox_10
+    libputty
+)
+
+target_link_libraries ( testnetbox_10 ${NETBOX_LIBRARIES} )
 
