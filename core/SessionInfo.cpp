@@ -175,7 +175,7 @@ public:
     Close(Committed);
   }
 
-  void Rollback(std::exception * E)
+  void Rollback(const std::exception * E)
   {
     assert(FErrorMessages == NULL);
     FErrorMessages = new TStringList();
@@ -183,7 +183,7 @@ public:
     {
       FErrorMessages->Add(::MB2W(E->what()));
     }
-    ExtException * EE = dynamic_cast<ExtException *>(E);
+    const ExtException * EE = dynamic_cast<const ExtException *>(E);
     if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
     {
       FErrorMessages->AddStrings(EE->GetMoreMessages());
@@ -338,7 +338,7 @@ void TSessionAction::Commit()
   }
 }
 //---------------------------------------------------------------------------
-void TSessionAction::Rollback(std::exception * E)
+void TSessionAction::Rollback(const std::exception * E)
 {
   if (FRecord != NULL)
   {
@@ -669,7 +669,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
         }
       }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
@@ -677,7 +677,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
       {
         throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
       }
-      catch (std::exception &E)
+      catch (const std::exception &E)
       {
         AddException(&E);
         FUI->HandleExtendedException(&E);
@@ -686,7 +686,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::AddException(std::exception * E)
+void TSessionLog::AddException(const std::exception * E)
 {
   if (E != NULL)
   {
@@ -820,7 +820,7 @@ void TSessionLog::OpenLogFile()
       throw ExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
     }
   }
-  catch (std::exception & E)
+  catch (const std::exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
@@ -830,7 +830,7 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
     }
-    catch (std::exception & E)
+    catch (const std::exception & E)
     {
       AddException(&E);
       FUI->HandleExtendedException(&E);

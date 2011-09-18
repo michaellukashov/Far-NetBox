@@ -1079,7 +1079,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Comments = Configuration->GetFileInfoString(L"Comments");
   }
-  catch(...)
+  catch (...)
   {
     Comments = L"";
   }
@@ -3804,7 +3804,7 @@ void TRightsContainer::UpdateControls()
       {
         OctalEditExit(NULL);
       }
-      catch(...)
+      catch (...)
       {
       }
     }
@@ -4682,7 +4682,7 @@ void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
   {
     GetSpeedLimit(SpeedCombo->GetText());
   }
-  catch(...)
+  catch (...)
   {
     SpeedCombo->SetFocus();
     throw;
@@ -5333,7 +5333,7 @@ TLabelList * TFileSystemInfoDialog::CreateLabelArray(int Count)
       List->Add(new TFarText(this));
     }
   }
-  catch(...)
+  catch (...)
   {
     delete List;
     throw;
@@ -5976,7 +5976,7 @@ void TApplyCommandDialog::Change()
       }
       AllowApplyToDirectories = FileCommand;
     }
-    catch(...)
+    catch (...)
     {
     }
 

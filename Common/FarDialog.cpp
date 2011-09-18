@@ -401,7 +401,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                 ReleaseSemaphore(FSynchronizeObjects[0], 1, NULL);
                 BreakSynchronize();
             }
-            catch(...)
+            catch (...)
             {
                 assert(false);
             }
@@ -431,7 +431,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                 {
                     Result = I->ItemProc(Msg, Param2);
                 }
-                catch (std::exception &E)
+                catch (const std::exception &E)
                 {
                     Handled = true;
                     GetFarPlugin()->HandleException(&E);
@@ -545,7 +545,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
             Change();
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         GetFarPlugin()->HandleException(&E);
         if (!Handled)

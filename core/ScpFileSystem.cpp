@@ -349,7 +349,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
           UName += GetOutput()->GetString(Index);
         }
       }
-      catch(...)
+      catch (...)
       {
         if (!FTerminal->GetActive())
         {
@@ -357,7 +357,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
         }
       }
     }
-    catch(...)
+    catch (...)
     {
       FTerminal->SetExceptionOnFail (false);
     }
@@ -480,7 +480,7 @@ void TSCPFileSystem::EnsureLocation()
     {
       ChangeDirectory(Directory);
     }
-    catch(...)
+    catch (...)
     {
       // when location to cached directory fails, pretend again
       // location in cached directory
@@ -548,7 +548,7 @@ bool TSCPFileSystem::IsLastLine(std::wstring & Line)
   {
     Result = RemoveLastLine(Line, FReturnCode, FCommandSet->GetLastLine());
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     FTerminal->TerminalError(&E, LoadStr(CANT_DETECT_RETURN_CODE));
   }
@@ -626,7 +626,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     FProcessingCommand = false;
   }
@@ -650,7 +650,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
     if (Params & ecReadProgress) COParams |= coReadProgress;
     ReadCommandOutput(COParams, &CmdString);
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetUseBusyCursor())
     {
@@ -708,7 +708,7 @@ void TSCPFileSystem::SkipStartupMessage()
     FTerminal->LogEvent(L"Skipping host startup message (if any).");
     ExecCommand(fsNull, 0, NULL);
   }
-  catch (std::exception & E)
+  catch (const std::exception & E)
   {
     FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR));
   }
@@ -761,7 +761,7 @@ void TSCPFileSystem::DetectReturnVar()
         // if fatal error occurs, we need to exit ...
         throw;
       }
-      catch (std::exception &E)
+      catch (const std::exception &E)
       {
         // ...otherwise, we will try next variable (if any)
         Success = false;
@@ -785,7 +785,7 @@ void TSCPFileSystem::DetectReturnVar()
         FCommandSet->GetReturnVar().c_str()));
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     FTerminal->CommandError(&E, LoadStr(DETECT_RETURNVAR_ERROR));
   }
@@ -815,12 +815,12 @@ void TSCPFileSystem::ClearAliases()
         ClearAlias(CommandList->GetString(Index));
       }
     }
-    catch(...)
+    catch (...)
     {
       delete CommandList;
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     FTerminal->CommandError(&E, LoadStr(UNALIAS_ALL_ERROR));
   }
@@ -836,7 +836,7 @@ void TSCPFileSystem::UnsetNationalVars()
       ExecCommand(fsUnset, 0, NationalVars[Index], false);
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     FTerminal->CommandError(&E, LoadStr(UNSET_NATIONAL_ERROR));
   }
@@ -948,7 +948,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             FileList->AddFile(File);
           }
         }
-        catch(...)
+        catch (...)
         {
           delete OutputCopy;
         }
@@ -990,7 +990,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FLsFullTime = asOn;
       }
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       if (FTerminal->GetActive())
       {
@@ -1040,7 +1040,7 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
     File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
     File->Complete();
   }
-  catch(...)
+  catch (...)
   {
     delete File;
     throw;
@@ -1250,7 +1250,7 @@ void TSCPFileSystem::AnyCommand(const std::wstring Command,
     ExecCommand(fsAnyCommand, 0, Command,
       ecDefault | ecIgnoreWarnings);
   }
-  catch(...)
+  catch (...)
   {
     FOnCaptureOutput = NULL;
     FSecureShell->SetOnCaptureOutput (NULL);
@@ -1309,7 +1309,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
         {
           ReadCommandOutput(coExpectNoOutput | coRaiseExcept | coOnlyReturnCode);
         }
-        catch(...)
+        catch (...)
         {
           // when ReadCommandOutput() fails than remote SCP is terminated already
           if (GotLastLine != NULL)
@@ -1378,7 +1378,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         throw std::exception("");
       }
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       if (GotLastLine && FTerminal->GetActive())
       {
@@ -1526,7 +1526,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     Failed = false;
   }
-  catch(...)
+  catch (...)
   {
     // Tell remote side, that we're done.
     if (FTerminal->GetActive())
@@ -1549,7 +1549,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             (Failed ? 0 : coRaiseExcept));
         }
       }
-      catch (std::exception &E)
+      catch (const std::exception &E)
       {
         // Only log error message (it should always succeed, but
         // some pending error maybe in queque) }
@@ -1781,11 +1781,11 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
         // normally -> no fatal error
         OperationProgress->TransferingFile = false;
       }
-      catch (std::exception &E)
+      catch (const std::exception &E)
       {
         // EScpFileSkipped is derived from EScpSkipFile,
         // but is does not indicate file skipped by user here
-        if (dynamic_cast<EScpFileSkipped *>(&E) != NULL)
+        if (dynamic_cast<const EScpFileSkipped *>(&E) != NULL)
         {
           Action.Rollback(&E);
         }
@@ -1821,7 +1821,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     if (File != NULL)
     {
@@ -1933,7 +1933,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         // );
       };
     }
-    catch(...)
+    catch (...)
     {
       // FIXME FindClose(SearchRec);
     }
@@ -1955,7 +1955,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -2025,7 +2025,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
                 FTerminal->DeleteFile(FileName, File)
               );
             }
-            catch(...)
+            catch (...)
             {
               FTerminal->SetExceptionOnFail (false);
             }
@@ -2061,7 +2061,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     // In case that copying doesn't cause fatal error (ie. connection is
     // still active) but wasn't succesful (exception or user termination)
@@ -2169,7 +2169,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
             throw std::exception("");
           }
         }
-        catch(std::exception & E)
+        catch (const std::exception & E)
         {
           if (!Initialized && FTerminal->GetActive())
           {
@@ -2253,7 +2253,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           AbsoluteFileName = SourceDir + OnlyFileName;
           OperationProgress->SetTransferSize(TSize);
         }
-        catch (std::exception &E)
+        catch (const std::exception &E)
         {
           SUSPEND_OPERATION (
             FTerminal->GetLog()->AddException(&E);
@@ -2371,7 +2371,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
                 FileStream = new TSafeHandleStream((HANDLE)File);
               }
-              catch (std::exception &E)
+              catch (const std::exception &E)
               {
                 // In this step we can still cancel transfer, so we do it
                 SCPError(::MB2W(E.what()), false);
@@ -2432,7 +2432,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                 while (!OperationProgress->IsLocalyDone() || !
                     OperationProgress->IsTransferDone());
               }
-              catch (std::exception &E)
+              catch (const std::exception &E)
               {
                 // Every exception during file transfer is fatal
                 FTerminal->FatalError(&E,
@@ -2465,13 +2465,13 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                 SetFileTime(File, NULL, &FileData.AcTime, &FileData.WrTime);
               }
             }
-            catch(...)
+            catch (...)
             {
               if (File) CloseHandle(File);
               if (FileStream) delete FileStream;
             }
           }
-          catch(std::exception & E)
+          catch (const std::exception & E)
           {
             if (SkipConfirmed)
             {

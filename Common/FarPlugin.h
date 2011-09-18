@@ -307,7 +307,7 @@ public:
     virtual int ProcessEditorEvent(int Event, void *Param);
     virtual int ProcessEditorInput(const INPUT_RECORD *Rec);
 
-    virtual void HandleException(std::exception *E, int OpMode = 0);
+    virtual void HandleException(const std::exception *E, int OpMode = 0);
 
     static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
@@ -398,7 +398,7 @@ protected:
     virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
     virtual void HandleFileSystemException(TCustomFarFileSystem *FileSystem,
-            std::exception *E, int OpMode = 0);
+        const std::exception *E, int OpMode = 0);
     virtual bool IsOldFar();
     virtual void OldFar();
     void ResetCachedInfo();
@@ -481,7 +481,7 @@ protected:
     bool IsLeft();
     bool IsRight();
 
-    virtual void HandleException(std::exception *E, int OpMode = 0);
+    virtual void HandleException(const std::exception *E, int OpMode = 0);
 
     TFarPanelInfo *GetPanelInfo() { return GetPanelInfo(0); };
     TFarPanelInfo *GetAnotherPanelInfo() { return GetPanelInfo(1); };

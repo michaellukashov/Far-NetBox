@@ -455,7 +455,7 @@ void TConfiguration::CleanupConfiguration()
       FDontSave = true;
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_CONFIG_ERROR);
   }
@@ -480,7 +480,7 @@ void TConfiguration::CleanupHostKeys()
   {
     CleanupRegistry(GetSshHostKeysSubKey());
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_HOSTKEYS_ERROR);
   }
@@ -499,7 +499,7 @@ void TConfiguration::CleanupRandomSeedFile()
       }
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_SEEDFILE_ERROR);
   }
@@ -521,7 +521,7 @@ void TConfiguration::CleanupIniFile()
       FDontSave = true;
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_INIFILE_ERROR);
   }
@@ -669,7 +669,7 @@ std::wstring TConfiguration::GetVersionStr()
    */
     return L"";
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E, L"Can't get application version");
   }
@@ -690,7 +690,7 @@ std::wstring TConfiguration::GetVersion()
     */
     return Result;
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E, L"Can't get application version");
   }

@@ -314,7 +314,7 @@ void TFTPFileSystem::Open()
 
       FFileZillaIntf->Init();
     }
-    catch(...)
+    catch (...)
     {
       delete FFileZillaIntf;
       FFileZillaIntf = NULL;
@@ -439,7 +439,7 @@ void TFTPFileSystem::Open()
       assert(!FPasswordFailed);
       FPasswordFailed = false;
     }
-    catch(...)
+    catch (...)
     {
       if (FPasswordFailed)
       {
@@ -497,7 +497,7 @@ void TFTPFileSystem::Idle()
           Files->Directory = CurrentDirectory;
           DoReadDirectory(Files);
         }
-        catch(...)
+        catch (...)
         {
           // ignore non-fatal errors
           // (i.e. current directory may not exist anymore)
@@ -619,7 +619,7 @@ void TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
     // user chance to leave the non-existing directory.
     EnsureLocation();
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -674,7 +674,7 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
           FTerminal->ProcessDirectory(AFileName, FTerminal->ChangeFileProperties,
             (void*)Properties);
         }
-        catch(...)
+        catch (...)
         {
           Action.Cancel();
           throw;
@@ -955,7 +955,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch(EScpSkipFile & E)
+      catch (const EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
@@ -988,7 +988,7 @@ void TFTPFileSystem::SinkRobust(const std::wstring FileName,
       Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1175,7 +1175,7 @@ void TFTPFileSystem::SinkFile(std::wstring FileName,
     SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch(EScpSkipFile & E)
+  catch (const EScpSkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
@@ -1231,7 +1231,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch(EScpSkipFile & E)
+      catch (const EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
@@ -1263,7 +1263,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
       Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1444,7 +1444,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
           CreateDir = false;
         }
       }
-      catch (EScpSkipFile &E)
+      catch (const EScpSkipFile &E)
       {
         // If ESkipFile occurs, just log it and continue with next file
         SUSPEND_OPERATION (
@@ -1486,7 +1486,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
         FTerminal->ExceptionOnFail = false;
       }
     }
-    catch(...)
+    catch (...)
     {
       TRemoteFile * File = NULL;
       // ignore non-fatal error when the directory already exists
@@ -1554,7 +1554,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
     {
       FTerminal->ProcessDirectory(FileName, FTerminal->DeleteFile, &Params);
     }
-    catch(...)
+    catch (...)
     {
       Action.Cancel();
       throw;
@@ -1801,7 +1801,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // (e.g. before file transfer)
       FDoListAll = (FListAll == asOn);
     }
-    catch(...)
+    catch (...)
     {
       FDoListAll = false;
       // reading the first directory has failed,
@@ -1874,7 +1874,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     // FZAPI treats all symlink target as directories
     File->Type = FILETYPE_DIRECTORY;
   }
-  catch(...)
+  catch (...)
   {
     delete File;
     File = NULL;
@@ -2271,7 +2271,7 @@ void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCo
       GotNonCommandReply(FReply);
     }
   }
-  catch(...)
+  catch (...)
   {
     // even if non-fatal error happens, we must process pending message,
     // so that we "eat" the reply message, so that it gets not mistakenly
@@ -2454,7 +2454,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
           MoreMessages = NULL;
         }
       }
-      catch(...)
+      catch (...)
       {
         delete MoreMessages;
         throw;
@@ -3180,7 +3180,7 @@ bool TFTPFileSystem::HandleListData(const char * Path,
           {
             File->Rights->Text = Entry->Permissions + 1;
           }
-          catch(...)
+          catch (...)
           {
             // ignore permissions errors with FTP
           }
@@ -3246,7 +3246,7 @@ bool TFTPFileSystem::HandleListData(const char * Path,
 
         File->Complete();
       }
-      catch (std::exception & E)
+      catch (const std::exception & E)
       {
         delete File;
         std::wstring EntryData =

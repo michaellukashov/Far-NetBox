@@ -2323,7 +2323,7 @@ void TStoredSessionList::Cleanup()
     } catch(...) {
       delete Storage;
     }
-  } catch (std::exception &E) {
+  } catch (const std::exception &E) {
     throw ExtException(&E); // FIXME, CLEANUP_SESSIONS_ERROR);
   }
 }

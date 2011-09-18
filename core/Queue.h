@@ -147,7 +147,7 @@ protected:
     std::wstring Name, std::wstring Instructions, TStrings * Prompts,
     TStrings * Results, bool & Result, void * Arg);
   void DoShowExtendedException(TTerminal * Terminal,
-    std::exception * E, void * Arg);
+    const std::exception * E, void * Arg);
   void DoQueueItemUpdate(TQueueItem * Item);
   void DoListUpdate();
   void DoEvent(TQueueEvent Event);

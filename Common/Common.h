@@ -43,7 +43,7 @@ std::wstring DelimitStr(std::wstring Str, std::wstring Chars);
 std::wstring ShellDelimitStr(std::wstring Str, char Quote);
 void OemToAnsi(std::wstring & Str);
 void AnsiToOem(std::wstring & Str);
-std::wstring ExceptionLogString(std::exception *E);
+std::wstring ExceptionLogString(const std::exception *E);
 bool IsNumber(const std::wstring Str);
 std::wstring SystemTemporaryDirectory();
 std::wstring SysErrorMessage(int code);

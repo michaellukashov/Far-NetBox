@@ -271,7 +271,7 @@ std::wstring ShellDelimitStr(std::wstring Str, char Quote)
   return DelimitStr(Str, Chars);
 }
 //---------------------------------------------------------------------------
-std::wstring ExceptionLogString(std::exception *E)
+std::wstring ExceptionLogString(const std::exception *E)
 {
   assert(E);
   if (::InheritsFrom<std::exception, std::exception>(E))

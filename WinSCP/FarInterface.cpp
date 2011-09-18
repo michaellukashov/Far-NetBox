@@ -12,7 +12,7 @@ TConfiguration * CreateConfiguration()
   return new TFarConfiguration(FarPlugin);
 }
 //---------------------------------------------------------------------------
-void ShowExtendedException(std::exception * E)
+void ShowExtendedException(const std::exception * E)
 {
   assert(FarPlugin != NULL);
   TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);

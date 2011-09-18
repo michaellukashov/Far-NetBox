@@ -69,7 +69,7 @@ public:
   }
 
   TTerminal * Terminal;
-  std::exception * E;
+  const std::exception * E;
 };
 //---------------------------------------------------------------------------
 class TTerminalItem : public TSignalThread
@@ -109,7 +109,7 @@ protected:
     std::wstring Name, std::wstring Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    std::exception * E, void * Arg);
+    const std::exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const std::wstring & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
@@ -815,7 +815,7 @@ void TTerminalQueue::DoPromptUser(TTerminal * Terminal,
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoShowExtendedException(
-  TTerminal * Terminal, std::exception * E, void * Arg)
+  TTerminal * Terminal, const std::exception * E, void * Arg)
 {
   if (GetOnShowExtendedException() != NULL)
   {
@@ -862,7 +862,7 @@ public:
     TTerminalItem * Item, const std::wstring & Name);
 
 protected:
-  virtual bool DoQueryReopen(std::exception * E);
+  virtual bool DoQueryReopen(const std::exception * E);
 
 private:
   TTerminalItem * FItem;
@@ -875,7 +875,7 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal,
 {
 }
 //---------------------------------------------------------------------------
-bool TBackgroundTerminal::DoQueryReopen(std::exception * /*E*/)
+bool TBackgroundTerminal::DoQueryReopen(const std::exception * /*E*/)
 {
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
@@ -972,7 +972,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch(std::exception & E)
+  catch (const std::exception & E)
   {
     // do not show error messages, if task was canceled anyway
     // (for example if transfer is cancelled during reconnection attempts)
@@ -1181,7 +1181,7 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalShowExtendedException(
-  TTerminal * Terminal, std::exception * E, void * Arg)
+  TTerminal * Terminal, const std::exception * E, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == NULL);

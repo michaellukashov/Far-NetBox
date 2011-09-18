@@ -1197,7 +1197,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
     #undef GETNCOL
     #undef GETCOL
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ETerminal(&E, ::FmtLoadStr(LIST_LINE_ERROR, value.c_str()));
   }
@@ -1262,7 +1262,7 @@ void TRemoteFile::FindLinkedFile()
       }
       GetTerminal()->SetExceptionOnFail(false);
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
       // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
         // else Terminal->Log->AddException(&E);

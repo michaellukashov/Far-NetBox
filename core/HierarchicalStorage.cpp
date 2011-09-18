@@ -640,7 +640,7 @@ TIniFileStorage::~TIniFileStorage()
           {
             RaiseLastOSError();
           }
-          catch (std::exception & E)
+          catch (const std::exception & E)
           {
             throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()));
           }

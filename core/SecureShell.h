@@ -96,7 +96,7 @@ protected:
   int TranslateErrorMessage(std::wstring & Message);
   void AddStdError(std::wstring Str);
   void AddStdErrorLine(const std::wstring & Str);
-  void FatalError(std::exception * E, std::wstring Msg);
+  void FatalError(const std::exception * E, std::wstring Msg);
   void inline LogEvent(const std::wstring & Str);
   void FatalError(std::wstring Error);
   static void ClearConfig(Config * cfg);

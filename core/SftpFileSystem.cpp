@@ -1041,7 +1041,7 @@ public:
       {
         FFileSystem->ReceiveResponse(Request, Response);
       }
-      catch(std::exception & E)
+      catch (const std::exception & E)
       {
         if (FFileSystem->FTerminal->GetActive())
         {
@@ -2388,7 +2388,7 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring Path)
 
     return RealDir;
   }
-  catch(std::exception & E)
+  catch (const std::exception & E)
   {
     if (FTerminal->GetActive())
     {
@@ -2574,7 +2574,7 @@ void TSFTPFileSystem::DoStartup()
   {
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_VERSION);
   }
-  catch(std::exception &E)
+  catch (const std::exception &E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR));
   }
@@ -2707,7 +2707,7 @@ void TSFTPFileSystem::DoStartup()
             }
           }
         }
-        catch(std::exception & E)
+        catch (const std::exception & E)
         {
           FFixedPaths->Clear();
           FTerminal->LogEvent(FORMAT(L"Failed to decode %s extension",
@@ -3066,7 +3066,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FTerminal->SetExceptionOnFail(false);
         }
       }
-      catch(std::exception &E)
+      catch (const std::exception &E)
       {
         // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
           // else File = NULL;
@@ -3525,7 +3525,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
             Success = true;
           }
-          catch (std::exception & E)
+          catch (const std::exception & E)
           {
             FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
               File != NULL ? File->GetFullFileName().c_str() : L""));
@@ -3659,7 +3659,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           tfFirstLevel);
         Success = true;
       }
-      catch(EScpSkipFile & E)
+      catch (const EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E))
@@ -3890,7 +3890,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
       SFTPSource(FileName, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -4295,7 +4295,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
               asOK | FLAGMASK(CopyParam->GetIgnorePermErrors(), asPermDenied));
           );
         }
-        catch(std::exception & E)
+        catch (const std::exception & E)
         {
           if (TouchAction.get() != NULL)
           {
@@ -4431,7 +4431,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 
       Success = true;
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
       {
@@ -4455,7 +4455,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           assert(File);
           SAFE_DESTROY(File);
         }
-        catch(...)
+        catch (...)
         {
           if (!FTerminal->GetActive())
           {
@@ -4515,7 +4515,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
             ReadFile(RealFileName, File);
             SAFE_DESTROY(File);
           }
-          catch(...)
+          catch (...)
           {
             if (!FTerminal->GetActive())
             {
@@ -4578,7 +4578,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const std::wstring Handle,
         ReceiveResponse(P, Packet, SSH_FXP_STATUS);
       }
     }
-    catch(...)
+    catch (...)
     {
       if (!FTerminal->GetActive() || TransferFinished)
       {
@@ -4604,7 +4604,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   {
     TryOpenDirectory(DestFullName);
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -4720,13 +4720,13 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           Params, OperationProgress, tfFirstLevel);
         Success = true;
       }
-      catch(EScpSkipFile & E)
+      catch (const EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
-      catch(...)
+      catch (...)
       {
         // TODO: remove the block?
         throw;
@@ -4760,7 +4760,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
       SFTPSink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -5296,7 +5296,7 @@ void TSFTPFileSystem::SFTPSinkFile(std::wstring FileName,
     SFTPSinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch(EScpSkipFile & E)
+  catch (const EScpSkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 

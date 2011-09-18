@@ -111,7 +111,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
                    sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleException(&E);
     }
@@ -289,7 +289,7 @@ int TCustomFarPlugin::Configure(int Item)
 
         return Result;
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleException(&E);
         return false;
@@ -327,7 +327,7 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
 
         return Result;
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleException(&E);
         return INVALID_HANDLE_VALUE;
@@ -354,7 +354,7 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
         }
         FOpenedPlugins->Remove(FileSystem);
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleException(&E);
     }
@@ -371,7 +371,7 @@ void TCustomFarPlugin::OldFar()
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::HandleFileSystemException(
-    TCustomFarFileSystem *FileSystem, std::exception *E, int OpMode)
+    TCustomFarFileSystem *FileSystem, const std::exception *E, int OpMode)
 {
     // This method is called as last-resort exception handler before
     // leaving plugin API. Especially for API fuctions that must update
@@ -403,7 +403,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
             FileSystem->GetOpenPluginInfo(Info);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E);
     }
@@ -424,7 +424,7 @@ int TCustomFarPlugin::GetFindData(HANDLE Plugin,
             return FileSystem->GetFindData(PanelItem, ItemsNumber, OpMode);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
@@ -446,7 +446,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
             FileSystem->FreeFindData(PanelItem, ItemsNumber);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E);
     }
@@ -474,7 +474,7 @@ int TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
             return 0;
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
@@ -503,7 +503,7 @@ int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
             return 0;
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E);
         // when error occurs, assume that key can be handled by plugin and
@@ -541,7 +541,7 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
             return false;
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E);
         return Event == FE_COMMAND ? true : false;
@@ -562,7 +562,7 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode
             return FileSystem->SetDirectory(Dir, OpMode);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
@@ -583,7 +583,7 @@ int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, wchar_t *Name, int OpMode)
             return FileSystem->MakeDirectory(Name, OpMode);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
@@ -605,7 +605,7 @@ int TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
             return FileSystem->DeleteFiles(PanelItem, ItemsNumber, OpMode);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
@@ -628,7 +628,7 @@ int TCustomFarPlugin::GetFiles(HANDLE Plugin,
             return FileSystem->GetFiles(PanelItem, ItemsNumber, Move, DestPath, OpMode);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         // display error even for OPM_FIND
         HandleFileSystemException(FileSystem, &E, OpMode & ~OPM_FIND);
@@ -651,7 +651,7 @@ int TCustomFarPlugin::PutFiles(HANDLE Plugin,
             return FileSystem->PutFiles(PanelItem, ItemsNumber, Move, OpMode);
         }
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
@@ -666,7 +666,7 @@ int TCustomFarPlugin::ProcessEditorEvent(int Event, void *Param)
 
         return ProcessEditorEventEx(Event, Param);
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleException(&E);
         return 0;
@@ -681,7 +681,7 @@ int TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD *Rec)
 
         return ProcessEditorInputEx(Rec);
     }
-    catch (std::exception &E)
+    catch (const std::exception &E)
     {
         HandleException(&E);
         // when error occurs, assume that input event can be handled by plugin and
@@ -1240,7 +1240,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
                 {
                     OnValidate(Text);
                 }
-                catch (std::exception &E)
+                catch (const std::exception &E)
                 {
                     HandleException(&E);
                     Repeat = true;
@@ -1537,7 +1537,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE &Screen)
     Screen = 0;
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::HandleException(std::exception *E, int /*OpMode*/)
+void TCustomFarPlugin::HandleException(const std::exception *E, int /*OpMode*/)
 {
     assert(E);
     Message(FMSG_WARNING | FMSG_MB_OK, L"", StrToFar(E->what()));
@@ -1761,7 +1761,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
     delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileSystem::HandleException(std::exception *E, int OpMode)
+void TCustomFarFileSystem::HandleException(const std::exception *E, int OpMode)
 {
     FPlugin->HandleException(E, OpMode);
 }
@@ -2184,7 +2184,7 @@ TObjectList *TCustomFarFileSystem::CreatePanelItemList(
             PanelItems->Add((TObject *)new TFarPanelItem(&PanelItem[Index]));
         }
     }
-    catch(...)
+    catch (...)
     {
         delete PanelItems;
         throw;

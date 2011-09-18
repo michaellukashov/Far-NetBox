@@ -106,7 +106,7 @@ protected:
 
   void ProcessEditorEvent(int Event, void * Param);
 
-  virtual void HandleException(std::exception * E, int OpMode = 0);
+  virtual void HandleException(const std::exception * E, int OpMode = 0);
   void KeepaliveThreadCallback();
 
   inline bool SessionList();
@@ -294,7 +294,7 @@ private:
     std::wstring SessionName, const std::wstring & Banner, bool & NeverShowAgain,
     int Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    std::exception * E, void * Arg);
+    const std::exception * E, void * Arg);
   void TerminalDeleteLocalFile(const std::wstring FileName, bool Alternative);
   void OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);

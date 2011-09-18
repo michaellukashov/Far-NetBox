@@ -64,7 +64,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     CoreInitialize();
     FInitialized = true;
   }
-  catch (std::exception & E)
+  catch (const std::exception & E)
   {
     HandleException(&E);
   }
@@ -190,7 +190,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
     }
     while (Result >= 0);
   }
-  catch(...)
+  catch (...)
   {
     delete MenuItems;
   }
@@ -307,7 +307,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     delete FileSystem;
     throw;
@@ -470,13 +470,13 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     delete MenuItems;
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::ShowExtendedException(std::exception * E)
+void TWinSCPPlugin::ShowExtendedException(const std::exception * E)
 {
 // FIXME
 /*
@@ -513,7 +513,7 @@ void TWinSCPPlugin::OldFar()
   throw ExtException(FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::HandleException(std::exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(const std::exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0)) // || E->InheritsFrom(__classid(EFatal)))
   {
@@ -723,7 +723,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
       Result = qaNeverAskAgain;
     }
   }
-  catch(...)
+  catch (...)
   {
     delete ButtonLabels;
   }

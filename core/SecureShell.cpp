@@ -358,7 +358,7 @@ void TSecureShell::Init()
       // unless this is tunnel session, it must be safe to send now
       assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().empty());
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       if (FAuthenticating && !FAuthenticationLog.empty())
       {
@@ -370,7 +370,7 @@ void TSecureShell::Init()
       }
     }
   }
-  catch(std::exception & E)
+  catch (const std::exception & E)
   {
     if (FAuthenticating)
     {
