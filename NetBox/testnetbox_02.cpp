@@ -72,9 +72,9 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
     }
 }
 
-class TClass2 : public boost::signals::trackable
+class TClass2 // : public boost::signals::trackable
 {
-  typedef void result_type;
+  // typedef void result_type;
   typedef boost::signal2<void, TClass2 *, int> click_signal_type;
   typedef click_signal_type::slot_type click_slot_type;
   // typedef click_signal_type::slot_function_type click_slot_type;
