@@ -3497,8 +3497,11 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
   static int CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this);
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Queue) )
+    {
+      Queue.DisposeSafe();
+    } BOOST_SCOPE_EXIT_END
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
     {
       TSFTPPacket Packet;
@@ -3554,10 +3557,6 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
       while (Next);
     }
   }
-  catch (...)
-  {
-    Queue.DisposeSafe();
-  }
   // queue is discarded here
 }
 //---------------------------------------------------------------------------
@@ -3574,13 +3573,13 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
 
   try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
+    {
+      Self->FTerminal->FOperationProgress = NULL;
+      Progress.Stop();
+    } BOOST_SCOPE_EXIT_END
     DoCalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
-  }
-  catch (...)
-  {
-    FTerminal->FOperationProgress = NULL;
-    Progress.Stop();
   }
 }
 //---------------------------------------------------------------------------
