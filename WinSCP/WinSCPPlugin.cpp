@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
@@ -97,8 +101,11 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
   bool Change = false;
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      {
+        delete MenuItems;
+      } BOOST_SCOPE_EXIT_END
     int MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
     int MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
     int MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
@@ -189,10 +196,6 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
       }
     }
     while (Result >= 0);
-  }
-  catch (...)
-  {
-    delete MenuItems;
   }
 
   return Change;
@@ -319,8 +322,11 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      {
+        delete MenuItems;
+      } BOOST_SCOPE_EXIT_END
     TWinSCPFileSystem * FileSystem;
     TWinSCPFileSystem * AnotherFileSystem;
     FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
@@ -470,10 +476,6 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
     }
   }
-  catch (...)
-  {
-    delete MenuItems;
-  }
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(const std::exception * E)
@@ -561,8 +563,11 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
 {
   int Result;
   TStrings * ButtonLabels = new TStringList();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&ButtonLabels) )
+      {
+        delete ButtonLabels;
+      } BOOST_SCOPE_EXIT_END
     unsigned int Flags = 0;
 
     if (Params != NULL)
@@ -722,10 +727,6 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
       assert(NeverAskAgainCheck);
       Result = qaNeverAskAgain;
     }
-  }
-  catch (...)
-  {
-    delete ButtonLabels;
   }
   return Result;
 }
