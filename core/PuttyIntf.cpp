@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #define PUTTY_DO_GLOBALS
 #include "PuttyIntf.h"
 #include "Interface.h"
@@ -119,24 +122,23 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   assert(SecureShell != NULL);
 
   int Result;
-  TStrings * Prompts = new TStringList();
-  TStrings * Results = new TStringList();
-  try
+  TStringList Prompts;
+  TStringList Results;
   {
     for (int Index = 0; Index < int(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
-      Prompts->AddObject(::MB2W(Prompt->prompt), (TObject *)Prompt->echo);
-      Results->AddObject(L"", (TObject *)Prompt->result_len);
+      Prompts.AddObject(::MB2W(Prompt->prompt), (TObject *)Prompt->echo);
+      Results.AddObject(L"", (TObject *)Prompt->result_len);
     }
 
     if (SecureShell->PromptUser(p->to_server, ::MB2W(p->name), p->name_reqd,
-          ::MB2W(p->instruction), p->instr_reqd, Prompts, Results))
+          ::MB2W(p->instruction), p->instr_reqd, &Prompts, &Results))
     {
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
-        wcsncpy((wchar_t *)::MB2W(Prompt->result).c_str(), Results->GetString(Index).c_str(), Prompt->result_len);
+        wcsncpy((wchar_t *)::MB2W(Prompt->result).c_str(), Results.GetString(Index).c_str(), Prompt->result_len);
         Prompt->result[Prompt->result_len - 1] = '\0';
       }
       Result = 1;
@@ -145,11 +147,6 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
     {
       Result = 0;
     }
-  }
-  catch (...)
-  {
-    delete Prompts;
-    delete Results;
   }
 
   return Result;
@@ -596,8 +593,11 @@ bool HasGSSAPI()
     Config cfg;
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&List) )
+      {
+        ssh_gss_cleanup(List);
+      } BOOST_SCOPE_EXIT_END
       for (int Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
       {
         ssh_gss_library * library = &List->libraries[Index];
@@ -607,10 +607,6 @@ bool HasGSSAPI()
           ((library->acquire_cred(library, &ctx) == SSH_GSS_OK) &&
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
-    }
-    catch (...)
-    {
-      ssh_gss_cleanup(List);
     }
 
     if (has < 0)
