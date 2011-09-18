@@ -3929,8 +3929,11 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
 
     if (Found)
     {
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+          // FIXME Self->FindClose(SearchRec);
+        } BOOST_SCOPE_EXIT_END
         std::wstring FileName;
         while (Found)
         {
@@ -3974,10 +3977,6 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           );
         }
       }
-      catch (...)
-      {
-        // FIXME FindClose(SearchRec);
-      }
 
       // can we expect that ProcessDirectory would take so little time
       // that we can pospone showing progress window until anything actually happens?
@@ -4007,8 +4006,11 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         if (Modified || New)
         {
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
-          try
           {
+            BOOST_SCOPE_EXIT ( (&ChecklistItem) )
+            {
+              delete ChecklistItem;
+            } BOOST_SCOPE_EXIT_END
             ChecklistItem->IsDirectory = FileData->IsDirectory;
 
             ChecklistItem->Local = FileData->Info;
@@ -4049,10 +4051,6 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
               Data.Checklist->Add(ChecklistItem);
               ChecklistItem = NULL;
             }
-          }
-          catch (...)
-          {
-            delete ChecklistItem;
           }
         }
         else
