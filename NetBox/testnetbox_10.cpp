@@ -388,7 +388,7 @@ private:
 
 class TClass2
 {
-  typedef boost::signal1<void, TClass2 *> click_signal_type;
+  typedef boost::signal1<void, TClass2 *, int> click_signal_type;
   typedef click_signal_type::slot_type click_slot_type;
 
 public:
@@ -397,9 +397,11 @@ public:
     {
     }
     
+    const click_signal_type &GetOnClick() const { return m_OnClick; }
     void SetOnClick(const click_slot_type& onClick)
     {
         m_OnClick.connect(onClick);
+        // DEBUG_PRINTF(L"m_OnClick.num_slots = %d", m_OnClick.num_slots());
     }
     void Click()
     {
@@ -418,7 +420,7 @@ public:
         ClickEventHandlerTriggered(false)
     {
     }
-    void ClickEventHandler(TClass2 *Sender)
+    void ClickEventHandler(TClass2 *Sender, int Data)
     {
         BOOST_TEST_MESSAGE("TClass3: ClickEventHandler triggered");
         ClickEventHandlerTriggered = true;
@@ -449,6 +451,7 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
         TClass2 cl2;
         TClass3 cl3;
         cl2.SetOnClick(boost::bind(&TClass3::ClickEventHandler, &cl3, _1));
+        BOOST_CHECK(cl2.GetOnClick().num_slots() > 0);
         cl2.Click();
         BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
         BOOST_CHECK_EQUAL(true, cl3.ClickEventHandlerTriggered);
