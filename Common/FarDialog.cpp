@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include <map>
 #include <math.h>
 
@@ -40,6 +44,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     FBounds(-1, -1, 40, 10)
 {
     assert(AFarPlugin);
+    Self = this;
     FItems = new TObjectList();
     FContainers = new TObjectList();
     FFarPlugin = AFarPlugin;
@@ -87,8 +92,11 @@ void TFarDialog::SetBounds(const TRect &value)
     if (GetBounds() != value)
     {
         LockChanges();
-        try
         {
+            BOOST_SCOPE_EXIT ( (&Self) )
+            {
+                Self->UnlockChanges();
+            } BOOST_SCOPE_EXIT_END
             FBounds = value;
             if (GetHandle())
             {
@@ -105,10 +113,6 @@ void TFarDialog::SetBounds(const TRect &value)
                 GetItem(i)->DialogResized();
             }
         }
-        catch (...)
-        {
-        }
-        UnlockChanges();
     }
 }
 //---------------------------------------------------------------------------
@@ -704,8 +708,11 @@ int TFarDialog::ShowModal()
 
     TFarDialog *PrevTopDialog = GetFarPlugin()->FTopDialog;
     GetFarPlugin()->FTopDialog = this;
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Self) (&PrevTopDialog) )
+        {
+            Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
+        } BOOST_SCOPE_EXIT_END
         assert(GetDefaultButton());
         assert(GetDefaultButton()->GetDefault());
 
@@ -736,10 +743,6 @@ int TFarDialog::ShowModal()
             FResult = -1;
         }
     }
-    catch (...)
-    {
-    }
-    GetFarPlugin()->FTopDialog = PrevTopDialog;
 
     return FResult;
 }
@@ -777,8 +780,11 @@ void TFarDialog::Change()
     else
     {
         TList *NotifiedContainers = new TList();
-        try
         {
+            BOOST_SCOPE_EXIT ( (&NotifiedContainers) )
+            {
+                delete NotifiedContainers;
+            } BOOST_SCOPE_EXIT_END
             TFarDialogItem *DItem;
             for (int i = 0; i < GetItemCount(); i++)
             {
@@ -795,10 +801,6 @@ void TFarDialog::Change()
                 ((TFarDialogContainer *)(*NotifiedContainers)[Index])->Change();
             }
         }
-        catch (...)
-        {
-        }
-        delete NotifiedContainers;
     }
 }
 //---------------------------------------------------------------------------
@@ -834,8 +836,11 @@ void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
         void *Arg)
 {
     LockChanges();
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+            Self->UnlockChanges();
+        } BOOST_SCOPE_EXIT_END
         for (int i = 0; i < GetItemCount(); i++)
         {
             TFarDialogItem *I = GetItem(i);
@@ -846,10 +851,6 @@ void TFarDialog::ProcessGroup(int Group, TFarProcessGroupEvent Callback,
             }
         }
     }
-    catch (...)
-    {
-    }
-    UnlockChanges();
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ShowItem(TFarDialogItem *Item, void *Arg)
@@ -896,20 +897,17 @@ void TFarDialog::UnlockChanges()
     FChangesLocked--;
     if (FChangesLocked == 0)
     {
-        try
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
-            if (FChangesPending)
+            if (Self->GetHandle())
             {
-                FChangesPending = false;
-                Change();
+                Self->SendMessage(DM_ENABLEREDRAW, true, 0);
             }
-        }
-        catch (...)
+        } BOOST_SCOPE_EXIT_END
+        if (FChangesPending)
         {
-        }
-        if (GetHandle())
-        {
-            SendMessage(DM_ENABLEREDRAW, true, 0);
+            FChangesPending = false;
+            Change();
         }
     }
 }
@@ -2065,7 +2063,7 @@ TFarList::TFarList(TFarDialogItem *ADialogItem) :
 {
     assert((ADialogItem == NULL) ||
            (ADialogItem->GetType() == DI_COMBOBOX) || (ADialogItem->GetType() == DI_LISTBOX));
-
+    Self = this;
     FDialogItem = ADialogItem;
     FListItems = new FarList;
     memset(FListItems, 0, sizeof(*FListItems));
@@ -2116,18 +2114,17 @@ void TFarList::Put(int Index, const std::wstring S)
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
         FNoDialogUpdate = true;
-        try
         {
+            BOOST_SCOPE_EXIT ( (&Self) )
+            {
+                Self->FNoDialogUpdate = false;
+            } BOOST_SCOPE_EXIT_END
             TStringList::PutString(Index, S);
             if (GetUpdateCount() == 0)
             {
                 UpdateItem(Index);
             }
         }
-        catch (...)
-        {
-        }
-        FNoDialogUpdate = false;
     }
     else
     {
@@ -2184,8 +2181,11 @@ void TFarList::Changed()
         if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
         {
             GetDialogItem()->GetDialog()->LockChanges();
-            try
             {
+                BOOST_SCOPE_EXIT ( (&Self) )
+                {
+                    Self->GetDialogItem()->GetDialog()->UnlockChanges();
+                } BOOST_SCOPE_EXIT_END
                 GetDialogItem()->SendMessage(DM_LISTSET, (int)FListItems);
                 if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
                 {
@@ -2194,10 +2194,6 @@ void TFarList::Changed()
                 SetCurPos((PrevSelected >= GetCount()) ? (GetCount() - 1) : PrevSelected,
                           PrevTopIndex);
             }
-            catch (...)
-            {
-            }
-            GetDialogItem()->GetDialog()->UnlockChanges();
         }
     }
 }

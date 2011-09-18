@@ -670,6 +670,7 @@ private:
     bool FNeedsSynchronize;
     HANDLE FSynchronizeObjects[2];
     TThreadMethod FSynchronizeMethod;
+    TFarDialog *Self;
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
@@ -1053,6 +1054,7 @@ private:
     FarList *FListItems;
     TFarDialogItem *FDialogItem;
     bool FNoDialogUpdate;
+    TFarList *Self;
 
     inline int GetSelectedInt(bool Init);
     bool GetFlag(int Index, int Flag);
