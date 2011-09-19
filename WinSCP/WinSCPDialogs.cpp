@@ -5129,7 +5129,7 @@ public:
   enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
 
   TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-    TGetSpaceAvailable OnGetSpaceAvailable);
+    const getspaceavailable_slot_type &OnGetSpaceAvailable);
 
   void Execute(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, std::wstring SpaceAvailablePath);
@@ -5156,7 +5156,7 @@ protected:
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
 
 private:
-  TGetSpaceAvailable FOnGetSpaceAvailable;
+  getspaceavailable_signal_type FOnGetSpaceAvailable;
   TFileSystemInfo FFileSystemInfo;
   TSessionInfo FSessionInfo;
   bool FSpaceAvailableLoaded;
@@ -5190,10 +5190,10 @@ public:
 };
 //---------------------------------------------------------------------------
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-  TGetSpaceAvailable OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
-  FOnGetSpaceAvailable(OnGetSpaceAvailable),
+  const getspaceavailable_slot_type &OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
   FSpaceAvailableLoaded(false)
 {
+  FOnGetSpaceAvailable.connect(OnGetSpaceAvailable);
   TFarText * Text;
   TFarSeparator * Separator;
   TFarButton * Button;
@@ -5618,14 +5618,14 @@ void TFileSystemInfoDialog::SpaceAvailableButtonClick(
 //---------------------------------------------------------------------------
 void TFileSystemInfoDialog::CheckSpaceAvailable()
 {
-  assert(FOnGetSpaceAvailable != NULL);
+  assert(!FOnGetSpaceAvailable.empty());
   assert(!SpaceAvailablePathEdit->GetText().empty());
 
   FSpaceAvailableLoaded = true;
 
   bool DoClose = false;
 
-  // FIXME FOnGetSpaceAvailable(SpaceAvailablePathEdit->GetText(), FSpaceAvailable, DoClose);
+  FOnGetSpaceAvailable(SpaceAvailablePathEdit->GetText(), FSpaceAvailable, DoClose);
 
   FeedControls();
   if (DoClose)
@@ -5644,12 +5644,12 @@ void TFileSystemInfoDialog::NeedSpaceAvailable()
 //---------------------------------------------------------------------------
 bool TFileSystemInfoDialog::SpaceAvailableSupported()
 {
-  return (FOnGetSpaceAvailable != NULL);
+  return (!FOnGetSpaceAvailable.empty());
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  std::wstring SpaceAvailablePath, TGetSpaceAvailable OnGetSpaceAvailable)
+  std::wstring SpaceAvailablePath, const getspaceavailable_slot_type &OnGetSpaceAvailable)
 {
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
   {

@@ -1964,10 +1964,10 @@ void TWinSCPFileSystem::ShowInformation()
 {
   TSessionInfo SessionInfo = GetTerminal()->GetSessionInfo();
   TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
-  TGetSpaceAvailable OnGetSpaceAvailable = NULL;
+  getspaceavailable_signal_type OnGetSpaceAvailable;
   if (GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
   {
-    // FIXME OnGetSpaceAvailable = GetSpaceAvailable;
+    OnGetSpaceAvailable.connect(boost::bind(&TWinSCPFileSystem::GetSpaceAvailable, this, _1, _2, _3));
   }
   FileSystemInfoDialog(SessionInfo, FileSystemInfo, GetTerminal()->GetCurrentDirectory(),
     OnGetSpaceAvailable);

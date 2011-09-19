@@ -3,7 +3,7 @@
 #define WinSCPFileSystemH
 //---------------------------------------------------------------------------
 #include "boostdefines.hpp"
-#include <boost/signals/signal2.hpp>
+#include <boost/signals/signal3.hpp>
 
 #include "Interface.h"
 #include "FarPlugin.h"
@@ -61,8 +61,10 @@ enum TSessionActionEnum { saAdd, saEdit, saConnect };
   // (int Params, TSynchronizeOptions & Options);
 typedef boost::signal2<void, int, TSynchronizeOptions &> getsynchronizeoptions_signal_type;
 typedef getsynchronizeoptions_signal_type::slot_type getsynchronizeoptions_slot_type;
-typedef void (TObject::*TGetSpaceAvailable)
-  (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
+// typedef void (TObject::*TGetSpaceAvailable)
+  // (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
+typedef boost::signal3<void, const std::wstring, TSpaceAvailable &, bool &> getspaceavailable_signal_type;
+typedef getspaceavailable_signal_type::slot_type getspaceavailable_slot_type;
 struct TMultipleEdit
 {
   std::wstring FileName;
@@ -163,7 +165,7 @@ protected:
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, std::wstring SpaceAvailablePath,
-    TGetSpaceAvailable OnGetSpaceAvailable);
+    const getspaceavailable_slot_type &OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, std::wstring & Directory,
     TBookmarkList * BookmarkList);
   bool ApplyCommandDialog(std::wstring & Command, int & Params);
