@@ -41,10 +41,7 @@ class base_fixture_t : TObject
 {
 public:
     base_fixture_t() :
-        TObject(),
-        OnChangeNotifyEventTriggered(false),
-        ClickEventHandlerTriggered(false),
-        onStringListChangeTriggered(false)
+        TObject()
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     }
@@ -54,27 +51,6 @@ public:
     }
 
     bool scp_test(std::string host, int port, std::string user, std::string password);
-
-public:
-    void OnChangeNotifyEvent(TObject *Sender)
-    {
-        BOOST_TEST_MESSAGE("OnChangeNotifyEvent triggered");
-        OnChangeNotifyEventTriggered = true;
-    }
-    void ClickEventHandler(TObject *Sender)
-    {
-        BOOST_TEST_MESSAGE("ClickEventHandler triggered");
-        ClickEventHandlerTriggered = true;
-    }
-    void onStringListChange(TObject *Sender)
-    {
-        BOOST_TEST_MESSAGE("onStringListChange triggered");
-        onStringListChangeTriggered = true;
-    }
-protected:
-    bool OnChangeNotifyEventTriggered;
-    bool ClickEventHandlerTriggered;
-    bool onStringListChangeTriggered;
 };
 
 //------------------------------------------------------------------------------
@@ -354,57 +330,6 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
         BOOST_CHECK_EQUAL(false, m.Matches(L"test.txt"));
         BOOST_CHECK_EQUAL(false, m.Matches(L"test.log"));
-    }
-}
-
-class TClass1 : TObject
-{
-public:
-    TClass1() :
-        OnChangeNotifyEventTriggered(false)
-    {
-    }
-    const notify_signal_type &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const notify_slot_type &Event) { FOnChange.connect(Event); }
-    virtual void Changed()
-    {
-        if (FOnChange.num_slots() > 0)
-        {
-            FOnChange(this);
-            OnChangeNotifyEventTriggered = true;
-        }
-    }
-    void Change(std::wstring str)
-    {
-        Changed();
-    }
-
-    bool OnChangeNotifyEventTriggered;
-private:
-    notify_signal_type FOnChange;
-};
-
-BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
-{
-    if (1)
-    {
-        TClass1 cl1;
-        BOOST_CHECK_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
-        cl1.SetOnChange(boost::bind(&base_fixture_t::OnChangeNotifyEvent, this, _1));
-        cl1.Change(L"line 1");
-        BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
-    }
-}
-
-BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
-{
-    if (1)
-    {
-        TStringList strings;
-        strings.SetOnChange(boost::bind(&base_fixture_t::onStringListChange, this, _1));
-        strings.Add(L"line 1");
-        // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
-        BOOST_CHECK_EQUAL(true, onStringListChangeTriggered);
     }
 }
 

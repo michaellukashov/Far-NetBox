@@ -36,7 +36,10 @@ using namespace boost::unit_test;
 class base_fixture_t
 {
 public:
-    base_fixture_t()
+    base_fixture_t() :
+        OnChangeNotifyEventTriggered(false),
+        ClickEventHandlerTriggered(false),
+        onStringListChangeTriggered(false)
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
     }
@@ -46,6 +49,25 @@ public:
     }
 
 public:
+    void OnChangeNotifyEvent(TObject *Sender)
+    {
+        BOOST_TEST_MESSAGE("OnChangeNotifyEvent triggered");
+        OnChangeNotifyEventTriggered = true;
+    }
+    void ClickEventHandler(TObject *Sender)
+    {
+        BOOST_TEST_MESSAGE("ClickEventHandler triggered");
+        ClickEventHandlerTriggered = true;
+    }
+    void onStringListChange(TObject *Sender)
+    {
+        BOOST_TEST_MESSAGE("onStringListChange triggered");
+        onStringListChangeTriggered = true;
+    }
+protected:
+    bool OnChangeNotifyEventTriggered;
+    bool ClickEventHandlerTriggered;
+    bool onStringListChangeTriggered;
 protected:
 };
 
@@ -71,6 +93,33 @@ BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
         BOOST_CHECK_EQUAL("long text", ::W2MB(MessageLines.GetString(2).c_str()).c_str());
     }
 }
+
+class TClass1 : TObject
+{
+public:
+    TClass1() :
+        OnChangeNotifyEventTriggered(false)
+    {
+    }
+    const notify_signal_type &GetOnChange() const { return FOnChange; }
+    void SetOnChange(const notify_slot_type &Event) { FOnChange.connect(Event); }
+    virtual void Changed()
+    {
+        if (FOnChange.num_slots() > 0)
+        {
+            FOnChange(this);
+            OnChangeNotifyEventTriggered = true;
+        }
+    }
+    void Change(std::wstring str)
+    {
+        Changed();
+    }
+
+    bool OnChangeNotifyEventTriggered;
+private:
+    notify_signal_type FOnChange;
+};
 
 class TClass2 // : public boost::signals::trackable
 {
@@ -135,6 +184,30 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
         cl2.Click();
         BOOST_CHECK_EQUAL(true, cl2.OnClickTriggered);
         BOOST_CHECK_EQUAL(true, cl3.ClickEventHandlerTriggered);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
+{
+    if (1)
+    {
+        TClass1 cl1;
+        BOOST_CHECK_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
+        cl1.SetOnChange(boost::bind(&base_fixture_t::OnChangeNotifyEvent, this, _1));
+        cl1.Change(L"line 1");
+        BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
+{
+    if (1)
+    {
+        TStringList strings;
+        strings.SetOnChange(boost::bind(&base_fixture_t::onStringListChange, this, _1));
+        strings.Add(L"line 1");
+        // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
+        BOOST_CHECK_EQUAL(true, onStringListChangeTriggered);
     }
 }
 
