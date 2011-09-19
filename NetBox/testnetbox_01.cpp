@@ -52,11 +52,11 @@ public:
     bool scp_test(std::string host, int port, std::string user, std::string password);
 
 public:
-    // TNotifyEvent OnChangeNotifyEvent;
     void OnChangeNotifyEvent(TObject *Sender)
     {
         BOOST_TEST_MESSAGE("OnChangeNotifyEvent triggered");
         OnChangeNotifyEventTriggered = true;
+        BOOST_TEST_MESSAGE("OnChangeNotifyEventTriggered = " << OnChangeNotifyEventTriggered);
     }
 protected:
     bool OnChangeNotifyEventTriggered;
@@ -347,8 +347,11 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
     if (1)
     {
         TStringList strings;
+        BOOST_TEST_MESSAGE("OnChangeNotifyEventTriggered = " << OnChangeNotifyEventTriggered);
+        // strings.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
         strings.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
         strings.Add(L"line 1");
+        BOOST_TEST_MESSAGE("OnChangeNotifyEventTriggered = " << OnChangeNotifyEventTriggered);
         BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
     }
 }
