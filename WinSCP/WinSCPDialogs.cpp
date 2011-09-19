@@ -3,6 +3,8 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/signals/signal3.hpp>
+#include <boost/bind.hpp>
 
 // #include <StrUtils.hpp>
 #include <math.h>
@@ -5115,8 +5117,10 @@ bool TWinSCPFileSystem::LinkDialog(std::wstring & FileName,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-typedef void (TObject::*TFeedFileSystemData)
-  (TObject * Control, int Label, std::wstring Value);
+// typedef void (TObject::*TFeedFileSystemData)
+  // (TObject * Control, int Label, std::wstring Value);
+typedef boost::signal3<void, TObject *, int, std::wstring> feedfilesystemdata_signal_type;
+typedef feedfilesystemdata_signal_type::slot_type feedfilesystemdata_slot_type;
 //---------------------------------------------------------------------------
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5125,13 +5129,13 @@ public:
   enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
 
   TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-    TGetSpaceAvailable OnGetSpaceAvailable);
+    const getspaceavailable_slot_type &OnGetSpaceAvailable);
 
   void Execute(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, std::wstring SpaceAvailablePath);
 
 protected:
-  void Feed(TFeedFileSystemData AddItem);
+  void Feed(const feedfilesystemdata_slot_type &AddItem);
   std::wstring CapabilityStr(TFSCapability Capability);
   std::wstring CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
@@ -5152,7 +5156,7 @@ protected:
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
 
 private:
-  TGetSpaceAvailable FOnGetSpaceAvailable;
+  getspaceavailable_signal_type FOnGetSpaceAvailable;
   TFileSystemInfo FFileSystemInfo;
   TSessionInfo FSessionInfo;
   bool FSpaceAvailableLoaded;
@@ -5186,10 +5190,10 @@ public:
 };
 //---------------------------------------------------------------------------
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-  TGetSpaceAvailable OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
-  FOnGetSpaceAvailable(OnGetSpaceAvailable),
+  const getspaceavailable_slot_type &OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
   FSpaceAvailableLoaded(false)
 {
+  FOnGetSpaceAvailable.connect(OnGetSpaceAvailable);
   TFarText * Text;
   TFarSeparator * Separator;
   TFarButton * Button;
@@ -5346,11 +5350,13 @@ std::wstring TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
   return Result;
 }
 //---------------------------------------------------------------------
-void TFileSystemInfoDialog::Feed(TFeedFileSystemData AddItem)
+void TFileSystemInfoDialog::Feed(const feedfilesystemdata_slot_type &AddItem)
 {
-  // FIXME AddItem(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
-  // FIXME AddItem(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
-  // FIXME AddItem(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
+  feedfilesystemdata_signal_type sig;
+  sig.connect(AddItem);
+  sig(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
+  sig(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
+  sig(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
 
   std::wstring Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
@@ -5525,8 +5531,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::FeedControls()
 {
-  FLastFeededControl = NULL;
-  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::ControlsAddItem);
+  Feed(boost::bind(&TFileSystemInfoDialog::ControlsAddItem, this, _1, _2, _3));
   InfoLister->SetRight(GetBorderBox()->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 //---------------------------------------------------------------------------
@@ -5555,7 +5560,7 @@ void TFileSystemInfoDialog::Execute(
   SpaceAvailablePathEdit->SetText(SpaceAvailablePath);
   UpdateControls();
 
-  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::CalculateMaxLenAddItem);
+  Feed(boost::bind(&TFileSystemInfoDialog::CalculateMaxLenAddItem, this, _1, _2, _3));
   FeedControls();
   HideTabs();
   SelectTab(tabProtocol);
@@ -5599,7 +5604,7 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
   NeedSpaceAvailable();
   FLastFeededControl = NULL;
   FClipboard = L"";
-  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::ClipboardAddItem);
+  Feed(boost::bind(&TFileSystemInfoDialog::ClipboardAddItem, this, _1, _2, _3));
   FarPlugin->FarCopyToClipboard(FClipboard);
   Close = false;
 }
@@ -5613,14 +5618,14 @@ void TFileSystemInfoDialog::SpaceAvailableButtonClick(
 //---------------------------------------------------------------------------
 void TFileSystemInfoDialog::CheckSpaceAvailable()
 {
-  assert(FOnGetSpaceAvailable != NULL);
+  assert(!FOnGetSpaceAvailable.empty());
   assert(!SpaceAvailablePathEdit->GetText().empty());
 
   FSpaceAvailableLoaded = true;
 
   bool DoClose = false;
 
-  // FIXME FOnGetSpaceAvailable(SpaceAvailablePathEdit->GetText(), FSpaceAvailable, DoClose);
+  FOnGetSpaceAvailable(SpaceAvailablePathEdit->GetText(), FSpaceAvailable, DoClose);
 
   FeedControls();
   if (DoClose)
@@ -5639,12 +5644,12 @@ void TFileSystemInfoDialog::NeedSpaceAvailable()
 //---------------------------------------------------------------------------
 bool TFileSystemInfoDialog::SpaceAvailableSupported()
 {
-  return (FOnGetSpaceAvailable != NULL);
+  return (!FOnGetSpaceAvailable.empty());
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  std::wstring SpaceAvailablePath, TGetSpaceAvailable OnGetSpaceAvailable)
+  std::wstring SpaceAvailablePath, const getspaceavailable_slot_type &OnGetSpaceAvailable)
 {
   TFileSystemInfoDialog * Dialog = new TFileSystemInfoDialog(FPlugin, OnGetSpaceAvailable);
   {
@@ -7071,8 +7076,8 @@ class TSynchronizeDialog : TFarDialog
 {
 public:
   TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-    TSynchronizeStartStopEvent OnStartStop,
-    int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
+    const synchronizestartstop_slot_type &OnStartStop,
+    int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions);
   virtual ~TSynchronizeDialog();
 
   bool Execute(TSynchronizeParamType & Params,
@@ -7105,11 +7110,11 @@ private:
   bool FAbort;
   bool FClose;
   TSynchronizeParamType FParams;
-  TSynchronizeStartStopEvent FOnStartStop;
+  synchronizestartstop_signal_type FOnStartStop;
   int FOptions;
   TSynchronizeOptions * FSynchronizeOptions;
   TCopyParamType FCopyParams;
-  TGetSynchronizeOptionsEvent FOnGetOptions;
+  getsynchronizeoptions_signal_type FOnGetOptions;
   int FCopyParamAttrs;
 
   TFarEdit * LocalDirectoryEdit;
@@ -7127,8 +7132,8 @@ private:
 };
 //---------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-  TSynchronizeStartStopEvent OnStartStop,
-  int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
+  const synchronizestartstop_slot_type &OnStartStop,
+  int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   TFarText * Text;
@@ -7136,11 +7141,11 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   FSynchronizing = false;
   FStarted = false;
-  FOnStartStop = OnStartStop;
+  FOnStartStop.connect(OnStartStop);
   FAbort = false;
   FClose = false;
   FOptions = Options;
-  FOnGetOptions = OnGetOptions;
+  FOnGetOptions.connect(OnGetOptions);
   FSynchronizeOptions = NULL;
   FCopyParamAttrs = CopyParamAttrs;
 
@@ -7319,7 +7324,7 @@ TSynchronizeParamType TSynchronizeDialog::GetParams()
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
 {
-  if (FOnStartStop)
+  if (!FOnStartStop.empty())
   {
     TSynchronizeParamType SParams = GetParams();
     SParams.Options =
@@ -7329,10 +7334,12 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
     {
       delete FSynchronizeOptions;
       FSynchronizeOptions = new TSynchronizeOptions;
-      // FIXME FOnGetOptions(SParams.Params, *FSynchronizeOptions);
+      FOnGetOptions(SParams.Params, *FSynchronizeOptions);
     }
-    // FIXME FOnStartStop(this, Start, SParams, GetCopyParams(), FSynchronizeOptions, DoAbort,
-      // DoSynchronizeThreads, DoLog);
+    FOnStartStop(this, Start, SParams, GetCopyParams(), FSynchronizeOptions,
+      boost::bind(&TSynchronizeDialog::DoAbort, this, _1, _2),
+      boost::bind(&TSynchronizeDialog::DoSynchronizeThreads, this, _1, _2),
+      boost::bind(&TSynchronizeDialog::DoLog, this, _1, _2, _3));
   }
 }
 //---------------------------------------------------------------------------
@@ -7517,8 +7524,8 @@ int TSynchronizeDialog::ActualCopyParamAttrs()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
-  const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-  bool & SaveSettings, int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
+  const TCopyParamType * CopyParams, const synchronizestartstop_slot_type &OnStartStop,
+  bool & SaveSettings, int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions)
 {
   bool Result;
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,

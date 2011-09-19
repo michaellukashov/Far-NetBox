@@ -568,14 +568,14 @@ void TFTPFileSystem::EnsureLocation()
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::AnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type *OutputEvent)
 {
   // end-user has right to expect that client current directory is really
   // current directory for the server
   EnsureLocation();
 
-  assert(FOnCaptureOutput == NULL);
-  FOnCaptureOutput = OutputEvent;
+  assert(FOnCaptureOutput.empty());
+  FOnCaptureOutput.connect(*OutputEvent);
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
@@ -721,7 +721,7 @@ bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
-  TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
+  calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
   assert(false);
 }
@@ -1586,7 +1586,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
   const TRemoteFile * /*File*/, std::wstring /*Command*/, int /*Params*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  const captureoutput_slot_type /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
   // see AnyCommand for a reason why

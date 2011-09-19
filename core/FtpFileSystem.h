@@ -31,7 +31,7 @@ public:
   virtual void Idle();
   virtual std::wstring AbsolutePath(std::wstring Path, bool Local);
   virtual void AnyCommand(const std::wstring Command,
-    TCaptureOutputEvent OutputEvent);
+    const captureoutput_slot_type *OutputEvent);
   virtual void ChangeDirectory(const std::wstring Directory);
   virtual void CachedChangeDirectory(const std::wstring Directory);
   virtual void AnnounceFileListOperation();
@@ -41,7 +41,7 @@ public:
   virtual bool LoadFilesProperties(TStrings * FileList);
   virtual void CalculateFilesChecksum(const std::wstring & Alg,
     TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum);
+    calculatedchecksum_slot_type *OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
@@ -55,7 +55,7 @@ public:
   virtual void DeleteFile(const std::wstring FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const std::wstring FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(int Capability) const;
@@ -220,13 +220,16 @@ private:
   bool FFileTransferPreserveTime;
   unsigned long FFileTransferCPSLimit;
   bool FAwaitingProgress;
-  TCaptureOutputEvent FOnCaptureOutput;
+  captureoutput_signal_type FOnCaptureOutput;
   std::wstring FUserName;
   TAutoSwitch FListAll;
   bool FDoListAll;
   bool FMfmt;
   TDateTime FLastDataSent;
   mutable std::wstring FOptionScratch;
+private:
+  TFTPFileSystem(const TFTPFileSystem &);
+  void operator=(const TFTPFileSystem &);
 };
 //---------------------------------------------------------------------------
 #endif NO_FILEZILLA

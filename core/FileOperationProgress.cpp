@@ -8,16 +8,15 @@
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType()
 {
-  FOnProgress = NULL;
-  FOnFinished = NULL;
   Clear();
 }
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType(
-  TFileOperationProgressEvent AOnProgress, TFileOperationFinished AOnFinished)
+  const fileoperationprogress_slot_type &AOnProgress,
+  const fileoperationfinished_slot_type &AOnFinished)
 {
-  FOnProgress = AOnProgress;
-  FOnFinished = AOnFinished;
+  FOnProgress.connect(AOnProgress);
+  FOnFinished.connect(AOnFinished);
   FReset = false;
   Clear();
 }
@@ -173,7 +172,7 @@ int TFileOperationProgressType::OverallProgress()
 void TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-  // FIXME FOnProgress(*this, Cancel);
+  FOnProgress(*this, Cancel);
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Finish(std::wstring FileName,

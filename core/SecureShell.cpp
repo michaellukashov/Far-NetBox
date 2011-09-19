@@ -39,7 +39,6 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   Pending = NULL;
   FBackendHandle = NULL;
   ResetConnection();
-  FOnCaptureOutput = NULL;
   FConfig = new Config();
   memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
@@ -650,13 +649,13 @@ void TSecureShell::CWrite(const char * Data, int Length)
 //---------------------------------------------------------------------------
 void TSecureShell::RegisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive.num_slots() == 0);
+  assert(FOnReceive.empty());
   FOnReceive.connect(Handler);
 }
 //---------------------------------------------------------------------------
 void TSecureShell::UnregisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive.num_slots() == 1);
+  assert(!FOnReceive.empty());
   USEDPARAM(Handler);
   FOnReceive.disconnect_all_slots();
 }
@@ -706,7 +705,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
       PendLen += Len;
     }
 
-    if (FOnReceive.num_slots() > 0)
+    if (!FOnReceive.empty())
     {
       if (!FFrozen)
       {
@@ -1096,9 +1095,9 @@ void TSecureShell::ClearStdError()
 void TSecureShell::CaptureOutput(TLogLineType Type,
   const std::wstring & Line)
 {
-  if (FOnCaptureOutput != NULL)
+  if (!FOnCaptureOutput.empty())
   {
-    // FIXME FOnCaptureOutput(Line, (Type == llStdError));
+    FOnCaptureOutput(Line, (Type == llStdError));
   }
   FLog->Add(Type, Line);
 }

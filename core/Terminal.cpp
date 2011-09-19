@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include "Terminal.h"
 
@@ -478,15 +479,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FTunnelLocalPortNumber = 0;
   FFileSystem = NULL;
   FSecureShell = NULL;
-  FOnProgress = NULL;
-  FOnFinished = NULL;
-  FOnDeleteLocalFile = NULL;
-  FOnReadDirectoryProgress = NULL;
-  FOnQueryUser = NULL;
-  FOnPromptUser = NULL;
-  FOnDisplayBanner = NULL;
-  FOnShowExtendedException = NULL;
-  FOnInformation = NULL;
   FOnFindingFile = NULL;
 
   FUseBusyCursor = true;
@@ -928,7 +920,7 @@ void TTerminal::Closed()
      CloseTunnel();
   }
 
-  if (GetOnClose().num_slots() > 0)
+  if (!GetOnClose().empty())
   {
     TCallbackGuard Guard(this);
     GetOnClose()(this);
@@ -1028,10 +1020,10 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 {
   bool AResult = false;
 
-  if (GetOnPromptUser() != NULL)
+  if (!GetOnPromptUser().empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME OnPromptUser(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
+    GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
     Guard.Verify();
   }
 
@@ -1060,10 +1052,10 @@ int TTerminal::QueryUser(const std::wstring Query,
 {
   LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
   int Answer = AbortAnswer(Answers);
-  if (FOnQueryUser)
+  if (!FOnQueryUser.empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnQueryUser(this, Query, MoreMessages, Answers, Params, Answer, QueryType, NULL);
+    FOnQueryUser(this, Query, MoreMessages, Answers, Params, Answer, QueryType, NULL);
     Guard.Verify();
   }
   return Answer;
@@ -1093,7 +1085,7 @@ int TTerminal::QueryUserException(const std::wstring Query,
 //---------------------------------------------------------------------------
 void TTerminal::DisplayBanner(const std::wstring & Banner)
 {
-  if (GetOnDisplayBanner() != NULL)
+  if (!GetOnDisplayBanner().empty())
   {
     if (Configuration->GetForceBanners() ||
         Configuration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
@@ -1102,8 +1094,8 @@ void TTerminal::DisplayBanner(const std::wstring & Banner)
       int Options =
         FLAGMASK(Configuration->GetForceBanners(), boDisableNeverShowAgain);
       TCallbackGuard Guard(this);
-      // FIXME OnDisplayBanner(this, GetSessionData()->GetSessionName(), Banner,
-        // NeverShowAgain, Options);
+      GetOnDisplayBanner()(this, GetSessionData()->GetSessionName(), Banner,
+        NeverShowAgain, Options);
       Guard.Verify();
       if (!Configuration->GetForceBanners() && NeverShowAgain)
       {
@@ -1116,11 +1108,11 @@ void TTerminal::DisplayBanner(const std::wstring & Banner)
 void TTerminal::HandleExtendedException(const std::exception * E)
 {
   GetLog()->AddException(E);
-  if (GetOnShowExtendedException() != NULL)
+  if (!GetOnShowExtendedException().empty())
   {
     TCallbackGuard Guard(this);
     // the event handler may destroy 'this' ...
-    // FIXME OnShowExtendedException(this, E, NULL);
+    GetOnShowExtendedException()(this, E, NULL);
     // .. hence guard is dismissed from destructor, to make following call no-op
     Guard.Verify();
   }
@@ -1129,9 +1121,9 @@ void TTerminal::HandleExtendedException(const std::exception * E)
 void TTerminal::ShowExtendedException(const std::exception * E)
 {
   GetLog()->AddException(E);
-  if (GetOnShowExtendedException() != NULL)
+  if (!GetOnShowExtendedException().empty())
   {
-    // FIXME OnShowExtendedException(this, E, NULL);
+    GetOnShowExtendedException()(this, E, NULL);
   }
 }
 //---------------------------------------------------------------------------
@@ -1143,10 +1135,10 @@ void TTerminal::DoInformation(const std::wstring & Str, bool Status,
     FAnyInformation = true;
   }
 
-  if (GetOnInformation())
+  if (!GetOnInformation().empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME OnInformation(this, Str, Status, Active);
+    GetOnInformation()(this, Str, Status, Active);
     Guard.Verify();
   }
 }
@@ -1159,10 +1151,10 @@ void TTerminal::Information(const std::wstring & Str, bool Status)
 void TTerminal::DoProgress(TFileOperationProgressType & ProgressData,
   TCancelStatus & Cancel)
 {
-  if (GetOnProgress() != NULL)
+  if (!GetOnProgress().empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME OnProgress(ProgressData, Cancel);
+    GetOnProgress()(ProgressData, Cancel);
     Guard.Verify();
   }
 }
@@ -1170,10 +1162,10 @@ void TTerminal::DoProgress(TFileOperationProgressType & ProgressData,
 void TTerminal::DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
   const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
-  if (GetOnFinished() != NULL)
+  if (!GetOnFinished().empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME OnFinished(Operation, Side, Temp, FileName, Success, OnceDoneOperation);
+    GetOnFinished()(Operation, Side, Temp, FileName, Success, OnceDoneOperation);
     Guard.Verify();
   }
 }
@@ -1386,11 +1378,11 @@ bool TTerminal::FileOperationLoopQuery(const std::exception & E,
   return Result;
 }
 //---------------------------------------------------------------------------
-int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
+int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   TFileOperationProgressType * OperationProgress, bool AllowSkip,
   const std::wstring Message, void * Param1, void * Param2)
 {
-  assert(CallBackFunc);
+  // assert(CallBackFunc);
   int Result;
   FILE_OPERATION_LOOP_EX
   (
@@ -1581,7 +1573,7 @@ bool TTerminal::GetAreCachesEmpty() const
 //---------------------------------------------------------------------------
 void TTerminal::DoChangeDirectory()
 {
-  if (FOnChangeDirectory.num_slots() > 0)
+  if (!FOnChangeDirectory.empty())
   {
     TCallbackGuard Guard(this);
     FOnChangeDirectory(this);
@@ -1591,17 +1583,17 @@ void TTerminal::DoChangeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::DoReadDirectory(bool ReloadOnly)
 {
-  if (FOnReadDirectory)
+  if (!FOnReadDirectory.empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnReadDirectory(this, ReloadOnly);
+    FOnReadDirectory(this, ReloadOnly);
     Guard.Verify();
   }
 }
 //---------------------------------------------------------------------------
 void TTerminal::DoStartReadDirectory()
 {
-  if (FOnStartReadDirectory.num_slots() > 0)
+  if (!FOnStartReadDirectory.empty())
   {
     TCallbackGuard Guard(this);
     FOnStartReadDirectory(this);
@@ -1611,10 +1603,10 @@ void TTerminal::DoStartReadDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::DoReadDirectoryProgress(int Progress, bool & Cancel)
 {
-  if (FReadingCurrentDirectory && (FOnReadDirectoryProgress != NULL))
+  if (FReadingCurrentDirectory && (!FOnReadDirectoryProgress.empty()))
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnReadDirectoryProgress(this, Progress, Cancel);
+    FOnReadDirectoryProgress(this, Progress, Cancel);
     Guard.Verify();
   }
   if (FOnFindingFile != NULL)
@@ -2370,7 +2362,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(std::wstring Directory, bool
 }
 //---------------------------------------------------------------------------
 void TTerminal::ProcessDirectory(const std::wstring DirName,
-  TProcessFileEvent CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
+  const processfile_slot_type &CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
 {
   TRemoteFileList * FileList = NULL;
   if (IgnoreErrors)
@@ -2514,7 +2506,7 @@ void TTerminal::AnnounceFileListOperation()
 }
 //---------------------------------------------------------------------------
 bool TTerminal::ProcessFiles(TStrings * FileList,
-  TFileOperation Operation, TProcessFileEvent ProcessFile, void * Param,
+  TFileOperation Operation, const processfile_slot_type &ProcessFile, void * Param,
   TOperationSide Side, bool Ex)
 {
   assert(FFileSystem);
@@ -2525,16 +2517,16 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressType Progress((TFileOperationProgressEvent)&TTerminal::DoProgress,
-        (TFileOperationFinished)&TTerminal::DoFinished);
-    Progress.Start(Operation, Side, FileList->GetCount());
+    TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+        boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    Progress->Start(Operation, Side, FileList->GetCount());
 
-    FOperationProgress = &Progress;
+    FOperationProgress = Progress;
     {
       BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
       {
         Self->FOperationProgress = NULL;
-        Progress.Stop();
+        Progress->Stop();
       }
       BOOST_SCOPE_EXIT_END
       if (Side == osRemote)
@@ -2553,7 +2545,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         int Index = 0;
         std::wstring FileName;
         bool Success;
-        while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
+        while ((Index < FileList->GetCount()) && (Progress->Cancel == csContinue))
         {
           FileName = FileList->GetString(Index);
           try
@@ -2561,7 +2553,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
             {
               BOOST_SCOPE_EXIT ( (&Self) (&Progress) (FileName) (Success) (OnceDoneOperation) )
               {
-                Progress.Finish(FileName, Success, OnceDoneOperation);
+                Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
               Success = false;
               if (!Ex)
@@ -2571,15 +2563,15 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               else
               {
                 // not used anymore
-                TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                // FIXME ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
+                // FIXME TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
+                // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
               }
               Success = true;
             }
           }
           catch (const EScpSkipFile & E)
           {
-            TFileOperationProgressType * OperationProgress = GetOperationProgress();
+            TFileOperationProgressType *OperationProgress = GetOperationProgress();
             SUSPEND_OPERATION (
               if (!HandleException(&E)) throw;
             );
@@ -2588,7 +2580,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         }
       }
 
-      if (Progress.Cancel == csContinue)
+      if (Progress->Cancel == csContinue)
       {
         Result = true;
       }
@@ -2612,10 +2604,12 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 //---------------------------------------------------------------------------
 // not used anymore
 bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-  TProcessFileEventEx ProcessFile, void * Param, TOperationSide Side)
+  const processfileex_slot_type &ProcessFile, void * Param, TOperationSide Side)
 {
-  return ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
-    Param, Side, true);
+  // FIXME
+  // return ProcessFiles(FileList, Operation, boost::bind(&TTerminal::ProcessFile, this, _1, _2, _3)),
+    // Param, Side, true);
+  return false;
 }
 //---------------------------------------------------------------------------
 TStrings * TTerminal::GetFixedPaths()
@@ -2733,13 +2727,13 @@ bool TTerminal::DeleteFiles(TStrings * FilesToDelete, int Params)
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
-  return ProcessFiles(FilesToDelete, foDelete, (TProcessFileEvent)&TTerminal::DeleteFile, &Params);
+  return ProcessFiles(FilesToDelete, foDelete, boost::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
 }
 //---------------------------------------------------------------------------
 void TTerminal::DeleteLocalFile(std::wstring FileName,
   const TRemoteFile * /*File*/, void * Params)
 {
-  if (GetOnDeleteLocalFile() == NULL)
+  if (!GetOnDeleteLocalFile().empty())
   {
     if (!RecursiveDeleteFile(FileName, false))
     {
@@ -2748,13 +2742,13 @@ void TTerminal::DeleteLocalFile(std::wstring FileName,
   }
   else
   {
-    // FIXME OnDeleteLocalFile(FileName, FLAGSET(*((int*)Params), dfAlternative));
+    GetOnDeleteLocalFile()(FileName, FLAGSET(*((int*)Params), dfAlternative));
   }
 }
 //---------------------------------------------------------------------------
 bool TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
 {
-  return ProcessFiles(FileList, foDelete, (TProcessFileEvent)&TTerminal::DeleteLocalFile, &Params, osLocal);
+  return ProcessFiles(FileList, foDelete, boost::bind(&TTerminal::DeleteLocalFile, this, _1, _2, _3), &Params, osLocal);
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFile(std::wstring FileName,
@@ -2780,7 +2774,7 @@ void TTerminal::CustomCommandOnFile(std::wstring FileName,
 //---------------------------------------------------------------------------
 void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
   const TRemoteFile * File, std::wstring Command, int Params,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type &OutputEvent)
 {
   try
   {
@@ -2812,15 +2806,16 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFiles(std::wstring Command,
-  int Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
+  int Params, TStrings * Files, const captureoutput_slot_type &OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
-    TCustomCommandParams AParams;
-    AParams.Command = Command;
-    AParams.Params = Params;
-    AParams.OutputEvent = OutputEvent;
-    ProcessFiles(Files, foCustomCommand, (TProcessFileEvent)&TTerminal::CustomCommandOnFile, &AParams);
+    TCustomCommandParams AParams(Command, Params, OutputEvent);
+    // AParams.Command = Command;
+    // AParams.Params = Params;
+    // AParams.OutputEvent.connect(OutputEvent);
+    // AParams.OutputEvent = OutputEvent;
+    ProcessFiles(Files, foCustomCommand, boost::bind(&TTerminal::CustomCommandOnFile, this, _1, _2, _3), &AParams);
   }
   else
   {
@@ -2922,7 +2917,7 @@ void TTerminal::ChangeFilesProperties(TStrings * FileList,
   const TRemoteProperties * Properties)
 {
   AnnounceFileListOperation();
-  ProcessFiles(FileList, foSetProperties, (TProcessFileEvent)&TTerminal::ChangeFileProperties, (void *)Properties);
+  ProcessFiles(FileList, foSetProperties, boost::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3), (void *)Properties);
 }
 //---------------------------------------------------------------------------
 bool TTerminal::LoadFilesProperties(TStrings * FileList)
@@ -3010,7 +3005,7 @@ void TTerminal::DoCalculateDirectorySize(const std::wstring FileName,
 {
   try
   {
-    ProcessDirectory(FileName, (TProcessFileEvent)&TTerminal::CalculateFileSize, Params);
+    ProcessDirectory(FileName, boost::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), Params);
   }
   catch (const std::exception & E)
   {
@@ -3034,13 +3029,13 @@ void TTerminal::CalculateFilesSize(TStrings * FileList,
   Param.Params = Params;
   Param.CopyParam = CopyParam;
   Param.Stats = Stats;
-  ProcessFiles(FileList, foCalculateSize, (TProcessFileEvent)&TTerminal::CalculateFileSize, &Param);
+  ProcessFiles(FileList, foCalculateSize, boost::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), &Param);
   Size = Param.Size;
 }
 //---------------------------------------------------------------------------
 void TTerminal::CalculateFilesChecksum(const std::wstring & Alg,
   TStrings * FileList, TStrings * Checksums,
-  TCalculatedChecksumEvent OnCalculatedChecksum)
+  calculatedchecksum_slot_type *OnCalculatedChecksum)
 {
   FFileSystem->CalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum);
 }
@@ -3184,7 +3179,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
         }
         Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
-    Result = ProcessFiles(FileList, foRemoteMove, (TProcessFileEvent)&TTerminal::MoveFile, &Params);
+    Result = ProcessFiles(FileList, foRemoteMove, boost::bind(&TTerminal::MoveFile, this, _1, _2, _3), &Params);
   }
   return Result;
 }
@@ -3243,7 +3238,7 @@ bool TTerminal::CopyFiles(TStrings * FileList, const std::wstring Target,
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  return ProcessFiles(FileList, foRemoteCopy, (TProcessFileEvent)&TTerminal::CopyFile, &Params);
+  return ProcessFiles(FileList, foRemoteCopy, boost::bind(&TTerminal::CopyFile, this, _1, _2, _3), &Params);
 }
 //---------------------------------------------------------------------------
 void TTerminal::CreateDirectory(const std::wstring DirName,
@@ -3453,39 +3448,43 @@ TTerminal * TTerminal::GetCommandSession()
 }
 //---------------------------------------------------------------------------
 void TTerminal::AnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type *OutputEvent)
 {
 
   class TOutputProxy
   {
   public:
-    TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) :
-      FAction(Action),
-      FOutputEvent(OutputEvent)
+    TOutputProxy(TCallSessionAction & Action, const captureoutput_slot_type *OutputEvent) :
+      FAction(Action)
     {
+      FOutputEvent.connect(*OutputEvent);
     }
 
     void Output(const std::wstring & Str, bool StdError)
     {
       FAction.AddOutput(Str, StdError);
-      if (FOutputEvent != NULL)
+      if (!FOutputEvent.empty())
       {
-        // FIXME FOutputEvent(Str, StdError);
+        FOutputEvent(Str, StdError);
       }
     }
 
   private:
-    TCallSessionAction & FAction;
-    TCaptureOutputEvent FOutputEvent;
+    TCallSessionAction &FAction;
+    captureoutput_signal_type FOutputEvent;
+  private:
+    TOutputProxy(const TOutputProxy &);
+    void operator=(const TOutputProxy &);
   };
 
   TCallSessionAction Action(GetLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  // FIXME DoAnyCommand(Command, (TCaptureOutputEvent)&ProxyOutputEvent.Output, &Action);
+  DoAnyCommand(Command, boost::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2),
+    &Action);
 }
 //---------------------------------------------------------------------------
 void TTerminal::DoAnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent, TCallSessionAction * Action)
+  const captureoutput_slot_type &OutputEvent, TCallSessionAction * Action)
 {
   assert(FFileSystem);
   try
@@ -3494,7 +3493,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     if (GetIsCapable(fcAnyCommand))
     {
       LogEvent(L"Executing user defined command.");
-      FFileSystem->AnyCommand(Command, OutputEvent);
+      FFileSystem->AnyCommand(Command, &OutputEvent);
     }
     else
     {
@@ -3503,7 +3502,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
       LogEvent(L"Executing user defined command on command session.");
 
       FCommandSession->SetCurrentDirectory(GetCurrentDirectory());
-      FCommandSession->FFileSystem->AnyCommand(Command, OutputEvent);
+      FCommandSession->FFileSystem->AnyCommand(Command, &OutputEvent);
 
       FCommandSession->FFileSystem->ReadCurrentDirectory();
 
@@ -3749,7 +3748,7 @@ void TTerminal::MakeLocalFileList(const std::wstring FileName,
   bool Directory = FLAGSET(Rec.dwFileAttributes, faDirectory);
   if (Directory && Params.Recursive)
   {
-    // FIXME ProcessLocalDirectory(FileName, (TProcessFileEvent)&TTerminal::MakeLocalFileList, &Params);
+    // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
   }
 
   if (!Directory || Params.IncludeDirs)
@@ -3785,7 +3784,7 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
     }
     else
     {
-      // FIXME ProcessLocalDirectory(FileName, (TProcessFileEvent)&TTerminal::CalculateLocalFileSize, Params);
+      // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
     }
   }
 
@@ -3799,15 +3798,15 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
 void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
-    (TFileOperationFinished)&TTerminal::DoFinished);
+  TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+    boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   TOnceDoneOperation OnceDoneOperation = odoIdle;
-  OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
+  OperationProgress->Start(foCalculateSize, osLocal, FileList->GetCount());
   {
     BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
     {
       Self->FOperationProgress = NULL;
-      OperationProgress.Stop();
+      OperationProgress->Stop();
     } BOOST_SCOPE_EXIT_END
     TCalculateSizeParams Params;
     Params.Size = 0;
@@ -3815,7 +3814,7 @@ TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerm
     Params.CopyParam = CopyParam;
 
     assert(!FOperationProgress);
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = OperationProgress;
     WIN32_FIND_DATA Rec;
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
@@ -3823,7 +3822,7 @@ TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerm
       if (FileSearchRec(FileName, Rec))
       {
         CalculateLocalFileSize(FileName, Rec, &Params);
-        OperationProgress.Finish(FileName, true, OnceDoneOperation);
+        OperationProgress->Finish(FileName, true, OnceDoneOperation);
       }
     }
 
@@ -3855,7 +3854,7 @@ struct TSynchronizeData
   std::wstring RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
   int Params;
-  TSynchronizeDirectory OnSynchronizeDirectory;
+  const synchronizedirectory_slot_type *OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
   int Flags;
   TStringList * LocalFileList;
@@ -3866,7 +3865,7 @@ struct TSynchronizeData
 TSynchronizeChecklist * TTerminal::SynchronizeCollect(const std::wstring LocalDirectory,
   const std::wstring RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  TSynchronizeDirectory OnSynchronizeDirectory,
+  const synchronizedirectory_slot_type &OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * Checklist = new TSynchronizeChecklist();
@@ -3888,7 +3887,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const std::wstring LocalDi
 void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   const std::wstring RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType *CopyParam, int Params,
-  TSynchronizeDirectory OnSynchronizeDirectory, TSynchronizeOptions *Options,
+  const synchronizedirectory_slot_type &OnSynchronizeDirectory, TSynchronizeOptions *Options,
   int Flags, TSynchronizeChecklist *Checklist)
 {
   TSynchronizeData Data;
@@ -3897,7 +3896,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   Data.RemoteDirectory = UnixIncludeTrailingBackslash(RemoteDirectory);
   Data.Mode = Mode;
   Data.Params = Params;
-  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
   Data.LocalFileList = NULL;
   Data.CopyParam = CopyParam;
   Data.Options = Options;
@@ -3999,7 +3998,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         DoSynchronizeProgress(Data, true);
       }
 
-      ProcessDirectory(RemoteDirectory, (TProcessFileEvent)&TTerminal::SynchronizeCollectFile, &Data,
+      ProcessDirectory(RemoteDirectory, boost::bind(&TTerminal::SynchronizeCollectFile, this, _1, _2, _3), &Data,
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
@@ -4197,7 +4196,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
           DoSynchronizeCollectDirectory(
             Data->LocalDirectory + LocalData->Info.FileName,
             Data->RemoteDirectory + File->GetFileName(),
-            Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
+            Data->Mode, Data->CopyParam, Data->Params, *Data->OnSynchronizeDirectory,
             Data->Options, (Data->Flags & ~sfFirstLevel),
             Data->Checklist);
         }
@@ -4250,11 +4249,11 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
   const TCopyParamType * CopyParam, int Params,
-  TSynchronizeDirectory OnSynchronizeDirectory)
+  const synchronizedirectory_slot_type &OnSynchronizeDirectory)
 {
   TSynchronizeData Data;
 
-  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
 
   int CopyParams =
     FLAGMASK(FLAGSET(Params, spNoConfirmation), cpNoConfirmation);
@@ -4390,13 +4389,13 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           if (DownloadList->GetCount() > 0)
           {
             ProcessFiles(DownloadList, foSetProperties,
-              (TProcessFileEvent)&TTerminal::SynchronizeLocalTimestamp, NULL, osLocal);
+              boost::bind(&TTerminal::SynchronizeLocalTimestamp, this, _1, _2, _3), NULL, osLocal);
           }
 
           if (UploadList->GetCount() > 0)
           {
             ProcessFiles(UploadList, foSetProperties,
-              (TProcessFileEvent)&TTerminal::SynchronizeRemoteTimestamp);
+              boost::bind(&TTerminal::SynchronizeRemoteTimestamp, this, _1, _2, _3));
           }
         }
         else
@@ -4536,7 +4535,7 @@ void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
       {
         Self->FOnFindingFile = NULL;
       } BOOST_SCOPE_EXIT_END
-      ProcessDirectory(Directory, (TProcessFileEvent)&TTerminal::FileFind, &Params, false, true);
+      ProcessDirectory(Directory, boost::bind(&TTerminal::FileFind, this, _1, _2, _3), &Params, false, true);
     }
   }
 }
@@ -4648,21 +4647,21 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
-    TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
-        (TFileOperationFinished)&TTerminal::DoFinished);
-    OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
+    TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+        boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
+    OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = OperationProgress;
     {
       BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
       {
-        OperationProgress.Stop();
+        OperationProgress->Stop();
         Self->FOperationProgress = NULL;
       } BOOST_SCOPE_EXIT_END
       if (CopyParam->GetCalculateSize())
       {
-        OperationProgress.SetTotalSize(Size);
+        OperationProgress->SetTotalSize(Size);
       }
 
       std::wstring UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
@@ -4684,10 +4683,10 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         }
 
         FFileSystem->CopyToRemote(FilesToCopy, UnlockedTargetDir,
-          CopyParam, Params, &OperationProgress, OnceDoneOperation);
+          CopyParam, Params, OperationProgress, OnceDoneOperation);
       }
 
-      if (OperationProgress.Cancel == csContinue)
+      if (OperationProgress->Cancel == csContinue)
       {
         Result = true;
       }
@@ -4738,8 +4737,8 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
     } BOOST_SCOPE_EXIT_END
     __int64 TotalSize;
     bool TotalSizeKnown = false;
-    TFileOperationProgressType OperationProgress((TFileOperationProgressEvent)&TTerminal::DoProgress,
-      (TFileOperationFinished)&TTerminal::DoFinished);
+    TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+      boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
 
     if (CopyParam->GetCalculateSize())
     {
@@ -4755,20 +4754,19 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         TotalSizeKnown = true;
       }
     }
-
-    OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osRemote,
+    OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osRemote,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = OperationProgress;
     {
       BOOST_SCOPE_EXIT ( (&FOperationProgress) (&OperationProgress) )
       {
         FOperationProgress = NULL;
-        OperationProgress.Stop();
+        OperationProgress->Stop();
       } BOOST_SCOPE_EXIT_END
       if (TotalSizeKnown)
       {
-        OperationProgress.SetTotalSize(TotalSize);
+        OperationProgress->SetTotalSize(TotalSize);
       }
 
       try
@@ -4781,7 +4779,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
             }
         } BOOST_SCOPE_EXIT_END
         FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,
-          &OperationProgress, OnceDoneOperation);
+          OperationProgress, OnceDoneOperation);
       }
       catch (const std::exception &E)
       {
@@ -4789,7 +4787,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         OnceDoneOperation = odoIdle;
       }
 
-      if (OperationProgress.Cancel == csContinue)
+      if (OperationProgress->Cancel == csContinue)
       {
         Result = true;
       }

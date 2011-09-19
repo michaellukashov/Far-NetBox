@@ -2,6 +2,9 @@
 #ifndef WinSCPFileSystemH
 #define WinSCPFileSystemH
 //---------------------------------------------------------------------------
+#include "boostdefines.hpp"
+#include <boost/signals/signal3.hpp>
+
 #include "Interface.h"
 #include "FarPlugin.h"
 #include "FileOperationProgress.h"
@@ -54,10 +57,14 @@ const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum { saAdd, saEdit, saConnect };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TGetSynchronizeOptionsEvent)
-  (int Params, TSynchronizeOptions & Options);
-typedef void (TObject::*TGetSpaceAvailable)
-  (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
+// typedef void (TObject::*TGetSynchronizeOptionsEvent)
+  // (int Params, TSynchronizeOptions & Options);
+typedef boost::signal2<void, int, TSynchronizeOptions &> getsynchronizeoptions_signal_type;
+typedef getsynchronizeoptions_signal_type::slot_type getsynchronizeoptions_slot_type;
+// typedef void (TObject::*TGetSpaceAvailable)
+  // (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
+typedef boost::signal3<void, const std::wstring, TSpaceAvailable &, bool &> getspaceavailable_signal_type;
+typedef getspaceavailable_signal_type::slot_type getspaceavailable_slot_type;
 struct TMultipleEdit
 {
   std::wstring FileName;
@@ -72,7 +79,9 @@ struct TEditHistory
   bool operator==(const TEditHistory& rh) { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 //---------------------------------------------------------------------------
-typedef void (TObject::* TProcessSessionEvent)(TSessionData * Data, void * Param);
+// typedef void (TObject::* TProcessSessionEvent)(TSessionData * Data, void * Param);
+typedef boost::signal2<void, TSessionData *, void *> processsession_signal_type;
+typedef processsession_signal_type::slot_type processsession_slot_type;
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
@@ -121,7 +130,7 @@ protected:
   void FocusSession(TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * Param);
   void ProcessSessions(TList * PanelItems,
-    TProcessSessionEvent ProcessSession, void * Param);
+    const processsession_slot_type &ProcessSession, void * Param);
   void ExportSession(TSessionData * Data, void * Param);
   bool ImportSessions(TList * PanelItems, bool Move, int OpMode);
   void FileProperties();
@@ -158,7 +167,7 @@ protected:
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, std::wstring SpaceAvailablePath,
-    TGetSpaceAvailable OnGetSpaceAvailable);
+    const getspaceavailable_slot_type &OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, std::wstring & Directory,
     TBookmarkList * BookmarkList);
   bool ApplyCommandDialog(std::wstring & Command, int & Params);
@@ -183,9 +192,9 @@ protected:
     TRemoteProperties * Properties, bool & SaveSettings);
   bool QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType & Params,
-    const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
+    const TCopyParamType * CopyParams, const synchronizestartstop_slot_type &OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs,
-    TGetSynchronizeOptionsEvent OnGetOptions);
+    const getsynchronizeoptions_slot_type &OnGetOptions);
   void DoSynchronize(TSynchronizeController * Sender,
     const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
@@ -301,7 +310,7 @@ private:
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void OperationFinished(TFileOperation Operation,
     TOperationSide Side, bool DragDrop, const std::wstring & FileName, bool Success,
-    bool & DisconnectWhenComplete);
+    TOnceDoneOperation &DisconnectWhenComplete); // ??? bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, std::wstring Directory = L"",

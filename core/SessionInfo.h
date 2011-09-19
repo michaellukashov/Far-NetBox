@@ -2,6 +2,10 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal2.hpp>
+#include <boost/signals/signal3.hpp>
+
 #include "SessionData.h"
 #include "Interface.h"
 // #include "Exceptions.h"
@@ -73,10 +77,14 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAction };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TCaptureOutputEvent)(
-  const std::wstring & Str, bool StdError);
-typedef void (TObject::*TCalculatedChecksumEvent)(
-  const std::wstring & FileName, const std::wstring & Alg, const std::wstring & Hash);
+// typedef void (TObject::*TCaptureOutputEvent)(
+  // const std::wstring & Str, bool StdError);
+typedef boost::signal2<void, const std::wstring &, bool> captureoutput_signal_type;
+typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
+// typedef void (TObject::*TCalculatedChecksumEvent)(
+  // const std::wstring & FileName, const std::wstring & Alg, const std::wstring & Hash);
+typedef boost::signal3<void, const std::wstring &, const std::wstring &, const std::wstring &> calculatedchecksum_signal_type;
+typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
 //---------------------------------------------------------------------------
 class TCriticalSection;
 class TSessionActionRecord;
@@ -186,7 +194,9 @@ public:
   void FileList(TRemoteFileList * FileList);
 };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring & Line);
+// typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring & Line);
+typedef boost::signal2<void, TLogLineType, const std::wstring &> doaddlog_signal_type;
+typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
@@ -264,9 +274,9 @@ private:
   void OpenLogFile();
   std::wstring GetLogFileName();
   void DoAdd(TLogLineType Type, std::wstring Line,
-    TDoAddLog func);
+    const doaddlog_slot_type &func);
   void DoAddToParent(TLogLineType aType, const std::wstring & aLine);
-  void DoAddToSelf(TLogLineType aType, const std::wstring & aLine);
+  void DoAddToSelf(TLogLineType aType, const std::wstring &aLine);
   void DoAddStartupInfo(TSessionData * Data);
 };
 //---------------------------------------------------------------------------

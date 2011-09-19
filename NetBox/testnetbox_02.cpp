@@ -23,6 +23,7 @@
 
 #include "TestTexts.h"
 #include "Common.h"
+#include "FileOperationProgress.h"
 
 using namespace boost::unit_test;
 
@@ -135,7 +136,7 @@ public:
     }
     
     const click_signal_type &GetOnClick() const { return m_OnClick; }
-    boost::signals::connection SetOnClick(const click_slot_type& onClick)
+    boost::signals::connection SetOnClick(const click_slot_type &onClick)
     {
         return m_OnClick.connect(onClick);
         // DEBUG_PRINTF(L"m_OnClick.num_slots = %d", m_OnClick.num_slots());
@@ -208,6 +209,14 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
         strings.Add(L"line 1");
         // BOOST_CHECK_EQUAL(true, OnChangeNotifyEventTriggered);
         BOOST_CHECK_EQUAL(true, onStringListChangeTriggered);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
+{
+    if (1)
+    {
+        TFileOperationProgressType OperationProgress;
     }
 }
 
