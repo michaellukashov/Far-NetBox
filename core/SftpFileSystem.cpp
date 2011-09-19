@@ -4115,7 +4115,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       OpenParams.Confirmed = false;
 
       FTerminal->LogEvent(L"Opening remote file.");
-      FTerminal->FileOperationLoop((TFileOperationEvent)&TSFTPFileSystem::SFTPOpenRemote, OperationProgress, true,
+      FTerminal->FileOperationLoop(boost::bind(&TSFTPFileSystem::SFTPOpenRemote, this, _1, _2), OperationProgress, true,
         FMTLOAD(SFTP_CREATE_FILE_ERROR, OpenParams.RemoteFileName.c_str()),
         &OpenParams);
 

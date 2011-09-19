@@ -70,8 +70,10 @@ typedef processfile_signal_type::slot_type processfile_slot_type;
   // (const std::wstring FileName, const TRemoteFile * File, void * Param, int Index);
 typedef boost::signal4<void, const std::wstring, const TRemoteFile *, void *, int> processfileex_signal_type;
 typedef processfile_signal_type::slot_type processfileex_slot_type;
-typedef int (TObject::*TFileOperationEvent)
-  (void * Param1, void * Param2);
+// typedef int (TObject::*TFileOperationEvent)
+  // (void * Param1, void * Param2);
+typedef boost::signal2<void, void *, void *> fileoperation_signal_type;
+typedef fileoperation_signal_type::slot_type fileoperation_slot_type;
 typedef void (TObject::*TSynchronizeDirectory)
   (const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
    bool & Continue, bool Collect);
@@ -254,7 +256,7 @@ protected:
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * File,
     const std::wstring FileName, bool ClearDirectoryChange = false);
-  int FileOperationLoop(TFileOperationEvent CallBackFunc,
+  int FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const std::wstring Message, void * Param1 = NULL, void * Param2 = NULL);
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,

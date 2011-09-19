@@ -1380,11 +1380,11 @@ bool TTerminal::FileOperationLoopQuery(const std::exception & E,
   return Result;
 }
 //---------------------------------------------------------------------------
-int TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
+int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   TFileOperationProgressType * OperationProgress, bool AllowSkip,
   const std::wstring Message, void * Param1, void * Param2)
 {
-  assert(CallBackFunc);
+  // assert(CallBackFunc);
   int Result;
   FILE_OPERATION_LOOP_EX
   (
