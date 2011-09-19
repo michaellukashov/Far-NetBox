@@ -225,7 +225,7 @@ struct TPasLibModule
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #endif
-#define USEDPARAM(p) ((p) == (p))
+#define USEDPARAM(p) ((void)p)
 
 //---------------------------------------------------------------------------
 static void Abort()
