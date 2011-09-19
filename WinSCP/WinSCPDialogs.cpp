@@ -7077,7 +7077,7 @@ class TSynchronizeDialog : TFarDialog
 public:
   TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,
-    int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
+    int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions);
   virtual ~TSynchronizeDialog();
 
   bool Execute(TSynchronizeParamType & Params,
@@ -7114,7 +7114,7 @@ private:
   int FOptions;
   TSynchronizeOptions * FSynchronizeOptions;
   TCopyParamType FCopyParams;
-  TGetSynchronizeOptionsEvent FOnGetOptions;
+  getsynchronizeoptions_signal_type FOnGetOptions;
   int FCopyParamAttrs;
 
   TFarEdit * LocalDirectoryEdit;
@@ -7133,7 +7133,7 @@ private:
 //---------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   TSynchronizeStartStopEvent OnStartStop,
-  int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
+  int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   TFarText * Text;
@@ -7145,7 +7145,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   FAbort = false;
   FClose = false;
   FOptions = Options;
-  FOnGetOptions = OnGetOptions;
+  FOnGetOptions.connect(OnGetOptions);
   FSynchronizeOptions = NULL;
   FCopyParamAttrs = CopyParamAttrs;
 
@@ -7523,7 +7523,7 @@ int TSynchronizeDialog::ActualCopyParamAttrs()
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-  bool & SaveSettings, int Options, int CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
+  bool & SaveSettings, int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions)
 {
   bool Result;
   TSynchronizeDialog * Dialog = new TSynchronizeDialog(FPlugin, OnStartStop,

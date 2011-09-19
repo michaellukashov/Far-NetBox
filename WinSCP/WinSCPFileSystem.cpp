@@ -1588,7 +1588,7 @@ void TWinSCPFileSystem::Synchronize()
     if (SynchronizeDialog(Params, &CopyParam,
         (TSynchronizeStartStopEvent)&TSynchronizeController::StartStop, //FIXME Controller.StartStop
         SaveSettings, Options, CopyParamAttrs,
-        (TGetSynchronizeOptionsEvent)&TWinSCPFileSystem::GetSynchronizeOptions) &&
+        boost::bind(&TWinSCPFileSystem::GetSynchronizeOptions, this, _1, _2)) &&
         SaveSettings)
     {
       GUIConfiguration->SetSynchronizeParams(Params.Params | UnusedParams);

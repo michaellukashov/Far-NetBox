@@ -2,6 +2,9 @@
 #ifndef WinSCPFileSystemH
 #define WinSCPFileSystemH
 //---------------------------------------------------------------------------
+#include "boostdefines.hpp"
+#include <boost/signals/signal2.hpp>
+
 #include "Interface.h"
 #include "FarPlugin.h"
 #include "FileOperationProgress.h"
@@ -54,8 +57,10 @@ const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
 enum TSessionActionEnum { saAdd, saEdit, saConnect };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TGetSynchronizeOptionsEvent)
-  (int Params, TSynchronizeOptions & Options);
+// typedef void (TObject::*TGetSynchronizeOptionsEvent)
+  // (int Params, TSynchronizeOptions & Options);
+typedef boost::signal2<void, int, TSynchronizeOptions &> getsynchronizeoptions_signal_type;
+typedef getsynchronizeoptions_signal_type::slot_type getsynchronizeoptions_slot_type;
 typedef void (TObject::*TGetSpaceAvailable)
   (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
 struct TMultipleEdit
@@ -185,7 +190,7 @@ protected:
   bool SynchronizeDialog(TSynchronizeParamType & Params,
     const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs,
-    TGetSynchronizeOptionsEvent OnGetOptions);
+    const getsynchronizeoptions_slot_type &OnGetOptions);
   void DoSynchronize(TSynchronizeController * Sender,
     const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
