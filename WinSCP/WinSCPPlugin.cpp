@@ -548,9 +548,9 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
     for (unsigned int i = 0; i < Data.Params->AliasesCount; i++)
     {
       if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
-          (Data.Params->Aliases[i].GetOnClick().num_slots() > 0))
+          (Data.Params->Aliases[i].OnClick.num_slots() > 0))
       {
-        Data.Params->Aliases[i].GetOnClick(this);
+        Data.Params->Aliases[i].OnClick(NULL);
         Close = false;
         break;
       }

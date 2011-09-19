@@ -17,7 +17,7 @@ TStoredSessionList * StoredSessions = NULL;
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias()
 {
-  OnClick = NULL;
+  OnClick.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(unsigned int AParams, std::wstring AHelpKeyword)

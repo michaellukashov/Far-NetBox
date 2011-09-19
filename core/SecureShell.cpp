@@ -658,7 +658,7 @@ void TSecureShell::UnregisterReceiveHandler(const notify_slot_type &Handler)
 {
   assert(FOnReceive.num_slots() == 1);
   USEDPARAM(Handler);
-  FOnReceive.disconnect();
+  FOnReceive.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
 void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
@@ -719,7 +719,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
           do
           {
             FDataWhileFrozen = false;
-            FOnReceive(this);
+            FOnReceive(NULL);
           }
           while (FDataWhileFrozen);
         }

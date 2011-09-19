@@ -928,10 +928,10 @@ void TTerminal::Closed()
      CloseTunnel();
   }
 
-  if (GetOnClose())
+  if (GetOnClose().num_slots() > 0)
   {
     TCallbackGuard Guard(this);
-    // FIXME GetOnClose(this);
+    GetOnClose()(this);
     Guard.Verify();
   }
 

@@ -411,11 +411,11 @@ void TConfiguration::NeverShowBanner(const std::wstring SessionKey,
 //---------------------------------------------------------------------------
 void TConfiguration::Changed()
 {
-  if (FUpdating == 0)
+  if (FUpdating== 0)
   {
-    if (GetOnChange())
+    if (GetOnChange().num_slots() > 0)
     {
-      // FIXME OnChange(this);
+      GetOnChange()(this);
     }
   }
   else
