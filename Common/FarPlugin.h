@@ -253,7 +253,9 @@ enum
 const size_t StartupInfoMinSize = 372;
 const size_t StandardFunctionsMinSize = 228;
 //---------------------------------------------------------------------------
-typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
+// typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
+typedef boost::signal1<void, unsigned int &> farmessagetimer_signal_type;
+typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
 // typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 typedef boost::signal3<void, void *, int, bool &> farmessageclick_signal_type;
 typedef farmessageclick_signal_type::slot_type farmessageclick_slot_type;
@@ -268,7 +270,7 @@ struct TFarMessageParams
     bool CheckBox;
     unsigned int Timer;
     unsigned int TimerAnswer;
-    TFarMessageTimerEvent TimerEvent;
+    farmessagetimer_slot_type *TimerEvent;
     unsigned int Timeout;
     unsigned int TimeoutButton;
     std::wstring TimeoutStr;

@@ -930,7 +930,9 @@ void TFarMessageDialog::Idle()
             if (FParams->TimerEvent != NULL)
             {
                 FParams->TimerAnswer = 0;
-                FParams->TimerEvent(FParams->TimerAnswer);
+                farmessagetimer_signal_type sig;
+                sig.connect(*FParams->TimerEvent);
+                sig(FParams->TimerAnswer);
                 if (FParams->TimerAnswer != 0)
                 {
                     Close(GetDefaultButton());
