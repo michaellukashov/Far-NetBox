@@ -675,7 +675,7 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
       {
         try
         {
-          FTerminal->ProcessDirectory(AFileName, FTerminal->ChangeFileProperties,
+          FTerminal->ProcessDirectory(AFileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
             (void*)Properties);
         }
         catch (...)
@@ -1070,7 +1070,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(FileName, SinkFile, &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, boost::bind(&TFTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -1548,7 +1548,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
   {
     try
     {
-      FTerminal->ProcessDirectory(FileName, FTerminal->DeleteFile, &Params);
+      FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
     }
     catch (...)
     {

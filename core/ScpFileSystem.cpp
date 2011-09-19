@@ -1206,8 +1206,8 @@ void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
     // AParams.Command = Command;
     // AParams.Params = Params;
     // AParams.OutputEvent.connect(OutputEvent);
-    // FIXME FTerminal->ProcessDirectory(FileName, FTerminal->CustomCommandOnFile,
-      // &AParams);
+    FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
+      &AParams);
   }
 
   if (!Dir || (Params & ccApplyToDirectories))

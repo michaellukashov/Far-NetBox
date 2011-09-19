@@ -3247,9 +3247,7 @@ void TSFTPFileSystem::DeleteFile(const std::wstring FileName,
     {
       try
       {
-        // FIXME
-        // FTerminal->ProcessDirectory(FileName, FTerminal->DeleteFile, &Params);
-        // FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
+        FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
       }
       catch(...)
       {
@@ -3337,7 +3335,7 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
 {
   assert(AProperties != NULL);
 
-  TRemoteFile * File;
+  TRemoteFile *File;
 
   std::wstring RealFileName = LocalCanonify(FileName);
   ReadFile(RealFileName, File);
@@ -3353,9 +3351,8 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
     {
       try
       {
-        // FIXME 
-        // FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3),
-          // (void*)AProperties);
+        FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
+          (void *)AProperties);
       }
       catch(...)
       {
