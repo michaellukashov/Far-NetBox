@@ -1833,9 +1833,9 @@ long TFarCheckBox::ItemProc(int Msg, long Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (FOnAllowChange)
+        if (!FOnAllowChange.empty())
         {
-            ((*this).FOnAllowChange)(this, Param, Allow);
+            FOnAllowChange(this, Param, Allow);
         }
         if (Allow)
         {
@@ -1874,9 +1874,9 @@ long TFarRadioButton::ItemProc(int Msg, long Param)
     if (Msg == DN_BTNCLICK)
     {
         bool Allow = true;
-        if (FOnAllowChange)
+        if (!FOnAllowChange.empty())
         {
-            ((*this).FOnAllowChange)(this, Param, Allow);
+            FOnAllowChange(this, Param, Allow);
         }
         if (Allow)
         {

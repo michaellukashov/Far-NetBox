@@ -21,6 +21,7 @@
 #include "boostdefines.hpp"
 #include <boost/signals/signal1.hpp>
 #include <boost/signals/signal2.hpp>
+#include <boost/signals/signal3.hpp>
 #include <boost/signals/signal4.hpp>
 
 #include "FarPlugin.h"
@@ -909,8 +910,10 @@ private:
     TFarButtonBrackets FBrackets;
 };
 //---------------------------------------------------------------------------
-typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
-        long NewState, bool &AllowChange);
+// typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
+        // long NewState, bool &AllowChange);
+typedef boost::signal3<void, TFarDialogItem *, long, bool &> farallowchange_signal_type;
+typedef farallowchange_signal_type::slot_type farallowchange_slot_type;
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
 {
@@ -921,15 +924,15 @@ public:
     virtual void SetCaption(std::wstring value) { SetData(value); }
     bool GetAllowGrayed() { return GetFlag(DIF_3STATE); }
     void SetAllowGrayed(bool value) { SetFlag(DIF_3STATE, value); }
-    virtual TFarAllowChange GetOnAllowChange() { return FOnAllowChange; }
-    virtual void SetOnAllowChange(TFarAllowChange value) { FOnAllowChange = value; }
+    virtual farallowchange_signal_type &GetOnAllowChange() { return FOnAllowChange; }
+    virtual void SetOnAllowChange(const farallowchange_slot_type &value) { FOnAllowChange.connect(value); }
     bool GetChecked() { return TFarDialogItem::GetChecked(); }
     void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
     int GetSelected() { return TFarDialogItem::GetSelected(); }
     void SetSelected(int value) { TFarDialogItem::SetSelected(value); }
 
 protected:
-    TFarAllowChange FOnAllowChange;
+    farallowchange_signal_type FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
@@ -944,11 +947,11 @@ public:
     void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
     virtual std::wstring GetCaption() { return GetData(); }
     virtual void SetCaption(std::wstring value) { SetData(value); }
-    virtual TFarAllowChange GetOnAllowChange() { return FOnAllowChange; }
-    virtual void SetOnAllowChange(TFarAllowChange value) { FOnAllowChange = value; }
+    virtual farallowchange_signal_type &GetOnAllowChange() { return FOnAllowChange; }
+    virtual void SetOnAllowChange(const farallowchange_slot_type &value) { FOnAllowChange.connect(value); }
 
 protected:
-    TFarAllowChange FOnAllowChange;
+    farallowchange_signal_type FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring value);
