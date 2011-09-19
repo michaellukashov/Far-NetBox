@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
