@@ -62,10 +62,14 @@ typedef readdirectory_signal_type::slot_type readdirectory_slot_type;
   // TObject* Sender, int Progress, bool & Cancel);
 typedef boost::signal3<void, TObject*, int, bool &> readdirectoryprogress_signal_type;
 typedef readdirectoryprogress_signal_type::slot_type readdirectoryprogress_slot_type;
-typedef void (TObject::*TProcessFileEvent)
-  (const std::wstring FileName, const TRemoteFile * File, void * Param);
-typedef void (TObject::*TProcessFileEventEx)
-  (const std::wstring FileName, const TRemoteFile * File, void * Param, int Index);
+// typedef void (TObject::*TProcessFileEvent)
+  // (const std::wstring FileName, const TRemoteFile * File, void * Param);
+typedef boost::signal3<void, const std::wstring, const TRemoteFile *, void *> processfile_signal_type;
+typedef processfile_signal_type::slot_type processfile_slot_type;
+// typedef void (TObject::*TProcessFileEventEx)
+  // (const std::wstring FileName, const TRemoteFile * File, void * Param, int Index);
+typedef boost::signal4<void, const std::wstring, const TRemoteFile *, void *, int> processfileex_signal_type;
+typedef processfile_signal_type::slot_type processfileex_slot_type;
 typedef int (TObject::*TFileOperationEvent)
   (void * Param1, void * Param2);
 typedef void (TObject::*TSynchronizeDirectory)
@@ -254,12 +258,12 @@ protected:
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const std::wstring Message, void * Param1 = NULL, void * Param2 = NULL);
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
-    TProcessFileEvent ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
+    const processfile_slot_type &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
     bool Ex = false);
   bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-    TProcessFileEventEx ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
+    const processfileex_slot_type &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
   void ProcessDirectory(const std::wstring DirName,
-    TProcessFileEvent CallBackFunc, void * Param = NULL, bool UseCache = false,
+    const processfile_slot_type &CallBackFunc, void * Param = NULL, bool UseCache = false,
     bool IgnoreErrors = false);
   void AnnounceFileListOperation();
   std::wstring TranslateLockedPath(std::wstring Path, bool Lock);

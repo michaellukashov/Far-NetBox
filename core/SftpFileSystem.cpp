@@ -3247,8 +3247,9 @@ void TSFTPFileSystem::DeleteFile(const std::wstring FileName,
     {
       try
       {
+        // FIXME
         // FTerminal->ProcessDirectory(FileName, FTerminal->DeleteFile, &Params);
-        FTerminal->ProcessDirectory(FileName, (TProcessFileEvent)&TTerminal::DeleteFile, &Params);
+        // FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
       }
       catch(...)
       {
@@ -3352,8 +3353,9 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
     {
       try
       {
-        FTerminal->ProcessDirectory(FileName, (TProcessFileEvent)&TTerminal::ChangeFileProperties,
-          (void*)AProperties);
+        // FIXME 
+        // FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3),
+          // (void*)AProperties);
       }
       catch(...)
       {
@@ -4842,7 +4844,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~tfFirstLevel;
 
-      FTerminal->ProcessDirectory(FileName, (TProcessFileEvent)&TSFTPFileSystem::SFTPSinkFile, &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, boost::bind(&TSFTPFileSystem::SFTPSinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion

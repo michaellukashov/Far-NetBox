@@ -2364,7 +2364,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(std::wstring Directory, bool
 }
 //---------------------------------------------------------------------------
 void TTerminal::ProcessDirectory(const std::wstring DirName,
-  TProcessFileEvent CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
+  const processfile_slot_type &CallBackFunc, void * Param, bool UseCache, bool IgnoreErrors)
 {
   TRemoteFileList * FileList = NULL;
   if (IgnoreErrors)
@@ -2508,7 +2508,7 @@ void TTerminal::AnnounceFileListOperation()
 }
 //---------------------------------------------------------------------------
 bool TTerminal::ProcessFiles(TStrings * FileList,
-  TFileOperation Operation, TProcessFileEvent ProcessFile, void * Param,
+  TFileOperation Operation, const processfile_slot_type &ProcessFile, void * Param,
   TOperationSide Side, bool Ex)
 {
   assert(FFileSystem);
@@ -2565,8 +2565,8 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               else
               {
                 // not used anymore
-                TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
-                // FIXME ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
+                // FIXME TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
+                // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
               }
               Success = true;
             }
@@ -2606,10 +2606,12 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 //---------------------------------------------------------------------------
 // not used anymore
 bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-  TProcessFileEventEx ProcessFile, void * Param, TOperationSide Side)
+  const processfileex_slot_type &ProcessFile, void * Param, TOperationSide Side)
 {
-  return ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
-    Param, Side, true);
+  // FIXME
+  // return ProcessFiles(FileList, Operation, boost::bind(&TTerminal::ProcessFile, this, _1, _2, _3)),
+    // Param, Side, true);
+  return false;
 }
 //---------------------------------------------------------------------------
 TStrings * TTerminal::GetFixedPaths()
@@ -2727,7 +2729,7 @@ bool TTerminal::DeleteFiles(TStrings * FilesToDelete, int Params)
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
-  return ProcessFiles(FilesToDelete, foDelete, (TProcessFileEvent)&TTerminal::DeleteFile, &Params);
+  return ProcessFiles(FilesToDelete, foDelete, boost::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
 }
 //---------------------------------------------------------------------------
 void TTerminal::DeleteLocalFile(std::wstring FileName,
@@ -2748,7 +2750,7 @@ void TTerminal::DeleteLocalFile(std::wstring FileName,
 //---------------------------------------------------------------------------
 bool TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
 {
-  return ProcessFiles(FileList, foDelete, (TProcessFileEvent)&TTerminal::DeleteLocalFile, &Params, osLocal);
+  return ProcessFiles(FileList, foDelete, boost::bind(&TTerminal::DeleteLocalFile, this, _1, _2, _3), &Params, osLocal);
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFile(std::wstring FileName,
@@ -2815,7 +2817,7 @@ void TTerminal::CustomCommandOnFiles(std::wstring Command,
     // AParams.Params = Params;
     // AParams.OutputEvent.connect(OutputEvent);
     // AParams.OutputEvent = OutputEvent;
-    ProcessFiles(Files, foCustomCommand, (TProcessFileEvent)&TTerminal::CustomCommandOnFile, &AParams);
+    ProcessFiles(Files, foCustomCommand, boost::bind(&TTerminal::CustomCommandOnFile, this, _1, _2, _3), &AParams);
   }
   else
   {
@@ -2917,7 +2919,7 @@ void TTerminal::ChangeFilesProperties(TStrings * FileList,
   const TRemoteProperties * Properties)
 {
   AnnounceFileListOperation();
-  ProcessFiles(FileList, foSetProperties, (TProcessFileEvent)&TTerminal::ChangeFileProperties, (void *)Properties);
+  ProcessFiles(FileList, foSetProperties, boost::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3), (void *)Properties);
 }
 //---------------------------------------------------------------------------
 bool TTerminal::LoadFilesProperties(TStrings * FileList)
@@ -3005,7 +3007,7 @@ void TTerminal::DoCalculateDirectorySize(const std::wstring FileName,
 {
   try
   {
-    ProcessDirectory(FileName, (TProcessFileEvent)&TTerminal::CalculateFileSize, Params);
+    ProcessDirectory(FileName, boost::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), Params);
   }
   catch (const std::exception & E)
   {
@@ -3029,7 +3031,7 @@ void TTerminal::CalculateFilesSize(TStrings * FileList,
   Param.Params = Params;
   Param.CopyParam = CopyParam;
   Param.Stats = Stats;
-  ProcessFiles(FileList, foCalculateSize, (TProcessFileEvent)&TTerminal::CalculateFileSize, &Param);
+  ProcessFiles(FileList, foCalculateSize, boost::bind(&TTerminal::CalculateFileSize, this, _1, _2, _3), &Param);
   Size = Param.Size;
 }
 //---------------------------------------------------------------------------
@@ -3179,7 +3181,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
         }
         Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
-    Result = ProcessFiles(FileList, foRemoteMove, (TProcessFileEvent)&TTerminal::MoveFile, &Params);
+    Result = ProcessFiles(FileList, foRemoteMove, boost::bind(&TTerminal::MoveFile, this, _1, _2, _3), &Params);
   }
   return Result;
 }
@@ -3238,7 +3240,7 @@ bool TTerminal::CopyFiles(TStrings * FileList, const std::wstring Target,
   Params.Target = Target;
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
-  return ProcessFiles(FileList, foRemoteCopy, (TProcessFileEvent)&TTerminal::CopyFile, &Params);
+  return ProcessFiles(FileList, foRemoteCopy, boost::bind(&TTerminal::CopyFile, this, _1, _2, _3), &Params);
 }
 //---------------------------------------------------------------------------
 void TTerminal::CreateDirectory(const std::wstring DirName,
@@ -3748,7 +3750,7 @@ void TTerminal::MakeLocalFileList(const std::wstring FileName,
   bool Directory = FLAGSET(Rec.dwFileAttributes, faDirectory);
   if (Directory && Params.Recursive)
   {
-    // FIXME ProcessLocalDirectory(FileName, (TProcessFileEvent)&TTerminal::MakeLocalFileList, &Params);
+    // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
   }
 
   if (!Directory || Params.IncludeDirs)
@@ -3784,7 +3786,7 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
     }
     else
     {
-      // FIXME ProcessLocalDirectory(FileName, (TProcessFileEvent)&TTerminal::CalculateLocalFileSize, Params);
+      // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
     }
   }
 
@@ -3998,7 +4000,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         DoSynchronizeProgress(Data, true);
       }
 
-      ProcessDirectory(RemoteDirectory, (TProcessFileEvent)&TTerminal::SynchronizeCollectFile, &Data,
+      ProcessDirectory(RemoteDirectory, boost::bind(&TTerminal::SynchronizeCollectFile, this, _1, _2, _3), &Data,
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
@@ -4389,13 +4391,13 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           if (DownloadList->GetCount() > 0)
           {
             ProcessFiles(DownloadList, foSetProperties,
-              (TProcessFileEvent)&TTerminal::SynchronizeLocalTimestamp, NULL, osLocal);
+              boost::bind(&TTerminal::SynchronizeLocalTimestamp, this, _1, _2, _3), NULL, osLocal);
           }
 
           if (UploadList->GetCount() > 0)
           {
             ProcessFiles(UploadList, foSetProperties,
-              (TProcessFileEvent)&TTerminal::SynchronizeRemoteTimestamp);
+              boost::bind(&TTerminal::SynchronizeRemoteTimestamp, this, _1, _2, _3));
           }
         }
         else
@@ -4535,7 +4537,7 @@ void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
       {
         Self->FOnFindingFile = NULL;
       } BOOST_SCOPE_EXIT_END
-      ProcessDirectory(Directory, (TProcessFileEvent)&TTerminal::FileFind, &Params, false, true);
+      ProcessDirectory(Directory, boost::bind(&TTerminal::FileFind, this, _1, _2, _3), &Params, false, true);
     }
   }
 }
