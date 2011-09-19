@@ -3476,6 +3476,9 @@ void TTerminal::AnyCommand(const std::wstring Command,
   private:
     TCallSessionAction & FAction;
     captureoutput_signal_type FOutputEvent;
+    private:
+      TOutputProxy(const TOutputProxy &);
+      void operator=(const TOutputProxy &);
   };
 
   TCallSessionAction Action(GetLog(), Command, GetCurrentDirectory());

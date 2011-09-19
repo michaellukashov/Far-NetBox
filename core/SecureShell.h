@@ -165,6 +165,9 @@ public:
   // __property bool Simple = { read = FSimple, write = FSimple };
   bool GetSimple() { return FSimple; }
   void SetSimple(bool value) { FSimple = value; }
+private:
+  TSecureShell(const TSecureShell &);
+  void operator=(const TSecureShell &);
 };
 //---------------------------------------------------------------------------
 #endif

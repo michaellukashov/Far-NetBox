@@ -127,6 +127,9 @@ private:
 
   static bool RemoveLastLine(std::wstring & Line,
     int & ReturnCode, std::wstring LastLine = L"");
+private:
+  TSCPFileSystem(const TSCPFileSystem &);
+  void operator=(const TSCPFileSystem &);
 };
 //---------------------------------------------------------------------------
 #endif // ScpFileSystemH

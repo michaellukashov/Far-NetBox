@@ -227,6 +227,9 @@ private:
   bool FMfmt;
   TDateTime FLastDataSent;
   mutable std::wstring FOptionScratch;
+private:
+  TFTPFileSystem(const TFTPFileSystem &);
+  void operator=(const TFTPFileSystem &);
 };
 //---------------------------------------------------------------------------
 #endif NO_FILEZILLA

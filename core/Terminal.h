@@ -561,6 +561,9 @@ struct TCustomCommandParams
   std::wstring Command;
   int Params;
   captureoutput_signal_type OutputEvent;
+private:
+  TCustomCommandParams(const TCustomCommandParams &);
+  void operator=(const TCustomCommandParams &);
 };
 //---------------------------------------------------------------------------
 struct TCalculateSizeStats
