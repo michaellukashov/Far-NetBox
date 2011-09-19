@@ -2815,10 +2815,11 @@ void TTerminal::CustomCommandOnFiles(std::wstring Command,
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
-    TCustomCommandParams AParams;
-    AParams.Command = Command;
-    AParams.Params = Params;
-    AParams.OutputEvent.connect(OutputEvent);
+    TCustomCommandParams AParams(Command, Params, OutputEvent);
+    // AParams.Command = Command;
+    // AParams.Params = Params;
+    // AParams.OutputEvent.connect(OutputEvent);
+    // AParams.OutputEvent = OutputEvent;
     ProcessFiles(Files, foCustomCommand, (TProcessFileEvent)&TTerminal::CustomCommandOnFile, &AParams);
   }
   else
@@ -3452,16 +3453,16 @@ TTerminal * TTerminal::GetCommandSession()
 }
 //---------------------------------------------------------------------------
 void TTerminal::AnyCommand(const std::wstring Command,
-  const captureoutput_slot_type &OutputEvent)
+  const captureoutput_slot_type *OutputEvent)
 {
 
   class TOutputProxy
   {
   public:
-    TOutputProxy(TCallSessionAction & Action, const captureoutput_slot_type &OutputEvent) :
+    TOutputProxy(TCallSessionAction & Action, const captureoutput_slot_type *OutputEvent) :
       FAction(Action)
     {
-      FOutputEvent.connect(OutputEvent);
+      FOutputEvent.connect(*OutputEvent);
     }
 
     void Output(const std::wstring & Str, bool StdError)
@@ -3474,16 +3475,16 @@ void TTerminal::AnyCommand(const std::wstring Command,
     }
 
   private:
-    TCallSessionAction & FAction;
+    TCallSessionAction &FAction;
     captureoutput_signal_type FOutputEvent;
-    private:
-      TOutputProxy(const TOutputProxy &);
-      void operator=(const TOutputProxy &);
+  private:
+    TOutputProxy(const TOutputProxy &);
+    void operator=(const TOutputProxy &);
   };
 
   TCallSessionAction Action(GetLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  DoAnyCommand(Command, boost::bind(&TOutputProxy::Output, ProxyOutputEvent, _1, _2),
+  DoAnyCommand(Command, boost::bind(&TOutputProxy::Output, &ProxyOutputEvent, _1, _2),
     &Action);
 }
 //---------------------------------------------------------------------------
@@ -3497,7 +3498,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     if (GetIsCapable(fcAnyCommand))
     {
       LogEvent(L"Executing user defined command.");
-      FFileSystem->AnyCommand(Command, OutputEvent);
+      FFileSystem->AnyCommand(Command, &OutputEvent);
     }
     else
     {
@@ -3506,7 +3507,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
       LogEvent(L"Executing user defined command on command session.");
 
       FCommandSession->SetCurrentDirectory(GetCurrentDirectory());
-      FCommandSession->FFileSystem->AnyCommand(Command, OutputEvent);
+      FCommandSession->FFileSystem->AnyCommand(Command, &OutputEvent);
 
       FCommandSession->FFileSystem->ReadCurrentDirectory();
 

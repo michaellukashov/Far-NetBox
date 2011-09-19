@@ -343,7 +343,8 @@ public:
   void Idle();
   void RecryptPasswords();
   bool AllowedAnyCommand(const std::wstring Command);
-  void AnyCommand(const std::wstring Command, const captureoutput_slot_type &OutputEvent);
+  void AnyCommand(const std::wstring Command,
+    const captureoutput_slot_type *OutputEvent);
   void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const std::wstring Message = L"");
   std::wstring AbsolutePath(std::wstring Path, bool Local);
   void BeginTransaction();
@@ -558,9 +559,19 @@ private:
 //---------------------------------------------------------------------------
 struct TCustomCommandParams
 {
+  TCustomCommandParams(
+      std::wstring Command,
+      int Params,
+      const captureoutput_slot_type &OutputEvent) :
+      Command(Command),
+      Params(Params),
+      OutputEvent(OutputEvent)
+  {
+  }
   std::wstring Command;
   int Params;
-  captureoutput_signal_type OutputEvent;
+  // captureoutput_signal_type OutputEvent;
+  const captureoutput_slot_type &OutputEvent;
 private:
   TCustomCommandParams(const TCustomCommandParams &);
   void operator=(const TCustomCommandParams &);

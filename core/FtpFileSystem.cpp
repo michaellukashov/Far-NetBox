@@ -568,14 +568,14 @@ void TFTPFileSystem::EnsureLocation()
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::AnyCommand(const std::wstring Command,
-  const captureoutput_slot_type &OutputEvent)
+  const captureoutput_slot_type *OutputEvent)
 {
   // end-user has right to expect that client current directory is really
   // current directory for the server
   EnsureLocation();
 
-  assert(FOnCaptureOutput == NULL);
-  FOnCaptureOutput = OutputEvent;
+  assert(FOnCaptureOutput.empty());
+  FOnCaptureOutput.connect(*OutputEvent);
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {

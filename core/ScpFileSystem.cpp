@@ -1202,10 +1202,10 @@ void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
   if (Dir && (Params & ccRecursive))
   {
-    TCustomCommandParams AParams;
-    AParams.Command = Command;
-    AParams.Params = Params;
-    AParams.OutputEvent.connect(OutputEvent);
+    TCustomCommandParams AParams(Command, Params, OutputEvent);
+    // AParams.Command = Command;
+    // AParams.Params = Params;
+    // AParams.OutputEvent.connect(OutputEvent);
     // FIXME FTerminal->ProcessDirectory(FileName, FTerminal->CustomCommandOnFile,
       // &AParams);
   }
@@ -1217,7 +1217,7 @@ void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
       Data, FTerminal->GetCurrentDirectory(), FileName, L"").
       Complete(Command, true);
 
-    AnyCommand(Cmd, OutputEvent);
+    AnyCommand(Cmd, &OutputEvent);
   }
 }
 //---------------------------------------------------------------------------
@@ -1235,13 +1235,13 @@ void TSCPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::AnyCommand(const std::wstring Command,
-  const captureoutput_slot_type &OutputEvent)
+  const captureoutput_slot_type *OutputEvent)
 {
   assert(!FSecureShell->GetOnCaptureOutput().empty());
-  // if (!OutputEvent.empty())
+  if (OutputEvent)
   {
     FSecureShell->SetOnCaptureOutput(boost::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
-    FOnCaptureOutput.connect(OutputEvent);
+    FOnCaptureOutput.connect(*OutputEvent);
   }
 
   {

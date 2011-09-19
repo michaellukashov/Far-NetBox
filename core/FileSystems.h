@@ -36,7 +36,7 @@ public:
   virtual void Idle() = 0;
   virtual std::wstring AbsolutePath(std::wstring Path, bool Local) = 0;
   virtual void AnyCommand(const std::wstring Command,
-    const captureoutput_slot_type &OutputEvent) = 0;
+    const captureoutput_slot_type *OutputEvent) = 0;
   virtual void ChangeDirectory(const std::wstring Directory) = 0;
   virtual void CachedChangeDirectory(const std::wstring Directory) = 0;
   virtual void AnnounceFileListOperation() = 0;

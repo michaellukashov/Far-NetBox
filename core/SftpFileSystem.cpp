@@ -3594,7 +3594,7 @@ void TSFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::AnyCommand(const std::wstring /*Command*/,
-  const captureoutput_slot_type & /*OutputEvent*/)
+  const captureoutput_slot_type * /*OutputEvent*/)
 {
   assert(false);
 }
