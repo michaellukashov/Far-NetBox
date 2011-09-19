@@ -84,8 +84,10 @@ typedef synchronizedirectory_signal_type::slot_type synchronizedirectory_slot_ty
   // const std::wstring FileName, bool Alternative);
 typedef boost::signal2<void, const std::wstring, bool> deletelocalfile_signal_type;
 typedef deletelocalfile_signal_type::slot_type deletelocalfile_slot_type;
-typedef int (TObject::*TDirectoryModifiedEvent)
-  (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);
+// typedef int (TObject::*TDirectoryModifiedEvent)
+  // (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);
+typedef boost::signal3<int, TTerminal *, const std::wstring, bool> directorymodified_signal_type;
+typedef directorymodified_signal_type::slot_type directorymodified_slot_type;
 typedef void (TObject::*TInformationEvent)
   (TTerminal * Terminal, const std::wstring & Str, bool Status, bool Active);
 //---------------------------------------------------------------------------
