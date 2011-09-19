@@ -65,8 +65,10 @@ typedef queuelistupdate_signal_type::slot_type queuelistupdate_slot_type;
 typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> queueitemupdate_signal_type;
 typedef queueitemupdate_signal_type::slot_type queueitemupdate_slot_type;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-typedef void (TObject::*TQueueEventEvent)
-  (TTerminalQueue *Queue, TQueueEvent Event);
+// typedef void (TObject::*TQueueEventEvent)
+  // (TTerminalQueue *Queue, TQueueEvent Event);
+typedef boost::signal2<void, TTerminalQueue *, TQueueEvent> queueevent_signal_type;
+typedef queueevent_signal_type::slot_type queueevent_slot_type;
 //---------------------------------------------------------------------------
 class TTerminalQueue : public TSignalThread
 {
@@ -102,8 +104,8 @@ public:
   queueitemupdate_signal_type &GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void SetOnQueueItemUpdate(const queueitemupdate_slot_type &value) { FOnQueueItemUpdate.connect(value); }
   // __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
-  TQueueEventEvent GetOnEvent() { return FOnEvent; }
-  void SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
+  queueevent_signal_type &GetOnEvent() { return FOnEvent; }
+  void SetOnEvent(const queueevent_slot_type &value) { FOnEvent.connect(value); }
 
 protected:
   friend class TTerminalItem;
@@ -116,7 +118,7 @@ protected:
   TExtendedExceptionEvent FOnShowExtendedException;
   queueitemupdate_signal_type FOnQueueItemUpdate;
   queuelistupdate_signal_type FOnListUpdate;
-  TQueueEventEvent FOnEvent;
+  queueevent_signal_type FOnEvent;
   TTerminal *FTerminal;
   TConfiguration *FConfiguration;
   TSessionData *FSessionData;
