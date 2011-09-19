@@ -42,11 +42,16 @@ typedef boost::signal8<void, TObject *, bool, const TSynchronizeParamType &,
    const synchronizeabort_slot_type &, const synchronizethreads_slot_type &,
    const synchronizelog_slot_type &> synchronizestartstop_signal_type;
 typedef synchronizestartstop_signal_type::slot_type synchronizestartstop_slot_type;
-typedef void (TObject::* TSynchronizeEvent)
-  (TSynchronizeController * Sender, const std::wstring LocalDirectory,
-   const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,
-   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
-   TSynchronizeOptions * Options, bool Full);
+// typedef void (TObject::* TSynchronizeEvent)
+  // (TSynchronizeController * Sender, const std::wstring LocalDirectory,
+   // const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,
+   // const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
+   // TSynchronizeOptions * Options, bool Full);
+typedef boost::signal8<void, TSynchronizeController *, const std::wstring,
+   const std::wstring, const TCopyParamType &,
+   const TSynchronizeParamType &, TSynchronizeChecklist **,
+   TSynchronizeOptions *, bool> synchronize_signal_type;
+typedef synchronize_signal_type::slot_type synchronize_slot_type;
 typedef void (TObject::* TSynchronizeInvalidEvent)
   (TSynchronizeController * Sender, const std::wstring Directory, const std::wstring ErrorStr);
 typedef void (TObject::* TSynchronizeTooManyDirectories)
@@ -62,7 +67,7 @@ enum TSynchronizeOperation { soUpload, soDelete };
 class TSynchronizeController
 {
 public:
-  TSynchronizeController(TSynchronizeEvent AOnSynchronize,
+  TSynchronizeController(const synchronize_slot_type &AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,
     TSynchronizeTooManyDirectories AOnTooManyDirectories);
   ~TSynchronizeController();
@@ -75,7 +80,7 @@ public:
   void LogOperation(TSynchronizeOperation Operation, const std::wstring FileName);
 
 private:
-  TSynchronizeEvent FOnSynchronize;
+  synchronize_signal_type FOnSynchronize;
   TSynchronizeParamType FSynchronizeParams;
   TSynchronizeOptions * FOptions;
   synchronizethreads_signal_type FOnSynchronizeThreads;

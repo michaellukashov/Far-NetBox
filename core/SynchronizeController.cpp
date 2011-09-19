@@ -15,10 +15,10 @@
 #include "SynchronizeController.h"
 //---------------------------------------------------------------------------
 TSynchronizeController::TSynchronizeController(
-  TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
+  const synchronize_slot_type &AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectories AOnTooManyDirectories)
 {
-  FOnSynchronize = AOnSynchronize;
+  FOnSynchronize.connect(AOnSynchronize);
   FOnSynchronizeInvalid = AOnSynchronizeInvalid;
   FOnTooManyDirectories = AOnTooManyDirectories;
   FSynchronizeMonitor = NULL;
@@ -45,11 +45,11 @@ void TSynchronizeController::StartStop(TObject * Sender,
 
       FOptions = Options;
       if (FLAGSET(Params.Options, soSynchronize) &&
-          (FOnSynchronize != NULL))
+          (!FOnSynchronize.empty()))
       {
-        // FIXME FOnSynchronize(this, Params.LocalDirectory,
-          // Params.RemoteDirectory, CopyParam,
-          // Params, NULL, FOptions, true);
+        FOnSynchronize(this, Params.LocalDirectory,
+          Params.RemoteDirectory, CopyParam,
+          Params, NULL, FOptions, true);
       }
 
       FCopyParam = CopyParam;
@@ -125,15 +125,15 @@ void TSynchronizeController::SynchronizeChange(
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
       ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
-    if (FOnSynchronize != NULL)
+    if (!FOnSynchronize.empty())
     {
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
         ((LocalDirectory == RootLocalDirectory) ? FOptions : NULL);
       TSynchronizeChecklist * Checklist = NULL;
-      // FIXME FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
-        // FSynchronizeParams, &Checklist, Options, false);
+      FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
+        FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
         {
