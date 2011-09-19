@@ -85,7 +85,7 @@ private:
   void UpdateSessionInfo();
   void DispatchSendBuffer(int BufSize);
   void SendBuffer(unsigned int & Result);
-  int TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  int TimeoutPrompt(queryparamstimer_slot_type *PoolEvent);
 
 protected:
   captureoutput_signal_type FOnCaptureOutput;

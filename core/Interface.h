@@ -53,7 +53,9 @@ struct TQueryButtonAlias
   notify_signal_type OnClick;
 };
 
-typedef void ( *TQueryParamsTimerEvent)(unsigned int & Result);
+// typedef void ( *TQueryParamsTimerEvent)(unsigned int & Result);
+typedef boost::signal1<void, unsigned int &> queryparamstimer_signal_type;
+typedef queryparamstimer_signal_type::slot_type queryparamstimer_slot_type;
 
 struct TQueryParams
 {
@@ -63,7 +65,7 @@ struct TQueryParams
   unsigned int AliasesCount;
   unsigned int Params;
   unsigned int Timer;
-  TQueryParamsTimerEvent TimerEvent;
+  queryparamstimer_slot_type *TimerEvent;
   std::wstring TimerMessage;
   unsigned int TimerAnswers;
   unsigned int Timeout;

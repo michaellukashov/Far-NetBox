@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include "PuttyIntf.h"
 #include "Exceptions.h"
@@ -859,7 +860,7 @@ void TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
+int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
 {
   FWaiting++;
 
@@ -925,7 +926,8 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      int Answer = -1; // FIXME TimeoutPrompt((TQueryParamsTimerEvent)&TSecureShell::SendBuffer);
+      queryparamstimer_slot_type slot = boost::bind(&TSecureShell::SendBuffer, this, _1);
+      int Answer = TimeoutPrompt(&slot);
       switch (Answer)
       {
         case qaRetry:
@@ -1365,7 +1367,8 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      int Answer = -1; // FIXME TimeoutPrompt(&TPoolForDataEvent::PoolForData&Event.PoolForData);
+      queryparamstimer_slot_type slot = boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
+      int Answer = TimeoutPrompt(&slot);
       switch (Answer)
       {
         case qaRetry:

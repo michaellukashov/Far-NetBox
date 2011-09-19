@@ -697,7 +697,8 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
     }
 
     FarParams.Token = &Data;
-    FarParams.ClickEvent = &boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
+    farmessageclick_slot_type slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
+    FarParams.ClickEvent = &slot;
 
     std::wstring DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))
