@@ -311,6 +311,7 @@ set ( TESTNETBOX_02_SOURCES
     ${PROJECT_ROOT}/Common/FarDialog.cpp
     ${PROJECT_ROOT}/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/core/Exceptions.cpp
+    ${PROJECT_ROOT}/core/FileOperationProgress.cpp
     ${PROJECT_ROOT}/resource/TextsCore1.rc
     ${PROJECT_ROOT}/resource/rtlconsts.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
