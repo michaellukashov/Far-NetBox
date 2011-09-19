@@ -79,7 +79,9 @@ struct TEditHistory
   bool operator==(const TEditHistory& rh) { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 //---------------------------------------------------------------------------
-typedef void (TObject::* TProcessSessionEvent)(TSessionData * Data, void * Param);
+// typedef void (TObject::* TProcessSessionEvent)(TSessionData * Data, void * Param);
+typedef boost::signal2<void, TSessionData *, void *> processsession_signal_type;
+typedef processsession_signal_type::slot_type processsession_slot_type;
 //---------------------------------------------------------------------------
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
@@ -128,7 +130,7 @@ protected:
   void FocusSession(TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * Param);
   void ProcessSessions(TList * PanelItems,
-    TProcessSessionEvent ProcessSession, void * Param);
+    const processsession_slot_type &ProcessSession, void * Param);
   void ExportSession(TSessionData * Data, void * Param);
   bool ImportSessions(TList * PanelItems, bool Move, int OpMode);
   void FileProperties();

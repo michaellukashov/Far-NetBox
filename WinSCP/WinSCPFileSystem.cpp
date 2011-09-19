@@ -2331,8 +2331,10 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
-  TProcessSessionEvent ProcessSession, void * Param)
+  const processsession_slot_type &ProcessSession, void * Param)
 {
+    processsession_signal_type sig;
+    sig.connect(ProcessSession);
   for (int Index = 0; Index < PanelItems->GetCount(); Index++)
   {
     TFarPanelItem * PanelItem = (TFarPanelItem *)PanelItems->GetItem(Index);
@@ -2341,7 +2343,7 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
     {
       if (PanelItem->GetUserData() != NULL)
       {
-        // FIXME (ProcessSession)(static_cast<TSessionData *>(PanelItem->GetUserData()), Param);
+        sig(static_cast<TSessionData *>(PanelItem->GetUserData()), Param);
         PanelItem->SetSelected(false);
       }
       else
@@ -2360,7 +2362,7 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
         TSessionData *Data = StoredSessions->GetSession(Index);
         if (Data->Name.substr(1, Folder.size()) == Folder)
         {
-          // FIXME ProcessSession(Data, Param);
+          sig(Data, Param);
           if (StoredSessions->GetSession(Index) != Data)
           {
             Index--;
@@ -2412,7 +2414,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
     if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
       (MoreMessageDialog(GetMsg(DELETE_SESSIONS_CONFIRM), NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
-      // FIXME ProcessSessions(PanelItems, DeleteSession, NULL);
+      ProcessSessions(PanelItems, boost::bind(&TWinSCPFileSystem::DeleteSession, this, _1, _2), NULL);
     }
     return true;
   }
@@ -2543,7 +2545,7 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
     {
       TExportSessionParam Param;
       Param.DestPath = DestPath;
-      // FIXME ProcessSessions(PanelItems, ExportSession, &Param);
+      ProcessSessions(PanelItems, boost::bind(&TWinSCPFileSystem::ExportSession, this, _1, _2), &Param);
       Result = 1;
     }
     else
