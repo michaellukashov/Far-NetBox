@@ -145,8 +145,8 @@ TSimpleThread::TSimpleThread() :
   FThread(NULL), FFinished(true)
 {
   unsigned ThreadID;
-  // FIXME FThread = reinterpret_cast<HANDLE>(
-    // StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+  FThread = reinterpret_cast<HANDLE>(
+    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()

@@ -42,7 +42,7 @@ std::wstring SshVersionString()
 
 //---------------------------------------------------------------------------
 int StartThread(void * SecurityAttributes, unsigned StackSize,
-  TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
+  const threadfunc_slot_type &ThreadFunc, void * Parameter, unsigned CreationFlags,
   unsigned & ThreadId)
 {
   // FIXME return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,

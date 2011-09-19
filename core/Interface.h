@@ -1,12 +1,16 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-//---------------------------------------------------------------------------
+#include "boostdefines.hpp"
+#include <boost/signals/signal1.hpp>
+
 #include "Configuration.h"
 #include "SessionData.h"
 #define HELP_NONE L""
 //---------------------------------------------------------------------------
-typedef int (TObject::*TThreadFunc)(void *Parameter);
+// typedef int (TObject::*TThreadFunc)(void *Parameter);
+typedef boost::signal1<int, void *> threadfunc_signal_type;
+typedef threadfunc_signal_type::slot_type threadfunc_slot_type;
 //---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration();
 
@@ -18,7 +22,7 @@ std::wstring AppNameString();
 std::wstring SshVersionString();
 void CopyToClipboard(std::wstring Text);
 int StartThread(void * SecurityAttributes, unsigned StackSize,
-  TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
+  const threadfunc_slot_type &ThreadFunc, void * Parameter, unsigned CreationFlags,
   unsigned & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
