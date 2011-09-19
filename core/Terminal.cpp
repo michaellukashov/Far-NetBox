@@ -481,7 +481,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FSecureShell = NULL;
   FOnDeleteLocalFile = NULL;
   FOnReadDirectoryProgress = NULL;
-  FOnQueryUser = NULL;
   FOnPromptUser = NULL;
   FOnDisplayBanner = NULL;
   FOnShowExtendedException = NULL;
@@ -1059,10 +1058,10 @@ int TTerminal::QueryUser(const std::wstring Query,
 {
   LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
   int Answer = AbortAnswer(Answers);
-  if (FOnQueryUser)
+  if (!FOnQueryUser.empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnQueryUser(this, Query, MoreMessages, Answers, Params, Answer, QueryType, NULL);
+    FOnQueryUser(this, Query, MoreMessages, Answers, Params, Answer, QueryType, NULL);
     Guard.Verify();
   }
   return Answer;

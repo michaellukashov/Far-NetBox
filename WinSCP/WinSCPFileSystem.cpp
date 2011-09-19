@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include "FarUtil.h"
 // #include <StrUtils.hpp>
@@ -2920,7 +2921,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   FTerminal = new TTerminal(Data, Configuration);
   try
   {
-    FTerminal->SetOnQueryUser((TQueryUserEvent)&TWinSCPFileSystem::TerminalQueryUser);
+    FTerminal->SetOnQueryUser(boost::bind(&TWinSCPFileSystem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
     // FIXME
     // FTerminal->OnPromptUser = TerminalPromptUser;
     // FTerminal->OnDisplayBanner = TerminalDisplayBanner;

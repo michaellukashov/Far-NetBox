@@ -257,7 +257,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
-  FOnQueryUser = NULL;
   FOnPromptUser = NULL;
   FOnShowExtendedException = NULL;
   FLastIdle = Now();
@@ -799,9 +798,9 @@ void TTerminalQueue::DoQueryUser(TObject * Sender,
   const std::wstring Query, TStrings * MoreMessages, int Answers,
   const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg)
 {
-  if (GetOnQueryUser() != NULL)
+  if (!GetOnQueryUser().empty())
   {
-    // FIXME OnQueryUser(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
+    GetOnQueryUser()(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
   }
 }
 //---------------------------------------------------------------------------

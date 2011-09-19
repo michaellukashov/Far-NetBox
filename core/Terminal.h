@@ -2,6 +2,9 @@
 #ifndef TerminalH
 #define TerminalH
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal8.hpp>
+
 #include "Classes.h"
 
 #include "SessionInfo.h"
@@ -29,9 +32,12 @@ struct TFilesFindParams;
 class TTunnelUI;
 class TCallbackGuard;
 //---------------------------------------------------------------------------
-typedef void (TObject::*TQueryUserEvent)
-  (TObject * Sender, const std::wstring Query, TStrings * MoreMessages, int Answers,
-   const TQueryParams * Params, int & Answer, TQueryType QueryType, void * Arg);
+// typedef void (TObject::*TQueryUserEvent)
+  // (TObject * Sender, const std::wstring Query, TStrings * MoreMessages, int Answers,
+   // const TQueryParams * Params, int & Answer, TQueryType QueryType, void * Arg);
+typedef boost::signal8<void, TObject *, const std::wstring, TStrings *, int,
+   const TQueryParams *, int &, TQueryType, void *> queryuser_signal_type;
+typedef queryuser_signal_type::slot_type queryuser_slot_type;
 typedef void (TObject::*TPromptUserEvent)
   (TTerminal * Terminal, TPromptKind Kind, std::wstring Name, std::wstring Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
@@ -189,7 +195,7 @@ private:
   TTunnelUI * FTunnelUI;
   int FTunnelLocalPortNumber;
   std::wstring FTunnelError;
-  TQueryUserEvent FOnQueryUser;
+  queryuser_signal_type FOnQueryUser;
   TPromptUserEvent FOnPromptUser;
   TDisplayBannerEvent FOnDisplayBanner;
   TExtendedExceptionEvent FOnShowExtendedException;
@@ -496,8 +502,8 @@ public:
   std::wstring GetTunnelPassword();
   // __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
   bool GetStoredCredentialsTried();
-  TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
-  void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
+  void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
   TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
   TDisplayBannerEvent GetOnDisplayBanner() { return FOnDisplayBanner; }

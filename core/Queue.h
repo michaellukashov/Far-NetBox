@@ -89,8 +89,8 @@ public:
   int GetTransfersLimit() { return FTransfersLimit; }
   void SetTransfersLimit(int value);
   // __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
-  TQueryUserEvent GetOnQueryUser() { return FOnQueryUser; }
-  void SetOnQueryUser(TQueryUserEvent value) { FOnQueryUser = value; }
+  queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
+  void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
   // __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
   TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
@@ -113,7 +113,7 @@ protected:
   friend class TPromptUserAction;
   friend class TShowExtendedExceptionAction;
 
-  TQueryUserEvent FOnQueryUser;
+  queryuser_signal_type FOnQueryUser;
   TPromptUserEvent FOnPromptUser;
   TExtendedExceptionEvent FOnShowExtendedException;
   queueitemupdate_signal_type FOnQueueItemUpdate;
