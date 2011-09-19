@@ -166,7 +166,7 @@ private:
   TRemoteTokenList FUsers;
   bool FUsersGroupsLookedup;
   fileoperationprogress_signal_type FOnProgress;
-  TFileOperationFinished FOnFinished;
+  fileoperationfinished_signal_type FOnFinished;
   TFileOperationProgressType * FOperationProgress;
   bool FUseBusyCursor;
   TRemoteDirectoryCache * FDirectoryCache;
@@ -467,8 +467,8 @@ public:
   const fileoperationprogress_signal_type &GetOnProgress() const { return FOnProgress; }
   void SetOnProgress(const fileoperationprogress_slot_type &value) { FOnProgress.connect(value); }
   // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
-  TFileOperationFinished GetOnFinished() { return FOnFinished; }
-  void SetOnFinished(TFileOperationFinished value) { FOnFinished = value; }
+  const fileoperationfinished_signal_type &GetOnFinished() const { return FOnFinished; }
+  void SetOnFinished(const fileoperationfinished_slot_type &value) { FOnFinished.connect(value); }
   // __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
   TCurrentFSProtocol GetFSProtocol() { return FFSProtocol; }
   bool GetUseBusyCursor() { return FUseBusyCursor; }

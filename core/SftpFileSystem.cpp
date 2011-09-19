@@ -3393,7 +3393,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   if (FSupport->Loaded)
   {
     TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2),
-        (TFileOperationFinished)&TTerminal::DoFinished);
+        boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
     Progress->Start(foGetProperties, osRemote, FileList->GetCount());
 
     FTerminal->FOperationProgress = Progress;
@@ -3569,7 +3569,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
     TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2),
-        (TFileOperationFinished)&TTerminal::DoFinished);
+        boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
   Progress->Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
   FTerminal->FOperationProgress = Progress;

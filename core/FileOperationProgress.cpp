@@ -8,16 +8,15 @@
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType()
 {
-  FOnFinished = NULL;
   Clear();
 }
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType(
   const fileoperationprogress_slot_type &AOnProgress,
-  TFileOperationFinished AOnFinished)
+  const fileoperationfinished_slot_type &AOnFinished)
 {
   FOnProgress.connect(AOnProgress);
-  FOnFinished = AOnFinished;
+  FOnFinished.connect(AOnFinished);
   FReset = false;
   Clear();
 }

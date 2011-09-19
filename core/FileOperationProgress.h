@@ -5,6 +5,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/signals/signal2.hpp>
+#include <boost/signals/signal6.hpp>
 
 #include "Configuration.h"
 #include "CopyParam.h"
@@ -23,9 +24,12 @@ enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend
 typedef boost::signal2<void, TFileOperationProgressType &, TCancelStatus &> fileoperationprogress_signal_type;
 typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_type;
 
-typedef void (TObject::*TFileOperationFinished)
-  (TFileOperation Operation, TOperationSide Side, bool Temp,
-    const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+// typedef void (TObject::*TFileOperationFinished)
+  // (TFileOperation Operation, TOperationSide Side, bool Temp,
+    // const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+typedef boost::signal6<void, TFileOperation, TOperationSide, bool,
+    const std::wstring &, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
+typedef fileoperationfinished_signal_type::slot_type fileoperationfinished_slot_type;
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
 {
@@ -36,7 +40,7 @@ private:
   TDateTime FFileStartTime;
   int FFilesFinished;
   fileoperationprogress_signal_type FOnProgress;
-  TFileOperationFinished FOnFinished;
+  fileoperationfinished_signal_type FOnFinished;
   bool FReset;
   unsigned int FLastSecond;
   unsigned long FRemainingCPS;
@@ -87,7 +91,7 @@ public:
   TFileOperationProgressType();
   TFileOperationProgressType(
     const fileoperationprogress_slot_type &AOnProgress,
-    TFileOperationFinished AOnFinished);
+    const fileoperationfinished_slot_type &AOnFinished);
   ~TFileOperationProgressType();
   void AddLocalyUsed(__int64 ASize);
   void AddTransfered(__int64 ASize, bool AddToTotals = true);
