@@ -843,7 +843,7 @@ bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
 }
 //---------------------------------------------------------------------------
 void ProcessLocalDirectory(std::wstring DirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param,
+  const processlocalfile_slot_type &CallBackFunc, void * Param,
   int FindAttrs)
 {
 // FIXME
@@ -863,11 +863,13 @@ void ProcessLocalDirectory(std::wstring DirName,
         {
             ::FindClose(SearchRec);
         }
+      processlocalfile_signal_type sig;
+      sig.connect(CallBackFunc);
       do
       {
         if ((SearchRec.Name != ".") && (SearchRec.Name != ".."))
         {
-          CallBackFunc(DirName + SearchRec.Name, SearchRec, Param);
+          sig(DirName + SearchRec.Name, SearchRec, Param);
         }
 
       } while (FindNext(SearchRec) == 0);
