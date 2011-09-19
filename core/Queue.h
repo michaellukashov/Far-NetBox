@@ -3,7 +3,7 @@
 #define QueueH
 //---------------------------------------------------------------------------
 #include "boostdefines.hpp"
-#include <boost/signals/signal1.hpp>
+#include <boost/signals/signal2.hpp>
 
 #include "Terminal.h"
 #include "FileOperationProgress.h"
@@ -60,8 +60,10 @@ class TTerminalQueueStatus;
   // (TTerminalQueue *Queue);
 typedef boost::signal1<void, TTerminalQueue *> queuelistupdate_signal_type;
 typedef queuelistupdate_signal_type::slot_type queuelistupdate_slot_type;
-typedef void (TObject::*TQueueItemUpdateEvent)
-  (TTerminalQueue *Queue, TQueueItem *Item);
+// typedef void (TObject::*TQueueItemUpdateEvent)
+  // (TTerminalQueue *Queue, TQueueItem *Item);
+typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> queueitemupdate_signal_type;
+typedef queueitemupdate_signal_type::slot_type queueitemupdate_slot_type;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
 typedef void (TObject::*TQueueEventEvent)
   (TTerminalQueue *Queue, TQueueEvent Event);
@@ -97,8 +99,8 @@ public:
   queuelistupdate_signal_type &GetOnListUpdate() { return FOnListUpdate; }
   void SetOnListUpdate(const queuelistupdate_signal_type &value) { FOnListUpdate.connect(value); }
   // __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
-  TQueueItemUpdateEvent GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
-  void SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
+  queueitemupdate_signal_type &GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
+  void SetOnQueueItemUpdate(const queueitemupdate_slot_type &value) { FOnQueueItemUpdate.connect(value); }
   // __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
   TQueueEventEvent GetOnEvent() { return FOnEvent; }
   void SetOnEvent(TQueueEventEvent value) { FOnEvent = value; }
@@ -112,7 +114,7 @@ protected:
   TQueryUserEvent FOnQueryUser;
   TPromptUserEvent FOnPromptUser;
   TExtendedExceptionEvent FOnShowExtendedException;
-  TQueueItemUpdateEvent FOnQueueItemUpdate;
+  queueitemupdate_signal_type FOnQueueItemUpdate;
   queuelistupdate_signal_type FOnListUpdate;
   TQueueEventEvent FOnEvent;
   TTerminal *FTerminal;
