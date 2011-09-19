@@ -481,7 +481,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FSecureShell = NULL;
   FOnDeleteLocalFile = NULL;
   FOnReadDirectoryProgress = NULL;
-  FOnDisplayBanner = NULL;
   FOnShowExtendedException = NULL;
   FOnInformation = NULL;
   FOnFindingFile = NULL;
@@ -1090,7 +1089,7 @@ int TTerminal::QueryUserException(const std::wstring Query,
 //---------------------------------------------------------------------------
 void TTerminal::DisplayBanner(const std::wstring & Banner)
 {
-  if (GetOnDisplayBanner() != NULL)
+  if (!GetOnDisplayBanner().empty())
   {
     if (Configuration->GetForceBanners() ||
         Configuration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
@@ -1099,8 +1098,8 @@ void TTerminal::DisplayBanner(const std::wstring & Banner)
       int Options =
         FLAGMASK(Configuration->GetForceBanners(), boDisableNeverShowAgain);
       TCallbackGuard Guard(this);
-      // FIXME OnDisplayBanner(this, GetSessionData()->GetSessionName(), Banner,
-        // NeverShowAgain, Options);
+      GetOnDisplayBanner()(this, GetSessionData()->GetSessionName(), Banner,
+        NeverShowAgain, Options);
       Guard.Verify();
       if (!Configuration->GetForceBanners() && NeverShowAgain)
       {

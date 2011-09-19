@@ -3,6 +3,7 @@
 #define TerminalH
 
 #include "boostdefines.hpp"
+#include <boost/signals/signal5.hpp>
 #include <boost/signals/signal8.hpp>
 
 #include "Classes.h"
@@ -44,9 +45,12 @@ typedef queryuser_signal_type::slot_type queryuser_slot_type;
 typedef boost::signal8<void, TTerminal *, TPromptKind, std::wstring, std::wstring,
    TStrings *, TStrings *, bool &, void *> promptuser_signal_type;
 typedef promptuser_signal_type::slot_type promptuser_slot_type;
-typedef void (TObject::*TDisplayBannerEvent)
-  (TTerminal * Terminal, std::wstring SessionName, const std::wstring & Banner,
-   bool & NeverShowAgain, int Options);
+// typedef void (TObject::*TDisplayBannerEvent)
+  // (TTerminal * Terminal, std::wstring SessionName, const std::wstring & Banner,
+   // bool & NeverShowAgain, int Options);
+typedef boost::signal5<void, TTerminal *, std::wstring, const std::wstring &,
+   bool &, int> displaybanner_signal_type;
+typedef displaybanner_signal_type::slot_type displaybanner_slot_type;
 typedef void (TObject::*TExtendedExceptionEvent)
   (TTerminal * Terminal, const std::exception * E, void * Arg);
 typedef void (TObject::*TReadDirectoryEvent)(TObject * Sender, bool ReloadOnly);
@@ -200,7 +204,7 @@ private:
   std::wstring FTunnelError;
   queryuser_signal_type FOnQueryUser;
   promptuser_signal_type FOnPromptUser;
-  TDisplayBannerEvent FOnDisplayBanner;
+  displaybanner_signal_type FOnDisplayBanner;
   TExtendedExceptionEvent FOnShowExtendedException;
   TInformationEvent FOnInformation;
   notify_signal_type FOnClose;
@@ -509,8 +513,8 @@ public:
   void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
   promptuser_signal_type &GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
-  TDisplayBannerEvent GetOnDisplayBanner() { return FOnDisplayBanner; }
-  void SetOnDisplayBanner(TDisplayBannerEvent value) { FOnDisplayBanner = value; }
+  displaybanner_signal_type &GetOnDisplayBanner() { return FOnDisplayBanner; }
+  void SetOnDisplayBanner(const displaybanner_slot_type &value) { FOnDisplayBanner.connect(value); }
   TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
   TInformationEvent GetOnInformation() { return FOnInformation; }
