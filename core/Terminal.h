@@ -80,8 +80,10 @@ typedef fileoperation_signal_type::slot_type fileoperation_slot_type;
 typedef boost::signal4<void, const std::wstring, const std::wstring,
    bool &, bool> synchronizedirectory_signal_type;
 typedef synchronizedirectory_signal_type::slot_type synchronizedirectory_slot_type;
-typedef void (TObject::*TDeleteLocalFileEvent)(
-  const std::wstring FileName, bool Alternative);
+// typedef void (TObject::*TDeleteLocalFileEvent)(
+  // const std::wstring FileName, bool Alternative);
+typedef boost::signal2<void, const std::wstring, bool> deletelocalfile_signal_type;
+typedef deletelocalfile_signal_type::slot_type deletelocalfile_slot_type;
 typedef int (TObject::*TDirectoryModifiedEvent)
   (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);
 typedef void (TObject::*TInformationEvent)
@@ -188,7 +190,7 @@ private:
   readdirectory_signal_type FOnReadDirectory;
   notify_signal_type FOnStartReadDirectory;
   readdirectoryprogress_signal_type FOnReadDirectoryProgress;
-  TDeleteLocalFileEvent FOnDeleteLocalFile;
+  deletelocalfile_signal_type FOnDeleteLocalFile;
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
   TRemoteTokenList FUsers;
@@ -484,8 +486,8 @@ public:
   void SetOnStartReadDirectory(const notify_slot_type &value) { FOnStartReadDirectory.connect(value); }
   readdirectoryprogress_signal_type &GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(const readdirectoryprogress_slot_type &value) { FOnReadDirectoryProgress.connect(value); }
-  TDeleteLocalFileEvent GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
-  void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
+  deletelocalfile_signal_type &GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  void SetOnDeleteLocalFile(const deletelocalfile_slot_type &value) { FOnDeleteLocalFile.connect(value); }
   // __property const TRemoteTokenList * Groups = { read = GetGroups };
   const TRemoteTokenList * GetGroups();
   // __property const TRemoteTokenList * Users = { read = GetUsers };

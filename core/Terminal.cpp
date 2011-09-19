@@ -479,7 +479,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FTunnelLocalPortNumber = 0;
   FFileSystem = NULL;
   FSecureShell = NULL;
-  FOnDeleteLocalFile = NULL;
   FOnInformation = NULL;
   FOnFindingFile = NULL;
 
@@ -2735,7 +2734,7 @@ bool TTerminal::DeleteFiles(TStrings * FilesToDelete, int Params)
 void TTerminal::DeleteLocalFile(std::wstring FileName,
   const TRemoteFile * /*File*/, void * Params)
 {
-  if (GetOnDeleteLocalFile() == NULL)
+  if (!GetOnDeleteLocalFile().empty())
   {
     if (!RecursiveDeleteFile(FileName, false))
     {
@@ -2744,7 +2743,7 @@ void TTerminal::DeleteLocalFile(std::wstring FileName,
   }
   else
   {
-    // FIXME OnDeleteLocalFile(FileName, FLAGSET(*((int*)Params), dfAlternative));
+    GetOnDeleteLocalFile()(FileName, FLAGSET(*((int*)Params), dfAlternative));
   }
 }
 //---------------------------------------------------------------------------
