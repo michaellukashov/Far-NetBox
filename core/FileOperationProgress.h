@@ -2,6 +2,10 @@
 #ifndef FileOperationProgressH
 #define FileOperationProgressH
 //---------------------------------------------------------------------------
+
+#include "boostdefines.hpp"
+#include <boost/signals/signal2.hpp>
+
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
@@ -14,8 +18,11 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
 enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-typedef void (TObject::*TFileOperationProgressEvent)
-  (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
+// typedef void (TObject::*TFileOperationProgressEvent)
+  // (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
+typedef boost::signal2<void, TFileOperationProgressType &, TCancelStatus &> fileoperationprogress_signal_type;
+typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_type;
+
 typedef void (TObject::*TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
     const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
@@ -28,7 +35,7 @@ private:
   // when current file was started being transfered
   TDateTime FFileStartTime;
   int FFilesFinished;
-  TFileOperationProgressEvent FOnProgress;
+  fileoperationprogress_signal_type FOnProgress;
   TFileOperationFinished FOnFinished;
   bool FReset;
   unsigned int FLastSecond;
@@ -79,7 +86,8 @@ public:
 
   TFileOperationProgressType();
   TFileOperationProgressType(
-    TFileOperationProgressEvent AOnProgress, TFileOperationFinished AOnFinished);
+    const fileoperationprogress_slot_type &AOnProgress,
+    TFileOperationFinished AOnFinished);
   ~TFileOperationProgressType();
   void AddLocalyUsed(__int64 ASize);
   void AddTransfered(__int64 ASize, bool AddToTotals = true);
@@ -121,6 +129,9 @@ public:
   int TransferProgress();
   int OverallProgress();
   int TotalTransferProgress();
+private:
+  TFileOperationProgressType(const TFileOperationProgressType &rhs);
+  void operator=(const TFileOperationProgressType &rhs);
 };
 //---------------------------------------------------------------------------
 class TSuspendFileOperationProgress

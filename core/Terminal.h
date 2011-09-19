@@ -165,7 +165,7 @@ private:
   TRemoteTokenList FGroups;
   TRemoteTokenList FUsers;
   bool FUsersGroupsLookedup;
-  TFileOperationProgressEvent FOnProgress;
+  fileoperationprogress_signal_type FOnProgress;
   TFileOperationFinished FOnFinished;
   TFileOperationProgressType * FOperationProgress;
   bool FUseBusyCursor;
@@ -317,7 +317,7 @@ protected:
   virtual void Closed();
   virtual void HandleExtendedException(const std::exception * E);
   bool IsListenerFree(unsigned int PortNumber);
-  void DoProgress(TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
+  void DoProgress(TFileOperationProgressType &ProgressData, TCancelStatus &Cancel);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
@@ -464,8 +464,8 @@ public:
   // __property const TRemoteTokenList * Membership = { read = GetMembership };
   const TRemoteTokenList * GetMembership();
   // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
-  TFileOperationProgressEvent GetOnProgress() { return FOnProgress; }
-  void SetOnProgress(TFileOperationProgressEvent value) { FOnProgress = value; }
+  const fileoperationprogress_signal_type &GetOnProgress() { return FOnProgress; }
+  void SetOnProgress(const fileoperationprogress_slot_type &value) { FOnProgress.connect(value); }
   // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
   TFileOperationFinished GetOnFinished() { return FOnFinished; }
   void SetOnFinished(TFileOperationFinished value) { FOnFinished = value; }
