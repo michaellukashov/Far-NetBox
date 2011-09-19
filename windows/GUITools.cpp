@@ -162,7 +162,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
 }
 //---------------------------------------------------------------------------
 bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
-  const std::wstring Params, TProcessMessagesEvent ProcessMessages)
+  const std::wstring Params, const processmessages_signal_type &ProcessMessages)
 {
   bool Result = false;
 /* // FIXME 
@@ -202,7 +202,7 @@ bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
 }
 //---------------------------------------------------------------------------
 bool ExecuteShellAndWait(HWND Handle, const std::wstring Command,
-  TProcessMessagesEvent ProcessMessages)
+  const processmessages_signal_type &ProcessMessages)
 {
   std::wstring Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
