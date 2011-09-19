@@ -413,7 +413,7 @@ void TConfiguration::Changed()
 {
   if (FUpdating== 0)
   {
-    if (GetOnChange().num_slots() > 0)
+    if (!GetOnChange().empty())
     {
       GetOnChange()(this);
     }

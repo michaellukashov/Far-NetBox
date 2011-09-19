@@ -649,13 +649,13 @@ void TSecureShell::CWrite(const char * Data, int Length)
 //---------------------------------------------------------------------------
 void TSecureShell::RegisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive.num_slots() == 0);
+  assert(FOnReceive.empty());
   FOnReceive.connect(Handler);
 }
 //---------------------------------------------------------------------------
 void TSecureShell::UnregisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive.num_slots() == 1);
+  assert(!FOnReceive.empty());
   USEDPARAM(Handler);
   FOnReceive.disconnect_all_slots();
 }
@@ -705,7 +705,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
       PendLen += Len;
     }
 
-    if (FOnReceive.num_slots() > 0)
+    if (!FOnReceive.empty())
     {
       if (!FFrozen)
       {

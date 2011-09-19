@@ -459,7 +459,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                     ((Param1 < 0) ||
                      ((Param1 >= 0) && (dynamic_cast<TFarButton *>(GetItem(Param1)) == NULL))) &&
                     GetDefaultButton()->GetEnabled() &&
-                    (GetDefaultButton()->GetOnClick().num_slots() > 0))
+                    (!GetDefaultButton()->GetOnClick().empty()))
             {
                 bool Close = (GetDefaultButton()->GetResult() != 0);
                 GetDefaultButton()->GetOnClick()(GetDefaultButton(), Close);
@@ -619,7 +619,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
 bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
 {
     bool Result = false;
-    if (FOnKey.num_slots() > 0)
+    if (!FOnKey.empty())
     {
         FOnKey(this, Item, KeyCode, Result);
     }
@@ -1343,7 +1343,7 @@ void TFarDialogItem::DoFocus()
 //---------------------------------------------------------------------------
 void TFarDialogItem::DoExit()
 {
-    if (FOnExit.num_slots() > 0)
+    if (!FOnExit.empty())
     {
         FOnExit(this);
     }
@@ -1609,7 +1609,7 @@ TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
 {
-    if (FOnMouseClick.num_slots() > 0)
+    if (!FOnMouseClick.empty())
     {
         FOnMouseClick(this, Event);
     }
@@ -1786,7 +1786,7 @@ long TFarButton::ItemProc(int Msg, long Param)
         else
         {
             bool Close = (GetResult() != 0);
-            if (FOnClick.num_slots() > 0)
+            if (!FOnClick.empty())
             {
                 FOnClick(this, Close);
             }
@@ -1809,7 +1809,7 @@ bool TFarButton::HotKey(char HotKey)
     if (Result)
     {
         bool Close = (GetResult() != 0);
-        if (FOnClick.num_slots() > 0)
+        if (!FOnClick.empty())
         {
             FOnClick(this, Close);
         }

@@ -920,7 +920,7 @@ void TTerminal::Closed()
      CloseTunnel();
   }
 
-  if (GetOnClose().num_slots() > 0)
+  if (!GetOnClose().empty())
   {
     TCallbackGuard Guard(this);
     GetOnClose()(this);
@@ -1573,7 +1573,7 @@ bool TTerminal::GetAreCachesEmpty() const
 //---------------------------------------------------------------------------
 void TTerminal::DoChangeDirectory()
 {
-  if (FOnChangeDirectory.num_slots() > 0)
+  if (!FOnChangeDirectory.empty())
   {
     TCallbackGuard Guard(this);
     FOnChangeDirectory(this);
@@ -1593,7 +1593,7 @@ void TTerminal::DoReadDirectory(bool ReloadOnly)
 //---------------------------------------------------------------------------
 void TTerminal::DoStartReadDirectory()
 {
-  if (FOnStartReadDirectory.num_slots() > 0)
+  if (!FOnStartReadDirectory.empty())
   {
     TCallbackGuard Guard(this);
     FOnStartReadDirectory(this);

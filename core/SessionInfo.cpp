@@ -844,7 +844,7 @@ void TSessionLog::OpenLogFile()
 //---------------------------------------------------------------------------
 void TSessionLog::StateChange()
 {
-  if (FOnStateChange.num_slots() > 0)
+  if (!FOnStateChange.empty())
   {
     FOnStateChange(this);
   }
