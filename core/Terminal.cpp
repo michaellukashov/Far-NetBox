@@ -3856,7 +3856,7 @@ struct TSynchronizeData
   std::wstring RemoteDirectory;
   TTerminal::TSynchronizeMode Mode;
   int Params;
-  TSynchronizeDirectory OnSynchronizeDirectory;
+  const synchronizedirectory_slot_type *OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
   int Flags;
   TStringList * LocalFileList;
@@ -3867,7 +3867,7 @@ struct TSynchronizeData
 TSynchronizeChecklist * TTerminal::SynchronizeCollect(const std::wstring LocalDirectory,
   const std::wstring RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int Params,
-  TSynchronizeDirectory OnSynchronizeDirectory,
+  const synchronizedirectory_slot_type &OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * Checklist = new TSynchronizeChecklist();
@@ -3889,7 +3889,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const std::wstring LocalDi
 void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   const std::wstring RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType *CopyParam, int Params,
-  TSynchronizeDirectory OnSynchronizeDirectory, TSynchronizeOptions *Options,
+  const synchronizedirectory_slot_type &OnSynchronizeDirectory, TSynchronizeOptions *Options,
   int Flags, TSynchronizeChecklist *Checklist)
 {
   TSynchronizeData Data;
@@ -3898,7 +3898,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   Data.RemoteDirectory = UnixIncludeTrailingBackslash(RemoteDirectory);
   Data.Mode = Mode;
   Data.Params = Params;
-  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
   Data.LocalFileList = NULL;
   Data.CopyParam = CopyParam;
   Data.Options = Options;
@@ -4198,7 +4198,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
           DoSynchronizeCollectDirectory(
             Data->LocalDirectory + LocalData->Info.FileName,
             Data->RemoteDirectory + File->GetFileName(),
-            Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
+            Data->Mode, Data->CopyParam, Data->Params, *Data->OnSynchronizeDirectory,
             Data->Options, (Data->Flags & ~sfFirstLevel),
             Data->Checklist);
         }
@@ -4251,11 +4251,11 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
 void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
   const TCopyParamType * CopyParam, int Params,
-  TSynchronizeDirectory OnSynchronizeDirectory)
+  const synchronizedirectory_slot_type &OnSynchronizeDirectory)
 {
   TSynchronizeData Data;
 
-  Data.OnSynchronizeDirectory = OnSynchronizeDirectory;
+  Data.OnSynchronizeDirectory = &OnSynchronizeDirectory;
 
   int CopyParams =
     FLAGMASK(FLAGSET(Params, spNoConfirmation), cpNoConfirmation);

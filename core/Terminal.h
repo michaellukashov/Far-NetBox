@@ -74,9 +74,12 @@ typedef processfile_signal_type::slot_type processfileex_slot_type;
   // (void * Param1, void * Param2);
 typedef boost::signal2<void, void *, void *> fileoperation_signal_type;
 typedef fileoperation_signal_type::slot_type fileoperation_slot_type;
-typedef void (TObject::*TSynchronizeDirectory)
-  (const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
-   bool & Continue, bool Collect);
+// typedef void (TObject::*TSynchronizeDirectory)
+  // (const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
+   // bool & Continue, bool Collect);
+typedef boost::signal4<void, const std::wstring, const std::wstring,
+   bool &, bool> synchronizedirectory_signal_type;
+typedef synchronizedirectory_signal_type::slot_type synchronizedirectory_slot_type;
 typedef void (TObject::*TDeleteLocalFileEvent)(
   const std::wstring FileName, bool Alternative);
 typedef int (TObject::*TDirectoryModifiedEvent)
@@ -298,7 +301,7 @@ protected:
   void DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     const std::wstring RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    TSynchronizeDirectory OnSynchronizeDirectory,
+    const synchronizedirectory_slot_type &OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
   void SynchronizeCollectFile(const std::wstring FileName,
     const TRemoteFile * File, /*TSynchronizeData*/ void * Param);
@@ -426,11 +429,11 @@ public:
   TSynchronizeChecklist * SynchronizeCollect(const std::wstring LocalDirectory,
     const std::wstring RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
-    TSynchronizeDirectory OnSynchronizeDirectory, TSynchronizeOptions * Options);
+    const synchronizedirectory_slot_type &OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void SynchronizeApply(TSynchronizeChecklist * Checklist,
     const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
     const TCopyParamType * CopyParam, int Params,
-    TSynchronizeDirectory OnSynchronizeDirectory);
+    const synchronizedirectory_slot_type &OnSynchronizeDirectory);
   void FilesFind(std::wstring Directory, const TFileMasks & FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
   void SpaceAvailable(const std::wstring Path, TSpaceAvailable & ASpaceAvailable);

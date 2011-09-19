@@ -1358,7 +1358,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
       } BOOST_SCOPE_EXIT_END
       AChecklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
         Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-        (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory, Options);
+        boost::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this, _1, _2, _3, _4), Options);
     }
 
     FPlugin->SaveScreen(FSynchronizationSaveScreenHandle);
@@ -1371,9 +1371,9 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
           Self->FPlugin->ClearConsoleTitle();
           Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
         } BOOST_SCOPE_EXIT_END
-      FTerminal->SynchronizeApply(AChecklist, LocalDirectory, RemoteDirectory,
-        &CopyParam, Params | TTerminal::spNoConfirmation,
-        (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory);
+        FTerminal->SynchronizeApply(AChecklist, LocalDirectory, RemoteDirectory,
+            &CopyParam, Params | TTerminal::spNoConfirmation,
+            boost::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this, _1, _2, _3, _4));
     }
   }
 }
@@ -1463,7 +1463,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
           } BOOST_SCOPE_EXIT_END
         Checklist = FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
           Mode, &CopyParam, Params | TTerminal::spNoConfirmation,
-          (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory, &SynchronizeOptions);
+          boost::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this, _1, _2, _3, _4), &SynchronizeOptions);
       }
 
       if (Checklist->GetCount() == 0)
@@ -1490,8 +1490,8 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
               Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
             } BOOST_SCOPE_EXIT_END
             FTerminal->SynchronizeApply(Checklist, LocalDirectory, RemoteDirectory,
-            &CopyParam, Params | TTerminal::spNoConfirmation,
-            (TSynchronizeDirectory)&TWinSCPFileSystem::TerminalSynchronizeDirectory);
+                &CopyParam, Params | TTerminal::spNoConfirmation,
+                boost::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this, _1, _2, _3, _4));
         }
       }
     }
