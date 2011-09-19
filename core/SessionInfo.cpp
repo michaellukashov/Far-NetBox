@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include <stdio.h>
 
@@ -594,7 +595,7 @@ void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring & Line)
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
+void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
 {
   if (FTopIndex < 0)
   {
@@ -629,7 +630,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
-  TDoAddLog func)
+  const doaddlog_slot_type &func)
 {
   std::wstring Prefix;
 
@@ -637,10 +638,11 @@ void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
   {
     Prefix = L"[" + GetName() + L"] ";
   }
-
+  doaddlog_signal_type sig;
+  sig.connect(func);
   while (!Line.empty())
   {
-    // FIXME (f)(Type, Prefix + CutToChar(Line, '\n', false));
+    sig(Type, Prefix + CutToChar(Line, '\n', false));
   }
 }
 //---------------------------------------------------------------------------
@@ -653,7 +655,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
     {
       if (FParent != NULL)
       {
-        // FIXME DoAdd(Type, Line, &DoAddToParent);
+        DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToParent, this, _1, _2));
       }
       else
       {
@@ -666,7 +668,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
             Self->DeleteUnnecessary();
             Self->EndUpdate();
           } BOOST_SCOPE_EXIT_END
-          // FIXME DoAdd(Type, Line, DoAddToSelf);
+          DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
         }
       }
     }
@@ -899,7 +901,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), (TDoAddLog)&TSessionLog::DoAddToSelf);
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
     AddSeparator();
     ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);

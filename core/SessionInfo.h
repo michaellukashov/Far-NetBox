@@ -194,7 +194,9 @@ public:
   void FileList(TRemoteFileList * FileList);
 };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring & Line);
+// typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring & Line);
+typedef boost::signal2<void, TLogLineType, const std::wstring &> doaddlog_signal_type;
+typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
 {
@@ -272,9 +274,9 @@ private:
   void OpenLogFile();
   std::wstring GetLogFileName();
   void DoAdd(TLogLineType Type, std::wstring Line,
-    TDoAddLog func);
+    const doaddlog_slot_type &func);
   void DoAddToParent(TLogLineType aType, const std::wstring & aLine);
-  void DoAddToSelf(TLogLineType aType, const std::wstring & aLine);
+  void DoAddToSelf(TLogLineType aType, const std::wstring &aLine);
   void DoAddStartupInfo(TSessionData * Data);
 };
 //---------------------------------------------------------------------------
