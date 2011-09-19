@@ -46,7 +46,7 @@ public:
   virtual bool LoadFilesProperties(TStrings * FileList) = 0;
   virtual void CalculateFilesChecksum(const std::wstring & Alg,
     TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
+    calculatedchecksum_slot_type *OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,

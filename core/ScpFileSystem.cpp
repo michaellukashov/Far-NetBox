@@ -1189,7 +1189,7 @@ bool TSCPFileSystem::LoadFilesProperties(TStrings * /*FileList*/ )
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
-  TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
+  calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
   assert(false);
 }

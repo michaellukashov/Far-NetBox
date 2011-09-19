@@ -396,7 +396,7 @@ public:
   void CalculateFilesSize(TStrings * FileList, __int64 & Size,
     int Params, const TCopyParamType * CopyParam = NULL, TCalculateSizeStats * Stats = NULL);
   void CalculateFilesChecksum(const std::wstring & Alg, TStrings * FileList,
-    TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
+    TStrings * Checksums, calculatedchecksum_slot_type *OnCalculatedChecksum);
   void ClearCaches();
   TSynchronizeChecklist * SynchronizeCollect(const std::wstring LocalDirectory,
     const std::wstring RemoteDirectory, TSynchronizeMode Mode,

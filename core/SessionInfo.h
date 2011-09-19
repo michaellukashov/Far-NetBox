@@ -4,6 +4,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/signals/signal2.hpp>
+#include <boost/signals/signal3.hpp>
 
 #include "SessionData.h"
 #include "Interface.h"
@@ -80,8 +81,10 @@ enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, l
   // const std::wstring & Str, bool StdError);
 typedef boost::signal2<void, const std::wstring &, bool> captureoutput_signal_type;
 typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
-typedef void (TObject::*TCalculatedChecksumEvent)(
-  const std::wstring & FileName, const std::wstring & Alg, const std::wstring & Hash);
+// typedef void (TObject::*TCalculatedChecksumEvent)(
+  // const std::wstring & FileName, const std::wstring & Alg, const std::wstring & Hash);
+typedef boost::signal3<void, const std::wstring &, const std::wstring &, const std::wstring &> calculatedchecksum_signal_type;
+typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
 //---------------------------------------------------------------------------
 class TCriticalSection;
 class TSessionActionRecord;

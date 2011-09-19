@@ -3443,8 +3443,8 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
   TStrings * FileList, TStrings * Checksums,
-  TCalculatedChecksumEvent OnCalculatedChecksum,
-  TFileOperationProgressType * OperationProgress, bool FirstLevel)
+  calculatedchecksum_slot_type *OnCalculatedChecksum,
+  TFileOperationProgressType *OperationProgress, bool FirstLevel)
 {
   TOnceDoneOperation OnceDoneOperation; // not used
 
@@ -3535,7 +3535,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
             Alg = Packet.GetString();
             Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
-            // FIXME OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
+            calculatedchecksum_signal_type sig;
+            sig.connect(*OnCalculatedChecksum);
+            sig(File->GetFileName(), Alg, Checksum);
 
             Success = true;
           }
@@ -3566,7 +3568,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
   TStrings * FileList, TStrings * Checksums,
-  TCalculatedChecksumEvent OnCalculatedChecksum)
+  calculatedchecksum_slot_type *OnCalculatedChecksum)
 {
     TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2),
         boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));

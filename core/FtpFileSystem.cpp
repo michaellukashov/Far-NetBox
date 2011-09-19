@@ -721,7 +721,7 @@ bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
-  TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
+  calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
   assert(false);
 }

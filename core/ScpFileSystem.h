@@ -29,7 +29,7 @@ public:
   virtual bool LoadFilesProperties(TStrings * FileList);
   virtual void CalculateFilesChecksum(const std::wstring & Alg,
     TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum);
+    calculatedchecksum_slot_type *OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
