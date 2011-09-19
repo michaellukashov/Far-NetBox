@@ -2507,7 +2507,7 @@ void TTerminal::AnnounceFileListOperation()
 //---------------------------------------------------------------------------
 bool TTerminal::ProcessFiles(TStrings * FileList,
   TFileOperation Operation, const processfile_slot_type &ProcessFile, void * Param,
-  TOperationSide Side, bool Ex)
+  TOperationSide Side)
 {
   assert(FFileSystem);
   assert(FileList);
@@ -2556,16 +2556,20 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
                 Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
               Success = false;
-              if (!Ex)
+              // if (!Ex)
               {
-                // FIXME ProcessFile(FileName, (TRemoteFile *)FileList->GetObject(Index), Param);
+                processfile_signal_type sig;
+                sig.connect(ProcessFile);
+                sig(FileName, (TRemoteFile *)FileList->GetObject(Index), Param);
               }
+              /*
               else
               {
                 // not used anymore
-                // FIXME TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
+                // TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
                 // ProcessFileEx(FileName, (TRemoteFile *)FileList->GetObject(Index), Param, Index);
               }
+              */
               Success = true;
             }
           }
@@ -2603,14 +2607,15 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 }
 //---------------------------------------------------------------------------
 // not used anymore
+/*
 bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
   const processfileex_slot_type &ProcessFile, void * Param, TOperationSide Side)
 {
-  // FIXME
   // return ProcessFiles(FileList, Operation, boost::bind(&TTerminal::ProcessFile, this, _1, _2, _3)),
     // Param, Side, true);
   return false;
 }
+*/
 //---------------------------------------------------------------------------
 TStrings * TTerminal::GetFixedPaths()
 {

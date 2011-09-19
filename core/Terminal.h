@@ -269,10 +269,9 @@ protected:
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     const std::wstring Message, void * Param1 = NULL, void * Param2 = NULL);
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
-    const processfile_slot_type &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote,
-    bool Ex = false);
-  bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-    const processfileex_slot_type &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
+    const processfile_slot_type &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
+  // bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
+    // const processfileex_slot_type &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
   void ProcessDirectory(const std::wstring DirName,
     const processfile_slot_type &CallBackFunc, void * Param = NULL, bool UseCache = false,
     bool IgnoreErrors = false);
