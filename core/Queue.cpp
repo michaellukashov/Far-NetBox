@@ -261,7 +261,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FOnPromptUser = NULL;
   FOnShowExtendedException = NULL;
   FOnQueueItemUpdate = NULL;
-  FOnListUpdate = NULL;
   FOnEvent = NULL;
   FLastIdle = Now();
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
@@ -784,9 +783,9 @@ void TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoListUpdate()
 {
-  if (GetOnListUpdate() != NULL)
+  if (!GetOnListUpdate().empty())
   {
-    // FIXME OnListUpdate(this);
+    GetOnListUpdate()(this);
   }
 }
 //---------------------------------------------------------------------------

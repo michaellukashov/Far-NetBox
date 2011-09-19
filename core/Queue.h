@@ -2,6 +2,9 @@
 #ifndef QueueH
 #define QueueH
 //---------------------------------------------------------------------------
+#include "boostdefines.hpp"
+#include <boost/signals/signal1.hpp>
+
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -53,8 +56,10 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
-typedef void (TObject::*TQueueListUpdate)
-  (TTerminalQueue *Queue);
+// typedef void (TObject::*TQueueListUpdate)
+  // (TTerminalQueue *Queue);
+typedef boost::signal1<void, TTerminalQueue *> queuelistupdate_signal_type;
+typedef queuelistupdate_signal_type::slot_type queuelistupdate_slot_type;
 typedef void (TObject::*TQueueItemUpdateEvent)
   (TTerminalQueue *Queue, TQueueItem *Item);
 enum TQueueEvent { qeEmpty, qePendingUserAction };
@@ -89,8 +94,8 @@ public:
   TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
   // __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
-  TQueueListUpdate GetOnListUpdate() { return FOnListUpdate; }
-  void SetOnListUpdate(TQueueListUpdate value) { FOnListUpdate = value; }
+  queuelistupdate_signal_type &GetOnListUpdate() { return FOnListUpdate; }
+  void SetOnListUpdate(const queuelistupdate_signal_type &value) { FOnListUpdate.connect(value); }
   // __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   TQueueItemUpdateEvent GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void SetOnQueueItemUpdate(TQueueItemUpdateEvent value) { FOnQueueItemUpdate = value; }
@@ -108,7 +113,7 @@ protected:
   TPromptUserEvent FOnPromptUser;
   TExtendedExceptionEvent FOnShowExtendedException;
   TQueueItemUpdateEvent FOnQueueItemUpdate;
-  TQueueListUpdate FOnListUpdate;
+  queuelistupdate_signal_type FOnListUpdate;
   TQueueEventEvent FOnEvent;
   TTerminal *FTerminal;
   TConfiguration *FConfiguration;
