@@ -257,7 +257,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
-  FOnPromptUser = NULL;
   FOnShowExtendedException = NULL;
   FLastIdle = Now();
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
@@ -808,9 +807,9 @@ void TTerminalQueue::DoPromptUser(TTerminal * Terminal,
   TPromptKind Kind, std::wstring Name, std::wstring Instructions,
   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg)
 {
-  if (GetOnPromptUser() != NULL)
+  if (!GetOnPromptUser().empty())
   {
-    // FIXME OnPromptUser(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
+    GetOnPromptUser()(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
   }
 }
 //---------------------------------------------------------------------------

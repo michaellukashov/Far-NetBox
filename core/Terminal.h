@@ -38,9 +38,12 @@ class TCallbackGuard;
 typedef boost::signal8<void, TObject *, const std::wstring, TStrings *, int,
    const TQueryParams *, int &, TQueryType, void *> queryuser_signal_type;
 typedef queryuser_signal_type::slot_type queryuser_slot_type;
-typedef void (TObject::*TPromptUserEvent)
-  (TTerminal * Terminal, TPromptKind Kind, std::wstring Name, std::wstring Instructions,
-   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
+// typedef void (TObject::*TPromptUserEvent)
+  // (TTerminal * Terminal, TPromptKind Kind, std::wstring Name, std::wstring Instructions,
+   // TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
+typedef boost::signal8<void, TTerminal *, TPromptKind, std::wstring, std::wstring,
+   TStrings *, TStrings *, bool &, void *> promptuser_signal_type;
+typedef promptuser_signal_type::slot_type promptuser_slot_type;
 typedef void (TObject::*TDisplayBannerEvent)
   (TTerminal * Terminal, std::wstring SessionName, const std::wstring & Banner,
    bool & NeverShowAgain, int Options);
@@ -196,7 +199,7 @@ private:
   int FTunnelLocalPortNumber;
   std::wstring FTunnelError;
   queryuser_signal_type FOnQueryUser;
-  TPromptUserEvent FOnPromptUser;
+  promptuser_signal_type FOnPromptUser;
   TDisplayBannerEvent FOnDisplayBanner;
   TExtendedExceptionEvent FOnShowExtendedException;
   TInformationEvent FOnInformation;
@@ -504,8 +507,8 @@ public:
   bool GetStoredCredentialsTried();
   queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
-  TPromptUserEvent GetOnPromptUser() { return FOnPromptUser; }
-  void SetOnPromptUser(TPromptUserEvent value) { FOnPromptUser = value; }
+  promptuser_signal_type &GetOnPromptUser() { return FOnPromptUser; }
+  void SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
   TDisplayBannerEvent GetOnDisplayBanner() { return FOnDisplayBanner; }
   void SetOnDisplayBanner(TDisplayBannerEvent value) { FOnDisplayBanner = value; }
   TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }

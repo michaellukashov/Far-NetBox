@@ -481,7 +481,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FSecureShell = NULL;
   FOnDeleteLocalFile = NULL;
   FOnReadDirectoryProgress = NULL;
-  FOnPromptUser = NULL;
   FOnDisplayBanner = NULL;
   FOnShowExtendedException = NULL;
   FOnInformation = NULL;
@@ -1026,10 +1025,10 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 {
   bool AResult = false;
 
-  if (GetOnPromptUser() != NULL)
+  if (!GetOnPromptUser().empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME OnPromptUser(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
+    GetOnPromptUser()(this, Kind, Name, Instructions, Prompts, Results, AResult, NULL);
     Guard.Verify();
   }
 
