@@ -1159,7 +1159,7 @@ void TTerminal::Information(const std::wstring & Str, bool Status)
 void TTerminal::DoProgress(TFileOperationProgressType & ProgressData,
   TCancelStatus & Cancel)
 {
-  if (GetOnProgress().num_slots() > 0)
+  if (!GetOnProgress().empty())
   {
     TCallbackGuard Guard(this);
     GetOnProgress()(ProgressData, Cancel);
@@ -2525,16 +2525,16 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 
   try
   {
-    TFileOperationProgressType Progress(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+    TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
         (TFileOperationFinished)&TTerminal::DoFinished);
-    Progress.Start(Operation, Side, FileList->GetCount());
+    Progress->Start(Operation, Side, FileList->GetCount());
 
-    FOperationProgress = &Progress;
+    FOperationProgress = Progress;
     {
       BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
       {
         Self->FOperationProgress = NULL;
-        Progress.Stop();
+        Progress->Stop();
       }
       BOOST_SCOPE_EXIT_END
       if (Side == osRemote)
@@ -2553,7 +2553,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         int Index = 0;
         std::wstring FileName;
         bool Success;
-        while ((Index < FileList->GetCount()) && (Progress.Cancel == csContinue))
+        while ((Index < FileList->GetCount()) && (Progress->Cancel == csContinue))
         {
           FileName = FileList->GetString(Index);
           try
@@ -2561,7 +2561,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
             {
               BOOST_SCOPE_EXIT ( (&Self) (&Progress) (FileName) (Success) (OnceDoneOperation) )
               {
-                Progress.Finish(FileName, Success, OnceDoneOperation);
+                Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
               Success = false;
               if (!Ex)
@@ -2579,7 +2579,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           }
           catch (const EScpSkipFile & E)
           {
-            TFileOperationProgressType * OperationProgress = GetOperationProgress();
+            TFileOperationProgressType *OperationProgress = GetOperationProgress();
             SUSPEND_OPERATION (
               if (!HandleException(&E)) throw;
             );
@@ -2588,7 +2588,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         }
       }
 
-      if (Progress.Cancel == csContinue)
+      if (Progress->Cancel == csContinue)
       {
         Result = true;
       }
@@ -3799,15 +3799,15 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
 void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
-  TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+  TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
     (TFileOperationFinished)&TTerminal::DoFinished);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
-  OperationProgress.Start(foCalculateSize, osLocal, FileList->GetCount());
+  OperationProgress->Start(foCalculateSize, osLocal, FileList->GetCount());
   {
     BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
     {
       Self->FOperationProgress = NULL;
-      OperationProgress.Stop();
+      OperationProgress->Stop();
     } BOOST_SCOPE_EXIT_END
     TCalculateSizeParams Params;
     Params.Size = 0;
@@ -3815,7 +3815,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
     Params.CopyParam = CopyParam;
 
     assert(!FOperationProgress);
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = OperationProgress;
     WIN32_FIND_DATA Rec;
     for (int Index = 0; Index < FileList->GetCount(); Index++)
     {
@@ -3823,7 +3823,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
       if (FileSearchRec(FileName, Rec))
       {
         CalculateLocalFileSize(FileName, Rec, &Params);
-        OperationProgress.Finish(FileName, true, OnceDoneOperation);
+        OperationProgress->Finish(FileName, true, OnceDoneOperation);
       }
     }
 
@@ -4648,21 +4648,21 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
-    TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+    TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
         (TFileOperationFinished)&TTerminal::DoFinished);
-    OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osLocal,
+    OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = OperationProgress;
     {
       BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
       {
-        OperationProgress.Stop();
+        OperationProgress->Stop();
         Self->FOperationProgress = NULL;
       } BOOST_SCOPE_EXIT_END
       if (CopyParam->GetCalculateSize())
       {
-        OperationProgress.SetTotalSize(Size);
+        OperationProgress->SetTotalSize(Size);
       }
 
       std::wstring UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
@@ -4684,10 +4684,10 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         }
 
         FFileSystem->CopyToRemote(FilesToCopy, UnlockedTargetDir,
-          CopyParam, Params, &OperationProgress, OnceDoneOperation);
+          CopyParam, Params, OperationProgress, OnceDoneOperation);
       }
 
-      if (OperationProgress.Cancel == csContinue)
+      if (OperationProgress->Cancel == csContinue)
       {
         Result = true;
       }
@@ -4738,7 +4738,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
     } BOOST_SCOPE_EXIT_END
     __int64 TotalSize;
     bool TotalSizeKnown = false;
-    TFileOperationProgressType OperationProgress(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+    TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
       (TFileOperationFinished)&TTerminal::DoFinished);
 
     if (CopyParam->GetCalculateSize())
@@ -4755,20 +4755,19 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         TotalSizeKnown = true;
       }
     }
-
-    OperationProgress.Start((Params & cpDelete ? foMove : foCopy), osRemote,
+    OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osRemote,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
-    FOperationProgress = &OperationProgress;
+    FOperationProgress = OperationProgress;
     {
       BOOST_SCOPE_EXIT ( (&FOperationProgress) (&OperationProgress) )
       {
         FOperationProgress = NULL;
-        OperationProgress.Stop();
+        OperationProgress->Stop();
       } BOOST_SCOPE_EXIT_END
       if (TotalSizeKnown)
       {
-        OperationProgress.SetTotalSize(TotalSize);
+        OperationProgress->SetTotalSize(TotalSize);
       }
 
       try
@@ -4781,7 +4780,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
             }
         } BOOST_SCOPE_EXIT_END
         FFileSystem->CopyToLocal(FilesToCopy, TargetDir, CopyParam, Params,
-          &OperationProgress, OnceDoneOperation);
+          OperationProgress, OnceDoneOperation);
       }
       catch (const std::exception &E)
       {
@@ -4789,7 +4788,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         OnceDoneOperation = odoIdle;
       }
 
-      if (OperationProgress.Cancel == csContinue)
+      if (OperationProgress->Cancel == csContinue)
       {
         Result = true;
       }

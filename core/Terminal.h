@@ -207,6 +207,7 @@ private:
   void AddCachedFileList(TRemoteFileList * FileList);
   inline bool InTransaction();
 
+  void DoProgress(TFileOperationProgressType &ProgressData, TCancelStatus &Cancel);
 protected:
   bool FReadCurrentDirectoryPending;
   bool FReadDirectoryPending;
@@ -317,7 +318,6 @@ protected:
   virtual void Closed();
   virtual void HandleExtendedException(const std::exception * E);
   bool IsListenerFree(unsigned int PortNumber);
-  void DoProgress(TFileOperationProgressType &ProgressData, TCancelStatus &Cancel);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
@@ -464,7 +464,7 @@ public:
   // __property const TRemoteTokenList * Membership = { read = GetMembership };
   const TRemoteTokenList * GetMembership();
   // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };
-  const fileoperationprogress_signal_type &GetOnProgress() { return FOnProgress; }
+  const fileoperationprogress_signal_type &GetOnProgress() const { return FOnProgress; }
   void SetOnProgress(const fileoperationprogress_slot_type &value) { FOnProgress.connect(value); }
   // __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
   TFileOperationFinished GetOnFinished() { return FOnFinished; }
