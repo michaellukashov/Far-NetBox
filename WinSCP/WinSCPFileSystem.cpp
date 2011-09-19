@@ -2924,8 +2924,8 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
     FTerminal->SetOnQueryUser(boost::bind(&TWinSCPFileSystem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
     // FIXME
     FTerminal->SetOnPromptUser(boost::bind(&TWinSCPFileSystem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-    FTerminal->SetOnDisplayBanner(boost::bind(&TWinSCPFileSystem::TerminalDisplayBanner, this, _1, _2, _3, _4, _5, _6));
-    // FTerminal->OnShowExtendedException = TerminalShowExtendedException;
+    FTerminal->SetOnDisplayBanner(boost::bind(&TWinSCPFileSystem::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
+    FTerminal->SetOnShowExtendedException(boost::bind(&TWinSCPFileSystem::TerminalShowExtendedException, this, _1, _2, _3));
     // FTerminal->OnChangeDirectory = TerminalChangeDirectory;
     // FTerminal->OnReadDirectory = TerminalReadDirectory;
     // FTerminal->OnStartReadDirectory = TerminalStartReadDirectory;

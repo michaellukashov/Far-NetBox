@@ -95,8 +95,8 @@ public:
   promptuser_signal_type &GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
   // __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
-  TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  extendedexception_signal_type &GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
   // __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   queuelistupdate_signal_type &GetOnListUpdate() { return FOnListUpdate; }
   void SetOnListUpdate(const queuelistupdate_signal_type &value) { FOnListUpdate.connect(value); }
@@ -115,7 +115,7 @@ protected:
 
   queryuser_signal_type FOnQueryUser;
   promptuser_signal_type FOnPromptUser;
-  TExtendedExceptionEvent FOnShowExtendedException;
+  extendedexception_signal_type FOnShowExtendedException;
   queueitemupdate_signal_type FOnQueueItemUpdate;
   queuelistupdate_signal_type FOnListUpdate;
   queueevent_signal_type FOnEvent;

@@ -481,7 +481,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FSecureShell = NULL;
   FOnDeleteLocalFile = NULL;
   FOnReadDirectoryProgress = NULL;
-  FOnShowExtendedException = NULL;
   FOnInformation = NULL;
   FOnFindingFile = NULL;
 
@@ -1112,11 +1111,11 @@ void TTerminal::DisplayBanner(const std::wstring & Banner)
 void TTerminal::HandleExtendedException(const std::exception * E)
 {
   GetLog()->AddException(E);
-  if (GetOnShowExtendedException() != NULL)
+  if (!GetOnShowExtendedException().empty())
   {
     TCallbackGuard Guard(this);
     // the event handler may destroy 'this' ...
-    // FIXME OnShowExtendedException(this, E, NULL);
+    GetOnShowExtendedException()(this, E, NULL);
     // .. hence guard is dismissed from destructor, to make following call no-op
     Guard.Verify();
   }
@@ -1125,9 +1124,9 @@ void TTerminal::HandleExtendedException(const std::exception * E)
 void TTerminal::ShowExtendedException(const std::exception * E)
 {
   GetLog()->AddException(E);
-  if (GetOnShowExtendedException() != NULL)
+  if (!GetOnShowExtendedException().empty())
   {
-    // FIXME OnShowExtendedException(this, E, NULL);
+    GetOnShowExtendedException()(this, E, NULL);
   }
 }
 //---------------------------------------------------------------------------

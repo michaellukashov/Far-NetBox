@@ -51,8 +51,10 @@ typedef promptuser_signal_type::slot_type promptuser_slot_type;
 typedef boost::signal5<void, TTerminal *, std::wstring, const std::wstring &,
    bool &, int> displaybanner_signal_type;
 typedef displaybanner_signal_type::slot_type displaybanner_slot_type;
-typedef void (TObject::*TExtendedExceptionEvent)
-  (TTerminal * Terminal, const std::exception * E, void * Arg);
+// typedef void (TObject::*TExtendedExceptionEvent)
+  // (TTerminal * Terminal, const std::exception * E, void * Arg);
+typedef boost::signal3<void, TTerminal *, const std::exception *, void *> extendedexception_signal_type;
+typedef extendedexception_signal_type::slot_type extendedexception_slot_type;
 typedef void (TObject::*TReadDirectoryEvent)(TObject * Sender, bool ReloadOnly);
 typedef void (TObject::*TReadDirectoryProgressEvent)(
   TObject* Sender, int Progress, bool & Cancel);
@@ -205,7 +207,7 @@ private:
   queryuser_signal_type FOnQueryUser;
   promptuser_signal_type FOnPromptUser;
   displaybanner_signal_type FOnDisplayBanner;
-  TExtendedExceptionEvent FOnShowExtendedException;
+  extendedexception_signal_type FOnShowExtendedException;
   TInformationEvent FOnInformation;
   notify_signal_type FOnClose;
   bool FAnyInformation;
@@ -515,8 +517,8 @@ public:
   void SetOnPromptUser(const promptuser_slot_type &value) { FOnPromptUser.connect(value); }
   displaybanner_signal_type &GetOnDisplayBanner() { return FOnDisplayBanner; }
   void SetOnDisplayBanner(const displaybanner_slot_type &value) { FOnDisplayBanner.connect(value); }
-  TExtendedExceptionEvent GetOnShowExtendedException() { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
+  extendedexception_signal_type &GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
   TInformationEvent GetOnInformation() { return FOnInformation; }
   void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
   const notify_signal_type &GetOnClose() const { return FOnClose; }

@@ -257,7 +257,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
-  FOnShowExtendedException = NULL;
   FLastIdle = Now();
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
 
@@ -816,9 +815,9 @@ void TTerminalQueue::DoPromptUser(TTerminal * Terminal,
 void TTerminalQueue::DoShowExtendedException(
   TTerminal * Terminal, const std::exception * E, void * Arg)
 {
-  if (GetOnShowExtendedException() != NULL)
+  if (!GetOnShowExtendedException().empty())
   {
-    // FIXME OnShowExtendedException(Terminal, E, Arg);
+    GetOnShowExtendedException()(Terminal, E, Arg);
   }
 }
 //---------------------------------------------------------------------------
