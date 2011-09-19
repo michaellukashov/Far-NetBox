@@ -231,7 +231,7 @@ private:
   notify_signal_type FOnClose;
   bool FAnyInformation;
   TCallbackGuard * FCallbackGuard;
-  TFindingFileEvent FOnFindingFile;
+  findingfile_signal_type FOnFindingFile;
   TTerminal *Self;
 
   void CommandError(const std::exception * E, const std::wstring Msg);
@@ -440,7 +440,7 @@ public:
     const TCopyParamType * CopyParam, int Params,
     const synchronizedirectory_slot_type &OnSynchronizeDirectory);
   void FilesFind(std::wstring Directory, const TFileMasks & FileMask,
-    TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
+    const filefound_slot_type *OnFileFound, const findingfile_slot_type *OnFindingFile);
   void SpaceAvailable(const std::wstring Path, TSpaceAvailable & ASpaceAvailable);
   bool DirectoryFileList(const std::wstring Path,
     TRemoteFileList *& FileList, bool CanLoad);

@@ -73,8 +73,8 @@ struct TMoveFileParams
 struct TFilesFindParams
 {
   TFileMasks FileMask;
-  TFileFoundEvent OnFileFound;
-  TFindingFileEvent OnFindingFile;
+  const filefound_slot_type *OnFileFound;
+  const findingfile_slot_type *OnFindingFile;
   bool Cancel;
 };
 //---------------------------------------------------------------------------
@@ -479,7 +479,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FTunnelLocalPortNumber = 0;
   FFileSystem = NULL;
   FSecureShell = NULL;
-  FOnFindingFile = NULL;
 
   FUseBusyCursor = true;
   FLockDirectory = L"";
@@ -1609,10 +1608,10 @@ void TTerminal::DoReadDirectoryProgress(int Progress, bool & Cancel)
     FOnReadDirectoryProgress(this, Progress, Cancel);
     Guard.Verify();
   }
-  if (FOnFindingFile != NULL)
+  if (!FOnFindingFile.empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnFindingFile(this, "", Cancel);
+    FOnFindingFile(this, L"", Cancel);
     Guard.Verify();
   }
 }
@@ -4495,7 +4494,6 @@ void TTerminal::FileFind(std::wstring FileName,
   const TRemoteFile * File, /*TFilesFindParams*/ void * Param)
 {
   // see DoFilesFind
-  FOnFindingFile = NULL;
 
   assert(Param);
   assert(File);
@@ -4515,7 +4513,9 @@ void TTerminal::FileFind(std::wstring FileName,
     if (AParams->FileMask.Matches(FullFileName, false,
          File->GetIsDirectory(), &MaskParams))
     {
-      AParams->OnFileFound(this, FileName, File, AParams->Cancel);
+      filefound_signal_type sig;
+      sig.connect(*AParams->OnFileFound);
+      sig(this, FileName, File, AParams->Cancel);
     }
 
     if (File->GetIsDirectory())
@@ -4527,18 +4527,20 @@ void TTerminal::FileFind(std::wstring FileName,
 //---------------------------------------------------------------------------
 void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
 {
-  Params.OnFindingFile(this, Directory, Params.Cancel);
+  findingfile_signal_type sig;
+  sig.connect(*Params.OnFindingFile);
+  sig(this, Directory, Params.Cancel);
   if (!Params.Cancel)
   {
-    assert(FOnFindingFile == NULL);
+    assert(FOnFindingFile.empty());
     // ideally we should set the handler only around actually reading
     // of the directory listing, so we at least reset the handler in
     // FileFind
-    FOnFindingFile = Params.OnFindingFile;
+    FOnFindingFile.connect(*Params.OnFindingFile);
     {
       BOOST_SCOPE_EXIT ( (&Self) )
       {
-        Self->FOnFindingFile = NULL;
+        Self->FOnFindingFile.disconnect_all_slots();
       } BOOST_SCOPE_EXIT_END
       ProcessDirectory(Directory, boost::bind(&TTerminal::FileFind, this, _1, _2, _3), &Params, false, true);
     }
@@ -4546,7 +4548,7 @@ void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
 }
 //---------------------------------------------------------------------------
 void TTerminal::FilesFind(std::wstring Directory, const TFileMasks & FileMask,
-  TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile)
+  const filefound_slot_type *OnFileFound, const findingfile_slot_type *OnFindingFile)
 {
   TFilesFindParams Params;
   Params.FileMask = FileMask;
