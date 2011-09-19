@@ -3588,13 +3588,13 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
     const TRemoteFile * /*File*/, std::wstring /*Command*/, int /*Params*/,
-    TCaptureOutputEvent /*OutputEvent*/)
+    const captureoutput_slot_type & /*OutputEvent*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::AnyCommand(const std::wstring /*Command*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  const captureoutput_slot_type & /*OutputEvent*/)
 {
   assert(false);
 }

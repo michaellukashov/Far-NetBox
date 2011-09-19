@@ -88,7 +88,7 @@ private:
   int TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
 
 protected:
-  TCaptureOutputEvent FOnCaptureOutput;
+  captureoutput_signal_type FOnCaptureOutput;
 
   void GotHostKey();
   int TranslatePuttyMessage(const TPuttyTranslation * Translation,
@@ -154,8 +154,8 @@ public:
   // __property bool Ready = { read = GetReady };
   bool GetReady();
   // __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
-  TCaptureOutputEvent GetOnCaptureOutput() { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
+  captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
+  void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
   // __property TDateTime LastDataSent = { read = FLastDataSent };
   TDateTime GetLastDataSent() { return FLastDataSent; }
   // __property std::wstring LastTunnelError = { read = FLastTunnelError };

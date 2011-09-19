@@ -1123,21 +1123,21 @@ void TWinSCPFileSystem::ApplyCommand()
                   Self->RedrawPanel();
                 }
               } BOOST_SCOPE_EXIT_END
-              TCaptureOutputEvent OutputEvent = NULL;
+              captureoutput_signal_type OutputEvent;
               FOutputLog = false;
               if (FLAGSET(Params, ccShowResults))
               {
                 assert(!FNoProgress);
                 FNoProgress = true;
                 FOutputLog = true;
-                // FIXME OutputEvent = TerminalCaptureLog;
+                OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
               }
 
               if (FLAGSET(Params, ccCopyResults))
               {
                 assert(FCapturedLog == NULL);
                 FCapturedLog = new TStringList();
-                // FIXME OutputEvent = TerminalCaptureLog;
+                OutputEvent.connect(boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2));
               }
 
               {

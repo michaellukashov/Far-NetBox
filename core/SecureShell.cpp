@@ -39,7 +39,6 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   Pending = NULL;
   FBackendHandle = NULL;
   ResetConnection();
-  FOnCaptureOutput = NULL;
   FConfig = new Config();
   memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
@@ -1096,9 +1095,9 @@ void TSecureShell::ClearStdError()
 void TSecureShell::CaptureOutput(TLogLineType Type,
   const std::wstring & Line)
 {
-  if (FOnCaptureOutput != NULL)
+  if (!FOnCaptureOutput.empty())
   {
-    // FIXME FOnCaptureOutput(Line, (Type == llStdError));
+    FOnCaptureOutput(Line, (Type == llStdError));
   }
   FLog->Add(Type, Line);
 }

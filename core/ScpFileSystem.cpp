@@ -295,7 +295,6 @@ TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal, TSecureShell * SecureShell
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FOutput = new TStringList();
   FProcessingCommand = false;
-  FOnCaptureOutput = NULL;
   Self = this;
 
   FFileSystemInfo.ProtocolBaseName = L"SCP";
@@ -1197,7 +1196,7 @@ void TSCPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
     const TRemoteFile * File, std::wstring Command, int Params,
-    TCaptureOutputEvent OutputEvent)
+    const captureoutput_slot_type &OutputEvent)
 {
   assert(File);
   bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -1206,7 +1205,7 @@ void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
     TCustomCommandParams AParams;
     AParams.Command = Command;
     AParams.Params = Params;
-    AParams.OutputEvent = OutputEvent;
+    AParams.OutputEvent.connect(OutputEvent);
     // FIXME FTerminal->ProcessDirectory(FileName, FTerminal->CustomCommandOnFile,
       // &AParams);
   }
@@ -1230,26 +1229,26 @@ void TSCPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError
       !RemoveLastLine(Line, ReturnCode) ||
       !Line.empty())
   {
-    assert(FOnCaptureOutput != NULL);
-    // FIXME FOnCaptureOutput(Line, StdError);
+    assert(!FOnCaptureOutput.empty());
+    FOnCaptureOutput(Line, StdError);
   }
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::AnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type &OutputEvent)
 {
-  assert(FSecureShell->GetOnCaptureOutput() == NULL);
-  if (OutputEvent != NULL)
+  assert(!FSecureShell->GetOnCaptureOutput().empty());
+  // if (!OutputEvent.empty())
   {
-    // FSecureShell->SetOnCaptureOutput(CaptureOutput);
-    FOnCaptureOutput = OutputEvent;
+    FSecureShell->SetOnCaptureOutput(boost::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
+    FOnCaptureOutput.connect(OutputEvent);
   }
 
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
-      Self->FOnCaptureOutput = NULL;
-      Self->FSecureShell->SetOnCaptureOutput(NULL);
+      Self->FOnCaptureOutput.disconnect_all_slots();
+      Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
     } BOOST_SCOPE_EXIT_END
     ExecCommand(fsAnyCommand, 0, Command,
       ecDefault | ecIgnoreWarnings);

@@ -19,7 +19,7 @@ public:
   virtual void Idle();
   virtual std::wstring AbsolutePath(std::wstring Path, bool Local);
   virtual void AnyCommand(const std::wstring Command,
-    TCaptureOutputEvent OutputEvent);
+    const captureoutput_slot_type &OutputEvent);
   virtual void ChangeDirectory(const std::wstring Directory);
   virtual void CachedChangeDirectory(const std::wstring Directory);
   virtual void AnnounceFileListOperation();
@@ -43,7 +43,7 @@ public:
   virtual void DeleteFile(const std::wstring FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const std::wstring FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(int Capability) const;
@@ -86,7 +86,7 @@ private:
   std::wstring FCachedDirectoryChange;
   bool FProcessingCommand;
   int FLsFullTime;
-  TCaptureOutputEvent FOnCaptureOutput;
+  captureoutput_signal_type FOnCaptureOutput;
   TSCPFileSystem *Self;
 
   void ClearAliases();

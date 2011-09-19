@@ -568,7 +568,7 @@ void TFTPFileSystem::EnsureLocation()
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::AnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type &OutputEvent)
 {
   // end-user has right to expect that client current directory is really
   // current directory for the server
@@ -1586,7 +1586,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
   const TRemoteFile * /*File*/, std::wstring /*Command*/, int /*Params*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  const captureoutput_slot_type /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
   // see AnyCommand for a reason why

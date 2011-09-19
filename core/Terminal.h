@@ -220,7 +220,7 @@ protected:
   void DoDeleteFile(const std::wstring FileName, const TRemoteFile * File,
     int Params);
   void DoCustomCommandOnFile(std::wstring FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
   void DoRenameFile(const std::wstring FileName,
     const std::wstring NewName, bool Move);
   void DoCopyFile(const std::wstring FileName, const std::wstring NewName);
@@ -322,7 +322,7 @@ protected:
     const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, const std::exception * E = NULL);
-  void DoAnyCommand(const std::wstring Command, TCaptureOutputEvent OutputEvent,
+  void DoAnyCommand(const std::wstring Command, const captureoutput_slot_type &OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(std::wstring Directory, bool UseCache);
   std::wstring EncryptPassword(const std::wstring & Password);
@@ -343,7 +343,7 @@ public:
   void Idle();
   void RecryptPasswords();
   bool AllowedAnyCommand(const std::wstring Command);
-  void AnyCommand(const std::wstring Command, TCaptureOutputEvent OutputEvent);
+  void AnyCommand(const std::wstring Command, const captureoutput_slot_type &OutputEvent);
   void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const std::wstring Message = L"");
   std::wstring AbsolutePath(std::wstring Path, bool Local);
   void BeginTransaction();
@@ -369,7 +369,7 @@ public:
   void CustomCommandOnFile(std::wstring FileName,
     const TRemoteFile * File, void * AParams);
   void CustomCommandOnFiles(std::wstring Command, int Params,
-    TStrings * Files, TCaptureOutputEvent OutputEvent);
+    TStrings * Files, const captureoutput_slot_type &OutputEvent);
   void ChangeDirectory(const std::wstring Directory);
   void EndTransaction();
   void HomeDirectory();
@@ -560,7 +560,7 @@ struct TCustomCommandParams
 {
   std::wstring Command;
   int Params;
-  TCaptureOutputEvent OutputEvent;
+  captureoutput_signal_type OutputEvent;
 };
 //---------------------------------------------------------------------------
 struct TCalculateSizeStats

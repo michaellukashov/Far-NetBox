@@ -2779,7 +2779,7 @@ void TTerminal::CustomCommandOnFile(std::wstring FileName,
 //---------------------------------------------------------------------------
 void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
   const TRemoteFile * File, std::wstring Command, int Params,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type &OutputEvent)
 {
   try
   {
@@ -2811,14 +2811,14 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFiles(std::wstring Command,
-  int Params, TStrings * Files, TCaptureOutputEvent OutputEvent)
+  int Params, TStrings * Files, const captureoutput_slot_type &OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
     TCustomCommandParams AParams;
     AParams.Command = Command;
     AParams.Params = Params;
-    AParams.OutputEvent = OutputEvent;
+    AParams.OutputEvent.connect(OutputEvent);
     ProcessFiles(Files, foCustomCommand, (TProcessFileEvent)&TTerminal::CustomCommandOnFile, &AParams);
   }
   else
@@ -3452,39 +3452,40 @@ TTerminal * TTerminal::GetCommandSession()
 }
 //---------------------------------------------------------------------------
 void TTerminal::AnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type &OutputEvent)
 {
 
   class TOutputProxy
   {
   public:
-    TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) :
-      FAction(Action),
-      FOutputEvent(OutputEvent)
+    TOutputProxy(TCallSessionAction & Action, const captureoutput_slot_type &OutputEvent) :
+      FAction(Action)
     {
+      FOutputEvent.connect(OutputEvent);
     }
 
     void Output(const std::wstring & Str, bool StdError)
     {
       FAction.AddOutput(Str, StdError);
-      if (FOutputEvent != NULL)
+      if (!FOutputEvent.empty())
       {
-        // FIXME FOutputEvent(Str, StdError);
+        FOutputEvent(Str, StdError);
       }
     }
 
   private:
     TCallSessionAction & FAction;
-    TCaptureOutputEvent FOutputEvent;
+    captureoutput_signal_type FOutputEvent;
   };
 
   TCallSessionAction Action(GetLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, OutputEvent);
-  // FIXME DoAnyCommand(Command, (TCaptureOutputEvent)&ProxyOutputEvent.Output, &Action);
+  DoAnyCommand(Command, boost::bind(&TOutputProxy::Output, ProxyOutputEvent, _1, _2),
+    &Action);
 }
 //---------------------------------------------------------------------------
 void TTerminal::DoAnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent, TCallSessionAction * Action)
+  const captureoutput_slot_type &OutputEvent, TCallSessionAction * Action)
 {
   assert(FFileSystem);
   try

@@ -2,6 +2,9 @@
 #ifndef SessionInfoH
 #define SessionInfoH
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal2.hpp>
+
 #include "SessionData.h"
 #include "Interface.h"
 // #include "Exceptions.h"
@@ -73,8 +76,10 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAction };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TCaptureOutputEvent)(
-  const std::wstring & Str, bool StdError);
+// typedef void (TObject::*TCaptureOutputEvent)(
+  // const std::wstring & Str, bool StdError);
+typedef boost::signal2<void, const std::wstring &, bool> captureoutput_signal_type;
+typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
 typedef void (TObject::*TCalculatedChecksumEvent)(
   const std::wstring & FileName, const std::wstring & Alg, const std::wstring & Hash);
 //---------------------------------------------------------------------------
