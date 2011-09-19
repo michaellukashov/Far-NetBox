@@ -22,7 +22,6 @@ TSynchronizeController::TSynchronizeController(
   FOnSynchronizeInvalid = AOnSynchronizeInvalid;
   FOnTooManyDirectories = AOnTooManyDirectories;
   FSynchronizeMonitor = NULL;
-  FSynchronizeAbort = NULL;
   FSynchronizeLog = NULL;
   FOptions = NULL;
 }
@@ -35,7 +34,7 @@ TSynchronizeController::~TSynchronizeController()
 void TSynchronizeController::StartStop(TObject * Sender,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
-  TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+  const synchronizeabort_slot_type &OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
   TSynchronizeLog OnSynchronizeLog)
 {
   if (Start)
@@ -57,8 +56,8 @@ void TSynchronizeController::StartStop(TObject * Sender,
       FCopyParam = CopyParam;
       FSynchronizeParams = Params;
 
-      assert(OnAbort);
-      FSynchronizeAbort = OnAbort;
+      // assert(OnAbort);
+      FSynchronizeAbort.connect(OnAbort);
 
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
       {
@@ -187,8 +186,8 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   {
     // FIXME FSynchronizeMonitor->Close();
   }
-  assert(FSynchronizeAbort);
-  // FIXME FSynchronizeAbort(NULL, Close);
+  assert(!FSynchronizeAbort.empty());
+  FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,

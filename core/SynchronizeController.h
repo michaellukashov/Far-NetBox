@@ -2,6 +2,9 @@
 #ifndef SynchronizeControllerH
 #define SynchronizeControllerH
 //---------------------------------------------------------------------------
+#include "boostdefines.hpp"
+#include <boost/signals/signal8.hpp>
+
 #include <CopyParam.h>
 //---------------------------------------------------------------------------
 struct TSynchronizeParamType
@@ -15,8 +18,10 @@ struct TSynchronizeParamType
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
-typedef void (TObject::* TSynchronizeAbortEvent)
-  (TObject * Sender, bool Close);
+// typedef void (TObject::* TSynchronizeAbortEvent)
+  // (TObject * Sender, bool Close);
+typedef boost::signal2<void, TObject *, bool> synchronizeabort_signal_type;
+typedef synchronizeabort_signal_type::slot_type synchronizeabort_slot_type;
 typedef void (TObject::* TSynchronizeThreadsEvent)
   (TObject* Sender, const threadmethod_slot_type &slot);
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
@@ -25,7 +30,7 @@ typedef void (TObject::* TSynchronizeLog)
 typedef void (TObject::* TSynchronizeStartStopEvent)
   (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
    const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
-   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+   const synchronizeabort_slot_type &OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
    TSynchronizeLog OnSynchronizeLog);
 typedef void (TObject::* TSynchronizeEvent)
   (TSynchronizeController * Sender, const std::wstring LocalDirectory,
@@ -55,7 +60,7 @@ public:
   void StartStop(TObject * Sender, bool Start,
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
-    TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+    const synchronizeabort_slot_type &OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLog OnSynchronizeLog);
   void LogOperation(TSynchronizeOperation Operation, const std::wstring FileName);
 
@@ -65,7 +70,7 @@ private:
   TSynchronizeOptions * FOptions;
   TSynchronizeThreadsEvent FOnSynchronizeThreads;
   Discmon::TDiscMonitor * FSynchronizeMonitor;
-  TSynchronizeAbortEvent FSynchronizeAbort;
+  synchronizeabort_signal_type FSynchronizeAbort;
   TSynchronizeInvalidEvent FOnSynchronizeInvalid;
   TSynchronizeTooManyDirectories FOnTooManyDirectories;
   TSynchronizeLog FSynchronizeLog;
