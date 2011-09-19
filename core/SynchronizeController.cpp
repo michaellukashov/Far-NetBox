@@ -15,11 +15,11 @@
 #include "SynchronizeController.h"
 //---------------------------------------------------------------------------
 TSynchronizeController::TSynchronizeController(
-  const synchronize_slot_type &AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
+  const synchronize_slot_type &AOnSynchronize, const synchronizeinvalid_slot_type &AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectories AOnTooManyDirectories)
 {
   FOnSynchronize.connect(AOnSynchronize);
-  FOnSynchronizeInvalid = AOnSynchronizeInvalid;
+  FOnSynchronizeInvalid.connect(AOnSynchronizeInvalid);
   FOnTooManyDirectories = AOnTooManyDirectories;
   FSynchronizeMonitor = NULL;
   FOptions = NULL;
@@ -241,9 +241,9 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 void TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const std::wstring Directory, const std::wstring ErrorStr)
 {
-  if (FOnSynchronizeInvalid != NULL)
+  if (!FOnSynchronizeInvalid.empty())
   {
-    // FIXME FOnSynchronizeInvalid(this, Directory, ErrorStr);
+    FOnSynchronizeInvalid(this, Directory, ErrorStr);
   }
 
   SynchronizeAbort(false);

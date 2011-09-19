@@ -52,8 +52,10 @@ typedef boost::signal8<void, TSynchronizeController *, const std::wstring,
    const TSynchronizeParamType &, TSynchronizeChecklist **,
    TSynchronizeOptions *, bool> synchronize_signal_type;
 typedef synchronize_signal_type::slot_type synchronize_slot_type;
-typedef void (TObject::* TSynchronizeInvalidEvent)
-  (TSynchronizeController * Sender, const std::wstring Directory, const std::wstring ErrorStr);
+// typedef void (TObject::* TSynchronizeInvalidEvent)
+  // (TSynchronizeController * Sender, const std::wstring Directory, const std::wstring ErrorStr);
+typedef boost::signal3<void, TSynchronizeController *, const std::wstring, const std::wstring> synchronizeinvalid_signal_type;
+typedef synchronizeinvalid_signal_type::slot_type synchronizeinvalid_slot_type;
 typedef void (TObject::* TSynchronizeTooManyDirectories)
   (TSynchronizeController * Sender, int & MaxDirectories);
 //---------------------------------------------------------------------------
@@ -68,7 +70,7 @@ class TSynchronizeController
 {
 public:
   TSynchronizeController(const synchronize_slot_type &AOnSynchronize,
-    TSynchronizeInvalidEvent AOnSynchronizeInvalid,
+    const synchronizeinvalid_slot_type &AOnSynchronizeInvalid,
     TSynchronizeTooManyDirectories AOnTooManyDirectories);
   ~TSynchronizeController();
 
@@ -86,7 +88,7 @@ private:
   synchronizethreads_signal_type FOnSynchronizeThreads;
   Discmon::TDiscMonitor * FSynchronizeMonitor;
   synchronizeabort_signal_type FSynchronizeAbort;
-  TSynchronizeInvalidEvent FOnSynchronizeInvalid;
+  synchronizeinvalid_signal_type FOnSynchronizeInvalid;
   TSynchronizeTooManyDirectories FOnTooManyDirectories;
   synchronizelog_signal_type FSynchronizeLog;
   TCopyParamType FCopyParam;
