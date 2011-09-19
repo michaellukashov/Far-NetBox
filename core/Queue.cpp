@@ -117,8 +117,8 @@ protected:
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const std::wstring & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  void OperationProgress(TFileOperationProgressType & ProgressData,
-    TCancelStatus & Cancel);
+  void OperationProgress(TFileOperationProgressType &ProgressData,
+    TCancelStatus &Cancel);
 };
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -1208,7 +1208,7 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::OperationProgress(
-  TFileOperationProgressType & ProgressData, TCancelStatus & Cancel)
+  TFileOperationProgressType &ProgressData, TCancelStatus &Cancel)
 {
   if (FPause && !FTerminated && !FCancel)
   {
@@ -1309,13 +1309,14 @@ void TQueueItem::SetStatus(TStatus Status)
 }
 //---------------------------------------------------------------------------
 void TQueueItem::SetProgress(
-  TFileOperationProgressType & ProgressData)
+  TFileOperationProgressType &ProgressData)
 {
   {
     TGuard Guard(FSection);
 
     assert(FProgressData != NULL);
-    *FProgressData = ProgressData;
+    delete FProgressData;
+    FProgressData = &ProgressData;
     FProgressData->Reset();
 
     if (FCPSLimit >= 0)
@@ -1334,7 +1335,7 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
   assert(Proxy->FProgressData != NULL);
   if (FProgressData != NULL)
   {
-    *Proxy->FProgressData = *FProgressData;
+    Proxy->FProgressData = FProgressData;
   }
   else
   {
@@ -1362,7 +1363,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
     {
       assert(FProgressData == NULL);
       TGuard Guard(FSection);
-      FProgressData = new TFileOperationProgressType();
+      FProgressData = new TFileOperationProgressType;
     }
     DoExecute(TerminalItem->FTerminal);
   }
@@ -1381,7 +1382,7 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   FQueueStatus(NULL), FInfo(NULL),
   FProcessingUserAction(false), FUserData(NULL)
 {
-  FProgressData = new TFileOperationProgressType();
+  FProgressData = new TFileOperationProgressType;
   FInfo = new TQueueItem::TInfo();
   Self = this;
 
@@ -1394,7 +1395,7 @@ TQueueItemProxy::~TQueueItemProxy()
   delete FInfo;
 }
 //---------------------------------------------------------------------------
-TFileOperationProgressType * TQueueItemProxy::GetProgressData()
+TFileOperationProgressType *TQueueItemProxy::GetProgressData()
 {
   return (FProgressData->Operation == foNone) ? NULL : FProgressData;
 }

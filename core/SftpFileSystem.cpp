@@ -3392,12 +3392,11 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   // without knowledge of server's capabilities, this all make no sense
   if (FSupport->Loaded)
   {
-    // TFileOperationProgressType Progress(&FTerminal->DoProgress, &FTerminal->DoFinished);
-    TFileOperationProgressType Progress((TFileOperationProgressEvent)&TTerminal::DoProgress,
-        (TFileOperationFinished)&TTerminal::DoFinished);
-    Progress.Start(foGetProperties, osRemote, FileList->GetCount());
+    TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2),
+        boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+    Progress->Start(foGetProperties, osRemote, FileList->GetCount());
 
-    FTerminal->FOperationProgress = &Progress;
+    FTerminal->FOperationProgress = Progress;
 
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this);
@@ -3406,7 +3405,8 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
       {
         Queue.DisposeSafe();
         Self->FTerminal->FOperationProgress = NULL;
-        Progress.Stop();
+        Progress->Stop();
+        delete Progress;
       } BOOST_SCOPE_EXIT_END
       if (Queue.Init(LoadFilesPropertiesQueueLen, FileList))
       {
@@ -3419,15 +3419,15 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
           assert((Packet.GetType() == SSH_FXP_ATTRS) || (Packet.GetType() == SSH_FXP_STATUS));
           if (Packet.GetType() == SSH_FXP_ATTRS)
           {
-            Progress.SetFile(File->GetFileName());
+            Progress->SetFile(File->GetFileName());
             assert(File != NULL);
             LoadFile(File, &Packet);
             Result = true;
             TOnceDoneOperation OnceDoneOperation;
-            Progress.Finish(File->GetFileName(), true, OnceDoneOperation);
+            Progress->Finish(File->GetFileName(), true, OnceDoneOperation);
           }
 
-          if (Progress.Cancel != csContinue)
+          if (Progress->Cancel != csContinue)
           {
             Next = false;
           }
@@ -3568,21 +3568,21 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
   TStrings * FileList, TStrings * Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  // TFileOperationProgressType Progress(&FTerminal->DoProgress, &FTerminal->DoFinished);
-    TFileOperationProgressType Progress((TFileOperationProgressEvent)&TTerminal::DoProgress,
-        (TFileOperationFinished)&TTerminal::DoFinished);
-  Progress.Start(foCalculateChecksum, osRemote, FileList->GetCount());
+    TFileOperationProgressType *Progress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, FTerminal, _1, _2),
+        boost::bind(&TTerminal::DoFinished, FTerminal, _1, _2, _3, _4, _5, _6));
+  Progress->Start(foCalculateChecksum, osRemote, FileList->GetCount());
 
-  FTerminal->FOperationProgress = &Progress;
+  FTerminal->FOperationProgress = Progress;
 
   {
     BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
     {
       Self->FTerminal->FOperationProgress = NULL;
-      Progress.Stop();
+      Progress->Stop();
+      delete Progress;
     } BOOST_SCOPE_EXIT_END
     DoCalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum,
-      &Progress, true);
+      Progress, true);
   }
 }
 //---------------------------------------------------------------------------
