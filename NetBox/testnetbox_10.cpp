@@ -361,18 +361,16 @@ class TClass1 : TObject
 {
 public:
     TClass1() :
-        FOnChange(NULL),
         OnChangeNotifyEventTriggered(false)
     {
     }
-    
-    TNotifyEvent GetOnChange() { return FOnChange; }
-    void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
+    const notify_signal_type &GetOnChange() const { return FOnChange; }
+    void SetOnChange(const notify_slot_type &Event) { FOnChange.connect(Event); }
     virtual void Changed()
     {
-        if (FOnChange)
+        if (FOnChange.num_slots() > 0)
         {
-            ((*this).*FOnChange)(this);
+            FOnChange(this);
             OnChangeNotifyEventTriggered = true;
         }
     }
@@ -383,7 +381,7 @@ public:
 
     bool OnChangeNotifyEventTriggered;
 private:
-    TNotifyEvent FOnChange;
+    notify_signal_type FOnChange;
 };
 
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
@@ -392,7 +390,7 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
     {
         TClass1 cl1;
         BOOST_CHECK_EQUAL(false, cl1.OnChangeNotifyEventTriggered);
-        cl1.SetOnChange((TNotifyEvent)&base_fixture_t::OnChangeNotifyEvent);
+        cl1.SetOnChange(boost::bind(&base_fixture_t::OnChangeNotifyEvent, this, _1));
         cl1.Change(L"line 1");
         BOOST_CHECK_EQUAL(true, cl1.OnChangeNotifyEventTriggered);
     }
