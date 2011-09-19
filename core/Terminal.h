@@ -55,7 +55,9 @@ typedef displaybanner_signal_type::slot_type displaybanner_slot_type;
   // (TTerminal * Terminal, const std::exception * E, void * Arg);
 typedef boost::signal3<void, TTerminal *, const std::exception *, void *> extendedexception_signal_type;
 typedef extendedexception_signal_type::slot_type extendedexception_slot_type;
-typedef void (TObject::*TReadDirectoryEvent)(TObject * Sender, bool ReloadOnly);
+// typedef void (TObject::*TReadDirectoryEvent)(TObject * Sender, bool ReloadOnly);
+typedef boost::signal2<void, TObject *, bool> readdirectory_signal_type;
+typedef readdirectory_signal_type::slot_type readdirectory_slot_type;
 typedef void (TObject::*TReadDirectoryProgressEvent)(
   TObject* Sender, int Progress, bool & Cancel);
 typedef void (TObject::*TProcessFileEvent)
@@ -172,7 +174,7 @@ private:
   int FInTransaction;
   bool FSuspendTransaction;
   notify_signal_type FOnChangeDirectory;
-  TReadDirectoryEvent FOnReadDirectory;
+  readdirectory_signal_type FOnReadDirectory;
   notify_signal_type FOnStartReadDirectory;
   TReadDirectoryProgressEvent FOnReadDirectoryProgress;
   TDeleteLocalFileEvent FOnDeleteLocalFile;
@@ -465,8 +467,8 @@ public:
   TRemoteDirectory * GetFiles() { return FFiles; }
   const notify_signal_type &GetOnChangeDirectory() const { return FOnChangeDirectory; }
   void SetOnChangeDirectory(const notify_slot_type &value) { FOnChangeDirectory.connect(value); }
-  TReadDirectoryEvent GetOnReadDirectory() { return FOnReadDirectory; }
-  void SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory = value; }
+  readdirectory_signal_type &GetOnReadDirectory() { return FOnReadDirectory; }
+  void SetOnReadDirectory(const readdirectory_slot_type &value) { FOnReadDirectory.connect(value); }
   const notify_signal_type &GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(const notify_slot_type &value) { FOnStartReadDirectory.connect(value); }
   TReadDirectoryProgressEvent GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }

@@ -1586,10 +1586,10 @@ void TTerminal::DoChangeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::DoReadDirectory(bool ReloadOnly)
 {
-  if (FOnReadDirectory)
+  if (!FOnReadDirectory.empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnReadDirectory(this, ReloadOnly);
+    FOnReadDirectory(this, ReloadOnly);
     Guard.Verify();
   }
 }
