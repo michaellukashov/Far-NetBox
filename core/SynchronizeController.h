@@ -3,7 +3,7 @@
 #define SynchronizeControllerH
 //---------------------------------------------------------------------------
 #include "boostdefines.hpp"
-#include <boost/signals/signal8.hpp>
+#include <boost/signals/signal3.hpp>
 
 #include <CopyParam.h>
 //---------------------------------------------------------------------------
@@ -27,13 +27,15 @@ typedef synchronizeabort_signal_type::slot_type synchronizeabort_slot_type;
 typedef boost::signal2<void, TObject *, const threadmethod_slot_type &> synchronizethreads_signal_type;
 typedef synchronizethreads_signal_type::slot_type synchronizethreads_slot_type;
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
-typedef void (TObject::* TSynchronizeLog)
-  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const std::wstring Message);
+// typedef void (TObject::* TSynchronizeLog)
+  // (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const std::wstring Message);
+typedef boost::signal3<void, TSynchronizeController *, TSynchronizeLogEntry, const std::wstring> synchronizelog_signal_type;
+typedef synchronizelog_signal_type::slot_type synchronizelog_slot_type;
 typedef void (TObject::* TSynchronizeStartStopEvent)
   (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
    const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
    const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
-   TSynchronizeLog OnSynchronizeLog);
+   const synchronizelog_slot_type &OnSynchronizeLog);
 typedef void (TObject::* TSynchronizeEvent)
   (TSynchronizeController * Sender, const std::wstring LocalDirectory,
    const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,
@@ -63,7 +65,7 @@ public:
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
     const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
-    TSynchronizeLog OnSynchronizeLog);
+    const synchronizelog_slot_type &OnSynchronizeLog);
   void LogOperation(TSynchronizeOperation Operation, const std::wstring FileName);
 
 private:
@@ -75,7 +77,7 @@ private:
   synchronizeabort_signal_type FSynchronizeAbort;
   TSynchronizeInvalidEvent FOnSynchronizeInvalid;
   TSynchronizeTooManyDirectories FOnTooManyDirectories;
-  TSynchronizeLog FSynchronizeLog;
+  synchronizelog_signal_type FSynchronizeLog;
   TCopyParamType FCopyParam;
 
   void SynchronizeChange(TObject * Sender, const std::wstring Directory,
