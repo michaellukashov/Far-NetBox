@@ -3,6 +3,8 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/signals/signal3.hpp>
+#include <boost/bind.hpp>
 
 // #include <StrUtils.hpp>
 #include <math.h>
@@ -5115,8 +5117,10 @@ bool TWinSCPFileSystem::LinkDialog(std::wstring & FileName,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-typedef void (TObject::*TFeedFileSystemData)
-  (TObject * Control, int Label, std::wstring Value);
+// typedef void (TObject::*TFeedFileSystemData)
+  // (TObject * Control, int Label, std::wstring Value);
+typedef boost::signal3<void, TObject *, int, std::wstring> feedfilesystemdata_signal_type;
+typedef feedfilesystemdata_signal_type::slot_type feedfilesystemdata_slot_type;
 //---------------------------------------------------------------------------
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5131,7 +5135,7 @@ public:
     const TFileSystemInfo & FileSystemInfo, std::wstring SpaceAvailablePath);
 
 protected:
-  void Feed(TFeedFileSystemData AddItem);
+  void Feed(const feedfilesystemdata_slot_type &AddItem);
   std::wstring CapabilityStr(TFSCapability Capability);
   std::wstring CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
@@ -5346,11 +5350,13 @@ std::wstring TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
   return Result;
 }
 //---------------------------------------------------------------------
-void TFileSystemInfoDialog::Feed(TFeedFileSystemData AddItem)
+void TFileSystemInfoDialog::Feed(const feedfilesystemdata_slot_type &AddItem)
 {
-  // FIXME AddItem(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
-  // FIXME AddItem(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
-  // FIXME AddItem(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
+  feedfilesystemdata_signal_type sig;
+  sig.connect(AddItem);
+  sig(ServerLabels, SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
+  sig(ServerLabels, SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
+  sig(ServerLabels, SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
 
   std::wstring Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
@@ -5525,8 +5531,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::FeedControls()
 {
-  FLastFeededControl = NULL;
-  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::ControlsAddItem);
+  Feed(boost::bind(&TFileSystemInfoDialog::ControlsAddItem, this, _1, _2, _3));
   InfoLister->SetRight(GetBorderBox()->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
 //---------------------------------------------------------------------------
@@ -5555,7 +5560,7 @@ void TFileSystemInfoDialog::Execute(
   SpaceAvailablePathEdit->SetText(SpaceAvailablePath);
   UpdateControls();
 
-  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::CalculateMaxLenAddItem);
+  Feed(boost::bind(&TFileSystemInfoDialog::CalculateMaxLenAddItem, this, _1, _2, _3));
   FeedControls();
   HideTabs();
   SelectTab(tabProtocol);
@@ -5599,7 +5604,7 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
   NeedSpaceAvailable();
   FLastFeededControl = NULL;
   FClipboard = L"";
-  Feed((TFeedFileSystemData)&TFileSystemInfoDialog::ClipboardAddItem);
+  Feed(boost::bind(&TFileSystemInfoDialog::ClipboardAddItem, this, _1, _2, _3));
   FarPlugin->FarCopyToClipboard(FClipboard);
   Close = false;
 }
