@@ -1016,7 +1016,9 @@ void TFarMessageDialog::ButtonClick(TFarButton *Sender, bool &Close)
 {
     if (FParams->ClickEvent != NULL)
     {
-        FParams->ClickEvent(FParams->Token, Sender->GetResult() - 1, Close);
+        farmessageclick_signal_type sig;
+        sig.connect(*FParams->ClickEvent);
+        sig(FParams->Token, Sender->GetResult() - 1, Close);
     }
 }
 //---------------------------------------------------------------------------

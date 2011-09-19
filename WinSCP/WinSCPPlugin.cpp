@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
@@ -696,7 +697,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
     }
 
     FarParams.Token = &Data;
-    // FIXME FarParams.SetClickEvent(MessageClick);
+    FarParams.ClickEvent = &boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
 
     std::wstring DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))

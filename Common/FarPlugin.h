@@ -18,6 +18,9 @@
 
 #pragma once
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal3.hpp>
+
 #pragma warning(push, 1)
 #include "Classes.h"
 #pragma warning(pop)
@@ -251,7 +254,10 @@ const size_t StartupInfoMinSize = 372;
 const size_t StandardFunctionsMinSize = 228;
 //---------------------------------------------------------------------------
 typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
-typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
+// typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
+typedef boost::signal3<void, void *, int, bool &> farmessageclick_signal_type;
+typedef farmessageclick_signal_type::slot_type farmessageclick_slot_type;
+
 //---------------------------------------------------------------------------
 struct TFarMessageParams
 {
@@ -266,7 +272,7 @@ struct TFarMessageParams
     unsigned int Timeout;
     unsigned int TimeoutButton;
     std::wstring TimeoutStr;
-    TFarMessageClickEvent ClickEvent;
+    farmessageclick_slot_type *ClickEvent;
     void *Token;
 };
 //---------------------------------------------------------------------------
