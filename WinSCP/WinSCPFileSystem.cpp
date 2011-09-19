@@ -3235,7 +3235,7 @@ void TWinSCPFileSystem::OperationProgress(
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   TOperationSide Side, bool /*Temp*/, const std::wstring & FileName, bool Success,
-  bool & /*DisconnectWhenComplete*/)
+  TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   USEDPARAM(Side);
 
