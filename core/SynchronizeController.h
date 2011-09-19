@@ -22,15 +22,17 @@ class TSynchronizeChecklist;
   // (TObject * Sender, bool Close);
 typedef boost::signal2<void, TObject *, bool> synchronizeabort_signal_type;
 typedef synchronizeabort_signal_type::slot_type synchronizeabort_slot_type;
-typedef void (TObject::* TSynchronizeThreadsEvent)
-  (TObject* Sender, const threadmethod_slot_type &slot);
+// typedef void (TObject::* TSynchronizeThreadsEvent)
+  // (TObject* Sender, const threadmethod_slot_type &slot);
+typedef boost::signal2<void, TObject *, const threadmethod_slot_type &> synchronizethreads_signal_type;
+typedef synchronizethreads_signal_type::slot_type synchronizethreads_slot_type;
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
 typedef void (TObject::* TSynchronizeLog)
   (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const std::wstring Message);
 typedef void (TObject::* TSynchronizeStartStopEvent)
   (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
    const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
-   const synchronizeabort_slot_type &OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+   const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
    TSynchronizeLog OnSynchronizeLog);
 typedef void (TObject::* TSynchronizeEvent)
   (TSynchronizeController * Sender, const std::wstring LocalDirectory,
@@ -60,7 +62,7 @@ public:
   void StartStop(TObject * Sender, bool Start,
     const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
-    const synchronizeabort_slot_type &OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+    const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
     TSynchronizeLog OnSynchronizeLog);
   void LogOperation(TSynchronizeOperation Operation, const std::wstring FileName);
 
@@ -68,7 +70,7 @@ private:
   TSynchronizeEvent FOnSynchronize;
   TSynchronizeParamType FSynchronizeParams;
   TSynchronizeOptions * FOptions;
-  TSynchronizeThreadsEvent FOnSynchronizeThreads;
+  synchronizethreads_signal_type FOnSynchronizeThreads;
   Discmon::TDiscMonitor * FSynchronizeMonitor;
   synchronizeabort_signal_type FSynchronizeAbort;
   TSynchronizeInvalidEvent FOnSynchronizeInvalid;
