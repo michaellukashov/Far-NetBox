@@ -99,7 +99,7 @@ public:
   void SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
   // __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   queuelistupdate_signal_type &GetOnListUpdate() { return FOnListUpdate; }
-  void SetOnListUpdate(const queuelistupdate_signal_type &value) { FOnListUpdate.connect(value); }
+  void SetOnListUpdate(const queuelistupdate_slot_type &value) { FOnListUpdate.connect(value); }
   // __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   queueitemupdate_signal_type &GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void SetOnQueueItemUpdate(const queueitemupdate_slot_type &value) { FOnQueueItemUpdate.connect(value); }
