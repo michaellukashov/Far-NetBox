@@ -768,8 +768,8 @@ public:
     void SetTag(int value) { FTag = value; }
     TFarDialog *GetDialog() { return FDialog; }
 
-    TNotifyEvent GetOnExit() { return FOnExit; }
-    void SetOnExit(TNotifyEvent value) { FOnExit = value; }
+    const notify_signal_type &GetOnExit() const { return FOnExit; }
+    void SetOnExit(const notify_slot_type &value) { FOnExit.connect(value); }
     const mouse_click_signal_type &GetOnMouseClick() const { return FOnMouseClick; }
     void SetOnMouseClick(const mouse_click_slot_type &value) { FOnMouseClick.connect(value); }
 
@@ -785,7 +785,7 @@ protected:
     int FDefaultType;
     int FGroup;
     int FTag;
-    TNotifyEvent FOnExit;
+    notify_signal_type FOnExit;
     mouse_click_signal_type FOnMouseClick;
 
     TFarDialogItem(TFarDialog *ADialog, int AType);

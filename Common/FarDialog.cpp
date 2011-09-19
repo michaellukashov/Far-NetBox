@@ -1008,7 +1008,6 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
     FGroup = 0;
     FEnabled = true;
     FIsEnabled = true;
-    FOnExit = NULL;
     // FOnMouseClick = NULL;
     FColors = 0;
     FColorMask = 0;
@@ -1344,9 +1343,9 @@ void TFarDialogItem::DoFocus()
 //---------------------------------------------------------------------------
 void TFarDialogItem::DoExit()
 {
-    if (FOnExit)
+    if (FOnExit.num_slots() > 0)
     {
-        ((*this).*FOnExit)(this);
+        FOnExit(this);
     }
 }
 //---------------------------------------------------------------------------
@@ -2519,7 +2518,7 @@ TFarLister::TFarLister(TFarDialog *ADialog) :
     FItems(new TStringList()),
     FTopIndex(0)
 {
-    FItems->SetOnChange((TNotifyEvent)&TFarLister::ItemsChange);
+    FItems->SetOnChange(boost::bind(&TFarLister::ItemsChange, this, _1));
 }
 //---------------------------------------------------------------------------
 TFarLister::~TFarLister()

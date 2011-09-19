@@ -219,8 +219,8 @@ public:
   TLogLineType GetType(int Index);
   // __property OnChange;
   // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
-  TNotifyEvent GetOnStateChange() { return FOnStateChange; }
-  void SetOnStateChange(TNotifyEvent value) { FOnStateChange = value; }
+  const notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
+  void SetOnStateChange(const notify_slot_type &value) { FOnStateChange.connect(value); }
   // __property std::wstring CurrentFileName = { read = FCurrentFileName };
   std::wstring GetCurrentFileName() { return FCurrentFileName; }
   // __property bool LoggingToFile = { read = GetLoggingToFile };
@@ -256,7 +256,7 @@ private:
   bool FLoggingActions;
   bool FClosed;
   TList * FPendingActions;
-  TNotifyEvent FOnStateChange;
+  notify_signal_type FOnStateChange;
   TSessionLog *Self;
 
   void DeleteUnnecessary();

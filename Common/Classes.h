@@ -60,7 +60,7 @@ class TObject;
 typedef boost::signal0<void> threadmethod_signal_type;
 typedef threadmethod_signal_type::slot_type threadmethod_slot_type;
 
-typedef void (TObject::*TNotifyEvent)(TObject *);
+// typedef void (TObject::*TNotifyEvent)(TObject *);
 typedef boost::signal1<void, TObject *> notify_signal_type;
 typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------
@@ -594,8 +594,6 @@ class TStringList : public TStrings
     friend int StringListCompareStrings(TStringList *List, int Index1, int Index2);
 public:
     TStringList() :
-        FOnChange(NULL),
-        FOnChanging(NULL),
         FSorted(false),
         FCaseSensitive(false)
     {
@@ -733,16 +731,15 @@ public:
     {
         ::Error(SNotImplemented, 0);
     }
-    TNotifyEvent GetOnChange() { return FOnChange; }
-    void SetOnChange(TNotifyEvent Event) { FOnChange = Event; }
-
+    const notify_signal_type &GetOnChange() const { return FOnChange; }
     void SetOnChange(const notify_slot_type &onChange)
     {
-        m_OnChange.connect(onChange);
+        FOnChange.connect(onChange);
     }
+    const notify_signal_type &GetOnChanging() const { return FOnChanging; }
     void SetOnChanging(const notify_slot_type &onChanging)
     {
-        m_OnChanging.connect(onChanging);
+        FOnChanging.connect(onChanging);
     }
 
     virtual void PutObject(int Index, TObject *AObject)
@@ -768,12 +765,12 @@ public:
     virtual void Changing()
     {
       if (GetUpdateCount() == 0)
-        m_OnChanging(this);
+        FOnChanging(this);
     }
     virtual void Changed()
     {
         if (GetUpdateCount() == 0)
-            m_OnChange(this);
+            FOnChange(this);
     }
     virtual void Insert(int Index, const std::wstring S)
     {
@@ -791,10 +788,8 @@ public:
 private:
     void ExchangeItems(int Index1, int Index2);
 private:
-    TNotifyEvent FOnChange;
-    TNotifyEvent FOnChanging;
-    notify_signal_type m_OnChange;
-    notify_signal_type m_OnChanging;
+    notify_signal_type FOnChange;
+    notify_signal_type FOnChanging;
     TStringItemList FList;
     bool FSorted;
     bool FCaseSensitive;

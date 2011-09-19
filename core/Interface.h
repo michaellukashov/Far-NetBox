@@ -46,7 +46,7 @@ struct TQueryButtonAlias
 
   unsigned int Button;
   std::wstring Alias;
-  TNotifyEvent OnClick;
+  notify_signal_type OnClick;
 };
 
 typedef void ( *TQueryParamsTimerEvent)(unsigned int & Result);

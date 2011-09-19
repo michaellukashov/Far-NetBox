@@ -22,7 +22,7 @@ private:
   bool FDontSave;
   bool FChanged;
   int FUpdating;
-  TNotifyEvent FOnChange;
+  notify_signal_type FOnChange;
 
   void * FApplicationInfo;
   bool FLogging;
@@ -183,8 +183,8 @@ public:
   // __property std::wstring DefaultLogFileName  = { read=GetDefaultLogFileName };
   std::wstring GetDefaultLogFileName();
   // __property TNotifyEvent OnChange = { read = FOnChange, write = FOnChange };
-  TNotifyEvent GetOnChange() { return FOnChange; }
-  void SetOnChange(TNotifyEvent value) { FOnChange = value; }
+  const notify_signal_type &GetOnChange() const { return FOnChange; }
+  void SetOnChange(const notify_slot_type &value) { FOnChange.connect(value); }
   // __property bool ConfirmOverwriting = { read = GetConfirmOverwriting, write = SetConfirmOverwriting};
   virtual bool GetConfirmOverwriting();
   virtual void SetConfirmOverwriting(bool value);

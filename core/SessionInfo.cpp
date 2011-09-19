@@ -842,9 +842,9 @@ void TSessionLog::OpenLogFile()
 //---------------------------------------------------------------------------
 void TSessionLog::StateChange()
 {
-  if (FOnStateChange != NULL)
+  if (FOnStateChange.num_slots() > 0)
   {
-    // FIXME FOnStateChange(this);
+    FOnStateChange(this);
   }
 }
 //---------------------------------------------------------------------------

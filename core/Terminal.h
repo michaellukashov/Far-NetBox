@@ -156,9 +156,9 @@ private:
   TRemoteDirectory * FFiles;
   int FInTransaction;
   bool FSuspendTransaction;
-  TNotifyEvent FOnChangeDirectory;
+  notify_signal_type FOnChangeDirectory;
   TReadDirectoryEvent FOnReadDirectory;
-  TNotifyEvent FOnStartReadDirectory;
+  notify_signal_type FOnStartReadDirectory;
   TReadDirectoryProgressEvent FOnReadDirectoryProgress;
   TDeleteLocalFileEvent FOnDeleteLocalFile;
   TRemoteTokenList FMembership;
@@ -194,7 +194,7 @@ private:
   TDisplayBannerEvent FOnDisplayBanner;
   TExtendedExceptionEvent FOnShowExtendedException;
   TInformationEvent FOnInformation;
-  TNotifyEvent FOnClose;
+  notify_signal_type FOnClose;
   bool FAnyInformation;
   TCallbackGuard * FCallbackGuard;
   TFindingFileEvent FOnFindingFile;
@@ -447,12 +447,12 @@ public:
   void SetExceptionOnFail(bool value);
   // __property TRemoteDirectory * Files = { read = FFiles };
   TRemoteDirectory * GetFiles() { return FFiles; }
-  TNotifyEvent GetOnChangeDirectory() { return FOnChangeDirectory; }
-  void SetOnChangeDirectory(TNotifyEvent value) { FOnChangeDirectory = value; }
+  const notify_signal_type &GetOnChangeDirectory() const { return FOnChangeDirectory; }
+  void SetOnChangeDirectory(const notify_slot_type &value) { FOnChangeDirectory.connect(value); }
   TReadDirectoryEvent GetOnReadDirectory() { return FOnReadDirectory; }
   void SetOnReadDirectory(TReadDirectoryEvent value) { FOnReadDirectory = value; }
-  TNotifyEvent GetOnStartReadDirectory() { return FOnStartReadDirectory; }
-  void SetOnStartReadDirectory(TNotifyEvent value) { FOnStartReadDirectory = value; }
+  const notify_signal_type &GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
+  void SetOnStartReadDirectory(const notify_slot_type &value) { FOnStartReadDirectory.connect(value); }
   TReadDirectoryProgressEvent GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
   void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
   TDeleteLocalFileEvent GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
@@ -505,8 +505,8 @@ public:
   void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
   TInformationEvent GetOnInformation() { return FOnInformation; }
   void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
-  TNotifyEvent GetOnClose() { return FOnClose; }
-  void SetOnClose(TNotifyEvent value) { FOnClose = value; }
+  const notify_slot_type &GetOnClose() const { return FOnClose; }
+  void SetOnClose(const notify_signal_type &value) { FOnClose.connect(value); }
   // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
   int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 };

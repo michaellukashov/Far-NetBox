@@ -487,7 +487,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FOnDisplayBanner = NULL;
   FOnShowExtendedException = NULL;
   FOnInformation = NULL;
-  FOnClose = NULL;
   FOnFindingFile = NULL;
 
   FUseBusyCursor = true;
@@ -1582,10 +1581,10 @@ bool TTerminal::GetAreCachesEmpty() const
 //---------------------------------------------------------------------------
 void TTerminal::DoChangeDirectory()
 {
-  if (FOnChangeDirectory)
+  if (FOnChangeDirectory.num_slots() > 0)
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnChangeDirectory(this);
+    FOnChangeDirectory(this);
     Guard.Verify();
   }
 }
@@ -1602,10 +1601,10 @@ void TTerminal::DoReadDirectory(bool ReloadOnly)
 //---------------------------------------------------------------------------
 void TTerminal::DoStartReadDirectory()
 {
-  if (FOnStartReadDirectory)
+  if (FOnStartReadDirectory.num_slots() > 0)
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnStartReadDirectory(this);
+    FOnStartReadDirectory(this);
     Guard.Verify();
   }
 }
