@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #include "boostdefines.hpp"
 #include <boost/signals/signal3.hpp>
+#include <boost/signals/signal8.hpp>
 
 #include <CopyParam.h>
 //---------------------------------------------------------------------------
@@ -31,11 +32,16 @@ enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDir
   // (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const std::wstring Message);
 typedef boost::signal3<void, TSynchronizeController *, TSynchronizeLogEntry, const std::wstring> synchronizelog_signal_type;
 typedef synchronizelog_signal_type::slot_type synchronizelog_slot_type;
-typedef void (TObject::* TSynchronizeStartStopEvent)
-  (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
-   const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
-   const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
-   const synchronizelog_slot_type &OnSynchronizeLog);
+// typedef void (TObject::* TSynchronizeStartStopEvent)
+  // (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
+   // const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
+   // TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
+   // TSynchronizeLog OnSynchronizeLog);
+typedef boost::signal8<void, TObject *, bool, const TSynchronizeParamType &,
+   const TCopyParamType &, TSynchronizeOptions *,
+   const synchronizeabort_slot_type &, const synchronizethreads_slot_type &,
+   const synchronizelog_slot_type &> synchronizestartstop_signal_type;
+typedef synchronizestartstop_signal_type::slot_type synchronizestartstop_slot_type;
 typedef void (TObject::* TSynchronizeEvent)
   (TSynchronizeController * Sender, const std::wstring LocalDirectory,
    const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,

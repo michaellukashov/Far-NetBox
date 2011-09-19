@@ -7076,7 +7076,7 @@ class TSynchronizeDialog : TFarDialog
 {
 public:
   TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-    TSynchronizeStartStopEvent OnStartStop,
+    const synchronizestartstop_slot_type &OnStartStop,
     int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions);
   virtual ~TSynchronizeDialog();
 
@@ -7110,7 +7110,7 @@ private:
   bool FAbort;
   bool FClose;
   TSynchronizeParamType FParams;
-  TSynchronizeStartStopEvent FOnStartStop;
+  synchronizestartstop_signal_type FOnStartStop;
   int FOptions;
   TSynchronizeOptions * FSynchronizeOptions;
   TCopyParamType FCopyParams;
@@ -7132,7 +7132,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-  TSynchronizeStartStopEvent OnStartStop,
+  const synchronizestartstop_slot_type &OnStartStop,
   int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
@@ -7141,7 +7141,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   FSynchronizing = false;
   FStarted = false;
-  FOnStartStop = OnStartStop;
+  FOnStartStop.connect(OnStartStop);
   FAbort = false;
   FClose = false;
   FOptions = Options;
@@ -7324,7 +7324,7 @@ TSynchronizeParamType TSynchronizeDialog::GetParams()
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
 {
-  if (FOnStartStop)
+  if (!FOnStartStop.empty())
   {
     TSynchronizeParamType SParams = GetParams();
     SParams.Options =
@@ -7334,10 +7334,12 @@ void TSynchronizeDialog::DoStartStop(bool Start, bool Synchronize)
     {
       delete FSynchronizeOptions;
       FSynchronizeOptions = new TSynchronizeOptions;
-      // FIXME FOnGetOptions(SParams.Params, *FSynchronizeOptions);
+      FOnGetOptions(SParams.Params, *FSynchronizeOptions);
     }
-    // FIXME FOnStartStop(this, Start, SParams, GetCopyParams(), FSynchronizeOptions, DoAbort,
-      // DoSynchronizeThreads, DoLog);
+    FOnStartStop(this, Start, SParams, GetCopyParams(), FSynchronizeOptions,
+      boost::bind(&TSynchronizeDialog::DoAbort, this, _1, _2),
+      boost::bind(&TSynchronizeDialog::DoSynchronizeThreads, this, _1, _2),
+      boost::bind(&TSynchronizeDialog::DoLog, this, _1, _2, _3));
   }
 }
 //---------------------------------------------------------------------------
@@ -7522,7 +7524,7 @@ int TSynchronizeDialog::ActualCopyParamAttrs()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
-  const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
+  const TCopyParamType * CopyParams, const synchronizestartstop_slot_type &OnStartStop,
   bool & SaveSettings, int Options, int CopyParamAttrs, const getsynchronizeoptions_slot_type &OnGetOptions)
 {
   bool Result;
