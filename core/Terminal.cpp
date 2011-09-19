@@ -479,7 +479,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FTunnelLocalPortNumber = 0;
   FFileSystem = NULL;
   FSecureShell = NULL;
-  FOnInformation = NULL;
   FOnFindingFile = NULL;
 
   FUseBusyCursor = true;
@@ -1136,10 +1135,10 @@ void TTerminal::DoInformation(const std::wstring & Str, bool Status,
     FAnyInformation = true;
   }
 
-  if (GetOnInformation())
+  if (!GetOnInformation().empty())
   {
     TCallbackGuard Guard(this);
-    // FIXME OnInformation(this, Str, Status, Active);
+    GetOnInformation()(this, Str, Status, Active);
     Guard.Verify();
   }
 }

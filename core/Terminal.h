@@ -88,8 +88,10 @@ typedef deletelocalfile_signal_type::slot_type deletelocalfile_slot_type;
   // (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);
 typedef boost::signal3<int, TTerminal *, const std::wstring, bool> directorymodified_signal_type;
 typedef directorymodified_signal_type::slot_type directorymodified_slot_type;
-typedef void (TObject::*TInformationEvent)
-  (TTerminal * Terminal, const std::wstring & Str, bool Status, bool Active);
+// typedef void (TObject::*TInformationEvent)
+  // (TTerminal * Terminal, const std::wstring & Str, bool Status, bool Active);
+typedef boost::signal4<void, TTerminal *, const std::wstring &, bool, bool> informationevent_signal_type;
+typedef informationevent_signal_type::slot_type informationevent_slot_type;
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \
   {                                                           \
@@ -225,7 +227,7 @@ private:
   promptuser_signal_type FOnPromptUser;
   displaybanner_signal_type FOnDisplayBanner;
   extendedexception_signal_type FOnShowExtendedException;
-  TInformationEvent FOnInformation;
+  informationevent_signal_type FOnInformation;
   notify_signal_type FOnClose;
   bool FAnyInformation;
   TCallbackGuard * FCallbackGuard;
@@ -536,8 +538,8 @@ public:
   void SetOnDisplayBanner(const displaybanner_slot_type &value) { FOnDisplayBanner.connect(value); }
   extendedexception_signal_type &GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(const extendedexception_slot_type &value) { FOnShowExtendedException.connect(value); }
-  TInformationEvent GetOnInformation() { return FOnInformation; }
-  void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
+  informationevent_signal_type &GetOnInformation() { return FOnInformation; }
+  void SetOnInformation(const informationevent_slot_type &value) { FOnInformation.connect(value); }
   const notify_signal_type &GetOnClose() const { return FOnClose; }
   void SetOnClose(const notify_slot_type &value) { FOnClose.connect(value); }
   // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
