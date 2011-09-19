@@ -1214,7 +1214,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::InputBox(const std::wstring Title,
         const std::wstring Prompt, std::wstring &Text, unsigned long Flags,
-        const std::wstring HistoryName, int MaxLen, TFarInputBoxValidateEvent OnValidate)
+        const std::wstring HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
 {
     bool Repeat;
     int Result;
@@ -1244,7 +1244,9 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
             {
                 try
                 {
-                    OnValidate(Text);
+                    farinputboxvalidate_signal_type sig;
+                    sig.connect(*OnValidate);
+                    sig(Text);
                 }
                 catch (const std::exception &E)
                 {

@@ -240,7 +240,9 @@ enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
                        fsAltShift, fsCtrlAlt
                      };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
-typedef void (*TFarInputBoxValidateEvent)(std::wstring &Text);
+// typedef void (*TFarInputBoxValidateEvent)(std::wstring &Text);
+typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
+typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
 enum
 {
@@ -333,7 +335,7 @@ public:
                         const int *BreakKeys, int &BreakCode);
     bool InputBox(std::wstring Title, std::wstring Prompt,
                              std::wstring &Text, unsigned long Flags, std::wstring HistoryName = L"",
-                             int MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
+                             int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
     std::wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
