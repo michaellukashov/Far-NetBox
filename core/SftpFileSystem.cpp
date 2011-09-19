@@ -3,6 +3,7 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
 
 #include "SftpFileSystem.h"
 
@@ -1221,7 +1222,7 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 public:
   TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem) : TSFTPQueue(AFileSystem)
   {
-    FFileSystem->FSecureShell->RegisterReceiveHandler((TNotifyEvent)&TSFTPAsynchronousQueue::ReceiveHandler);
+    FFileSystem->FSecureShell->RegisterReceiveHandler(boost::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
     FReceiveHandlerRegistered = true;
   }
 
@@ -1268,7 +1269,7 @@ protected:
     if (FReceiveHandlerRegistered)
     {
       FReceiveHandlerRegistered = false;
-      FFileSystem->FSecureShell->UnregisterReceiveHandler((TNotifyEvent)&TSFTPAsynchronousQueue::ReceiveHandler);
+      FFileSystem->FSecureShell->UnregisterReceiveHandler(boost::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
     }
   }
 

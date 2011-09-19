@@ -40,7 +40,6 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   FBackendHandle = NULL;
   ResetConnection();
   FOnCaptureOutput = NULL;
-  FOnReceive = NULL;
   FConfig = new Config();
   memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
@@ -649,17 +648,17 @@ void TSecureShell::CWrite(const char * Data, int Length)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::RegisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive == NULL);
-  FOnReceive = Handler;
+  assert(FOnReceive.num_slots() == 0);
+  FOnReceive.connect(Handler);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::UnregisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive == Handler);
+  assert(FOnReceive.num_slots() == 1);
   USEDPARAM(Handler);
-  FOnReceive = NULL;
+  FOnReceive.disconnect();
 }
 //---------------------------------------------------------------------------
 void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
@@ -707,7 +706,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
       PendLen += Len;
     }
 
-    if (FOnReceive != NULL)
+    if (FOnReceive.num_slots() > 0)
     {
       if (!FFrozen)
       {
@@ -720,7 +719,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
           do
           {
             FDataWhileFrozen = false;
-            // FIXME FOnReceive(NULL);
+            FOnReceive(this);
           }
           while (FDataWhileFrozen);
         }

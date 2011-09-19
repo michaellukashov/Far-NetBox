@@ -505,8 +505,8 @@ public:
   void SetOnShowExtendedException(TExtendedExceptionEvent value) { FOnShowExtendedException = value; }
   TInformationEvent GetOnInformation() { return FOnInformation; }
   void SetOnInformation(TInformationEvent value) { FOnInformation = value; }
-  const notify_slot_type &GetOnClose() const { return FOnClose; }
-  void SetOnClose(const notify_signal_type &value) { FOnClose.connect(value); }
+  const notify_signal_type &GetOnClose() const { return FOnClose; }
+  void SetOnClose(const notify_slot_type &value) { FOnClose.connect(value); }
   // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
   int GetTunnelLocalPortNumber() { return FTunnelLocalPortNumber; }
 };

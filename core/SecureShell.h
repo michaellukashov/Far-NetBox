@@ -36,7 +36,7 @@ private:
   void * FBackendHandle;
   const unsigned int * FMaxPacketSize;
   Config * FConfig;
-  TNotifyEvent FOnReceive;
+  notify_signal_type FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
@@ -127,8 +127,8 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried();
 
-  void RegisterReceiveHandler(TNotifyEvent Handler);
-  void UnregisterReceiveHandler(TNotifyEvent Handler);
+  void RegisterReceiveHandler(const notify_slot_type &Handler);
+  void UnregisterReceiveHandler(const notify_slot_type &Handler);
 
   // interface to PuTTY core
   void UpdateSocket(SOCKET value, bool Startup);
