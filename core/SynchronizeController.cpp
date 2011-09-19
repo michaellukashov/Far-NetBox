@@ -16,11 +16,11 @@
 //---------------------------------------------------------------------------
 TSynchronizeController::TSynchronizeController(
   const synchronize_slot_type &AOnSynchronize, const synchronizeinvalid_slot_type &AOnSynchronizeInvalid,
-  TSynchronizeTooManyDirectories AOnTooManyDirectories)
+  const synchronizetoomanydirectories_slot_type &AOnTooManyDirectories)
 {
   FOnSynchronize.connect(AOnSynchronize);
   FOnSynchronizeInvalid.connect(AOnSynchronizeInvalid);
-  FOnTooManyDirectories = AOnTooManyDirectories;
+  FOnTooManyDirectories.connect(AOnTooManyDirectories);
   FSynchronizeMonitor = NULL;
   FOptions = NULL;
 }
@@ -252,9 +252,9 @@ void TSynchronizeController::SynchronizeInvalid(
 void TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, int & MaxDirectories)
 {
-  if (FOnTooManyDirectories != NULL)
+  if (!FOnTooManyDirectories.empty())
   {
-    // FIXME FOnTooManyDirectories(this, MaxDirectories);
+    FOnTooManyDirectories(this, MaxDirectories);
   }
 }
 //---------------------------------------------------------------------------

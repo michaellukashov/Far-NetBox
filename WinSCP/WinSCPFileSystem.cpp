@@ -1564,7 +1564,7 @@ void TWinSCPFileSystem::Synchronize()
   TSynchronizeController Controller(
     boost::bind(&TWinSCPFileSystem::DoSynchronize, this, _1, _2, _3, _4, _5, _6, _7, _8),
     boost::bind(&TWinSCPFileSystem::DoSynchronizeInvalid, this, _1, _2, _3),
-    (TSynchronizeTooManyDirectories)&TWinSCPFileSystem::DoSynchronizeTooManyDirectories);
+    boost::bind(&TWinSCPFileSystem::DoSynchronizeTooManyDirectories, this, _1, _2));
   assert(FSynchronizeController == NULL);
   FSynchronizeController = &Controller;
 
