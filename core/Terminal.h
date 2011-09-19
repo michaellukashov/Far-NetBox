@@ -58,8 +58,10 @@ typedef extendedexception_signal_type::slot_type extendedexception_slot_type;
 // typedef void (TObject::*TReadDirectoryEvent)(TObject * Sender, bool ReloadOnly);
 typedef boost::signal2<void, TObject *, bool> readdirectory_signal_type;
 typedef readdirectory_signal_type::slot_type readdirectory_slot_type;
-typedef void (TObject::*TReadDirectoryProgressEvent)(
-  TObject* Sender, int Progress, bool & Cancel);
+// typedef void (TObject::*TReadDirectoryProgressEvent)(
+  // TObject* Sender, int Progress, bool & Cancel);
+typedef boost::signal3<void, TObject*, int, bool &> readdirectoryprogress_signal_type;
+typedef readdirectoryprogress_signal_type::slot_type readdirectoryprogress_slot_type;
 typedef void (TObject::*TProcessFileEvent)
   (const std::wstring FileName, const TRemoteFile * File, void * Param);
 typedef void (TObject::*TProcessFileEventEx)
@@ -176,7 +178,7 @@ private:
   notify_signal_type FOnChangeDirectory;
   readdirectory_signal_type FOnReadDirectory;
   notify_signal_type FOnStartReadDirectory;
-  TReadDirectoryProgressEvent FOnReadDirectoryProgress;
+  readdirectoryprogress_signal_type FOnReadDirectoryProgress;
   TDeleteLocalFileEvent FOnDeleteLocalFile;
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
@@ -471,8 +473,8 @@ public:
   void SetOnReadDirectory(const readdirectory_slot_type &value) { FOnReadDirectory.connect(value); }
   const notify_signal_type &GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
   void SetOnStartReadDirectory(const notify_slot_type &value) { FOnStartReadDirectory.connect(value); }
-  TReadDirectoryProgressEvent GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
-  void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent value) { FOnReadDirectoryProgress = value; }
+  readdirectoryprogress_signal_type &GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  void SetOnReadDirectoryProgress(const readdirectoryprogress_slot_type &value) { FOnReadDirectoryProgress.connect(value); }
   TDeleteLocalFileEvent GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(TDeleteLocalFileEvent value) { FOnDeleteLocalFile = value; }
   // __property const TRemoteTokenList * Groups = { read = GetGroups };

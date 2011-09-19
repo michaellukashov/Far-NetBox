@@ -480,7 +480,6 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FFileSystem = NULL;
   FSecureShell = NULL;
   FOnDeleteLocalFile = NULL;
-  FOnReadDirectoryProgress = NULL;
   FOnInformation = NULL;
   FOnFindingFile = NULL;
 
@@ -1606,10 +1605,10 @@ void TTerminal::DoStartReadDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::DoReadDirectoryProgress(int Progress, bool & Cancel)
 {
-  if (FReadingCurrentDirectory && (FOnReadDirectoryProgress != NULL))
+  if (FReadingCurrentDirectory && (!FOnReadDirectoryProgress.empty()))
   {
     TCallbackGuard Guard(this);
-    // FIXME FOnReadDirectoryProgress(this, Progress, Cancel);
+    FOnReadDirectoryProgress(this, Progress, Cancel);
     Guard.Verify();
   }
   if (FOnFindingFile != NULL)
