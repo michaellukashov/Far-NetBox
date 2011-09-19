@@ -2922,32 +2922,30 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   try
   {
     FTerminal->SetOnQueryUser(boost::bind(&TWinSCPFileSystem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
-    // FIXME
     FTerminal->SetOnPromptUser(boost::bind(&TWinSCPFileSystem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
     FTerminal->SetOnDisplayBanner(boost::bind(&TWinSCPFileSystem::TerminalDisplayBanner, this, _1, _2, _3, _4, _5));
     FTerminal->SetOnShowExtendedException(boost::bind(&TWinSCPFileSystem::TerminalShowExtendedException, this, _1, _2, _3));
-    // FTerminal->OnChangeDirectory = TerminalChangeDirectory;
-    // FTerminal->OnReadDirectory = TerminalReadDirectory;
-    // FTerminal->OnStartReadDirectory = TerminalStartReadDirectory;
-    // FTerminal->OnReadDirectoryProgress = TerminalReadDirectoryProgress;
-    // FTerminal->OnInformation = TerminalInformation;
-    // FTerminal->OnFinished = OperationFinished;
-    // FTerminal->OnProgress = OperationProgress;
-    // FTerminal->OnDeleteLocalFile = TerminalDeleteLocalFile;
+    FTerminal->SetOnChangeDirectory(boost::bind(&TWinSCPFileSystem::TerminalChangeDirectory, this, _1));
+    FTerminal->SetOnReadDirectory(boost::bind(&TWinSCPFileSystem::TerminalReadDirectory, this, _1, _2));
+    FTerminal->SetOnStartReadDirectory(boost::bind(&TWinSCPFileSystem::TerminalStartReadDirectory, this, _1));
+    FTerminal->SetOnReadDirectoryProgress(boost::bind(&TWinSCPFileSystem::TerminalReadDirectoryProgress, this, _1, _2, _3));
+    FTerminal->SetOnInformation(boost::bind(&TWinSCPFileSystem::TerminalInformation, this, _1, _2, _3, _4));
+    FTerminal->SetOnFinished(boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
+    FTerminal->SetOnProgress(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2));
+    FTerminal->SetOnDeleteLocalFile(boost::bind(&TWinSCPFileSystem::TerminalDeleteLocalFile, this, _1, _2));
     ConnectTerminal(FTerminal);
 
-    // FIXME FTerminal->OnClose = TerminalClose;
+    FTerminal->SetOnClose(boost::bind(&TWinSCPFileSystem::TerminalClose, this, _1));
 
     assert(FQueue == NULL);
     FQueue = new TTerminalQueue(FTerminal, Configuration);
     FQueue->SetTransfersLimit(GUIConfiguration->GetQueueTransfersLimit());
-    // FIXME
-    // FQueue->OnQueryUser = TerminalQueryUser;
-    // FQueue->OnPromptUser = TerminalPromptUser;
-    // FQueue->OnShowExtendedException = TerminalShowExtendedException;
-    // FQueue->OnListUpdate = QueueListUpdate;
-    // FQueue->OnQueueItemUpdate = QueueItemUpdate;
-    // FQueue->OnEvent = QueueEvent;
+    FQueue->SetOnQueryUser(boost::bind(&TWinSCPFileSystem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+    FQueue->SetOnPromptUser(boost::bind(&TWinSCPFileSystem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+    FQueue->SetOnShowExtendedException(boost::bind(&TWinSCPFileSystem::TerminalShowExtendedException, this, _1, _2, _3));
+    FQueue->SetOnListUpdate(boost::bind(&TWinSCPFileSystem::QueueListUpdate, this, _1));
+    FQueue->SetOnQueueItemUpdate(boost::bind(&TWinSCPFileSystem::QueueItemUpdate, this, _1, _2));
+    FQueue->SetOnEvent(boost::bind(&TWinSCPFileSystem::QueueEvent, this, _1, _2));
 
     assert(FQueueStatus == NULL);
     FQueueStatus = FQueue->CreateStatus(NULL);
