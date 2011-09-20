@@ -352,9 +352,13 @@ std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext)
 
 std::wstring ExtractFileExt(std::wstring FileName)
 {
-    // FIXME 
-    std::wstring result;
-    return result;
+    // FIXME
+    std::wstring Result;
+    // int I = ::LastDelimiter(L'.' + PathDelim + DriveDelim, FileName);
+  // if (I > 0) and (FileName[I] = '.') then
+    // Result := Copy(FileName, I, MaxInt) else
+    // Result := '';
+    return Result;
 }
 
 std::wstring get_full_path_name(const std::wstring &path)
