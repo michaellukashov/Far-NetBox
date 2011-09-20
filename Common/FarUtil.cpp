@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 
+#include "Common.h"
 #include "FarUtil.h"
 #include "Strings.h"
 
@@ -356,9 +357,39 @@ std::wstring ExtractFileExt(std::wstring FileName)
     return result;
 }
 
+std::wstring get_full_path_name(const std::wstring &path)
+{
+  std::wstring buf(0, MAX_PATH);
+  DWORD size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), (LPWSTR)buf.c_str(), NULL);
+  if (size > buf.size())
+  {
+    buf.resize(size);
+    size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), (LPWSTR)buf.c_str(), NULL);
+  }
+  return std::wstring(buf.c_str(), size);
+}
+
+std::wstring ExpandFileName(const std::wstring FileName)
+{
+  std::wstring Result;
+  Result = get_full_path_name(FileName);
+  return Result;
+}
+
+std::wstring GetUniversalName(std::wstring FileName)
+{
+    // FIXME
+    std::wstring Result = FileName;
+    return Result;
+}
+
 std::wstring ExpandUNCFileName(std::wstring FileName)
 {
-    // FIXME 
-    std::wstring result;
-    return result;
+    std::wstring Result = ExpandFileName(FileName);
+    if ((Result.size() >= 3) && (Result[2] == L':') && (::UpCase(Result[1]) >= 'A')
+      && (::UpCase(Result[1]) <= 'Z'))
+    {
+      Result = GetUniversalName(Result);
+    }
+    return Result;
 }
