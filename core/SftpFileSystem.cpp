@@ -3741,7 +3741,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
       TQueryParams Params(0, HELP_APPEND_OR_RESUME);
       SUSPEND_OPERATION
       (
-        Answer = FTerminal->QueryUser(L"", // FIXME FORMAT(LoadStr(APPEND_OR_RESUME), (FileName)),
+        Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME).c_str(), FileName.c_str()),
           NULL, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
       );
 

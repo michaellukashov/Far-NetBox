@@ -825,15 +825,14 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                     (Params->TimeoutButton == (unsigned int)Index))
             {
                 FTimeoutButtonCaption = Caption;
-                // FIXME Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
-                // FIXME Caption = FORMAT(Params->TimeoutStr, (Caption, int(Params->Timeout / 1000)));
+                Caption = FORMAT(Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
                 std::wstring Buffer;
                 Buffer.resize(512);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
                 SetCaption(Buffer);
                 FTimeoutButton = Button;
             }
-            // FIXME Button->Caption = FORMAT(L" %s ", (Caption));
+            Button->SetCaption(FORMAT(L" %s ", (Caption)));
             std::wstring Buffer;
             Buffer.resize(512);
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Caption.c_str(), int(Params->Timeout / 1000));
@@ -951,12 +950,11 @@ void TFarMessageDialog::Idle()
         }
         else
         {
-            // FIXME 
-            // std::wstring Caption =
-                // FORMAT(L" %s ", (FORMAT(FParams->TimeoutStr,
-                                       // (FTimeoutButtonCaption, int((FParams->Timeout - Running) / 1000)))));
-            // Caption += std::wstring::StringOfChar(' ',
-                                                // FTimeoutButton->Caption.size() - Caption.size());
+            std::wstring Caption =
+                FORMAT(L" %s ", (FORMAT(FParams->TimeoutStr.c_str(),
+                                       FTimeoutButtonCaption, int((FParams->Timeout - Running) / 1000))).c_str());
+            Caption += ::StringOfChar(L' ', FTimeoutButton->GetCaption().size() - Caption.size());
+            /*
             std::wstring Buffer;
             Buffer.resize(512);
             std::wstring Buffer2;
@@ -964,6 +962,7 @@ void TFarMessageDialog::Idle()
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer2.c_str(), FTimeoutButtonCaption.c_str(), FParams->TimeoutStr.c_str(), int((FParams->Timeout - Running) / 1000));
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Buffer2.c_str());
             std::wstring Caption = Buffer;
+            */
             FTimeoutButton->SetCaption(Caption);
         }
     }
@@ -1508,8 +1507,7 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
     std::wstring Title;
     if (FCurrentProgress >= 0)
     {
-        // FIXME 
-        // Title = FORMAT(L"{%d%%} %s", (FCurrentProgress, FCurrentTitle));
+        Title = FORMAT(L"{%d%%} %s", FCurrentProgress, FCurrentTitle.c_str());
         std::wstring Buffer;
         Buffer.resize(512);
         GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L"{%d%%} %s", FCurrentProgress, FCurrentTitle);
@@ -1711,12 +1709,11 @@ int TCustomFarPlugin::FarVersion()
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::FormatFarVersion(int Version)
 {
-    // FIXME 
-    // return FORMAT(L"%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
-    std::wstring Buffer;
-    Buffer.resize(512);
-    GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L"%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
-    return Buffer;
+    return FORMAT(L"%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
+    // std::wstring Buffer;
+    // Buffer.resize(512);
+    // GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L"%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
+    // return Buffer;
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::TemporaryDir()

@@ -135,7 +135,7 @@ public:
 
             FLog->Add(llAction, L"      <file>");
             FLog->Add(llAction, FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName())));
-            // FIXME FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType()))));
+            FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1))));
             if (!File->GetIsDirectory())
             {
               FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize())));
