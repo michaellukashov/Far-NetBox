@@ -722,8 +722,8 @@ class TFarMessageDialog : public TFarDialog
 {
 public:
     TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFlags,
-                                 const std::wstring Title, const std::wstring Message, TStrings *Buttons,
-                                 TFarMessageParams *Params);
+        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        TFarMessageParams *Params);
 
     int Execute(bool &ACheckBox);
 
@@ -822,7 +822,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
             if ((Params->Timeout > 0) &&
-                    (Params->TimeoutButton == (unsigned int)Index))
+                (Params->TimeoutButton == (unsigned int)Index))
             {
                 FTimeoutButtonCaption = Caption;
                 Caption = FORMAT(Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
@@ -1094,16 +1094,16 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
 
         TFarEnvGuard Guard;
         Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
-                                      Flags | FMSG_LEFTALIGN, NULL, Items, MessageLines->GetCount(),
-                                      Buttons->GetCount());
+            Flags | FMSG_LEFTALIGN, NULL, Items, MessageLines->GetCount(),
+            Buttons->GetCount());
     }
 
     return Result;
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::Message(unsigned int Flags,
-        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
-        TFarMessageParams *Params, bool Oem)
+    const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+    TFarMessageParams *Params, bool Oem)
 {
     // when message is shown while some "custom" output is on screen,
     // make the output actually background of FAR screen
@@ -1135,8 +1135,8 @@ int TCustomFarPlugin::Message(unsigned int Flags,
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::Menu(unsigned int Flags, std::wstring Title,
-                                      std::wstring Bottom, const FarMenuItem *Items, int Count,
-                                      const int *BreakKeys, int &BreakCode)
+        std::wstring Bottom, const FarMenuItem *Items, int Count,
+        const int *BreakKeys, int &BreakCode)
 {
     assert(Items);
 
@@ -1144,13 +1144,13 @@ int TCustomFarPlugin::Menu(unsigned int Flags, std::wstring Title,
     std::wstring ABottom = Bottom;
     TFarEnvGuard Guard;
     return FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
-                             Flags, StrToFar(ATitle), (wchar_t *)StrToFar(ABottom), NULL, BreakKeys,
-                             &BreakCode, Items, Count);
+        Flags, StrToFar(ATitle), (wchar_t *)StrToFar(ABottom), NULL, BreakKeys,
+        &BreakCode, Items, Count);
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
-                                      const std::wstring Bottom, TStrings *Items, const int *BreakKeys,
-                                      int &BreakCode)
+        const std::wstring Bottom, TStrings *Items, const int *BreakKeys,
+        int &BreakCode)
 {
     assert(Items && Items->GetCount());
     int Result;
@@ -1204,15 +1204,15 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
-                                      const std::wstring Bottom, TStrings *Items)
+    const std::wstring Bottom, TStrings *Items)
 {
     int BreakCode;
     return Menu(Flags, Title, Bottom, Items, NULL, BreakCode);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarPlugin::InputBox(const std::wstring Title,
-        const std::wstring Prompt, std::wstring &Text, unsigned long Flags,
-        const std::wstring HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
+    const std::wstring Prompt, std::wstring &Text, unsigned long Flags,
+    const std::wstring HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
 {
     bool Repeat;
     int Result;
@@ -1407,7 +1407,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
     Dest.X = 0;
     Dest.Y = 0;
     Fill.Char.AsciiChar = ' ';
-    // Fill.Ñhar.UnicodeChar = ' ';
+    // Fill.Ñhar.UnicodeChar = L' ';
     Fill.Attributes = 7;
     ScrollConsoleScreenBuffer(FConsoleOutput, &Source, NULL, Dest, &Fill);
 }

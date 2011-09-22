@@ -321,29 +321,29 @@ public:
 
     static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
-                           const std::wstring Message, TStrings *Buttons = NULL,
-                           TFarMessageParams *Params = NULL, bool Oem = false);
+        const std::wstring Message, TStrings *Buttons = NULL,
+        TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
     int MaxMenuItemLength();
     int Menu(unsigned int Flags, std::wstring Title,
-                        std::wstring Bottom, TStrings *Items, const int *BreakKeys,
-                        int &BreakCode);
+        std::wstring Bottom, TStrings *Items, const int *BreakKeys,
+        int &BreakCode);
     int Menu(unsigned int Flags, const std::wstring Title,
                         const std::wstring Bottom, TStrings *Items);
     int Menu(unsigned int Flags, const std::wstring Title,
-                        const std::wstring Bottom, const FarMenuItem *Items, int Count,
-                        const int *BreakKeys, int &BreakCode);
+        const std::wstring Bottom, const FarMenuItem *Items, int Count,
+        const int *BreakKeys, int &BreakCode);
     bool InputBox(std::wstring Title, std::wstring Prompt,
-                             std::wstring &Text, unsigned long Flags, std::wstring HistoryName = L"",
-                             int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
+        std::wstring &Text, unsigned long Flags, std::wstring HistoryName = L"",
+        int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
     std::wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
     bool CheckForEsc();
     bool Viewer(std::wstring FileName, unsigned int Flags,
-                           std::wstring Title = L"");
+        std::wstring Title = L"");
     bool Editor(std::wstring FileName, unsigned int Flags,
-                           std::wstring Title = L"");
+        std::wstring Title = L"");
 
     int FarAdvControl(int Command, void *Param = NULL);
     int FarAdvControl(int Command, int Param);
@@ -373,7 +373,7 @@ public:
     void ToggleVideoMode();
 
     TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
-            HANDLE Plugin = INVALID_HANDLE_VALUE);
+        HANDLE Plugin = INVALID_HANDLE_VALUE);
 
     std::wstring GetModuleName();
     TFarDialog *GetTopDialog() const { return FTopDialog; }
@@ -402,8 +402,8 @@ protected:
 
     virtual bool HandlesFunction(THandlesFunction Function);
     virtual void GetPluginInfoEx(long unsigned &Flags,
-                                            TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
-                                            TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
+        TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
+        TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
     virtual bool ConfigureEx(int Item) = 0;
     virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
@@ -415,11 +415,11 @@ protected:
     void ResetCachedInfo();
     int MaxLength(TStrings *Strings);
     int FarMessage(unsigned int Flags,
-                              const std::wstring Title, const std::wstring Message, TStrings *Buttons,
-                              TFarMessageParams *Params);
+        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-                                 const std::wstring Title, const std::wstring Message, TStrings *Buttons,
-                                 TFarMessageParams *Params);
+        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
     TCriticalSection *GetCriticalSection() const { return FCriticalSection; }
@@ -445,16 +445,16 @@ public:
     virtual ~TCustomFarFileSystem();
     void GetOpenPluginInfo(struct OpenPluginInfo *Info);
     int GetFindData(struct PluginPanelItem **PanelItem,
-                               int *ItemsNumber, int OpMode);
+        int *ItemsNumber, int OpMode);
     void FreeFindData(struct PluginPanelItem *PanelItem, int ItemsNumber);
     int ProcessHostFile(struct PluginPanelItem *PanelItem,
-                                   int ItemsNumber, int OpMode);
+        int ItemsNumber, int OpMode);
     int ProcessKey(int Key, unsigned int ControlState);
     int ProcessEvent(int Event, void *Param);
     int SetDirectory(const wchar_t *Dir, int OpMode);
     int MakeDirectory(wchar_t *Name, int OpMode);
     int DeleteFiles(struct PluginPanelItem *PanelItem,
-                               int ItemsNumber, int OpMode);
+        int ItemsNumber, int OpMode);
     int GetFiles(struct PluginPanelItem *PanelItem,
         int ItemsNumber, int Move, wchar_t *DestPath, int OpMode);
     int PutFiles(struct PluginPanelItem *PanelItem,
@@ -466,10 +466,10 @@ protected:
     bool FClosed;
 
     virtual void GetOpenPluginInfoEx(long unsigned &Flags,
-            std::wstring &HostFile, std::wstring &CurDir, std::wstring &Format,
-            std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
-            int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
-            std::wstring &ShortcutData) = 0;
+        std::wstring &HostFile, std::wstring &CurDir, std::wstring &Format,
+        std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
+        int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
+        std::wstring &ShortcutData) = 0;
     virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) = 0;
     virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
@@ -510,7 +510,7 @@ private:
 
     void ClearOpenPluginInfo(OpenPluginInfo &Info);
     TObjectList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
-                                          int ItemsNumber);
+        int ItemsNumber);
     TFarPanelInfo *GetPanelInfo(int Another);
 };
 //---------------------------------------------------------------------------
@@ -543,9 +543,9 @@ class TFarKeyBarTitles : public TObject
 public:
     void ClearFileKeyBarTitles();
     void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
-                                     int FunctionKeyStart, int FunctionKeyEnd = 0);
+        int FunctionKeyStart, int FunctionKeyEnd = 0);
     void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int FunctionKey,
-                                   const std::wstring Title);
+        const std::wstring Title);
 
 private:
     KeyBarTitles FKeyBarTitles;
@@ -651,7 +651,7 @@ private:
 //---------------------------------------------------------------------------
 enum MENUITEMFLAGS_EX
 {
-    // MIF_HIDDEN = 0x40000000UL,
+    // FIXME MIF_HIDDEN = 0x40000000UL,
 };
 //---------------------------------------------------------------------------
 class TFarMenuItems : public TStringList
