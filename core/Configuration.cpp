@@ -3,6 +3,9 @@
 // #include <shfolder.h>
 #include <shlobj.h>
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include <FileInfo.h>
 
 #include "Exceptions.h"
@@ -50,17 +53,16 @@ void TConfiguration::Default()
 
   TRegistryStorage * AdminStorage;
   AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&AdminStorage) )
+      {
+        delete AdminStorage;
+      } BOOST_SCOPE_EXIT_END
     if (AdminStorage->OpenRootKey(false))
     {
       LoadAdmin(AdminStorage);
       AdminStorage->CloseSubKey();
     }
-  }
-  catch(...)
-  {
-    delete AdminStorage;
   }
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
@@ -112,7 +114,14 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #define LASTELEM(ELEM) \
   ELEM.substr(::LastDelimiter(ELEM, L".>")+1, ELEM.size() - LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  { \
+      BOOST_SCOPE_EXIT ( (&Storage) ) \
+      { \
+        Storage->CloseSubKey(); \
+      } BOOST_SCOPE_EXIT_END \
+      BLOCK \
+  }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
@@ -150,18 +159,17 @@ void TConfiguration::Save(bool All, bool Explicit)
   if (FDontSave) return;
 
   THierarchicalStorage * AStorage = CreateScpStorage(false);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&AStorage) )
+      {
+        delete AStorage;
+      } BOOST_SCOPE_EXIT_END
     AStorage->SetAccessMode(smReadWrite);
     AStorage->SetExplicit(Explicit);
     if (AStorage->OpenSubKey(GetConfigurationSubKey(), true))
     {
       SaveData(AStorage, All);
     }
-  }
-  catch(...)
-  {
-    delete AStorage;
   }
 
   Saved();
@@ -182,8 +190,12 @@ void TConfiguration::Export(const std::wstring FileName)
 {
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
-  try
   {
+      BOOST_SCOPE_EXIT ( (&ExportStorage) (&Storage) )
+      {
+        delete ExportStorage;
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
     ExportStorage = new TIniFileStorage(FileName);
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
@@ -197,11 +209,6 @@ void TConfiguration::Export(const std::wstring FileName)
     {
       SaveData(ExportStorage, true);
     }
-  }
-  catch(...)
-  {
-    delete ExportStorage;
-    delete Storage;
   }
 
   StoredSessions->Export(FileName);
@@ -228,17 +235,16 @@ void TConfiguration::Load()
   TGuard Guard(FCriticalSection);
 
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
     {
       LoadData(Storage);
     }
-  }
-  catch(...)
-  {
-    delete Storage;
   }
 }
 //---------------------------------------------------------------------------
@@ -246,8 +252,11 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
   TStrings * Names = new TStringList();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Names) )
+      {
+        delete Names;
+      } BOOST_SCOPE_EXIT_END
     if (Source->OpenSubKey(GetConfigurationSubKey(), false))
     {
       if (Target->OpenSubKey(GetConfigurationSubKey(), true))
@@ -311,18 +320,17 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
       Source->CloseSubKey();
     }
   }
-  catch(...)
-  {
-    delete Names;
-  }
 }
 //---------------------------------------------------------------------------
 void TConfiguration::LoadDirectoryChangesCache(const std::wstring SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
         Storage->OpenSubKey(L"CDCache", false) &&
@@ -331,18 +339,17 @@ void TConfiguration::LoadDirectoryChangesCache(const std::wstring SessionKey,
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
   }
-  catch(...)
-  {
-    delete Storage;
-  }
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
         Storage->OpenSubKey(L"CDCache", true))
@@ -351,10 +358,6 @@ void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
       DirectoryChangesCache->Serialize(Data);
       Storage->WriteBinaryData(SessionKey, Data);
     }
-  }
-  catch(...)
-  {
-    delete Storage;
   }
 }
 //---------------------------------------------------------------------------
@@ -371,18 +374,17 @@ bool TConfiguration::ShowBanner(const std::wstring SessionKey,
 {
   bool Result;
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smRead);
     Result =
       !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
       !Storage->OpenSubKey(L"Banners", false) ||
       !Storage->ValueExists(SessionKey) ||
       (Storage->ReadString(SessionKey, L"") != StrToHex(BannerHash(Banner)));
-  }
-  catch(...)
-  {
-    delete Storage;
   }
 
   return Result;
@@ -392,8 +394,11 @@ void TConfiguration::NeverShowBanner(const std::wstring SessionKey,
   const std::wstring & Banner)
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
 
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
@@ -402,19 +407,15 @@ void TConfiguration::NeverShowBanner(const std::wstring SessionKey,
       Storage->WriteString(SessionKey, StrToHex(BannerHash(Banner)));
     }
   }
-  catch(...)
-  {
-    delete Storage;
-  }
 }
 //---------------------------------------------------------------------------
 void TConfiguration::Changed()
 {
-  if (FUpdating == 0)
+  if (FUpdating== 0)
   {
-    if (GetOnChange())
+    if (!GetOnChange().empty())
     {
-      // FIXME OnChange(this);
+      GetOnChange()(this);
     }
   }
   else
@@ -455,7 +456,7 @@ void TConfiguration::CleanupConfiguration()
       FDontSave = true;
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_CONFIG_ERROR);
   }
@@ -464,13 +465,12 @@ void TConfiguration::CleanupConfiguration()
 void TConfiguration::CleanupRegistry(std::wstring CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Registry) )
+      {
+        delete Registry;
+      } BOOST_SCOPE_EXIT_END
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
-  }
-  catch(...)
-  {
-    delete Registry;
   }
 }
 //---------------------------------------------------------------------------
@@ -480,7 +480,7 @@ void TConfiguration::CleanupHostKeys()
   {
     CleanupRegistry(GetSshHostKeysSubKey());
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_HOSTKEYS_ERROR);
   }
@@ -499,7 +499,7 @@ void TConfiguration::CleanupRandomSeedFile()
       }
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_SEEDFILE_ERROR);
   }
@@ -521,7 +521,7 @@ void TConfiguration::CleanupIniFile()
       FDontSave = true;
     }
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E); // FIXME , CLEANUP_INIFILE_ERROR);
   }
@@ -669,7 +669,7 @@ std::wstring TConfiguration::GetVersionStr()
    */
     return L"";
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E, L"Can't get application version");
   }
@@ -690,7 +690,7 @@ std::wstring TConfiguration::GetVersion()
     */
     return Result;
   }
-  catch (std::exception &E)
+  catch (const std::exception &E)
   {
     throw ExtException(&E, L"Can't get application version");
   }
@@ -703,8 +703,14 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
 
   std::wstring Result;
   void * Info = GetFileApplicationInfo(FileName);
-  try
   {
+      BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
+      {
+        if (!FileName.empty())
+        {
+          FreeFileInfo(Info);
+        }
+      } BOOST_SCOPE_EXIT_END
     if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
       TTranslation Translation;
@@ -714,13 +720,6 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
     else
     {
       assert(!FileName.empty());
-    }
-  }
-  catch(...)
-  {
-    if (!FileName.empty())
-    {
-      FreeFileInfo(Info);
     }
   }
   return Result;
@@ -791,8 +790,12 @@ void TConfiguration::SetStorage(TStorage value)
     THierarchicalStorage * SourceStorage = NULL;
     THierarchicalStorage * TargetStorage = NULL;
 
-    try
     {
+        BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) )
+        {
+          delete SourceStorage;
+          delete TargetStorage;
+        } BOOST_SCOPE_EXIT_END
       SourceStorage = CreateScpStorage(false);
       SourceStorage->SetAccessMode(smRead);
 
@@ -805,11 +808,6 @@ void TConfiguration::SetStorage(TStorage value)
       // copy before save as it removes the ini file,
       // when switching from ini to registry
       CopyData(SourceStorage, TargetStorage);
-    }
-    catch(...)
-    {
-      delete SourceStorage;
-      delete TargetStorage;
     }
 
     // save all and explicit

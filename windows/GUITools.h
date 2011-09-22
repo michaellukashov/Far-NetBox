@@ -2,6 +2,9 @@
 #ifndef GUIToolsH
 #define GUIToolsH
 //---------------------------------------------------------------------------
+#include "boostdefines.hpp"
+#include <boost/signals/signal0.hpp>
+
 // from shlobj.h
 #define CSIDL_DESKTOP                   0x0000        // <desktop>
 #define CSIDL_SENDTO                    0x0009        // <user name>\SendTo
@@ -15,7 +18,9 @@
 //---------------------------------------------------------------------------
 class TSessionData;
 //---------------------------------------------------------------------------
-typedef void (TObject::*TProcessMessagesEvent)();
+// typedef void (TObject::*TProcessMessagesEvent)();
+typedef boost::signal0<void> processmessages_signal_type;
+typedef processmessages_signal_type::slot_type processmessages_slot_type;
 //---------------------------------------------------------------------------
 bool FindFile(std::wstring & Path);
 bool FileExistsEx(std::wstring Path);
@@ -23,9 +28,9 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params);
 bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle);
 bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
-  const std::wstring Params, TProcessMessagesEvent ProcessMessages);
+  const std::wstring Params, const processmessages_signal_type &ProcessMessages);
 bool ExecuteShellAndWait(HWND Handle, const std::wstring Command,
-  TProcessMessagesEvent ProcessMessages);
+  const processmessages_signal_type &ProcessMessages);
 void OpenSessionInPutty(const std::wstring PuttyPath,
   TSessionData * SessionData, std::wstring Password);
 bool SpecialFolderLocation(int PathID, std::wstring & Path);

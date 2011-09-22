@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 2.8)
 #-------------------------------------------------------------------------------
 
 set ( CMAKE_CXX_FLAGS
-    "-DWIN32;_WINDOWS /EHsc /MP2" )
+    "-DWIN32;_WINDOWS /Y3 /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS" )
 set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
@@ -23,21 +23,21 @@ include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 
 #-------------------------------------------------------------------------------
 
-macro(use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME)
-    get_filename_component( PCH_HEADER ${HDR_FILE} NAME )
-    set(PCH_BINARY ${PCHNAME})
-    set( PCH_BINARY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PCH_BINARY}.pch" )
+macro ( use_precompiled_header SRC_LIST_VAR HDR_FILE SRC_FILE PCHNAME )
+    get_filename_component ( PCH_HEADER ${HDR_FILE} NAME )
+    set ( PCH_BINARY ${PCHNAME} )
+    set ( PCH_BINARY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${PCH_BINARY}.pch" )
     if (MSVC)
-        set( SRC_LIST ${${SRC_LIST_VAR}} )
-        set_source_files_properties( ${SRC_LIST} PROPERTIES
+        set ( SRC_LIST ${${SRC_LIST_VAR}} )
+        set_source_files_properties ( ${SRC_LIST} PROPERTIES
             COMPILE_FLAGS "/Yu${PCH_HEADER} /Fp${PCH_BINARY}"
             OBJECT_DEPENDS "${PCH_BINARY}" )
-        set_source_files_properties( ${SRC_FILE} PROPERTIES
+        set_source_files_properties ( ${SRC_FILE} PROPERTIES
             COMPILE_FLAGS "/Yc${PCH_HEADER} /Fp${PCH_BINARY}"
             OBJECT_OUTPUTS "${PCH_BINARY}"
             OBJECT_DEPENDS "" )
-    endif(MSVC)
-endmacro( use_precompiled_header )
+    endif (MSVC)
+endmacro ( use_precompiled_header )
 
 #-------------------------------------------------------
 
@@ -156,6 +156,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/NetBox/Session.cpp
     ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
     ${PROJECT_ROOT}/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/resource/rtlconsts.rc
 )
 
 #-------------------------------------------------------------------------------
@@ -265,7 +266,7 @@ add_custom_command ( TARGET NetBox
 
 target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
 
-add_dependencies ( NetBox 
+add_dependencies ( NetBox
     libputty
     #zlib libssh2 libcurl
 )
@@ -277,29 +278,77 @@ add_dependencies ( NetBox
 
 set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/NetBox )
 
-set ( TESTNETBOX_01_HEADERS
-)
-
-set ( TESTNETBOX_01_SOURCES ${COMMON_SOURCES}
+set ( TESTNETBOX_01_SOURCES
+    ${PROJECT_ROOT}/Common/Classes.cpp
+    ${PROJECT_ROOT}/Common/Common.cpp
+    ${PROJECT_ROOT}/core/Exceptions.cpp
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-    ${PROJECT_ROOT}/resource/testnetbox_01.rc
+    ${PROJECT_ROOT}/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/resource/rtlconsts.rc
 )
 
-set ( TESTNETBOX_01_LIBRARIES
-    ${NETBOX_LIBRARIES}
-)
-
-add_executable( testnetbox_01 ${TESTNETBOX_01_HEADERS} ${TESTNETBOX_01_SOURCES} )
+add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
 set_target_properties( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
 )
-add_dependencies ( testnetbox_01 
+add_dependencies ( testnetbox_01
     libputty
-    # zlib libssh2 libcurl
 )
-# use_precompiled_header ( TESTNETBOX_01_SOURCES stdafx.h stdafx.cpp testnetbox_01 )
 
-target_link_libraries ( testnetbox_01 ${TESTNETBOX_01_LIBRARIES} )
+target_link_libraries ( testnetbox_01 )
+
+#-------------------------------------------------------
+# target testnetbox_02
+
+set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/NetBox )
+
+set ( TESTNETBOX_02_SOURCES
+    ${PROJECT_ROOT}/Common/Classes.cpp
+    ${PROJECT_ROOT}/Common/Common.cpp
+    ${PROJECT_ROOT}/Common/FarUtil.cpp
+    ${PROJECT_ROOT}/Common/FarDialog.cpp
+    ${PROJECT_ROOT}/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/core/Exceptions.cpp
+    ${PROJECT_ROOT}/core/FileOperationProgress.cpp
+    ${PROJECT_ROOT}/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/resource/rtlconsts.rc
+    ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
+)
+
+add_executable( testnetbox_02 ${TESTNETBOX_02_SOURCES} )
+set_target_properties( testnetbox_02
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+)
+
+add_dependencies ( testnetbox_02
+    libputty
+)
+
+target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
+
+#-------------------------------------------------------
+# target testnetbox_10
+
+set ( TESTNETBOX_10_DIR ${PROJECT_ROOT}/NetBox )
+
+set ( TESTNETBOX_10_SOURCES ${COMMON_SOURCES}
+    ${PROJECT_ROOT}/resource/testnetbox_10.rc
+    ${TESTNETBOX_10_DIR}/testnetbox_10.cpp
+)
+
+add_executable( testnetbox_10 ${TESTNETBOX_10_SOURCES} )
+set_target_properties( testnetbox_10
+    PROPERTIES
+    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+)
+add_dependencies ( testnetbox_10
+    libputty
+)
+
+target_link_libraries ( testnetbox_10 ${NETBOX_LIBRARIES} )
 

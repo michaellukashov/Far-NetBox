@@ -36,7 +36,7 @@ private:
   void * FBackendHandle;
   const unsigned int * FMaxPacketSize;
   Config * FConfig;
-  TNotifyEvent FOnReceive;
+  notify_signal_type FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
@@ -61,6 +61,7 @@ private:
   std::wstring FAuthenticationLog;
   std::wstring FLastTunnelError;
   std::wstring FUserName;
+  TSecureShell *Self;
 
   static TCipher FuncToSsh1Cipher(const void * Cipher);
   static TCipher FuncToSsh2Cipher(const void * Cipher);
@@ -84,10 +85,10 @@ private:
   void UpdateSessionInfo();
   void DispatchSendBuffer(int BufSize);
   void SendBuffer(unsigned int & Result);
-  int TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  int TimeoutPrompt(queryparamstimer_slot_type *PoolEvent);
 
 protected:
-  TCaptureOutputEvent FOnCaptureOutput;
+  captureoutput_signal_type FOnCaptureOutput;
 
   void GotHostKey();
   int TranslatePuttyMessage(const TPuttyTranslation * Translation,
@@ -96,7 +97,7 @@ protected:
   int TranslateErrorMessage(std::wstring & Message);
   void AddStdError(std::wstring Str);
   void AddStdErrorLine(const std::wstring & Str);
-  void FatalError(std::exception * E, std::wstring Msg);
+  void FatalError(const std::exception * E, std::wstring Msg);
   void inline LogEvent(const std::wstring & Str);
   void FatalError(std::wstring Error);
   static void ClearConfig(Config * cfg);
@@ -126,8 +127,8 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried();
 
-  void RegisterReceiveHandler(TNotifyEvent Handler);
-  void UnregisterReceiveHandler(TNotifyEvent Handler);
+  void RegisterReceiveHandler(const notify_slot_type &Handler);
+  void UnregisterReceiveHandler(const notify_slot_type &Handler);
 
   // interface to PuTTY core
   void UpdateSocket(SOCKET value, bool Startup);
@@ -153,8 +154,8 @@ public:
   // __property bool Ready = { read = GetReady };
   bool GetReady();
   // __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
-  TCaptureOutputEvent GetOnCaptureOutput() { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(TCaptureOutputEvent value) { FOnCaptureOutput = value; }
+  captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
+  void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
   // __property TDateTime LastDataSent = { read = FLastDataSent };
   TDateTime GetLastDataSent() { return FLastDataSent; }
   // __property std::wstring LastTunnelError = { read = FLastTunnelError };
@@ -164,6 +165,9 @@ public:
   // __property bool Simple = { read = FSimple, write = FSimple };
   bool GetSimple() { return FSimple; }
   void SetSimple(bool value) { FSimple = value; }
+private:
+  TSecureShell(const TSecureShell &);
+  void operator=(const TSecureShell &);
 };
 //---------------------------------------------------------------------------
 #endif

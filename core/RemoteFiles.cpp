@@ -3,6 +3,9 @@
 #include "stdafx.h"
 #include <ShellAPI.h>
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "RemoteFiles.h"
 #include "Common.h"
 #include "Exceptions.h"
@@ -715,6 +718,7 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
   FTerminal = NULL;
   FDirectory = NULL;
   FIsHidden = -1;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TRemoteFile::~TRemoteFile()
@@ -1197,7 +1201,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
     #undef GETNCOL
     #undef GETCOL
   }
-  catch (exception &E)
+  catch (const std::exception &E)
   {
     throw ETerminal(&E, ::FmtLoadStr(LIST_LINE_ERROR, value.c_str()));
   }
@@ -1253,16 +1257,15 @@ void TRemoteFile::FindLinkedFile()
     GetTerminal()->SetExceptionOnFail(true);
     try
     {
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+            Self->GetTerminal()->SetExceptionOnFail(false);
+        } BOOST_SCOPE_EXIT_END
         GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
-      catch(...)
-      {
-      }
-      GetTerminal()->SetExceptionOnFail(false);
     }
-    catch (exception &E)
+    catch (const std::exception &E)
     {
       // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
         // else Terminal->Log->AddException(&E);
@@ -1548,6 +1551,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
 TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
 {
   FSection = new TCriticalSection();
+  Self = this;
   SetSorted(true);
   SetDuplicates(dupError);
   SetCaseSensitive(true);
@@ -1563,18 +1567,17 @@ void TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection);
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->TStringList::Clear();
+    } BOOST_SCOPE_EXIT_END
     for (int Index = 0; Index < GetCount(); Index++)
     {
       delete (TRemoteFileList *)GetObject(Index);
-      SetObject(Index, NULL);
+      PutObject(Index, NULL);
     }
   }
-  catch(...)
-  {
-  }
-    TStringList::Clear();
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmpty() const
@@ -1799,8 +1802,11 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
   if (ACount > FMaxSize)
   {
     TStrings * Limited = new TStringList();
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Limited) )
+      {
+        delete Limited;
+      } BOOST_SCOPE_EXIT_END
       int Index = ACount - FMaxSize;
       while (Index < ACount)
       {
@@ -1809,10 +1815,6 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
       }
       Data += Limited->GetText();
     }
-    catch(...)
-    {
-    }
-      delete Limited;
   }
   else
   {

@@ -31,7 +31,7 @@ public:
   virtual void Idle();
   virtual std::wstring AbsolutePath(std::wstring Path, bool Local);
   virtual void AnyCommand(const std::wstring Command,
-    TCaptureOutputEvent OutputEvent);
+    const captureoutput_slot_type *OutputEvent);
   virtual void ChangeDirectory(const std::wstring Directory);
   virtual void CachedChangeDirectory(const std::wstring Directory);
   virtual void AnnounceFileListOperation();
@@ -41,7 +41,7 @@ public:
   virtual bool LoadFilesProperties(TStrings * FileList);
   virtual void CalculateFilesChecksum(const std::wstring & Alg,
     TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum);
+    calculatedchecksum_slot_type *OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
@@ -55,7 +55,7 @@ public:
   virtual void DeleteFile(const std::wstring FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const std::wstring FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(int Capability) const;
@@ -89,7 +89,7 @@ protected:
   std::wstring FDirectoryToChangeTo;
   std::wstring FHomeDirectory;
   std::wstring FEOL;
-  TObjectList * FPacketReservations;
+  TList * FPacketReservations;
   // Variant FPacketNumbers;
   std::vector<unsigned int> FPacketNumbers;
   char FPreviousLoggedPacket;
@@ -104,6 +104,7 @@ protected:
   bool FOpenSSH;
   TStrings * FFixedPaths;
   unsigned long FMaxPacketSize;
+  TSFTPFileSystem *Self;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     const std::wstring FileName, unsigned long Flags);
@@ -141,7 +142,7 @@ protected:
   void ResetConnection();
   void DoCalculateFilesChecksum(const std::wstring & Alg,
     TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum,
+    calculatedchecksum_slot_type *OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel);
   void DoDeleteFile(const std::wstring FileName, char Type);
 

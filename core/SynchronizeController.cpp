@@ -1,5 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
@@ -11,15 +15,13 @@
 #include "SynchronizeController.h"
 //---------------------------------------------------------------------------
 TSynchronizeController::TSynchronizeController(
-  TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
-  TSynchronizeTooManyDirectories AOnTooManyDirectories)
+  const synchronize_slot_type &AOnSynchronize, const synchronizeinvalid_slot_type &AOnSynchronizeInvalid,
+  const synchronizetoomanydirectories_slot_type &AOnTooManyDirectories)
 {
-  FOnSynchronize = AOnSynchronize;
-  FOnSynchronizeInvalid = AOnSynchronizeInvalid;
-  FOnTooManyDirectories = AOnTooManyDirectories;
+  FOnSynchronize.connect(AOnSynchronize);
+  FOnSynchronizeInvalid.connect(AOnSynchronizeInvalid);
+  FOnTooManyDirectories.connect(AOnTooManyDirectories);
   FSynchronizeMonitor = NULL;
-  FSynchronizeAbort = NULL;
-  FSynchronizeLog = NULL;
   FOptions = NULL;
 }
 //---------------------------------------------------------------------------
@@ -31,30 +33,30 @@ TSynchronizeController::~TSynchronizeController()
 void TSynchronizeController::StartStop(TObject * Sender,
   bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
   TSynchronizeOptions * Options,
-  TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
-  TSynchronizeLog OnSynchronizeLog)
+  const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
+  const synchronizelog_slot_type &OnSynchronizeLog)
 {
   if (Start)
   {
     try
     {
-      assert(OnSynchronizeLog != NULL);
-      FSynchronizeLog = OnSynchronizeLog;
+      FSynchronizeLog.connect(OnSynchronizeLog);
+      assert(!FSynchronizeLog.empty());
 
       FOptions = Options;
       if (FLAGSET(Params.Options, soSynchronize) &&
-          (FOnSynchronize != NULL))
+          (!FOnSynchronize.empty()))
       {
-        // FIXME FOnSynchronize(this, Params.LocalDirectory,
-          // Params.RemoteDirectory, CopyParam,
-          // Params, NULL, FOptions, true);
+        FOnSynchronize(this, Params.LocalDirectory,
+          Params.RemoteDirectory, CopyParam,
+          Params, NULL, FOptions, true);
       }
 
       FCopyParam = CopyParam;
       FSynchronizeParams = Params;
 
-      assert(OnAbort);
-      FSynchronizeAbort = OnAbort;
+      // assert(OnAbort);
+      FSynchronizeAbort.connect(OnAbort);
 
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
       {
@@ -123,19 +125,22 @@ void TSynchronizeController::SynchronizeChange(
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
       ExcludeTrailingBackslash(LocalDirectory).c_str()));
 
-    if (FOnSynchronize != NULL)
+    if (!FOnSynchronize.empty())
     {
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
         ((LocalDirectory == RootLocalDirectory) ? FOptions : NULL);
       TSynchronizeChecklist * Checklist = NULL;
-      // FIXME FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
-        // FSynchronizeParams, &Checklist, Options, false);
+      FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
+        FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != NULL)
       {
-        try
         {
+          BOOST_SCOPE_EXIT ( (&Checklist) )
+          {
+            delete Checklist;
+          } BOOST_SCOPE_EXIT_END
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
             SubdirsChanged = false;
@@ -165,16 +170,12 @@ void TSynchronizeController::SynchronizeChange(
             SubdirsChanged = false;
           }
         }
-        catch(...)
-        {
-          delete Checklist;
-        }
       }
     }
   }
-  catch(exception & E)
+  catch (const std::exception & E)
   {
-    SynchronizeAbort(dynamic_cast<EFatal*>(&E) != NULL);
+    SynchronizeAbort(dynamic_cast<const EFatal *>(&E) != NULL);
   }
 }
 //---------------------------------------------------------------------------
@@ -184,8 +185,8 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   {
     // FIXME FSynchronizeMonitor->Close();
   }
-  assert(FSynchronizeAbort);
-  // FIXME FSynchronizeAbort(NULL, Close);
+  assert(!FSynchronizeAbort.empty());
+  FSynchronizeAbort(NULL, Close);
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
@@ -215,9 +216,9 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
   const std::wstring Message)
 {
-  if (FSynchronizeLog != NULL)
+  if (!FSynchronizeLog.empty())
   {
-    // FIXME FSynchronizeLog(this, Entry, Message);
+    FSynchronizeLog(this, Entry, Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -240,9 +241,9 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 void TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const std::wstring Directory, const std::wstring ErrorStr)
 {
-  if (FOnSynchronizeInvalid != NULL)
+  if (!FOnSynchronizeInvalid.empty())
   {
-    // FIXME FOnSynchronizeInvalid(this, Directory, ErrorStr);
+    FOnSynchronizeInvalid(this, Directory, ErrorStr);
   }
 
   SynchronizeAbort(false);
@@ -251,9 +252,9 @@ void TSynchronizeController::SynchronizeInvalid(
 void TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, int & MaxDirectories)
 {
-  if (FOnTooManyDirectories != NULL)
+  if (!FOnTooManyDirectories.empty())
   {
-    // FIXME FOnTooManyDirectories(this, MaxDirectories);
+    FOnTooManyDirectories(this, MaxDirectories);
   }
 }
 //---------------------------------------------------------------------------

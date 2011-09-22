@@ -12,7 +12,7 @@ TConfiguration * CreateConfiguration()
   return new TFarConfiguration(FarPlugin);
 }
 //---------------------------------------------------------------------------
-void ShowExtendedException(std::exception * E)
+void ShowExtendedException(const std::exception * E)
 {
   assert(FarPlugin != NULL);
   TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
@@ -42,7 +42,7 @@ std::wstring SshVersionString()
 
 //---------------------------------------------------------------------------
 int StartThread(void * SecurityAttributes, unsigned StackSize,
-  TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
+  const threadfunc_slot_type &ThreadFunc, void * Parameter, unsigned CreationFlags,
   unsigned & ThreadId)
 {
   // FIXME return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,

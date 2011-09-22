@@ -18,6 +18,12 @@
 
 #pragma once
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal1.hpp>
+#include <boost/signals/signal2.hpp>
+#include <boost/signals/signal3.hpp>
+#include <boost/signals/signal4.hpp>
+
 #include "FarPlugin.h"
 #include "stdafx.h"
 
@@ -550,11 +556,19 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TFarKeyEvent)
-    (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
-typedef void (TObject::*TFarMouseClickEvent) 
-    (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
-typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
+// typedef void (TObject::*TFarKeyEvent)
+    // (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
+typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
+typedef key_signal_type::slot_type key_slot_type;
+
+// typedef void (TObject::*TFarMouseClickEvent) 
+    // (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
+typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
+typedef mouse_click_signal_type::slot_type mouse_click_slot_type;
+
+// typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
+typedef boost::signal2<void, TFarDialogItem *, void *> processgroupevent_signal_type;
+typedef processgroupevent_signal_type::slot_type processgroupevent_slot_type;
 //---------------------------------------------------------------------------
 class TFarDialog : public TObject
 {
@@ -575,8 +589,8 @@ public:
     TRect GetBounds() const { return FBounds; }
     void SetBounds(const TRect &value);
     TRect GetClientRect() const;
-    wstring GetHelpTopic() const { return FHelpTopic; }
-    void SetHelpTopic(const wstring &value);
+    std::wstring GetHelpTopic() const { return FHelpTopic; }
+    void SetHelpTopic(const std::wstring &value);
     unsigned int GetFlags() const { return FFlags; }
     void SetFlags(const unsigned int &value);
     bool GetCentered() const;
@@ -588,8 +602,8 @@ public:
     void SetWidth(const int &value);
     int GetHeight() const;
     void SetHeight(const int &value);
-    wstring GetCaption() const;
-    void SetCaption(const wstring &value);
+    std::wstring GetCaption() const;
+    void SetCaption(const std::wstring &value);
     HANDLE GetHandle() const { return FHandle; }
     TFarButton *GetDefaultButton() const { return FDefaultButton; }
     TFarBox *GetBorderBox() const { return FBorderBox; }
@@ -607,8 +621,8 @@ public:
     int GetResult() const { return FResult; }
     TPoint GetMaxSize();
     
-    TFarKeyEvent GetOnKey() const { return FOnKey; }
-    void SetOnKey(const TFarKeyEvent &value) { FOnKey = value; }
+    const key_signal_type &GetOnKey() const { return FOnKey; }
+    void SetOnKey(const key_slot_type &value) { FOnKey.connect(value); }
 
     void Redraw();
     void LockChanges();
@@ -632,13 +646,13 @@ protected:
     virtual void Change();
     virtual void Init();
     virtual bool CloseQuery();
-    wstring GetMsg(int MsgId);
+    std::wstring GetMsg(int MsgId);
     void RefreshBounds();
     virtual void Idle();
     void BreakSynchronize();
-    void Synchronize(TThreadMethod Method);
+    void Synchronize(const threadmethod_slot_type &slot);
     void Close(TFarButton *Button);
-    void ProcessGroup(int Group, TFarProcessGroupEvent Callback, void *Arg);
+    void ProcessGroup(int Group, const processgroupevent_slot_type &Callback, void *Arg);
     void ShowItem(TFarDialogItem *Item, void *Arg);
     void EnableItem(TFarDialogItem *Item, void *Arg);
     bool ChangesLocked();
@@ -650,7 +664,7 @@ private:
     TCustomFarPlugin *FFarPlugin;
     TRect FBounds;
     unsigned int FFlags;
-    wstring FHelpTopic;
+    std::wstring FHelpTopic;
     bool FVisible;
     TObjectList *FItems;
     TObjectList *FContainers;
@@ -661,7 +675,7 @@ private:
     int FDefaultGroup;
     int FTag;
     TFarDialogItem *FItemFocused;
-    TFarKeyEvent FOnKey;
+    key_signal_type FOnKey;
     FarDialogItem *FDialogItems;
     int FDialogItemsCapacity;
     int FChangesLocked;
@@ -669,7 +683,8 @@ private:
     int FResult;
     bool FNeedsSynchronize;
     HANDLE FSynchronizeObjects[2];
-    TThreadMethod FSynchronizeMethod;
+    threadmethod_signal_type FSynchronizeMethod;
+    TFarDialog *Self;
 };
 //---------------------------------------------------------------------------
 class TFarDialogContainer : public TObject
@@ -695,7 +710,7 @@ protected:
     void Add(TFarDialogItem *Item);
     void Remove(TFarDialogItem *Item);
     virtual void Change();
-    wstring GetMsg(int MsgId);
+    std::wstring GetMsg(int MsgId);
 
 private:
     int FLeft;
@@ -754,10 +769,10 @@ public:
     void SetTag(int value) { FTag = value; }
     TFarDialog *GetDialog() { return FDialog; }
 
-    TNotifyEvent GetOnExit() { return FOnExit; }
-    void SetOnExit(TNotifyEvent value) { FOnExit = value; }
-    TFarMouseClickEvent GetOnMouseClick() { return FOnMouseClick; }
-    void SetOnMouseClick(TFarMouseClickEvent value) { FOnMouseClick = value; }
+    const notify_signal_type &GetOnExit() const { return FOnExit; }
+    void SetOnExit(const notify_slot_type &value) { FOnExit.connect(value); }
+    const mouse_click_signal_type &GetOnMouseClick() const { return FOnMouseClick; }
+    void SetOnMouseClick(const mouse_click_slot_type &value) { FOnMouseClick.connect(value); }
 
     void Move(int DeltaX, int DeltaY);
     void MoveAt(int X, int Y);
@@ -771,8 +786,8 @@ protected:
     int FDefaultType;
     int FGroup;
     int FTag;
-    TNotifyEvent FOnExit;
-    TFarMouseClickEvent FOnMouseClick;
+    notify_signal_type FOnExit;
+    mouse_click_signal_type FOnMouseClick;
 
     TFarDialogItem(TFarDialog *ADialog, int AType);
     ~TFarDialogItem();
@@ -780,8 +795,8 @@ protected:
     FarDialogItem *GetDialogItem();
     bool GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
     void SetCenterGroup(bool value) { SetFlag(DIF_CENTERGROUP, value); }
-    virtual wstring GetData();
-    virtual void SetData(const wstring value);
+    virtual std::wstring GetData();
+    virtual void SetData(const std::wstring value);
     int GetType();
     void SetType(int value);
     int GetSelected();
@@ -810,12 +825,12 @@ protected:
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
     TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-    void Text(int X, int Y, int Color, wstring Str, bool Oem = false);
+    void Text(int X, int Y, int Color, std::wstring Str, bool Oem = false);
     void Redraw();
     virtual bool HotKey(char HotKey);
 
-    virtual void SetDataInternal(const wstring value);
-    void UpdateData(const wstring value);
+    virtual void SetDataInternal(const std::wstring value);
+    void UpdateData(const std::wstring value);
     void UpdateSelected(int value);
 
     bool GetFlag(int Index);
@@ -854,13 +869,15 @@ class TFarBox : public TFarDialogItem
 public:
     TFarBox(TFarDialog *ADialog);
 
-    virtual wstring GetCaption() { return GetData(); }
-    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual std::wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(std::wstring value) { SetData(value); }
     virtual bool GetDouble() { return GetAlterType(DI_DOUBLEBOX); }
     virtual void SetDouble(bool value) { SetAlterType(DI_DOUBLEBOX, value); }
 };
 //---------------------------------------------------------------------------
-typedef void (TObject::*TFarButtonClick)(TFarButton *Sender, bool &Close);
+typedef boost::signal2<void, TFarButton *, bool &> button_click_signal_type;
+typedef button_click_signal_type::slot_type button_click_slot_type;
+
 enum TFarButtonBrackets { brNone, brTight, brSpace, brNormal };
 //---------------------------------------------------------------------------
 class TFarButton : public TFarDialogItem
@@ -868,8 +885,8 @@ class TFarButton : public TFarDialogItem
 public:
     TFarButton(TFarDialog *ADialog);
 
-    virtual wstring GetCaption() { return GetData(); }
-    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual std::wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(std::wstring value) { SetData(value); }
     virtual int GetResult() { return FResult; }
     virtual void SetResult(int value) { FResult = value; }
     bool GetDefault();
@@ -878,45 +895,47 @@ public:
     void SetBrackets(TFarButtonBrackets value);
     bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
     void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
-    virtual TFarButtonClick GetOnClick() { return FOnClick; }
-    virtual void SetOnClick(TFarButtonClick value) { FOnClick = value; }
+    virtual const button_click_signal_type &GetOnClick() const { return FOnClick; }
+    virtual void SetOnClick(const button_click_slot_type &value) { FOnClick.connect(value); }
 
 protected:
-    virtual void SetDataInternal(const wstring value);
-    virtual wstring GetData();
+    virtual void SetDataInternal(const std::wstring value);
+    virtual std::wstring GetData();
     virtual long ItemProc(int Msg, long Param);
     virtual bool HotKey(char HotKey);
 
 private:
     int FResult;
-    TFarButtonClick FOnClick;
+    button_click_signal_type FOnClick;
     TFarButtonBrackets FBrackets;
 };
 //---------------------------------------------------------------------------
-typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
-        long NewState, bool &AllowChange);
+// typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
+        // long NewState, bool &AllowChange);
+typedef boost::signal3<void, TFarDialogItem *, long, bool &> farallowchange_signal_type;
+typedef farallowchange_signal_type::slot_type farallowchange_slot_type;
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
 {
 public:
     TFarCheckBox(TFarDialog *ADialog);
 
-    virtual wstring GetCaption() { return GetData(); }
-    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual std::wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(std::wstring value) { SetData(value); }
     bool GetAllowGrayed() { return GetFlag(DIF_3STATE); }
     void SetAllowGrayed(bool value) { SetFlag(DIF_3STATE, value); }
-    virtual TFarAllowChange GetOnAllowChange() { return FOnAllowChange; }
-    virtual void SetOnAllowChange(TFarAllowChange value) { FOnAllowChange = value; }
+    virtual farallowchange_signal_type &GetOnAllowChange() { return FOnAllowChange; }
+    virtual void SetOnAllowChange(const farallowchange_slot_type &value) { FOnAllowChange.connect(value); }
     bool GetChecked() { return TFarDialogItem::GetChecked(); }
     void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
     int GetSelected() { return TFarDialogItem::GetSelected(); }
     void SetSelected(int value) { TFarDialogItem::SetSelected(value); }
 
 protected:
-    TFarAllowChange FOnAllowChange;
+    farallowchange_signal_type FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const wstring value);
+    virtual void SetData(const std::wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarRadioButton : public TFarDialogItem
@@ -926,16 +945,16 @@ public:
 
     bool GetChecked() { return TFarDialogItem::GetChecked(); }
     void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
-    virtual wstring GetCaption() { return GetData(); }
-    virtual void SetCaption(wstring value) { SetData(value); }
-    virtual TFarAllowChange GetOnAllowChange() { return FOnAllowChange; }
-    virtual void SetOnAllowChange(TFarAllowChange value) { FOnAllowChange = value; }
+    virtual std::wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(std::wstring value) { SetData(value); }
+    virtual farallowchange_signal_type &GetOnAllowChange() { return FOnAllowChange; }
+    virtual void SetOnAllowChange(const farallowchange_slot_type &value) { FOnAllowChange.connect(value); }
 
 protected:
-    TFarAllowChange FOnAllowChange;
+    farallowchange_signal_type FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const wstring value);
+    virtual void SetData(const std::wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarEdit : public TFarDialogItem
@@ -943,8 +962,8 @@ class TFarEdit : public TFarDialogItem
 public:
     TFarEdit(TFarDialog *ADialog);
 
-    virtual wstring GetText() { return GetData(); }
-    virtual void SetText(wstring value) { SetData(value); }
+    virtual std::wstring GetText() { return GetData(); }
+    virtual void SetText(std::wstring value) { SetData(value); }
     int GetAsInteger();
     void SetAsInteger(int value);
     virtual bool GetPassword() { return GetAlterType(DI_PSWEDIT); }
@@ -952,10 +971,10 @@ public:
     virtual bool GetFixed() { return GetAlterType(DI_FIXEDIT); }
     virtual void SetFixed(bool value) { SetAlterType(DI_FIXEDIT, value); }
 
-    virtual wstring GetMask() { return GetHistoryMask(1); }
-    virtual void SetMask(wstring value) { SetHistoryMask(1, value); }
-    virtual wstring GetHistory() { return GetHistoryMask(0); }
-    virtual void SetHistory(wstring value) { SetHistoryMask(0, value); }
+    virtual std::wstring GetMask() { return GetHistoryMask(1); }
+    virtual void SetMask(std::wstring value) { SetHistoryMask(1, value); }
+    virtual std::wstring GetHistory() { return GetHistoryMask(0); }
+    virtual void SetHistory(std::wstring value) { SetHistoryMask(0, value); }
     bool GetExpandEnvVars() { return GetFlag(DIF_EDITEXPAND); }
     void SetExpandEnvVars(bool value) { SetFlag(DIF_EDITEXPAND, value); }
     bool GetAutoSelect() { return GetFlag(DIF_SELECTONENTRY); }
@@ -968,8 +987,8 @@ protected:
     virtual void Detach();
 
 private:
-    wstring GetHistoryMask(int Index);
-    void SetHistoryMask(int Index, wstring value);
+    std::wstring GetHistoryMask(int Index);
+    void SetHistoryMask(int Index, std::wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarSeparator : public TFarDialogItem
@@ -979,8 +998,8 @@ public:
 
     bool GetDouble();
     void SetDouble(bool value);
-    virtual wstring GetCaption() { return GetData(); }
-    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual std::wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(std::wstring value) { SetData(value); }
     int GetPosition();
     void SetPosition(int value);
 
@@ -995,15 +1014,15 @@ class TFarText : public TFarDialogItem
 public:
     TFarText(TFarDialog *ADialog);
 
-    virtual wstring GetCaption() { return GetData(); }
-    virtual void SetCaption(wstring value) { SetData(value); }
+    virtual std::wstring GetCaption() { return GetData(); }
+    virtual void SetCaption(std::wstring value) { SetData(value); }
     bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
     void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
     bool GetColor() { return TFarDialogItem::GetColor(0); }
     void SetColor(bool value) { TFarDialogItem::SetColor(0, value); }
 
 protected:
-    virtual void SetData(const wstring value);
+    virtual void SetData(const std::wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarListBox;
@@ -1041,7 +1060,7 @@ protected:
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
-    virtual void Put(int Index, const wstring S);
+    virtual void Put(int Index, const std::wstring S);
     void SetCurPos(int Position, int TopIndex);
     void UpdateItem(int Index);
 
@@ -1053,6 +1072,7 @@ private:
     FarList *FListItems;
     TFarDialogItem *FDialogItem;
     bool FNoDialogUpdate;
+    TFarList *Self;
 
     inline int GetSelectedInt(bool Init);
     bool GetFlag(int Index, int Flag);
@@ -1112,8 +1132,8 @@ public:
     bool GetWrapMode() { return GetFlag(DIF_LISTWRAPMODE); }
     void SetWrapMode(bool value) { SetFlag(DIF_LISTWRAPMODE, value); }
     TFarList *GetItems() { return FList; }
-    virtual wstring GetText() { return GetData(); }
-    virtual void SetText(wstring value) { SetData(value); }
+    virtual std::wstring GetText() { return GetData(); }
+    virtual void SetText(std::wstring value) { SetData(value); }
     bool GetAutoSelect() { return GetFlag(DIF_SELECTONENTRY); }
     void SetAutoSelect(bool value) { SetFlag(DIF_SELECTONENTRY, value); }
     bool GetDropDownList() { return GetFlag(DIF_DROPDOWNLIST); }
@@ -1151,6 +1171,6 @@ private:
     void ItemsChange(TObject *Sender);
 };
 //---------------------------------------------------------------------------
-wstring StripHotKey(wstring Text);
+std::wstring StripHotKey(std::wstring Text);
 TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------

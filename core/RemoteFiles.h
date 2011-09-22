@@ -110,6 +110,8 @@ private:
   std::wstring FFullFileName;
   int FIsHidden;
   std::wstring FTypeName;
+  TRemoteFile *Self;
+
   void LoadTypeInfo();
 
 protected:
@@ -308,6 +310,7 @@ protected:
   virtual void Delete(int Index);
 private:
   TCriticalSection * FSection;
+  TRemoteDirectoryCache *Self;
   void DoClearFileList(std::wstring Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------

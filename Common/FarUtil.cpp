@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 
+#include "Common.h"
 #include "FarUtil.h"
 #include "Strings.h"
 
@@ -279,48 +280,6 @@ void AppendPathDelimiterA(std::string &str)
     }
 }
 
-/**
- * Encoding multibyte to wide std::string
- * \param src source std::string
- * \param cp code page
- * \return wide std::string
- */
-std::wstring MB2W(const char *src, const UINT cp)
-{
-    assert(src);
-
-    std::wstring wide;
-    const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
-    if (reqLength)
-    {
-        wide.resize(static_cast<size_t>(reqLength));
-        MultiByteToWideChar(cp, 0, src, -1, &wide[0], reqLength);
-        wide.erase(wide.length() - 1);  //remove NULL character
-    }
-    return wide;
-}
-
-/**
- * Encoding wide to multibyte std::string
- * \param src source std::string
- * \param cp code page
- * \return multibyte std::string
- */
-std::string W2MB(const wchar_t *src, const UINT cp)
-{
-    assert(src);
-
-    std::string mb;
-    const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
-    if (reqLength)
-    {
-        mb.resize(static_cast<size_t>(reqLength));
-        WideCharToMultiByte(cp, 0, src, -1, &mb[0], reqLength, NULL, NULL);
-        mb.erase(mb.length() - 1);  //remove NULL character
-    }
-    return mb;
-}
-
 void CheckAbortEvent(HANDLE *AbortEvent)
 {
     //Very-very bad architecture... TODO!
@@ -346,89 +305,16 @@ std::wstring ExpandEnvVars(const std::wstring& str)
     return result;
 }
 
-//---------------------------------------------------------------------------
-
-std::wstring ExcludeTrailingBackslash(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    return result;
-}
-
-std::wstring IncludeTrailingBackslash(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    if (str[str.size() - 1] != L'/' ||
-        str[str.size() - 1] != L'\\')
-    {
-        result += L'\\';
-    }
-    return result;
-}
-
-std::wstring ExtractFileDir(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    return result;
-}
-
-std::wstring ExtractFilePath(const std::wstring str)
-{
-    // FIXME
-    std::wstring result = str;
-    return result;
-}
-
-std::wstring GetCurrentDir()
-{
-    // FIXME
-    std::wstring result;
-    return result;
-}
-
 std::wstring StringOfChar(const wchar_t c, size_t len)
 {
-    // FIXME
     std::wstring result;
+    result.resize(len, c);
     return result;
 }
 
 // void RaiseLastOSError()
 // {
 // }
-
-TDateTime Date()
-{
-    TDateTime result;
-    return result;
-}
-
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-    unsigned short &M, unsigned short &D)
-{
-    // FIXME
-}
-
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-    unsigned short &N, unsigned short &S, unsigned short &MS)
-{
-    // FIXME
-}
-
-std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
-{
-    std::wstring result;
-    return result;
-}
-
-std::wstring SysErrorMessage(int code)
-{
-    // FIXME 
-    std::wstring result;
-    return result;
-}
 
 char *StrNew(const char *str)
 {
@@ -466,14 +352,43 @@ std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext)
 
 std::wstring ExtractFileExt(std::wstring FileName)
 {
-    // FIXME 
-    std::wstring result;
-    return result;
+    std::wstring Result = ExtractFileExtension(FileName, L'.');
+    return Result;
+}
+
+std::wstring get_full_path_name(const std::wstring &path)
+{
+  std::wstring buf(0, MAX_PATH);
+  DWORD size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), (LPWSTR)buf.c_str(), NULL);
+  if (size > buf.size())
+  {
+    buf.resize(size);
+    size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), (LPWSTR)buf.c_str(), NULL);
+  }
+  return std::wstring(buf.c_str(), size);
+}
+
+std::wstring ExpandFileName(const std::wstring FileName)
+{
+  std::wstring Result;
+  Result = get_full_path_name(FileName);
+  return Result;
+}
+
+std::wstring GetUniversalName(std::wstring FileName)
+{
+    // FIXME
+    std::wstring Result = FileName;
+    return Result;
 }
 
 std::wstring ExpandUNCFileName(std::wstring FileName)
 {
-    // FIXME 
-    std::wstring result;
-    return result;
+    std::wstring Result = ExpandFileName(FileName);
+    if ((Result.size() >= 3) && (Result[2] == L':') && (::UpCase(Result[1]) >= 'A')
+      && (::UpCase(Result[1]) <= 'Z'))
+    {
+      Result = GetUniversalName(Result);
+    }
+    return Result;
 }

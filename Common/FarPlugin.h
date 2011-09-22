@@ -18,6 +18,9 @@
 
 #pragma once
 
+#include "boostdefines.hpp"
+#include <boost/signals/signal3.hpp>
+
 #pragma warning(push, 1)
 #include "Classes.h"
 #pragma warning(pop)
@@ -237,7 +240,9 @@ enum TFarShiftStatus { fsNone, fsCtrl, fsAlt, fsShift, fsCtrlShift,
                        fsAltShift, fsCtrlAlt
                      };
 enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
-typedef void (*TFarInputBoxValidateEvent)(std::wstring &Text);
+// typedef void (*TFarInputBoxValidateEvent)(std::wstring &Text);
+typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
+typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
 enum
 {
@@ -250,8 +255,13 @@ enum
 const size_t StartupInfoMinSize = 372;
 const size_t StandardFunctionsMinSize = 228;
 //---------------------------------------------------------------------------
-typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
-typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
+// typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
+typedef boost::signal1<void, unsigned int &> farmessagetimer_signal_type;
+typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
+// typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
+typedef boost::signal3<void, void *, int, bool &> farmessageclick_signal_type;
+typedef farmessageclick_signal_type::slot_type farmessageclick_slot_type;
+
 //---------------------------------------------------------------------------
 struct TFarMessageParams
 {
@@ -262,11 +272,11 @@ struct TFarMessageParams
     bool CheckBox;
     unsigned int Timer;
     unsigned int TimerAnswer;
-    TFarMessageTimerEvent TimerEvent;
+    farmessagetimer_slot_type *TimerEvent;
     unsigned int Timeout;
     unsigned int TimeoutButton;
     std::wstring TimeoutStr;
-    TFarMessageClickEvent ClickEvent;
+    farmessageclick_slot_type *ClickEvent;
     void *Token;
 };
 //---------------------------------------------------------------------------
@@ -307,7 +317,7 @@ public:
     virtual int ProcessEditorEvent(int Event, void *Param);
     virtual int ProcessEditorInput(const INPUT_RECORD *Rec);
 
-    virtual void HandleException(exception *E, int OpMode = 0);
+    virtual void HandleException(const std::exception *E, int OpMode = 0);
 
     static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
@@ -325,7 +335,7 @@ public:
                         const int *BreakKeys, int &BreakCode);
     bool InputBox(std::wstring Title, std::wstring Prompt,
                              std::wstring &Text, unsigned long Flags, std::wstring HistoryName = L"",
-                             int MaxLen = 255, TFarInputBoxValidateEvent OnValidate = NULL);
+                             int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
     std::wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
@@ -388,6 +398,7 @@ protected:
     bool FValidFarSystemSettings;
     unsigned int FFarSystemSettings;
     TPoint FNormalConsoleSize;
+    TCustomFarPlugin *Self;
 
     virtual bool HandlesFunction(THandlesFunction Function);
     virtual void GetPluginInfoEx(long unsigned &Flags,
@@ -398,7 +409,7 @@ protected:
     virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
     virtual void HandleFileSystemException(TCustomFarFileSystem *FileSystem,
-            exception *E, int OpMode = 0);
+        const std::exception *E, int OpMode = 0);
     virtual bool IsOldFar();
     virtual void OldFar();
     void ResetCachedInfo();
@@ -481,7 +492,7 @@ protected:
     bool IsLeft();
     bool IsRight();
 
-    virtual void HandleException(exception *E, int OpMode = 0);
+    virtual void HandleException(const std::exception *E, int OpMode = 0);
 
     TFarPanelInfo *GetPanelInfo() { return GetPanelInfo(0); };
     TFarPanelInfo *GetAnotherPanelInfo() { return GetPanelInfo(1); };

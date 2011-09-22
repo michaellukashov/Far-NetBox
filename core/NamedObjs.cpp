@@ -37,7 +37,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
           Name.erase(P, Name.size() - P + 1);
           Name = ::TrimRight(Name);
-        } catch (exception &E) { N = 0; };
+        } catch (const std::exception &E) { N = 0; };
       Name += L" (" + IntToStr(N+1) + L")";
     }
 }

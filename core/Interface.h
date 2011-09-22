@@ -1,16 +1,22 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-//---------------------------------------------------------------------------
+#include "boostdefines.hpp"
+#include <boost/signals/signal1.hpp>
+#include <boost/signals/signal3.hpp>
+#include <boost/signals/signal4.hpp>
+
 #include "Configuration.h"
 #include "SessionData.h"
 #define HELP_NONE L""
 //---------------------------------------------------------------------------
-typedef int (TObject::*TThreadFunc)(void *Parameter);
+// typedef int (TObject::*TThreadFunc)(void *Parameter);
+typedef boost::signal1<int, void *> threadfunc_signal_type;
+typedef threadfunc_signal_type::slot_type threadfunc_slot_type;
 //---------------------------------------------------------------------------
 TConfiguration * CreateConfiguration();
 
-void ShowExtendedException(exception * E);
+void ShowExtendedException(const std::exception * E);
 
 std::wstring GetRegistryKey();
 void Busy(bool Start);
@@ -18,7 +24,7 @@ std::wstring AppNameString();
 std::wstring SshVersionString();
 void CopyToClipboard(std::wstring Text);
 int StartThread(void * SecurityAttributes, unsigned StackSize,
-  TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
+  const threadfunc_slot_type &ThreadFunc, void * Parameter, unsigned CreationFlags,
   unsigned & ThreadId);
 
 const unsigned int qaYes =      0x00000001;
@@ -46,10 +52,12 @@ struct TQueryButtonAlias
 
   unsigned int Button;
   std::wstring Alias;
-  TNotifyEvent OnClick;
+  notify_signal_type OnClick;
 };
 
-typedef void ( *TQueryParamsTimerEvent)(unsigned int & Result);
+// typedef void ( *TQueryParamsTimerEvent)(unsigned int & Result);
+typedef boost::signal1<void, unsigned int &> queryparamstimer_signal_type;
+typedef queryparamstimer_signal_type::slot_type queryparamstimer_slot_type;
 
 struct TQueryParams
 {
@@ -59,7 +67,7 @@ struct TQueryParams
   unsigned int AliasesCount;
   unsigned int Params;
   unsigned int Timer;
-  TQueryParamsTimerEvent TimerEvent;
+  queryparamstimer_slot_type *TimerEvent;
   std::wstring TimerMessage;
   unsigned int TimerAnswers;
   unsigned int Timeout;
@@ -85,9 +93,13 @@ enum TPromptKind
 
 bool IsAuthenticationPrompt(TPromptKind Kind);
 //---------------------------------------------------------------------------
-typedef void ( *TFileFoundEvent)
-  (TTerminal * Terminal, const std::wstring FileName, const TRemoteFile * File,
-   bool & Cancel);
-typedef void ( *TFindingFileEvent)
-  (TTerminal * Terminal, const std::wstring Directory, bool & Cancel);
+// typedef void ( *TFileFoundEvent)
+  // (TTerminal * Terminal, const std::wstring FileName, const TRemoteFile * File,
+   // bool & Cancel);
+typedef boost::signal4<void, TTerminal *, const std::wstring, const TRemoteFile *, bool &> filefound_signal_type;
+typedef filefound_signal_type::slot_type filefound_slot_type;
+// typedef void ( *TFindingFileEvent)
+  // (TTerminal * Terminal, const std::wstring Directory, bool & Cancel);
+typedef boost::signal3<void, TTerminal *, const std::wstring, bool &> findingfile_signal_type;
+typedef findingfile_signal_type::slot_type findingfile_slot_type;
 //---------------------------------------------------------------------------

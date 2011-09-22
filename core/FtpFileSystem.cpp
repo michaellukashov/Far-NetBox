@@ -1,6 +1,10 @@
 //---------------------------------------------------------------------------
 #include <stdafx.h>
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
+
 #ifndef NO_FILEZILLA
 //---------------------------------------------------------------------------
 #include <list>
@@ -19,7 +23,7 @@
 #include <openssl/x509_vfy.h>
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
-  FILE_OPERATION_LOOP_CUSTOM(FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
+  FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
 const int DummyCodeClass = 8;
 const int DummyTimeoutCode = 801;
@@ -314,7 +318,7 @@ void TFTPFileSystem::Open()
 
       FFileZillaIntf->Init();
     }
-    catch(...)
+    catch (...)
     {
       delete FFileZillaIntf;
       FFileZillaIntf = NULL;
@@ -439,7 +443,7 @@ void TFTPFileSystem::Open()
       assert(!FPasswordFailed);
       FPasswordFailed = false;
     }
-    catch(...)
+    catch (...)
     {
       if (FPasswordFailed)
       {
@@ -490,14 +494,17 @@ void TFTPFileSystem::Idle()
       FLastDataSent = Now();
 
       TRemoteDirectory * Files = new TRemoteDirectory(FTerminal);
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Files) )
+        {
+          delete Files;
+        } BOOST_SCOPE_EXIT_END
         try
         {
           Files->Directory = CurrentDirectory;
           DoReadDirectory(Files);
         }
-        catch(...)
+        catch (...)
         {
           // ignore non-fatal errors
           // (i.e. current directory may not exist anymore)
@@ -506,10 +513,6 @@ void TFTPFileSystem::Idle()
             throw;
           }
         }
-      }
-      __finally
-      {
-        delete Files;
       }
     }
   }
@@ -566,23 +569,22 @@ void TFTPFileSystem::EnsureLocation()
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::AnyCommand(const std::wstring Command,
-  TCaptureOutputEvent OutputEvent)
+  const captureoutput_slot_type *OutputEvent)
 {
   // end-user has right to expect that client current directory is really
   // current directory for the server
   EnsureLocation();
 
-  assert(FOnCaptureOutput == NULL);
-  FOnCaptureOutput = OutputEvent;
-  try
+  assert(FOnCaptureOutput.empty());
+  FOnCaptureOutput.connect(*OutputEvent);
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FOnCaptureOutput = NULL;
+    } BOOST_SCOPE_EXIT_END
     FFileZillaIntf->CustomCommand(Command.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
-  }
-  __finally
-  {
-    FOnCaptureOutput = NULL;
   }
 }
 //---------------------------------------------------------------------------
@@ -619,7 +621,7 @@ void TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
     // user chance to leave the non-existing directory.
     EnsureLocation();
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -657,8 +659,11 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
 
     TRemoteFile * OwnedFile = NULL;
 
-    try
     {
+      BOOST_SCOPE_EXIT ( (&OwnedFile) )
+      {
+        delete OwnedFile;
+      } BOOST_SCOPE_EXIT_END
       std::wstring FileName = AbsolutePath(AFileName, false);
 
       if (File == NULL)
@@ -671,10 +676,10 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
       {
         try
         {
-          FTerminal->ProcessDirectory(AFileName, FTerminal->ChangeFileProperties,
+          FTerminal->ProcessDirectory(AFileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
             (void*)Properties);
         }
-        catch(...)
+        catch (...)
         {
           Action.Cancel();
           throw;
@@ -702,10 +707,6 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
 
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
-    __finally
-    {
-      delete OwnedFile;
-    }
   }
   else
   {
@@ -721,7 +722,7 @@ bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
-  TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
+  calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
   assert(false);
 }
@@ -946,8 +947,11 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
     bool Success = false;
 
-    try
     {
+      BOOST_SCOPE_EXIT ( (&OperationProgress) )
+      {
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      } BOOST_SCOPE_EXIT_END
       try
       {
         SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
@@ -955,16 +959,12 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch(EScpSkipFile & E)
+      catch (const EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
-    }
-    __finally
-    {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     Index++;
   }
@@ -988,7 +988,7 @@ void TFTPFileSystem::SinkRobust(const std::wstring FileName,
       Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1071,7 +1071,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
       SinkFileParams.Skipped = false;
       SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-      FTerminal->ProcessDirectory(FileName, SinkFile, &SinkFileParams);
+      FTerminal->ProcessDirectory(FileName, boost::bind(&TFTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
 
       // Do not delete directory if some of its files were skip.
       // Throw "skip file" for the directory to avoid attempt to deletion
@@ -1175,7 +1175,7 @@ void TFTPFileSystem::SinkFile(std::wstring FileName,
     SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch(EScpSkipFile & E)
+  catch (const EScpSkipFile & E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
@@ -1213,8 +1213,11 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     FileName = FilesToCopy->GetString(Index);
     FileNameOnly = ExtractFileName(FileName);
 
-    try
     {
+      BOOST_SCOPE_EXIT ( (&OperationProgress) )
+      {
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      } BOOST_SCOPE_EXIT_END
       try
       {
         if (FTerminal->GetSessionData()->CacheDirectories)
@@ -1231,16 +1234,12 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch(EScpSkipFile & E)
+      catch (const EScpSkipFile & E)
       {
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
-    }
-    __finally
-    {
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
     }
     Index++;
   }
@@ -1263,7 +1262,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
       Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1426,8 +1425,11 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
 
   bool CreateDir = true;
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&SearchRec) )
+    {
+      ::FindClose(SearchRec);
+    } BOOST_SCOPE_EXIT_END
     while (FindOK && !OperationProgress->Cancel)
     {
       std::wstring FileName = DirectoryName + SearchRec.Name;
@@ -1444,7 +1446,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
           CreateDir = false;
         }
       }
-      catch (EScpSkipFile &E)
+      catch (const EScpSkipFile &E)
       {
         // If ESkipFile occurs, just log it and continue with next file
         SUSPEND_OPERATION (
@@ -1460,10 +1462,6 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
       );
     };
   }
-  __finally
-  {
-    FindClose(SearchRec);
-  }
 
   if (CreateDir)
   {
@@ -1477,16 +1475,15 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
     try
     {
       FTerminal->ExceptionOnFail = true;
-      try
       {
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->FTerminal->SetExceptionOnFail(false);
+          } BOOST_SCOPE_EXIT_END
         FTerminal->CreateDirectory(DestFullName, &Properties);
       }
-      __finally
-      {
-        FTerminal->ExceptionOnFail = false;
-      }
     }
-    catch(...)
+    catch (...)
     {
       TRemoteFile * File = NULL;
       // ignore non-fatal error when the directory already exists
@@ -1552,9 +1549,9 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
   {
     try
     {
-      FTerminal->ProcessDirectory(FileName, FTerminal->DeleteFile, &Params);
+      FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::DeleteFile, FTerminal, _1, _2, _3), &Params);
     }
-    catch(...)
+    catch (...)
     {
       Action.Cancel();
       throw;
@@ -1590,7 +1587,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
   const TRemoteFile * /*File*/, std::wstring /*Command*/, int /*Params*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  const captureoutput_slot_type /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
   // see AnyCommand for a reason why
@@ -1600,8 +1597,11 @@ void TFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
 void TFTPFileSystem::DoStartup()
 {
   TStrings * PostLoginCommands = new TStringList();
-  try
   {
+    BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
+    {
+      delete PostLoginCommands;
+    } BOOST_SCOPE_EXIT_END
     PostLoginCommands->Text = FTerminal->GetSessionData()->PostLoginCommands;
     for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
@@ -1613,10 +1613,6 @@ void TFTPFileSystem::DoStartup()
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
       }
     }
-  }
-  __finally
-  {
-    delete PostLoginCommands;
   }
 
   // retrieve initialize working directory to save it as home directory
@@ -1692,8 +1688,11 @@ void TFTPFileSystem::ReadCurrentDirectory()
     TStrings * Response = NULL;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, "", &Code, &Response);
 
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Response) )
+        {
+          delete Response;
+        } BOOST_SCOPE_EXIT_END
       assert(Response != NULL);
       bool Result = false;
 
@@ -1729,10 +1728,6 @@ void TFTPFileSystem::ReadCurrentDirectory()
       {
         throw std::exception(FMTLOAD(FTP_PWD_RESPONSE_ERROR, Response->Text.c_str()));
       }
-    }
-    __finally
-    {
-      delete Response;
     }
   }
 }
@@ -1801,7 +1796,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // (e.g. before file transfer)
       FDoListAll = (FListAll == asOn);
     }
-    catch(...)
+    catch (...)
     {
       FDoListAll = false;
       // reading the first directory has failed,
@@ -1874,7 +1869,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     // FZAPI treats all symlink target as directories
     File->Type = FILETYPE_DIRECTORY;
   }
-  catch(...)
+  catch (...)
   {
     delete File;
     File = NULL;
@@ -2209,20 +2204,19 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   unsigned int Reply;
 
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FReply = 0;
+        assert(Self->FCommandReply == 0);
+        Self->FCommandReply = 0;
+        assert(Self->FWaitingForReply);
+        Self->FWaitingForReply = false;
+      }
     // discard up to one reply
     // (it should not happen here that two replies are posted anyway)
     while (ProcessMessage() && (FReply == 0));
     Reply = FReply;
-  }
-  __finally
-  {
-    FReply = 0;
-    assert(FCommandReply == 0);
-    FCommandReply = 0;
-    assert(FWaitingForReply);
-    FWaitingForReply = false;
   }
 
   if (Reply != 0)
@@ -2271,7 +2265,7 @@ void TFTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCo
       GotNonCommandReply(FReply);
     }
   }
-  catch(...)
+  catch (...)
   {
     // even if non-fatal error happens, we must process pending message,
     // so that we "eat" the reply message, so that it gets not mistakenly
@@ -2296,19 +2290,18 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 
   unsigned int Reply;
 
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FReply = 0;
+        Self->FCommandReply = 0;
+        assert(Self->FWaitingForReply);
+        Self->FWaitingForReply = false;
+      }
     unsigned int & ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;
-  }
-  __finally
-  {
-    FReply = 0;
-    FCommandReply = 0;
-    assert(FWaitingForReply);
-    FWaitingForReply = false;
   }
 
   return Reply;
@@ -2346,8 +2339,11 @@ void TFTPFileSystem::GotNonCommandReply(unsigned int Reply)
 void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
   std::wstring Error, unsigned int * Code, TStrings ** Response)
 {
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->ResetReply();
+      } BOOST_SCOPE_EXIT_END
     if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
     {
       assert(Reply == TFileZillaIntf::REPLY_OK);
@@ -2454,7 +2450,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
           MoreMessages = NULL;
         }
       }
-      catch(...)
+      catch (...)
       {
         delete MoreMessages;
         throw;
@@ -2471,14 +2467,13 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       {
         // for fatal error, it is essential that there is some message
         assert(!Error.empty());
-        ExtException * E = new ExtException(Error, MoreMessages, true);
-        try
+        ExtException *E = new ExtException(Error, MoreMessages, true);
         {
+            BOOST_SCOPE_EXIT ( (&E) )
+            {
+              delete E;
+            } BOOST_SCOPE_EXIT_END
           FTerminal->FatalError(E, "");
-        }
-        __finally
-        {
-          delete E;
         }
       }
       else
@@ -2497,10 +2492,6 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       *Response = FLastResponse;
       FLastResponse = new TStringList();
     }
-  }
-  __finally
-  {
-    ResetReply();
   }
 }
 //---------------------------------------------------------------------------
@@ -3051,8 +3042,11 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     THierarchicalStorage * Storage =
       FTerminal->Configuration->CreateScpStorage(false);
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Storage) )
+        {
+          delete Storage;
+        } BOOST_SCOPE_EXIT_END
       Storage->AccessMode = smRead;
 
       if (Storage->OpenSubKey(CertificateStorageKey, false) &&
@@ -3060,10 +3054,6 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       {
         RequestResult = 1;
       }
-    }
-    __finally
-    {
-      delete Storage;
     }
 
     if (RequestResult == 0)
@@ -3124,18 +3114,17 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       {
         THierarchicalStorage * Storage =
           FTerminal->Configuration->CreateScpStorage(false);
-        try
         {
+            BOOST_SCOPE_EXIT ( (&Storage) )
+            {
+              delete Storage;
+            } BOOST_SCOPE_EXIT_END
           Storage->AccessMode = smReadWrite;
 
           if (Storage->OpenSubKey(CertificateStorageKey, true))
           {
             Storage->WriteString(FSessionInfo.CertificateFingerprint, "");
           }
-        }
-        __finally
-        {
-          delete Storage;
         }
       }
     }
@@ -3180,7 +3169,7 @@ bool TFTPFileSystem::HandleListData(const char * Path,
           {
             File->Rights->Text = Entry->Permissions + 1;
           }
-          catch(...)
+          catch (...)
           {
             // ignore permissions errors with FTP
           }
@@ -3246,7 +3235,7 @@ bool TFTPFileSystem::HandleListData(const char * Path,
 
         File->Complete();
       }
-      catch (std::exception & E)
+      catch (const std::exception & E)
       {
         delete File;
         std::wstring EntryData =

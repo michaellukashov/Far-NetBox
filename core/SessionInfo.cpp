@@ -1,6 +1,10 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
+
 #include <stdio.h>
 
 #include "Common.h"
@@ -131,7 +135,7 @@ public:
 
             FLog->Add(llAction, L"      <file>");
             FLog->Add(llAction, FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName())));
-            // FIXME FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType()))));
+            FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1))));
             if (!File->GetIsDirectory())
             {
               FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize())));
@@ -175,7 +179,7 @@ public:
     Close(Committed);
   }
 
-  void Rollback(std::exception * E)
+  void Rollback(const std::exception * E)
   {
     assert(FErrorMessages == NULL);
     FErrorMessages = new TStringList();
@@ -183,7 +187,7 @@ public:
     {
       FErrorMessages->Add(::MB2W(E->what()));
     }
-    ExtException * EE = dynamic_cast<ExtException *>(E);
+    const ExtException * EE = dynamic_cast<const ExtException *>(E);
     if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
     {
       FErrorMessages->AddStrings(EE->GetMoreMessages());
@@ -338,7 +342,7 @@ void TSessionAction::Commit()
   }
 }
 //---------------------------------------------------------------------------
-void TSessionAction::Rollback(std::exception * E)
+void TSessionAction::Rollback(const std::exception * E)
 {
   if (FRecord != NULL)
   {
@@ -545,6 +549,7 @@ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   FLoggingActions = false;
   FClosed = false;
   FPendingActions = new TList();
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TSessionLog::~TSessionLog()
@@ -590,7 +595,7 @@ void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring & Line)
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
+void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
 {
   if (FTopIndex < 0)
   {
@@ -625,7 +630,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring & Line)
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
-  TDoAddLog func)
+  const doaddlog_slot_type &func)
 {
   std::wstring Prefix;
 
@@ -633,10 +638,11 @@ void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
   {
     Prefix = L"[" + GetName() + L"] ";
   }
-
+  doaddlog_signal_type sig;
+  sig.connect(func);
   while (!Line.empty())
   {
-    // FIXME (f)(Type, Prefix + CutToChar(Line, '\n', false));
+    sig(Type, Prefix + CutToChar(Line, '\n', false));
   }
 }
 //---------------------------------------------------------------------------
@@ -649,27 +655,24 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
     {
       if (FParent != NULL)
       {
-        // FIXME DoAdd(Type, Line, &DoAddToParent);
+        DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToParent, this, _1, _2));
       }
       else
       {
         TGuard Guard(FCriticalSection);
 
-        // FIXME BeginUpdate();
-
-        try
+        BeginUpdate();
         {
-          // FIXME DoAdd(Type, Line, DoAddToSelf);
-        }
-        catch(...)
-        {
-          DeleteUnnecessary();
-
-          // FIXME EndUpdate();
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->DeleteUnnecessary();
+            Self->EndUpdate();
+          } BOOST_SCOPE_EXIT_END
+          DoAdd(Type, Line, boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
         }
       }
     }
-    catch (exception &E)
+    catch (const std::exception &E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
@@ -677,7 +680,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
       {
         throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
       }
-      catch (std::exception &E)
+      catch (const std::exception &E)
       {
         AddException(&E);
         FUI->HandleExtendedException(&E);
@@ -686,7 +689,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::AddException(exception * E)
+void TSessionLog::AddException(const std::exception * E)
 {
   if (E != NULL)
   {
@@ -820,7 +823,7 @@ void TSessionLog::OpenLogFile()
       throw ExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
     }
   }
-  catch (exception & E)
+  catch (const std::exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
@@ -830,7 +833,7 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
     }
-    catch (std::exception & E)
+    catch (const std::exception & E)
     {
       AddException(&E);
       FUI->HandleExtendedException(&E);
@@ -841,17 +844,20 @@ void TSessionLog::OpenLogFile()
 //---------------------------------------------------------------------------
 void TSessionLog::StateChange()
 {
-  if (FOnStateChange != NULL)
+  if (!FOnStateChange.empty())
   {
-    // FIXME FOnStateChange(this);
+    FOnStateChange(this);
   }
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DeleteUnnecessary()
 {
-  // BeginUpdate();
-  try
+  BeginUpdate();
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
     if (!GetLogging() || (FParent != NULL))
     {
       Clear();
@@ -864,10 +870,6 @@ void TSessionLog::DeleteUnnecessary()
         FTopIndex++;
       }
     }
-  }
-  catch(...)
-  {
-    // EndUpdate();
   }
 }
 //---------------------------------------------------------------------------
@@ -891,20 +893,24 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 {
   TGuard Guard(FCriticalSection);
 
-  // FIXME BeginUpdate();
-  try
+  BeginUpdate();
   {
-    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), (TDoAddLog)&TSessionLog::DoAddToSelf);
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->DeleteUnnecessary();
+
+      Self->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
+    #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
     AddSeparator();
     ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Storage) )
+      {
+        delete Storage;
+      } BOOST_SCOPE_EXIT_END
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
-    }
-    catch(...)
-    {
-      delete Storage;
     }
     ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
     AddSeparator();
@@ -1035,12 +1041,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     AddSeparator();
 
     #undef ADF
-  }
-  catch(...)
-  {
-    DeleteUnnecessary();
-
-    // EndUpdate();
   }
 }
 //---------------------------------------------------------------------------

@@ -5,6 +5,9 @@
 #include <shlobj.h>
 #include <Common.h>
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "GUITools.h"
 #include "GUIConfiguration.h"
 #include <TextsCore.h>
@@ -52,8 +55,13 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     TRegistryStorage * Storage = NULL;
     TSessionData * ExportData = NULL;
     TRegistryStorage * SourceStorage = NULL;
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
+        {
+          delete Storage;
+          delete ExportData;
+          delete SourceStorage;
+        } BOOST_SCOPE_EXIT_END
       Storage = new TRegistryStorage(Configuration->GetPuttySessionsKey());
       Storage->SetAccessMode(smReadWrite);
       // make it compatible with putty
@@ -101,12 +109,6 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
           SessionName = GUIConfiguration->GetPuttySession();
         }
       }
-    }
-    catch (...)
-    {
-      delete Storage;
-      delete ExportData;
-      delete SourceStorage;
     }
 
     if (!Params.empty())
@@ -160,7 +162,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
 }
 //---------------------------------------------------------------------------
 bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
-  const std::wstring Params, TProcessMessagesEvent ProcessMessages)
+  const std::wstring Params, const processmessages_signal_type &ProcessMessages)
 {
   bool Result = false;
 /* // FIXME 
@@ -200,7 +202,7 @@ bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
 }
 //---------------------------------------------------------------------------
 bool ExecuteShellAndWait(HWND Handle, const std::wstring Command,
-  TProcessMessagesEvent ProcessMessages)
+  const processmessages_signal_type &ProcessMessages)
 {
   std::wstring Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);

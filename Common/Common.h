@@ -4,35 +4,13 @@
 #include <WinBase.h>
 
 // #include <boost/type_traits/is_base_of.hpp>
+#include "boostdefines.hpp"
+#include <boost/signals/signal3.hpp>
 
 #include "Classes.h"
 
 //---------------------------------------------------------------------------
-inline int __cdecl debug_printf(const wchar_t *format, ...)
-{
-    (void)format;
-    int len = 0;
-#ifdef NETBOX_DEBUG
-    va_list args;
-    va_start(args, format);
-    len = _vscwprintf(format, args);
-    std::wstring buf(len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[0], buf.size(), format, args);
-
-    va_end(args);
-    OutputDebugStringW(buf.c_str());
-#endif
-    return len;
-}
-
-#ifdef NETBOX_DEBUG
-#define DEBUG_PRINTF(format, ...) debug_printf(format, __VA_ARGS__);
-#else
-#define DEBUG_PRINTF(format, ...)
-#endif
-
-//---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(NULL, "")
+#define EXCEPTION throw ExtException(NULL, L"")
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
   strncpy(dest, source, sizeof(dest)); \
@@ -48,6 +26,7 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+
 //---------------------------------------------------------------------------
 extern const char EngShortMonthNames[12][4];
 //---------------------------------------------------------------------------
@@ -66,9 +45,10 @@ std::wstring DelimitStr(std::wstring Str, std::wstring Chars);
 std::wstring ShellDelimitStr(std::wstring Str, char Quote);
 void OemToAnsi(std::wstring & Str);
 void AnsiToOem(std::wstring & Str);
-std::wstring ExceptionLogString(std::exception *E);
+std::wstring ExceptionLogString(const std::exception *E);
 bool IsNumber(const std::wstring Str);
 std::wstring SystemTemporaryDirectory();
+std::wstring SysErrorMessage(int code);
 std::wstring GetShellFolderPath(int CSIdl);
 std::wstring StripPathQuotes(const std::wstring Path);
 std::wstring AddPathQuotes(std::wstring Path);
@@ -87,6 +67,12 @@ std::wstring ExtractDirectory(const std::wstring &path, wchar_t delimiter = '/')
 std::wstring ExtractFilename(const std::wstring &path, wchar_t delimiter = '/');
 std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter = '/');
 std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter = '/');
+
+std::wstring IncludeTrailingBackslash(const std::wstring Str);
+std::wstring ExcludeTrailingBackslash(const std::wstring Str);
+std::wstring ExtractFileDir(const std::wstring Str);
+std::wstring ExtractFilePath(const std::wstring Str);
+std::wstring GetCurrentDir();
 
 bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2);
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2);
@@ -127,11 +113,13 @@ __int64 Round(double Number);
     TWin32FindData FindData;
 }; */
 //---------------------------------------------------------------------------
-typedef void (* TProcessLocalFileEvent)
-  (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
+// typedef void (* TProcessLocalFileEvent)
+  // (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
+typedef boost::signal3<void, const std::wstring, const WIN32_FIND_DATA, void *> processlocalfile_signal_type;
+typedef processlocalfile_signal_type::slot_type processlocalfile_slot_type;
 bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec);
 void ProcessLocalDirectory(std::wstring DirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param = NULL, int FindAttrs = -1);
+  const processlocalfile_slot_type &CallBackFunc, void * Param = NULL, int FindAttrs = -1);
 //---------------------------------------------------------------------------
 enum TDSTMode
 {
@@ -155,6 +143,17 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 std::wstring FixedLenDateTimeFormat(const std::wstring & Format);
 int CompareFileTime(TDateTime T1, TDateTime T2);
+
+TDateTime Date();
+void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
+    unsigned short &M, unsigned short &D);
+void DecodeTime(const TDateTime &DateTime, unsigned short &H,
+    unsigned short &N, unsigned short &S, unsigned short &MS);
+// TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D);
+// TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
+
+std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
+
 //---------------------------------------------------------------------------
 struct TMethod
 {
@@ -230,12 +229,17 @@ struct TPasLibModule
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #endif
-#define USEDPARAM(p) ((p) == (p))
+#define USEDPARAM(p) ((void)p)
+
 //---------------------------------------------------------------------------
 static void Abort()
 {
     throw std::exception();
 }
+
+//---------------------------------------------------------------------------
+void Error(int ErrorID, int data);
+
 //---------------------------------------------------------------------------
 class TCompThread : public TObject
 {
@@ -264,10 +268,10 @@ int LastDelimiter(const std::wstring str, const std::wstring delim);
 
 bool CompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompare(const std::wstring str1, const std::wstring str2);
-bool AnsiCompareStr(const std::wstring str1, const std::wstring str2);
+int AnsiCompareStr(const std::wstring str1, const std::wstring str2);
 bool AnsiSameText(const std::wstring str1, const std::wstring str2);
 bool SameText(const std::wstring str1, const std::wstring str2);
-bool AnsiCompareText(const std::wstring str1, const std::wstring str2);
+int AnsiCompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2);
 
@@ -326,4 +330,6 @@ bool InheritsFrom(const Base *t)
 //---------------------------------------------------------------------------
 std::wstring Format(const wchar_t *format, ...);
 std::wstring FmtLoadStr(int id, ...);
+//---------------------------------------------------------------------------
+std::wstring WrapText(const std::wstring Line, int MaxCol = 40);
 //---------------------------------------------------------------------------

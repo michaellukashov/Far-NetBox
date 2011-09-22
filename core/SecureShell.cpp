@@ -1,6 +1,10 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
+
 #include "PuttyIntf.h"
 #include "Exceptions.h"
 #include "Interface.h"
@@ -36,14 +40,13 @@ TSecureShell::TSecureShell(TSessionUI* UI,
   Pending = NULL;
   FBackendHandle = NULL;
   ResetConnection();
-  FOnCaptureOutput = NULL;
-  FOnReceive = NULL;
   FConfig = new Config();
   memset(FConfig, 0, sizeof(*FConfig));
   FSocket = INVALID_SOCKET;
   FSocketEvent = CreateEvent(NULL, false, false, NULL);
   FFrozen = false;
   FSimple = false;
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TSecureShell::~TSecureShell()
@@ -358,7 +361,7 @@ void TSecureShell::Init()
       // unless this is tunnel session, it must be safe to send now
       assert(FBackend->sendok(FBackendHandle) || !FSessionData->GetTunnelPortFwd().empty());
     }
-    catch(std::exception & E)
+    catch (const std::exception & E)
     {
       if (FAuthenticating && !FAuthenticationLog.empty())
       {
@@ -370,7 +373,7 @@ void TSecureShell::Init()
       }
     }
   }
-  catch(std::exception & E)
+  catch (const std::exception & E)
   {
     if (FAuthenticating)
     {
@@ -503,7 +506,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   else if (Index == 6)
   {
     assert(Prompts->GetCount() == 1);
-    Prompts->SetString(0, LoadStr(PASSWORD_PROMPT));
+    Prompts->PutString(0, LoadStr(PASSWORD_PROMPT));
     PromptKind = pkPassword;
   }
   else if (Index == 7)
@@ -556,7 +559,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       // use empty username if no username was filled on login dialog
       // and GSSAPI auth is enabled, hence there's chance that the server can
       // deduce the username otherwise
-      Results->SetString(0, L"");
+      Results->PutString(0, L"");
       Result = true;
     }
   }
@@ -570,7 +573,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->SetString(0, FSessionData->GetPassword());
+      Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
     else if (Instructions.empty() && !InstructionsRequired && (Prompts->GetCount() == 0))
@@ -586,7 +589,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
       Result = true;
-      Results->SetString(0, FSessionData->GetPassword());
+      Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
     }
   }
@@ -645,17 +648,17 @@ void TSecureShell::CWrite(const char * Data, int Length)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::RegisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive == NULL);
-  FOnReceive = Handler;
+  assert(FOnReceive.empty());
+  FOnReceive.connect(Handler);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::UnregisterReceiveHandler(const notify_slot_type &Handler)
 {
-  assert(FOnReceive == Handler);
+  assert(!FOnReceive.empty());
   USEDPARAM(Handler);
-  FOnReceive = NULL;
+  FOnReceive.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
 void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
@@ -703,23 +706,22 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
       PendLen += Len;
     }
 
-    if (FOnReceive != NULL)
+    if (!FOnReceive.empty())
     {
       if (!FFrozen)
       {
         FFrozen = true;
-        try
         {
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->FFrozen = false;
+          } BOOST_SCOPE_EXIT_END
           do
           {
             FDataWhileFrozen = false;
-            // FIXME FOnReceive(NULL);
+            FOnReceive(NULL);
           }
           while (FDataWhileFrozen);
-        }
-        catch (...)
-        {
-          FFrozen = false;
         }
       }
       else
@@ -753,8 +755,11 @@ int TSecureShell::Receive(char * Buf, int Len)
     OutPtr = Buf;
     OutLen = Len;
 
-    try
     {
+        BOOST_SCOPE_EXIT ( (&OutPtr) )
+        {
+          OutPtr = NULL;
+        } BOOST_SCOPE_EXIT_END
       /*
        * See if the pending-input block contains some of what we
        * need.
@@ -790,10 +795,6 @@ int TSecureShell::Receive(char * Buf, int Len)
 
       // This seems ambiguous
       if (Len <= 0) FatalError(LoadStr(LOST_CONNECTION));
-    }
-    catch (...)
-    {
-      OutPtr = NULL;
     }
   };
   if (Configuration->GetActualLogProtocol() >= 1)
@@ -859,13 +860,16 @@ void TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
+int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
 {
   FWaiting++;
 
   int Answer;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FWaiting--;
+    } BOOST_SCOPE_EXIT_END
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError);
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
@@ -873,10 +877,6 @@ int TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Params.TimerAnswers = qaAbort;
     Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
-  }
-  catch (...)
-  {
-    FWaiting--;
   }
   return Answer;
 }
@@ -926,7 +926,8 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent(L"Waiting for dispatching send buffer timed out, asking user what to do.");
-      int Answer = -1; // FIXME TimeoutPrompt((TQueryParamsTimerEvent)&TSecureShell::SendBuffer);
+      queryparamstimer_slot_type slot = boost::bind(&TSecureShell::SendBuffer, this, _1);
+      int Answer = TimeoutPrompt(&slot);
       switch (Answer)
       {
         case qaRetry:
@@ -1096,9 +1097,9 @@ void TSecureShell::ClearStdError()
 void TSecureShell::CaptureOutput(TLogLineType Type,
   const std::wstring & Line)
 {
-  if (FOnCaptureOutput != NULL)
+  if (!FOnCaptureOutput.empty())
   {
-    // FIXME FOnCaptureOutput(Line, (Type == llStdError));
+    FOnCaptureOutput(Line, (Type == llStdError));
   }
   FLog->Add(Type, Line);
 }
@@ -1366,7 +1367,8 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent(L"Waiting for data timed out, asking user what to do.");
-      int Answer = -1; // FIXME TimeoutPrompt(&TPoolForDataEvent::PoolForData&Event.PoolForData);
+      queryparamstimer_slot_type slot = boost::bind(&TPoolForDataEvent::PoolForData, &Event, _1);
+      int Answer = TimeoutPrompt(&slot);
       switch (Answer)
       {
         case qaRetry:
@@ -1502,8 +1504,11 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     int HandleCount;
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Handles) )
+      {
+        sfree(Handles);
+      } BOOST_SCOPE_EXIT_END
       Handles = sresize(Handles, HandleCount + 1, HANDLE);
       Handles[HandleCount] = FSocketEvent;
       unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
@@ -1563,10 +1568,6 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
 
         MSec = 0;
       }
-    }
-    catch (...)
-    {
-      sfree(Handles);
     }
 
     unsigned int TicksAfter = GetTickCount();

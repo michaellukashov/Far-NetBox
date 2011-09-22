@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include "Common.h"
 #include "Terminal.h"
 #include "Queue.h"
@@ -69,7 +72,7 @@ public:
   }
 
   TTerminal * Terminal;
-  exception * E;
+  const std::exception * E;
 };
 //---------------------------------------------------------------------------
 class TTerminalItem : public TSignalThread
@@ -96,6 +99,7 @@ protected:
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
+  TTerminalItem *Self;
 
   virtual void ProcessEvent();
   virtual void Finished();
@@ -109,12 +113,12 @@ protected:
     std::wstring Name, std::wstring Instructions,
     TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
-    exception * E, void * Arg);
+    const std::exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const std::wstring & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  void OperationProgress(TFileOperationProgressType & ProgressData,
-    TCancelStatus & Cancel);
+  void OperationProgress(TFileOperationProgressType &ProgressData,
+    TCancelStatus &Cancel);
 };
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -129,7 +133,7 @@ int TSimpleThread::ThreadProc(void * Thread)
   }
   catch(...)
   {
-    // we do not expect thread to be terminated with exception
+    // we do not expect thread to be terminated with std::exception
     assert(false);
   }
   SimpleThread->FFinished = true;
@@ -141,8 +145,8 @@ TSimpleThread::TSimpleThread() :
   FThread(NULL), FFinished(true)
 {
   unsigned ThreadID;
-  // FIXME FThread = reinterpret_cast<HANDLE>(
-    // StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+  FThread = reinterpret_cast<HANDLE>(
+    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()
@@ -253,12 +257,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
-  FOnQueryUser = NULL;
-  FOnPromptUser = NULL;
-  FOnShowExtendedException = NULL;
-  FOnQueueItemUpdate = NULL;
-  FOnListUpdate = NULL;
-  FOnEvent = NULL;
   FLastIdle = Now();
   FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
 
@@ -270,6 +268,7 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals = new TList();
 
   FItemsSection = new TCriticalSection();
+  Self = this;
 
   Start();
 }
@@ -446,8 +445,14 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
   TTerminalQueueStatus * Status = new TTerminalQueueStatus();
   try
   {
-    try
     {
+        BOOST_SCOPE_EXIT ( (&Current) )
+        {
+          if (Current != NULL)
+          {
+            delete Current;
+          }
+        } BOOST_SCOPE_EXIT_END
       TGuard Guard(FItemsSection);
 
       TQueueItem * Item;
@@ -474,13 +479,6 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
         {
           Status->Add(new TQueueItemProxy(this, Item));
         }
-      }
-    }
-    catch(...)
-    {
-      if (Current != NULL)
-      {
-        delete Current;
       }
     }
   }
@@ -772,25 +770,25 @@ void TTerminalQueue::ProcessEvent()
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
 {
-  if (GetOnQueueItemUpdate() != NULL)
+  if (!GetOnQueueItemUpdate().empty())
   {
-    // FIXME OnQueueItemUpdate(this, Item);
+    GetOnQueueItemUpdate()(this, Item);
   }
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoListUpdate()
 {
-  if (GetOnListUpdate() != NULL)
+  if (!GetOnListUpdate().empty())
   {
-    // FIXME OnListUpdate(this);
+    GetOnListUpdate()(this);
   }
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoEvent(TQueueEvent Event)
 {
-  if (GetOnEvent() != NULL)
+  if (!GetOnEvent().empty())
   {
-    // FIXME OnEvent(this, Event);
+    GetOnEvent()(this, Event);
   }
 }
 //---------------------------------------------------------------------------
@@ -798,9 +796,9 @@ void TTerminalQueue::DoQueryUser(TObject * Sender,
   const std::wstring Query, TStrings * MoreMessages, int Answers,
   const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg)
 {
-  if (GetOnQueryUser() != NULL)
+  if (!GetOnQueryUser().empty())
   {
-    // FIXME OnQueryUser(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
+    GetOnQueryUser()(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
   }
 }
 //---------------------------------------------------------------------------
@@ -808,18 +806,18 @@ void TTerminalQueue::DoPromptUser(TTerminal * Terminal,
   TPromptKind Kind, std::wstring Name, std::wstring Instructions,
   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg)
 {
-  if (GetOnPromptUser() != NULL)
+  if (!GetOnPromptUser().empty())
   {
-    // FIXME OnPromptUser(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
+    GetOnPromptUser()(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
   }
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoShowExtendedException(
-  TTerminal * Terminal, exception * E, void * Arg)
+  TTerminal * Terminal, const std::exception * E, void * Arg)
 {
-  if (GetOnShowExtendedException() != NULL)
+  if (!GetOnShowExtendedException().empty())
   {
-    // FIXME OnShowExtendedException(Terminal, E, Arg);
+    GetOnShowExtendedException()(Terminal, E, Arg);
   }
 }
 //---------------------------------------------------------------------------
@@ -862,7 +860,7 @@ public:
     TTerminalItem * Item, const std::wstring & Name);
 
 protected:
-  virtual bool DoQueryReopen(exception * E);
+  virtual bool DoQueryReopen(const std::exception * E);
 
 private:
   TTerminalItem * FItem;
@@ -875,7 +873,7 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal,
 {
 }
 //---------------------------------------------------------------------------
-bool TBackgroundTerminal::DoQueryReopen(exception * /*E*/)
+bool TBackgroundTerminal::DoQueryReopen(const std::exception * /*E*/)
 {
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
@@ -898,6 +896,7 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   FCriticalSection(NULL), FUserAction(NULL)
 {
   FCriticalSection = new TCriticalSection();
+  Self = this;
 
   FTerminal = new TBackgroundTerminal(FQueue->FTerminal, Queue->FSessionData,
     FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
@@ -972,7 +971,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch(exception & E)
+  catch (const std::exception & E)
   {
     // do not show error messages, if task was canceled anyway
     // (for example if transfer is cancelled during reconnection attempts)
@@ -1090,21 +1089,18 @@ bool TTerminalItem::WaitForUserAction(
 
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) )
+    {
+      Self->FUserAction = NULL;
+      Self->FItem->SetStatus(PrevStatus);
+    } BOOST_SCOPE_EXIT_END
     FUserAction = UserAction;
-
     FItem->SetStatus(ItemStatus);
     FQueue->DoEvent(qePendingUserAction);
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
   }
-  catch(...)
-  {
-    FUserAction = NULL;
-    FItem->SetStatus(PrevStatus);
-  }
-
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1181,7 +1177,7 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalShowExtendedException(
-  TTerminal * Terminal, exception * E, void * Arg)
+  TTerminal * Terminal, const std::exception * E, void * Arg)
 {
   USEDPARAM(Arg);
   assert(Arg == NULL);
@@ -1206,7 +1202,7 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::OperationProgress(
-  TFileOperationProgressType & ProgressData, TCancelStatus & Cancel)
+  TFileOperationProgressType &ProgressData, TCancelStatus &Cancel)
 {
   if (FPause && !FTerminated && !FCancel)
   {
@@ -1217,16 +1213,15 @@ void TTerminalItem::OperationProgress(
     FPause = false;
     ProgressData.Suspend();
 
-    try
     {
+      BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) (&ProgressData) )
+      {
+        Self->FItem->SetStatus(PrevStatus);
+        ProgressData.Resume();
+      } BOOST_SCOPE_EXIT_END
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
-    }
-    catch(...)
-    {
-      FItem->SetStatus(PrevStatus);
-      ProgressData.Resume();
     }
   }
 
@@ -1266,6 +1261,7 @@ TQueueItem::TQueueItem() :
 {
   FSection = new TCriticalSection();
   FInfo = new TInfo();
+  Self = this;
 }
 //---------------------------------------------------------------------------
 TQueueItem::~TQueueItem()
@@ -1307,13 +1303,14 @@ void TQueueItem::SetStatus(TStatus Status)
 }
 //---------------------------------------------------------------------------
 void TQueueItem::SetProgress(
-  TFileOperationProgressType & ProgressData)
+  TFileOperationProgressType &ProgressData)
 {
   {
     TGuard Guard(FSection);
 
     assert(FProgressData != NULL);
-    *FProgressData = ProgressData;
+    delete FProgressData;
+    FProgressData = &ProgressData;
     FProgressData->Reset();
 
     if (FCPSLimit >= 0)
@@ -1332,7 +1329,7 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
   assert(Proxy->FProgressData != NULL);
   if (FProgressData != NULL)
   {
-    *Proxy->FProgressData = *FProgressData;
+    Proxy->FProgressData = FProgressData;
   }
   else
   {
@@ -1348,22 +1345,21 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
 //---------------------------------------------------------------------------
 void TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      {
+        TGuard Guard(Self->FSection);
+        delete Self->FProgressData;
+        Self->FProgressData = NULL;
+      }
+    } BOOST_SCOPE_EXIT_END
     {
       assert(FProgressData == NULL);
       TGuard Guard(FSection);
-      FProgressData = new TFileOperationProgressType();
+      FProgressData = new TFileOperationProgressType;
     }
     DoExecute(TerminalItem->FTerminal);
-  }
-  catch(...)
-  {
-    {
-      TGuard Guard(FSection);
-      delete FProgressData;
-      FProgressData = NULL;
-    }
   }
 }
 //---------------------------------------------------------------------------
@@ -1380,8 +1376,9 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   FQueueStatus(NULL), FInfo(NULL),
   FProcessingUserAction(false), FUserData(NULL)
 {
-  FProgressData = new TFileOperationProgressType();
+  FProgressData = new TFileOperationProgressType;
   FInfo = new TQueueItem::TInfo();
+  Self = this;
 
   Update();
 }
@@ -1392,7 +1389,7 @@ TQueueItemProxy::~TQueueItemProxy()
   delete FInfo;
 }
 //---------------------------------------------------------------------------
-TFileOperationProgressType * TQueueItemProxy::GetProgressData()
+TFileOperationProgressType *TQueueItemProxy::GetProgressData()
 {
   return (FProgressData->Operation == foNone) ? NULL : FProgressData;
 }
@@ -1465,13 +1462,12 @@ bool TQueueItemProxy::ProcessUserAction(void * Arg)
 
   bool Result;
   FProcessingUserAction = true;
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+      Self->FProcessingUserAction = false;
+    } BOOST_SCOPE_EXIT_END
     Result = FQueue->ItemProcessUserAction(FQueueItem, Arg);
-  }
-  catch(...)
-  {
-    FProcessingUserAction = false;
   }
   return Result;
 }

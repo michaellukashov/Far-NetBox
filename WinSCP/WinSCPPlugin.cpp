@@ -1,5 +1,10 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+#include <boost/bind.hpp>
+
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarConfiguration.h"
@@ -33,6 +38,7 @@ TMessageParams::TMessageParams()
 TWinSCPPlugin::TWinSCPPlugin(HWND AHandle): TCustomFarPlugin(AHandle)
 {
   FInitialized = false;
+  Self = this;
   CreateMutex(NULL, false, L"WinSCPFar");
 }
 //---------------------------------------------------------------------------
@@ -64,7 +70,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     CoreInitialize();
     FInitialized = true;
   }
-  catch(exception & E)
+  catch (const std::exception & E)
   {
     HandleException(&E);
   }
@@ -97,8 +103,11 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
   bool Change = false;
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      {
+        delete MenuItems;
+      } BOOST_SCOPE_EXIT_END
     int MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
     int MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
     int MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
@@ -190,10 +199,6 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
     }
     while (Result >= 0);
   }
-  catch(...)
-  {
-    delete MenuItems;
-  }
 
   return Change;
 }
@@ -257,8 +262,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       }
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
-        wstring Directory;
-        wstring Name = (wchar_t *)Item;
+        std::wstring Directory;
+        std::wstring Name = (wchar_t *)Item;
         if (OpenFrom == OPEN_SHORTCUT)
         {
           int P = Name.find_first_of(L"\1");
@@ -307,7 +312,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     delete FileSystem;
     throw;
@@ -319,8 +324,11 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      {
+        delete MenuItems;
+      } BOOST_SCOPE_EXIT_END
     TWinSCPFileSystem * FileSystem;
     TWinSCPFileSystem * AnotherFileSystem;
     FileSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
@@ -443,9 +451,9 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
       else if (Result == MPageant || Result == MPuttygen)
       {
-        wstring Path = (Result == MPageant) ?
+        std::wstring Path = (Result == MPageant) ?
           FarConfiguration->GetPageantPath() : FarConfiguration->GetPuttygenPath();
-        wstring Program, Params, Dir;
+        std::wstring Program, Params, Dir;
         SplitCommand(Path, Program, Params, Dir);
         ExecuteShell(Program, Params);
       }
@@ -470,19 +478,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
     }
   }
-  catch(...)
-  {
-    delete MenuItems;
-  }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::ShowExtendedException(exception * E)
+void TWinSCPPlugin::ShowExtendedException(const std::exception * E)
 {
 // FIXME
 /*
   if (!E->Message.empty())
   {
-    if (E->InheritsFrom(__classid(exception)))
+    if (E->InheritsFrom(__classid(std::exception)))
     {
       if (!E->InheritsFrom(__classid(EAbort)))
       {
@@ -496,7 +500,7 @@ void TWinSCPPlugin::ShowExtendedException(exception * E)
           MoreMessages = ((ExtException *)E)->MoreMessages;
         }
 
-        wstring Message = TranslateExceptionMessage(E);
+        std::wstring Message = TranslateExceptionMessage(E);
         MoreMessageDialog(Message, MoreMessages, Type, qaOK);
       }
     }
@@ -513,7 +517,7 @@ void TWinSCPPlugin::OldFar()
   throw ExtException(FORMAT(GetMsg(OLD_FAR).c_str(), FormatFarVersion(GetMinFarVersion()).c_str()));
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::HandleException(exception * E, int OpMode)
+void TWinSCPPlugin::HandleException(const std::exception * E, int OpMode)
 {
   if (((OpMode & OPM_FIND) == 0)) // || E->InheritsFrom(__classid(EFatal)))
   {
@@ -545,9 +549,9 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
     for (unsigned int i = 0; i < Data.Params->AliasesCount; i++)
     {
       if ((static_cast<int>(Data.Params->Aliases[i].Button) == Data.Buttons[Result]) &&
-          (Data.Params->Aliases[i].OnClick != NULL))
+          (!Data.Params->Aliases[i].OnClick.empty()))
       {
-        // FIXME Data.Params->Aliases[i].OnClick(NULL);
+        Data.Params->Aliases[i].OnClick(NULL);
         Close = false;
         break;
       }
@@ -555,14 +559,17 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::MoreMessageDialog(wstring Str,
+int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
   int Result;
   TStrings * ButtonLabels = new TStringList();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&ButtonLabels) )
+      {
+        delete ButtonLabels;
+      } BOOST_SCOPE_EXIT_END
     unsigned int Flags = 0;
 
     if (Params != NULL)
@@ -623,7 +630,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->SetObject(ButtonLabels->GetCount() - 1, (TObject*)true); \
+          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, (TObject*)true); \
           NeverAskAgainPending = false; \
         } \
       }
@@ -656,7 +663,7 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {
-            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+            ButtonLabels->PutString(bi, Params->Aliases[ai].Alias);
             break;
           }
         }
@@ -690,9 +697,10 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
     }
 
     FarParams.Token = &Data;
-    // FIXME FarParams.SetClickEvent(MessageClick);
+    farmessageclick_slot_type slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
+    FarParams.ClickEvent = &slot;
 
-    wstring DialogStr = Str;
+    std::wstring DialogStr = Str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))
     {
       FarParams.MoreMessages = MoreMessages;
@@ -722,10 +730,6 @@ int TWinSCPPlugin::MoreMessageDialog(wstring Str,
       assert(NeverAskAgainCheck);
       Result = qaNeverAskAgain;
     }
-  }
-  catch(...)
-  {
-    delete ButtonLabels;
   }
   return Result;
 }

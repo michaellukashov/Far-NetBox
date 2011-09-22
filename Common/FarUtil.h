@@ -21,7 +21,6 @@
 #include "FarPlugin.h"
 #include "FarSettings.h"
 #include "FarDialog.h"
-#include "FarUtil.h"
 
 /**
  * File read/write wrapper
@@ -372,36 +371,15 @@ void AppendChar(std::string &str, const char ch);
 void AppendPathDelimiterW(std::wstring &str);
 void AppendPathDelimiterA(std::string &str);
 
-std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
-std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
-
 void CheckAbortEvent(HANDLE *AbortEvent);
 
 std::wstring ExpandEnvVars(const std::wstring& str);
 
 //---------------------------------------------------------------------------
 
-std::wstring IncludeTrailingBackslash(const std::wstring Str);
-std::wstring ExcludeTrailingBackslash(const std::wstring Str);
-std::wstring ExtractFileDir(const std::wstring Str);
-std::wstring ExtractFilePath(const std::wstring Str);
-std::wstring GetCurrentDir();
-
 std::wstring StringOfChar(const wchar_t c, size_t len);
 
 void RaiseLastOSError();
-
-TDateTime Date();
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-    unsigned short &M, unsigned short &D);
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-    unsigned short &N, unsigned short &S, unsigned short &MS);
-// TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D);
-// TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
-
-std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
-
-std::wstring SysErrorMessage(int code);
 
 char *StrNew(const char *str);
 

@@ -19,13 +19,6 @@ public:
   TNamedObject(std::wstring aName): TPersistent(), Name(aName) {}
   void MakeUniqueIn(TNamedObjectList * List);
 };
-//---------------------------------------------------------------------------
-enum TListNotification
-{
-  lnAdded,
-  lnExtracted,
-  lnDeleted,
-};
 
 //---------------------------------------------------------------------------
 class TNamedObjectList : public TObjectList

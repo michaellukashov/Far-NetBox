@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 // #include <LanguagesDEPfix.hpp>
 #include "GUIConfiguration.h"
 #include "GUITools.h"
@@ -409,8 +412,11 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
     {
       if (Storage->OpenSubKey(Name, false))
       {
-        try
         {
+            BOOST_SCOPE_EXIT ( (&Storage) )
+            {
+              Storage->CloseSubKey();
+            } BOOST_SCOPE_EXIT_END
           Name = Storage->ReadString(L"Name", Name);
           CopyParam->Load(Storage);
 
@@ -419,10 +425,6 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
             Rule = new TCopyParamRule();
             Rule->Load(Storage);
           }
-        }
-        catch(...)
-        {
-          Storage->CloseSubKey();
         }
       }
     }
@@ -447,8 +449,11 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
-      try
       {
+        BOOST_SCOPE_EXIT ( (&Storage) )
+        {
+          Storage->CloseSubKey();
+        } BOOST_SCOPE_EXIT_END
         const TCopyParamType * CopyParam = GetCopyParam(Index);
         const TCopyParamRule * Rule = GetRule(Index);
 
@@ -459,10 +464,6 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
         {
           Rule->Save(Storage);
         }
-      }
-      catch(...)
-      {
-        Storage->CloseSubKey();
       }
     }
   }
@@ -614,7 +615,14 @@ std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } catch(...) { Storage->CloseSubKey(); }
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  { \
+      BOOST_SCOPE_EXIT ( (&Storage) ) \
+      { \
+        Storage->CloseSubKey(); \
+      } BOOST_SCOPE_EXIT_END \
+      BLOCK \
+  }
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
     KEY(bool,     ContinueOnError); \
@@ -650,8 +658,11 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
     FDefaultCopyParam.Save(Storage);
 
     if (FCopyParamListDefaults)
@@ -665,19 +676,14 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
       FCopyParamList->Save(Storage);
     }
   }
-  catch(...)
-  {
-    Storage->CloseSubKey();
-  }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
     FNewDirectoryProperties.Save(Storage);
-  }
-  catch(...)
-  {
-    Storage->CloseSubKey();
   }
 }
 //---------------------------------------------------------------------------
@@ -693,8 +699,11 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   #undef KEY
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
     // must be loaded before eventual setting defaults for CopyParamList
     FDefaultCopyParam.Load(Storage);
 
@@ -712,10 +721,6 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     FCopyParamList->Reset();
   }
-  catch(...)
-  {
-    Storage->CloseSubKey();
-  }
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
   // with quotes. First check for absence of quotes.
@@ -732,13 +737,12 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
-  try
   {
+    BOOST_SCOPE_EXIT ( (&Storage) )
+    {
+      Storage->CloseSubKey();
+    } BOOST_SCOPE_EXIT_END
     FNewDirectoryProperties.Load(Storage);
-  }
-  catch(...)
-  {
-    Storage->CloseSubKey();
   }
 }
 //---------------------------------------------------------------------------
@@ -920,8 +924,11 @@ TStrings * TGUIConfiguration::GetLocales()
 {
   std::wstring LocalesExts;
   TStringList * Exts = new TStringList();
-  try
   {
+      BOOST_SCOPE_EXIT ( (&Exts) )
+      {
+        delete Exts;
+      } BOOST_SCOPE_EXIT_END
     Exts->SetSorted(true);
     Exts->SetCaseSensitive(false);
 
@@ -932,8 +939,11 @@ TStrings * TGUIConfiguration::GetLocales()
 
     Found = false; // FIXME  (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
       // FindAttrs, SearchRec) == 0);
-    try
     {
+        BOOST_SCOPE_EXIT ( (&SearchRec) )
+        {
+          // FIXME FindClose(SearchRec);
+        } BOOST_SCOPE_EXIT_END
       std::wstring Ext;
       while (Found)
       {
@@ -947,10 +957,6 @@ TStrings * TGUIConfiguration::GetLocales()
         }
         Found = false; // FIXME (FindNext(SearchRec) == 0);
       }
-    }
-    catch(...)
-    {
-      // FIXME FindClose(SearchRec);
     }
 
     if (FLastLocalesExts != LocalesExts)
@@ -1026,10 +1032,6 @@ TStrings * TGUIConfiguration::GetLocales()
         }
       }
     }
-  }
-  catch(...)
-  {
-    delete Exts;
   }
 
   return FLocales;

@@ -3,6 +3,7 @@
 // #include <ShFolder.h>
 #include <shlobj.h>
 
+#include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
 
 #include "Common.h"
@@ -15,6 +16,25 @@
 namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
+
+inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
+{
+    return ::CompareString(0, SORT_STRINGSORT, s1, -1, s2, -1) - 2;
+}
+
+inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
+{
+    return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
+}
+
+//---------------------------------------------------------------------------
+void Error(int ErrorID, int data)
+{
+    std::wstring Msg = FMTLOAD(ErrorID, data);
+    // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
+    throw ExtException(Msg);
+}
+
 //---------------------------------------------------------------------------
 // TCriticalSection
 //---------------------------------------------------------------------------
@@ -78,7 +98,7 @@ const char EngShortMonthNames[12][4] =
 std::wstring ReplaceChar(std::wstring Str, char A, char B)
 {
   for (int Index = 0; Index < Str.size(); Index++)
-    if (Str[Index+1] == A) Str[Index+1] = B;
+    if (Str[Index] == A) Str[Index] = B;
   return Str;
 }
 //---------------------------------------------------------------------------
@@ -103,7 +123,7 @@ std::wstring MakeValidFileName(std::wstring FileName)
   std::wstring IllegalChars = L":;,=+<>|\"[] \\/?*";
   for (int Index = 0; Index < IllegalChars.size(); Index++)
   {
-    FileName = ReplaceChar(FileName, IllegalChars[Index+1], L'-');
+    FileName = ReplaceChar(FileName, IllegalChars[Index], L'-');
   }
   return FileName;
 }
@@ -251,7 +271,7 @@ std::wstring ShellDelimitStr(std::wstring Str, char Quote)
   return DelimitStr(Str, Chars);
 }
 //---------------------------------------------------------------------------
-std::wstring ExceptionLogString(exception *E)
+std::wstring ExceptionLogString(const std::exception *E)
 {
   assert(E);
   if (::InheritsFrom<std::exception, std::exception>(E))
@@ -289,6 +309,14 @@ std::wstring SystemTemporaryDirectory()
   TempDir.resize(GetTempPath(MAX_PATH, (wchar_t *)TempDir.c_str()));
   return TempDir;
 }
+
+std::wstring SysErrorMessage(int code)
+{
+    // FIXME 
+    std::wstring result;
+    return result;
+}
+
 //---------------------------------------------------------------------------
 std::wstring GetShellFolderPath(int CSIdl)
 {
@@ -538,9 +566,9 @@ std::wstring ExtractFileExtension(const std::wstring &path, wchar_t delimiter)
 {
     std::wstring filename = ExtractFilename(path, delimiter);
     std::wstring::size_type n = filename.find_last_of('.');
-    if (n != wstring::npos)
+    if (n != std::wstring::npos)
         return filename.substr(n);
-    return wstring();
+    return std::wstring();
 }
 
 std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &ext, wchar_t delimiter)
@@ -559,6 +587,48 @@ std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &e
        + ext;
 }
   
+//---------------------------------------------------------------------------
+
+std::wstring ExcludeTrailingBackslash(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring IncludeTrailingBackslash(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    if (str[str.size() - 1] != L'/' ||
+        str[str.size() - 1] != L'\\')
+    {
+        result += L'\\';
+    }
+    return result;
+}
+
+std::wstring ExtractFileDir(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring ExtractFilePath(const std::wstring str)
+{
+    // FIXME
+    std::wstring result = str;
+    return result;
+}
+
+std::wstring GetCurrentDir()
+{
+    // FIXME
+    std::wstring result;
+    return result;
+}
+
 //---------------------------------------------------------------------------
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2)
 {
@@ -773,7 +843,7 @@ bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
 }
 //---------------------------------------------------------------------------
 void ProcessLocalDirectory(std::wstring DirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param,
+  const processlocalfile_slot_type &CallBackFunc, void * Param,
   int FindAttrs)
 {
 // FIXME
@@ -788,21 +858,22 @@ void ProcessLocalDirectory(std::wstring DirName,
   DirName = IncludeTrailingBackslash(DirName);
   if (FindFirst(DirName + "*.*", FindAttrs, SearchRec) == 0)
   {
-    try
     {
+        BOOST_SCOPE_EXIT ( (&SearchRec) )
+        {
+            ::FindClose(SearchRec);
+        }
+      processlocalfile_signal_type sig;
+      sig.connect(CallBackFunc);
       do
       {
         if ((SearchRec.Name != ".") && (SearchRec.Name != ".."))
         {
-          CallBackFunc(DirName + SearchRec.Name, SearchRec, Param);
+          sig(DirName + SearchRec.Name, SearchRec, Param);
         }
 
       } while (FindNext(SearchRec) == 0);
     }
-    catch (...)
-    {
-    }
-    FindClose(SearchRec);
   }
   */
 }
@@ -893,7 +964,7 @@ static TDateTimeParams * GetDateTimeParams()
 
         case TIME_ZONE_ID_INVALID:
         default:
-          throw exception(); // FIXME (TIMEZONE_ERROR);
+          throw std::exception(); // FIXME (TIMEZONE_ERROR);
       }
       // Is it same as SysUtils::UnixDateDelta = 25569 ??
       DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
@@ -1334,6 +1405,31 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   */
   return 0;
 }
+
+TDateTime Date()
+{
+    TDateTime result;
+    return result;
+}
+
+void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
+    unsigned short &M, unsigned short &D)
+{
+    // FIXME
+}
+
+void DecodeTime(const TDateTime &DateTime, unsigned short &H,
+    unsigned short &N, unsigned short &S, unsigned short &MS)
+{
+    // FIXME
+}
+
+std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
+{
+    std::wstring result;
+    return result;
+}
+
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
 {
@@ -1906,34 +2002,30 @@ bool AnsiCompare(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
-bool AnsiCompareStr(const std::wstring str1, const std::wstring str2)
+// Case-sensitive compare
+int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 bool AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool SameText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
-bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
+int AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    return false;
+    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
@@ -2026,23 +2118,23 @@ int FileSetAttr(const std::wstring &filename, int attrs)
 bool ForceDirectories(const std::wstring Dir)
 {
     // FIXME
-    return true;
+    return false;
 }
 
 bool DeleteFile(const std::wstring File)
 {
     // FIXME
-    return true;
+    return false;
 }
 
 bool RemoveDir(const std::wstring Dir)
 {
     // FIXME
-    return true;
+    return false;
 }
 
 //---------------------------------------------------------------------------
-// bool InheritsFrom(const exception &E1, const exception &from)
+// bool InheritsFrom(const std::exception &E1, const std::exception &from)
 // {
     // return false;
 // }
@@ -2102,4 +2194,82 @@ std::wstring FmtLoadStr(int id, ...)
     // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
     return result;
 }
+//---------------------------------------------------------------------------
+std::wstring WrapText(const std::wstring Line, int MaxCol)
+{
+    std::wstring Result;
+    /*
+  Col := 1;
+  Pos := 1;
+  LinePos := 1;
+  BreakPos := 0;
+  QuoteChar := ' ';
+  ExistingBreak := False;
+  LineLen := Length(Line);
+  BreakLen := Length(BreakStr);
+  Result := '';
+  while Pos <= LineLen do
+  begin
+    CurChar := Line[Pos];
+    if CurChar in LeadBytes then
+    begin
+      L := CharLength(Line, Pos) - 1;
+      Inc(Pos, L);
+      Inc(Col, L);
+    end
+    else
+    begin
+      if CurChar = BreakStr[1] then
+      begin
+        if QuoteChar = ' ' then
+        begin
+          ExistingBreak := CompareText(BreakStr, Copy(Line, Pos, BreakLen)) = 0;
+          if ExistingBreak then
+          begin
+            Inc(Pos, BreakLen-1);
+            BreakPos := Pos;
+          end;
+        end
+      end
+      else if CurChar in BreakChars then
+      begin
+        if QuoteChar = ' ' then BreakPos := Pos
+      end
+      else if CurChar in QuoteChars then
+      begin
+        if CurChar = QuoteChar then
+          QuoteChar := ' '
+        else if QuoteChar = ' ' then
+          QuoteChar := CurChar;
+      end;
+    end;
+    Inc(Pos);
+    Inc(Col);
+    if not (QuoteChar in QuoteChars) and (ExistingBreak or
+      ((Col > MaxCol) and (BreakPos > LinePos))) then
+    begin
+      Col := Pos - BreakPos;
+      Result := Result + Copy(Line, LinePos, BreakPos - LinePos + 1);
+      if not (CurChar in QuoteChars) then
+        while Pos <= LineLen do
+        begin
+          if Line[Pos] in BreakChars then
+            Inc(Pos)
+          else if Copy(Line, Pos, Length(sLineBreak)) = sLineBreak then
+            Inc(Pos, Length(sLineBreak))
+          else
+            break;
+        end;
+      if not ExistingBreak and (Pos < LineLen) then
+        Result := Result + BreakStr;
+      Inc(BreakPos);
+      LinePos := BreakPos;
+      ExistingBreak := False;
+    end;
+  end;
+  Result := Result + Copy(Line, LinePos, MaxInt);
+  */
+    return Result;
+}
+
 //---------------------------------------------------------------------------

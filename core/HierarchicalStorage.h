@@ -174,6 +174,7 @@ public:
 private:
   TMemIniFile * FIniFile;
   TStrings * FOriginal;
+  TIniFileStorage *Self;
   void ApplyOverrides();
 protected:
   // __property std::wstring CurrentSection  = { read=GetCurrentSection };

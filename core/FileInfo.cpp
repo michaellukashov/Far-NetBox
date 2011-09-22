@@ -2,6 +2,9 @@
 #include "stdafx.h"
 #include <Windows.h>
 
+#include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
+
 #include <Common.h>
 #include <Exceptions.h>
 // #include <Windows.hpp>
@@ -34,8 +37,14 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
   }
   else
   {
-    try
     {
+        BOOST_SCOPE_EXIT ( (&NeedFree) (&Module) )
+        {
+          if (NeedFree)
+          {
+            FreeLibrary(Module);
+          }
+        } BOOST_SCOPE_EXIT_END
       HANDLE Rsrc = FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
         MAKEINTRESOURCE(VS_FILE_INFO));
       if (Rsrc == NULL)
@@ -50,8 +59,11 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
         }
         else
         {
-          try
           {
+              BOOST_SCOPE_EXIT ( (&Mem) )
+              {
+                FreeResource(Mem);
+              } BOOST_SCOPE_EXIT_END
             VS_VERSION_INFO_STRUCT32 * VersionInfo = (VS_VERSION_INFO_STRUCT32 *)LockResource(Mem);
             const VS_FIXEDFILEINFO * FixedInfo =
               (VS_FIXEDFILEINFO *)DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1);
@@ -75,18 +87,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
               }
             }
           }
-          catch (...)
-          {
-            FreeResource(Mem);
-          }
         }
-      }
-    }
-    catch (...)
-    {
-      if (NeedFree)
-      {
-        FreeLibrary(Module);
       }
     }
   }
