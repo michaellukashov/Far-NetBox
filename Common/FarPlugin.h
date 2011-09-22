@@ -685,7 +685,7 @@ private:
 class TFarEditorInfo
 {
 public:
-    TFarEditorInfo(EditorInfo *Info);
+    explicit TFarEditorInfo(EditorInfo *Info);
     ~TFarEditorInfo();
 
     int GetEditorID();
@@ -719,17 +719,23 @@ extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
 inline wchar_t *StrFromFar(wchar_t *S)
 {
+    // FIXME
+    ::Error(SNotImplemented, 0);
     // OemToChar(S, S);
     return S;
 }
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(const wchar_t *S)
 {
+    // FIXME
+    ::Error(SNotImplemented, 0);
     return S;
 }
 //---------------------------------------------------------------------------
 inline wchar_t *StrFromFar(std::wstring &S)
 {
+    // FIXME
+    ::Error(SNotImplemented, 0);
     // OemToChar(S.c_str(), S.c_str());
     // return S.c_str();
     return L"";
@@ -737,12 +743,16 @@ inline wchar_t *StrFromFar(std::wstring &S)
 //---------------------------------------------------------------------------
 inline wchar_t *StrToFar(wchar_t *S)
 {
+    // FIXME
+    ::Error(SNotImplemented, 0);
     // CharToOem(S, S);
     return S;
 }
 //---------------------------------------------------------------------------
 inline wchar_t *StrToFar(std::wstring &S)
 {
+    // FIXME
+    ::Error(SNotImplemented, 0);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
     // return S.c_str();
@@ -751,6 +761,8 @@ inline wchar_t *StrToFar(std::wstring &S)
 //---------------------------------------------------------------------------
 inline std::wstring StrToFar(const char *S)
 {
+    // FIXME
+    ::Error(SNotImplemented, 0);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
     // return S.c_str();
@@ -759,6 +771,8 @@ inline std::wstring StrToFar(const char *S)
 //---------------------------------------------------------------------------
 static bool Win32Check(bool RetVal)
 {
+    // FIXME
+    ::Error(SNotImplemented, 0);
     return true;
 }
 //---------------------------------------------------------------------------
