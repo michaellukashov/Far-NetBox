@@ -317,7 +317,7 @@ void DllProcessDetach()
 }
 
 //---------------------------------------------------------------------------
-int WINAPI DllEntryPoint(HINSTANCE HInst, unsigned long Reason, void * /*Reserved*/)
+BOOL WINAPI DllMain(HINSTANCE HInst, DWORD Reason, LPVOID /*ptr*/ )
 {
   switch (Reason)
   {
