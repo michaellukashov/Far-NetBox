@@ -36,6 +36,10 @@
 
 std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 
+//---------------------------------------------------------------------------
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
+
+//---------------------------------------------------------------------------
 extern "C"
 {
 
