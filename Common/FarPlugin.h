@@ -288,7 +288,7 @@ class TCustomFarPlugin : public TObject
     friend TFarMessageDialog;
     friend TFarPluginGuard;
 public:
-    TCustomFarPlugin(HINSTANCE HInst);
+    explicit TCustomFarPlugin(HINSTANCE HInst);
     virtual ~TCustomFarPlugin();
     virtual int GetMinFarVersion();
     virtual void SetStartupInfo(const struct PluginStartupInfo *Info);

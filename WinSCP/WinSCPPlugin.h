@@ -28,7 +28,7 @@ class TWinSCPPlugin : public TCustomFarPlugin
 {
 friend TWinSCPFileSystem;
 public:
-  TWinSCPPlugin(HWND AHandle);
+  explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
   virtual int GetMinFarVersion();
 
