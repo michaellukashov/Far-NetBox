@@ -29,6 +29,7 @@
 #include "Logging.h"
 #include "Strings.h"
 #include "resource.h"
+#include "Common.h"
 
 #define MIN_FAR_VERMAJOR 2
 #define MIN_FAR_VERMINOR 0
@@ -40,16 +41,28 @@ std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 
 //---------------------------------------------------------------------------
+class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
+{
+public:
+  inline __fastcall TFarPluginGuard() :
+    TGuard(FarPlugin->GetCriticalSection())
+  {
+  }
+};
+
+//---------------------------------------------------------------------------
 extern "C"
 {
 
 int WINAPI GetMinFarVersionW()
 {
+    TFarPluginGuard Guard;
     return MAKEFARVERSION(MIN_FAR_VERMAJOR, MIN_FAR_VERMINOR, MIN_FAR_BUILD);
 }
 
 void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
 {
+    TFarPluginGuard Guard;
     CFarPlugin::Initialize(psi);
 
     m_Settings.Load();
@@ -72,6 +85,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
 
 void WINAPI GetPluginInfoW(PluginInfo *pi)
 {
+    TFarPluginGuard Guard;
     pi->StructSize = sizeof(PluginInfo);
     pi->Flags = PF_FULLCMDLINE;
     if (!m_Settings.AddToPanelMenu())
@@ -113,6 +127,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
 
 void WINAPI ExitFARW()
 {
+    TFarPluginGuard Guard;
     for (std::vector<CPanel *>::const_iterator it = m_PanelInstances.begin(); it != m_PanelInstances.end(); ++it)
     {
         delete *it;
@@ -125,6 +140,7 @@ void WINAPI ExitFARW()
 
 void WINAPI ClosePluginW(HANDLE plugin)
 {
+    TFarPluginGuard Guard;
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     assert(panelInstance);
     delete panelInstance;
@@ -136,6 +152,7 @@ void WINAPI ClosePluginW(HANDLE plugin)
 
 HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
+    TFarPluginGuard Guard;
     //Export sessions from registry to local folder
     // !!!! this functionality will be removed in next release !!!!
     CSession::ExportFromRegistry();
@@ -179,6 +196,7 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 
 HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *fileHeader, int fileHeaderSize, int /*opMode*/)
 {
+    TFarPluginGuard Guard;
     if (!fileName)
     {
         return INVALID_HANDLE_VALUE;
@@ -216,6 +234,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
 
 void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->GetOpenPluginInfo(pluginInfo);
@@ -223,6 +242,7 @@ void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
 
 int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"NetBox: SetDirectoryW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
@@ -234,6 +254,7 @@ int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
     int move, const wchar_t **destPath, int opMode)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
@@ -244,6 +265,7 @@ int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
 
 int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNumber, int opMode)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"NetBox: GetFindDataW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
@@ -254,6 +276,7 @@ int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNu
 
 void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->FreeItemList(panelItem, itemsNumber);
@@ -261,6 +284,7 @@ void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNu
 
 int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->MakeDirectory(name, opMode);
@@ -268,6 +292,7 @@ int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
 
 int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->DeleteFiles(panelItem, itemsNumber, opMode);
@@ -275,6 +300,7 @@ int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumb
 
 int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->PutFiles(srcPath, panelItem, itemsNumber, move != 0, opMode);
@@ -282,6 +308,7 @@ int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
 
 int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 {
+    TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->ProcessKey(key, controlState);
@@ -289,6 +316,7 @@ int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 
 int WINAPI ConfigureW(int /*itemNumber*/)
 {
+    TFarPluginGuard Guard;
     // DEBUG_PRINTF(L"NetBox: ConfigureW: begin");
     m_Settings.Configure();
     // DEBUG_PRINTF(L"NetBox: ConfigureW: end");
