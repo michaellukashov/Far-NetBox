@@ -762,11 +762,3 @@ static bool Win32Check(bool RetVal)
     return true;
 }
 //---------------------------------------------------------------------------
-
-// from winscp434source\core\Common.h
-#define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
-#define LENOF(x) ( (sizeof((x))) / (sizeof(*(x))))
-#define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
-#define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
-#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
