@@ -27,9 +27,9 @@ bool FileExistsEx(std::wstring Path);
 bool ExecuteShell(const std::wstring Path, const std::wstring Params);
 bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle);
-bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
+bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
   const std::wstring Params, const processmessages_signal_type &ProcessMessages);
-bool ExecuteShellAndWait(HWND Handle, const std::wstring Command,
+bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Command,
   const processmessages_signal_type &ProcessMessages);
 void OpenSessionInPutty(const std::wstring PuttyPath,
   TSessionData * SessionData, std::wstring Password);

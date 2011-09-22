@@ -161,7 +161,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
+bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
   const std::wstring Params, const processmessages_signal_type &ProcessMessages)
 {
   bool Result = false;
@@ -201,7 +201,7 @@ bool ExecuteShellAndWait(HWND Handle, const std::wstring Path,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HWND Handle, const std::wstring Command,
+bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Command,
   const processmessages_signal_type &ProcessMessages)
 {
   std::wstring Program, Params, Dir;

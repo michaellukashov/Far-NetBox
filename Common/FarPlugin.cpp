@@ -26,12 +26,12 @@ TFarMessageParams::TFarMessageParams()
     ClickEvent = NULL;
 }
 //---------------------------------------------------------------------------
-TCustomFarPlugin::TCustomFarPlugin(HWND AHandle): TObject()
+TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst): TObject()
 {
     Self = this;
     FFarThread = GetCurrentThreadId();
     FCriticalSection = new TCriticalSection;
-    FHandle = AHandle;
+    FHandle = HInst;
     FANSIApis = AreFileApisANSI();
     FFarVersion = 0;
     FTerminalScreenShowing = false;

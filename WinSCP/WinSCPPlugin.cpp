@@ -17,9 +17,9 @@
 #include <Terminal.h>
 #include <GUITools.h>
 //---------------------------------------------------------------------------
-TCustomFarPlugin * CreateFarPlugin(HWND Handle)
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
-  return new TWinSCPPlugin(Handle);
+  return new TWinSCPPlugin(HInst);
 }
 //---------------------------------------------------------------------------
 TMessageParams::TMessageParams()
@@ -35,7 +35,8 @@ TMessageParams::TMessageParams()
   TimeoutAnswer = 0;
 }
 //---------------------------------------------------------------------------
-TWinSCPPlugin::TWinSCPPlugin(HWND AHandle): TCustomFarPlugin(AHandle)
+TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
+    TCustomFarPlugin(HInst)
 {
   FInitialized = false;
   Self = this;

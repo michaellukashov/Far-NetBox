@@ -288,7 +288,7 @@ class TCustomFarPlugin : public TObject
     friend TFarMessageDialog;
     friend TFarPluginGuard;
 public:
-    TCustomFarPlugin(HWND AHandle);
+    TCustomFarPlugin(HINSTANCE HInst);
     virtual ~TCustomFarPlugin();
     virtual int GetMinFarVersion();
     virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
@@ -377,14 +377,14 @@ public:
 
     std::wstring GetModuleName();
     TFarDialog *GetTopDialog() const { return FTopDialog; }
-    HWND GetHandle() const { return FHandle; };
+    HINSTANCE GetHandle() const { return FHandle; };
     bool GetANSIApis() const { return FANSIApis; };
     unsigned int GetFarThread() const { return FFarThread; };
     FarStandardFunctions GetFarStandardFunctions() { return FFarStandardFunctions; }
 protected:
     PluginStartupInfo FStartupInfo;
     FarStandardFunctions FFarStandardFunctions;
-    HWND FHandle;
+    HINSTANCE FHandle;
     bool FANSIApis;
     TObjectList *FOpenedPlugins;
     TFarDialog *FTopDialog;

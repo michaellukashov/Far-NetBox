@@ -291,4 +291,45 @@ int WINAPI ConfigureW(int /*itemNumber*/)
     return FALSE;
 }
 
+//---------------------------------------------------------------------------
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
+//---------------------------------------------------------------------------
+static int Processes = 0;
+//---------------------------------------------------------------------------
+void DllProcessAttach(HINSTANCE HInst)
+{
+  FarPlugin = CreateFarPlugin(HInst);
+
+  assert(!Processes);
+  Processes++;
+}
+
+//---------------------------------------------------------------------------
+void DllProcessDetach()
+{
+  assert(Processes);
+  Processes--;
+  if (!Processes)
+  {
+    assert(FarPlugin);
+    SAFE_DESTROY(FarPlugin);
+  }
+}
+
+//---------------------------------------------------------------------------
+int WINAPI DllEntryPoint(HINSTANCE HInst, unsigned long Reason, void * /*Reserved*/)
+{
+  switch (Reason)
+  {
+    case DLL_PROCESS_ATTACH:
+      DllProcessAttach(HInst);
+      break;
+
+    case DLL_PROCESS_DETACH:
+      DllProcessDetach();
+      break;
+  }
+  return true;
+}
+
 }
