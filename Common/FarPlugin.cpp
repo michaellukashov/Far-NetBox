@@ -28,6 +28,7 @@ TFarMessageParams::TFarMessageParams()
 //---------------------------------------------------------------------------
 TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst): TObject()
 {
+    // DEBUG_PRINTF(L"TCustomFarPlugin: begin");
     Self = this;
     FFarThread = GetCurrentThreadId();
     FCriticalSection = new TCriticalSection;
@@ -51,7 +52,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst): TObject()
                                OPEN_EXISTING, 0, NULL);
     FConsoleOutput = CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
                                 FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-
     if (ConsoleWindowState() == SW_SHOWNORMAL)
     {
         FNormalConsoleSize = TerminalInfo();
@@ -60,6 +60,7 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst): TObject()
     {
         FNormalConsoleSize = TPoint(-1, -1);
     }
+    // DEBUG_PRINTF(L"TCustomFarPlugin: end");
 }
 //---------------------------------------------------------------------------
 TCustomFarPlugin::~TCustomFarPlugin()
@@ -1300,6 +1301,7 @@ void TCustomFarPlugin::FarCopyToClipboard(TStrings *Strings)
 //---------------------------------------------------------------------------
 TPoint TCustomFarPlugin::TerminalInfo(TPoint *Size, TPoint *Cursor)
 {
+    // DEBUG_PRINTF(L"begin");
     CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
     GetConsoleScreenBufferInfo(FConsoleOutput, &BufferInfo);
 
@@ -1315,7 +1317,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint *Size, TPoint *Cursor)
         Cursor->x = BufferInfo.dwCursorPosition.X;
         Cursor->y = BufferInfo.dwCursorPosition.Y;
     }
-
+    // DEBUG_PRINTF(L"end");
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1323,6 +1325,7 @@ HWND TCustomFarPlugin::GetConsoleWindow()
 {
     wchar_t Title[512];
     GetConsoleTitle(Title, sizeof(Title) - 1);
+    // DEBUG_PRINTF(L"Title = %s", Title);
     StrFromFar(Title);
     HWND Result = FindWindow(NULL, Title);
     return Result;
