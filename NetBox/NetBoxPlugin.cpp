@@ -19,10 +19,10 @@
 #include "FarTexts.h"
 #include "FarDialog.h"
 //---------------------------------------------------------------------------
-// TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
-// {
-  // return new TNetBoxPlugin(HInst);
-// }
+TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
+{
+  return new TNetBoxPlugin(HInst);
+}
 //---------------------------------------------------------------------------
 TNetBoxPlugin::TNetBoxPlugin(HINSTANCE HInst) :
     parent(HInst)
