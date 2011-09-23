@@ -68,6 +68,7 @@ include_directories (
     ${PROJECT_ROOT}/resource
     ${PROJECT_ROOT}/Putty
     ${PROJECT_ROOT}/Common
+    ${PROJECT_ROOT}/WinSCP
     ${PROJECT_ROOT}/Putty
     ${PROJECT_ROOT}/Putty/windows
     ${PROJECT_ROOT}/Putty/charset
@@ -156,6 +157,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/NetBox/Panel.cpp
     ${PROJECT_ROOT}/NetBox/WebDAV.cpp
     ${PROJECT_ROOT}/NetBox/Session.cpp
+    ${PROJECT_ROOT}/NetBox/NetBoxPlugin.cpp
     ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
     ${PROJECT_ROOT}/resource/TextsCore1.rc
     ${PROJECT_ROOT}/resource/rtlconsts.rc
