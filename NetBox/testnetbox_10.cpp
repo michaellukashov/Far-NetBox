@@ -27,6 +27,7 @@
 #include "TestTexts.h"
 #include "Common.h"
 #include "FileMasks.h"
+#include "WinSCPPlugin.h"
 
 using namespace boost::unit_test;
 
@@ -338,6 +339,20 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 }
 
 BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
+{
+    if (1)
+    {
+        HINSTANCE HInst = GetModuleHandle(0);
+        TWinSCPPlugin *FarPlugin = new TWinSCPPlugin(HInst);
+        //DEBUG_PRINTF(L"FarPlugin = %x", FarPlugin);
+        BOOST_CHECK(FarPlugin != NULL);
+        // SAFE_DESTROY(FarPlugin);
+        delete FarPlugin;
+        // BOOST_CHECK(FarPlugin == NULL);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
 {
     if (1)
     {
