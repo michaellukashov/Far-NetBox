@@ -24,11 +24,9 @@
 #include "TestTexts.h"
 #include "Common.h"
 #include "FileOperationProgress.h"
+#include "testutils.h"
 
 using namespace boost::unit_test;
-
-#define TEST_CASE_TODO(exp) \
-    std::cerr << "TODO: " << #exp << std::endl
 
 /*******************************************************************************
             test suite

@@ -28,11 +28,9 @@
 #include "Common.h"
 #include "FileMasks.h"
 #include "WinSCPPlugin.h"
+#include "testutils.h"
 
 using namespace boost::unit_test;
-
-#define TEST_CASE_TODO(exp) \
-    std::cerr << "TODO: " << #exp << std::endl
 
 /*******************************************************************************
             test suite
