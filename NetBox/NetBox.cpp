@@ -387,7 +387,7 @@ static int Processes = 0;
 //---------------------------------------------------------------------------
 void DllProcessAttach(HINSTANCE HInst)
 {
-    DEBUG_PRINTF(L"HInst = %u", HInst);
+    // DEBUG_PRINTF(L"HInst = %u", HInst);
     FarPlugin = CreateFarPlugin(HInst);
 
     assert(!Processes);

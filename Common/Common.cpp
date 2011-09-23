@@ -2175,7 +2175,7 @@ std::wstring FmtLoadStr(int id, ...)
     std::wstring result;
     std::wstring format;
     HINSTANCE hInstance = FarPlugin->GetHandle(); // GetModuleHandle(0);
-    DEBUG_PRINTF(L"hInstance = %u", hInstance);
+    // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     format.resize(255);
     int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
     format.resize(Length);
