@@ -1566,9 +1566,7 @@ TPasLibModule * FindModule(void * Instance)
 std::wstring LoadStr(int Ident, unsigned int MaxLength)
 {
     std::wstring Result;
-    // TPasLibModule * MainModule = FindModule(HInstance);
-    // assert(MainModule != NULL);
-    HINSTANCE hInstance = FarPlugin->GetHandle(); // GetModuleHandle(0);
+    HINSTANCE hInstance = FarPlugin->GetHandle();
     // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     assert(hInstance != 0);
 
@@ -2174,7 +2172,7 @@ std::wstring FmtLoadStr(int id, ...)
 {
     std::wstring result;
     std::wstring format;
-    HINSTANCE hInstance = FarPlugin->GetHandle(); // GetModuleHandle(0);
+    HINSTANCE hInstance = FarPlugin->GetHandle();
     // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     format.resize(255);
     int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
