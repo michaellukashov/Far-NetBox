@@ -387,18 +387,18 @@ static int Processes = 0;
 //---------------------------------------------------------------------------
 void DllProcessAttach(HINSTANCE HInst)
 {
-    DEBUG_PRINTF(L"DllProcessAttach: start");
+    DEBUG_PRINTF(L"HInst = %u", HInst);
     FarPlugin = CreateFarPlugin(HInst);
 
     assert(!Processes);
     Processes++;
-    DEBUG_PRINTF(L"DllProcessAttach: end");
+    // DEBUG_PRINTF(L"DllProcessAttach: end");
 }
 
 //---------------------------------------------------------------------------
 void DllProcessDetach()
 {
-  DEBUG_PRINTF(L"DllProcessDetach: start");
+  // DEBUG_PRINTF(L"DllProcessDetach: start");
   assert(Processes);
   Processes--;
   if (!Processes)
@@ -406,13 +406,13 @@ void DllProcessDetach()
     assert(FarPlugin);
     SAFE_DESTROY(FarPlugin);
   }
-  DEBUG_PRINTF(L"DllProcessDetach: end");
+  // DEBUG_PRINTF(L"DllProcessDetach: end");
 }
 
 //---------------------------------------------------------------------------
 BOOL WINAPI DllMain(HINSTANCE HInst, DWORD Reason, LPVOID /*ptr*/ )
 {
-  DEBUG_PRINTF(L"DllEntryPoint: start");
+  // DEBUG_PRINTF(L"DllEntryPoint: start");
   switch (Reason)
   {
     case DLL_PROCESS_ATTACH:
@@ -423,7 +423,7 @@ BOOL WINAPI DllMain(HINSTANCE HInst, DWORD Reason, LPVOID /*ptr*/ )
       DllProcessDetach();
       break;
   }
-  DEBUG_PRINTF(L"DllEntryPoint: end");
+  // DEBUG_PRINTF(L"DllEntryPoint: end");
   return true;
 }
 
