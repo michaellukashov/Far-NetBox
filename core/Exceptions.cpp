@@ -47,24 +47,28 @@ TStrings *ExceptionToMoreMessages(const std::exception * E)
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::wstring Msg, int AHelpContext) :
-    std::exception(::W2MB(Msg.c_str()).c_str(), AHelpContext)
+    std::exception(::W2MB(Msg.c_str()).c_str(), AHelpContext),
+    FMoreMessages(NULL)
 {
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception * E) :
-  std::exception("")
+  std::exception(""),
+  FMoreMessages(NULL)
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception* E, std::wstring Msg):
-  std::exception(::W2MB(Msg.c_str()).c_str())
+  std::exception(::W2MB(Msg.c_str()).c_str()),
+  FMoreMessages(NULL)
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg) :
-  std::exception("")
+  std::exception(""),
+  FMoreMessages(NULL)
 {
   // append message to the end to more messages
   // DEBUG_PRINTF(L"ExtException");
@@ -87,7 +91,8 @@ ExtException::ExtException(std::wstring Msg) :
 
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, const std::exception* E) :
-  std::exception("")
+  std::exception(""),
+  FMoreMessages(NULL)
 {
   // "copy std::exception"
   AddMoreMessages(E);
@@ -112,6 +117,7 @@ ExtException::ExtException(std::wstring Msg, const std::exception* E) :
 ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
     std::wstring HelpKeyword) :
   std::exception(::W2MB(Msg.c_str()).c_str()),
+  FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.empty())
@@ -123,7 +129,8 @@ ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, TStrings* MoreMessages,
   bool Own) :
-  std::exception(::W2MB(Msg.c_str()).c_str())
+  std::exception(::W2MB(Msg.c_str()).c_str()),
+  FMoreMessages(NULL)
 {
   if (Own)
   {
