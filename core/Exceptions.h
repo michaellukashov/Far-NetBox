@@ -17,6 +17,7 @@ enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
 class ExtException : public std::exception
 {
+  typedef std::exception parent;
 public:
   ExtException(const std::exception* E);
   ExtException(const std::exception* E, std::wstring Msg);
