@@ -21,6 +21,7 @@
 #include "SessionManager.h"
 #include "Settings.h"
 #include "Strings.h"
+#include "Common.h"
 
 
 void CSessionManager::GetOpenPluginInfo(OpenPluginInfo *pluginInfo)
@@ -32,7 +33,7 @@ void CSessionManager::GetOpenPluginInfo(OpenPluginInfo *pluginInfo)
     if (!init)
     {
         ZeroMemory(&panelModes, sizeof(panelModes));
-        for (int i = 0; i < sizeof(panelModes) / sizeof(panelModes[0]); ++i)
+        for (int i = 0; i < LENOF(panelModes); ++i)
         {
             panelModes[i].ColumnTypes = L"N";
             panelModes[i].ColumnWidths = L"0";
@@ -48,7 +49,7 @@ void CSessionManager::GetOpenPluginInfo(OpenPluginInfo *pluginInfo)
         init = true;
     }
     pluginInfo->PanelModesArray = panelModes;
-    pluginInfo->PanelModesNumber = sizeof(panelModes) / sizeof(panelModes[0]);
+    pluginInfo->PanelModesNumber = LENOF(panelModes);
     pluginInfo->KeyBar = &keyBarTitles;
 }
 

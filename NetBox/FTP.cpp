@@ -18,9 +18,12 @@
  **************************************************************************/
 
 #include "stdafx.h"
+
+#include <Wininet.h>
+
 #include "FTP.h"
 #include "Strings.h"
-#include <Wininet.h>
+#include "Common.h"
 
 static const char *ParamCodePage = "CodePage";
 
@@ -405,7 +408,7 @@ bool CFTP::Delete(const wchar_t *path, const ItemType type, std::wstring &errorI
 WORD CFTP::GetMonth(const char *name) const
 {
     static const char *months[] = { "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
-    for (WORD i = 0; i < sizeof(months) / sizeof(months[0]); ++i)
+    for (WORD i = 0; i < LENOF(months); ++i)
     {
         if (_strnicmp(months[i], name, 3) == 0)
         {

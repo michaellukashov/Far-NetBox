@@ -109,17 +109,17 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
     static const wchar_t *menuStrings[1] = { CFarPlugin::GetString(StringTitle) };
 
     pi->PluginConfigStrings = menuStrings;
-    pi->PluginConfigStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
+    pi->PluginConfigStringsNumber = LENOF(menuStrings);
 
     if (m_Settings.AddToPanelMenu())
     {
         pi->PluginMenuStrings = menuStrings;
-        pi->PluginMenuStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
+        pi->PluginMenuStringsNumber = LENOF(menuStrings);
     }
     if (m_Settings.AddToDiskMenu())
     {
         pi->DiskMenuStrings = menuStrings;
-        pi->DiskMenuStringsNumber = sizeof(menuStrings) / sizeof(menuStrings[0]);
+        pi->DiskMenuStringsNumber = LENOF(menuStrings);
     }
 
     static std::wstring cmdPreffix;
