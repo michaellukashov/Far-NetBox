@@ -53,29 +53,40 @@ int TNetBoxPlugin::GetMinFarVersion()
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
+    DEBUG_PRINTF(L"begin");
   try
   {
-    TCustomFarPlugin::SetStartupInfo(Info);
-    assert(!FInitialized);
+    DEBUG_PRINTF(L"1");
     CoreInitialize();
+    DEBUG_PRINTF(L"2");
+    TCustomFarPlugin::SetStartupInfo(Info);
+    DEBUG_PRINTF(L"3");
+    assert(!FInitialized);
     FInitialized = true;
   }
   catch (const std::exception & E)
   {
+    DEBUG_PRINTF(L"4");
     HandleException(&E);
+    DEBUG_PRINTF(L"5");
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::GetPluginInfoEx(long unsigned & Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
+    DEBUG_PRINTF(L"begin: FarConfiguration = %x", FarConfiguration);
   Flags = PF_FULLCMDLINE;
   if (FarConfiguration->GetDisksMenu())
   {
+    DEBUG_PRINTF(L"1");
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
       (TObject *)FarConfiguration->GetDisksMenuHotKey());
+    DEBUG_PRINTF(L"2");
   }
+  DEBUG_PRINTF(L"3");
   if (FarConfiguration->GetPluginsMenu())
   {
     PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
@@ -86,6 +97,7 @@ void TNetBoxPlugin::GetPluginInfoEx(long unsigned & Flags,
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
+    DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 bool TNetBoxPlugin::ConfigureEx(int /*Item*/)

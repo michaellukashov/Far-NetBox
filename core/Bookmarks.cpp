@@ -12,7 +12,7 @@
 #include "TextsCore.h"
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
-TBookmarks::TBookmarks(): TObject()
+TBookmarks::TBookmarks() : TObject()
 {
   FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
   FBookmarkLists = new TStringList();

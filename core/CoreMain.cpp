@@ -51,7 +51,9 @@ void CoreInitialize()
 
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
+  DEBUG_PRINTF(L"before CreateConfiguration");
   Configuration = CreateConfiguration();
+  DEBUG_PRINTF(L"after CreateConfiguration");
 
   try
   {
