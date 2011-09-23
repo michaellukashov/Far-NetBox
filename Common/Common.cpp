@@ -2036,9 +2036,25 @@ bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 
 //---------------------------------------------------------------------------
 
+class EOSError : public std::exception
+{
+public:
+    EOSError(std::wstring msg, DWORD code) : std::exception(::W2MB(msg.c_str()).c_str()),
+        ErrorCode(code)
+    {
+    }
+    DWORD ErrorCode;
+};
+
 void RaiseLastOSError()
 {
-    // FIXME
+  int LastError = ::GetLastError();
+  std::wstring ErrorMsg;
+  if (LastError != 0)
+    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
+  else
+    ErrorMsg = FMTLOAD(SUnkOSError);
+  throw EOSError(ErrorMsg, LastError);
 }
 
 //---------------------------------------------------------------------------

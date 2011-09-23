@@ -379,8 +379,6 @@ std::wstring ExpandEnvVars(const std::wstring& str);
 
 std::wstring StringOfChar(const wchar_t c, size_t len);
 
-void RaiseLastOSError();
-
 char *StrNew(const char *str);
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix);
