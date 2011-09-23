@@ -38,7 +38,7 @@
 std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 
 //---------------------------------------------------------------------------
-TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
+TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
 
 //---------------------------------------------------------------------------
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
