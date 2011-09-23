@@ -57,7 +57,7 @@ int WINAPI GetMinFarVersionW()
     return FarPlugin->GetMinFarVersion();
 }
 
-void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
+void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
 {
     TFarPluginGuard Guard;
     CFarPlugin::Initialize(psi);
@@ -78,6 +78,7 @@ void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
     CSession::RegisterProtocolClient(2, L"WebDAV", CSession::SessionCreator<CSessionWebDAV>, L"http", L"https");
     CSession::RegisterProtocolClient(3, L"FTPS", CSession::SessionCreator<CSessionFTPS>, L"ftps");
     CSession::RegisterProtocolClient(4, L"SCP", CSession::SessionCreator<CSessionSCP>, L"scp");
+    FarPlugin->SetStartupInfo(psi);
 }
 
 void WINAPI ExitFARW()
