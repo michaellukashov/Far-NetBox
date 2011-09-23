@@ -88,7 +88,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -107,7 +107,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -156,7 +156,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -191,7 +191,11 @@
     <ClCompile Include="..\Common\FarDialog.cpp" />
     <ClCompile Include="..\Common\FarPlugin.cpp" />
     <ClCompile Include="..\Common\Common.cpp" />
-    <ClCompile Include="WinSCPFileSystem.cpp" />
+    <ClCompile Include="..\WinSCP\WinSCPFileSystem.cpp" />
+    <ClCompile Include="..\WinSCP\WinSCPDialogs.cpp" />
+    <ClCompile Include="..\WinSCP\WinSCPPlugin.cpp" />
+    <ClCompile Include="..\WinSCP\FarConfiguration.cpp" />
+    <ClCompile Include="..\WinSCP\FarInterface.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -203,7 +207,7 @@
     <ClCompile Include="..\libs\tinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\libs\tinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="WebDAV.cpp" />
-    <ClCompile Include="..\Common\RemoteFiles.cpp" />
+    <ClCompile Include="..\core\RemoteFiles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
