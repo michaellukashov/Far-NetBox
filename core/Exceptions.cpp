@@ -59,7 +59,7 @@ ExtException::ExtException(const std::exception *E) :
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const std::exception *E, std::wstring Msg):
+ExtException::ExtException(const std::exception *E, std::wstring Msg) :
   parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
@@ -209,7 +209,7 @@ std::wstring LastSysErrorMessage()
 }
 //---------------------------------------------------------------------------
 EOSExtException::EOSExtException(std::wstring Msg) :
-  ExtException(Msg, LastSysErrorMessage())
+  parent(Msg, LastSysErrorMessage())
 {
 }
 
