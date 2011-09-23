@@ -220,4 +220,9 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
+{
+    BOOST_CHECK_THROW(::Error(SListIndexError, 0), ExtException);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
