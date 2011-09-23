@@ -24,6 +24,7 @@
 #pragma warning(push, 1)
 #include "Classes.h"
 #pragma warning(pop)
+#include "Common.h"
 
 class CFarPlugin
 {
@@ -720,7 +721,7 @@ extern TCustomFarPlugin *FarPlugin;
 inline wchar_t *StrFromFar(wchar_t *S)
 {
     // FIXME
-    ::Error(SNotImplemented, 0);
+    // ::Error(SNotImplemented, 0);
     // OemToChar(S, S);
     return S;
 }
@@ -728,17 +729,17 @@ inline wchar_t *StrFromFar(wchar_t *S)
 inline std::wstring StrFromFar(const wchar_t *S)
 {
     // FIXME
-    ::Error(SNotImplemented, 0);
-    return S;
+    // ::Error(SNotImplemented, 0);
+    return std::wstring(S);
 }
 //---------------------------------------------------------------------------
 inline wchar_t *StrFromFar(std::wstring &S)
 {
     // FIXME
-    ::Error(SNotImplemented, 0);
+    // ::Error(SNotImplemented, 0);
     // OemToChar(S.c_str(), S.c_str());
-    // return S.c_str();
-    return L"";
+    return (wchar_t *)S.c_str();
+    // return L"";
 }
 //---------------------------------------------------------------------------
 inline wchar_t *StrToFar(wchar_t *S)
@@ -771,8 +772,8 @@ inline std::wstring StrToFar(const char *S)
 //---------------------------------------------------------------------------
 static bool Win32Check(bool RetVal)
 {
-    // FIXME
-    ::Error(SNotImplemented, 0);
-    return true;
+  if (!RetVal)
+    RaiseLastOSError();
+  return RetVal;
 }
 //---------------------------------------------------------------------------
