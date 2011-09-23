@@ -326,7 +326,7 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
 }
 
 //---------------------------------------------------------------------------
-// void ShowExtendedException(const std::exception *E)
-// {
-  // ShowExtendedExceptionEx(NULL, E);
-// }
+void ShowExtendedException(const std::exception *E)
+{
+  ShowExtendedExceptionEx(NULL, E);
+}
