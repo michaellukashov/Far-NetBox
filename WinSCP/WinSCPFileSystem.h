@@ -20,6 +20,7 @@ class TSessionData;
 class TRemoteFile;
 class TBookmarkList;
 class TWinSCPPlugin;
+class TNetBoxPlugin;
 class TFarButton;
 class TFarDialogItem;
 class TFarDialog;
@@ -86,6 +87,7 @@ typedef processsession_signal_type::slot_type processsession_slot_type;
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
 friend class TWinSCPPlugin;
+friend class TNetBoxPlugin;
 friend class TKeepaliveThread;
 friend class TQueueDialog;
 public:
