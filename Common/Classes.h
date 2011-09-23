@@ -289,7 +289,7 @@ public:
 
     virtual void Sort(CompareFunc func)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 1);
     }
     virtual void Notify(void *Ptr, int Action)
     {
@@ -495,7 +495,7 @@ public:
 
     bool Equals(TStrings *value)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 2);
         return false;
     }
     virtual void Clear() = 0;
@@ -510,40 +510,40 @@ public:
     }
     void SetDuplicates(TDuplicatesEnum value)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 3);
     }
     void Move(int Index, int To)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 4);
     }
     size_t IndexOf(const wchar_t *value)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 5);
         return -1;
     }
     size_t IndexOfName(const wchar_t *value)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 6);
         return -1;
     }
     const std::wstring GetName(int Index)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 7);
         return L"";
     }
     const std::wstring GetValue(const std::wstring Name)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 8);
         return L"";
     }
     void SetValue(const std::wstring Name, const std::wstring Value)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 9);
     }
     std::wstring GetCommaText() const;
     void AddStrings(TStrings *value)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 10);
     }
     void Append(const std::wstring &value)
     {
@@ -551,13 +551,13 @@ public:
     }
     bool Find(const std::wstring Value, int &Index)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 11);
         return false;
     }
     virtual void Insert(int Index, const std::wstring AString) = 0;
     void SaveToStream(TStream *Stream)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 12);
     }
     wchar_t GetDelimiter() const { return FDelimiter; }
     void SetDelimiter(wchar_t value)
@@ -602,7 +602,7 @@ public:
     {}
     virtual void Assign(TPersistent *Source)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 13);
     }
     virtual size_t GetCount() const
     {
@@ -729,7 +729,7 @@ public:
 
     void LoadFromFile(const std::wstring &FileName)
     {
-        ::Error(SNotImplemented, 0);
+        ::Error(SNotImplemented, 14);
     }
     const notify_signal_type &GetOnChange() const { return FOnChange; }
     void SetOnChange(const notify_slot_type &onChange)
