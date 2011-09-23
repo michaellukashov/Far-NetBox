@@ -62,6 +62,10 @@ bool base_fixture_t::scp_test(std::string host, int port, std::string user, std:
 
 //------------------------------------------------------------------------------
 
+TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
+
+//------------------------------------------------------------------------------
+
 BOOST_AUTO_TEST_SUITE(testnetbox_10)
 
 BOOST_FIXTURE_TEST_CASE(test1, base_fixture_t)
@@ -330,6 +334,20 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
         BOOST_CHECK_EQUAL(true, m.Matches(L"test.exe"));
         BOOST_CHECK_EQUAL(false, m.Matches(L"test.txt"));
         BOOST_CHECK_EQUAL(false, m.Matches(L"test.log"));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
+{
+    if (1)
+    {
+        HINSTANCE HInst = GetModuleHandle(0);
+        TCustomFarPlugin *FarPlugin = CreateFarPlugin(HInst);
+        //DEBUG_PRINTF(L"FarPlugin = %x", FarPlugin);
+        BOOST_CHECK(FarPlugin != NULL);
+        // SAFE_DESTROY(FarPlugin);
+        delete FarPlugin;
+        // BOOST_CHECK(FarPlugin == NULL);
     }
 }
 
