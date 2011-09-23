@@ -9,9 +9,9 @@
 // #include <System.hpp>
 
 //---------------------------------------------------------------------------
-bool ExceptionMessage(const std::exception * E, std::wstring & Message);
+bool ExceptionMessage(const std::exception *E, std::wstring & Message);
 std::wstring LastSysErrorMessage();
-TStrings * ExceptionToMoreMessages(const std::exception * E);
+TStrings *ExceptionToMoreMessages(const std::exception *E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
@@ -19,23 +19,23 @@ class ExtException : public std::exception
 {
   typedef std::exception parent;
 public:
-  ExtException(const std::exception* E);
-  ExtException(const std::exception* E, std::wstring Msg);
+  ExtException(const std::exception *E);
+  ExtException(const std::exception *E, std::wstring Msg);
   // "copy the std::exception", just append message to the end
   ExtException(std::wstring Msg);
   ExtException(std::wstring Msg, const std::exception *E);
   ExtException(std::wstring Msg, std::wstring MoreMessages, std::wstring HelpKeyword = L"");
-  ExtException(std::wstring Msg, TStrings* MoreMessages, bool Own);
+  ExtException(std::wstring Msg, TStrings *MoreMessages, bool Own);
   virtual ~ExtException(void);
   TStrings *GetMoreMessages() const { return FMoreMessages; }
   std::wstring GetHelpKeyword() const { return FHelpKeyword; }
 
-  // inline ExtException(const std::wstring Msg, const TVarRec * Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) { }
-  // inline ExtException(int Ident, const TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::exception(Ident, Args, Args_Size) { }
+  // inline ExtException(const std::wstring Msg, const TVarRec *Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) { }
+  // inline ExtException(int Ident, const TVarRec *Args, const int Args_Size)/*overload */ : Sysutils::exception(Ident, Args, Args_Size) { }
   ExtException(const std::wstring Msg, int AHelpContext);
-  // inline ExtException(const std::wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
-  // inline ExtException(int Ident, int AHelpContext)/* overload */ : std::exception(Ident, AHelpContext) { }
-  // inline ExtException(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }
+  // inline ExtException(const std::wstring Msg, const TVarRec *Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) { }
+  // inline ExtException(int Ident, int AHelpContext)/*overload */ : std::exception(Ident, AHelpContext) { }
+  // inline ExtException(PResStringRec ResStringRec, const TVarRec *Args, const int Args_Size, int AHelpContext)/*overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) { }
   const std::wstring GetMessage() const { return FMessage; }
   void SetMessage(const std::wstring value) { FMessage = value; }
 protected:
@@ -51,16 +51,16 @@ private:
   class NAME : public BASE \
   { \
   public: \
-    inline NAME(const std::exception* E, std::wstring Msg) : BASE(E, Msg) { } \
+    inline NAME(const std::exception *E, std::wstring Msg) : BASE(E, Msg) { } \
     inline virtual ~NAME(void) { } \
     inline NAME(const std::wstring Msg, int AHelpContext) : BASE(Msg, AHelpContext) { } \
   };
 
-    // inline NAME(const std::exception* E, int Ident) : BASE(E, Ident) { } \
-    // inline NAME(const std::wstring Msg, const TVarRec * Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
-    // inline NAME(int Ident, const TVarRec * Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
-    // inline NAME(const std::wstring Msg, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
-    // inline NAME(PResStringRec ResStringRec, const TVarRec * Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
+    // inline NAME(const std::exception *E, int Ident) : BASE(E, Ident) { } \
+    // inline NAME(const std::wstring Msg, const TVarRec *Args, const int Args_Size) : BASE(Msg, Args, Args_Size) { } \
+    // inline NAME(int Ident, const TVarRec *Args, const int Args_Size) : BASE(Ident, Args, Args_Size) { } \
+    // inline NAME(const std::wstring Msg, const TVarRec *Args, const int Args_Size, int AHelpContext) : BASE(Msg, Args, Args_Size, AHelpContext) { } \
+    // inline NAME(PResStringRec ResStringRec, const TVarRec *Args, const int Args_Size, int AHelpContext) : BASE(ResStringRec, Args, Args_Size, AHelpContext) { } \
     // inline NAME(int Ident, int AHelpContext) : BASE(Ident, AHelpContext) { } \
 
 //---------------------------------------------------------------------------
@@ -82,14 +82,14 @@ class EFatal : public ExtException
 {
 public:
   // fatal errors are always copied, new message is only appended
-  inline EFatal(const std::exception* E, std::wstring Msg) : ExtException(Msg, E) { }
+  inline EFatal(const std::exception *E, std::wstring Msg) : ExtException(Msg, E) { }
 };
 //---------------------------------------------------------------------------
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NAME : public BASE \
   { \
   public: \
-    inline NAME(const std::exception* E, std::wstring Msg) : BASE(E, Msg) { } \
+    inline NAME(const std::exception *E, std::wstring Msg) : BASE(E, Msg) { } \
   };
 //---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
@@ -99,7 +99,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 class ESshTerminate : public EFatal
 {
 public:
-  inline ESshTerminate(const std::exception* E, std::wstring Msg, TOnceDoneOperation AOperation) :
+  inline ESshTerminate(const std::exception *E, std::wstring Msg, TOnceDoneOperation AOperation) :
     EFatal(E, Msg),
     Operation(AOperation)
   { }

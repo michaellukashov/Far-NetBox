@@ -7,7 +7,7 @@
 #include "Terminal.h"
 
 //---------------------------------------------------------------------------
-bool ExceptionMessage(const std::exception * E, std::wstring & Message)
+bool ExceptionMessage(const std::exception *E, std::wstring & Message)
 {
   bool Result = true;
   if (dynamic_cast<const EAbort *>(E) != NULL)
@@ -29,7 +29,7 @@ bool ExceptionMessage(const std::exception * E, std::wstring & Message)
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings *ExceptionToMoreMessages(const std::exception * E)
+TStrings *ExceptionToMoreMessages(const std::exception *E)
 {
   TStrings *Result = NULL;
   std::wstring Message;
@@ -52,14 +52,14 @@ ExtException::ExtException(const std::wstring Msg, int AHelpContext) :
 {
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const std::exception * E) :
+ExtException::ExtException(const std::exception *E) :
   parent(""),
   FMoreMessages(NULL)
 {
   AddMoreMessages(E);
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(const std::exception* E, std::wstring Msg):
+ExtException::ExtException(const std::exception *E, std::wstring Msg):
   parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
@@ -90,7 +90,7 @@ ExtException::ExtException(std::wstring Msg) :
 }
 
 //---------------------------------------------------------------------------
-ExtException::ExtException(std::wstring Msg, const std::exception* E) :
+ExtException::ExtException(std::wstring Msg, const std::exception *E) :
   parent(""),
   FMoreMessages(NULL)
 {
@@ -127,7 +127,7 @@ ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
   }
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(std::wstring Msg, TStrings* MoreMessages,
+ExtException::ExtException(std::wstring Msg, TStrings *MoreMessages,
   bool Own) :
   parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
@@ -143,7 +143,7 @@ ExtException::ExtException(std::wstring Msg, TStrings* MoreMessages,
   }
 }
 //---------------------------------------------------------------------------
-void ExtException::AddMoreMessages(const std::exception* E)
+void ExtException::AddMoreMessages(const std::exception *E)
 {
   if (E != NULL)
   {
@@ -214,17 +214,17 @@ EOSExtException::EOSExtException(std::wstring Msg) :
 }
 
 //---------------------------------------------------------------------------
-void ShowExtendedExceptionEx(TTerminal * Terminal,
-  const std::exception * E)
+void ShowExtendedExceptionEx(TTerminal *Terminal,
+  const std::exception *E)
 {
 /* FIXME
   std::wstring Message; // not used
   if (ExceptionMessage(E, Message))
   {
-    TTerminalManager * Manager = TTerminalManager::Instance(false);
+    TTerminalManager *Manager = TTerminalManager::Instance(false);
 
     TQueryType Type;
-    ESshTerminate * Terminate = dynamic_cast<ESshTerminate*>(E);
+    ESshTerminate *Terminate = dynamic_cast<ESshTerminate*>(E);
     bool CloseOnCompletion = (Terminate != NULL);
     Type = CloseOnCompletion ? qtInformation : qtError;
 
@@ -237,11 +237,11 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
       }
 
       int SessionReopenTimeout = 0;
-      TManagedTerminal * ManagedTerminal = dynamic_cast<TManagedTerminal *>(Terminal);
+      TManagedTerminal *ManagedTerminal = dynamic_cast<TManagedTerminal *>(Terminal);
       if ((ManagedTerminal != NULL) &&
           ((Configuration->SessionReopenTimeout == 0) ||
            ((double)ManagedTerminal->ReopenStart == 0) ||
-           (int(double(Now() - ManagedTerminal->ReopenStart) * 24*60*60*1000) < Configuration->SessionReopenTimeout)))
+           (int(double(Now() - ManagedTerminal->ReopenStart) *24*60*60*1000) < Configuration->SessionReopenTimeout)))
       {
         SessionReopenTimeout = GUIConfiguration->SessionReopenAutoIdle;
       }
@@ -326,7 +326,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
 }
 
 //---------------------------------------------------------------------------
-// void ShowExtendedException(const std::exception * E)
+// void ShowExtendedException(const std::exception *E)
 // {
   // ShowExtendedExceptionEx(NULL, E);
 // }
