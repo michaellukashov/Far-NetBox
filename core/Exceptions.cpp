@@ -67,7 +67,7 @@ ExtException::ExtException(const std::exception *E, std::wstring Msg):
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg) :
-  parent(""),
+  parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
   // append message to the end to more messages
@@ -91,7 +91,7 @@ ExtException::ExtException(std::wstring Msg) :
 
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, const std::exception *E) :
-  parent(""),
+  parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
   // "copy std::exception"
