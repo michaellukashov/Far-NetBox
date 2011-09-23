@@ -50,6 +50,7 @@ ExtException::ExtException(const std::wstring Msg, int AHelpContext) :
     parent(::W2MB(Msg.c_str()).c_str(), AHelpContext),
     FMoreMessages(NULL)
 {
+    DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception *E) :
@@ -57,6 +58,7 @@ ExtException::ExtException(const std::exception *E) :
   FMoreMessages(NULL)
 {
   AddMoreMessages(E);
+  DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception *E, std::wstring Msg) :
@@ -64,6 +66,7 @@ ExtException::ExtException(const std::exception *E, std::wstring Msg) :
   FMoreMessages(NULL)
 {
   AddMoreMessages(E);
+  DEBUG_PRINTF(L"Msg = %s, FMessage = %s", Msg.c_str(), FMessage.c_str());
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg) :
@@ -87,6 +90,7 @@ ExtException::ExtException(std::wstring Msg) :
       FMoreMessages->Append(Msg);
     }
   }
+  DEBUG_PRINTF(L"Msg = %s, FMessage = %s", Msg.c_str(), FMessage.c_str());
 }
 
 //---------------------------------------------------------------------------
@@ -112,6 +116,7 @@ ExtException::ExtException(std::wstring Msg, const std::exception *E) :
       FMoreMessages->Append(Msg);
     }
   }
+  DEBUG_PRINTF(L"Msg = %s, FMessage = %s", Msg.c_str(), FMessage.c_str());
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
@@ -125,6 +130,7 @@ ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
     FMoreMessages = new TStringList();
     FMoreMessages->SetText(MoreMessages);
   }
+  DEBUG_PRINTF(L"Msg = %s, FMessage = %s", Msg.c_str(), FMessage.c_str());
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, TStrings *MoreMessages,
@@ -141,6 +147,7 @@ ExtException::ExtException(std::wstring Msg, TStrings *MoreMessages,
     FMoreMessages = new TStringList();
     FMoreMessages->Assign(MoreMessages);
   }
+  DEBUG_PRINTF(L"Msg = %s, FMessage = %s", Msg.c_str(), FMessage.c_str());
 }
 //---------------------------------------------------------------------------
 void ExtException::AddMoreMessages(const std::exception *E)
