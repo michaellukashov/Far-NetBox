@@ -257,15 +257,15 @@ set_target_properties( NetBox
 )
 
 # move from NetBox/Debug to NetBox/
-string(REPLACE "/" "\\" outdir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-add_custom_command ( TARGET NetBox
-    POST_BUILD
-    COMMAND copy /Y ${outdir}\\${CMAKE_BUILD_TYPE}\\ ${outdir}
-    COMMAND del /F /Q ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll_
-    COMMAND ren ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll NetBox.dll_
-    WORKING_DIRECTORY ${outdir}
-    VERBATIM
-)
+# string(REPLACE "/" "\\" outdir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+# add_custom_command ( TARGET NetBox
+#     POST_BUILD
+#     COMMAND copy /Y ${outdir}\\${CMAKE_BUILD_TYPE}\\ ${outdir}
+#     COMMAND del /F /Q ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll_
+#     COMMAND ren ${outdir}\\${CMAKE_BUILD_TYPE}\\NetBox.dll NetBox.dll_
+#     WORKING_DIRECTORY ${outdir}
+#     VERBATIM
+# )
 #TODO: COMMAND create_ver.py
 
 target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
