@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
 
+string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
+
 #-------------------------------------------------------------------------------
 
 set ( CMAKE_CXX_FLAGS
