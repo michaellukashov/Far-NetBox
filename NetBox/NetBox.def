@@ -13,6 +13,10 @@ EXPORTS
    OpenFilePluginW
    OpenPluginW
    ProcessKeyW
+   ProcessEventW
+   ProcessHostFileW
+   ProcessEditorEventW
+   ProcessEditorInputW
    PutFilesW
    SetDirectoryW
    SetStartupInfoW
