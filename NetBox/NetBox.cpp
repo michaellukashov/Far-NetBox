@@ -31,10 +31,6 @@
 #include "resource.h"
 #include "Common.h"
 
-#define MIN_FAR_VERMAJOR 2
-#define MIN_FAR_VERMINOR 0
-#define MIN_FAR_BUILD    0
-
 std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 
 //---------------------------------------------------------------------------
@@ -44,7 +40,7 @@ TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
 {
 public:
-  inline __fastcall TFarPluginGuard() :
+  inline TFarPluginGuard() :
     TGuard(FarPlugin->GetCriticalSection())
   {
   }
@@ -56,8 +52,9 @@ extern "C"
 
 int WINAPI GetMinFarVersionW()
 {
+    assert(FarPlugin);
     TFarPluginGuard Guard;
-    return MAKEFARVERSION(MIN_FAR_VERMAJOR, MIN_FAR_VERMINOR, MIN_FAR_BUILD);
+    return FarPlugin->GetMinFarVersion();
 }
 
 void WINAPI SetStartupInfoW(const PluginStartupInfo *psi)
