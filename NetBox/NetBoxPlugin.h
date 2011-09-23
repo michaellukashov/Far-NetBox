@@ -10,9 +10,10 @@ class TWinSCPFileSystem;
 class TCopyParamType;
 
 //---------------------------------------------------------------------------
-class TNetBoxPlugin : public TCustomFarPlugin
+class TNetBoxPlugin : public TWinSCPPlugin // TCustomFarPlugin
 {
-friend TWinSCPFileSystem;
+  typedef TWinSCPPlugin parent;
+  friend TWinSCPFileSystem;
 public:
   explicit TNetBoxPlugin(HINSTANCE HInst);
   virtual ~TNetBoxPlugin();

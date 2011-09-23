@@ -25,7 +25,7 @@
 // }
 //---------------------------------------------------------------------------
 TNetBoxPlugin::TNetBoxPlugin(HINSTANCE HInst) :
-    TCustomFarPlugin(HInst)
+    parent(HInst)
 {
   FInitialized = false;
   Self = this;
@@ -120,71 +120,70 @@ bool TNetBoxPlugin::ConfigureEx(int /*Item*/)
       {
         if (Result == MInterface)
         {
-          // if (ConfigurationDialog())
+          if (ConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MTransfer)
         {
-          // FIXME
-          // if (TransferConfigurationDialog())
+          if (TransferConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MBackground)
         {
-          // if (QueueConfigurationDialog())
+          if (QueueConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MEndurance)
         {
-          // if (EnduranceConfigurationDialog())
+          if (EnduranceConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MPanel)
         {
-          // if (PanelConfigurationDialog())
+          if (PanelConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MTransferEditor)
         {
-          // if (TransferEditorConfigurationDialog())
+          if (TransferEditorConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MConfirmations)
         {
-          // if (ConfirmationsConfigurationDialog())
+          if (ConfirmationsConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MLogging)
         {
-          // if (LoggingConfigurationDialog())
+          if (LoggingConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MIntegration)
         {
-          // if (IntegrationConfigurationDialog())
+          if (IntegrationConfigurationDialog())
           {
             Change = true;
           }
         }
         else if (Result == MAbout)
         {
-          // AboutDialog();
+          AboutDialog();
         }
       }
     }
