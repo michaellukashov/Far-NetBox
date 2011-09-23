@@ -111,4 +111,6 @@
 #define sSocketWrite 2105
 
 #define SNotImplemented 2106
+#define SOSError 2107
+#define SUnkOSError 2108
 

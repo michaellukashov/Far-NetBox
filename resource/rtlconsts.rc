@@ -113,4 +113,6 @@ BEGIN
   sSocketWrite, "Write"
 
   SNotImplemented, "Not implemented"
+  SOSError "System Error.  Code: %d.\n%s"
+  SUnkOSError "A call to an OS function failed"
 END
