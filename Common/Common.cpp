@@ -1844,37 +1844,44 @@ return false;
 //---------------------------------------------------------------------------
 std::wstring IntToStr(int value)
 {
+    // FIXME
     std::wstring result;
     return result;
 }
 
 int StrToInt(const std::wstring value)
 {
+    // FIXME
     return 0;
 }
 
 __int64 ToInt(const std::wstring value)
 {
+    // FIXME
     return 0;
 }
 
 int StrToIntDef(const std::wstring value, int defval)
 {
+    // FIXME
     return 0;
 }
 
 __int64 StrToInt64(const std::wstring value)
 {
+    // FIXME
     return 0;
 }
 
 __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
+    // FIXME
     return 0;
 }
 
 __int64 TryStrToInt(const std::wstring value, __int64 defval)
 {
+    // FIXME
     return 0;
 }
 
