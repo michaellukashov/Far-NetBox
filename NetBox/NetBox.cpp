@@ -244,10 +244,10 @@ int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
     TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
-    // DEBUG_PRINTF(L"NetBox: SetDirectoryW: begin");
+    // DEBUG_PRINTF(L"SetDirectoryW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->ChangeDirectory(dir, opMode);
-    // DEBUG_PRINTF(L"NetBox: SetDirectoryW: result = %u", result);
+    // DEBUG_PRINTF(L"SetDirectoryW: result = %u", result);
     return result;
 }
 
@@ -256,10 +256,10 @@ int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
 {
     TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
-    // DEBUG_PRINTF(L"NetBox: GetFiles: begin");
+    // DEBUG_PRINTF(L"GetFiles: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetFiles(panelItem, itemsNumber, destPath, move != 0, opMode);
-    // DEBUG_PRINTF(L"NetBox: GetFilesW: result = %u", result);
+    // DEBUG_PRINTF(L"GetFilesW: result = %u", result);
     return result;
 }
 
@@ -267,10 +267,10 @@ int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNu
 {
     TFarPluginGuard Guard;
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
-    // DEBUG_PRINTF(L"NetBox: GetFindDataW: begin");
+    // DEBUG_PRINTF(L"GetFindDataW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetItemList(panelItem, itemsNumber, opMode);
-    // DEBUG_PRINTF(L"NetBox: GetFindDataW: itemsNumber = %u", *itemsNumber);
+    // DEBUG_PRINTF(L"GetFindDataW: itemsNumber = %u", *itemsNumber);
     return result;
 }
 
@@ -317,9 +317,9 @@ int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 int WINAPI ConfigureW(int /*itemNumber*/)
 {
     TFarPluginGuard Guard;
-    // DEBUG_PRINTF(L"NetBox: ConfigureW: begin");
+    // DEBUG_PRINTF(L"ConfigureW: begin");
     m_Settings.Configure();
-    // DEBUG_PRINTF(L"NetBox: ConfigureW: end");
+    // DEBUG_PRINTF(L"ConfigureW: end");
     return FALSE;
 }
 

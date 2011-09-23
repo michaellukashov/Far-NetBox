@@ -123,7 +123,7 @@ void CSettings::Load()
         {
             m_proxySettings.proxyPassword = regStrVal;
         }
-        // DEBUG_PRINTF(L"NetBox: Load: m_ProxyType = %d, m_ProxyPort = %u, m_ProxyPassword = %s", m_ProxyType, m_ProxyPort, m_ProxyPassword.c_str());
+        // DEBUG_PRINTF(L"Load: m_ProxyType = %d, m_ProxyPort = %u, m_ProxyPassword = %s", m_ProxyType, m_ProxyPort, m_ProxyPassword.c_str());
 
         // Логирование
         if (settings.GetNumber(RegEnableLogging, regVal))
@@ -167,7 +167,7 @@ void CSettings::Save() const
         settings.SetNumber(RegProxyPort, m_proxySettings.proxyPort);
         settings.SetString(RegProxyLogin, m_proxySettings.proxyLogin.c_str());
         settings.SetString(RegProxyPassword, m_proxySettings.proxyPassword.c_str());
-        // DEBUG_PRINTF(L"NetBox: Save: m_ProxyType = %d, m_ProxyPort = %u, m_ProxyPassword = %s", m_proxySettings.proxyType, m_proxySettings.proxyPort, m_proxySettings.proxyPassword.c_str());
+        // DEBUG_PRINTF(L"Save: m_ProxyType = %d, m_ProxyPort = %u, m_ProxyPassword = %s", m_proxySettings.proxyType, m_proxySettings.proxyPort, m_proxySettings.proxyPassword.c_str());
         // Настройки логирования
         settings.SetNumber(RegEnableLogging, m_EnableLogging ? 1 : 0);
         settings.SetNumber(RegLoggingLevel, m_LoggingLevel);
@@ -369,7 +369,7 @@ void CSettings::LoggingConfigure()
     const int idBtnCancel = dlg.CreateButton(0, dlg.GetHeight() - 1, CFarPlugin::GetString(StringCancel), DIF_CENTERGROUP);
 
     // Установка состояния элементов диалога
-    // DEBUG_PRINTF(L"NetBox: idEnableLogging = %d, m_EnableLogging = %d", idEnableLogging, idBtnCancel, m_EnableLogging);
+    // DEBUG_PRINTF(L"idEnableLogging = %d, m_EnableLogging = %d", idEnableLogging, idBtnCancel, m_EnableLogging);
     dlgItemEnableLogging->Focus = 1;
 
     // Показываем диалог
@@ -395,7 +395,7 @@ void CSettings::ShowAbout()
     ++topPos;
     std::wstring ver = PLUGIN_VERSION_WTXT;
     std::wstring version = CFarPlugin::GetFormattedString(StringPluginVersion, ver.c_str());
-    // DEBUG_PRINTF(L"NetBox: version = %s", version.c_str());
+    // DEBUG_PRINTF(L"version = %s", version.c_str());
     dlg.CreateText(dlg.GetLeft() + 16, ++topPos, version.c_str());
 
     FarDialogItem *itemCloseBtn;

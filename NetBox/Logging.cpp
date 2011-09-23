@@ -50,7 +50,7 @@ void CLogger::Shutdown()
 
 void CLogger::Log(int level, const wchar_t *format, va_list args)
 {
-    // DEBUG_PRINTF(L"NetBox: level = %d, m_loggingLevel = %d", level, m_loggingLevel);
+    // DEBUG_PRINTF(L"level = %d, m_loggingLevel = %d", level, m_loggingLevel);
     if (!m_enableLogging)
     {
         return;
@@ -95,7 +95,7 @@ void CLogger::Log(int level, const wchar_t *format, va_list args)
 
 void CLogger::Log(int level, const char *str)
 {
-    // DEBUG_PRINTF(L"NetBox: level = %d, m_loggingLevel = %d", level, m_loggingLevel);
+    // DEBUG_PRINTF(L"level = %d, m_loggingLevel = %d", level, m_loggingLevel);
     if (!m_enableLogging)
     {
         return;

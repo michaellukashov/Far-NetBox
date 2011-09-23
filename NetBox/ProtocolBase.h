@@ -40,7 +40,7 @@ public:
     virtual bool ChangeDirectory(const wchar_t *name, std::wstring &errorInfo)
     {
         assert(name && *name);
-        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
+        // DEBUG_PRINTF(L"ChangeDirectory: name = %s, m_CurrentDirectory = %s", name, m_CurrentDirectory.c_str());
 
         const bool moveUp = (wcscmp(L"..", name) == 0);
         std::wstring newPath;
@@ -81,7 +81,7 @@ public:
 
         //Check path existing
         bool dirExist = false;
-        // DEBUG_PRINTF(L"NetBox: ChangeDirectory: name = %s, newPath = %s", name, newPath.c_str());
+        // DEBUG_PRINTF(L"ChangeDirectory: name = %s, newPath = %s", name, newPath.c_str());
         if (!CheckExisting(newPath.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
         {
             return false;
@@ -197,7 +197,7 @@ protected:
                 r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
             }
         }
-        // DEBUG_PRINTF(L"NetBox: LocalToFtpCP: r = %s", ::MB2W(r.c_str()).c_str());
+        // DEBUG_PRINTF(L"LocalToFtpCP: r = %s", ::MB2W(r.c_str()).c_str());
         return r;
     }
 

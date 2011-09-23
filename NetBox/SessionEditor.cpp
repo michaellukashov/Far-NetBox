@@ -147,12 +147,12 @@ bool CSessionEditor::EditSession()
     {
         sessionURL = scheme + L"://" + hostName + L":" + ::NumberToWString(port) + path + query;
     }
-    DEBUG_PRINTF(L"NetBox: sessionURL = %s", sessionURL.c_str());
+    DEBUG_PRINTF(L"sessionURL = %s", sessionURL.c_str());
     m_Session->SetURL(sessionURL.c_str());
 
     m_Session->SetPromptPwd(GetCheckState(m_IdChBxPromtpPsw));
     ::GetProxySettings(*this, m_params, proxySettings);
-    // DEBUG_PRINTF(L"NetBox: proxySettings.proxyType = %u, host = %s", proxySettings.proxyType, proxySettings.proxyHost.c_str());
+    // DEBUG_PRINTF(L"proxySettings.proxyType = %u, host = %s", proxySettings.proxyType, proxySettings.proxyHost.c_str());
     m_Session->SetProxySettings(proxySettings);
 
     OnSave();
@@ -257,7 +257,7 @@ LONG_PTR CSessionEditor::DialogMessageProc(int msg, int param1, LONG_PTR param2)
     }
     else if (msg == DN_BTNCLICK && param1 == m_IdBtnProxy)
     {
-        // DEBUG_PRINTF(L"NetBox: DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
+        // DEBUG_PRINTF(L"DN_BTNCLICK: param1 = %u, param2 = %u", param1, param2);
         // Прячем элементы диалога
         ShowSessionDlgItems(false);
         // Показываем элементы настроек прокси

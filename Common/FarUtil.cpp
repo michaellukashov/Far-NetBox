@@ -215,7 +215,7 @@ void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
         NULL, flags, &params.proxyHostItem);
     // Порт
     params.proxyPortStr = ::NumberToWString(ps.proxyPort);
-    // DEBUG_PRINTF(L"NetBox: proxyPort = %u, proxyPortStr = %s", ps.proxyPort, params.proxyPortStr.c_str());
+    // DEBUG_PRINTF(L"proxyPort = %u, proxyPortStr = %s", ps.proxyPort, params.proxyPortStr.c_str());
     left = dlg.GetWidth() - 10;
     params.idProxyPortText = dlg.CreateText(left, topPos,
         CFarPlugin::GetString(StringProxySettingsProxyPort), flags, &params.proxyPortTextItem);
@@ -243,7 +243,7 @@ void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogPar
     proxySettings.proxyType = dlg.GetSelectonIndex(params.idProxyTypeComboBox);
     proxySettings.proxyHost = dlg.GetText(params.idProxyHost);
     proxySettings.proxyPort = TextToNumber(dlg.GetText(params.idProxyPort));
-    // DEBUG_PRINTF(L"NetBox: proxyPort = %u", proxySettings.proxyPort);
+    // DEBUG_PRINTF(L"proxyPort = %u", proxySettings.proxyPort);
     proxySettings.proxyLogin = dlg.GetText(params.idProxyLogin);
     proxySettings.proxyPassword = dlg.GetText(params.idProxyPassword);
 }
@@ -301,7 +301,7 @@ std::wstring ExpandEnvVars(const std::wstring& str)
     wchar_t buf[MAX_PATH];
     unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
     std::wstring result = std::wstring(buf, size - 1);
-    // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
+    // DEBUG_PRINTF(L"result = %s", result.c_str());
     return result;
 }
 

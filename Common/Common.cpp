@@ -200,7 +200,7 @@ std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
     Str = TrimLeft(Str);
     Result = TrimRight(Str);
   }
-  // DEBUG_PRINTF(L"NetBox: Str = %s, Result = %s", Str.c_str(), Result.c_str());
+  // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -215,7 +215,7 @@ std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
       break;
     }
   }
-  // DEBUG_PRINTF(L"NetBox: CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
+  // DEBUG_PRINTF(L"CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
 
   std::wstring Result;
   if (P <= Str.size())
@@ -244,7 +244,7 @@ std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
       P++;
     }
   }
-  // DEBUG_PRINTF(L"NetBox: CopyToChars: Result = %s", Result.c_str());
+  // DEBUG_PRINTF(L"CopyToChars: Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1583,7 +1583,7 @@ std::wstring LoadStrPart(int Ident, int Part)
   std::wstring Result;
 
   std::wstring Str = LoadStr(Ident);
-  // DEBUG_PRINTF(L"NetBox: Str = %s", Str.c_str());
+  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
 
   while (Part > 0)
   {
@@ -2158,15 +2158,15 @@ std::wstring FmtLoadStr(int id, ...)
     std::wstring result;
     std::wstring format;
     HINSTANCE hInstance = GetModuleHandle(0);
-    // DEBUG_PRINTF(L"NetBox: hInstance = %u", hInstance);
+    // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     format.resize(255);
     int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
     format.resize(Length);
-    // DEBUG_PRINTF(L"NetBox: format = %s", format.c_str());
+    // DEBUG_PRINTF(L"format = %s", format.c_str());
     if (!Length)
     {
         // TRACE(_T("Unknown resource string id : %d"), id);
-        DEBUG_PRINTF(L"NetBox: Unknown resource string id: %d\n", id);
+        DEBUG_PRINTF(L"Unknown resource string id: %d\n", id);
     }
     else
     {
@@ -2179,9 +2179,9 @@ std::wstring FmtLoadStr(int id, ...)
             lpszTemp == NULL)
         {
           // AfxThrowMemoryException();
-            DEBUG_PRINTF(L"NetBox: FormatMessage error");
+            DEBUG_PRINTF(L"FormatMessage error");
         }
-        // DEBUG_PRINTF(L"NetBox: lpszTemp = %s", lpszTemp);
+        // DEBUG_PRINTF(L"lpszTemp = %s", lpszTemp);
         result = lpszTemp;
         ::LocalFree(lpszTemp);
         */
@@ -2191,7 +2191,7 @@ std::wstring FmtLoadStr(int id, ...)
         va_end(args);
         result = buf;
     }
-    // DEBUG_PRINTF(L"NetBox: result = %s", result.c_str());
+    // DEBUG_PRINTF(L"result = %s", result.c_str());
     return result;
 }
 //---------------------------------------------------------------------------

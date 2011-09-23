@@ -198,7 +198,7 @@ namespace Masks {
 
 bool TMask::GetMatches(const std::wstring Str)
 {
-    // DEBUG_PRINTF(L"NetBox: GetMatches: FMask = %s, Str = %s", FMask.c_str(), Str.c_str());
+    // DEBUG_PRINTF(L"GetMatches: FMask = %s, Str = %s", FMask.c_str(), Str.c_str());
     return CmpName(FMask.c_str(), Str.c_str(), true, true);
 }
 
@@ -328,7 +328,7 @@ std::wstring TFileMasks::TParams::ToString() const
 bool TFileMasks::IsMask(const std::wstring Mask)
 {
     int result = ::LastDelimiter(Mask, L"?*[");
-    // DEBUG_PRINTF(L"NetBox: isMask: result = %d", result);
+    // DEBUG_PRINTF(L"isMask: result = %d", result);
     return result != -1;
 }
 //---------------------------------------------------------------------------
@@ -398,7 +398,7 @@ bool TFileMasks::MatchesMasks(const std::wstring FileName, bool Directory,
   bool Result = false;
 
   TMasks::const_iterator I = Masks.begin();
-  // DEBUG_PRINTF(L"NetBox: Masks.size = %d", Masks.size());
+  // DEBUG_PRINTF(L"Masks.size = %d", Masks.size());
   while (!Result && (I != Masks.end()))
   {
     const TMask &Mask = *I;
@@ -618,7 +618,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
       else
       {
         MaskStr = ::CopyToChars(Str, NextMaskFrom, L";,|", false, &NextMaskDelimiter);
-        // DEBUG_PRINTF(L"NetBox: MaskStr = %s, NextMaskDelimiter = %c", MaskStr.c_str(), NextMaskDelimiter);
+        // DEBUG_PRINTF(L"MaskStr = %s, NextMaskDelimiter = %c", MaskStr.c_str(), NextMaskDelimiter);
       }
       int MaskEnd = NextMaskFrom - 1;
 
@@ -640,11 +640,11 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         int NextPartFrom = 0;
         while (NextPartFrom <= MaskStr.size())
         {
-          // DEBUG_PRINTF(L"NetBox: NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
+          // DEBUG_PRINTF(L"NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
           char PartDelimiter = NextPartDelimiter;
           int PartFrom = NextPartFrom;
           std::wstring PartStr = ::CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
-          // DEBUG_PRINTF(L"NetBox: PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
+          // DEBUG_PRINTF(L"PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
 
           int PartStart = MaskStart + PartFrom - 1;
           int PartEnd = MaskStart + NextPartFrom - 2;

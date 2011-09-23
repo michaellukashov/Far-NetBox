@@ -150,7 +150,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, std::wstring &errorIn
 
     //Check path existing
     bool dirExist = false;
-    // DEBUG_PRINTF(L"NetBox: newPath = %s", newPath.c_str());
+    // DEBUG_PRINTF(L"newPath = %s", newPath.c_str());
     if (!CheckExisting(newPath.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
         return false;
@@ -164,7 +164,7 @@ bool CSessionManager::ChangeDirectory(const wchar_t *name, std::wstring &errorIn
 bool CSessionManager::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
     const std::wstring dirPath = ConvertPath(m_Settings.GetSessionPath().c_str(), path);
-    // DEBUG_PRINTF(L"NetBox: dirPath = %s", dirPath.c_str());
+    // DEBUG_PRINTF(L"dirPath = %s", dirPath.c_str());
     if (!CreateDirectory(dirPath.c_str(), NULL))
     {
         const int errCode = GetLastError();
@@ -181,7 +181,7 @@ bool CSessionManager::MakeDirectory(const wchar_t *path, std::wstring &errorInfo
 bool CSessionManager::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
 {
     std::wstring findMask = ConvertPath(m_Settings.GetSessionPath().c_str(), m_CurrentDirectory.c_str());
-    // DEBUG_PRINTF(L"NetBox: findMask = %s", findMask.c_str());
+    // DEBUG_PRINTF(L"findMask = %s", findMask.c_str());
     ::AppendWChar(findMask, L'\\');
     ::AppendWChar(findMask, L'*');
 

@@ -57,7 +57,7 @@ bool CWebDAV::Connect(HANDLE abortEvent, std::wstring &errorInfo)
     assert(abortEvent);
 
     const wchar_t *url = m_Session.GetURL();
-    // DEBUG_PRINTF(L"NetBox: WebDAV: connecting to %s", url);
+    // DEBUG_PRINTF(L"WebDAV: connecting to %s", url);
     //Initialize curl
     m_CURL.Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
         m_Session.GetProxySettings());
@@ -68,7 +68,7 @@ bool CWebDAV::Connect(HANDLE abortEvent, std::wstring &errorInfo)
     // std::wstring query;
     ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
     bool dirExist = false;
-    // DEBUG_PRINTF(L"NetBox: path = %s, query = %s", path.c_str(), query.c_str());
+    // DEBUG_PRINTF(L"path = %s, query = %s", path.c_str(), query.c_str());
     // if (!query.empty())
     // {
         // path += query;
@@ -95,19 +95,19 @@ void CWebDAV::Close()
 
 bool CWebDAV::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s", path);
+    // DEBUG_PRINTF(L"CWebDAV::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
     std::string responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
+    // DEBUG_PRINTF(L"CWebDAV::CheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
 }
 
 
 bool CWebDAV::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
 {
-    // DEBUG_PRINTF(L"NetBox: MakeDirectory: begin: path = %s", path);
+    // DEBUG_PRINTF(L"MakeDirectory: begin: path = %s", path);
     const std::string webDavPath = EscapeUTF8URL(path);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
@@ -126,7 +126,7 @@ bool CWebDAV::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
     }
 
     bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
-    // DEBUG_PRINTF(L"NetBox: MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
+    // DEBUG_PRINTF(L"MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
     return result;
 }
 
@@ -335,19 +335,19 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &erro
 
 bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    // DEBUG_PRINTF(L"CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile outFile;
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
-        // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
+        // DEBUG_PRINTF(L"CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
 
     const std::string webDavPath = EscapeUTF8URL(remotePath);
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"CWebDAV::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
@@ -364,19 +364,19 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     if (urlCode != CURLE_OK)
     {
         errorInfo = ::MB2W(curl_easy_strerror(urlCode));
-        // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
+        // DEBUG_PRINTF(L"CWebDAV::GetFile: errorInfo = %s", errorInfo.c_str());
         return false;
     }
 
     bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
+    // DEBUG_PRINTF(L"CWebDAV::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
     return result;
 }
 
 
 bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    // DEBUG_PRINTF(L"CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
     CFile inFile;
@@ -464,7 +464,7 @@ bool CWebDAV::Delete(const wchar_t *path, const ItemType /*type*/, std::wstring 
 bool CWebDAV::SendPropFindRequest(const wchar_t *dir, std::string &response, std::wstring &errInfo)
 {
     const std::string webDavPath = EscapeUTF8URL(dir);
-    // DEBUG_PRINTF(L"NetBox: CWebDAV::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+    // DEBUG_PRINTF(L"CWebDAV::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
 
@@ -501,7 +501,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, std::string &response, std
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_POSTFIELDSIZE, requestDataLen));
 
     CHECK_CUCALL(urlCode, m_CURL.Perform());
-    // DEBUG_PRINTF(L"NetBox: urlCode = %d", urlCode);
+    // DEBUG_PRINTF(L"urlCode = %d", urlCode);
     if (urlCode != CURLE_OK)
     {
         errInfo = ::MB2W(curl_easy_strerror(urlCode));
@@ -510,7 +510,7 @@ bool CWebDAV::SendPropFindRequest(const wchar_t *dir, std::string &response, std
 
     if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
     {
-        // DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
+        // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
         return false;
     }
 
@@ -532,7 +532,7 @@ bool CWebDAV::CheckResponseCode(const long expect, std::wstring &errInfo)
         if (responseCode != expect)
         {
             errInfo = GetBadResponseInfo(responseCode);
-            // DEBUG_PRINTF(L"NetBox: errInfo = %s", errInfo.c_str());
+            // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
             return false;
         }
     }

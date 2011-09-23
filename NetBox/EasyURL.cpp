@@ -95,7 +95,7 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
         m_Password = ::W2MB(password);
     }
     m_proxySettings = proxySettings;
-    // DEBUG_PRINTF(L"NetBox: CEasyURL::Initialize: proxy type = %u, adress = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
+    // DEBUG_PRINTF(L"CEasyURL::Initialize: proxy type = %u, adress = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
     return true;
 }
 
@@ -116,7 +116,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     assert(m_CURL);
     assert(!m_Prepared);
     assert(!path || path[0] == L'/');
-    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: m_TopURL = %s, path = %s", ::MB2W(m_TopURL.c_str()).c_str(), ::MB2W(path).c_str());
+    // DEBUG_PRINTF(L"CEasyURL::Prepare: m_TopURL = %s, path = %s", ::MB2W(m_TopURL.c_str()).c_str(), ::MB2W(path).c_str());
     curl_easy_reset(m_CURL);
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
@@ -148,7 +148,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
     }
-    // DEBUG_PRINTF(L"NetBox: CEasyURL::Prepare: proxy type = %u, host = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
+    // DEBUG_PRINTF(L"CEasyURL::Prepare: proxy type = %u, host = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
     if (m_proxySettings.proxyType != PROXY_NONE)
     {
         int proxy_type = CURLPROXY_HTTP;
@@ -196,7 +196,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     }
 
     m_Prepared = (urlCode == CURLE_OK);
-    // DEBUG_PRINTF(L"NetBox: Prepare: m_Prepared = %u", m_Prepared);
+    // DEBUG_PRINTF(L"Prepare: m_Prepared = %u", m_Prepared);
     return urlCode;
 }
 
@@ -278,7 +278,7 @@ CURLcode CEasyURL::Perform()
 CURLcode CEasyURL::ExecuteFtpCommand(const char *cmd)
 {
     assert(cmd);
-    // DEBUG_PRINTF(L"NetBox: ExecuteFtpCommand: cmd = %s", ::MB2W(cmd).c_str());
+    // DEBUG_PRINTF(L"ExecuteFtpCommand: cmd = %s", ::MB2W(cmd).c_str());
 
     CSlistURL slist;
     slist.Append(cmd);
@@ -391,7 +391,7 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
     // PASS *****
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {
-        // DEBUG_PRINTF(L"NetBox: data = %s", ::MB2W(data).c_str());
+        // DEBUG_PRINTF(L"data = %s", ::MB2W(data).c_str());
         std::wstring dataw = ::MB2W(data);
         RegExpSearch search = {
             dataw.c_str(),
@@ -403,7 +403,7 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
         };
         if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
         {
-            // DEBUG_PRINTF(L"NetBox: PASS ****");
+            // DEBUG_PRINTF(L"PASS ****");
             Log2("PASS ****");
             return 0;
         }

@@ -48,7 +48,7 @@ CURLcode CFTPS::CURLPrepare(const char *ftpPath, const bool handleTimeout /*= tr
     CURLcode urlCode = CFTP::CURLPrepare(ftpPath, handleTimeout);
     if (urlCode == CURLE_OK)
     {
-        // DEBUG_PRINTF(L"NetBox: CFTPS::CURLPrepare: path = %s", ftpPath);
+        // DEBUG_PRINTF(L"CFTPS::CURLPrepare: path = %s", ftpPath);
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_DEFAULT));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYPEER, m_SSL_VERIFYPEER));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_SSL_VERIFYHOST, 1));
@@ -63,7 +63,7 @@ bool CFTPS::TryToResolveConnectionProblem()
     if (m_lastErrorCurlCode == CURLE_SSL_CACERT)
     {
         // Показываем предупреждение о сертификате
-        // DEBUG_PRINTF(L"NetBox: TryToResolveConnectionProblem: errorCode: %u", m_lastErrorCurlCode);
+        // DEBUG_PRINTF(L"TryToResolveConnectionProblem: errorCode: %u", m_lastErrorCurlCode);
         std::wstring errorInfo = ::MB2W(curl_easy_strerror(m_lastErrorCurlCode));
         std::wstring msg = CFarPlugin::GetFormattedString(StringSSLErrorContinue, errorInfo.c_str());
         const int retCode = CFarPlugin::MessageBox(CFarPlugin::GetString(StringTitle), msg.c_str(), FMSG_MB_YESNO | FMSG_WARNING);
