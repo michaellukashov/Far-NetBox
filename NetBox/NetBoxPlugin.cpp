@@ -57,9 +57,9 @@ void TNetBoxPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   try
   {
     DEBUG_PRINTF(L"1");
-    CoreInitialize();
-    DEBUG_PRINTF(L"2");
     TCustomFarPlugin::SetStartupInfo(Info);
+    DEBUG_PRINTF(L"2");
+    CoreInitialize();
     DEBUG_PRINTF(L"3");
     assert(!FInitialized);
     FInitialized = true;
