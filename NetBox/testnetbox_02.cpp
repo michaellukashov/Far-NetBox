@@ -41,10 +41,13 @@ public:
         onStringListChangeTriggered(false)
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
+        FarPlugin = CreateStub();
     }
 
     virtual ~base_fixture_t()
     {
+        delete FarPlugin;
+        FarPlugin = NULL;
     }
 
 public:
@@ -221,6 +224,37 @@ BOOST_FIXTURE_TEST_CASE(test5, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test6, base_fixture_t)
 {
     BOOST_CHECK_THROW(::Error(SListIndexError, 0), ExtException);
+}
+
+BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
+{
+    TStringList Lines;
+    Lines.SetSorted(true);
+    if (1)
+    {
+        Lines.SetDuplicates(dupAccept);
+        Lines.Add(L"aaa");
+        Lines.Add(L"aaa");
+        Lines.Add(L"bbb");
+        BOOST_CHECK(3 == Lines.GetCount());
+    }
+    Lines.Clear();
+    if (1)
+    {
+        Lines.SetDuplicates(dupIgnore);
+        Lines.Add(L"aaa");
+        Lines.Add(L"aaa");
+        Lines.Add(L"bbb");
+        BOOST_CHECK(2 == Lines.GetCount());
+    }
+    Lines.Clear();
+    if (1)
+    {
+        Lines.SetDuplicates(dupError);
+        Lines.Add(L"aaa");
+        Lines.Add(L"bbb");
+        BOOST_CHECK_THROW(Lines.Add(L"aaa"), std::exception);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

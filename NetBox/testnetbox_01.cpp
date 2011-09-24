@@ -20,8 +20,14 @@
 
 #include "TestTexts.h"
 #include "Common.h"
+#include "FarPlugin.h"
+#include "testutils.h"
 
 using namespace boost::unit_test;
+
+//------------------------------------------------------------------------------
+TCustomFarPlugin *FarPlugin = NULL;
+//------------------------------------------------------------------------------
 
 /*******************************************************************************
             test suite
