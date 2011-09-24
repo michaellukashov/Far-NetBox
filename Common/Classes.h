@@ -397,7 +397,8 @@ public:
     TStrings() :
         FDelimiter(L','),
         FQuoteChar(L'"'),
-        FUpdateCount(0)
+        FUpdateCount(0),
+        FDuplicates(dupAccept)
     {
     }
     virtual ~TStrings()
@@ -510,7 +511,7 @@ public:
     }
     void SetDuplicates(TDuplicatesEnum value)
     {
-        ::Error(SNotImplemented, 3);
+        FDuplicates = value;
     }
     void Move(int Index, int To)
     {
@@ -549,11 +550,6 @@ public:
     {
         Insert(GetCount(), value);
     }
-    bool Find(const std::wstring Value, int &Index)
-    {
-        ::Error(SNotImplemented, 11);
-        return false;
-    }
     virtual void Insert(int Index, const std::wstring AString) = 0;
     void SaveToStream(TStream *Stream)
     {
@@ -573,7 +569,8 @@ public:
     void SetDelimitedText(const std::wstring Value);
     virtual int CompareStrings(const std::wstring &S1, const std::wstring &S2);
     int GetUpdateCount() const { return FUpdateCount; }
-private:
+protected:
+    TDuplicatesEnum FDuplicates;
     mutable wchar_t FDelimiter;
     mutable wchar_t FQuoteChar;
     int FUpdateCount;
@@ -613,6 +610,65 @@ public:
         FList.clear();
           // SetCount(0);
           // SetCapacity(0);
+    }
+    size_t Add(std::wstring S)
+    {
+        return AddObject(S, NULL);
+    }
+    int AddObject(std::wstring S, TObject *AObject)
+    {
+      // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
+      int Result = 0;
+      if (!GetSorted())
+      {
+        Result = GetCount();
+      }
+      else
+      {
+        if (Find(S, Result))
+        {
+          switch (FDuplicates)
+          {
+            case dupIgnore:
+                return Result;
+                break;
+            case dupError:
+                ::Error(SDuplicateString, 2);
+                break;
+          }
+        }
+      }
+      InsertItem(Result, S, AObject);
+      return Result;
+    }
+    virtual bool Find(const std::wstring S, int &Index)
+    {
+      bool Result = false;
+      int L = 0;
+      int H = GetCount() - 1;
+      while (L <= H)
+      {
+        int I = (L + H) >> 1;
+        int C = CompareStrings(FList[I].FString, S);
+        if (C < 0)
+        {
+            L = I + 1;
+        }
+        else
+        {
+          H = I - 1;
+          if (C == 0)
+          {
+            Result = true;
+            if (FDuplicates != dupAccept)
+            {
+                L = I;
+            }
+          }
+        }
+      }
+      Index = L;
+      return Result;
     }
     virtual void PutString(int Index, std::wstring S)
     {
