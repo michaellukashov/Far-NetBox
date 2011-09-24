@@ -235,11 +235,14 @@ void TCopyParamList::Init()
 //---------------------------------------------------------------------------
 TCopyParamList::~TCopyParamList()
 {
+  DEBUG_PRINTF(L"begin");
   Clear();
+  DEBUG_PRINTF(L"1");
   delete FCopyParams;
   delete FRules;
   delete FNames;
   delete FNameList;
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Reset()
@@ -334,12 +337,18 @@ void TCopyParamList::Add(const std::wstring Name,
 void TCopyParamList::Insert(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-  assert(FNames->IndexOf(Name.c_str()) < 0);
+  DEBUG_PRINTF(L"begin");
+  assert(FNames->IndexOf(Name) < 0);
+  DEBUG_PRINTF(L"1");
   FNames->Insert(Index, Name);
+  DEBUG_PRINTF(L"2");
   assert(CopyParam != NULL);
   FCopyParams->Insert(Index, reinterpret_cast<TObject *>(CopyParam));
+  DEBUG_PRINTF(L"3");
   FRules->Insert(Index, reinterpret_cast<TObject *>(Rule));
+  DEBUG_PRINTF(L"4");
   Modify();
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Change(int Index, const std::wstring Name,
@@ -535,13 +544,17 @@ TGUIConfiguration::~TGUIConfiguration()
 //---------------------------------------------------------------------------
 void TGUIConfiguration::Default()
 {
+  DEBUG_PRINTF(L"begin");
   TConfiguration::Default();
+  DEBUG_PRINTF(L"1");
 
   // reset before call to DefaultLocalized()
   FDefaultCopyParam.Default();
+  DEBUG_PRINTF(L"2");
 
   FCopyParamListDefaults = true;
   DefaultLocalized();
+  DEBUG_PRINTF(L"3");
 
   FIgnoreCancelBeforeFinish = TDateTime(0, 0, 3, 0);
   FContinueOnError = false;
@@ -560,6 +573,7 @@ void TGUIConfiguration::Default()
   FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
   FPuttyPath = FDefaultPuttyPath;
   SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
+  DEBUG_PRINTF(L"3");
   FPuttyPassword = false;
   FTelnetForFtpInPutty = true;
   FPuttySession = L"WinSCP temporary session";
@@ -573,10 +587,12 @@ void TGUIConfiguration::Default()
 
   FNewDirectoryProperties.Default();
   FNewDirectoryProperties.Rights = TRights::rfDefault;
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TGUIConfiguration::DefaultLocalized()
 {
+    DEBUG_PRINTF(L"begin: FCopyParamListDefaults = %d", FCopyParamListDefaults);
   if (FCopyParamListDefaults)
   {
     FCopyParamList->Clear();
@@ -586,24 +602,31 @@ void TGUIConfiguration::DefaultLocalized()
     // obsolete translations)
     if (!LoadStr(COPY_PARAM_PRESET_ASCII).empty())
     {
+        DEBUG_PRINTF(L"1");
       TCopyParamType * CopyParam;
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
+      DEBUG_PRINTF(L"2");
       CopyParam->SetTransferMode(tmAscii);
+      DEBUG_PRINTF(L"3");
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
+      DEBUG_PRINTF(L"4");
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmBinary);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
+      DEBUG_PRINTF(L"5");
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->GetExcludeFileMask().SetMasks(L"*.bak; *.tmp; ~$*; *.wbk; *~; #*; .#*");
       CopyParam->SetNegativeExclude(false); // just for sure
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE), CopyParam, NULL);
+      DEBUG_PRINTF(L"6");
     }
 
     FCopyParamList->Reset();
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)

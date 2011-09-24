@@ -20,6 +20,8 @@ TCopyParamType::TCopyParamType(const TCopyParamType & Source)
 //---------------------------------------------------------------------------
 TCopyParamType::~TCopyParamType()
 {
+  DEBUG_PRINTF(L"begin");
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TCopyParamType::Default()

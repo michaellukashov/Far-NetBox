@@ -519,6 +519,7 @@ public:
     }
     int IndexOf(const std::wstring S)
     {
+      DEBUG_PRINTF(L"begin");
       for (int Result = 0; Result < GetCount() - 1; Result++)
       {
         if (CompareStrings(GetString(Result), S) == 0)
@@ -526,6 +527,7 @@ public:
             return Result;
         }
       }
+      DEBUG_PRINTF(L"end");
       return -1;
     }
     int IndexOfName(const wchar_t *value)
@@ -679,6 +681,7 @@ public:
     }
     int IndexOf(const std::wstring S)
     {
+      DEBUG_PRINTF(L"begin");
       int Result = -1;
       if (!GetSorted())
       {
@@ -691,6 +694,7 @@ public:
           Result = -1;
         }
       }
+      DEBUG_PRINTF(L"end");
       return Result;
     }
     virtual void PutString(int Index, std::wstring S)
