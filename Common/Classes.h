@@ -411,7 +411,7 @@ public:
     }
     virtual size_t GetCount() const = 0;
     virtual void Delete(size_t Index) = 0;
-    virtual std::wstring GetString(int Index) const = 0;
+    virtual std::wstring GetString(size_t Index) const = 0;
     virtual std::wstring GetText()
     {
         return GetTextStr();
@@ -520,7 +520,7 @@ public:
     int IndexOf(const std::wstring S)
     {
       DEBUG_PRINTF(L"begin");
-      for (int Result = 0; Result < GetCount() - 1; Result++)
+      for (size_t Result = 0; Result < GetCount() - 1; Result++)
       {
         if (CompareStrings(GetString(Result), S) == 0)
         {
@@ -766,7 +766,7 @@ public:
         FList.insert(FList.begin() + Index, item);
         Changed();
     }
-    virtual std::wstring GetString(int Index) const
+    virtual std::wstring GetString(size_t Index) const
     {
         // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
         if ((Index < 0) || (Index >= FList.size()))
