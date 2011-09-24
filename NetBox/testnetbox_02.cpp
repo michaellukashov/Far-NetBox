@@ -21,10 +21,10 @@
 
 #include "FarUtil.h"
 
+#include "testutils.h"
 #include "TestTexts.h"
 #include "Common.h"
 #include "FileOperationProgress.h"
-#include "testutils.h"
 
 using namespace boost::unit_test;
 
@@ -237,6 +237,8 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
         BOOST_CHECK(3 == Lines.GetCount());
+        BOOST_CHECK(0 == Lines.IndexOf(L"aaa"));
+        BOOST_CHECK(2 == Lines.IndexOf(L"bbb"));
     }
     Lines.Clear();
     if (1)
@@ -246,6 +248,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
         Lines.Add(L"aaa");
         Lines.Add(L"bbb");
         BOOST_CHECK(2 == Lines.GetCount());
+        BOOST_CHECK(1 == Lines.IndexOf(L"bbb"));
     }
     Lines.Clear();
     if (1)

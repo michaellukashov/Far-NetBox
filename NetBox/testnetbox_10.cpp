@@ -23,12 +23,14 @@
 #include "puttyexp.h"
 #include "FarUtil.h"
 
+#include "testutils.h"
 #include "delegate.h"
 #include "TestTexts.h"
 #include "Common.h"
 #include "FileMasks.h"
 #include "WinSCPPlugin.h"
-#include "testutils.h"
+#include "GUIConfiguration.h"
+#include "TextsCore.h"
 
 using namespace boost::unit_test;
 
@@ -43,10 +45,13 @@ public:
         TObject()
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
+        FarPlugin = CreateStub();
     }
 
     virtual ~base_fixture_t()
     {
+        delete FarPlugin;
+        FarPlugin = NULL;
     }
 
     bool scp_test(std::string host, int port, std::string user, std::string password);
@@ -362,6 +367,21 @@ BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
         delete FarPlugin;
         // BOOST_CHECK(FarPlugin == NULL);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
+{
+    TGUICopyParamType FDefaultCopyParam;
+    TCopyParamType *CopyParam = new TCopyParamType(FDefaultCopyParam);
+    CopyParam->SetTransferMode(tmAscii);
+    TCopyParamList FCopyParamList;
+    // BOOST_TEST_MESSAGE("FCopyParamList.Count = " << FCopyParamList.GetCount());
+    FCopyParamList.Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, NULL);
+    // BOOST_TEST_MESSAGE("FCopyParamList.Count = " << FCopyParamList.GetCount());
+    CopyParam = new TCopyParamType(FDefaultCopyParam);
+    CopyParam->SetTransferMode(tmAscii);
+    FCopyParamList.Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
+    // BOOST_TEST_MESSAGE("FCopyParamList.Count = " << FCopyParamList.GetCount());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
