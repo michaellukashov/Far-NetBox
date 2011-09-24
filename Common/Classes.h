@@ -228,7 +228,7 @@ public:
     }
     int Remove(void *item)
     {
-        size_t Result = IndexOf(item);
+        int Result = IndexOf(item);
         if (Result >= 0)
         {
             Delete(Result);
@@ -273,13 +273,13 @@ public:
         if (Item != NULL)
           Notify(Item, lnAdded);
     }
-    size_t IndexOf(void *value) const
+    int IndexOf(void *value) const
     {
-        size_t Result = 0;
+        int Result = 0;
         while ((Result < FList.size()) && (FList[Result] != value))
           Result++;
         if (Result == FList.size())
-          Result = (size_t)-1;
+          Result = -1;
         return Result;
     }
     virtual void Clear()
@@ -352,7 +352,7 @@ public:
     {
         parent::Insert(Index, value);
     }
-    size_t IndexOf(TObject *value) const
+    int IndexOf(TObject *value) const
     {
         return parent::IndexOf(value);
     }
@@ -517,12 +517,18 @@ public:
     {
         ::Error(SNotImplemented, 4);
     }
-    size_t IndexOf(const wchar_t *value)
+    int IndexOf(const std::wstring S)
     {
-        ::Error(SNotImplemented, 5);
-        return -1;
+      for (int Result = 0; Result < GetCount() - 1; Result++)
+      {
+        if (CompareStrings(GetString(Result), S) == 0)
+        {
+            return Result;
+        }
+      }
+      return -1;
     }
-    size_t IndexOfName(const wchar_t *value)
+    int IndexOfName(const wchar_t *value)
     {
         ::Error(SNotImplemented, 6);
         return -1;
@@ -588,6 +594,7 @@ typedef int (TStringListSortCompare)(TStringList *List, int Index1, int Index2);
 
 class TStringList : public TStrings
 {
+    typedef TStrings parent;
     friend int StringListCompareStrings(TStringList *List, int Index1, int Index2);
 public:
     TStringList() :
@@ -668,6 +675,22 @@ public:
         }
       }
       Index = L;
+      return Result;
+    }
+    int IndexOf(const std::wstring S)
+    {
+      int Result = -1;
+      if (!GetSorted())
+      {
+        Result = parent::IndexOf(S);
+      }
+      else
+      {
+        if (!Find(S, Result))
+        {
+          Result = -1;
+        }
+      }
       return Result;
     }
     virtual void PutString(int Index, std::wstring S)
