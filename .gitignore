@@ -28,4 +28,4 @@ ipch/
 *.7z
 *.orig
 tags
-NetBox/build
+src/NetBox/build
