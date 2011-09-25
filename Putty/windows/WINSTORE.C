@@ -588,9 +588,9 @@ void read_random_seed(noise_consumer_t consumer)
 	    DWORD len;
 
 	    if (ReadFile(seedf, buf, sizeof(buf), &len, NULL) && len)
-		consumer(buf, len);
+            consumer(buf, len);
 	    else
-		break;
+            break;
 	}
 	CloseHandle(seedf);
     }
