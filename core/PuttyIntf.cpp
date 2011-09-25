@@ -340,22 +340,26 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool CanCreate)
 {
   long R;
+  DEBUG_PRINTF(L"1");
   assert(Configuration != NULL);
 
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
 
   std::wstring RegKey = ::MB2W(SubKey);
+  DEBUG_PRINTF(L"2");
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().size();
+  DEBUG_PRINTF(L"3");
   assert(RegKey.substr(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.substr(PuttyKeyLen + 1, RegKey.size() - PuttyKeyLen);
+  DEBUG_PRINTF(L"4");
   // DEBUG_PRINTF(L"RegKey = %s", RegKey.c_str());
   if (!RegKey.empty())
   {
     assert(RegKey[0] == '\\');
     RegKey.erase(0, 1);
   }
-
+  DEBUG_PRINTF(L"5");
   if (RegKey.empty())
   {
     *Result = static_cast<HKEY>(NULL);
@@ -379,7 +383,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
       R = ERROR_CANTOPEN;
     }
   }
-
+  DEBUG_PRINTF(L"6");
   return R;
 }
 //---------------------------------------------------------------------------
