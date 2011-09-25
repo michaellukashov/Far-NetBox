@@ -216,16 +216,13 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Command,
 bool SpecialFolderLocation(int PathID, std::wstring & Path)
 {
   LPITEMIDLIST Pidl;
-  char Buf[256];
-  ::Error(SNotImplemented, 99);
-  /* // FIXME 
+  wchar_t Buf[256];
   if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {
     Path = std::wstring(Buf);
     return true;
   }
-  */
   return false;
 }
 //---------------------------------------------------------------------------
