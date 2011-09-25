@@ -29,7 +29,6 @@ void noise_get_heavy(void (*func) (void *, int))
     GetWindowsDirectory(winpath, sizeof(winpath));
     strcat(winpath, "\\*");
     srch = FindFirstFile(winpath, &finddata);
-    OutputDebugStringW(L"NetBox: 10");
     if (srch != INVALID_HANDLE_VALUE) {
 	do {
 	    func(&finddata, sizeof(finddata));
@@ -40,12 +39,9 @@ void noise_get_heavy(void (*func) (void *, int))
     pid = GetCurrentProcessId();
     func(&pid, sizeof(pid));
 
-    OutputDebugStringW(L"NetBox: 13");
     read_random_seed(func);
-    OutputDebugStringW(L"NetBox: 14");
     /* Update the seed immediately, in case another instance uses it. */
     random_save_seed();
-    OutputDebugStringW(L"NetBox: 15");
 }
 
 void random_save_seed(void)
