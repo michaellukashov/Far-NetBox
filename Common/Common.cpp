@@ -613,22 +613,33 @@ std::wstring IncludeTrailingBackslash(const std::wstring str)
 
 std::wstring ExtractFileDir(const std::wstring str)
 {
-    // FIXME
-    std::wstring result = str;
+    std::wstring result;
+    int Pos = ::LastDelimiter(str, L"/\\");
+    DEBUG_PRINTF(L"Pos = %d", Pos);
+    // it used to return Path when no slash was found
+    if (Pos > 0)
+    {
+      result = str.substr(0, Pos);
+    }
+    else
+    {
+      result = (Pos == 0) ? std::wstring(L"/") : std::wstring();
+    }
     return result;
 }
 
 std::wstring ExtractFilePath(const std::wstring str)
 {
-    // FIXME
-    std::wstring result = str;
+    std::wstring result = ::ExtractFileDir(str);
     return result;
 }
 
 std::wstring GetCurrentDir()
 {
-    // FIXME
     std::wstring result;
+    wchar_t path[MAX_PATH + 1];
+    GetCurrentDirectory(sizeof(path), path);
+    result = path;
     return result;
 }
 
