@@ -298,6 +298,7 @@ public:
     {
       // if (FList.size() > 1)
         // QuickSort(FList, 0, GetCount() - 1, Compare);
+      ::Error(SNotImplemented, 15);
     }
 private:
     std::vector<void *> FList;
@@ -520,7 +521,7 @@ public:
     int IndexOf(const std::wstring S)
     {
       DEBUG_PRINTF(L"begin");
-      for (size_t Result = 0; Result < GetCount() - 1; Result++)
+      for (size_t Result = 0; Result < GetCount(); Result++)
       {
         if (CompareStrings(GetString(Result), S) == 0)
         {
