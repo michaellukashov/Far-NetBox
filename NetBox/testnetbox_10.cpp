@@ -155,6 +155,7 @@ BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
     std::ifstream is;
     is.open(filename.c_str(), std::ios::in);
     BOOST_CHECK(!is.fail());
+    BOOST_CHECK(::FileExists(::MB2W(filename.c_str())));
 }
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)

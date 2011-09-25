@@ -326,7 +326,8 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
     BOOST_CHECK(L"C:\\Program Files" == ::ExtractFileDir(Folder));
     BOOST_CHECK(L"C:\\Program Files" == ::ExtractFilePath(Folder));
     BOOST_TEST_MESSAGE("GetCurrentDir = " << ::W2MB(::GetCurrentDir().c_str()).c_str());
-    BOOST_CHECK(GetCurrentDir().size() > 0);
+    BOOST_CHECK(::GetCurrentDir().size() > 0);
+    BOOST_CHECK(::DirectoryExists(::GetCurrentDir()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
