@@ -394,4 +394,9 @@ BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
     BOOST_CHECK(ProgramsFolder.size() > 0);
 }
 
+BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
+{
+    random_ref();
+}
+
 BOOST_AUTO_TEST_SUITE_END()
