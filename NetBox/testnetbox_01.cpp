@@ -311,4 +311,11 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
+{
+    std::wstring ProgramsFolder;
+    std::wstring DefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+    BOOST_CHECK(DefaultPuttyPathOnly == L"\\PuTTY\\putty.exe");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
