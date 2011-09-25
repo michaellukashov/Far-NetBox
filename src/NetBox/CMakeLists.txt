@@ -61,17 +61,17 @@ set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/
 #-------------------------------------------------------------------------------
 
 include_directories (
-    ${PROJECT_ROOT}/NetBox
-    ${PROJECT_ROOT}/PluginSDK/${FAR_VERSION}
-    ${PROJECT_ROOT}/core
-    ${PROJECT_ROOT}/windows
-    ${PROJECT_ROOT}/resource
-    ${PROJECT_ROOT}/Putty
-    ${PROJECT_ROOT}/Common
-    ${PROJECT_ROOT}/WinSCP
-    ${PROJECT_ROOT}/Putty
-    ${PROJECT_ROOT}/Putty/windows
-    ${PROJECT_ROOT}/Putty/charset
+    ${PROJECT_ROOT}/src/NetBox
+    ${PROJECT_ROOT}/src/PluginSDK/${FAR_VERSION}
+    ${PROJECT_ROOT}/src/core
+    ${PROJECT_ROOT}/src/windows
+    ${PROJECT_ROOT}/src/resource
+    ${PROJECT_ROOT}/src/Putty
+    ${PROJECT_ROOT}/src/Common
+    ${PROJECT_ROOT}/src/WinSCP
+    ${PROJECT_ROOT}/src/Putty
+    ${PROJECT_ROOT}/src/Putty/windows
+    ${PROJECT_ROOT}/src/Putty/charset
     ${PROJECT_ROOT}/libs
     ${PROJECT_ROOT}/libs/boost
     ${PROJECT_ROOT}/libs/libcurl/include
@@ -98,7 +98,7 @@ link_directories (
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_ALL_HEADERS
-    ${PROJECT_ROOT}/NetBox/resource.h
+    ${PROJECT_ROOT}/src/NetBox/resource.h
 )
 
 set ( COMMON_SOURCES
@@ -106,61 +106,61 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
     ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
-    ${PROJECT_ROOT}/core/RemoteFiles.cpp
-    ${PROJECT_ROOT}/core/Terminal.cpp
-    ${PROJECT_ROOT}/core/Exceptions.cpp
-    ${PROJECT_ROOT}/core/FileOperationProgress.cpp
-    ${PROJECT_ROOT}/core/Queue.cpp
-    ${PROJECT_ROOT}/core/SecureShell.cpp
-    ${PROJECT_ROOT}/core/SessionInfo.cpp
-    ${PROJECT_ROOT}/core/CoreMain.cpp
-    ${PROJECT_ROOT}/core/FileMasks.cpp
-    ${PROJECT_ROOT}/core/CopyParam.cpp
-    ${PROJECT_ROOT}/core/SessionData.cpp
-    ${PROJECT_ROOT}/core/Configuration.cpp
-    ${PROJECT_ROOT}/core/ScpFileSystem.cpp
-    ${PROJECT_ROOT}/core/FtpFileSystem.cpp
-    ${PROJECT_ROOT}/core/SftpFileSystem.cpp
-    ${PROJECT_ROOT}/core/PuttyIntf.cpp
-    ${PROJECT_ROOT}/core/Cryptography.cpp
-    ${PROJECT_ROOT}/core/FileBuffer.cpp
-    ${PROJECT_ROOT}/core/NamedObjs.cpp
-    ${PROJECT_ROOT}/core/HierarchicalStorage.cpp
-    ${PROJECT_ROOT}/core/Option.cpp
-    ${PROJECT_ROOT}/core/FileInfo.cpp
-    ${PROJECT_ROOT}/core/FileSystems.cpp
-    ${PROJECT_ROOT}/core/Bookmarks.cpp
-    ${PROJECT_ROOT}/core/SynchronizeController.cpp
-    ${PROJECT_ROOT}/Common/Classes.cpp
-    ${PROJECT_ROOT}/Common/Common.cpp
-    ${PROJECT_ROOT}/Common/FarUtil.cpp
-    ${PROJECT_ROOT}/Common/FarPlugin.cpp
-    ${PROJECT_ROOT}/Common/FarDialog.cpp
-    ${PROJECT_ROOT}/windows/GUIConfiguration.cpp
-    ${PROJECT_ROOT}/windows/GUITools.cpp
-    ${PROJECT_ROOT}/WinSCP/WinSCPDialogs.cpp
-    ${PROJECT_ROOT}/WinSCP/WinSCPFileSystem.cpp
-    ${PROJECT_ROOT}/WinSCP/WinSCPPlugin.cpp
-    ${PROJECT_ROOT}/WinSCP/FarInterface.cpp
-    ${PROJECT_ROOT}/WinSCP/FarConfiguration.cpp
-    ${PROJECT_ROOT}/NetBox/stdafx.cpp
-    ${PROJECT_ROOT}/NetBox/Logging.cpp
-    ${PROJECT_ROOT}/NetBox/Settings.cpp
-    ${PROJECT_ROOT}/NetBox/EasyURL.cpp
-    ${PROJECT_ROOT}/NetBox/Session.cpp
-    ${PROJECT_ROOT}/NetBox/SessionManager.cpp
-    ${PROJECT_ROOT}/NetBox/SessionEditor.cpp
-    ${PROJECT_ROOT}/NetBox/FTP.cpp
-    ${PROJECT_ROOT}/NetBox/SFTP.cpp
-    ${PROJECT_ROOT}/NetBox/FTPS.cpp
-    ${PROJECT_ROOT}/NetBox/SCP.cpp
-    ${PROJECT_ROOT}/NetBox/Panel.cpp
-    ${PROJECT_ROOT}/NetBox/WebDAV.cpp
-    ${PROJECT_ROOT}/NetBox/Session.cpp
-    ${PROJECT_ROOT}/NetBox/NetBoxPlugin.cpp
-    ${PROJECT_ROOT}/NetBox/ProgressWindow.cpp
-    ${PROJECT_ROOT}/resource/TextsCore1.rc
-    ${PROJECT_ROOT}/resource/rtlconsts.rc
+    ${PROJECT_ROOT}/src/core/RemoteFiles.cpp
+    ${PROJECT_ROOT}/src/core/Terminal.cpp
+    ${PROJECT_ROOT}/src/core/Exceptions.cpp
+    ${PROJECT_ROOT}/src/core/FileOperationProgress.cpp
+    ${PROJECT_ROOT}/src/core/Queue.cpp
+    ${PROJECT_ROOT}/src/core/SecureShell.cpp
+    ${PROJECT_ROOT}/src/core/SessionInfo.cpp
+    ${PROJECT_ROOT}/src/core/CoreMain.cpp
+    ${PROJECT_ROOT}/src/core/FileMasks.cpp
+    ${PROJECT_ROOT}/src/core/CopyParam.cpp
+    ${PROJECT_ROOT}/src/core/SessionData.cpp
+    ${PROJECT_ROOT}/src/core/Configuration.cpp
+    ${PROJECT_ROOT}/src/core/ScpFileSystem.cpp
+    ${PROJECT_ROOT}/src/core/FtpFileSystem.cpp
+    ${PROJECT_ROOT}/src/core/SftpFileSystem.cpp
+    ${PROJECT_ROOT}/src/core/PuttyIntf.cpp
+    ${PROJECT_ROOT}/src/core/Cryptography.cpp
+    ${PROJECT_ROOT}/src/core/FileBuffer.cpp
+    ${PROJECT_ROOT}/src/core/NamedObjs.cpp
+    ${PROJECT_ROOT}/src/core/HierarchicalStorage.cpp
+    ${PROJECT_ROOT}/src/core/Option.cpp
+    ${PROJECT_ROOT}/src/core/FileInfo.cpp
+    ${PROJECT_ROOT}/src/core/FileSystems.cpp
+    ${PROJECT_ROOT}/src/core/Bookmarks.cpp
+    ${PROJECT_ROOT}/src/core/SynchronizeController.cpp
+    ${PROJECT_ROOT}/src/Common/Classes.cpp
+    ${PROJECT_ROOT}/src/Common/Common.cpp
+    ${PROJECT_ROOT}/src/Common/FarUtil.cpp
+    ${PROJECT_ROOT}/src/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/src/Common/FarDialog.cpp
+    ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
+    ${PROJECT_ROOT}/src/windows/GUITools.cpp
+    ${PROJECT_ROOT}/src/WinSCP/WinSCPDialogs.cpp
+    ${PROJECT_ROOT}/src/WinSCP/WinSCPFileSystem.cpp
+    ${PROJECT_ROOT}/src/WinSCP/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/src/WinSCP/FarInterface.cpp
+    ${PROJECT_ROOT}/src/WinSCP/FarConfiguration.cpp
+    ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
+    ${PROJECT_ROOT}/src/NetBox/Logging.cpp
+    ${PROJECT_ROOT}/src/NetBox/Settings.cpp
+    ${PROJECT_ROOT}/src/NetBox/EasyURL.cpp
+    ${PROJECT_ROOT}/src/NetBox/Session.cpp
+    ${PROJECT_ROOT}/src/NetBox/SessionManager.cpp
+    ${PROJECT_ROOT}/src/NetBox/SessionEditor.cpp
+    ${PROJECT_ROOT}/src/NetBox/FTP.cpp
+    ${PROJECT_ROOT}/src/NetBox/SFTP.cpp
+    ${PROJECT_ROOT}/src/NetBox/FTPS.cpp
+    ${PROJECT_ROOT}/src/NetBox/SCP.cpp
+    ${PROJECT_ROOT}/src/NetBox/Panel.cpp
+    ${PROJECT_ROOT}/src/NetBox/WebDAV.cpp
+    ${PROJECT_ROOT}/src/NetBox/Session.cpp
+    ${PROJECT_ROOT}/src/NetBox/NetBoxPlugin.cpp
+    ${PROJECT_ROOT}/src/NetBox/ProgressWindow.cpp
+    ${PROJECT_ROOT}/src/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/src/resource/rtlconsts.rc
 )
 
 #-------------------------------------------------------------------------------
@@ -170,8 +170,8 @@ set ( NETBOX_HEADERS ${NETBOX_ALL_HEADERS}
 )
 
 set ( NETBOX_SOURCES ${COMMON_SOURCES}
-    ${PROJECT_ROOT}/NetBox/NetBox.cpp
-    ${PROJECT_ROOT}/NetBox/NetBox.def
+    ${PROJECT_ROOT}/src/NetBox/NetBox.cpp
+    ${PROJECT_ROOT}/src/NetBox/NetBox.def
 )
 
 add_library (libcurl STATIC IMPORTED)
@@ -187,47 +187,47 @@ set_property (TARGET ssleay32
 #-------------------------------------------------------------------------------
 
 add_library (libputty STATIC
-    ${PROJECT_ROOT}/Putty/CPROXY.C
-    ${PROJECT_ROOT}/Putty/INT64.C
-    ${PROJECT_ROOT}/Putty/LOGGING.C
-    ${PROJECT_ROOT}/Putty/MISC.C
-    ${PROJECT_ROOT}/Putty/PGSSAPI.C
-    ${PROJECT_ROOT}/Putty/PORTFWD_.C
-    ${PROJECT_ROOT}/Putty/PROXY.C
-    ${PROJECT_ROOT}/Putty/SSH_.C
-    ${PROJECT_ROOT}/Putty/SSHAES_.C
-    ${PROJECT_ROOT}/Putty/SSHARCF.C
-    ${PROJECT_ROOT}/Putty/SSHBLOWF.C
-    ${PROJECT_ROOT}/Putty/SSHBN.C
-    ${PROJECT_ROOT}/Putty/SSHCRC.C
-    ${PROJECT_ROOT}/Putty/SSHCRCDA.C
-    ${PROJECT_ROOT}/Putty/SSHDES.C
-    ${PROJECT_ROOT}/Putty/SSHDH.C
-    ${PROJECT_ROOT}/Putty/SSHDSS.C
-    ${PROJECT_ROOT}/Putty/SSHGSSC.C
-    ${PROJECT_ROOT}/Putty/SSHMD5.C
-    ${PROJECT_ROOT}/Putty/SSHPUBK.C
-    ${PROJECT_ROOT}/Putty/SSHRAND.C
-    ${PROJECT_ROOT}/Putty/SSHRSA.C
-    ${PROJECT_ROOT}/Putty/SSHSH256.C
-    ${PROJECT_ROOT}/Putty/SSHSH512.C
-    ${PROJECT_ROOT}/Putty/SSHSHA_.C
-    ${PROJECT_ROOT}/Putty/SSHZLIB.C
-    ${PROJECT_ROOT}/Putty/TREE234.C
-    ${PROJECT_ROOT}/Putty/CHARSET/UTF8.C
-    ${PROJECT_ROOT}/Putty/WILDCARD.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINGSS.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINHANDL.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINMISC.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINNET.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINNOISE.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINNOJMP.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINPGNTC.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINPROXY.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINSTORE_.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/WINTIME.C
-    ${PROJECT_ROOT}/Putty/WINDOWS/strftime.c
-    ${PROJECT_ROOT}/Putty/X11FWD.C
+    ${PROJECT_ROOT}/src/Putty/CPROXY.C
+    ${PROJECT_ROOT}/src/Putty/INT64.C
+    ${PROJECT_ROOT}/src/Putty/LOGGING.C
+    ${PROJECT_ROOT}/src/Putty/MISC.C
+    ${PROJECT_ROOT}/src/Putty/PGSSAPI.C
+    ${PROJECT_ROOT}/src/Putty/PORTFWD_.C
+    ${PROJECT_ROOT}/src/Putty/PROXY.C
+    ${PROJECT_ROOT}/src/Putty/SSH_.C
+    ${PROJECT_ROOT}/src/Putty/SSHAES_.C
+    ${PROJECT_ROOT}/src/Putty/SSHARCF.C
+    ${PROJECT_ROOT}/src/Putty/SSHBLOWF.C
+    ${PROJECT_ROOT}/src/Putty/SSHBN.C
+    ${PROJECT_ROOT}/src/Putty/SSHCRC.C
+    ${PROJECT_ROOT}/src/Putty/SSHCRCDA.C
+    ${PROJECT_ROOT}/src/Putty/SSHDES.C
+    ${PROJECT_ROOT}/src/Putty/SSHDH.C
+    ${PROJECT_ROOT}/src/Putty/SSHDSS.C
+    ${PROJECT_ROOT}/src/Putty/SSHGSSC.C
+    ${PROJECT_ROOT}/src/Putty/SSHMD5.C
+    ${PROJECT_ROOT}/src/Putty/SSHPUBK.C
+    ${PROJECT_ROOT}/src/Putty/SSHRAND.C
+    ${PROJECT_ROOT}/src/Putty/SSHRSA.C
+    ${PROJECT_ROOT}/src/Putty/SSHSH256.C
+    ${PROJECT_ROOT}/src/Putty/SSHSH512.C
+    ${PROJECT_ROOT}/src/Putty/SSHSHA_.C
+    ${PROJECT_ROOT}/src/Putty/SSHZLIB.C
+    ${PROJECT_ROOT}/src/Putty/TREE234.C
+    ${PROJECT_ROOT}/src/Putty/CHARSET/UTF8.C
+    ${PROJECT_ROOT}/src/Putty/WILDCARD.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINGSS.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINHANDL.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINMISC.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNET.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNOISE.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNOJMP.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINPGNTC.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINPROXY.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINSTORE_.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINTIME.C
+    ${PROJECT_ROOT}/src/Putty/WINDOWS/strftime.c
+    ${PROJECT_ROOT}/src/Putty/X11FWD.C
 )
 
 set_target_properties( libputty
@@ -280,15 +280,15 @@ add_dependencies ( NetBox
 #-------------------------------------------------------
 # target testnetbox_01
 
-set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/NetBox )
+set ( TESTNETBOX_01_DIR ${PROJECT_ROOT}/src/NetBox )
 
 set ( TESTNETBOX_01_SOURCES
-    ${PROJECT_ROOT}/Common/Classes.cpp
-    ${PROJECT_ROOT}/Common/Common.cpp
-    ${PROJECT_ROOT}/core/Exceptions.cpp
+    ${PROJECT_ROOT}/src/Common/Classes.cpp
+    ${PROJECT_ROOT}/src/Common/Common.cpp
+    ${PROJECT_ROOT}/src/core/Exceptions.cpp
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
-    ${PROJECT_ROOT}/resource/TextsCore1.rc
-    ${PROJECT_ROOT}/resource/rtlconsts.rc
+    ${PROJECT_ROOT}/src/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/src/resource/rtlconsts.rc
 )
 
 add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
@@ -306,18 +306,18 @@ target_link_libraries ( testnetbox_01 )
 #-------------------------------------------------------
 # target testnetbox_02
 
-set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/NetBox )
+set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/src/NetBox )
 
 set ( TESTNETBOX_02_SOURCES
-    ${PROJECT_ROOT}/Common/Classes.cpp
-    ${PROJECT_ROOT}/Common/Common.cpp
-    ${PROJECT_ROOT}/Common/FarUtil.cpp
-    ${PROJECT_ROOT}/Common/FarDialog.cpp
-    ${PROJECT_ROOT}/Common/FarPlugin.cpp
-    ${PROJECT_ROOT}/core/Exceptions.cpp
-    ${PROJECT_ROOT}/core/FileOperationProgress.cpp
-    ${PROJECT_ROOT}/resource/TextsCore1.rc
-    ${PROJECT_ROOT}/resource/rtlconsts.rc
+    ${PROJECT_ROOT}/src/Common/Classes.cpp
+    ${PROJECT_ROOT}/src/Common/Common.cpp
+    ${PROJECT_ROOT}/src/Common/FarUtil.cpp
+    ${PROJECT_ROOT}/src/Common/FarDialog.cpp
+    ${PROJECT_ROOT}/src/Common/FarPlugin.cpp
+    ${PROJECT_ROOT}/src/core/Exceptions.cpp
+    ${PROJECT_ROOT}/src/core/FileOperationProgress.cpp
+    ${PROJECT_ROOT}/src/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/src/resource/rtlconsts.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
 
@@ -337,10 +337,10 @@ target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
 #-------------------------------------------------------
 # target testnetbox_10
 
-set ( TESTNETBOX_10_DIR ${PROJECT_ROOT}/NetBox )
+set ( TESTNETBOX_10_DIR ${PROJECT_ROOT}/src/NetBox )
 
 set ( TESTNETBOX_10_SOURCES ${COMMON_SOURCES}
-    ${PROJECT_ROOT}/resource/testnetbox_10.rc
+    ${PROJECT_ROOT}/src/resource/testnetbox_10.rc
     ${TESTNETBOX_10_DIR}/testnetbox_10.cpp
 )
 
