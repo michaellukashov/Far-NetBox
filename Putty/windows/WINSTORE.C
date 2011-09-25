@@ -509,7 +509,9 @@ static HANDLE access_random_seed(int action)
 	RegCloseKey(rkey);
 
 	if (*seedpath && try_random_seed(seedpath, action, &rethandle))
+    {
 	    return rethandle;
+    }
     }
 
     /*
@@ -527,12 +529,13 @@ static HANDLE access_random_seed(int action)
 	 * so stuff that. */
 	shell32_module = load_system32_dll("shell32.dll");
 	GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
+    OutputDebugStringW(L"NetBox: access_random_seed: 1");
 	tried_shgetfolderpath = TRUE;
     }
     if (p_SHGetFolderPathA) {
 	if (SUCCEEDED(p_SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA,
 					 NULL, SHGFP_TYPE_CURRENT, seedpath))) {
-	    strcat(seedpath, "\\PUTTY.RND");
+        strcat(seedpath, "\\PUTTY.RND");
 	    if (try_random_seed(seedpath, action, &rethandle))
 		return rethandle;
 	}
@@ -549,19 +552,22 @@ static HANDLE access_random_seed(int action)
      * Failing that, try %HOMEDRIVE%%HOMEPATH% as a guess at the
      * user's home directory.
      */
+    OutputDebugStringW(L"NetBox: access_random_seed: 2");
     {
 	int len, ret;
 
 	len =
 	    GetEnvironmentVariable("HOMEDRIVE", seedpath,
 				   sizeof(seedpath));
-	ret =
+    ret =
 	    GetEnvironmentVariable("HOMEPATH", seedpath + len,
 				   sizeof(seedpath) - len);
 	if (ret != 0) {
 	    strcat(seedpath, "\\PUTTY.RND");
-	    if (try_random_seed(seedpath, action, &rethandle))
-		return rethandle;
+        if (try_random_seed(seedpath, action, &rethandle))
+        {
+            return rethandle;
+        }
 	}
     }
 
@@ -571,7 +577,9 @@ static HANDLE access_random_seed(int action)
     GetWindowsDirectory(seedpath, sizeof(seedpath));
     strcat(seedpath, "\\PUTTY.RND");
     if (try_random_seed(seedpath, action, &rethandle))
-	return rethandle;
+    {
+        return rethandle;
+    }
 
     /*
      * If even that failed, give up.
