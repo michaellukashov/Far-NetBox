@@ -346,8 +346,8 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   // DEBUG_PRINTF(L"RegKey = %s", RegKey.c_str());
   if (!RegKey.empty())
   {
-    assert(RegKey[1] == '\\');
-    RegKey.erase(1, 1);
+    assert(RegKey[0] == '\\');
+    RegKey.erase(0, 1);
   }
 
   if (RegKey.empty())
