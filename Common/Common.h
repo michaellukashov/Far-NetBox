@@ -333,3 +333,5 @@ std::wstring FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------
 std::wstring WrapText(const std::wstring Line, int MaxCol = 40);
 //---------------------------------------------------------------------------
+std::wstring TranslateExceptionMessage(const std::exception *E);
+//---------------------------------------------------------------------------

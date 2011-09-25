@@ -2357,3 +2357,11 @@ std::wstring WrapText(const std::wstring Line, int MaxCol)
 }
 
 //---------------------------------------------------------------------------
+std::wstring TranslateExceptionMessage(const std::exception *E)
+{
+    if (E)
+        return ::MB2W(E->what());
+    else
+        return std::wstring();
+}
+//---------------------------------------------------------------------------
