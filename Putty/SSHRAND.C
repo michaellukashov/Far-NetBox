@@ -64,7 +64,7 @@ static void random_stir(void)
      * back to here. Prevent recursive stirs.
      */
     if (pool.stir_pending)
-	return;
+        return;
     pool.stir_pending = TRUE;
 
     noise_get_light(random_add_noise);
@@ -105,7 +105,7 @@ static void random_stir(void)
 	     */
 
 	    for (k = 0; k < sizeof(digest) / sizeof(*digest); k++)
-		digest[k] ^= ((word32 *) (pool.pool + j))[k];
+            digest[k] ^= ((word32 *) (pool.pool + j))[k];
 
 	    /*
 	     * Munge our unrevealed first block of the pool into
