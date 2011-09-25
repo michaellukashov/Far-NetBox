@@ -219,8 +219,9 @@ void random_ref(void)
         InitializeCriticalSection(&noise_section);
 #endif
 	memset(&pool, 0, sizeof(pool));    /* just to start with */
-
+    OutputDebugStringW(L"NetBox: 1");
 	noise_get_heavy(random_add_heavynoise_bitbybit);
+    OutputDebugStringW(L"NetBox: 2");
 	random_stir();
 
 	next_noise_collection =

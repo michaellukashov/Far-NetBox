@@ -482,6 +482,7 @@ static HANDLE access_random_seed(int action)
     DWORD type, size;
     HANDLE rethandle;
     char seedpath[2 * MAX_PATH + 10] = "\0";
+    OutputDebugStringW(L"NetBox: 30");
 
     /*
      * Iterate over a selection of possible random seed paths until
@@ -499,17 +500,23 @@ static HANDLE access_random_seed(int action)
      * Registry, if any.
      */
     size = sizeof(seedpath);
+    OutputDebugStringW(L"NetBox: 31");
     if (RegOpenKey(HKEY_CURRENT_USER, PUTTY_REG_POS, &rkey) ==
-	ERROR_SUCCESS) {
-	int ret = RegQueryValueEx(rkey, "RandSeedFile",
+        ERROR_SUCCESS) {
+    int ret = 0;
+    OutputDebugStringW(L"NetBox: 312");
+	ret = RegQueryValueEx(rkey, "RandSeedFile",
 				  0, &type, seedpath, &size);
+    OutputDebugStringW(L"NetBox: 32");
 	if (ret != ERROR_SUCCESS || type != REG_SZ)
 	    seedpath[0] = '\0';
 	RegCloseKey(rkey);
+    OutputDebugStringW(L"NetBox: 33");
 
 	if (*seedpath && try_random_seed(seedpath, action, &rethandle))
 	    return rethandle;
     }
+    OutputDebugStringW(L"NetBox: 34");
 
     /*
      * Next, try the user's local Application Data directory,
@@ -528,6 +535,7 @@ static HANDLE access_random_seed(int action)
 	GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
 	tried_shgetfolderpath = TRUE;
     }
+    OutputDebugStringW(L"NetBox: 35");
     if (p_SHGetFolderPathA) {
 	if (SUCCEEDED(p_SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA,
 					 NULL, SHGFP_TYPE_CURRENT, seedpath))) {
@@ -535,6 +543,7 @@ static HANDLE access_random_seed(int action)
 	    if (try_random_seed(seedpath, action, &rethandle))
 		return rethandle;
 	}
+    OutputDebugStringW(L"NetBox: 36");
 
 	if (SUCCEEDED(p_SHGetFolderPathA(NULL, CSIDL_APPDATA,
 					 NULL, SHGFP_TYPE_CURRENT, seedpath))) {
@@ -542,6 +551,7 @@ static HANDLE access_random_seed(int action)
 	    if (try_random_seed(seedpath, action, &rethandle))
 		return rethandle;
 	}
+    OutputDebugStringW(L"NetBox: 37");
     }
 
     /*
@@ -562,6 +572,7 @@ static HANDLE access_random_seed(int action)
 	    if (try_random_seed(seedpath, action, &rethandle))
 		return rethandle;
 	}
+    OutputDebugStringW(L"NetBox: 38");
     }
 
     /*
@@ -569,6 +580,7 @@ static HANDLE access_random_seed(int action)
      */
     GetWindowsDirectory(seedpath, sizeof(seedpath));
     strcat(seedpath, "\\PUTTY.RND");
+    OutputDebugStringW(L"NetBox: 39");
     if (try_random_seed(seedpath, action, &rethandle))
 	return rethandle;
 
@@ -581,11 +593,13 @@ static HANDLE access_random_seed(int action)
 void read_random_seed(noise_consumer_t consumer)
 {
     HANDLE seedf = access_random_seed(OPEN_R);
+    OutputDebugStringW(L"NetBox: 20");
 
     if (seedf != INVALID_HANDLE_VALUE) {
 	while (1) {
 	    char buf[1024];
 	    DWORD len;
+        OutputDebugStringW(L"NetBox: 21");
 
 	    if (ReadFile(seedf, buf, sizeof(buf), &len, NULL) && len)
             consumer(buf, len);
@@ -594,6 +608,7 @@ void read_random_seed(noise_consumer_t consumer)
 	}
 	CloseHandle(seedf);
     }
+    OutputDebugStringW(L"NetBox: 22");
 }
 
 void write_random_seed(void *data, int len)
