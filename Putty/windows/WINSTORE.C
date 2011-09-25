@@ -553,6 +553,7 @@ static HANDLE access_random_seed(int action)
 	}
     OutputDebugStringW(L"NetBox: 37");
     }
+    OutputDebugStringW(L"NetBox: 38");
 
     /*
      * Failing that, try %HOMEDRIVE%%HOMEPATH% as a guess at the
