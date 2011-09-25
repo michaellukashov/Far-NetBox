@@ -87,14 +87,14 @@ void *open_settings_w(const char *sessionname, char **errmsg)
     p = snewn(3 * strlen(sessionname) + 1, char);
     mungestr(sessionname, p);
 
-    ret = RegCreateKey(HKEY_CURRENT_USER, puttystr, &subkey1);
+    ret = RegCreateKeyA(HKEY_CURRENT_USER, puttystr, &subkey1);
     if (ret != ERROR_SUCCESS) {
 	sfree(p);
         *errmsg = dupprintf("Unable to create registry key\n"
                             "HKEY_CURRENT_USER\\%s", puttystr);
 	return NULL;
     }
-    ret = RegCreateKey(subkey1, p, &sesskey);
+    ret = RegCreateKeyA(subkey1, p, &sesskey);
     RegCloseKey(subkey1);
     if (ret != ERROR_SUCCESS) {
         *errmsg = dupprintf("Unable to create registry key\n"
@@ -109,14 +109,14 @@ void *open_settings_w(const char *sessionname, char **errmsg)
 void write_setting_s(void *handle, const char *key, const char *value)
 {
     if (handle)
-	RegSetValueEx((HKEY) handle, key, 0, REG_SZ, value,
+	RegSetValueExA((HKEY) handle, key, 0, REG_SZ, value,
 		      1 + strlen(value));
 }
 
 void write_setting_i(void *handle, const char *key, int value)
 {
     if (handle)
-	RegSetValueEx((HKEY) handle, key, 0, REG_DWORD,
+	RegSetValueExA((HKEY) handle, key, 0, REG_DWORD,
 		      (CONST BYTE *) &value, sizeof(value));
 }
 
@@ -136,10 +136,10 @@ void *open_settings_r(const char *sessionname)
     p = snewn(3 * strlen(sessionname) + 1, char);
     mungestr(sessionname, p);
 
-    if (RegOpenKey(HKEY_CURRENT_USER, puttystr, &subkey1) != ERROR_SUCCESS) {
+    if (RegOpenKeyA(HKEY_CURRENT_USER, puttystr, &subkey1) != ERROR_SUCCESS) {
 	sesskey = NULL;
     } else {
-	if (RegOpenKey(subkey1, p, &sesskey) != ERROR_SUCCESS) {
+	if (RegOpenKeyA(subkey1, p, &sesskey) != ERROR_SUCCESS) {
 	    sesskey = NULL;
 	}
 	RegCloseKey(subkey1);
@@ -156,7 +156,7 @@ char *read_setting_s(void *handle, const char *key, char *buffer, int buflen)
     size = buflen;
 
     if (!handle ||
-	RegQueryValueEx((HKEY) handle, key, 0,
+	RegQueryValueExA((HKEY) handle, key, 0,
 			&type, buffer, &size) != ERROR_SUCCESS ||
 	type != REG_SZ) return NULL;
     else
@@ -169,7 +169,7 @@ int read_setting_i(void *handle, const char *key, int defvalue)
     size = sizeof(val);
 
     if (!handle ||
-	RegQueryValueEx((HKEY) handle, key, 0, &type,
+	RegQueryValueExA((HKEY) handle, key, 0, &type,
 			(BYTE *) &val, &size) != ERROR_SUCCESS ||
 	size != sizeof(val) || type != REG_DWORD)
 	return defvalue;
@@ -236,12 +236,12 @@ void del_settings(const char *sessionname)
     HKEY subkey1;
     char *p;
 
-    if (RegOpenKey(HKEY_CURRENT_USER, puttystr, &subkey1) != ERROR_SUCCESS)
+    if (RegOpenKeyA(HKEY_CURRENT_USER, puttystr, &subkey1) != ERROR_SUCCESS)
 	return;
 
     p = snewn(3 * strlen(sessionname) + 1, char);
     mungestr(sessionname, p);
-    RegDeleteKey(subkey1, p);
+    RegDeleteKeyA(subkey1, p);
     sfree(p);
 
     RegCloseKey(subkey1);
@@ -259,7 +259,7 @@ void *enum_settings_start(void)
     struct enumsettings *ret;
     HKEY key;
 
-    if (RegOpenKey(HKEY_CURRENT_USER, puttystr, &key) != ERROR_SUCCESS)
+    if (RegOpenKeyA(HKEY_CURRENT_USER, puttystr, &key) != ERROR_SUCCESS)
 	return NULL;
 
     ret = snew(struct enumsettings);
@@ -276,7 +276,7 @@ char *enum_settings_next(void *handle, char *buffer, int buflen)
     struct enumsettings *e = (struct enumsettings *) handle;
     char *otherbuf;
     otherbuf = snewn(3 * buflen, char);
-    if (RegEnumKey(e->key, e->i++, otherbuf, 3 * buflen) == ERROR_SUCCESS) {
+    if (RegEnumKeyA(e->key, e->i++, otherbuf, 3 * buflen) == ERROR_SUCCESS) {
 	unmungestr(otherbuf, buffer, buflen);
 	sfree(otherbuf);
 	return buffer;
@@ -334,12 +334,12 @@ int verify_host_key(const char *hostname, int port,
 
     hostkey_regname(regname, hostname, port, keytype);
 
-    if (RegOpenKey(HKEY_CURRENT_USER, PUTTY_REG_POS "\\SshHostKeys",
+    if (RegOpenKeyA(HKEY_CURRENT_USER, PUTTY_REG_POS "\\SshHostKeys",
 		   &rkey) != ERROR_SUCCESS)
 	return 1;		       /* key does not exist in registry */
 
     readlen = len;
-    ret = RegQueryValueEx(rkey, regname, NULL, &type, otherstr, &readlen);
+    ret = RegQueryValueExA(rkey, regname, NULL, &type, otherstr, &readlen);
 
     if (ret != ERROR_SUCCESS && ret != ERROR_MORE_DATA &&
 	!strcmp(keytype, "rsa")) {
@@ -351,7 +351,7 @@ int verify_host_key(const char *hostname, int port,
 	char *justhost = regname + 1 + strcspn(regname, ":");
 	char *oldstyle = snewn(len + 10, char);	/* safety margin */
 	readlen = len;
-	ret = RegQueryValueEx(rkey, justhost, NULL, &type,
+	ret = RegQueryValueExA(rkey, justhost, NULL, &type,
 			      oldstyle, &readlen);
 
 	if (ret == ERROR_SUCCESS && type == REG_SZ) {
@@ -398,7 +398,7 @@ int verify_host_key(const char *hostname, int port,
 	     * wrong, and hyper-cautiously do nothing.
 	     */
 	    if (!strcmp(otherstr, key))
-		RegSetValueEx(rkey, regname, 0, REG_SZ, otherstr,
+		RegSetValueExA(rkey, regname, 0, REG_SZ, otherstr,
 			      strlen(otherstr) + 1);
 	}
     }
@@ -407,7 +407,7 @@ int verify_host_key(const char *hostname, int port,
 
 #ifdef MPEXT
     // make sure it is zero terminated, what it is not, particularly when
-    // RegQueryValueEx fails (the key is unknown)
+    // RegQueryValueExA fails (the key is unknown)
     otherstr[len - 1] = '\0';
 #endif
 #ifdef MPEXT
@@ -442,9 +442,9 @@ void store_host_key(const char *hostname, int port,
 
     hostkey_regname(regname, hostname, port, keytype);
 
-    if (RegCreateKey(HKEY_CURRENT_USER, PUTTY_REG_POS "\\SshHostKeys",
+    if (RegCreateKeyA(HKEY_CURRENT_USER, PUTTY_REG_POS "\\SshHostKeys",
 		     &rkey) == ERROR_SUCCESS) {
-	RegSetValueEx(rkey, regname, 0, REG_SZ, key, strlen(key) + 1);
+	RegSetValueExA(rkey, regname, 0, REG_SZ, key, strlen(key) + 1);
 	RegCloseKey(rkey);
     } /* else key does not exist in registry */
 
@@ -501,11 +501,11 @@ static HANDLE access_random_seed(int action)
      */
     size = sizeof(seedpath);
     OutputDebugStringW(L"NetBox: 31");
-    if (RegOpenKey(HKEY_CURRENT_USER, PUTTY_REG_POS, &rkey) ==
+    if (RegOpenKeyA(HKEY_CURRENT_USER, PUTTY_REG_POS, &rkey) ==
         ERROR_SUCCESS) {
     int ret = 0;
     OutputDebugStringW(L"NetBox: 312");
-	ret = RegQueryValueEx(rkey, "RandSeedFile",
+	ret = RegQueryValueExA(rkey, "RandSeedFile",
 				  0, &type, seedpath, &size);
     OutputDebugStringW(L"NetBox: 32");
 	if (ret != ERROR_SUCCESS || type != REG_SZ)
@@ -642,7 +642,7 @@ static int transform_jumplist_registry
     char *old_value, *new_value;
     char *piterator_old, *piterator_new, *piterator_tmp;
 
-    ret = RegCreateKeyEx(HKEY_CURRENT_USER, reg_jumplist_key, 0, NULL,
+    ret = RegCreateKeyExA(HKEY_CURRENT_USER, reg_jumplist_key, 0, NULL,
                          REG_OPTION_NON_VOLATILE, (KEY_READ | KEY_WRITE), NULL,
                          &pjumplist_key, NULL);
     if (ret != ERROR_SUCCESS) {
@@ -652,7 +652,7 @@ static int transform_jumplist_registry
     /* Get current list of saved sessions in the registry. */
     value_length = 200;
     old_value = snewn(value_length, char);
-    ret = RegQueryValueEx(pjumplist_key, reg_jumplist_value, NULL, &type,
+    ret = RegQueryValueExA(pjumplist_key, reg_jumplist_value, NULL, &type,
                           old_value, &value_length);
     /* When the passed buffer is too small, ERROR_MORE_DATA is
      * returned and the required size is returned in the length
@@ -660,7 +660,7 @@ static int transform_jumplist_registry
     if (ret == ERROR_MORE_DATA) {
         sfree(old_value);
         old_value = snewn(value_length, char);
-        ret = RegQueryValueEx(pjumplist_key, reg_jumplist_value, NULL, &type,
+        ret = RegQueryValueExA(pjumplist_key, reg_jumplist_value, NULL, &type,
                               old_value, &value_length);
     }
 
@@ -676,7 +676,7 @@ static int transform_jumplist_registry
     } else if (type != REG_MULTI_SZ) {
         /* The value present in the registry has the wrong type: we
          * try to delete it and start from an empty value. */
-        ret = RegDeleteValue(pjumplist_key, reg_jumplist_value);
+        ret = RegDeleteValueA(pjumplist_key, reg_jumplist_value);
         if (ret != ERROR_SUCCESS) {
             sfree(old_value);
             RegCloseKey(pjumplist_key);
@@ -734,7 +734,7 @@ static int transform_jumplist_registry
         ++piterator_new;
 
         /* Save the new list to the registry. */
-        ret = RegSetValueEx(pjumplist_key, reg_jumplist_value, 0, REG_MULTI_SZ,
+        ret = RegSetValueExA(pjumplist_key, reg_jumplist_value, 0, REG_MULTI_SZ,
                             new_value, piterator_new - new_value);
 
         sfree(old_value);
@@ -796,12 +796,12 @@ static void registry_recursive_remove(HKEY key)
     HKEY subkey;
 
     i = 0;
-    while (RegEnumKey(key, i, name, sizeof(name)) == ERROR_SUCCESS) {
-	if (RegOpenKey(key, name, &subkey) == ERROR_SUCCESS) {
+    while (RegEnumKeyA(key, i, name, sizeof(name)) == ERROR_SUCCESS) {
+	if (RegOpenKeyA(key, name, &subkey) == ERROR_SUCCESS) {
 	    registry_recursive_remove(subkey);
 	    RegCloseKey(subkey);
 	}
-	RegDeleteKey(key, name);
+	RegDeleteKeyA(key, name);
     }
 }
 
@@ -830,7 +830,7 @@ void cleanup_all(void)
     /*
      * Open the main PuTTY registry key and remove everything in it.
      */
-    if (RegOpenKey(HKEY_CURRENT_USER, PUTTY_REG_POS, &key) ==
+    if (RegOpenKeyA(HKEY_CURRENT_USER, PUTTY_REG_POS, &key) ==
 	ERROR_SUCCESS) {
 	registry_recursive_remove(key);
 	RegCloseKey(key);
@@ -840,10 +840,10 @@ void cleanup_all(void)
      * we've done that, see if the parent key has any other
      * children.
      */
-    if (RegOpenKey(HKEY_CURRENT_USER, PUTTY_REG_PARENT,
+    if (RegOpenKeyA(HKEY_CURRENT_USER, PUTTY_REG_PARENT,
 		   &key) == ERROR_SUCCESS) {
-	RegDeleteKey(key, PUTTY_REG_PARENT_CHILD);
-	ret = RegEnumKey(key, 0, name, sizeof(name));
+	RegDeleteKeyA(key, PUTTY_REG_PARENT_CHILD);
+	ret = RegEnumKeyA(key, 0, name, sizeof(name));
 	RegCloseKey(key);
 	/*
 	 * If the parent key had no other children, we must delete
@@ -851,9 +851,9 @@ void cleanup_all(void)
 	 * key.
 	 */
 	if (ret != ERROR_SUCCESS) {
-	    if (RegOpenKey(HKEY_CURRENT_USER, PUTTY_REG_GPARENT,
+	    if (RegOpenKeyA(HKEY_CURRENT_USER, PUTTY_REG_GPARENT,
 			   &key) == ERROR_SUCCESS) {
-		RegDeleteKey(key, PUTTY_REG_GPARENT_CHILD);
+		RegDeleteKeyA(key, PUTTY_REG_GPARENT_CHILD);
 		RegCloseKey(key);
 	    }
 	}

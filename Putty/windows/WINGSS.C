@@ -77,18 +77,18 @@ struct ssh_gss_liblist *ssh_gss_setup(const Config *cfg)
     /* MIT Kerberos GSSAPI implementation */
     /* TODO: For 64-bit builds, check for gssapi64.dll */
     module = NULL;
-    if (RegOpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\MIT\\Kerberos", &regkey)
+    if (RegOpenKeyA(HKEY_LOCAL_MACHINE, "SOFTWARE\\MIT\\Kerberos", &regkey)
 	== ERROR_SUCCESS) {
 	DWORD type, size;
 	LONG ret;
 	char *buffer;
 
 	/* Find out the string length */
-        ret = RegQueryValueEx(regkey, "InstallDir", NULL, &type, NULL, &size);
+        ret = RegQueryValueExA(regkey, "InstallDir", NULL, &type, NULL, &size);
 
 	if (ret == ERROR_SUCCESS && type == REG_SZ) {
 	    buffer = snewn(size + 20, char);
-	    ret = RegQueryValueEx(regkey, "InstallDir", NULL,
+	    ret = RegQueryValueExA(regkey, "InstallDir", NULL,
 				  &type, buffer, &size);
 	    if (ret == ERROR_SUCCESS && type == REG_SZ) {
 		strcat(buffer, "\\bin\\gssapi32.dll");
