@@ -65,7 +65,8 @@ void TSynchronizeController::StartStop(TObject * Sender,
       }
       int Directories = 0;
 /*
-      // FIXME 
+      // FIXME
+::Error(SNotImplemented, 256); 
       FSynchronizeMonitor = new TDiscMonitor(dynamic_cast<TComponent*>(Sender));
       FSynchronizeMonitor->SubTree = false;
       TMonitorFilters Filters;
@@ -94,6 +95,7 @@ void TSynchronizeController::StartStop(TObject * Sender,
     catch(...)
     {
       // FIXME SAFE_DESTROY((TObject *)FSynchronizeMonitor);
+      ::Error(SNotImplemented, 257); 
       throw;
     }
   }
@@ -184,6 +186,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   if (FSynchronizeMonitor != NULL)
   {
     // FIXME FSynchronizeMonitor->Close();
+    ::Error(SNotImplemented, 258); 
   }
   assert(!FSynchronizeAbort.empty());
   FSynchronizeAbort(NULL, Close);

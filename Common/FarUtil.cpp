@@ -318,34 +318,34 @@ std::wstring StringOfChar(const wchar_t c, size_t len)
 
 char *StrNew(const char *str)
 {
-    // FIXME 
+    ::Error(SNotImplemented, 30); 
     return (char *)str;
 }
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
 {
-    // FIXME 
+    ::Error(SNotImplemented, 31); 
     wchar_t *result = NULL;
     return result;
 }
 
 std::wstring EncryptPassword(std::wstring Password, std::wstring Key)
 {
-    // FIXME 
+    ::Error(SNotImplemented, 32); 
     std::wstring result;
     return result;
 }
 
 std::wstring DecryptPassword(std::wstring Password, std::wstring Key)
 {
-    // FIXME 
+    ::Error(SNotImplemented, 33); 
     std::wstring result;
     return result;
 }
 
 std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext)
 {
-    // FIXME 
+    ::Error(SNotImplemented, 34); 
     std::wstring result;
     return result;
 }
@@ -377,7 +377,7 @@ std::wstring ExpandFileName(const std::wstring FileName)
 
 std::wstring GetUniversalName(std::wstring FileName)
 {
-    // FIXME
+    ::Error(SNotImplemented, 35);
     std::wstring Result = FileName;
     return Result;
 }

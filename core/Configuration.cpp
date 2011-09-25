@@ -458,6 +458,7 @@ void TConfiguration::CleanupConfiguration()
   }
   catch (const std::exception &E)
   {
+    ::Error(SNotImplemented, 200); 
     throw ExtException(&E); // FIXME , CLEANUP_CONFIG_ERROR);
   }
 }
@@ -482,6 +483,7 @@ void TConfiguration::CleanupHostKeys()
   }
   catch (const std::exception &E)
   {
+    ::Error(SNotImplemented, 201); 
     throw ExtException(&E); // FIXME , CLEANUP_HOSTKEYS_ERROR);
   }
 }
@@ -501,6 +503,7 @@ void TConfiguration::CleanupRandomSeedFile()
   }
   catch (const std::exception &E)
   {
+    ::Error(SNotImplemented, 202); 
     throw ExtException(&E); // FIXME , CLEANUP_SEEDFILE_ERROR);
   }
 }
@@ -523,6 +526,7 @@ void TConfiguration::CleanupIniFile()
   }
   catch (const std::exception &E)
   {
+    ::Error(SNotImplemented, 203); 
     throw ExtException(&E); // FIXME , CLEANUP_INIFILE_ERROR);
   }
 }
@@ -588,6 +592,7 @@ int TConfiguration::GetCompoundVersion()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::ModuleFileName()
 {
+  ::Error(SNotImplemented, 204); 
   return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------

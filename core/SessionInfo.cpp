@@ -678,6 +678,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
       FConfiguration->SetLogging(false);
       try
       {
+        ::Error(SNotImplemented, 243); 
         throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
       }
       catch (const std::exception &E)
@@ -831,6 +832,7 @@ void TSessionLog::OpenLogFile()
     FConfiguration->SetLogToFile(false);
     try
     {
+      ::Error(SNotImplemented, 244); 
       throw ExtException(&E); // FIXME , LOG_GEN_ERROR);
     }
     catch (const std::exception & E)

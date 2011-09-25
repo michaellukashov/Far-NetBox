@@ -483,6 +483,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(const std::exception * E)
 {
+  ::Error(SNotImplemented, 121);
 // FIXME
 /*
   if (!E->Message.empty())

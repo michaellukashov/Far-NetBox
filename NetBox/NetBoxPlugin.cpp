@@ -484,6 +484,7 @@ void TNetBoxPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::ShowExtendedException(const std::exception * E)
 {
+ ::Error(SNotImplemented, 101);
 // FIXME
 /*
   if (!E->Message.empty())

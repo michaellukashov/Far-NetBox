@@ -123,6 +123,7 @@ const TSessionInfo & TSecureShell::GetSessionInfo()
 //---------------------------------------------------------------------
 void TSecureShell::ClearConfig(Config * cfg)
 {
+  ::Error(SNotImplemented, 234); 
   // FIXME StrDispose(cfg->remote_cmd_ptr);
   // FIXME StrDispose(cfg->remote_cmd_ptr2);
   // clear all
@@ -1777,6 +1778,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
       // FIXME Aliases[0].OnClick = &ClipboardHandler.Copy;
+      ::Error(SNotImplemented, 236); 
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)
@@ -1805,6 +1807,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       switch (R) {
         case qaOK:
           assert(!Unknown);
+          ::Error(SNotImplemented, 237); 
           // FIXME KeyStr = (StoredKeys + Delimiter + KeyStr);
           // fall thru
         case qaYes:

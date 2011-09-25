@@ -312,7 +312,7 @@ std::wstring SystemTemporaryDirectory()
 
 std::wstring SysErrorMessage(int code)
 {
-    // FIXME 
+    ::Error(SNotImplemented, 41); 
     std::wstring result;
     return result;
 }
@@ -843,7 +843,7 @@ char HexToChar(const std::wstring Hex, int MinChars)
 //---------------------------------------------------------------------------
 bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
 {
-// FIXME
+::Error(SNotImplemented, 42);
 /*
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
@@ -860,7 +860,7 @@ void ProcessLocalDirectory(std::wstring DirName,
   const processlocalfile_slot_type &CallBackFunc, void * Param,
   int FindAttrs)
 {
-// FIXME
+::Error(SNotImplemented, 43);
 /*
   assert(CallBackFunc);
   if (FindAttrs < 0)
@@ -894,7 +894,7 @@ void ProcessLocalDirectory(std::wstring DirName,
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
 {
-// FIXME
+::Error(SNotImplemented, 44);
 /*
   try
   {
@@ -910,7 +910,7 @@ TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
 //---------------------------------------------------------------------------
 TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec)
 {
-// FIXME
+::Error(SNotImplemented, 45);
 /*
   try
   {
@@ -1016,9 +1016,11 @@ static TDateTimeParams * GetDateTimeParams()
 static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
   TDateTime & Result)
 {
+  ::Error(SNotImplemented, 46);
   if (Date.wYear == 0)
   {
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
+    
     Result = Temp; // FIXME + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
       // (7 * (Date.wDay - 1));
     if (Date.wDay == 5)
@@ -1114,12 +1116,14 @@ static bool IsDateInDST(const TDateTime & DateTime)
 
     if (CurrentCache->SummerDST)
     {
+      ::Error(SNotImplemented, 47);
       Result = false; // FIXME
         // (DateTime >= CurrentCache->DaylightDate) &&
         // (DateTime < CurrentCache->StandardDate);
     }
     else
     {
+      ::Error(SNotImplemented, 48);
       Result = false; // FIXME
         // (DateTime < CurrentCache->StandardDate) ||
         // (DateTime >= CurrentCache->DaylightDate);
@@ -1138,6 +1142,7 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   TDateTimeParams * Params = GetDateTimeParams();
 
   TDateTime Result;
+  ::Error(SNotImplemented, 49);
   Result = TDateTime(); // FIXME Params->UnixEpoch + (double(TimeStamp) / 86400);
 
   if (Params->DaylightHack)
@@ -1181,7 +1186,8 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
-  return 0; // FIXME Round(double(DateTime - Params->UnixEpoch) * 86400) +
+  ::Error(SNotImplemented, 50);
+  return 0; // Round(double(DateTime - Params->UnixEpoch) * 86400) +
     // Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
@@ -1221,7 +1227,8 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
-  TDateTime Result = TDateTime(); // FIXME SystemTimeToDateTime(SysTime);
+  ::Error(SNotImplemented, 51);
+  TDateTime Result = TDateTime(); // SystemTimeToDateTime(SysTime);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1240,6 +1247,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
+      ::Error(SNotImplemented, 52);
       TDateTime DateTime = TDateTime(); // FIXME SystemTimeToDateTime(SystemTime);
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
@@ -1258,6 +1266,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
+      ::Error(SNotImplemented, 53);
       TDateTime DateTime = TDateTime(); // FIXME SystemTimeToDateTime(SystemTime);
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
@@ -1271,6 +1280,7 @@ TDateTime ConvertTimestampToUTC(TDateTime DateTime)
 {
 
   TDateTimeParams * Params = GetDateTimeParams();
+  ::Error(SNotImplemented, 54);
   // FIXME
   // DateTime += Params->CurrentDifference;
   // DateTime +=
@@ -1304,6 +1314,7 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
+      ::Error(SNotImplemented, 55);
       // FIXME DateTime = DateTime - Params->CurrentDaylightDifference;
     }
 
@@ -1375,6 +1386,7 @@ std::wstring FixedLenDateTimeFormat(const std::wstring & Format)
       if (!AsIs && (strchr("dDeEmMhHnNsS", F) != NULL) &&
           ((Index == Result.size()) || (Result[Index + 1] != F)))
       {
+        ::Error(SNotImplemented, 56);
         // FIXME Result.insert(Index, F);
       }
 
@@ -1395,6 +1407,7 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
   //  FIXME
+  ::Error(SNotImplemented, 57);
   /*
   static TDateTime TwoSeconds(0, 0, 2, 0);
   int Result;
@@ -1430,16 +1443,18 @@ void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
     unsigned short &M, unsigned short &D)
 {
     // FIXME
+    ::Error(SNotImplemented, 58);
 }
 
 void DecodeTime(const TDateTime &DateTime, unsigned short &H,
     unsigned short &N, unsigned short &S, unsigned short &MS)
 {
-    // FIXME
+    ::Error(SNotImplemented, 40);
 }
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
 {
+    ::Error(SNotImplemented, 59);
     std::wstring result;
     return result;
 }
@@ -1448,6 +1463,7 @@ std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
 bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
 {
 //FIXME
+  ::Error(SNotImplemented, 60);
 /*
   SHFILEOPSTRUCT Data;
 
@@ -1698,6 +1714,7 @@ void OemToAnsi(std::wstring & Str)
   {
     // Str.Unique();
     // FIXME OemToChar(Str.c_str(), Str.c_str());
+    ::Error(SNotImplemented, 61);
   }
 }
 //---------------------------------------------------------------------------
@@ -1707,6 +1724,7 @@ void AnsiToOem(std::wstring & Str)
   {
     // Str.Unique();
     // FIXME CharToOem(Str.c_str(), Str.c_str());
+    ::Error(SNotImplemented, 62);
   }
 }
 //---------------------------------------------------------------------------
@@ -1787,11 +1805,13 @@ void AddToList(std::wstring & List, const std::wstring & Value, wchar_t Delimite
 //---------------------------------------------------------------------------
 bool Is2000()
 {
+  ::Error(SNotImplemented, 63);
   return false; // FIXME (Win32MajorVersion >= 5);
 }
 //---------------------------------------------------------------------------
 bool IsWin7()
 {
+  ::Error(SNotImplemented, 65);
   return false; // FIXME
     // (Win32MajorVersion > 6) ||
     // ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
@@ -1799,6 +1819,7 @@ bool IsWin7()
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
+::Error(SNotImplemented, 66);
 // FIXME
 return false;
   // HANDLE Kernel32 = GetModuleHandle(kernel32);
@@ -1859,6 +1880,7 @@ return false;
 std::wstring IntToStr(int value)
 {
     // FIXME
+    ::Error(SNotImplemented, 67);
     std::wstring result;
     return result;
 }
@@ -1866,36 +1888,42 @@ std::wstring IntToStr(int value)
 int StrToInt(const std::wstring value)
 {
     // FIXME
+    ::Error(SNotImplemented, 68);
     return 0;
 }
 
 __int64 ToInt(const std::wstring value)
 {
     // FIXME
+    ::Error(SNotImplemented, 69);
     return 0;
 }
 
 int StrToIntDef(const std::wstring value, int defval)
 {
     // FIXME
+    ::Error(SNotImplemented, 70);
     return 0;
 }
 
 __int64 StrToInt64(const std::wstring value)
 {
     // FIXME
+    ::Error(SNotImplemented, 71);
     return 0;
 }
 
 __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
     // FIXME
+    ::Error(SNotImplemented, 72);
     return 0;
 }
 
 __int64 TryStrToInt(const std::wstring value, __int64 defval)
 {
     // FIXME
+    ::Error(SNotImplemented, 73);
     return 0;
 }
 
@@ -2013,12 +2041,14 @@ int LastDelimiter(const std::wstring str, const std::wstring delim)
 bool CompareText(const std::wstring str1, const std::wstring str2)
 {
     // FIXME
+    ::Error(SNotImplemented, 74);
     return false;
 }
 
 bool AnsiCompare(const std::wstring str1, const std::wstring str2)
 {
     // FIXME
+    ::Error(SNotImplemented, 75);
     return false;
 }
 
@@ -2051,6 +2081,7 @@ bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 {
     // FIXME
+    ::Error(SNotImplemented, 76);
     return false;
 }
 
@@ -2081,12 +2112,14 @@ void RaiseLastOSError()
 double StrToFloat(std::wstring Value)
 {
     // FIXME
+    ::Error(SNotImplemented, 77);
     return 0;
 }
 
 std::wstring FormatFloat(std::wstring Format, double value)
 {
     // FIXME
+    ::Error(SNotImplemented, 78);
     return std::wstring(L"");
 }
 
@@ -2094,6 +2127,7 @@ std::wstring FormatFloat(std::wstring Format, double value)
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
     // FIXME
+    ::Error(SNotImplemented, 79);
     TTimeStamp result = {0, 0};
     return result;
 }
@@ -2103,12 +2137,14 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
 {
     // FIXME
+    ::Error(SNotImplemented, 80);
     return 0;
 }
 
 unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
 {
     // FIXME
+    ::Error(SNotImplemented, 81);
     return 0;
 }
 
@@ -2117,24 +2153,27 @@ unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
 bool FileExists(const std::wstring &filename)
 {
     // FIXME
+    ::Error(SNotImplemented, 82);
     return false;
 }
 
 bool RenameFile(const std::wstring &from, const std::wstring &to)
 {
-    // FIXME 
+    ::Error(SNotImplemented, 40); 
     return false;
 }
 
 bool DirectoryExists(const std::wstring &filename)
 {
     // FIXME
+    ::Error(SNotImplemented, 83);
     return false;
 }
 
 std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList)
 {
     // FIXME
+    ::Error(SNotImplemented, 84);
     return std::wstring(L"");
 }
 
@@ -2142,30 +2181,35 @@ std::wstring FileSearch(const std::wstring FileName, const std::wstring Director
 int FileGetAttr(const std::wstring &filename)
 {
     // FIXME
+    ::Error(SNotImplemented, 85);
     return 0;
 }
 
 int FileSetAttr(const std::wstring &filename, int attrs)
 {
     // FIXME
+    ::Error(SNotImplemented, 86);
     return 0;
 }
 
 bool ForceDirectories(const std::wstring Dir)
 {
     // FIXME
+    ::Error(SNotImplemented, 87);
     return false;
 }
 
 bool DeleteFile(const std::wstring File)
 {
     // FIXME
+    ::Error(SNotImplemented, 88);
     return false;
 }
 
 bool RemoveDir(const std::wstring Dir)
 {
     // FIXME
+    ::Error(SNotImplemented, 89);
     return false;
 }
 

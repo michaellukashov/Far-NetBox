@@ -1269,6 +1269,7 @@ void TRemoteFile::FindLinkedFile()
     {
       // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
         // else Terminal->Log->AddException(&E);
+      ::Error(SNotImplemented, 214); 
     }
   }
 }
@@ -1317,7 +1318,8 @@ bool TRemoteFile::GetHaveFullFileName() const
 int TRemoteFile::GetAttr()
 {
   int Result = 0;
-  if (GetRights()->GetReadOnly()) Result |= 0; // FICME faReadOnly;
+  ::Error(SNotImplemented, 215); 
+  if (GetRights()->GetReadOnly()) Result |= 0; // FIXME faReadOnly;
   if (GetIsHidden()) Result |= 0; // FIXME faHidden;
   return Result;
 }
@@ -1525,6 +1527,7 @@ void TRemoteDirectory::SetIncludeParentDirectory(bool value)
     else if (!value && GetParentDirectory())
     {
       assert(IndexOf(GetParentDirectory()) >= 0);
+     ::Error(SNotImplemented, 216); 
       // FIXME Extract(GetParentDirectory());
     }
   }
@@ -1543,6 +1546,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
     else if (!value && GetThisDirectory())
     {
       assert(IndexOf(GetThisDirectory()) >= 0);
+      ::Error(SNotImplemented, 217); 
       // FIXME Extract(GetThisDirectory());
     }
   }

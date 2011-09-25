@@ -1292,6 +1292,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
     case 2:     /* fatal error */
       // pscp adds 'Resp' to 'Msg', why?
       std::wstring Msg = FSecureShell->ReceiveLine();
+      ::Error(SNotImplemented, 219); 
       // FIXME std::wstring Line = std::wstring(Resp) + Msg;
       std::wstring Line = Msg;
       if (IsLastLine(Line))
@@ -1732,6 +1733,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
                 {
+                  ::Error(SNotImplemented, 220); 
                   throw ExtException(L""); // FIXME USER_TERMINATED);
                 }
               }
@@ -1758,6 +1760,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
           if ((OperationProgress->Cancel == csCancelTransfer) ||
               (OperationProgress->Cancel == csCancel && !OperationProgress->TransferingFile))
           {
+              ::Error(SNotImplemented, 221); 
               throw ExtException(L""); // FIXME USER_TERMINATED);
           }
         }
@@ -1894,7 +1897,8 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     // TSearchRec SearchRec;
     WIN32_FIND_DATA SearchRec;
     bool FindOK = false;
-// FIXME 
+    ::Error(SNotImplemented, 223); 
+    // FIXME
     // FILE_OPERATION_LOOP (L"", // FIXME MTLOAD(LIST_DIR_ERROR, (DirectoryName)),
       // FindOK = (bool)(FindFirst(IncludeTrailingBackslash(DirectoryName) + L"*.*",
         // FindAttrs, SearchRec) == 0);
@@ -1903,6 +1907,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     {
       BOOST_SCOPE_EXIT ( (&Self) )
       {
+        ::Error(SNotImplemented, 224); 
         // FIXME FindClose(SearchRec);
       } BOOST_SCOPE_EXIT_END
       while (FindOK && !OperationProgress->Cancel)
@@ -1939,6 +1944,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
           );
         }
         FindOK = false;
+        ::Error(SNotImplemented, 225); 
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
           // FIXME FindOK = (FindNext(SearchRec) == 0);
         );
@@ -1956,6 +1962,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
       else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
       {
       // FIXME
+::Error(SNotImplemented, 226);
         // FILE_OPERATION_LOOP (L"", FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
           // THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
         // )
@@ -2291,6 +2298,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           if (!FileData.Exists)
           {
             // FIXME
+::Error(SNotImplemented, 227);
             // FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFileName.c_str()),
               // if (!ForceDirectories(DestFileName)) RaiseLastOSError();
             // );
@@ -2355,6 +2363,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                       OperationProgress->Cancel = csCancel; // continue on next case
                     case qaNo:
                       SkipConfirmed = true;
+                      ::Error(SNotImplemented, 228); 
                       // FIXME EXCEPTION;
                   }
                 }
@@ -2365,6 +2374,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                        &File, FLAGSET(Params, cpNoConfirmation)))
                 {
                   SkipConfirmed = true;
+                  ::Error(SNotImplemented, 229); 
                   // FIXME EXCEPTION;
                 }
 
@@ -2416,6 +2426,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                   }
 
                   // This is crucial, if it fails during file transfer, it's fatal error
+                  ::Error(SNotImplemented, 230);
                   // FIXME
                   // FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
                     // BlockBuf.WriteToStream(FileStream, BlockBuf.Size);
@@ -2425,7 +2436,8 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
                   if (OperationProgress->Cancel == csCancelTransfer)
                   {
-                    throw ExtException(L""); // FIXME USER_TERMINATED);
+                    ::Error(SNotImplemented, 231);  
+                    throw ExtException(L""); // FIXME , USER_TERMINATED);
                   }
                 }
                 while (!OperationProgress->IsLocalyDone() || !
@@ -2483,6 +2495,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           if ((NewAttrs & FileData.Attrs) != NewAttrs)
           {
             // FIXME
+            ::Error(SNotImplemented, 232);
             // FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
               // THROWOSIFFALSE(FileSetAttr(DestFileName, FileData.Attrs | NewAttrs) == 0);
             // );

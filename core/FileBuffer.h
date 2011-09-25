@@ -29,7 +29,7 @@ public:
   TMemoryStream *GetMemory() { return FMemory; }
   void SetMemory(TMemoryStream * value);
   // __property char * Data = { read=GetData };
-  char *GetData() const { return NULL; } // FIXME (char *)FMemory->Memory; }
+  char *GetData() const { ::Error(SNotImplemented, 210); return NULL; } // FIXME (char *)FMemory->Memory; }
   // __property int Size = { read=FSize, write=SetSize };
   int GetSize() { return FSize; }
   void SetSize(int value);

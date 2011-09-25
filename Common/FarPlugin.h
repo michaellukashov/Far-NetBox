@@ -720,7 +720,6 @@ extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
 inline wchar_t *StrFromFar(wchar_t *S)
 {
-    // FIXME
     // ::Error(SNotImplemented, 20);
     // OemToChar(S, S);
     return S;
@@ -728,7 +727,6 @@ inline wchar_t *StrFromFar(wchar_t *S)
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(const wchar_t *S)
 {
-    // FIXME
     // ::Error(SNotImplemented, 21);
     return std::wstring(S);
 }

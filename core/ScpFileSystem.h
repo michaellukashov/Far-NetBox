@@ -100,7 +100,7 @@ private:
   void EnsureLocation();
   void ExecCommand(const std::wstring & Cmd, int Params,
     const std::wstring & CmdString);
-  void ExecCommand(TFSCommand Cmd, int Params = -1, ...); // FIXME const wchar_t TVarRec * args = NULL,
+  void ExecCommand(TFSCommand Cmd, int Params = -1, ...);
   void ReadCommandOutput(int Params, const std::wstring * Cmd = NULL);
   void SCPResponse(bool * GotLastLine = NULL);
   void SCPDirectorySource(const std::wstring DirectoryName,

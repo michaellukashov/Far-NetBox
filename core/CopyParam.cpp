@@ -245,6 +245,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool value)
 wchar_t * TCopyParamType::ReplaceChar(std::wstring & FileName, wchar_t * InvalidChar) const
 {
   int Index = InvalidChar - FileName.c_str() + 1;
+  ::Error(SNotImplemented, 205); 
   if (false) // FIXME FileName.GetByteType(Index) == mbSingleByte)
   {
     if (GetInvalidCharsReplacement() == TokenReplacement)
@@ -321,6 +322,7 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
       int Index = InvalidChar - FileName.c_str() + 1;
+      ::Error(SNotImplemented, 206); 
       if ((FileName.size() >= Index + 2) &&
           false // FIXME (FileName.ByteType(Index) == mbSingleByte) &&
           // (FileName.ByteType(Index + 1) == mbSingleByte) &&

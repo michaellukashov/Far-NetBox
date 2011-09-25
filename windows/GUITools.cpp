@@ -17,6 +17,7 @@
 //---------------------------------------------------------------------------
 bool FindFile(std::wstring & Path)
 {
+  ::Error(SNotImplemented, 95);
   bool Result = FileExists(Path);
   if (!Result)
   {
@@ -134,6 +135,7 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring Path, const std::wstring Params)
 {
+  ::Error(SNotImplemented, 96);
   return false; // FIXME ((int)ShellExecute(NULL, L"open", (char*)Path.data(),
     // (char*)Params.data(), NULL, SW_SHOWNORMAL) > 32);
 }
@@ -142,6 +144,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle)
 {
   bool Result = false;
+  ::Error(SNotImplemented, 97);
 /* // FIXME
   TShellExecuteInfo ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
@@ -164,6 +167,7 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
 bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
   const std::wstring Params, const processmessages_signal_type &ProcessMessages)
 {
+  ::Error(SNotImplemented, 98);
   bool Result = false;
 /* // FIXME 
   TShellExecuteInfo ExecuteInfo;
@@ -213,6 +217,7 @@ bool SpecialFolderLocation(int PathID, std::wstring & Path)
 {
   LPITEMIDLIST Pidl;
   char Buf[256];
+  ::Error(SNotImplemented, 99);
   /* // FIXME 
   if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
@@ -304,6 +309,7 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
 bool DeleteDirectory(const std::wstring DirName)
 {
   bool retval = true;
+  ::Error(SNotImplemented, 100);
   /* // FIXME 
   TSearchRec sr;
   if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function

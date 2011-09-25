@@ -353,6 +353,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(const std::exception * E, int OpMode)
 {
+  ::Error(SNotImplemented, 120);
   if ((GetTerminal() != NULL)) // FIXME && E->InheritsFrom(__classid(EFatal)))
   {
     if (!FClosed)

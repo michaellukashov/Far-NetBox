@@ -45,6 +45,7 @@ int StartThread(void * SecurityAttributes, unsigned StackSize,
   const threadfunc_slot_type &ThreadFunc, void * Parameter, unsigned CreationFlags,
   unsigned & ThreadId)
 {
+  ::Error(SNotImplemented, 102);
   // FIXME return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
     // CreationFlags, ThreadId);
   return 0;

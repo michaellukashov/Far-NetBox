@@ -253,6 +253,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   TFarButton(Dialog)
 {
   SetCenterGroup(true);
+  ::Error(SNotImplemented, 102);
   // FIXME SetOnClick(&TTabbedDialog::TabButtonClick); // Dialog->
 }
 //---------------------------------------------------------------------------
@@ -1142,6 +1143,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCaption(GetMsg(ABOUT_URL));
   Text->SetColor(static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
+  ::Error(SNotImplemented, 103);
   // FIXME Text->SetOnMouseClick(UrlTextClick);
 
   Button = new TFarButton(this);
@@ -1196,6 +1198,7 @@ void TAboutDialog::UrlTextClick(TFarDialogItem * /*Item*/,
 {
   std::wstring Address = GetMsg(ABOUT_URL);
   // FIXME ShellExecute(NULL, L"open", Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
+  ::Error(SNotImplemented, 104);
 }
 //---------------------------------------------------------------------------
 void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
@@ -1206,6 +1209,7 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
     case 2: Address = GetMsg(ABOUT_URL) + L"forum/"; break;
   }
   // FIXME ShellExecute(NULL, "open", Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
+  ::Error(SNotImplemented, 105);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1293,6 +1297,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     Button = new TFarButton(this);
     Button->SetCaption(GetMsg(PASSWORD_SHOW_PROMPT));
     // FIXME Button->SetOnClick(ShowPromptClick);
+    ::Error(SNotImplemented, 106);
     Button->SetCenterGroup(true);
   }
 
@@ -1922,6 +1927,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_UNIX));
   // FIXME Button->SetOnClick(UnixEnvironmentButtonClick);
+  ::Error(SNotImplemented, 107);
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
@@ -2418,6 +2424,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
       BOOST_SCOPE_EXIT ( (&Self) )
       {
         // FIXME Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
+        ::Error(SNotImplemented, 108);
       } BOOST_SCOPE_EXIT_END
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (int Index = Configuration->GetTunnelLocalPortNumberLow();
@@ -2480,6 +2487,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   CipherUpButton->Move(0, 1);
   CipherUpButton->SetResult(-1);
   // FIXME CipherUpButton->SetOnClick(CipherButtonClick);
+  ::Error(SNotImplemented, 109);
 
   SetNextItemPosition(ipBelow);
 
@@ -2593,6 +2601,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   AuthGSSAPICheck2 = new TFarCheckBox(this);
   AuthGSSAPICheck2->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI));
   // FIXME AuthGSSAPICheck2->SetOnAllowChange(AuthGSSAPICheckAllowChange);
+  ::Error(SNotImplemented, 110);
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_AUTH_PARAMS_GROUP));
@@ -3706,6 +3715,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   OctalEdit->SetWidth(5);
   OctalEdit->SetMask(L"9999");
   // FIXME OctalEdit->SetOnExit(OctalEditExit);
+  ::Error(SNotImplemented, 111);
 
   if (ShowButtons)
   {
@@ -4320,6 +4330,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   AsciiFileMaskEdit->SetWidth(TMWidth);
   AsciiFileMaskEdit->SetHistory(ASCII_MASK_HISTORY);
   // FIXME AsciiFileMaskEdit->SetOnExit(ValidateMaskComboExit);
+  ::Error(SNotImplemented, 112);
 
   Box = new TFarBox(GetDialog());
   Box->SetLeft(0);
@@ -4753,6 +4764,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
   // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
+  ::Error(SNotImplemented, 113);
 
   new TFarSeparator(this);
 
@@ -4788,6 +4800,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
   // FIXME Button->SetOnClick(TransferSettingsButtonClick);
+  ::Error(SNotImplemented, 114);
 
   SetNextItemPosition(ipRight);
 
@@ -5274,6 +5287,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
   Button->SetEnabledDependency(SpaceAvailablePathEdit);
   // FIXME Button->SetOnClick(SpaceAvailableButtonClick);
+  ::Error(SNotImplemented, 115);
 
   SetNextItemPosition(ipNewLine);
 
@@ -5370,6 +5384,7 @@ void TFileSystemInfoDialog::Feed(const feedfilesystemdata_slot_type &AddItem)
   {
     Str += FORMAT(L"/%s", (DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR))));
   }
+  ::Error(SNotImplemented, 116);
   // FIXME AddItem(ServerLabels, SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
   {
@@ -6165,6 +6180,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
+  ::Error(SNotImplemented, 117);
   // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
   CopyParamLister->SetGroup(1);
   // Right edge is adjusted in Change
@@ -6514,6 +6530,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetNoBox(true);
   // align list with bottom of the window
   ListBox->SetBottom(-5);
+  ::Error(SNotImplemented, 118);
   // FIXME ListBox->SetOnMouseClick(ListBoxClick);
   ListBox->SetOem(true);
 

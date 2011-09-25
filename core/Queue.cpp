@@ -903,7 +903,8 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   try
   {
     FTerminal->SetUseBusyCursor(false);
-    // FIXME 
+    // FIXME
+::Error(SNotImplemented, 213); 
     // FTerminal->SetOnQueryUser(&TTerminalItem::TerminalQueryUser);
     // FTerminal->SetOnPromptUser(&TTerminalItem::TerminalPromptUser);
     // FTerminal->SetOnShowExtendedException(&TTerminalItem::TerminalShowExtendedException);

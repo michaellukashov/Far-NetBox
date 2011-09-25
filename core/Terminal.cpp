@@ -739,6 +739,7 @@ void TTerminal::Open()
                   {
                     // the only case where we expect this to happen
                     // FIXME assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
+                    ::Error(SNotImplemented, 259); 
                     FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
                   }
                   else
@@ -1387,6 +1388,7 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   (
     AllowSkip, Message,
     Result = 0; // FIXME CallBackFunc(Param1, Param2);
+    ::Error(SNotImplemented, 260);
   );
 
   return Result;
@@ -1734,6 +1736,7 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   // from within OnShowExtendedException handler
   assert(FCallbackGuard == NULL);
   int Result = 0;
+  ::Error(SNotImplemented, 261); 
   if (E) // FIXME && E->InheritsFrom(__classid(EFatal)))
   {
     FatalError(E, Msg);
@@ -2312,6 +2315,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(std::wstring Directory, 
   }
   catch (const std::exception & E)
   { // FIXME
+::Error(SNotImplemented, 262);
 /*     COMMAND_ERROR_ARI
     (
       "",
@@ -2407,6 +2411,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
         {
           // FIXME CallBackFunc(Directory + File->GetFileName(), File, Param);
+          ::Error(SNotImplemented, 263); 
         }
       }
     }
@@ -3521,7 +3526,8 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     {
       RollbackAction(*Action, NULL, &E);
     }
-    if (GetExceptionOnFail()) throw; // FIXME  || (E.InheritsFrom(__classid(EFatal)))) throw;
+    ::Error(SNotImplemented, 264);
+    if (GetExceptionOnFail()) throw; // FIXME || (E.InheritsFrom(__classid(EFatal)))) throw;
       else HandleExtendedException(&E);
   }
 }
@@ -3752,6 +3758,7 @@ void TTerminal::MakeLocalFileList(const std::wstring FileName,
   bool Directory = FLAGSET(Rec.dwFileAttributes, faDirectory);
   if (Directory && Params.Recursive)
   {
+    ::Error(SNotImplemented, 265); 
     // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
   }
 
@@ -3788,6 +3795,7 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
     }
     else
     {
+      ::Error(SNotImplemented, 266); 
       // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
     }
   }
@@ -3936,6 +3944,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     Data.LocalFileList->SetSorted(true);
     Data.LocalFileList->SetCaseSensitive(false);
     TFileOperationProgressType *OperationProgress = GetOperationProgress();
+    ::Error(SNotImplemented, 267); 
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       // FIXME Found = (FindFirst(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
@@ -3944,6 +3953,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     if (Found)
     {
       {
+        ::Error(SNotImplemented, 268); 
         BOOST_SCOPE_EXIT ( (&Self) )
         {
           // FIXME Self->FindClose(SearchRec);
@@ -3986,6 +3996,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
               reinterpret_cast<TObject*>(FileData));
           }
 
+          ::Error(SNotImplemented, 269); 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
             // FIXME Found = (FindNext(SearchRec) == 0);
           );
@@ -4439,6 +4450,7 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   if (Data.OnSynchronizeDirectory != NULL)
   {
     bool Continue = true;
+    ::Error(SNotImplemented, 270); 
     // FIXME Data.OnSynchronizeDirectory(Data.LocalDirectory, Data.RemoteDirectory,
       // Continue, Collect);
 

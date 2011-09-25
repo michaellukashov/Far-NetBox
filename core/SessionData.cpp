@@ -183,7 +183,8 @@ void TSessionData::NonPersistant()
 //---------------------------------------------------------------------
 void TSessionData::Assign(TPersistent * Source)
 {
-  if (Source) // FIXME  && Source->InheritsFrom(__classid(TSessionData)))
+  ::Error(SNotImplemented, 238);  
+  if (Source) // FIXME && Source->InheritsFrom(__classid(TSessionData)))
   {
     #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
     DUPL(Name);
@@ -1256,6 +1257,7 @@ void TSessionData::SetHostName(std::wstring value)
     SetPassword(XPassword);
     if (!XPassword.empty())
     {
+      ::Error(SNotImplemented, 239); 
       // FIXME ::Unique(XPassword());
       memset((void *)XPassword.c_str(), 0, XPassword.size());
     }
@@ -1305,6 +1307,7 @@ void TSessionData::SetUserName(std::wstring value)
   SetPassword(XPassword);
   if (!XPassword.empty())
   {
+    ::Error(SNotImplemented, 240); 
     // FIXME ::Unique(XPassword);
     memset((void *)XPassword.c_str(), 0, XPassword.size());
   }
@@ -1950,6 +1953,7 @@ void TSessionData::SetTunnelHostName(std::wstring value)
     SetTunnelPassword(XTunnelPassword);
     if (!XTunnelPassword.empty())
     {
+      ::Error(SNotImplemented, 241); 
       // FIXME ::Unique(XTunnelPassword);
       memset((void *)XTunnelPassword.c_str(), 0, XTunnelPassword.size());
     }
@@ -1969,6 +1973,7 @@ void TSessionData::SetTunnelUserName(std::wstring value)
   SetTunnelPassword(XTunnelPassword);
   if (!XTunnelPassword.empty())
   {
+    ::Error(SNotImplemented, 242); 
     // FIXME ::Unique(XTunnelPassword);
     memset((void *)XTunnelPassword.c_str(), 0, XTunnelPassword.size());
   }
