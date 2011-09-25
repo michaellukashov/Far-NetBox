@@ -481,38 +481,37 @@ void TNetBoxPlugin::CommandsMenu(bool FromFileSystem)
     }
   }
 }
+
 //---------------------------------------------------------------------------
-void TNetBoxPlugin::ShowExtendedException(const std::exception * E)
+void TNetBoxPlugin::ShowExtendedException(const std::exception *E)
 {
- ::Error(SNotImplemented, 101);
-// FIXME
-/*
-  if (!E->Message.empty())
+  if (strlen(E->what()) > 0)
   {
-    if (E->InheritsFrom(__classid(std::exception)))
+    if (::InheritsFrom<std::exception, std::exception>(E))
     {
-      if (!E->InheritsFrom(__classid(EAbort)))
+      if (!::InheritsFrom<std::exception, EAbort>(E))
       {
         TQueryType Type;
-        Type = (E->InheritsFrom(__classid(ESshTerminate)) ?
-          qtInformation : qtError);
+        Type = (::InheritsFrom<std::exception, ESshTerminate>(E)) ?
+          qtInformation : qtError;
 
-        TStrings * MoreMessages = NULL;
-        if (E->InheritsFrom(__classid(ExtException)))
+        TStrings *MoreMessages = NULL;
+        if (::InheritsFrom<std::exception, ExtException>(E))
         {
-          MoreMessages = ((ExtException *)E)->MoreMessages;
+          MoreMessages = ((ExtException *)E)->GetMoreMessages();
         }
 
-        std::wstring Message = TranslateExceptionMessage(E);
-        MoreMessageDialog(Message, MoreMessages, Type, qaOK);
+        std::wstring Message = ::TranslateExceptionMessage(E);
+        DEBUG_PRINTF(L"Message = %s", Message.c_str());
+        // FIXME MoreMessageDialog(Message, MoreMessages, Type, qaOK);
       }
     }
     else
     {
-      ShowException(ExceptObject(), ExceptAddr());
+      // FIXME ShowException(ExceptObject(), ExceptAddr());
+      DEBUG_PRINTF(L"ShowException");
     }
   }
-*/
 }
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::OldFar()

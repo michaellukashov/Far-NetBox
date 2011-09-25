@@ -483,35 +483,32 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(const std::exception * E)
 {
-  ::Error(SNotImplemented, 121);
-// FIXME
-/*
-  if (!E->Message.empty())
+  if (strlen(E->what()) > 0)
   {
-    if (E->InheritsFrom(__classid(std::exception)))
+    if (::InheritsFrom<std::exception, std::exception>(E))
     {
-      if (!E->InheritsFrom(__classid(EAbort)))
+      if (!::InheritsFrom<std::exception, EAbort>(E))
       {
         TQueryType Type;
-        Type = (E->InheritsFrom(__classid(ESshTerminate)) ?
-          qtInformation : qtError);
+        Type = (::InheritsFrom<std::exception, ESshTerminate>(E)) ?
+          qtInformation : qtError;
 
-        TStrings * MoreMessages = NULL;
-        if (E->InheritsFrom(__classid(ExtException)))
+        TStrings *MoreMessages = NULL;
+        if (::InheritsFrom<std::exception, ExtException>(E))
         {
-          MoreMessages = ((ExtException *)E)->MoreMessages;
+          MoreMessages = ((ExtException *)E)->GetMoreMessages();
         }
 
-        std::wstring Message = TranslateExceptionMessage(E);
+        std::wstring Message = ::TranslateExceptionMessage(E);
         MoreMessageDialog(Message, MoreMessages, Type, qaOK);
       }
     }
     else
     {
-      ShowException(ExceptObject(), ExceptAddr());
+      // ShowException(ExceptObject(), ExceptAddr());
+      DEBUG_PRINTF(L"ShowException");
     }
   }
-*/
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::OldFar()
