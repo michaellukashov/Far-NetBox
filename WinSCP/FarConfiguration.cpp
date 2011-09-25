@@ -13,13 +13,13 @@
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   Self = this;
   FFarConfirmations = -1;
   FPlugin = APlugin;
   FBookmarks = new TBookmarks();
   Default();
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 TFarConfiguration::~TFarConfiguration()
@@ -29,7 +29,7 @@ TFarConfiguration::~TFarConfiguration()
 //---------------------------------------------------------------------------
 void TFarConfiguration::Default()
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   TGUIConfiguration::Default();
   
   FForceInheritance = false;
@@ -62,7 +62,7 @@ void TFarConfiguration::Default()
   SetPageantPath(FormatCommand(ExtractFilePath(ModuleFileName()) + L"putty\\pageant.exe", L""));
 
   FBookmarks->Clear();
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::Saved()

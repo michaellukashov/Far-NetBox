@@ -42,8 +42,8 @@ TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
 //---------------------------------------------------------------------------
 TGUICopyParamType::~TGUICopyParamType()
 {
-    DEBUG_PRINTF(L"begin");
-    DEBUG_PRINTF(L"end");
+    // DEBUG_PRINTF(L"begin");
+    // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Assign(const TCopyParamType * Source)
@@ -242,13 +242,13 @@ void TCopyParamList::Init()
 //---------------------------------------------------------------------------
 TCopyParamList::~TCopyParamList()
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   Clear();
   delete FCopyParams;
   delete FRules;
   delete FNames;
   delete FNameList;
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Reset()
@@ -343,14 +343,14 @@ void TCopyParamList::Add(const std::wstring Name,
 void TCopyParamList::Insert(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   assert(FNames->IndexOf(Name) < 0);
   FNames->Insert(Index, Name);
   assert(CopyParam != NULL);
   FCopyParams->Insert(Index, reinterpret_cast<TObject *>(CopyParam));
   FRules->Insert(Index, reinterpret_cast<TObject *>(Rule));
   Modify();
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TCopyParamList::Change(int Index, const std::wstring Name,
@@ -546,7 +546,7 @@ TGUIConfiguration::~TGUIConfiguration()
 //---------------------------------------------------------------------------
 void TGUIConfiguration::Default()
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   TConfiguration::Default();
 
   // reset before call to DefaultLocalized()
@@ -568,9 +568,9 @@ void TGUIConfiguration::Default()
   FQueueRememberPassword = false;
   std::wstring ProgramsFolder;
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-  DEBUG_PRINTF(L"ProgramsFolder = %s", ProgramsFolder.c_str());
+  // DEBUG_PRINTF(L"ProgramsFolder = %s", ProgramsFolder.c_str());
   FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
-  DEBUG_PRINTF(L"FDefaultPuttyPathOnly = %s", FDefaultPuttyPathOnly.c_str());
+  // DEBUG_PRINTF(L"FDefaultPuttyPathOnly = %s", FDefaultPuttyPathOnly.c_str());
   FDefaultPuttyPath = FormatCommand(L"%PROGRAMFILES%\\PuTTY\\putty.exe", L"");
   FPuttyPath = FDefaultPuttyPath;
   SetPSftpPath(FormatCommand(L"%PROGRAMFILES%\\PuTTY\\psftp.exe", L""));
@@ -587,12 +587,12 @@ void TGUIConfiguration::Default()
 
   FNewDirectoryProperties.Default();
   FNewDirectoryProperties.Rights = TRights::rfDefault;
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TGUIConfiguration::DefaultLocalized()
 {
-  DEBUG_PRINTF(L"begin: FCopyParamListDefaults = %d", FCopyParamListDefaults);
+  // DEBUG_PRINTF(L"begin: FCopyParamListDefaults = %d", FCopyParamListDefaults);
   if (FCopyParamListDefaults)
   {
     FCopyParamList->Clear();
@@ -620,7 +620,7 @@ void TGUIConfiguration::DefaultLocalized()
 
     FCopyParamList->Reset();
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)

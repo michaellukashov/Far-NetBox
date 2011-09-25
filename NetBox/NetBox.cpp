@@ -79,7 +79,6 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
     CSession::RegisterProtocolClient(2, L"WebDAV", CSession::SessionCreator<CSessionWebDAV>, L"http", L"https");
     CSession::RegisterProtocolClient(3, L"FTPS", CSession::SessionCreator<CSessionFTPS>, L"ftps");
     CSession::RegisterProtocolClient(4, L"SCP", CSession::SessionCreator<CSessionSCP>, L"scp");
-    DEBUG_PRINTF(L"before SetStartupInfo");
     FarPlugin->SetStartupInfo(psi);
 }
 
@@ -139,7 +138,6 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
     {
         pi->CommandPrefix = cmdPreffix.c_str();
     }
-    DEBUG_PRINTF(L"before GetPluginInfo");
     FarPlugin->GetPluginInfo(pi);
 }
 

@@ -57,14 +57,20 @@ void CoreInitialize()
 
   try
   {
+    DEBUG_PRINTF(L"1");
     Configuration->Load();
+    DEBUG_PRINTF(L"2");
   }
   catch (const std::exception & E)
   {
+    DEBUG_PRINTF(L"3");
     ShowExtendedException(&E);
+    DEBUG_PRINTF(L"4");
   }
 
+  DEBUG_PRINTF(L"41");
   PuttyInitialize();
+  DEBUG_PRINTF(L"5");
   #ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
   #endif
@@ -73,11 +79,15 @@ void CoreInitialize()
 
   try
   {
+    DEBUG_PRINTF(L"6");
     StoredSessions->Load();
+    DEBUG_PRINTF(L"7");
   }
   catch (const std::exception & E)
   {
+    DEBUG_PRINTF(L"8");
     ShowExtendedException(&E);
+    DEBUG_PRINTF(L"9");
   }
 }
 //---------------------------------------------------------------------------

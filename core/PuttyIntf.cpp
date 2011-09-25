@@ -24,21 +24,27 @@ void PuttyInitialize()
   SaveRandomSeed = true;
 
   InitializeCriticalSection(&noise_section);
+  DEBUG_PRINTF(L"1");
 
   // make sure random generator is initialised, so random_save_seed()
   // in destructor can proceed
   random_ref();
+  DEBUG_PRINTF(L"2");
 
   flags = FLAG_VERBOSE | FLAG_SYNCAGENT; // verbose log
 
   sk_init();
+  DEBUG_PRINTF(L"3");
 
   std::wstring VersionString = SshVersionString();
+  DEBUG_PRINTF(L"4");
   assert(!VersionString.empty() && (VersionString.size() < sizeof(sshver)));
   strcpy(sshver, ::W2MB(VersionString.c_str()).c_str());
   std::wstring AppName = AppNameString();
+  DEBUG_PRINTF(L"5");
   assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
   strcpy(appname_, ::W2MB(AppName.c_str()).c_str());
+  DEBUG_PRINTF(L"6");
 }
 //---------------------------------------------------------------------------
 void PuttyFinalize()
