@@ -345,8 +345,7 @@ std::wstring DecryptPassword(std::wstring Password, std::wstring Key)
 
 std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext)
 {
-    ::Error(SNotImplemented, 34); 
-    std::wstring result;
+    std::wstring result = ::ChangeFileExtension(FileName, ext, L'.');
     return result;
 }
 
