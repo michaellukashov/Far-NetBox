@@ -216,8 +216,9 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
     Info.StructSize = sizeof(Info);
 }
 //---------------------------------------------------------------------------
-wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
+std::wstring TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
 {
+    /*
     if (Str.empty() && !AllowEmpty)
     {
         return NULL;
@@ -229,6 +230,9 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
         wcscpy_s(Result, Str.size(), Str.c_str());
         return Result;
     }
+    */
+    std::wstring result = Str;
+    return result;
 }
 //---------------------------------------------------------------------------
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,

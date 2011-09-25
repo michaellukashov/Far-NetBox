@@ -320,7 +320,7 @@ public:
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
 
-    static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
+    static std::wstring DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
         const std::wstring Message, TStrings *Buttons = NULL,
         TFarMessageParams *Params = NULL, bool Oem = false);
