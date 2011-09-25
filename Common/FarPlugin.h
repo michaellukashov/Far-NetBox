@@ -718,11 +718,11 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
-inline wchar_t *StrFromFar(wchar_t *S)
+inline std::wstring StrFromFar(wchar_t *S)
 {
     // ::Error(SNotImplemented, 20);
     // OemToChar(S, S);
-    return S;
+    return std::wstring(S);
 }
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(const wchar_t *S)
@@ -731,41 +731,41 @@ inline std::wstring StrFromFar(const wchar_t *S)
     return std::wstring(S);
 }
 //---------------------------------------------------------------------------
-inline wchar_t *StrFromFar(std::wstring &S)
+inline std::wstring StrFromFar(std::wstring &S)
 {
     // FIXME
     // ::Error(SNotImplemented, 22);
     // OemToChar(S.c_str(), S.c_str());
-    return (wchar_t *)S.c_str();
+    return std::wstring(S);
     // return L"";
 }
 //---------------------------------------------------------------------------
-inline wchar_t *StrToFar(wchar_t *S)
+inline std::wstring StrToFar(wchar_t *S)
 {
     // FIXME
-    ::Error(SNotImplemented, 23);
+    // ::Error(SNotImplemented, 23);
     // CharToOem(S, S);
-    return S;
+    return std::wstring(S);
 }
 //---------------------------------------------------------------------------
-inline wchar_t *StrToFar(std::wstring &S)
+inline std::wstring StrToFar(const std::wstring &S)
 {
     // FIXME
-    ::Error(SNotImplemented, 24);
+    // ::Error(SNotImplemented, 24);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
-    // return S.c_str();
-    return L"";
+    return std::wstring(S);
+    // return L"";
 }
 //---------------------------------------------------------------------------
 inline std::wstring StrToFar(const char *S)
 {
     // FIXME
-    ::Error(SNotImplemented, 25);
+    // ::Error(SNotImplemented, 25);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
-    // return S.c_str();
-    return L"";
+    return ::MB2W(S);
+    // return L"";
 }
 //---------------------------------------------------------------------------
 static bool Win32Check(bool RetVal)
