@@ -615,7 +615,7 @@ std::wstring ExtractFileDir(const std::wstring str)
 {
     std::wstring result;
     int Pos = ::LastDelimiter(str, L"/\\");
-    DEBUG_PRINTF(L"Pos = %d", Pos);
+    // DEBUG_PRINTF(L"Pos = %d", Pos);
     // it used to return Path when no slash was found
     if (Pos > 0)
     {

@@ -18,7 +18,6 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   FFarConfirmations = -1;
   FPlugin = APlugin;
   FBookmarks = new TBookmarks();
-  DEBUG_PRINTF(L"1");
   Default();
   DEBUG_PRINTF(L"end");
 }
@@ -32,7 +31,6 @@ void TFarConfiguration::Default()
 {
   DEBUG_PRINTF(L"begin");
   TGUIConfiguration::Default();
-  DEBUG_PRINTF(L"1");
   
   FForceInheritance = false;
   FConfirmOverwritingOverride = false;
@@ -49,7 +47,6 @@ void TFarConfiguration::Default()
   FEditorUploadOnSave = false;
   FEditorMultiple = false;
   FQueueBeep = true;
-  DEBUG_PRINTF(L"2");
 
   SetCustomPanelModeDetailed(true);
   SetFullScreenDetailed(true);
@@ -57,14 +54,12 @@ void TFarConfiguration::Default()
   SetColumnWidthsDetailed(L"0,8,14,0,0,9");
   SetStatusColumnTypesDetailed(L"NR");
   SetStatusColumnWidthsDetailed(L"0");
-  DEBUG_PRINTF(L"3");
 
   SetApplyCommandCommand(L"");
   SetApplyCommandParams(0);
 
   SetPuttygenPath(FormatCommand(ExtractFilePath(ModuleFileName()) + L"putty\\puttygen.exe", L""));
   SetPageantPath(FormatCommand(ExtractFilePath(ModuleFileName()) + L"putty\\pageant.exe", L""));
-  DEBUG_PRINTF(L"4");
 
   FBookmarks->Clear();
   DEBUG_PRINTF(L"end");
