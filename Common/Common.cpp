@@ -2163,8 +2163,14 @@ bool RenameFile(const std::wstring &from, const std::wstring &to)
 
 bool DirectoryExists(const std::wstring &filename)
 {
-    // FIXME
-    ::Error(SNotImplemented, 83);
+    if ((filename == L".") ||
+        (filename == L".."))
+      return true;
+
+    int attr = GetFileAttributes(filename.c_str());
+
+    if (FLAGSET(attr, FILE_ATTRIBUTE_DIRECTORY))
+      return true;
     return false;
 }
 
