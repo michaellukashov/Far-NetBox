@@ -88,13 +88,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\libs\openssl\x86\out32dll;..\libs\boost\stage;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
       <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
@@ -107,13 +107,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\libs\openssl\x64\out32dll;..\libs\boost\stage;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
       <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
@@ -130,7 +130,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x86\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -138,7 +138,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\libs\openssl\x86\out32dll;..\libs\boost\stage;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
       <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
@@ -156,7 +156,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\libs;..\libs\libssh2\include;..\libs\libcurl\include;..\libs\openssl\x64\inc32;..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -164,7 +164,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\libs\openssl\x64\out32dll;..\libs\boost\stage;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
       <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
@@ -202,10 +202,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\libs\tinyXML\tinystr.cpp" />
-    <ClCompile Include="..\libs\tinyXML\tinyxml.cpp" />
-    <ClCompile Include="..\libs\tinyXML\tinyxmlerror.cpp" />
-    <ClCompile Include="..\libs\tinyXML\tinyxmlparser.cpp" />
+    <ClCompile Include="..\..\libs\tinyXML\tinystr.cpp" />
+    <ClCompile Include="..\..\libs\tinyXML\tinyxml.cpp" />
+    <ClCompile Include="..\..\libs\tinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\libs\tinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="WebDAV.cpp" />
     <ClCompile Include="..\core\RemoteFiles.cpp" />
   </ItemGroup>
@@ -231,18 +231,18 @@
     <ClInclude Include="Logging.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Strings.h" />
-    <ClInclude Include="..\libs\tinyXML\tinystr.h" />
-    <ClInclude Include="..\libs\tinyXML\tinyxml.h" />
+    <ClInclude Include="..\..\libs\tinyXML\tinystr.h" />
+    <ClInclude Include="..\..\libs\tinyXML\tinyxml.h" />
     <ClInclude Include="WebDAV.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libs\libcurl\lib\libcurl.vcxproj">
+    <ProjectReference Include="..\..\libs\libcurl\lib\libcurl.vcxproj">
       <Project>{87ee9da4-de1e-4448-8324-183c98dca588}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\libs\libssh2\libssh2.vcxproj">
+    <ProjectReference Include="..\..\libs\libssh2\libssh2.vcxproj">
       <Project>{a7d3d5f5-261e-475f-bf66-9d4bd6f67f19}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\libs\zlib\zlib.vcxproj">
+    <ProjectReference Include="..\..\libs\zlib\zlib.vcxproj">
       <Project>{e9f6071a-d2bc-471e-8899-5f49b024aa04}</Project>
     </ProjectReference>
   </ItemGroup>
