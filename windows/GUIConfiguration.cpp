@@ -567,7 +567,7 @@ void TGUIConfiguration::Default()
   FQueueAutoPopup = true;
   FQueueRememberPassword = false;
   std::wstring ProgramsFolder;
-  // SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
+  SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
   DEBUG_PRINTF(L"ProgramsFolder = %s", ProgramsFolder.c_str());
   FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
   DEBUG_PRINTF(L"FDefaultPuttyPathOnly = %s", FDefaultPuttyPathOnly.c_str());
