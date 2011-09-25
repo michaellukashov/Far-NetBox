@@ -2150,11 +2150,9 @@ unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
 
 //---------------------------------------------------------------------------
 
-bool FileExists(const std::wstring &filename)
+bool FileExists(const std::wstring &fileName)
 {
-    // FIXME
-    ::Error(SNotImplemented, 82);
-    return false;
+    return GetFileAttributes(fileName.c_str()) != 0xFFFFFFFF;
 }
 
 bool RenameFile(const std::wstring &from, const std::wstring &to)
