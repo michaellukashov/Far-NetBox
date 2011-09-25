@@ -591,8 +591,12 @@ std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &e
 
 std::wstring ExcludeTrailingBackslash(const std::wstring str)
 {
-    // FIXME
     std::wstring result = str;
+    if ((str.size() > 0) && ((str[str.size() - 1] == L'/') ||
+        (str[str.size() - 1] == L'\\')))
+    {
+        result.resize(result.size() - 1);
+    }
     return result;
 }
 
