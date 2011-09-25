@@ -598,10 +598,9 @@ std::wstring ExcludeTrailingBackslash(const std::wstring str)
 
 std::wstring IncludeTrailingBackslash(const std::wstring str)
 {
-    // FIXME
     std::wstring result = str;
-    if (str[str.size() - 1] != L'/' ||
-        str[str.size() - 1] != L'\\')
+    if ((str.size() == 0) || (str[str.size() - 1] != L'/') ||
+        (str[str.size() - 1] != L'\\'))
     {
         result += L'\\';
     }
