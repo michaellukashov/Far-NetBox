@@ -397,6 +397,7 @@ BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
 {
     random_ref();
+    random_unref();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
