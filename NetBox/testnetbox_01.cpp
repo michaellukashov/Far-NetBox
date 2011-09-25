@@ -314,8 +314,19 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
     std::wstring ProgramsFolder;
-    std::wstring DefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
+    std::wstring DefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\putty.exe";
     BOOST_CHECK(DefaultPuttyPathOnly == L"\\PuTTY\\putty.exe");
+    BOOST_CHECK(L"" == ::ExcludeTrailingBackslash(::IncludeTrailingBackslash(ProgramsFolder)));
+}
+
+BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
+{
+    std::wstring Folder = L"C:\\Program Files\\Putty";
+    BOOST_TEST_MESSAGE("ExtractFileDir = " << ::W2MB(::ExtractFileDir(Folder).c_str()).c_str());
+    BOOST_CHECK(L"C:\\Program Files" == ::ExtractFileDir(Folder));
+    BOOST_CHECK(L"C:\\Program Files" == ::ExtractFilePath(Folder));
+    BOOST_TEST_MESSAGE("GetCurrentDir = " << ::W2MB(::GetCurrentDir().c_str()).c_str());
+    BOOST_CHECK(GetCurrentDir().size() > 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
