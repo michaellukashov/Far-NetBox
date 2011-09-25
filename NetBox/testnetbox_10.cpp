@@ -29,6 +29,7 @@
 #include "Common.h"
 #include "FileMasks.h"
 #include "WinSCPPlugin.h"
+#include "GUITools.h"
 #include "GUIConfiguration.h"
 #include "TextsCore.h"
 
@@ -383,6 +384,14 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
     CopyParam->SetTransferMode(tmAscii);
     FCopyParamList.Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
     // BOOST_TEST_MESSAGE("FCopyParamList.Count = " << FCopyParamList.GetCount());
+}
+
+BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
+{
+    std::wstring ProgramsFolder;
+    ::SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
+    BOOST_TEST_MESSAGE("ProgramsFolder = " << ::W2MB(ProgramsFolder.c_str()).c_str());
+    BOOST_CHECK(ProgramsFolder.size() > 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
