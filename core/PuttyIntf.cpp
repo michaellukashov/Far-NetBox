@@ -341,8 +341,9 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
 
   std::wstring RegKey = ::MB2W(SubKey);
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().size();
-  assert(RegKey.substr(1, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
+  assert(RegKey.substr(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.substr(PuttyKeyLen + 1, RegKey.size() - PuttyKeyLen);
+  // DEBUG_PRINTF(L"RegKey = %s", RegKey.c_str());
   if (!RegKey.empty())
   {
     assert(RegKey[1] == '\\');
