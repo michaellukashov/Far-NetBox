@@ -25,6 +25,7 @@ public:
   TGUICopyParamType();
   TGUICopyParamType(const TCopyParamType & Source);
   TGUICopyParamType(const TGUICopyParamType & Source);
+  ~TGUICopyParamType();
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage);

@@ -38,6 +38,13 @@ TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
 {
   GUIAssign(&Source);
 }
+
+//---------------------------------------------------------------------------
+TGUICopyParamType::~TGUICopyParamType()
+{
+    DEBUG_PRINTF(L"begin");
+    DEBUG_PRINTF(L"end");
+}
 //---------------------------------------------------------------------------
 void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
