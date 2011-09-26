@@ -48,7 +48,7 @@ bool TNetBoxPlugin::HandlesFunction(THandlesFunction Function)
 //---------------------------------------------------------------------------
 int TNetBoxPlugin::GetMinFarVersion()
 {
-  return FAR170BETA5;
+  return FAR20; // FAR170BETA5;
 }
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
