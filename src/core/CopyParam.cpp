@@ -6,7 +6,6 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 #include "Exceptions.h"
-#include "FarUtil.h"
 //---------------------------------------------------------------------------
 TCopyParamType::TCopyParamType()
 {

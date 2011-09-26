@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#include "FarUtil.h"
 
 #include "Common.h"
 #include "PuttyIntf.h"
