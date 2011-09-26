@@ -66,9 +66,9 @@ include_directories (
     ${PROJECT_ROOT}/src/core
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
-    ${PROJECT_ROOT}/src/Putty
     ${PROJECT_ROOT}/src/Common
     ${PROJECT_ROOT}/src/WinSCP
+    ${PROJECT_ROOT}/src/Putty
     ${PROJECT_ROOT}/src/Putty
     ${PROJECT_ROOT}/src/Putty/windows
     ${PROJECT_ROOT}/src/Putty/charset
