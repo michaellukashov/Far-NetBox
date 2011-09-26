@@ -188,6 +188,7 @@
     <ClCompile Include="FTPS.cpp" />
     <ClCompile Include="SCP.cpp" />
     <ClCompile Include="Logging.cpp" />
+    <ClCompile Include="WebDAV.cpp" />
     <ClCompile Include="..\Common\FarDialog.cpp" />
     <ClCompile Include="..\Common\FarPlugin.cpp" />
     <ClCompile Include="..\Common\Common.cpp" />
@@ -232,7 +233,6 @@
     <ClCompile Include="..\..\libs\tinyXML\tinyxml.cpp" />
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlparser.cpp" />
-    <ClCompile Include="WebDAV.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
