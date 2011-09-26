@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include "FarPlugin.h"
 #include "FarSettings.h"
 #include "FarDialog.h"
 
