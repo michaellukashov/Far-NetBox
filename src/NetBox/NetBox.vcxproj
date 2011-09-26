@@ -87,7 +87,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -106,7 +106,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -129,7 +129,7 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -155,7 +155,7 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -233,6 +233,47 @@
     <ClCompile Include="..\..\libs\tinyXML\tinyxml.cpp" />
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlparser.cpp" />
+    <ClCompile Include="..\Putty\CPROXY.C" />
+    <ClCompile Include="..\Putty\INT64.C" />
+    <ClCompile Include="..\Putty\LOGGING.C" />
+    <ClCompile Include="..\Putty\MISC.C" />
+    <ClCompile Include="..\Putty\PGSSAPI.C" />
+    <ClCompile Include="..\Putty\PORTFWD_.C" />
+    <ClCompile Include="..\Putty\PROXY.C" />
+    <ClCompile Include="..\Putty\SSH_.C" />
+    <ClCompile Include="..\Putty\SSHAES_.C" />
+    <ClCompile Include="..\Putty\SSHARCF.C" />
+    <ClCompile Include="..\Putty\SSHBLOWF.C" />
+    <ClCompile Include="..\Putty\SSHBN.C" />
+    <ClCompile Include="..\Putty\SSHCRC.C" />
+    <ClCompile Include="..\Putty\SSHCRCDA.C" />
+    <ClCompile Include="..\Putty\SSHDES.C" />
+    <ClCompile Include="..\Putty\SSHDH.C" />
+    <ClCompile Include="..\Putty\SSHDSS.C" />
+    <ClCompile Include="..\Putty\SSHGSSC.C" />
+    <ClCompile Include="..\Putty\SSHMD5.C" />
+    <ClCompile Include="..\Putty\SSHPUBK.C" />
+    <ClCompile Include="..\Putty\SSHRAND.C" />
+    <ClCompile Include="..\Putty\SSHRSA.C" />
+    <ClCompile Include="..\Putty\SSHSH256.C" />
+    <ClCompile Include="..\Putty\SSHSH512.C" />
+    <ClCompile Include="..\Putty\SSHSHA_.C" />
+    <ClCompile Include="..\Putty\SSHZLIB.C" />
+    <ClCompile Include="..\Putty\TREE234.C" />
+    <ClCompile Include="..\Putty\CHARSET\UTF8.C" />
+    <ClCompile Include="..\Putty\WILDCARD.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINGSS.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINHANDL.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINMISC.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINNET.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINNOISE.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINNOJMP.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINPGNTC.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINPROXY.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINSTORE_.C" />
+    <ClCompile Include="..\Putty\WINDOWS\WINTIME.C" />
+    <ClCompile Include="..\Putty\WINDOWS\strftime.C" />
+    <ClCompile Include="..\Putty\X11FWD.C" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
