@@ -87,8 +87,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -106,8 +106,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -129,8 +129,8 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -155,8 +155,8 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -191,11 +191,37 @@
     <ClCompile Include="..\Common\FarDialog.cpp" />
     <ClCompile Include="..\Common\FarPlugin.cpp" />
     <ClCompile Include="..\Common\Common.cpp" />
+    <ClCompile Include="..\Common\Classes.cpp" />
     <ClCompile Include="..\WinSCP\WinSCPFileSystem.cpp" />
     <ClCompile Include="..\WinSCP\WinSCPDialogs.cpp" />
     <ClCompile Include="..\WinSCP\WinSCPPlugin.cpp" />
     <ClCompile Include="..\WinSCP\FarConfiguration.cpp" />
     <ClCompile Include="..\WinSCP\FarInterface.cpp" />
+    <ClCompile Include="..\core\RemoteFiles.cpp" />
+    <ClCompile Include="..\core\Terminal.cpp" />
+    <ClCompile Include="..\core\Exceptions.cpp" />
+    <ClCompile Include="..\core\FileOperationProgress.cpp" />
+    <ClCompile Include="..\core\Queue.cpp" />
+    <ClCompile Include="..\core\SecureShell.cpp" />
+    <ClCompile Include="..\core\SessionInfo.cpp" />
+    <ClCompile Include="..\core\CoreMain.cpp" />
+    <ClCompile Include="..\core\FileMasks.cpp" />
+    <ClCompile Include="..\core\CopyParam.cpp" />
+    <ClCompile Include="..\core\SessionData.cpp" />
+    <ClCompile Include="..\core\Configuration.cpp" />
+    <ClCompile Include="..\core\ScpFileSystem.cpp" />
+    <ClCompile Include="..\core\FtpFileSystem.cpp" />
+    <ClCompile Include="..\core\SftpFileSystem.cpp" />
+    <ClCompile Include="..\core\PuttyIntf.cpp" />
+    <ClCompile Include="..\core\Cryptography.cpp" />
+    <ClCompile Include="..\core\FileBuffer.cpp" />
+    <ClCompile Include="..\core\NamedObjs.cpp" />
+    <ClCompile Include="..\core\HierarchicalStorage.cpp" />
+    <ClCompile Include="..\core\Option.cpp" />
+    <ClCompile Include="..\core\FileInfo.cpp" />
+    <ClCompile Include="..\core\FileSystems.cpp" />
+    <ClCompile Include="..\core\Bookmarks.cpp" />
+    <ClCompile Include="..\core\SynchronizeController.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -207,7 +233,6 @@
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="WebDAV.cpp" />
-    <ClCompile Include="..\core\RemoteFiles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
