@@ -250,10 +250,11 @@ enum
     FAR170BETA4 = MAKEFARVERSION(1, 70, 1282),
     FAR170BETA5 = MAKEFARVERSION(1, 70, 1634),
     FAR170ALPHA6 = MAKEFARVERSION(1, 70, 1812),
-    FAR170 = MAKEFARVERSION(1, 70, 2087)
+    FAR170 = MAKEFARVERSION(1, 70, 2087),
+    FAR20 = MAKEFARVERSION(2, 0, 1666),
 };
 //---------------------------------------------------------------------------
-const size_t StartupInfoMinSize = 372;
+const size_t StartupInfoMinSize = 132; // 372;
 const size_t StandardFunctionsMinSize = 228;
 //---------------------------------------------------------------------------
 // typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
