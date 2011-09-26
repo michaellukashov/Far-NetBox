@@ -5,7 +5,6 @@
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
 
-#include "FarUtil.h"
 #include "FarPlugin.h"
 #include "FarDialog.h"
 #include "Common.h"

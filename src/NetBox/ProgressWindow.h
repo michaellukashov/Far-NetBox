@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "FarUtil.h"
+#include "FarDialog.h"
 #include "Protocol.h"
 
 
