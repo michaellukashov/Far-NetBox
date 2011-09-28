@@ -20,10 +20,12 @@
 #include "FarDialog.h"
 #include "Strings.h"
 //---------------------------------------------------------------------------
+#ifndef WINSCP
 TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
 {
   return new TNetBoxPlugin(HInst);
 }
+#endif
 //---------------------------------------------------------------------------
 TNetBoxPlugin::TNetBoxPlugin(HINSTANCE HInst) :
     parent(HInst)
