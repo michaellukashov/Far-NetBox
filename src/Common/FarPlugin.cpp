@@ -242,7 +242,7 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
     PanelInfo Info;
     if (FarVersion() >= FAR170BETA5)
     {
-        // FarControl(Another ? FCTL_GETANOTHERPANELSHORTINFO : FCTL_GETPANELSHORTINFO, &Info, Plugin);
+        FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
     }
     else
     {
