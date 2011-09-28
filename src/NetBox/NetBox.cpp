@@ -313,7 +313,7 @@ int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->MakeDirectory(name, opMode);
 #endif
-    return FarPlugin->MakeDirectory(plugin, *name, opMode);
+    return FarPlugin->MakeDirectory(plugin, (wchar_t *)*name, opMode);
 }
 
 int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
@@ -342,7 +342,7 @@ int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
     return result;
 #endif
     return FarPlugin->GetFiles(plugin, panelItem, itemsNumber,
-        move, *destPath, opMode);
+        move, (wchar_t *)*destPath, opMode);
 }
 
 int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
