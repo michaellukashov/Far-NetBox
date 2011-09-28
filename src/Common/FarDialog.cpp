@@ -726,7 +726,7 @@ int TFarDialog::ShowModal()
             HANDLE dlg = GetFarPlugin()->FStartupInfo.DialogInit(
                 GetFarPlugin()->FStartupInfo.ModuleNumber,
                 Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-                StrToFar(AHelpTopic).c_str(), FDialogItems, GetItemCount(), 0, GetFlags(),
+                StrToFar(AHelpTopic), FDialogItems, GetItemCount(), 0, GetFlags(),
                 DialogProcGeneral, (long)this);
             BResult = GetFarPlugin()->FStartupInfo.DialogRun(dlg);
         }

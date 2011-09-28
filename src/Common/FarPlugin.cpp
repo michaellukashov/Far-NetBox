@@ -1550,7 +1550,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE &Screen)
 void TCustomFarPlugin::HandleException(const std::exception *E, int /*OpMode*/)
 {
     assert(E);
-    Message(FMSG_WARNING | FMSG_MB_OK, L"", :MB2W(E->what()));
+    Message(FMSG_WARNING | FMSG_MB_OK, L"", ::MB2W(E->what()));
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::GetMsg(int MsgId)
