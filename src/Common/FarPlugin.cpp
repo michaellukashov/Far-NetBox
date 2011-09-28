@@ -224,10 +224,11 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
         return NULL;
     }
     else
-    {
-        wchar_t *Result = new wchar_t[Str.size() + 1];
-        // strcpy(Result, Str.c_str());
-        wcscpy_s(Result, Str.size(), Str.c_str());
+    {   
+        // DEBUG_PRINTF(L"Str.size = %d", Str.size());
+        const size_t sz = Str.size() + 1;
+        wchar_t *Result = new wchar_t[sz];
+        wcscpy_s(Result, sz, Str.c_str());
         return Result;
     }
 }
