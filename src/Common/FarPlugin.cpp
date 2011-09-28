@@ -159,16 +159,18 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
         COMPOSESTRINGARRAY(PluginConfigStrings);
 
 #undef COMPOSESTRINGARRAY
-
+        // FIXME
+        /*
         if (DiskMenuStrings.GetCount())
         {
             wchar_t *NumberArray = new wchar_t[DiskMenuStrings.GetCount()];
-            FPluginInfo.DiskMenuStrings = &NumberArray;
+            FPluginInfo.DiskMenuNumbers = &NumberArray;
             for (int Index = 0; Index < DiskMenuStrings.GetCount(); Index++)
             {
                 NumberArray[Index] = (int)DiskMenuStrings.GetObject(Index);
             }
         }
+        */
 
         std::wstring CommandPrefix;
         for (int Index = 0; Index < CommandPrefixes.GetCount(); Index++)
@@ -210,7 +212,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
 
 #undef FREESTRINGARRAY
 
-        delete[] Info.DiskMenuStrings;
+        // FIXME delete[] Info.DiskMenuNumbers;
         delete[] Info.CommandPrefix;
     }
     memset(&Info, 0, sizeof(Info));
