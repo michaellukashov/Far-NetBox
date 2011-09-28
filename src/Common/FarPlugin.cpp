@@ -201,7 +201,8 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
       { \
         delete[] Info.NAME[Index]; \
       } \
-      delete[] Info.NAME;
+      delete[] Info.NAME; \
+      Info.NAME = NULL;
 
         FREESTRINGARRAY(DiskMenuStrings);
         FREESTRINGARRAY(PluginMenuStrings);
