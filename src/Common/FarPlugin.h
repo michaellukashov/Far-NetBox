@@ -751,17 +751,16 @@ inline std::wstring StrToFar(wchar_t *S)
 }
 */
 //---------------------------------------------------------------------------
-/*
-inline std::wstring StrToFar(const std::wstring &S)
+
+inline wchar_t *StrToFar(const std::wstring &S)
 {
     // FIXME
     // ::Error(SNotImplemented, 24);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
-    return std::wstring(S);
-    // return L"";
+    return (wchar_t *)S.c_str();
 }
-*/
+
 //---------------------------------------------------------------------------
 inline wchar_t *StrToFar(const wchar_t *S)
 {
