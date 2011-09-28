@@ -741,6 +741,7 @@ inline std::wstring StrFromFar(std::wstring &S)
     // return L"";
 }
 //---------------------------------------------------------------------------
+/*
 inline std::wstring StrToFar(wchar_t *S)
 {
     // FIXME
@@ -748,7 +749,9 @@ inline std::wstring StrToFar(wchar_t *S)
     // CharToOem(S, S);
     return std::wstring(S);
 }
+*/
 //---------------------------------------------------------------------------
+/*
 inline std::wstring StrToFar(const std::wstring &S)
 {
     // FIXME
@@ -758,15 +761,15 @@ inline std::wstring StrToFar(const std::wstring &S)
     return std::wstring(S);
     // return L"";
 }
+*/
 //---------------------------------------------------------------------------
-inline std::wstring StrToFar(const char *S)
+inline wchar_t *StrToFar(const wchar_t *S)
 {
     // FIXME
     // ::Error(SNotImplemented, 25);
     // S.Unique();
-    // CharToOem(S.c_str(), S.c_str());
-    return ::MB2W(S);
-    // return L"";
+    // CharToOem(S, S);
+    return (wchar_t *)S;
 }
 //---------------------------------------------------------------------------
 static bool Win32Check(bool RetVal)
