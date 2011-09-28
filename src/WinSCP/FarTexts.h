@@ -1,3 +1,6 @@
+#include "Strings.h"
+
+/*
 enum
 {
   PLUGIN_NAME,
@@ -655,3 +658,4 @@ enum
 
   MENU_EDIT_HISTORY,
 };
+*/
