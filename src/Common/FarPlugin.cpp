@@ -230,7 +230,6 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
         wcscpy_s(Result, Str.size(), Str.c_str());
         return Result;
     }
-    return Result;
 }
 //---------------------------------------------------------------------------
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
@@ -1551,7 +1550,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE &Screen)
 void TCustomFarPlugin::HandleException(const std::exception *E, int /*OpMode*/)
 {
     assert(E);
-    Message(FMSG_WARNING | FMSG_MB_OK, L"", StrToFar(E->what()));
+    Message(FMSG_WARNING | FMSG_MB_OK, L"", :MB2W(E->what()));
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::GetMsg(int MsgId)
