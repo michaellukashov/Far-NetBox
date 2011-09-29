@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "Classes.h"
-#include "FarUtil.h"
 
 //---------------------------------------------------------------------------
 bool ExceptionMessage(const std::exception *E, std::wstring & Message);

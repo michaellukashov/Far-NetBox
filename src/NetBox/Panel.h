@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "FarUtil.h"
 #include "Settings.h"
 #include "Protocol.h"
 #include "Strings.h"

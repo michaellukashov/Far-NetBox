@@ -86,15 +86,15 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;MPEXT;WINSCP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -112,8 +112,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -137,8 +137,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -163,8 +163,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -188,8 +188,10 @@
     <ClCompile Include="SCP.cpp" />
     <ClCompile Include="Logging.cpp" />
     <ClCompile Include="WebDAV.cpp" />
+    <ClCompile Include=".\NetBoxPlugin.cpp" />
     <ClCompile Include="..\Common\FarDialog.cpp" />
     <ClCompile Include="..\Common\FarPlugin.cpp" />
+    <ClCompile Include="..\Common\FarUtil.cpp" />
     <ClCompile Include="..\Common\Common.cpp" />
     <ClCompile Include="..\Common\Classes.cpp" />
     <ClCompile Include="..\WinSCP\WinSCPFileSystem.cpp" />
@@ -222,6 +224,8 @@
     <ClCompile Include="..\core\FileSystems.cpp" />
     <ClCompile Include="..\core\Bookmarks.cpp" />
     <ClCompile Include="..\core\SynchronizeController.cpp" />
+    <ClCompile Include="..\windows\GUIConfiguration.cpp" />
+    <ClCompile Include="..\windows\GUITools.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -232,53 +236,14 @@
     <ClCompile Include="..\..\libs\tinyXML\tinyxml.cpp" />
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\libs\tinyXML\tinyxmlparser.cpp" />
-    <ClCompile Include="..\Putty\CPROXY.C" />
-    <ClCompile Include="..\Putty\INT64.C" />
-    <ClCompile Include="..\Putty\LOGGING.C" />
-    <ClCompile Include="..\Putty\MISC.C" />
-    <ClCompile Include="..\Putty\PGSSAPI.C" />
-    <ClCompile Include="..\Putty\PORTFWD_.C" />
-    <ClCompile Include="..\Putty\PROXY.C" />
-    <ClCompile Include="..\Putty\SSH_.C" />
-    <ClCompile Include="..\Putty\SSHAES_.C" />
-    <ClCompile Include="..\Putty\SSHARCF.C" />
-    <ClCompile Include="..\Putty\SSHBLOWF.C" />
-    <ClCompile Include="..\Putty\SSHBN.C" />
-    <ClCompile Include="..\Putty\SSHCRC.C" />
-    <ClCompile Include="..\Putty\SSHCRCDA.C" />
-    <ClCompile Include="..\Putty\SSHDES.C" />
-    <ClCompile Include="..\Putty\SSHDH.C" />
-    <ClCompile Include="..\Putty\SSHDSS.C" />
-    <ClCompile Include="..\Putty\SSHGSSC.C" />
-    <ClCompile Include="..\Putty\SSHMD5.C" />
-    <ClCompile Include="..\Putty\SSHPUBK.C" />
-    <ClCompile Include="..\Putty\SSHRAND.C" />
-    <ClCompile Include="..\Putty\SSHRSA.C" />
-    <ClCompile Include="..\Putty\SSHSH256.C" />
-    <ClCompile Include="..\Putty\SSHSH512.C" />
-    <ClCompile Include="..\Putty\SSHSHA_.C" />
-    <ClCompile Include="..\Putty\SSHZLIB.C" />
-    <ClCompile Include="..\Putty\TREE234.C" />
-    <ClCompile Include="..\Putty\CHARSET\UTF8.C" />
-    <ClCompile Include="..\Putty\WILDCARD.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINGSS.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINHANDL.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINMISC.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINNET.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINNOISE.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINNOJMP.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINPGNTC.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINPROXY.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINSTORE_.C" />
-    <ClCompile Include="..\Putty\WINDOWS\WINTIME.C" />
-    <ClCompile Include="..\Putty\WINDOWS\strftime.C" />
-    <ClCompile Include="..\Putty\X11FWD.C" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NetBox.rc" />
+    <ResourceCompile Include="..\resource\TextsCore1.rc" />
+    <ResourceCompile Include="..\resource\rtlconsts.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EasyURL.h" />
@@ -309,6 +274,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\libs\zlib\zlib.vcxproj">
       <Project>{e9f6071a-d2bc-471e-8899-5f49b024aa04}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Putty\libputty.vcxproj">
+      <Project>{456AD982-730D-46F8-8BE2-0E00D7433741}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

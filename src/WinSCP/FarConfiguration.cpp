@@ -8,7 +8,6 @@
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
 #include "FarPlugin.h"
-#include "FarUtil.h"
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   TGUIConfiguration()

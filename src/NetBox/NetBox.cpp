@@ -61,6 +61,7 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     CFarPlugin::Initialize(psi);
 
     m_Settings.Load();
@@ -79,6 +80,7 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
     CSession::RegisterProtocolClient(2, L"WebDAV", CSession::SessionCreator<CSessionWebDAV>, L"http", L"https");
     CSession::RegisterProtocolClient(3, L"FTPS", CSession::SessionCreator<CSessionFTPS>, L"ftps");
     CSession::RegisterProtocolClient(4, L"SCP", CSession::SessionCreator<CSessionSCP>, L"scp");
+#endif
     FarPlugin->SetStartupInfo(psi);
 }
 
@@ -86,6 +88,7 @@ void WINAPI ExitFARW()
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     for (std::vector<CPanel *>::const_iterator it = m_PanelInstances.begin(); it != m_PanelInstances.end(); ++it)
     {
         delete *it;
@@ -94,6 +97,7 @@ void WINAPI ExitFARW()
 
     curl_global_cleanup();
     WSACleanup();
+#endif
     FarPlugin->ExitFAR();
 }
 
@@ -101,6 +105,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     pi->StructSize = sizeof(PluginInfo);
     pi->Flags = PF_FULLCMDLINE;
     if (!m_Settings.AddToPanelMenu())
@@ -138,6 +143,7 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
     {
         pi->CommandPrefix = cmdPreffix.c_str();
     }
+#endif
     FarPlugin->GetPluginInfo(pi);
 }
 
@@ -145,9 +151,11 @@ int WINAPI ConfigureW(int item)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     // DEBUG_PRINTF(L"ConfigureW: begin");
     m_Settings.Configure();
     // DEBUG_PRINTF(L"ConfigureW: end");
+#endif
     return FarPlugin->Configure(item);
 }
 
@@ -155,7 +163,7 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    // return FarPlugin->OpenPlugin(OpenFrom, Item);
+#ifndef WINSCP
     //Export sessions from registry to local folder
     // !!!! this functionality will be removed in next release !!!!
     CSession::ExportFromRegistry();
@@ -195,12 +203,15 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
     }
     delete panelInstance;
     return INVALID_HANDLE_VALUE;
+#endif
+  return FarPlugin->OpenPlugin(openFrom, item);
 }
 
 void WINAPI ClosePluginW(HANDLE plugin)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     assert(panelInstance);
     delete panelInstance;
@@ -208,6 +219,7 @@ void WINAPI ClosePluginW(HANDLE plugin)
     std::vector<CPanel *>::iterator it = std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin);
     assert(it != m_PanelInstances.end());
     m_PanelInstances.erase(it);
+#endif
     FarPlugin->ClosePlugin(plugin);
 }
 
@@ -215,9 +227,11 @@ void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->GetOpenPluginInfo(pluginInfo);
+#endif
     FarPlugin->GetOpenPluginInfo(plugin, pluginInfo);
 }
 
@@ -225,23 +239,27 @@ int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNu
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"GetFindDataW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetItemList(panelItem, itemsNumber, opMode);
     // DEBUG_PRINTF(L"GetFindDataW: itemsNumber = %u", *itemsNumber);
     return result;
-    // return FarPlugin->GetFindData(Plugin, PanelItem, ItemsNumber, OpMode);
+#endif
+    return FarPlugin->GetFindData(plugin, panelItem, itemsNumber, opMode);
 }
 
 void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     panelInstance->FreeItemList(panelItem, itemsNumber);
     FarPlugin->FreeFindData(plugin, panelItem, itemsNumber);
+#endif
 }
 
 int WINAPI ProcessHostFileW(HANDLE Plugin,
@@ -249,7 +267,6 @@ int WINAPI ProcessHostFileW(HANDLE Plugin,
 {
   assert(FarPlugin);
   TFarPluginGuard Guard;
-  // return FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode);
   return FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode);
 }
 
@@ -257,9 +274,12 @@ int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->ProcessKey(key, controlState);
+#endif
+  return FarPlugin->ProcessKey(plugin, key, controlState);
 }
 
 int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
@@ -273,33 +293,39 @@ int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"SetDirectoryW: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->ChangeDirectory(dir, opMode);
     // DEBUG_PRINTF(L"SetDirectoryW: result = %u", result);
     return result;
-    // return FarPlugin->SetDirectory(Plugin, Dir, OpMode);
+#endif
+    return FarPlugin->SetDirectory(plugin, dir, opMode);
 }
 
 int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->MakeDirectory(name, opMode);
-    // return FarPlugin->MakeDirectory(Plugin, Name, OpMode);
+#endif
+    return FarPlugin->MakeDirectory(plugin, (wchar_t *)*name, opMode);
 }
 
 int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->DeleteFiles(panelItem, itemsNumber, opMode);
-    // return FarPlugin->DeleteFiles(Plugin, PanelItem, ItemsNumber, OpMode);
+#endif
+    return FarPlugin->DeleteFiles(plugin, panelItem, itemsNumber, opMode);
 }
 
 int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
@@ -307,25 +333,29 @@ int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     // DEBUG_PRINTF(L"GetFiles: begin");
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     int result = panelInstance->GetFiles(panelItem, itemsNumber, destPath, move != 0, opMode);
     // DEBUG_PRINTF(L"GetFilesW: result = %u", result);
     return result;
-    // return FarPlugin->GetFiles(Plugin, PanelItem, ItemsNumber,
-        // Move, DestPath, OpMode);
+#endif
+    return FarPlugin->GetFiles(plugin, panelItem, itemsNumber,
+        move, (wchar_t *)*destPath, opMode);
 }
 
 int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
+#ifndef WINSCP
     assert(std::find(m_PanelInstances.begin(), m_PanelInstances.end(), plugin) != m_PanelInstances.end());
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->PutFiles(srcPath, panelItem, itemsNumber, move != 0, opMode);
-      // return FarPlugin->PutFiles(Plugin, PanelItem, ItemsNumber,
-        // Move, OpMode);
+#endif
+    return FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
+        move, opMode);
 }
 
 int WINAPI ProcessEditorEventW(int Event, void * Param)
@@ -333,10 +363,9 @@ int WINAPI ProcessEditorEventW(int Event, void * Param)
     assert(FarPlugin);
     TFarPluginGuard Guard;
     return FarPlugin->ProcessEditorEvent(Event, Param);
-    return FarPlugin->ProcessEditorEvent(Event, Param);
 }
 
-int WINAPI ProcessEditorInputW(const INPUT_RECORD * Rec)
+int WINAPI ProcessEditorInputW(const INPUT_RECORD *Rec)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;

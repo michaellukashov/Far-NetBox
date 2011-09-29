@@ -18,11 +18,14 @@
 #include "FarConfiguration.h"
 #include "FarTexts.h"
 #include "FarDialog.h"
+#include "Strings.h"
 //---------------------------------------------------------------------------
+#ifndef WINSCP
 TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
 {
   return new TNetBoxPlugin(HInst);
 }
+#endif
 //---------------------------------------------------------------------------
 TNetBoxPlugin::TNetBoxPlugin(HINSTANCE HInst) :
     parent(HInst)
@@ -48,7 +51,7 @@ bool TNetBoxPlugin::HandlesFunction(THandlesFunction Function)
 //---------------------------------------------------------------------------
 int TNetBoxPlugin::GetMinFarVersion()
 {
-  return FAR170BETA5;
+  return FAR20; // FAR170BETA5;
 }
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)

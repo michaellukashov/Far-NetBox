@@ -335,3 +335,28 @@ std::wstring WrapText(const std::wstring Line, int MaxCol = 40);
 //---------------------------------------------------------------------------
 std::wstring TranslateExceptionMessage(const std::exception *E);
 //---------------------------------------------------------------------------
+
+void AppendWChar(std::wstring &str, const wchar_t ch);
+void AppendChar(std::string &str, const char ch);
+
+void AppendPathDelimiterW(std::wstring &str);
+void AppendPathDelimiterA(std::string &str);
+
+std::wstring ExpandEnvVars(const std::wstring& str);
+
+//---------------------------------------------------------------------------
+
+std::wstring StringOfChar(const wchar_t c, size_t len);
+
+char *StrNew(const char *str);
+
+wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix);
+
+std::wstring EncryptPassword(std::wstring Password, std::wstring Key);
+std::wstring DecryptPassword(std::wstring Password, std::wstring Key);
+
+std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext);
+std::wstring ExtractFileExt(std::wstring FileName);
+std::wstring ExpandUNCFileName(std::wstring FileName);
+
+void FileSeek(HANDLE file, __int64 offset, __int64 size);

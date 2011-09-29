@@ -49,14 +49,17 @@ bool TNamedObjectList::IsHidden(TNamedObject * Object)
   return (Object->Name.substr(1, HiddenPrefix.size()) == HiddenPrefix);
 }
 //---------------------------------------------------------------------------
-TNamedObjectList::TNamedObjectList():
-  TObjectList()
+TNamedObjectList::TNamedObjectList() :
+  TObjectList(),
+  FHiddenCount(0),
+  AutoSort(true)
 {
   AutoSort = true;
 }
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(int Index)
 {
+    DEBUG_PRINTF(L"Index = %d, Count = %d, GetHiddenCount = %d", Index, GetCount(), GetHiddenCount());
   return (TNamedObject *)GetItem(Index+GetHiddenCount());
 }
 //---------------------------------------------------------------------------

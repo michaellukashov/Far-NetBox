@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "FarDialog.h"
 #include "FarUtil.h"
 
 class CSession;

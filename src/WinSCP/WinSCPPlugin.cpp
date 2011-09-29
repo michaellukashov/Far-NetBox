@@ -17,10 +17,12 @@
 #include <Terminal.h>
 #include <GUITools.h>
 //---------------------------------------------------------------------------
-// TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
-// {
-  // return new TWinSCPPlugin(HInst);
-// }
+#ifdef WINSCP
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
+{
+  return new TWinSCPPlugin(HInst);
+}
+#endif
 //---------------------------------------------------------------------------
 TMessageParams::TMessageParams()
 {

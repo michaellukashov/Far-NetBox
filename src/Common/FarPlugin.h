@@ -250,10 +250,11 @@ enum
     FAR170BETA4 = MAKEFARVERSION(1, 70, 1282),
     FAR170BETA5 = MAKEFARVERSION(1, 70, 1634),
     FAR170ALPHA6 = MAKEFARVERSION(1, 70, 1812),
-    FAR170 = MAKEFARVERSION(1, 70, 2087)
+    FAR170 = MAKEFARVERSION(1, 70, 2087),
+    FAR20 = MAKEFARVERSION(2, 0, 1666),
 };
 //---------------------------------------------------------------------------
-const size_t StartupInfoMinSize = 372;
+const size_t StartupInfoMinSize = 132; // 372;
 const size_t StandardFunctionsMinSize = 228;
 //---------------------------------------------------------------------------
 // typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
@@ -320,7 +321,7 @@ public:
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
 
-    static std::wstring DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
+    static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
         const std::wstring Message, TStrings *Buttons = NULL,
         TFarMessageParams *Params = NULL, bool Oem = false);
@@ -740,6 +741,7 @@ inline std::wstring StrFromFar(std::wstring &S)
     // return L"";
 }
 //---------------------------------------------------------------------------
+/*
 inline std::wstring StrToFar(wchar_t *S)
 {
     // FIXME
@@ -747,25 +749,26 @@ inline std::wstring StrToFar(wchar_t *S)
     // CharToOem(S, S);
     return std::wstring(S);
 }
+*/
 //---------------------------------------------------------------------------
-inline std::wstring StrToFar(const std::wstring &S)
+
+inline wchar_t *StrToFar(const std::wstring &S)
 {
     // FIXME
     // ::Error(SNotImplemented, 24);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
-    return std::wstring(S);
-    // return L"";
+    return (wchar_t *)S.c_str();
 }
+
 //---------------------------------------------------------------------------
-inline std::wstring StrToFar(const char *S)
+inline wchar_t *StrToFar(const wchar_t *S)
 {
     // FIXME
     // ::Error(SNotImplemented, 25);
     // S.Unique();
-    // CharToOem(S.c_str(), S.c_str());
-    return ::MB2W(S);
-    // return L"";
+    // CharToOem(S, S);
+    return (wchar_t *)S;
 }
 //---------------------------------------------------------------------------
 static bool Win32Check(bool RetVal)

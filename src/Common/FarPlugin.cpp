@@ -7,7 +7,6 @@
 
 #include "FarPlugin.h"
 #include "FarDialog.h"
-#include "FarUtil.h"
 #include "Common.h"
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
@@ -151,7 +150,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
           FPluginInfo.NAME ## Number = NAME.GetCount(); \
           for (int Index = 0; Index < NAME.GetCount(); Index++) \
           { \
-            StringArray[Index] = (wchar_t *)StrToFar(DuplicateStr(NAME.GetString(Index))).c_str(); \
+            StringArray[Index] = StrToFar(DuplicateStr(NAME.GetString(Index))); \
           } \
         }
 
@@ -160,16 +159,18 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
         COMPOSESTRINGARRAY(PluginConfigStrings);
 
 #undef COMPOSESTRINGARRAY
-
+        // FIXME
+        /*
         if (DiskMenuStrings.GetCount())
         {
             wchar_t *NumberArray = new wchar_t[DiskMenuStrings.GetCount()];
-            FPluginInfo.DiskMenuStrings = &NumberArray;
+            FPluginInfo.DiskMenuNumbers = &NumberArray;
             for (int Index = 0; Index < DiskMenuStrings.GetCount(); Index++)
             {
                 NumberArray[Index] = (int)DiskMenuStrings.GetObject(Index);
             }
         }
+        */
 
         std::wstring CommandPrefix;
         for (int Index = 0; Index < CommandPrefixes.GetCount(); Index++)
@@ -178,7 +179,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
                             CommandPrefixes.GetString(Index);
         }
         DEBUG_PRINTF(L"CommandPrefix = %s", CommandPrefix.c_str());
-        FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix)).c_str();
+        FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix));
 
         memcpy(Info, &FPluginInfo, sizeof(FPluginInfo));
     }
@@ -202,7 +203,8 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
       { \
         delete[] Info.NAME[Index]; \
       } \
-      delete[] Info.NAME;
+      delete[] Info.NAME; \
+      Info.NAME = NULL;
 
         FREESTRINGARRAY(DiskMenuStrings);
         FREESTRINGARRAY(PluginMenuStrings);
@@ -210,30 +212,27 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
 
 #undef FREESTRINGARRAY
 
-        delete[] Info.DiskMenuStrings;
+        // FIXME delete[] Info.DiskMenuNumbers;
         delete[] Info.CommandPrefix;
     }
     memset(&Info, 0, sizeof(Info));
     Info.StructSize = sizeof(Info);
 }
 //---------------------------------------------------------------------------
-std::wstring TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
+wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
 {
-    /*
     if (Str.empty() && !AllowEmpty)
     {
         return NULL;
     }
     else
-    {
-        wchar_t *Result = new wchar_t[Str.size() + 1];
-        // strcpy(Result, Str.c_str());
-        wcscpy_s(Result, Str.size(), Str.c_str());
+    {   
+        // DEBUG_PRINTF(L"Str.size = %d", Str.size());
+        const size_t sz = Str.size() + 1;
+        wchar_t *Result = new wchar_t[sz];
+        wcscpy_s(Result, sz, Str.c_str());
         return Result;
     }
-    */
-    std::wstring result = Str;
-    return result;
 }
 //---------------------------------------------------------------------------
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
@@ -243,7 +242,7 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
     PanelInfo Info;
     if (FarVersion() >= FAR170BETA5)
     {
-        // FarControl(Another ? FCTL_GETANOTHERPANELSHORTINFO : FCTL_GETPANELSHORTINFO, &Info, Plugin);
+        FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
     }
     else
     {
@@ -1150,7 +1149,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, std::wstring Title,
     std::wstring ABottom = Bottom;
     TFarEnvGuard Guard;
     return FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
-        Flags, (wchar_t *)StrToFar(ATitle).c_str(), (wchar_t *)StrToFar(ABottom).c_str(), NULL, BreakKeys,
+        Flags, StrToFar(ATitle), StrToFar(ABottom), NULL, BreakKeys,
         &BreakCode, Items, Count);
 }
 //---------------------------------------------------------------------------
@@ -1232,10 +1231,10 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
         {
             TFarEnvGuard Guard;
             Result = FStartupInfo.InputBox(
-                StrToFar((wchar_t *)Title.c_str()).c_str(),
-                StrToFar((wchar_t *)Prompt.c_str()).c_str(),
-                StrToFar((wchar_t *)HistoryName.c_str()).c_str(),
-                StrToFar((wchar_t *)AText.c_str()).c_str(),
+                StrToFar(Title.c_str()),
+                StrToFar(Prompt.c_str()),
+                StrToFar(HistoryName.c_str()),
+                StrToFar(AText.c_str()),
                 (wchar_t *)DestText.c_str(), MaxLen, NULL,
                 FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
         }
@@ -1268,7 +1267,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
 void TCustomFarPlugin::Text(int X, int Y, int Color, std::wstring Str)
 {
     TFarEnvGuard Guard;
-    FStartupInfo.Text(X, Y, Color, StrToFar(Str).c_str());
+    FStartupInfo.Text(X, Y, Color, StrToFar(Str.c_str()));
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FlushText()
@@ -1280,13 +1279,13 @@ void TCustomFarPlugin::FlushText()
 void TCustomFarPlugin::WriteConsole(std::wstring Str)
 {
     unsigned long Written;
-    ::WriteConsole(FConsoleOutput, StrToFar(Str).c_str(), Str.size(), &Written, NULL);
+    ::WriteConsole(FConsoleOutput, StrToFar(Str.c_str()), Str.size(), &Written, NULL);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FarCopyToClipboard(std::wstring Str)
 {
     TFarEnvGuard Guard;
-    FFarStandardFunctions.CopyToClipboard(StrToFar(Str).c_str());
+    FFarStandardFunctions.CopyToClipboard(StrToFar(Str.c_str()));
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FarCopyToClipboard(TStrings *Strings)
@@ -1491,7 +1490,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
     {
         FCurrentTitle = L"";
         FCurrentProgress = -1;
-        SetConsoleTitle(StrToFar(Title).c_str());
+        SetConsoleTitle(StrToFar(Title));
     }
     FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
@@ -1532,7 +1531,7 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
 void TCustomFarPlugin::UpdateConsoleTitle()
 {
     std::wstring Title = FormatConsoleTitle();
-    SetConsoleTitle(StrToFar(Title).c_str());
+    SetConsoleTitle(StrToFar(Title));
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::SaveScreen(HANDLE &Screen)
@@ -1554,7 +1553,7 @@ void TCustomFarPlugin::RestoreScreen(HANDLE &Screen)
 void TCustomFarPlugin::HandleException(const std::exception *E, int /*OpMode*/)
 {
     assert(E);
-    Message(FMSG_WARNING | FMSG_MB_OK, L"", StrToFar(E->what()).c_str());
+    Message(FMSG_WARNING | FMSG_MB_OK, L"", ::MB2W(E->what()));
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::GetMsg(int MsgId)
@@ -1587,8 +1586,8 @@ bool TCustomFarPlugin::Viewer(std::wstring FileName,
 {
     TFarEnvGuard Guard;
     int Result = FStartupInfo.Viewer(
-        StrToFar(FileName).c_str(),
-        StrToFar(Title).c_str(), 0, 0, -1, -1, Flags,
+        StrToFar(FileName),
+        StrToFar(Title), 0, 0, -1, -1, Flags,
         65001);
     return Result;
 }
@@ -1598,8 +1597,8 @@ bool TCustomFarPlugin::Editor(std::wstring FileName,
 {
     TFarEnvGuard Guard;
     int Result = FStartupInfo.Editor(
-        StrToFar(FileName).c_str(),
-        StrToFar(Title).c_str(), 0, 0, -1, -1, Flags, -1, -1,
+        StrToFar(FileName),
+        StrToFar(Title), 0, 0, -1, -1, Flags, -1, -1,
         65001);
     return (Result == EEC_MODIFIED) || (Result == EEC_NOT_MODIFIED);
 }
@@ -1669,7 +1668,7 @@ int TCustomFarPlugin::FarEditorControl(int Command, void *Param)
 
     case ECTL_SETTITLE:
         Buf = (wchar_t *)Param;
-        Param = (wchar_t *)StrToFar(Buf).c_str();
+        Param = StrToFar(Buf);
         break;
 
     default:
@@ -1855,14 +1854,14 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
                                     PanelTitle, PanelModes, FOpenPluginInfo.StartPanelMode,
                                     FOpenPluginInfo.StartSortMode, StartSortOrder, KeyBarTitles, ShortcutData);
 
-                FOpenPluginInfo.HostFile = StrToFar(TCustomFarPlugin::DuplicateStr(HostFile)).c_str();
-                FOpenPluginInfo.CurDir = StrToFar(TCustomFarPlugin::DuplicateStr(CurDir)).c_str();
-                FOpenPluginInfo.Format = StrToFar(TCustomFarPlugin::DuplicateStr(Format)).c_str();
-                FOpenPluginInfo.PanelTitle = StrToFar(TCustomFarPlugin::DuplicateStr(PanelTitle)).c_str();
+                FOpenPluginInfo.HostFile = StrToFar(TCustomFarPlugin::DuplicateStr(HostFile));
+                FOpenPluginInfo.CurDir = StrToFar(TCustomFarPlugin::DuplicateStr(CurDir));
+                FOpenPluginInfo.Format = StrToFar(TCustomFarPlugin::DuplicateStr(Format));
+                FOpenPluginInfo.PanelTitle = StrToFar(TCustomFarPlugin::DuplicateStr(PanelTitle));
                 PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
                 FOpenPluginInfo.StartSortOrder = StartSortOrder;
                 KeyBarTitles->FillOpenPluginInfo(&FOpenPluginInfo);
-                FOpenPluginInfo.ShortcutData = StrToFar(TCustomFarPlugin::DuplicateStr(ShortcutData)).c_str();
+                FOpenPluginInfo.ShortcutData = StrToFar(TCustomFarPlugin::DuplicateStr(ShortcutData));
             }
 
             FOpenPluginInfoValid = true;
@@ -2227,8 +2226,8 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
 
     ClearPanelMode(FPanelModes[Mode]);
     wchar_t *Titles[PANEL_MODES_COUNT];
-    FPanelModes[Mode].ColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnTypes)).c_str();
-    FPanelModes[Mode].ColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnWidths)).c_str();
+    FPanelModes[Mode].ColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnTypes));
+    FPanelModes[Mode].ColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnWidths));
     if (ColumnTitles)
     {
         FPanelModes[Mode].ColumnTitles = new wchar_t *[ColumnTypesCount];
@@ -2236,8 +2235,8 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
         {
             // FPanelModes[Mode].ColumnTitles[Index] = StrToFar(
                 // TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));
-            Titles[Index] = (wchar_t *)StrToFar(
-                TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index))).c_str();
+            Titles[Index] = StrToFar(
+                TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));
         }
         FPanelModes[Mode].ColumnTitles = Titles;
     }
@@ -2246,8 +2245,8 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
     FPanelModes[Mode].AlignExtensions = AlignExtensions;
     FPanelModes[Mode].CaseConversion = CaseConversion;
 
-    FPanelModes[Mode].StatusColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnTypes)).c_str();
-    FPanelModes[Mode].StatusColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnWidths)).c_str();
+    FPanelModes[Mode].StatusColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnTypes));
+    FPanelModes[Mode].StatusColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnWidths));
 }
 //---------------------------------------------------------------------------
 void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
@@ -2367,7 +2366,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
     {
         delete[] Titles[FunctionKey-1];
     }
-    Titles[FunctionKey-1] = (wchar_t *)StrToFar(TCustomFarPlugin::DuplicateStr(Title, true)).c_str();
+    Titles[FunctionKey-1] = StrToFar(TCustomFarPlugin::DuplicateStr(Title, true));
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles &Titles)
@@ -2427,15 +2426,15 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
     wcscpy_s((wchar_t *)PanelItem->FindData.lpwszFileName, FileName.size(), FileName.c_str());
     // StrToFar(PanelItem->FindData.lpwszFileName);
-    PanelItem->Description = StrToFar(TCustomFarPlugin::DuplicateStr(Description)).c_str();
-    PanelItem->Owner = StrToFar(TCustomFarPlugin::DuplicateStr(Owner)).c_str();
+    PanelItem->Description = StrToFar(TCustomFarPlugin::DuplicateStr(Description));
+    PanelItem->Owner = StrToFar(TCustomFarPlugin::DuplicateStr(Owner));
 
     // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     wchar_t **CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
     {
         CustomColumnData[Index] =
-            (wchar_t *)StrToFar(TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index))).c_str();
+            StrToFar(TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index)));
     }
     PanelItem->CustomColumnData = CustomColumnData;
 }
