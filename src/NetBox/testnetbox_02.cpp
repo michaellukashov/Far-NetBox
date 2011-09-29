@@ -260,4 +260,10 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
+{
+    TDateTime dt = EncodeDateVerbose(2009, 12, 29);
+    BOOST_TEST_MESSAGE("dt = " << dt);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
