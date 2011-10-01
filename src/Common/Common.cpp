@@ -903,41 +903,15 @@ class EConvertError : public ExtException
 };
 
 //---------------------------------------------------------------------------
-typedef boost::gregorian::greg_day TDayTable[12];
-// typedef int TDayTable[12];
+// typedef boost::gregorian::greg_day TDayTable[12];
+typedef int TDayTable[12];
 // static MonthDays: array [Boolean] of TDayTable =
     // ((31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
      // (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31));
 // static const boost::gregorian::greg_day MonthDays[12][] = {
 static const TDayTable MonthDays[] = {
-  {
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(28),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31)
-  },
-  {
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(29),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31),
-    boost::gregorian::greg_day(30),
-    boost::gregorian::greg_day(31)
-  }
+  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
