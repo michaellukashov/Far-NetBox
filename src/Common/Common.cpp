@@ -5,6 +5,9 @@
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
+#include "boost/date_time/gregorian/greg_day.hpp"
+#include "boost/date_time/gregorian_calendar.hpp"
+#include "boost/date_time/year_month_day.hpp"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -16,6 +19,7 @@
 // #include <math.h>
 
 namespace alg = boost::algorithm;
+namespace dt = boost::date_time;
 
 //---------------------------------------------------------------------------
 
@@ -893,6 +897,71 @@ void ProcessLocalDirectory(std::wstring DirName,
   }
   */
 }
+//---------------------------------------------------------------------------
+class EConvertError : public ExtException
+{
+};
+
+//---------------------------------------------------------------------------
+typedef boost::gregorian::greg_day TDayTable[12];
+// typedef int TDayTable[12];
+// static MonthDays: array [Boolean] of TDayTable =
+    // ((31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
+     // (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31));
+// static const boost::gregorian::greg_day MonthDays[12][] = {
+static const TDayTable MonthDays[] = {
+  {
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(28),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31)
+  },
+  {
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(29),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31),
+    boost::gregorian::greg_day(30),
+    boost::gregorian::greg_day(31)
+  }
+};
+//---------------------------------------------------------------------------
+bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
+// var
+  // I: Integer;
+  // DayTable: PDayTable;
+{
+  // Result := False;
+  DayTable := @MonthDays[dt::gregorian_calendar::is_leap_year(Year)];
+  if (Year >= 1) and (Year <= 9999) and (Month >= 1) and (Month <= 12) and
+    (Day >= 1) and (Day <= DayTable^[Month]) then
+  begin
+    for I := 1 to Month - 1 do Inc(Day, DayTable^[I]);
+    I := Year - 1;
+    Date := I * 365 + I div 4 - I div 100 + I div 400 + Day - DateDelta;
+    Result := True;
+  end;
+end;
+
+function EncodeDate(Year, Month, Day: Word): TDateTime;
+begin
+  if not TryEncodeDate(Year, Month, Day, Result) then
+    ConvertError(@SDateEncodeError);
+end;
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
 {
