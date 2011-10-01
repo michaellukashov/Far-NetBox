@@ -114,3 +114,4 @@
 #define SOSError 2107
 #define SUnkOSError 2108
 
+#define SDateEncodeError 2109

@@ -911,7 +911,19 @@ void ProcessLocalDirectory(std::wstring DirName,
 //---------------------------------------------------------------------------
 class EConvertError : public ExtException
 {
+    typedef ExtException parent;
+public:
+    EConvertError(std::wstring Msg) :
+        parent(Msg)
+    {}
 };
+
+//---------------------------------------------------------------------------
+void ConvertError(int ErrorID)
+{
+    std::wstring Msg = FMTLOAD(ErrorID, 0);
+    throw EConvertError(Msg);
+}
 
 //---------------------------------------------------------------------------
 typedef int TDayTable[12];
@@ -920,6 +932,9 @@ static const TDayTable MonthDays[] = {
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
   { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
+// Days between 1/1/0001 and 12/31/1899
+static const int DateDelta = 693594;
+
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
 // var
@@ -928,21 +943,27 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
 {
   // Result := False;
   const TDayTable *DayTable = &MonthDays[gregorian_calendar::is_leap_year(Year)];
-  if (Year >= 1) and (Year <= 9999) and (Month >= 1) and (Month <= 12) and
-    (Day >= 1) and (Day <= DayTable^[Month]) then
-  begin
-    for I := 1 to Month - 1 do Inc(Day, DayTable^[I]);
-    I := Year - 1;
-    Date := I * 365 + I div 4 - I div 100 + I div 400 + Day - DateDelta;
-    Result := True;
-  end;
-end;
+  if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
+    (Day >= 1) && (Day <= (*DayTable)[Month]))
+  {
+    for (int I = 1; I <= Month - 1; I++)
+        Day += (*DayTable)[I - 1];
+    int I = Year - 1;
+    Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
+    return true;
+  }
+  return false;
+}
 
-function EncodeDate(Year, Month, Day: Word): TDateTime;
-begin
-  if not TryEncodeDate(Year, Month, Day, Result) then
-    ConvertError(@SDateEncodeError);
-end;
+TDateTime EncodeDate(int Year, int Month, int Day)
+{
+  TDateTime Result;
+  if (!TryEncodeDate(Year, Month, Day, Result))
+  {
+    ConvertError(SDateEncodeError);
+  }
+  return Result;
+}
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
 {
@@ -952,7 +973,7 @@ TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
   {
     return EncodeDate(Year, Month, Day);
   }
-  catch (EConvertError & E)
+  catch (const EConvertError &E)
   {
     throw EConvertError(FORMAT(L"%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
   }
