@@ -20,6 +20,17 @@
 
 namespace alg = boost::algorithm;
 namespace dt = boost::date_time;
+namespace bg = boost::gregorian;
+// namespace gc = boost::gregorian_calendar;
+
+typedef boost::date_time::year_month_day_base<
+    unsigned long, 
+    unsigned short, 
+    unsigned short> simple_ymd_type;
+
+typedef boost::date_time::gregorian_calendar_base<
+    simple_ymd_type,
+    unsigned long> gregorian_calendar;
 
 //---------------------------------------------------------------------------
 
@@ -903,12 +914,8 @@ class EConvertError : public ExtException
 };
 
 //---------------------------------------------------------------------------
-// typedef boost::gregorian::greg_day TDayTable[12];
 typedef int TDayTable[12];
-// static MonthDays: array [Boolean] of TDayTable =
-    // ((31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
-     // (31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31));
-// static const boost::gregorian::greg_day MonthDays[12][] = {
+// typedef TDayTable *PDayTable;
 static const TDayTable MonthDays[] = {
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
   { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
@@ -920,7 +927,7 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
   // DayTable: PDayTable;
 {
   // Result := False;
-  DayTable := @MonthDays[dt::gregorian_calendar::is_leap_year(Year)];
+  const TDayTable *DayTable = &MonthDays[gregorian_calendar::is_leap_year(Year)];
   if (Year >= 1) and (Year <= 9999) and (Month >= 1) and (Month <= 12) and
     (Day >= 1) and (Day <= DayTable^[Month]) then
   begin
