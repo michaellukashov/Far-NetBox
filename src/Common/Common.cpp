@@ -967,17 +967,14 @@ TDateTime EncodeDate(int Year, int Month, int Day)
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
 {
-::Error(SNotImplemented, 44);
-/*
   try
   {
     return EncodeDate(Year, Month, Day);
   }
   catch (const EConvertError &E)
   {
-    throw EConvertError(FORMAT(L"%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
+    throw EConvertError(FORMAT(L"%s [%d-%d-%d]", E.GetMessage().c_str(), int(Year), int(Month), int(Day)));
   }
-  */
   return TDateTime();
 }
 //---------------------------------------------------------------------------
