@@ -18,6 +18,8 @@
 #include <boost/signals/signal1.hpp>
 #include <boost/signals/signal2.hpp>
 #include <boost/bind.hpp>
+#include "boost/date_time/gregorian/gregorian.hpp"
+#include "boost/date_time/year_month_day.hpp"
 
 #include "FarUtil.h"
 
@@ -25,6 +27,9 @@
 #include "TestTexts.h"
 #include "Common.h"
 #include "FileOperationProgress.h"
+
+namespace dt = boost::date_time;
+namespace bg = boost::gregorian;
 
 using namespace boost::unit_test;
 
@@ -264,6 +269,13 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
     TDateTime dt = EncodeDateVerbose(2009, 12, 29);
     BOOST_TEST_MESSAGE("dt = " << dt);
+    bg::date::ymd_type ymd(2009, 12, 29);
+    BOOST_TEST_MESSAGE("ymd.year = " << ymd.year);
+    unsigned short Y;
+    unsigned short M;
+    unsigned short D;
+    dt.DecodeDate(Y, M, D);
+    BOOST_CHECK(Y == ymd.year && M == ymd.month && D == ymd.day);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
