@@ -879,6 +879,7 @@ private:
     bool FCaseSensitive;
 };
 
+/// TDateTime: number of days between since 12/30/1899
 class TDateTime
 {
 public:
