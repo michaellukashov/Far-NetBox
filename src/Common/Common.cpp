@@ -5,8 +5,9 @@
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
-#include "boost/date_time/gregorian/greg_day.hpp"
-#include "boost/date_time/gregorian_calendar.hpp"
+// #include "boost/date_time/gregorian/greg_day.hpp"
+// #include "boost/date_time/gregorian_calendar.hpp"
+#include "boost/date_time/gregorian/gregorian.hpp"
 #include "boost/date_time/year_month_day.hpp"
 
 #include "Common.h"
@@ -23,14 +24,14 @@ namespace dt = boost::date_time;
 namespace bg = boost::gregorian;
 // namespace gc = boost::gregorian_calendar;
 
-typedef boost::date_time::year_month_day_base<
-    unsigned long, 
-    unsigned short, 
-    unsigned short> simple_ymd_type;
+// typedef boost::date_time::year_month_day_base<
+    // unsigned long, 
+    // unsigned short, 
+    // unsigned short> simple_ymd_type;
 
-typedef boost::date_time::gregorian_calendar_base<
-    simple_ymd_type,
-    unsigned long> gregorian_calendar;
+// typedef boost::date_time::gregorian_calendar_base<
+    // simple_ymd_type,
+    // unsigned long> gregorian_calendar;
 
 //---------------------------------------------------------------------------
 
@@ -937,7 +938,7 @@ static const int DateDelta = 693594;
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
 {
-  const TDayTable *DayTable = &MonthDays[gregorian_calendar::is_leap_year(Year)];
+  const TDayTable *DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
     (Day >= 1) && (Day <= (*DayTable)[Month]))
   {
