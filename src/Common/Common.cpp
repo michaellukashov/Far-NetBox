@@ -927,7 +927,6 @@ void ConvertError(int ErrorID)
 
 //---------------------------------------------------------------------------
 typedef int TDayTable[12];
-// typedef TDayTable *PDayTable;
 static const TDayTable MonthDays[] = {
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
   { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
@@ -937,11 +936,7 @@ static const int DateDelta = 693594;
 
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
-// var
-  // I: Integer;
-  // DayTable: PDayTable;
 {
-  // Result := False;
   const TDayTable *DayTable = &MonthDays[gregorian_calendar::is_leap_year(Year)];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
     (Day >= 1) && (Day <= (*DayTable)[Month]))
