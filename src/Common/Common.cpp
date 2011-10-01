@@ -1489,6 +1489,7 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
 TDateTime Date()
 {
     TDateTime result;
+    ::Error(SNotImplemented, 44);
     return result;
 }
 
