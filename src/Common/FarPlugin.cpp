@@ -2438,29 +2438,24 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
     // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
     FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
-    // DEBUG_PRINTF(L"11");
     FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
-    // DEBUG_PRINTF(L"12");
     PanelItem->FindData.ftCreationTime = FileTime;
     PanelItem->FindData.ftLastAccessTime = FileTimeA;
     PanelItem->FindData.ftLastWriteTime = FileTime;
     PanelItem->FindData.nFileSize = Size;
-    // DEBUG_PRINTF(L"2");
     // PanelItem->PackSize = (long int)Size;
 
     // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
     // wcscpy_s((wchar_t *)PanelItem->FindData.lpwszFileName, FileName.size(), FileName.c_str());
     // StrToFar(PanelItem->FindData.lpwszFileName);
     PanelItem->FindData.lpwszFileName = StrToFar(TCustomFarPlugin::DuplicateStr(FileName));
-    DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
+    // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
     PanelItem->Description = StrToFar(TCustomFarPlugin::DuplicateStr(Description));
     PanelItem->Owner = StrToFar(TCustomFarPlugin::DuplicateStr(Owner));
-    // DEBUG_PRINTF(L"3");
     // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     wchar_t **CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
     {
-        // DEBUG_PRINTF(L"4");
         CustomColumnData[Index] =
             StrToFar(TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index)));
     }
