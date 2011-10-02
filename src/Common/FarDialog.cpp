@@ -941,7 +941,12 @@ bool TFarDialog::ChangesLocked()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarDialogContainer::TFarDialogContainer(TFarDialog *ADialog) :
-    TObject()
+    TObject(),
+    FLeft(0),
+    FTop(0),
+    FItems(NULL),
+    FDialog(NULL),
+    FEnabled(false)
 {
     assert(ADialog);
 
@@ -1018,7 +1023,20 @@ size_t TFarDialogContainer::GetItemCount() const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
-    TObject()
+    TObject(),
+    FDefaultType(0),
+    FGroup(0),
+    FTag(0),
+    FDialog(NULL),
+    FEnabledFollow(NULL),
+    FEnabledDependency(NULL),
+    FEnabledDependencyNegative(NULL),
+    FContainer(NULL),
+    FEnabled(false),
+    FIsEnabled(false),
+    FColors(0),
+    FColorMask(0),
+    FOem(false)
 {
     assert(ADialog);
     FDialog = ADialog;
@@ -1071,8 +1089,9 @@ void TFarDialogItem::ResetBounds()
 {
     TRect B = FBounds;
     FarDialogItem *DItem = GetDialogItem();
+    DEBUG_PRINTF(L"this = %p, DItem = %p, GetContainer = %p", this, DItem, GetContainer());
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
-    (GetContainer() ? GetContainer()->CB : 0 ) + B.BB : GetDialog()->GetSize().DB + B.BB
+    (GetContainer() ? GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
     BOUND(X1, Left, x, GetLeft());
     BOUND(Y1, Top, y, GetTop());
     BOUND(X2, Right, x, GetLeft());
