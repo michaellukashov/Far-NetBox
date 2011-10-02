@@ -1622,6 +1622,7 @@ void TWinSCPFileSystem::DoSynchronize(
   }
   catch (const std::exception & E)
   {
+    DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
     throw;
   }
@@ -1952,6 +1953,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const std::wstring Path,
       {
         Close = true;
       }
+      DEBUG_PRINTF(L"before HandleException");
       HandleException(&E);
     }
   }

@@ -7460,6 +7460,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
       FSynchronizing = false;
       UpdateControls();
 
+      DEBUG_PRINTF(L"before FarPlugin->HandleException");
       FarPlugin->HandleException(&E);
     }
   }

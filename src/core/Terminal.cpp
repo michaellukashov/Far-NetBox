@@ -2576,6 +2576,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           }
           catch (const EScpSkipFile & E)
           {
+            DEBUG_PRINTF(L"before HandleException");
             TFileOperationProgressType *OperationProgress = GetOperationProgress();
             SUSPEND_OPERATION (
               if (!HandleException(&E)) throw;

@@ -121,6 +121,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
     }
 }
@@ -188,6 +189,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
     }
 }
@@ -304,6 +306,7 @@ int TCustomFarPlugin::Configure(int Item)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
         return false;
     }
@@ -342,6 +345,7 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
         return INVALID_HANDLE_VALUE;
     }
@@ -368,6 +372,7 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
     }
 }
@@ -392,10 +397,12 @@ void TCustomFarPlugin::HandleFileSystemException(
     // Check against object pointer is stupid, but no other idea so far.
     if (FOpenedPlugins->IndexOf(FileSystem) >= 0)
     {
+        DEBUG_PRINTF(L"before FileSystem->HandleException");
         FileSystem->HandleException(E, OpMode);
     }
     else
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(E, OpMode);
     }
 }
@@ -691,6 +698,7 @@ int TCustomFarPlugin::ProcessEditorEvent(int Event, void *Param)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
         return 0;
     }
@@ -706,6 +714,7 @@ int TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD *Rec)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
         // when error occurs, assume that input event can be handled by plugin and
         // should not be processed by FAR
@@ -1271,6 +1280,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
                 }
                 catch (const std::exception &E)
                 {
+                    DEBUG_PRINTF(L"before HandleException");
                     HandleException(&E);
                     Repeat = true;
                 }
@@ -1794,6 +1804,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem()
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::HandleException(const std::exception *E, int OpMode)
 {
+    DEBUG_PRINTF(L"before FPlugin->HandleException");
     FPlugin->HandleException(E, OpMode);
 }
 //---------------------------------------------------------------------------

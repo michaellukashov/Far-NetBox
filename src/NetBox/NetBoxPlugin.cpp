@@ -66,6 +66,7 @@ void TNetBoxPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   }
   catch (const std::exception & E)
   {
+    DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
   }
   DEBUG_PRINTF(L"end");

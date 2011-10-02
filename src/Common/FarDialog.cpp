@@ -459,6 +459,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                 catch (const std::exception &E)
                 {
                     Handled = true;
+                    DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
                     GetFarPlugin()->HandleException(&E);
                     Result = I->FailItemProc(Msg, Param2);
                 }
@@ -572,6 +573,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
         GetFarPlugin()->HandleException(&E);
         if (!Handled)
         {
