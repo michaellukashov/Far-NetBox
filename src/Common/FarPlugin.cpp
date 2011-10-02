@@ -2336,7 +2336,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
         int FunctionKey, const std::wstring Title)
 {
     assert(FunctionKey >= 1 && FunctionKey <= LENOF(FKeyBarTitles.Titles));
-    wchar_t **Titles;
+    wchar_t **Titles = NULL;
     switch (ShiftStatus)
     {
     case fsNone:
