@@ -31,6 +31,7 @@ inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
 {
+    // DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
     std::wstring Msg = FMTLOAD(ErrorID, data);
     // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
     throw ExtException(Msg);
@@ -929,7 +930,7 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
         Day += (*DayTable)[I - 1];
     int I = Year - 1;
     Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
-    DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
+    // DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
     return true;
   }
   return false;
@@ -2290,6 +2291,7 @@ std::wstring Format(const wchar_t *format, ...)
 //---------------------------------------------------------------------------
 std::wstring FmtLoadStr(int id, ...)
 {
+    // DEBUG_PRINTF(L"begin: id = %d", id)
     std::wstring result;
     std::wstring format;
     HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
