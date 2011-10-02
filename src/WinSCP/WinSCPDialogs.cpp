@@ -1213,6 +1213,7 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::AboutDialog()
 {
+  DEBUG_PRINTF(L"begin");
   TFarDialog * Dialog = new TAboutDialog(this);
   {
       BOOST_SCOPE_EXIT ( (&Dialog) )
@@ -1221,8 +1222,8 @@ void TWinSCPPlugin::AboutDialog()
       } BOOST_SCOPE_EXIT_END
     DEBUG_PRINTF(L"before Dialog->ShowModal");
     Dialog->ShowModal();
-    DEBUG_PRINTF(L"after Dialog->ShowModal");
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
