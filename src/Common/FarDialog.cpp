@@ -1032,6 +1032,7 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
     FEnabledDependency(NULL),
     FEnabledDependencyNegative(NULL),
     FContainer(NULL),
+    FItem(-1),
     FEnabled(false),
     FIsEnabled(false),
     FColors(0),
@@ -1170,6 +1171,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
     {
         SendMessage(DM_SETTEXTPTR, (int)FarData.c_str());
     }
+    DEBUG_PRINTF(L"GetDialogItem()->PtrData = %p", GetDialogItem()->PtrData);
     wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
     DialogChange();
 }
@@ -1195,8 +1197,11 @@ void TFarDialogItem::UpdateData(const std::wstring value)
 std::wstring TFarDialogItem::GetData()
 {
     DEBUG_PRINTF(L"GetItem = %d", GetItem());
-    DEBUG_PRINTF(L"GetDialogItem = %x", GetDialogItem());
-    std::wstring Result = GetDialogItem()->PtrData;
+    // DEBUG_PRINTF(L"GetItem = %d", GetItem());
+    // DEBUG_PRINTF(L"GetDialogItem = %x", GetDialogItem());
+    std::wstring Result;
+    if (GetDialogItem()->PtrData)
+        Result = GetDialogItem()->PtrData;
     if (!GetOem())
     {
         StrFromFar(Result);
