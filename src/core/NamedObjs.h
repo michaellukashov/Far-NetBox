@@ -2,8 +2,6 @@
 #ifndef NamedObjsH
 #define NamedObjsH
 
-// #include <system.hpp>
-// #include <contnrs.hpp>
 #include "Classes.h"
 
 //---------------------------------------------------------------------------

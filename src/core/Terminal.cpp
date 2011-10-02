@@ -7,9 +7,6 @@
 
 #include "Terminal.h"
 
-// #include <SysUtils.hpp>
-// #include <FileCtrl.hpp>
-
 #include "Common.h"
 #include "PuttyTools.h"
 #include "FileBuffer.h"

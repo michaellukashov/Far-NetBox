@@ -6,7 +6,6 @@
 #include <boost/bind.hpp>
 
 #include "FarUtil.h"
-// #include <StrUtils.hpp>
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
 #include "FarDialog.h"
@@ -17,11 +16,9 @@
 #include "Exceptions.h"
 #include "SessionData.h"
 #include <CoreMain.h>
-// #include <SysUtils.hpp>
 #include "ScpFileSystem.h"
 #include <Bookmarks.h>
 #include <GUITools.h>
-// #include <CompThread.hpp>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):

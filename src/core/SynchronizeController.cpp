@@ -7,7 +7,6 @@
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-// #include <DiscMon.hpp>
 #include <Exceptions.h>
 #include "GUIConfiguration.h"
 #include "CoreMain.h"

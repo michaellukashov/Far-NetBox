@@ -12,8 +12,6 @@
 #include "Interface.h"
 
 #include "FarPlugin.h"
-// #include <StrUtils.hpp>
-// #include <math.h>
 
 namespace alg = boost::algorithm;
 //---------------------------------------------------------------------------

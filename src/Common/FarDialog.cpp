@@ -6,12 +6,9 @@
 #include <boost/bind.hpp>
 
 #include <map>
-#include <math.h>
 
 #include "FarDialog.h"
 #include "Common.h"
-
-// #include <Common.h>
 
 //---------------------------------------------------------------------------
 std::wstring StripHotKey(std::wstring Text)

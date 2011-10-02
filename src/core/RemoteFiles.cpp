@@ -1,5 +1,4 @@
 //---------------------------------------------------------------------------
-// #include <SysUtils.hpp>
 #include "stdafx.h"
 #include <ShellAPI.h>
 

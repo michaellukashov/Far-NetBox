@@ -6,8 +6,6 @@
 #include <boost/signals/signal3.hpp>
 #include <boost/bind.hpp>
 
-// #include <StrUtils.hpp>
-#include <math.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarTexts.h"
