@@ -15,9 +15,11 @@
 
 namespace alg = boost::algorithm;
 //---------------------------------------------------------------------------
+int Win32Platform = 0;
 int Win32MajorVersion = 0;
 int Win32MinorVersion = 0;
 int Win32BuildNumber = 0;
+// int Win32CSDVersion = 0;
 //---------------------------------------------------------------------------
 
 inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
@@ -1967,75 +1969,68 @@ void AddToList(std::wstring & List, const std::wstring & Value, wchar_t Delimite
 //---------------------------------------------------------------------------
 bool Is2000()
 {
-  ::Error(SNotImplemented, 63);
-  return false; // FIXME (Win32MajorVersion >= 5);
+  return (Win32MajorVersion >= 5);
 }
 //---------------------------------------------------------------------------
 bool IsWin7()
 {
-  ::Error(SNotImplemented, 65);
-  return false; // FIXME
-    // (Win32MajorVersion > 6) ||
-    // ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
+  return (Win32MajorVersion > 6) ||
+    ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
 }
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
-::Error(SNotImplemented, 66);
-// FIXME
-return false;
-  // HANDLE Kernel32 = GetModuleHandle(kernel32);
-  // typedef BOOL WINAPI (* TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-  // TGetProductInfo GetProductInfo =
-      // (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
-  // bool Result;
-  // if (GetProductInfo == NULL)
-  // {
-    // Result = false;
-  // }
-  // else
-  // {
-    // DWORD Type;
-    // GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
-    // switch (Type)
-    // {
-      // case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
-      // case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
-      // case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
-      // case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
-      // case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
-      // case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
-      // case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
-      // case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
-      // case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
-      // case 0x002A /*PRODUCT_HYPER*/:
-      // case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
-      // case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
-      // case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
-      // case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
-      // case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
-      // case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
-      // case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
-      // case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
-      // case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
-      // case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
-      // case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
-      // case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
-      // case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
-      // case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
-      // case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
-      // case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
-      // case 0x0011 /*PRODUCT_WEB_SERVE*/:
-      // case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
-        // Result = true;
-        // break;
+  bool Result = false;
+  HMODULE Kernel32 = GetModuleHandle(L"kernel32.dll");
+  // typedef bool BOOL;
+  // typedef unsigned long DWORD;
+  // typedef unsigned long *PDWORD;
+  typedef BOOL (WINAPI *TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+  TGetProductInfo GetProductInfo =
+      (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfoA");
+  if (GetProductInfo != NULL)
+  {
+    DWORD Type;
+    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
+    switch (Type)
+    {
+      case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
+      case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
+      case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
+      case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
+      case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
+      case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
+      case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
+      case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
+      case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
+      case 0x002A /*PRODUCT_HYPER*/:
+      case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
+      case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
+      case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
+      case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
+      case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
+      case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
+      case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
+      case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
+      case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
+      case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
+      case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
+      case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
+      case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
+      case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
+      case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
+      case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
+      case 0x0011 /*PRODUCT_WEB_SERVE*/:
+      case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
+        Result = true;
+        break;
 
-      // default:
-        // Result = false;
-        // break;
-    // }
-  // }
-  // return Result;
+      default:
+        Result = false;
+        break;
+    }
+  }
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -2667,17 +2662,15 @@ void FileSeek(HANDLE file, __int64 offset, __int64 size)
 }
 
 void InitPlatformId()
-// var
-  // OSVersionInfo: TOSVersionInfo;
 {
-  // OSVersionInfo.dwOSVersionInfoSize := SizeOf(OSVersionInfo);
-  // if GetVersionEx(OSVersionInfo) then
-    // with OSVersionInfo do
-    // begin
-      // Win32Platform := dwPlatformId;
-      // Win32MajorVersion := dwMajorVersion;
-      // Win32MinorVersion := dwMinorVersion;
-      // Win32BuildNumber := dwBuildNumber;
-      // Win32CSDVersion := szCSDVersion;
-    // end;
+  OSVERSIONINFO OSVersionInfo;
+  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  if (GetVersionEx(&OSVersionInfo) != 0)
+  {
+      Win32Platform = OSVersionInfo.dwPlatformId;
+      Win32MajorVersion = OSVersionInfo.dwMajorVersion;
+      Win32MinorVersion = OSVersionInfo.dwMinorVersion;
+      Win32BuildNumber = OSVersionInfo.dwBuildNumber;
+      // Win32CSDVersion = OSVersionInfo.szCSDVersion;
+  }
 }

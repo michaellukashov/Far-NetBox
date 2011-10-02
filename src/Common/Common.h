@@ -227,9 +227,11 @@ struct TPasLibModule
   void * ResInstance;
 };
 //---------------------------------------------------------------------------
+extern int Win32Platform;
 extern int Win32MajorVersion;
 extern int Win32MinorVersion;
 extern int Win32BuildNumber;
+// extern int Win32CSDVersion;
 //---------------------------------------------------------------------------
 void InitPlatformId();
 //---------------------------------------------------------------------------
