@@ -135,8 +135,8 @@ enum TDSTMode
   dstmKeep = 2
 };
 bool UsesDaylightHack();
-TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day);
-TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec);
+TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
+TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 TDateTime StrToDateTime(std::wstring Value);
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
 FILETIME DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
@@ -152,12 +152,12 @@ std::wstring FixedLenDateTimeFormat(const std::wstring & Format);
 int CompareFileTime(TDateTime T1, TDateTime T2);
 
 TDateTime Date();
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-    unsigned short &M, unsigned short &D);
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-    unsigned short &N, unsigned short &S, unsigned short &MS);
-// TDateTime EncodeDateVerbose(unsigned short Y, unsigned shortM, unsigned short D);
-// TDateTime EncodeTimeVerbose(unsigned short H, unsigned short N, unsigned short S, unsigned short MS);
+void DecodeDate(const TDateTime &DateTime, unsigned int &Y,
+    unsigned int &M, unsigned int &D);
+void DecodeTime(const TDateTime &DateTime, unsigned int &H,
+    unsigned int &N, unsigned int &S, unsigned int  &MS);
+TDateTime EncodeDateVerbose(unsigned int Y, unsigned int M, unsigned int D);
+TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsigned int MS);
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
 

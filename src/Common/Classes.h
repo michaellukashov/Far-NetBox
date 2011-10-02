@@ -930,10 +930,10 @@ public:
     {
         return std::wstring();
     }
-    void DecodeDate(unsigned short &Y,
-        unsigned short &M, unsigned short &D);
-    void DecodeTime(unsigned short &H,
-        unsigned short &N, unsigned short &S, unsigned short &MS);
+    void DecodeDate(unsigned int &Y,
+        unsigned int &M, unsigned int &D);
+    void DecodeTime(unsigned int &H,
+        unsigned int &N, unsigned int &S, unsigned int &MS);
 private:
     double FValue;
 };
@@ -1136,8 +1136,8 @@ public:
 //---------------------------------------------------------------------------
 struct TTimeStamp
 {
-    int Time;
-    int Date;
+    int Time; // Number of milliseconds since midnight
+    int Date; // One plus number of days since 1/1/0001
 };
 
 //---------------------------------------------------------------------------

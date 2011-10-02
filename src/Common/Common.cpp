@@ -916,6 +916,12 @@ static const TDayTable MonthDays[] = {
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
   { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
+
+static const int HoursPerDay = 24;
+static const int MinsPerDay  = HoursPerDay * 60;
+static const int SecsPerDay  = MinsPerDay * 60;
+static const int MSecsPerDay = SecsPerDay * 1000;
+
 // Days between 1/1/0001 and 12/31/1899
 static const int DateDelta = 693594;
 
@@ -946,7 +952,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
+TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day)
 {
   try
   {
@@ -959,7 +965,7 @@ TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
   return TDateTime();
 }
 //---------------------------------------------------------------------------
-TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec)
+TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
 {
 ::Error(SNotImplemented, 45);
 /*
@@ -1126,7 +1132,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
   }
   else
   {
-    unsigned short Year, Month, Day;
+    unsigned int Year, Month, Day;
     ::DecodeDate(DateTime, Year, Month, Day);
 
     TDSTCache * CurrentCache = &DSTCache[0];
@@ -1491,15 +1497,92 @@ TDateTime Date()
     return result;
 }
 
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-    unsigned short &M, unsigned short &D)
+void DivMod(const int Dividend, const unsigned int Divisor,
+  unsigned int &Result, unsigned int &Remainder)
 {
-    // FIXME
-    ::Error(SNotImplemented, 58);
+    Result = Dividend / Divisor;
+    Remainder = Dividend % Divisor;
 }
 
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-    unsigned short &N, unsigned short &S, unsigned short &MS)
+bool DecodeDateFully(const TDateTime &DateTime,
+    unsigned int &Year, unsigned int &Month, unsigned int &Day, unsigned int &DOW)
+{
+  static const int D1 = 365;
+  static const int D4 = D1 * 4 + 1;
+  static const int D100 = D4 * 25 - 1;
+  static const int D400 = D100 * 4 + 1;
+  bool Result = false;
+  int T = DateTimeToTimeStamp(DateTime).Date;
+  // DEBUG_PRINTF(L"DateTime = %f, T = %d", DateTime, T);
+  unsigned int Y = 0;
+  unsigned int M = 0;
+  unsigned int D = 0;
+  unsigned int I = 0;
+  if (T <= 0)
+  {
+    Year = 0;
+    Month = 0;
+    Day = 0;
+    DOW = 0;
+    return false;
+  }
+  else
+  {
+    DOW = T % 7 + 1;
+    T--;
+    Y = 1;
+    while (T >= D400)
+    {
+      T -= D400;
+      Y += 400;
+    }
+    DivMod(T, D100, I, D);
+    // DEBUG_PRINTF(L"T = %u, D100 = %u, I = %u, D = %u", T, D100, I, D);
+    if (I == 4)
+    {
+      I--;
+      D += D100;
+    }
+    Y += I * 100;
+    DivMod(D, D4, I, D);
+    // DEBUG_PRINTF(L"D4 = %u, I = %u, D = %u", D4, I, D);
+    Y += I * 4;
+    DivMod(D, D1, I, D);
+    // DEBUG_PRINTF(L"D1 = %u, I = %u, D = %u", D1, I, D);
+    if (I == 4)
+    {
+      I--;
+      D += D1;
+    }
+    Y += I;
+    Result = bg::gregorian_calendar::is_leap_year(Y);
+    const TDayTable *DayTable = &MonthDays[Result];
+    M = 1;
+    while (true)
+    {
+      I = (*DayTable)[M - 1];
+      // DEBUG_PRINTF(L"I = %u, D = %u", I, D);
+      if (D < I)
+        break;
+      D -= I;
+      M++;
+    }
+    Year = Y;
+    Month = M;
+    Day = D + 1;
+  }
+  return Result;
+}
+
+void DecodeDate(const TDateTime &DateTime, unsigned int &Year,
+    unsigned int &Month, unsigned int &Day)
+{
+  unsigned int Dummy = 0;
+  DecodeDateFully(DateTime, Year, Month, Day, Dummy);
+}
+
+void DecodeTime(const TDateTime &DateTime, unsigned int &H,
+    unsigned int &N, unsigned int &S, unsigned int &MS)
 {
     ::Error(SNotImplemented, 40);
 }
@@ -2178,9 +2261,12 @@ std::wstring FormatFloat(std::wstring Format, double value)
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
-    // FIXME
-    ::Error(SNotImplemented, 79);
     TTimeStamp result = {0, 0};
+    double fractpart, intpart;
+    fractpart = modf(DateTime, &intpart);
+    result.Time = fractpart * MSecsPerDay;
+    result.Date = intpart + DateDelta;
+    // DEBUG_PRINTF(L"DateTime = %f, time = %u, Date = %u", DateTime, result.Time, result.Date);
     return result;
 }
 

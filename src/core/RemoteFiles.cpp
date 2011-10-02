@@ -342,7 +342,7 @@ TDateTime ReduceDateTimePrecision(TDateTime DateTime,
   }
   else if (Precision != mfFull)
   {
-    unsigned short Y, M, D, H, N, S, MS;
+    unsigned int Y, M, D, H, N, S, MS;
 
     DecodeDate(DateTime, Y, M, D);
     DecodeTime(DateTime, H, N, S, MS);
@@ -926,7 +926,7 @@ std::wstring TRemoteFile::GetUserModificationStr()
 //---------------------------------------------------------------------------
 std::wstring TRemoteFile::GetModificationStr()
 {
-  unsigned short Year, Month, Day, Hour, Min, Sec, MSec;
+  unsigned int Year, Month, Day, Hour, Min, Sec, MSec;
   GetModification().DecodeDate(Year, Month, Day);
   GetModification().DecodeTime(Hour, Min, Sec, MSec);
   switch (FModificationFmt)
@@ -1040,7 +1040,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
       bool FullTime = false;
       bool DayMonthFormat = false;
-      unsigned short Day, Month, Year, Hour, Min, Sec, P;
+      unsigned int Day, Month, Year, Hour, Min, Sec, P;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1135,7 +1135,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           // Check if we got time (contains :) or year
           if ((P = (unsigned int)Col.find_first_of(L':')) > 0)
           {
-            unsigned short CurrMonth, CurrDay;
+            unsigned int CurrMonth, CurrDay;
             Hour = (unsigned int)StrToInt(Col.substr(1, P-1));
             Min = (unsigned int)StrToInt(Col.substr(P+1, Col.size() - P));
             if (Hour > 23 || Hour > 59) Abort();

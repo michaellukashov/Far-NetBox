@@ -1609,7 +1609,7 @@ std::wstring TSessionData::GetProtocolStr() const
 //---------------------------------------------------------------------
 void TSessionData::SetPingIntervalDT(TDateTime value)
 {
-  unsigned short hour, min, sec, msec;
+  unsigned int hour, min, sec, msec;
 
   value.DecodeTime(hour, min, sec, msec);
   SetPingInterval(((int)hour)*60*60 + ((int)min)*60 + sec);

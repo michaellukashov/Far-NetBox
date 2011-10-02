@@ -230,13 +230,13 @@ TDateTime::TDateTime(unsigned int Hour,
     //TODO
     ::Error(SNotImplemented, 145);
 }
-void TDateTime::DecodeDate(unsigned short &Y,
-        unsigned short &M, unsigned short &D)
+void TDateTime::DecodeDate(unsigned int &Y,
+        unsigned int &M, unsigned int &D)
 {
     ::DecodeDate(*this, Y, M, D);
 }
-void TDateTime::DecodeTime(unsigned short &H,
-        unsigned short &N, unsigned short &S, unsigned short &MS)
+void TDateTime::DecodeTime(unsigned int &H,
+        unsigned int &N, unsigned int &S, unsigned int &MS)
 {
     ::DecodeTime(*this, H, N, S, MS);
 }
