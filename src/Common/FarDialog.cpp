@@ -1089,7 +1089,8 @@ void TFarDialogItem::ResetBounds()
 {
     TRect B = FBounds;
     FarDialogItem *DItem = GetDialogItem();
-    DEBUG_PRINTF(L"this = %p, DItem = %p, GetContainer = %p", this, DItem, GetContainer());
+    DEBUG_PRINTF(L"this = %x", this);
+    DEBUG_PRINTF(L"this = %x, DItem = %x, GetContainer = %x", this, DItem, GetContainer());
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
     (GetContainer() ? GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
     BOUND(X1, Left, x, GetLeft());
@@ -1193,6 +1194,8 @@ void TFarDialogItem::UpdateData(const std::wstring value)
 //---------------------------------------------------------------------------
 std::wstring TFarDialogItem::GetData()
 {
+    DEBUG_PRINTF(L"GetItem = %d", GetItem());
+    DEBUG_PRINTF(L"GetDialogItem = %x", GetDialogItem());
     std::wstring Result = GetDialogItem()->PtrData;
     if (!GetOem())
     {
