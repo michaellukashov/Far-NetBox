@@ -8,6 +8,8 @@
 #include "FarPlugin.h"
 #include "FarDialog.h"
 #include "Common.h"
+#include "Exceptions.h"
+#include "TextsCore.h"
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TCustomFarPlugin *FarPlugin = NULL;
@@ -1111,6 +1113,9 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     const std::wstring Title, const std::wstring Message, TStrings *Buttons,
     TFarMessageParams *Params, bool Oem)
 {
+    DEBUG_PRINTF(L"Message = %s", Message.c_str());
+    // throw ExtException(Message);
+    _asm int 3;
     // when message is shown while some "custom" output is on screen,
     // make the output actually background of FAR screen
     if (FTerminalScreenShowing)
