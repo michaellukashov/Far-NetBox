@@ -879,32 +879,48 @@ private:
     bool FCaseSensitive;
 };
 
-/// TDateTime: number of days between since 12/30/1899
+/// TDateTime: number of days since 12/30/1899
 class TDateTime
 {
 public:
     TDateTime()
     {}
-    explicit TDateTime(double)
-    {}
+    explicit TDateTime(double value)
+    {
+        FValue = value;
+    }
     explicit TDateTime(unsigned int Hour,
-        unsigned int Min, unsigned int Sec, unsigned int MSec)
-    {}
+        unsigned int Min, unsigned int Sec, unsigned int MSec);
+    TDateTime(const TDateTime &rhs)
+    {
+        FValue = rhs.FValue;
+    }
+    TDateTime &operator = (const TDateTime &rhs)
+    {
+        FValue = rhs.FValue;
+        return *this;
+    }
     operator double() const
     {
-        return 0.0;
+        return FValue;
     }
-    TDateTime &operator - (const TDateTime &)
+    TDateTime &operator + (const TDateTime &rhs)
     {
+        FValue += rhs.FValue;
+        return *this;
+    }
+    TDateTime &operator - (const TDateTime &rhs)
+    {
+        FValue -= rhs.FValue;
         return *this;
     }
     void operator = (double value)
     {
-
+        FValue = value;
     }
     bool operator == (const TDateTime &rhs)
     {
-        return false;
+        return abs(FValue - rhs.FValue) < 0.000001;
     }
     bool operator != (const TDateTime &rhs)
     {
@@ -918,6 +934,8 @@ public:
         unsigned short &M, unsigned short &D);
     void DecodeTime(unsigned short &H,
         unsigned short &N, unsigned short &S, unsigned short &MS);
+private:
+    double FValue;
 };
 
 static TDateTime Now()

@@ -224,6 +224,12 @@ std::string W2MB(const wchar_t *src, const UINT cp)
 
 //---------------------------------------------------------------------------
 
+TDateTime::TDateTime(unsigned int Hour,
+    unsigned int Min, unsigned int Sec, unsigned int MSec)
+{
+    //TODO
+    ::Error(SNotImplemented, 145);
+}
 void TDateTime::DecodeDate(unsigned short &Y,
         unsigned short &M, unsigned short &D)
 {
