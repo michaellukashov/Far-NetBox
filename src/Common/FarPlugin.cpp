@@ -1181,9 +1181,10 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                     assert(Selected < 0);
                     Selected = i;
                 }
-                // strcpy(MenuItems[Count].Text.Text, StrToFar(Text));
                 std::wstring Str = StrToFar(Text);
-                wcscpy_s((wchar_t *)MenuItems[Count].Text, Str.size(), Str.c_str());
+                // DEBUG_PRINTF(L"MenuItems[%d].Text = %s", Count, MenuItems[Count].Text);
+                // wcscpy_s((wchar_t *)MenuItems[Count].Text, Str.size(), Str.c_str());
+                MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
                 MenuItems[Count].UserData = i;
                 Count++;
             }
