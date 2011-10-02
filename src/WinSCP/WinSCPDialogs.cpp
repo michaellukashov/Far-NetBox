@@ -1219,7 +1219,9 @@ void TWinSCPPlugin::AboutDialog()
       {
         delete Dialog;
       } BOOST_SCOPE_EXIT_END
+    DEBUG_PRINTF(L"before Dialog->ShowModal");
     Dialog->ShowModal();
+    DEBUG_PRINTF(L"after Dialog->ShowModal");
   }
 }
 //---------------------------------------------------------------------------

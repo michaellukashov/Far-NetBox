@@ -129,9 +129,8 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 
     do
     {
-      DEBUG_PRINTF(L"1");
       Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems);
-      DEBUG_PRINTF(L"2");
+      DEBUG_PRINTF(L"Result = %d", Result);
 
       if (Result >= 0)
       {
