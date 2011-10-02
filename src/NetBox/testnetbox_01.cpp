@@ -40,6 +40,7 @@ public:
     base_fixture_t()
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
+        InitPlatformId();
     }
 
     virtual ~base_fixture_t()
@@ -355,6 +356,19 @@ BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
     BOOST_CHECK(Y == ymd.year);
     BOOST_CHECK(M == ymd.month);
     BOOST_CHECK(D == ymd.day);
+    int DOW = ::DayOfWeek(dt1);
+    BOOST_CHECK_EQUAL(3, DOW);
+}
+
+BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
+{
+    BOOST_TEST_MESSAGE("Is2000 = " << Is2000());
+    BOOST_TEST_MESSAGE("IsWin7 = " << IsWin7());
+    BOOST_TEST_MESSAGE("IsExactly2008R2 = " << IsExactly2008R2());
+    TDateTime dt = ::EncodeDateVerbose(2009, 12, 29);
+    FILETIME ft = ::DateTimeToFileTime(dt, dstmWin);
+    BOOST_TEST_MESSAGE("ft.dwLowDateTime = " << ft.dwLowDateTime);
+    BOOST_TEST_MESSAGE("ft.dwHighDateTime = " << ft.dwHighDateTime);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
