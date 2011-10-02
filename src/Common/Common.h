@@ -163,25 +163,6 @@ TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsi
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
 
 //---------------------------------------------------------------------------
-struct TMethod
-{
-  void *Code;
-  void *Data;
-};
-//---------------------------------------------------------------------------
-template<class MethodT>
-void MakeMethod(void * Data, void * Code, MethodT & Method)
-{
-  ((TMethod*)&Method)->Data = Data;
-  ((TMethod*)&Method)->Code = Code;
-}
-//---------------------------------------------------------------------------
-static TMethod MakeMethod(void * Data, void * Code)
-{
-  TMethod Method = { Data, Code };
-  return Method;
-}
-//---------------------------------------------------------------------------
 class TCriticalSection
 {
 public:
