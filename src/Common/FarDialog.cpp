@@ -14,8 +14,8 @@
 std::wstring StripHotKey(std::wstring Text)
 {
     size_t Len = Text.length();
-    int Pos = 1;
-    while (Pos <= Len)
+    int Pos = 0;
+    while (Pos < Len)
     {
         if (Text[Pos] == '&')
         {
