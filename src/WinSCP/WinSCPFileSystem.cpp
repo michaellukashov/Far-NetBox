@@ -516,7 +516,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
             if (ChildPaths->IndexOf(Name.c_str()) < 0)
             {
               PanelItems->Add((TObject *)new TSessionFolderPanelItem(Name));
-              //FIXME ChildPaths->AddObject((TObject *)Name);
+              ChildPaths->Add(Name);
             }
           }
           else
