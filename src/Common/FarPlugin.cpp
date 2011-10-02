@@ -2559,8 +2559,12 @@ void THintPanelItem::GetData(
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarPanelInfo::TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner):
-    TObject()
+    TObject(),
+    FPanelInfo(NULL),
+    FItems(NULL),
+    FOwner(NULL)
 {
+    // if (!APanelInfo) _asm int 3;
     assert(APanelInfo);
     FPanelInfo = APanelInfo;
     FOwner = AOwner;
