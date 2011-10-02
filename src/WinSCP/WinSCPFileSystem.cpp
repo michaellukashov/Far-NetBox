@@ -348,10 +348,10 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
   SAFE_DESTROY(FTerminal);
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::HandleException(const std::exception * E, int OpMode)
+void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
 {
-  ::Error(SNotImplemented, 120);
-  if ((GetTerminal() != NULL)) // FIXME && E->InheritsFrom(__classid(EFatal)))
+  // ::Error(SNotImplemented, 120);
+  if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
   {
     if (!FClosed)
     {
