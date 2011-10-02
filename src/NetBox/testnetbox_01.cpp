@@ -330,4 +330,17 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
     BOOST_CHECK(::DirectoryExists(::GetCurrentDir()));
 }
 
+BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
+{
+    TDateTime dt = EncodeDateVerbose(2009, 12, 29);
+    BOOST_TEST_MESSAGE("dt = " << dt);
+    bg::date::ymd_type ymd(2009, 12, 29);
+    BOOST_TEST_MESSAGE("ymd.year = " << ymd.year);
+    unsigned short Y;
+    unsigned short M;
+    unsigned short D;
+    dt.DecodeDate(Y, M, D);
+    BOOST_CHECK(Y == ymd.year && M == ymd.month && D == ymd.day);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
