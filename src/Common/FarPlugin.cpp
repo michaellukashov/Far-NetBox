@@ -1199,7 +1199,8 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
             if (FLAGCLEAR(Flags, MIF_HIDDEN))
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
-                std::wstring Text = Items->GetString(i).substr(1, sizeof(MenuItems[i].Text)-1);
+                std::wstring Text = Items->GetString(i); // .substr(1, sizeof(MenuItems[i].Text)-1);
+                DEBUG_PRINTF(L"Text = %s", Text.c_str());
                 MenuItems[Count].Flags = Flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
@@ -1212,6 +1213,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                 MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
                 MenuItems[Count].UserData = i;
                 Count++;
+                DEBUG_PRINTF(L"Count = %d", Count);
             }
         }
 
