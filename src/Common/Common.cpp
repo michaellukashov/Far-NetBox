@@ -1013,6 +1013,15 @@ TDateTime StrToDateTime(std::wstring Value)
 }
 
 //---------------------------------------------------------------------------
+// DayOfWeek returns the day of the week of the given date. The result is an
+// integer between 1 and 7, corresponding to Sunday through Saturday.
+// This function is not ISO 8601 compliant, for that see the DateUtils unit.
+unsigned int DayOfWeek(const TDateTime DateTime)
+{
+  return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
+}
+
+//---------------------------------------------------------------------------
 struct TDateTimeParams
 {
   TDateTime UnixEpoch;
@@ -1096,16 +1105,15 @@ static TDateTimeParams * GetDateTimeParams()
   return &DateTimeParams;
 }
 //---------------------------------------------------------------------------
-static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
-  TDateTime & Result)
+static void EncodeDSTMargin(const SYSTEMTIME &Date, unsigned short Year,
+  TDateTime &Result)
 {
-  ::Error(SNotImplemented, 46);
   if (Date.wYear == 0)
   {
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
     
-    Result = Temp; // FIXME + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
-      // (7 * (Date.wDay - 1));
+    Result = ((Date.wDayOfWeek - ::DayOfWeek(Temp) + 8) % 7) +
+      (7 * (Date.wDay - 1));
     if (Date.wDay == 5)
     {
       unsigned short Month = static_cast<unsigned short>(Date.wMonth + 1);
@@ -1117,17 +1125,18 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
 
       if (Result >= EncodeDateVerbose(Year, Month, 1))
       {
-        // Result -= 7;
+        Result = Result - 7;
       }
     }
-    // Result += EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
-      // Date.wMilliseconds);
+    Result = Result + EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
+      Date.wMilliseconds);
   }
   else
   {
-    // Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
-      // EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
+    Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
+      EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
   }
+  // ::Error(SNotImplemented, 46);
 }
 //---------------------------------------------------------------------------
 static bool IsDateInDST(const TDateTime & DateTime)
@@ -1144,7 +1153,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
   static int DSTCacheCount = 0;
   static TCriticalSection Section;
 
-  TDateTimeParams * Params = GetDateTimeParams();
+  TDateTimeParams *Params = GetDateTimeParams();
   bool Result;
 
   // On some systems it occurs that StandardDate is unset, while
@@ -1199,17 +1208,15 @@ static bool IsDateInDST(const TDateTime & DateTime)
 
     if (CurrentCache->SummerDST)
     {
-      ::Error(SNotImplemented, 47);
-      Result = false; // FIXME
-        // (DateTime >= CurrentCache->DaylightDate) &&
-        // (DateTime < CurrentCache->StandardDate);
+      Result =
+        (DateTime >= CurrentCache->DaylightDate) &&
+        (DateTime < CurrentCache->StandardDate);
     }
     else
     {
-      ::Error(SNotImplemented, 48);
-      Result = false; // FIXME
-        // (DateTime < CurrentCache->StandardDate) ||
-        // (DateTime >= CurrentCache->DaylightDate);
+      Result =
+        (DateTime < CurrentCache->StandardDate) ||
+        (DateTime >= CurrentCache->DaylightDate);
     }
   }
   return Result;
@@ -1267,11 +1274,11 @@ __int64 Round(double Number)
 //---------------------------------------------------------------------------
 static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
-  TDateTimeParams * Params = GetDateTimeParams();
-
-  ::Error(SNotImplemented, 50);
-  return 0; // Round(double(DateTime - Params->UnixEpoch) * 86400) +
-    // Params->CurrentDifferenceSec;
+  TDateTimeParams *Params = GetDateTimeParams();
+  double value = double(DateTime - Params->UnixEpoch) * 86400;
+  double intpart;
+  modf(value, &intpart);
+  return intpart + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
 FILETIME DateTimeToFileTime(const TDateTime DateTime,
@@ -1280,7 +1287,7 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
   FILETIME Result;
   __int64 UnixTimeStamp = DateTimeToUnix(DateTime);
 
-  TDateTimeParams * Params = GetDateTimeParams();
+  TDateTimeParams *Params = GetDateTimeParams();
   if (!Params->DaylightHack)
   {
     UnixTimeStamp += (IsDateInDST(DateTime) ?
@@ -1397,20 +1404,20 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      ::Error(SNotImplemented, 55);
-      // FIXME DateTime = DateTime - Params->CurrentDaylightDifference;
+      // ::Error(SNotImplemented, 55);
+      DateTime = DateTime - Params->CurrentDaylightDifference;
     }
 
     if (!IsDateInDST(DateTime))
     {
       if (DSTMode == dstmWin)
       {
-        // DateTime = DateTime - Params->DaylightDifference;
+        DateTime = DateTime - Params->DaylightDifference;
       }
     }
     else
     {
-      // DateTime = DateTime - Params->StandardDifference;
+      DateTime = DateTime - Params->StandardDifference;
     }
   }
   else
@@ -1419,11 +1426,11 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
     {
       if (IsDateInDST(DateTime))
       {
-        // DateTime = DateTime + Params->DaylightDifference;
+        DateTime = DateTime + Params->DaylightDifference;
       }
       else
       {
-        // DateTime = DateTime + Params->StandardDifference;
+        DateTime = DateTime + Params->StandardDifference;
       }
     }
   }

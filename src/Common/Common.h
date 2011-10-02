@@ -138,6 +138,7 @@ bool UsesDaylightHack();
 TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
 TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 TDateTime StrToDateTime(std::wstring Value);
+unsigned int DayOfWeek(const TDateTime DateTime);
 TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
 FILETIME DateTimeToFileTime(const TDateTime DateTime, TDSTMode DSTMode);
 TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode);
