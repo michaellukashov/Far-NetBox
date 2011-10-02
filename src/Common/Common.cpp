@@ -15,6 +15,10 @@
 
 namespace alg = boost::algorithm;
 //---------------------------------------------------------------------------
+int Win32MajorVersion = 0;
+int Win32MinorVersion = 0;
+int Win32BuildNumber = 0;
+//---------------------------------------------------------------------------
 
 inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
 {
@@ -2660,4 +2664,20 @@ std::wstring ExpandUNCFileName(std::wstring FileName)
 void FileSeek(HANDLE file, __int64 offset, __int64 size)
 {
     ::Error(SNotImplemented, 300);
+}
+
+void InitPlatformId()
+// var
+  // OSVersionInfo: TOSVersionInfo;
+{
+  // OSVersionInfo.dwOSVersionInfoSize := SizeOf(OSVersionInfo);
+  // if GetVersionEx(OSVersionInfo) then
+    // with OSVersionInfo do
+    // begin
+      // Win32Platform := dwPlatformId;
+      // Win32MajorVersion := dwMajorVersion;
+      // Win32MinorVersion := dwMinorVersion;
+      // Win32BuildNumber := dwBuildNumber;
+      // Win32CSDVersion := szCSDVersion;
+    // end;
 }

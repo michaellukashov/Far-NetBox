@@ -227,6 +227,11 @@ struct TPasLibModule
   void * ResInstance;
 };
 //---------------------------------------------------------------------------
+extern int Win32MajorVersion;
+extern int Win32MinorVersion;
+extern int Win32BuildNumber;
+//---------------------------------------------------------------------------
+void InitPlatformId();
 //---------------------------------------------------------------------------
 #include <assert.h>
 #ifndef _DEBUG

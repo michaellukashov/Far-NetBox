@@ -28,6 +28,7 @@ TFarMessageParams::TFarMessageParams()
 TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst): TObject()
 {
     // DEBUG_PRINTF(L"TCustomFarPlugin: begin");
+    InitPlatformId();
     Self = this;
     FFarThread = GetCurrentThreadId();
     FCriticalSection = new TCriticalSection;
