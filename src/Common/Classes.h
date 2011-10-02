@@ -883,7 +883,8 @@ private:
 class TDateTime
 {
 public:
-    TDateTime()
+    TDateTime() :
+        FValue(0.0)
     {}
     explicit TDateTime(double value)
     {
