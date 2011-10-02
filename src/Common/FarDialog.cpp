@@ -40,7 +40,29 @@ TRect Rect(int Left, int Top, int Right, int Bottom)
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     TObject(),
-    FBounds(-1, -1, 40, 10)
+    FFarPlugin(NULL),
+    FBounds(-1, -1, 40, 10),
+    FFlags(0),
+    FHelpTopic(),
+    FVisible(false),
+    FItems(NULL),
+    FContainers(NULL),
+    FHandle(0),
+    FDefaultButton(NULL),
+    FBorderBox(NULL),
+    // FNextItemPosition(0),
+    FDefaultGroup(0),
+    FTag(0),
+    FItemFocused(NULL),
+    // FOnKey(NULL),
+    FDialogItems(NULL),
+    FDialogItemsCapacity(0),
+    FChangesLocked(0),
+    FChangesPending(false),
+    FResult(0),
+    FNeedsSynchronize(false),
+    // FSynchronizeMethod(NULL),
+    Self(NULL)
 {
     assert(AFarPlugin);
     Self = this;
