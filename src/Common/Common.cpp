@@ -5,8 +5,6 @@
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
-#include "boost/date_time/gregorian/gregorian.hpp"
-#include "boost/date_time/year_month_day.hpp"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -18,8 +16,6 @@
 // #include <math.h>
 
 namespace alg = boost::algorithm;
-namespace dt = boost::date_time;
-namespace bg = boost::gregorian;
 //---------------------------------------------------------------------------
 
 inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
@@ -933,6 +929,7 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
         Day += (*DayTable)[I - 1];
     int I = Year - 1;
     Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
+    DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
     return true;
   }
   return false;
