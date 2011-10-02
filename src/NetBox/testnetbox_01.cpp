@@ -332,15 +332,29 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
 {
-    TDateTime dt = EncodeDateVerbose(2009, 12, 29);
-    BOOST_TEST_MESSAGE("dt = " << dt);
+    TDateTime dt1(23, 58, 59, 102);
+    BOOST_TEST_MESSAGE("dt1 = " << dt1);
+    BOOST_CHECK(dt1 > 0.0);
+    unsigned int H, M, S, MS;
+    dt1.DecodeTime(H, M, S, MS);
+    BOOST_CHECK_EQUAL(H, 23);
+    BOOST_CHECK_EQUAL(M, 58);
+    BOOST_CHECK_EQUAL(S, 59);
+    BOOST_CHECK_EQUAL(MS, 102);
+}
+
+BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
+{
+    TDateTime dt1 = EncodeDateVerbose(2009, 12, 29);
+    BOOST_TEST_MESSAGE("dt1 = " << dt1);
     bg::date::ymd_type ymd(2009, 12, 29);
-    BOOST_TEST_MESSAGE("ymd.year = " << ymd.year);
-    unsigned int Y;
-    unsigned int M;
-    unsigned int D;
-    dt.DecodeDate(Y, M, D);
-    BOOST_CHECK(Y == ymd.year && M == ymd.month && D == ymd.day);
+    BOOST_TEST_MESSAGE("ymd.year = " << ymd.year << ", ymd.month = " << ymd.month << ", ymd.day = " << ymd.day);
+    unsigned int Y, M, D;
+    dt1.DecodeDate(Y, M, D);
+    BOOST_TEST_MESSAGE("Y = " << Y << ", M = " << M << ", D = " << D);
+    BOOST_CHECK(Y == ymd.year);
+    BOOST_CHECK(M == ymd.month);
+    BOOST_CHECK(D == ymd.day);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
