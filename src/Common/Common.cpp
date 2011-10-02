@@ -947,7 +947,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
   TDateTime Result;
   if (!TryEncodeDate(Year, Month, Day, Result))
   {
-    ConvertError(SDateEncodeError);
+    ::ConvertError(SDateEncodeError);
   }
   return Result;
 }
@@ -965,24 +965,46 @@ TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int 
   return TDateTime();
 }
 //---------------------------------------------------------------------------
+bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, TDateTime &Time)
+{
+  bool Result = false;
+  // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
+  if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
+  {
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / (double)MSecsPerDay;
+    // DEBUG_PRINTF(L"Time = %f", Time);
+    Result = true;
+  }
+  return Result;
+}
+
+TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+{
+  TDateTime Result;
+  if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
+  {
+    ::ConvertError(STimeEncodeError);
+  }
+  // DEBUG_PRINTF(L"Result = %f", Result);
+  return Result;
+}
+//---------------------------------------------------------------------------
 TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
 {
-::Error(SNotImplemented, 45);
-/*
   try
   {
-    return EncodeTime(Hour, Min, Sec, MSec);
+    return ::EncodeTime(Hour, Min, Sec, MSec);
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%d:%d:%d.%d]", (E.Message, int(Hour), int(Min), int(Sec), int(MSec))));
+    throw EConvertError(FORMAT(L"%s [%d:%d:%d.%d]", E.GetMessage().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
-  */
   return TDateTime();
 }
 
 TDateTime StrToDateTime(std::wstring Value)
 {
+    ::Error(SNotImplemented, 145);
   return TDateTime();
 }
 
@@ -1581,10 +1603,13 @@ void DecodeDate(const TDateTime &DateTime, unsigned int &Year,
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const TDateTime &DateTime, unsigned int &H,
-    unsigned int &N, unsigned int &S, unsigned int &MS)
+void DecodeTime(const TDateTime &DateTime, unsigned int &Hour,
+    unsigned int &Min, unsigned int &Sec, unsigned int &MSec)
 {
-    ::Error(SNotImplemented, 40);
+  unsigned int MinCount, MSecCount;
+  DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
+  DivMod(MinCount, 60, Hour, Min);
+  DivMod(MSecCount, 1000, Sec, MSec);
 }
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
