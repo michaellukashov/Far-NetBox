@@ -374,7 +374,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 
     static std::map<HANDLE, long> Dialogs;
     TFarDialog *Dialog = NULL;
-    long Result;
+    LONG_PTR Result = 0;
     if (Msg == DN_INITDIALOG)
     {
         assert(Dialogs.find(Handle) == Dialogs.end());
@@ -649,7 +649,7 @@ bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
 bool TFarDialog::HotKey(unsigned long Key)
 {
     bool Result = false;
-    char HotKey;
+    char HotKey = 0;
     if ((KEY_ALTA <= Key) && (Key <= KEY_ALTZ))
     {
         Result = true;
@@ -1742,7 +1742,7 @@ void TFarButton::SetDataInternal(const std::wstring value)
 
     if ((GetLeft() >= 0) || (GetRight() >= 0))
     {
-        int Margin;
+        int Margin = 0;
         switch (FBrackets)
         {
         case brNone:
@@ -2181,8 +2181,8 @@ void TFarList::Changed()
 
     if ((GetUpdateCount() == 0) && !FNoDialogUpdate)
     {
-        int PrevSelected;
-        int PrevTopIndex;
+        int PrevSelected = 0;
+        int PrevTopIndex = 0;
         if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
         {
             PrevSelected = GetSelected();
@@ -2612,7 +2612,7 @@ void TFarLister::DoFocus()
 //---------------------------------------------------------------------------
 long TFarLister::ItemProc(int Msg, long Param)
 {
-    long Result;
+    long Result = 0;
 
     if (Msg == DN_DRAWDLGITEM)
     {
