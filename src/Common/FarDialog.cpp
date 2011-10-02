@@ -1090,8 +1090,7 @@ void TFarDialogItem::ResetBounds()
 {
     TRect B = FBounds;
     FarDialogItem *DItem = GetDialogItem();
-    DEBUG_PRINTF(L"this = %x", this);
-    DEBUG_PRINTF(L"this = %x, DItem = %x, GetContainer = %x", this, DItem, GetContainer());
+    // DEBUG_PRINTF(L"this = %x, DItem = %x, GetContainer = %x", this, DItem, GetContainer());
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
     (GetContainer() ? GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
     BOUND(X1, Left, x, GetLeft());
@@ -1162,7 +1161,10 @@ unsigned int TFarDialogItem::GetFlags()
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
-    std::wstring FarData = value.substr(1, sizeof(GetDialogItem()->PtrData) - 1);
+    // DEBUG_PRINTF(L"value = %s", value.c_str());
+    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
+    std::wstring FarData = value; // .substr(0, sizeof(GetDialogItem()->PtrData));
+    // DEBUG_PRINTF(L"FarData = %s", FarData.c_str());
     if (!GetOem())
     {
         StrToFar(FarData);
@@ -1171,8 +1173,10 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
     {
         SendMessage(DM_SETTEXTPTR, (int)FarData.c_str());
     }
-    DEBUG_PRINTF(L"GetDialogItem()->PtrData = %p", GetDialogItem()->PtrData);
-    wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
+    GetDialogItem()->MaxLen = FarData.size();
+    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %p", GetDialogItem()->PtrData);
     DialogChange();
 }
 //---------------------------------------------------------------------------
@@ -1196,7 +1200,6 @@ void TFarDialogItem::UpdateData(const std::wstring value)
 //---------------------------------------------------------------------------
 std::wstring TFarDialogItem::GetData()
 {
-    DEBUG_PRINTF(L"GetItem = %d", GetItem());
     // DEBUG_PRINTF(L"GetItem = %d", GetItem());
     // DEBUG_PRINTF(L"GetDialogItem = %x", GetDialogItem());
     std::wstring Result;
