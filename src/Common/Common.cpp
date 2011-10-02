@@ -1286,16 +1286,19 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
 {
   FILETIME Result;
   __int64 UnixTimeStamp = DateTimeToUnix(DateTime);
+  // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
 
   TDateTimeParams *Params = GetDateTimeParams();
+  // DEBUG_PRINTF(L"Params->DaylightHack = %d", Params->DaylightHack);
   if (!Params->DaylightHack)
   {
     UnixTimeStamp += (IsDateInDST(DateTime) ?
       Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
     UnixTimeStamp -= Params->CurrentDaylightDifferenceSec;
   }
-
+  // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
   TIME_POSIX_TO_WIN(UnixTimeStamp, Result);
+  // DEBUG_PRINTF(L"Result = %d", Result.dwLowDateTime);
 
   return Result;
 }

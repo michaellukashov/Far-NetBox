@@ -417,6 +417,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E);
     }
 }
@@ -438,6 +439,7 @@ int TCustomFarPlugin::GetFindData(HANDLE Plugin,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
     }
@@ -460,6 +462,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E);
     }
 }
@@ -488,6 +491,7 @@ int TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
     }
@@ -517,6 +521,7 @@ int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E);
         // when error occurs, assume that key can be handled by plugin and
         // should not be processed by FAR
@@ -555,6 +560,7 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E);
         return Event == FE_COMMAND ? true : false;
     }
@@ -576,6 +582,7 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
     }
@@ -597,6 +604,7 @@ int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, wchar_t *Name, int OpMode)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
     }
@@ -619,6 +627,7 @@ int TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
     }
@@ -642,6 +651,7 @@ int TCustomFarPlugin::GetFiles(HANDLE Plugin,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         // display error even for OPM_FIND
         HandleFileSystemException(FileSystem, &E, OpMode & ~OPM_FIND);
         return 0;
@@ -665,6 +675,7 @@ int TCustomFarPlugin::PutFiles(HANDLE Plugin,
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before HandleFileSystemException");
         HandleFileSystemException(FileSystem, &E, OpMode);
         return 0;
     }
@@ -1881,6 +1892,7 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
 int TCustomFarFileSystem::GetFindData(
     struct PluginPanelItem **PanelItem, int *ItemsNumber, int OpMode)
 {
+    DEBUG_PRINTF(L"begin");
     ResetCachedInfo();
     TObjectList *PanelItems = new TObjectList();
     bool Result;
@@ -1890,6 +1902,7 @@ int TCustomFarFileSystem::GetFindData(
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
         Result = !FClosed && GetFindDataEx(PanelItems, OpMode);
+        // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount = %d", Result, PanelItems->GetCount());
         if (Result && PanelItems->GetCount())
         {
             *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
@@ -1907,7 +1920,7 @@ int TCustomFarFileSystem::GetFindData(
             *ItemsNumber = 0;
         }
     }
-    delete PanelItems;
+    DEBUG_PRINTF(L"end: Result = %d", Result);
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -2409,6 +2422,7 @@ std::wstring TCustomFarPanelItem::GetCustomColumnData(int /*Column*/)
 void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
 {
     assert(PanelItem);
+    DEBUG_PRINTF(L"begin");
 
     std::wstring FileName;
     __int64 Size = 0;
@@ -2421,29 +2435,37 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
             LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
             UserData, PanelItem->CustomColumnNumber);
-
+    // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+    // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
     FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
+    // DEBUG_PRINTF(L"11");
     FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
+    // DEBUG_PRINTF(L"12");
     PanelItem->FindData.ftCreationTime = FileTime;
     PanelItem->FindData.ftLastAccessTime = FileTimeA;
     PanelItem->FindData.ftLastWriteTime = FileTime;
     PanelItem->FindData.nFileSize = Size;
-    // PanelItem->FindData.FileSizeHigh = (long int)(Size >> 32);
+    // DEBUG_PRINTF(L"2");
     // PanelItem->PackSize = (long int)Size;
+
     // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
-    wcscpy_s((wchar_t *)PanelItem->FindData.lpwszFileName, FileName.size(), FileName.c_str());
+    // wcscpy_s((wchar_t *)PanelItem->FindData.lpwszFileName, FileName.size(), FileName.c_str());
     // StrToFar(PanelItem->FindData.lpwszFileName);
+    PanelItem->FindData.lpwszFileName = StrToFar(TCustomFarPlugin::DuplicateStr(FileName));
+    DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
     PanelItem->Description = StrToFar(TCustomFarPlugin::DuplicateStr(Description));
     PanelItem->Owner = StrToFar(TCustomFarPlugin::DuplicateStr(Owner));
-
+    // DEBUG_PRINTF(L"3");
     // PanelItem->CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     wchar_t **CustomColumnData = new wchar_t *[PanelItem->CustomColumnNumber];
     for (int Index = 0; Index < PanelItem->CustomColumnNumber; Index++)
     {
+        // DEBUG_PRINTF(L"4");
         CustomColumnData[Index] =
             StrToFar(TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index)));
     }
     PanelItem->CustomColumnData = CustomColumnData;
+    DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

@@ -458,6 +458,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
 bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 {
   bool Result;
+  DEBUG_PRINTF(L"begin: Connected = %d", Connected());
   if (Connected())
   {
     assert(!FNoProgress);
@@ -491,7 +492,6 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     Result = true;
     assert(StoredSessions);
     StoredSessions->Load();
-
     std::wstring Folder = UnixIncludeTrailingBackslash(FSessionsFolder);
     TSessionData * Data;
     TStringList * ChildPaths = new TStringList();
@@ -526,17 +526,14 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         }
       }
     }
-
     if (!FNewSessionsFolder.empty())
     {
       PanelItems->Add((TObject *)new TSessionFolderPanelItem(FNewSessionsFolder));
     }
-
     if (PanelItems->GetCount() == 0)
     {
       PanelItems->Add((TObject *)new THintPanelItem(GetMsg(NEW_SESSION_HINT)));
     }
-
     TWinSCPFileSystem * OppositeFileSystem =
       dynamic_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
     if ((OppositeFileSystem != NULL) && !OppositeFileSystem->Connected() &&
@@ -557,6 +554,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
   {
     Result = false;
   }
+  DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
