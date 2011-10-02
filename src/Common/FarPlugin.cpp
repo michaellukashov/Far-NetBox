@@ -179,7 +179,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
             CommandPrefix = CommandPrefix + (CommandPrefix.empty() ? L"" : L":") +
                             CommandPrefixes.GetString(Index);
         }
-        DEBUG_PRINTF(L"CommandPrefix = %s", CommandPrefix.c_str());
+        // DEBUG_PRINTF(L"CommandPrefix = %s", CommandPrefix.c_str());
         FPluginInfo.CommandPrefix = StrToFar(DuplicateStr(CommandPrefix));
 
         memcpy(Info, &FPluginInfo, sizeof(FPluginInfo));
