@@ -1529,6 +1529,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         catch (const EScpFileSkipped &E)
         {
           TQueryParams Params(qpAllowContinueOnError);
+          DEBUG_PRINTF(L"before FTerminal->HandleException");
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                 &E,
@@ -1542,6 +1543,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         }
         catch (const EScpSkipFile &E)
         {
+          DEBUG_PRINTF(L"before FTerminal->HandleException");
           OperationProgress->Finish(FileName, false, OnceDoneOperation);
           // If ESkipFile occurs, just log it and continue with next file
           SUSPEND_OPERATION (
@@ -1926,6 +1928,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         catch (EScpFileSkipped &E)
         {
           TQueryParams Params(qpAllowContinueOnError);
+          DEBUG_PRINTF(L"before FTerminal->HandleException");
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                 &E,
@@ -1939,6 +1942,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         catch (EScpSkipFile &E)
         {
           // If ESkipFile occurs, just log it and continue with next file
+          DEBUG_PRINTF(L"before FTerminal->HandleException");
           SUSPEND_OPERATION (
             if (!FTerminal->HandleException(&E)) throw;
           );
@@ -2523,6 +2527,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
     }
     catch (EScpSkipFile &E)
     {
+      DEBUG_PRINTF(L"before FTerminal->HandleException");
       SCPSendError(E.GetMessage(), false);
       Success = false;
       if (!FTerminal->HandleException(&E)) throw;

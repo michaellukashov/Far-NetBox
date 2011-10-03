@@ -6,19 +6,16 @@
 #include <boost/bind.hpp>
 
 #include <map>
-#include <math.h>
 
 #include "FarDialog.h"
 #include "Common.h"
-
-// #include <Common.h>
 
 //---------------------------------------------------------------------------
 std::wstring StripHotKey(std::wstring Text)
 {
     size_t Len = Text.length();
-    int Pos = 1;
-    while (Pos <= Len)
+    int Pos = 0;
+    while (Pos < Len)
     {
         if (Text[Pos] == '&')
         {
@@ -43,7 +40,29 @@ TRect Rect(int Left, int Top, int Right, int Bottom)
 //---------------------------------------------------------------------------
 TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
     TObject(),
-    FBounds(-1, -1, 40, 10)
+    FFarPlugin(NULL),
+    FBounds(-1, -1, 40, 10),
+    FFlags(0),
+    FHelpTopic(),
+    FVisible(false),
+    FItems(NULL),
+    FContainers(NULL),
+    FHandle(0),
+    FDefaultButton(NULL),
+    FBorderBox(NULL),
+    // FNextItemPosition(0),
+    FDefaultGroup(0),
+    FTag(0),
+    FItemFocused(NULL),
+    // FOnKey(NULL),
+    FDialogItems(NULL),
+    FDialogItemsCapacity(0),
+    FChangesLocked(0),
+    FChangesPending(false),
+    FResult(0),
+    FNeedsSynchronize(false),
+    // FSynchronizeMethod(NULL),
+    Self(NULL)
 {
     assert(AFarPlugin);
     Self = this;
@@ -355,7 +374,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 
     static std::map<HANDLE, long> Dialogs;
     TFarDialog *Dialog = NULL;
-    long Result;
+    LONG_PTR Result = 0;
     if (Msg == DN_INITDIALOG)
     {
         assert(Dialogs.find(Handle) == Dialogs.end());
@@ -440,6 +459,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                 catch (const std::exception &E)
                 {
                     Handled = true;
+                    DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
                     GetFarPlugin()->HandleException(&E);
                     Result = I->FailItemProc(Msg, Param2);
                 }
@@ -553,6 +573,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
     }
     catch (const std::exception &E)
     {
+        DEBUG_PRINTF(L"before GetFarPlugin()->HandleException");
         GetFarPlugin()->HandleException(&E);
         if (!Handled)
         {
@@ -630,7 +651,7 @@ bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
 bool TFarDialog::HotKey(unsigned long Key)
 {
     bool Result = false;
-    char HotKey;
+    char HotKey = 0;
     if ((KEY_ALTA <= Key) && (Key <= KEY_ALTZ))
     {
         Result = true;
@@ -922,7 +943,12 @@ bool TFarDialog::ChangesLocked()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarDialogContainer::TFarDialogContainer(TFarDialog *ADialog) :
-    TObject()
+    TObject(),
+    FLeft(0),
+    FTop(0),
+    FItems(NULL),
+    FDialog(NULL),
+    FEnabled(false)
 {
     assert(ADialog);
 
@@ -999,7 +1025,21 @@ size_t TFarDialogContainer::GetItemCount() const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
-    TObject()
+    TObject(),
+    FDefaultType(0),
+    FGroup(0),
+    FTag(0),
+    FDialog(NULL),
+    FEnabledFollow(NULL),
+    FEnabledDependency(NULL),
+    FEnabledDependencyNegative(NULL),
+    FContainer(NULL),
+    FItem(-1),
+    FEnabled(false),
+    FIsEnabled(false),
+    FColors(0),
+    FColorMask(0),
+    FOem(false)
 {
     assert(ADialog);
     FDialog = ADialog;
@@ -1052,8 +1092,9 @@ void TFarDialogItem::ResetBounds()
 {
     TRect B = FBounds;
     FarDialogItem *DItem = GetDialogItem();
+    // DEBUG_PRINTF(L"this = %x, DItem = %x, GetContainer = %x", this, DItem, GetContainer());
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
-    (GetContainer() ? GetContainer()->CB : 0 ) + B.BB : GetDialog()->GetSize().DB + B.BB
+    (GetContainer() ? GetContainer()->CB : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
     BOUND(X1, Left, x, GetLeft());
     BOUND(Y1, Top, y, GetTop());
     BOUND(X2, Right, x, GetLeft());
@@ -1122,7 +1163,10 @@ unsigned int TFarDialogItem::GetFlags()
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
-    std::wstring FarData = value.substr(1, sizeof(GetDialogItem()->PtrData) - 1);
+    // DEBUG_PRINTF(L"value = %s", value.c_str());
+    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
+    std::wstring FarData = value; // .substr(0, sizeof(GetDialogItem()->PtrData));
+    // DEBUG_PRINTF(L"FarData = %s", FarData.c_str());
     if (!GetOem())
     {
         StrToFar(FarData);
@@ -1131,7 +1175,10 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
     {
         SendMessage(DM_SETTEXTPTR, (int)FarData.c_str());
     }
-    wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
+    GetDialogItem()->MaxLen = FarData.size();
+    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %p", GetDialogItem()->PtrData);
     DialogChange();
 }
 //---------------------------------------------------------------------------
@@ -1155,7 +1202,11 @@ void TFarDialogItem::UpdateData(const std::wstring value)
 //---------------------------------------------------------------------------
 std::wstring TFarDialogItem::GetData()
 {
-    std::wstring Result = GetDialogItem()->PtrData;
+    // DEBUG_PRINTF(L"GetItem = %d", GetItem());
+    // DEBUG_PRINTF(L"GetDialogItem = %x", GetDialogItem());
+    std::wstring Result;
+    if (GetDialogItem()->PtrData)
+        Result = GetDialogItem()->PtrData;
     if (!GetOem())
     {
         StrFromFar(Result);
@@ -1701,7 +1752,7 @@ void TFarButton::SetDataInternal(const std::wstring value)
 
     if ((GetLeft() >= 0) || (GetRight() >= 0))
     {
-        int Margin;
+        int Margin = 0;
         switch (FBrackets)
         {
         case brNone:
@@ -2140,8 +2191,8 @@ void TFarList::Changed()
 
     if ((GetUpdateCount() == 0) && !FNoDialogUpdate)
     {
-        int PrevSelected;
-        int PrevTopIndex;
+        int PrevSelected = 0;
+        int PrevTopIndex = 0;
         if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
         {
             PrevSelected = GetSelected();
@@ -2571,7 +2622,7 @@ void TFarLister::DoFocus()
 //---------------------------------------------------------------------------
 long TFarLister::ItemProc(int Msg, long Param)
 {
-    long Result;
+    long Result = 0;
 
     if (Msg == DN_DRAWDLGITEM)
     {

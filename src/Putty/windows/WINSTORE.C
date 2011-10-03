@@ -529,7 +529,7 @@ static HANDLE access_random_seed(int action)
 	 * so stuff that. */
 	shell32_module = load_system32_dll("shell32.dll");
 	GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
-    OutputDebugStringW(L"NetBox: access_random_seed: 1");
+    // OutputDebugStringW(L"NetBox: access_random_seed: 1");
 	tried_shgetfolderpath = TRUE;
     }
     if (p_SHGetFolderPathA) {
@@ -552,7 +552,7 @@ static HANDLE access_random_seed(int action)
      * Failing that, try %HOMEDRIVE%%HOMEPATH% as a guess at the
      * user's home directory.
      */
-    OutputDebugStringW(L"NetBox: access_random_seed: 2");
+    // OutputDebugStringW(L"NetBox: access_random_seed: 2");
     {
 	int len, ret;
 

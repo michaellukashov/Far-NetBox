@@ -961,6 +961,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       }
       catch (const EScpSkipFile & E)
       {
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
         );
@@ -1180,7 +1181,7 @@ void TFTPFileSystem::SinkFile(std::wstring FileName,
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
     Params->Skipped = true;
-
+    DEBUG_PRINTF(L"before FTerminal->HandleException");
     SUSPEND_OPERATION (
       if (!FTerminal->HandleException(&E))
       {
@@ -1236,6 +1237,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       }
       catch (const EScpSkipFile & E)
       {
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
         );
@@ -1449,6 +1451,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
       catch (const EScpSkipFile &E)
       {
         // If ESkipFile occurs, just log it and continue with next file
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
           // here a message to user was displayed, which was not appropriate
           // when user refused to overwrite the file in subdirectory.

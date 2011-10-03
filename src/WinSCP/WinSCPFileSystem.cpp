@@ -6,7 +6,6 @@
 #include <boost/bind.hpp>
 
 #include "FarUtil.h"
-// #include <StrUtils.hpp>
 #include "WinSCPFileSystem.h"
 #include "WinSCPPlugin.h"
 #include "FarDialog.h"
@@ -17,11 +16,9 @@
 #include "Exceptions.h"
 #include "SessionData.h"
 #include <CoreMain.h>
-// #include <SysUtils.hpp>
 #include "ScpFileSystem.h"
 #include <Bookmarks.h>
 #include <GUITools.h>
-// #include <CompThread.hpp>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
@@ -351,10 +348,10 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
   SAFE_DESTROY(FTerminal);
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::HandleException(const std::exception * E, int OpMode)
+void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
 {
-  ::Error(SNotImplemented, 120);
-  if ((GetTerminal() != NULL)) // FIXME && E->InheritsFrom(__classid(EFatal)))
+  // ::Error(SNotImplemented, 120);
+  if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
   {
     if (!FClosed)
     {
@@ -461,6 +458,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
 bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 {
   bool Result;
+  DEBUG_PRINTF(L"begin: Connected = %d", Connected());
   if (Connected())
   {
     assert(!FNoProgress);
@@ -494,7 +492,6 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     Result = true;
     assert(StoredSessions);
     StoredSessions->Load();
-
     std::wstring Folder = UnixIncludeTrailingBackslash(FSessionsFolder);
     TSessionData * Data;
     TStringList * ChildPaths = new TStringList();
@@ -519,7 +516,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
             if (ChildPaths->IndexOf(Name.c_str()) < 0)
             {
               PanelItems->Add((TObject *)new TSessionFolderPanelItem(Name));
-              //FIXME ChildPaths->AddObject((TObject *)Name);
+              ChildPaths->Add(Name);
             }
           }
           else
@@ -529,17 +526,14 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         }
       }
     }
-
     if (!FNewSessionsFolder.empty())
     {
       PanelItems->Add((TObject *)new TSessionFolderPanelItem(FNewSessionsFolder));
     }
-
     if (PanelItems->GetCount() == 0)
     {
       PanelItems->Add((TObject *)new THintPanelItem(GetMsg(NEW_SESSION_HINT)));
     }
-
     TWinSCPFileSystem * OppositeFileSystem =
       dynamic_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
     if ((OppositeFileSystem != NULL) && !OppositeFileSystem->Connected() &&
@@ -560,6 +554,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
   {
     Result = false;
   }
+  DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1627,6 +1622,7 @@ void TWinSCPFileSystem::DoSynchronize(
   }
   catch (const std::exception & E)
   {
+    DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
     throw;
   }
@@ -1957,6 +1953,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const std::wstring Path,
       {
         Close = true;
       }
+      DEBUG_PRINTF(L"before HandleException");
       HandleException(&E);
     }
   }

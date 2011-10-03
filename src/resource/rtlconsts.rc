@@ -115,4 +115,6 @@ BEGIN
   SNotImplemented, "Not implemented. Code: %d"
   SOSError "System Error.  Code: %d.\n%s"
   SUnkOSError "A call to an OS function failed"
+
+  SDateEncodeError "Invalid argument to date encode"
 END

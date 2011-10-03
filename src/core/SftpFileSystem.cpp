@@ -2717,6 +2717,7 @@ void TSFTPFileSystem::DoStartup()
         }
         catch (const std::exception & E)
         {
+          DEBUG_PRINTF(L"before FTerminal->HandleException");
           FFixedPaths->Clear();
           FTerminal->LogEvent(FORMAT(L"Failed to decode %s extension",
             (SFTP_EXT_FSROOTS)));
@@ -3674,6 +3675,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       }
       catch (const EScpSkipFile & E)
       {
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E))
           {
@@ -4667,6 +4669,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
       }
       catch (EScpSkipFile &E)
       {
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
         // If ESkipFile occurs, just log it and continue with next file
         SUSPEND_OPERATION (
           // here a message to user was displayed, which was not appropriate
@@ -4736,6 +4739,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       }
       catch (const EScpSkipFile & E)
       {
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
           if (!FTerminal->HandleException(&E)) throw;
         );
@@ -5309,7 +5313,7 @@ void TSFTPFileSystem::SFTPSinkFile(std::wstring FileName,
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
     Params->Skipped = true;
-
+    DEBUG_PRINTF(L"before FTerminal->HandleException");
     SUSPEND_OPERATION (
       if (!FTerminal->HandleException(&E)) throw;
     );

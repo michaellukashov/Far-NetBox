@@ -75,6 +75,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   }
   catch (const std::exception & E)
   {
+    DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
   }
 }
@@ -103,6 +104,7 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 {
+  DEBUG_PRINTF(L"begin");
   bool Change = false;
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
@@ -128,6 +130,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
     do
     {
       Result = Menu(FMENU_WRAPMODE, GetMsg(PLUGIN_TITLE), L"", MenuItems);
+      DEBUG_PRINTF(L"Result = %d", Result);
 
       if (Result >= 0)
       {
@@ -202,7 +205,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
     }
     while (Result >= 0);
   }
-
+  DEBUG_PRINTF(L"end");
   return Change;
 }
 //---------------------------------------------------------------------------

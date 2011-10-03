@@ -6,8 +6,6 @@
 #include <boost/signals/signal3.hpp>
 #include <boost/bind.hpp>
 
-// #include <StrUtils.hpp>
-#include <math.h>
 #include "WinSCPPlugin.h"
 #include "WinSCPFileSystem.h"
 #include "FarTexts.h"
@@ -1215,14 +1213,17 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::AboutDialog()
 {
+  DEBUG_PRINTF(L"begin");
   TFarDialog * Dialog = new TAboutDialog(this);
   {
       BOOST_SCOPE_EXIT ( (&Dialog) )
       {
         delete Dialog;
       } BOOST_SCOPE_EXIT_END
+    DEBUG_PRINTF(L"before Dialog->ShowModal");
     Dialog->ShowModal();
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -7462,6 +7463,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
       FSynchronizing = false;
       UpdateControls();
 
+      DEBUG_PRINTF(L"before FarPlugin->HandleException");
       FarPlugin->HandleException(&E);
     }
   }

@@ -74,7 +74,7 @@ ExtException::ExtException(std::wstring Msg) :
   FMoreMessages(NULL)
 {
   // append message to the end to more messages
-  // DEBUG_PRINTF(L"ExtException");
+  // DEBUG_PRINTF(L"begin");
   if (!Msg.empty())
   {
     if (GetMessage().empty())

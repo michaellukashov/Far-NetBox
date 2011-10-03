@@ -40,6 +40,7 @@ public:
     base_fixture_t()
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
+        InitPlatformId();
     }
 
     virtual ~base_fixture_t()
@@ -328,6 +329,46 @@ BOOST_FIXTURE_TEST_CASE(test9, base_fixture_t)
     BOOST_TEST_MESSAGE("GetCurrentDir = " << ::W2MB(::GetCurrentDir().c_str()).c_str());
     BOOST_CHECK(::GetCurrentDir().size() > 0);
     BOOST_CHECK(::DirectoryExists(::GetCurrentDir()));
+}
+
+BOOST_FIXTURE_TEST_CASE(test10, base_fixture_t)
+{
+    TDateTime dt1(23, 58, 59, 102);
+    BOOST_TEST_MESSAGE("dt1 = " << dt1);
+    BOOST_CHECK(dt1 > 0.0);
+    unsigned int H, M, S, MS;
+    dt1.DecodeTime(H, M, S, MS);
+    BOOST_CHECK_EQUAL(H, 23);
+    BOOST_CHECK_EQUAL(M, 58);
+    BOOST_CHECK_EQUAL(S, 59);
+    BOOST_CHECK_EQUAL(MS, 102);
+}
+
+BOOST_FIXTURE_TEST_CASE(test11, base_fixture_t)
+{
+    TDateTime dt1 = EncodeDateVerbose(2009, 12, 29);
+    BOOST_TEST_MESSAGE("dt1 = " << dt1);
+    bg::date::ymd_type ymd(2009, 12, 29);
+    BOOST_TEST_MESSAGE("ymd.year = " << ymd.year << ", ymd.month = " << ymd.month << ", ymd.day = " << ymd.day);
+    unsigned int Y, M, D;
+    dt1.DecodeDate(Y, M, D);
+    BOOST_TEST_MESSAGE("Y = " << Y << ", M = " << M << ", D = " << D);
+    BOOST_CHECK(Y == ymd.year);
+    BOOST_CHECK(M == ymd.month);
+    BOOST_CHECK(D == ymd.day);
+    int DOW = ::DayOfWeek(dt1);
+    BOOST_CHECK_EQUAL(3, DOW);
+}
+
+BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
+{
+    BOOST_TEST_MESSAGE("Is2000 = " << Is2000());
+    BOOST_TEST_MESSAGE("IsWin7 = " << IsWin7());
+    BOOST_TEST_MESSAGE("IsExactly2008R2 = " << IsExactly2008R2());
+    TDateTime dt = ::EncodeDateVerbose(2009, 12, 29);
+    FILETIME ft = ::DateTimeToFileTime(dt, dstmWin);
+    BOOST_TEST_MESSAGE("ft.dwLowDateTime = " << ft.dwLowDateTime);
+    BOOST_TEST_MESSAGE("ft.dwHighDateTime = " << ft.dwHighDateTime);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

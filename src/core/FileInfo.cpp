@@ -7,7 +7,6 @@
 
 #include <Common.h>
 #include <Exceptions.h>
-// #include <Windows.hpp>
 #include "FileInfo.h"
 #include "FileBuffer.h"
 //---------------------------------------------------------------------------

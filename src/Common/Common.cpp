@@ -12,11 +12,14 @@
 #include "Interface.h"
 
 #include "FarPlugin.h"
-// #include <StrUtils.hpp>
-// #include <math.h>
 
 namespace alg = boost::algorithm;
-
+//---------------------------------------------------------------------------
+int Win32Platform = 0;
+int Win32MajorVersion = 0;
+int Win32MinorVersion = 0;
+int Win32BuildNumber = 0;
+// int Win32CSDVersion = 0;
 //---------------------------------------------------------------------------
 
 inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
@@ -32,6 +35,7 @@ inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
 {
+    // DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
     std::wstring Msg = FMTLOAD(ErrorID, data);
     // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
     throw ExtException(Msg);
@@ -834,6 +838,7 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
 
 std::wstring IntToHex(unsigned int Int, int MinChars)
 {
+    ::Error(SNotImplemented, 421);
     return L"";
 }
 
@@ -894,41 +899,127 @@ void ProcessLocalDirectory(std::wstring DirName,
   */
 }
 //---------------------------------------------------------------------------
-TDateTime EncodeDateVerbose(short int Year, short int Month, short int Day)
+class EConvertError : public ExtException
 {
-::Error(SNotImplemented, 44);
-/*
+    typedef ExtException parent;
+public:
+    EConvertError(std::wstring Msg) :
+        parent(Msg)
+    {}
+};
+
+//---------------------------------------------------------------------------
+void ConvertError(int ErrorID)
+{
+    std::wstring Msg = FMTLOAD(ErrorID, 0);
+    throw EConvertError(Msg);
+}
+
+//---------------------------------------------------------------------------
+typedef int TDayTable[12];
+static const TDayTable MonthDays[] = {
+  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+};
+
+static const int HoursPerDay = 24;
+static const int MinsPerDay  = HoursPerDay * 60;
+static const int SecsPerDay  = MinsPerDay * 60;
+static const int MSecsPerDay = SecsPerDay * 1000;
+
+// Days between 1/1/0001 and 12/31/1899
+static const int DateDelta = 693594;
+
+//---------------------------------------------------------------------------
+bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
+{
+  const TDayTable *DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
+  if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
+    (Day >= 1) && (Day <= (*DayTable)[Month]))
+  {
+    for (int I = 1; I <= Month - 1; I++)
+        Day += (*DayTable)[I - 1];
+    int I = Year - 1;
+    Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
+    // DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
+    return true;
+  }
+  return false;
+}
+
+TDateTime EncodeDate(int Year, int Month, int Day)
+{
+  TDateTime Result;
+  if (!TryEncodeDate(Year, Month, Day, Result))
+  {
+    ::ConvertError(SDateEncodeError);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day)
+{
   try
   {
     return EncodeDate(Year, Month, Day);
   }
-  catch (EConvertError & E)
+  catch (const EConvertError &E)
   {
-    throw EConvertError(FORMAT(L"%s [%d-%d-%d]", (E.Message, int(Year), int(Month), int(Day))));
+    throw EConvertError(FORMAT(L"%s [%d-%d-%d]", E.GetMessage().c_str(), int(Year), int(Month), int(Day)));
   }
-  */
   return TDateTime();
 }
 //---------------------------------------------------------------------------
-TDateTime EncodeTimeVerbose(short int Hour, short int Min, short int Sec, short int MSec)
+bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, TDateTime &Time)
 {
-::Error(SNotImplemented, 45);
-/*
+  bool Result = false;
+  // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
+  if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
+  {
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / (double)MSecsPerDay;
+    // DEBUG_PRINTF(L"Time = %f", Time);
+    Result = true;
+  }
+  return Result;
+}
+
+TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+{
+  TDateTime Result;
+  if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
+  {
+    ::ConvertError(STimeEncodeError);
+  }
+  // DEBUG_PRINTF(L"Result = %f", Result);
+  return Result;
+}
+//---------------------------------------------------------------------------
+TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+{
   try
   {
-    return EncodeTime(Hour, Min, Sec, MSec);
+    return ::EncodeTime(Hour, Min, Sec, MSec);
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%d:%d:%d.%d]", (E.Message, int(Hour), int(Min), int(Sec), int(MSec))));
+    throw EConvertError(FORMAT(L"%s [%d:%d:%d.%d]", E.GetMessage().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
   }
-  */
   return TDateTime();
 }
 
 TDateTime StrToDateTime(std::wstring Value)
 {
+    ::Error(SNotImplemented, 145);
   return TDateTime();
+}
+
+//---------------------------------------------------------------------------
+// DayOfWeek returns the day of the week of the given date. The result is an
+// integer between 1 and 7, corresponding to Sunday through Saturday.
+// This function is not ISO 8601 compliant, for that see the DateUtils unit.
+unsigned int DayOfWeek(const TDateTime DateTime)
+{
+  return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
 
 //---------------------------------------------------------------------------
@@ -1015,16 +1106,15 @@ static TDateTimeParams * GetDateTimeParams()
   return &DateTimeParams;
 }
 //---------------------------------------------------------------------------
-static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
-  TDateTime & Result)
+static void EncodeDSTMargin(const SYSTEMTIME &Date, unsigned short Year,
+  TDateTime &Result)
 {
-  ::Error(SNotImplemented, 46);
   if (Date.wYear == 0)
   {
     TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
     
-    Result = Temp; // FIXME + ((Date.wDayOfWeek - DayOfWeek(Temp) + 8) % 7) +
-      // (7 * (Date.wDay - 1));
+    Result = ((Date.wDayOfWeek - ::DayOfWeek(Temp) + 8) % 7) +
+      (7 * (Date.wDay - 1));
     if (Date.wDay == 5)
     {
       unsigned short Month = static_cast<unsigned short>(Date.wMonth + 1);
@@ -1036,17 +1126,18 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, unsigned short Year,
 
       if (Result >= EncodeDateVerbose(Year, Month, 1))
       {
-        // Result -= 7;
+        Result = Result - 7;
       }
     }
-    // Result += EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
-      // Date.wMilliseconds);
+    Result = Result + EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
+      Date.wMilliseconds);
   }
   else
   {
-    // Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
-      // EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
+    Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
+      EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
   }
+  // ::Error(SNotImplemented, 46);
 }
 //---------------------------------------------------------------------------
 static bool IsDateInDST(const TDateTime & DateTime)
@@ -1063,7 +1154,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
   static int DSTCacheCount = 0;
   static TCriticalSection Section;
 
-  TDateTimeParams * Params = GetDateTimeParams();
+  TDateTimeParams *Params = GetDateTimeParams();
   bool Result;
 
   // On some systems it occurs that StandardDate is unset, while
@@ -1077,7 +1168,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
   }
   else
   {
-    unsigned short Year, Month, Day;
+    unsigned int Year, Month, Day;
     ::DecodeDate(DateTime, Year, Month, Day);
 
     TDSTCache * CurrentCache = &DSTCache[0];
@@ -1118,17 +1209,15 @@ static bool IsDateInDST(const TDateTime & DateTime)
 
     if (CurrentCache->SummerDST)
     {
-      ::Error(SNotImplemented, 47);
-      Result = false; // FIXME
-        // (DateTime >= CurrentCache->DaylightDate) &&
-        // (DateTime < CurrentCache->StandardDate);
+      Result =
+        (DateTime >= CurrentCache->DaylightDate) &&
+        (DateTime < CurrentCache->StandardDate);
     }
     else
     {
-      ::Error(SNotImplemented, 48);
-      Result = false; // FIXME
-        // (DateTime < CurrentCache->StandardDate) ||
-        // (DateTime >= CurrentCache->DaylightDate);
+      Result =
+        (DateTime < CurrentCache->StandardDate) ||
+        (DateTime >= CurrentCache->DaylightDate);
     }
   }
   return Result;
@@ -1186,11 +1275,11 @@ __int64 Round(double Number)
 //---------------------------------------------------------------------------
 static __int64 DateTimeToUnix(const TDateTime DateTime)
 {
-  TDateTimeParams * Params = GetDateTimeParams();
-
-  ::Error(SNotImplemented, 50);
-  return 0; // Round(double(DateTime - Params->UnixEpoch) * 86400) +
-    // Params->CurrentDifferenceSec;
+  TDateTimeParams *Params = GetDateTimeParams();
+  double value = double(DateTime - Params->UnixEpoch) * 86400;
+  double intpart;
+  modf(value, &intpart);
+  return intpart + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
 FILETIME DateTimeToFileTime(const TDateTime DateTime,
@@ -1198,16 +1287,19 @@ FILETIME DateTimeToFileTime(const TDateTime DateTime,
 {
   FILETIME Result;
   __int64 UnixTimeStamp = DateTimeToUnix(DateTime);
+  // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
 
-  TDateTimeParams * Params = GetDateTimeParams();
+  TDateTimeParams *Params = GetDateTimeParams();
+  // DEBUG_PRINTF(L"Params->DaylightHack = %d", Params->DaylightHack);
   if (!Params->DaylightHack)
   {
     UnixTimeStamp += (IsDateInDST(DateTime) ?
       Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
     UnixTimeStamp -= Params->CurrentDaylightDifferenceSec;
   }
-
+  // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
   TIME_POSIX_TO_WIN(UnixTimeStamp, Result);
+  // DEBUG_PRINTF(L"Result = %d", Result.dwLowDateTime);
 
   return Result;
 }
@@ -1316,20 +1408,20 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      ::Error(SNotImplemented, 55);
-      // FIXME DateTime = DateTime - Params->CurrentDaylightDifference;
+      // ::Error(SNotImplemented, 55);
+      DateTime = DateTime - Params->CurrentDaylightDifference;
     }
 
     if (!IsDateInDST(DateTime))
     {
       if (DSTMode == dstmWin)
       {
-        // DateTime = DateTime - Params->DaylightDifference;
+        DateTime = DateTime - Params->DaylightDifference;
       }
     }
     else
     {
-      // DateTime = DateTime - Params->StandardDifference;
+      DateTime = DateTime - Params->StandardDifference;
     }
   }
   else
@@ -1338,11 +1430,11 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
     {
       if (IsDateInDST(DateTime))
       {
-        // DateTime = DateTime + Params->DaylightDifference;
+        DateTime = DateTime + Params->DaylightDifference;
       }
       else
       {
-        // DateTime = DateTime + Params->StandardDifference;
+        DateTime = DateTime + Params->StandardDifference;
       }
     }
   }
@@ -1438,20 +1530,101 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
 TDateTime Date()
 {
     TDateTime result;
+    ::Error(SNotImplemented, 44);
     return result;
 }
 
-void DecodeDate(const TDateTime &DateTime, unsigned short &Y,
-    unsigned short &M, unsigned short &D)
+void DivMod(const int Dividend, const unsigned int Divisor,
+  unsigned int &Result, unsigned int &Remainder)
 {
-    // FIXME
-    ::Error(SNotImplemented, 58);
+    Result = Dividend / Divisor;
+    Remainder = Dividend % Divisor;
 }
 
-void DecodeTime(const TDateTime &DateTime, unsigned short &H,
-    unsigned short &N, unsigned short &S, unsigned short &MS)
+bool DecodeDateFully(const TDateTime &DateTime,
+    unsigned int &Year, unsigned int &Month, unsigned int &Day, unsigned int &DOW)
 {
-    ::Error(SNotImplemented, 40);
+  static const int D1 = 365;
+  static const int D4 = D1 * 4 + 1;
+  static const int D100 = D4 * 25 - 1;
+  static const int D400 = D100 * 4 + 1;
+  bool Result = false;
+  int T = DateTimeToTimeStamp(DateTime).Date;
+  // DEBUG_PRINTF(L"DateTime = %f, T = %d", DateTime, T);
+  unsigned int Y = 0;
+  unsigned int M = 0;
+  unsigned int D = 0;
+  unsigned int I = 0;
+  if (T <= 0)
+  {
+    Year = 0;
+    Month = 0;
+    Day = 0;
+    DOW = 0;
+    return false;
+  }
+  else
+  {
+    DOW = T % 7 + 1;
+    T--;
+    Y = 1;
+    while (T >= D400)
+    {
+      T -= D400;
+      Y += 400;
+    }
+    DivMod(T, D100, I, D);
+    // DEBUG_PRINTF(L"T = %u, D100 = %u, I = %u, D = %u", T, D100, I, D);
+    if (I == 4)
+    {
+      I--;
+      D += D100;
+    }
+    Y += I * 100;
+    DivMod(D, D4, I, D);
+    // DEBUG_PRINTF(L"D4 = %u, I = %u, D = %u", D4, I, D);
+    Y += I * 4;
+    DivMod(D, D1, I, D);
+    // DEBUG_PRINTF(L"D1 = %u, I = %u, D = %u", D1, I, D);
+    if (I == 4)
+    {
+      I--;
+      D += D1;
+    }
+    Y += I;
+    Result = bg::gregorian_calendar::is_leap_year(Y);
+    const TDayTable *DayTable = &MonthDays[Result];
+    M = 1;
+    while (true)
+    {
+      I = (*DayTable)[M - 1];
+      // DEBUG_PRINTF(L"I = %u, D = %u", I, D);
+      if (D < I)
+        break;
+      D -= I;
+      M++;
+    }
+    Year = Y;
+    Month = M;
+    Day = D + 1;
+  }
+  return Result;
+}
+
+void DecodeDate(const TDateTime &DateTime, unsigned int &Year,
+    unsigned int &Month, unsigned int &Day)
+{
+  unsigned int Dummy = 0;
+  DecodeDateFully(DateTime, Year, Month, Day, Dummy);
+}
+
+void DecodeTime(const TDateTime &DateTime, unsigned int &Hour,
+    unsigned int &Min, unsigned int &Sec, unsigned int &MSec)
+{
+  unsigned int MinCount, MSecCount;
+  DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
+  DivMod(MinCount, 60, Hour, Min);
+  DivMod(MSecCount, 1000, Sec, MSec);
 }
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
@@ -1598,7 +1771,7 @@ TPasLibModule * FindModule(void * Instance)
 std::wstring LoadStr(int Ident, unsigned int MaxLength)
 {
     std::wstring Result;
-    HINSTANCE hInstance = FarPlugin->GetHandle();
+    HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
     // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     assert(hInstance != 0);
 
@@ -1807,75 +1980,68 @@ void AddToList(std::wstring & List, const std::wstring & Value, wchar_t Delimite
 //---------------------------------------------------------------------------
 bool Is2000()
 {
-  ::Error(SNotImplemented, 63);
-  return false; // FIXME (Win32MajorVersion >= 5);
+  return (Win32MajorVersion >= 5);
 }
 //---------------------------------------------------------------------------
 bool IsWin7()
 {
-  ::Error(SNotImplemented, 65);
-  return false; // FIXME
-    // (Win32MajorVersion > 6) ||
-    // ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
+  return (Win32MajorVersion > 6) ||
+    ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
 }
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
-::Error(SNotImplemented, 66);
-// FIXME
-return false;
-  // HANDLE Kernel32 = GetModuleHandle(kernel32);
-  // typedef BOOL WINAPI (* TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-  // TGetProductInfo GetProductInfo =
-      // (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfo");
-  // bool Result;
-  // if (GetProductInfo == NULL)
-  // {
-    // Result = false;
-  // }
-  // else
-  // {
-    // DWORD Type;
-    // GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
-    // switch (Type)
-    // {
-      // case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
-      // case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
-      // case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
-      // case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
-      // case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
-      // case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
-      // case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
-      // case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
-      // case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
-      // case 0x002A /*PRODUCT_HYPER*/:
-      // case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
-      // case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
-      // case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
-      // case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
-      // case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
-      // case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
-      // case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
-      // case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
-      // case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
-      // case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
-      // case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
-      // case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
-      // case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
-      // case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
-      // case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
-      // case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
-      // case 0x0011 /*PRODUCT_WEB_SERVE*/:
-      // case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
-        // Result = true;
-        // break;
+  bool Result = false;
+  HMODULE Kernel32 = GetModuleHandle(L"kernel32.dll");
+  // typedef bool BOOL;
+  // typedef unsigned long DWORD;
+  // typedef unsigned long *PDWORD;
+  typedef BOOL (WINAPI *TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+  TGetProductInfo GetProductInfo =
+      (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfoA");
+  if (GetProductInfo != NULL)
+  {
+    DWORD Type;
+    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
+    switch (Type)
+    {
+      case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
+      case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
+      case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
+      case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
+      case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
+      case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
+      case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
+      case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
+      case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
+      case 0x002A /*PRODUCT_HYPER*/:
+      case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
+      case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
+      case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
+      case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
+      case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
+      case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
+      case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
+      case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
+      case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
+      case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
+      case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
+      case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
+      case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
+      case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
+      case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
+      case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
+      case 0x0011 /*PRODUCT_WEB_SERVE*/:
+      case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
+        Result = true;
+        break;
 
-      // default:
-        // Result = false;
-        // break;
-    // }
-  // }
-  // return Result;
+      default:
+        Result = false;
+        break;
+    }
+  }
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -2128,9 +2294,12 @@ std::wstring FormatFloat(std::wstring Format, double value)
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 {
-    // FIXME
-    ::Error(SNotImplemented, 79);
     TTimeStamp result = {0, 0};
+    double fractpart, intpart;
+    fractpart = modf(DateTime, &intpart);
+    result.Time = fractpart * MSecsPerDay;
+    result.Date = intpart + DateDelta;
+    // DEBUG_PRINTF(L"DateTime = %f, time = %u, Date = %u", DateTime, result.Time, result.Date);
     return result;
 }
 
@@ -2241,9 +2410,10 @@ std::wstring Format(const wchar_t *format, ...)
 //---------------------------------------------------------------------------
 std::wstring FmtLoadStr(int id, ...)
 {
+    // DEBUG_PRINTF(L"begin: id = %d", id)
     std::wstring result;
     std::wstring format;
-    HINSTANCE hInstance = FarPlugin->GetHandle();
+    HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
     // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     format.resize(255);
     int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
@@ -2500,4 +2670,18 @@ std::wstring ExpandUNCFileName(std::wstring FileName)
 void FileSeek(HANDLE file, __int64 offset, __int64 size)
 {
     ::Error(SNotImplemented, 300);
+}
+
+void InitPlatformId()
+{
+  OSVERSIONINFO OSVersionInfo;
+  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  if (GetVersionEx(&OSVersionInfo) != 0)
+  {
+      Win32Platform = OSVersionInfo.dwPlatformId;
+      Win32MajorVersion = OSVersionInfo.dwMajorVersion;
+      Win32MinorVersion = OSVersionInfo.dwMinorVersion;
+      Win32BuildNumber = OSVersionInfo.dwBuildNumber;
+      // Win32CSDVersion = OSVersionInfo.szCSDVersion;
+  }
 }

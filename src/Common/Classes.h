@@ -879,31 +879,49 @@ private:
     bool FCaseSensitive;
 };
 
+/// TDateTime: number of days since 12/30/1899
 class TDateTime
 {
 public:
-    TDateTime()
+    TDateTime() :
+        FValue(0.0)
     {}
-    explicit TDateTime(double)
-    {}
+    explicit TDateTime(double value)
+    {
+        FValue = value;
+    }
     explicit TDateTime(unsigned int Hour,
-        unsigned int Min, unsigned int Sec, unsigned int MSec)
-    {}
+        unsigned int Min, unsigned int Sec, unsigned int MSec);
+    TDateTime(const TDateTime &rhs)
+    {
+        FValue = rhs.FValue;
+    }
+    TDateTime &operator = (const TDateTime &rhs)
+    {
+        FValue = rhs.FValue;
+        return *this;
+    }
     operator double() const
     {
-        return 0.0;
+        return FValue;
     }
-    TDateTime &operator - (const TDateTime &)
+    TDateTime &operator + (const TDateTime &rhs)
     {
+        FValue += rhs.FValue;
+        return *this;
+    }
+    TDateTime &operator - (const TDateTime &rhs)
+    {
+        FValue -= rhs.FValue;
         return *this;
     }
     void operator = (double value)
     {
-
+        FValue = value;
     }
     bool operator == (const TDateTime &rhs)
     {
-        return false;
+        return abs(FValue - rhs.FValue) < 0.000001;
     }
     bool operator != (const TDateTime &rhs)
     {
@@ -913,10 +931,12 @@ public:
     {
         return std::wstring();
     }
-    void DecodeDate(unsigned short &Y,
-        unsigned short &M, unsigned short &D);
-    void DecodeTime(unsigned short &H,
-        unsigned short &N, unsigned short &S, unsigned short &MS);
+    void DecodeDate(unsigned int &Y,
+        unsigned int &M, unsigned int &D);
+    void DecodeTime(unsigned int &H,
+        unsigned int &N, unsigned int &S, unsigned int &MS);
+private:
+    double FValue;
 };
 
 static TDateTime Now()
@@ -1117,8 +1137,8 @@ public:
 //---------------------------------------------------------------------------
 struct TTimeStamp
 {
-    int Time;
-    int Date;
+    int Time; // Number of milliseconds since midnight
+    int Date; // One plus number of days since 1/1/0001
 };
 
 //---------------------------------------------------------------------------
