@@ -2293,18 +2293,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
         int ColumnTypesCount = Mode.ColumnTypes ?
                                CommaCount(std::wstring(Mode.ColumnTypes)) + 1 : 0;
 
-        delete Mode.ColumnTypes;
-        delete Mode.ColumnWidths;
+        delete[] Mode.ColumnTypes;
+        delete[] Mode.ColumnWidths;
         if (Mode.ColumnTitles)
         {
             for (int Index = 0; Index < ColumnTypesCount; Index++)
             {
-                // delete Mode.ColumnTitles[Index]; // TODO: check memory leaks
+                // delete[] Mode.ColumnTitles[Index]; // TODO: check memory leaks
             }
             // delete[] Mode.ColumnTitles;
         }
-        delete Mode.StatusColumnTypes;
-        delete Mode.StatusColumnWidths;
+        delete[] Mode.StatusColumnTypes;
+        delete[] Mode.StatusColumnWidths;
         memset(&Mode, 0, sizeof(Mode));
     }
 }
