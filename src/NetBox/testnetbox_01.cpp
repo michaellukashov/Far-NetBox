@@ -381,4 +381,16 @@ BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
     BOOST_CHECK(int_value == 1234);
 }
 
+BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
+{
+    TStringList Strings1;
+    TStringList Strings2;
+    Strings1.AddStrings(&Strings2);
+    BOOST_CHECK(0 == Strings1.GetCount());
+    Strings2.Add(L"lalalla");
+    Strings1.AddStrings(&Strings2);
+    BOOST_CHECK(1 == Strings1.GetCount());
+    BOOST_CHECK(L"lalalla" == Strings1.GetString(0));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
