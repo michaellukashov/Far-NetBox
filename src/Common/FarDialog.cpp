@@ -2008,8 +2008,9 @@ void TFarEdit::SetHistoryMask(int Index, std::wstring value)
         }
         else
         {
-            GetDialogItem()->Mask = new wchar_t[value.size() + 1];
-            wcscpy_s((wchar_t *)GetDialogItem()->Mask, value.size(), value.c_str());
+            // GetDialogItem()->Mask = new wchar_t[value.size() + 1];
+            // wcscpy_s((wchar_t *)GetDialogItem()->Mask, value.size(), value.c_str());
+            GetDialogItem()->Mask = TCustomFarPlugin::DuplicateStr(value);
             if (!GetOem())
             {
                 StrToFar((wchar_t *)GetDialogItem()->Mask);
