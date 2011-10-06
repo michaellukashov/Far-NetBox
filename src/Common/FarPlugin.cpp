@@ -252,10 +252,7 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
     }
     else
     {
-        if (Another)
-            FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_PASSIVE);
-        else
-            FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_ACTIVE);
+        FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
     }
 
     if (Info.Plugin)
@@ -2090,22 +2087,20 @@ void TCustomFarFileSystem::ResetCachedInfo()
 //---------------------------------------------------------------------------
 TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
 {
-    DEBUG_PRINTF(L"Another = %d", Another);
+    // DEBUG_PRINTF(L"Another = %d", Another);
     if (FPanelInfo[Another] == NULL)
     {
         ::PanelInfo *Info = new ::PanelInfo;
-        bool res = false;
-        if (Another)
-            res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_PASSIVE);
-        else
-            res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_ACTIVE);
-        DEBUG_PRINTF(L"res = %d", res);
-        if (!res) // FarControl(Another == 0 ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO, Info))
+        bool res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)Info,
+            Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE);
+        // DEBUG_PRINTF(L"res = %d", res);
+        if (!res)
         {
             memset(Info, 0, sizeof(*Info));
             assert(false);
         }
-        FPanelInfo[Another] = new TFarPanelInfo(Info, (Another == 0 ? this : NULL));
+        // DEBUG_PRINTF(L"Info = %x", Info);
+        FPanelInfo[Another] = new TFarPanelInfo(Info, Another == 0 ? this : NULL);
     }
     return FPanelInfo[Another];
 }
@@ -2263,7 +2258,7 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
     assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
     ClearPanelMode(FPanelModes[Mode]);
-    wchar_t *Titles[PANEL_MODES_COUNT];
+    static wchar_t *Titles[PANEL_MODES_COUNT];
     FPanelModes[Mode].ColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnTypes));
     FPanelModes[Mode].ColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnWidths));
     if (ColumnTitles)
@@ -2277,6 +2272,10 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
                 TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));
         }
         FPanelModes[Mode].ColumnTitles = Titles;
+    }
+    else
+    {
+        FPanelModes[Mode].ColumnTitles = NULL;
     }
     FPanelModes[Mode].FullScreen = FullScreen;
     FPanelModes[Mode].DetailedStatus = DetailedStatus;
@@ -2294,18 +2293,18 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
         int ColumnTypesCount = Mode.ColumnTypes ?
                                CommaCount(std::wstring(Mode.ColumnTypes)) + 1 : 0;
 
-        delete[] Mode.ColumnTypes;
-        delete[] Mode.ColumnWidths;
+        delete Mode.ColumnTypes;
+        delete Mode.ColumnWidths;
         if (Mode.ColumnTitles)
         {
             for (int Index = 0; Index < ColumnTypesCount; Index++)
             {
-                delete[] Mode.ColumnTitles[Index];
+                // delete Mode.ColumnTitles[Index]; // TODO: check memory leaks
             }
-            delete[] Mode.ColumnTitles;
+            // delete[] Mode.ColumnTitles;
         }
-        delete[] Mode.StatusColumnTypes;
-        delete[] Mode.StatusColumnWidths;
+        delete Mode.StatusColumnTypes;
+        delete Mode.StatusColumnWidths;
         memset(&Mode, 0, sizeof(Mode));
     }
 }

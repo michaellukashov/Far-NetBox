@@ -850,7 +850,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
 bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 {
   bool Handled = false;
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
 
   TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
@@ -998,7 +998,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
       Handled = true;
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
   return Handled;
 }
 //---------------------------------------------------------------------------
