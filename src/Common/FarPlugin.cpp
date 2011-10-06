@@ -2237,7 +2237,7 @@ TObjectList *TCustomFarFileSystem::CreatePanelItemList(
 //---------------------------------------------------------------------------
 TFarPanelModes::TFarPanelModes() : TObject()
 {
-    memset(FPanelModes, 0, sizeof(FPanelModes));
+    memset(&FPanelModes, 0, sizeof(FPanelModes));
     FReferenced = false;
 }
 //---------------------------------------------------------------------------
