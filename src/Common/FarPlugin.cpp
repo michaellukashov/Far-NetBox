@@ -243,6 +243,7 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
         HANDLE Plugin)
 {
+    DEBUG_PRINTF(L"begin");
     TCustomFarFileSystem *Result = NULL;
     PanelInfo Info;
     if (FarVersion() >= FAR170BETA5)
@@ -274,7 +275,7 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
             Index++;
         }
     }
-
+    DEBUG_PRINTF(L"end");
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1782,8 +1783,9 @@ int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD *Rec)
 //---------------------------------------------------------------------------
 unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
-TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin):
-    TObject()
+TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin) :
+    TObject(),
+    FPlugin(NULL)
 {
     FCriticalSection = new TCriticalSection;
     FPlugin = APlugin;
@@ -2088,6 +2090,7 @@ void TCustomFarFileSystem::ResetCachedInfo()
 //---------------------------------------------------------------------------
 TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
 {
+    DEBUG_PRINTF(L"Another = %d", Another);
     if (FPanelInfo[Another] == NULL)
     {
         ::PanelInfo *Info = new ::PanelInfo;
@@ -2096,6 +2099,7 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
             res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_PASSIVE);
         else
             res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_ACTIVE);
+        DEBUG_PRINTF(L"res = %d", res);
         if (!res) // FarControl(Another == 0 ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO, Info))
         {
             memset(Info, 0, sizeof(*Info));
@@ -2161,6 +2165,7 @@ bool TCustomFarFileSystem::IsActiveFileSystem()
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::IsLeft()
 {
+    DEBUG_PRINTF(L"IsLeft");
     return (GetPanelInfo(0)->GetBounds().Left <= 0);
 }
 //---------------------------------------------------------------------------
@@ -2572,7 +2577,7 @@ TFarPanelInfo::TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner
     FItems(NULL),
     FOwner(NULL)
 {
-    // if (!APanelInfo) _asm int 3;
+    // if (!APanelInfo) throw ExtException(L"");
     assert(APanelInfo);
     FPanelInfo = APanelInfo;
     FOwner = AOwner;
