@@ -2426,7 +2426,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-        ::Error(SNotImplemented, 108);
+        // ::Error(SNotImplemented, 108);
       } BOOST_SCOPE_EXIT_END
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (int Index = Configuration->GetTunnelLocalPortNumberLow();
