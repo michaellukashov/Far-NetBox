@@ -3,6 +3,8 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/signals/signal1.hpp>
+#include <boost/signals/signal2.hpp>
 #include <boost/signals/signal3.hpp>
 #include <boost/bind.hpp>
 
@@ -251,8 +253,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   TFarButton(Dialog)
 {
   SetCenterGroup(true);
-  ::Error(SNotImplemented, 102);
-  // FIXME SetOnClick(&TTabbedDialog::TabButtonClick); // Dialog->
+  SetOnClick(boost::bind(&TTabbedDialog::TabButtonClick, Dialog, _1, _2));
 }
 //---------------------------------------------------------------------------
 void TTabButton::SetTabName(std::wstring value)
