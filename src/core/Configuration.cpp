@@ -621,6 +621,7 @@ void * TConfiguration::GetApplicationInfo()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileProductName(const std::wstring FileName)
 {
+    DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return GetFileFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
@@ -707,6 +708,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
   TGuard Guard(FCriticalSection);
 
   std::wstring Result;
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   void * Info = GetFileApplicationInfo(FileName);
   {
       BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
@@ -720,6 +722,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
     {
       TTranslation Translation;
       Translation = GetTranslation(Info, 0);
+      DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %d, CharSet = %d", Info, Key.c_str(), Translation.Language, Translation.CharSet);
       Result = ::GetFileInfoString(Info, Translation, Key);
     }
     else
@@ -732,6 +735,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileInfoString(const std::wstring Key)
 {
+    DEBUG_PRINTF(L"Key = %s", Key.c_str());
   return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------

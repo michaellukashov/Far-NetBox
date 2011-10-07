@@ -239,7 +239,7 @@ std::wstring GetFileInfoString(void * FileInfo,
 {
   wchar_t *P;
   UINT Len;
-
+  DEBUG_PRINTF(L"StringName = %s", StringName.c_str());
   if (!VerQueryValue(FileInfo, std::wstring((L"\\StringFileInfo\\") +
     IntToHex(Translation.Language, 4) +
     IntToHex(Translation.CharSet, 4) +

@@ -791,7 +791,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         } BOOST_SCOPE_EXIT_END
         FarWrapText(Message, MessageLines, MaxMessageWidth);
         int MaxLen = Plugin->MaxLength(MessageLines);
-
+        DEBUG_PRINTF(L"MaxLen = %d, Params->MoreMessages = %x", MaxLen, Params->MoreMessages);
         if (Params->MoreMessages != NULL)
         {
             MoreMessageLines = new TStringList();
@@ -810,6 +810,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         }
 
         // temporary
+        DEBUG_PRINTF(L"MaxMessageWidth = %d, Title = %s", MaxMessageWidth, Title.c_str());
         SetSize(TPoint(MaxMessageWidth, 10));
         SetCaption(Title);
         SetFlags(GetFlags() |
@@ -839,6 +840,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         int ButtonLines = 1;
         TFarButton *Button = NULL;
         FTimeoutButton = NULL;
+        DEBUG_PRINTF(L"Buttons->GetCount = %d", Buttons->GetCount());
         for (int Index = 0; Index < Buttons->GetCount(); Index++)
         {
             TFarButton *PrevButton = Button;
@@ -847,6 +849,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             Button->SetBrackets(brNone);
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
+            DEBUG_PRINTF(L"Caption = %s", Caption.c_str());
             if ((Params->Timeout > 0) &&
                 (Params->TimeoutButton == (unsigned int)Index))
             {
@@ -887,14 +890,17 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 ButtonLines++;
             }
 
+            DEBUG_PRINTF(L"Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetRight(), GetBorderBox()->GetLeft());
             if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
             {
                 MaxLen = Button->GetRight() - GetBorderBox()->GetLeft();
             }
+            DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
 
             SetNextItemPosition(ipRight);
         }
 
+        DEBUG_PRINTF(L"Params->CheckBoxLabel = %s", Params->CheckBoxLabel.c_str());
         if (!Params->CheckBoxLabel.empty())
         {
             SetNextItemPosition(ipNewLine);
@@ -912,6 +918,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         }
 
         TRect rect = GetClientRect();
+        DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
         TPoint S(
             rect.Left + MaxLen + (- (rect.Right + 1)),
             rect.Top + MessageLines->GetCount() +
@@ -936,7 +943,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
             S.y += MoreMessagesLister->GetHeight() + 1;
         }
-
+        DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
         SetSize(S);
     }
 }
@@ -1142,6 +1149,7 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     }
 
     int Result;
+    DEBUG_PRINTF(L"Buttons = %x, Params = %x, Title = %s", Buttons, Params, Title.c_str());
     if (Buttons != NULL)
     {
         TFarMessageParams DefaultParams;
