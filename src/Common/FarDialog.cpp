@@ -1197,7 +1197,9 @@ void TFarDialogItem::UpdateData(const std::wstring value)
     {
         StrToFar(FarData);
     }
-    wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
+    GetDialogItem()->MaxLen = FarData.size();
 }
 //---------------------------------------------------------------------------
 std::wstring TFarDialogItem::GetData()
@@ -1977,7 +1979,9 @@ long TFarEdit::ItemProc(int Msg, long Param)
     if (Msg == DN_EDITCHANGE)
     {
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
-        wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
+        GetDialogItem()->MaxLen = Data.size();
     }
     return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2148,9 +2152,10 @@ void TFarList::UpdateItem(int Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
     std::wstring value = GetString(Index).substr(1, sizeof(ListItem->Text) - 1);
-    wcscpy_s((wchar_t *)ListItem->Text,
-        value.size(),
-        value.c_str());
+    // wcscpy_s((wchar_t *)ListItem->Text,
+        // value.size(),
+        // value.c_str());
+    ListItem->Text = TCustomFarPlugin::DuplicateStr(value, true);
     if (!GetDialogItem()->GetOem())
     {
         StrToFar(std::wstring(ListItem->Text));
@@ -2545,7 +2550,9 @@ long TFarComboBox::ItemProc(int Msg, long Param)
     {
         // strcpy(GetDialogItem()->PtrData, ((FarDialogItem *)Param)->Data);
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
-        wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
+        GetDialogItem()->MaxLen = Data.size();
     }
 
     if (FList->ItemProc(Msg, Param))
