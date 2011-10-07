@@ -1133,7 +1133,7 @@ int TCustomFarPlugin::Message(unsigned int Flags,
 {
     DEBUG_PRINTF(L"Message = %s", Message.c_str());
     // throw ExtException(Message);
-    _asm int 3;
+    // _asm int 3;
     // when message is shown while some "custom" output is on screen,
     // make the output actually background of FAR screen
     if (FTerminalScreenShowing)
