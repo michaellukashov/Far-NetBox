@@ -1163,8 +1163,8 @@ unsigned int TFarDialogItem::GetFlags()
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
-    DEBUG_PRINTF(L"value = %s", value.c_str());
-    DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
+    // DEBUG_PRINTF(L"value = %s", value.c_str());
+    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
     std::wstring FarData = value; // .substr(0, sizeof(GetDialogItem()->PtrData));
     // DEBUG_PRINTF(L"FarData = %s", FarData.c_str());
     if (!GetOem())
@@ -1178,7 +1178,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
     // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
     GetDialogItem()->MaxLen = FarData.size();
-    DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
+    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
     DialogChange();
 }
 //---------------------------------------------------------------------------
@@ -2259,7 +2259,7 @@ void TFarList::Changed()
 void TFarList::SetSelected(int value)
 {
     assert(GetDialogItem() != NULL);
-    DEBUG_PRINTF(L"value = %d", value);
+    // DEBUG_PRINTF(L"value = %d", value);
     if (GetSelectedInt(false) != value)
     {
         if (GetDialogItem()->GetDialog()->GetHandle())
@@ -2355,7 +2355,7 @@ int TFarList::GetSelectedInt(bool Init)
 {
     int Result;
     assert(GetDialogItem() != NULL);
-    DEBUG_PRINTF(L"GetCount = %d", GetCount());
+    // DEBUG_PRINTF(L"GetCount = %d, Init = %d", GetCount(), Init);
     if (GetCount() == 0)
     {
         Result = -1;
@@ -2374,9 +2374,9 @@ int TFarList::GetSelectedInt(bool Init)
 //---------------------------------------------------------------------------
 int TFarList::GetSelected()
 {
-    DEBUG_PRINTF(L"begin");
+    // DEBUG_PRINTF(L"begin");
     int Result = GetSelectedInt(false);
-    DEBUG_PRINTF(L"Result = %d", Result);
+    // DEBUG_PRINTF(L"Result = %d", Result);
 
     if ((Result < 0) && (GetCount() > 0))
     {
@@ -2415,9 +2415,9 @@ void TFarList::SetFlag(int Index, int Flag, bool value)
 //---------------------------------------------------------------------------
 void TFarList::Init()
 {
-    DEBUG_PRINTF(L"begin");
+    // DEBUG_PRINTF(L"begin");
     UpdatePosition(GetSelectedInt(true));
-    DEBUG_PRINTF(L"end");
+    // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 long TFarList::ItemProc(int Msg, long Param)
