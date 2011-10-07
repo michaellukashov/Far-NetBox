@@ -3,6 +3,8 @@
 
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
+#include <boost/signals/signal1.hpp>
+#include <boost/signals/signal2.hpp>
 #include <boost/signals/signal3.hpp>
 #include <boost/bind.hpp>
 
@@ -251,8 +253,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   TFarButton(Dialog)
 {
   SetCenterGroup(true);
-  ::Error(SNotImplemented, 102);
-  // FIXME SetOnClick(&TTabbedDialog::TabButtonClick); // Dialog->
+  SetOnClick(boost::bind(&TTabbedDialog::TabButtonClick, Dialog, _1, _2));
 }
 //---------------------------------------------------------------------------
 void TTabButton::SetTabName(std::wstring value)
@@ -1656,8 +1657,8 @@ private:
 //---------------------------------------------------------------------------
 static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP };
 //---------------------------------------------------------------------------
-TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
-  TSessionActionEnum Action) : TTabbedDialog(AFarPlugin, tabCount),
+TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) :
+  TTabbedDialog(AFarPlugin, tabCount),
   FAction(Action)
 {
   Self = this;
@@ -1927,15 +1928,15 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_UNIX));
-  // FIXME Button->SetOnClick(UnixEnvironmentButtonClick);
-  ::Error(SNotImplemented, 107);
+  // ::Error(SNotImplemented, 107);
+  Button->SetOnClick(boost::bind(&TSessionDialog::UnixEnvironmentButtonClick, this, _1, _2));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_WINDOWS));
-  // FIXME Button->SetOnClick(WindowsEnvironmentButtonClick);
+  Button->SetOnClick(boost::bind(&TSessionDialog::WindowsEnvironmentButtonClick, this, _1, _2));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipNewLine);
@@ -2420,12 +2421,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   TunnelLocalPortNumberEdit = new TFarComboBox(this);
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
-  // TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
+  TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
   {
       BOOST_SCOPE_EXIT ( (&Self) )
       {
-        // FIXME Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-        ::Error(SNotImplemented, 108);
+        Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
+        // ::Error(SNotImplemented, 108);
       } BOOST_SCOPE_EXIT_END
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (int Index = Configuration->GetTunnelLocalPortNumberLow();
@@ -2487,15 +2488,15 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   CipherUpButton->SetCaption(GetMsg(LOGIN_UP));
   CipherUpButton->Move(0, 1);
   CipherUpButton->SetResult(-1);
-  // FIXME CipherUpButton->SetOnClick(CipherButtonClick);
-  ::Error(SNotImplemented, 109);
+  // ::Error(SNotImplemented, 109);
+  CipherUpButton->SetOnClick(boost::bind(&TSessionDialog::CipherButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipBelow);
 
   CipherDownButton = new TFarButton(this);
   CipherDownButton->SetCaption(GetMsg(LOGIN_DOWN));
   CipherDownButton->SetResult(1);
-  // FIXME CipherDownButton->SetOnClick(CipherButtonClick);
+  CipherDownButton->SetOnClick(boost::bind(&TSessionDialog::CipherButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipNewLine);
 
@@ -2562,14 +2563,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
   KexUpButton->SetCaption(GetMsg(LOGIN_UP));
   KexUpButton->Move(0, 1);
   KexUpButton->SetResult(-1);
-  // FIXME KexUpButton->SetOnClick(KexButtonClick);
+  KexUpButton->SetOnClick(boost::bind(&TSessionDialog::KexButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipBelow);
 
   KexDownButton = new TFarButton(this);
   KexDownButton->SetCaption(GetMsg(LOGIN_DOWN));
   KexDownButton->SetResult(1);
-  // FIXME KexDownButton->SetOnClick(KexButtonClick);
+  KexDownButton->SetOnClick(boost::bind(&TSessionDialog::KexButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipNewLine);
 
@@ -2601,8 +2602,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin,
 
   AuthGSSAPICheck2 = new TFarCheckBox(this);
   AuthGSSAPICheck2->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI));
-  // FIXME AuthGSSAPICheck2->SetOnAllowChange(AuthGSSAPICheckAllowChange);
-  ::Error(SNotImplemented, 110);
+  // ::Error(SNotImplemented, 110);
+  AuthGSSAPICheck2->SetOnAllowChange(boost::bind(&TSessionDialog::AuthGSSAPICheckAllowChange, this, _1, _2, _3));
 
   Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(LOGIN_AUTH_PARAMS_GROUP));

@@ -551,9 +551,18 @@ public:
         ::Error(SNotImplemented, 9);
     }
     std::wstring GetCommaText() const;
-    void AddStrings(TStrings *value)
+    void AddStrings(TStrings *Strings)
     {
-        ::Error(SNotImplemented, 10);
+        // ::Error(SNotImplemented, 10);
+      BeginUpdate();
+      // try
+        for (int I = 0; I < Strings->GetCount(); I++)
+        {
+          AddObject(Strings->GetString(I), Strings->GetObject(I));
+        }
+      // finally
+        EndUpdate();
+      // end;
     }
     void Append(const std::wstring &value)
     {

@@ -371,4 +371,26 @@ BOOST_FIXTURE_TEST_CASE(test12, base_fixture_t)
     BOOST_TEST_MESSAGE("ft.dwHighDateTime = " << ft.dwHighDateTime);
 }
 
+BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
+{
+    std::wstring str_value = ::IntToStr(1234);
+    BOOST_TEST_MESSAGE("str_value = " << ::W2MB(str_value.c_str()));
+    BOOST_CHECK(::W2MB(str_value.c_str()) == "1234");
+    int int_value = ::StrToInt(L"1234");
+    BOOST_TEST_MESSAGE("int_value = " << int_value);
+    BOOST_CHECK(int_value == 1234);
+}
+
+BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
+{
+    TStringList Strings1;
+    TStringList Strings2;
+    Strings1.AddStrings(&Strings2);
+    BOOST_CHECK(0 == Strings1.GetCount());
+    Strings2.Add(L"lalalla");
+    Strings1.AddStrings(&Strings2);
+    BOOST_CHECK(1 == Strings1.GetCount());
+    BOOST_CHECK(L"lalalla" == Strings1.GetString(0));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

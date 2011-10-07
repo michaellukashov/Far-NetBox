@@ -2047,17 +2047,14 @@ bool IsExactly2008R2()
 //---------------------------------------------------------------------------
 std::wstring IntToStr(int value)
 {
-    // FIXME
-    ::Error(SNotImplemented, 67);
-    std::wstring result;
+    std::wstring result = boost::lexical_cast<std::wstring>(value);
     return result;
 }
 
 int StrToInt(const std::wstring value)
 {
-    // FIXME
-    ::Error(SNotImplemented, 68);
-    return 0;
+    int result = boost::lexical_cast<int>(value);
+    return result;
 }
 
 __int64 ToInt(const std::wstring value)

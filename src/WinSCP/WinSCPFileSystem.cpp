@@ -603,15 +603,18 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FocusSession(TSessionData * Data)
 {
+  DEBUG_PRINTF(L"begin");
   TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
   if (SessionItem != NULL)
   {
     GetPanelInfo()->SetFocusedItem(SessionItem);
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
+  DEBUG_PRINTF(L"begin");
   TSessionData * OrigData = Data;
   bool NewData = !Data;
   bool FillInConnect = !Edit && !Data->GetCanLogin();
@@ -702,6 +705,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
       }
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
@@ -846,6 +850,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
 bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 {
   bool Handled = false;
+  // DEBUG_PRINTF(L"begin");
 
   TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
@@ -993,11 +998,13 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
       Handled = true;
     }
   }
+  // DEBUG_PRINTF(L"end");
   return Handled;
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::CreateLink()
 {
+  DEBUG_PRINTF(L"begin");
   RequireCapability(fcResolveSymlink);
   RequireCapability(fcSymbolicLink);
 
@@ -1045,6 +1052,7 @@ void TWinSCPFileSystem::CreateLink()
       RedrawPanel();
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TemporarilyDownloadFiles(
@@ -1376,6 +1384,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 {
+  DEBUG_PRINTF(L"1");
   return
     (GetPanelInfo()->GetSelectedCount() > 0) ||
     (GetAnotherPanelInfo()->GetSelectedCount() > 0);
@@ -1384,6 +1393,7 @@ bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 void TWinSCPFileSystem::GetSynchronizeOptions(
   int Params, TSynchronizeOptions & Options)
 {
+  DEBUG_PRINTF(L"begin");
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
     Options.Filter = new TStringList();
@@ -1400,6 +1410,7 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
     }
     Options.Filter->Sort();
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FullSynchronize(bool Source)
@@ -1692,6 +1703,7 @@ void TWinSCPFileSystem::CustomCommandGetParamValue(
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TransferFiles(bool Move)
 {
+  DEBUG_PRINTF(L"begin");
   if (Move)
   {
     RequireCapability(fcRemoteMove);
@@ -1735,10 +1747,12 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
       }
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::RenameFile()
 {
+  DEBUG_PRINTF(L"begin");
   TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
   assert(PanelItem != NULL);
 
@@ -1762,10 +1776,12 @@ void TWinSCPFileSystem::RenameFile()
       }
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FileProperties()
 {
+  DEBUG_PRINTF(L"begin");
   TStrings * FileList = CreateSelectedFileList(osRemote);
   if (FileList)
   {
@@ -1821,6 +1837,7 @@ void TWinSCPFileSystem::FileProperties()
       }
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::InsertTokenOnCommandLine(std::wstring Token, bool Separate)
@@ -2776,6 +2793,7 @@ bool TWinSCPFileSystem::ImportSessions(TList * PanelItems, bool /*Move*/,
 TStrings * TWinSCPFileSystem::CreateFocusedFileList(
   TOperationSide Side, TFarPanelInfo * PanelInfo)
 {
+  DEBUG_PRINTF(L"begin");
   if (PanelInfo == NULL)
   {
     PanelInfo = this->GetPanelInfo();
@@ -2798,6 +2816,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
     }
     Result->AddObject(FileName, (TObject *)PanelItem->GetUserData());
   }
+  DEBUG_PRINTF(L"end");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -3235,6 +3254,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   TOperationSide Side, bool /*Temp*/, const std::wstring & FileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
+  DEBUG_PRINTF(L"begin");
   USEDPARAM(Side);
 
   if ((Operation != foCalculateSize) &&
@@ -3287,6 +3307,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       FSynchronizeController->LogOperation(soDelete, FileName);
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ShowOperationProgress(

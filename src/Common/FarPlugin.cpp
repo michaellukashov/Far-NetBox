@@ -243,6 +243,7 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
         HANDLE Plugin)
 {
+    DEBUG_PRINTF(L"begin");
     TCustomFarFileSystem *Result = NULL;
     PanelInfo Info;
     if (FarVersion() >= FAR170BETA5)
@@ -251,10 +252,7 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
     }
     else
     {
-        if (Another)
-            FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_PASSIVE);
-        else
-            FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_ACTIVE);
+        FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
     }
 
     if (Info.Plugin)
@@ -274,7 +272,7 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
             Index++;
         }
     }
-
+    DEBUG_PRINTF(L"end");
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -1782,8 +1780,9 @@ int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD *Rec)
 //---------------------------------------------------------------------------
 unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
-TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin):
-    TObject()
+TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin) :
+    TObject(),
+    FPlugin(NULL)
 {
     FCriticalSection = new TCriticalSection;
     FPlugin = APlugin;
@@ -2088,20 +2087,20 @@ void TCustomFarFileSystem::ResetCachedInfo()
 //---------------------------------------------------------------------------
 TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
 {
+    // DEBUG_PRINTF(L"Another = %d", Another);
     if (FPanelInfo[Another] == NULL)
     {
         ::PanelInfo *Info = new ::PanelInfo;
-        bool res = false;
-        if (Another)
-            res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_PASSIVE);
-        else
-            res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, PANEL_ACTIVE);
-        if (!res) // FarControl(Another == 0 ? FCTL_GETPANELINFO : FCTL_GETANOTHERPANELINFO, Info))
+        bool res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)Info,
+            Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE);
+        // DEBUG_PRINTF(L"res = %d", res);
+        if (!res)
         {
             memset(Info, 0, sizeof(*Info));
             assert(false);
         }
-        FPanelInfo[Another] = new TFarPanelInfo(Info, (Another == 0 ? this : NULL));
+        // DEBUG_PRINTF(L"Info = %x", Info);
+        FPanelInfo[Another] = new TFarPanelInfo(Info, Another == 0 ? this : NULL);
     }
     return FPanelInfo[Another];
 }
@@ -2161,6 +2160,7 @@ bool TCustomFarFileSystem::IsActiveFileSystem()
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::IsLeft()
 {
+    DEBUG_PRINTF(L"IsLeft");
     return (GetPanelInfo(0)->GetBounds().Left <= 0);
 }
 //---------------------------------------------------------------------------
@@ -2232,7 +2232,7 @@ TObjectList *TCustomFarFileSystem::CreatePanelItemList(
 //---------------------------------------------------------------------------
 TFarPanelModes::TFarPanelModes() : TObject()
 {
-    memset(FPanelModes, 0, sizeof(FPanelModes));
+    memset(&FPanelModes, 0, sizeof(FPanelModes));
     FReferenced = false;
 }
 //---------------------------------------------------------------------------
@@ -2258,7 +2258,7 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
     assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
     ClearPanelMode(FPanelModes[Mode]);
-    wchar_t *Titles[PANEL_MODES_COUNT];
+    static wchar_t *Titles[PANEL_MODES_COUNT];
     FPanelModes[Mode].ColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnTypes));
     FPanelModes[Mode].ColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(ColumnWidths));
     if (ColumnTitles)
@@ -2272,6 +2272,10 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
                 TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));
         }
         FPanelModes[Mode].ColumnTitles = Titles;
+    }
+    else
+    {
+        FPanelModes[Mode].ColumnTitles = NULL;
     }
     FPanelModes[Mode].FullScreen = FullScreen;
     FPanelModes[Mode].DetailedStatus = DetailedStatus;
@@ -2295,9 +2299,9 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
         {
             for (int Index = 0; Index < ColumnTypesCount; Index++)
             {
-                delete[] Mode.ColumnTitles[Index];
+                // delete[] Mode.ColumnTitles[Index]; // TODO: check memory leaks
             }
-            delete[] Mode.ColumnTitles;
+            // delete[] Mode.ColumnTitles;
         }
         delete[] Mode.StatusColumnTypes;
         delete[] Mode.StatusColumnWidths;
@@ -2572,7 +2576,7 @@ TFarPanelInfo::TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner
     FItems(NULL),
     FOwner(NULL)
 {
-    // if (!APanelInfo) _asm int 3;
+    // if (!APanelInfo) throw ExtException(L"");
     assert(APanelInfo);
     FPanelInfo = APanelInfo;
     FOwner = AOwner;

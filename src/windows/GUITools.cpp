@@ -17,7 +17,6 @@
 //---------------------------------------------------------------------------
 bool FindFile(std::wstring & Path)
 {
-  ::Error(SNotImplemented, 95);
   bool Result = FileExists(Path);
   if (!Result)
   {
@@ -36,6 +35,7 @@ bool FindFile(std::wstring & Path)
       }
     }
   }
+  ::Error(SNotImplemented, 95);
   return Result;
 }
 //---------------------------------------------------------------------------
