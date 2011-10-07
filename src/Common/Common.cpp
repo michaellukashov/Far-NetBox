@@ -838,8 +838,6 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
 
 std::wstring IntToHex(unsigned int Int, int MinChars)
 {
-    // std::wstring result(20, 0); // = FmtStr(Result, '%.*x', [Digits, Value]);
-    // _ltow(Int, (wchar_t *)result.c_str(), 16);
     std::wstringstream ss;
     ss << std::setfill(L'0') << std::setw(MinChars) << std::hex << Int;
     return ss.str();
