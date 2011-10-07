@@ -2353,7 +2353,7 @@ int TFarList::GetVisibleCount()
 //---------------------------------------------------------------------------
 int TFarList::GetSelectedInt(bool Init)
 {
-    int Result;
+    int Result = -1;
     assert(GetDialogItem() != NULL);
     // DEBUG_PRINTF(L"GetCount = %d, Init = %d", GetCount(), Init);
     if (GetCount() == 0)
@@ -2366,7 +2366,9 @@ int TFarList::GetSelectedInt(bool Init)
     }
     else
     {
-        Result = IndexOf(GetDialogItem()->GetDialogItem()->PtrData);
+        const wchar_t *PtrData = GetDialogItem()->GetDialogItem()->PtrData;
+        if (PtrData)
+            Result = IndexOf(PtrData);
     }
 
     return Result;
