@@ -393,4 +393,11 @@ BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
     BOOST_CHECK(L"lalalla" == Strings1.GetString(0));
 }
 
+BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
+{
+    std::wstring res = ::IntToHex(10, 2);
+    BOOST_TEST_MESSAGE("res = " << ::W2MB(res.c_str()));
+    BOOST_CHECK(res == L"0a");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
