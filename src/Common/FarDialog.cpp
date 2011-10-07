@@ -2224,9 +2224,6 @@ void TFarList::Changed()
         for (int i = 0; i < GetCount(); i++)
         {
             std::wstring value = GetString(i).substr(0, sizeof(FListItems->Items[i].Text));
-            // wcscpy_s((wchar_t *)FListItems->Items[i].Text,
-                // value.size(),
-                // value.c_str());
             delete[] FListItems->Items[i].Text;
             FListItems->Items[i].Text = TCustomFarPlugin::DuplicateStr(value);
             if ((GetDialogItem() != NULL) && !GetDialogItem()->GetOem())
