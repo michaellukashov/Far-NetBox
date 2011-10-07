@@ -3111,6 +3111,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
         KexListBox->GetItems()->EndUpdate();
       } BOOST_SCOPE_EXIT_END
     KexListBox->GetItems()->Clear();
+    DEBUG_PRINTF(L"KEX_NAME_WARN = %d, KEX_COUNT = %d, KEX_NAME_GSSGEX = %d", KEX_NAME_WARN, KEX_COUNT, KEX_NAME_GSSGEX);
     assert(KEX_NAME_WARN+KEX_COUNT-1 == KEX_NAME_GSSGEX);
     for (int Index = 0; Index < KEX_COUNT; Index++)
     {
