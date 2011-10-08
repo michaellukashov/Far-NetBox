@@ -54,7 +54,7 @@ private:
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
 
-  // TVSFixedFileInfo *GetFixedApplicationInfo();
+  VS_FIXEDFILEINFO GetFixedApplicationInfo();
   std::wstring TrimVersion(std::wstring Version);
   void UpdateActualLogProtocol();
 

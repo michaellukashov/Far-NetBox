@@ -14,7 +14,7 @@ void * CreateFileInfo(std::wstring FileName);
 void FreeFileInfo(void * FileInfo);
 
 // Return pointer to fixed file version info
-// FIXME PVSFixedFileInfo GetFixedFileInfo(void * FileInfo);
+VS_FIXEDFILEINFO GetFixedFileInfo(void * FileInfo);
 
 // Return number of available file version info translations
 unsigned GetTranslationCount(void * FileInfo);

@@ -192,16 +192,17 @@ typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
 //---------------------------------------------------------------------------
 // Return pointer to fixed file version info
-/* FIXME
-PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
+VS_FIXEDFILEINFO GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
-  PVSFixedFileInfo Result;
-  if (!VerQueryValue(FileInfo, "\\", (void**)&Result, &Len))
+  VS_FIXEDFILEINFO Result;
+  if (!VerQueryValue(FileInfo, L"\\", (void**)&Result, &Len))
+  {
     throw std::exception("Fixed file info not available");
+  }
   return Result;
 };
-*/
+
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
 unsigned GetTranslationCount(void * FileInfo)

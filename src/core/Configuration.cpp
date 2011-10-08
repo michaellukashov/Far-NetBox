@@ -576,19 +576,17 @@ std::wstring TConfiguration::GetOSVersionStr()
   return Result;
 }
 //---------------------------------------------------------------------------
-// TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
-// {
-  // return GetFixedFileInfo(ApplicationInfo);
-// }
+VS_FIXEDFILEINFO TConfiguration::GetFixedApplicationInfo()
+{
+  return GetFixedFileInfo(GetApplicationInfo());
+}
 //---------------------------------------------------------------------------
 int TConfiguration::GetCompoundVersion()
 {
-/* FIXME
-  TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
+  VS_FIXEDFILEINFO FileInfo = GetFixedApplicationInfo();
   return CalculateCompoundVersion(
-    HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
-    HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
-*/
+    HIWORD(FileInfo.dwFileVersionMS), LOWORD(FileInfo.dwFileVersionMS),
+    HIWORD(FileInfo.dwFileVersionLS), LOWORD(FileInfo.dwFileVersionLS));
  return 0;
 }
 //---------------------------------------------------------------------------
@@ -668,15 +666,12 @@ std::wstring TConfiguration::GetVersionStr()
   TGuard Guard(FCriticalSection);
   try
   {
-  /* FIXME 
-    TVSFixedFileInfo * Info = FixedApplicationInfo;
+    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
     return FMTLOAD(VERSION,
-      HIWORD(Info->dwFileVersionMS),
-      LOWORD(Info->dwFileVersionMS),
-      HIWORD(Info->dwFileVersionLS),
-      LOWORD(Info->dwFileVersionLS));
-   */
-    return L"";
+      HIWORD(Info.dwFileVersionMS),
+      LOWORD(Info.dwFileVersionMS),
+      HIWORD(Info.dwFileVersionLS),
+      LOWORD(Info.dwFileVersionLS));
   }
   catch (const std::exception &E)
   {
@@ -691,7 +686,6 @@ std::wstring TConfiguration::GetVersion()
   {
     std::wstring Result;
     VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
-    // DEBUG_PRINTF(L"Info.dwFileVersionMS = %x", Info.dwFileVersionMS);
     Result = TrimVersion(FORMAT(L"%d.%d.%d",
       HIWORD(Info.dwFileVersionMS),
       LOWORD(Info.dwFileVersionMS),
