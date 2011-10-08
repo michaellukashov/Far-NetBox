@@ -17,7 +17,9 @@
 #include "CoreMain.h"
 #include "Security.h"
 //---------------------------------------------------------------------------
-TConfiguration::TConfiguration()
+TConfiguration::TConfiguration() :
+  FApplicationInfo(NULL),
+  FCriticalSection(NULL)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
