@@ -4365,8 +4365,8 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   AsciiFileMaskEdit->SetEnabledDependency(TMAutomaticButton);
   AsciiFileMaskEdit->SetWidth(TMWidth);
   AsciiFileMaskEdit->SetHistory(ASCII_MASK_HISTORY);
-  // FIXME AsciiFileMaskEdit->SetOnExit(ValidateMaskComboExit);
-  ::Error(SNotImplemented, 112);
+  // ::Error(SNotImplemented, 112);
+  AsciiFileMaskEdit->SetOnExit(boost::bind(&TCopyParamsContainer::ValidateMaskComboExit, this, _1));
 
   Box = new TFarBox(GetDialog());
   Box->SetLeft(0);
@@ -4520,7 +4520,8 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(ExcludeFileMaskCombo);
   ExcludeFileMaskCombo->SetWidth(TMWidth);
   ExcludeFileMaskCombo->SetHistory(EXCLUDE_FILE_MASK_HISTORY);
-  // FIXME ExcludeFileMaskCombo->SetOnExit(ValidateMaskComboExit);
+  // FIXME 
+  ExcludeFileMaskCombo->SetOnExit(boost::bind(&TCopyParamsContainer::ValidateMaskComboExit, this, _1));
   ExcludeFileMaskCombo->SetEnabled(NegativeExcludeCombo->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -4541,7 +4542,8 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
     SpeedCombo->GetItems()->Add(IntToStr(Speed));
     Speed = Speed / 2;
   }
-  // FIXME SpeedCombo->SetOnExit(ValidateSpeedComboExit);
+  // FIXME
+  SpeedCombo->SetOnExit(boost::bind(&TCopyParamsContainer::ValidateSpeedComboExit, this, _1));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
