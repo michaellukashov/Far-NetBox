@@ -131,8 +131,8 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
     Result = (Len != 0);
     if (Result)
     {
-      static const wchar_t Signature[] = L"FE2X";
-      unsigned int BufSize = VersionInfo->wLength + wcslen(Signature);
+      static const char Signature[] = "FE2X";
+      unsigned int BufSize = VersionInfo->wLength + strlen(Signature);
       unsigned int ConvBuf;
       DEBUG_PRINTF(L"DataSize = %d, BufSize = %d", DataSize, BufSize);
 
@@ -140,7 +140,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
       {
         ConvBuf = DataSize - VersionInfo->wLength;
         DEBUG_PRINTF(L"ConvBuf = %d", ConvBuf);
-        memcpy(((wchar_t*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(wchar_t) ? 4 * sizeof(wchar_t) : ConvBuf );
+        memcpy(((char *)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(char) ? 4 * sizeof(char) : ConvBuf );
         DEBUG_PRINTF(L"Data = %s", Data);
       }
     }
