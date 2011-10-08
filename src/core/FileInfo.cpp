@@ -195,12 +195,12 @@ typedef TTranslation *PTranslations;
 VS_FIXEDFILEINFO GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
-  VS_FIXEDFILEINFO Result;
-  if (!VerQueryValue(FileInfo, L"\\", (void**)&Result, &Len))
+  VS_FIXEDFILEINFO *pResult = NULL;
+  if (!VerQueryValue(FileInfo, L"\\", (void**)&pResult, &Len))
   {
     throw std::exception("Fixed file info not available");
   }
-  return Result;
+  return *pResult;
 };
 
 //---------------------------------------------------------------------------
