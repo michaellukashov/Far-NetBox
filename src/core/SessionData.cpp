@@ -183,8 +183,7 @@ void TSessionData::NonPersistant()
 //---------------------------------------------------------------------
 void TSessionData::Assign(TPersistent * Source)
 {
-  ::Error(SNotImplemented, 238);  
-  if (Source) // FIXME && Source->InheritsFrom(__classid(TSessionData)))
+  if (Source && ::InheritsFrom<TPersistent, TSessionData>(Source))
   {
     #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
     DUPL(Name);
