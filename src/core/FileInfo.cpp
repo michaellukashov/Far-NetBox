@@ -167,7 +167,7 @@ void *CreateFileInfo(std::wstring FileName)
   DEBUG_PRINTF(L"FileName = %s, Size = %d, Handle = %u", FileName.c_str(), Size, Handle);
   if (Size > 0)
   {
-    Result = new wchar_t[Size];
+    Result = new char[Size];
     // Get file version info block
     if (!GetFileVersionInfoFix(FileName.c_str(), Handle, Size, Result))
     {
