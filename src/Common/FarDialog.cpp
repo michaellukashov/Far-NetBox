@@ -1165,7 +1165,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
     // DEBUG_PRINTF(L"value = %s", value.c_str());
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
-    std::wstring FarData = value; // .substr(0, sizeof(GetDialogItem()->PtrData));
+    std::wstring FarData = value.c_str(); // .substr(0, sizeof(GetDialogItem()->PtrData));
     // DEBUG_PRINTF(L"FarData = %s", FarData.c_str());
     if (!GetOem())
     {
