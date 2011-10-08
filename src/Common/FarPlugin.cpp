@@ -862,14 +862,14 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 std::wstring Buffer;
                 Buffer.resize(512);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
-                SetCaption(Buffer);
+                SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
             Button->SetCaption(FORMAT(L" %s ", (Caption)));
             std::wstring Buffer;
             Buffer.resize(512);
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Caption.c_str(), int(Params->Timeout / 1000));
-            Button->SetCaption(Buffer);
+            Button->SetCaption(Buffer.c_str());
             Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
             Button->SetBottom(Button->GetTop());
             Button->SetResult(Index + 1);
