@@ -41,7 +41,10 @@ public:
 };
 //---------------------------------------------------------------------------
 TWinSCPDialog::TWinSCPDialog(TCustomFarPlugin * AFarPlugin) :
-  TFarDialog(AFarPlugin)
+  TFarDialog(AFarPlugin),
+  ButtonSeparator(NULL),
+  OkButton(NULL),
+  CancelButton(NULL)
 {
 }
 //---------------------------------------------------------------------------
@@ -1253,7 +1256,10 @@ private:
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   std::wstring SessionName, TPromptKind Kind, std::wstring Name,
   std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
-  TFarDialog(AFarPlugin)
+  TFarDialog(AFarPlugin),
+  FSessionData(NULL),
+  FEdits(NULL),
+  SavePasswordCheck(NULL)
 {
   TFarButton * Button;
 
@@ -3644,7 +3650,9 @@ private:
 TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   bool AAnyDirectories, bool ShowButtons,
   bool ShowSpecials, TFarDialogItem * EnabledDependency) :
-  TFarDialogContainer(ADialog)
+  TFarDialogContainer(ADialog),
+  OctalEdit(NULL),
+  DirectoriesXCheck(NULL)
 {
   Self = this;
   FAnyDirectories = AAnyDirectories;
@@ -3953,7 +3961,13 @@ private:
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   TStrings * FileList, const std::wstring Directory, TStrings * GroupList,
-  TStrings * UserList, int AAllowedChanges) : TFarDialog(AFarPlugin)
+  TStrings * UserList, int AAllowedChanges) :
+  TFarDialog(AFarPlugin),
+  RightsContainer(NULL),
+  OwnerComboBox(NULL),
+  GroupComboBox(NULL),
+  RecursiveCheck(NULL),
+  OkButton(NULL)
 {
   FAllowedChanges = AAllowedChanges;
 
@@ -4269,7 +4283,27 @@ private:
 TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   int Options, int CopyParamAttrs) :
   TFarDialogContainer(ADialog),
-  FOptions(Options), FCopyParamAttrs(CopyParamAttrs)
+  FOptions(Options), FCopyParamAttrs(CopyParamAttrs),
+  TMTextButton(NULL),
+  TMBinaryButton(NULL),
+  TMAutomaticButton(NULL),
+  AsciiFileMaskEdit(NULL),
+  RightsContainer(NULL),
+  CCNoChangeButton(NULL),
+  CCUpperCaseButton(NULL),
+  CCLowerCaseButton(NULL),
+  CCFirstUpperCaseButton(NULL),
+  CCLowerCaseShortButton(NULL),
+  ReplaceInvalidCharsCheck(NULL),
+  PreserveRightsCheck(NULL),
+  PreserveTimeCheck(NULL),
+  PreserveReadOnlyCheck(NULL),
+  IgnorePermErrorsCheck(NULL),
+  ClearArchiveCheck(NULL),
+  NegativeExcludeCombo(NULL),
+  ExcludeFileMaskCombo(NULL),
+  CalculateSizeCheck(NULL),
+  SpeedCombo(NULL)
 {
   TFarBox * Box;
   TFarSeparator * Separator;

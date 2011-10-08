@@ -773,7 +773,11 @@ private:
 TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFlags,
         const std::wstring Title, const std::wstring Message, TStrings *Buttons,
         TFarMessageParams *Params) :
-    TFarDialog(Plugin), FParams(Params)
+    TFarDialog(Plugin),
+    FParams(Params),
+    FCheckBoxChecked(false),
+    FTimeoutButton(NULL),
+    CheckBox(NULL)
 {
     assert(Params != NULL);
     assert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
