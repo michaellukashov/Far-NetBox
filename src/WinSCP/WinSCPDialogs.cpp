@@ -3087,21 +3087,21 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     case ssh2only:  SshProt2onlyButton->SetChecked(true); break;
   }
 
-  // CipherListBox->GetItems()->BeginUpdate();
-  try
+  CipherListBox->GetItems()->BeginUpdate();
   {
+    BOOST_SCOPE_EXIT ( (&CipherListBox) )
+    {
+      CipherListBox->GetItems()->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
     for (int Index = 0; Index < CIPHER_COUNT; Index++)
     {
+      TObject *Obj = (TObject*)SessionData->GetCipher(Index);
       CipherListBox->GetItems()->AddObject(
         GetMsg(CIPHER_NAME_WARN + int(SessionData->GetCipher(Index))),
-        (TObject*)SessionData->GetCipher(Index));
+        Obj);
     }
-  }
-  catch (...)
-  {
-    // CipherListBox->GetItems()->EndUpdate();
   }
 
   // KEX tab
@@ -3323,7 +3323,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (int Index = 0; Index < CIPHER_COUNT; Index++)
     {
-      SessionData->SetCipher(Index, *(TCipher *)(TObject *)CipherListBox->GetItems()->GetObject(Index));
+      TObject *Obj = (TObject *)CipherListBox->GetItems()->GetObject(Index);
+      SessionData->SetCipher(Index, (TCipher)(int)Obj);
     }
 
     // KEX tab
@@ -3333,7 +3334,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (int Index = 0; Index < KEX_COUNT; Index++)
     {
-      SessionData->SetKex(Index, *(TKex *)KexListBox->GetItems()->GetObject(Index));
+      SessionData->SetKex(Index, (TKex)(int)KexListBox->GetItems()->GetObject(Index));
     }
 
     // Authentication tab
