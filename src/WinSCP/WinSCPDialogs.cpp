@@ -191,7 +191,7 @@ void TTabbedDialog::SelectTab(int Tab)
   {
     FOrigCaption = GetCaption();
   }
-  SetCaption(FORMAT(L"%s - %s", (TabName(Tab), FOrigCaption)));
+  SetCaption(FORMAT(L"%s - %s", TabName(Tab).c_str(), FOrigCaption.c_str()));
 }
 //---------------------------------------------------------------------------
 TTabButton * TTabbedDialog::TabButton(int Tab)
@@ -293,7 +293,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
     Dialog->SetSize(TPoint(67, 23));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_INTERFACE))));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTERFACE)).c_str()));
 
     TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
     DisksMenuCheck->SetCaption(GetMsg(CONFIG_DISKS_MENU));
@@ -464,7 +464,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
       } BOOST_SCOPE_EXIT_END
     Dialog->SetSize(TPoint(65, 7));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_PANEL))));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_PANEL)).c_str()));
 
     TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog);
     AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
@@ -504,7 +504,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
     Dialog->SetSize(TPoint(65, 15));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_LOGGING))));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_LOGGING)).c_str()));
 
     TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
     LoggingCheck->SetCaption(GetMsg(LOGGING_ENABLE));
@@ -622,7 +622,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
     Dialog->SetSize(TPoint(76, 13));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_ENDURANCE))));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ENDURANCE)).c_str()));
 
     Separator = new TFarSeparator(Dialog);
     Separator->SetCaption(GetMsg(TRANSFER_RESUME));
@@ -729,7 +729,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
     Dialog->SetSize(TPoint(76, 11));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_BACKGROUND))));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_BACKGROUND)).c_str()));
 
     Text = new TFarText(Dialog);
     Text->SetCaption(GetMsg(TRANSFER_QUEUE_LIMIT));
@@ -820,7 +820,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 
   SetSize(TPoint(55, 14));
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_TRANSFER_EDITOR))));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER_EDITOR)).c_str()));
 
   EditorMultipleCheck = new TFarCheckBox(this);
   EditorMultipleCheck->SetCaption(GetMsg(TRANSFER_EDITOR_MULTIPLE));
@@ -930,7 +930,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
       } BOOST_SCOPE_EXIT_END
     Dialog->SetSize(TPoint(65, 10));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_CONFIRMATIONS))));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_CONFIRMATIONS)).c_str()));
 
     TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
     ConfirmOverwritingCheck->SetAllowGrayed(true);
@@ -992,7 +992,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
     Dialog->SetSize(TPoint(65, 14));
     Dialog->SetCaption(FORMAT(L"%s - %s",
-      GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_INTEGRATION))));
+      GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_INTEGRATION)).c_str()));
 
     Text = new TFarText(Dialog);
     Text->SetCaption(GetMsg(INTEGRATION_PUTTY));
@@ -1113,7 +1113,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->Move(0, 1);
     Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
       ProductName.c_str(),
-       Configuration->GetProductVersion().c_str()));
+      Configuration->GetProductVersion().c_str()));
     Text->SetCenterGroup(true);
   }
 
@@ -1451,7 +1451,7 @@ bool TWinSCPFileSystem::BannerDialog(std::wstring SessionName,
         delete Dialog;
       } BOOST_SCOPE_EXIT_END
     Dialog->SetSize(TPoint(70, 21));
-    Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName));
+    Dialog->SetCaption(FORMAT(GetMsg(BANNER_TITLE).c_str(), SessionName.c_str()));
 
     TFarLister * Lister = new TFarLister(Dialog);
     FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
@@ -4041,7 +4041,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     Text->SetCenterGroup(true);
     if (FileList->GetCount() > 1)
     {
-      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES).c_str(), (FileList->GetCount())));
+      Text->SetCaption(FORMAT(GetMsg(PROPERTIES_PROMPT_FILES).c_str(), FileList->GetCount()));
     }
     else
     {
@@ -5505,7 +5505,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
       TFarText * Text = reinterpret_cast<TFarText *>(List->GetItem(FLastListItem));
       FLastListItem++;
 
-      Text->SetCaption(FORMAT(L"%-*s  %s", (List->MaxLen, GetMsg(Label), (Value))));
+      Text->SetCaption(FORMAT(L"%d-%s  %s", List->MaxLen, GetMsg(Label).c_str(), Value.c_str()));
     }
   }
 }

@@ -865,7 +865,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
-            Button->SetCaption(FORMAT(L" %s ", (Caption)));
+            Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
             std::wstring Buffer;
             Buffer.resize(512);
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Caption.c_str(), int(Params->Timeout / 1000));
