@@ -835,9 +835,9 @@ long TFarDialog::SendMessage(int Msg, int Param1, int Param2)
     return GetFarPlugin()->FStartupInfo.SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-char TFarDialog::GetSystemColor(unsigned int Index)
+int TFarDialog::GetSystemColor(unsigned int Index)
 {
-    return static_cast<char>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, Index));
+    return static_cast<int>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, Index));
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Redraw()

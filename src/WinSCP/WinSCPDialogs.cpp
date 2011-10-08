@@ -1143,7 +1143,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->Move(0, 1);
   }
   Text->SetCaption(GetMsg(ABOUT_URL));
-  Text->SetColor(static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
+  Text->SetColor(static_cast<int>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
   Text->SetOnMouseClick(boost::bind(&TAboutDialog::UrlTextClick, this, _1, _2));
 
