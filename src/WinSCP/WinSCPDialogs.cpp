@@ -1104,6 +1104,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
+  DEBUG_PRINTF(L"Configuration->GetVersion = %s", Configuration->GetVersion().c_str());
   Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str()));
   Text->SetCenterGroup(true);
 

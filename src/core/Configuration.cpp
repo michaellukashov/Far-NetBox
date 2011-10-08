@@ -605,7 +605,7 @@ void * TConfiguration::GetFileApplicationInfo(const std::wstring FileName)
   {
     if (!FApplicationInfo)
     {
-      DEBUG_PRINTF(L"ModuleFileName = %s", ModuleFileName().c_str());
+      // DEBUG_PRINTF(L"ModuleFileName = %s", ModuleFileName().c_str());
       FApplicationInfo = CreateFileInfo(ModuleFileName());
     }
     Result = FApplicationInfo;
@@ -624,7 +624,7 @@ void * TConfiguration::GetApplicationInfo()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileProductName(const std::wstring FileName)
 {
-    DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+    // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return GetFileFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
@@ -690,13 +690,12 @@ std::wstring TConfiguration::GetVersion()
   try
   {
     std::wstring Result;
-    /* FIXME
-    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
-    Result = TrimVersion(FORMAT(L"%d.%d.%d", (
-      HIWORD(Info->dwFileVersionMS),
-      LOWORD(Info->dwFileVersionMS),
-      HIWORD(Info->dwFileVersionLS))));
-    */
+    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    // DEBUG_PRINTF(L"Info.dwFileVersionMS = %x", Info.dwFileVersionMS);
+    Result = TrimVersion(FORMAT(L"%d.%d.%d",
+      HIWORD(Info.dwFileVersionMS),
+      LOWORD(Info.dwFileVersionMS),
+      HIWORD(Info.dwFileVersionLS)));
     return Result;
   }
   catch (const std::exception &E)
@@ -711,7 +710,6 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
   TGuard Guard(FCriticalSection);
 
   std::wstring Result;
-  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   void * Info = GetFileApplicationInfo(FileName);
   {
       BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
@@ -725,7 +723,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
     {
       TTranslation Translation;
       Translation = GetTranslation(Info, 0);
-      DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %x, CharSet = %x", Info, Key.c_str(), Translation.Language, Translation.CharSet);
+      // DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %x, CharSet = %x", Info, Key.c_str(), Translation.Language, Translation.CharSet);
       try
       {
         Result = ::GetFileInfoString(Info, Translation, Key);
@@ -746,7 +744,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileInfoString(const std::wstring Key)
 {
-    DEBUG_PRINTF(L"Key = %s", Key.c_str());
+    // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------

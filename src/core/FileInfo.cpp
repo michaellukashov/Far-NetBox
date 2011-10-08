@@ -26,7 +26,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
 
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);
-  DEBUG_PRINTF(L"Module = %d", Module);
+  // DEBUG_PRINTF(L"Module = %d", Module);
   if (Module == NULL)
   {
     Module = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
@@ -102,7 +102,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
   {
     *Handle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
-    DEBUG_PRINTF(L"Len = %d", Len);
+    // DEBUG_PRINTF(L"Len = %d", Len);
 
     if (Len != 0)
     {
@@ -121,13 +121,13 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   unsigned int DataSize, void * Data)
 {
   bool Result;
-  DEBUG_PRINTF(L"IsWin7 = %d, Handle = %d, DataSize = %d", IsWin7(), Handle, DataSize);
+  // DEBUG_PRINTF(L"IsWin7 = %d, Handle = %d, DataSize = %d", IsWin7(), Handle, DataSize);
   if (IsWin7())
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = (VS_VERSION_INFO_STRUCT32*)Data;
 
     unsigned int Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
-    DEBUG_PRINTF(L"Len = %d, VersionInfo->wLength = %d", Len, VersionInfo->wLength);
+    // DEBUG_PRINTF(L"Len = %d, VersionInfo->wLength = %d", Len, VersionInfo->wLength);
 
     Result = (Len != 0);
     if (Result)
@@ -135,14 +135,14 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
       static const char Signature[] = "FE2X";
       unsigned int BufSize = VersionInfo->wLength + strlen(Signature);
       unsigned int ConvBuf;
-      DEBUG_PRINTF(L"DataSize = %d, BufSize = %d", DataSize, BufSize);
+      // DEBUG_PRINTF(L"DataSize = %d, BufSize = %d", DataSize, BufSize);
 
       if (DataSize >= BufSize)
       {
         ConvBuf = DataSize - VersionInfo->wLength;
-        DEBUG_PRINTF(L"ConvBuf = %d", ConvBuf);
+        // DEBUG_PRINTF(L"ConvBuf = %d", ConvBuf);
         memcpy(((char *)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(char) ? 4 * sizeof(char) : ConvBuf );
-        DEBUG_PRINTF(L"Data = %s", Data);
+        // DEBUG_PRINTF(L"Data = %s", Data);
       }
     }
   }
@@ -165,7 +165,7 @@ void *CreateFileInfo(std::wstring FileName)
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(FileName.c_str(), &Handle);
   // If size is valid
-  DEBUG_PRINTF(L"FileName = %s, Size = %d, Handle = %u", FileName.c_str(), Size, Handle);
+  // DEBUG_PRINTF(L"FileName = %s, Size = %d, Handle = %u", FileName.c_str(), Size, Handle);
   if (Size > 0)
   {
     Result = new char[Size];
@@ -221,7 +221,7 @@ TTranslation GetTranslation(void * FileInfo, unsigned i)
 
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", (void**)&P, &Len))
     throw std::exception("File info translations not available");
-  DEBUG_PRINTF(L"Len = %d, Language = %x", Len, P[i].Language);
+  // DEBUG_PRINTF(L"Len = %d, Language = %x", Len, P[i].Language);
   if (i * sizeof(TTranslation) >= Len)
     throw std::exception("Specified translation not available");
   return P[i];
