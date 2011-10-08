@@ -140,7 +140,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
       {
         ConvBuf = DataSize - VersionInfo->wLength;
         DEBUG_PRINTF(L"ConvBuf = %d", ConvBuf);
-        memcpy(((wchar_t*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
+        memcpy(((wchar_t*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(wchar_t) ? 4 * sizeof(wchar_t) : ConvBuf );
         DEBUG_PRINTF(L"Data = %s", Data);
       }
     }
