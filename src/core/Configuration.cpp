@@ -603,6 +603,7 @@ void * TConfiguration::GetFileApplicationInfo(const std::wstring FileName)
   {
     if (!FApplicationInfo)
     {
+      DEBUG_PRINTF(L"ModuleFileName = %s", ModuleFileName().c_str());
       FApplicationInfo = CreateFileInfo(ModuleFileName());
     }
     Result = FApplicationInfo;
@@ -722,7 +723,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
     {
       TTranslation Translation;
       Translation = GetTranslation(Info, 0);
-      DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %d, CharSet = %d", Info, Key.c_str(), Translation.Language, Translation.CharSet);
+      DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %x, CharSet = %x", Info, Key.c_str(), Translation.Language, Translation.CharSet);
       try
       {
         Result = ::GetFileInfoString(Info, Translation, Key);
