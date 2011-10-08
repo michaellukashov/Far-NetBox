@@ -2190,10 +2190,10 @@ std::wstring TRights::GetOctal() const
   std::wstring Result;
   unsigned short N = GetNumberSet(); // used to be "Number"
   Result.resize(4);
-  Result[1] = static_cast<char>('0' + ((N & 07000) >> 9));
-  Result[2] = static_cast<char>('0' + ((N & 00700) >> 6));
-  Result[3] = static_cast<char>('0' + ((N & 00070) >> 3));
-  Result[4] = static_cast<char>('0' + ((N & 00007) >> 0));
+  Result[0] = static_cast<wchar_t>('0' + ((N & 07000) >> 9));
+  Result[1] = static_cast<wchar_t>('0' + ((N & 00700) >> 6));
+  Result[2] = static_cast<wchar_t>('0' + ((N & 00070) >> 3));
+  Result[3] = static_cast<wchar_t>('0' + ((N & 00007) >> 0));
 
   return Result;
 }
