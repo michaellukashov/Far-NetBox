@@ -1098,14 +1098,13 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetSize(TPoint(55, Height));
 
   SetCaption(FORMAT(L"%s - %s",
-    GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_ABOUT))));
-
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_ABOUT)).c_str()));
   Text = new TFarText(this);
   Text->SetCaption(Configuration->GetFileInfoString(L"FileDescription"));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), (Configuration->GetVersion())));
+  Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str()));
   Text->SetCenterGroup(true);
 
   if (!ProductName.empty())
@@ -1113,8 +1112,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text = new TFarText(this);
     Text->Move(0, 1);
     Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
-      ProductName,
-       Configuration->GetProductVersion()));
+      ProductName.c_str(),
+       Configuration->GetProductVersion().c_str()));
     Text->SetCenterGroup(true);
   }
 
@@ -1167,7 +1166,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   new TFarSeparator(this);
 
   Text = new TFarText(this);
-  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, LoadStr(PUTTY_VERSION)).c_str());
+  Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, LoadStr(PUTTY_VERSION).c_str()));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
