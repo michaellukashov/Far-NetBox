@@ -154,11 +154,11 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void * CreateFileInfo(std::wstring FileName)
+void *CreateFileInfo(std::wstring FileName)
 {
   unsigned long Handle;
   unsigned int Size;
-  void * Result = NULL;
+  void *Result = NULL;
 
 
   // Get file version info block size
