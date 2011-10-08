@@ -102,6 +102,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
   {
     *Handle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
+    DEBUG_PRINTF(L"Len = %d", Len);
 
     if (Len != 0)
     {
@@ -243,18 +244,25 @@ std::wstring GetLanguage(unsigned int Language)
 std::wstring GetFileInfoString(void * FileInfo,
   TTranslation Translation, std::wstring StringName)
 {
-  wchar_t *P;
+  wchar_t *P = NULL;
   UINT Len;
-  DEBUG_PRINTF(L"StringName = %s", StringName.c_str());
-  if (!VerQueryValue(FileInfo, std::wstring((L"\\StringFileInfo\\") +
-    IntToHex(Translation.Language, 4) +
-    IntToHex(Translation.CharSet, 4) +
-    L"\\" + StringName).c_str(), (void**)&P, &Len))
+  // DEBUG_PRINTF(L"StringName = %s", StringName.c_str());
+  // DEBUG_PRINTF(L"IntToHex(Translation.Language, 4) = %s", IntToHex(Translation.Language, 4).c_str());
+  // DEBUG_PRINTF(L"IntToHex(Translation.CharSet, 4) = %s", IntToHex(Translation.CharSet, 4).c_str());
+  std::wstring subBlock = std::wstring((L"\\StringFileInfo\\000004E4") +
+    // IntToHex(Translation.Language, 4) +
+    // IntToHex(Translation.CharSet, 4) +
+    std::wstring(L"\\") + StringName);
+  // DEBUG_PRINTF(L"subBlock = %s", subBlock.c_str());
+  // 4e40409 58324546\Comments
+  if (!VerQueryValue(FileInfo, subBlock.c_str(), (void**)&P, &Len))
   {
+    // DEBUG_PRINTF(L"Len = %d", Len);
     throw std::exception("Specified file info string not available");
   }
   // c_str() makes sure that returned string has only necessary bytes allocated
   std::wstring Result = std::wstring(P, Len).c_str();
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 };
 //---------------------------------------------------------------------------
