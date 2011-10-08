@@ -3724,8 +3724,9 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   OctalEdit->SetEnabledDependency(EnabledDependency);
   OctalEdit->SetWidth(5);
   OctalEdit->SetMask(L"9999");
-  // FIXME OctalEdit->SetOnExit(OctalEditExit);
-  ::Error(SNotImplemented, 111);
+  // ::Error(SNotImplemented, 111);
+  // FIXME
+  OctalEdit->SetOnExit(boost::bind(&TRightsContainer::OctalEditExit, this, _1));
 
   if (ShowButtons)
   {
@@ -3736,21 +3737,24 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_NONE_RIGHTS));
     Button->SetTag(TRights::rfNo);
-    // FIXME Button->SetOnClick(RightsButtonClick);
+    // FIXME
+    Button->SetOnClick(boost::bind(&TRightsContainer::RightsButtonClick, this, _1, _2));
 
     Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_DEFAULT_RIGHTS));
     Button->SetTag(TRights::rfDefault);
-    // FIXME Button->SetOnClick(RightsButtonClick);
+    // FIXME
+    Button->SetOnClick(boost::bind(&TRightsContainer::RightsButtonClick, this, _1, _2));
 
     Button = new TFarButton(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_ALL_RIGHTS));
     Button->SetTag(TRights::rfAll);
-    // FIXME Button->SetOnClick(RightsButtonClick);
+    // FIXME 
+    Button->SetOnClick(boost::bind(&TRightsContainer::RightsButtonClick, this, _1, _2));
   }
 
   GetDialog()->SetNextItemPosition(ipNewLine);
