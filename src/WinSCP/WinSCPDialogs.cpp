@@ -1145,13 +1145,12 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCaption(GetMsg(ABOUT_URL));
   Text->SetColor(static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
-  ::Error(SNotImplemented, 103);
-  // FIXME Text->SetOnMouseClick(UrlTextClick);
+  Text->SetOnMouseClick(boost::bind(&TAboutDialog::UrlTextClick, this, _1, _2));
 
   Button = new TFarButton(this);
   Button->Move(0, 1);
   Button->SetCaption(GetMsg(ABOUT_HOMEPAGE));
-  // FIXME Button->SetOnClick(UrlButtonClick);
+  Button->SetOnClick(boost::bind(&TAboutDialog::UrlButtonClick, this, _1, _2));
   Button->SetTag(1);
   Button->SetCenterGroup(true);
 
@@ -1159,7 +1158,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(ABOUT_FORUM));
-  // FIXME Button->SetOnClick(UrlButtonClick);
+  Button->SetOnClick(boost::bind(&TAboutDialog::UrlButtonClick, this, _1, _2));
   Button->SetTag(2);
   Button->SetCenterGroup(true);
 
