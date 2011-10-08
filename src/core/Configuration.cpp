@@ -723,7 +723,15 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
       TTranslation Translation;
       Translation = GetTranslation(Info, 0);
       DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %d, CharSet = %d", Info, Key.c_str(), Translation.Language, Translation.CharSet);
-      Result = ::GetFileInfoString(Info, Translation, Key);
+      try
+      {
+        Result = ::GetFileInfoString(Info, Translation, Key);
+      }
+      catch (const std::exception &e)
+      {
+        DEBUG_PRINTF(L"Error: %s", ::MB2W(e.what()).c_str());
+        Result = L"";
+      }
     }
     else
     {
