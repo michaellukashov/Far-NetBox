@@ -1198,8 +1198,8 @@ void TAboutDialog::UrlTextClick(TFarDialogItem * /*Item*/,
   MOUSE_EVENT_RECORD * /*Event*/)
 {
   std::wstring Address = GetMsg(ABOUT_URL);
-  // FIXME ShellExecute(NULL, L"open", Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
   ::Error(SNotImplemented, 104);
+  // FIXME ShellExecute(NULL, L"open", Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
@@ -1209,8 +1209,8 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
     case 1: Address = GetMsg(ABOUT_URL) + L"eng/docs/far"; break;
     case 2: Address = GetMsg(ABOUT_URL) + L"forum/"; break;
   }
-  // FIXME ShellExecute(NULL, "open", Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
   ::Error(SNotImplemented, 105);
+  // FIXME ShellExecute(NULL, "open", Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1303,8 +1303,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   {
     Button = new TFarButton(this);
     Button->SetCaption(GetMsg(PASSWORD_SHOW_PROMPT));
-    // FIXME Button->SetOnClick(ShowPromptClick);
-    ::Error(SNotImplemented, 106);
+    Button->SetOnClick(boost::bind(&TPasswordDialog::ShowPromptClick, this, _1, _2));
     Button->SetCenterGroup(true);
   }
 
@@ -1933,7 +1932,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(LOGIN_ENVIRONMENT_UNIX));
-  // ::Error(SNotImplemented, 107);
   Button->SetOnClick(boost::bind(&TSessionDialog::UnixEnvironmentButtonClick, this, _1, _2));
   Button->SetCenterGroup(true);
 
@@ -2431,7 +2429,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
-        // ::Error(SNotImplemented, 108);
       } BOOST_SCOPE_EXIT_END
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
     for (int Index = Configuration->GetTunnelLocalPortNumberLow();
@@ -2493,7 +2490,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   CipherUpButton->SetCaption(GetMsg(LOGIN_UP));
   CipherUpButton->Move(0, 1);
   CipherUpButton->SetResult(-1);
-  // ::Error(SNotImplemented, 109);
   CipherUpButton->SetOnClick(boost::bind(&TSessionDialog::CipherButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipBelow);
@@ -2607,7 +2603,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   AuthGSSAPICheck2 = new TFarCheckBox(this);
   AuthGSSAPICheck2->SetCaption(GetMsg(LOGIN_AUTH_GSSAPI));
-  // ::Error(SNotImplemented, 110);
   AuthGSSAPICheck2->SetOnAllowChange(boost::bind(&TSessionDialog::AuthGSSAPICheckAllowChange, this, _1, _2, _3));
 
   Separator = new TFarSeparator(this);
@@ -3725,8 +3720,6 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   OctalEdit->SetEnabledDependency(EnabledDependency);
   OctalEdit->SetWidth(5);
   OctalEdit->SetMask(L"9999");
-  // ::Error(SNotImplemented, 111);
-  // FIXME
   OctalEdit->SetOnExit(boost::bind(&TRightsContainer::OctalEditExit, this, _1));
 
   if (ShowButtons)
@@ -3738,7 +3731,6 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_NONE_RIGHTS));
     Button->SetTag(TRights::rfNo);
-    // FIXME
     Button->SetOnClick(boost::bind(&TRightsContainer::RightsButtonClick, this, _1, _2));
 
     Button = new TFarButton(GetDialog());
@@ -3746,7 +3738,6 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_DEFAULT_RIGHTS));
     Button->SetTag(TRights::rfDefault);
-    // FIXME
     Button->SetOnClick(boost::bind(&TRightsContainer::RightsButtonClick, this, _1, _2));
 
     Button = new TFarButton(GetDialog());
@@ -3754,7 +3745,6 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(PROPERTIES_ALL_RIGHTS));
     Button->SetTag(TRights::rfAll);
-    // FIXME 
     Button->SetOnClick(boost::bind(&TRightsContainer::RightsButtonClick, this, _1, _2));
   }
 
@@ -4370,7 +4360,6 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   AsciiFileMaskEdit->SetEnabledDependency(TMAutomaticButton);
   AsciiFileMaskEdit->SetWidth(TMWidth);
   AsciiFileMaskEdit->SetHistory(ASCII_MASK_HISTORY);
-  // ::Error(SNotImplemented, 112);
   AsciiFileMaskEdit->SetOnExit(boost::bind(&TCopyParamsContainer::ValidateMaskComboExit, this, _1));
 
   Box = new TFarBox(GetDialog());
@@ -4525,7 +4514,6 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Add(ExcludeFileMaskCombo);
   ExcludeFileMaskCombo->SetWidth(TMWidth);
   ExcludeFileMaskCombo->SetHistory(EXCLUDE_FILE_MASK_HISTORY);
-  // FIXME 
   ExcludeFileMaskCombo->SetOnExit(boost::bind(&TCopyParamsContainer::ValidateMaskComboExit, this, _1));
   ExcludeFileMaskCombo->SetEnabled(NegativeExcludeCombo->GetEnabled());
 
@@ -4547,7 +4535,6 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
     SpeedCombo->GetItems()->Add(IntToStr(Speed));
     Speed = Speed / 2;
   }
-  // FIXME
   SpeedCombo->SetOnExit(boost::bind(&TCopyParamsContainer::ValidateSpeedComboExit, this, _1));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
@@ -4806,8 +4793,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
-  ::Error(SNotImplemented, 113);
+  CopyParamLister->SetOnMouseClick(boost::bind(&TCopyDialog::CopyParamListerClick, this, _1, _2));
 
   new TFarSeparator(this);
 
@@ -4842,8 +4828,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
-  // FIXME Button->SetOnClick(TransferSettingsButtonClick);
-  ::Error(SNotImplemented, 114);
+  Button->SetOnClick(boost::bind(&TCopyDialog::TransferSettingsButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipRight);
 
@@ -5329,8 +5314,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
   Button->SetEnabledDependency(SpaceAvailablePathEdit);
-  // FIXME Button->SetOnClick(SpaceAvailableButtonClick);
-  ::Error(SNotImplemented, 115);
+  Button->SetOnClick(boost::bind(&TFileSystemInfoDialog::SpaceAvailableButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipNewLine);
 
@@ -5347,7 +5331,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SERVER_PROTOCOL_COPY_CLIPBOARD));
-  // FIXME Button->SetOnClick(ClipboardButtonClick);
+  Button->SetOnClick(boost::bind(&TFileSystemInfoDialog::ClipboardButtonClick, this, _1, _2));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
@@ -5420,24 +5404,23 @@ void TFileSystemInfoDialog::Feed(const feedfilesystemdata_slot_type &AddItem)
   {
     Str += FORMAT(L"/%s", (FSessionInfo.SCCipher));
   }
-  // AddItem(ServerLabels, SERVER_CIPHER, Str);
+  sig(ServerLabels, SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
     Str += FORMAT(L"/%s", (DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR))));
   }
-  ::Error(SNotImplemented, 116);
-  // FIXME AddItem(ServerLabels, SERVER_COMPRESSION, Str);
+  sig(ServerLabels, SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
   {
-    // FIXME AddItem(ServerLabels, SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
+    sig(ServerLabels, SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
-  // FIXME AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
+  sig(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
 
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
+  sig(ProtocolLabels, PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
+  sig(ProtocolLabels, PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
   std::wstring AnyCommand;
   if (!FFileSystemInfo.IsCapable[fcShellAnyCommand] &&
       FFileSystemInfo.IsCapable[fcAnyCommand])
@@ -5448,21 +5431,21 @@ void TFileSystemInfoDialog::Feed(const feedfilesystemdata_slot_type &AddItem)
   {
     AnyCommand = CapabilityStr(fcAnyCommand);
   }
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_ANY_COMMAND, AnyCommand);
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
-  // FIXME AddItem(ProtocolLabels, PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
+  sig(ProtocolLabels, PROTOCOL_ANY_COMMAND, AnyCommand);
+  sig(ProtocolLabels, PROTOCOL_SYMBOLIC_HARD_LINK, CapabilityStr(fcSymbolicLink, fcHardLink));
+  sig(ProtocolLabels, PROTOCOL_USER_GROUP_LISTING, CapabilityStr(fcUserGroupListing));
+  sig(ProtocolLabels, PROTOCOL_REMOTE_COPY, CapabilityStr(fcRemoteCopy));
+  sig(ProtocolLabels, PROTOCOL_CHECKING_SPACE_AVAILABLE, CapabilityStr(fcCheckingSpaceAvailable));
+  sig(ProtocolLabels, PROTOCOL_CALCULATING_CHECKSUM, CapabilityStr(fcCalculatingChecksum));
+  sig(ProtocolLabels, PROTOCOL_NATIVE_TEXT_MODE, CapabilityStr(fcNativeTextMode));
 
-  // FIXME AddItem(InfoLister, 0, FFileSystemInfo.AdditionalInfo);
+  sig(InfoLister, 0, FFileSystemInfo.AdditionalInfo);
 
-  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
-  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
-  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
-  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
-  // FIXME AddItem(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
+  sig(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.BytesOnDevice));
+  sig(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_ON_DEVICE, SpaceStr(FSpaceAvailable.UnusedBytesOnDevice));
+  sig(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.BytesAvailableToUser));
+  sig(SpaceAvailableLabels, SPACE_AVAILABLE_UNUSED_BYTES_AVAILABLE_TO_USER, SpaceStr(FSpaceAvailable.UnusedBytesAvailableToUser));
+  sig(SpaceAvailableLabels, SPACE_AVAILABLE_BYTES_PER_ALLOCATION_UNIT, SpaceStr(FSpaceAvailable.BytesPerAllocationUnit));
 }
 //---------------------------------------------------------------------
 void TFileSystemInfoDialog::ControlsAddItem(TObject * Control,
@@ -6223,8 +6206,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  ::Error(SNotImplemented, 117);
-  // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
+  CopyParamLister->SetOnMouseClick(boost::bind(&TFullSynchronizeDialog::CopyParamListerClick, this, _1, _2));
   CopyParamLister->SetGroup(1);
   // Right edge is adjusted in Change
 
@@ -6236,7 +6218,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
-  // FIXME Button->SetOnClick(TransferSettingsButtonClick);
+  Button->SetOnClick(boost::bind(&TFullSynchronizeDialog::TransferSettingsButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipRight);
 
@@ -6573,8 +6555,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetNoBox(true);
   // align list with bottom of the window
   ListBox->SetBottom(-5);
-  ::Error(SNotImplemented, 118);
-  // FIXME ListBox->SetOnMouseClick(ListBoxClick);
+  ListBox->SetOnMouseClick(boost::bind(&TSynchronizeChecklistDialog::ListBoxClick, this, _1, _2));
   ListBox->SetOem(true);
 
   std::wstring Actions = GetMsg(CHECKLIST_ACTIONS);
@@ -6593,18 +6574,18 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   CheckAllButton = new TFarButton(this);
   CheckAllButton->SetCaption(GetMsg(CHECKLIST_CHECK_ALL));
   CheckAllButton->SetCenterGroup(true);
-  // FIXME CheckAllButton->SetOnClick(CheckAllButtonClick);
+  CheckAllButton->SetOnClick(boost::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipRight);
 
   UncheckAllButton = new TFarButton(this);
   UncheckAllButton->SetCaption(GetMsg(CHECKLIST_UNCHECK_ALL));
   UncheckAllButton->SetCenterGroup(true);
-  // FIXME UncheckAllButton->SetOnClick(CheckAllButtonClick);
+  UncheckAllButton->SetOnClick(boost::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this, _1, _2));
 
   VideoModeButton = new TFarButton(this);
   VideoModeButton->SetCenterGroup(true);
-  // FIXME VideoModeButton->SetOnClick(VideoModeButtonClick);
+  VideoModeButton->SetOnClick(boost::bind(&TSynchronizeChecklistDialog::VideoModeButtonClick, this, _1, _2));
 
   AddStandardButtons(0, true);
 
@@ -7268,7 +7249,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
-  // FIXME CopyParamLister->SetOnMouseClick(CopyParamListerClick);
+  CopyParamLister->SetOnMouseClick(boost::bind(&TSynchronizeDialog::CopyParamListerClick, this, _1, _2));
   // Right edge is adjusted in Change
 
   SetDefaultGroup(0);
@@ -7281,7 +7262,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCaption(GetMsg(TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
-  // FIXME Button->SetOnClick(TransferSettingsButtonClick);
+  Button->SetOnClick(boost::bind(&TSynchronizeDialog::TransferSettingsButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipRight);
 
@@ -7289,12 +7270,12 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   StartButton->SetCaption(GetMsg(SYNCHRONIZE_START_BUTTON));
   StartButton->SetDefault(true);
   StartButton->SetCenterGroup(true);
-  // FIXME StartButton->SetOnClick(StartButtonClick);
+  StartButton->SetOnClick(boost::bind(&TSynchronizeDialog::StartButtonClick, this, _1, _2));
 
   StopButton = new TFarButton(this);
   StopButton->SetCaption(GetMsg(SYNCHRONIZE_STOP_BUTTON));
   StopButton->SetCenterGroup(true);
-  // FIXME StopButton->SetOnClick(StopButtonClick);
+  StopButton->SetOnClick(boost::bind(&TSynchronizeDialog::StopButtonClick, this, _1, _2));
 
   SetNextItemPosition(ipRight);
 
@@ -7694,24 +7675,24 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 
   ExecuteButton = new TFarButton(this);
   ExecuteButton->SetCaption(GetMsg(QUEUE_EXECUTE));
-  // FIXME ExecuteButton->SetOnClick(OperationButtonClick);
+  ExecuteButton->SetOnClick(boost::bind(&TQueueDialog::OperationButtonClick, this, _1, _2));
   ExecuteButton->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
   DeleteButton = new TFarButton(this);
   DeleteButton->SetCaption(GetMsg(QUEUE_DELETE));
-  // FIXME DeleteButton->SetOnClick(OperationButtonClick);
+  DeleteButton->SetOnClick(boost::bind(&TQueueDialog::OperationButtonClick, this, _1, _2));
   DeleteButton->SetCenterGroup(true);
 
   MoveUpButton = new TFarButton(this);
   MoveUpButton->SetCaption(GetMsg(QUEUE_MOVE_UP));
-  // FIXME MoveUpButton->SetOnClick(OperationButtonClick);
+  MoveUpButton->SetOnClick(boost::bind(&TQueueDialog::OperationButtonClick, this, _1, _2));
   MoveUpButton->SetCenterGroup(true);
 
   MoveDownButton = new TFarButton(this);
   MoveDownButton->SetCaption(GetMsg(QUEUE_MOVE_DOWN));
-  // FIXME MoveDownButton->SetOnClick(OperationButtonClick);
+  MoveDownButton->SetOnClick(boost::bind(&TQueueDialog::OperationButtonClick, this, _1, _2));
   MoveDownButton->SetCenterGroup(true);
 
   CloseButton = new TFarButton(this);
