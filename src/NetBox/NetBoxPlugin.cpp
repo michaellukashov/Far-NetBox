@@ -499,12 +499,11 @@ void TNetBoxPlugin::ShowExtendedException(const std::exception *E)
 
         std::wstring Message = ::TranslateExceptionMessage(E);
         DEBUG_PRINTF(L"Message = %s", Message.c_str());
-        // FIXME MoreMessageDialog(Message, MoreMessages, Type, qaOK);
+        MoreMessageDialog(Message, MoreMessages, Type, qaOK);
       }
     }
     else
     {
-      // FIXME ShowException(ExceptObject(), ExceptAddr());
       DEBUG_PRINTF(L"ShowException");
     }
   }
