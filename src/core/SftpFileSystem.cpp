@@ -1726,7 +1726,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     if (!IsCapable(fcRename))
     {
       ::Error(SNotImplemented, 245); 
-      FFileSystemInfo.AdditionalInfo += L""; // FIXME LoadStr(FS_RENAME_NOT_SUPPORTED) + "\r\n\r\n";
+      FFileSystemInfo.AdditionalInfo += LoadStr(FS_RENAME_NOT_SUPPORTED) + L"\r\n\r\n";
     }
 
     if (FExtensions->GetCount() > 0)
@@ -1735,7 +1735,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       std::wstring Value;
       std::wstring Line;
       ::Error(SNotImplemented, 246); 
-      FFileSystemInfo.AdditionalInfo += L""; // FIXME LoadStr(SFTP_EXTENSION_INFO) + "\r\n";
+      FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
       for (int Index = 0; Index < FExtensions->GetCount(); Index++)
       {
         std::wstring Name = FExtensions->GetName(Index);
@@ -1755,7 +1755,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     else
     {
       ::Error(SNotImplemented, 247); 
-      FFileSystemInfo.AdditionalInfo += L""; // FIXME LoadStr(SFTP_NO_EXTENSION_INFO) + "\r\n";
+      FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_NO_EXTENSION_INFO) + L"\r\n";
     }
 
     FFileSystemInfo.ProtocolBaseName = L"SFTP";
@@ -2761,8 +2761,7 @@ void TSFTPFileSystem::DoStartup()
       Packet.AddString(FTerminal->GetConfiguration()->GetCompanyName());
       Packet.AddString(FTerminal->GetConfiguration()->GetProductName());
       Packet.AddString(FTerminal->GetConfiguration()->GetProductVersion());
-      // FIXME Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
-      ::Error(SNotImplemented, 248); 
+      Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo().dwFileVersionLS));
       SendPacket(&Packet);
       // we are not interested in the response, do not wait for it
       ReserveResponse(&Packet, NULL);
@@ -3143,7 +3142,7 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   if (ReadLinkPacket.GetCardinal() != 1)
   {
     ::Error(SNotImplemented, 249); 
-    FTerminal->FatalError(NULL, L""); // FIXME LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
+    FTerminal->FatalError(NULL, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
   }
   SymlinkFile->SetLinkTo(ReadLinkPacket.GetPathString(FUtfStrings));
 
@@ -3782,7 +3781,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
   {
     ::Error(SNotImplemented, 250); 
     if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName, LoadStr(RENAME_TITLE), L"",
-          L"", // FIXME LoadStr(RENAME_PROMPT2),
+          LoadStr(RENAME_PROMPT2),
           true, 0, FileName))
     {
       OverwriteMode = omOverwrite;
@@ -4643,18 +4642,17 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   // TSearchRec SearchRec;
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
-    // FIXME
-   ::Error(SNotImplemented, 251); 
-  // FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    // FindOK = (bool)(FindFirst(DirectoryName + L"*.*",
-      // FindAttrs, SearchRec) == 0);
-  // );
+  HANDLE findHandle = 0;
+  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+    findHandle = FindFirst(DirectoryName + L"*.*",
+      FindAttrs, SearchRec);
+    FindOK = (findHandle != 0);
+  );
 
   {
-    ::Error(SNotImplemented, 252); 
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (&Self) (&findHandle) )
     {
-      // FIXME Self->FindClose(SearchRec);
+      ::FindClose(findHandle);
     } BOOST_SCOPE_EXIT_END
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -4678,11 +4676,9 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
           if (!FTerminal->HandleException(&E)) throw;
         );
       }
-    // FIXME
-    ::Error(SNotImplemented, 253); 
-      // FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        // FindOK = (FindNext(SearchRec) == 0);
-      // );
+      FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+        FindOK = (::FindNextFile(findHandle, &SearchRec) == 0);
+      );
     };
   }
 
