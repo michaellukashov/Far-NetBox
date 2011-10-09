@@ -840,7 +840,8 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
         FPlugin->ShowTerminalScreen();
 
         FOutputLog = true;
-        // FIXME FTerminal->AnyCommand(Command, TerminalCaptureLog);
+        captureoutput_slot_type OutputEvent = boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2);
+        FTerminal->AnyCommand(Command, &OutputEvent);
       }
     }
   }
