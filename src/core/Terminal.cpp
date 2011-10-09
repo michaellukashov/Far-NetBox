@@ -3941,7 +3941,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       std::wstring path = Data.LocalDirectory + L"*.*";
       findHandle = FindFirstFile(path.c_str(), /*FindAttrs, */&SearchRec);
-      Found = (findHandle == 0);
+      Found = (findHandle != 0);
     );
 
     if (Found)
