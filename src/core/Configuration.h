@@ -54,7 +54,6 @@ private:
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
 
-  VS_FIXEDFILEINFO GetFixedApplicationInfo();
   std::wstring TrimVersion(std::wstring Version);
   void UpdateActualLogProtocol();
 
@@ -116,8 +115,9 @@ public:
   virtual std::wstring StronglyRecryptPassword(std::wstring Password, std::wstring Key);
 
   // __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
+  VS_FIXEDFILEINFO GetFixedApplicationInfo();
   // __property void * ApplicationInfo  = { read=GetApplicationInfo };
-  void * GetApplicationInfo();
+  void *GetApplicationInfo();
   // __property std::wstring StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
   std::wstring GetStoredSessionsSubKey();
   // __property std::wstring PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
