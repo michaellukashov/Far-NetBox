@@ -2335,7 +2335,7 @@ void TStoredSessionList::Cleanup()
     }
   } catch (const std::exception &E)
   {
-    throw ExtException(&E); //FIXME , CLEANUP_SESSIONS_ERROR);
+    throw ExtException(&E, FMTLOAD(CLEANUP_SESSIONS_ERROR));
   }
 }
 //---------------------------------------------------------------------------
