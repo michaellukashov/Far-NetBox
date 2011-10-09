@@ -1385,7 +1385,6 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   FILE_OPERATION_LOOP_EX
   (
     AllowSkip, Message,
-    // ::Error(SNotImplemented, 260);
     Result = sig(Param1, Param2);
   );
 
@@ -1734,15 +1733,14 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   // from within OnShowExtendedException handler
   assert(FCallbackGuard == NULL);
   int Result = 0;
-  ::Error(SNotImplemented, 261); 
-  if (E) // FIXME && E->InheritsFrom(__classid(EFatal)))
+  if (E && ::InheritsFrom<std::exception, EFatal>(E))
   {
     FatalError(E, Msg);
   }
-  else if (E) // && E->InheritsFrom(__classid(EAbort)))
+  else if (E && ::InheritsFrom<std::exception, EAbort>(E))
   {
     // resent EAbort std::exception
-    // Abort();
+    ::Abort();
   }
   else if (GetExceptionOnFail())
   {
