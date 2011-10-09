@@ -1725,7 +1725,6 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
     if (!IsCapable(fcRename))
     {
-      ::Error(SNotImplemented, 245); 
       FFileSystemInfo.AdditionalInfo += LoadStr(FS_RENAME_NOT_SUPPORTED) + L"\r\n\r\n";
     }
 
@@ -1734,7 +1733,6 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       std::wstring Name;
       std::wstring Value;
       std::wstring Line;
-      ::Error(SNotImplemented, 246); 
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
       for (int Index = 0; Index < FExtensions->GetCount(); Index++)
       {
@@ -1754,7 +1752,6 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     }
     else
     {
-      ::Error(SNotImplemented, 247); 
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_NO_EXTENSION_INFO) + L"\r\n";
     }
 
@@ -3141,7 +3138,6 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   ReceiveResponse(&ReadLinkPacket, &ReadLinkPacket, SSH_FXP_NAME);
   if (ReadLinkPacket.GetCardinal() != 1)
   {
-    ::Error(SNotImplemented, 249); 
     FTerminal->FatalError(NULL, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
   }
   SymlinkFile->SetLinkTo(ReadLinkPacket.GetPathString(FUtfStrings));
@@ -3779,7 +3775,6 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
   }
   else if (Answer == qaIgnore)
   {
-    ::Error(SNotImplemented, 250); 
     if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName, LoadStr(RENAME_TITLE), L"",
           LoadStr(RENAME_PROMPT2),
           true, 0, FileName))
@@ -4644,8 +4639,10 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   bool FindOK = false;
   HANDLE findHandle = 0;
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    findHandle = FindFirst(DirectoryName + L"*.*",
-      FindAttrs, SearchRec);
+    std::wstring path = DirectoryName + L"*.*";
+    findHandle = FindFirstFile(path.c_str(),
+      // FindAttrs, 
+      &SearchRec);
     FindOK = (findHandle != 0);
   );
 
@@ -4833,9 +4830,8 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     if (!File->GetIsSymLink())
     {
       int Attrs = 0;
-       ::Error(SNotImplemented, 254); 
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        // FIXME int Attrs = FileGetAttr(DestFullName);
+        int Attrs = FileGetAttr(DestFullName);
         if ((Attrs & faDirectory) == 0) EXCEPTION;
       );
 
@@ -4894,9 +4890,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
     int Attrs = 0;
-    ::Error(SNotImplemented, 255); 
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
-      // FIXME Attrs = FileGetAttr(DestFullName);
       if ((Attrs >= 0) && (Attrs & faDirectory)) EXCEPTION;
     );
 
