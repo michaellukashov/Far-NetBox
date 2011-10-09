@@ -735,8 +735,7 @@ void TTerminal::Open()
                   if (!FSecureShell->GetActive() && !FTunnelError.empty())
                   {
                     // the only case where we expect this to happen
-                    // FIXME assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
-                    ::Error(SNotImplemented, 259); 
+                    assert(E.what() == ::W2MB(LoadStr(UNEXPECTED_CLOSE_ERROR).c_str()).c_str());
                     FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
                   }
                   else
@@ -1380,12 +1379,14 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   const std::wstring Message, void * Param1, void * Param2)
 {
   // assert(CallBackFunc);
+  fileoperation_signal_type sig;
+  sig.connect(CallBackFunc);
   int Result;
   FILE_OPERATION_LOOP_EX
   (
     AllowSkip, Message,
-    Result = 0; // FIXME CallBackFunc(Param1, Param2);
-    ::Error(SNotImplemented, 260);
+    // ::Error(SNotImplemented, 260);
+    Result = sig(Param1, Param2);
   );
 
   return Result;
