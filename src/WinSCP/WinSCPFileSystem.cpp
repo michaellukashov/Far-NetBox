@@ -458,7 +458,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
 bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
 {
   bool Result;
-  DEBUG_PRINTF(L"begin: Connected = %d", Connected());
+  // DEBUG_PRINTF(L"begin: Connected = %d", Connected());
   if (Connected())
   {
     assert(!FNoProgress);
@@ -554,7 +554,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
   {
     Result = false;
   }
-  DEBUG_PRINTF(L"Result = %d", Result);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -603,22 +603,21 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FocusSession(TSessionData * Data)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
   if (SessionItem != NULL)
   {
     GetPanelInfo()->SetFocusedItem(SessionItem);
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
-  DEBUG_PRINTF(L"begin");
+  DEBUG_PRINTF(L"begin: Data = %x, Edit = %d", Data, Edit);
   TSessionData * OrigData = Data;
   bool NewData = !Data;
   bool FillInConnect = !Edit && !Data->GetCanLogin();
-
   if (NewData || FillInConnect)
   {
     Data = new TSessionData(L"");
@@ -655,6 +654,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
                   GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
                 !Name.empty())
             {
+              DEBUG_PRINTF(L"Name = %s", Name.c_str());
               if (StoredSessions->FindByName(Name))
               {
                 throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
@@ -679,6 +679,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
           {
             if (SelectSession != NULL)
             {
+              // DEBUG_PRINTF(L"SelectSession = %x", SelectSession);
               FocusSession(SelectSession);
             }
             // rarely we need to redraw even when new session is created
@@ -866,9 +867,12 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
     TSessionData * Data = NULL;
 
     // DEBUG_PRINTF(L"Focused = %x", Focused);
+    if (Focused)
+    {
+        // DEBUG_PRINTF(L"Focused->GetIsFile = %d, Focused->GetUserData = %x", Focused->GetIsFile(), Focused->GetUserData());
+    }
     if ((Focused != NULL) && Focused->GetIsFile() && Focused->GetUserData())
     {
-      // DEBUG_PRINTF(L"Focused->GetIsFile = %d, Focused->GetUserData = %x", Focused->GetIsFile(), Focused->GetUserData());
       Data = (TSessionData *)Focused->GetUserData();
     }
 

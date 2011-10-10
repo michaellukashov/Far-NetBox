@@ -18,6 +18,7 @@ int NamedObjectSortProc(void * Item1, void * Item2)
 int TNamedObject::CompareName(std::wstring aName,
   bool CaseSensitive)
 {
+  DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
   if (CaseSensitive)
     return ::AnsiCompare(Name, aName);
   else
@@ -59,7 +60,7 @@ TNamedObjectList::TNamedObjectList() :
 //---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::AtObject(int Index)
 {
-    DEBUG_PRINTF(L"Index = %d, Count = %d, GetHiddenCount = %d", Index, GetCount(), GetHiddenCount());
+    // DEBUG_PRINTF(L"Index = %d, Count = %d, GetHiddenCount = %d", Index, GetCount(), GetHiddenCount());
   return (TNamedObject *)GetItem(Index+GetHiddenCount());
 }
 //---------------------------------------------------------------------------
