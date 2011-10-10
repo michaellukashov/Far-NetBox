@@ -2616,9 +2616,9 @@ int TFarPanelInfo::GetSelectedCount()
 {
     int Count = FPanelInfo->SelectedItemsNumber;
 
-    if (Count == 1)
-    {
+    if (Count == 1) // FIXME &&
         // (FPanelInfo->SelectedItems(0).Flags & PPIF_SELECTED) == 0)
+    {
         Count = 0;
     }
 
@@ -2630,9 +2630,17 @@ TObjectList *TFarPanelInfo::GetItems()
     if (!FItems)
     {
         FItems = new TObjectList();
+        DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
         for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
         {
-            // FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
+            DEBUG_PRINTF(L"Index = %d", Index);
+            // FIXME FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
+            /*
+            PluginPanelItem *ppi = new PluginPanelItem;
+            memset(ppi, 0, sizeof(*ppi));
+            FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi); // Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+            FItems->Add((TObject *)new TFarPanelItem(ppi));
+            */
         }
     }
     return FItems;
@@ -2746,7 +2754,7 @@ bool TFarPanelInfo::GetIsPlugin()
 //---------------------------------------------------------------------------
 std::wstring TFarPanelInfo::GetCurrentDirectory()
 {
-    std::wstring Result = L""; //FPanelInfo->CurDir;
+    std::wstring Result = L""; //FIXME FPanelInfo->CurDir;
     return StrFromFar(Result);
 }
 //---------------------------------------------------------------------------
@@ -2863,7 +2871,7 @@ int TFarEditorInfo::GetEditorID()
 //---------------------------------------------------------------------------
 std::wstring TFarEditorInfo::GetFileName()
 {
-    std::wstring Result = L""; // FEditorInfo->GetFileName();
+    std::wstring Result = L""; // FIXME FEditorInfo->GetFileName();
     return StrFromFar(Result);
 };
 //---------------------------------------------------------------------------
@@ -2972,6 +2980,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
 //---------------------------------------------------------------------------
 std::wstring StrFromFar(const char *S)
 {
+    // FIXME
     std::wstring Result; // = S;
     // OemToChar(Result.c_str(), Result.c_str());
     return Result;
