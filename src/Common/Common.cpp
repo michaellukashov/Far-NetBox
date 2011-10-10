@@ -2600,20 +2600,6 @@ wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
     return result;
 }
 
-std::wstring EncryptPassword(std::wstring Password, std::wstring Key)
-{
-    ::Error(SNotImplemented, 32); 
-    std::wstring result;
-    return result;
-}
-
-std::wstring DecryptPassword(std::wstring Password, std::wstring Key)
-{
-    ::Error(SNotImplemented, 33); 
-    std::wstring result;
-    return result;
-}
-
 std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext)
 {
     std::wstring result = ::ChangeFileExtension(FileName, ext, L'.');
