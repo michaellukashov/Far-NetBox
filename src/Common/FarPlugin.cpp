@@ -2678,6 +2678,7 @@ void TFarPanelInfo::ApplySelection()
 TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 {
     int Index = GetFocusedIndex();
+    // DEBUG_PRINTF(L"Index = %d, GetItems = %x, GetItems()->GetCount = %d", Index, GetItems(), GetItems()->GetCount());
     if ((Index >= 0) && (GetItems()->GetCount() > 0))
     {
         assert(Index < GetItems()->GetCount());

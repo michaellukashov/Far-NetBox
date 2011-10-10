@@ -865,8 +865,10 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
   {
     TSessionData * Data = NULL;
 
+    // DEBUG_PRINTF(L"Focused = %x", Focused);
     if ((Focused != NULL) && Focused->GetIsFile() && Focused->GetUserData())
     {
+      // DEBUG_PRINTF(L"Focused->GetIsFile = %d, Focused->GetUserData = %x", Focused->GetIsFile(), Focused->GetUserData());
       Data = (TSessionData *)Focused->GetUserData();
     }
 
@@ -888,8 +890,10 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
       Handled = true;
     }
 
+    // DEBUG_PRINTF(L"Key = %x, VK_F4 = %x, ControlState = %d", Key, VK_F4, ControlState);
     if (Key == VK_F4 && (ControlState == 0))
     {
+      DEBUG_PRINTF(L"Data = %x, StoredSessions->GetCount = %d", Data, StoredSessions->GetCount());
       if ((Data != NULL) || (StoredSessions->GetCount() == 0))
       {
         EditConnectSession(Data, true);
