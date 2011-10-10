@@ -2617,7 +2617,7 @@ int TFarPanelInfo::GetSelectedCount()
     int Count = FPanelInfo->SelectedItemsNumber;
 
     if (Count == 1) // FIXME &&
-        // (FPanelInfo->SelectedItems(0).Flags & PPIF_SELECTED) == 0)
+        // (FPanelInfo->SelectedItems[0].Flags & PPIF_SELECTED) == 0)
     {
         Count = 0;
     }
@@ -2630,17 +2630,20 @@ TObjectList *TFarPanelInfo::GetItems()
     if (!FItems)
     {
         FItems = new TObjectList();
-        DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
+        // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
         for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
         {
-            DEBUG_PRINTF(L"Index = %d", Index);
-            // FIXME FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
-            /*
-            PluginPanelItem *ppi = new PluginPanelItem;
-            memset(ppi, 0, sizeof(*ppi));
-            FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi); // Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+            // DEBUG_PRINTF(L"Index = %d", Index);
+            // TODO: move to common function
+            size_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
+            // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
+            PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
+            memset(ppi, 0, size);
+            size_t size2 = FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi);
+            // DEBUG_PRINTF(L"size2 = %d", size2);
+            // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
+
             FItems->Add((TObject *)new TFarPanelItem(ppi));
-            */
         }
     }
     return FItems;
