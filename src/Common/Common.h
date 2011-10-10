@@ -263,9 +263,9 @@ int LastDelimiter(const std::wstring str, const std::wstring delim);
 //---------------------------------------------------------------------------
 
 bool CompareText(const std::wstring str1, const std::wstring str2);
-bool AnsiCompare(const std::wstring str1, const std::wstring str2);
+int AnsiCompare(const std::wstring str1, const std::wstring str2);
 int AnsiCompareStr(const std::wstring str1, const std::wstring str2);
-bool AnsiSameText(const std::wstring str1, const std::wstring str2);
+int AnsiSameText(const std::wstring str1, const std::wstring str2);
 bool SameText(const std::wstring str1, const std::wstring str2);
 int AnsiCompareText(const std::wstring str1, const std::wstring str2);
 bool AnsiCompareIC(const std::wstring str1, const std::wstring str2);
