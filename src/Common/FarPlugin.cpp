@@ -1658,7 +1658,7 @@ unsigned int TCustomFarPlugin::FarSystemSettings()
     return FFarSystemSettings;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
+DWORD TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
 {
     std::wstring Buf;
     int Param = 0;
@@ -2103,8 +2103,8 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
     if (FPanelInfo[Another] == NULL)
     {
         ::PanelInfo *Info = new ::PanelInfo;
-        bool res = FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)Info,
-            Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE);
+        bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)Info,
+            Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
         // DEBUG_PRINTF(L"res = %d", res);
         if (!res)
         {
@@ -2117,7 +2117,7 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
     return FPanelInfo[Another];
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2)
+DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2)
 {
     return FPlugin->FarControl(Command, Param1, Param2, this);
 }

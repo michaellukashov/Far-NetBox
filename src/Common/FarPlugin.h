@@ -349,7 +349,7 @@ public:
 
     int FarAdvControl(int Command, void *Param = NULL);
     int FarAdvControl(int Command, int Param);
-    bool FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+    DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(int Command, void *Param);
     unsigned int FarSystemSettings();
     void Text(int X, int Y, int Color, std::wstring Str);
@@ -484,7 +484,7 @@ protected:
     virtual int PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
-    bool FarControl(int Command, int Param1, LONG_PTR Param2);
+    DWORD FarControl(int Command, int Param1, LONG_PTR Param2);
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePlugin();
