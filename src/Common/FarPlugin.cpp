@@ -2616,10 +2616,19 @@ int TFarPanelInfo::GetSelectedCount()
 {
     int Count = FPanelInfo->SelectedItemsNumber;
 
-    if (Count == 1) // FIXME &&
-        // (FPanelInfo->SelectedItems[0].Flags & PPIF_SELECTED) == 0)
+    if (Count == 1)
     {
-        Count = 0;
+        size_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
+        DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
+        PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
+        memset(ppi, 0, size);
+        FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, (LONG_PTR)ppi);
+        if ((ppi->Flags & PPIF_SELECTED) == 0)
+        {
+            DEBUG_PRINTF(L"ppi->Flags = %x", ppi->Flags);
+            Count = 0;
+        }
+        free(ppi);
     }
 
     return Count;
