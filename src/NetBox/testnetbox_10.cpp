@@ -400,4 +400,19 @@ BOOST_FIXTURE_TEST_CASE(test13, base_fixture_t)
     random_unref();
 }
 
+BOOST_FIXTURE_TEST_CASE(test14, base_fixture_t)
+{
+    BOOST_TEST_MESSAGE("RAND_MAX = " << RAND_MAX);
+    for (int i = 0; i < 10; i++)
+    {
+        BOOST_TEST_MESSAGE("rand() = " << rand());
+        BOOST_TEST_MESSAGE("random(256) = " << random(256));
+    }
+    std::wstring enc = ::EncryptPassword(L"1234ABC", L"234556");
+    BOOST_TEST_MESSAGE("enc = " << ::W2MB(enc.c_str()).c_str());
+    std::wstring dec = ::DecryptPassword(enc, L"234556");
+    BOOST_TEST_MESSAGE("dec = " << ::W2MB(dec.c_str()).c_str());
+    BOOST_CHECK(dec == L"1234ABC");
+}
+
 BOOST_AUTO_TEST_SUITE_END()
