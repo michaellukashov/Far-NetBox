@@ -67,7 +67,6 @@ void TSessionPanelItem::GetData(
 {
   FileName = UnixExtractFileName(FSessionData->Name);
   UserData = FSessionData;
-  DEBUG_PRINTF(L"UserData = %x", UserData);
 }
 //---------------------------------------------------------------------------
 TSessionFolderPanelItem::TSessionFolderPanelItem(std::wstring Folder):
@@ -615,7 +614,7 @@ void TWinSCPFileSystem::FocusSession(TSessionData * Data)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
-  DEBUG_PRINTF(L"begin: Data = %x, Edit = %d", Data, Edit);
+  // DEBUG_PRINTF(L"begin: Data = %x, Edit = %d", Data, Edit);
   TSessionData * OrigData = Data;
   bool NewData = !Data;
   bool FillInConnect = !Edit && !Data->GetCanLogin();
@@ -655,7 +654,6 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
                   GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
                 !Name.empty())
             {
-              DEBUG_PRINTF(L"Name = %s", Name.c_str());
               if (StoredSessions->FindByName(Name))
               {
                 throw ExtException(FORMAT(GetMsg(SESSION_ALREADY_EXISTS_ERROR).c_str(), Name.c_str()));
@@ -707,7 +705,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
       }
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
@@ -898,7 +896,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
     // DEBUG_PRINTF(L"Key = %x, VK_F4 = %x, ControlState = %d", Key, VK_F4, ControlState);
     if (Key == VK_F4 && (ControlState == 0))
     {
-      DEBUG_PRINTF(L"Data = %x, StoredSessions->GetCount = %d", Data, StoredSessions->GetCount());
+      // DEBUG_PRINTF(L"Data = %x, StoredSessions->GetCount = %d", Data, StoredSessions->GetCount());
       if ((Data != NULL) || (StoredSessions->GetCount() == 0))
       {
         EditConnectSession(Data, true);

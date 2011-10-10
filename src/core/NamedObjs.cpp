@@ -18,7 +18,7 @@ int NamedObjectSortProc(void * Item1, void * Item2)
 int TNamedObject::CompareName(std::wstring aName,
   bool CaseSensitive)
 {
-  DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
+  // DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
   if (CaseSensitive)
     return ::AnsiCompare(Name, aName);
   else
