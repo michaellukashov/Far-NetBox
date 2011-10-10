@@ -869,7 +869,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
     // DEBUG_PRINTF(L"Focused = %x", Focused);
     if (Focused)
     {
-        // DEBUG_PRINTF(L"Focused->GetIsFile = %d, Focused->GetUserData = %x", Focused->GetIsFile(), Focused->GetUserData());
+        DEBUG_PRINTF(L"Focused->GetIsFile = %d, Focused->GetUserData = %x", Focused->GetIsFile(), Focused->GetUserData());
     }
     if ((Focused != NULL) && Focused->GetIsFile() && Focused->GetUserData())
     {
