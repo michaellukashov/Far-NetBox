@@ -72,7 +72,7 @@ typedef boost::signal4<void, const std::wstring, const TRemoteFile *, void *, in
 typedef processfileex_signal_type::slot_type processfileex_slot_type;
 // typedef int (TObject::*TFileOperationEvent)
   // (void * Param1, void * Param2);
-typedef boost::signal2<void, void *, void *> fileoperation_signal_type;
+typedef boost::signal2<int, void *, void *> fileoperation_signal_type;
 typedef fileoperation_signal_type::slot_type fileoperation_slot_type;
 // typedef void (TObject::*TSynchronizeDirectory)
   // (const std::wstring LocalDirectory, const std::wstring RemoteDirectory,

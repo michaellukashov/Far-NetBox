@@ -838,8 +838,9 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
 
 std::wstring IntToHex(unsigned int Int, int MinChars)
 {
-    ::Error(SNotImplemented, 421);
-    return L"";
+    std::wstringstream ss;
+    ss << std::setfill(L'0') << std::setw(MinChars) << std::hex << Int;
+    return ss.str();
 }
 
 //---------------------------------------------------------------------------

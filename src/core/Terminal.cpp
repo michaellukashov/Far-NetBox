@@ -735,8 +735,7 @@ void TTerminal::Open()
                   if (!FSecureShell->GetActive() && !FTunnelError.empty())
                   {
                     // the only case where we expect this to happen
-                    // FIXME assert(E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR));
-                    ::Error(SNotImplemented, 259); 
+                    assert(E.what() == ::W2MB(LoadStr(UNEXPECTED_CLOSE_ERROR).c_str()).c_str());
                     FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
                   }
                   else
@@ -1380,12 +1379,13 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   const std::wstring Message, void * Param1, void * Param2)
 {
   // assert(CallBackFunc);
+  fileoperation_signal_type sig;
+  sig.connect(CallBackFunc);
   int Result;
   FILE_OPERATION_LOOP_EX
   (
     AllowSkip, Message,
-    Result = 0; // FIXME CallBackFunc(Param1, Param2);
-    ::Error(SNotImplemented, 260);
+    Result = sig(Param1, Param2);
   );
 
   return Result;
@@ -1733,15 +1733,14 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   // from within OnShowExtendedException handler
   assert(FCallbackGuard == NULL);
   int Result = 0;
-  ::Error(SNotImplemented, 261); 
-  if (E) // FIXME && E->InheritsFrom(__classid(EFatal)))
+  if (E && ::InheritsFrom<std::exception, EFatal>(E))
   {
     FatalError(E, Msg);
   }
-  else if (E) // && E->InheritsFrom(__classid(EAbort)))
+  else if (E && ::InheritsFrom<std::exception, EAbort>(E))
   {
     // resent EAbort std::exception
-    // Abort();
+    ::Abort();
   }
   else if (GetExceptionOnFail())
   {
@@ -2291,14 +2290,12 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const 
   }
   catch (const std::exception & E)
   {
-    /* FIXME
     COMMAND_ERROR_ARI_ACTION
     (
-      "",
+      L"",
       FileList = ReadDirectoryListing(Directory, Mask),
       Action
     );
-    */
   }
   return FileList;
 }
@@ -2311,14 +2308,13 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(std::wstring Directory, 
     FileList = DoReadDirectoryListing(Directory, UseCache);
   }
   catch (const std::exception & E)
-  { // FIXME
-::Error(SNotImplemented, 262);
-/*     COMMAND_ERROR_ARI
+  {
+    COMMAND_ERROR_ARI
     (
-      "",
+      L"",
       FileList = CustomReadDirectoryListing(Directory, UseCache);
     );
- */  }
+  }
   return FileList;
 }
 //---------------------------------------------------------------------------
@@ -2402,13 +2398,14 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
       std::wstring Directory = UnixIncludeTrailingBackslash(DirName);
 
       TRemoteFile *File;
+      processfile_signal_type sig;
+      sig.connect(CallBackFunc);
       for (int Index = 0; Index < FileList->GetCount(); Index++)
       {
         File = FileList->GetFile(Index);
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
         {
-          // FIXME CallBackFunc(Directory + File->GetFileName(), File, Param);
-          ::Error(SNotImplemented, 263); 
+          sig(Directory + File->GetFileName(), File, Param);
         }
       }
     }
@@ -3524,8 +3521,7 @@ void TTerminal::DoAnyCommand(const std::wstring Command,
     {
       RollbackAction(*Action, NULL, &E);
     }
-    ::Error(SNotImplemented, 264);
-    if (GetExceptionOnFail()) throw; // FIXME || (E.InheritsFrom(__classid(EFatal)))) throw;
+    if (GetExceptionOnFail() || ::InheritsFrom<std::exception, EFatal>(&E)) throw;
       else HandleExtendedException(&E);
   }
 }
@@ -3756,8 +3752,7 @@ void TTerminal::MakeLocalFileList(const std::wstring FileName,
   bool Directory = FLAGSET(Rec.dwFileAttributes, faDirectory);
   if (Directory && Params.Recursive)
   {
-    ::Error(SNotImplemented, 265); 
-    // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
+    ProcessLocalDirectory(FileName, boost::bind(&TTerminal::MakeLocalFileList, this, _1, _2, _3), &Params);
   }
 
   if (!Directory || Params.IncludeDirs)
@@ -3793,8 +3788,7 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
     }
     else
     {
-      ::Error(SNotImplemented, 266); 
-      // FIXME ProcessLocalDirectory(FileName, boost::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
+      ProcessLocalDirectory(FileName, boost::bind(&TTerminal::CalculateLocalFileSize, this, _1, _2, _3), Params);
     }
   }
 
@@ -3942,19 +3936,20 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     Data.LocalFileList->SetSorted(true);
     Data.LocalFileList->SetCaseSensitive(false);
     TFileOperationProgressType *OperationProgress = GetOperationProgress();
-    ::Error(SNotImplemented, 267); 
+    HANDLE findHandle = 0;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-      // FIXME Found = (FindFirst(Data.LocalDirectory + L"*.*", FindAttrs, SearchRec) == 0);
+      std::wstring path = Data.LocalDirectory + L"*.*";
+      findHandle = FindFirstFile(path.c_str(), /*FindAttrs, */&SearchRec);
+      Found = (findHandle != 0);
     );
 
     if (Found)
     {
       {
-        ::Error(SNotImplemented, 268); 
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (&Self) (&findHandle) )
         {
-          // FIXME Self->FindClose(SearchRec);
+          ::FindClose(findHandle);
         } BOOST_SCOPE_EXIT_END
         std::wstring FileName;
         while (Found)
@@ -3994,9 +3989,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
               reinterpret_cast<TObject*>(FileData));
           }
 
-          ::Error(SNotImplemented, 269); 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            // FIXME Found = (FindNext(SearchRec) == 0);
+            Found = (::FindNextFile(findHandle, &SearchRec) == 0);
           );
         }
       }
@@ -4448,9 +4442,10 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   if (Data.OnSynchronizeDirectory != NULL)
   {
     bool Continue = true;
-    ::Error(SNotImplemented, 270); 
-    // FIXME Data.OnSynchronizeDirectory(Data.LocalDirectory, Data.RemoteDirectory,
-      // Continue, Collect);
+    synchronizedirectory_signal_type sig;
+    sig.connect(*Data.OnSynchronizeDirectory);
+    sig(Data.LocalDirectory, Data.RemoteDirectory,
+      Continue, Collect);
 
     if (!Continue)
     {

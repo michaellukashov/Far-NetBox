@@ -773,7 +773,11 @@ private:
 TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFlags,
         const std::wstring Title, const std::wstring Message, TStrings *Buttons,
         TFarMessageParams *Params) :
-    TFarDialog(Plugin), FParams(Params)
+    TFarDialog(Plugin),
+    FParams(Params),
+    FCheckBoxChecked(false),
+    FTimeoutButton(NULL),
+    CheckBox(NULL)
 {
     assert(Params != NULL);
     assert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
@@ -791,7 +795,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         } BOOST_SCOPE_EXIT_END
         FarWrapText(Message, MessageLines, MaxMessageWidth);
         int MaxLen = Plugin->MaxLength(MessageLines);
-
+        DEBUG_PRINTF(L"MaxLen = %d, Params->MoreMessages = %x", MaxLen, Params->MoreMessages);
         if (Params->MoreMessages != NULL)
         {
             MoreMessageLines = new TStringList();
@@ -810,6 +814,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         }
 
         // temporary
+        DEBUG_PRINTF(L"MaxMessageWidth = %d, Title = %s", MaxMessageWidth, Title.c_str());
         SetSize(TPoint(MaxMessageWidth, 10));
         SetCaption(Title);
         SetFlags(GetFlags() |
@@ -839,6 +844,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         int ButtonLines = 1;
         TFarButton *Button = NULL;
         FTimeoutButton = NULL;
+        DEBUG_PRINTF(L"Buttons->GetCount = %d", Buttons->GetCount());
         for (int Index = 0; Index < Buttons->GetCount(); Index++)
         {
             TFarButton *PrevButton = Button;
@@ -847,6 +853,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             Button->SetBrackets(brNone);
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
+            DEBUG_PRINTF(L"Caption = %s", Caption.c_str());
             if ((Params->Timeout > 0) &&
                 (Params->TimeoutButton == (unsigned int)Index))
             {
@@ -855,14 +862,14 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 std::wstring Buffer;
                 Buffer.resize(512);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
-                SetCaption(Buffer);
+                SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
-            Button->SetCaption(FORMAT(L" %s ", (Caption)));
+            Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
             std::wstring Buffer;
             Buffer.resize(512);
             GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Caption.c_str(), int(Params->Timeout / 1000));
-            Button->SetCaption(Buffer);
+            Button->SetCaption(Buffer.c_str());
             Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
             Button->SetBottom(Button->GetTop());
             Button->SetResult(Index + 1);
@@ -887,14 +894,17 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 ButtonLines++;
             }
 
+            DEBUG_PRINTF(L"Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetRight(), GetBorderBox()->GetLeft());
             if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
             {
                 MaxLen = Button->GetRight() - GetBorderBox()->GetLeft();
             }
+            DEBUG_PRINTF(L"MaxLen = %d", MaxLen);
 
             SetNextItemPosition(ipRight);
         }
 
+        DEBUG_PRINTF(L"Params->CheckBoxLabel = %s", Params->CheckBoxLabel.c_str());
         if (!Params->CheckBoxLabel.empty())
         {
             SetNextItemPosition(ipNewLine);
@@ -912,6 +922,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         }
 
         TRect rect = GetClientRect();
+        DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
         TPoint S(
             rect.Left + MaxLen + (- (rect.Right + 1)),
             rect.Top + MessageLines->GetCount() +
@@ -936,7 +947,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
             S.y += MoreMessagesLister->GetHeight() + 1;
         }
-
+        DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
         SetSize(S);
     }
 }
@@ -1133,7 +1144,7 @@ int TCustomFarPlugin::Message(unsigned int Flags,
 {
     DEBUG_PRINTF(L"Message = %s", Message.c_str());
     // throw ExtException(Message);
-    _asm int 3;
+    // _asm int 3;
     // when message is shown while some "custom" output is on screen,
     // make the output actually background of FAR screen
     if (FTerminalScreenShowing)
@@ -1142,6 +1153,7 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     }
 
     int Result;
+    DEBUG_PRINTF(L"Buttons = %x, Params = %x, Title = %s", Buttons, Params, Title.c_str());
     if (Buttons != NULL)
     {
         TFarMessageParams DefaultParams;
@@ -2604,9 +2616,9 @@ int TFarPanelInfo::GetSelectedCount()
 {
     int Count = FPanelInfo->SelectedItemsNumber;
 
-    if (Count == 1)
-    {
+    if (Count == 1) // FIXME &&
         // (FPanelInfo->SelectedItems(0).Flags & PPIF_SELECTED) == 0)
+    {
         Count = 0;
     }
 
@@ -2618,9 +2630,17 @@ TObjectList *TFarPanelInfo::GetItems()
     if (!FItems)
     {
         FItems = new TObjectList();
+        DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
         for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
         {
-            // FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
+            DEBUG_PRINTF(L"Index = %d", Index);
+            // FIXME FItems->Add((TObject *)new TFarPanelItem(&FPanelInfo->PanelItems[Index]));
+            /*
+            PluginPanelItem *ppi = new PluginPanelItem;
+            memset(ppi, 0, sizeof(*ppi));
+            FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi); // Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+            FItems->Add((TObject *)new TFarPanelItem(ppi));
+            */
         }
     }
     return FItems;
@@ -2666,6 +2686,7 @@ void TFarPanelInfo::ApplySelection()
 TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 {
     int Index = GetFocusedIndex();
+    // DEBUG_PRINTF(L"Index = %d, GetItems = %x, GetItems()->GetCount = %d", Index, GetItems(), GetItems()->GetCount());
     if ((Index >= 0) && (GetItems()->GetCount() > 0))
     {
         assert(Index < GetItems()->GetCount());
@@ -2733,7 +2754,7 @@ bool TFarPanelInfo::GetIsPlugin()
 //---------------------------------------------------------------------------
 std::wstring TFarPanelInfo::GetCurrentDirectory()
 {
-    std::wstring Result = L""; //FPanelInfo->CurDir;
+    std::wstring Result = L""; //FIXME FPanelInfo->CurDir;
     return StrFromFar(Result);
 }
 //---------------------------------------------------------------------------
@@ -2850,7 +2871,7 @@ int TFarEditorInfo::GetEditorID()
 //---------------------------------------------------------------------------
 std::wstring TFarEditorInfo::GetFileName()
 {
-    std::wstring Result = L""; // FEditorInfo->GetFileName();
+    std::wstring Result = L""; // FIXME FEditorInfo->GetFileName();
     return StrFromFar(Result);
 };
 //---------------------------------------------------------------------------
@@ -2959,6 +2980,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
 //---------------------------------------------------------------------------
 std::wstring StrFromFar(const char *S)
 {
+    // FIXME
     std::wstring Result; // = S;
     // OemToChar(Result.c_str(), Result.c_str());
     return Result;

@@ -123,9 +123,8 @@ const TSessionInfo & TSecureShell::GetSessionInfo()
 //---------------------------------------------------------------------
 void TSecureShell::ClearConfig(Config * cfg)
 {
-  ::Error(SNotImplemented, 234); 
-  // FIXME StrDispose(cfg->remote_cmd_ptr);
-  // FIXME StrDispose(cfg->remote_cmd_ptr2);
+  delete[] cfg->remote_cmd_ptr;
+  delete[] cfg->remote_cmd_ptr2;
   // clear all
   memset(cfg, 0, sizeof(*cfg));
 }
@@ -1707,7 +1706,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
 {
   GotHostKey();
 
-  char Delimiter = ';';
+  wchar_t Delimiter = L';';
   assert(KeyStr.find_first_of(Delimiter) == 0);
 
   if (FSessionData->GetTunnel())
@@ -1777,8 +1776,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       TQueryButtonAlias Aliases[3];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      // FIXME Aliases[0].OnClick = &ClipboardHandler.Copy;
-      ::Error(SNotImplemented, 236); 
+      Aliases[0].OnClick.connect(boost::bind(&TClipboardHandler::Copy, ClipboardHandler, _1));
       Answers = qaYes | qaCancel | qaRetry;
       AliasesCount = 1;
       if (!Unknown)
@@ -1807,8 +1805,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       switch (R) {
         case qaOK:
           assert(!Unknown);
-          ::Error(SNotImplemented, 237); 
-          // FIXME KeyStr = (StoredKeys + Delimiter + KeyStr);
+          KeyStr = StoredKeys + Delimiter + KeyStr;
           // fall thru
         case qaYes:
           store_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),

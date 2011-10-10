@@ -17,7 +17,9 @@
 #include "CoreMain.h"
 #include "Security.h"
 //---------------------------------------------------------------------------
-TConfiguration::TConfiguration()
+TConfiguration::TConfiguration() :
+  FApplicationInfo(NULL),
+  FCriticalSection(NULL)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
@@ -458,8 +460,7 @@ void TConfiguration::CleanupConfiguration()
   }
   catch (const std::exception &E)
   {
-    ::Error(SNotImplemented, 200); 
-    throw ExtException(&E); // FIXME , CLEANUP_CONFIG_ERROR);
+    throw ExtException(&E, FMTLOAD(CLEANUP_CONFIG_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -483,8 +484,7 @@ void TConfiguration::CleanupHostKeys()
   }
   catch (const std::exception &E)
   {
-    ::Error(SNotImplemented, 201); 
-    throw ExtException(&E); // FIXME , CLEANUP_HOSTKEYS_ERROR);
+    throw ExtException(&E, FMTLOAD(CLEANUP_HOSTKEYS_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -503,8 +503,7 @@ void TConfiguration::CleanupRandomSeedFile()
   }
   catch (const std::exception &E)
   {
-    ::Error(SNotImplemented, 202); 
-    throw ExtException(&E); // FIXME , CLEANUP_SEEDFILE_ERROR);
+    throw ExtException(&E, FMTLOAD(CLEANUP_SEEDFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -526,8 +525,7 @@ void TConfiguration::CleanupIniFile()
   }
   catch (const std::exception &E)
   {
-    ::Error(SNotImplemented, 203); 
-    throw ExtException(&E); // FIXME , CLEANUP_INIFILE_ERROR);
+    throw ExtException(&E, FMTLOAD(CLEANUP_INIFILE_ERROR));
   }
 }
 //---------------------------------------------------------------------------
@@ -574,19 +572,17 @@ std::wstring TConfiguration::GetOSVersionStr()
   return Result;
 }
 //---------------------------------------------------------------------------
-// TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo()
-// {
-  // return GetFixedFileInfo(ApplicationInfo);
-// }
+VS_FIXEDFILEINFO TConfiguration::GetFixedApplicationInfo()
+{
+  return GetFixedFileInfo(GetApplicationInfo());
+}
 //---------------------------------------------------------------------------
 int TConfiguration::GetCompoundVersion()
 {
-/* FIXME
-  TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
+  VS_FIXEDFILEINFO FileInfo = GetFixedApplicationInfo();
   return CalculateCompoundVersion(
-    HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
-    HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
-*/
+    HIWORD(FileInfo.dwFileVersionMS), LOWORD(FileInfo.dwFileVersionMS),
+    HIWORD(FileInfo.dwFileVersionLS), LOWORD(FileInfo.dwFileVersionLS));
  return 0;
 }
 //---------------------------------------------------------------------------
@@ -603,6 +599,7 @@ void * TConfiguration::GetFileApplicationInfo(const std::wstring FileName)
   {
     if (!FApplicationInfo)
     {
+      // DEBUG_PRINTF(L"ModuleFileName = %s", ModuleFileName().c_str());
       FApplicationInfo = CreateFileInfo(ModuleFileName());
     }
     Result = FApplicationInfo;
@@ -621,6 +618,7 @@ void * TConfiguration::GetApplicationInfo()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileProductName(const std::wstring FileName)
 {
+    // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return GetFileFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
@@ -664,15 +662,12 @@ std::wstring TConfiguration::GetVersionStr()
   TGuard Guard(FCriticalSection);
   try
   {
-  /* FIXME 
-    TVSFixedFileInfo * Info = FixedApplicationInfo;
+    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
     return FMTLOAD(VERSION,
-      HIWORD(Info->dwFileVersionMS),
-      LOWORD(Info->dwFileVersionMS),
-      HIWORD(Info->dwFileVersionLS),
-      LOWORD(Info->dwFileVersionLS));
-   */
-    return L"";
+      HIWORD(Info.dwFileVersionMS),
+      LOWORD(Info.dwFileVersionMS),
+      HIWORD(Info.dwFileVersionLS),
+      LOWORD(Info.dwFileVersionLS));
   }
   catch (const std::exception &E)
   {
@@ -686,13 +681,11 @@ std::wstring TConfiguration::GetVersion()
   try
   {
     std::wstring Result;
-    /* FIXME
-    TVSFixedFileInfo * Info = GetFixedApplicationInfo();
-    Result = TrimVersion(FORMAT(L"%d.%d.%d", (
-      HIWORD(Info->dwFileVersionMS),
-      LOWORD(Info->dwFileVersionMS),
-      HIWORD(Info->dwFileVersionLS))));
-    */
+    VS_FIXEDFILEINFO Info = GetFixedApplicationInfo();
+    Result = TrimVersion(FORMAT(L"%d.%d.%d",
+      HIWORD(Info.dwFileVersionMS),
+      LOWORD(Info.dwFileVersionMS),
+      HIWORD(Info.dwFileVersionLS)));
     return Result;
   }
   catch (const std::exception &E)
@@ -720,7 +713,16 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
     {
       TTranslation Translation;
       Translation = GetTranslation(Info, 0);
-      Result = ::GetFileInfoString(Info, Translation, Key);
+      // DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %x, CharSet = %x", Info, Key.c_str(), Translation.Language, Translation.CharSet);
+      try
+      {
+        Result = ::GetFileInfoString(Info, Translation, Key);
+      }
+      catch (const std::exception &e)
+      {
+        DEBUG_PRINTF(L"Error: %s", ::MB2W(e.what()).c_str());
+        Result = L"";
+      }
     }
     else
     {
@@ -732,6 +734,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileInfoString(const std::wstring Key)
 {
+    // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------

@@ -26,6 +26,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
 
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);
+  // DEBUG_PRINTF(L"Module = %d", Module);
   if (Module == NULL)
   {
     Module = LoadLibraryEx(FileName, 0, LOAD_LIBRARY_AS_DATAFILE);
@@ -101,6 +102,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
   {
     *Handle = 0;
     Len = VERSION_GetFileVersionInfo_PE(FileName, 0, NULL);
+    // DEBUG_PRINTF(L"Len = %d", Len);
 
     if (Len != 0)
     {
@@ -119,25 +121,28 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   unsigned int DataSize, void * Data)
 {
   bool Result;
-
+  // DEBUG_PRINTF(L"IsWin7 = %d, Handle = %d, DataSize = %d", IsWin7(), Handle, DataSize);
   if (IsWin7())
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = (VS_VERSION_INFO_STRUCT32*)Data;
 
-
     unsigned int Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
+    // DEBUG_PRINTF(L"Len = %d, VersionInfo->wLength = %d", Len, VersionInfo->wLength);
 
     Result = (Len != 0);
     if (Result)
     {
-      static const wchar_t Signature[] = L"FE2X";
-      unsigned int BufSize = VersionInfo->wLength + wcslen(Signature);
+      static const char Signature[] = "FE2X";
+      unsigned int BufSize = VersionInfo->wLength + strlen(Signature);
       unsigned int ConvBuf;
+      // DEBUG_PRINTF(L"DataSize = %d, BufSize = %d", DataSize, BufSize);
 
       if (DataSize >= BufSize)
       {
         ConvBuf = DataSize - VersionInfo->wLength;
-        memcpy(((wchar_t*)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf );
+        // DEBUG_PRINTF(L"ConvBuf = %d", ConvBuf);
+        memcpy(((char *)(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 * sizeof(char) ? 4 * sizeof(char) : ConvBuf );
+        // DEBUG_PRINTF(L"Data = %s", Data);
       }
     }
   }
@@ -150,19 +155,20 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void * CreateFileInfo(std::wstring FileName)
+void *CreateFileInfo(std::wstring FileName)
 {
   unsigned long Handle;
   unsigned int Size;
-  void * Result = NULL;
+  void *Result = NULL;
 
 
   // Get file version info block size
   Size = GetFileVersionInfoSizeFix(FileName.c_str(), &Handle);
   // If size is valid
+  // DEBUG_PRINTF(L"FileName = %s, Size = %d, Handle = %u", FileName.c_str(), Size, Handle);
   if (Size > 0)
   {
-    Result = new wchar_t[Size];
+    Result = new char[Size];
     // Get file version info block
     if (!GetFileVersionInfoFix(FileName.c_str(), Handle, Size, Result))
     {
@@ -186,16 +192,17 @@ typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
 //---------------------------------------------------------------------------
 // Return pointer to fixed file version info
-/* FIXME
-PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
+VS_FIXEDFILEINFO GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
-  PVSFixedFileInfo Result;
-  if (!VerQueryValue(FileInfo, "\\", (void**)&Result, &Len))
+  VS_FIXEDFILEINFO *pResult = NULL;
+  if (!VerQueryValue(FileInfo, L"\\", (void**)&pResult, &Len))
+  {
     throw std::exception("Fixed file info not available");
-  return Result;
+  }
+  return *pResult;
 };
-*/
+
 //---------------------------------------------------------------------------
 // Return number of available file version info translations
 unsigned GetTranslationCount(void * FileInfo)
@@ -215,6 +222,7 @@ TTranslation GetTranslation(void * FileInfo, unsigned i)
 
   if (!VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", (void**)&P, &Len))
     throw std::exception("File info translations not available");
+  // DEBUG_PRINTF(L"Len = %d, Language = %x", Len, P[i].Language);
   if (i * sizeof(TTranslation) >= Len)
     throw std::exception("Specified translation not available");
   return P[i];
@@ -237,18 +245,25 @@ std::wstring GetLanguage(unsigned int Language)
 std::wstring GetFileInfoString(void * FileInfo,
   TTranslation Translation, std::wstring StringName)
 {
-  wchar_t *P;
+  wchar_t *P = NULL;
   UINT Len;
-
-  if (!VerQueryValue(FileInfo, std::wstring((L"\\StringFileInfo\\") +
-    IntToHex(Translation.Language, 4) +
-    IntToHex(Translation.CharSet, 4) +
-    L"\\" + StringName).c_str(), (void**)&P, &Len))
+  // DEBUG_PRINTF(L"StringName = %s", StringName.c_str());
+  // DEBUG_PRINTF(L"IntToHex(Translation.Language, 4) = %s", IntToHex(Translation.Language, 4).c_str());
+  // DEBUG_PRINTF(L"IntToHex(Translation.CharSet, 4) = %s", IntToHex(Translation.CharSet, 4).c_str());
+  std::wstring subBlock = std::wstring((L"\\StringFileInfo\\000004E4") +
+    // IntToHex(Translation.Language, 4) +
+    // IntToHex(Translation.CharSet, 4) +
+    std::wstring(L"\\") + StringName);
+  // DEBUG_PRINTF(L"subBlock = %s", subBlock.c_str());
+  // 4e40409 58324546\Comments
+  if (!VerQueryValue(FileInfo, subBlock.c_str(), (void**)&P, &Len))
   {
+    // DEBUG_PRINTF(L"Len = %d", Len);
     throw std::exception("Specified file info string not available");
   }
   // c_str() makes sure that returned string has only necessary bytes allocated
   std::wstring Result = std::wstring(P, Len).c_str();
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 };
 //---------------------------------------------------------------------------

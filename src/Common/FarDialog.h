@@ -627,7 +627,7 @@ public:
     void Redraw();
     void LockChanges();
     void UnlockChanges();
-    char GetSystemColor(unsigned int Index);
+    int GetSystemColor(unsigned int Index);
     bool HotKey(unsigned long Key);
 
     TCustomFarPlugin *GetFarPlugin() { return FFarPlugin; }

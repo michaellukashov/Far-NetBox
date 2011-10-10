@@ -835,9 +835,9 @@ long TFarDialog::SendMessage(int Msg, int Param1, int Param2)
     return GetFarPlugin()->FStartupInfo.SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-char TFarDialog::GetSystemColor(unsigned int Index)
+int TFarDialog::GetSystemColor(unsigned int Index)
 {
-    return static_cast<char>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, Index));
+    return static_cast<int>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, Index));
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Redraw()
@@ -1165,7 +1165,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
     // DEBUG_PRINTF(L"value = %s", value.c_str());
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
-    std::wstring FarData = value; // .substr(0, sizeof(GetDialogItem()->PtrData));
+    std::wstring FarData = value.c_str(); // .substr(0, sizeof(GetDialogItem()->PtrData));
     // DEBUG_PRINTF(L"FarData = %s", FarData.c_str());
     if (!GetOem())
     {
@@ -1178,7 +1178,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
     // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
     GetDialogItem()->MaxLen = FarData.size();
-    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %p", GetDialogItem()->PtrData);
+    // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
     DialogChange();
 }
 //---------------------------------------------------------------------------
@@ -1197,7 +1197,9 @@ void TFarDialogItem::UpdateData(const std::wstring value)
     {
         StrToFar(FarData);
     }
-    wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
+    GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
+    GetDialogItem()->MaxLen = FarData.size();
 }
 //---------------------------------------------------------------------------
 std::wstring TFarDialogItem::GetData()
@@ -1977,7 +1979,9 @@ long TFarEdit::ItemProc(int Msg, long Param)
     if (Msg == DN_EDITCHANGE)
     {
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
-        wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
+        GetDialogItem()->MaxLen = Data.size();
     }
     return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2148,9 +2152,10 @@ void TFarList::UpdateItem(int Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
     std::wstring value = GetString(Index).substr(1, sizeof(ListItem->Text) - 1);
-    wcscpy_s((wchar_t *)ListItem->Text,
-        value.size(),
-        value.c_str());
+    // wcscpy_s((wchar_t *)ListItem->Text,
+        // value.size(),
+        // value.c_str());
+    ListItem->Text = TCustomFarPlugin::DuplicateStr(value, true);
     if (!GetDialogItem()->GetOem())
     {
         StrToFar(std::wstring(ListItem->Text));
@@ -2224,9 +2229,6 @@ void TFarList::Changed()
         for (int i = 0; i < GetCount(); i++)
         {
             std::wstring value = GetString(i).substr(0, sizeof(FListItems->Items[i].Text));
-            // wcscpy_s((wchar_t *)FListItems->Items[i].Text,
-                // value.size(),
-                // value.c_str());
             delete[] FListItems->Items[i].Text;
             FListItems->Items[i].Text = TCustomFarPlugin::DuplicateStr(value);
             if ((GetDialogItem() != NULL) && !GetDialogItem()->GetOem())
@@ -2257,6 +2259,7 @@ void TFarList::Changed()
 void TFarList::SetSelected(int value)
 {
     assert(GetDialogItem() != NULL);
+    // DEBUG_PRINTF(L"value = %d", value);
     if (GetSelectedInt(false) != value)
     {
         if (GetDialogItem()->GetDialog()->GetHandle())
@@ -2350,8 +2353,9 @@ int TFarList::GetVisibleCount()
 //---------------------------------------------------------------------------
 int TFarList::GetSelectedInt(bool Init)
 {
-    int Result;
+    int Result = -1;
     assert(GetDialogItem() != NULL);
+    // DEBUG_PRINTF(L"GetCount = %d, Init = %d", GetCount(), Init);
     if (GetCount() == 0)
     {
         Result = -1;
@@ -2362,7 +2366,9 @@ int TFarList::GetSelectedInt(bool Init)
     }
     else
     {
-        Result = IndexOf(GetDialogItem()->GetDialogItem()->PtrData);
+        const wchar_t *PtrData = GetDialogItem()->GetDialogItem()->PtrData;
+        if (PtrData)
+            Result = IndexOf(PtrData);
     }
 
     return Result;
@@ -2370,7 +2376,9 @@ int TFarList::GetSelectedInt(bool Init)
 //---------------------------------------------------------------------------
 int TFarList::GetSelected()
 {
+    // DEBUG_PRINTF(L"begin");
     int Result = GetSelectedInt(false);
+    // DEBUG_PRINTF(L"Result = %d", Result);
 
     if ((Result < 0) && (GetCount() > 0))
     {
@@ -2409,7 +2417,9 @@ void TFarList::SetFlag(int Index, int Flag, bool value)
 //---------------------------------------------------------------------------
 void TFarList::Init()
 {
+    // DEBUG_PRINTF(L"begin");
     UpdatePosition(GetSelectedInt(true));
+    // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 long TFarList::ItemProc(int Msg, long Param)
@@ -2548,7 +2558,9 @@ long TFarComboBox::ItemProc(int Msg, long Param)
     {
         // strcpy(GetDialogItem()->PtrData, ((FarDialogItem *)Param)->Data);
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
-        wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
+        GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
+        GetDialogItem()->MaxLen = Data.size();
     }
 
     if (FList->ItemProc(Msg, Param))

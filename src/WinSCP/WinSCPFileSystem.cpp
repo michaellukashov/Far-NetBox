@@ -840,7 +840,8 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
         FPlugin->ShowTerminalScreen();
 
         FOutputLog = true;
-        // FIXME FTerminal->AnyCommand(Command, TerminalCaptureLog);
+        captureoutput_slot_type OutputEvent = boost::bind(&TWinSCPFileSystem::TerminalCaptureLog, this, _1, _2);
+        FTerminal->AnyCommand(Command, &OutputEvent);
       }
     }
   }
@@ -864,8 +865,10 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
   {
     TSessionData * Data = NULL;
 
+    // DEBUG_PRINTF(L"Focused = %x", Focused);
     if ((Focused != NULL) && Focused->GetIsFile() && Focused->GetUserData())
     {
+      // DEBUG_PRINTF(L"Focused->GetIsFile = %d, Focused->GetUserData = %x", Focused->GetIsFile(), Focused->GetUserData());
       Data = (TSessionData *)Focused->GetUserData();
     }
 
@@ -887,8 +890,10 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
       Handled = true;
     }
 
+    // DEBUG_PRINTF(L"Key = %x, VK_F4 = %x, ControlState = %d", Key, VK_F4, ControlState);
     if (Key == VK_F4 && (ControlState == 0))
     {
+      DEBUG_PRINTF(L"Data = %x, StoredSessions->GetCount = %d", Data, StoredSessions->GetCount());
       if ((Data != NULL) || (StoredSessions->GetCount() == 0))
       {
         EditConnectSession(Data, true);
@@ -1234,18 +1239,17 @@ void TWinSCPFileSystem::ApplyCommand()
               MakeFileListParam.Recursive =
                 FLAGSET(Params, ccRecursive) && !FileListCommand;
 
-              // FIXME ProcessLocalDirectory(TempDir, &FTerminal->MakeLocalFileList, &MakeFileListParam);
+              ProcessLocalDirectory(TempDir, boost::bind(&TTerminal::MakeLocalFileList, FTerminal, _1, _2, _3), &MakeFileListParam);
 
-              // FIXME TFileOperationProgressType Progress(&OperationProgress, &OperationFinished);
+              TFileOperationProgressType Progress(boost::bind(&TWinSCPFileSystem::OperationProgress, this, _1, _2), boost::bind(&TWinSCPFileSystem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
 
-              // FIXME Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->GetCount());
+              Progress.Start(foCustomCommand, osRemote, FileListCommand ? 1 : FileList->GetCount());
 
               {
-                 // FIXME
-                  // BOOST_SCOPE_EXIT ( (&Progress) )
-                  // {
-                      // FIXME Progress.Stop();
-                  // } BOOST_SCOPE_EXIT_END
+                  BOOST_SCOPE_EXIT ( (&Progress) )
+                  {
+                      Progress.Stop();
+                  } BOOST_SCOPE_EXIT_END
                 if (FileListCommand)
                 {
                   std::wstring LocalFile;
@@ -1817,8 +1821,10 @@ void TWinSCPFileSystem::FileProperties()
         if (FTerminal->GetIsCapable(fcGroupChanging)) Flags |= cpGroup;
 
         TRemoteProperties NewProperties = CurrentProperties;
-        // ??? FIXME if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
-            // FTerminal->GetGroups(), FTerminal->GetUsers(), &NewProperties, Flags))
+        // FIXME
+        ::Error(SNotImplemented, 10);
+        if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
+            (TStrings *)FTerminal->GetGroups(), (TStrings *)FTerminal->GetUsers(), &NewProperties, Flags))
         {
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
@@ -2498,12 +2504,12 @@ int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
         Confirmed = CopyDialog(false, Move, FFileList, DestPath,
           &CopyParam, Options, CopyParamAttrs);
 
-        if (Confirmed && !EditView) // FIXME && CopyParam.Queue)
+        if (Confirmed && !EditView && CopyParam.GetQueue())
         {
           // these parameters are known only after transfer dialog
-          Params |= cpNoConfirmation | cpNewerOnly;
-            // FIXME FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
-            // FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+          Params |=
+            FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
+            FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
           QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList,
             DestPath, &CopyParam, Params));
           Confirmed = false;
@@ -2643,8 +2649,8 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     {
       // these parameters are known only after transfer dialog
       Params |= cpNoConfirmation | cpNewerOnly; // FIXME
-        // FLAGMASK(CopyParam.QueueNoConfirmation, cpNoConfirmation) |
-        // FLAGMASK(CopyParam.NewerOnly, cpNewerOnly);
+        // FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
+        // FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList,
         DestPath, &CopyParam, Params));
       Confirmed = false;
