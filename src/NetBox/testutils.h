@@ -7,7 +7,7 @@
 
 #include "FarPlugin.h"
 #include "Cryptography.h"
-#include "Security.h"
+#include "WinSCPSecurity.h"
 
 //------------------------------------------------------------------------------
 

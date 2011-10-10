@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 #include "Common.h"
-#include "Security.h"
+#include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
 #define PWALG_SIMPLE_INTERNAL 0x00
 #define PWALG_SIMPLE_EXTERNAL 0x01

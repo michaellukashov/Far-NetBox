@@ -15,7 +15,7 @@
 #include "TextsCore.h"
 #include "Interface.h"
 #include "CoreMain.h"
-#include "Security.h"
+#include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
   FApplicationInfo(NULL),
