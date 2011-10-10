@@ -402,11 +402,26 @@ BOOST_FIXTURE_TEST_CASE(test15, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
 {
-    std::wstring Name1 = L"1";
-    std::wstring Name2 = L"2";
-    bool res = ::AnsiCompareIC(Name1, Name2);
-    BOOST_TEST_MESSAGE("res = " << res);
-    BOOST_CHECK(res == false);
+    {
+        std::wstring Name1 = L"1";
+        std::wstring Name2 = L"2";
+        int res = ::AnsiCompareIC(Name1, Name2);
+        BOOST_TEST_MESSAGE("res = " << res);
+        BOOST_CHECK(res != 0);
+        res = ::AnsiCompare(Name1, Name2);
+        BOOST_TEST_MESSAGE("res = " << res);
+        BOOST_CHECK(res != 0);
+    }
+    {
+        std::wstring Name1 = L"abc";
+        std::wstring Name2 = L"ABC";
+        int res = ::AnsiCompareIC(Name1, Name2);
+        BOOST_TEST_MESSAGE("res = " << res);
+        BOOST_CHECK(res == 0);
+        res = ::AnsiCompare(Name1, Name2);
+        BOOST_TEST_MESSAGE("res = " << res);
+        BOOST_CHECK(res != 0);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
