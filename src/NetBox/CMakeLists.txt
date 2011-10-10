@@ -130,6 +130,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/FileSystems.cpp
     ${PROJECT_ROOT}/src/core/Bookmarks.cpp
     ${PROJECT_ROOT}/src/core/SynchronizeController.cpp
+    ${PROJECT_ROOT}/src/core/Security.cpp
     ${PROJECT_ROOT}/src/Common/Classes.cpp
     ${PROJECT_ROOT}/src/Common/Common.cpp
     ${PROJECT_ROOT}/src/Common/FarUtil.cpp
