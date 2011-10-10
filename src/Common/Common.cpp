@@ -2211,11 +2211,9 @@ bool CompareText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
-bool AnsiCompare(const std::wstring str1, const std::wstring str2)
+int AnsiCompare(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    ::Error(SNotImplemented, 75);
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 // Case-sensitive compare
@@ -2224,9 +2222,9 @@ int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
     return StrCmp(str1.c_str(), str2.c_str());
 }
 
-bool AnsiSameText(const std::wstring str1, const std::wstring str2)
+int AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 bool SameText(const std::wstring str1, const std::wstring str2)
@@ -2239,9 +2237,9 @@ int AnsiCompareText(const std::wstring str1, const std::wstring str2)
     return StrCmpI(str1.c_str(), str2.c_str());
 }
 
-bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
+int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)

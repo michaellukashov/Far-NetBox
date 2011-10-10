@@ -578,6 +578,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
 void TSessionData::Save(THierarchicalStorage * Storage,
   bool PuttyExport, const TSessionData * Default)
 {
+  DEBUG_PRINTF(L"begin");
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
     #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
@@ -802,6 +803,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     Storage->CloseSubKey();
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
