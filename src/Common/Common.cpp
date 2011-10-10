@@ -2237,9 +2237,9 @@ int AnsiCompareText(const std::wstring str1, const std::wstring str2)
     return StrCmpI(str1.c_str(), str2.c_str());
 }
 
-bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
+int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
