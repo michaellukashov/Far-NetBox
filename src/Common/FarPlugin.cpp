@@ -2450,7 +2450,7 @@ std::wstring TCustomFarPanelItem::GetCustomColumnData(int /*Column*/)
 //---------------------------------------------------------------------------
 void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
 {
-    // DEBUG_PRINTF(L"begin");
+    DEBUG_PRINTF(L"begin");
     assert(PanelItem);
 
     std::wstring FileName;
@@ -2464,7 +2464,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
             LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
             UserData, PanelItem->CustomColumnNumber);
-    // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+    DEBUG_PRINTF(L"FileName = %s, UserData = %x, PanelItem->UserData = %x", FileName.c_str(), UserData, PanelItem->UserData);
     // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
     FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
     FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
@@ -2489,7 +2489,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
             StrToFar(TCustomFarPlugin::DuplicateStr(GetCustomColumnData(Index)));
     }
     PanelItem->CustomColumnData = CustomColumnData;
-    // DEBUG_PRINTF(L"end");
+    DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
