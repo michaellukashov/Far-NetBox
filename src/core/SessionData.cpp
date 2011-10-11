@@ -924,21 +924,21 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
   TFSProtocol AFSProtocol;
   int APortNumber;
   TFtps AFtps = ftpsNone;
-  if (LowerCase(Url.substr(1, 4)) == L"scp:")
+  if (LowerCase(Url.substr(0, 4)) == L"scp:")
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     Url.erase(1, 4);
     ProtocolDefined = true;
   }
-  else if (LowerCase(Url.substr(1, 5)) == L"sftp:")
+  else if (LowerCase(Url.substr(0, 5)) == L"sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     Url.erase(1, 5);
     ProtocolDefined = true;
   }
-  else if (LowerCase(Url.substr(1, 4)) == L"ftp:")
+  else if (LowerCase(Url.substr(0, 4)) == L"ftp:")
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
@@ -946,7 +946,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     Url.erase(1, 4);
     ProtocolDefined = true;
   }
-  else if (LowerCase(Url.substr(1, 5)) == L"ftps:")
+  else if (LowerCase(Url.substr(0, 5)) == L"ftps:")
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
@@ -955,7 +955,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (Url.substr(1, 2) == L"//"))
+  if (ProtocolDefined && (Url.substr(0, 2) == L"//"))
   {
     Url.erase(1, 2);
   }
@@ -976,7 +976,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     {
       TSessionData * AData = (TSessionData *)StoredSessions->GetItem(Index);
       if (AnsiSameText(AData->Name, DecodedUrl) ||
-          AnsiSameText(AData->Name + L"/", DecodedUrl.substr(1, AData->Name.size() + 1)))
+          AnsiSameText(AData->Name + L"/", DecodedUrl.substr(0, AData->Name.size() + 1)))
       {
         Data = AData;
         break;
@@ -990,7 +990,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       DefaultsOnly = false;
       Assign(Data);
       int P = 1;
-      while (!AnsiSameText(DecodeUrlChars(Url.substr(1, P)), Data->Name))
+      while (!AnsiSameText(DecodeUrlChars(Url.substr(0, P)), Data->Name))
       {
         P++;
         assert(P <= Url.size());
@@ -1016,7 +1016,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
         PSlash = Url.size() + 1;
       }
 
-      std::wstring ConnectInfo = Url.substr(1, PSlash - 1);
+      std::wstring ConnectInfo = Url.substr(0, PSlash - 1);
 
       int P = ::LastDelimiter(ConnectInfo, L"@");
 
@@ -1025,21 +1025,21 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
       if (P > 0)
       {
-        UserInfo = ConnectInfo.substr(1, P - 1);
-        HostInfo = ConnectInfo.substr(P + 1, ConnectInfo.size() - P);
+        UserInfo = ConnectInfo.substr(0, P - 1);
+        HostInfo = ConnectInfo.substr(P, ConnectInfo.size() - P);
       }
       else
       {
         HostInfo = ConnectInfo;
       }
 
-      if ((HostInfo.size() >= 2) && (HostInfo[1] == '[') && ((P = HostInfo.find_first_of(L"]")) > 0))
+      if ((HostInfo.size() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.find_first_of(L"]")) > 0))
       {
-        SetHostName(HostInfo.substr(2, P - 2));
+        SetHostName(HostInfo.substr(1, P - 2));
         HostInfo.erase(1, P);
-        if (!HostInfo.empty() && (HostInfo[1] == ':'))
+        if (!HostInfo.empty() && (HostInfo[0] == ':'))
         {
-          HostInfo.erase(1, 1);
+          HostInfo.erase(0, 1);
         }
       }
       else
@@ -1249,8 +1249,8 @@ void TSessionData::SetHostName(std::wstring value)
     int P = ::LastDelimiter(value, L"@");
     if (P > 0)
     {
-      SetUserName(value.substr(1, P - 1));
-      value = value.substr(P + 1, value.size() - P);
+      SetUserName(value.substr(0, P - 1));
+      value = value.substr(P, value.size() - P);
     }
     FHostName = value;
     Modify();
@@ -1944,8 +1944,8 @@ void TSessionData::SetTunnelHostName(std::wstring value)
     int P = ::LastDelimiter(value, L"@");
     if (P > 0)
     {
-      SetTunnelUserName(value.substr(1, P - 1));
-      value = value.substr(P + 1, value.size() - P);
+      SetTunnelUserName(value.substr(0, P - 1));
+      value = value.substr(P, value.size() - P);
     }
     FTunnelHostName = value;
     Modify();

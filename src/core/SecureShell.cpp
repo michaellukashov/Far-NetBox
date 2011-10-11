@@ -1058,8 +1058,8 @@ void TSecureShell::AddStdError(std::wstring Str)
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.find_first_of(L"\n")) > 0)
   {
-    Line = FStdErrorTemp.substr(1, P-1);
-    FStdErrorTemp.erase(1, P);
+    Line = FStdErrorTemp.substr(0, P-1);
+    FStdErrorTemp.erase(0, P);
     AddStdErrorLine(Line);
   }
 }

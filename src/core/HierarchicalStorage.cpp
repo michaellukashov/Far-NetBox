@@ -696,7 +696,7 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
       {
         Result = Sections->Find(NewKey, Index);
         if (!Result && Index < Sections->GetCount() &&
-            Sections->GetString(Index).substr(1, NewKey.size()+1) == NewKey + L"\\")
+            Sections->GetString(Index).substr(0, NewKey.size()+1) == NewKey + L"\\")
         {
           Result = true;
         }
@@ -740,7 +740,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
     {
       std::wstring Section = Sections->GetString(i);
       if (AnsiCompareText(GetCurrentSubKey(),
-          Section.substr(1, GetCurrentSubKey().size())) == 0)
+          Section.substr(0, GetCurrentSubKey().size())) == 0)
       {
         std::wstring SubSection = Section.substr(GetCurrentSubKey().size() + 1,
           Section.size() - GetCurrentSubKey().size());
@@ -805,7 +805,7 @@ void TIniFileStorage::ApplyOverrides()
       std::wstring Section = Sections->GetString(i);
 
       if (AnsiSameText(OverridesKey,
-            Section.substr(1, OverridesKey.size())))
+            Section.substr(0, OverridesKey.size())))
       {
         std::wstring SubKey = Section.substr(OverridesKey.size() + 1,
           Section.size() - OverridesKey.size());

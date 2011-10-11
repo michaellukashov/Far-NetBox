@@ -267,8 +267,8 @@ void TTabButton::SetTabName(std::wstring value)
     int P = ::Pos(value, L"|");
     if (P > 0)
     {
-      C = value.substr(1, P - 1);
-      value.erase(1, P);
+      C = value.substr(0, P - 1);
+      value.erase(0, P);
     }
     else
     {
@@ -6786,10 +6786,10 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
   else
   {
     S = ChecklistItem->Local.Directory;
-    if (AnsiSameText(FLocalDirectory, S.substr(1, FLocalDirectory.size())))
+    if (AnsiSameText(FLocalDirectory, S.substr(0, FLocalDirectory.size())))
     {
-      S[1] = '.';
-      S.erase(2, FLocalDirectory.size() - 1);
+      S[0] = '.';
+      S.erase(1, FLocalDirectory.size() - 1);
     }
     else
     {
@@ -6829,7 +6829,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
   else
   {
     S = ChecklistItem->Remote.Directory;
-    if (AnsiSameText(FRemoteDirectory, S.substr(1, FRemoteDirectory.size())))
+    if (AnsiSameText(FRemoteDirectory, S.substr(0, FRemoteDirectory.size())))
     {
       S[1] = '.';
       S.erase(2, FRemoteDirectory.size() - 1);

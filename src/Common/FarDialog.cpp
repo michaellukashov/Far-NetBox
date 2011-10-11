@@ -1192,7 +1192,7 @@ void TFarDialogItem::SetData(const std::wstring value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::UpdateData(const std::wstring value)
 {
-    std::wstring FarData = value.substr(1, sizeof(GetDialogItem()->PtrData) - 1);
+    std::wstring FarData = value; //.substr(0, sizeof(GetDialogItem()->PtrData) - 1);
     if (!GetOem())
     {
         StrToFar(FarData);
@@ -1780,12 +1780,12 @@ std::wstring TFarButton::GetData()
     if ((FBrackets == brTight) || (FBrackets == brSpace))
     {
         bool HasBrackets = (Result.size() >= 2) &&
-            (Result[1] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
+            (Result[0] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
             (Result[Result.size()] == ((FBrackets == brSpace) ? L' ' : L']'));
         assert(HasBrackets);
         if (HasBrackets)
         {
-            Result = Result.substr(2, Result.size() - 2);
+            Result = Result.substr(1, Result.size() - 2);
         }
     }
     return Result;
@@ -2151,7 +2151,7 @@ void TFarList::Assign(TPersistent *Source)
 void TFarList::UpdateItem(int Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
-    std::wstring value = GetString(Index).substr(1, sizeof(ListItem->Text) - 1);
+    std::wstring value = GetString(Index).substr(0, sizeof(ListItem->Text) - 1);
     // wcscpy_s((wchar_t *)ListItem->Text,
         // value.size(),
         // value.c_str());
@@ -2561,6 +2561,7 @@ long TFarComboBox::ItemProc(int Msg, long Param)
         // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
         GetDialogItem()->MaxLen = Data.size();
+        DEBUG_PRINTF(L"Data.size = %d", Data.size());
     }
 
     if (FList->ItemProc(Msg, Param))
@@ -2657,7 +2658,7 @@ long TFarLister::ItemProc(int Msg, long Param)
             Buf = L" ";
             if (Index < GetItems()->GetCount())
             {
-                std::wstring value = GetItems()->GetString(Index).substr(1, DisplayWidth - 1);
+                std::wstring value = GetItems()->GetString(Index).substr(0, DisplayWidth - 1);
                 Buf += value;
             }
             std::wstring value; // = std::wstring::StringOfChar(' ', DisplayWidth - Buf.size());

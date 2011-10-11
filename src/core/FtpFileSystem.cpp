@@ -2533,7 +2533,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
 
   bool HasCodePrefix =
     (Response.Length() >= 3) &&
-    TryStrToInt(Response.substr(1, 3), Code) &&
+    TryStrToInt(Response.substr(0, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == ' ') || (Response[4] == '-'));
 
@@ -2543,7 +2543,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     FLastResponse->Clear();
     if (Response.Length() >= 5)
     {
-      FLastResponse->Add(Response.substr(5, Response.Length() - 4));
+      FLastResponse->Add(Response.substr(4, Response.Length() - 4));
     }
     SetLastCode(Code);
   }
@@ -2668,7 +2668,7 @@ bool TFTPFileSystem::HandleStatus(const char * AStatus, int Type)
       {
         FLastCommand = FEAT;
       }
-      else if (Status.substr(1, 5) == "PASS ")
+      else if (Status.substr(0, 5) == "PASS ")
       {
         FLastCommand = PASS;
       }

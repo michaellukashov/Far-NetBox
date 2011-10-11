@@ -47,7 +47,7 @@ const std::wstring TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
 bool TNamedObjectList::IsHidden(TNamedObject * Object)
 {
-  return (Object->Name.substr(1, HiddenPrefix.size()) == HiddenPrefix);
+  return (Object->Name.substr(0, HiddenPrefix.size()) == HiddenPrefix);
 }
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList() :

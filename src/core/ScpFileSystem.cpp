@@ -202,7 +202,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
 void TCommandSet::SetCommand(TFSCommand Cmd, std::wstring value)
 {
   CHECK_CMD;
-  wcscpy((wchar_t *)CommandSet[Cmd].Command, value.substr(1, MaxCommandLen - 1).c_str());
+  wcscpy((wchar_t *)CommandSet[Cmd].Command, value.substr(0, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::GetCommand(TFSCommand Cmd)
@@ -518,7 +518,7 @@ bool TSCPFileSystem::IsTotalListingLine(const std::wstring Line)
 {
   // On some hosts there is not "total" but "totalt". What's the reason??
   // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-  return !::AnsiCompareIC(Line.substr(1, 5), L"total");
+  return !::AnsiCompareIC(Line.substr(0, 5), L"total");
 }
 //---------------------------------------------------------------------------
 bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
@@ -870,7 +870,7 @@ void TSCPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
   std::wstring ToDir;
   if (!Directory.empty() &&
-      ((Directory[1] != L'~') || (Directory.substr(1, 2) == L"~ ")))
+      ((Directory[0] != L'~') || (Directory.substr(0, 2) == L"~ ")))
   {
     ToDir = L"\"" + DelimitStr(Directory) + L"\"";
   }

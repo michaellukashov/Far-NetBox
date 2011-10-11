@@ -117,7 +117,7 @@ void TSynchronizeController::SynchronizeChange(
 
     std::wstring LocalDirectory = IncludeTrailingBackslash(Directory);
 
-    assert(LocalDirectory.substr(1, RootLocalDirectory.size()) ==
+    assert(LocalDirectory.substr(0, RootLocalDirectory.size()) ==
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
       ToUnixPath(LocalDirectory.substr(RootLocalDirectory.size() + 1,
