@@ -2099,7 +2099,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SftpServerEdit->GetItems()->Add(L"/bin/sftp-server");
   SftpServerEdit->GetItems()->Add(L"sudo su -c /bin/sftp-server");
   Text->SetEnabledFollow(SftpServerEdit);
-  DEBUG_PRINTF(L"SftpServerEdit->GetItems()[2] = %s", SftpServerEdit->GetItems()->GetString(2).c_str());
 
   SetNextItemPosition(ipNewLine);
 
