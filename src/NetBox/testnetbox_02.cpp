@@ -28,6 +28,15 @@
 
 using namespace boost::unit_test;
 
+// to compile with libputty
+extern "C" void modalfatalbox(char * fmt, ...)
+{
+  va_list Param;
+  va_start(Param, fmt);
+  // SSHFatalError(fmt, Param);
+  va_end(Param);
+}
+
 /*******************************************************************************
             test suite
 *******************************************************************************/

@@ -121,7 +121,6 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/FtpFileSystem.cpp
     ${PROJECT_ROOT}/src/core/SftpFileSystem.cpp
     ${PROJECT_ROOT}/src/core/PuttyIntf.cpp
-    ${PROJECT_ROOT}/src/core/Cryptography.cpp
     ${PROJECT_ROOT}/src/core/FileBuffer.cpp
     ${PROJECT_ROOT}/src/core/NamedObjs.cpp
     ${PROJECT_ROOT}/src/core/HierarchicalStorage.cpp
@@ -130,6 +129,8 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/FileSystems.cpp
     ${PROJECT_ROOT}/src/core/Bookmarks.cpp
     ${PROJECT_ROOT}/src/core/SynchronizeController.cpp
+    ${PROJECT_ROOT}/src/core/Cryptography.cpp
+    ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
     ${PROJECT_ROOT}/src/Common/Classes.cpp
     ${PROJECT_ROOT}/src/Common/Common.cpp
     ${PROJECT_ROOT}/src/Common/FarUtil.cpp
@@ -315,6 +316,8 @@ set ( TESTNETBOX_02_SOURCES
     ${PROJECT_ROOT}/src/Common/FarPlugin.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
     ${PROJECT_ROOT}/src/core/FileOperationProgress.cpp
+    ${PROJECT_ROOT}/src/core/Cryptography.cpp
+    ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
     ${PROJECT_ROOT}/src/resource/TextsCore1.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp

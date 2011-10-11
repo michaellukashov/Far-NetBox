@@ -6,6 +6,8 @@
 #include <fstream>
 
 #include "FarPlugin.h"
+#include "Cryptography.h"
+#include "WinSCPSecurity.h"
 
 //------------------------------------------------------------------------------
 
@@ -19,6 +21,11 @@ public:
     explicit TStubFarPlugin() :
         TCustomFarPlugin(GetModuleHandle(0))
     {
+        CryptographyInitialize();
+    }
+    ~TStubFarPlugin()
+    {
+        CryptographyFinalize();
     }
 protected:
     virtual void GetPluginInfoEx(long unsigned &Flags,

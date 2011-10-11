@@ -2463,8 +2463,8 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     void *UserData = (void *)PanelItem->UserData;
     GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
             LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
-            UserData, PanelItem->CustomColumnNumber);
-    // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+            (void *)UserData, PanelItem->CustomColumnNumber);
+    PanelItem->UserData = (DWORD_PTR)UserData;
     // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
     FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
     FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
