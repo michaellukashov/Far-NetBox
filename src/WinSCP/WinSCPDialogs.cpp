@@ -267,8 +267,8 @@ void TTabButton::SetTabName(std::wstring value)
     int P = ::Pos(value, L"|");
     if (P > 0)
     {
-      C = value.substr(0, P - 1);
-      value.erase(0, P);
+      C = value.substr(0, P);
+      value.erase(0, P+1);
     }
     else
     {
