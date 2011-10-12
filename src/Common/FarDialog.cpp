@@ -380,6 +380,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
         assert(Dialogs.find(Handle) == Dialogs.end());
         Dialogs[Handle] = Param2;
         Dialog = (TFarDialog *)Param2;
+        DEBUG_PRINTF(L"Handle = %d", Handle);
         Dialog->FHandle = Handle;
     }
     else
@@ -1166,13 +1167,14 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
     // DEBUG_PRINTF(L"value = %s", value.c_str());
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
     std::wstring FarData = value.c_str(); // .substr(0, sizeof(GetDialogItem()->PtrData));
-    // DEBUG_PRINTF(L"FarData = %s", FarData.c_str());
+    // DEBUG_PRINTF(L"FarData = %s, GetOem = %d", FarData.c_str(), GetOem());
     if (!GetOem())
     {
         StrToFar(FarData);
     }
     if (GetDialog()->GetHandle())
     {
+        // DEBUG_PRINTF(L"DM_SETTEXTPTR");
         SendMessage(DM_SETTEXTPTR, (int)FarData.c_str());
     }
     // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());

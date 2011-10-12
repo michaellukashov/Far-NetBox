@@ -2983,8 +2983,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     COMBO->GetItems()->SetSelected(2 - SessionData->Get ## PROP)
   SFTP_BUGS();
 
+  // DEBUG_PRINTF(L"SessionData->GetSftpServer = %s", SessionData->GetSftpServer().c_str());
+  // DEBUG_PRINTF(L"SftpServerEdit->GetText = %s", SftpServerEdit->GetText().c_str());
   if (SessionData->GetSftpServer().empty())
   {
+    // DEBUG_PRINTF(L"SftpServerEdit->GetItems()->GetString(0) = %s", SftpServerEdit->GetItems()->GetString(0).c_str());
     SftpServerEdit->SetText(SftpServerEdit->GetItems()->GetString(0));
   }
   else
