@@ -3216,7 +3216,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // SFTP tab
     #define TRISTATE(COMBO, PROP, MSG) \
       SessionData->Set##PROP(sb##PROP, (TAutoSwitch)(2 - COMBO->GetItems()->GetSelected()));
-    // SFTP_BUGS();
+    SFTP_BUGS();
     SessionData->SetSFTPBug(sbSymlink, (TAutoSwitch)(2 - SFTPBugSymlinkCombo->GetItems()->GetSelected()));
     SessionData->SetSFTPBug(sbSignedTS, (TAutoSwitch)(2 - SFTPBugSignedTSCombo->GetItems()->GetSelected()));
 
@@ -3346,7 +3346,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetGSSAPIServerRealm(GSSAPIServerRealmEdit->GetText());
 
     // Bugs tab
-    // BUGS();
+    BUGS();
     #undef TRISTATE
     SessionData->SetBug(sbIgnore1, (TAutoSwitch)(2 - BugIgnore1Combo->GetItems()->GetSelected()));
     SessionData->SetBug(sbPlainPW1, (TAutoSwitch)(2 - BugPlainPW1Combo->GetItems()->GetSelected()));
