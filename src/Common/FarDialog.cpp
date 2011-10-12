@@ -714,6 +714,7 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
+    DEBUG_PRINTF(L"GetItemCount = %d", GetItemCount());
     for (int i = 0; i < GetItemCount(); i++)
     {
         GetItem(i)->Init();
@@ -2563,7 +2564,7 @@ long TFarComboBox::ItemProc(int Msg, long Param)
         // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
         GetDialogItem()->MaxLen = Data.size();
-        DEBUG_PRINTF(L"Data.size = %d", Data.size());
+        // DEBUG_PRINTF(L"Data.size = %d", Data.size());
     }
 
     if (FList->ItemProc(Msg, Param))
