@@ -2151,7 +2151,7 @@ void TFarList::Assign(TPersistent *Source)
 void TFarList::UpdateItem(int Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
-    std::wstring value = GetString(Index).substr(0, sizeof(ListItem->Text) - 1);
+    std::wstring value = GetString(Index); //.substr(0, sizeof(ListItem->Text) - 1);
     // wcscpy_s((wchar_t *)ListItem->Text,
         // value.size(),
         // value.c_str());
