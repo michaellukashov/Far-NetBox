@@ -532,7 +532,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
                     // flag DIF_LISTNOCLOSE.
                     if (Button == NULL)
                     {
-                        assert(FarPlugin->FarVersion() >= FAR170ALPHA6);
+                        assert((short int)FarPlugin->FarVersion() >= (short int)FAR170ALPHA6);
                         assert(dynamic_cast<TFarListBox *>(GetItem(Param1)) != NULL);
                         Result = false;
                     }
@@ -2461,7 +2461,7 @@ long TFarListBox::ItemProc(int Msg, long Param)
     bool Result;
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
-    if ((Msg == DN_KEY) && (GetDialog()->GetFarPlugin()->FarVersion() >= FAR170) && GetDialog()->HotKey(Param))
+    if ((Msg == DN_KEY) && ((short int)GetDialog()->GetFarPlugin()->FarVersion() >= (short int)FAR170) && GetDialog()->HotKey(Param))
     {
         Result = true;
     }
@@ -2476,7 +2476,7 @@ long TFarListBox::ItemProc(int Msg, long Param)
 
     // FAR WORKAROUND
     if ((Msg == DN_MOUSECLICK) && (GetDialog()->GetItemCount() > 0) &&
-            (GetDialog()->GetFarPlugin()->FarVersion() < FAR170ALPHA6))
+            ((short int)GetDialog()->GetFarPlugin()->FarVersion() < (short int)FAR170ALPHA6))
     {
         FDenyClose = true;
     }
@@ -2523,7 +2523,7 @@ bool TFarListBox::CloseQuery()
     // FAR WORKAROUND
     if (FDenyClose)
     {
-        assert(FarPlugin->FarVersion() < FAR170ALPHA6);
+        assert((short int)FarPlugin->FarVersion() < (short int)FAR170ALPHA6);
         FDenyClose = false;
         return false;
     }
