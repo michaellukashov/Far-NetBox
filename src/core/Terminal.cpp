@@ -1398,9 +1398,9 @@ std::wstring TTerminal::TranslateLockedPath(std::wstring Path, bool Lock)
 
   if (Lock)
   {
-    if (Path.substr(1, FLockDirectory.size()) == FLockDirectory)
+    if (Path.substr(0, FLockDirectory.size()) == FLockDirectory)
     {
-      Path.erase(1, FLockDirectory.size());
+      Path.erase(0, FLockDirectory.size());
       if (Path.empty()) Path = L"/";
     }
   }
@@ -3161,7 +3161,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
             // current directory
             if ((File != NULL) &&
                 File->GetIsDirectory() &&
-                ((curDirectory.substr(1, FileList->GetString(Index).size()) == FileList->GetString(Index)) &&
+                ((curDirectory.substr(0, FileList->GetString(Index).size()) == FileList->GetString(Index)) &&
                  ((FileList->GetString(Index).size() == curDirectory.size()) ||
                   (curDirectory[FileList->GetString(Index).size() + 1] == '/'))))
             {

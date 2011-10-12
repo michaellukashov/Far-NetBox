@@ -388,13 +388,13 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
   Command = ::Trim(Command);
   Params = L"";
   Dir = L"";
-  if (!Command.empty() && (Command[1] == L'\"'))
+  if (!Command.empty() && (Command[0] == L'\"'))
   {
-    Command.erase(1, 1);
+    Command.erase(0, 1);
     int P = Command.find_first_of(L'"');
     if (P)
     {
-      Program = ::Trim(Command.substr(1, P-1));
+      Program = ::Trim(Command.substr(0, P-1));
       Params = ::Trim(Command.substr(P + 1, Command.size() - P));
     }
     else
@@ -407,7 +407,7 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     int P = Command.find_first_of(L" ");
     if (P)
     {
-      Program = ::Trim(Command.substr(1, P));
+      Program = ::Trim(Command.substr(0, P));
       Params = ::Trim(Command.substr(P + 1, Command.size() - P));
     }
     else
@@ -418,14 +418,14 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
   int B = Program.find_last_of(L"\\");
   if (B)
   {
-    Dir = ::Trim(Program.substr(1, B));
+    Dir = ::Trim(Program.substr(0, B));
   }
   else
   {
     B = Program.find_last_of(L"/");
     if (B)
     {
-      Dir = ::Trim(Program.substr(1, B));
+      Dir = ::Trim(Program.substr(0, B));
     }
   }
 }

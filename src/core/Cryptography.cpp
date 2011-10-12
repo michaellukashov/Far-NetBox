@@ -434,7 +434,7 @@ bool AES256DecryptWithMAC(std::wstring Input, std::wstring Password,
     Input.size() > SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + MAC_LENGTH(PASSWORD_MANAGER_AES_MODE);
   if (Result)
   {
-    std::wstring Salt = Input.substr(1, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    std::wstring Salt = Input.substr(0, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
     std::wstring Encrypted =
       Input.substr(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + 1,
         Input.size() - SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) - MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -461,7 +461,7 @@ void AES256CreateVerifier(std::wstring Input, std::wstring & Verifier)
 bool AES256Verify(std::wstring Input, std::wstring Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
-  std::wstring Salt = Verifier.substr(1, SaltLength);
+  std::wstring Salt = Verifier.substr(0, SaltLength);
   std::wstring Dummy = Verifier.substr(SaltLength + 1, SaltLength);
   std::wstring Mac = Verifier.substr(SaltLength + SaltLength + 1, MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
 

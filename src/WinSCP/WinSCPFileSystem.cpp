@@ -505,7 +505,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
         Data = StoredSessions->GetSession(Index);
-        if (Data->Name.substr(1, Folder.size()) == Folder)
+        if (Data->Name.substr(0, Folder.size()) == Folder)
         {
           std::wstring Name = Data->Name.substr(
             Folder.size() + 1, Data->Name.size() - Folder.size());
@@ -717,7 +717,7 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
     {
       std::wstring Command = (wchar_t *)Param;
       if (!::Trim(Command).empty() &&
-          (::LowerCase(Command.substr(1, 3)) != L"cd "))
+          (::LowerCase(Command.substr(0, 3)) != L"cd "))
       {
         Result = ExecuteCommand(Command);
       }
@@ -2226,13 +2226,13 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
             std::wstring RemotePath = UnixIncludeTrailingBackslash(FTerminal->GetCurrentDirectory());
             std::wstring FullPrevPath = UnixIncludeTrailingBackslash(PrevPath);
             std::wstring ALocalPath;
-            if (RemotePath.substr(1, FullPrevPath.size()) == FullPrevPath)
+            if (RemotePath.substr(0, FullPrevPath.size()) == FullPrevPath)
             {
               ALocalPath = IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
                 FromUnixPath(RemotePath.substr(FullPrevPath.size() + 1,
                   RemotePath.size() - FullPrevPath.size()));
             }
-            else if (FullPrevPath.substr(1, RemotePath.size()) == RemotePath)
+            else if (FullPrevPath.substr(0, RemotePath.size()) == RemotePath)
             {
               std::wstring NewLocalPath;
               ALocalPath = ExcludeTrailingBackslash(AnotherPanel->GetCurrentDirectory());
@@ -2385,7 +2385,7 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
       while (Index < StoredSessions->GetCount())
       {
         TSessionData *Data = StoredSessions->GetSession(Index);
-        if (Data->Name.substr(1, Folder.size()) == Folder)
+        if (Data->Name.substr(0, Folder.size()) == Folder)
         {
           sig(Data, Param);
           if (StoredSessions->GetSession(Index) != Data)

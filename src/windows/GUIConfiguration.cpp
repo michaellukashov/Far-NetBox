@@ -746,7 +746,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // yet in the string). Note that FileExists may display error dialog, but as
   // it should be called only for custom users path, let's expect that the user
   // can take care of it.
-  if ((FPuttyPath.substr(1, 1) != L"\"") &&
+  if ((FPuttyPath.substr(0, 1) != L"\"") &&
       (CompareFileName(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
        FileExists(ExpandEnvironmentVariables(FPuttyPath))))
   {
@@ -1000,7 +1000,7 @@ TStrings * TGUIConfiguration::GetLocales()
           Ext = Exts->IndexOf(Langs->Ext[Index]);
           if (Ext < 0)
           {
-            Ext = Exts->IndexOf(Langs->Ext[Index].substr(1, 2));
+            Ext = Exts->IndexOf(Langs->Ext[Index].substr(0, 2));
             if (Ext >= 0)
             {
               Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
@@ -1041,7 +1041,7 @@ TStrings * TGUIConfiguration::GetLocales()
       {
         if ((Exts->GetObject(Index) == NULL) &&
             (Exts->GetString(Index).size() == 3) &&
-            SameText(Exts->GetString(Index).substr(1, 2), AdditionaLanguagePrefix))
+            SameText(Exts->GetString(Index).substr(0, 2), AdditionaLanguagePrefix))
         {
           std::wstring LangName = GetFileFileInfoString(L"LangName",
             ChangeFileExt(ModuleFileName(), std::wstring(L".") + Exts->GetString(Index)));

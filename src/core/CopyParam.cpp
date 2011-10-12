@@ -340,7 +340,7 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
         }
         else if ((Hex == L"00") &&
                  ((Index == FileName.size() - 2) || (FileName[Index + 3] == '.')) &&
-                 IsReservedName(FileName.substr(1, Index - 1) + FileName.substr(Index + 3, FileName.size() - Index - 3 + 1)))
+                 IsReservedName(FileName.substr(0, Index - 1) + FileName.substr(Index + 3, FileName.size() - Index - 3 + 1)))
         {
           FileName.erase(Index, 3);
           InvalidChar = (wchar_t *)FileName.c_str() + Index - 1;
@@ -414,7 +414,7 @@ std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
   switch (GetFileNameCase()) {
     case ncUpperCase: FileName = ::UpperCase(FileName); break;
     case ncLowerCase: FileName = ::LowerCase(FileName); break;
-    case ncFirstUpperCase: FileName = ::UpperCase(FileName.substr(1, 1)) +
+    case ncFirstUpperCase: FileName = ::UpperCase(FileName.substr(0, 1)) +
       ::LowerCase(FileName.substr(2, FileName.size()-1)); break;
     case ncLowerCaseShort:
       if ((FileName.size() <= 12) && (FileName.find_first_of(L".") <= 9) &&

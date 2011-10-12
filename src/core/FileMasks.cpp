@@ -279,7 +279,7 @@ std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
       {
         FileName.resize(P2 - 1);
       }
-      FileName = MaskFilePart(FileName, Mask.substr(1, P - 1), Masked);
+      FileName = MaskFilePart(FileName, Mask.substr(0, P - 1), Masked);
       if (!FileExt.empty())
       {
         FileName += L"." + FileExt;
@@ -695,7 +695,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
             {
               // make sure sole "/" (root dir) is preserved as is
               CreateMaskMask(
-                UnixExcludeTrailingBackslash(ToUnixPath(PartStr.substr(1, D))),
+                UnixExcludeTrailingBackslash(ToUnixPath(PartStr.substr(0, D))),
                 PartStart, PartStart + D - 1, false,
                 Mask.DirectoryMask);
               CreateMaskMask(

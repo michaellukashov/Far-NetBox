@@ -32,7 +32,7 @@ std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
 {
   if ((Path.size() > 1) && ::IsDelimiter(Path, L"/", Path.size()))
-      return Path.substr(1, Path.size() - 1);
+      return Path.substr(0, Path.size());
     else return Path;
 }
 //---------------------------------------------------------------------------
@@ -45,7 +45,7 @@ bool UnixIsChildPath(std::wstring Parent, std::wstring Child)
 {
   Parent = UnixIncludeTrailingBackslash(Parent);
   Child = UnixIncludeTrailingBackslash(Child);
-  return (Child.substr(1, Parent.size()) == Parent);
+  return (Child.substr(0, Parent.size()) == Parent);
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileDir(const std::wstring Path)
@@ -54,11 +54,11 @@ std::wstring UnixExtractFileDir(const std::wstring Path)
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
-    return Path.substr(1, Pos - 1);
+    return Path.substr(0, Pos - 1);
   }
   else
   {
-    return (Pos == 1) ? std::wstring(L"/") : std::wstring();
+    return (Pos == 0) ? std::wstring(L"/") : std::wstring();
   }
 }
 //---------------------------------------------------------------------------
@@ -67,7 +67,7 @@ std::wstring UnixExtractFilePath(const std::wstring Path)
 {
   int Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
-  return (Pos > 0) ? Path.substr(1, Pos) : std::wstring();
+  return (Pos > 0) ? Path.substr(0, Pos) : std::wstring();
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileName(const std::wstring Path)
@@ -115,7 +115,7 @@ bool ExtractCommonPath(TStrings * Files, std::wstring & Path)
     for (int Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.empty() &&
-        (Files->GetString(Index).substr(1, Path.size()) != Path))
+        (Files->GetString(Index).substr(0, Path.size()) != Path))
       {
         int PrevLen = Path.size();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
@@ -142,7 +142,7 @@ bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path)
     for (int Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.empty() &&
-        (Files->GetString(Index).substr(1, Path.size()) != Path))
+        (Files->GetString(Index).substr(0, Path.size()) != Path))
       {
         int PrevLen = Path.size();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
@@ -187,7 +187,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
     int P;
     while ((P = Result.find_first_of(L"/../")) > 0)
     {
-      int P2 = ::LastDelimiter(Result.substr(1, P-1), L"/");
+      int P2 = ::LastDelimiter(Result.substr(0, P-1), L"/");
       assert(P2 > 0);
       Result.erase(P2, P - P2 + 3);
     }
@@ -262,8 +262,8 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
     int P = ::LastDelimiter(Result, L"/");
     if (P)
     {
-      Dir = Result.substr(1, P);
-      Name = Result.substr(P + 1, Result.size() - P);
+      Dir = Result.substr(0, P);
+      Name = Result.substr(P, Result.size() - P);
     }
     else
     {
@@ -276,10 +276,10 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
     Dir = ExtractFilePath(Result);
     Name = ExtractFileName(Result, false);
 
-    if (Dir.size() >= 2 && Dir[2] == L':')
+    if (Dir.size() >= 2 && Dir[1] == L':')
     {
-      Drive = Dir.substr(1, 2);
-      Dir.erase(1, 2);
+      Drive = Dir.substr(0, 2);
+      Dir.erase(0, 2);
     }
   }
 
@@ -302,7 +302,7 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
 
   if (Result.size() > MaxLen)
   {
-    Result = Result.substr(1, MaxLen);
+    Result = Result.substr(0, MaxLen);
   }
   return Result;
 }
@@ -977,13 +977,13 @@ void TRemoteFile::SetListingStr(std::wstring value)
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
 
-    SetType(Line[1]);
-    Line.erase(1, 1);
+    SetType(Line[0]);
+    Line.erase(0, 1);
 
     #define GETNCOL  \
       { if (Line.empty()) throw ExtException(L""); \
         int P = Line.find_first_of(L' '); \
-        if (P) { Col = Line.substr(1, P-1); Line.erase(1, P); } \
+        if (P) { Col = Line.substr(0, P-1); Line.erase(0, P); } \
           else { Col = Line; Line = L""; } \
       }
     #define GETCOL { GETNCOL; Line = ::TrimLeft(Line); }
@@ -993,7 +993,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
     GetRights()->SetAllowUndef(true);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    GetRights()->SetText(Line.substr(1, 9));
+    GetRights()->SetText(Line.substr(0, 9));
     Line.erase(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
@@ -1105,9 +1105,9 @@ void TRemoteFile::SetListingStr(std::wstring value)
           {
             Abort();
           }
-          Hour = (unsigned int)StrToInt(Col.substr(1, 2));
-          Min = (unsigned int)StrToInt(Col.substr(4, 2));
-          Sec = (unsigned int)StrToInt(Col.substr(7, 2));
+          Hour = (unsigned int)StrToInt(Col.substr(0, 2));
+          Min = (unsigned int)StrToInt(Col.substr(3, 2));
+          Sec = (unsigned int)StrToInt(Col.substr(6, 2));
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GETNCOL;
@@ -1127,16 +1127,16 @@ void TRemoteFile::SetListingStr(std::wstring value)
             // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
             // we must ensure that trailing space is also deleted, so real
             // separator space is not treated as part of file name
-            Col = Trim(Line.substr(1, 6));
-            Line.erase(1, 6);
+            Col = Trim(Line.substr(0, 6));
+            Line.erase(0, 6);
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
           if ((P = (unsigned int)Col.find_first_of(L':')) > 0)
           {
             unsigned int CurrMonth, CurrDay;
-            Hour = (unsigned int)StrToInt(Col.substr(1, P-1));
-            Min = (unsigned int)StrToInt(Col.substr(P+1, Col.size() - P));
+            Hour = (unsigned int)StrToInt(Col.substr(0, P-1));
+            Min = (unsigned int)StrToInt(Col.substr(P, Col.size() - P));
             if (Hour > 23 || Hour > 59) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
@@ -1666,7 +1666,7 @@ void TRemoteDirectoryCache::DoClearFileList(std::wstring Directory, bool SubDirs
     Index = GetCount()-1;
     while (Index >= 0)
     {
-      if (GetString(Index).substr(1, Directory.size()) == Directory)
+      if (GetString(Index).substr(0, Directory.size()) == Directory)
       {
         Delete(Index);
       }
@@ -1737,7 +1737,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
 {
   for (int Index = 0; Index < GetCount(); Index++)
   {
-    if (GetName(Index).substr(1, SourceDir.size()) == SourceDir)
+    if (GetName(Index).substr(0, SourceDir.size()) == SourceDir)
     {
       Delete(Index);
       Index--;
@@ -1756,8 +1756,8 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   for (int Index = 0; Index < GetCount(); Index++)
   {
     std::wstring Name = GetName(Index);
-    if ((Name.substr(1, TargetDir.size()) == TargetDir) ||
-        (GetValue(Name).substr(1, TargetDir.size()) == TargetDir) ||
+    if ((Name.substr(0, TargetDir.size()) == TargetDir) ||
+        (GetValue(Name).substr(0, TargetDir.size()) == TargetDir) ||
         (!Key.empty() && (Name == Key)))
     {
       Delete(Index);
