@@ -424,4 +424,15 @@ BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test17, base_fixture_t)
+{
+    TStringList List1;
+    List1.SetText(L"123\n456");
+    BOOST_CHECK(2 == List1.GetCount());
+    BOOST_TEST_MESSAGE("List1.GetString(0) = " << ::W2MB(List1.GetString(0).c_str()));
+    BOOST_CHECK("123" == ::W2MB(List1.GetString(0).c_str()));
+    BOOST_TEST_MESSAGE("List1.GetString(1) = " << ::W2MB(List1.GetString(1).c_str()));
+    BOOST_CHECK("456" == ::W2MB(List1.GetString(1).c_str()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
