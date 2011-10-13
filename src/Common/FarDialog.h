@@ -1145,7 +1145,6 @@ protected:
 
 private:
     TFarList *FList;
-    FarList *m_FarList;
 };
 //---------------------------------------------------------------------------
 class TFarLister : public TFarDialogItem
