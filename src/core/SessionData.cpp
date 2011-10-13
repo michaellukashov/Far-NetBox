@@ -2194,6 +2194,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   TSessionData * Data, bool All, bool RecryptPasswordOnly,
   TSessionData * FactoryDefaults)
 {
+  DEBUG_PRINTF(L"begin: All = %d, Data->GetModified = %d", All, Data->GetModified());
   if (All || Data->GetModified())
   {
     if (RecryptPasswordOnly)
@@ -2205,6 +2206,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       Data->Save(Storage, false, FactoryDefaults);
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
@@ -2243,10 +2245,13 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
     } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
+    DEBUG_PRINTF(L"Configuration->GetStoredSessionsSubKey = %s", Configuration->GetStoredSessionsSubKey().c_str());
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
+      DEBUG_PRINTF(L"2");
       DoSave(Storage, All, RecryptPasswordOnly);
     }
+    DEBUG_PRINTF(L"3");
   }
   DEBUG_PRINTF(L"end");
   Saved();

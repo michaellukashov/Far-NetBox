@@ -128,6 +128,7 @@ std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
 //---------------------------------------------------------------------------
 bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreate*/, bool Path)
 {
+  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path)));
   return true;
 }
@@ -412,9 +413,11 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
-  bool Result;
+  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  bool Result = CanCreate;
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
   std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey ()+ MungeSubKey(SubKey, Path));
+  DEBUG_PRINTF(L"K = %s", K.c_str());
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
   return Result;
@@ -678,6 +681,7 @@ std::wstring TIniFileStorage::GetCurrentSection()
 //---------------------------------------------------------------------------
 bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
+  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   bool Result = CanCreate;
 
   if (!Result)
