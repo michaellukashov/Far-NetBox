@@ -596,7 +596,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
   std::wstring Caption = FORMAT(L"%s - %s",
-    (GetMsg(PLUGIN_TITLE), StripHotKey(GetMsg(CONFIG_TRANSFER))));
+    GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER)).c_str());
 
   TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
