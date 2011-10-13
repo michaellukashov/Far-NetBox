@@ -380,7 +380,6 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
         assert(Dialogs.find(Handle) == Dialogs.end());
         Dialogs[Handle] = Param2;
         Dialog = (TFarDialog *)Param2;
-        DEBUG_PRINTF(L"Handle = %d", Handle);
         Dialog->FHandle = Handle;
     }
     else
@@ -714,7 +713,6 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-    DEBUG_PRINTF(L"GetItemCount = %d", GetItemCount());
     for (int i = 0; i < GetItemCount(); i++)
     {
         GetItem(i)->Init();
