@@ -422,6 +422,11 @@ BOOST_FIXTURE_TEST_CASE(test16, base_fixture_t)
         BOOST_TEST_MESSAGE("res = " << res);
         BOOST_CHECK(res != 0);
     }
+    {
+        std::wstring Name1 = L"Unlimited";
+        std::wstring Name2 = L"Unlimited";
+        BOOST_CHECK(::AnsiSameText(Name1, Name2));
+    }
 }
 
 BOOST_FIXTURE_TEST_CASE(test17, base_fixture_t)
