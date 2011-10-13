@@ -2231,7 +2231,7 @@ void TFarList::Changed()
         }
         for (int i = 0; i < GetCount(); i++)
         {
-            std::wstring value = GetString(i).substr(0, sizeof(FListItems->Items[i].Text));
+            std::wstring value = GetString(i);
             delete[] FListItems->Items[i].Text;
             FListItems->Items[i].Text = TCustomFarPlugin::DuplicateStr(value);
             if ((GetDialogItem() != NULL) && !GetDialogItem()->GetOem())
