@@ -514,9 +514,21 @@ public:
     {
         FDuplicates = value;
     }
-    void Move(int Index, int To)
+    void Move(int CurIndex, int NewIndex)
     {
-        ::Error(SNotImplemented, 4);
+      // ::Error(SNotImplemented, 4);
+      if (CurIndex != NewIndex)
+      {
+        BeginUpdate();
+        // try
+          std::wstring TempString = GetString(CurIndex);
+          TObject *TempObject = GetObject(CurIndex);
+          Delete(CurIndex);
+          InsertObject(NewIndex, TempString, TempObject);
+        // finally
+          EndUpdate();
+        //end;
+      }
     }
     int IndexOf(const std::wstring S)
     {
