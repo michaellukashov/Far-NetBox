@@ -2247,6 +2247,7 @@ void TFarList::Changed()
                 {
                     Self->GetDialogItem()->GetDialog()->UnlockChanges();
                 } BOOST_SCOPE_EXIT_END
+                DEBUG_PRINTF(L"DM_LISTSET");
                 GetDialogItem()->SendMessage(DM_LISTSET, (int)FListItems);
                 if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
                 {
@@ -2564,7 +2565,7 @@ long TFarComboBox::ItemProc(int Msg, long Param)
         // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
         GetDialogItem()->MaxLen = Data.size();
-        // DEBUG_PRINTF(L"Data.size = %d", Data.size());
+        DEBUG_PRINTF(L"Data.size = %d", Data.size());
     }
 
     if (FList->ItemProc(Msg, Param))
@@ -2581,6 +2582,7 @@ void TFarComboBox::Init()
 {
     TFarDialogItem::Init();
     GetItems()->Init();
+    DEBUG_PRINTF(L"GetItems()->GetCount = %d", GetItems()->GetCount());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
