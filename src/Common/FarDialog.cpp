@@ -1178,7 +1178,6 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
         // DEBUG_PRINTF(L"DM_SETTEXTPTR");
         SendMessage(DM_SETTEXTPTR, (int)FarData.c_str());
     }
-    // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
     GetDialogItem()->MaxLen = FarData.size();
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
@@ -1200,7 +1199,6 @@ void TFarDialogItem::UpdateData(const std::wstring value)
     {
         StrToFar(FarData);
     }
-    // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, FarData.size(), FarData.c_str());
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
     GetDialogItem()->MaxLen = FarData.size();
 }
@@ -1982,7 +1980,6 @@ long TFarEdit::ItemProc(int Msg, long Param)
     if (Msg == DN_EDITCHANGE)
     {
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
-        // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
         GetDialogItem()->MaxLen = Data.size();
     }
@@ -2015,8 +2012,6 @@ void TFarEdit::SetHistoryMask(int Index, std::wstring value)
         }
         else
         {
-            // GetDialogItem()->Mask = new wchar_t[value.size() + 1];
-            // wcscpy_s((wchar_t *)GetDialogItem()->Mask, value.size(), value.c_str());
             GetDialogItem()->Mask = TCustomFarPlugin::DuplicateStr(value);
             if (!GetOem())
             {
@@ -2155,9 +2150,6 @@ void TFarList::UpdateItem(int Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
     std::wstring value = GetString(Index).c_str();
-    // wcscpy_s((wchar_t *)ListItem->Text,
-        // value.size(),
-        // value.c_str());
     ListItem->Text = TCustomFarPlugin::DuplicateStr(value, true);
     if (!GetDialogItem()->GetOem())
     {
@@ -2559,9 +2551,7 @@ long TFarComboBox::ItemProc(int Msg, long Param)
 {
     if (Msg == DN_EDITCHANGE)
     {
-        // strcpy(GetDialogItem()->PtrData, ((FarDialogItem *)Param)->Data);
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
-        // wcscpy_s((wchar_t *)GetDialogItem()->PtrData, Data.size(), Data.c_str());
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
         GetDialogItem()->MaxLen = Data.size();
         // DEBUG_PRINTF(L"Data.size = %d", Data.size());
