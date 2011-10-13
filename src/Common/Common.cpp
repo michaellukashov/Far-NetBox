@@ -2222,7 +2222,7 @@ int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 
 int AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool SameText(const std::wstring str1, const std::wstring str2)
