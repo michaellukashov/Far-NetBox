@@ -2054,43 +2054,41 @@ std::wstring IntToStr(int value)
 
 int StrToInt(const std::wstring value)
 {
-    int result = boost::lexical_cast<int>(value);
-    return result;
+    return TryStrToInt(value, 0);
 }
 
 __int64 ToInt(const std::wstring value)
 {
-    // FIXME
-    ::Error(SNotImplemented, 69);
-    return 0;
+    return TryStrToInt(value, 0);
 }
 
 int StrToIntDef(const std::wstring value, int defval)
 {
-    // FIXME
-    ::Error(SNotImplemented, 70);
-    return 0;
+    return TryStrToInt(value, defval);
 }
 
 __int64 StrToInt64(const std::wstring value)
 {
-    // FIXME
-    ::Error(SNotImplemented, 71);
-    return 0;
+    return TryStrToInt(value, 0);
 }
 
 __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
-    // FIXME
-    ::Error(SNotImplemented, 72);
-    return 0;
+    return TryStrToInt(value, defval);
 }
 
 __int64 TryStrToInt(const std::wstring value, __int64 defval)
 {
-    // FIXME
-    ::Error(SNotImplemented, 73);
-    return 0;
+    __int64 result = 0;
+    try
+    {
+        result = boost::lexical_cast<__int64>(value);
+    }
+    catch (const boost::bad_lexical_cast &)
+    {
+        result = defval;
+    }
+    return result;
 }
 
 //---------------------------------------------------------------------------
@@ -2224,7 +2222,7 @@ int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 
 int AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool SameText(const std::wstring str1, const std::wstring str2)

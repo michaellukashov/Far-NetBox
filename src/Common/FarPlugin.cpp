@@ -1209,7 +1209,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
             if (FLAGCLEAR(Flags, MIF_HIDDEN))
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
-                std::wstring Text = Items->GetString(i); // .substr(1, sizeof(MenuItems[i].Text)-1);
+                std::wstring Text = Items->GetString(i).c_str();
                 // DEBUG_PRINTF(L"Text = %s", Text.c_str());
                 MenuItems[Count].Flags = Flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
@@ -1219,7 +1219,6 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                 }
                 std::wstring Str = StrToFar(Text);
                 // DEBUG_PRINTF(L"MenuItems[%d].Text = %s", Count, MenuItems[Count].Text);
-                // wcscpy_s((wchar_t *)MenuItems[Count].Text, Str.size(), Str.c_str());
                 MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
                 MenuItems[Count].UserData = i;
                 Count++;
@@ -2475,7 +2474,6 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     // PanelItem->PackSize = (long int)Size;
 
     // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
-    // wcscpy_s((wchar_t *)PanelItem->FindData.lpwszFileName, FileName.size(), FileName.c_str());
     // StrToFar(PanelItem->FindData.lpwszFileName);
     PanelItem->FindData.lpwszFileName = StrToFar(TCustomFarPlugin::DuplicateStr(FileName));
     // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
