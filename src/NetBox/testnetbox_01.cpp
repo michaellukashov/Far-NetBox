@@ -438,6 +438,11 @@ BOOST_FIXTURE_TEST_CASE(test17, base_fixture_t)
     BOOST_CHECK("123" == ::W2MB(List1.GetString(0).c_str()));
     BOOST_TEST_MESSAGE("List1.GetString(1) = " << ::W2MB(List1.GetString(1).c_str()));
     BOOST_CHECK("456" == ::W2MB(List1.GetString(1).c_str()));
+    List1.Move(0, 1);
+    BOOST_TEST_MESSAGE("List1.GetString(0) = " << ::W2MB(List1.GetString(0).c_str()));
+    BOOST_CHECK("456" == ::W2MB(List1.GetString(0).c_str()));
+    BOOST_TEST_MESSAGE("List1.GetString(1) = " << ::W2MB(List1.GetString(1).c_str()));
+    BOOST_CHECK("123" == ::W2MB(List1.GetString(1).c_str()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
