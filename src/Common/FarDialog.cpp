@@ -1167,7 +1167,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
     // DEBUG_PRINTF(L"value = %s", value.c_str());
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
-    std::wstring FarData = value.c_str(); // .substr(0, sizeof(GetDialogItem()->PtrData));
+    std::wstring FarData = value.c_str();
     // DEBUG_PRINTF(L"FarData = %s, GetOem = %d", FarData.c_str(), GetOem());
     if (!GetOem())
     {
@@ -1195,7 +1195,7 @@ void TFarDialogItem::SetData(const std::wstring value)
 //---------------------------------------------------------------------------
 void TFarDialogItem::UpdateData(const std::wstring value)
 {
-    std::wstring FarData = value; //.substr(0, sizeof(GetDialogItem()->PtrData) - 1);
+    std::wstring FarData = value.c_str();
     if (!GetOem())
     {
         StrToFar(FarData);
@@ -2154,7 +2154,7 @@ void TFarList::Assign(TPersistent *Source)
 void TFarList::UpdateItem(int Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
-    std::wstring value = GetString(Index); //.substr(0, sizeof(ListItem->Text) - 1);
+    std::wstring value = GetString(Index).c_str();
     // wcscpy_s((wchar_t *)ListItem->Text,
         // value.size(),
         // value.c_str());
