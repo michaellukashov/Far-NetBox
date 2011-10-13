@@ -2583,6 +2583,21 @@ void TFarComboBox::Init()
     TFarDialogItem::Init();
     GetItems()->Init();
     DEBUG_PRINTF(L"GetItems()->GetCount = %d", GetItems()->GetCount());
+    DEBUG_PRINTF(L"GetDialogItem()->ListItems = %x, GetItems()->GetListItems = %x", GetDialogItem()->ListItems, GetItems()->GetListItems());
+/*
+    FarListItem *FarListItems = (FarListItem *)malloc(sizeof(FarListItem) * 3);
+    memset(FarListItems, 0, sizeof(FarListItem) * 3);
+    for (int i = 0; i < 3; i++)
+    {
+        std::wstring S = L"ABCDEFQWEWER" + IntToStr(i);
+        FarListItems[i].Text = TCustomFarPlugin::DuplicateStr(S, true);
+    }
+    m_FarList = (FarList *)malloc(sizeof(FarList));
+    m_FarList->ItemsNumber = 3;
+    m_FarList->Items = FarListItems;
+
+    GetDialogItem()->ListItems = m_FarList;
+*/
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
