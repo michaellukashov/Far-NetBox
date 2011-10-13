@@ -323,6 +323,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
 //---------------------------------------------------------------------------
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
+  DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
   if (FTerminal)
   {
     SaveSession();
@@ -2916,8 +2917,10 @@ TStrings * TWinSCPFileSystem::CreateFileList(TList * PanelItems,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::SaveSession()
 {
+  DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
   if (!FTerminal->GetSessionData()->Name.empty())
   {
+    DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
     FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
     TSessionData * Data;

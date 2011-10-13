@@ -2210,6 +2210,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
+  DEBUG_PRINTF(L"begin");
   TSessionData * FactoryDefaults = new TSessionData(L"");
   {
     BOOST_SCOPE_EXIT ( (&FactoryDefaults) )
@@ -2223,6 +2224,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
@@ -2232,6 +2234,7 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
+  DEBUG_PRINTF(L"begin")
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
@@ -2245,7 +2248,7 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
       DoSave(Storage, All, RecryptPasswordOnly);
     }
   }
-
+  DEBUG_PRINTF(L"end");
   Saved();
 }
 //---------------------------------------------------------------------
