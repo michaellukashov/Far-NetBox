@@ -565,6 +565,7 @@ bool TRegistry::DeleteValue(const std::wstring &value)
 bool TRegistry::KeyExists(const std::wstring Key)
 {
   bool Result = false;
+  DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
   {
     BOOST_SCOPE_EXIT( (&FAccess) (&OldAccess) )
@@ -577,6 +578,7 @@ bool TRegistry::KeyExists(const std::wstring Key)
     if (TempKey != 0) RegCloseKey(TempKey);
     Result = TempKey != 0;
   }
+  DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
@@ -598,6 +600,7 @@ bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
 */
 TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
 {
+    return rdUnknown;
 }
 
 int TRegistry::GetDataSize(const std::wstring Name)
