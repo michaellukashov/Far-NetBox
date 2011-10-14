@@ -1060,59 +1060,76 @@ class EWriteError : public std::exception
 };
 
 //---------------------------------------------------------------------------
+
+struct TRegKeyInfo
+{
+    DWORD NumSubKeys;
+    DWORD MaxSubKeyLen;
+    DWORD NumValues;
+    DWORD MaxValueLen;
+    DWORD MaxDataLen;
+    FILETIME FileTime;
+};
+
+//---------------------------------------------------------------------------
+enum TRegDataType 
+{
+    rdUnknown, rdString, rdExpandString, rdInteger, rdBinary
+};
+//---------------------------------------------------------------------------
+
 class TRegistry
 {
 public:
-    void SetAccess(int access)
-    {}
-    void SetRootKey(HKEY ARootKey)
-    {}
-    void GetValueNames(TStrings * Names)
-    {}
-    void GetKeyNames(TStrings * Names)
-    {}
-    HKEY GetCurrentKey() const { return 0; }
-    HKEY GetRootKey() const { return 0; }
-    void CloseKey() {}
-    bool OpenKey(const std::wstring &key, bool CanCreate) { return false; }
-    bool DeleteKey(const std::wstring &key) { return false; }
-    bool DeleteValue(const std::wstring &value) { return false; }
-    bool KeyExists(const std::wstring SubKey) { return false; }
-    bool ValueExists(const std::wstring Value) { return false; }
-    int GetDataSize(const std::wstring Name) { return 0; }
-    bool Readbool(const std::wstring Name) { return false; }
-    TDateTime ReadDateTime(const std::wstring Name) { return TDateTime(); }
-    double ReadFloat(const std::wstring Name)
-    { return 0; }
-    int Readint(const std::wstring Name)
-    { return 0; }
-    __int64 ReadInt64(const std::wstring Name)
-    { return 0; }
-    std::wstring ReadString(const std::wstring Name)
-    { return L""; }
-    std::wstring ReadStringRaw(const std::wstring Name)
-    { return L""; }
+    TRegistry();
+    ~TRegistry();
+    void SetAccess(int access);
+    void SetRootKey(HKEY ARootKey);
+    void GetValueNames(TStrings * Names);
+    void GetKeyNames(TStrings * Names);
+    HKEY GetCurrentKey() const;
+    HKEY GetRootKey() const;
+    void CloseKey();
+    bool OpenKey(const std::wstring &key, bool CanCreate);
+    bool DeleteKey(const std::wstring &key);
+    bool DeleteValue(const std::wstring &value);
+    bool KeyExists(const std::wstring SubKey);
+    bool ValueExists(const std::wstring Value);
+    // bool GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
+    TRegDataType GetDataType(const std::wstring &ValueName);
+    int GetDataSize(const std::wstring Name);
+    bool Readbool(const std::wstring Name);
+    TDateTime ReadDateTime(const std::wstring Name);
+    double ReadFloat(const std::wstring Name);
+    int Readint(const std::wstring Name);
+    __int64 ReadInt64(const std::wstring Name);
+    std::wstring ReadString(const std::wstring Name);
+    std::wstring ReadStringRaw(const std::wstring Name);
     int ReadBinaryData(const std::wstring Name,
-      void * Buffer, int Size)
-    { return 0; }
+      void * Buffer, int Size);
 
-  void Writebool(const std::wstring Name, bool Value)
-  {}
-  void WriteDateTime(const std::wstring Name, TDateTime Value)
-  {}
-  void WriteFloat(const std::wstring Name, double Value)
-  {}
-  void WriteString(const std::wstring Name, const std::wstring Value)
-  {}
-  void WriteStringRaw(const std::wstring Name, const std::wstring Value)
-  {}
-  void Writeint(const std::wstring Name, int Value)
-  {}
-  void WriteInt64(const std::wstring Name, __int64 Value)
-  {}
+  void Writebool(const std::wstring Name, bool Value);
+  void WriteDateTime(const std::wstring Name, TDateTime Value);
+  void WriteFloat(const std::wstring Name, double Value);
+  void WriteString(const std::wstring Name, const std::wstring Value);
+  void WriteStringRaw(const std::wstring Name, const std::wstring Value);
+  void Writeint(const std::wstring Name, int Value);
+  void WriteInt64(const std::wstring Name, __int64 Value);
   void WriteBinaryData(const std::wstring Name,
-      const void * Buffer, int Size)
-  {}
+      const void * Buffer, int Size);
+private:
+    void ChangeKey(HKEY Value, const std::wstring &Path);
+    HKEY GetBaseKey(bool Relative);
+    HKEY GetKey(const std::wstring &Key);
+    void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
+    bool GetKeyInfo(TRegKeyInfo &Value);
+private:
+    HKEY FCurrentKey;
+	HKEY FRootKey;
+	// bool FLazyWrite;
+	std::wstring FCurrentPath;
+	bool FCloseRootKey;
+	unsigned FAccess;
 };
 
 //---------------------------------------------------------------------------

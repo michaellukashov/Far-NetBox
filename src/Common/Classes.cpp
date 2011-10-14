@@ -395,19 +395,323 @@ std::wstring TSHFileInfo::GetFileType(std::wstring strFileName)
 
 void TStream::ReadBuffer(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 400);
 }
 
 unsigned long TStream::Read(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 401);
     return 0;
 }
 
 void TStream::WriteBuffer(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 402);
 }
 
 unsigned long TStream::Write(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 403);
     return 0;
+}
+
+//---------------------------------------------------------------------------
+bool IsRelative(const std::wstring &Value)
+{
+  return  !(!Value.empty() && (Value[0] == L'\\'));
+}
+
+TRegDataType DataTypeToRegData(int Value)
+{
+    TRegDataType Result;
+  if (Value == REG_SZ)
+    Result = rdString;
+  else if (Value == REG_EXPAND_SZ)
+    Result = rdExpandString;
+  else if (Value == REG_DWORD)
+    Result = rdInteger;
+  else if (Value == REG_BINARY)
+    Result = rdBinary;
+  else
+    Result = rdUnknown;
+  return Result;
+}
+
+//---------------------------------------------------------------------------
+TRegistry::TRegistry() :
+    FCurrentKey(0),
+    FCloseRootKey(true),
+    FAccess(KEY_ALL_ACCESS)
+{
+    SetRootKey(HKEY_CURRENT_USER);
+    SetAccess(KEY_ALL_ACCESS);
+    // LazyWrite = True;
+}
+
+TRegistry::~TRegistry()
+{
+    CloseKey();
+}
+
+void TRegistry::SetAccess(int access)
+{
+    FAccess = access;
+}
+void TRegistry::SetRootKey(HKEY ARootKey)
+{
+  if (FRootKey != ARootKey)
+  {
+    if (FCloseRootKey)
+    {
+      RegCloseKey(GetRootKey());
+      FCloseRootKey = false;
+    }
+    FRootKey = ARootKey;
+    CloseKey();
+  }
+}
+void TRegistry::GetValueNames(TStrings * Names)
+{}
+
+void TRegistry::GetKeyNames(TStrings * Names)
+{}
+HKEY TRegistry::GetCurrentKey() const { return FCurrentKey; }
+HKEY TRegistry::GetRootKey() const { return FRootKey; }
+
+void TRegistry::CloseKey()
+{
+  if (GetCurrentKey() != 0)
+  {
+    // if LazyWrite then
+    RegCloseKey(GetCurrentKey()); //else RegFlushKey(CurrentKey);
+    FCurrentKey = 0;
+    FCurrentPath = L"";
+  }
+}
+
+bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
+{
+  DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
+  bool Result = false;
+  std::wstring S = Key;
+  bool Relative = ::IsRelative(S);
+
+  // if (!Relative) S.erase(0, 1); // Delete(S, 1, 1);
+  HKEY TempKey = 0;
+  if (!CanCreate || S.empty())
+  {
+    DEBUG_PRINTF(L"RegOpenKeyEx");
+    Result = RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
+      FAccess, &TempKey) == ERROR_SUCCESS;
+  }
+  else
+  {
+    // int Disposition = 0;
+    DEBUG_PRINTF(L"RegCreateKeyEx: Relative = %d", Relative);
+    Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, NULL,
+      REG_OPTION_NON_VOLATILE, FAccess, NULL, &TempKey, NULL) == ERROR_SUCCESS;
+  }
+  if (Result)
+  {
+    if ((GetCurrentKey() != 0) && Relative)
+        S = FCurrentPath + L'\\' + S;
+    ChangeKey(TempKey, S);
+  }
+  DEBUG_PRINTF(L"Result = %d", Result);
+  return Result;
+}
+
+bool TRegistry::DeleteKey(const std::wstring &Key)
+{
+  bool Result = false;
+  std::wstring S = Key;
+  bool Relative = ::IsRelative(S);
+  // if not Relative then Delete(S, 1, 1);
+  HKEY OldKey = GetCurrentKey();
+  HKEY DeleteKey = GetKey(Key);
+  if (DeleteKey != 0)
+  {
+    TRegistry *Self = this;
+    BOOST_SCOPE_EXIT( (&Self) (&OldKey) (&DeleteKey) )
+    {
+        Self->SetCurrentKey(OldKey);
+        RegCloseKey(DeleteKey);
+    } BOOST_SCOPE_EXIT_END
+    SetCurrentKey(DeleteKey);
+    TRegKeyInfo Info;
+    if (GetKeyInfo(Info))
+    {
+      std::wstring KeyName;
+      KeyName.resize(Info.MaxSubKeyLen + 1);
+      for (int I = Info.NumSubKeys - 1; I >= 0; I--)
+      {
+        DWORD Len = Info.MaxSubKeyLen + 1;
+        if (RegEnumKeyEx(DeleteKey, (DWORD)I, &KeyName[0], &Len,
+            NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+          this->DeleteKey(KeyName);
+      }
+    }
+  }
+  Result = RegDeleteKey(GetBaseKey(Relative), S.c_str()) == ERROR_SUCCESS;
+  return Result;
+}
+
+bool TRegistry::DeleteValue(const std::wstring &value)
+{
+  bool Result = false;
+  return Result;
+}
+
+bool TRegistry::KeyExists(const std::wstring Key)
+{
+  bool Result = false;
+  unsigned OldAccess = FAccess;
+  {
+    BOOST_SCOPE_EXIT( (&FAccess) (&OldAccess) )
+    {
+        FAccess = OldAccess;
+    } BOOST_SCOPE_EXIT_END
+
+    FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
+    HKEY TempKey = GetKey(Key);
+    if (TempKey != 0) RegCloseKey(TempKey);
+    Result = TempKey != 0;
+  }
+  return Result;
+}
+
+bool TRegistry::ValueExists(const std::wstring Name)
+{
+  // TRegDataInfo Info = {0};
+  bool Result = false; // GetDataInfo(Name, Info);
+  return Result;
+}
+/*
+bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
+{
+  int DataType;
+  memset(&Value, 0, sizeof(value));
+  bool Result = RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
+    &Value.DataSize) == ERROR_SUCCESS;
+  Value.RegData = DataTypeToRegData(DataType);
+}
+*/
+TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
+{
+}
+
+int TRegistry::GetDataSize(const std::wstring Name)
+{
+  int Result = 0;
+  return Result;
+}
+
+bool TRegistry::Readbool(const std::wstring Name)
+{
+  bool Result = false;
+  return Result;
+}
+
+TDateTime TRegistry::ReadDateTime(const std::wstring Name)
+{
+  TDateTime Result = TDateTime();
+  return Result;
+}
+
+double TRegistry::ReadFloat(const std::wstring Name)
+{
+  double Result = 0.0;
+  return Result;
+}
+
+int TRegistry::Readint(const std::wstring Name)
+{
+  int Result = 0;
+  return Result;
+}
+
+__int64 TRegistry::ReadInt64(const std::wstring Name)
+{
+  __int64 Result = 0;
+  return Result;
+}
+
+std::wstring TRegistry::ReadString(const std::wstring Name)
+{
+  std::wstring Result = L"";
+  return Result;
+}
+
+std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
+{
+  std::wstring Result = L"";
+  return Result;
+}
+
+int TRegistry::ReadBinaryData(const std::wstring Name,
+  void * Buffer, int Size)
+{
+  int Result = 0;
+  return Result;
+}
+
+void TRegistry::Writebool(const std::wstring Name, bool Value)
+{}
+void TRegistry::WriteDateTime(const std::wstring Name, TDateTime Value)
+{}
+void TRegistry::WriteFloat(const std::wstring Name, double Value)
+{}
+void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
+{}
+void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
+{}
+void TRegistry::Writeint(const std::wstring Name, int Value)
+{}
+void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
+{}
+void TRegistry::WriteBinaryData(const std::wstring Name,
+  const void * Buffer, int Size)
+{}
+
+void TRegistry::ChangeKey(HKEY Value, const std::wstring &Path)
+{
+  CloseKey();
+  FCurrentKey = Value;
+  FCurrentPath = Path;
+}
+
+HKEY TRegistry::GetBaseKey(bool Relative)
+{
+  HKEY Result = 0;
+  if ((FCurrentKey == 0) || !Relative)
+    Result = GetRootKey();
+  else
+    Result = FCurrentKey;
+  return Result;
+}
+
+HKEY TRegistry::GetKey(const std::wstring &Key)
+{
+  std::wstring S = Key;
+  bool Relative = ::IsRelative(S);
+  // if not Relative then Delete(S, 1, 1);
+  HKEY Result = 0;
+  RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
+  return Result;
+}
+
+bool TRegistry::GetKeyInfo(TRegKeyInfo &Value)
+{
+  memset(&Value, 0, sizeof(Value));
+  bool Result = RegQueryInfoKey(GetCurrentKey(), NULL, NULL, NULL, &Value.NumSubKeys,
+    &Value.MaxSubKeyLen, NULL, &Value.NumValues, &Value.MaxValueLen,
+    &Value.MaxDataLen, NULL, &Value.FileTime) == ERROR_SUCCESS;
+  // if SysLocale.FarEast and (Win32Platform = VER_PLATFORM_WIN32_NT) then
+    // with Value do
+    // begin
+      // Inc(MaxSubKeyLen, MaxSubKeyLen);
+      // Inc(MaxValueLen, MaxValueLen);
+    // end;
+  return Result;
 }
 

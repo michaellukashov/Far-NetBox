@@ -2248,10 +2248,8 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
     DEBUG_PRINTF(L"Configuration->GetStoredSessionsSubKey = %s", Configuration->GetStoredSessionsSubKey().c_str());
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
-      DEBUG_PRINTF(L"2");
       DoSave(Storage, All, RecryptPasswordOnly);
     }
-    DEBUG_PRINTF(L"3");
   }
   DEBUG_PRINTF(L"end");
   Saved();
