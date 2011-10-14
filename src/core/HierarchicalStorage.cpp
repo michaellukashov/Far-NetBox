@@ -417,9 +417,9 @@ bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, boo
   bool Result = CanCreate;
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
   std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey ()+ MungeSubKey(SubKey, Path));
-  DEBUG_PRINTF(L"K = %s", K.c_str());
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
+  DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
   return Result;
 }
 //---------------------------------------------------------------------------
