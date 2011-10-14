@@ -20,18 +20,21 @@
 //---------------------------------------------------------------------------
 std::wstring MungeStr(const std::wstring Str)
 {
-  std::wstring Result;
-  Result.resize(Str.size() * 3 + 1);
-  putty_mungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)::W2MB(Result.c_str()).c_str());
+  std::string Result2;
+  Result2.resize(Str.size() * 3 + 1);
+  putty_mungestr(::W2MB(Str.c_str()).c_str(), (char *)Result2.c_str());
+  std::wstring Result = ::MB2W(Result2.c_str());
   PackStr(Result);
+  // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring UnMungeStr(const std::wstring Str)
 {
-  std::wstring Result;
-  Result.resize(Str.size() * 3 + 1);
-  putty_unmungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)::W2MB(Result.c_str()).c_str(), Result.size());
+  std::string Result2;
+  Result2.resize(Str.size() * 3 + 1);
+  putty_unmungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)Result2.c_str(), Result2.size());
+  std::wstring Result = ::MB2W(Result2.c_str());
   PackStr(Result);
   return Result;
 }
