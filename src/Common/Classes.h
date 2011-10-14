@@ -1098,6 +1098,9 @@ public:
   void WriteBinaryData(const std::wstring Name,
       const void * Buffer, int Size);
 private:
+    void ChangeKey(HKEY Value, const std::wstring &Path);
+    HKEY GetBaseKey(bool Relative);
+private:
     HKEY FCurrentKey;
 	HKEY FRootKey;
 	// bool FLazyWrite;

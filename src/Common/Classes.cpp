@@ -416,7 +416,15 @@ unsigned long TStream::Write(void *Buffer, unsigned long int Count)
 }
 
 //---------------------------------------------------------------------------
-TRegistry::TRegistry()
+bool IsRelative(const std::wstring &Value)
+{
+  return  !(!Value.empty() && (Value[0] == L'\\'));
+}
+//---------------------------------------------------------------------------
+TRegistry::TRegistry() :
+    FCurrentKey(0),
+    FCloseRootKey(true),
+    FAccess(KEY_ALL_ACCESS)
 {
     SetRootKey(HKEY_CURRENT_USER);
     SetAccess(KEY_ALL_ACCESS);
@@ -429,7 +437,9 @@ TRegistry::~TRegistry()
 }
 
 void TRegistry::SetAccess(int access)
-{}
+{
+    FAccess = access;
+}
 void TRegistry::SetRootKey(HKEY ARootKey)
 {
   if (FRootKey != ARootKey)
@@ -448,8 +458,9 @@ void TRegistry::GetValueNames(TStrings * Names)
 
 void TRegistry::GetKeyNames(TStrings * Names)
 {}
-HKEY TRegistry::GetCurrentKey() const { return 0; }
-HKEY TRegistry::GetRootKey() const { return 0; }
+HKEY TRegistry::GetCurrentKey() const { return FCurrentKey; }
+HKEY TRegistry::GetRootKey() const { return FRootKey; }
+
 void TRegistry::CloseKey()
 {
   if (GetCurrentKey() != 0)
@@ -461,28 +472,38 @@ void TRegistry::CloseKey()
   }
 }
 
-bool TRegistry::OpenKey(const std::wstring &key, bool CanCreate)
+bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
 {
-    DEBUG_PRINTF(L"key = %s, CanCreate = %d", key.c_str(), CanCreate);
-  S := Key;
-  Relative := IsRelative(S);
+  DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
+  bool Result = false;
+  std::wstring S = Key;
+  bool Relative = ::IsRelative(S);
 
-  if not Relative then Delete(S, 1, 1);
-  TempKey := 0;
-  if not CanCreate or (S = '') then
-  begin
-    Result := RegOpenKeyEx(GetBaseKey(Relative), PChar(S), 0,
-      FAccess, TempKey) = ERROR_SUCCESS;
-  end else
-    Result := RegCreateKeyEx(GetBaseKey(Relative), PChar(S), 0, nil,
-      REG_OPTION_NON_VOLATILE, FAccess, nil, TempKey, @Disposition) = ERROR_SUCCESS;
-  if Result then
-  begin
-    if (CurrentKey <> 0) and Relative then S := CurrentPath + '\' + S;
+  // if (!Relative) S.erase(0, 1); // Delete(S, 1, 1);
+  HKEY TempKey = 0;
+  if (!CanCreate || S.empty())
+  {
+    DEBUG_PRINTF(L"RegOpenKeyEx");
+    Result = RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
+      FAccess, &TempKey) == ERROR_SUCCESS;
+  }
+  else
+  {
+    // int Disposition = 0;
+    DEBUG_PRINTF(L"RegCreateKeyEx: Relative = %d", Relative);
+    Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, NULL,
+      REG_OPTION_NON_VOLATILE, FAccess, NULL, &TempKey, NULL) == ERROR_SUCCESS;
+  }
+  if (Result)
+  {
+    if ((GetCurrentKey() != 0) && Relative)
+        S = FCurrentPath + L'\\' + S;
     ChangeKey(TempKey, S);
-  end;
-    return false;
+  }
+  DEBUG_PRINTF(L"Result = %d", Result);
+  return Result;
 }
+
 bool TRegistry::DeleteKey(const std::wstring &key) { return false; }
 bool TRegistry::DeleteValue(const std::wstring &value) { return false; }
 bool TRegistry::KeyExists(const std::wstring SubKey) { return false; }
@@ -521,4 +542,21 @@ void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
 void TRegistry::WriteBinaryData(const std::wstring Name,
   const void * Buffer, int Size)
 {}
+
+void TRegistry::ChangeKey(HKEY Value, const std::wstring &Path)
+{
+  CloseKey();
+  FCurrentKey = Value;
+  FCurrentPath = Path;
+}
+
+HKEY TRegistry::GetBaseKey(bool Relative)
+{
+  HKEY Result = 0;
+  if ((FCurrentKey == 0) || !Relative)
+    Result = GetRootKey();
+  else
+    Result = FCurrentKey;
+  return Result;
+}
 
