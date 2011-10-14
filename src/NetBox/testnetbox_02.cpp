@@ -274,12 +274,16 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
    std::wstring RootKey = L"Software\\Michael Lukashov\\TestNetBox";
    TRegistryStorage Storage(RootKey);
+   Storage.SetAccessMode(smReadWrite);
    BOOST_CHECK(Storage.OpenRootKey(true));
    std::wstring SubKey = L"SubKey1";
    Storage.DeleteSubKey(SubKey);
    BOOST_CHECK(!Storage.KeyExists(SubKey));
    BOOST_CHECK(Storage.OpenSubKey(SubKey, true));
+   Storage.SetAccessMode(smReadWrite);
    Storage.Writeint(L"IntVal", 1234);
+   // BOOST_TEST_MESSAGE("Storage.GetFailed = " << Storage.GetFailed());
+   Storage.CloseSubKey();
    BOOST_CHECK(Storage.KeyExists(SubKey));
 }
 
