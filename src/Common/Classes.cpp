@@ -395,19 +395,23 @@ std::wstring TSHFileInfo::GetFileType(std::wstring strFileName)
 
 void TStream::ReadBuffer(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 400);
 }
 
 unsigned long TStream::Read(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 401);
     return 0;
 }
 
 void TStream::WriteBuffer(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 402);
 }
 
 unsigned long TStream::Write(void *Buffer, unsigned long int Count)
 {
+    ::Error(SNotImplemented, 403);
     return 0;
 }
 
