@@ -1060,6 +1060,19 @@ class EWriteError : public std::exception
 };
 
 //---------------------------------------------------------------------------
+
+struct TRegKeyInfo
+{
+    DWORD NumSubKeys;
+    DWORD MaxSubKeyLen;
+    DWORD NumValues;
+    DWORD MaxValueLen;
+    DWORD MaxDataLen;
+    FILETIME FileTime;
+};
+
+//---------------------------------------------------------------------------
+
 class TRegistry
 {
 public:
@@ -1100,6 +1113,9 @@ public:
 private:
     void ChangeKey(HKEY Value, const std::wstring &Path);
     HKEY GetBaseKey(bool Relative);
+    HKEY GetKey(const std::wstring &Key);
+    void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
+    bool GetKeyInfo(TRegKeyInfo &Value);
 private:
     HKEY FCurrentKey;
 	HKEY FRootKey;

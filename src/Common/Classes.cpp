@@ -420,6 +420,7 @@ bool IsRelative(const std::wstring &Value)
 {
   return  !(!Value.empty() && (Value[0] == L'\\'));
 }
+
 //---------------------------------------------------------------------------
 TRegistry::TRegistry() :
     FCurrentKey(0),
@@ -504,9 +505,38 @@ bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
   return Result;
 }
 
-bool TRegistry::DeleteKey(const std::wstring &key)
+bool TRegistry::DeleteKey(const std::wstring &Key)
 {
   bool Result = false;
+  std::wstring S = Key;
+  bool Relative = ::IsRelative(S);
+  // if not Relative then Delete(S, 1, 1);
+  HKEY OldKey = GetCurrentKey();
+  HKEY DeleteKey = GetKey(Key);
+  if (DeleteKey != 0)
+  {
+    TRegistry *Self = this;
+    BOOST_SCOPE_EXIT( (&Self) (&OldKey) (&DeleteKey) )
+    {
+        Self->SetCurrentKey(OldKey);
+        RegCloseKey(DeleteKey);
+    } BOOST_SCOPE_EXIT_END
+    SetCurrentKey(DeleteKey);
+    TRegKeyInfo Info;
+    if (GetKeyInfo(Info))
+    {
+      std::wstring KeyName;
+      KeyName.resize(Info.MaxSubKeyLen + 1);
+      for (int I = Info.NumSubKeys - 1; I >= 0; I--)
+      {
+        DWORD Len = Info.MaxSubKeyLen + 1;
+        if (RegEnumKeyEx(DeleteKey, (DWORD)I, &KeyName[0], &Len,
+            NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
+          this->DeleteKey(KeyName);
+      }
+    }
+  }
+  Result = RegDeleteKey(GetBaseKey(Relative), S.c_str()) == ERROR_SUCCESS;
   return Result;
 }
 
@@ -618,3 +648,27 @@ HKEY TRegistry::GetBaseKey(bool Relative)
   return Result;
 }
 
+HKEY TRegistry::GetKey(const std::wstring &Key)
+{
+  std::wstring S = Key;
+  bool Relative = ::IsRelative(S);
+  // if not Relative then Delete(S, 1, 1);
+  HKEY Result = 0;
+  RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);
+  return Result;
+}
+
+bool TRegistry::GetKeyInfo(TRegKeyInfo &Value)
+{
+  memset(&Value, 0, sizeof(Value));
+  bool Result = RegQueryInfoKey(GetCurrentKey(), NULL, NULL, NULL, &Value.NumSubKeys,
+    &Value.MaxSubKeyLen, NULL, &Value.NumValues, &Value.MaxValueLen,
+    &Value.MaxDataLen, NULL, &Value.FileTime) == ERROR_SUCCESS;
+  // if SysLocale.FarEast and (Win32Platform = VER_PLATFORM_WIN32_NT) then
+    // with Value do
+    // begin
+      // Inc(MaxSubKeyLen, MaxSubKeyLen);
+      // Inc(MaxValueLen, MaxValueLen);
+    // end;
+  return Result;
+}
