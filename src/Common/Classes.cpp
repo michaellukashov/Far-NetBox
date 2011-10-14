@@ -415,3 +415,74 @@ unsigned long TStream::Write(void *Buffer, unsigned long int Count)
     return 0;
 }
 
+//---------------------------------------------------------------------------
+TRegistry::TRegistry()
+{
+    SetRootKey(HKEY_CURRENT_USER);
+    SetAccess(KEY_ALL_ACCESS);
+    // LazyWrite = True;
+}
+
+TRegistry::~TRegistry()
+{
+    CloseKey();
+}
+
+void TRegistry::SetAccess(int access)
+{}
+void TRegistry::SetRootKey(HKEY ARootKey)
+{}
+void TRegistry::GetValueNames(TStrings * Names)
+{}
+void TRegistry::GetKeyNames(TStrings * Names)
+{}
+HKEY TRegistry::GetCurrentKey() const { return 0; }
+HKEY TRegistry::GetRootKey() const { return 0; }
+void TRegistry::CloseKey()
+{
+}
+
+bool TRegistry::OpenKey(const std::wstring &key, bool CanCreate)
+{
+    DEBUG_PRINTF(L"key = %s, CanCreate = %d", key.c_str(), CanCreate);
+    return false;
+}
+bool TRegistry::DeleteKey(const std::wstring &key) { return false; }
+bool TRegistry::DeleteValue(const std::wstring &value) { return false; }
+bool TRegistry::KeyExists(const std::wstring SubKey) { return false; }
+bool TRegistry::ValueExists(const std::wstring Value) { return false; }
+int TRegistry::GetDataSize(const std::wstring Name) { return 0; }
+bool TRegistry::Readbool(const std::wstring Name) { return false; }
+TDateTime TRegistry::ReadDateTime(const std::wstring Name) { return TDateTime(); }
+double TRegistry::ReadFloat(const std::wstring Name)
+{ return 0; }
+int TRegistry::Readint(const std::wstring Name)
+{ return 0; }
+__int64 TRegistry::ReadInt64(const std::wstring Name)
+{ return 0; }
+std::wstring TRegistry::ReadString(const std::wstring Name)
+{ return L""; }
+std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
+{ return L""; }
+int TRegistry::ReadBinaryData(const std::wstring Name,
+  void * Buffer, int Size)
+{ return 0; }
+
+void TRegistry::Writebool(const std::wstring Name, bool Value)
+{}
+void TRegistry::WriteDateTime(const std::wstring Name, TDateTime Value)
+{}
+void TRegistry::WriteFloat(const std::wstring Name, double Value)
+{}
+void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
+{}
+void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
+{}
+void TRegistry::Writeint(const std::wstring Name, int Value)
+{}
+void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
+{}
+void TRegistry::WriteBinaryData(const std::wstring Name,
+  const void * Buffer, int Size)
+{}
+
