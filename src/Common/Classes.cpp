@@ -421,6 +421,22 @@ bool IsRelative(const std::wstring &Value)
   return  !(!Value.empty() && (Value[0] == L'\\'));
 }
 
+TRegDataType DataTypeToRegData(int Value)
+{
+    TRegDataType Result;
+  if (Value == REG_SZ)
+    Result = rdString;
+  else if (Value == REG_EXPAND_SZ)
+    Result = rdExpandString;
+  else if (Value == REG_DWORD)
+    Result = rdInteger;
+  else if (Value == REG_BINARY)
+    Result = rdBinary;
+  else
+    Result = rdUnknown;
+  return Result;
+}
+
 //---------------------------------------------------------------------------
 TRegistry::TRegistry() :
     FCurrentKey(0),
@@ -546,16 +562,42 @@ bool TRegistry::DeleteValue(const std::wstring &value)
   return Result;
 }
 
-bool TRegistry::KeyExists(const std::wstring SubKey)
+bool TRegistry::KeyExists(const std::wstring Key)
 {
   bool Result = false;
+  unsigned OldAccess = FAccess;
+  {
+    BOOST_SCOPE_EXIT( (&FAccess) (&OldAccess) )
+    {
+        FAccess = OldAccess;
+    } BOOST_SCOPE_EXIT_END
+
+    FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
+    HKEY TempKey = GetKey(Key);
+    if (TempKey != 0) RegCloseKey(TempKey);
+    Result = TempKey != 0;
+  }
   return Result;
 }
 
-bool TRegistry::ValueExists(const std::wstring Value)
+bool TRegistry::ValueExists(const std::wstring Name)
 {
-  bool Result = false;
+  // TRegDataInfo Info = {0};
+  bool Result = GetDataInfo(Name, Info);
   return Result;
+}
+/*
+bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
+{
+  int DataType;
+  memset(&Value, 0, sizeof(value));
+  bool Result = RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
+    &Value.DataSize) == ERROR_SUCCESS;
+  Value.RegData = DataTypeToRegData(DataType);
+}
+*/
+TRegDataType TRegistry::GetDataType(const ValueName: std::wstring)
+{
 }
 
 int TRegistry::GetDataSize(const std::wstring Name)
@@ -672,3 +714,4 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo &Value)
     // end;
   return Result;
 }
+
