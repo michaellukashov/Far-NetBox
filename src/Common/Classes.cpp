@@ -431,20 +431,56 @@ TRegistry::~TRegistry()
 void TRegistry::SetAccess(int access)
 {}
 void TRegistry::SetRootKey(HKEY ARootKey)
-{}
+{
+  if (FRootKey != ARootKey)
+  {
+    if (FCloseRootKey)
+    {
+      RegCloseKey(GetRootKey());
+      FCloseRootKey = false;
+    }
+    FRootKey = ARootKey;
+    CloseKey();
+  }
+}
 void TRegistry::GetValueNames(TStrings * Names)
 {}
+
 void TRegistry::GetKeyNames(TStrings * Names)
 {}
 HKEY TRegistry::GetCurrentKey() const { return 0; }
 HKEY TRegistry::GetRootKey() const { return 0; }
 void TRegistry::CloseKey()
 {
+  if (GetCurrentKey() != 0)
+  {
+    // if LazyWrite then
+    RegCloseKey(GetCurrentKey()); //else RegFlushKey(CurrentKey);
+    FCurrentKey = 0;
+    FCurrentPath = L"";
+  }
 }
 
 bool TRegistry::OpenKey(const std::wstring &key, bool CanCreate)
 {
     DEBUG_PRINTF(L"key = %s, CanCreate = %d", key.c_str(), CanCreate);
+  S := Key;
+  Relative := IsRelative(S);
+
+  if not Relative then Delete(S, 1, 1);
+  TempKey := 0;
+  if not CanCreate or (S = '') then
+  begin
+    Result := RegOpenKeyEx(GetBaseKey(Relative), PChar(S), 0,
+      FAccess, TempKey) = ERROR_SUCCESS;
+  end else
+    Result := RegCreateKeyEx(GetBaseKey(Relative), PChar(S), 0, nil,
+      REG_OPTION_NON_VOLATILE, FAccess, nil, TempKey, @Disposition) = ERROR_SUCCESS;
+  if Result then
+  begin
+    if (CurrentKey <> 0) and Relative then S := CurrentPath + '\' + S;
+    ChangeKey(TempKey, S);
+  end;
     return false;
 }
 bool TRegistry::DeleteKey(const std::wstring &key) { return false; }

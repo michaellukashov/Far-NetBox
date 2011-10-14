@@ -1097,6 +1097,13 @@ public:
   void WriteInt64(const std::wstring Name, __int64 Value);
   void WriteBinaryData(const std::wstring Name,
       const void * Buffer, int Size);
+private:
+    HKEY FCurrentKey;
+	HKEY FRootKey;
+	// bool FLazyWrite;
+	std::wstring FCurrentPath;
+	bool FCloseRootKey;
+	unsigned FAccess;
 };
 
 //---------------------------------------------------------------------------
