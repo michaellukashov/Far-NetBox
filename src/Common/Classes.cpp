@@ -520,7 +520,7 @@ void TRegistry::CloseKey()
 
 bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
 {
-  DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
+  // DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
   bool Result = false;
   std::wstring S = Key;
   bool Relative = ::IsRelative(S);
@@ -529,14 +529,14 @@ bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
   HKEY TempKey = 0;
   if (!CanCreate || S.empty())
   {
-    DEBUG_PRINTF(L"RegOpenKeyEx");
+    // DEBUG_PRINTF(L"RegOpenKeyEx");
     Result = RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
       FAccess, &TempKey) == ERROR_SUCCESS;
   }
   else
   {
     // int Disposition = 0;
-    DEBUG_PRINTF(L"RegCreateKeyEx: Relative = %d", Relative);
+    // DEBUG_PRINTF(L"RegCreateKeyEx: Relative = %d", Relative);
     Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, NULL,
       REG_OPTION_NON_VOLATILE, FAccess, NULL, &TempKey, NULL) == ERROR_SUCCESS;
   }
@@ -546,7 +546,7 @@ bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
         S = FCurrentPath + L'\\' + S;
     ChangeKey(TempKey, S);
   }
-  DEBUG_PRINTF(L"Result = %d", Result);
+  // DEBUG_PRINTF(L"CurrentKey = %d, Result = %d", GetCurrentKey(), Result);
   return Result;
 }
 
@@ -594,7 +594,7 @@ bool TRegistry::DeleteValue(const std::wstring &value)
 bool TRegistry::KeyExists(const std::wstring Key)
 {
   bool Result = false;
-  DEBUG_PRINTF(L"Key = %s", Key.c_str());
+  // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
   {
     BOOST_SCOPE_EXIT( (&FAccess) (&OldAccess) )
@@ -602,12 +602,12 @@ bool TRegistry::KeyExists(const std::wstring Key)
         FAccess = OldAccess;
     } BOOST_SCOPE_EXIT_END
 
-    FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
+    // FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
     if (TempKey != 0) RegCloseKey(TempKey);
     Result = TempKey != 0;
   }
-  DEBUG_PRINTF(L"Result = %d", Result);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
@@ -691,6 +691,7 @@ void TRegistry::PutData(const std::wstring &Name, const void *Buffer,
   int BufSize, TRegDataType RegData)
 {
   int DataType = ::RegDataToDataType(RegData);
+  // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType);
   if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType, 
     reinterpret_cast<const BYTE *>(Buffer),
     BufSize) != ERROR_SUCCESS)
@@ -719,7 +720,8 @@ void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value
 }
 void TRegistry::Writeint(const std::wstring Name, int Value)
 {
-    PutData(Name, &Value, sizeof(int), rdInteger);
+    // PutData(Name, &Value, sizeof(DWORD), rdInteger);
+    WriteInt64(Name, Value);
 }
 
 void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)

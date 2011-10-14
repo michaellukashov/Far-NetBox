@@ -131,7 +131,7 @@ std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
 //---------------------------------------------------------------------------
 bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreate*/, bool Path)
 {
-  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path)));
   return true;
 }
@@ -417,13 +417,13 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
-  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   bool Result = CanCreate;
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
   std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey () + MungeSubKey(SubKey, Path));
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
-  DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
+  // DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -570,7 +570,9 @@ void TRegistryStorage::WriteStringRaw(const std::wstring Name, const std::wstrin
 //---------------------------------------------------------------------------
 void TRegistryStorage::Writeint(const std::wstring Name, int Value)
 {
+  // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
   WRITE_REGISTRY(Writeint);
+  // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::WriteInt64(const std::wstring Name, __int64 Value)
@@ -685,7 +687,7 @@ std::wstring TIniFileStorage::GetCurrentSection()
 //---------------------------------------------------------------------------
 bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
-  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   bool Result = CanCreate;
 
   if (!Result)
