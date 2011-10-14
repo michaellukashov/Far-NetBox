@@ -437,6 +437,35 @@ TRegDataType DataTypeToRegData(int Value)
   return Result;
 }
 
+int RegDataToDataType(TRegDataType Value)
+{
+  int Result = 0;
+  switch (Value)
+  {
+    case rdString:
+        Result = REG_SZ;
+        break;
+    case rdExpandString:
+        Result = REG_EXPAND_SZ;
+        break;
+    case rdInteger:
+        Result = REG_DWORD;
+        break;
+    case rdBinary:
+        Result = REG_BINARY;
+        break;
+    default:
+        Result = REG_NONE;
+        break;
+  }
+  return Result;
+}
+
+//---------------------------------------------------------------------------
+class ERegistryException : public std::exception
+{
+};
+
 //---------------------------------------------------------------------------
 TRegistry::TRegistry() :
     FCurrentKey(0),
@@ -658,20 +687,45 @@ int TRegistry::ReadBinaryData(const std::wstring Name,
   return Result;
 }
 
+void TRegistry::PutData(const std::wstring &Name, const void *Buffer,
+  int BufSize, TRegDataType RegData)
+{
+  int DataType = ::RegDataToDataType(RegData);
+  if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType, 
+    reinterpret_cast<const BYTE *>(Buffer),
+    BufSize) != ERROR_SUCCESS)
+    throw std::exception("RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+}
+
 void TRegistry::Writebool(const std::wstring Name, bool Value)
-{}
+{
+    Writeint(Name, Value);
+}
 void TRegistry::WriteDateTime(const std::wstring Name, TDateTime Value)
-{}
+{
+     ::Error(SNotImplemented, 404);
+}
 void TRegistry::WriteFloat(const std::wstring Name, double Value)
-{}
+{
+    PutData(Name, &Value, sizeof(double), rdBinary);
+}
 void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
-{}
+{
+    PutData(Name, (void *)Value.c_str(), Value.size() + 1, rdString);
+}
 void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
-{}
+{
+    PutData(Name, Value.c_str(), Value.size() + 1, rdString);
+}
 void TRegistry::Writeint(const std::wstring Name, int Value)
-{}
+{
+    PutData(Name, &Value, sizeof(int), rdInteger);
+}
+
 void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
-{}
+{
+    PutData(Name, &Value, sizeof(__int64), rdInteger);
+}
 void TRegistry::WriteBinaryData(const std::wstring Name,
   const void * Buffer, int Size)
 {}

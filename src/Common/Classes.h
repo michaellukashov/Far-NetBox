@@ -1123,6 +1123,8 @@ private:
     HKEY GetKey(const std::wstring &Key);
     void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
     bool GetKeyInfo(TRegKeyInfo &Value);
+    void PutData(const std::wstring &Name, const void *Buffer,
+      int BufSize, TRegDataType RegData);
 private:
     HKEY FCurrentKey;
 	HKEY FRootKey;
