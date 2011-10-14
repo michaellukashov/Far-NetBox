@@ -135,8 +135,9 @@ bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreat
 //---------------------------------------------------------------------------
 void THierarchicalStorage::CloseSubKey()
 {
-  if (FKeyHistory->GetCount() == 0) throw std::exception("");
-    else FKeyHistory->Delete(FKeyHistory->GetCount()-1);
+  if (FKeyHistory->GetCount() == 0)
+    throw std::exception("");
+  else FKeyHistory->Delete(FKeyHistory->GetCount()-1);
 }
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearSubKeys()
@@ -416,7 +417,7 @@ bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, boo
   DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   bool Result = CanCreate;
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
-  std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey ()+ MungeSubKey(SubKey, Path));
+  std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey () + MungeSubKey(SubKey, Path));
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
   DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
