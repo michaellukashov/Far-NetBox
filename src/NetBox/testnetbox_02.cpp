@@ -273,7 +273,7 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
    TRegistryStorage Storage(L"Software\\Michael Lukashov\\TestNetBox");
-   BOOST_CHECK(Storage.OpenRootKey(false));
+   BOOST_CHECK(Storage.OpenRootKey(true));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
