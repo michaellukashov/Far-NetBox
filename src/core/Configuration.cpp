@@ -740,7 +740,7 @@ std::wstring TConfiguration::GetFileInfoString(const std::wstring Key)
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetRegistryStorageKey()
 {
-  return GetRegistryKey();
+  return ::GetRegistryKey();
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetIniFileStorageName(std::wstring value)
