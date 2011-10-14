@@ -129,7 +129,7 @@ protected:
 
   // __property int Failed  = { read=GetFailed, write=FFailed };
   int GetFailed();
-  void GetFailed(int value) { FFailed = value; }
+  void SetFailed(int value) { FFailed = value; }
 
 private:
   TRegistry * FRegistry;
