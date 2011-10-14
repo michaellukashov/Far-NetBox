@@ -272,8 +272,14 @@ BOOST_FIXTURE_TEST_CASE(test7, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
 {
-   TRegistryStorage Storage(L"Software\\Michael Lukashov\\TestNetBox");
+   std::wstring RootKey = L"Software\\Michael Lukashov\\TestNetBox";
+   TRegistryStorage Storage(RootKey);
    BOOST_CHECK(Storage.OpenRootKey(true));
+   std::wstring SubKey = L"SubKey1";
+   Storage.DeleteKey(SubKey);
+   BOOST_CHECK(!Storage.KeyExists(SubKey));
+   BOOST_CHECK(Storage.OpenKey(SubKey, true));
+   BOOST_CHECK(Storage.KeyExists(SubKey));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
