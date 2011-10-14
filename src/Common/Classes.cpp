@@ -602,7 +602,7 @@ bool TRegistry::KeyExists(const std::wstring Key)
         FAccess = OldAccess;
     } BOOST_SCOPE_EXIT_END
 
-    // FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
+    FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
     if (TempKey != 0) RegCloseKey(TempKey);
     Result = TempKey != 0;
