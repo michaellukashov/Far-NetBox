@@ -504,26 +504,84 @@ bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
   return Result;
 }
 
-bool TRegistry::DeleteKey(const std::wstring &key) { return false; }
-bool TRegistry::DeleteValue(const std::wstring &value) { return false; }
-bool TRegistry::KeyExists(const std::wstring SubKey) { return false; }
-bool TRegistry::ValueExists(const std::wstring Value) { return false; }
-int TRegistry::GetDataSize(const std::wstring Name) { return 0; }
-bool TRegistry::Readbool(const std::wstring Name) { return false; }
-TDateTime TRegistry::ReadDateTime(const std::wstring Name) { return TDateTime(); }
+bool TRegistry::DeleteKey(const std::wstring &key)
+{
+  bool Result = false;
+  return Result;
+}
+
+bool TRegistry::DeleteValue(const std::wstring &value)
+{
+  bool Result = false;
+  return Result;
+}
+
+bool TRegistry::KeyExists(const std::wstring SubKey)
+{
+  bool Result = false;
+  return Result;
+}
+
+bool TRegistry::ValueExists(const std::wstring Value)
+{
+  bool Result = false;
+  return Result;
+}
+
+int TRegistry::GetDataSize(const std::wstring Name)
+{
+  int Result = 0;
+  return Result;
+}
+
+bool TRegistry::Readbool(const std::wstring Name)
+{
+  bool Result = false;
+  return Result;
+}
+
+TDateTime TRegistry::ReadDateTime(const std::wstring Name)
+{
+  TDateTime Result = TDateTime();
+  return Result;
+}
+
 double TRegistry::ReadFloat(const std::wstring Name)
-{ return 0; }
+{
+  double Result = 0.0;
+  return Result;
+}
+
 int TRegistry::Readint(const std::wstring Name)
-{ return 0; }
+{
+  int Result = 0;
+  return Result;
+}
+
 __int64 TRegistry::ReadInt64(const std::wstring Name)
-{ return 0; }
+{
+  __int64 Result = 0;
+  return Result;
+}
+
 std::wstring TRegistry::ReadString(const std::wstring Name)
-{ return L""; }
+{
+  std::wstring Result = L"";
+  return Result;
+}
+
 std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
-{ return L""; }
+{
+  std::wstring Result = L"";
+  return Result;
+}
+
 int TRegistry::ReadBinaryData(const std::wstring Name,
   void * Buffer, int Size)
-{ return 0; }
+{
+  int Result = 0;
+  return Result;
+}
 
 void TRegistry::Writebool(const std::wstring Name, bool Value)
 {}
