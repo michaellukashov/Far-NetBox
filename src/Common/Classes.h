@@ -1096,7 +1096,7 @@ public:
     bool KeyExists(const std::wstring SubKey);
     bool ValueExists(const std::wstring Value);
     // bool GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
-    TRegDataType GetDataType(const ValueName: std::wstring);
+    TRegDataType GetDataType(const std::wstring &ValueName);
     int GetDataSize(const std::wstring Name);
     bool Readbool(const std::wstring Name);
     TDateTime ReadDateTime(const std::wstring Name);

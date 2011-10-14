@@ -583,7 +583,7 @@ bool TRegistry::KeyExists(const std::wstring Key)
 bool TRegistry::ValueExists(const std::wstring Name)
 {
   // TRegDataInfo Info = {0};
-  bool Result = GetDataInfo(Name, Info);
+  bool Result = false; // GetDataInfo(Name, Info);
   return Result;
 }
 /*
@@ -596,7 +596,7 @@ bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
   Value.RegData = DataTypeToRegData(DataType);
 }
 */
-TRegDataType TRegistry::GetDataType(const ValueName: std::wstring)
+TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
 {
 }
 
