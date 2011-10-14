@@ -276,9 +276,10 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
    TRegistryStorage Storage(RootKey);
    BOOST_CHECK(Storage.OpenRootKey(true));
    std::wstring SubKey = L"SubKey1";
-   Storage.DeleteKey(SubKey);
+   Storage.DeleteSubKey(SubKey);
    BOOST_CHECK(!Storage.KeyExists(SubKey));
-   BOOST_CHECK(Storage.OpenKey(SubKey, true));
+   BOOST_CHECK(Storage.OpenSubKey(SubKey, true));
+   Storage.Writeint(L"IntVal", 1234);
    BOOST_CHECK(Storage.KeyExists(SubKey));
 }
 
