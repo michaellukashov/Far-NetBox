@@ -620,6 +620,7 @@ bool TRegistry::ValueExists(const std::wstring Name)
 {
   TRegDataInfo Info;
   bool Result = GetDataInfo(Name, Info);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
@@ -627,8 +628,9 @@ bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value)
 {
   DWORD DataType;
   memset(&Value, 0, sizeof(Value));
-  bool Result = RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
-    &Value.DataSize) == ERROR_SUCCESS;
+  bool Result = (RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
+    &Value.DataSize) == ERROR_SUCCESS);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   Value.RegData = DataTypeToRegData(DataType);
   return Result;
 }
@@ -685,9 +687,11 @@ double TRegistry::ReadFloat(const std::wstring Name)
 
 int TRegistry::Readint(const std::wstring Name)
 {
-  int Result = 0;
+  DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
-  GetData(Name, &Result, sizeof(int), RegData);
+  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
+  GetData(Name, &Result, sizeof(Result), RegData);
+  // DEBUG_PRINTF(L"Result = %d, RegData = %d, rdInteger = %d", Result, RegData, rdInteger);
   if (RegData != rdInteger)
   {
     ::ReadError(Name);
@@ -708,7 +712,6 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
   int Len = GetDataSize(Name);
   if (Len > 0)
   {
-    // SetString(Result, nil, Len);
     Result.resize(Len);
     GetData(Name, (void *)Result.c_str(), Len, RegData);
     if ((RegData == rdString) || (RegData = rdExpandString))
@@ -726,14 +729,26 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
 
 std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
 {
-  std::wstring Result = L"";
+  std::wstring Result = ReadString(Name);
   return Result;
 }
 
 int TRegistry::ReadBinaryData(const std::wstring Name,
-  void * Buffer, int Size)
+  void *Buffer, int BufSize)
 {
   int Result = 0;
+  TRegDataInfo Info;
+  if (GetDataInfo(Name, Info))
+  {
+    Result = Info.DataSize;
+    TRegDataType RegData = Info.RegData;
+    if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
+        GetData(Name, Buffer, Result, RegData);
+    else
+        ReadError(Name);
+  }
+  else
+    Result = 0;
   return Result;
 }
 
@@ -741,6 +756,7 @@ int TRegistry::GetData(const std::wstring &Name, void *Buffer,
   DWORD BufSize, TRegDataType &RegData)
 {
   DWORD DataType = REG_NONE;
+  // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
   if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
     reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
   {
@@ -755,7 +771,7 @@ void TRegistry::PutData(const std::wstring &Name, const void *Buffer,
   int BufSize, TRegDataType RegData)
 {
   int DataType = ::RegDataToDataType(RegData);
-  // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType);
+  // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
   if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType, 
     reinterpret_cast<const BYTE *>(Buffer),
     BufSize) != ERROR_SUCCESS)
@@ -785,8 +801,9 @@ void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value
 }
 void TRegistry::Writeint(const std::wstring Name, int Value)
 {
-    // PutData(Name, &Value, sizeof(DWORD), rdInteger);
-    WriteInt64(Name, Value);
+    DWORD Val = Value;
+    PutData(Name, &Val, sizeof(DWORD), rdInteger);
+    // WriteInt64(Name, Value);
 }
 
 void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
@@ -794,8 +811,10 @@ void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
     PutData(Name, &Value, sizeof(__int64), rdInteger);
 }
 void TRegistry::WriteBinaryData(const std::wstring Name,
-  const void * Buffer, int Size)
-{}
+  const void *Buffer, int BufSize)
+{
+    PutData(Name, Buffer, BufSize, rdBinary);
+}
 
 void TRegistry::ChangeKey(HKEY Value, const std::wstring &Path)
 {
