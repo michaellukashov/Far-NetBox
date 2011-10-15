@@ -27,7 +27,11 @@ std::wstring AppNameString()
 //---------------------------------------------------------------------------
 std::wstring GetRegistryKey()
 {
+#ifndef NETBOX_DEBUG
   return L"Software\\Martin Prikryl\\WinSCP 2";
+#else
+  return L"Software\\Michael Lukashov\\TestNetBox";
+#endif
 }
 //---------------------------------------------------------------------------
 void Busy(bool /*Start*/)
