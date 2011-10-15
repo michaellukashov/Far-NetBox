@@ -426,9 +426,9 @@ bool IsRelative(const std::wstring &Value)
   return  !(!Value.empty() && (Value[0] == L'\\'));
 }
 
-TRegDataType DataTypeToRegData(int Value)
+TRegDataType DataTypeToRegData(DWORD Value)
 {
-    TRegDataType Result;
+  TRegDataType Result;
   if (Value == REG_SZ)
     Result = rdString;
   else if (Value == REG_EXPAND_SZ)
@@ -442,9 +442,9 @@ TRegDataType DataTypeToRegData(int Value)
   return Result;
 }
 
-int RegDataToDataType(TRegDataType Value)
+DWORD RegDataToDataType(TRegDataType Value)
 {
-  int Result = 0;
+  DWORD Result = 0;
   switch (Value)
   {
     case rdString:
@@ -618,28 +618,44 @@ bool TRegistry::KeyExists(const std::wstring Key)
 
 bool TRegistry::ValueExists(const std::wstring Name)
 {
-  // TRegDataInfo Info = {0};
-  bool Result = false; // GetDataInfo(Name, Info);
+  TRegDataInfo Info;
+  bool Result = GetDataInfo(Name, Info);
   return Result;
 }
-/*
-bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
+
+bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value)
 {
-  int DataType;
-  memset(&Value, 0, sizeof(value));
+  DWORD DataType;
+  memset(&Value, 0, sizeof(Value));
   bool Result = RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
     &Value.DataSize) == ERROR_SUCCESS;
   Value.RegData = DataTypeToRegData(DataType);
-}
-*/
-TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
-{
-    return rdUnknown;
+  return Result;
 }
 
-int TRegistry::GetDataSize(const std::wstring Name)
+TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
+{
+  TRegDataType Result;
+  TRegDataInfo Info;
+  if (GetDataInfo(ValueName, Info))
+    Result = Info.RegData;
+  else
+    Result = rdUnknown;
+  return Result;
+}
+
+int TRegistry::GetDataSize(const std::wstring ValueName)
 {
   int Result = 0;
+  TRegDataInfo Info;
+  if (GetDataInfo(ValueName, Info))
+  {
+    Result = Info.DataSize;
+  }
+  else
+  {
+    Result = -1;
+  }
   return Result;
 }
 
@@ -662,7 +678,7 @@ double TRegistry::ReadFloat(const std::wstring Name)
   int Len = GetData(Name, &Result, sizeof(double), RegData);
   if ((RegData != rdBinary) || (Len != sizeof(double)))
   {
-    ReadError(Name);
+    ::ReadError(Name);
   }
   return Result;
 }
@@ -670,6 +686,12 @@ double TRegistry::ReadFloat(const std::wstring Name)
 int TRegistry::Readint(const std::wstring Name)
 {
   int Result = 0;
+  TRegDataType RegData = rdUnknown;
+  GetData(Name, &Result, sizeof(int), RegData);
+  if (RegData != rdInteger)
+  {
+    ::ReadError(Name);
+  }
   return Result;
 }
 
@@ -682,6 +704,23 @@ __int64 TRegistry::ReadInt64(const std::wstring Name)
 std::wstring TRegistry::ReadString(const std::wstring Name)
 {
   std::wstring Result = L"";
+  TRegDataType RegData = rdUnknown;
+  int Len = GetDataSize(Name);
+  if (Len > 0)
+  {
+    // SetString(Result, nil, Len);
+    Result.resize(Len);
+    GetData(Name, (void *)Result.c_str(), Len, RegData);
+    if ((RegData == rdString) || (RegData = rdExpandString))
+    {
+      PackStr(Result);
+    }
+    else ReadError(Name);
+  }
+  else
+  {
+    Result = L"";
+  }
   return Result;
 }
 

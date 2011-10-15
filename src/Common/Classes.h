@@ -1076,6 +1076,13 @@ enum TRegDataType
 {
     rdUnknown, rdString, rdExpandString, rdInteger, rdBinary
 };
+
+struct TRegDataInfo
+{
+    TRegDataType RegData;
+    DWORD DataSize;
+};
+
 //---------------------------------------------------------------------------
 
 class TRegistry
@@ -1095,7 +1102,7 @@ public:
     bool DeleteValue(const std::wstring &value);
     bool KeyExists(const std::wstring SubKey);
     bool ValueExists(const std::wstring Value);
-    // bool GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
+    bool GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
     TRegDataType GetDataType(const std::wstring &ValueName);
     int GetDataSize(const std::wstring Name);
     bool Readbool(const std::wstring Name);
