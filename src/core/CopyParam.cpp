@@ -294,8 +294,8 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
     if (!FileName.empty() &&
-        ((FileName[FileName.size()] == ' ') ||
-         (FileName[FileName.size()] == '.')))
+        ((FileName[FileName.size() - 1] == ' ') ||
+         (FileName[FileName.size() - 1] == '.')))
     {
       ReplaceChar(FileName, (wchar_t *)FileName.c_str() + FileName.size() - 1);
     }

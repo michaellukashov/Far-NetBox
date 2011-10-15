@@ -1073,7 +1073,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
     if (!ARemoteDirectory.empty() && (ARemoteDirectory != L"/"))
     {
-      if ((ARemoteDirectory[ARemoteDirectory.size()] != '/') &&
+      if ((ARemoteDirectory[ARemoteDirectory.size() - 1] != '/') &&
           (FileName != NULL))
       {
         *FileName = DecodeUrlChars(UnixExtractFileName(ARemoteDirectory));

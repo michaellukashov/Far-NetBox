@@ -5548,7 +5548,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         assert(false);
       }
 
-      if (!LabelStr.empty() && (LabelStr[LabelStr.size()] == ':'))
+      if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
       {
         LabelStr.resize(LabelStr.size() - 1);
       }
@@ -5564,7 +5564,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     {
       assert(dynamic_cast<TLabelList *>(AControl) != NULL);
       std::wstring LabelStr = GetMsg(Label);
-      if (!LabelStr.empty() && (LabelStr[LabelStr.size()] == ':'))
+      if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
       {
         LabelStr.resize(LabelStr.size() - 1);
       }
@@ -6642,7 +6642,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring & List,
       }
       else
       {
-        List[List.size()] = '{';
+        List[List.size() - 1] = '{';
       }
     }
     if (Scroll > Len - Width)

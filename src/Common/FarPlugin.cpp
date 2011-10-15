@@ -800,8 +800,8 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         {
             MoreMessageLines = new TStringList();
             std::wstring MoreMessages = Params->MoreMessages->GetText();
-            while (MoreMessages[MoreMessages.size()] == L'\n' ||
-                    MoreMessages[MoreMessages.size()] == L'\r')
+            while (MoreMessages[MoreMessages.size() - 1] == L'\n' ||
+                    MoreMessages[MoreMessages.size() - 1] == L'\r')
             {
                 MoreMessages.resize(MoreMessages.size() - 1);
             }
@@ -1095,8 +1095,8 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         if (Params->MoreMessages != NULL)
         {
             FullMessage += std::wstring(L"\n\x01\n") + Params->MoreMessages->GetText();
-            while (FullMessage[FullMessage.size()] == L'\n' ||
-                    FullMessage[FullMessage.size()] == L'\r')
+            while (FullMessage[FullMessage.size() - 1] == L'\n' ||
+                    FullMessage[FullMessage.size() - 1] == L'\r')
             {
                 FullMessage.resize(FullMessage.size() - 1);
             }

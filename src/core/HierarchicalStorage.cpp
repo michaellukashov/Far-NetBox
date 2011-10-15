@@ -112,7 +112,7 @@ std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
   std::wstring Result;
   if (Path)
   {
-    assert(Key.empty() || (Key[Key.size()] != '\\'));
+    assert(Key.empty() || (Key[Key.size() - 1] != '\\'));
     while (!Key.empty())
     {
       if (!Result.empty())

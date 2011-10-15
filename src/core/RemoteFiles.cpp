@@ -1024,7 +1024,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
       GETCOL;
       assert(!Col.empty());
       // for devices etc.. there is additional column ending by comma, we ignore it
-      if (Col[Col.size()] == ',') GETCOL;
+      if (Col[Col.size() - 1] == ',') GETCOL;
       ASize = StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)

@@ -349,7 +349,7 @@ std::wstring GetShellFolderPath(int CSIdl)
 std::wstring StripPathQuotes(const std::wstring Path)
 {
   if ((Path.size() >= 2) &&
-      (Path[1] == L'\"') && (Path[Path.size()] == L'\"'))
+      (Path[0] == L'\"') && (Path[Path.size() - 1] == L'\"'))
   {
     return Path.substr(2, Path.size() - 2);
   }
@@ -1649,7 +1649,6 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
   std::wstring FileList(FileName);
   FileList.resize(FileList.size() + 2);
   FileList[FileList.size() - 1] = '\0';
-  FileList[FileList.size()] = '\0';
   Data.pFrom = FileList.c_str();
   Data.pTo = "";
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
