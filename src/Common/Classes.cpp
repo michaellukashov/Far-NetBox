@@ -773,8 +773,7 @@ void TRegistry::PutData(const std::wstring &Name, const void *Buffer,
   int DataType = ::RegDataToDataType(RegData);
   // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
   if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType, 
-    reinterpret_cast<const BYTE *>(Buffer),
-    BufSize) != ERROR_SUCCESS)
+    reinterpret_cast<const BYTE *>(Buffer), BufSize) != ERROR_SUCCESS)
     throw std::exception("RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
 }
 
