@@ -285,6 +285,9 @@ BOOST_FIXTURE_TEST_CASE(test8, base_fixture_t)
    // BOOST_TEST_MESSAGE("Storage.GetFailed = " << Storage.GetFailed());
    Storage.CloseSubKey();
    BOOST_CHECK(Storage.KeyExists(SubKey));
+   int res = Storage.Readint(L"IntVal", -1);
+   BOOST_TEST_MESSAGE("res = " << res);
+   BOOST_CHECK(1234 == res);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
