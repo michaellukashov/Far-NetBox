@@ -6833,8 +6833,8 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     S = ChecklistItem->Remote.Directory;
     if (AnsiSameText(FRemoteDirectory, S.substr(0, FRemoteDirectory.size())))
     {
-      S[1] = '.';
-      S.erase(2, FRemoteDirectory.size() - 1);
+      S[0] = '.';
+      S.erase(1, FRemoteDirectory.size() - 1);
     }
     else
     {
