@@ -191,7 +191,7 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 {
   int P = Str.find_first_of(Ch, 0);
   std::wstring Result;
-  DEBUG_PRINTF(L"P = %d", P);
+  // DEBUG_PRINTF(L"P = %d", P);
   if (P != std::wstring::npos)
   {
     Result = Str.substr(0, P);
