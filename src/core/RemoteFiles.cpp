@@ -2087,6 +2087,7 @@ void TRights::SetText(const std::wstring & value)
 //---------------------------------------------------------------------------
 std::wstring TRights::GetText() const
 {
+  DEBUG_PRINTF(L"FText = %s", FText.c_str());
   if (!FText.empty())
   {
     return FText;
@@ -2126,6 +2127,7 @@ std::wstring TRights::GetText() const
         Symbol = UndefSymbol;
       }
 
+      DEBUG_PRINTF(L"Symbol = %c", Symbol);
       Result[i] = Symbol;
 
       Flag <<= 1;
@@ -2136,6 +2138,7 @@ std::wstring TRights::GetText() const
         ExtendedFlag <<= 1;
       }
     }
+    DEBUG_PRINTF(L"Result = %s", Result.c_str());
     return Result;
   }
 }
