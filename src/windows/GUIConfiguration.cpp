@@ -670,7 +670,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   TConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(::MB2W("##VAR")), Get##VAR())
+  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(::MB2W(#VAR)), Get##VAR())
   REGCONFIG(true);
   #undef KEY
 
@@ -709,7 +709,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   TConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(::MB2W("##VAR")), Get##VAR()))
+  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(::MB2W(#VAR)), Get##VAR()))
   // #pragma warn -eas
   REGCONFIG(false);
   // #pragma warn +eas
