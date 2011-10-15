@@ -416,6 +416,11 @@ unsigned long TStream::Write(void *Buffer, unsigned long int Count)
 }
 
 //---------------------------------------------------------------------------
+void ReadError(const std::wstring &Name)
+{
+  throw std::exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+}
+
 bool IsRelative(const std::wstring &Value)
 {
   return  !(!Value.empty() && (Value[0] == L'\\'));
@@ -646,13 +651,19 @@ bool TRegistry::Readbool(const std::wstring Name)
 
 TDateTime TRegistry::ReadDateTime(const std::wstring Name)
 {
-  TDateTime Result = TDateTime();
+  TDateTime Result = TDateTime(ReadFloat(Name));
   return Result;
 }
 
 double TRegistry::ReadFloat(const std::wstring Name)
 {
   double Result = 0.0;
+  TRegDataType RegData;
+  int Len = GetData(Name, &Result, sizeof(double), RegData);
+  if ((RegData != rdBinary) || (Len != sizeof(double)))
+  {
+    ReadError(Name);
+  }
   return Result;
 }
 
@@ -687,6 +698,20 @@ int TRegistry::ReadBinaryData(const std::wstring Name,
   return Result;
 }
 
+int TRegistry::GetData(const std::wstring &Name, void *Buffer,
+  DWORD BufSize, TRegDataType &RegData)
+{
+  DWORD DataType = REG_NONE;
+  if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
+    reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
+  {
+    throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+  }
+  int Result = BufSize;
+  RegData = DataTypeToRegData(DataType);
+  return Result;
+}
+
 void TRegistry::PutData(const std::wstring &Name, const void *Buffer,
   int BufSize, TRegDataType RegData)
 {
@@ -704,7 +729,8 @@ void TRegistry::Writebool(const std::wstring Name, bool Value)
 }
 void TRegistry::WriteDateTime(const std::wstring Name, TDateTime Value)
 {
-     ::Error(SNotImplemented, 404);
+    double Val = Value.operator double();
+    PutData(Name, &Val, sizeof(double), rdBinary);
 }
 void TRegistry::WriteFloat(const std::wstring Name, double Value)
 {
