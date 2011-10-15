@@ -2370,9 +2370,9 @@ bool ForceDirectories(const std::wstring Dir)
 
 bool DeleteFile(const std::wstring File)
 {
-    // FIXME
-    ::Error(SNotImplemented, 88);
-    return false;
+    // DEBUG_PRINTF(L"File = %s", File.c_str());
+    ::DeleteFile(File.c_str());
+    return !::FileExists(File);
 }
 
 bool RemoveDir(const std::wstring Dir)
