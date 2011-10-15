@@ -35,7 +35,7 @@ inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
 {
-    // DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
+    DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
     std::wstring Msg = FMTLOAD(ErrorID, data);
     // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
     throw ExtException(Msg);
