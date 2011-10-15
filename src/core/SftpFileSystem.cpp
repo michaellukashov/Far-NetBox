@@ -899,7 +899,7 @@ public:
   // __property std::wstring TypeName = { read = GetTypeName };
   std::wstring GetTypeName() const
   {
-    #define TYPE_CASE(TYPE) case TYPE: return std::wstring(::MB2W("##TYPE"))
+    #define TYPE_CASE(TYPE) case TYPE: return ::MB2W(#TYPE)
     switch (GetType()) {
       TYPE_CASE(SSH_FXP_INIT);
       TYPE_CASE(SSH_FXP_VERSION);
