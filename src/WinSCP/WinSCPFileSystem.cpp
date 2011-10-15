@@ -347,6 +347,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
     GUIConfiguration->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
