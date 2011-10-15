@@ -471,7 +471,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     SetProxyLocalhost(Storage->Readbool(L"ProxyLocalhost", GetProxyLocalhost()));
 
     #define READ_BUG(BUG) \
-      SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + std::wstring(::MB2W("##BUG")), \
+      SetBug(sb##BUG, TAutoSwitch(2 - Storage->Readint(L"Bug" + ::MB2W(#BUG), \
         2 - GetBug(sb##BUG))));
     READ_BUG(Ignore1);
     READ_BUG(PlainPW1);
@@ -492,7 +492,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
 
     SetSftpServer(Storage->ReadString(L"SftpServer", GetSftpServer()));
     #define READ_SFTP_BUG(BUG) \
-      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + std::wstring(::MB2W("##BUG")) + L"Bug", GetSFTPBug(sb##BUG))));
+      SetSFTPBug(sb##BUG, TAutoSwitch(Storage->Readint(L"SFTP" + ::MB2W(#BUG) + L"Bug", GetSFTPBug(sb##BUG))));
     READ_SFTP_BUG(Symlink);
     READ_SFTP_BUG(SignedTS);
     #undef READ_SFTP_BUG
@@ -744,7 +744,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
     // #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, L"Bug" + std::wstring(::MB2W("##BUG")), GetBug(sb##BUG));
-    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, "Bug##BUG", GetBug(sb##BUG));
+    #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, L"Bug" + ::MB2W(#BUG), GetBug(sb##BUG));
     WRITE_BUG(Ignore1);
     WRITE_BUG(PlainPW1);
     WRITE_BUG(RSA1);
