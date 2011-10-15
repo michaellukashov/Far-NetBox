@@ -2100,21 +2100,21 @@ std::wstring TRights::GetText() const
     int ExtendedFlag = 01000;
     bool ExtendedPos = true;
     char Symbol;
-    int i = TextLen;
-    while (i >= 1)
+    int i = TextLen - 1;
+    while (i >= 0)
     {
       if (ExtendedPos &&
           ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
       {
-        Symbol = CombinedSymbols[i - 1];
+        Symbol = CombinedSymbols[i];
       }
       else if ((FSet & Flag) != 0)
       {
-        Symbol = BasicSymbols[i - 1];
+        Symbol = BasicSymbols[i];
       }
       else if (ExtendedPos && ((FSet & ExtendedFlag) != 0))
       {
-        Symbol = ExtendedSymbols[i - 1];
+        Symbol = ExtendedSymbols[i];
       }
       else if ((!ExtendedPos && ((FUnset & Flag) == Flag)) ||
         (ExtendedPos && ((FUnset & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag))))
