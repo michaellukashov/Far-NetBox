@@ -187,11 +187,12 @@ std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
+std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 {
   int P = Str.find_first_of(Ch, 0);
   std::wstring Result;
-  if (P)
+  DEBUG_PRINTF(L"P = %d", P);
+  if (P != std::wstring::npos)
   {
     Result = Str.substr(0, P);
     Str.erase(0, P + 1);
