@@ -703,6 +703,7 @@ int TRegistry::Readint(const std::wstring Name)
 __int64 TRegistry::ReadInt64(const std::wstring Name)
 {
   __int64 Result = 0;
+  ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
 
@@ -809,7 +810,7 @@ void TRegistry::Writeint(const std::wstring Name, int Value)
 
 void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
 {
-    PutData(Name, &Value, sizeof(__int64), rdInteger);
+    WriteBinaryData(Name, &Value, sizeof(Value));
 }
 void TRegistry::WriteBinaryData(const std::wstring Name,
   const void *Buffer, int BufSize)
