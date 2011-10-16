@@ -358,7 +358,7 @@ void TCopyParamList::Change(int Index, const std::wstring Name,
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
-    FNames->GetString(Index) = Name;
+    FNames->PutString(Index, Name);
     delete GetCopyParam(Index);
     FCopyParams->SetItem(Index, (reinterpret_cast<TObject *>(CopyParam)));
     delete GetRule(Index);
@@ -1009,7 +1009,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
           if (Ext >= 0)
           {
-            Exts->GetObject(Ext) = reinterpret_cast<TObject*>(Locale);
+            Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
           }
           else
           {

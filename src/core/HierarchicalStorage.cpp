@@ -458,7 +458,7 @@ void TRegistryStorage::GetSubKeyNames(TStrings* Strings)
   FRegistry->GetKeyNames(Strings);
   for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
-    Strings->GetString(Index) = UnMungeStr(Strings->GetString(Index));
+    Strings->PutString(Index, UnMungeStr(Strings->GetString(Index)));
   }
 }
 //---------------------------------------------------------------------------
@@ -781,7 +781,7 @@ void TIniFileStorage::GetValueNames(TStrings* Strings)
   FIniFile->ReadSection(GetCurrentSection(), Strings);
   for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
-    Strings->GetString(Index) = UnMungeIniName(Strings->GetString(Index));
+    Strings->PutString(Index, UnMungeIniName(Strings->GetString(Index)));
   }
 }
 //---------------------------------------------------------------------------

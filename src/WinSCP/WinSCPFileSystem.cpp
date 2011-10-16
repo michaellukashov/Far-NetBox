@@ -3037,9 +3037,8 @@ void TWinSCPFileSystem::LogAuthentication(
       {
         AuthenticationLogLines->Delete(0);
       }
-      AuthenticationLogLines->GetString(0) =
-        AuthenticationLogLines->GetString(0) +
-          ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).size());
+      AuthenticationLogLines->PutString(0, AuthenticationLogLines->GetString(0) +
+          ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).size()));
       Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
       Count = AuthenticationLogLines->GetCount();
     }
@@ -3215,7 +3214,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
     Result = FPlugin->InputBox(Name, StripHotKey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
     if (Result)
     {
-      Results->GetString(0) = AResult;
+      Results->PutString(0, AResult);
     }
   }
   else

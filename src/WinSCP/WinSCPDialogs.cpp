@@ -7931,7 +7931,7 @@ void TQueueDialog::RefreshQueue()
         if (QueueListBox->GetItems()->GetString(Index) != Line)
         {
           Change = true;
-          QueueListBox->GetItems()->GetString(Index) = Line;
+          QueueListBox->GetItems()->PutString(Index, Line);
         }
       }
 

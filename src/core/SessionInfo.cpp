@@ -241,7 +241,7 @@ public:
     int Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->GetString(Index) = FValues->GetString(Index) + L"\r\n" + Output;
+      FValues->PutString(Index, FValues->GetString(Index) + L"\r\n" + Output);
     }
     else
     {
