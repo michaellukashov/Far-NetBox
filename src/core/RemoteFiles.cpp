@@ -2100,7 +2100,7 @@ std::wstring TRights::GetText() const
   }
   else
   {
-    std::wstring Result;
+    std::string Result;
     Result.resize(TextLen);
 
     int Flag = 00001;
