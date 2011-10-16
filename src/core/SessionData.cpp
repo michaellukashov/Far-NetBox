@@ -1261,9 +1261,7 @@ void TSessionData::SetHostName(std::wstring value)
     SetPassword(XPassword);
     if (!XPassword.empty())
     {
-      ::Error(SNotImplemented, 239); 
-      // FIXME ::Unique(XPassword());
-      memset((void *)XPassword.c_str(), 0, XPassword.size());
+      memset((void *)XPassword.c_str(), 0, XPassword.size() * sizeof(wchar_t));
     }
   }
 }
