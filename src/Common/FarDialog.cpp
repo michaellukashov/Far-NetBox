@@ -2047,8 +2047,8 @@ void TFarEdit::SetAsInteger(int value)
 //---------------------------------------------------------------------------
 int TFarEdit::GetAsInteger()
 {
-    // return StrToIntDef(GetText(), 0);
-    return GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
+    return StrToIntDef(GetText(), 0);
+    // return GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
