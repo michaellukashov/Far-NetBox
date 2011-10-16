@@ -2153,18 +2153,18 @@ std::wstring TRights::GetText() const
 //---------------------------------------------------------------------------
 void TRights::SetOctal(std::wstring value)
 {
-  std::wstring AValue(value);
+  std::string AValue(::W2MB(value.c_str()));
   if (AValue.size() == 3)
   {
-    AValue = L"0" + AValue;
+    AValue = "0" + AValue;
   }
 
-  if (GetOctal() != AValue)
+  if (GetOctal() != ::MB2W(AValue.c_str()))
   {
     bool Correct = (AValue.size() == 4);
     if (Correct)
     {
-      for (int i = 1; (i <= AValue.size()) && Correct; i++)
+      for (int i = 0; (i <= AValue.size()) && Correct; i++)
       {
         Correct = (AValue[i] >= '0') && (AValue[i] <= '7');
       }
@@ -2176,10 +2176,10 @@ void TRights::SetOctal(std::wstring value)
     }
 
     SetNumber(static_cast<unsigned short>(
-      ((AValue[1] - '0') << 9) +
-      ((AValue[2] - '0') << 6) +
-      ((AValue[3] - '0') << 3) +
-      ((AValue[4] - '0') << 0)));
+      ((AValue[0] - '0') << 9) +
+      ((AValue[1] - '0') << 6) +
+      ((AValue[2] - '0') << 3) +
+      ((AValue[3] - '0') << 0)));
   }
   FUnknown = false;
 }
