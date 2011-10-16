@@ -664,7 +664,7 @@ int TRegistry::GetDataSize(const std::wstring ValueName)
 
 bool TRegistry::Readbool(const std::wstring Name)
 {
-  bool Result = false;
+  bool Result = Readint(Name);
   return Result;
 }
 
