@@ -505,11 +505,40 @@ void TRegistry::SetRootKey(HKEY ARootKey)
     CloseKey();
   }
 }
-void TRegistry::GetValueNames(TStrings * Names)
-{}
+void TRegistry::GetValueNames(TStrings * Strings)
+{
+  Strings->Clear();
+  TRegKeyInfo Info;
+  std::wstring S;
+  if (GetKeyInfo(Info))
+  {
+    S.resize(Info.MaxValueLen + 1);
+    for (int I = 0; I < Info.NumSubKeys; I++)
+    {
+      DWORD Len = Info.MaxValueLen + 1;
+      RegEnumValue(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
+      Strings->Add(S.c_str());
+    }
+  }
+}
 
-void TRegistry::GetKeyNames(TStrings * Names)
-{}
+void TRegistry::GetKeyNames(TStrings * Strings)
+{
+  Strings->Clear();
+  TRegKeyInfo Info;
+  std::wstring S;
+  if (GetKeyInfo(Info))
+  {
+    S.resize(Info.MaxSubKeyLen + 1);
+    for (int I = 0; I < Info.NumSubKeys; I++)
+    {
+      DWORD Len = Info.MaxSubKeyLen + 1;
+      RegEnumKeyEx(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
+      Strings->Add(S.c_str());
+    }
+  }
+}
+
 HKEY TRegistry::GetCurrentKey() const { return FCurrentKey; }
 HKEY TRegistry::GetRootKey() const { return FRootKey; }
 
