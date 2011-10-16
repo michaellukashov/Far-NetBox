@@ -474,7 +474,8 @@ class ERegistryException : public std::exception
 //---------------------------------------------------------------------------
 TRegistry::TRegistry() :
     FCurrentKey(0),
-    FCloseRootKey(true),
+    FRootKey(0),
+    FCloseRootKey(false),
     FAccess(KEY_ALL_ACCESS)
 {
     SetRootKey(HKEY_CURRENT_USER);
