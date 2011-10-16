@@ -112,6 +112,7 @@ void TFarConfiguration::Saved()
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
   bool All)
 {
+  // DEBUG_PRINTF(L"begin");
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
@@ -125,6 +126,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
 
     Storage->CloseSubKey();
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::LoadData(THierarchicalStorage * Storage)

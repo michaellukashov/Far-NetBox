@@ -1804,11 +1804,13 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin) :
     memset(&FOpenPluginInfo, 0, sizeof(FOpenPluginInfo));
     ClearOpenPluginInfo(FOpenPluginInfo);
     FInstances++;
+    // DEBUG_PRINTF(L"FInstances = %d", FInstances);
 };
 //---------------------------------------------------------------------------
 TCustomFarFileSystem::~TCustomFarFileSystem()
 {
     FInstances--;
+    // DEBUG_PRINTF(L"FInstances = %d", FInstances);
     ResetCachedInfo();
     ClearOpenPluginInfo(FOpenPluginInfo);
     delete FCriticalSection;
@@ -2222,6 +2224,7 @@ int TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
 TObjectList *TCustomFarFileSystem::CreatePanelItemList(
     struct PluginPanelItem *PanelItem, int ItemsNumber)
 {
+    // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
     TObjectList *PanelItems = new TObjectList();
     try
     {
@@ -2721,6 +2724,7 @@ void TFarPanelInfo::SetFocusedIndex(int value)
 {
     // for "another panel info", there's no owner
     assert(FOwner != NULL);
+    // DEBUG_PRINTF(L"GetFocusedIndex = %d, value = %d", GetFocusedIndex(), value);
     if (GetFocusedIndex() != value)
     {
         assert(value >= 0 && value < FPanelInfo->ItemsNumber);

@@ -188,6 +188,7 @@ void TSessionData::Assign(TPersistent * Source)
     #define DUPL(P) Set##P(((TSessionData *)Source)->Get##P())
     DUPL(Name);
     DUPL(HostName);
+    // DEBUG_PRINTF(L"HostName = %s, Source->HostName = %s", GetHostName().c_str(), ((TSessionData *)Source)->GetHostName().c_str());
     DUPL(PortNumber);
     DUPL(UserName);
     DUPL(Password);
@@ -578,7 +579,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
 void TSessionData::Save(THierarchicalStorage * Storage,
   bool PuttyExport, const TSessionData * Default)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
     #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
@@ -803,7 +804,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     Storage->CloseSubKey();
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport)
@@ -999,8 +1000,10 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
       if (StoredSessions->IsHidden(Data))
       {
+        // DEBUG_PRINTF(L"StoredSessions->IsHidden(Data) = %d", StoredSessions->IsHidden(Data));
         Data->Remove();
         StoredSessions->Remove(Data);
+        // DEBUG_PRINTF(L"StoredSessions->Count = %d", StoredSessions->GetCount());
         // only modified, implicit
         StoredSessions->Save(false, false);
       }
@@ -1658,6 +1661,7 @@ std::wstring TSessionData::GetDefaultSessionName()
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetSessionName()
 {
+  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
   if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
   {
@@ -1672,6 +1676,7 @@ std::wstring TSessionData::GetSessionName()
 std::wstring TSessionData::GetSessionUrl()
 {
   std::wstring Url;
+  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
   if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
   {
@@ -2111,10 +2116,12 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       delete Loaded;
     } BOOST_SCOPE_EXIT_END
     Storage->GetSubKeyNames(SubKeys);
+    // DEBUG_PRINTF(L"SubKeys->GetCount = %d", SubKeys->GetCount());
     for (int Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       TSessionData *SessionData;
       std::wstring SessionName = SubKeys->GetString(Index);
+      // DEBUG_PRINTF(L"SessionName = %s", SessionName.c_str());
       bool ValidName = true;
       try
       {
@@ -2126,8 +2133,10 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
       if (ValidName)
       {
-        if (SessionName == FDefaultSettings->Name) SessionData = FDefaultSettings;
-          else SessionData = (TSessionData*)FindByName(SessionName);
+        if (SessionName == FDefaultSettings->Name)
+          SessionData = FDefaultSettings;
+        else
+          SessionData = (TSessionData*)FindByName(SessionName);
 
         if ((SessionData != FDefaultSettings) || !UseDefaults)
         {
@@ -2167,6 +2176,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------
 void TStoredSessionList::Load(std::wstring aKey, bool UseDefaults)
 {
+  // DEBUG_PRINTF(L"aKey = %s", aKey.c_str());
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
@@ -2194,7 +2204,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   TSessionData * Data, bool All, bool RecryptPasswordOnly,
   TSessionData * FactoryDefaults)
 {
-  DEBUG_PRINTF(L"begin: All = %d, Data->GetModified = %d", All, Data->GetModified());
+  // DEBUG_PRINTF(L"begin: All = %d, Data->GetModified = %d", All, Data->GetModified());
   if (All || Data->GetModified())
   {
     if (RecryptPasswordOnly)
@@ -2206,13 +2216,13 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       Data->Save(Storage, false, FactoryDefaults);
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   bool All, bool RecryptPasswordOnly)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   TSessionData * FactoryDefaults = new TSessionData(L"");
   {
     BOOST_SCOPE_EXIT ( (&FactoryDefaults) )
@@ -2226,7 +2236,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
@@ -2236,7 +2246,7 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
-  DEBUG_PRINTF(L"begin")
+  // DEBUG_PRINTF(L"begin")
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
@@ -2245,13 +2255,13 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
     } BOOST_SCOPE_EXIT_END
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
-    DEBUG_PRINTF(L"Configuration->GetStoredSessionsSubKey = %s", Configuration->GetStoredSessionsSubKey().c_str());
+    // DEBUG_PRINTF(L"Configuration->GetStoredSessionsSubKey = %s", Configuration->GetStoredSessionsSubKey().c_str());
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       DoSave(Storage, All, RecryptPasswordOnly);
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
   Saved();
 }
 //---------------------------------------------------------------------
@@ -2354,9 +2364,10 @@ int TStoredSessionList::IndexOf(TSessionData * Data)
 }
 //---------------------------------------------------------------------------
 TSessionData *TStoredSessionList::NewSession(
-  std::wstring SessionName, TSessionData *Session)
+  std::wstring SessionName, TSessionData * Session)
 {
-  TSessionData * DuplicateSession = (TSessionData*)FindByName(SessionName);
+  TSessionData *DuplicateSession = (TSessionData *)FindByName(SessionName);
+  // DEBUG_PRINTF(L"DuplicateSession = %x", DuplicateSession);
   if (!DuplicateSession)
   {
     DuplicateSession = new TSessionData(L"");
@@ -2365,6 +2376,7 @@ TSessionData *TStoredSessionList::NewSession(
     // make sure, that new stored session is saved to registry
     DuplicateSession->SetModified(true);
     Add(DuplicateSession);
+    // DEBUG_PRINTF(L"Count = %d", GetCount());
   }
   else
   {
