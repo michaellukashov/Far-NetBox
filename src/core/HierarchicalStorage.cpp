@@ -330,14 +330,16 @@ std::wstring THierarchicalStorage::ExcludeTrailingBackslash(const std::wstring &
   }
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const std::wstring AStorage):
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
+TRegistryStorage::TRegistryStorage(const std::wstring AStorage) :
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
 {
   Init();
 };
 //---------------------------------------------------------------------------
-TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey):
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
+TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey) :
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
 {
   Init();
   FRegistry->SetRootKey(ARootKey);
