@@ -1827,6 +1827,7 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::Deserialize(const std::wstring Data)
 {
+  // DEBUG_PRINTF(L"Data = %s", Data.c_str());
   if (Data.empty())
   {
     SetText(L"");
@@ -1870,6 +1871,7 @@ TRights::TRights()
 {
   FAllowUndef = false;
   FSet = 0;
+  // DEBUG_PRINTF(L"FSet = %o", FSet);
   FUnset = 0;
   SetNumber(0);
   FUnknown = true;
@@ -1879,6 +1881,7 @@ TRights::TRights(unsigned short ANumber)
 {
   FAllowUndef = false;
   FSet = 0;
+  // DEBUG_PRINTF(L"FSet = %o", FSet);
   FUnset = 0;
   SetNumber(ANumber);
 }
@@ -1891,6 +1894,7 @@ TRights::TRights(const TRights & Source)
 void TRights::Assign(const TRights * Source)
 {
   FAllowUndef = Source->GetAllowUndef();
+  // DEBUG_PRINTF(L"FSet = %o, Source->FSet = %o", FSet, Source->FSet);
   FSet = Source->FSet;
   FUnset = Source->FUnset;
   FText = Source->FText;
@@ -2029,6 +2033,7 @@ void TRights::SetText(const std::wstring & value)
 {
   if (value != GetText())
   {
+    // DEBUG_PRINTF(L"value = %s, GetText = %s", value.c_str(), GetText().c_str());
     if ((value.size() != TextLen) ||
         (!GetAllowUndef() && (value.find_first_of(UndefSymbol) > 0)) ||
         (value.find_first_of(L" ") > 0))
@@ -2037,6 +2042,7 @@ void TRights::SetText(const std::wstring & value)
     }
 
     FSet = 0;
+    // DEBUG_PRINTF(L"FSet = %o", FSet);
     FUnset = 0;
     int Flag = 00001;
     int ExtendedFlag = 01000;
@@ -2087,7 +2093,7 @@ void TRights::SetText(const std::wstring & value)
 //---------------------------------------------------------------------------
 std::wstring TRights::GetText() const
 {
-  DEBUG_PRINTF(L"FText = %s", FText.c_str());
+  // DEBUG_PRINTF(L"FSet = %o, FText = %s", FSet, FText.c_str());
   if (!FText.empty())
   {
     return FText;
@@ -2104,6 +2110,7 @@ std::wstring TRights::GetText() const
     int i = TextLen - 1;
     while (i >= 0)
     {
+      // DEBUG_PRINTF(L"FSet = %o, Flag = %o", FSet, Flag);
       if (ExtendedPos &&
           ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
       {
@@ -2127,7 +2134,7 @@ std::wstring TRights::GetText() const
         Symbol = UndefSymbol;
       }
 
-      DEBUG_PRINTF(L"Symbol = %c", Symbol);
+      // DEBUG_PRINTF(L"Symbol = %c", Symbol);
       Result[i] = Symbol;
 
       Flag <<= 1;
@@ -2138,8 +2145,8 @@ std::wstring TRights::GetText() const
         ExtendedFlag <<= 1;
       }
     }
-    DEBUG_PRINTF(L"Result = %s", Result.c_str());
-    return Result;
+    // DEBUG_PRINTF(L"Result = %s", ::MB2W(Result.c_str()).c_str());
+    return ::MB2W(Result.c_str());
   }
 }
 //---------------------------------------------------------------------------
@@ -2209,6 +2216,7 @@ void TRights::SetNumber(unsigned short value)
     FUnset = static_cast<unsigned short>(rfAllSpecials & ~FSet);
     FText = L"";
   }
+  // DEBUG_PRINTF(L"FSet = %o, value = %o", FSet, value);
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
@@ -2384,6 +2392,7 @@ void TRights::AllUndef()
   if ((FSet != 0) || (FUnset != 0))
   {
     FSet = 0;
+    // DEBUG_PRINTF(L"FSet = %o", FSet);
     FUnset = 0;
     FText = L"";
   }

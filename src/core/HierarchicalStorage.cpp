@@ -285,12 +285,15 @@ std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring Name)
 //---------------------------------------------------------------------------
 void THierarchicalStorage::WriteString(const std::wstring Name, const std::wstring Value)
 {
+  // DEBUG_PRINTF(L"GetMungeStringValues = %d", GetMungeStringValues());
   if (GetMungeStringValues())
   {
+    // DEBUG_PRINTF(L"Name = %s, Value = %s, MungeStr(Value) = %s", Name.c_str(), Value.c_str(), MungeStr(Value).c_str());
     WriteStringRaw(Name, MungeStr(Value));
   }
   else
   {
+    // DEBUG_PRINTF(L"Value = %s", Value.c_str());
     WriteStringRaw(Name, Value);
   }
 }

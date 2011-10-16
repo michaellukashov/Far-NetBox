@@ -792,7 +792,8 @@ void TRegistry::WriteFloat(const std::wstring Name, double Value)
 }
 void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
 {
-    PutData(Name, (void *)Value.c_str(), Value.size() + 1, rdString);
+    // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
+    PutData(Name, (void *)Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
 {

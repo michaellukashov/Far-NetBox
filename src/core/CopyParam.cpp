@@ -557,6 +557,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->Writebool(L"PreserveTime", GetPreserveTime());
   Storage->Writebool(L"PreserveRights", GetPreserveRights());
   Storage->Writebool(L"IgnorePermErrors", GetIgnorePermErrors());
+  // DEBUG_PRINTF(L"GetRights().GetText = %s", GetRights().GetText().c_str());
   Storage->WriteString(L"Text", GetRights().GetText());
   Storage->Writeint(L"TransferMode", GetTransferMode());
   Storage->Writeint(L"ResumeSupport", GetResumeSupport());

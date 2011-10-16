@@ -2370,8 +2370,9 @@ bool ForceDirectories(const std::wstring Dir)
 
 bool DeleteFile(const std::wstring File)
 {
-    // DEBUG_PRINTF(L"File = %s", File.c_str());
+    DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
     ::DeleteFile(File.c_str());
+    DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
     return !::FileExists(File);
 }
 
