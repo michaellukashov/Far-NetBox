@@ -2588,8 +2588,10 @@ std::wstring StringOfChar(const wchar_t c, size_t len)
 
 char *StrNew(const char *str)
 {
-    ::Error(SNotImplemented, 30); 
-    return (char *)str;
+    const size_t sz = strlen(str) + 1;
+    char *Result = new char[sz];
+    strncpy(Result, str, sz);
+    return Result;
 }
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
