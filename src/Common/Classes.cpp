@@ -797,7 +797,7 @@ void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
 }
 void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
 {
-    PutData(Name, Value.c_str(), Value.size() + 1, rdString);
+    PutData(Name, Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::Writeint(const std::wstring Name, int Value)
 {
