@@ -2047,40 +2047,41 @@ void TRights::SetText(const std::wstring & value)
     int Flag = 00001;
     int ExtendedFlag = 01000;
     bool KeepText = false;
-    for (int i = TextLen; i >= 1; i--)
+    std::string val = ::W2MB(value.c_str());
+    for (int i = TextLen - 1; i >= 0; i--)
     {
-      if (value[i] == UnsetSymbol)
+      if (val[i] == UnsetSymbol)
       {
         FUnset |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (value[i] == UndefSymbol)
+      else if (val[i] == UndefSymbol)
       {
         // do nothing
       }
-      else if (value[i] == CombinedSymbols[i - 1])
+      else if (val[i] == CombinedSymbols[i - 1])
       {
         FSet |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (value[i] == ExtendedSymbols[i - 1])
+      else if (val[i] == ExtendedSymbols[i - 1])
       {
         FSet |= static_cast<unsigned short>(ExtendedFlag);
         FUnset |= static_cast<unsigned short>(Flag);
       }
       else
       {
-        if (value[i] != BasicSymbols[i - 1])
+        if (val[i] != BasicSymbols[i - 1])
         {
           KeepText = true;
         }
         FSet |= static_cast<unsigned short>(Flag);
-        if (i % 3 == 0)
+        if ((i + 1) % 3 == 0)
         {
           FUnset |= static_cast<unsigned short>(ExtendedFlag);
         }
       }
 
       Flag <<= 1;
-      if (i % 3 == 1)
+      if ((i + 1) % 3 == 1)
       {
         ExtendedFlag <<= 1;
       }
@@ -2139,7 +2140,7 @@ std::wstring TRights::GetText() const
 
       Flag <<= 1;
       i--;
-      ExtendedPos = ((i % 3) == 0);
+      ExtendedPos = (((i + 1) % 3) == 0);
       if (ExtendedPos)
       {
         ExtendedFlag <<= 1;
@@ -2205,7 +2206,7 @@ std::wstring TRights::GetOctal() const
   Result[2] = static_cast<wchar_t>('0' + ((N & 00070) >> 3));
   Result[3] = static_cast<wchar_t>('0' + ((N & 00007) >> 0));
 
-  return Result;
+  return ::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
 void TRights::SetNumber(unsigned short value)
