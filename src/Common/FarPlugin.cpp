@@ -2127,10 +2127,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
     InvalidateOpenPluginInfo();
     // FarControl(Another ? FCTL_UPDATEANOTHERPANEL : FCTL_UPDATEPANEL,
                // (void *)(!ClearSelection));
-    if (Another)
-        FPlugin->FarControl(FCTL_UPDATEPANEL, 0, (LONG_PTR)(!ClearSelection), PANEL_PASSIVE);
-    else
-        FPlugin->FarControl(FCTL_UPDATEPANEL, 0, (LONG_PTR)(!ClearSelection), PANEL_ACTIVE);
+    FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, NULL, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
     return (FInstances >= PrevInstances);
 }
 //---------------------------------------------------------------------------
