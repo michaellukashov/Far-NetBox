@@ -2353,8 +2353,8 @@ int TStoredSessionList::IndexOf(TSessionData * Data)
   return -1;
 }
 //---------------------------------------------------------------------------
-TSessionData * TStoredSessionList::NewSession(
-  std::wstring SessionName, TSessionData * Session)
+TSessionData *TStoredSessionList::NewSession(
+  std::wstring SessionName, TSessionData *Session)
 {
   TSessionData * DuplicateSession = (TSessionData*)FindByName(SessionName);
   if (!DuplicateSession)
@@ -2366,7 +2366,7 @@ TSessionData * TStoredSessionList::NewSession(
     DuplicateSession->SetModified(true);
     Add(DuplicateSession);
   }
-    else
+  else
   {
     DuplicateSession->Assign(Session);
     DuplicateSession->Name = SessionName;
