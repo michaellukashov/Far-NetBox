@@ -29,7 +29,7 @@ void TCopyParamType::Default()
   SetFileNameCase(ncNoChange);
   SetPreserveReadOnly(false);
   SetPreserveTime(true);
-  GetRights().SetNumber(TRights::rfDefault);
+  FRights.SetNumber(TRights::rfDefault);
   SetPreserveRights(false); // Was true until #106
   SetIgnorePermErrors(false);
   FAsciiFileMask.SetMasks(L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
@@ -534,7 +534,7 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
   SetPreserveTime(Storage->Readbool(L"PreserveTime", GetPreserveTime()));
   SetPreserveRights(Storage->Readbool(L"PreserveRights", GetPreserveRights()));
   SetIgnorePermErrors(Storage->Readbool(L"IgnorePermErrors", GetIgnorePermErrors()));
-  GetRights().SetText(Storage->ReadString(L"Text", GetRights().GetText()));
+  FRights.SetText(Storage->ReadString(L"Text", GetRights().GetText()));
   SetTransferMode((TTransferMode)Storage->Readint(L"TransferMode", GetTransferMode()));
   SetResumeSupport((TResumeSupport)Storage->Readint(L"ResumeSupport", GetResumeSupport()));
   SetResumeThreshold(Storage->ReadInt64(L"ResumeThreshold", GetResumeThreshold()));
