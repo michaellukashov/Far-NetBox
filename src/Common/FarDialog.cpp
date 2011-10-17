@@ -1780,7 +1780,7 @@ std::wstring TFarButton::GetData()
     {
         bool HasBrackets = (Result.size() >= 2) &&
             (Result[0] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
-            (Result[Result.size()] == ((FBrackets == brSpace) ? L' ' : L']'));
+            (Result[Result.size() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
         assert(HasBrackets);
         if (HasBrackets)
         {
@@ -2047,8 +2047,8 @@ void TFarEdit::SetAsInteger(int value)
 //---------------------------------------------------------------------------
 int TFarEdit::GetAsInteger()
 {
-    // return StrToIntDef(GetText(), 0);
-    return GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
+    return StrToIntDef(GetText(), 0);
+    // return GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

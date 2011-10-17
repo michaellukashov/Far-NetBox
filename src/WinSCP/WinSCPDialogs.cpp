@@ -5548,7 +5548,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         assert(false);
       }
 
-      if (!LabelStr.empty() && (LabelStr[LabelStr.size()] == ':'))
+      if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
       {
         LabelStr.resize(LabelStr.size() - 1);
       }
@@ -5564,7 +5564,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     {
       assert(dynamic_cast<TLabelList *>(AControl) != NULL);
       std::wstring LabelStr = GetMsg(Label);
-      if (!LabelStr.empty() && (LabelStr[LabelStr.size()] == ':'))
+      if (!LabelStr.empty() && (LabelStr[LabelStr.size() - 1] == ':'))
       {
         LabelStr.resize(LabelStr.size() - 1);
       }
@@ -6642,7 +6642,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring & List,
       }
       else
       {
-        List[List.size()] = '{';
+        List[List.size() - 1] = '{';
       }
     }
     if (Scroll > Len - Width)
@@ -6833,8 +6833,8 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     S = ChecklistItem->Remote.Directory;
     if (AnsiSameText(FRemoteDirectory, S.substr(0, FRemoteDirectory.size())))
     {
-      S[1] = '.';
-      S.erase(2, FRemoteDirectory.size() - 1);
+      S[0] = '.';
+      S.erase(1, FRemoteDirectory.size() - 1);
     }
     else
     {
@@ -7931,7 +7931,7 @@ void TQueueDialog::RefreshQueue()
         if (QueueListBox->GetItems()->GetString(Index) != Line)
         {
           Change = true;
-          QueueListBox->GetItems()->GetString(Index) = Line;
+          QueueListBox->GetItems()->PutString(Index, Line);
         }
       }
 

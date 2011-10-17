@@ -4869,7 +4869,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
       {
         Password = FMainTerminal->GetPassword();
       }
-      Results->GetString(0) = Password;
+      Results->PutString(0, Password);
       if (!Results->GetString(0).empty())
       {
         LogEvent(L"Using remembered password of the main session.");

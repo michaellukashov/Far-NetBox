@@ -35,7 +35,7 @@ inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
 {
-    // DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
+    DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
     std::wstring Msg = FMTLOAD(ErrorID, data);
     // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
     throw ExtException(Msg);
@@ -187,11 +187,12 @@ std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring CutToChar(std::wstring &Str, char Ch, bool Trim)
+std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 {
   int P = Str.find_first_of(Ch, 0);
   std::wstring Result;
-  if (P)
+  // DEBUG_PRINTF(L"P = %d", P);
+  if (P != std::wstring::npos)
   {
     Result = Str.substr(0, P);
     Str.erase(0, P + 1);
@@ -349,7 +350,7 @@ std::wstring GetShellFolderPath(int CSIdl)
 std::wstring StripPathQuotes(const std::wstring Path)
 {
   if ((Path.size() >= 2) &&
-      (Path[1] == L'\"') && (Path[Path.size()] == L'\"'))
+      (Path[0] == L'\"') && (Path[Path.size() - 1] == L'\"'))
   {
     return Path.substr(2, Path.size() - 2);
   }
@@ -1649,7 +1650,6 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
   std::wstring FileList(FileName);
   FileList.resize(FileList.size() + 2);
   FileList[FileList.size() - 1] = '\0';
-  FileList[FileList.size()] = '\0';
   Data.pFrom = FileList.c_str();
   Data.pTo = "";
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
@@ -2370,9 +2370,10 @@ bool ForceDirectories(const std::wstring Dir)
 
 bool DeleteFile(const std::wstring File)
 {
-    // FIXME
-    ::Error(SNotImplemented, 88);
-    return false;
+    DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
+    ::DeleteFile(File.c_str());
+    DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
+    return !::FileExists(File);
 }
 
 bool RemoveDir(const std::wstring Dir)
@@ -2587,8 +2588,10 @@ std::wstring StringOfChar(const wchar_t c, size_t len)
 
 char *StrNew(const char *str)
 {
-    ::Error(SNotImplemented, 30); 
-    return (char *)str;
+    const size_t sz = strlen(str) + 1;
+    char *Result = new char[sz];
+    strncpy(Result, str, sz);
+    return Result;
 }
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)

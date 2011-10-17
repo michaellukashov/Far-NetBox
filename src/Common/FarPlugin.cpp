@@ -800,8 +800,8 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         {
             MoreMessageLines = new TStringList();
             std::wstring MoreMessages = Params->MoreMessages->GetText();
-            while (MoreMessages[MoreMessages.size()] == L'\n' ||
-                    MoreMessages[MoreMessages.size()] == L'\r')
+            while (MoreMessages[MoreMessages.size() - 1] == L'\n' ||
+                    MoreMessages[MoreMessages.size() - 1] == L'\r')
             {
                 MoreMessages.resize(MoreMessages.size() - 1);
             }
@@ -1095,8 +1095,8 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         if (Params->MoreMessages != NULL)
         {
             FullMessage += std::wstring(L"\n\x01\n") + Params->MoreMessages->GetText();
-            while (FullMessage[FullMessage.size()] == L'\n' ||
-                    FullMessage[FullMessage.size()] == L'\r')
+            while (FullMessage[FullMessage.size() - 1] == L'\n' ||
+                    FullMessage[FullMessage.size() - 1] == L'\r')
             {
                 FullMessage.resize(FullMessage.size() - 1);
             }
@@ -1804,11 +1804,13 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin) :
     memset(&FOpenPluginInfo, 0, sizeof(FOpenPluginInfo));
     ClearOpenPluginInfo(FOpenPluginInfo);
     FInstances++;
+    // DEBUG_PRINTF(L"FInstances = %d", FInstances);
 };
 //---------------------------------------------------------------------------
 TCustomFarFileSystem::~TCustomFarFileSystem()
 {
     FInstances--;
+    // DEBUG_PRINTF(L"FInstances = %d", FInstances);
     ResetCachedInfo();
     ClearOpenPluginInfo(FOpenPluginInfo);
     delete FCriticalSection;
@@ -2127,10 +2129,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
     InvalidateOpenPluginInfo();
     // FarControl(Another ? FCTL_UPDATEANOTHERPANEL : FCTL_UPDATEPANEL,
                // (void *)(!ClearSelection));
-    if (Another)
-        FPlugin->FarControl(FCTL_UPDATEPANEL, 0, (LONG_PTR)(!ClearSelection), PANEL_PASSIVE);
-    else
-        FPlugin->FarControl(FCTL_UPDATEPANEL, 0, (LONG_PTR)(!ClearSelection), PANEL_ACTIVE);
+    FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, NULL, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
     return (FInstances >= PrevInstances);
 }
 //---------------------------------------------------------------------------
@@ -2225,6 +2224,7 @@ int TCustomFarFileSystem::PutFilesEx(TObjectList * /*PanelItems*/,
 TObjectList *TCustomFarFileSystem::CreatePanelItemList(
     struct PluginPanelItem *PanelItem, int ItemsNumber)
 {
+    // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
     TObjectList *PanelItems = new TObjectList();
     try
     {
@@ -2724,6 +2724,7 @@ void TFarPanelInfo::SetFocusedIndex(int value)
 {
     // for "another panel info", there's no owner
     assert(FOwner != NULL);
+    // DEBUG_PRINTF(L"GetFocusedIndex = %d, value = %d", GetFocusedIndex(), value);
     if (GetFocusedIndex() != value)
     {
         assert(value >= 0 && value < FPanelInfo->ItemsNumber);

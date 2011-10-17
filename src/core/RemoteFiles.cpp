@@ -1024,7 +1024,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
       GETCOL;
       assert(!Col.empty());
       // for devices etc.. there is additional column ending by comma, we ignore it
-      if (Col[Col.size()] == ',') GETCOL;
+      if (Col[Col.size() - 1] == ',') GETCOL;
       ASize = StrToInt64Def(Col, -1);
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
@@ -1827,6 +1827,7 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::Deserialize(const std::wstring Data)
 {
+  // DEBUG_PRINTF(L"Data = %s", Data.c_str());
   if (Data.empty())
   {
     SetText(L"");
@@ -1870,6 +1871,7 @@ TRights::TRights()
 {
   FAllowUndef = false;
   FSet = 0;
+  // DEBUG_PRINTF(L"FSet = %o", FSet);
   FUnset = 0;
   SetNumber(0);
   FUnknown = true;
@@ -1879,6 +1881,7 @@ TRights::TRights(unsigned short ANumber)
 {
   FAllowUndef = false;
   FSet = 0;
+  // DEBUG_PRINTF(L"FSet = %o", FSet);
   FUnset = 0;
   SetNumber(ANumber);
 }
@@ -1891,6 +1894,7 @@ TRights::TRights(const TRights & Source)
 void TRights::Assign(const TRights * Source)
 {
   FAllowUndef = Source->GetAllowUndef();
+  // DEBUG_PRINTF(L"FSet = %o, Source->FSet = %o", FSet, Source->FSet);
   FSet = Source->FSet;
   FUnset = Source->FUnset;
   FText = Source->FText;
@@ -2029,6 +2033,7 @@ void TRights::SetText(const std::wstring & value)
 {
   if (value != GetText())
   {
+    // DEBUG_PRINTF(L"value = %s, GetText = %s", value.c_str(), GetText().c_str());
     if ((value.size() != TextLen) ||
         (!GetAllowUndef() && (value.find_first_of(UndefSymbol) > 0)) ||
         (value.find_first_of(L" ") > 0))
@@ -2037,44 +2042,46 @@ void TRights::SetText(const std::wstring & value)
     }
 
     FSet = 0;
+    // DEBUG_PRINTF(L"FSet = %o", FSet);
     FUnset = 0;
     int Flag = 00001;
     int ExtendedFlag = 01000;
     bool KeepText = false;
-    for (int i = TextLen; i >= 1; i--)
+    std::string val = ::W2MB(value.c_str());
+    for (int i = TextLen - 1; i >= 0; i--)
     {
-      if (value[i] == UnsetSymbol)
+      if (val[i] == UnsetSymbol)
       {
         FUnset |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (value[i] == UndefSymbol)
+      else if (val[i] == UndefSymbol)
       {
         // do nothing
       }
-      else if (value[i] == CombinedSymbols[i - 1])
+      else if (val[i] == CombinedSymbols[i - 1])
       {
         FSet |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (value[i] == ExtendedSymbols[i - 1])
+      else if (val[i] == ExtendedSymbols[i - 1])
       {
         FSet |= static_cast<unsigned short>(ExtendedFlag);
         FUnset |= static_cast<unsigned short>(Flag);
       }
       else
       {
-        if (value[i] != BasicSymbols[i - 1])
+        if (val[i] != BasicSymbols[i - 1])
         {
           KeepText = true;
         }
         FSet |= static_cast<unsigned short>(Flag);
-        if (i % 3 == 0)
+        if ((i + 1) % 3 == 0)
         {
           FUnset |= static_cast<unsigned short>(ExtendedFlag);
         }
       }
 
       Flag <<= 1;
-      if (i % 3 == 1)
+      if ((i + 1) % 3 == 1)
       {
         ExtendedFlag <<= 1;
       }
@@ -2087,34 +2094,36 @@ void TRights::SetText(const std::wstring & value)
 //---------------------------------------------------------------------------
 std::wstring TRights::GetText() const
 {
+  // DEBUG_PRINTF(L"FSet = %o, FText = %s", FSet, FText.c_str());
   if (!FText.empty())
   {
     return FText;
   }
   else
   {
-    std::wstring Result;
+    std::string Result;
     Result.resize(TextLen);
 
     int Flag = 00001;
     int ExtendedFlag = 01000;
     bool ExtendedPos = true;
     char Symbol;
-    int i = TextLen;
-    while (i >= 1)
+    int i = TextLen - 1;
+    while (i >= 0)
     {
+      // DEBUG_PRINTF(L"FSet = %o, Flag = %o", FSet, Flag);
       if (ExtendedPos &&
           ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
       {
-        Symbol = CombinedSymbols[i - 1];
+        Symbol = CombinedSymbols[i];
       }
       else if ((FSet & Flag) != 0)
       {
-        Symbol = BasicSymbols[i - 1];
+        Symbol = BasicSymbols[i];
       }
       else if (ExtendedPos && ((FSet & ExtendedFlag) != 0))
       {
-        Symbol = ExtendedSymbols[i - 1];
+        Symbol = ExtendedSymbols[i];
       }
       else if ((!ExtendedPos && ((FUnset & Flag) == Flag)) ||
         (ExtendedPos && ((FUnset & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag))))
@@ -2126,34 +2135,36 @@ std::wstring TRights::GetText() const
         Symbol = UndefSymbol;
       }
 
+      // DEBUG_PRINTF(L"Symbol = %c", Symbol);
       Result[i] = Symbol;
 
       Flag <<= 1;
       i--;
-      ExtendedPos = ((i % 3) == 0);
+      ExtendedPos = (((i + 1) % 3) == 0);
       if (ExtendedPos)
       {
         ExtendedFlag <<= 1;
       }
     }
-    return Result;
+    // DEBUG_PRINTF(L"Result = %s", ::MB2W(Result.c_str()).c_str());
+    return ::MB2W(Result.c_str());
   }
 }
 //---------------------------------------------------------------------------
 void TRights::SetOctal(std::wstring value)
 {
-  std::wstring AValue(value);
+  std::string AValue(::W2MB(value.c_str()));
   if (AValue.size() == 3)
   {
-    AValue = L"0" + AValue;
+    AValue = "0" + AValue;
   }
 
-  if (GetOctal() != AValue)
+  if (GetOctal() != ::MB2W(AValue.c_str()))
   {
     bool Correct = (AValue.size() == 4);
     if (Correct)
     {
-      for (int i = 1; (i <= AValue.size()) && Correct; i++)
+      for (int i = 0; (i <= AValue.size()) && Correct; i++)
       {
         Correct = (AValue[i] >= '0') && (AValue[i] <= '7');
       }
@@ -2165,10 +2176,10 @@ void TRights::SetOctal(std::wstring value)
     }
 
     SetNumber(static_cast<unsigned short>(
-      ((AValue[1] - '0') << 9) +
-      ((AValue[2] - '0') << 6) +
-      ((AValue[3] - '0') << 3) +
-      ((AValue[4] - '0') << 0)));
+      ((AValue[0] - '0') << 9) +
+      ((AValue[1] - '0') << 6) +
+      ((AValue[2] - '0') << 3) +
+      ((AValue[3] - '0') << 0)));
   }
   FUnknown = false;
 }
@@ -2187,15 +2198,15 @@ unsigned long TRights::GetNumberDecadic() const
 //---------------------------------------------------------------------------
 std::wstring TRights::GetOctal() const
 {
-  std::wstring Result;
+  std::string Result;
   unsigned short N = GetNumberSet(); // used to be "Number"
   Result.resize(4);
-  Result[0] = static_cast<wchar_t>('0' + ((N & 07000) >> 9));
-  Result[1] = static_cast<wchar_t>('0' + ((N & 00700) >> 6));
-  Result[2] = static_cast<wchar_t>('0' + ((N & 00070) >> 3));
-  Result[3] = static_cast<wchar_t>('0' + ((N & 00007) >> 0));
+  Result[0] = static_cast<char>('0' + ((N & 07000) >> 9));
+  Result[1] = static_cast<char>('0' + ((N & 00700) >> 6));
+  Result[2] = static_cast<char>('0' + ((N & 00070) >> 3));
+  Result[3] = static_cast<char>('0' + ((N & 00007) >> 0));
 
-  return Result;
+  return ::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
 void TRights::SetNumber(unsigned short value)
@@ -2206,6 +2217,7 @@ void TRights::SetNumber(unsigned short value)
     FUnset = static_cast<unsigned short>(rfAllSpecials & ~FSet);
     FText = L"";
   }
+  // DEBUG_PRINTF(L"FSet = %o, value = %o", FSet, value);
   FUnknown = false;
 }
 //---------------------------------------------------------------------------
@@ -2381,6 +2393,7 @@ void TRights::AllUndef()
   if ((FSet != 0) || (FUnset != 0))
   {
     FSet = 0;
+    // DEBUG_PRINTF(L"FSet = %o", FSet);
     FUnset = 0;
     FText = L"";
   }

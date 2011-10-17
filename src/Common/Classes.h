@@ -49,7 +49,7 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
 
 #ifdef NETBOX_DEBUG
 // #define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: %s:%d %s: "format, ::MB2W(__FILE__).c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
-#define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: [%s:%d] %s: "format, ExtractFilename(::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
+#define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
 #else
 #define DEBUG_PRINTF(format, ...)
 #endif
@@ -1076,6 +1076,13 @@ enum TRegDataType
 {
     rdUnknown, rdString, rdExpandString, rdInteger, rdBinary
 };
+
+struct TRegDataInfo
+{
+    TRegDataType RegData;
+    DWORD DataSize;
+};
+
 //---------------------------------------------------------------------------
 
 class TRegistry
@@ -1095,7 +1102,7 @@ public:
     bool DeleteValue(const std::wstring &value);
     bool KeyExists(const std::wstring SubKey);
     bool ValueExists(const std::wstring Value);
-    // bool GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
+    bool GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
     TRegDataType GetDataType(const std::wstring &ValueName);
     int GetDataSize(const std::wstring Name);
     bool Readbool(const std::wstring Name);
@@ -1123,6 +1130,10 @@ private:
     HKEY GetKey(const std::wstring &Key);
     void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
     bool GetKeyInfo(TRegKeyInfo &Value);
+    int GetData(const std::wstring &Name, void *Buffer,
+      DWORD BufSize, TRegDataType &RegData);
+    void PutData(const std::wstring &Name, const void *Buffer,
+      int BufSize, TRegDataType RegData);
 private:
     HKEY FCurrentKey;
 	HKEY FRootKey;

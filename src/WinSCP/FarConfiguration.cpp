@@ -112,10 +112,11 @@ void TFarConfiguration::Saved()
 void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
   bool All)
 {
+  // DEBUG_PRINTF(L"begin");
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(std::wstring(::MB2W("##VAR"))), Get##VAR())
+  #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(::MB2W(#VAR)), Get##VAR())
   REGCONFIG(true);
   #undef KEY
 
@@ -125,6 +126,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage,
 
     Storage->CloseSubKey();
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
@@ -132,7 +134,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(std::wstring(::MB2W("##VAR"))), Get##VAR()))
+  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(::MB2W(#VAR)), Get##VAR()))
   REGCONFIG(false);
   #undef KEY
 

@@ -358,7 +358,7 @@ void TCopyParamList::Change(int Index, const std::wstring Name,
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
-    FNames->GetString(Index) = Name;
+    FNames->PutString(Index, Name);
     delete GetCopyParam(Index);
     FCopyParams->SetItem(Index, (reinterpret_cast<TObject *>(CopyParam)));
     delete GetRule(Index);
@@ -670,7 +670,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   TConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(::MB2W("##VAR")), Get##VAR())
+  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(::MB2W(#VAR)), Get##VAR())
   REGCONFIG(true);
   #undef KEY
 
@@ -709,7 +709,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   TConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(::MB2W("##VAR")), Get##VAR()))
+  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(::MB2W(#VAR)), Get##VAR()))
   // #pragma warn -eas
   REGCONFIG(false);
   // #pragma warn +eas
@@ -1009,7 +1009,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
           if (Ext >= 0)
           {
-            Exts->GetObject(Ext) = reinterpret_cast<TObject*>(Locale);
+            Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
           }
           else
           {

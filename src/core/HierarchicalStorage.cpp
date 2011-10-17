@@ -20,18 +20,21 @@
 //---------------------------------------------------------------------------
 std::wstring MungeStr(const std::wstring Str)
 {
-  std::wstring Result;
-  Result.resize(Str.size() * 3 + 1);
-  putty_mungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)::W2MB(Result.c_str()).c_str());
+  std::string Result2;
+  Result2.resize(Str.size() * 3 + 1);
+  putty_mungestr(::W2MB(Str.c_str()).c_str(), (char *)Result2.c_str());
+  std::wstring Result = ::MB2W(Result2.c_str());
   PackStr(Result);
+  // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring UnMungeStr(const std::wstring Str)
 {
-  std::wstring Result;
-  Result.resize(Str.size() * 3 + 1);
-  putty_unmungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)::W2MB(Result.c_str()).c_str(), Result.size());
+  std::string Result2;
+  Result2.resize(Str.size() * 3 + 1);
+  putty_unmungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)Result2.c_str(), Result2.size());
+  std::wstring Result = ::MB2W(Result2.c_str());
   PackStr(Result);
   return Result;
 }
@@ -107,28 +110,31 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
 std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
 {
   std::wstring Result;
+  // DEBUG_PRINTF(L"Key = %s, Path = %d", Key.c_str(), Path);
   if (Path)
   {
-    assert(Key.empty() || (Key[Key.size()] != '\\'));
+    assert(Key.empty() || (Key[Key.size() - 1] != '\\'));
     while (!Key.empty())
     {
       if (!Result.empty())
       {
         Result += '\\';
       }
-      Result += MungeStr(CutToChar(Key, '\\', false));
+      Result += MungeStr(CutToChar(Key, L'\\', false));
+      // DEBUG_PRINTF(L"Key = %s, Result = %s", Key.c_str(), Result.c_str());
     }
   }
   else
   {
     Result = MungeStr(Key);
   }
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
 bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreate*/, bool Path)
 {
-  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path)));
   return true;
 }
@@ -279,12 +285,15 @@ std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring Name)
 //---------------------------------------------------------------------------
 void THierarchicalStorage::WriteString(const std::wstring Name, const std::wstring Value)
 {
+  // DEBUG_PRINTF(L"GetMungeStringValues = %d", GetMungeStringValues());
   if (GetMungeStringValues())
   {
+    // DEBUG_PRINTF(L"Name = %s, Value = %s, MungeStr(Value) = %s", Name.c_str(), Value.c_str(), MungeStr(Value).c_str());
     WriteStringRaw(Name, MungeStr(Value));
   }
   else
   {
+    // DEBUG_PRINTF(L"Value = %s", Value.c_str());
     WriteStringRaw(Name, Value);
   }
 }
@@ -321,14 +330,16 @@ std::wstring THierarchicalStorage::ExcludeTrailingBackslash(const std::wstring &
   }
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const std::wstring AStorage):
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
+TRegistryStorage::TRegistryStorage(const std::wstring AStorage) :
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
 {
   Init();
 };
 //---------------------------------------------------------------------------
-TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey):
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
+TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey) :
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(NULL)
 {
   Init();
   FRegistry->SetRootKey(ARootKey);
@@ -414,13 +425,13 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
-  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   bool Result = CanCreate;
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
-  std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey () + MungeSubKey(SubKey, Path));
+  std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + MungeSubKey(SubKey, Path));
   Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
-  DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
+  // DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -447,7 +458,7 @@ void TRegistryStorage::GetSubKeyNames(TStrings* Strings)
   FRegistry->GetKeyNames(Strings);
   for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
-    Strings->GetString(Index) = UnMungeStr(Strings->GetString(Index));
+    Strings->PutString(Index, UnMungeStr(Strings->GetString(Index)));
   }
 }
 //---------------------------------------------------------------------------
@@ -567,7 +578,9 @@ void TRegistryStorage::WriteStringRaw(const std::wstring Name, const std::wstrin
 //---------------------------------------------------------------------------
 void TRegistryStorage::Writeint(const std::wstring Name, int Value)
 {
+  // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
   WRITE_REGISTRY(Writeint);
+  // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::WriteInt64(const std::wstring Name, __int64 Value)
@@ -682,7 +695,7 @@ std::wstring TIniFileStorage::GetCurrentSection()
 //---------------------------------------------------------------------------
 bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
-  DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   bool Result = CanCreate;
 
   if (!Result)
@@ -768,7 +781,7 @@ void TIniFileStorage::GetValueNames(TStrings* Strings)
   FIniFile->ReadSection(GetCurrentSection(), Strings);
   for (int Index = 0; Index < Strings->GetCount(); Index++)
   {
-    Strings->GetString(Index) = UnMungeIniName(Strings->GetString(Index));
+    Strings->PutString(Index, UnMungeIniName(Strings->GetString(Index)));
   }
 }
 //---------------------------------------------------------------------------

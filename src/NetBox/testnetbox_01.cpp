@@ -445,4 +445,20 @@ BOOST_FIXTURE_TEST_CASE(test17, base_fixture_t)
     BOOST_CHECK("123" == ::W2MB(List1.GetString(1).c_str()));
 }
 
+BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
+{
+    {
+        std::wstring Key = L"Interface";
+        std::wstring Res = ::CutToChar(Key, L'\\', false);
+        BOOST_CHECK(Key.empty());
+        BOOST_CHECK("Interface" == ::W2MB(Res.c_str()));
+    }
+    {
+        std::wstring Key = L"Interface\\SubKey";
+        std::wstring Res = ::CutToChar(Key, L'\\', false);
+        BOOST_CHECK("SubKey" == ::W2MB(Key.c_str()));
+        BOOST_CHECK("Interface" == ::W2MB(Res.c_str()));
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

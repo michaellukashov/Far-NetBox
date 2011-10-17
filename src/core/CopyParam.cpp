@@ -29,7 +29,7 @@ void TCopyParamType::Default()
   SetFileNameCase(ncNoChange);
   SetPreserveReadOnly(false);
   SetPreserveTime(true);
-  GetRights().SetNumber(TRights::rfDefault);
+  FRights.SetNumber(TRights::rfDefault);
   SetPreserveRights(false); // Was true until #106
   SetIgnorePermErrors(false);
   FAsciiFileMask.SetMasks(L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
@@ -294,8 +294,8 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
     if (!FileName.empty() &&
-        ((FileName[FileName.size()] == ' ') ||
-         (FileName[FileName.size()] == '.')))
+        ((FileName[FileName.size() - 1] == ' ') ||
+         (FileName[FileName.size() - 1] == '.')))
     {
       ReplaceChar(FileName, (wchar_t *)FileName.c_str() + FileName.size() - 1);
     }
@@ -534,7 +534,7 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
   SetPreserveTime(Storage->Readbool(L"PreserveTime", GetPreserveTime()));
   SetPreserveRights(Storage->Readbool(L"PreserveRights", GetPreserveRights()));
   SetIgnorePermErrors(Storage->Readbool(L"IgnorePermErrors", GetIgnorePermErrors()));
-  GetRights().SetText(Storage->ReadString(L"Text", GetRights().GetText()));
+  FRights.SetText(Storage->ReadString(L"Text", GetRights().GetText()));
   SetTransferMode((TTransferMode)Storage->Readint(L"TransferMode", GetTransferMode()));
   SetResumeSupport((TResumeSupport)Storage->Readint(L"ResumeSupport", GetResumeSupport()));
   SetResumeThreshold(Storage->ReadInt64(L"ResumeThreshold", GetResumeThreshold()));
@@ -557,6 +557,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->Writebool(L"PreserveTime", GetPreserveTime());
   Storage->Writebool(L"PreserveRights", GetPreserveRights());
   Storage->Writebool(L"IgnorePermErrors", GetIgnorePermErrors());
+  // DEBUG_PRINTF(L"GetRights().GetText = %s", GetRights().GetText().c_str());
   Storage->WriteString(L"Text", GetRights().GetText());
   Storage->Writeint(L"TransferMode", GetTransferMode());
   Storage->Writeint(L"ResumeSupport", GetResumeSupport());

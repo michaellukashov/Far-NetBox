@@ -323,7 +323,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
 //---------------------------------------------------------------------------
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
-  DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
+  // DEBUG_PRINTF(L"FTerminal = %x", FTerminal);
   if (FTerminal)
   {
     SaveSession();
@@ -347,6 +347,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
     GUIConfiguration->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
@@ -502,7 +503,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
           delete ChildPaths;
         } BOOST_SCOPE_EXIT_END
       ChildPaths->SetCaseSensitive(false);
-
+      // DEBUG_PRINTF(L"StoredSessions->GetCount = %d", StoredSessions->GetCount());
       for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
         Data = StoredSessions->GetSession(Index);
@@ -606,6 +607,7 @@ void TWinSCPFileSystem::FocusSession(TSessionData * Data)
 {
   // DEBUG_PRINTF(L"begin");
   TFarPanelItem * SessionItem = GetPanelInfo()->FindUserData(Data);
+  // DEBUG_PRINTF(L"SessionItem = %x", SessionItem);
   if (SessionItem != NULL)
   {
     GetPanelInfo()->SetFocusedItem(SessionItem);
@@ -2173,8 +2175,8 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     if (SessionList())
     {
       FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
-      assert(FSessionsFolder[1] == L'/');
-      FSessionsFolder.erase(1, 1);
+      assert(FSessionsFolder[0] == L'/');
+      FSessionsFolder.erase(0, 1);
       FNewSessionsFolder = L"";
     }
     else
@@ -2354,6 +2356,7 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 {
   Data->Remove();
   StoredSessions->Remove(Data);
+  DEBUG_PRINTF(L"StoredSessions->Count = %d", StoredSessions->GetCount());
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
@@ -3034,9 +3037,8 @@ void TWinSCPFileSystem::LogAuthentication(
       {
         AuthenticationLogLines->Delete(0);
       }
-      AuthenticationLogLines->GetString(0) =
-        AuthenticationLogLines->GetString(0) +
-          ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).size());
+      AuthenticationLogLines->PutString(0, AuthenticationLogLines->GetString(0) +
+          ::StringOfChar(' ', Width - AuthenticationLogLines->GetString(0).size()));
       Message = AnsiReplaceStr(AuthenticationLogLines->GetText(), L"\r", L"");
       Count = AuthenticationLogLines->GetCount();
     }
@@ -3212,7 +3214,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
     Result = FPlugin->InputBox(Name, StripHotKey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
     if (Result)
     {
-      Results->GetString(0) = AResult;
+      Results->PutString(0, AResult);
     }
   }
   else

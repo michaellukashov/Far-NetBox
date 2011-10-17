@@ -151,7 +151,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(std::wstring(::MB2W("##NAME"))), Get##VAR())
+  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(::MB2W(#NAME)), Get##VAR())
   REGCONFIG(true);
   #undef KEYEX
 }
@@ -218,7 +218,7 @@ void TConfiguration::Export(const std::wstring FileName)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(std::wstring(::MB2W("##NAME"))), Get##VAR()))
+  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(::MB2W(#NAME)), Get##VAR()))
   // #pragma warn -eas
   REGCONFIG(false);
   // #pragma warn +eas

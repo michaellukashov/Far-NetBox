@@ -416,14 +416,19 @@ unsigned long TStream::Write(void *Buffer, unsigned long int Count)
 }
 
 //---------------------------------------------------------------------------
+void ReadError(const std::wstring &Name)
+{
+  throw std::exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
+}
+
 bool IsRelative(const std::wstring &Value)
 {
   return  !(!Value.empty() && (Value[0] == L'\\'));
 }
 
-TRegDataType DataTypeToRegData(int Value)
+TRegDataType DataTypeToRegData(DWORD Value)
 {
-    TRegDataType Result;
+  TRegDataType Result;
   if (Value == REG_SZ)
     Result = rdString;
   else if (Value == REG_EXPAND_SZ)
@@ -437,10 +442,40 @@ TRegDataType DataTypeToRegData(int Value)
   return Result;
 }
 
+DWORD RegDataToDataType(TRegDataType Value)
+{
+  DWORD Result = 0;
+  switch (Value)
+  {
+    case rdString:
+        Result = REG_SZ;
+        break;
+    case rdExpandString:
+        Result = REG_EXPAND_SZ;
+        break;
+    case rdInteger:
+        Result = REG_DWORD;
+        break;
+    case rdBinary:
+        Result = REG_BINARY;
+        break;
+    default:
+        Result = REG_NONE;
+        break;
+  }
+  return Result;
+}
+
+//---------------------------------------------------------------------------
+class ERegistryException : public std::exception
+{
+};
+
 //---------------------------------------------------------------------------
 TRegistry::TRegistry() :
     FCurrentKey(0),
-    FCloseRootKey(true),
+    FRootKey(0),
+    FCloseRootKey(false),
     FAccess(KEY_ALL_ACCESS)
 {
     SetRootKey(HKEY_CURRENT_USER);
@@ -470,11 +505,40 @@ void TRegistry::SetRootKey(HKEY ARootKey)
     CloseKey();
   }
 }
-void TRegistry::GetValueNames(TStrings * Names)
-{}
+void TRegistry::GetValueNames(TStrings * Strings)
+{
+  Strings->Clear();
+  TRegKeyInfo Info;
+  std::wstring S;
+  if (GetKeyInfo(Info))
+  {
+    S.resize(Info.MaxValueLen + 1);
+    for (int I = 0; I < Info.NumSubKeys; I++)
+    {
+      DWORD Len = Info.MaxValueLen + 1;
+      RegEnumValue(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
+      Strings->Add(S.c_str());
+    }
+  }
+}
 
-void TRegistry::GetKeyNames(TStrings * Names)
-{}
+void TRegistry::GetKeyNames(TStrings * Strings)
+{
+  Strings->Clear();
+  TRegKeyInfo Info;
+  std::wstring S;
+  if (GetKeyInfo(Info))
+  {
+    S.resize(Info.MaxSubKeyLen + 1);
+    for (int I = 0; I < Info.NumSubKeys; I++)
+    {
+      DWORD Len = Info.MaxSubKeyLen + 1;
+      RegEnumKeyEx(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
+      Strings->Add(S.c_str());
+    }
+  }
+}
+
 HKEY TRegistry::GetCurrentKey() const { return FCurrentKey; }
 HKEY TRegistry::GetRootKey() const { return FRootKey; }
 
@@ -491,7 +555,7 @@ void TRegistry::CloseKey()
 
 bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
 {
-  DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
+  // DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
   bool Result = false;
   std::wstring S = Key;
   bool Relative = ::IsRelative(S);
@@ -500,14 +564,14 @@ bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
   HKEY TempKey = 0;
   if (!CanCreate || S.empty())
   {
-    DEBUG_PRINTF(L"RegOpenKeyEx");
+    // DEBUG_PRINTF(L"RegOpenKeyEx");
     Result = RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
       FAccess, &TempKey) == ERROR_SUCCESS;
   }
   else
   {
     // int Disposition = 0;
-    DEBUG_PRINTF(L"RegCreateKeyEx: Relative = %d", Relative);
+    // DEBUG_PRINTF(L"RegCreateKeyEx: Relative = %d", Relative);
     Result = RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, NULL,
       REG_OPTION_NON_VOLATILE, FAccess, NULL, &TempKey, NULL) == ERROR_SUCCESS;
   }
@@ -517,7 +581,7 @@ bool TRegistry::OpenKey(const std::wstring &Key, bool CanCreate)
         S = FCurrentPath + L'\\' + S;
     ChangeKey(TempKey, S);
   }
-  DEBUG_PRINTF(L"Result = %d", Result);
+  // DEBUG_PRINTF(L"CurrentKey = %d, Result = %d", GetCurrentKey(), Result);
   return Result;
 }
 
@@ -565,6 +629,7 @@ bool TRegistry::DeleteValue(const std::wstring &value)
 bool TRegistry::KeyExists(const std::wstring Key)
 {
   bool Result = false;
+  // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
   {
     BOOST_SCOPE_EXIT( (&FAccess) (&OldAccess) )
@@ -577,101 +642,210 @@ bool TRegistry::KeyExists(const std::wstring Key)
     if (TempKey != 0) RegCloseKey(TempKey);
     Result = TempKey != 0;
   }
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
 bool TRegistry::ValueExists(const std::wstring Name)
 {
-  // TRegDataInfo Info = {0};
-  bool Result = false; // GetDataInfo(Name, Info);
+  TRegDataInfo Info;
+  bool Result = GetDataInfo(Name, Info);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
-/*
-bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
+
+bool TRegistry::GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value)
 {
-  int DataType;
-  memset(&Value, 0, sizeof(value));
-  bool Result = RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
-    &Value.DataSize) == ERROR_SUCCESS;
+  DWORD DataType;
+  memset(&Value, 0, sizeof(Value));
+  bool Result = (RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), NULL, &DataType, NULL,
+    &Value.DataSize) == ERROR_SUCCESS);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   Value.RegData = DataTypeToRegData(DataType);
-}
-*/
-TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
-{
+  return Result;
 }
 
-int TRegistry::GetDataSize(const std::wstring Name)
+TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
+{
+  TRegDataType Result;
+  TRegDataInfo Info;
+  if (GetDataInfo(ValueName, Info))
+    Result = Info.RegData;
+  else
+    Result = rdUnknown;
+  return Result;
+}
+
+int TRegistry::GetDataSize(const std::wstring ValueName)
 {
   int Result = 0;
+  TRegDataInfo Info;
+  if (GetDataInfo(ValueName, Info))
+  {
+    Result = Info.DataSize;
+  }
+  else
+  {
+    Result = -1;
+  }
   return Result;
 }
 
 bool TRegistry::Readbool(const std::wstring Name)
 {
-  bool Result = false;
+  bool Result = Readint(Name);
   return Result;
 }
 
 TDateTime TRegistry::ReadDateTime(const std::wstring Name)
 {
-  TDateTime Result = TDateTime();
+  TDateTime Result = TDateTime(ReadFloat(Name));
   return Result;
 }
 
 double TRegistry::ReadFloat(const std::wstring Name)
 {
   double Result = 0.0;
+  TRegDataType RegData;
+  int Len = GetData(Name, &Result, sizeof(double), RegData);
+  if ((RegData != rdBinary) || (Len != sizeof(double)))
+  {
+    ::ReadError(Name);
+  }
   return Result;
 }
 
 int TRegistry::Readint(const std::wstring Name)
 {
-  int Result = 0;
+  DWORD Result = 0;
+  TRegDataType RegData = rdUnknown;
+  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
+  GetData(Name, &Result, sizeof(Result), RegData);
+  // DEBUG_PRINTF(L"Result = %d, RegData = %d, rdInteger = %d", Result, RegData, rdInteger);
+  if (RegData != rdInteger)
+  {
+    ::ReadError(Name);
+  }
   return Result;
 }
 
 __int64 TRegistry::ReadInt64(const std::wstring Name)
 {
   __int64 Result = 0;
+  ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
 
 std::wstring TRegistry::ReadString(const std::wstring Name)
 {
   std::wstring Result = L"";
+  TRegDataType RegData = rdUnknown;
+  int Len = GetDataSize(Name);
+  if (Len > 0)
+  {
+    Result.resize(Len);
+    GetData(Name, (void *)Result.c_str(), Len, RegData);
+    if ((RegData == rdString) || (RegData = rdExpandString))
+    {
+      PackStr(Result);
+    }
+    else ReadError(Name);
+  }
+  else
+  {
+    Result = L"";
+  }
   return Result;
 }
 
 std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
 {
-  std::wstring Result = L"";
+  std::wstring Result = ReadString(Name);
   return Result;
 }
 
 int TRegistry::ReadBinaryData(const std::wstring Name,
-  void * Buffer, int Size)
+  void *Buffer, int BufSize)
 {
   int Result = 0;
+  TRegDataInfo Info;
+  if (GetDataInfo(Name, Info))
+  {
+    Result = Info.DataSize;
+    TRegDataType RegData = Info.RegData;
+    if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
+        GetData(Name, Buffer, Result, RegData);
+    else
+        ReadError(Name);
+  }
+  else
+    Result = 0;
   return Result;
 }
 
+int TRegistry::GetData(const std::wstring &Name, void *Buffer,
+  DWORD BufSize, TRegDataType &RegData)
+{
+  DWORD DataType = REG_NONE;
+  // DEBUG_PRINTF(L"GetCurrentKey = %d", GetCurrentKey());
+  if (RegQueryValueEx(GetCurrentKey(), Name.c_str(), NULL, &DataType,
+    reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
+  {
+    throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+  }
+  int Result = BufSize;
+  RegData = DataTypeToRegData(DataType);
+  return Result;
+}
+
+void TRegistry::PutData(const std::wstring &Name, const void *Buffer,
+  int BufSize, TRegDataType RegData)
+{
+  int DataType = ::RegDataToDataType(RegData);
+  // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
+  if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType, 
+    reinterpret_cast<const BYTE *>(Buffer), BufSize) != ERROR_SUCCESS)
+    throw std::exception("RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+}
+
 void TRegistry::Writebool(const std::wstring Name, bool Value)
-{}
+{
+    Writeint(Name, Value);
+}
 void TRegistry::WriteDateTime(const std::wstring Name, TDateTime Value)
-{}
+{
+    double Val = Value.operator double();
+    PutData(Name, &Val, sizeof(double), rdBinary);
+}
 void TRegistry::WriteFloat(const std::wstring Name, double Value)
-{}
+{
+    PutData(Name, &Value, sizeof(double), rdBinary);
+}
 void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
-{}
+{
+    // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
+    PutData(Name, (void *)Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
+}
 void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
-{}
+{
+    PutData(Name, Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
+}
 void TRegistry::Writeint(const std::wstring Name, int Value)
-{}
+{
+    DWORD Val = Value;
+    PutData(Name, &Val, sizeof(DWORD), rdInteger);
+    // WriteInt64(Name, Value);
+}
+
 void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
-{}
+{
+    WriteBinaryData(Name, &Value, sizeof(Value));
+}
 void TRegistry::WriteBinaryData(const std::wstring Name,
-  const void * Buffer, int Size)
-{}
+  const void *Buffer, int BufSize)
+{
+    PutData(Name, Buffer, BufSize, rdBinary);
+}
 
 void TRegistry::ChangeKey(HKEY Value, const std::wstring &Path)
 {
