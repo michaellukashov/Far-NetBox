@@ -2036,19 +2036,22 @@ void TFarEdit::SetHistoryMask(int Index, std::wstring value)
 //---------------------------------------------------------------------------
 void TFarEdit::SetAsInteger(int value)
 {
-    int Int = GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
+    // DEBUG_PRINTF(L"GetText = %s, value = %d", GetText().c_str(), value);
+    // int Int = GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
+    int Int = ::StrToIntDef(::Trim(GetText()), 0);
     if (!Int || (GetAsInteger() != value))
     {
-        wchar_t Buffer[32];
-        SetText(GetDialog()->GetFarPlugin()->GetFarStandardFunctions().itoa(value, Buffer, 10));
+        // wchar_t Buffer[32];
+        // SetText(GetDialog()->GetFarPlugin()->GetFarStandardFunctions().itoa(value, Buffer, 10));
+        SetText(::IntToStr(value));
         DialogChange();
     }
 }
 //---------------------------------------------------------------------------
 int TFarEdit::GetAsInteger()
 {
-    // DEBUG_PRINTF(L"GetText = %s", GetText().c_str());
-    return StrToIntDef(GetText(), 0);
+    // DEBUG_PRINTF(L"GetText = %s, StrToIntDef = %d", GetText().c_str(), ::StrToIntDef(GetText(), 0));
+    return ::StrToIntDef(::Trim(GetText()), 0);
     // return GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
 }
 //---------------------------------------------------------------------------
