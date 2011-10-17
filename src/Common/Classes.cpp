@@ -620,9 +620,9 @@ bool TRegistry::DeleteKey(const std::wstring &Key)
   return Result;
 }
 
-bool TRegistry::DeleteValue(const std::wstring &value)
+bool TRegistry::DeleteValue(const std::wstring &Name)
 {
-  bool Result = false;
+  bool Result = RegDeleteValue(GetCurrentKey(), Name.c_str()) == ERROR_SUCCESS;
   return Result;
 }
 
