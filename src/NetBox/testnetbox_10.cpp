@@ -218,12 +218,14 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
         std::wstring Str1 = L" part 1 | part 2 ";
         std::wstring str1 = ::CutToChar(Str1, '|', false);
         BOOST_TEST_MESSAGE("str1 = \"" << ::W2MB(str1.c_str()) << "\"");
+        BOOST_TEST_MESSAGE("Str1 = \"" << ::W2MB(Str1.c_str()) << "\"");
         // BOOST_TEST_MESSAGE("Str1 = \"" << ::W2MB(Str1.c_str()) << "\"");
         // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
         BOOST_CHECK_EQUAL(::W2MB(str1.c_str()), std::string(" part 1 "));
 
         std::wstring str2 = ::CutToChar(Str1, '|', true);
         BOOST_TEST_MESSAGE("str2 = \"" << ::W2MB(str2.c_str()) << "\"");
+        BOOST_TEST_MESSAGE("Str1 = \"" << ::W2MB(Str1.c_str()) << "\"");
         BOOST_CHECK_EQUAL(::W2MB(str2.c_str()), std::string("part 2"));
     }
     {
