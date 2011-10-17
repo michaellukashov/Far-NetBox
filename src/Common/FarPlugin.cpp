@@ -2041,7 +2041,6 @@ int TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem *PanelItem,
         } BOOST_SCOPE_EXIT_END
         Result = DeleteFilesEx(PanelItems, OpMode);
     }
-
     return Result;
 }
 //---------------------------------------------------------------------------
@@ -2617,13 +2616,13 @@ int TFarPanelInfo::GetSelectedCount()
     if (Count == 1)
     {
         size_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, NULL);
-        DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
+        // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
         PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
         memset(ppi, 0, size);
         FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, (LONG_PTR)ppi);
         if ((ppi->Flags & PPIF_SELECTED) == 0)
         {
-            DEBUG_PRINTF(L"ppi->Flags = %x", ppi->Flags);
+            // DEBUG_PRINTF(L"ppi->Flags = %x", ppi->Flags);
             Count = 0;
         }
         free(ppi);

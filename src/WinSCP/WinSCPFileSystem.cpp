@@ -1394,7 +1394,6 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 {
-  DEBUG_PRINTF(L"1");
   return
     (GetPanelInfo()->GetSelectedCount() > 0) ||
     (GetAnotherPanelInfo()->GetSelectedCount() > 0);
@@ -2356,7 +2355,6 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 {
   Data->Remove();
   StoredSessions->Remove(Data);
-  DEBUG_PRINTF(L"StoredSessions->Count = %d", StoredSessions->GetCount());
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
@@ -2406,7 +2404,6 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
 {
-  DEBUG_PRINTF(L"begin");
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osRemote);
@@ -2807,7 +2804,6 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
 TStrings * TWinSCPFileSystem::CreateFocusedFileList(
   TOperationSide Side, TFarPanelInfo * PanelInfo)
 {
-  DEBUG_PRINTF(L"begin");
   if (PanelInfo == NULL)
   {
     PanelInfo = this->GetPanelInfo();
@@ -2830,7 +2826,6 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(
     }
     Result->AddObject(FileName, (TObject *)PanelItem->GetUserData());
   }
-  DEBUG_PRINTF(L"end");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2921,10 +2916,10 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::SaveSession()
 {
-  DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
+  // DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
   if (!FTerminal->GetSessionData()->Name.empty())
   {
-    DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
+    // DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
     FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
     TSessionData * Data;
