@@ -1735,20 +1735,21 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   std::wstring StoredKeys;
   if (!Result)
   {
-    StoredKeys.resize(10240);
+    std::string StoredKeys2;
+    StoredKeys2.resize(10240);
 #ifdef MPEXT
     if (retrieve_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
-          (char *)::W2MB(StoredKeys.c_str()).c_str(), StoredKeys.size()) == 0)
+          (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #else
     if (verify_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
-          (char *)::W2MB(StoredKeys.c_str()).c_str(), StoredKeys.size()) == 0)
+          (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #endif
     {
-      PackStr(StoredKeys);
+      StoredKeys = ::MB2W(StoredKeys2.c_str()); // PackStr(StoredKeys);
       std::wstring Buf = StoredKeys;
       while (!Result && !Buf.empty())
       {
-        std::wstring StoredKey = CutToChar(Buf, Delimiter, false);
+        std::wstring StoredKey = ::CutToChar(Buf, Delimiter, false);
         if (StoredKey == KeyStr)
         {
           Result = true;
