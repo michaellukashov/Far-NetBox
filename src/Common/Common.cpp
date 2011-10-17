@@ -202,10 +202,11 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
     Result = Str;
     Str = L"";
   }
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   if (Trim)
   {
     Str = TrimLeft(Str);
-    Result = TrimRight(Str);
+    Result = ::Trim(Result);
   }
   // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
