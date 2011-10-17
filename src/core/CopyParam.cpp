@@ -331,7 +331,7 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
         std::wstring Hex = FileName.substr(Index + 1, 2);
         char Char = HexToChar(Hex);
         if ((Char != '\0') &&
-            ((FTokenizibleChars.find_first_of(Char) > 0) ||
+            ((FTokenizibleChars.find(Char) != std::wstring::npos) ||
              (((Char == ' ') || (Char == '.')) && (Index == FileName.size() - 2))))
         {
           FileName[Index] = Char;

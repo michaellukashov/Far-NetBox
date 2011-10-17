@@ -1035,7 +1035,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
         HostInfo = ConnectInfo;
       }
 
-      if ((HostInfo.size() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.find_first_of(L"]")) > 0))
+      if ((HostInfo.size() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.find(L"]")) != std::wstring::npos))
       {
         SetHostName(HostInfo.substr(1, P - 2));
         HostInfo.erase(1, P);

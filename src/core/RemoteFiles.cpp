@@ -185,13 +185,13 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
     int P;
-    while ((P = Result.find_first_of(L"/../")) > 0)
+    while ((P = Result.find(L"/../")) != std::wstring::npos)
     {
       int P2 = ::LastDelimiter(Result.substr(0, P-1), L"/");
       assert(P2 > 0);
       Result.erase(P2, P - P2 + 3);
     }
-    while ((P = Result.find_first_of(L"/./")) > 0)
+    while ((P = Result.find_first_of(L"/./")) != std::wstring::npos)
     {
       Result.erase(P, 2);
     }
@@ -319,7 +319,7 @@ std::wstring MakeFileList(TStrings * FileList)
 
     std::wstring FileName = FileList->GetString(Index);
     // currently this is used for local file only, so no delimiting is done
-    if (FileName.find_first_of(L" ") > 0)
+    if (FileName.find(L" ") != std::wstring::npos)
     {
       Result += L"\"" + FileName + L"\"";
     }
@@ -1132,7 +1132,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
-          if ((P = (unsigned int)Col.find_first_of(L':')) > 0)
+          if ((P = (unsigned int)Col.find(L':')) != std::wstring::npos)
           {
             unsigned int CurrMonth, CurrDay;
             Hour = (unsigned int)StrToInt(Col.substr(0, P-1));
@@ -2035,8 +2035,8 @@ void TRights::SetText(const std::wstring & value)
   {
     // DEBUG_PRINTF(L"value = %s, GetText = %s", value.c_str(), GetText().c_str());
     if ((value.size() != TextLen) ||
-        (!GetAllowUndef() && (value.find_first_of(UndefSymbol) > 0)) ||
-        (value.find_first_of(L" ") > 0))
+        (!GetAllowUndef() && (value.find(UndefSymbol) != std::wstring::npos)) ||
+        (value.find(L" ") != std::wstring::npos))
     {
       throw ExtException(FMTLOAD(RIGHTS_ERROR, value.c_str()));
     }
