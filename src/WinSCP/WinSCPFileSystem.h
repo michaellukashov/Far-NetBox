@@ -109,10 +109,10 @@ protected:
   virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
   virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
   virtual int MakeDirectoryEx(std::wstring & Name, int OpMode);
-  virtual bool DeleteFilesEx(TList * PanelItems, int OpMode);
-  virtual int GetFilesEx(TList * PanelItems, bool Move,
+  virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
+  virtual int GetFilesEx(TObjectList * PanelItems, bool Move,
     std::wstring & DestPath, int OpMode);
-  virtual int PutFilesEx(TList * PanelItems, bool Move, int OpMode);
+  virtual int PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
   virtual bool ProcessEventEx(int Event, void * Param);
 
   void ProcessEditorEvent(int Event, void * Param);
@@ -131,10 +131,10 @@ protected:
     bool Duplicate);
   void FocusSession(TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * Param);
-  void ProcessSessions(TList * PanelItems,
+  void ProcessSessions(TObjectList * PanelItems,
     const processsession_slot_type &ProcessSession, void * Param);
   void ExportSession(TSessionData * Data, void * Param);
-  bool ImportSessions(TList * PanelItems, bool Move, int OpMode);
+  bool ImportSessions(TObjectList * PanelItems, bool Move, int OpMode);
   void FileProperties();
   void CreateLink();
   void TransferFiles(bool Move);
@@ -314,7 +314,7 @@ private:
     TOperationSide Side, bool DragDrop, const std::wstring & FileName, bool Success,
     TOnceDoneOperation &DisconnectWhenComplete); // ??? bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
-  TStrings * CreateFileList(TList * PanelItems,
+  TStrings * CreateFileList(TObjectList * PanelItems,
     TOperationSide Side, bool SelectedOnly = false, std::wstring Directory = L"",
     bool FileNameOnly = false, TStrings * AFileList = NULL);
   TStrings * CreateSelectedFileList(TOperationSide Side,

@@ -2359,7 +2359,7 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
   DEBUG_PRINTF(L"StoredSessions->Count = %d", StoredSessions->GetCount());
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
+void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   const processsession_slot_type &ProcessSession, void * Param)
 {
     processsession_signal_type sig;
@@ -2404,8 +2404,9 @@ void TWinSCPFileSystem::ProcessSessions(TList * PanelItems,
   }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::DeleteFilesEx(TList * PanelItems, int OpMode)
+bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
 {
+  DEBUG_PRINTF(L"begin");
   if (Connected())
   {
     FFileList = CreateFileList(PanelItems, osRemote);
@@ -2464,7 +2465,7 @@ struct TExportSessionParam
   std::wstring DestPath;
 };
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::GetFilesEx(TList * PanelItems, bool Move,
+int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   std::wstring & DestPath, int OpMode)
 {
   int Result;
@@ -2692,7 +2693,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   return Result;
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::PutFilesEx(TList * PanelItems, bool Move, int OpMode)
+int TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode)
 {
   int Result;
   if (Connected())
@@ -2759,7 +2760,7 @@ int TWinSCPFileSystem::PutFilesEx(TList * PanelItems, bool Move, int OpMode)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::ImportSessions(TList * PanelItems, bool /*Move*/,
+bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   int OpMode)
 {
   bool Result = (OpMode & OPM_SILENT) ||
@@ -2854,7 +2855,7 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings * TWinSCPFileSystem::CreateFileList(TList * PanelItems,
+TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TOperationSide Side, bool SelectedOnly, std::wstring Directory, bool FileNameOnly,
   TStrings * AFileList)
 {
