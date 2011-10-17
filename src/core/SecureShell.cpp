@@ -1710,7 +1710,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   GotHostKey();
 
   wchar_t Delimiter = L';';
-  assert(KeyStr.find_first_of(Delimiter) == 0);
+  assert(KeyStr.find_first_of(Delimiter) == std::wstring::npos);
 
   if (FSessionData->GetTunnel())
   {
