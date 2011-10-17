@@ -244,7 +244,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       }
       else
       {
-        ASCOPY(cfg->remote_cmd_ptr, ::W2MB(Data->GetShell().c_str()));
+        // ASCOPY(cfg->remote_cmd_ptr, ::W2MB(Data->GetShell().c_str()));
+        cfg->remote_cmd_ptr = ::StrNew(::W2MB(Data->GetShell().c_str()).c_str());
       }
     }
     else
@@ -257,7 +258,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       else
       {
         cfg->ssh_subsys = FALSE;
-        cfg->remote_cmd_ptr = (char *)::W2MB(Data->GetSftpServer().c_str()).c_str();
+        // cfg->remote_cmd_ptr = (char *)::W2MB(Data->GetSftpServer().c_str()).c_str();
+        cfg->remote_cmd_ptr = ::StrNew(::W2MB(Data->GetSftpServer().c_str()).c_str());
       }
 
       if (Data->GetFSProtocol() != fsSFTPonly)
