@@ -390,9 +390,10 @@ void TSecureShell::Init()
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyLogEvent(const std::wstring & Str)
 {
+  DEBUG_PRINTF(L"Str = %s", Str.c_str());
   #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
-  if (Str.find_first_of(SERVER_VERSION_MSG) == 1)
+  if (Str.find_first_of(SERVER_VERSION_MSG) == 0)
   {
     FSessionInfo.SshVersionString = Str.substr(std::wstring(SERVER_VERSION_MSG).size() + 1,
       Str.size() - std::wstring(SERVER_VERSION_MSG).size());
@@ -409,11 +410,11 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
     FSessionInfo.SshImplementation = (Ptr != NULL) ? Ptr + 1 : L"";
   }
   #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
-  else if (Str.find_first_of(FORWARDING_FAILURE_MSG) == 1)
+  else if (Str.find_first_of(FORWARDING_FAILURE_MSG) == 0)
   {
-    FLastTunnelError = Str.substr(std::wstring(FORWARDING_FAILURE_MSG).size() + 1,
+    FLastTunnelError = Str.substr(std::wstring(FORWARDING_FAILURE_MSG).size(),
       Str.size() - std::wstring(FORWARDING_FAILURE_MSG).size());
-
+    DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
     static const TPuttyTranslation Translation[] = {
       { "Administratively prohibited [%]", PFWD_TRANSL_ADMIN },
       { "Connect failed [%]", PFWD_TRANSL_CONNECT },
