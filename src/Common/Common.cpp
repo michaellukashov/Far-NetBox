@@ -288,7 +288,7 @@ std::wstring ExceptionLogString(const std::exception *E)
     Msg = FORMAT(L"(%s) %s", L"exception", ::MB2W(E->what()).c_str());
     if (::InheritsFrom<std::exception, ExtException>(E))
     {
-      TStrings * MoreMessages = ((ExtException *)E)->GetMoreMessages();
+      TStrings * MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
