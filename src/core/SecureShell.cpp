@@ -393,14 +393,14 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
   DEBUG_PRINTF(L"Str = %s", Str.c_str());
   #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
-  if (Str.find_first_of(std::wstring(SERVER_VERSION_MSG)) == 0)
+  if (Str.find(std::wstring(SERVER_VERSION_MSG)) == 0)
   {
     FSessionInfo.SshVersionString = Str.substr(std::wstring(SERVER_VERSION_MSG).size() + 1,
       Str.size() - std::wstring(SERVER_VERSION_MSG).size());
 
     const wchar_t * Ptr = wcschr(FSessionInfo.SshVersionString.c_str(), '-');
     // const wchar_t * Ptr = NULL;
-    // int pos = FSessionInfo.SshVersionString.find_first_of('-');
+    // int pos = FSessionInfo.SshVersionString.find('-');
     // if (pos >= 0)
         // Ptr = &FSessionInfo.SshVersionString[pos];
     if (Ptr != NULL)
@@ -410,7 +410,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
     FSessionInfo.SshImplementation = (Ptr != NULL) ? Ptr + 1 : L"";
   }
   #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
-  else if (Str.find_first_of(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
+  else if (Str.find(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
   {
     FLastTunnelError = Str.substr(std::wstring(FORWARDING_FAILURE_MSG).size(),
       Str.size() - std::wstring(FORWARDING_FAILURE_MSG).size());
