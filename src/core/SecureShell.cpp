@@ -635,7 +635,7 @@ void TSecureShell::CWrite(const char * Data, int Length)
 
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
-  while (FCWriteTemp.find_first_of(L"\n") > 0)
+  while (FCWriteTemp.find_first_of(L"\n") != std::wstring::npos)
   {
     std::wstring Line = CutToChar(FCWriteTemp, '\n', false);
 
@@ -1059,7 +1059,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   FStdErrorTemp += Str;
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
-  while ((P = FStdErrorTemp.find_first_of(L"\n")) > 0)
+  while ((P = FStdErrorTemp.find_first_of(L"\n")) != std::wstring::npos)
   {
     Line = FStdErrorTemp.substr(0, P-1);
     FStdErrorTemp.erase(0, P);
