@@ -594,9 +594,9 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
     #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, #PROPERTY, PROPERTY, )
 
-    WRITE_DATA_EX(String, L"HostName", GetHostName());
-    WRITE_DATA_EX(int, L"PortNumber", GetPortNumber());
-    WRITE_DATA_EX(bool, L"Passwordless", GetPasswordless());
+    WRITE_DATA_EX(String, L"HostName", GetHostName(), );
+    WRITE_DATA_EX(int, L"PortNumber", GetPortNumber(), );
+    WRITE_DATA_EX(bool, L"Passwordless", GetPasswordless(), );
     WRITE_DATA_EX(int, L"PingInterval", GetPingInterval() / 60, );
     WRITE_DATA_EX(int, L"PingIntervalSecs", GetPingInterval() % 60, );
     Storage->DeleteValue(L"PingIntervalSec"); // obsolete
@@ -611,16 +611,16 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     {
       Storage->DeleteValue(L"PingType");
     }
-    WRITE_DATA_EX(int, L"Timeout", GetTimeout());
-    WRITE_DATA_EX(bool, L"TryAgent", GetTryAgent());
-    WRITE_DATA_EX(bool, L"AgentFwd", GetAgentFwd());
-    WRITE_DATA_EX(bool, L"AuthTIS", GetAuthTIS());
-    WRITE_DATA_EX(bool, L"AuthKI", GetAuthKI());
-    WRITE_DATA_EX(bool, L"AuthKIPassword", GetAuthKIPassword());
+    WRITE_DATA_EX(int, L"Timeout", GetTimeout(), );
+    WRITE_DATA_EX(bool, L"TryAgent", GetTryAgent(), );
+    WRITE_DATA_EX(bool, L"AgentFwd", GetAgentFwd(), );
+    WRITE_DATA_EX(bool, L"AuthTIS", GetAuthTIS(), );
+    WRITE_DATA_EX(bool, L"AuthKI", GetAuthKI(), );
+    WRITE_DATA_EX(bool, L"AuthKIPassword", GetAuthKIPassword(), );
 
-    WRITE_DATA_EX(bool, L"AuthGSSAPI", GetAuthGSSAPI());
-    WRITE_DATA_EX(bool, L"GSSAPIFwdTGT", GetGSSAPIFwdTGT());
-    WRITE_DATA_EX(String, L"GSSAPIServerRealm", GetGSSAPIServerRealm());
+    WRITE_DATA_EX(bool, L"AuthGSSAPI", GetAuthGSSAPI(), );
+    WRITE_DATA_EX(bool, L"GSSAPIFwdTGT", GetGSSAPIFwdTGT(), );
+    WRITE_DATA_EX(String, L"GSSAPIServerRealm", GetGSSAPIServerRealm(), );
     Storage->DeleteValue(L"TryGSSKEX");
     Storage->DeleteValue(L"UserNameFromEnvironment");
     Storage->DeleteValue(L"GSSAPIServerChoosesUserName");
@@ -635,60 +635,60 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(bool, L"GssapiFwd", GetGSSAPIFwdTGT(), );
     }
 
-    WRITE_DATA_EX(bool, L"ChangeUsername", GetChangeUsername());
-    WRITE_DATA_EX(bool, L"Compression", GetCompression());
-    WRITE_DATA_EX(int, L"SshProt", GetSshProt());
-    WRITE_DATA_EX(bool, L"Ssh2DES", GetSsh2DES());
-    WRITE_DATA_EX(bool, L"SshNoUserAuth", GetSshNoUserAuth());
+    WRITE_DATA_EX(bool, L"ChangeUsername", GetChangeUsername(), );
+    WRITE_DATA_EX(bool, L"Compression", GetCompression(), );
+    WRITE_DATA_EX(int, L"SshProt", GetSshProt(), );
+    WRITE_DATA_EX(bool, L"Ssh2DES", GetSsh2DES(), );
+    WRITE_DATA_EX(bool, L"SshNoUserAuth", GetSshNoUserAuth(), );
     WRITE_DATA_EX(String, L"Cipher", GetCipherList(), );
     WRITE_DATA_EX(String, L"KEX", GetKexList(), );
-    WRITE_DATA_EX(int, L"AddressFamily", GetAddressFamily());
+    WRITE_DATA_EX(int, L"AddressFamily", GetAddressFamily(), );
     WRITE_DATA_EX(String, L"RekeyBytes", GetRekeyData(), );
-    WRITE_DATA_EX(int, L"RekeyTime", GetRekeyTime());
+    WRITE_DATA_EX(int, L"RekeyTime", GetRekeyTime(), );
 
-    WRITE_DATA_EX(bool, L"TcpNoDelay", GetTcpNoDelay());
+    WRITE_DATA_EX(bool, L"TcpNoDelay", GetTcpNoDelay(), );
 
     if (PuttyExport)
     {
-      WRITE_DATA_EX(String, L"UserName", GetUserName());
-      WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile());
+      WRITE_DATA_EX(String, L"UserName", GetUserName(), );
+      WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
     }
     else
     {
-      WRITE_DATA_EX(String, L"UserName", GetUserName());
-      WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile());
-      WRITE_DATA_EX(int, L"FSProtocol", GetFSProtocol());
-      WRITE_DATA_EX(String, L"LocalDirectory", GetLocalDirectory());
-      WRITE_DATA_EX(String, L"RemoteDirectory", GetRemoteDirectory());
-      WRITE_DATA_EX(bool, L"UpdateDirectories", GetUpdateDirectories());
-      WRITE_DATA_EX(bool, L"CacheDirectories", GetCacheDirectories());
-      WRITE_DATA_EX(bool, L"CacheDirectoryChanges", GetCacheDirectoryChanges());
-      WRITE_DATA_EX(bool, L"PreserveDirectoryChanges", GetPreserveDirectoryChanges());
+      WRITE_DATA_EX(String, L"UserName", GetUserName(), );
+      WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
+      WRITE_DATA_EX(int, L"FSProtocol", GetFSProtocol(), );
+      WRITE_DATA_EX(String, L"LocalDirectory", GetLocalDirectory(), );
+      WRITE_DATA_EX(String, L"RemoteDirectory", GetRemoteDirectory(), );
+      WRITE_DATA_EX(bool, L"UpdateDirectories", GetUpdateDirectories(), );
+      WRITE_DATA_EX(bool, L"CacheDirectories", GetCacheDirectories(), );
+      WRITE_DATA_EX(bool, L"CacheDirectoryChanges", GetCacheDirectoryChanges(), );
+      WRITE_DATA_EX(bool, L"PreserveDirectoryChanges", GetPreserveDirectoryChanges(), );
 
-      WRITE_DATA_EX(bool, L"ResolveSymlinks", GetResolveSymlinks());
+      WRITE_DATA_EX(bool, L"ResolveSymlinks", GetResolveSymlinks(), );
       WRITE_DATA_EX(int, L"ConsiderDST", GetDSTMode(), );
-      WRITE_DATA_EX(bool, L"LockInHome", GetLockInHome());
+      WRITE_DATA_EX(bool, L"LockInHome", GetLockInHome(), );
       // Special is never stored (if it would, login dialog must be modified not to
       // duplicate Special parameter when Special session is loaded and then stored
       // under different name)
-      // WRITE_DATA_EX(bool, L"Special", GetSpecial());
-      WRITE_DATA_EX(String, L"Shell", GetShell());
-      WRITE_DATA_EX(bool, L"ClearAliases", GetClearAliases());
-      WRITE_DATA_EX(bool, L"UnsetNationalVars", GetUnsetNationalVars());
-      WRITE_DATA_EX(String, L"ListingCommand", GetListingCommand());
-      WRITE_DATA_EX(bool, L"IgnoreLsWarnings", GetIgnoreLsWarnings());
-      WRITE_DATA_EX(int, L"SCPLsFullTime", GetSCPLsFullTime());
-      WRITE_DATA_EX(int, L"FtpListAll", GetFtpListAll());
-      WRITE_DATA_EX(bool, L"Scp1Compatibility", GetScp1Compatibility());
-      WRITE_DATA_EX(Float, L"TimeDifference", GetTimeDifference());
-      WRITE_DATA_EX(bool, L"DeleteToRecycleBin", GetDeleteToRecycleBin());
-      WRITE_DATA_EX(bool, L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin());
-      WRITE_DATA_EX(String, L"RecycleBinPath", GetRecycleBinPath());
-      WRITE_DATA_EX(String, L"PostLoginCommands", GetPostLoginCommands());
+      // WRITE_DATA_EX(bool, L"Special", GetSpecial(), );
+      WRITE_DATA_EX(String, L"Shell", GetShell(), );
+      WRITE_DATA_EX(bool, L"ClearAliases", GetClearAliases(), );
+      WRITE_DATA_EX(bool, L"UnsetNationalVars", GetUnsetNationalVars(), );
+      WRITE_DATA_EX(String, L"ListingCommand", GetListingCommand(), );
+      WRITE_DATA_EX(bool, L"IgnoreLsWarnings", GetIgnoreLsWarnings(), );
+      WRITE_DATA_EX(int, L"SCPLsFullTime", GetSCPLsFullTime(), );
+      WRITE_DATA_EX(int, L"FtpListAll", GetFtpListAll(), );
+      WRITE_DATA_EX(bool, L"Scp1Compatibility", GetScp1Compatibility(), );
+      WRITE_DATA_EX(Float, L"TimeDifference", GetTimeDifference(), );
+      WRITE_DATA_EX(bool, L"DeleteToRecycleBin", GetDeleteToRecycleBin(), );
+      WRITE_DATA_EX(bool, L"OverwrittenToRecycleBin", GetOverwrittenToRecycleBin(), );
+      WRITE_DATA_EX(String, L"RecycleBinPath", GetRecycleBinPath(), );
+      WRITE_DATA_EX(String, L"PostLoginCommands", GetPostLoginCommands(), );
 
-      WRITE_DATA_EX(String, L"ReturnVar", GetReturnVar());
-      WRITE_DATA_EX(bool, L"LookupUserGroups", GetLookupUserGroups());
-      WRITE_DATA_EX(int, L"EOLType", GetEOLType());
+      WRITE_DATA_EX(String, L"ReturnVar", GetReturnVar(), );
+      WRITE_DATA_EX(bool, L"LookupUserGroups", GetLookupUserGroups(), );
+      WRITE_DATA_EX(int, L"EOLType", GetEOLType(), );
       Storage->DeleteValue(L"SFTPUtfBug");
       WRITE_DATA_EX(int, L"Utf", GetNotUtf(), );
     }
@@ -727,21 +727,21 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       Storage->DeleteValue(L"ProxyType");
       Storage->DeleteValue(L"ProxySOCKSVersion");
     }
-    WRITE_DATA_EX(String, L"ProxyHost", GetProxyHost());
-    WRITE_DATA_EX(int, L"ProxyPort", GetProxyPort());
-    WRITE_DATA_EX(String, L"ProxyUsername", GetProxyUsername());
+    WRITE_DATA_EX(String, L"ProxyHost", GetProxyHost(), );
+    WRITE_DATA_EX(int, L"ProxyPort", GetProxyPort(), );
+    WRITE_DATA_EX(String, L"ProxyUsername", GetProxyUsername(), );
     if (GetProxyMethod() == pmCmd)
     {
       WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyLocalCommand(), );
     }
     else
     {
-      WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyTelnetCommand());
+      WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
     }
     #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
-    WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS());
+    WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS(), );
     #undef WRITE_DATA_CONV_FUNC
-    WRITE_DATA_EX(bool, L"ProxyLocalhost", GetProxyLocalhost());
+    WRITE_DATA_EX(bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
     #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
     #define WRITE_BUG(BUG) WRITE_DATA_CONV(int, ::MB2W("Bug" #BUG), GetBug(sb##BUG));
@@ -767,36 +767,36 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 
     if (!PuttyExport)
     {
-      WRITE_DATA_EX(String, L"SftpServer", GetSftpServer());
+      WRITE_DATA_EX(String, L"SftpServer", GetSftpServer(), );
 
       #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(int, ::MB2W("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
       WRITE_SFTP_BUG(Symlink);
       WRITE_SFTP_BUG(SignedTS);
       #undef WRITE_SFTP_BUG
 
-      WRITE_DATA_EX(int, L"SFTPMaxVersion", GetSFTPMaxVersion());
-      WRITE_DATA_EX(int, L"SFTPMaxPacketSize", GetSFTPMaxPacketSize());
+      WRITE_DATA_EX(int, L"SFTPMaxVersion", GetSFTPMaxVersion(), );
+      WRITE_DATA_EX(int, L"SFTPMaxPacketSize", GetSFTPMaxPacketSize(), );
 
-      WRITE_DATA_EX(int, L"Color", GetColor());
+      WRITE_DATA_EX(int, L"Color", GetColor(), );
 
-      WRITE_DATA_EX(bool, L"Tunnel", GetTunnel());
-      WRITE_DATA_EX(String, L"TunnelHostName", GetTunnelHostName());
-      WRITE_DATA_EX(int, L"TunnelPortNumber", GetTunnelPortNumber());
-      WRITE_DATA_EX(String, L"TunnelUserName", GetTunnelUserName());
-      WRITE_DATA_EX(String, L"TunnelPublicKeyFile", GetTunnelPublicKeyFile());
-      WRITE_DATA_EX(int, L"TunnelLocalPortNumber", GetTunnelLocalPortNumber());
+      WRITE_DATA_EX(bool, L"Tunnel", GetTunnel(), );
+      WRITE_DATA_EX(String, L"TunnelHostName", GetTunnelHostName(), );
+      WRITE_DATA_EX(int, L"TunnelPortNumber", GetTunnelPortNumber(), );
+      WRITE_DATA_EX(String, L"TunnelUserName", GetTunnelUserName(), );
+      WRITE_DATA_EX(String, L"TunnelPublicKeyFile", GetTunnelPublicKeyFile(), );
+      WRITE_DATA_EX(int, L"TunnelLocalPortNumber", GetTunnelLocalPortNumber(), );
 
-      WRITE_DATA_EX(bool, L"FtpPasvMode", GetFtpPasvMode());
-      WRITE_DATA_EX(bool, L"FtpForcePasvIp", GetFtpForcePasvIp());
-      WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount());
-      WRITE_DATA_EX(int, L"FtpPingInterval", GetFtpPingInterval());
-      WRITE_DATA_EX(int, L"FtpPingType", GetFtpPingType());
-      WRITE_DATA_EX(int, L"Ftps", GetFtps());
+      WRITE_DATA_EX(bool, L"FtpPasvMode", GetFtpPasvMode(), );
+      WRITE_DATA_EX(bool, L"FtpForcePasvIp", GetFtpForcePasvIp(), );
+      WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount(), );
+      WRITE_DATA_EX(int, L"FtpPingInterval", GetFtpPingInterval(), );
+      WRITE_DATA_EX(int, L"FtpPingType", GetFtpPingType(), );
+      WRITE_DATA_EX(int, L"Ftps", GetFtps(), );
 
-      WRITE_DATA_EX(int, L"FtpProxyLogonType", GetFtpProxyLogonType());
+      WRITE_DATA_EX(int, L"FtpProxyLogonType", GetFtpProxyLogonType(), );
 
-      WRITE_DATA_EX(String, L"CustomParam1", GetCustomParam1());
-      WRITE_DATA_EX(String, L"CustomParam2", GetCustomParam2());
+      WRITE_DATA_EX(String, L"CustomParam1", GetCustomParam1(), );
+      WRITE_DATA_EX(String, L"CustomParam2", GetCustomParam2(), );
     }
 
     SavePasswords(Storage, PuttyExport);
