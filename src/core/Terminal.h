@@ -99,9 +99,9 @@ typedef informationevent_signal_type::slot_type informationevent_slot_type;
     Command                                                   \
   }
 
-#define THROW_SKIP_FILE(EXCEPTION, MESSAGE) \
-  throw EScpSkipFile(EXCEPTION, MESSAGE)
-#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(NULL, L"")
+#define THROW_SKIP_FILE(MESSAGE, EXCEPTION) \
+  throw EScpSkipFile(MESSAGE, EXCEPTION)
+#define THROW_SKIP_FILE_NULL THROW_SKIP_FILE(L"", NULL)
 
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_CUSTOM(TERMINAL, ALLOW_SKIP, MESSAGE, OPERATION) { \
@@ -111,19 +111,19 @@ typedef informationevent_signal_type::slot_type informationevent_slot_type;
     try { \
       OPERATION;                                                            \
     }                                                                       \
-    catch (const EAbort & E)                                                      \
+    catch (const EAbort &E)                                                      \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (const EScpSkipFile & E)                                                \
+    catch (const EScpSkipFile &E)                                                \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (const EFatal & E)                                                      \
+    catch (const EFatal &E)                                                      \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (const std::exception & E)                                                   \
+    catch (const std::exception &E)                                                   \
     {                                                                       \
       TERMINAL->FileOperationLoopQuery(E, OperationProgress, MESSAGE, ALLOW_SKIP); \
       DoRepeat = true;                                                      \

@@ -1202,7 +1202,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
   }
   catch (const std::exception &E)
   {
-    throw ETerminal(&E, ::FmtLoadStr(LIST_LINE_ERROR, value.c_str()));
+    throw ETerminal(::FmtLoadStr(LIST_LINE_ERROR, value.c_str()), &E);
   }
 }
 //---------------------------------------------------------------------------
@@ -1266,9 +1266,10 @@ void TRemoteFile::FindLinkedFile()
     }
     catch (const std::exception &E)
     {
-      // FIXME if (E.InheritsFrom(__classid(EFatal))) throw;
-        // else Terminal->Log->AddException(&E);
-      ::Error(SNotImplemented, 214); 
+      if (::InheritsFrom<std::exception, EFatal>(&E))
+        throw;
+      else
+        GetTerminal()->GetLog()->AddException(&E);
     }
   }
 }

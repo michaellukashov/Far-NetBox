@@ -15,23 +15,25 @@ class ExtException : public std::exception
 {
   typedef std::exception parent;
 public:
-  ExtException(const std::exception *E);
-  ExtException(const std::exception *E, std::wstring Msg);
+  explicit ExtException(std::wstring Msg);
+  explicit ExtException(const std::exception *E);
+  // explicit ExtException(const std::exception *E, std::wstring Msg);
   // "copy the std::exception", just append message to the end
-  ExtException(std::wstring Msg);
-  ExtException(std::wstring Msg, const std::exception *E);
-  ExtException(std::wstring Msg, std::wstring MoreMessages, std::wstring HelpKeyword = L"");
-  ExtException(std::wstring Msg, TStrings *MoreMessages, bool Own);
-  virtual ~ExtException(void);
-  TStrings *GetMoreMessages() const { return FMoreMessages; }
-  std::wstring GetHelpKeyword() const { return FHelpKeyword; }
-
+  explicit ExtException(std::wstring Msg, const std::exception *E);
+  explicit ExtException(std::wstring Msg, std::wstring MoreMessages, std::wstring HelpKeyword = L"");
+  explicit ExtException(std::wstring Msg, TStrings *MoreMessages, bool Own);
   // inline ExtException(const std::wstring Msg, const TVarRec *Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) {}
   // inline ExtException(int Ident, const TVarRec *Args, const int Args_Size)/*overload */ : Sysutils::exception(Ident, Args, Args_Size) {}
-  ExtException(const std::wstring Msg, int AHelpContext);
+  explicit ExtException(const std::wstring Msg, int AHelpContext);
   // inline ExtException(const std::wstring Msg, const TVarRec *Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) {}
   // inline ExtException(int Ident, int AHelpContext)/*overload */ : std::exception(Ident, AHelpContext) {}
   // inline ExtException(PResStringRec ResStringRec, const TVarRec *Args, const int Args_Size, int AHelpContext)/*overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) {}
+  explicit ExtException(const ExtException &) throw();
+  ExtException &operator =(const ExtException &) throw();
+  virtual ~ExtException(void) throw();
+
+  TStrings *GetMoreMessages() const { return FMoreMessages; }
+  std::wstring GetHelpKeyword() const { return FHelpKeyword; }
   const std::wstring GetMessage() const { return FMessage; }
   void SetMessage(const std::wstring value) { FMessage = value; }
 protected:
@@ -48,9 +50,9 @@ private:
   { \
     typedef BASE parent; \
   public: \
-    inline NAME(const std::exception *E, std::wstring Msg) : parent(E, Msg) {} \
-    inline virtual ~NAME(void) {} \
-    inline NAME(const std::wstring Msg, int AHelpContext) : parent(Msg, AHelpContext) {} \
+    explicit NAME(std::wstring Msg, const std::exception *E) : parent(Msg, E) {} \
+    explicit NAME(const std::wstring Msg, int AHelpContext) : parent(Msg, AHelpContext) {} \
+    inline virtual ~NAME(void) throw() {} \
   };
 
     // inline NAME(const std::exception *E, int Ident) : parent(E, Ident) {} \
@@ -81,7 +83,7 @@ class EFatal : public ExtException
   typedef ExtException parent;
 public:
   // fatal errors are always copied, new message is only appended
-  inline EFatal(const std::exception *E, std::wstring Msg) : ExtException(Msg, E) {}
+  explicit EFatal(std::wstring Msg, const std::exception *E) : parent(Msg, E) {}
 };
 //---------------------------------------------------------------------------
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
@@ -89,7 +91,7 @@ public:
   { \
     typedef BASE parent; \
   public: \
-    inline NAME(const std::exception *E, std::wstring Msg) : parent(E, Msg) {} \
+    explicit NAME(std::wstring Msg, const std::exception *E) : parent(Msg, E) {} \
   };
 //---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
@@ -100,8 +102,8 @@ class ESshTerminate : public EFatal
 {
   typedef EFatal parent;
 public:
-  inline ESshTerminate(const std::exception *E, std::wstring Msg, TOnceDoneOperation AOperation) :
-    parent(E, Msg),
+  explicit ESshTerminate(std::wstring Msg, const std::exception *E, TOnceDoneOperation AOperation) :
+    parent(Msg, E),
     Operation(AOperation)
   {}
 

@@ -663,7 +663,7 @@ TIniFileStorage::~TIniFileStorage()
           }
           catch (const std::exception & E)
           {
-            throw ExtException(&E, FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()));
+            throw ExtException(FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()), &E);
           }
         }
       }

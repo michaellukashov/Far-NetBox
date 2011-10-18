@@ -907,7 +907,7 @@ class EConvertError : public ExtException
     typedef ExtException parent;
 public:
     EConvertError(std::wstring Msg) :
-        parent(Msg)
+        parent(Msg, NULL)
     {}
 };
 

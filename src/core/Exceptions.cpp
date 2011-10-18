@@ -61,6 +61,7 @@ ExtException::ExtException(const std::exception *E) :
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
+/*
 ExtException::ExtException(const std::exception *E, std::wstring Msg) :
   parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
@@ -68,6 +69,7 @@ ExtException::ExtException(const std::exception *E, std::wstring Msg) :
   AddMoreMessages(E);
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
+*/
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg) :
   parent(::W2MB(Msg.c_str()).c_str()),
@@ -150,6 +152,20 @@ ExtException::ExtException(std::wstring Msg, TStrings *MoreMessages,
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
+ExtException::ExtException(const ExtException &E) throw() :
+    parent(E.what()),
+    FMoreMessages(NULL)
+{
+    AddMoreMessages(&E);
+}
+
+ExtException &ExtException::operator =(const ExtException &E) throw()
+{
+    AddMoreMessages(&E);
+    return *this;
+}
+
+//---------------------------------------------------------------------------
 void ExtException::AddMoreMessages(const std::exception *E)
 {
   if (E != NULL)
@@ -202,6 +218,7 @@ ExtException::~ExtException()
 {
     DEBUG_PRINTF(L"~ExtException");
   delete FMoreMessages;
+  FMoreMessages = NULL;
 }
 //---------------------------------------------------------------------------
 std::wstring LastSysErrorMessage()

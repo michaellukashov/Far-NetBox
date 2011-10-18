@@ -758,7 +758,7 @@ void TSCPFileSystem::DetectReturnVar()
           Abort();
         }
       }
-      catch (EFatal &E)
+      catch (const EFatal &E)
       {
         // if fatal error occurs, we need to exit ...
         throw;
@@ -1330,11 +1330,11 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 
       if (Resp == 1)
       {
-        THROW_FILE_SKIPPED(NULL, Msg);
+        THROW_FILE_SKIPPED(Msg, NULL);
       }
         else
       {
-        THROW_SCP_ERROR(NULL, Msg);
+        THROW_SCP_ERROR(Msg, NULL);
       }
   }
 }
@@ -1937,7 +1937,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
             if (!FTerminal->HandleException(&E)) throw;
           );
         }
-        catch (EScpSkipFile &E)
+        catch (const EScpSkipFile &E)
         {
           // If ESkipFile occurs, just log it and continue with next file
           DEBUG_PRINTF(L"before FTerminal->HandleException");
@@ -2059,7 +2059,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
               );
             }
           }
-          catch (EFatal &E)
+          catch (const EFatal &E)
           {
             throw;
           }
@@ -2095,7 +2095,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 void TSCPFileSystem::SCPError(const std::wstring Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
-  THROW_FILE_SKIPPED(NULL, Message);
+  THROW_FILE_SKIPPED(Message, NULL);
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSendError(const std::wstring Message, bool Fatal)
@@ -2194,7 +2194,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         switch (Ctrl) {
           case 1:
             // Error (already logged by ReceiveLine())
-            THROW_FILE_SKIPPED(NULL, FMTLOAD(REMOTE_ERROR, Line.c_str()));
+            THROW_FILE_SKIPPED(FMTLOAD(REMOTE_ERROR, Line.c_str()), NULL);
 
           case 2:
             // Fatal error, terminate copying
@@ -2265,7 +2265,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         // last possibility to cancel transfer before it starts
         if (OperationProgress->Cancel)
         {
-          THROW_SKIP_FILE(NULL, LoadStr(USER_TERMINATED));
+          THROW_SKIP_FILE(LoadStr(USER_TERMINATED), NULL);
         }
 
         bool Dir = (Ctrl == L'D');
@@ -2511,7 +2511,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
       // succesfull, even when for example user refused to overwrite file
       Success = false;
     }
-    catch (EScpSkipFile &E)
+    catch (const EScpSkipFile &E)
     {
       DEBUG_PRINTF(L"before FTerminal->HandleException");
       SCPSendError(E.GetMessage(), false);

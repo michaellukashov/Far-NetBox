@@ -959,7 +959,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (const EScpSkipFile & E)
+      catch (const EScpSkipFile &E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
@@ -1176,7 +1176,7 @@ void TFTPFileSystem::SinkFile(std::wstring FileName,
     SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (const EScpSkipFile & E)
+  catch (const EScpSkipFile &E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 
@@ -1235,7 +1235,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (const EScpSkipFile & E)
+      catch (const EScpSkipFile &E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
