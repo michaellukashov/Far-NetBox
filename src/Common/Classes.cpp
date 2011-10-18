@@ -188,7 +188,9 @@ int TStringList::CompareStrings(const std::wstring &S1, const std::wstring &S2)
  */
 std::wstring MB2W(const char *src, const UINT cp)
 {
-    assert(src);
+    // assert(src);
+    if (!src)
+        return L"";
 
     std::wstring wide;
     const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
@@ -620,9 +622,9 @@ bool TRegistry::DeleteKey(const std::wstring &Key)
   return Result;
 }
 
-bool TRegistry::DeleteValue(const std::wstring &value)
+bool TRegistry::DeleteValue(const std::wstring &Name)
 {
-  bool Result = false;
+  bool Result = RegDeleteValue(GetCurrentKey(), Name.c_str()) == ERROR_SUCCESS;
   return Result;
 }
 

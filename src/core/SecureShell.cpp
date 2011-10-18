@@ -244,7 +244,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       }
       else
       {
-        ASCOPY(cfg->remote_cmd_ptr, ::W2MB(Data->GetShell().c_str()));
+        // ASCOPY(cfg->remote_cmd_ptr, ::W2MB(Data->GetShell().c_str()));
+        cfg->remote_cmd_ptr = ::StrNew(::W2MB(Data->GetShell().c_str()).c_str());
       }
     }
     else
@@ -257,7 +258,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       else
       {
         cfg->ssh_subsys = FALSE;
-        cfg->remote_cmd_ptr = (char *)::W2MB(Data->GetSftpServer().c_str()).c_str();
+        // cfg->remote_cmd_ptr = (char *)::W2MB(Data->GetSftpServer().c_str()).c_str();
+        cfg->remote_cmd_ptr = ::StrNew(::W2MB(Data->GetSftpServer().c_str()).c_str());
       }
 
       if (Data->GetFSProtocol() != fsSFTPonly)
@@ -388,16 +390,17 @@ void TSecureShell::Init()
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyLogEvent(const std::wstring & Str)
 {
+  DEBUG_PRINTF(L"Str = %s", Str.c_str());
   #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
-  if (Str.find_first_of(SERVER_VERSION_MSG) == 1)
+  if (Str.find(std::wstring(SERVER_VERSION_MSG)) == 0)
   {
     FSessionInfo.SshVersionString = Str.substr(std::wstring(SERVER_VERSION_MSG).size() + 1,
       Str.size() - std::wstring(SERVER_VERSION_MSG).size());
 
     const wchar_t * Ptr = wcschr(FSessionInfo.SshVersionString.c_str(), '-');
     // const wchar_t * Ptr = NULL;
-    // int pos = FSessionInfo.SshVersionString.find_first_of('-');
+    // int pos = FSessionInfo.SshVersionString.find('-');
     // if (pos >= 0)
         // Ptr = &FSessionInfo.SshVersionString[pos];
     if (Ptr != NULL)
@@ -407,11 +410,11 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
     FSessionInfo.SshImplementation = (Ptr != NULL) ? Ptr + 1 : L"";
   }
   #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
-  else if (Str.find_first_of(FORWARDING_FAILURE_MSG) == 1)
+  else if (Str.find(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
   {
-    FLastTunnelError = Str.substr(std::wstring(FORWARDING_FAILURE_MSG).size() + 1,
+    FLastTunnelError = Str.substr(std::wstring(FORWARDING_FAILURE_MSG).size(),
       Str.size() - std::wstring(FORWARDING_FAILURE_MSG).size());
-
+    DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
     static const TPuttyTranslation Translation[] = {
       { "Administratively prohibited [%]", PFWD_TRANSL_ADMIN },
       { "Connect failed [%]", PFWD_TRANSL_CONNECT },
@@ -632,7 +635,7 @@ void TSecureShell::CWrite(const char * Data, int Length)
 
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
-  while (FCWriteTemp.find_first_of(L"\n") > 0)
+  while (FCWriteTemp.find_first_of(L"\n") != std::wstring::npos)
   {
     std::wstring Line = CutToChar(FCWriteTemp, '\n', false);
 
@@ -1056,7 +1059,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   FStdErrorTemp += Str;
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
-  while ((P = FStdErrorTemp.find_first_of(L"\n")) > 0)
+  while ((P = FStdErrorTemp.find_first_of(L"\n")) != std::wstring::npos)
   {
     Line = FStdErrorTemp.substr(0, P-1);
     FStdErrorTemp.erase(0, P);
@@ -1707,7 +1710,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   GotHostKey();
 
   wchar_t Delimiter = L';';
-  assert(KeyStr.find_first_of(Delimiter) == 0);
+  assert(KeyStr.find_first_of(Delimiter) == std::wstring::npos);
 
   if (FSessionData->GetTunnel())
   {
@@ -1732,20 +1735,21 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   std::wstring StoredKeys;
   if (!Result)
   {
-    StoredKeys.resize(10240);
+    std::string StoredKeys2;
+    StoredKeys2.resize(10240);
 #ifdef MPEXT
     if (retrieve_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
-          (char *)::W2MB(StoredKeys.c_str()).c_str(), StoredKeys.size()) == 0)
+          (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #else
     if (verify_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
-          (char *)::W2MB(StoredKeys.c_str()).c_str(), StoredKeys.size()) == 0)
+          (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #endif
     {
-      PackStr(StoredKeys);
+      StoredKeys = ::MB2W(StoredKeys2.c_str()); // PackStr(StoredKeys);
       std::wstring Buf = StoredKeys;
       while (!Result && !Buf.empty())
       {
-        std::wstring StoredKey = CutToChar(Buf, Delimiter, false);
+        std::wstring StoredKey = ::CutToChar(Buf, Delimiter, false);
         if (StoredKey == KeyStr)
         {
           Result = true;

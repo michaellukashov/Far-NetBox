@@ -24,7 +24,6 @@
 #include "FarUtil.h"
 
 #include "testutils.h"
-#include "delegate.h"
 #include "TestTexts.h"
 #include "Common.h"
 #include "FileMasks.h"
@@ -105,58 +104,8 @@ BOOST_FIXTURE_TEST_CASE(test2, base_fixture_t)
     log_free(ctx);
 }
 
-static const std::string filename = "output.txt";
-
-class App
-{
-public:
-    App()
-    {
-        std::remove(filename.c_str());
-    }
-    // Определяем делегат Callback,
-    // который принимает 1 параметр и ничего не возвращает.
-    typedef CDelegate1<void, std::string> Callback;
-
-    // Это метод класса App.
-    void OutputToConsole(std::string str)
-    {
-        std::cout << str << std::endl;
-    }
-
-    // А это статический метод класса App.
-    static void OutputToFile(std::string str)
-    {
-        std::ofstream fout(filename, std::ios::out | std::ios::ate | std::ios::app);
-        fout << str << std::endl;
-        fout.close();
-    }
-};
-
 BOOST_FIXTURE_TEST_CASE(test3, base_fixture_t)
 {
-    App app;
-    // Создаём делегат.
-    App::Callback callback = NULL;
-    BOOST_REQUIRE(callback.IsNull());
-    if (!callback.IsNull()) callback("1");
-
-    // Добавляем ссылку на OutputToFile.
-    // Вызываем её через делегата.
-    callback += NewDelegate(App::OutputToFile);
-    BOOST_REQUIRE(!callback.IsNull());
-    if (!callback.IsNull()) callback("2");
-
-    // Добавляем ссылку на OutputToConsole.
-    // Вызывается вся цепочка:
-    // сначала OutputToFile, потом OutputToConsole.
-    callback += NewDelegate(&app, &App::OutputToConsole);
-    BOOST_REQUIRE(!callback.IsNull());
-    if (!callback.IsNull()) callback("3");
-    std::ifstream is;
-    is.open(filename.c_str(), std::ios::in);
-    BOOST_CHECK(!is.fail());
-    BOOST_CHECK(::FileExists(::MB2W(filename.c_str())));
 }
 
 BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
@@ -218,12 +167,14 @@ BOOST_FIXTURE_TEST_CASE(test4, base_fixture_t)
         std::wstring Str1 = L" part 1 | part 2 ";
         std::wstring str1 = ::CutToChar(Str1, '|', false);
         BOOST_TEST_MESSAGE("str1 = \"" << ::W2MB(str1.c_str()) << "\"");
+        BOOST_TEST_MESSAGE("Str1 = \"" << ::W2MB(Str1.c_str()) << "\"");
         // BOOST_TEST_MESSAGE("Str1 = \"" << ::W2MB(Str1.c_str()) << "\"");
         // DEBUG_PRINTF(L"str1 = \"%s\"", str1.c_str());
         BOOST_CHECK_EQUAL(::W2MB(str1.c_str()), std::string(" part 1 "));
 
         std::wstring str2 = ::CutToChar(Str1, '|', true);
         BOOST_TEST_MESSAGE("str2 = \"" << ::W2MB(str2.c_str()) << "\"");
+        BOOST_TEST_MESSAGE("Str1 = \"" << ::W2MB(Str1.c_str()) << "\"");
         BOOST_CHECK_EQUAL(::W2MB(str2.c_str()), std::string("part 2"));
     }
     {

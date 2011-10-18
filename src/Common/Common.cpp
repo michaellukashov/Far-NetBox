@@ -202,10 +202,11 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
     Result = Str;
     Str = L"";
   }
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   if (Trim)
   {
     Str = TrimLeft(Str);
-    Result = TrimRight(Str);
+    Result = ::Trim(Result);
   }
   // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
   return Result;
@@ -287,7 +288,7 @@ std::wstring ExceptionLogString(const std::exception *E)
     Msg = FORMAT(L"(%s) %s", L"exception", ::MB2W(E->what()).c_str());
     if (::InheritsFrom<std::exception, ExtException>(E))
     {
-      TStrings * MoreMessages = ((ExtException *)E)->GetMoreMessages();
+      TStrings * MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +

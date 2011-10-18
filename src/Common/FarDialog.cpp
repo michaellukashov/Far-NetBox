@@ -1177,7 +1177,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
         SendMessage(DM_SETTEXTPTR, (int)FarData.c_str());
     }
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
-    GetDialogItem()->MaxLen = FarData.size();
+    // GetDialogItem()->MaxLen = FarData.size();
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
     DialogChange();
 }
@@ -1198,7 +1198,7 @@ void TFarDialogItem::UpdateData(const std::wstring value)
         StrToFar(FarData);
     }
     GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(FarData, true);
-    GetDialogItem()->MaxLen = FarData.size();
+    // GetDialogItem()->MaxLen = FarData.size();
 }
 //---------------------------------------------------------------------------
 std::wstring TFarDialogItem::GetData()
@@ -1979,7 +1979,7 @@ long TFarEdit::ItemProc(int Msg, long Param)
     {
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
-        GetDialogItem()->MaxLen = Data.size();
+        // GetDialogItem()->MaxLen = Data.size();
     }
     return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2036,19 +2036,19 @@ void TFarEdit::SetHistoryMask(int Index, std::wstring value)
 //---------------------------------------------------------------------------
 void TFarEdit::SetAsInteger(int value)
 {
-    int Int = GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
+    // DEBUG_PRINTF(L"GetText = %s, value = %d", GetText().c_str(), value);
+    int Int = ::StrToIntDef(::Trim(GetText()), 0);
     if (!Int || (GetAsInteger() != value))
     {
-        wchar_t Buffer[32];
-        SetText(GetDialog()->GetFarPlugin()->GetFarStandardFunctions().itoa(value, Buffer, 10));
+        SetText(::IntToStr(value));
         DialogChange();
     }
 }
 //---------------------------------------------------------------------------
 int TFarEdit::GetAsInteger()
 {
-    return StrToIntDef(GetText(), 0);
-    // return GetDialog()->GetFarPlugin()->GetFarStandardFunctions().atoi(GetText().c_str());
+    // DEBUG_PRINTF(L"GetText = %s, StrToIntDef = %d", GetText().c_str(), ::StrToIntDef(GetText(), 0));
+    return ::StrToIntDef(::Trim(GetText()), 0);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2551,8 +2551,7 @@ long TFarComboBox::ItemProc(int Msg, long Param)
     {
         std::wstring Data = ((FarDialogItem *)Param)->PtrData;
         GetDialogItem()->PtrData = TCustomFarPlugin::DuplicateStr(Data, true);
-        GetDialogItem()->MaxLen = Data.size();
-        // DEBUG_PRINTF(L"Data.size = %d", Data.size());
+        // GetDialogItem()->MaxLen = Data.size();
     }
 
     if (FList->ItemProc(Msg, Param))
