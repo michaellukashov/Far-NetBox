@@ -117,8 +117,8 @@ void TStrings::Assign(TPersistent *Source)
     {
       Clear();
       // FDefined = TStrings(Source).FDefined;
-      FQuoteChar = (TStrings *)(Source)->FQuoteChar;
-      FDelimiter = (TStrings *)(Source)->FDelimiter;
+      FQuoteChar = ((TStrings *)Source)->FQuoteChar;
+      FDelimiter = ((TStrings *)Source)->FDelimiter;
       AddStrings((TStrings *)(Source));
     // finally
       EndUpdate();
