@@ -599,6 +599,7 @@ public:
     void SetDelimitedText(const std::wstring Value);
     virtual int CompareStrings(const std::wstring &S1, const std::wstring &S2);
     int GetUpdateCount() const { return FUpdateCount; }
+    void Assign(TPersistent *Source);
 protected:
     TDuplicatesEnum FDuplicates;
     mutable wchar_t FDelimiter;
@@ -630,7 +631,8 @@ public:
     {}
     virtual void Assign(TPersistent *Source)
     {
-        ::Error(SNotImplemented, 13);
+        // ::Error(SNotImplemented, 13);
+        parent::Assign(Source);
     }
     virtual size_t GetCount() const
     {
