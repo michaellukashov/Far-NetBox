@@ -996,19 +996,19 @@ void TRemoteFile::SetListingStr(std::wstring value)
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
     GetRights()->SetText(Line.substr(0, 9));
-    Line.erase(1, 9);
+    Line.erase(0, 9);
     DEBUG_PRINTF(L"Line3 = %s", Line.c_str());
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
-    if (!Line.empty() && ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
+    if (!Line.empty() && ((Line[0] == '+') || (Line[0] == '@') || (Line[0] == '.')))
     {
-      Line.erase(1, 1);
+      Line.erase(0, 1);
       DEBUG_PRINTF(L"Line4 = %s", Line.c_str());
     }
-    else if ((Line.size() >= 2) && (Line[1] == ' ') &&
-             ((Line[2] == '+') || (Line[2] == '@') || (Line[2] == '.')))
+    else if ((Line.size() >= 2) && (Line[0] == ' ') &&
+             ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
     {
-      Line.erase(1, 2);
+      Line.erase(0, 2);
       DEBUG_PRINTF(L"Line5 = %s", Line.c_str());
     }
     Line = ::TrimLeft(Line);
