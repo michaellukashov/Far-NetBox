@@ -74,8 +74,10 @@ public:
   void Default();
   void CopyFrom(TCommandSet * Source);
   std::wstring Command(TFSCommand Cmd, ...);
+  std::wstring Command(TFSCommand Cmd, va_list args);
   TStrings * CreateCommandList();
   std::wstring FullCommand(TFSCommand Cmd, ...);
+  std::wstring FullCommand(TFSCommand Cmd, va_list args);
   static std::wstring ExtractCommand(std::wstring Command);
   // __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
   int GetMaxLines(TFSCommand Cmd);
@@ -218,10 +220,19 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
   va_list args;
   va_start(args, Cmd);
   if (args)
-      result = FORMAT(GetCommand(Cmd).c_str(), args);
+      result = ::Format(GetCommand(Cmd).c_str(), args);
   else
       result = GetCommand(Cmd);
   va_end(args);
+  DEBUG_PRINTF(L"result = %s", result.c_str());
+  return result;
+}
+//---------------------------------------------------------------------------
+std::wstring TCommandSet::Command(TFSCommand Cmd, va_list args)
+{
+  DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
+  std::wstring result;
+  result = ::Format(GetCommand(Cmd).c_str(), args);
   DEBUG_PRINTF(L"result = %s", result.c_str());
   return result;
 }
@@ -242,6 +253,29 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
     std::wstring LastLineCmdTmp = ::Format(GetCommand(fsLastLine).c_str(), GetLastLine().c_str(), GetReturnVar().c_str());
     DEBUG_PRINTF(L"LastLineCmdTmp = %s", LastLineCmdTmp.c_str());
   }
+  std::wstring LastLineCmd =
+    Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
+  std::wstring FirstLineCmd;
+  if (GetInteractiveCommand(Cmd))
+    FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
+
+  std::wstring Result;
+  if (!Line.empty())
+    Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
+  else
+    Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
+  DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  return Result;
+}
+//---------------------------------------------------------------------------
+std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
+{
+  std::wstring Separator;
+  if (GetOneLineCommand(Cmd))
+    Separator = L" ; ";
+  else
+    Separator = L"\n";
+  std::wstring Line = Command(Cmd, args);
   std::wstring LastLineCmd =
     Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
   std::wstring FirstLineCmd;
