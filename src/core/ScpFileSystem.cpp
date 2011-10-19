@@ -567,7 +567,10 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
     {
       IsLastLine = true;
       DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
-      Line.resize(Pos - 1);
+      // if ((Pos != std::wstring::npos) && (Pos != 0)) 
+      {
+        Line.resize(Pos);
+      }
       DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
     }
   }
@@ -781,6 +784,7 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index]));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
+        DEBUG_PRINTF(L"GetOutput()->GetString(0) = %s", GetOutput()->GetString(0).c_str());
         if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
