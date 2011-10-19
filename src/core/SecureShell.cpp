@@ -812,7 +812,7 @@ std::wstring TSecureShell::ReceiveLine()
 {
   unsigned Index;
   char Ch;
-  std::wstring Line;
+  std::string Line;
   bool EOL = false;
 
   do
@@ -829,7 +829,7 @@ std::wstring TSecureShell::ReceiveLine()
       EOL = (bool)(Index && (Pending[Index-1] == '\n'));
       int PrevLen = Line.size();
       Line.resize(PrevLen + Index);
-      Receive((char *)::W2MB(Line.c_str()).c_str() + PrevLen, Index);
+      Receive((char *)Line.c_str() + PrevLen, Index);
     }
 
     // If buffer don't contain end-of-line character
@@ -843,10 +843,11 @@ std::wstring TSecureShell::ReceiveLine()
   }
   while (!EOL);
 
+  DEBUG_PRINTF(L"Line = %s", ::MB2W(Line.c_str()).c_str());
   // We don't want end-of-line character
   Line.resize(Line.size()-1);
-  CaptureOutput(llOutput, Line);
-  return Line;
+  CaptureOutput(llOutput, ::MB2W(Line.c_str()));
+  return ::MB2W(Line.c_str());
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(int Code)
