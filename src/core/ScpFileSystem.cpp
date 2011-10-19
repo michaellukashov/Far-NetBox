@@ -430,7 +430,8 @@ std::wstring TSCPFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
 bool TSCPFileSystem::IsCapable(int Capability) const
 {
   assert(FTerminal);
-  switch (Capability) {
+  switch (Capability)
+  {
     case fcUserGroupListing:
     case fcModeChanging:
     case fcModeChangingUpload:
