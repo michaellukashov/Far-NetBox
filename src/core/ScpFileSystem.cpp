@@ -561,10 +561,13 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
     // in console window
     std::wstring ReturnCodeStr = Line.substr(Pos + LastLine.size() + 1,
       Line.size() - Pos + LastLine.size());
-    if (TryStrToInt(ReturnCodeStr, ReturnCode))
+    DEBUG_PRINTF(L"ReturnCodeStr = '%s'", ReturnCodeStr.c_str());
+    if (TryStrToInt(ReturnCodeStr, ReturnCode) || (ReturnCodeStr == L"0"))
     {
       IsLastLine = true;
+      DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
       Line.resize(Pos - 1);
+      DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
     }
   }
   return IsLastLine;
