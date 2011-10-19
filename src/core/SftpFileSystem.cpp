@@ -2397,7 +2397,7 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring Path)
   {
     if (FTerminal->GetActive())
     {
-      throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, Path.c_str()));
+      throw ExtException(FMTLOAD(SFTP_REALPATH_ERROR, Path.c_str()), &E);
     }
     else
     {
@@ -3668,7 +3668,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           tfFirstLevel);
         Success = true;
       }
-      catch (const EScpSkipFile & E)
+      catch (const EScpSkipFile &E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
@@ -4662,7 +4662,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
             Flags & ~tfFirstLevel);
         }
       }
-      catch (EScpSkipFile &E)
+      catch (const EScpSkipFile &E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         // If ESkipFile occurs, just log it and continue with next file
@@ -4730,7 +4730,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           Params, OperationProgress, tfFirstLevel);
         Success = true;
       }
-      catch (const EScpSkipFile & E)
+      catch (const EScpSkipFile &E)
       {
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
@@ -5298,7 +5298,7 @@ void TSFTPFileSystem::SFTPSinkFile(std::wstring FileName,
     SFTPSinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (const EScpSkipFile & E)
+  catch (const EScpSkipFile &E)
   {
     TFileOperationProgressType * OperationProgress = Params->OperationProgress;
 

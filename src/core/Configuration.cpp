@@ -460,7 +460,7 @@ void TConfiguration::CleanupConfiguration()
   }
   catch (const std::exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_CONFIG_ERROR));
+    throw ExtException(FMTLOAD(CLEANUP_CONFIG_ERROR), &E);
   }
 }
 //---------------------------------------------------------------------------
@@ -484,7 +484,7 @@ void TConfiguration::CleanupHostKeys()
   }
   catch (const std::exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_HOSTKEYS_ERROR));
+    throw ExtException(FMTLOAD(CLEANUP_HOSTKEYS_ERROR), &E);
   }
 }
 //---------------------------------------------------------------------------
@@ -503,7 +503,7 @@ void TConfiguration::CleanupRandomSeedFile()
   }
   catch (const std::exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_SEEDFILE_ERROR));
+    throw ExtException(FMTLOAD(CLEANUP_SEEDFILE_ERROR), &E);
   }
 }
 //---------------------------------------------------------------------------
@@ -525,7 +525,7 @@ void TConfiguration::CleanupIniFile()
   }
   catch (const std::exception &E)
   {
-    throw ExtException(&E, FMTLOAD(CLEANUP_INIFILE_ERROR));
+    throw ExtException(FMTLOAD(CLEANUP_INIFILE_ERROR), &E);
   }
 }
 //---------------------------------------------------------------------------
@@ -671,7 +671,7 @@ std::wstring TConfiguration::GetVersionStr()
   }
   catch (const std::exception &E)
   {
-    throw ExtException(&E, L"Can't get application version");
+    throw ExtException(L"Can't get application version", &E);
   }
 }
 //---------------------------------------------------------------------------
@@ -690,7 +690,7 @@ std::wstring TConfiguration::GetVersion()
   }
   catch (const std::exception &E)
   {
-    throw ExtException(&E, L"Can't get application version");
+    throw ExtException(L"Can't get application version", &E);
   }
 }
 //---------------------------------------------------------------------------

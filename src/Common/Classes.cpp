@@ -108,6 +108,26 @@ int TStrings::CompareStrings(const std::wstring &S1, const std::wstring &S2)
     return ::AnsiCompareText(S1, S2);
 }
 
+void TStrings::Assign(TPersistent *Source)
+{
+  if (::InheritsFrom<TPersistent, TStrings>(Source))
+  {
+    BeginUpdate();
+    // try
+    {
+      Clear();
+      // FDefined = TStrings(Source).FDefined;
+      FQuoteChar = ((TStrings *)Source)->FQuoteChar;
+      FDelimiter = ((TStrings *)Source)->FDelimiter;
+      AddStrings((TStrings *)(Source));
+    // finally
+      EndUpdate();
+    }
+    return;
+  }
+  TPersistent::Assign(Source);
+}
+
 //---------------------------------------------------------------------------
 int StringListCompareStrings(TStringList *List, int Index1, int Index2)
 {

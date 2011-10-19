@@ -494,7 +494,7 @@ void TNetBoxPlugin::ShowExtendedException(const std::exception *E)
         TStrings *MoreMessages = NULL;
         if (::InheritsFrom<std::exception, ExtException>(E))
         {
-          MoreMessages = ((ExtException *)E)->GetMoreMessages();
+          MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
         }
 
         std::wstring Message = ::TranslateExceptionMessage(E);

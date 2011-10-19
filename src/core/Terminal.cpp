@@ -354,7 +354,7 @@ void TTunnelUI::DisplayBanner(const std::wstring & Banner)
 //---------------------------------------------------------------------------
 void TTunnelUI::FatalError(const std::exception * E, std::wstring Msg)
 {
-  throw ESshFatal(E, Msg);
+  throw ESshFatal(Msg, E);
 }
 //---------------------------------------------------------------------------
 void TTunnelUI::HandleExtendedException(const std::exception * E)
@@ -428,7 +428,7 @@ void TCallbackGuard::FatalError(const std::exception * E, const std::wstring & M
   {
     assert(FFatalError == NULL);
 
-    FFatalError = new ExtException(E, Msg);
+    FFatalError = new ExtException(Msg, E);
   }
 
   // silently abort what we are doing.
@@ -454,7 +454,7 @@ void TCallbackGuard::Verify()
 
     if (FFatalError != NULL)
     {
-      throw ESshFatal(FFatalError, L"");
+      throw ESshFatal(L"", FFatalError);
     }
   }
 }
@@ -1241,7 +1241,7 @@ void TTerminal::TerminalError(std::wstring Msg)
 //---------------------------------------------------------------------------
 void TTerminal::TerminalError(const std::exception * E, std::wstring Msg)
 {
-  throw ETerminal(E, Msg);
+  throw ETerminal(Msg, E);
 }
 //---------------------------------------------------------------------------
 bool TTerminal::DoQueryReopen(const std::exception * E)
@@ -1362,12 +1362,12 @@ bool TTerminal::FileOperationLoopQuery(const std::exception & E,
 
     if (AllowSkip)
     {
-      THROW_SKIP_FILE(&E, Message);
+      THROW_SKIP_FILE(Message, &E);
     }
     else
     {
       // this can happen only during file transfer with SCP
-      throw ExtException(&E, Message);
+      throw ExtException(Message, &E);
     }
   }
 
@@ -1717,7 +1717,7 @@ void TTerminal::FatalError(const std::exception * E, std::wstring Msg)
   }
   else
   {
-    throw ESshFatal(E, Msg);
+    throw ESshFatal(Msg, E);
   }
 }
 //---------------------------------------------------------------------------
@@ -1744,11 +1744,11 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   }
   else if (GetExceptionOnFail())
   {
-    throw ECommand(E, Msg);
+    throw ECommand(Msg, E);
   }
   else if (!Answers)
   {
-    ECommand * ECmd = new ECommand(E, Msg);
+    ECommand * ECmd = new ECommand(Msg, E);
     {
       BOOST_SCOPE_EXIT ( (&ECmd) )
       {
@@ -1806,8 +1806,9 @@ void TTerminal::CloseOnCompletion(TOnceDoneOperation Operation, const std::wstri
 {
   LogEvent(L"Closing session after completed operation (as requested by user)");
   Close();
-  throw ESshTerminate(NULL,
+  throw ESshTerminate(
     Message.empty() ? LoadStr(CLOSED_ON_COMPLETION) : Message,
+    NULL,
     Operation);
 }
 //---------------------------------------------------------------------------
@@ -2085,8 +2086,8 @@ void TTerminal::EnsureNonExistence(const std::wstring FileName)
     TRemoteFile *File = FFiles->FindFile(FileName);
     if (File)
     {
-      if (File->GetIsDirectory()) throw ECommand(NULL, FMTLOAD(RENAME_CREATE_DIR_EXISTS, FileName.c_str()));
-        else throw ECommand(NULL, FMTLOAD(RENAME_CREATE_FILE_EXISTS, FileName.c_str()));
+      if (File->GetIsDirectory()) throw ECommand(FMTLOAD(RENAME_CREATE_DIR_EXISTS, FileName.c_str()), NULL);
+        else throw ECommand(FMTLOAD(RENAME_CREATE_FILE_EXISTS, FileName.c_str()), NULL);
     }
   }
 }
@@ -2571,7 +2572,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Success = true;
             }
           }
-          catch (const EScpSkipFile & E)
+          catch (const EScpSkipFile &E)
           {
             DEBUG_PRINTF(L"before HandleException");
             TFileOperationProgressType *OperationProgress = GetOperationProgress();
