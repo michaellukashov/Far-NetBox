@@ -111,7 +111,7 @@ std::wstring ReplaceChar(std::wstring Str, char A, char B)
 std::wstring DeleteChar(std::wstring Str, char C)
 {
   int P;
-  while ((P = Str.find_first_of(C, 0)) > 0)
+  while ((P = Str.find_first_of(C, 0)) != std::wstring::npos)
   {
     Str.erase(P, 1);
   }
@@ -364,7 +364,7 @@ std::wstring StripPathQuotes(const std::wstring Path)
 std::wstring AddPathQuotes(std::wstring Path)
 {
   Path = StripPathQuotes(Path);
-  if (Path.find_first_of(L" "))
+  if (Path.find_first_of(L" ") != std::wstring::npos)
   {
     Path = L"\"" + Path + L"\"";
   }
@@ -374,11 +374,11 @@ std::wstring AddPathQuotes(std::wstring Path)
 std::wstring ReplaceStrAll(std::wstring Str, std::wstring What, std::wstring ByWhat)
 {
     std::wstring result = Str;
-    size_t pos = result.find_first_of(What);
-    while (pos >= 0)
+    size_t pos = result.find(What);
+    while (pos != std::wstring::npos)
     {
         result.replace(pos, What.size(), ByWhat);
-        pos = result.find_first_of(What);
+        pos = result.find(What);
     }
     return result;
 }
@@ -460,7 +460,7 @@ void ReformatFileNameCommand(std::wstring & Command)
   {
     std::wstring Program, Params, Dir;
     SplitCommand(Command, Program, Params, Dir);
-    if (Params.find_first_of(ShellCommandFileNamePattern) == 0)
+    if (Params.find(ShellCommandFileNamePattern) == 0)
     {
       Params = Params + (Params.empty() ? L"" : L" ") + ShellCommandFileNamePattern;
     }
@@ -1833,7 +1833,7 @@ std::wstring DoEncodeUrl(std::wstring S, std::wstring Chars)
   int i = 1;
   while (i <= S.size())
   {
-    if (Chars.find_first_of(S[i]) > 0)
+    if (Chars.find_first_of(S[i]) != std::wstring::npos)
     {
       std::wstring H = CharToHex(S[i]);
       S.insert(i + 1, H);
@@ -1848,11 +1848,11 @@ std::wstring DoEncodeUrl(std::wstring S, std::wstring Chars)
 std::wstring EncodeUrlChars(std::wstring S, std::wstring Ignore)
 {
   std::wstring Chars;
-  if (Ignore.find_first_of(L' ') == 0)
+  if (Ignore.find_first_of(L' ') == std::wstring::npos)
   {
     Chars += L' ';
   }
-  if (Ignore.find_first_of(L'/') == 0)
+  if (Ignore.find_first_of(L'/') == std::wstring::npos)
   {
     Chars += L'/';
   }
@@ -2165,7 +2165,7 @@ int AnsiPos(const std::wstring str, wchar_t c)
 
 int Pos(const std::wstring str, const std::wstring substr)
 {
-    int result = str.find_first_of(substr);
+    int result = str.find(substr);
     return result == std::wstring::npos ? -1 : result;
 }
 
@@ -2198,7 +2198,7 @@ int LastDelimiter(const std::wstring str, const std::wstring delim)
             return i;
         }
     }
-    return -1;
+    return std::string::npos;
 }
 
 //---------------------------------------------------------------------------
