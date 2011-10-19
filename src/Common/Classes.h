@@ -404,187 +404,38 @@ public:
     }
     virtual ~TStrings()
     {}
-    size_t Add(std::wstring S)
-    {
-        int Result = GetCount();
-        Insert(Result, S);
-        return Result;
-    }
+    size_t Add(std::wstring S);
     virtual size_t GetCount() const = 0;
     virtual void Delete(size_t Index) = 0;
     virtual std::wstring GetString(size_t Index) const = 0;
-    virtual std::wstring GetText()
-    {
-        return GetTextStr();
-    }
-    virtual std::wstring GetTextStr()
-    {
-        std::wstring Result;
-        int I, L, Size, Count;
-        wchar_t *P;
-        std::wstring S, LB;
-
-        Count = GetCount();
-        // DEBUG_PRINTF(L"Count = %d", Count);
-        Size = 0;
-        LB = sLineBreak;
-        for (I = 0; I < Count; I++)
-        {
-            Size += GetString(I).size() + LB.size();
-        }
-        Result.resize(Size);
-        P = (wchar_t *)Result.c_str();
-        for (I = 0; I < Count; I++)
-        {
-          S = GetString(I);
-          // DEBUG_PRINTF(L"  S = %s", S.c_str());
-          L = S.size() * sizeof(wchar_t);
-          if (L != 0)
-          {
-            memcpy(P, S.c_str(), L);
-            P += S.size();
-          };
-          L = LB.size() * sizeof(wchar_t);
-          if (L != 0)
-          {
-            memcpy(P, LB.c_str(), L);
-            P += LB.size();
-          };
-        }
-        return Result;
-    }
-    virtual void SetText(const std::wstring Text)
-    {
-        SetTextStr(Text);
-    }
+    virtual std::wstring GetText();
+    virtual std::wstring GetTextStr();
+    virtual void SetText(const std::wstring Text);
     virtual void SetTextStr(const std::wstring Text);
-    void SetCommaText(std::wstring Value)
-    {
-        SetDelimiter(L',');
-        SetQuoteChar(L'"');
-        SetDelimitedText(Value);
-    }
-    virtual void BeginUpdate()
-    {
-        if (FUpdateCount == 0) 
-          SetUpdateState(true);
-        FUpdateCount++;
-    }
-    virtual void EndUpdate()
-    {
-        FUpdateCount--;
-        if (FUpdateCount == 0)
-            SetUpdateState(false);
-    }
-    virtual void SetUpdateState(bool Updating)
-    {
-    }
-    virtual TObject *GetObject(int Index)
-    {
-        return NULL;
-    }
-    int AddObject(std::wstring S, TObject *AObject)
-    {
-        int Result = Add(S);
-        PutObject(Result, AObject);
-        return Result;
-    }
-    virtual void InsertObject(int Index, std::wstring Key, TObject *AObject)
-    {
-        Insert(Index, Key);
-        PutObject(Index, AObject);
-    }
-
-    bool Equals(TStrings *value)
-    {
-        ::Error(SNotImplemented, 2);
-        return false;
-    }
+    void SetCommaText(std::wstring Value);
+    virtual void BeginUpdate();
+    virtual void EndUpdate();
+    virtual void SetUpdateState(bool Updating);
+    virtual TObject *GetObject(int Index);
+    int AddObject(std::wstring S, TObject *AObject);
+    virtual void InsertObject(int Index, std::wstring Key, TObject *AObject);
+    bool Equals(TStrings *value);
     virtual void Clear() = 0;
-    virtual void PutObject(int Index, TObject *AObject)
-    {
-    }
-    virtual void PutString(int Index, std::wstring S)
-    {
-        TObject *TempObject = GetObject(Index);
-        Delete(Index);
-        InsertObject(Index, S, TempObject);
-    }
-    void SetDuplicates(TDuplicatesEnum value)
-    {
-        FDuplicates = value;
-    }
-    void Move(int CurIndex, int NewIndex)
-    {
-      // ::Error(SNotImplemented, 4);
-      if (CurIndex != NewIndex)
-      {
-        BeginUpdate();
-        // try
-          std::wstring TempString = GetString(CurIndex);
-          TObject *TempObject = GetObject(CurIndex);
-          Delete(CurIndex);
-          InsertObject(NewIndex, TempString, TempObject);
-        // finally
-          EndUpdate();
-        //end;
-      }
-    }
-    int IndexOf(const std::wstring S)
-    {
-      // DEBUG_PRINTF(L"begin");
-      for (size_t Result = 0; Result < GetCount(); Result++)
-      {
-        if (CompareStrings(GetString(Result), S) == 0)
-        {
-            return Result;
-        }
-      }
-      // DEBUG_PRINTF(L"end");
-      return -1;
-    }
-    int IndexOfName(const wchar_t *value)
-    {
-        ::Error(SNotImplemented, 6);
-        return -1;
-    }
-    const std::wstring GetName(int Index)
-    {
-        ::Error(SNotImplemented, 7);
-        return L"";
-    }
-    const std::wstring GetValue(const std::wstring Name)
-    {
-        ::Error(SNotImplemented, 8);
-        return L"";
-    }
-    void SetValue(const std::wstring Name, const std::wstring Value)
-    {
-        ::Error(SNotImplemented, 9);
-    }
+    virtual void PutObject(int Index, TObject *AObject);
+    virtual void PutString(int Index, std::wstring S);
+    void SetDuplicates(TDuplicatesEnum value);
+    void Move(int CurIndex, int NewIndex);
+    int IndexOf(const std::wstring S);
+    virtual int IndexOfName(const std::wstring &Name);
+    const std::wstring GetName(int Index);
+    std::wstring ExtractName(const std::wstring &S);
+    const std::wstring GetValue(const std::wstring Name);
+    void SetValue(const std::wstring Name, const std::wstring Value);
     std::wstring GetCommaText() const;
-    void AddStrings(TStrings *Strings)
-    {
-        // ::Error(SNotImplemented, 10);
-      BeginUpdate();
-      // try
-        for (int I = 0; I < Strings->GetCount(); I++)
-        {
-          AddObject(Strings->GetString(I), Strings->GetObject(I));
-        }
-      // finally
-        EndUpdate();
-      // end;
-    }
-    void Append(const std::wstring &value)
-    {
-        Insert(GetCount(), value);
-    }
+    void AddStrings(TStrings *Strings);
+    void Append(const std::wstring &value);
     virtual void Insert(int Index, const std::wstring AString) = 0;
-    void SaveToStream(TStream *Stream)
-    {
-        ::Error(SNotImplemented, 12);
-    }
+    void SaveToStream(TStream *Stream);
     wchar_t GetDelimiter() const { return FDelimiter; }
     void SetDelimiter(wchar_t value)
     {
