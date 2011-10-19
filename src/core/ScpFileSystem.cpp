@@ -226,8 +226,10 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
 std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
 {
   std::wstring Separator;
-  if (GetOneLineCommand(Cmd)) Separator = L" ; ";
-    else Separator = L"\n";
+  if (GetOneLineCommand(Cmd))
+    Separator = L" ; ";
+  else
+    Separator = L"\n";
   va_list args;
   va_start(args, Cmd);
   std::wstring Line = Command(Cmd, args);
