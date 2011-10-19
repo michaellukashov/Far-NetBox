@@ -653,7 +653,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring * Cmd)
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
-  const std::wstring & CmdString)
+  const std::wstring &CmdString)
 {
   if (Params < 0) Params = ecDefault;
   if (FTerminal->GetUseBusyCursor())
@@ -926,15 +926,15 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         FTerminal->LogEvent(L"Listing current directory.");
         ExecCommand(fsListCurrentDirectory,
-          0, FTerminal->GetSessionData()->GetListingCommand(), Options, Params);
+          0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, Params);
       }
         else
       {
         FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
           (FileList->GetDirectory())));
         ExecCommand(fsListDirectory,
-          0, FTerminal->GetSessionData()->GetListingCommand(), Options,
-            DelimitStr(FileList->GetDirectory()),
+          0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
+            DelimitStr(FileList->GetDirectory().c_str()),
           Params);
       }
 
@@ -1076,7 +1076,7 @@ void TSCPFileSystem::CustomReadFile(const std::wstring FileName,
   // so we use it only if we already know that it is supported (asOn).
   const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
   ExecCommand(fsListFile,
-    Params, FTerminal->GetSessionData()->GetListingCommand(), Options, DelimitStr(FileName).c_str());
+    Params, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str());
   if (FOutput->GetCount())
   {
     int LineIndex = 0;
@@ -1096,31 +1096,31 @@ void TSCPFileSystem::DeleteFile(const std::wstring FileName,
   USEDPARAM(Params);
   Action.Recursive();
   assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
-  ExecCommand(fsDeleteFile, 0, DelimitStr(FileName));
+  ExecCommand(fsDeleteFile, 0, DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ExecCommand(fsRenameFile, 0, DelimitStr(FileName), DelimitStr(NewName));
+  ExecCommand(fsRenameFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CopyFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ExecCommand(fsCopyFile, 0, DelimitStr(FileName), DelimitStr(NewName));
+  ExecCommand(fsCopyFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CreateDirectory(const std::wstring DirName)
 {
-  ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName));
+  ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CreateLink(const std::wstring FileName,
   const std::wstring PointTo, bool Symbolic)
 {
   ExecCommand(fsCreateLink, 0, 
-    Symbolic ? L"-s" : L"", DelimitStr(PointTo), DelimitStr(FileName));
+    Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::ChangeFileToken(const std::wstring & DelimitedName,
@@ -1138,7 +1138,7 @@ void TSCPFileSystem::ChangeFileToken(const std::wstring & DelimitedName,
 
   if (!Str.empty())
   {
-    ExecCommand(Cmd, 0, RecursiveStr, Str, DelimitedName);
+    ExecCommand(Cmd, 0, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
   }
 }
 //---------------------------------------------------------------------------
@@ -1179,7 +1179,7 @@ void TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
     if ((Rights.GetNumberSet() | Rights.GetNumberUnset()) != TRights::rfNo)
     {
       ExecCommand(fsChangeMode,
-        0, RecursiveStr, Rights.GetSimplestStr(), DelimitedName);
+        0, RecursiveStr.c_str(), Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
     }
 
     // if file is directory and we do recursive mode settings with
@@ -1188,7 +1188,7 @@ void TSCPFileSystem::ChangeFileProperties(const std::wstring FileName,
     {
       Rights.AddExecute();
       ExecCommand(fsChangeMode,
-        0, L"", Rights.GetSimplestStr(), DelimitedName);
+        0, L"", Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
     }
   }
   else
@@ -1268,7 +1268,7 @@ void TSCPFileSystem::AnyCommand(const std::wstring Command,
       Self->FOnCaptureOutput.disconnect_all_slots();
       Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
     } BOOST_SCOPE_EXIT_END
-    ExecCommand(fsAnyCommand, 0, Command,
+    ExecCommand(fsAnyCommand, 0, Command.c_str(),
       ecDefault | ecIgnoreWarnings);
   }
 }
@@ -1378,7 +1378,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    0, Options, DelimitStr(UnixExcludeTrailingBackslash(TargetDir))));
+    0, Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
 
   {
@@ -2042,7 +2042,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       {
         bool Success = true; // Have to be set to true (see ::SCPSink)
         SendCommand(FCommandSet->FullCommand(fsCopyToLocal,
-          Options, DelimitStr(FileName)));
+          Options.c_str(), DelimitStr(FileName).c_str()));
         SkipFirstLine();
 
         // Filename is used for error messaging and excluding files only
