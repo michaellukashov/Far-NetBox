@@ -2114,7 +2114,7 @@ std::wstring TrimRight(const std::wstring str)
 {
     std::wstring result = str;
     while (result.size() > 0 && 
-        (result[result.size() - 1] == ' ') || (result[result.size() - 1] == '\n'))
+        ((result[result.size() - 1] == ' ') || (result[result.size() - 1] == '\n')))
     {
         result.resize(result.size() - 1);
     }
