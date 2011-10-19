@@ -879,7 +879,7 @@ int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
     Params.TimerEvent = PoolEvent;
     Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING2, FSessionData->GetTimeout());
     Params.TimerAnswers = qaAbort;
-    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout()),
+    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
   }
   return Answer;
