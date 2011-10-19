@@ -985,8 +985,14 @@ void TRemoteFile::SetListingStr(std::wstring value)
     #define GETNCOL  \
       { if (Line.empty()) throw ExtException(L""); \
         int P = Line.find_first_of(L' '); \
-        if (P) { Col = Line.substr(0, P-1); Line.erase(0, P); } \
-          else { Col = Line; Line = L""; } \
+        if (P != std::wstring::npos) \
+        { \
+            Col = Line.substr(0, P); Line.erase(0, P); \
+        } \
+        else \
+        { \
+            Col = Line; Line = L""; \
+        } \
       }
     #define GETCOL { GETNCOL; Line = ::TrimLeft(Line); }
 
