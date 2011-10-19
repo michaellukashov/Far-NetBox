@@ -822,11 +822,11 @@ std::wstring TSecureShell::ReceiveLine()
     {
       Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
-      while ((Index < PendLen) && (!Index || (Pending[Index-1] != '\n')))
+      while ((Index < PendLen) && (!Index || (Pending[Index] != '\n')))
       {
         Index++;
       }
-      EOL = (bool)(Index && (Pending[Index-1] == '\n'));
+      EOL = (bool)(Index && (Pending[Index] == '\n'));
       int PrevLen = Line.size();
       Line.resize(PrevLen + Index);
       Receive((char *)Line.c_str() + PrevLen, Index);
@@ -843,11 +843,13 @@ std::wstring TSecureShell::ReceiveLine()
   }
   while (!EOL);
 
-  DEBUG_PRINTF(L"Line = %s", ::MB2W(Line.c_str()).c_str());
+  DEBUG_PRINTF(L"Line1 = %s", ::MB2W(Line.c_str()).c_str());
   // We don't want end-of-line character
   Line.resize(Line.size()-1);
-  CaptureOutput(llOutput, ::MB2W(Line.c_str()));
-  return ::MB2W(Line.c_str());
+  std::wstring LineW = ::MB2W(Line.c_str());
+  DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
+  CaptureOutput(llOutput, LineW);
+  return LineW;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(int Code)
@@ -1099,7 +1101,7 @@ void TSecureShell::ClearStdError()
 }
 //---------------------------------------------------------------------------
 void TSecureShell::CaptureOutput(TLogLineType Type,
-  const std::wstring & Line)
+  const std::wstring &Line)
 {
   if (!FOnCaptureOutput.empty())
   {
