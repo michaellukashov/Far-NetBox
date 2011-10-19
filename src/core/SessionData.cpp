@@ -2438,8 +2438,8 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
           for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
             KeyName = KeyList->GetString(KeyIndex);
-            int P = KeyName.find_first_of(HostKeyName);
-            if ((P > 0) && (P == KeyName.size() - HostKeyName.size() + 1))
+            int P = KeyName.find(HostKeyName);
+            if ((P != std::wstring::npos) && (P == KeyName.size() - HostKeyName.size() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,
                 SourceStorage->ReadStringRaw(KeyName, L""));

@@ -533,8 +533,8 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
   if (LastLine.empty()) LastLine = LAST_LINE;
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
-  int Pos = Line.find_first_of(LastLine);
-  if (Pos)
+  int Pos = Line.find(LastLine);
+  if (Pos != std::wstring::npos)
   {
     // 2003-07-14: There must be nothing after return code number to
     // consider string as last line. This fixes bug with 'set' command

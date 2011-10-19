@@ -191,7 +191,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
       assert(P2 > 0);
       Result.erase(P2, P - P2 + 3);
     }
-    while ((P = Result.find_first_of(L"/./")) != std::wstring::npos)
+    while ((P = Result.find(L"/./")) != std::wstring::npos)
     {
       Result.erase(P, 2);
     }
@@ -1181,8 +1181,8 @@ void TRemoteFile::SetListingStr(std::wstring value)
         FLinkTo = L"";
         if (GetIsSymLink())
         {
-          P = Line.find_first_of(SYMLINKSTR);
-          if (P)
+          P = Line.find(SYMLINKSTR);
+          if (P != std::wstring::npos)
           {
             FLinkTo = Line.substr(
               P + std::wstring(SYMLINKSTR).size(), Line.size() - P + std::wstring(SYMLINKSTR).size() + 1);
