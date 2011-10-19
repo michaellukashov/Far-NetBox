@@ -1077,7 +1077,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         for (unsigned int IMonth = 0; IMonth < 12; IMonth++) \
           if (!AnsiCompareIC(Col, ::MB2W(EngShortMonthNames[IMonth]))) { Month = IMonth; Month++; break; }
       COL2MONTH;
-      DEBUG_PRINTF(L"11");
+      DEBUG_PRINTF(L"11: Col = %s", Col.c_str());
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
       if ((Month == 0) && (Col.size() == 10) && (Col[5] == '-') && (Col[8] == '-'))
