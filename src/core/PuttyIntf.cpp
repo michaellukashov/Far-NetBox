@@ -138,8 +138,11 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       for (int Index = 0; Index < int(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
-        wcsncpy((wchar_t *)::MB2W(Prompt->result).c_str(), Results.GetString(Index).c_str(), Prompt->result_len);
-        Prompt->result[Prompt->result_len - 1] = '\0';
+        std::string Str = ::W2MB(Results.GetString(Index).c_str());
+        Prompt->result = strdup(Str.c_str());
+        Prompt->result_len = Str.size();
+        Prompt->result[Prompt->result_len] = '\0';
+        // DEBUG_PRINTF(L"Prompt->result = %s", ::MB2W(Prompt->result).c_str());
       }
       Result = 1;
     }
