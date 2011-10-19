@@ -1016,22 +1016,32 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     GETCOL;
     FINodeBlocks = StrToInt(Col);
+    DEBUG_PRINTF(L"1");
 
     GETCOL;
+    DEBUG_PRINTF(L"2");
     FOwner.SetName(Col);
+    DEBUG_PRINTF(L"3");
+    
 
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
+    DEBUG_PRINTF(L"4");
     GETCOL;
+    DEBUG_PRINTF(L"5");
     __int64 ASize;
     do
     {
       FGroup.SetName(FGroup.GetName() + Col);
+      DEBUG_PRINTF(L"6");
       GETCOL;
+      DEBUG_PRINTF(L"7");
       assert(!Col.empty());
       // for devices etc.. there is additional column ending by comma, we ignore it
       if (Col[Col.size() - 1] == ',') GETCOL;
+      DEBUG_PRINTF(L"8: Col = %s", Col.c_str());
       ASize = StrToInt64Def(Col, -1);
+      DEBUG_PRINTF(L"9");
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
       if (ASize < 0) Col = L" " + Col;
@@ -1048,6 +1058,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
       unsigned int Day, Month, Year, Hour, Min, Sec, P;
 
       GETCOL;
+      DEBUG_PRINTF(L"10");
       // format dd mmm or mmm dd ?
       Day = (unsigned int)StrToIntDef(Col, 0);
       if (Day > 0)
@@ -1060,6 +1071,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         for (unsigned int IMonth = 0; IMonth < 12; IMonth++) \
           if (!AnsiCompareIC(Col, ::MB2W(EngShortMonthNames[IMonth]))) { Month = IMonth; Month++; break; }
       COL2MONTH;
+      DEBUG_PRINTF(L"11");
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
       if ((Month == 0) && (Col.size() == 10) && (Col[5] == '-') && (Col[8] == '-'))
@@ -1164,7 +1176,9 @@ void TRemoteFile::SetListingStr(std::wstring value)
         }
       }
 
+      DEBUG_PRINTF(L"12");
       FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
+      DEBUG_PRINTF(L"13");
       // adjust only when time is known,
       // adjusting default "midnight" time makes no sense
       if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
@@ -1173,11 +1187,13 @@ void TRemoteFile::SetListingStr(std::wstring value)
         FModification = AdjustDateTimeFromUnix(FModification,
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
+      DEBUG_PRINTF(L"14");
 
       if (double(FLastAccess) == 0)
       {
         FLastAccess = FModification;
       }
+      DEBUG_PRINTF(L"15");
 
       // separating space is already deleted, other spaces are treated as part of name
 
@@ -1185,6 +1201,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         int P;
 
         FLinkTo = L"";
+        DEBUG_PRINTF(L"16");
         if (GetIsSymLink())
         {
           P = Line.find(SYMLINKSTR);
