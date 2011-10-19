@@ -216,11 +216,11 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
   DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
   va_list args;
   va_start(args, Cmd);
+  va_end(args);
   if (args)
       return ::Format(GetCommand(Cmd).c_str(), args);
   else
       return GetCommand(Cmd);
-  va_end(args);
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
