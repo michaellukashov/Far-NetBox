@@ -976,9 +976,11 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
+    DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
 
     SetType(Line[0]);
     Line.erase(0, 1);
+    DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
 
     #define GETNCOL  \
       { if (Line.empty()) throw ExtException(L""); \
@@ -995,18 +997,22 @@ void TRemoteFile::SetListingStr(std::wstring value)
     // so we get only first 9 characters and trim all following spaces (if any)
     GetRights()->SetText(Line.substr(0, 9));
     Line.erase(1, 9);
+    DEBUG_PRINTF(L"Line3 = %s", Line.c_str());
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
     if (!Line.empty() && ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
     {
       Line.erase(1, 1);
+      DEBUG_PRINTF(L"Line4 = %s", Line.c_str());
     }
     else if ((Line.size() >= 2) && (Line[1] == ' ') &&
              ((Line[2] == '+') || (Line[2] == '@') || (Line[2] == '.')))
     {
       Line.erase(1, 2);
+      DEBUG_PRINTF(L"Line5 = %s", Line.c_str());
     }
     Line = ::TrimLeft(Line);
+    DEBUG_PRINTF(L"Line6 = %s", Line.c_str());
 
     GETCOL;
     FINodeBlocks = StrToInt(Col);
