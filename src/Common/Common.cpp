@@ -2408,6 +2408,20 @@ std::wstring Format(const wchar_t *format, ...)
 }
 
 //---------------------------------------------------------------------------
+
+std::wstring Format(const wchar_t *format, va_list args)
+{
+    std::wstring result;
+    if (format && *format)
+    {
+        int len = _vscwprintf(format, args);
+        result.resize(len + sizeof(wchar_t));
+        vswprintf_s(&result[0], result.size(), format, args);
+    }
+    return result;
+}
+
+//---------------------------------------------------------------------------
 std::wstring FmtLoadStr(int id, ...)
 {
     // DEBUG_PRINTF(L"begin: id = %d", id)
