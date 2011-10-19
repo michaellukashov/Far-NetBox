@@ -2309,6 +2309,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
+  DEBUG_PRINTF(L"Packet->GetMessageNumber = %d", Packet->GetMessageNumber());
   FPacketNumbers[Packet->GetMessageNumber()] = FPacketReservations->GetCount() - 1;
 }
 //---------------------------------------------------------------------------
