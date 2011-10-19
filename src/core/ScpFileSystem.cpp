@@ -213,33 +213,47 @@ std::wstring TCommandSet::GetCommand(TFSCommand Cmd)
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
 {
+  DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
+  std::wstring result;
   va_list args;
   va_start(args, Cmd);
-  if (args) return FORMAT(GetCommand(Cmd).c_str(), args);
-    else return GetCommand(Cmd);
+  if (args)
+      result = FORMAT(GetCommand(Cmd).c_str(), args);
+  else
+      result = GetCommand(Cmd);
   va_end(args);
+  DEBUG_PRINTF(L"result = %s", result.c_str());
+  return result;
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
 {
   std::wstring Separator;
-  if (GetOneLineCommand(Cmd)) Separator = L" ; ";
-    else Separator = L"\n";
+  if (GetOneLineCommand(Cmd))
+    Separator = L" ; ";
+  else
+    Separator = L"\n";
   va_list args;
   va_start(args, Cmd);
   std::wstring Line = Command(Cmd, args);
   va_end(args);
+  if (0)
+  {
+    std::wstring LastLineCmdTmp = ::Format(GetCommand(fsLastLine).c_str(), GetLastLine().c_str(), GetReturnVar().c_str());
+    DEBUG_PRINTF(L"LastLineCmdTmp = %s", LastLineCmdTmp.c_str());
+  }
   std::wstring LastLineCmd =
-    Command(fsLastLine, GetLastLine(), GetReturnVar().c_str());
+    Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
   std::wstring FirstLineCmd;
   if (GetInteractiveCommand(Cmd))
-    FirstLineCmd = Command(fsFirstLine, GetFirstLine()) + Separator;
+    FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
 
   std::wstring Result;
   if (!Line.empty())
     Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
   else
-    Result = FORMAT(L"%s%s", FirstLineCmd, LastLineCmd);
+    Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
+  DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -256,10 +270,12 @@ std::wstring TCommandSet::GetLastLine()
 std::wstring TCommandSet::GetReturnVar()
 {
   assert(GetSessionData());
-  if (!FReturnVar.empty()) return std::wstring(L"$") + FReturnVar;
-    else
-  if (GetSessionData()->GetDetectReturnVar()) return L"0";
-    else return std::wstring(L"$") + GetSessionData()->GetReturnVar();
+  if (!FReturnVar.empty())
+      return std::wstring(L"$") + FReturnVar;
+  else if (GetSessionData()->GetDetectReturnVar())
+      return L"0";
+  else
+      return std::wstring(L"$") + GetSessionData()->GetReturnVar();
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::ExtractCommand(std::wstring Command)
@@ -425,7 +441,8 @@ std::wstring TSCPFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
 bool TSCPFileSystem::IsCapable(int Capability) const
 {
   assert(FTerminal);
-  switch (Capability) {
+  switch (Capability)
+  {
     case fcUserGroupListing:
     case fcModeChanging:
     case fcModeChangingUpload:
@@ -528,8 +545,8 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
   if (LastLine.empty()) LastLine = LAST_LINE;
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
-  int Pos = Line.find_first_of(LastLine);
-  if (Pos)
+  int Pos = Line.find(LastLine);
+  if (Pos != std::wstring::npos)
   {
     // 2003-07-14: There must be nothing after return code number to
     // consider string as last line. This fixes bug with 'set' command

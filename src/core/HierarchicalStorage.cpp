@@ -60,9 +60,9 @@ std::wstring MungeIniName(const std::wstring Str)
 //---------------------------------------------------------------------------
 std::wstring UnMungeIniName(const std::wstring Str)
 {
-  int P = Str.find_first_of(L"%3D");
+  int P = Str.find(L"%3D");
   // make this fast for now
-  if (P > 0)
+  if (P != std::wstring::npos)
   {
     return ::StringReplace(Str, L"%3D", L"=");
   }

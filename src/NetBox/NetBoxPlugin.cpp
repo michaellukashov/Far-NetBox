@@ -264,8 +264,8 @@ TCustomFarFileSystem * TNetBoxPlugin::OpenPluginEx(int OpenFrom, int Item)
         std::wstring Name = (wchar_t *)Item;
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          int P = Name.find_first_of(L"\1");
-          if (P)
+          int P = Name.find(L"\1");
+          if (P != std::string::npos)
           {
             Directory = Name.substr(P + 1, Name.size() - P);
             Name.resize(P - 1);
