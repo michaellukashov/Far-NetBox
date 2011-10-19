@@ -244,6 +244,7 @@
   <ItemGroup>
     <ResourceCompile Include="NetBox.rc" />
     <ResourceCompile Include="..\resource\TextsCore1.rc" />
+    <ResourceCompile Include="..\resource\TextsCore2.rc" />
     <ResourceCompile Include="..\resource\rtlconsts.rc" />
   </ItemGroup>
   <ItemGroup>

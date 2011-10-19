@@ -160,6 +160,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/NetBox/NetBoxPlugin.cpp
     ${PROJECT_ROOT}/src/NetBox/ProgressWindow.cpp
     ${PROJECT_ROOT}/src/resource/TextsCore1.rc
+    ${PROJECT_ROOT}/src/resource/TextsCore2.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc
 )
 
