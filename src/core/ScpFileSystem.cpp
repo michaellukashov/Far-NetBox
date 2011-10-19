@@ -235,10 +235,10 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
   std::wstring Line = Command(Cmd, args);
   va_end(args);
   std::wstring LastLineCmd =
-    Command(fsLastLine, GetLastLine(), GetReturnVar().c_str());
+    Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
   std::wstring FirstLineCmd;
   if (GetInteractiveCommand(Cmd))
-    FirstLineCmd = Command(fsFirstLine, GetFirstLine()) + Separator;
+    FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
 
   std::wstring Result;
   if (!Line.empty())
