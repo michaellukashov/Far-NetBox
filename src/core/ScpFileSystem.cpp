@@ -217,7 +217,7 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
   va_list args;
   va_start(args, Cmd);
   if (args)
-      return FORMAT(GetCommand(Cmd).c_str(), args);
+      return ::Format(GetCommand(Cmd).c_str(), args);
   else
       return GetCommand(Cmd);
   va_end(args);
@@ -234,8 +234,15 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
   va_start(args, Cmd);
   std::wstring Line = Command(Cmd, args);
   va_end(args);
+  std::wstring ll = GetLastLine();
+  std::wstring rv = GetReturnVar();
+  if (1)
+  {
+    std::wstring LastLineCmdTmp = ::Format(GetCommand(fsLastLine).c_str(), ll.c_str(), rv.c_str());
+    DEBUG_PRINTF(L"LastLineCmdTmp = %s", LastLineCmdTmp.c_str());
+  }
   std::wstring LastLineCmd =
-    Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
+    Command(fsLastLine, ll.c_str(), rv.c_str());
   std::wstring FirstLineCmd;
   if (GetInteractiveCommand(Cmd))
     FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
@@ -261,10 +268,12 @@ std::wstring TCommandSet::GetLastLine()
 std::wstring TCommandSet::GetReturnVar()
 {
   assert(GetSessionData());
-  if (!FReturnVar.empty()) return std::wstring(L"$") + FReturnVar;
-    else
-  if (GetSessionData()->GetDetectReturnVar()) return L"0";
-    else return std::wstring(L"$") + GetSessionData()->GetReturnVar();
+  if (!FReturnVar.empty())
+      return std::wstring(L"$") + FReturnVar;
+  else if (GetSessionData()->GetDetectReturnVar())
+      return L"0";
+  else
+      return std::wstring(L"$") + GetSessionData()->GetReturnVar();
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::ExtractCommand(std::wstring Command)
