@@ -238,7 +238,7 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
   std::wstring rv = GetReturnVar();
   if (1)
   {
-    std::wstring LastLineCmdTmp = ::Format(GetCommand(fsLastLine).c_str(), ll.c_str(), rv.c_str());
+    std::wstring LastLineCmdTmp = ::Format(GetCommand(fsLastLine).c_str(), GetLastLine().c_str(), GetReturnVar().c_str());
     DEBUG_PRINTF(L"LastLineCmdTmp = %s", LastLineCmdTmp.c_str());
   }
   std::wstring LastLineCmd =
