@@ -2395,15 +2395,10 @@ bool RemoveDir(const std::wstring Dir)
 std::wstring Format(const wchar_t *format, ...)
 {
     std::wstring result;
-    if (format && *format)
-    {
-        va_list args;
-        va_start(args, format);
-        int len = _vscwprintf(format, args);
-        result.resize(len + sizeof(wchar_t));
-        vswprintf_s(&result[0], result.size(), format, args);
-        va_end(args);
-    }
+    va_list args;
+    va_start(args, format);
+    result = ::Format(format, args);
+    va_end(args);
     return result;
 }
 
