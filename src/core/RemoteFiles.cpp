@@ -1087,7 +1087,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         Day = (unsigned int)ToInt(Col.substr(8, 2));
         GETCOL;
         DEBUG_PRINTF(L"111: Col = %s", Col.c_str());
-        Hour = (unsigned int)ToInt(Col.substr(9, 2));
+        Hour = (unsigned int)ToInt(Col.substr(0, 2)); // 9, 2));
         Min = (unsigned int)ToInt(Col.substr(3, 2));
         Sec = (unsigned int)ToInt(Col.substr(6, 2));
         FModificationFmt = mfFull;
@@ -1101,6 +1101,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         if (Month == 0)
         {
           GETCOL;
+          DEBUG_PRINTF(L"111: Col = %s", Col.c_str());
           COL2MONTH;
           // neither standard, not --full-time format
           if (Month == 0)
@@ -1117,6 +1118,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         if (Day == 0)
         {
           GETNCOL;
+          DEBUG_PRINTF(L"112: Col = %s", Col.c_str());
           Day = (unsigned int)StrToInt(Col);
         }
         if ((Day < 1) || (Day > 31)) Abort();
@@ -1126,6 +1128,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         if (FullTime)
         {
           GETCOL;
+          DEBUG_PRINTF(L"113: Col = %s", Col.c_str());
           if (Col.size() != 8)
           {
             Abort();
@@ -1136,6 +1139,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           FModificationFmt = mfFull;
           // do not trim leading space of filename
           GETNCOL;
+          DEBUG_PRINTF(L"114: Col = %s", Col.c_str());
           Year = (unsigned int)StrToInt(Col);
         }
         else
@@ -1145,6 +1149,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           if (DayMonthFormat)
           {
             GETCOL;
+            DEBUG_PRINTF(L"115: Col = %s", Col.c_str());
           }
           else
           {
@@ -1157,11 +1162,13 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
+          DEBUG_PRINTF(L"116: Col = %s", Col.c_str());
           if ((P = (unsigned int)Col.find(L':')) != std::wstring::npos)
           {
             unsigned int CurrMonth, CurrDay;
             Hour = (unsigned int)StrToInt(Col.substr(0, P-1));
             Min = (unsigned int)StrToInt(Col.substr(P, Col.size() - P));
+            DEBUG_PRINTF(L"Hour = %d, Min = %d", Hour, Min);
             if (Hour > 23 || Hour > 59) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
@@ -1175,6 +1182,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
             else
           {
             Year = (unsigned int)StrToInt(Col);
+            DEBUG_PRINTF(L"Year = %d", Year);
             if (Year > 10000) Abort();
             // When we don't got time we assume midnight
             Hour = 0; Min = 0; Sec = 0;
@@ -1183,9 +1191,8 @@ void TRemoteFile::SetListingStr(std::wstring value)
         }
       }
 
-      DEBUG_PRINTF(L"12");
+      DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Hour = %d, Min = %d, Sec = %d", Year, Month, Day, Hour, Min, Sec);
       FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
-      DEBUG_PRINTF(L"13");
       // adjust only when time is known,
       // adjusting default "midnight" time makes no sense
       if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
@@ -1194,13 +1201,11 @@ void TRemoteFile::SetListingStr(std::wstring value)
         FModification = AdjustDateTimeFromUnix(FModification,
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
-      DEBUG_PRINTF(L"14");
 
       if (double(FLastAccess) == 0)
       {
         FLastAccess = FModification;
       }
-      DEBUG_PRINTF(L"15");
 
       // separating space is already deleted, other spaces are treated as part of name
 
@@ -1224,6 +1229,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
         }
         FFileName = UnixExtractFileName(Line);
+        DEBUG_PRINTF(L"FFileName = %s", FFileName.c_str());
       }
     }
 

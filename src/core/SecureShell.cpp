@@ -391,7 +391,7 @@ void TSecureShell::Init()
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyLogEvent(const std::wstring & Str)
 {
-  DEBUG_PRINTF(L"Str = %s", Str.c_str());
+  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
   #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.find(std::wstring(SERVER_VERSION_MSG)) == 0)
@@ -415,7 +415,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
   {
     FLastTunnelError = Str.substr(std::wstring(FORWARDING_FAILURE_MSG).size(),
       Str.size() - std::wstring(FORWARDING_FAILURE_MSG).size());
-    DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
+    // DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
     static const TPuttyTranslation Translation[] = {
       { "Administratively prohibited [%]", PFWD_TRANSL_ADMIN },
       { "Connect failed [%]", PFWD_TRANSL_CONNECT },
@@ -673,7 +673,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
   {
     LogEvent(FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
   }
-  DEBUG_PRINTF(L"Data = %s, Length = %d", ::MB2W(Data).c_str(), Length);
+  // DEBUG_PRINTF(L"Data = %s, Length = %d", ::MB2W(Data).c_str(), Length);
 
   // Following is taken from scp.c from_backend() and modified
 
@@ -709,7 +709,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
       }
       memcpy(Pending + PendLen, p, Len);
       PendLen += Len;
-      DEBUG_PRINTF(L"PendLen = %d", PendLen);
+      // DEBUG_PRINTF(L"PendLen = %d", PendLen);
     }
 
     if (!FOnReceive.empty())
@@ -725,7 +725,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
           do
           {
             FDataWhileFrozen = false;
-            DEBUG_PRINTF(L"before FOnReceive");
+            // DEBUG_PRINTF(L"before FOnReceive");
             FOnReceive(NULL);
           }
           while (FDataWhileFrozen);
@@ -822,7 +822,7 @@ std::wstring TSecureShell::ReceiveLine()
   do
   {
     // If there is any buffer of received chars
-    DEBUG_PRINTF(L"PendLen = %d", PendLen);
+    // DEBUG_PRINTF(L"PendLen = %d", PendLen);
     if (PendLen > 0)
     {
       Index = 0;
@@ -832,7 +832,7 @@ std::wstring TSecureShell::ReceiveLine()
         Index++;
       }
       EOL = (bool)(Index && (Pending[Index-1] == '\n'));
-      DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, ::MB2W(Pending).c_str());
+      // DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, ::MB2W(Pending).c_str());
       int PrevLen = Line.size();
       Line.resize(PrevLen + Index);
       Receive((char *)Line.c_str() + PrevLen, Index);
@@ -840,7 +840,7 @@ std::wstring TSecureShell::ReceiveLine()
 
     // If buffer don't contain end-of-line character
     // we read one more which causes receiving new buffer of chars
-    DEBUG_PRINTF(L"EOL = %d", EOL);
+    // DEBUG_PRINTF(L"EOL = %d", EOL);
     if (!EOL)
     {
       Receive(&Ch, 1);
@@ -850,11 +850,11 @@ std::wstring TSecureShell::ReceiveLine()
   }
   while (!EOL);
 
-  DEBUG_PRINTF(L"Line1 = %s", ::MB2W(Line.c_str()).c_str());
+  // DEBUG_PRINTF(L"Line1 = %s", ::MB2W(Line.c_str()).c_str());
   // We don't want end-of-line character
   // Line.resize(Line.size()-1);
   std::wstring LineW = ::MB2W(Line.c_str());
-  DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
+  // DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
   CaptureOutput(llOutput, LineW);
   return LineW;
 }

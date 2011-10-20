@@ -225,10 +225,10 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::Command(TFSCommand Cmd, va_list args)
 {
-  DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
+  // DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
   std::wstring result;
   result = ::Format(GetCommand(Cmd).c_str(), args);
-  DEBUG_PRINTF(L"result = %s", result.c_str());
+  // DEBUG_PRINTF(L"result = %s", result.c_str());
   return result;
 }
 //---------------------------------------------------------------------------
@@ -261,7 +261,7 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
     Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
   else
     Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
-  DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -554,7 +554,7 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
   int Pos = Line.find(LastLine);
-  DEBUG_PRINTF(L"Line = %s, LastLine = %s, Pos = %d", Line.c_str(), LastLine.c_str(), Pos);
+  // DEBUG_PRINTF(L"Line = %s, LastLine = %s, Pos = %d", Line.c_str(), LastLine.c_str(), Pos);
   if (Pos != std::wstring::npos)
   {
     // 2003-07-14: There must be nothing after return code number to
@@ -562,16 +562,16 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
     // in console window
     std::wstring ReturnCodeStr = ::TrimRight(Line.substr(Pos + LastLine.size() + 1,
       Line.size() - Pos + LastLine.size()));
-    DEBUG_PRINTF(L"ReturnCodeStr = '%s'", ReturnCodeStr.c_str());
+    // DEBUG_PRINTF(L"ReturnCodeStr = '%s'", ReturnCodeStr.c_str());
     if (TryStrToInt(ReturnCodeStr, ReturnCode) || (ReturnCodeStr == L"0"))
     {
       IsLastLine = true;
-      DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
+      // DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
       // if ((Pos != std::wstring::npos) && (Pos != 0)) 
       {
         Line.resize(Pos);
       }
-      DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
+      // DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
     }
   }
   return IsLastLine;
@@ -832,6 +832,7 @@ void TSCPFileSystem::ClearAlias(std::wstring Alias)
   {
     // this command usually fails, because there will never be
     // aliases on all commands -> see last false parametr
+    DEBUG_PRINTF(L"Alias = %s", Alias.c_str());
     ExecCommand(fsUnalias, 0, Alias.c_str(), false);
   }
 }
