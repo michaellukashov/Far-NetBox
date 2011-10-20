@@ -2235,10 +2235,12 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         Initialized = true;
 
         // First characted distinguish type of control record
-        char Ctrl = Line[1];
-        Line.erase(1, 1);
+        char Ctrl = Line[0];
+        Line.erase(0, 1);
+        DEBUG_PRINTF(L"Ctrl = %c", Ctrl);
 
-        switch (Ctrl) {
+        switch (Ctrl)
+        {
           case 1:
             // Error (already logged by ReceiveLine())
             THROW_FILE_SKIPPED(FMTLOAD(REMOTE_ERROR, Line.c_str()), NULL);
