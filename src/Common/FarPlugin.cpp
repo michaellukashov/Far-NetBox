@@ -1659,7 +1659,7 @@ unsigned int TCustomFarPlugin::FarSystemSettings()
 //---------------------------------------------------------------------------
 DWORD TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
 {
-    std::wstring Buf;
+    // std::wstring Buf;
     int Param = 0;
     switch (Command)
     {
@@ -1668,7 +1668,7 @@ DWORD TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HAN
     // case FCTL_SETANOTHERPANELDIR:
     case FCTL_SETCMDLINE:
     case FCTL_INSERTCMDLINE:
-        Buf = (wchar_t *)Param2;
+        // Buf = (wchar_t *)Param2;
         // Param = StrToFar(Buf);
         break;
 

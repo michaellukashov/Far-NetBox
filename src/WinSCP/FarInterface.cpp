@@ -45,14 +45,49 @@ std::wstring SshVersionString()
 }
 
 //---------------------------------------------------------------------------
-int StartThread(void * SecurityAttributes, unsigned StackSize,
-  const threadfunc_slot_type &ThreadFunc, void * Parameter, unsigned CreationFlags,
-  unsigned & ThreadId)
+struct TThreadRec
 {
-  ::Error(SNotImplemented, 1002);
-  // FIXME return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
-    // CreationFlags, ThreadId);
-  return 0;
+    TThreadRec(const threadfunc_slot_type &Func, void *Parameter) :
+        Func(Func),
+        Parameter(Parameter)
+    {}
+    const threadfunc_slot_type &Func;
+    void *Parameter;
+};
+//---------------------------------------------------------------------------
+DWORD WINAPI threadstartroutine(TThreadRec *rec)
+{
+    threadfunc_signal_type sig;
+    sig.connect(rec->Func);
+    return sig(rec->Parameter);
+}
+//---------------------------------------------------------------------------
+int BeginThread(void *SecurityAttributes, DWORD StackSize,
+  const threadfunc_slot_type &ThreadFunc, void *Parameter, DWORD CreationFlags,
+  DWORD &ThreadId)
+{
+  TThreadRec *P = new TThreadRec(ThreadFunc, Parameter);
+  HANDLE Result = ::CreateThread((LPSECURITY_ATTRIBUTES)SecurityAttributes,
+    StackSize,
+    (LPTHREAD_START_ROUTINE)&threadstartroutine,
+    P,
+    CreationFlags, &ThreadId);
+  // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
+  return (int)Result;
+}
+
+void EndThread(int ExitCode)
+{
+  ::ExitThread(ExitCode);
+}
+
+//---------------------------------------------------------------------------
+int StartThread(void *SecurityAttributes, unsigned StackSize,
+  const threadfunc_slot_type &ThreadFunc, void *Parameter, unsigned CreationFlags,
+  DWORD &ThreadId)
+{
+  return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
+    CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
 void CopyToClipboard(std::wstring Text)

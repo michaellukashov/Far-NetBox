@@ -121,10 +121,11 @@ protected:
     TCancelStatus &Cancel);
 };
 //---------------------------------------------------------------------------
-// TSignalThread
+// TSimpleThread
 //---------------------------------------------------------------------------
 int TSimpleThread::ThreadProc(void * Thread)
 {
+  DEBUG_PRINTF(L"begin");
   TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread*>(Thread);
   assert(SimpleThread != NULL);
   try
@@ -138,15 +139,13 @@ int TSimpleThread::ThreadProc(void * Thread)
   }
   SimpleThread->FFinished = true;
   SimpleThread->Finished();
+  DEBUG_PRINTF(L"end");
   return 0;
 }
 //---------------------------------------------------------------------------
 TSimpleThread::TSimpleThread() :
   FThread(NULL), FFinished(true)
 {
-  unsigned ThreadID;
-  FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()
@@ -158,6 +157,16 @@ TSimpleThread::~TSimpleThread()
     CloseHandle(FThread);
   }
 }
+
+void TSimpleThread::Init()
+{
+  DWORD ThreadID;
+  FThread = reinterpret_cast<HANDLE>(
+    StartThread(NULL, 0, boost::bind(&TSimpleThread::ThreadProc, _1), this, CREATE_SUSPENDED, ThreadID));
+    // StartThread(NULL, 0, (TThreadFunc *)ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+    // StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+}
+
 //---------------------------------------------------------------------------
 bool TSimpleThread::IsFinished()
 {

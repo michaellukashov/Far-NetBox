@@ -13,7 +13,7 @@ class TSimpleThread
 public:
   TSimpleThread();
   virtual ~TSimpleThread();
-
+  virtual void Init();
   virtual void Start();
   void WaitFor(unsigned int Milliseconds = INFINITE);
   virtual void Terminate() = 0;
@@ -28,6 +28,9 @@ protected:
   virtual void Finished();
 
   static int ThreadProc(void *Thread);
+private:
+  TSimpleThread(const TSimpleThread &);
+  TSimpleThread &operator = (const TSimpleThread &);
 };
 //---------------------------------------------------------------------------
 class TSignalThread : public TSimpleThread

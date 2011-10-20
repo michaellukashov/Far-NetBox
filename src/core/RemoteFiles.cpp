@@ -976,11 +976,10 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
-    DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
+    DEBUG_PRINTF(L"Line = %s", Line.c_str());
 
     SetType(Line[0]);
     Line.erase(0, 1);
-    DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
 
     #define GETNCOL  \
       { if (Line.empty()) throw ExtException(L""); \
@@ -1003,51 +1002,38 @@ void TRemoteFile::SetListingStr(std::wstring value)
     // so we get only first 9 characters and trim all following spaces (if any)
     GetRights()->SetText(Line.substr(0, 9));
     Line.erase(0, 9);
-    DEBUG_PRINTF(L"Line3 = %s", Line.c_str());
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
     if (!Line.empty() && ((Line[0] == '+') || (Line[0] == '@') || (Line[0] == '.')))
     {
       Line.erase(0, 1);
-      DEBUG_PRINTF(L"Line4 = %s", Line.c_str());
     }
     else if ((Line.size() >= 2) && (Line[0] == ' ') &&
              ((Line[1] == '+') || (Line[1] == '@') || (Line[1] == '.')))
     {
       Line.erase(0, 2);
-      DEBUG_PRINTF(L"Line5 = %s", Line.c_str());
     }
     Line = ::TrimLeft(Line);
-    DEBUG_PRINTF(L"Line6 = %s", Line.c_str());
 
     GETCOL;
     FINodeBlocks = StrToInt(Col);
-    DEBUG_PRINTF(L"1");
 
     GETCOL;
-    DEBUG_PRINTF(L"2");
     FOwner.SetName(Col);
-    DEBUG_PRINTF(L"3");
     
 
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
-    DEBUG_PRINTF(L"4");
     GETCOL;
-    DEBUG_PRINTF(L"5");
     __int64 ASize;
     do
     {
       FGroup.SetName(FGroup.GetName() + Col);
-      DEBUG_PRINTF(L"6");
       GETCOL;
-      DEBUG_PRINTF(L"7");
       assert(!Col.empty());
       // for devices etc.. there is additional column ending by comma, we ignore it
       if (Col[Col.size() - 1] == ',') GETCOL;
-      DEBUG_PRINTF(L"8: Col = %s", Col.c_str());
       ASize = StrToInt64Def(Col, -1);
-      DEBUG_PRINTF(L"9");
       // if it's not a number (file size) we take it as part of group name
       // (at least on CygWin, there can be group with space in its name)
       if (ASize < 0) Col = L" " + Col;
@@ -1064,7 +1050,6 @@ void TRemoteFile::SetListingStr(std::wstring value)
       unsigned int Day, Month, Year, Hour, Min, Sec, P;
 
       GETCOL;
-      DEBUG_PRINTF(L"10");
       // format dd mmm or mmm dd ?
       Day = (unsigned int)StrToIntDef(Col, 0);
       if (Day > 0)
@@ -1077,18 +1062,17 @@ void TRemoteFile::SetListingStr(std::wstring value)
         for (unsigned int IMonth = 0; IMonth < 12; IMonth++) \
           if (!AnsiCompareIC(Col, ::MB2W(EngShortMonthNames[IMonth]))) { Month = IMonth; Month++; break; }
       COL2MONTH;
-      DEBUG_PRINTF(L"11: Col = %s", Col.c_str());
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
-      if ((Month == 0) && (Col.size() == 10) && (Col[5] == '-') && (Col[8] == '-'))
+      if ((Month == 0) && (Col.size() == 10) && (Col[4] == '-') && (Col[7] == '-'))
       {
-        Year = (unsigned int)ToInt(Col.substr(1, 4));
-        Month = (unsigned int)ToInt(Col.substr(6, 2));
-        Day = (unsigned int)ToInt(Col.substr(9, 2));
+        Year = (unsigned int)ToInt(Col.substr(0, 4));
+        Month = (unsigned int)ToInt(Col.substr(5, 2));
+        Day = (unsigned int)ToInt(Col.substr(8, 2));
         GETCOL;
-        Hour = (unsigned int)ToInt(Col.substr(1, 2));
-        Min = (unsigned int)ToInt(Col.substr(4, 2));
-        Sec = (unsigned int)ToInt(Col.substr(7, 2));
+        Hour = (unsigned int)ToInt(Col.substr(0, 2)); // 9, 2));
+        Min = (unsigned int)ToInt(Col.substr(3, 2));
+        Sec = (unsigned int)ToInt(Col.substr(6, 2));
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename
@@ -1161,6 +1145,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
             unsigned int CurrMonth, CurrDay;
             Hour = (unsigned int)StrToInt(Col.substr(0, P-1));
             Min = (unsigned int)StrToInt(Col.substr(P, Col.size() - P));
+            // DEBUG_PRINTF(L"Hour = %d, Min = %d", Hour, Min);
             if (Hour > 23 || Hour > 59) Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
@@ -1182,9 +1167,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         }
       }
 
-      DEBUG_PRINTF(L"12");
       FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
-      DEBUG_PRINTF(L"13");
       // adjust only when time is known,
       // adjusting default "midnight" time makes no sense
       if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
@@ -1193,13 +1176,11 @@ void TRemoteFile::SetListingStr(std::wstring value)
         FModification = AdjustDateTimeFromUnix(FModification,
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
-      DEBUG_PRINTF(L"14");
 
       if (double(FLastAccess) == 0)
       {
         FLastAccess = FModification;
       }
-      DEBUG_PRINTF(L"15");
 
       // separating space is already deleted, other spaces are treated as part of name
 
@@ -1207,7 +1188,6 @@ void TRemoteFile::SetListingStr(std::wstring value)
         int P;
 
         FLinkTo = L"";
-        DEBUG_PRINTF(L"16");
         if (GetIsSymLink())
         {
           P = Line.find(SYMLINKSTR);
@@ -1223,6 +1203,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
         }
         FFileName = UnixExtractFileName(Line);
+        DEBUG_PRINTF(L"FFileName = %s", FFileName.c_str());
       }
     }
 
