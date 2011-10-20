@@ -144,8 +144,9 @@ int TSimpleThread::ThreadProc(void * Thread)
 TSimpleThread::TSimpleThread() :
   FThread(NULL), FFinished(true)
 {
-  unsigned ThreadID;
+  DWORD ThreadID;
   FThread = reinterpret_cast<HANDLE>(
+    // StartThread(NULL, 0, boost::bind(&TSimpleThread::ThreadProc, this, _1), this, CREATE_SUSPENDED, ThreadID));
     StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
 }
 //---------------------------------------------------------------------------

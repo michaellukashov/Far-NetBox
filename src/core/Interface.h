@@ -24,8 +24,8 @@ std::wstring AppNameString();
 std::wstring SshVersionString();
 void CopyToClipboard(std::wstring Text);
 int StartThread(void * SecurityAttributes, unsigned StackSize,
-  const threadfunc_slot_type &ThreadFunc, void * Parameter, unsigned CreationFlags,
-  unsigned & ThreadId);
+  const threadfunc_slot_type &ThreadFunc, void *Parameter, unsigned CreationFlags,
+  DWORD &ThreadId);
 
 const unsigned int qaYes =      0x00000001;
 const unsigned int qaNo =       0x00000002;
