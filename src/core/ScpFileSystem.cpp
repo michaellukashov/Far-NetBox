@@ -1079,8 +1079,8 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   TRemoteFile * File = new TRemoteFile(LinkedByFile);
   try
   {
-    File->SetTerminal (FTerminal);
-    File->SetListingStr (ListingStr);
+    File->SetTerminal(FTerminal);
+    File->SetListingStr(ListingStr);
     File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
     File->Complete();
   }
