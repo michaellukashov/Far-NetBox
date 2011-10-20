@@ -665,7 +665,7 @@ void TSecureShell::UnregisterReceiveHandler(const notify_slot_type &Handler)
   FOnReceive.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
+void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
 {
   CheckConnection();
 
@@ -1071,7 +1071,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.find_first_of(L"\n")) != std::wstring::npos)
   {
-    Line = FStdErrorTemp.substr(0, P-1);
+    Line = FStdErrorTemp.substr(0, P);
     FStdErrorTemp.erase(0, P);
     AddStdErrorLine(Line);
   }
