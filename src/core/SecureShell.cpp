@@ -1071,9 +1071,9 @@ void TSecureShell::AddStdError(std::wstring Str)
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.find_first_of(L"\n")) != std::wstring::npos)
   {
-    Line = FStdErrorTemp.substr(0, P);
-    FStdErrorTemp.erase(0, P);
-    DEBUG_PRINTF(L"P = %d, FStdErrorTemp = %s", P, FStdErrorTemp.c_str());
+    Line = ::TrimRight(FStdErrorTemp.substr(0, P));
+    FStdErrorTemp.erase(0, P + 1);
+    DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
     AddStdErrorLine(Line);
   }
 }
@@ -1087,8 +1087,8 @@ void TSecureShell::AddStdErrorLine(const std::wstring &Str)
   if (!::Trim(Str).empty())
   {
     DEBUG_PRINTF(L"Str = %s", ::Trim(Str).c_str());
+    CaptureOutput(llStdError, Str);
   }
-  CaptureOutput(llStdError, Str);
 }
 //---------------------------------------------------------------------------
 const std::wstring & TSecureShell::GetStdError()
