@@ -125,6 +125,7 @@ protected:
 //---------------------------------------------------------------------------
 int TSimpleThread::ThreadProc(void * Thread)
 {
+  DEBUG_PRINTF(L"begin");
   TSimpleThread * SimpleThread = reinterpret_cast<TSimpleThread*>(Thread);
   assert(SimpleThread != NULL);
   try
@@ -138,6 +139,7 @@ int TSimpleThread::ThreadProc(void * Thread)
   }
   SimpleThread->FFinished = true;
   SimpleThread->Finished();
+  DEBUG_PRINTF(L"end");
   return 0;
 }
 //---------------------------------------------------------------------------

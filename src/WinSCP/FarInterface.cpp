@@ -74,6 +74,7 @@ int BeginThread(void *SecurityAttributes, DWORD StackSize,
     (LPTHREAD_START_ROUTINE)threadstartroutine,
     P,
     CreationFlags, &ThreadId);
+  DEBUG_PRINTF(L"Result = %s, ThreadId = %d", Result, ThreadId);
   return (int)Result;
 }
 
