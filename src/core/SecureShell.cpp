@@ -673,7 +673,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
   {
     LogEvent(FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
   }
-  DEBUG_PRINTF(L"IsStdErr = %d, Data = %s, Length = %d", IsStdErr, ::MB2W(Data).c_str(), Length);
+  DEBUG_PRINTF(L"IsStdErr = %d, Length = %d, Data = '%s'", IsStdErr, Length, ::MB2W(Data).c_str());
 
   // Following is taken from scp.c from_backend() and modified
 
@@ -1073,6 +1073,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   {
     Line = FStdErrorTemp.substr(0, P);
     FStdErrorTemp.erase(0, P);
+    DEBUG_PRINTF(L"P = %d, FStdErrorTemp = %s", P, FStdErrorTemp.c_str());
     AddStdErrorLine(Line);
   }
 }
