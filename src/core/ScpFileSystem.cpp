@@ -289,9 +289,9 @@ std::wstring TCommandSet::GetReturnVar()
 std::wstring TCommandSet::ExtractCommand(std::wstring Command)
 {
   int P = Command.find_first_of(L" ");
-  if (P > 0)
+  if (P != std::wstring::npos)
   {
-    Command.resize(P-1);
+    Command.resize(P);
   }
   return Command;
 }
