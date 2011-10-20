@@ -673,7 +673,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
   {
     LogEvent(FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
   }
-  DEBUG_PRINTF(L"IsStdErr = %d, Length = %d, Data = '%s'", IsStdErr, Length, ::MB2W(Data).c_str());
+  // DEBUG_PRINTF(L"IsStdErr = %d, Length = %d, Data = '%s'", IsStdErr, Length, ::MB2W(Data).c_str());
 
   // Following is taken from scp.c from_backend() and modified
 
@@ -1073,7 +1073,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   {
     Line = ::TrimRight(FStdErrorTemp.substr(0, P));
     FStdErrorTemp.erase(0, P + 1);
-    DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
+    // DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
     AddStdErrorLine(Line);
   }
 }
@@ -1086,7 +1086,7 @@ void TSecureShell::AddStdErrorLine(const std::wstring &Str)
   }
   if (!::Trim(Str).empty())
   {
-    DEBUG_PRINTF(L"Str = %s", ::Trim(Str).c_str());
+    // DEBUG_PRINTF(L"Str = %s", ::Trim(Str).c_str());
     CaptureOutput(llStdError, Str);
   }
 }

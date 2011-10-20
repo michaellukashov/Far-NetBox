@@ -842,7 +842,7 @@ void TSCPFileSystem::ClearAlias(std::wstring Alias)
   {
     // this command usually fails, because there will never be
     // aliases on all commands -> see last false parametr
-    DEBUG_PRINTF(L"Alias = %s", Alias.c_str());
+    // DEBUG_PRINTF(L"Alias = %s", Alias.c_str());
     ExecCommand(fsUnalias, 0, Alias.c_str(), false);
   }
 }
