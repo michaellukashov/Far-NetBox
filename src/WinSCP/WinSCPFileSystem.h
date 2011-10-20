@@ -385,7 +385,7 @@ protected:
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, std::wstring & Description,
     std::wstring & Owner, void *& UserData, int & CustomColumnNumber);
-  virtual std::wstring CustomColumnData(int Column);
+  virtual std::wstring GetCustomColumnData(int Column);
   static void TranslateColumnTypes(std::wstring & ColumnTypes,
     TStrings * ColumnTitles);
 };

@@ -114,7 +114,7 @@ void TRemoteFilePanelItem::GetData(
   CustomColumnNumber = 4;
 }
 //---------------------------------------------------------------------------
-std::wstring TRemoteFilePanelItem::CustomColumnData(int Column)
+std::wstring TRemoteFilePanelItem::GetCustomColumnData(int Column)
 {
   switch (Column) {
     case 0: return FRemoteFile->GetGroup().GetName();
