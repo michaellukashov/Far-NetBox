@@ -27,7 +27,8 @@ struct TPuttyTranslation
 };
 //---------------------------------------------------------------------------
 TSecureShell::TSecureShell(TSessionUI* UI,
-  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration)
+  TSessionData * SessionData, TSessionLog * Log, TConfiguration * Configuration) :
+  PendLen(0)
 {
   FUI = UI;
   FSessionData = SessionData;
@@ -672,6 +673,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
   {
     LogEvent(FORMAT(L"Received %u bytes (%d)", Length, int(IsStdErr)));
   }
+  DEBUG_PRINTF(L"Data = %s, Length = %d", ::MB2W(Data).c_str(), Length);
 
   // Following is taken from scp.c from_backend() and modified
 
@@ -707,6 +709,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
       }
       memcpy(Pending + PendLen, p, Len);
       PendLen += Len;
+      DEBUG_PRINTF(L"PendLen = %d", PendLen);
     }
 
     if (!FOnReceive.empty())
@@ -722,6 +725,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char * Data, int Length)
           do
           {
             FDataWhileFrozen = false;
+            DEBUG_PRINTF(L"before FOnReceive");
             FOnReceive(NULL);
           }
           while (FDataWhileFrozen);
@@ -812,12 +816,13 @@ std::wstring TSecureShell::ReceiveLine()
 {
   unsigned Index;
   char Ch;
-  std::wstring Line;
+  std::string Line;
   bool EOL = false;
 
   do
   {
     // If there is any buffer of received chars
+    DEBUG_PRINTF(L"PendLen = %d", PendLen);
     if (PendLen > 0)
     {
       Index = 0;
@@ -827,13 +832,15 @@ std::wstring TSecureShell::ReceiveLine()
         Index++;
       }
       EOL = (bool)(Index && (Pending[Index-1] == '\n'));
+      DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, ::MB2W(Pending).c_str());
       int PrevLen = Line.size();
       Line.resize(PrevLen + Index);
-      Receive((char *)::W2MB(Line.c_str()).c_str() + PrevLen, Index);
+      Receive((char *)Line.c_str() + PrevLen, Index);
     }
 
     // If buffer don't contain end-of-line character
     // we read one more which causes receiving new buffer of chars
+    DEBUG_PRINTF(L"EOL = %d", EOL);
     if (!EOL)
     {
       Receive(&Ch, 1);
@@ -843,10 +850,13 @@ std::wstring TSecureShell::ReceiveLine()
   }
   while (!EOL);
 
+  DEBUG_PRINTF(L"Line1 = %s", ::MB2W(Line.c_str()).c_str());
   // We don't want end-of-line character
-  Line.resize(Line.size()-1);
-  CaptureOutput(llOutput, Line);
-  return Line;
+  // Line.resize(Line.size()-1);
+  std::wstring LineW = ::MB2W(Line.c_str());
+  DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
+  CaptureOutput(llOutput, LineW);
+  return LineW;
 }
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(int Code)
@@ -878,7 +888,7 @@ int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
     Params.TimerEvent = PoolEvent;
     Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING2, FSessionData->GetTimeout());
     Params.TimerAnswers = qaAbort;
-    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout()),
+    Answer = FUI->QueryUser(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout()),
       NULL, qaRetry | qaAbort, &Params);
   }
   return Answer;
@@ -1073,6 +1083,7 @@ void TSecureShell::AddStdErrorLine(const std::wstring & Str)
   {
     FAuthenticationLog += (FAuthenticationLog.empty() ? L"" : L"\n") + Str;
   }
+  DEBUG_PRINTF(L"Str = %s", Str.c_str());
   CaptureOutput(llStdError, Str);
 }
 //---------------------------------------------------------------------------
@@ -1098,7 +1109,7 @@ void TSecureShell::ClearStdError()
 }
 //---------------------------------------------------------------------------
 void TSecureShell::CaptureOutput(TLogLineType Type,
-  const std::wstring & Line)
+  const std::wstring &Line)
 {
   if (!FOnCaptureOutput.empty())
   {

@@ -113,19 +113,235 @@ void TStrings::Assign(TPersistent *Source)
   if (::InheritsFrom<TPersistent, TStrings>(Source))
   {
     BeginUpdate();
-    // try
     {
+        TStrings *Self = this;
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+            Self->EndUpdate();
+        } BOOST_SCOPE_EXIT_END
       Clear();
       // FDefined = TStrings(Source).FDefined;
       FQuoteChar = ((TStrings *)Source)->FQuoteChar;
       FDelimiter = ((TStrings *)Source)->FDelimiter;
       AddStrings((TStrings *)(Source));
-    // finally
-      EndUpdate();
     }
     return;
   }
   TPersistent::Assign(Source);
+}
+
+size_t TStrings::Add(std::wstring S)
+{
+    int Result = GetCount();
+    Insert(Result, S);
+    return Result;
+}
+std::wstring TStrings::GetText()
+{
+    return GetTextStr();
+}
+std::wstring TStrings::GetTextStr()
+{
+    std::wstring Result;
+    int I, L, Size, Count;
+    wchar_t *P;
+    std::wstring S, LB;
+
+    Count = GetCount();
+    // DEBUG_PRINTF(L"Count = %d", Count);
+    Size = 0;
+    LB = sLineBreak;
+    for (I = 0; I < Count; I++)
+    {
+        Size += GetString(I).size() + LB.size();
+    }
+    Result.resize(Size);
+    P = (wchar_t *)Result.c_str();
+    for (I = 0; I < Count; I++)
+    {
+      S = GetString(I);
+      // DEBUG_PRINTF(L"  S = %s", S.c_str());
+      L = S.size() * sizeof(wchar_t);
+      if (L != 0)
+      {
+        memcpy(P, S.c_str(), L);
+        P += S.size();
+      };
+      L = LB.size() * sizeof(wchar_t);
+      if (L != 0)
+      {
+        memcpy(P, LB.c_str(), L);
+        P += LB.size();
+      };
+    }
+    return Result;
+}
+void TStrings::SetText(const std::wstring Text)
+{
+    SetTextStr(Text);
+}
+void TStrings::SetCommaText(std::wstring Value)
+{
+    SetDelimiter(L',');
+    SetQuoteChar(L'"');
+    SetDelimitedText(Value);
+}
+void TStrings::BeginUpdate()
+{
+    if (FUpdateCount == 0) 
+      SetUpdateState(true);
+    FUpdateCount++;
+}
+void TStrings::EndUpdate()
+{
+    FUpdateCount--;
+    if (FUpdateCount == 0)
+        SetUpdateState(false);
+}
+void TStrings::SetUpdateState(bool Updating)
+{
+}
+TObject *TStrings::GetObject(int Index)
+{
+    return NULL;
+}
+int TStrings::AddObject(std::wstring S, TObject *AObject)
+{
+    int Result = Add(S);
+    PutObject(Result, AObject);
+    return Result;
+}
+void TStrings::InsertObject(int Index, std::wstring Key, TObject *AObject)
+{
+    Insert(Index, Key);
+    PutObject(Index, AObject);
+}
+
+bool TStrings::Equals(TStrings *value)
+{
+    ::Error(SNotImplemented, 2);
+    return false;
+}
+void TStrings::PutObject(int Index, TObject *AObject)
+{
+}
+void TStrings::PutString(int Index, std::wstring S)
+{
+    TObject *TempObject = GetObject(Index);
+    Delete(Index);
+    InsertObject(Index, S, TempObject);
+}
+void TStrings::SetDuplicates(TDuplicatesEnum value)
+{
+    FDuplicates = value;
+}
+void TStrings::Move(int CurIndex, int NewIndex)
+{
+  if (CurIndex != NewIndex)
+  {
+    BeginUpdate();
+    {
+        TStrings *Self = this;
+        BOOST_SCOPE_EXIT ( (&Self) )
+        {
+            Self->EndUpdate();
+        } BOOST_SCOPE_EXIT_END
+      std::wstring TempString = GetString(CurIndex);
+      TObject *TempObject = GetObject(CurIndex);
+      Delete(CurIndex);
+      InsertObject(NewIndex, TempString, TempObject);
+    }
+  }
+}
+int TStrings::IndexOf(const std::wstring S)
+{
+  // DEBUG_PRINTF(L"begin");
+  for (size_t Result = 0; Result < GetCount(); Result++)
+  {
+    if (CompareStrings(GetString(Result), S) == 0)
+    {
+        return Result;
+    }
+  }
+  // DEBUG_PRINTF(L"end");
+  return -1;
+}
+int TStrings::IndexOfName(const std::wstring &Name)
+{
+  int Result = -1;
+  for (Result = 0; Result < GetCount(); Result++)
+  {
+    std::wstring S = GetString(Result);
+    int P = ::AnsiPos(S, L'=');
+    if ((P != std::wstring::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
+    {
+        return Result;
+    }
+  }
+  Result = -1;
+  return Result;
+}
+const std::wstring TStrings::GetName(int Index)
+{
+    return ExtractName(GetString(Index));
+}
+std::wstring TStrings::ExtractName(const std::wstring &S)
+{
+   std::wstring Result = S;
+   int P = ::AnsiPos(Result, L'=');
+   if (P != std::wstring::npos)
+    Result.resize(P);
+   else
+    Result.resize(0);
+   return Result;
+}
+const std::wstring TStrings::GetValue(const std::wstring Name)
+{
+  std::wstring Result;
+  int I = IndexOfName(Name);
+  if (I >= 0)
+  {
+    Result = GetString(I).substr(Name.size() + 1, -1);
+  }
+  return Result;
+}
+void TStrings::SetValue(const std::wstring Name, const std::wstring Value)
+{
+  int I = IndexOfName(Name);
+  if (!Value.empty())
+  {
+    if (I == std::wstring::npos)
+        I = Add(L"");
+    PutString(I, Name + L'=' + Value);
+  }
+  else
+  {
+    if (I != std::wstring::npos)
+        Delete(I);
+  }
+}
+void TStrings::AddStrings(TStrings *Strings)
+{
+  BeginUpdate();
+  {
+    TStrings *Self = this;
+    BOOST_SCOPE_EXIT ( (&Self) )
+    {
+        Self->EndUpdate();
+    } BOOST_SCOPE_EXIT_END
+    for (int I = 0; I < Strings->GetCount(); I++)
+    {
+      AddObject(Strings->GetString(I), Strings->GetObject(I));
+    }
+  }
+}
+void TStrings::Append(const std::wstring &value)
+{
+    Insert(GetCount(), value);
+}
+void TStrings::SaveToStream(TStream *Stream)
+{
+    ::Error(SNotImplemented, 12);
 }
 
 //---------------------------------------------------------------------------

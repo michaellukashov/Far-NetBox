@@ -461,4 +461,11 @@ BOOST_FIXTURE_TEST_CASE(test18, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
+{
+    TStringList Strings1;
+    Strings1.Add(L"Name1=Value1");
+    BOOST_CHECK(0 == Strings1.IndexOfName(L"Name1"));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

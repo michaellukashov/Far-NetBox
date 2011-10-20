@@ -325,6 +325,7 @@ bool InheritsFrom(const Base *t)
 
 //---------------------------------------------------------------------------
 std::wstring Format(const wchar_t *format, ...);
+std::wstring Format(const wchar_t *format, va_list args);
 std::wstring FmtLoadStr(int id, ...);
 //---------------------------------------------------------------------------
 std::wstring WrapText(const std::wstring Line, int MaxCol = 40);
