@@ -5,6 +5,8 @@
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
+#include "boost/date_time.hpp"
+#include "boost/date_time/local_time/local_time.hpp"
 
 #include "Common.h"
 #include "Exceptions.h"
@@ -1632,9 +1634,21 @@ void DecodeTime(const TDateTime &DateTime, unsigned int &Hour,
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
 {
-    ::Error(SNotImplemented, 59);
-    std::wstring result;
-    return result;
+    DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
+    // ::Error(SNotImplemented, 59);
+    std::wstring Result;
+    // DateTimeToString(Result, fmt, DateTime);
+    boost::local_time::local_time_facet *output_facet = new boost::local_time::local_time_facet();
+    std::wstringstream ss;
+    ss.imbue(std::locale(std::locale::classic(), output_facet));
+    output_facet->format(::W2MB(fmt.c_str()).c_str());
+    // boost::local_time::local_date_time ldt;
+    unsigned int Y, M, D;
+    DateTime.DecodeDate(Y, M, D);
+    bg::date d(Y, M, D);
+    ss << d;
+    Result = ss.str();
+    return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -2282,6 +2296,7 @@ double StrToFloat(std::wstring Value)
 
 std::wstring FormatFloat(std::wstring Format, double value)
 {
+    DEBUG_PRINTF(L"Format = %s", Format.c_str());
     // FIXME
     ::Error(SNotImplemented, 78);
     return std::wstring(L"");
