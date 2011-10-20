@@ -2302,7 +2302,7 @@ std::wstring FormatFloat(std::wstring Format, double value)
     // ::Error(SNotImplemented, 78);
     std::wstring result(20, 0);
     swprintf_s(&result[0], result.size(), L"%.2f", value);
-    return result;
+    return result.c_str();
 }
 
 //---------------------------------------------------------------------------
