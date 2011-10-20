@@ -468,4 +468,11 @@ BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
     BOOST_CHECK(0 == Strings1.IndexOfName(L"Name1"));
 }
 
+BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
+{
+    TDateTime DateTime = Now();
+    std::wstring str = ::FormatDateTime(L"HH:MM:SS", DateTime);
+    BOOST_CHECK("str" == ::W2MB(str.c_str()));
+}
+
 BOOST_AUTO_TEST_SUITE_END()
