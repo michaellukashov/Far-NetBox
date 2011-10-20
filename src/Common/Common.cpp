@@ -771,8 +771,8 @@ std::wstring CharToHex(char Ch, bool UpperCase)
   const char * Digits = (UpperCase ? UpperDigits : LowerDigits);
   std::wstring Result;
   Result.resize(2);
-  Result[1] = Digits[((unsigned char)Ch & 0xF0) >> 4];
-  Result[2] = Digits[ (unsigned char)Ch & 0x0F];
+  Result[0] = Digits[((unsigned char)Ch & 0xF0) >> 4];
+  Result[1] = Digits[ (unsigned char)Ch & 0x0F];
   return Result;
 }
 //---------------------------------------------------------------------------
