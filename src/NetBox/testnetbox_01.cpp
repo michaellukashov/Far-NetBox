@@ -472,7 +472,16 @@ BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
 {
     TDateTime DateTime = Now();
     std::wstring str = ::FormatDateTime(L"HH:MM:SS", DateTime);
-    BOOST_CHECK("str" == ::W2MB(str.c_str()));
+    BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+    // BOOST_CHECK(str == L"20:20:20");
+}
+
+BOOST_FIXTURE_TEST_CASE(test21, base_fixture_t)
+{
+    std::wstring str = ::FormatFloat(L"#,##0", 23.456);
+    BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
+    // BOOST_CHECK(str.c_str() == L"23.46");
+    BOOST_CHECK("23.46" == ::W2MB(str.c_str()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
