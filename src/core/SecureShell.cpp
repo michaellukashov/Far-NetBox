@@ -853,7 +853,7 @@ std::wstring TSecureShell::ReceiveLine()
   // DEBUG_PRINTF(L"Line1 = %s", ::MB2W(Line.c_str()).c_str());
   // We don't want end-of-line character
   // Line.resize(Line.size()-1);
-  std::wstring LineW = ::MB2W(Line.c_str());
+  std::wstring LineW = ::TrimRight(::MB2W(Line.c_str()));
   // DEBUG_PRINTF(L"Line2 = %s", LineW.c_str());
   CaptureOutput(llOutput, LineW);
   return LineW;
