@@ -229,7 +229,7 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, va_list args)
   std::wstring result;
   result = ::Format(GetCommand(Cmd).c_str(), args);
   // DEBUG_PRINTF(L"result = %s", result.c_str());
-  return result;
+  return result.c_str();
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
@@ -239,7 +239,7 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
   va_start(args, Cmd);
   Result = FullCommand(Cmd, args);
   va_end(args);
-  return Result;
+  return Result.c_str();
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
@@ -254,7 +254,10 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
     Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
   std::wstring FirstLineCmd;
   if (GetInteractiveCommand(Cmd))
+  {
     FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
+    // DEBUG_PRINTF(L"FirstLineCmd1 = '%s'", FirstLineCmd.c_str());
+  }
 
   std::wstring Result;
   if (!Line.empty())
