@@ -2297,9 +2297,12 @@ double StrToFloat(std::wstring Value)
 std::wstring FormatFloat(std::wstring Format, double value)
 {
     DEBUG_PRINTF(L"Format = %s", Format.c_str());
+    // #,##0 "B"
     // FIXME
-    ::Error(SNotImplemented, 78);
-    return std::wstring(L"");
+    // ::Error(SNotImplemented, 78);
+    std::wstring result(20, 0);
+    swprintf_s(&result[0], result.size(), L"%.2f", value);
+    return result;
 }
 
 //---------------------------------------------------------------------------
