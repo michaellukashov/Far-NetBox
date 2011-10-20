@@ -492,7 +492,7 @@ std::wstring TSCPFileSystem::DelimitStr(std::wstring Str)
   if (!Str.empty())
   {
     Str = ::DelimitStr(Str, L"\\`$\"");
-    if (Str[1] == L'-') Str = L"./" + Str;
+    if (Str[0] == L'-') Str = L"./" + Str;
   }
   return Str;
 }
