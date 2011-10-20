@@ -1080,15 +1080,16 @@ void TRemoteFile::SetListingStr(std::wstring value)
       DEBUG_PRINTF(L"11: Col = %s", Col.c_str());
       // if the column is not known month name, it may have been "yyyy-mm-dd"
       // for --full-time format
-      if ((Month == 0) && (Col.size() == 10) && (Col[5] == '-') && (Col[8] == '-'))
+      if ((Month == 0) && (Col.size() == 10) && (Col[4] == '-') && (Col[7] == '-'))
       {
-        Year = (unsigned int)ToInt(Col.substr(1, 4));
-        Month = (unsigned int)ToInt(Col.substr(6, 2));
-        Day = (unsigned int)ToInt(Col.substr(9, 2));
+        Year = (unsigned int)ToInt(Col.substr(0, 4));
+        Month = (unsigned int)ToInt(Col.substr(5, 2));
+        Day = (unsigned int)ToInt(Col.substr(8, 2));
         GETCOL;
-        Hour = (unsigned int)ToInt(Col.substr(1, 2));
-        Min = (unsigned int)ToInt(Col.substr(4, 2));
-        Sec = (unsigned int)ToInt(Col.substr(7, 2));
+        DEBUG_PRINTF(L"111: Col = %s", Col.c_str());
+        Hour = (unsigned int)ToInt(Col.substr(9, 2));
+        Min = (unsigned int)ToInt(Col.substr(3, 2));
+        Sec = (unsigned int)ToInt(Col.substr(6, 2));
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename
