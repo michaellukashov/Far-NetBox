@@ -1077,13 +1077,16 @@ void TSecureShell::AddStdError(std::wstring Str)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AddStdErrorLine(const std::wstring & Str)
+void TSecureShell::AddStdErrorLine(const std::wstring &Str)
 {
   if (FAuthenticating)
   {
     FAuthenticationLog += (FAuthenticationLog.empty() ? L"" : L"\n") + Str;
   }
-  DEBUG_PRINTF(L"Str = %s", Str.c_str());
+  if (!::Trim(Str).empty())
+  {
+    DEBUG_PRINTF(L"Str = %s", ::Trim(Str).c_str());
+  }
   CaptureOutput(llStdError, Str);
 }
 //---------------------------------------------------------------------------
