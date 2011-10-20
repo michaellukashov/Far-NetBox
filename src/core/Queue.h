@@ -28,6 +28,9 @@ protected:
   virtual void Finished();
 
   static int ThreadProc(void *Thread);
+private:
+  TSimpleThread(const TSimpleThread &);
+  TSimpleThread &operator = (const TSimpleThread &);
 };
 //---------------------------------------------------------------------------
 class TSignalThread : public TSimpleThread

@@ -47,31 +47,39 @@ std::wstring SshVersionString()
 //---------------------------------------------------------------------------
 struct TThreadRec
 {
-    const threadfunc_slot_type *Func;
+    TThreadRec(const threadfunc_slot_type &Func, void *Parameter) :
+    // TThreadRec(TThreadFunc *Func, void *Parameter) :
+        Func(Func),
+        Parameter(Parameter)
+    {}
+    const threadfunc_slot_type &Func;
+    // TThreadFunc *Func;
     void *Parameter;
 };
 //---------------------------------------------------------------------------
-int threadstartroutine(TThreadRec *rec)
+DWORD WINAPI threadstartroutine(TThreadRec *rec)
 {
-    if (rec->Func)
+    // if (rec->Func)
     {
         threadfunc_signal_type sig;
-        sig.connect(*rec->Func);
+        sig.connect(rec->Func);
         return sig(rec->Parameter);
+        // return (*rec->Func)(rec->Parameter);
     }
     return 0;
 }
 //---------------------------------------------------------------------------
 int BeginThread(void *SecurityAttributes, DWORD StackSize,
-  const threadfunc_slot_type *ThreadFunc, void *Parameter, DWORD CreationFlags,
+  const threadfunc_slot_type &ThreadFunc, void *Parameter, DWORD CreationFlags,
+  // TThreadFunc *ThreadFunc, void *Parameter, DWORD CreationFlags,
   DWORD &ThreadId)
 {
-  TThreadRec *P = new TThreadRec;
-  P->Func = ThreadFunc;
-  P->Parameter = Parameter;
+  TThreadRec *P = new TThreadRec(ThreadFunc, Parameter);
+  // P->Func = ThreadFunc;
+  // P->Parameter = Parameter;
   HANDLE Result = ::CreateThread((LPSECURITY_ATTRIBUTES)SecurityAttributes,
     StackSize,
-    (LPTHREAD_START_ROUTINE)threadstartroutine,
+    (LPTHREAD_START_ROUTINE)&threadstartroutine,
     P,
     CreationFlags, &ThreadId);
   DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
@@ -89,8 +97,19 @@ int StartThread(void *SecurityAttributes, unsigned StackSize,
   DWORD &ThreadId)
 {
   // ::Error(SNotImplemented, 1002);
-  return BeginThread(SecurityAttributes, StackSize, &ThreadFunc, Parameter,
+  return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
     CreationFlags, ThreadId);
+  // return 0;
+}
+//---------------------------------------------------------------------------
+int StartThread(void *SecurityAttributes, unsigned StackSize,
+  TThreadFunc *ThreadFunc, void *Parameter, unsigned CreationFlags,
+  DWORD &ThreadId)
+{
+  ::Error(SNotImplemented, 1002);
+  // return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
+    // CreationFlags, ThreadId);
+  return 0;
 }
 //---------------------------------------------------------------------------
 void CopyToClipboard(std::wstring Text)

@@ -121,7 +121,7 @@ protected:
     TCancelStatus &Cancel);
 };
 //---------------------------------------------------------------------------
-// TSignalThread
+// TSimpleThread
 //---------------------------------------------------------------------------
 int TSimpleThread::ThreadProc(void * Thread)
 {
@@ -148,8 +148,8 @@ TSimpleThread::TSimpleThread() :
 {
   DWORD ThreadID;
   FThread = reinterpret_cast<HANDLE>(
-    // StartThread(NULL, 0, boost::bind(&TSimpleThread::ThreadProc, this, _1), this, CREATE_SUSPENDED, ThreadID));
-    StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+    StartThread(NULL, 0, boost::bind(&TSimpleThread::ThreadProc, _1), this, CREATE_SUSPENDED, ThreadID));
+    // StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()

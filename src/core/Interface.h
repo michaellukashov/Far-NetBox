@@ -10,7 +10,7 @@
 #include "SessionData.h"
 #define HELP_NONE L""
 //---------------------------------------------------------------------------
-// typedef int (TObject::*TThreadFunc)(void *Parameter);
+typedef int (*TThreadFunc)(void *Parameter);
 typedef boost::signal1<int, void *> threadfunc_signal_type;
 typedef threadfunc_signal_type::slot_type threadfunc_slot_type;
 //---------------------------------------------------------------------------
@@ -25,6 +25,9 @@ std::wstring SshVersionString();
 void CopyToClipboard(std::wstring Text);
 int StartThread(void * SecurityAttributes, unsigned StackSize,
   const threadfunc_slot_type &ThreadFunc, void *Parameter, unsigned CreationFlags,
+  DWORD &ThreadId);
+int StartThread(void *SecurityAttributes, unsigned StackSize,
+  TThreadFunc *ThreadFunc, void *Parameter, unsigned CreationFlags,
   DWORD &ThreadId);
 
 const unsigned int qaYes =      0x00000001;
