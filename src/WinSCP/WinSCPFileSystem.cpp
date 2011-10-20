@@ -2967,6 +2967,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 
     assert(FQueue == NULL);
     FQueue = new TTerminalQueue(FTerminal, Configuration);
+    FQueue->Init();
     FQueue->SetTransfersLimit(GUIConfiguration->GetQueueTransfersLimit());
     FQueue->SetOnQueryUser(boost::bind(&TWinSCPFileSystem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
     FQueue->SetOnPromptUser(boost::bind(&TWinSCPFileSystem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));

@@ -13,7 +13,7 @@ class TSimpleThread
 public:
   TSimpleThread();
   virtual ~TSimpleThread();
-
+  virtual void Init();
   virtual void Start();
   void WaitFor(unsigned int Milliseconds = INFINITE);
   virtual void Terminate() = 0;
