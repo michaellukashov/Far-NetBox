@@ -679,7 +679,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
 
   if (IsStdErr)
   {
-    AddStdError(std::wstring(::MB2W(Data), Length));
+    AddStdError(std::wstring(::MB2W(Data)));
   }
   else
   {
