@@ -1820,13 +1820,13 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
           // side already know, that file transfer finished, even if it failed
           // so we don't have to throw EFatal
         }
-        catch (EScp &E)
+        catch (const EScp &E)
         {
           // SCP protocol fatal error
           OperationProgress->TransferingFile = false;
           throw;
         }
-        catch (EScpFileSkipped &E)
+        catch (const EScpFileSkipped &E)
         {
           // SCP protocol non-fatal error
           OperationProgress->TransferingFile = false;
@@ -1970,7 +1970,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         // Previously we catched EScpSkipFile, making error being displayed
         // even when file was excluded by mask. Now the EScpSkipFile is special
         // case without error message.
-        catch (EScpFileSkipped &E)
+        catch (const EScpFileSkipped &E)
         {
           TQueryParams Params(qpAllowContinueOnError);
           DEBUG_PRINTF(L"before FTerminal->HandleException");
@@ -2499,12 +2499,12 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                 // If one of following exception occurs, we still need
                 // to send confirmation to other side
               }
-              catch (EScp &E)
+              catch (const EScp &E)
               {
                 FSecureShell->SendNull();
                 throw;
               }
-              catch (EScpFileSkipped &E)
+              catch (const EScpFileSkipped &E)
               {
                 FSecureShell->SendNull();
                 throw;
@@ -2542,7 +2542,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         }
       }
     }
-    catch (EScpFileSkipped &E)
+    catch (const EScpFileSkipped &E)
     {
       if (!SkipConfirmed)
       {
