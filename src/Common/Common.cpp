@@ -1238,31 +1238,30 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   TDateTimeParams * Params = GetDateTimeParams();
 
   TDateTime Result;
-  ::Error(SNotImplemented, 49);
-  Result = TDateTime(); // FIXME Params->UnixEpoch + (double(TimeStamp) / 86400);
+  DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
+  // ::Error(SNotImplemented, 49);
+  Result = TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
 
   if (Params->DaylightHack)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      // Result -= Params->CurrentDifference;
+      Result = Result - Params->CurrentDifference;
     }
     else if (DSTMode == dstmKeep)
     {
-      // Result -= Params->BaseDifference;
+      Result = Result - Params->BaseDifference;
     }
   }
   else
   {
-    // Result -= Params->BaseDifference;
+    Result = Result - Params->BaseDifference;
   }
-/*
   if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
   {
-    Result -= (IsDateInDST(Result) ?
+    Result = Result - (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
   }
-*/
   return Result;
 }
 //---------------------------------------------------------------------------
