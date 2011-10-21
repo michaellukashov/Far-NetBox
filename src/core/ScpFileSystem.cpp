@@ -538,6 +538,7 @@ void TSCPFileSystem::SendCommand(const std::wstring Cmd)
   FOutput->Clear();
   // We suppose, that 'Cmd' already contains command that ensures,
   // that 'LastLine' will be printed
+  DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
   FSecureShell->SendLine(Cmd);
   FProcessingCommand = true;
 }
@@ -1377,6 +1378,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 
       if (Resp == 1)
       {
+        DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
         THROW_FILE_SKIPPED(Msg, NULL);
       }
         else
@@ -1407,6 +1409,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   if (CopyParam->GetPreserveRights()) Options = L"-p";
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
+  DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
     0, Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
@@ -1820,13 +1823,13 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
           // side already know, that file transfer finished, even if it failed
           // so we don't have to throw EFatal
         }
-        catch (EScp &E)
+        catch (const EScp &E)
         {
           // SCP protocol fatal error
           OperationProgress->TransferingFile = false;
           throw;
         }
-        catch (EScpFileSkipped &E)
+        catch (const EScpFileSkipped &E)
         {
           // SCP protocol non-fatal error
           OperationProgress->TransferingFile = false;
@@ -1970,7 +1973,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         // Previously we catched EScpSkipFile, making error being displayed
         // even when file was excluded by mask. Now the EScpSkipFile is special
         // case without error message.
-        catch (EScpFileSkipped &E)
+        catch (const EScpFileSkipped &E)
         {
           TQueryParams Params(qpAllowContinueOnError);
           DEBUG_PRINTF(L"before FTerminal->HandleException");
@@ -2078,6 +2081,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
         std::wstring FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
+        DEBUG_PRINTF(L"FileName = '%s', FullFileName = '%s'", FileName.c_str(), FullFileName.c_str());
         SCPSink(TargetDir, FullFileName, UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeded (no exception), so it's ok that
@@ -2142,6 +2146,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 void TSCPFileSystem::SCPError(const std::wstring Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
+  DEBUG_PRINTF(L"Message = %s", Message.c_str());
   THROW_FILE_SKIPPED(Message, NULL);
 }
 //---------------------------------------------------------------------------
@@ -2301,6 +2306,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
           OperationProgress->SetFile(OnlyFileName);
           AbsoluteFileName = SourceDir + OnlyFileName;
+          DEBUG_PRINTF(L"AbsoluteFileName = '%s', OnlyFileName = '%s'", AbsoluteFileName.c_str(), OnlyFileName.c_str());
           OperationProgress->SetTransferSize(TSize);
         }
         catch (const std::exception &E)
@@ -2499,12 +2505,12 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                 // If one of following exception occurs, we still need
                 // to send confirmation to other side
               }
-              catch (EScp &E)
+              catch (const EScp &E)
               {
                 FSecureShell->SendNull();
                 throw;
               }
-              catch (EScpFileSkipped &E)
+              catch (const EScpFileSkipped &E)
               {
                 FSecureShell->SendNull();
                 throw;
@@ -2542,12 +2548,13 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         }
       }
     }
-    catch (EScpFileSkipped &E)
+    catch (const EScpFileSkipped &E)
     {
       if (!SkipConfirmed)
       {
         SUSPEND_OPERATION (
           TQueryParams Params(qpAllowContinueOnError);
+          DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
           if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
                 &E, qaOK | qaAbort, &Params, qtError) == qaAbort)
           {

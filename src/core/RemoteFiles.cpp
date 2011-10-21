@@ -74,9 +74,9 @@ std::wstring UnixExtractFileName(const std::wstring Path)
 {
   int Pos = ::LastDelimiter(Path, L"/");
   std::wstring Result;
-  if (Pos > 0)
+  if (Pos != std::wstring::npos)
   {
-    Result = Path.substr(Pos + 1, Path.size() - Pos);
+    Result = Path.substr(Pos, Path.size() - Pos);
   }
   else
   {
@@ -976,7 +976,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
-    DEBUG_PRINTF(L"Line = %s", Line.c_str());
+    // DEBUG_PRINTF(L"Line = %s", Line.c_str());
 
     SetType(Line[0]);
     Line.erase(0, 1);
@@ -1202,8 +1202,9 @@ void TRemoteFile::SetListingStr(std::wstring value)
             Abort();
           }
         }
-        FFileName = UnixExtractFileName(Line);
-        DEBUG_PRINTF(L"FFileName = %s", FFileName.c_str());
+        FFileName = UnixExtractFileName(::Trim(Line));
+        DEBUG_PRINTF(L"FFileName = '%s'", FFileName.c_str());
+        DEBUG_PRINTF(L"Line = '%s'", Line.c_str());
       }
     }
 
