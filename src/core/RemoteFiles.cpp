@@ -2176,7 +2176,7 @@ void TRights::SetOctal(std::wstring value)
     bool Correct = (AValue.size() == 4);
     if (Correct)
     {
-      for (int i = 0; (i <= AValue.size()) && Correct; i++)
+      for (int i = 0; (i < AValue.size()) && Correct; i++)
       {
         Correct = (AValue[i] >= '0') && (AValue[i] <= '7');
       }
