@@ -1409,6 +1409,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   if (CopyParam->GetPreserveRights()) Options = L"-p";
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
+  DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
     0, Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
