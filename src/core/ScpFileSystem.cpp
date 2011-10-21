@@ -2292,13 +2292,15 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         // We reach this point only if control record was 'C' or 'D'
         try
         {
-          FileData.RemoteRights.SetOctal (CutToChar(Line, ' ', true));
+          FileData.RemoteRights.SetOctal(CutToChar(Line, ' ', true));
           // do not trim leading spaces of the filename
           __int64 TSize = StrToInt64(::TrimRight(CutToChar(Line, ' ', false)));
+          DEBUG_PRINTF(L"TSize = %u", TSize);
           MaskParams.Size = TSize;
           // Security fix: ensure the file ends up where we asked for it.
           // (accept only filename, not path)
           std::wstring OnlyFileName = UnixExtractFileName(Line);
+          DEBUG_PRINTF(L"Line = '%s', OnlyFileName = '%s'", Line.c_str(), OnlyFileName.c_str());
           if (Line != OnlyFileName)
           {
             FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", (Line)));
@@ -2306,7 +2308,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
           OperationProgress->SetFile(OnlyFileName);
           AbsoluteFileName = SourceDir + OnlyFileName;
-          DEBUG_PRINTF(L"AbsoluteFileName = '%s', OnlyFileName = '%s'", AbsoluteFileName.c_str(), OnlyFileName.c_str());
+          // DEBUG_PRINTF(L"AbsoluteFileName = '%s', OnlyFileName = '%s'", AbsoluteFileName.c_str(), OnlyFileName.c_str());
           OperationProgress->SetTransferSize(TSize);
         }
         catch (const std::exception &E)
@@ -2323,7 +2325,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           THROW_SKIP_FILE(LoadStr(USER_TERMINATED), NULL);
         }
 
-        bool Dir = (Ctrl == L'D');
+        bool Dir = (Ctrl == 'D');
         std::wstring SourceFullName = SourceDir + OperationProgress->FileName;
         if (!CopyParam->AllowTransfer(SourceFullName, osRemote, Dir, MaskParams))
         {
@@ -2338,6 +2340,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
             Level == 0);
 
+        DEBUG_PRINTF(L"DestFileName = %s", DestFileName.c_str());
         FileData.Attrs = FileGetAttr(DestFileName);
         // If getting attrs failes, we suppose, that file/folder doesn't exists
         FileData.Exists = (FileData.Attrs != -1);
@@ -2361,15 +2364,14 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
             CopyParam, Success, OperationProgress, Params, Level + 1);
           continue;
         }
-          else
-        if (Ctrl == 'C')
+        else if (Ctrl == 'C')
         {
           TDownloadSessionAction Action(FTerminal->GetLog());
           Action.FileName(AbsoluteFileName);
 
           try
           {
-            HANDLE File = NULL;
+            HANDLE File = 0;
             TStream * FileStream = NULL;
 
             /* TODO 1 : Turn off read-only attr */
@@ -2428,7 +2430,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                   EXCEPTION;
                 }
 
-                FileStream = new TSafeHandleStream((HANDLE)File);
+                FileStream = new TSafeHandleStream(File);
               }
               catch (const std::exception &E)
               {
@@ -2460,8 +2462,8 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
                 do
                 {
-                  BlockBuf.SetSize (OperationProgress->TransferBlockSize());
-                  BlockBuf.SetPosition (0);
+                  BlockBuf.SetSize(OperationProgress->TransferBlockSize());
+                  BlockBuf.SetPosition(0);
 
                   FSecureShell->Receive(BlockBuf.GetData(), BlockBuf.GetSize());
                   OperationProgress->AddTransfered(BlockBuf.GetSize());
