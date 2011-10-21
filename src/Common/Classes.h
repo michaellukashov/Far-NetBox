@@ -859,27 +859,62 @@ public:
 
 //---------------------------------------------------------------------------
 
-enum SeekEnum
+enum
 {
-    soFromBeginning,
-    soFromCurrent
+  soFromBeginning = 0,
+  soFromCurrent = 1,
+  soFromEnd = 2
+};
+
+enum TSeekOrigin
+{
+    soBeginning,
+    soCurrent,
+    soEnd
 };
 
 //---------------------------------------------------------------------------
 class TStream
 {
 public:
-    __int64 GetPosition() const { return FPosition; }
-    void SetPosition(__int64 value) { FPosition = value; }
-    __int64 GetSize() const { return FSize; }
-    void SetSize(__int64 value) { FSize = value; }
-    void ReadBuffer(void *Buffer, unsigned long int Count);
-    unsigned long Read(void *Buffer, unsigned long int Count);
-    void WriteBuffer(void *Buffer, unsigned long int Count);
-    unsigned long Write(void *Buffer, unsigned long int Count);
-private:
-    __int64 FPosition;
-    __int64 FSize;
+    TStream()
+    {}
+    virtual ~TStream()
+    {}
+    virtual __int64 Read(void *Buffer, __int64 Count) = 0;
+    virtual __int64 Write(const void *Buffer, __int64 Count) = 0;
+    virtual __int64 Seek(__int64 Offset, __int64 Origin) = 0;
+    virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin) = 0;
+    void ReadBuffer(void *Buffer, __int64 Count);
+    void WriteBuffer(const void *Buffer, __int64 Count);
+    __int64 CopyFrom(TStream *Source, __int64 Count);
+
+    // __int64 GetPosition() const { return FPosition; }
+    // void SetPosition(__int64 value) { FPosition = value; }
+    // __int64 GetSize() const { return FSize; }
+    // void SetSize(__int64 value) { FSize = value; }
+    // unsigned long Read(void *Buffer, unsigned long int Count);
+    // void WriteBuffer(void *Buffer, unsigned long int Count);
+    // unsigned long Write(void *Buffer, unsigned long int Count);
+public:
+    __int64 GetPosition() { return Seek(0, soCurrent); }
+    __int64 GetSize()
+    {
+      __int64 Pos = Seek(0, soCurrent);
+      __int64 Result = Seek(0, soEnd);
+      Seek(Pos, soBeginning);
+      return Result;
+    }
+    // void SetSize64(const __int64 NewSize);
+public:
+    virtual void SetSize(const __int64 NewSize) = 0;
+    void SetPosition(const __int64 Pos)
+    {
+        Seek(Pos, soBeginning);
+    }
+// private:
+    // __int64 FPosition;
+    // __int64 FSize;
 };
 
 //---------------------------------------------------------------------------
@@ -889,6 +924,15 @@ class THandleStream : public TStream
 public:
   THandleStream(HANDLE AHandle)
   {}
+  virtual  __int64 Read(void *Buffer, __int64 Count);
+  virtual __int64 Write(const void *Buffer, __int64 Count);
+  virtual __int64 Seek(__int64 Offset, __int64 Origin);
+  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
+
+  // property Handle: Integer read FHandle;
+  HANDLE GetHandle() { return FHandle; }
+protected:
+    virtual void SetSize(const __int64 NewSize);
 protected:
   HANDLE FHandle;
 };
@@ -898,10 +942,39 @@ protected:
 class TMemoryStream : public TStream
 {
 public:
-    void Seek(int seek, int from)
+    TMemoryStream() :
+        FMemory(NULL),
+        FSize(0),
+        FPosition(0),
+        FCapacity(0)
     {}
-    void Clear()
-    {}
+    virtual  ~TMemoryStream();
+    virtual __int64 Read(void *Buffer, __int64 Count);
+    virtual __int64 Seek(__int64 Offset, __int64 Origin);
+    virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
+    void SaveToStream(TStream *Stream);
+    void SaveToFile(const std::wstring FileName);
+
+    void Clear();
+    void LoadFromStream(TStream *Stream);
+    void LoadFromFile(const std::wstring FileName);
+    virtual void SetSize(const __int64 NewSize);
+    virtual __int64 Write(const void *Buffer, __int64 Count);
+
+    // property Memory: Pointer read FMemory;
+    void *GetMemory() { return FMemory; }
+protected:
+    void SetPointer(void *Ptr, __int64 Size);
+    virtual void *Realloc(__int64 &NewCapacity);
+    // property Capacity: Longint read FCapacity write SetCapacity;
+    __int64 GetCapacity() { return FCapacity; }
+private:
+    void SetCapacity(__int64 NewCapacity);
+private:
+    void *FMemory;
+    __int64 FSize;
+    __int64 FPosition;
+    __int64 FCapacity;
 };
 
 class EReadError : public std::exception

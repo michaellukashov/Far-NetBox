@@ -73,7 +73,7 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
     {
       SetSize(GetSize() - Len + Result);
     }
-    FMemory->Seek(Len, soFromCurrent);
+    FMemory->Seek(Len, soCurrent);
   }
   catch (EReadError &)
   {
@@ -84,7 +84,7 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
 //---------------------------------------------------------------------------
 DWORD TFileBuffer::LoadStream(TStream * Stream, const DWORD Len, bool ForceLen)
 {
-  FMemory->Seek(0, soFromBeginning);
+  FMemory->Seek(0, soBeginning);
   return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
@@ -218,19 +218,18 @@ void TFileBuffer::Delete(int Index, int Len)
   SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::WriteToStream(TStream * Stream, const DWORD Len)
+void TFileBuffer::WriteToStream(TStream *Stream, const DWORD Len)
 {
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    FMemory->Seek(Len, soFromCurrent);
+    FMemory->Seek(Len, soCurrent);
   }
   catch (EWriteError &)
   {
     RaiseLastOSError();
   }
 }
-//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
   THandleStream(AHandle)
