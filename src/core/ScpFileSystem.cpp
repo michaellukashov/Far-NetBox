@@ -538,6 +538,7 @@ void TSCPFileSystem::SendCommand(const std::wstring Cmd)
   FOutput->Clear();
   // We suppose, that 'Cmd' already contains command that ensures,
   // that 'LastLine' will be printed
+  DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
   FSecureShell->SendLine(Cmd);
   FProcessingCommand = true;
 }
@@ -1377,6 +1378,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 
       if (Resp == 1)
       {
+        DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
         THROW_FILE_SKIPPED(Msg, NULL);
       }
         else
@@ -2142,6 +2144,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
 void TSCPFileSystem::SCPError(const std::wstring Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
+  DEBUG_PRINTF(L"Message = %s", Message.c_str());
   THROW_FILE_SKIPPED(Message, NULL);
 }
 //---------------------------------------------------------------------------
@@ -2301,6 +2304,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
 
           OperationProgress->SetFile(OnlyFileName);
           AbsoluteFileName = SourceDir + OnlyFileName;
+          DEBUG_PRINTF(L"AbsoluteFileName = '%s', OnlyFileName = '%s'", AbsoluteFileName.c_str(), OnlyFileName.c_str());
           OperationProgress->SetTransferSize(TSize);
         }
         catch (const std::exception &E)
@@ -2548,6 +2552,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
       {
         SUSPEND_OPERATION (
           TQueryParams Params(qpAllowContinueOnError);
+          DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
           if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
                 &E, qaOK | qaAbort, &Params, qtError) == qaAbort)
           {
