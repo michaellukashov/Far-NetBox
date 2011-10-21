@@ -912,13 +912,11 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   try
   {
     FTerminal->SetUseBusyCursor(false);
-    // FIXME
-::Error(SNotImplemented, 213); 
-    // FTerminal->SetOnQueryUser(&TTerminalItem::TerminalQueryUser);
-    // FTerminal->SetOnPromptUser(&TTerminalItem::TerminalPromptUser);
-    // FTerminal->SetOnShowExtendedException(&TTerminalItem::TerminalShowExtendedException);
-    // FTerminal->SetOnProgress(&TTerminalItem::OperationProgress);
-    // FTerminal->SetOnFinished(&TTerminalItem::OperationFinished);
+    FTerminal->SetOnQueryUser(boost::bind(&TTerminalItem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+    FTerminal->SetOnPromptUser(boost::bind(&TTerminalItem::TerminalPromptUser, this, _1, _2, _3, _4, _5, _6, _7, _8));
+    FTerminal->SetOnShowExtendedException(boost::bind(&TTerminalItem::TerminalShowExtendedException, this, _1, _2, _3));
+    FTerminal->SetOnProgress(boost::bind(&TTerminalItem::OperationProgress, this, _1, _2));
+    FTerminal->SetOnFinished(boost::bind(&TTerminalItem::OperationFinished, this, _1, _2, _3, _4, _5, _6));
   }
   catch(...)
   {
