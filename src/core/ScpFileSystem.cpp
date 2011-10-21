@@ -2081,6 +2081,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         // Filename is used for error messaging and excluding files only
         // Send in full path to allow path-based excluding
         std::wstring FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
+        DEBUG_PRINTF(L"FileName = '%s', FullFileName = '%s'", FileName.c_str(), FullFileName.c_str());
         SCPSink(TargetDir, FullFileName, UnixExtractFilePath(FullFileName),
           CopyParam, Success, OperationProgress, Params, 0);
         // operation succeded (no exception), so it's ok that
