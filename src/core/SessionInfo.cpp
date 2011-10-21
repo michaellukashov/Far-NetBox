@@ -966,8 +966,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Bypass authentication: %s",
        BooleanToEngStr(Data->GetSshNoUserAuth()).c_str());
       ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
-        BooleanToEngStr(Data->GetTryAgent()).c_str(), BooleanToEngStr(Data->GetAgentFwd()).c_str(), BooleanToEngStr(Data->GetAuthTIS()).c_str(),
-         BooleanToEngStr(Data->GetAuthKI()).c_str(), BooleanToEngStr(Data->GetAuthGSSAPI()).c_str());
+        BooleanToEngStr(Data->GetTryAgent()).c_str(),
+        BooleanToEngStr(Data->GetAgentFwd()).c_str(),
+        BooleanToEngStr(Data->GetAuthTIS()).c_str(),
+        BooleanToEngStr(Data->GetAuthKI()).c_str(),
+        BooleanToEngStr(Data->GetAuthGSSAPI()).c_str());
       if (Data->GetAuthGSSAPI())
       {
         ADF(L"GSSAPI: Forwarding: %s; Server realm: %s",
@@ -981,7 +984,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         Bugs += BugFlags[Data->GetBug((TSshBug)Index)] + (Index<BUG_COUNT-1? L"," : L"");
       }
-      ADF(L"SSH Bugs: %s", (Bugs));
+      ADF(L"SSH Bugs: %s", Bugs.c_str());
       Bugs = L"";
       for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
       {
@@ -991,7 +994,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Return code variable: %s; Lookup user groups: %s",
         (Data->GetDetectReturnVar() ? std::wstring(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
         BooleanToEngStr(Data->GetLookupUserGroups()).c_str()));
-      ADF(L"Shell: %s", (Data->GetShell().empty()? std::wstring(L"default").c_str() : Data->GetShell().c_str()));
+      ADF(L"Shell: %s", Data->GetShell().empty() ? std::wstring(L"default").c_str() : Data->GetShell().c_str());
       ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
       ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
         BooleanToEngStr(Data->GetClearAliases()).c_str(),

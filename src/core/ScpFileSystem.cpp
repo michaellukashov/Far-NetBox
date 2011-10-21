@@ -229,7 +229,7 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, va_list args)
   std::wstring result;
   result = ::Format(GetCommand(Cmd).c_str(), args);
   // DEBUG_PRINTF(L"result = %s", result.c_str());
-  return result;
+  return result.c_str();
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
@@ -239,7 +239,7 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
   va_start(args, Cmd);
   Result = FullCommand(Cmd, args);
   va_end(args);
-  return Result;
+  return Result.c_str();
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
@@ -254,7 +254,10 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
     Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
   std::wstring FirstLineCmd;
   if (GetInteractiveCommand(Cmd))
+  {
     FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
+    // DEBUG_PRINTF(L"FirstLineCmd1 = '%s'", FirstLineCmd.c_str());
+  }
 
   std::wstring Result;
   if (!Line.empty())
@@ -492,7 +495,7 @@ std::wstring TSCPFileSystem::DelimitStr(std::wstring Str)
   if (!Str.empty())
   {
     Str = ::DelimitStr(Str, L"\\`$\"");
-    if (Str[1] == L'-') Str = L"./" + Str;
+    if (Str[0] == L'-') Str = L"./" + Str;
   }
   return Str;
 }
@@ -2232,10 +2235,12 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         Initialized = true;
 
         // First characted distinguish type of control record
-        char Ctrl = Line[1];
-        Line.erase(1, 1);
+        char Ctrl = Line[0];
+        Line.erase(0, 1);
+        DEBUG_PRINTF(L"Line ='%s', Ctrl = '%c'", Line.c_str(), Ctrl);
 
-        switch (Ctrl) {
+        switch (Ctrl)
+        {
           case 1:
             // Error (already logged by ReceiveLine())
             THROW_FILE_SKIPPED(FMTLOAD(REMOTE_ERROR, Line.c_str()), NULL);

@@ -260,7 +260,7 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
   if (Unix)
   {
     int P = ::LastDelimiter(Result, L"/");
-    if (P)
+    if (P != std::wstring::npos)
     {
       Dir = Result.substr(0, P);
       Name = Result.substr(P, Result.size() - P);

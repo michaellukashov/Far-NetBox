@@ -461,13 +461,13 @@ TRights TCopyParamType::RemoteFileRights(int Attrs) const
 //---------------------------------------------------------------------------
 std::wstring TCopyParamType::GetLogStr() const
 {
-  wchar_t CaseC[] = L"NULFS";
-  wchar_t ModeC[] = L"BAM";
-  wchar_t ResumeC[] = L"YSN";
+  static wchar_t CaseC[] = L"NULFS";
+  static wchar_t ModeC[] = L"BAM";
+  static wchar_t ResumeC[] = L"YSN";
   return FORMAT(
-    L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %s; RIC: %s; "
-    L"Resume: %s (%d); CalcS: %s; Mask: %s\n"
-    L"  TM: %s; ClAr: %s; CPS: %u; ExclM(%s): %s\n"
+    L"  PrTime: %s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
+    L"Resume: %c (%d); CalcS: %s; Mask: %s\n"
+    L"  TM: %c; ClAr: %s; CPS: %u; ExclM(%s): %s\n"
     L"  AscM: %s\n",
     BooleanToEngStr(GetPreserveTime()).c_str(),
      BooleanToEngStr(GetPreserveReadOnly()).c_str(),
@@ -481,11 +481,11 @@ std::wstring TCopyParamType::GetLogStr() const
      BooleanToEngStr(GetCalculateSize()).c_str(),
      GetFileMask().c_str(),
      ModeC[GetTransferMode()],
-     BooleanToEngStr(GetClearArchive()),
+     BooleanToEngStr(GetClearArchive()).c_str(),
      int(GetCPSLimit()),
-     BooleanToEngStr(GetNegativeExclude()),
-     GetExcludeFileMask().GetMasks(),
-     GetAsciiFileMask().GetMasks());
+     BooleanToEngStr(GetNegativeExclude()).c_str(),
+     GetExcludeFileMask().GetMasks().c_str(),
+     GetAsciiFileMask().GetMasks().c_str());
 }
 //---------------------------------------------------------------------------
 int TCopyParamType::LocalFileAttrs(const TRights & Rights) const

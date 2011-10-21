@@ -32,7 +32,7 @@ BEGIN
   TOLOCAL_COPY_ERROR, "Copying files from remote side failed."
   SCP_EMPTY_LINE, "SCP protocol error: Unexpected newline"
   SCP_ILLEGAL_TIME_FORMAT, "SCP protocol error: Illegal time format"
-  SCP_INVALID_CONTROL_RECORD, "SCP protocol error: Invalid control record (%s; %s)"
+  SCP_INVALID_CONTROL_RECORD, "SCP protocol error: Invalid control record (%c; %s)"
   COPY_ERROR, "Copying file '%s' failed."
   SCP_ILLEGAL_FILE_DESCRIPTOR, "SCP protocol error: Illegal file descriptor format"
   NOT_DIRECTORY_ERROR, "'%s' is not folder!"

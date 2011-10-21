@@ -179,11 +179,9 @@ void TFileOperationProgressType::Finish(std::wstring FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
-    // FIXME
-   ::Error(SNotImplemented, 212); 
-/*   FOnFinished(Operation, Side, Temp, FileName,
+   FOnFinished(Operation, Side, Temp, FileName,
     // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
-    Success && (Cancel == csContinue), OnceDoneOperation); */
+    Success && (Cancel == csContinue), OnceDoneOperation);
   FFilesFinished++;
   DoProgress();
 }
