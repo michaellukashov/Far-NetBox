@@ -22,6 +22,7 @@
 #include "Common.h"
 #include "FarPlugin.h"
 #include "testutils.h"
+#include "FileBuffer.h"
 
 using namespace boost::unit_test;
 
@@ -482,6 +483,28 @@ BOOST_FIXTURE_TEST_CASE(test21, base_fixture_t)
     BOOST_TEST_MESSAGE("str = " << ::W2MB(str.c_str()));
     // BOOST_CHECK(str.c_str() == L"23.46");
     BOOST_CHECK("23.46" == ::W2MB(str.c_str()));
+}
+
+BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
+{
+    std::wstring FileName = L"testfile";
+    ::DeleteFile(FileName);
+    unsigned int CreateAttr = FILE_ATTRIBUTE_NORMAL;
+    HANDLE File = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
+      NULL, CREATE_ALWAYS, CreateAttr, 0);
+    // BOOST_CHECK(File != 0);
+    TStream *FileStream = new TSafeHandleStream(File);
+    TFileBuffer *BlockBuf = new TFileBuffer();
+    // BlockBuf->SetSize(1024);
+    BlockBuf->SetPosition(0);
+    std::string str = "test string";
+    BlockBuf->Insert(0, str.c_str(), str.size());
+    BOOST_TEST_MESSAGE("BlockBuf->GetSize = " << BlockBuf->GetSize());
+    BOOST_CHECK(BlockBuf->GetSize() == str.size());
+    BlockBuf->WriteToStream(FileStream, BlockBuf->GetSize());
+    delete FileStream; FileStream = NULL;
+    delete BlockBuf; BlockBuf = NULL;
+    BOOST_CHECK(::FileExists(FileName));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
