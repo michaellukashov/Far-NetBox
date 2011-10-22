@@ -2684,9 +2684,10 @@ std::wstring ExpandUNCFileName(std::wstring FileName)
     return Result;
 }
 
-void FileSeek(HANDLE file, __int64 offset, __int64 size)
+__int64 FileSeek(HANDLE file, __int64 offset, __int64 size)
 {
     ::Error(SNotImplemented, 300);
+    return 0;
 }
 
 void InitPlatformId()
@@ -2702,3 +2703,12 @@ void InitPlatformId()
       // Win32CSDVersion = OSVersionInfo.szCSDVersion;
   }
 }
+
+//---------------------------------------------------------------------------
+bool Win32Check(bool RetVal)
+{
+  if (!RetVal)
+    RaiseLastOSError();
+  return RetVal;
+}
+//---------------------------------------------------------------------------

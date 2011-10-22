@@ -771,10 +771,3 @@ inline wchar_t *StrToFar(const wchar_t *S)
     return (wchar_t *)S;
 }
 //---------------------------------------------------------------------------
-static bool Win32Check(bool RetVal)
-{
-  if (!RetVal)
-    RaiseLastOSError();
-  return RetVal;
-}
-//---------------------------------------------------------------------------

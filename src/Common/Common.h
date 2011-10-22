@@ -353,4 +353,8 @@ std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext);
 std::wstring ExtractFileExt(std::wstring FileName);
 std::wstring ExpandUNCFileName(std::wstring FileName);
 
-void FileSeek(HANDLE file, __int64 offset, __int64 size);
+__int64 FileSeek(HANDLE file, __int64 offset, __int64 size);
+
+//---------------------------------------------------------------------------
+bool Win32Check(bool RetVal);
+//---------------------------------------------------------------------------
