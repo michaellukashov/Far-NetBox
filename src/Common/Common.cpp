@@ -2331,8 +2331,6 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 
 __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
 {
-    // FIXME
-    // ::Error(SNotImplemented, 80);
   __int64 Result = -1;
   if (!::ReadFile(Handle, Buffer, Count, (LPDWORD)&Result, NULL))
     Result = -1;
@@ -2342,12 +2340,13 @@ __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
 
 __int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count)
 {
-    // FIXME
-    // ::Error(SNotImplemented, 81);
   __int64 Result = -1;
-  if (!::WriteFile(Handle, Buffer, Count, (LPDWORD)&Result, NULL))
+  DWORD res = 0;
+  if (::WriteFile(Handle, Buffer, Count, &res, NULL))
+    Result = res;
+  else
     Result = -1;
-  DEBUG_PRINTF(L"Count = %d, Result = %d", Count, Result);
+  // DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", Result, Handle, Count);
   return Result;
 }
 
@@ -2410,9 +2409,9 @@ bool ForceDirectories(const std::wstring Dir)
 
 bool DeleteFile(const std::wstring File)
 {
-    DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
+    // DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
     ::DeleteFile(File.c_str());
-    DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
+    // DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
     return !::FileExists(File);
 }
 
