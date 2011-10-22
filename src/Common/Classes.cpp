@@ -218,13 +218,23 @@ void TStrings::InsertObject(int Index, std::wstring Key, TObject *AObject)
     PutObject(Index, AObject);
 }
 
-bool TStrings::Equals(TStrings *value)
+bool TStrings::Equals(TStrings *Strings)
 {
-    ::Error(SNotImplemented, 2);
+  bool Result = false;
+  int Count = GetCount();
+  if (Count != Strings->GetCount())
     return false;
+  for (int I = 0; I < Count; I++)
+  {
+    if (GetString(I) != Strings->GetString(I))
+        return false;
+  }
+  Result = true;
+  return Result;
 }
 void TStrings::PutObject(int Index, TObject *AObject)
 {
+    ::Error(SNotImplemented, 1204);
 }
 void TStrings::PutString(int Index, std::wstring S)
 {
