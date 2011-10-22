@@ -24,7 +24,7 @@ TFileBuffer::~TFileBuffer()
   delete FMemory;
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::SetSize(int value)
+void TFileBuffer::SetSize(__int64 value)
 {
   if (FSize != value)
   {
@@ -33,17 +33,17 @@ void TFileBuffer::SetSize(int value)
   }
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::SetPosition(int value)
+void TFileBuffer::SetPosition(__int64 value)
 {
   FMemory->SetPosition(value);
 }
 //---------------------------------------------------------------------------
-int TFileBuffer::GetPosition() const
+__int64 TFileBuffer::GetPosition() const
 {
-  return (int)FMemory->GetPosition();
+  return FMemory->GetPosition();
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::SetMemory(TMemoryStream * value)
+void TFileBuffer::SetMemory(TMemoryStream *value)
 {
   if (FMemory != value)
   {
@@ -222,8 +222,11 @@ void TFileBuffer::WriteToStream(TStream *Stream, const DWORD Len)
 {
   try
   {
+    // DEBUG_PRINTF(L"before WriteBuffer: GetPosition = %d", GetPosition());
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
+    // DEBUG_PRINTF(L"after WriteBuffer");
     FMemory->Seek(Len, soCurrent);
+    // DEBUG_PRINTF(L"after Seek");
   }
   catch (const EWriteError &)
   {
@@ -234,11 +237,18 @@ void TFileBuffer::WriteToStream(TStream *Stream, const DWORD Len)
 TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
   THandleStream(AHandle)
 {
+    // DEBUG_PRINTF(L"FHandle = %d", FHandle);
 }
-//---------------------------------------------------------------------------
-int TSafeHandleStream::Read(void *Buffer, int Count)
+
+TSafeHandleStream::~TSafeHandleStream()
 {
-  int Result = ::FileRead(FHandle, Buffer, Count);
+    // DEBUG_PRINTF(L"FHandle = %d", FHandle);
+}
+
+//---------------------------------------------------------------------------
+__int64 TSafeHandleStream::Read(void *Buffer, __int64 Count)
+{
+  __int64 Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == -1)
   {
     ::RaiseLastOSError();
@@ -246,9 +256,10 @@ int TSafeHandleStream::Read(void *Buffer, int Count)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TSafeHandleStream::Write(const void *Buffer, int Count)
+__int64 TSafeHandleStream::Write(const void *Buffer, __int64 Count)
 {
-  int Result = ::FileWrite(FHandle, Buffer, Count);
+  __int64 Result = ::FileWrite(FHandle, Buffer, Count);
+  // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
   if (Result == -1)
   {
     ::RaiseLastOSError();
