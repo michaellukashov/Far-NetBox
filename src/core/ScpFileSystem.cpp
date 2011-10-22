@@ -31,11 +31,11 @@ const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
-#define THROW_FILE_SKIPPED(EXCEPTION, MESSAGE) \
-  throw EScpFileSkipped(EXCEPTION, MESSAGE)
+#define THROW_FILE_SKIPPED(MESSAGE, EXCEPTION) \
+  throw EScpFileSkipped(MESSAGE, EXCEPTION)
 
-#define THROW_SCP_ERROR(EXCEPTION, MESSAGE) \
-  throw EScp(EXCEPTION, MESSAGE)
+#define THROW_SCP_ERROR(MESSAGE, EXCEPTION) \
+  throw EScp(MESSAGE, EXCEPTION)
 //===========================================================================
 #define MaxShellCommand fsAnyCommand
 #define ShellCommandCount MaxShellCommand + 1
