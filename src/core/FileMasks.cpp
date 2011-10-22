@@ -213,15 +213,16 @@ EFileMasksException::EFileMasksException(
   ErrorLen = AErrorLen;
 }
 //---------------------------------------------------------------------------
-std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool& Masked)
+std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool &Masked)
 {
   std::wstring Result;
-  int RestStart = 1;
+  // DEBUG_PRINTF(L"Mask = %s, Masked = %d", Mask.c_str(), Masked);
+  int RestStart = 0;
   bool Delim = false;
-  for (int Index = 1; Index <= Mask.size(); Index++)
+  for (int Index = 0; Index < Mask.size(); Index++)
   {
     switch (Mask[Index])
-    {
+    {   /*
       case '\\':
         if (!Delim)
         {
@@ -229,7 +230,7 @@ std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool
           Masked = true;
           break;
         }
-
+        */
       case '*':
         if (!Delim)
         {
@@ -242,7 +243,7 @@ std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool
       case '?':
         if (!Delim)
         {
-          if (RestStart <= Part.size())
+          if (RestStart < Part.size())
           {
             Result += Part[RestStart];
             RestStart++;
@@ -253,45 +254,52 @@ std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool
 
       default:
         Result += Mask[Index];
-        RestStart++;
+        // RestStart++;
         Delim = false;
         break;
     }
   }
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
 {
-  DEBUG_PRINTF(L"FileName = %s, Mask = %s", FileName.c_str(), Mask.c_str());
+  // DEBUG_PRINTF(L"FileName = %s, Mask = %s", FileName.c_str(), Mask.c_str());
   if (!Mask.empty() && (Mask != L"*") && (Mask != L"*.*"))
   {
-    bool Masked;
+    bool Masked = false;
     int P = ::LastDelimiter(Mask, L".");
-    if (P > 0)
+    if (P != std::wstring::npos)
     {
       int P2 = ::LastDelimiter(FileName, L".");
+      // DEBUG_PRINTF(L"P2 = %d", P2);
       // only dot at beginning of file name is not considered as
       // name/ext separator
-      std::wstring FileExt = P2 > 1 ?
-        FileName.substr(P2 + 1, FileName.size() - P2) : std::wstring();
+      std::wstring FileExt = P2 > 0 ?
+        FileName.substr(P2, FileName.size() - P2) : std::wstring();
+      // DEBUG_PRINTF(L"FileExt = %s", FileExt.c_str());
       FileExt = MaskFilePart(FileExt, Mask.substr(P + 1, Mask.size() - P), Masked);
-      if (P2 > 1)
+      // DEBUG_PRINTF(L"FileExt = %s", FileExt.c_str());
+      if (P2 > 0)
       {
         FileName.resize(P2 - 1);
       }
-      FileName = MaskFilePart(FileName, Mask.substr(0, P - 1), Masked);
+      // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+      FileName = MaskFilePart(FileName, Mask.substr(0, P), Masked);
+      // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
       if (!FileExt.empty())
       {
         FileName += L"." + FileExt;
       }
+      // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
     }
     else
     {
       FileName = MaskFilePart(FileName, Mask, Masked);
     }
   }
-  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+  // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return FileName;
 }
 //---------------------------------------------------------------------------
