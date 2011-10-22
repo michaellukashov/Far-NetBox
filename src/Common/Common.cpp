@@ -320,11 +320,22 @@ std::wstring SystemTemporaryDirectory()
   return TempDir;
 }
 
-std::wstring SysErrorMessage(int code)
+std::wstring SysErrorMessage(int ErrorCode)
 {
-    ::Error(SNotImplemented, 41); 
-    std::wstring result;
-    return result;
+    // ::Error(SNotImplemented, 41); 
+    std::wstring Result;
+    // LPTSTR lpszTemp;
+    wchar_t Buffer[255];
+    int Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+      FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
+      (LPTSTR)Buffer,
+      sizeof(Buffer), NULL);
+    while ((Len > 0) && ((Buffer[Len - 1] >= 0) && 
+      (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
+      Len--;
+    // SetString(Result, Buffer, Len);
+    Result = std::wstring(Buffer, Len);
+    return Result;
 }
 
 //---------------------------------------------------------------------------
