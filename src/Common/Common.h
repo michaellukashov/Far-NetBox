@@ -289,8 +289,8 @@ std::wstring FormatFloat(std::wstring Format, double value);
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
 
-unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count);
-unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count);
+__int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count);
+__int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count);
 
 //---------------------------------------------------------------------------
 

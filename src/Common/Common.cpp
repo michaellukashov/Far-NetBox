@@ -2318,18 +2318,26 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 
 //---------------------------------------------------------------------------
 
-unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
+__int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
 {
     // FIXME
-    ::Error(SNotImplemented, 80);
-    return 0;
+    // ::Error(SNotImplemented, 80);
+  __int64 Result = -1;
+  if (!::ReadFile(Handle, Buffer, Count, (LPDWORD)&Result, NULL))
+    Result = -1;
+  DEBUG_PRINTF(L"Count = %d, Result = %d", Count, Result);
+  return Result;
 }
 
-unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
+__int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count)
 {
     // FIXME
-    ::Error(SNotImplemented, 81);
-    return 0;
+    // ::Error(SNotImplemented, 81);
+  __int64 Result = -1;
+  if (!::WriteFile(Handle, Buffer, Count, (LPDWORD)&Result, NULL))
+    Result = -1;
+  DEBUG_PRINTF(L"Count = %d, Result = %d", Count, Result);
+  return Result;
 }
 
 //---------------------------------------------------------------------------
