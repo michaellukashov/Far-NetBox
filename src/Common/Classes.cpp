@@ -666,6 +666,7 @@ void TStream::ReadBuffer(void *Buffer, __int64 Count)
 
 void TStream::WriteBuffer(const void *Buffer, __int64 Count)
 {
+  // DEBUG_PRINTF(L"Count = %d", Count);
   if ((Count != 0) && (Write(Buffer, Count) != Count))
     throw EWriteError(::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
 }
@@ -703,6 +704,7 @@ __int64 THandleStream::Read(void *Buffer, __int64 Count)
 __int64 THandleStream::Write(const void *Buffer, __int64 Count)
 {
   __int64 Result = ::FileWrite(FHandle, Buffer, Count);
+  // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
   if (Result == -1) Result = 0;
   return Result;
 }
