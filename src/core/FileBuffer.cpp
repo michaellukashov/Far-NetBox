@@ -75,7 +75,7 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
     }
     FMemory->Seek(Len, soCurrent);
   }
-  catch (EReadError &)
+  catch (const EReadError &)
   {
     RaiseLastOSError();
   }
@@ -225,7 +225,7 @@ void TFileBuffer::WriteToStream(TStream *Stream, const DWORD Len)
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
     FMemory->Seek(Len, soCurrent);
   }
-  catch (EWriteError &)
+  catch (const EWriteError &)
   {
     RaiseLastOSError();
   }

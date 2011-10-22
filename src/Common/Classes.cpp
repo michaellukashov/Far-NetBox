@@ -639,29 +639,36 @@ public:
     {}
 };
 
+/*
+class EWriteError : public ExtException
+{
+public:
+    EWriteError(const std::wstring Msg) :
+        ExtException(Msg)
+    {}
+};
+
+class EReadError : public ExtException
+{
+public:
+    EReadError(const std::wstring Msg) :
+        ExtException(Msg)
+    {}
+};
+*/
 //---------------------------------------------------------------------------
 
 void TStream::ReadBuffer(void *Buffer, __int64 Count)
 {
-    ::Error(SNotImplemented, 400);
+  if ((Count != 0) && (Read(Buffer, Count) != Count))
+    throw EReadError(::W2MB(FMTLOAD(SReadError).c_str()).c_str());
 }
-
-// unsigned long TStream::Read(void *Buffer, unsigned long int Count)
-// {
-    // ::Error(SNotImplemented, 401);
-    // return 0;
-// }
 
 void TStream::WriteBuffer(const void *Buffer, __int64 Count)
 {
-    ::Error(SNotImplemented, 402);
+  if ((Count != 0) && (Write(Buffer, Count) != Count))
+    throw EWriteError(::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
 }
-
-// unsigned long TStream::Write(void *Buffer, unsigned long int Count)
-// {
-    // ::Error(SNotImplemented, 403);
-    // return 0;
-// }
 
 //---------------------------------------------------------------------------
 void ReadError(const std::wstring &Name)

@@ -938,6 +938,23 @@ protected:
 };
 
 //---------------------------------------------------------------------------
+class EReadError : public std::exception
+{
+public:
+    EReadError(const char *Msg) :
+        std::exception(Msg)
+    {}
+};
+ 
+class EWriteError : public std::exception
+{
+public:
+    EWriteError(const char *Msg) :
+        std::exception(Msg)
+    {}
+};
+
+//---------------------------------------------------------------------------
 
 class TMemoryStream : public TStream
 {
@@ -975,14 +992,6 @@ private:
     __int64 FSize;
     __int64 FPosition;
     __int64 FCapacity;
-};
-
-class EReadError : public std::exception
-{
-};
-
-class EWriteError : public std::exception
-{
 };
 
 //---------------------------------------------------------------------------
