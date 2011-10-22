@@ -4698,7 +4698,7 @@ void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
   if (!Masks.GetIsValid(Start, Length))
   {
     Edit->SetFocus();
-    throw ExtException(FORMAT(GetMsg(MASK_ERROR).c_str(), (Masks.GetMasks().substr(Start+1, Length))));
+    throw ExtException(FORMAT(GetMsg(MASK_ERROR).c_str(), Masks.GetMasks().substr(Start, Length).c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -4773,13 +4773,13 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     std::wstring Prompt;
     if (FileList->GetCount() > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), (FileList->GetCount()));
+      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), FileList->GetCount());
     }
     else
     {
       Prompt = FORMAT(GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT).c_str(),
-        (ToRemote ? ExtractFileName(FileList->GetString(0), true) :
-            UnixExtractFileName(FileList->GetString(0))));
+        (ToRemote ? ExtractFileName(FileList->GetString(0), true).c_str() :
+            UnixExtractFileName(FileList->GetString(0)).c_str()));
     }
 
     Text = new TFarText(this);
@@ -4919,13 +4919,13 @@ bool TCopyDialog::CloseQuery()
       {
         TWinSCPPlugin* WinSCPPlugin = dynamic_cast<TWinSCPPlugin*>(FarPlugin);
 
-        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), (Directory)),
+        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
               NULL, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!ForceDirectories(Directory))
           {
             DirectoryEdit->SetFocus();
-            throw ExtException(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), (Directory)));
+            throw ExtException(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), Directory.c_str()));
           }
         }
         else
@@ -5372,7 +5372,7 @@ std::wstring TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability)
 std::wstring TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
   TFSCapability Capability2)
 {
-  return FORMAT(L"%s/%s", (CapabilityStr(Capability1), CapabilityStr(Capability2)));
+  return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
 //---------------------------------------------------------------------
 std::wstring TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
@@ -5388,7 +5388,7 @@ std::wstring TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
     std::wstring SizeUnorderedStr = FormatBytes(Bytes, false);
     if (Result != SizeUnorderedStr)
     {
-      Result = FORMAT(L"%s (%s)", (Result, SizeUnorderedStr));
+      Result = FORMAT(L"%s (%s)", Result.c_str(), SizeUnorderedStr.c_str());
     }
   }
   return Result;
@@ -5405,14 +5405,14 @@ void TFileSystemInfoDialog::Feed(const feedfilesystemdata_slot_type &AddItem)
   std::wstring Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
-    Str += FORMAT(L"/%s", (FSessionInfo.SCCipher));
+    Str += FORMAT(L"/%s", FSessionInfo.SCCipher.c_str());
   }
   sig(ServerLabels, SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
-    Str += FORMAT(L"/%s", (DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR))));
+    Str += FORMAT(L"/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)).c_str());
   }
   sig(ServerLabels, SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
@@ -5558,7 +5558,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         Value.resize(Value.size() - 2);
       }
 
-      FClipboard += FORMAT(L"%s\r\n%s\r\n", (LabelStr, Value));
+      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value.c_str());
     }
     else
     {
@@ -5568,7 +5568,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       {
         LabelStr.resize(LabelStr.size() - 1);
       }
-      FClipboard += FORMAT(L"%s = %s\r\n", (LabelStr, Value));
+      FClipboard += FORMAT(L"%s = %s\r\n", LabelStr.c_str(), Value.c_str());
     }
   }
 }
@@ -6936,7 +6936,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), (FChecked, ListBox->GetItems()->GetCount())));
+    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
   CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->GetCount()));
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
@@ -7610,7 +7610,7 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
   std::wstring & NewName)
 {
   return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(RENAME_FILE).c_str(), (File->GetFileName())), NewName, 0) &&
+    FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&
     !NewName.empty();
 }
 //---------------------------------------------------------------------------
@@ -8057,7 +8057,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
       {
         if (ProgressData->Operation == Info->Operation)
         {
-          Values[1] = FORMAT(L"%d%%", (ProgressData->OverallProgress()));
+          Values[1] = FORMAT(L"%d%%", ProgressData->OverallProgress());
         }
         else if (ProgressData->Operation == foCalculateSize)
         {
@@ -8078,7 +8078,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
         (Info->Side == osRemote));
       if (ProgressData->Operation == Info->Operation)
       {
-        Values[1] = FORMAT(L"%d%%", (ProgressData->TransferProgress()));
+        Values[1] = FORMAT(L"%d%%", ProgressData->TransferProgress());
       }
     }
     else
@@ -8088,7 +8088,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
   }
 
   Line = FORMAT(L"%1s %1s  %-*.*s %s",
-    (Operation, Direction, PathMaxLen, PathMaxLen, Values[0], Values[1]));
+    (Operation, Direction.c_str(), PathMaxLen, PathMaxLen, Values[0], Values[1]));
 
   return true;
 }
