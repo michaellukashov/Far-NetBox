@@ -55,6 +55,7 @@ DERIVE_EXT_EXCEPTION(EScp, ExtException); // SCP protocol fatal error (non-fatal
 DERIVE_EXT_EXCEPTION(EScpSkipFile, ExtException);
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, EScpSkipFile);
 //---------------------------------------------------------------------------
+/*
 class EOSExtException : public ExtException
 {
   typedef ExtException parent;
@@ -62,6 +63,7 @@ public:
   EOSExtException();
   EOSExtException(std::wstring Msg);
 };
+*/
 //---------------------------------------------------------------------------
 class EFatal : public ExtException
 {

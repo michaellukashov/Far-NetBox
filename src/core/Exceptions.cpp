@@ -201,7 +201,9 @@ std::wstring LastSysErrorMessage()
   return Result;
 }
 //---------------------------------------------------------------------------
+/*
 EOSExtException::EOSExtException(std::wstring Msg) :
   parent(Msg, LastSysErrorMessage())
 {
 }
+*/
