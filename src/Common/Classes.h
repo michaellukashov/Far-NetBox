@@ -877,10 +877,8 @@ enum TSeekOrigin
 class TStream
 {
 public:
-    TStream()
-    {}
-    virtual ~TStream()
-    {}
+    TStream();
+    virtual ~TStream();
     virtual __int64 Read(void *Buffer, __int64 Count) = 0;
     virtual __int64 Write(const void *Buffer, __int64 Count) = 0;
     virtual __int64 Seek(__int64 Offset, __int64 Origin) = 0;
@@ -888,14 +886,6 @@ public:
     void ReadBuffer(void *Buffer, __int64 Count);
     void WriteBuffer(const void *Buffer, __int64 Count);
     __int64 CopyFrom(TStream *Source, __int64 Count);
-
-    // __int64 GetPosition() const { return FPosition; }
-    // void SetPosition(__int64 value) { FPosition = value; }
-    // __int64 GetSize() const { return FSize; }
-    // void SetSize(__int64 value) { FSize = value; }
-    // unsigned long Read(void *Buffer, unsigned long int Count);
-    // void WriteBuffer(void *Buffer, unsigned long int Count);
-    // unsigned long Write(void *Buffer, unsigned long int Count);
 public:
     __int64 GetPosition() { return Seek(0, soCurrent); }
     __int64 GetSize()
@@ -912,9 +902,6 @@ public:
     {
         Seek(Pos, soBeginning);
     }
-// private:
-    // __int64 FPosition;
-    // __int64 FSize;
 };
 
 //---------------------------------------------------------------------------
@@ -922,9 +909,9 @@ public:
 class THandleStream : public TStream
 {
 public:
-  THandleStream(HANDLE AHandle)
-  {}
-  virtual  __int64 Read(void *Buffer, __int64 Count);
+  THandleStream(HANDLE AHandle);
+  virtual ~THandleStream();
+  virtual __int64 Read(void *Buffer, __int64 Count);
   virtual __int64 Write(const void *Buffer, __int64 Count);
   virtual __int64 Seek(__int64 Offset, __int64 Origin);
   virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
@@ -959,12 +946,7 @@ public:
 class TMemoryStream : public TStream
 {
 public:
-    TMemoryStream() :
-        FMemory(NULL),
-        FSize(0),
-        FPosition(0),
-        FCapacity(0)
-    {}
+    TMemoryStream();
     virtual  ~TMemoryStream();
     virtual __int64 Read(void *Buffer, __int64 Count);
     virtual __int64 Seek(__int64 Offset, __int64 Origin);

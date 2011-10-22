@@ -677,6 +677,22 @@ void ReadError(const std::wstring &Name)
 }
 
 //---------------------------------------------------------------------------
+TStream::TStream()
+{
+}
+
+TStream::~TStream()
+{
+}
+//---------------------------------------------------------------------------
+THandleStream::THandleStream(HANDLE AHandle) :
+    FHandle(AHandle)
+{
+}
+THandleStream::~THandleStream()
+{
+}
+
 __int64 THandleStream::Read(void *Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
@@ -713,6 +729,14 @@ void THandleStream::SetSize(const __int64 NewSize)
 }
 
 //---------------------------------------------------------------------------
+TMemoryStream::TMemoryStream() :
+    FMemory(NULL),
+    FSize(0),
+    FPosition(0),
+    FCapacity(0)
+{
+}
+
 TMemoryStream::~TMemoryStream()
 {
     Clear();
