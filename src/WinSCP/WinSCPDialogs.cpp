@@ -4753,7 +4753,8 @@ private:
 //---------------------------------------------------------------------------
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, TStrings * FileList,
-  int Options, int CopyParamAttrs) : TFarDialog(AFarPlugin)
+  int Options, int CopyParamAttrs) :
+  TFarDialog(AFarPlugin)
 {
   FToRemote = ToRemote;
   FOptions = Options;
