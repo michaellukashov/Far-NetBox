@@ -77,7 +77,7 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
   }
   catch (const EReadError &)
   {
-    RaiseLastOSError();
+    ::RaiseLastOSError();
   }
   return Result;
 }
@@ -227,7 +227,7 @@ void TFileBuffer::WriteToStream(TStream *Stream, const DWORD Len)
   }
   catch (const EWriteError &)
   {
-    RaiseLastOSError();
+    ::RaiseLastOSError();
   }
 }
 //---------------------------------------------------------------------------
@@ -241,7 +241,7 @@ int TSafeHandleStream::Read(void *Buffer, int Count)
   int Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == -1)
   {
-    RaiseLastOSError();
+    ::RaiseLastOSError();
   }
   return Result;
 }
@@ -251,7 +251,7 @@ int TSafeHandleStream::Write(const void *Buffer, int Count)
   int Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
-    RaiseLastOSError();
+    ::RaiseLastOSError();
   }
   return Result;
 };
