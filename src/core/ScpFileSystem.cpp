@@ -1581,7 +1581,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
           DEBUG_PRINTF(L"before FTerminal->HandleException");
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
-                &E,
+              &E,
               qaOK | qaAbort, &Params, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
@@ -1980,7 +1980,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                 &E,
-                  qaOK | qaAbort, &Params, qtError) == qaAbort)
+                qaOK | qaAbort, &Params, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
