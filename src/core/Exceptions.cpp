@@ -46,12 +46,14 @@ TStrings *ExceptionToMoreMessages(const std::exception *E)
   return Result;
 }
 //---------------------------------------------------------------------------
+/*
 ExtException::ExtException(const std::wstring Msg, int AHelpContext) :
-    parent(::W2MB(Msg.c_str()).c_str(), AHelpContext),
+    parent(), // ::W2MB(Msg.c_str()).c_str(), AHelpContext),
     FMoreMessages(NULL)
 {
     DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
 }
+*/
 //---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception *E) :
   parent(""),
@@ -97,9 +99,10 @@ ExtException::ExtException(std::wstring Msg) :
 
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, const std::exception *E) :
-  parent(::W2MB(Msg.c_str()).c_str()),
+  parent(), // ::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
+  DEBUG_PRINTF(L"Msg = %s, E = %x", Msg.c_str(), E);
   // "copy std::exception"
   AddMoreMessages(E);
   // and append message to the end to more messages
@@ -121,9 +124,10 @@ ExtException::ExtException(std::wstring Msg, const std::exception *E) :
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
+/*
 ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
     std::wstring HelpKeyword) :
-  parent(::W2MB(Msg.c_str()).c_str()),
+  parent(), // ::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL),
   FHelpKeyword(HelpKeyword)
 {
@@ -134,6 +138,7 @@ ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
   }
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
+*/
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, TStrings *MoreMessages,
   bool Own) :
