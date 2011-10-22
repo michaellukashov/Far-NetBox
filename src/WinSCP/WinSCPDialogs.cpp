@@ -4882,7 +4882,7 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
       }
       else
       {
-        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText(), true));
+        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText(), false));
         TargetDirectory = ExtractFilePath(DirectoryEdit->GetText());
       }
 
