@@ -96,11 +96,11 @@ std::wstring ExtractFileName(const std::wstring & Path, bool Unix)
 {
   if (Unix)
   {
-    return UnixExtractFileName(Path);
+    return ::UnixExtractFileName(Path);
   }
   else
   {
-    return ExtractFileName(Path, false);
+    return ::ExtractFilename(Path, L'\\');
   }
 }
 //---------------------------------------------------------------------------
