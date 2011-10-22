@@ -17,7 +17,7 @@ namespace dt = boost::date_time;
 namespace bg = boost::gregorian;
 
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(NULL, L"")
+#define EXCEPTION throw ExtException(L"", NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
   strncpy(dest, source, sizeof(dest)); \
