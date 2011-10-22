@@ -3440,8 +3440,14 @@ std::wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
 {
   std::wstring Result;
   // OEM character set (Ansi does not have the ascii art we need)
-  Result = ::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
-  Result += ::StringOfChar('\xB0', (Width - 5) - Result.size());
+  // Result = ::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
+  // Result += ::StringOfChar('\xB0', (Width - 5) - Result.size());
+  std::string res1;
+  res1.resize((Width - 5) * Percentage / 100, '\xDB');
+  std::string res2;
+  res2.resize((Width - 5) - res1.size(), '\xB0');
+  std::string res = res1 + res2;
+  Result = ::MB2W(res.c_str());
   Result += FORMAT(L"%4d%%", Percentage);
   return Result;
 }
