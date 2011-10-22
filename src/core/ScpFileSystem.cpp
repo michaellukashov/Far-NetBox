@@ -2335,6 +2335,8 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           SCPError(L"", false);
         }
 
+        DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
+        DEBUG_PRINTF(L"OperationProgress->FileName = %s", OperationProgress->FileName.c_str());
         std::wstring DestFileName =
           IncludeTrailingBackslash(TargetDir) +
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,

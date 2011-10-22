@@ -407,10 +407,12 @@ std::wstring TCopyParamType::Untokenize(std::wstring FileName)
 std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
   TOperationSide Side, bool FirstLevel) const
 {
+  DEBUG_PRINTF(L"FirstLevel = %d, Side = %d, FileName = %s", FirstLevel, Side, FileName.c_str());
   if (FirstLevel)
   {
     FileName = MaskFileName(FileName, GetFileMask());
   }
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   switch (GetFileNameCase()) {
     case ncUpperCase: FileName = ::UpperCase(FileName); break;
     case ncLowerCase: FileName = ::LowerCase(FileName); break;
@@ -436,6 +438,7 @@ std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
   {
     FileName = RestoreChars(FileName);
   }
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return FileName;
 }
 //---------------------------------------------------------------------------

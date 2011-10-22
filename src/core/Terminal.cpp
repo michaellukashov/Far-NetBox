@@ -1063,6 +1063,7 @@ int TTerminal::QueryUserException(const std::wstring Query,
 {
   int Result;
   TStringList MoreMessages;
+  DEBUG_PRINTF(L"E->what = %s", ::MB2W(E->what()));
   if (!std::string(E->what()).empty() && !Query.empty())
   {
     MoreMessages.Add(std::wstring(::MB2W(E->what())));
@@ -1071,6 +1072,7 @@ int TTerminal::QueryUserException(const std::wstring Query,
   const ExtException *EE = dynamic_cast<const ExtException*>(E);
   if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
   {
+    DEBUG_PRINTF(L"EE->GetMoreMessages = %s", EE->GetMoreMessages()->GetText());
     MoreMessages.AddStrings(EE->GetMoreMessages());
   }
   Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
@@ -3609,7 +3611,7 @@ bool TTerminal::CreateLocalFile(const std::wstring FileName,
 {
   assert(AHandle);
   bool Result = true;
-
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
     Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
   );

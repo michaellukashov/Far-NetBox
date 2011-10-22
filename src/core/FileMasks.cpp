@@ -263,6 +263,7 @@ std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool
 //---------------------------------------------------------------------------
 std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
 {
+  DEBUG_PRINTF(L"FileName = %s, Mask = %s", FileName.c_str(), Mask.c_str());
   if (!Mask.empty() && (Mask != L"*") && (Mask != L"*.*"))
   {
     bool Masked;
@@ -290,6 +291,7 @@ std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
       FileName = MaskFilePart(FileName, Mask, Masked);
     }
   }
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return FileName;
 }
 //---------------------------------------------------------------------------
