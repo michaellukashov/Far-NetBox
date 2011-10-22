@@ -319,6 +319,10 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FLastEditorID = -1;
   FLoadingSessionList = false;
   FPathHistory = new TStringList;
+
+  FLastMultipleEditReadOnly = false;
+  FEditorPendingSave = false;
+  FOutputLog = false;
 }
 //---------------------------------------------------------------------------
 TWinSCPFileSystem::~TWinSCPFileSystem()
