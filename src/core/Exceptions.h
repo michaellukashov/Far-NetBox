@@ -17,17 +17,10 @@ class ExtException : public std::exception
 public:
   explicit ExtException(std::wstring Msg);
   explicit ExtException(const std::exception *E);
-  // explicit ExtException(const std::exception *E, std::wstring Msg);
   // "copy the std::exception", just append message to the end
   explicit ExtException(std::wstring Msg, const std::exception *E);
   // explicit ExtException(std::wstring Msg, std::wstring MoreMessages, std::wstring HelpKeyword = L"");
   explicit ExtException(std::wstring Msg, TStrings *MoreMessages, bool Own);
-  // inline ExtException(const std::wstring Msg, const TVarRec *Args, const int Args_Size) : Sysutils::exception(Msg, Args, Args_Size) {}
-  // inline ExtException(int Ident, const TVarRec *Args, const int Args_Size)/*overload */ : Sysutils::exception(Ident, Args, Args_Size) {}
-  // explicit ExtException(const std::wstring Msg, int AHelpContext);
-  // inline ExtException(const std::wstring Msg, const TVarRec *Args, const int Args_Size, int AHelpContext) : Sysutils::exception(Msg, Args, Args_Size, AHelpContext) {}
-  // inline ExtException(int Ident, int AHelpContext)/*overload */ : std::exception(Ident, AHelpContext) {}
-  // inline ExtException(PResStringRec ResStringRec, const TVarRec *Args, const int Args_Size, int AHelpContext)/*overload */ : Sysutils::exception(ResStringRec, Args, Args_Size, AHelpContext) {}
   explicit ExtException(const ExtException &) throw();
   ExtException &operator =(const ExtException &) throw();
   virtual ~ExtException(void) throw();
@@ -51,16 +44,8 @@ private:
     typedef BASE parent; \
   public: \
     explicit NAME(std::wstring Msg, const std::exception *E) : parent(Msg, E) {} \
-    explicit NAME(const std::wstring Msg, int AHelpContext) : parent(Msg, AHelpContext) {} \
     virtual ~NAME(void) throw() {} \
   };
-
-    // inline NAME(const std::exception *E, int Ident) : parent(E, Ident) {} \
-    // inline NAME(const std::wstring Msg, const TVarRec *Args, const int Args_Size) : parent(Msg, Args, Args_Size) {} \
-    // inline NAME(int Ident, const TVarRec *Args, const int Args_Size) : parent(Ident, Args, Args_Size) {} \
-    // inline NAME(const std::wstring Msg, const TVarRec *Args, const int Args_Size, int AHelpContext) : parent(Msg, Args, Args_Size, AHelpContext) {} \
-    // inline NAME(PResStringRec ResStringRec, const TVarRec *Args, const int Args_Size, int AHelpContext) : parent(ResStringRec, Args, Args_Size, AHelpContext) {} \
-    // inline NAME(int Ident, int AHelpContext) : parent(Ident, AHelpContext) {} \
 
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(ESsh, ExtException);
@@ -97,7 +82,7 @@ public:
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 //---------------------------------------------------------------------------
 // std::exception that closes application, but displayes info message (not error message)
-// = close on completionclass ESshTerminate : public EFatal
+// = close on completion
 class ESshTerminate : public EFatal
 {
   typedef EFatal parent;

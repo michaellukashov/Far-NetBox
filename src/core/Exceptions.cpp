@@ -1,4 +1,3 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
 
 #include "Exceptions.h"
@@ -46,15 +45,6 @@ TStrings *ExceptionToMoreMessages(const std::exception *E)
   return Result;
 }
 //---------------------------------------------------------------------------
-/*
-ExtException::ExtException(const std::wstring Msg, int AHelpContext) :
-    parent(), // ::W2MB(Msg.c_str()).c_str(), AHelpContext),
-    FMoreMessages(NULL)
-{
-    DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
-}
-*/
-//---------------------------------------------------------------------------
 ExtException::ExtException(const std::exception *E) :
   parent(""),
   FMoreMessages(NULL)
@@ -62,16 +52,6 @@ ExtException::ExtException(const std::exception *E) :
   AddMoreMessages(E);
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
-//---------------------------------------------------------------------------
-/*
-ExtException::ExtException(const std::exception *E, std::wstring Msg) :
-  parent(::W2MB(Msg.c_str()).c_str()),
-  FMoreMessages(NULL)
-{
-  AddMoreMessages(E);
-  DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
-}
-*/
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg) :
   parent(::W2MB(Msg.c_str()).c_str()),
@@ -123,22 +103,6 @@ ExtException::ExtException(std::wstring Msg, const std::exception *E) :
   }
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
-//---------------------------------------------------------------------------
-/*
-ExtException::ExtException(std::wstring Msg, std::wstring MoreMessages,
-    std::wstring HelpKeyword) :
-  parent(), // ::W2MB(Msg.c_str()).c_str()),
-  FMoreMessages(NULL),
-  FHelpKeyword(HelpKeyword)
-{
-  if (!MoreMessages.empty())
-  {
-    FMoreMessages = new TStringList();
-    FMoreMessages->SetText(MoreMessages);
-  }
-  DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
-}
-*/
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, TStrings *MoreMessages,
   bool Own) :
