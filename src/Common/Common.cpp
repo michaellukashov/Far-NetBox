@@ -1249,7 +1249,7 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   TDateTimeParams * Params = GetDateTimeParams();
 
   TDateTime Result;
-  DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
+  // DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
   // ::Error(SNotImplemented, 49);
   Result = TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
 
@@ -1644,7 +1644,7 @@ void DecodeTime(const TDateTime &DateTime, unsigned int &Hour,
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
 {
-    DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
+    // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
     // ::Error(SNotImplemented, 59);
     std::wstring Result;
     // DateTimeToString(Result, fmt, DateTime);
@@ -2306,7 +2306,7 @@ double StrToFloat(std::wstring Value)
 
 std::wstring FormatFloat(std::wstring Format, double value)
 {
-    DEBUG_PRINTF(L"Format = %s", Format.c_str());
+    // DEBUG_PRINTF(L"Format = %s", Format.c_str());
     // #,##0 "B"
     // FIXME
     // ::Error(SNotImplemented, 78);
@@ -2334,7 +2334,7 @@ __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
   __int64 Result = -1;
   if (!::ReadFile(Handle, Buffer, Count, (LPDWORD)&Result, NULL))
     Result = -1;
-  DEBUG_PRINTF(L"Count = %d, Result = %d", Count, Result);
+  // DEBUG_PRINTF(L"Count = %d, Result = %d", Count, Result);
   return Result;
 }
 

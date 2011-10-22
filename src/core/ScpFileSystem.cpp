@@ -538,7 +538,7 @@ void TSCPFileSystem::SendCommand(const std::wstring Cmd)
   FOutput->Clear();
   // We suppose, that 'Cmd' already contains command that ensures,
   // that 'LastLine' will be printed
-  DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
+  // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
   FSecureShell->SendLine(Cmd);
   FProcessingCommand = true;
 }
@@ -1409,7 +1409,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   if (CopyParam->GetPreserveRights()) Options = L"-p";
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
-  DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
+  // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
     0, Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
@@ -2335,14 +2335,14 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           SCPError(L"", false);
         }
 
-        DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
-        DEBUG_PRINTF(L"OperationProgress->FileName = %s", OperationProgress->FileName.c_str());
+        // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
+        // DEBUG_PRINTF(L"OperationProgress->FileName = %s", OperationProgress->FileName.c_str());
         std::wstring DestFileName =
           IncludeTrailingBackslash(TargetDir) +
           CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
             Level == 0);
 
-        DEBUG_PRINTF(L"DestFileName = %s", DestFileName.c_str());
+        // DEBUG_PRINTF(L"DestFileName = %s", DestFileName.c_str());
         FileData.Attrs = FileGetAttr(DestFileName);
         // If getting attrs failes, we suppose, that file/folder doesn't exists
         FileData.Exists = (FileData.Attrs != -1);
@@ -2558,7 +2558,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
       {
         SUSPEND_OPERATION (
           TQueryParams Params(qpAllowContinueOnError);
-          DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
+          // DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
           if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
                 &E, qaOK | qaAbort, &Params, qtError) == qaAbort)
           {
