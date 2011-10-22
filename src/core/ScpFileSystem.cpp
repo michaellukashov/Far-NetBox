@@ -665,7 +665,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
            WrongReturnCode))
       {
         assert(Cmd != NULL);
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, *Cmd, GetReturnCode(), Message.c_str()));
+        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, Cmd->c_str(), GetReturnCode(), Message.c_str()));
       }
     }
   }
