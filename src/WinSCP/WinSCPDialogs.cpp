@@ -4859,9 +4859,9 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
   {
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
-    DirectoryEdit->GetText() =
+    DirectoryEdit->SetText(
       (FToRemote ? UnixIncludeTrailingBackslash(TargetDirectory) :
-        IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask();
+        IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
 
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
