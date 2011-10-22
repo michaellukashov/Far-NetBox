@@ -701,9 +701,14 @@ __int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
     return 0;
 }
 
-void THandleStream::SetSize(const  __int64 NewSize)
+void THandleStream::SetSize(const __int64 NewSize)
 {
-    Seek(NewSize, soBeginning);
+    __int64 res = Seek(NewSize, soBeginning);
+    // LARGE_INTEGER li;
+    // li.QuadPart = size;
+    // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
+        // handleLastErrorImpl(_path);
+    DEBUG_PRINTF(L"FHandle = %d, res = %d", FHandle, res);
     ::Win32Check(::SetEndOfFile(FHandle));
 }
 
