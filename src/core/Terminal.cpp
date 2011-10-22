@@ -1063,17 +1063,28 @@ int TTerminal::QueryUserException(const std::wstring Query,
 {
   int Result;
   TStringList MoreMessages;
-  DEBUG_PRINTF(L"E->what = %s", ::MB2W(E->what()));
-  if (!std::string(E->what()).empty() && !Query.empty())
+  DEBUG_PRINTF(L"E->what = %s", ::MB2W(E->what()).c_str());
+
+  if ((E != NULL) && !std::string(E->what()).empty() && !Query.empty())
   {
     MoreMessages.Add(std::wstring(::MB2W(E->what())));
   }
-
-  const ExtException *EE = dynamic_cast<const ExtException*>(E);
-  if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+  Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
+    MoreMessages.GetCount() ? &MoreMessages : NULL,
+    Answers, Params, QueryType);
+  return Result;
+}
+//---------------------------------------------------------------------------
+int TTerminal::QueryUserException(const std::wstring Query,
+  const ExtException *E, int Answers, const TQueryParams * Params,
+  TQueryType QueryType)
+{
+  int Result;
+  TStringList MoreMessages;
+  if ((E != NULL) && (E->GetMoreMessages() != NULL))
   {
-    DEBUG_PRINTF(L"EE->GetMoreMessages = %s", EE->GetMoreMessages()->GetText());
-    MoreMessages.AddStrings(EE->GetMoreMessages());
+    DEBUG_PRINTF(L"E->GetMoreMessages = %s", E->GetMoreMessages()->GetText());
+    MoreMessages.AddStrings(E->GetMoreMessages());
   }
   Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
     MoreMessages.GetCount() ? &MoreMessages : NULL,
