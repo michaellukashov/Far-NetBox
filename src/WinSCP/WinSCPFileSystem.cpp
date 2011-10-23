@@ -1833,7 +1833,9 @@ void TWinSCPFileSystem::FileProperties()
         // FIXME
         ::Error(SNotImplemented, 10);
         if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
-            (TStrings *)FTerminal->GetGroups(), (TStrings *)FTerminal->GetUsers(), &NewProperties, Flags))
+            // (TStrings *)FTerminal->GetGroups(), (TStrings *)FTerminal->GetUsers(),
+            NULL, NULL,
+            &NewProperties, Flags))
         {
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
