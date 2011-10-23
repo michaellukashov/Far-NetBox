@@ -1859,7 +1859,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(std::wstring Token, bool Separa
 {
   if (!Token.empty())
   {
-    if (Token.find_first_of(L" ") > 0)
+    if (Token.find_first_of(L" ") != std::wstring::npos)
     {
       Token = FORMAT(L"\"%s\"", Token.c_str());
     }

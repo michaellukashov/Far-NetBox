@@ -1065,7 +1065,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
         SetFtps(AFtps);
       }
 
-      bool PasswordSeparator = (UserInfo.find_first_of(':') != 0);
+      bool PasswordSeparator = (UserInfo.find_first_of(':') != std::wstring::npos);
       SetUserName(DecodeUrlChars(CutToChar(UserInfo, ':', false)));
       SetPassword(DecodeUrlChars(UserInfo));
       SetPasswordless(GetPassword().empty() && PasswordSeparator);
