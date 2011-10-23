@@ -702,6 +702,8 @@ THandleStream::THandleStream(HANDLE AHandle) :
 }
 THandleStream::~THandleStream()
 {
+    // if (FHandle > 0)
+    //   CloseHandle(FHandle);
 }
 
 __int64 THandleStream::Read(void *Buffer, __int64 Count)
