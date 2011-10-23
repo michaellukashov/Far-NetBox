@@ -76,7 +76,7 @@ std::wstring UnixExtractFileName(const std::wstring Path)
   std::wstring Result;
   if (Pos != std::wstring::npos)
   {
-    Result = Path.substr(Pos, Path.size() - Pos);
+    Result = Path.substr(Pos + 1, Path.size() - Pos);
   }
   else
   {
