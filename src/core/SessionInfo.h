@@ -57,6 +57,10 @@ struct TFileSystemInfo
 class TSessionUI
 {
 public:
+  TSessionUI()
+  {}
+  virtual ~TSessionUI()
+  {}
   virtual void Information(const std::wstring & Str, bool Status) = 0;
   virtual int QueryUser(const std::wstring Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
