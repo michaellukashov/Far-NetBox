@@ -1,4 +1,3 @@
-//---------------------------------------------------------------------------
 #ifndef TerminalH
 #define TerminalH
 
@@ -369,7 +368,7 @@ protected:
 
 public:
   TTerminal(TSessionData * SessionData, TConfiguration * Configuration);
-  ~TTerminal();
+  virtual ~TTerminal();
   void Open();
   void Close();
   void Reopen(int Params);

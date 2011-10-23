@@ -493,6 +493,10 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FTunnelUI = NULL;
   FTunnelOpening = false;
   FCallbackGuard = NULL;
+  FOperationProgress = NULL;
+  FClosedOnCompletion = NULL;
+  FTunnel = NULL;
+  FAnyInformation = false;;
   Self = this;
 }
 //---------------------------------------------------------------------------
