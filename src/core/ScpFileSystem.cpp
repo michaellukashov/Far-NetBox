@@ -1339,10 +1339,11 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
     case 1:     /* error */
     case 2:     /* fatal error */
       // pscp adds 'Resp' to 'Msg', why?
-      std::wstring Msg = FSecureShell->ReceiveLine();
-      // FIXME std::wstring Line = std::wstring((wchar_t)Resp) + Msg;
-      std::wstring Line = Msg;
-      if (IsLastLine(Line))
+      std::wstring MsgW = FSecureShell->ReceiveLine();
+      std::string Msg = ::W2MB(MsgW.c_str());
+      std::string Line = Resp + Msg;
+      std::wstring LineW = ::MB2W(Line.c_str());
+      if (IsLastLine(LineW))
       {
         if (GotLastLine != NULL)
         {
@@ -1366,24 +1367,23 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
           throw;
         }
       }
-        else
-      if (Resp == 1)
+      else if (Resp == 1)
       {
         FTerminal->LogEvent(L"SCP remote side error (1):");
       }
-        else
+      else
       {
         FTerminal->LogEvent(L"SCP remote side fatal error (2):");
       }
 
       if (Resp == 1)
       {
-        DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
-        THROW_FILE_SKIPPED(Msg, NULL);
+        DEBUG_PRINTF(L"Msg = %s", MsgW.c_str());
+        THROW_FILE_SKIPPED(MsgW, NULL);
       }
-        else
+      else
       {
-        THROW_SCP_ERROR(Msg, NULL);
+        THROW_SCP_ERROR(LineW, NULL);
       }
   }
 }
