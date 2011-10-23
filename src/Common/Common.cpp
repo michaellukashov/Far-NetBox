@@ -2325,9 +2325,12 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
 {
   __int64 Result = -1;
-  if (!::ReadFile(Handle, Buffer, Count, (LPDWORD)&Result, NULL))
+  DWORD res = 0;
+  if (::ReadFile(Handle, Buffer, Count, &res, NULL))
+    Result = res;
+  else
     Result = -1;
-  // DEBUG_PRINTF(L"Count = %d, Result = %d", Count, Result);
+  DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", Result, Handle, Count);
   return Result;
 }
 
