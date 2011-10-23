@@ -1620,10 +1620,9 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
   TFileOperationProgressType * OperationProgress, int Level)
 {
   std::wstring DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(FileName, true), osLocal, Level == 0);
-
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", (FileName)));
+    ExtractFileName(FileName, false), osLocal, Level == 0);
   DEBUG_PRINTF(L"DestFileName = %s", DestFileName.c_str());
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   OperationProgress->SetFile(FileName, false);
 
@@ -1642,7 +1641,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
     &Attrs, &File, NULL, &MTime, &ATime, &Size);
 
   bool Dir = FLAGSET(Attrs, faDirectory);
-  TSafeHandleStream * Stream = new TSafeHandleStream((HANDLE)File);
+  TSafeHandleStream * Stream = new TSafeHandleStream(File);
   {
     BOOST_SCOPE_EXIT ( (&Self) (&File) (&Stream) )
     {
@@ -1662,11 +1661,10 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
     {
       std::wstring AbsoluteFileName = FTerminal->AbsolutePath(TargetDir + DestFileName, false);
       DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
-
       assert(File);
 
       // File is regular file (not directory)
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", (FileName)));
+      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
 
       OperationProgress->SetLocalSize(Size);
 
@@ -1762,10 +1760,10 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             // Send file modes (rights), filesize and file name
             // TVarRec don't understand 'unsigned int' -> we use sprintf()
             wprintf((wchar_t *)Buf.c_str(), L"C%s %Ld %s",
-              Rights.GetOctal().data(),
+              Rights.GetOctal().c_str(),
               (OperationProgress->AsciiTransfer ? (__int64)AsciiBuf.GetSize()  :
                 OperationProgress->LocalSize),
-              DestFileName.data());
+              DestFileName.c_str());
             FSecureShell->SendLine(Buf);
             SCPResponse();
             // Indicate we started transfering file, we need to finish it
@@ -1778,7 +1776,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             if (OperationProgress->AsciiTransfer)
             {
               FTerminal->LogEvent(FORMAT(L"Sending ASCII data (%u bytes)",
-                (AsciiBuf.GetSize())));
+                AsciiBuf.GetSize()));
               // Should be equal, just in case it's rounded (see above)
               OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
               while (!OperationProgress->IsTransferDone())
@@ -1807,7 +1805,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             else if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
             {
               FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
-                (BlockBuf.GetSize())));
+                BlockBuf.GetSize()));
             }
             FSecureShell->Send(BlockBuf.GetData(), BlockBuf.GetSize());
             OperationProgress->AddTransfered(BlockBuf.GetSize());
