@@ -859,18 +859,11 @@ public:
 
 //---------------------------------------------------------------------------
 
-enum
-{
-  soFromBeginning = 0,
-  soFromCurrent = 1,
-  soFromEnd = 2
-};
-
 enum TSeekOrigin
 {
-    soBeginning,
-    soCurrent,
-    soEnd
+    soFromBeginning = 0,
+    soFromCurrent = 1,
+    soFromEnd = 2
 };
 
 //---------------------------------------------------------------------------
@@ -887,7 +880,7 @@ public:
     void WriteBuffer(const void *Buffer, __int64 Count);
     __int64 CopyFrom(TStream *Source, __int64 Count);
 public:
-    __int64 GetPosition() { return Seek(0, soCurrent); }
+    __int64 GetPosition() { return Seek(0, soFromCurrent); }
     __int64 GetSize()
     {
       __int64 Pos = Seek(0, soCurrent);
