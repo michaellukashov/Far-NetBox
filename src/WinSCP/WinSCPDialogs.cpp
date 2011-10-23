@@ -4989,7 +4989,6 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, TStrings * FileList,
   std::wstring & TargetDirectory, 
   TGUICopyParamType * Params,
-  // TCopyParamType * Params,
   int Options,
   int CopyParamAttrs)
 {
@@ -5001,7 +5000,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
       {
         delete Dialog;
       } BOOST_SCOPE_EXIT_END
-    Result = Dialog->Execute(TargetDirectory, (TGUICopyParamType *)Params);
+    Result = Dialog->Execute(TargetDirectory, Params);
   }
   return Result;
 }

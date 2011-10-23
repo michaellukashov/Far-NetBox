@@ -162,7 +162,6 @@ protected:
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     std::wstring & TargetDirectory, 
     TGUICopyParamType * Params,
-    // TCopyParamType * Params,
     int Options,
     int CopyParamAttrs);
   bool LinkDialog(std::wstring & FileName, std::wstring & PointTo, bool & Symbolic,
