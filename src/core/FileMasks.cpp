@@ -283,7 +283,7 @@ std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
       // DEBUG_PRINTF(L"FileExt = %s", FileExt.c_str());
       if (P2 > 0)
       {
-        FileName.resize(P2 - 1);
+        FileName.resize(P2);
       }
       // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
       FileName = MaskFilePart(FileName, Mask.substr(0, P), Masked);
