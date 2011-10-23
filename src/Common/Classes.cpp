@@ -709,7 +709,7 @@ THandleStream::~THandleStream()
 __int64 THandleStream::Read(void *Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
-  DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
+  // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
   if (Result == -1) Result = 0;
   return Result;
 }
@@ -724,7 +724,7 @@ __int64 THandleStream::Write(const void *Buffer, __int64 Count)
 __int64 THandleStream::Seek(__int64 Offset, __int64 Origin)
 {
     __int64 Result = ::FileSeek(FHandle, Offset, Origin);
-    DEBUG_PRINTF(L"Result = %d, FHandle = %d, Offset = %d, Origin = %d", Result, FHandle, Offset, Origin);
+    // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Offset = %d, Origin = %d", Result, FHandle, Offset, Origin);
     return Result;
 }
 __int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
@@ -740,7 +740,7 @@ void THandleStream::SetSize(const __int64 NewSize)
     // li.QuadPart = size;
     // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
         // handleLastErrorImpl(_path);
-    DEBUG_PRINTF(L"FHandle = %d, res = %d", FHandle, res);
+    // DEBUG_PRINTF(L"FHandle = %d, res = %d", FHandle, res);
     ::Win32Check(::SetEndOfFile(FHandle));
 }
 

@@ -1203,8 +1203,8 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
         }
         FFileName = UnixExtractFileName(::Trim(Line));
-        DEBUG_PRINTF(L"FFileName = '%s'", FFileName.c_str());
-        DEBUG_PRINTF(L"Line = '%s'", Line.c_str());
+        // DEBUG_PRINTF(L"FFileName = '%s'", FFileName.c_str());
+        // DEBUG_PRINTF(L"Line = '%s'", Line.c_str());
       }
     }
 
