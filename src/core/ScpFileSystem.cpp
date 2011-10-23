@@ -1749,22 +1749,34 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
 
             if (CopyParam->GetPreserveTime())
             {
+              Buf.resize(40, 0);
               // Send last file access and modification time
-              // TVarRec don't understand 'unsigned int' -> we use sprintf()
-              wprintf((wchar_t *)Buf.c_str(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
+              // wprintf((wchar_t *)Buf.c_str(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
+                // static_cast<unsigned long>(ATime));
+              swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                 static_cast<unsigned long>(ATime));
-              FSecureShell->SendLine(Buf);
+              DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
+              FSecureShell->SendLine(Buf.c_str());
               SCPResponse();
             }
 
             // Send file modes (rights), filesize and file name
-            // TVarRec don't understand 'unsigned int' -> we use sprintf()
+            Buf.clear();
+            Buf.resize(MAX_PATH * 2, 0);
+            /*
             wprintf((wchar_t *)Buf.c_str(), L"C%s %Ld %s",
               Rights.GetOctal().c_str(),
               (OperationProgress->AsciiTransfer ? (__int64)AsciiBuf.GetSize()  :
                 OperationProgress->LocalSize),
               DestFileName.c_str());
-            FSecureShell->SendLine(Buf);
+            */
+            swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"C%s %Ld %s",
+              Rights.GetOctal().c_str(),
+              OperationProgress->AsciiTransfer ? (__int64)AsciiBuf.GetSize()  :
+                OperationProgress->LocalSize,
+              DestFileName.c_str());
+            DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
+            FSecureShell->SendLine(Buf.c_str());
             SCPResponse();
             // Indicate we started transfering file, we need to finish it
             // If not, it's fatal error
