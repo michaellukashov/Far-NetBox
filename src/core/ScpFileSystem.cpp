@@ -1412,7 +1412,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   DEBUG_PRINTF(L"TargetDir = %s, Options = %s", TargetDir.c_str(), Options.c_str());
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    0, Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
+    Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
 
   {
@@ -1484,6 +1484,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       std::wstring FileNameOnly =
         CopyParam->ChangeFileName(ExtractFileName(FileName, true), osLocal, true);
 
+      DEBUG_PRINTF(L"CheckExistence = %d, FileNameOnly = %s", CheckExistence, FileNameOnly.c_str());
       if (CheckExistence)
       {
         // previously there was assertion on FTerminal->FFiles->Loaded, but it
