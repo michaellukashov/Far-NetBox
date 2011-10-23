@@ -248,6 +248,7 @@ TSafeHandleStream::~TSafeHandleStream()
 //---------------------------------------------------------------------------
 __int64 TSafeHandleStream::Read(void *Buffer, __int64 Count)
 {
+  DEBUG_PRINTF(L"FHandle = %d", FHandle);
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == (__int64)-1)
   {
