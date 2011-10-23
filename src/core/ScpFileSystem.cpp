@@ -1623,6 +1623,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
     ExtractFileName(FileName, true), osLocal, Level == 0);
 
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", (FileName)));
+  DEBUG_PRINTF(L"DestFileName = %s", DestFileName.c_str());
 
   OperationProgress->SetFile(FileName, false);
 
@@ -1660,6 +1661,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
     else
     {
       std::wstring AbsoluteFileName = FTerminal->AbsolutePath(TargetDir + DestFileName, false);
+      DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
 
       assert(File);
 
