@@ -512,8 +512,15 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
         BOOST_CHECK(FileSearchRec(FileName, Rec));
     }
     {
-        HANDLE File = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ,
-          NULL, OPEN_EXISTING, 0, NULL);
+        HANDLE File = ::CreateFile(
+          FileName.c_str(),
+          GENERIC_READ,
+          0, // FILE_SHARE_READ,
+          NULL,
+          OPEN_ALWAYS, // OPEN_EXISTING,
+          FILE_ATTRIBUTE_NORMAL, // 0,
+          NULL);
+        DEBUG_PRINTF(L"File = %d", File);
         TStream *FileStream = new TSafeHandleStream(File);
         TFileBuffer *BlockBuf = new TFileBuffer();
         BlockBuf->ReadStream(FileStream, str.size(), true);
