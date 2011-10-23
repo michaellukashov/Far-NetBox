@@ -789,16 +789,6 @@ void TSCPFileSystem::DetectReturnVar()
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index]));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
         // DEBUG_PRINTF(L"GetOutput()->GetString(0) = %s", GetOutput()->GetString(0).c_str());
-        /*
-        std::wstring L;
-        int val = 256;
-        if (GetOutput()->GetCount() == 1)
-        {
-            L = GetOutput()->GetString(0);
-            val = StrToIntDef(::Trim(L), 256);
-            DEBUG_PRINTF(L"L = %s, val = %d", L.c_str(), val);
-        }
-        */
         if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
