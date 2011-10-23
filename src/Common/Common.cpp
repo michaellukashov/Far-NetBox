@@ -2325,12 +2325,13 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
 {
   __int64 Result = -1;
+  // DEBUG_PRINTF(L"Handle = %d, Count = %d", Handle, Count);
   DWORD res = 0;
-  if (::ReadFile(Handle, Buffer, Count, &res, NULL))
+  if (::ReadFile(Handle, (LPVOID)Buffer, (DWORD)Count, &res, NULL))
     Result = res;
   else
     Result = -1;
-  DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", Result, Handle, Count);
+  // DEBUG_PRINTF(L"Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
   return Result;
 }
 
@@ -2342,7 +2343,7 @@ __int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count)
     Result = res;
   else
     Result = -1;
-  // DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", Result, Handle, Count);
+  // DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
   return Result;
 }
 
