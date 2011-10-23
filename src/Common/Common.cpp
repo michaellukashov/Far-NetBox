@@ -2687,8 +2687,8 @@ std::wstring GetUniversalName(std::wstring FileName)
 std::wstring ExpandUNCFileName(std::wstring FileName)
 {
     std::wstring Result = ExpandFileName(FileName);
-    if ((Result.size() >= 3) && (Result[2] == L':') && (::UpCase(Result[1]) >= 'A')
-      && (::UpCase(Result[1]) <= 'Z'))
+    if ((Result.size() >= 3) && (Result[1] == L':') && (::UpCase(Result[0]) >= 'A')
+      && (::UpCase(Result[0]) <= 'Z'))
     {
       Result = GetUniversalName(Result);
     }
