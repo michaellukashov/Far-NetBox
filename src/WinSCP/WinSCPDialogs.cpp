@@ -1187,7 +1187,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   new TFarSeparator(this);
 
   Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(MSG_BUTTON_Close));
+  Button->SetCaption(GetMsg(MSG_BUTTON_CLOSE));
   Button->SetDefault(true);
   Button->SetResult(brOK);
   Button->SetCenterGroup(true);
@@ -4694,11 +4694,11 @@ void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
   TFarEdit * Edit = dynamic_cast<TFarEdit *>(Sender);
   assert(Edit != NULL);
   TFileMasks Masks = Edit->GetText();
-  int Start, Length;
+  int Start = 0, Length = 0;
   if (!Masks.GetIsValid(Start, Length))
   {
     Edit->SetFocus();
-    throw ExtException(FORMAT(GetMsg(MASK_ERROR).c_str(), Masks.GetMasks().substr(Start, Length).c_str()));
+    throw ExtException(FORMAT(GetMsg(EDIT_MASK_ERROR).c_str(), Masks.GetMasks().c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -7283,7 +7283,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipRight);
 
   CloseButton = new TFarButton(this);
-  CloseButton->SetCaption(GetMsg(MSG_BUTTON_Close));
+  CloseButton->SetCaption(GetMsg(MSG_BUTTON_CLOSE));
   CloseButton->SetResult(brCancel);
   CloseButton->SetCenterGroup(true);
 }
