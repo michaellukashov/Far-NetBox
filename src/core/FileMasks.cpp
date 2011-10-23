@@ -339,7 +339,7 @@ bool TFileMasks::IsMask(const std::wstring Mask)
 {
     int result = ::LastDelimiter(Mask, L"?*[");
     // DEBUG_PRINTF(L"isMask: result = %d", result);
-    return result != -1;
+    return result != std::wstring::npos;
 }
 //---------------------------------------------------------------------------
 bool TFileMasks::IsAnyMask(const std::wstring & Mask)
@@ -481,7 +481,7 @@ bool TFileMasks::Matches(const std::wstring FileName, bool Local,
     {
       Path = ToUnixPath(ExcludeTrailingBackslash(Path));
     }
-    Result = Matches(ExtractFileName(FileName, true), Directory, Path, Params);
+    Result = Matches(ExtractFileName(FileName, false), Directory, Path, Params);
   }
   else
   {
@@ -493,7 +493,7 @@ bool TFileMasks::Matches(const std::wstring FileName, bool Local,
 //---------------------------------------------------------------------------
 bool TFileMasks::GetIsValid(int &Start, int &Length) const
 {
-    if (IsMask(FStr))
+    if (IsMask(FStr) || FStr.empty())
     {
         Start = 0;
         Length = FStr.size();
@@ -501,7 +501,7 @@ bool TFileMasks::GetIsValid(int &Start, int &Length) const
     }
     else
     {
-        Start = -1;
+        Start = 0;
         Length = 0;
         return false;
     }
