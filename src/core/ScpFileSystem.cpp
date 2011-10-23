@@ -1482,8 +1482,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       bool CanProceed;
 
       std::wstring FileNameOnly =
-        CopyParam->ChangeFileName(ExtractFileName(FileName, true), osLocal, true);
-
+        CopyParam->ChangeFileName(ExtractFileName(FileName, false), osLocal, true);
       DEBUG_PRINTF(L"CheckExistence = %d, FileNameOnly = %s", CheckExistence, FileNameOnly.c_str());
       if (CheckExistence)
       {

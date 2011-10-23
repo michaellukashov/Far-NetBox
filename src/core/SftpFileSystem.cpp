@@ -3974,7 +3974,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       // File is regular file (not directory)
       assert(File);
 
-      std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, true),
+      std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
       std::wstring DestFullName = LocalCanonify(TargetDir + DestFileName);
       std::wstring DestPartinalFullName;
