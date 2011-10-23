@@ -866,17 +866,10 @@ char HexToChar(const std::wstring Hex, int MinChars)
 //---------------------------------------------------------------------------
 bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
 {
-::Error(SNotImplemented, 42);
-/*
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
-  if (Result)
-  {
-    FindClose(Rec);
-  }
-  return Result;
-*/ 
-    return false;
+    HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
+    bool Result = (hFind != INVALID_HANDLE_VALUE);
+    FindClose(hFind);
+    return Result;
 }
 //---------------------------------------------------------------------------
 void ProcessLocalDirectory(std::wstring DirName,
