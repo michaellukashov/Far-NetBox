@@ -3957,8 +3957,9 @@ private:
 };
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const std::wstring Directory, TStrings * GroupList,
-  TStrings * UserList, int AAllowedChanges) :
+  TStrings * FileList, const std::wstring Directory,
+  TStrings * GroupList, TStrings * UserList,
+  int AAllowedChanges) :
   TFarDialog(AFarPlugin),
   RightsContainer(NULL),
   OwnerComboBox(NULL),
@@ -4214,11 +4215,12 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
-  const std::wstring Directory, TStrings * GroupList, TStrings * UserList,
+  const std::wstring Directory,
+  TStrings * GroupList, TStrings * UserList,
   // const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   TRemoteProperties * Properties, int AllowedChanges)
 {
-  bool Result;
+  bool Result = false;
   TPropertiesDialog * Dialog = new TPropertiesDialog(FPlugin, FileList,
     Directory, GroupList, UserList, AllowedChanges);
   {
