@@ -265,7 +265,7 @@ private:
   bool FLastMultipleEditReadOnly;
   int FLastEditorID;
   bool FEditorPendingSave;
-  TCopyParamType FLastEditCopyParam;
+  TGUICopyParamType FLastEditCopyParam;
   bool FNoProgress;
   bool FNoProgressFinish;
   TKeepaliveThread * FKeepaliveThread;

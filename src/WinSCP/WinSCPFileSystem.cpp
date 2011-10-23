@@ -1441,7 +1441,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   int Params = GUIConfiguration->GetSynchronizeParams();
   bool SaveSettings = false;
 
-  TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
   TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   int Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
@@ -1602,7 +1602,7 @@ void TWinSCPFileSystem::Synchronize()
           }
         }
       } BOOST_SCOPE_EXIT_END
-    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TCopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
     int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
@@ -2493,7 +2493,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
         (OpMode & OPM_SILENT) &&
         (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-      TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
       if (EditView)
       {
         EditViewCopyParam(CopyParam);
@@ -2658,7 +2658,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     if (Confirmed && !Edit && CopyParam.GetQueue())
     {
       // these parameters are known only after transfer dialog
-      Params |= // cpNoConfirmation | cpNewerOnly |
+      Params |=
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
         FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList,
@@ -3993,7 +3993,7 @@ void TWinSCPFileSystem::MultipleEdit(std::wstring Directory,
   if (Edit)
   {
     std::wstring TempDir;
-    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
     EditViewCopyParam(CopyParam);
 
     TStrings * FileList = new TStringList;

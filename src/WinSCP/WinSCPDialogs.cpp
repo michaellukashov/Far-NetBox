@@ -598,7 +598,7 @@ bool TWinSCPPlugin::TransferConfigurationDialog()
   std::wstring Caption = FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER)).c_str());
 
-  TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
   if (Result)
   {
@@ -699,7 +699,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
           {
             Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
-        TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+        TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
         if (ResumeOnButton->GetChecked()) CopyParam.SetResumeSupport(rsOn);
         if (ResumeSmartButton->GetChecked()) CopyParam.SetResumeSupport(rsSmart);
@@ -773,7 +773,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
           {
             Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
-        TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+        TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
         FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
         CopyParam.SetQueue(QueueCheck->GetChecked());
