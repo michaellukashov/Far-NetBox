@@ -2679,7 +2679,7 @@ std::wstring ExpandFileName(const std::wstring FileName)
 
 std::wstring GetUniversalName(std::wstring FileName)
 {
-    ::Error(SNotImplemented, 35);
+    // ::Error(SNotImplemented, 35);
     std::wstring Result = FileName;
     return Result;
 }
