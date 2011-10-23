@@ -73,7 +73,7 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
     {
       SetSize(GetSize() - Len + Result);
     }
-    FMemory->Seek(Len, soCurrent);
+    FMemory->Seek(Len, soFromCurrent);
   }
   catch (const EReadError &)
   {
@@ -84,7 +84,7 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
 //---------------------------------------------------------------------------
 DWORD TFileBuffer::LoadStream(TStream * Stream, const DWORD Len, bool ForceLen)
 {
-  FMemory->Seek(0, soBeginning);
+  FMemory->Seek(0, soFromBeginning);
   return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
@@ -225,7 +225,7 @@ void TFileBuffer::WriteToStream(TStream *Stream, const DWORD Len)
     // DEBUG_PRINTF(L"before WriteBuffer: GetPosition = %d", GetPosition());
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
     // DEBUG_PRINTF(L"after WriteBuffer");
-    FMemory->Seek(Len, soCurrent);
+    FMemory->Seek(Len, soFromCurrent);
     // DEBUG_PRINTF(L"after Seek");
   }
   catch (const EWriteError &)

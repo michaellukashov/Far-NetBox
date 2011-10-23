@@ -883,9 +883,9 @@ public:
     __int64 GetPosition() { return Seek(0, soFromCurrent); }
     __int64 GetSize()
     {
-      __int64 Pos = Seek(0, soCurrent);
-      __int64 Result = Seek(0, soEnd);
-      Seek(Pos, soBeginning);
+      __int64 Pos = Seek(0, soFromCurrent);
+      __int64 Result = Seek(0, soFromEnd);
+      Seek(Pos, soFromBeginning);
       return Result;
     }
     // void SetSize64(const __int64 NewSize);
@@ -893,7 +893,7 @@ public:
     virtual void SetSize(const __int64 NewSize) = 0;
     void SetPosition(const __int64 Pos)
     {
-        Seek(Pos, soBeginning);
+        Seek(Pos, soFromBeginning);
     }
 };
 

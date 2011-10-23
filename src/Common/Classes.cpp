@@ -733,7 +733,7 @@ __int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 
 void THandleStream::SetSize(const __int64 NewSize)
 {
-    __int64 res = Seek(NewSize, soBeginning);
+    __int64 res = Seek(NewSize, soFromBeginning);
     // LARGE_INTEGER li;
     // li.QuadPart = size;
     // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
