@@ -2621,6 +2621,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   std::wstring DestPath)
 {
   int Result = 1;
+  DEBUG_PRINTF(L"DestPath = %s", DestPath.c_str());
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
