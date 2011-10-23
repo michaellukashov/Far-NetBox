@@ -249,7 +249,7 @@ TSafeHandleStream::~TSafeHandleStream()
 __int64 TSafeHandleStream::Read(void *Buffer, __int64 Count)
 {
   __int64 Result = ::FileRead(FHandle, Buffer, Count);
-  if (Result == -1)
+  if (Result == (__int64)-1)
   {
     ::RaiseLastOSError();
   }
