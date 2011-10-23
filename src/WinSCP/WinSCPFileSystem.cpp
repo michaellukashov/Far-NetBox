@@ -2625,7 +2625,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
-  TCopyParamType CopyParam;
+  TGUICopyParamType CopyParam;
 
   if (Edit)
   {
@@ -2655,12 +2655,12 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     Confirmed = CopyDialog(true, Move, FFileList, DestPath,
       &CopyParam, Options, CopyParamAttrs);
 
-    if (Confirmed && !Edit) // FIXME && CopyParam.Queue)
+    if (Confirmed && !Edit && CopyParam.GetQueue())
     {
       // these parameters are known only after transfer dialog
-      Params |= cpNoConfirmation | cpNewerOnly; // FIXME
-        // FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
-        // FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+      Params |= // cpNoConfirmation | cpNewerOnly |
+        FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
+        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList,
         DestPath, &CopyParam, Params));
       Confirmed = false;
@@ -2682,8 +2682,8 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
       // these parameters are known only after transfer dialog
       Params |=
         FLAGMASK(!Ask, cpNoConfirmation) |
-        FLAGMASK(Edit, cpTemporary) // |
-        // FLAGMASK(CopyParam.NewerOnly, cpNewerOnly)
+        FLAGMASK(Edit, cpTemporary) |
+        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
         ;
       FTerminal->CopyToRemote(FFileList, DestPath, &CopyParam, Params);
     }
