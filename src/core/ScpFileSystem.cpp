@@ -1751,8 +1751,6 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             {
               Buf.resize(40, 0);
               // Send last file access and modification time
-              // wprintf((wchar_t *)Buf.c_str(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
-                // static_cast<unsigned long>(ATime));
               swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                 static_cast<unsigned long>(ATime));
               DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
@@ -1763,17 +1761,11 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             // Send file modes (rights), filesize and file name
             Buf.clear();
             Buf.resize(MAX_PATH * 2, 0);
-            /*
-            wprintf((wchar_t *)Buf.c_str(), L"C%s %Ld %s",
+            // TODO: use boost::format
+            swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"C%s %ld %s",
               Rights.GetOctal().c_str(),
-              (OperationProgress->AsciiTransfer ? (__int64)AsciiBuf.GetSize()  :
+              (int)(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
                 OperationProgress->LocalSize),
-              DestFileName.c_str());
-            */
-            swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"C%s %Ld %s",
-              Rights.GetOctal().c_str(),
-              OperationProgress->AsciiTransfer ? (__int64)AsciiBuf.GetSize()  :
-                OperationProgress->LocalSize,
               DestFileName.c_str());
             DEBUG_PRINTF(L"Buf = %s", Buf.c_str());
             FSecureShell->SendLine(Buf.c_str());
