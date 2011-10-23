@@ -1696,7 +1696,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             BlockBuf.LoadStream(Stream, OperationProgress->LocalBlockSize(), true);
           );
 
-          OperationProgress->AddLocalyUsed(BlockBuf.GetSize());
+          OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
           // We do ASCII transfer: convert EOL of current block
           // (we don't convert whole buffer, cause it would produce
@@ -1713,11 +1713,11 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
             // Calculate total size to sent (assume that ratio between
             // size of source and size of EOL-transformed data would remain same)
             // First check if file contains anything (div by zero!)
-            if (OperationProgress->LocalyUsed)
+            if (OperationProgress->LocallyUsed)
             {
               __int64 X = OperationProgress->LocalSize;
               X *= AsciiBuf.GetSize();
-              X /= OperationProgress->LocalyUsed;
+              X /= OperationProgress->LocallyUsed;
               OperationProgress->ChangeTransferSize(X);
             }
               else
@@ -1733,7 +1733,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
           // This is done, because when reading fails we can't interrupt sending
           // (don't know how to tell other side that it failed)
           if (!OperationProgress->TransferingFile &&
-              (!OperationProgress->AsciiTransfer || OperationProgress->IsLocalyDone()))
+              (!OperationProgress->AsciiTransfer || OperationProgress->IsLocallyDone()))
           {
             std::wstring Buf;
 
@@ -1809,7 +1809,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
               throw ExtException(FMTLOAD(USER_TERMINATED));
           }
         }
-        while (!OperationProgress->IsLocalyDone() || !OperationProgress->IsTransferDone());
+        while (!OperationProgress->IsLocallyDone() || !OperationProgress->IsTransferDone());
 
         FSecureShell->SendNull();
         try
@@ -2480,14 +2480,14 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
                     BlockBuf.WriteToStream(FileStream, BlockBuf.GetSize());
                   );
 
-                  OperationProgress->AddLocalyUsed(BlockBuf.GetSize());
+                  OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
                   if (OperationProgress->Cancel == csCancelTransfer)
                   {
                     throw ExtException(FMTLOAD(USER_TERMINATED));
                   }
                 }
-                while (!OperationProgress->IsLocalyDone() || !
+                while (!OperationProgress->IsLocallyDone() || !
                     OperationProgress->IsTransferDone());
               }
               catch (const std::exception &E)

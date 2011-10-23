@@ -64,7 +64,7 @@ public:
 
   // file size to read/write
   __int64 LocalSize;
-  __int64 LocalyUsed;
+  __int64 LocallyUsed;
   __int64 TransferSize;
   __int64 TransferedSize;
   __int64 SkippedSize;
@@ -93,7 +93,7 @@ public:
     const fileoperationprogress_slot_type &AOnProgress,
     const fileoperationfinished_slot_type &AOnFinished);
   ~TFileOperationProgressType();
-  void AddLocalyUsed(__int64 ASize);
+  void AddLocallyUsed(__int64 ASize);
   void AddTransfered(__int64 ASize, bool AddToTotals = true);
   void AddResumed(__int64 ASize);
   void Clear();
@@ -101,7 +101,7 @@ public:
   void Finish(std::wstring FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   unsigned long LocalBlockSize();
-  bool IsLocalyDone();
+  bool IsLocallyDone();
   bool IsTransferDone();
   void SetFile(std::wstring AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
