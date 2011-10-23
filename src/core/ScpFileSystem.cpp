@@ -264,7 +264,7 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
     Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
   else
     Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -538,7 +538,7 @@ void TSCPFileSystem::SendCommand(const std::wstring Cmd)
   FOutput->Clear();
   // We suppose, that 'Cmd' already contains command that ensures,
   // that 'LastLine' will be printed
-  // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
+  DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
   FSecureShell->SendLine(Cmd);
   FProcessingCommand = true;
 }
@@ -1406,10 +1406,11 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   std::wstring TargetDirFull = UnixIncludeTrailingBackslash(TargetDir);
 
+  DEBUG_PRINTF(L"CopyParam->GetPreserveRights = %d", CopyParam->GetPreserveRights());
   if (CopyParam->GetPreserveRights()) Options = L"-p";
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
-  // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
+  DEBUG_PRINTF(L"TargetDir = %s, Options = %s", TargetDir.c_str(), Options.c_str());
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
     0, Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
   SkipFirstLine();
@@ -1450,6 +1451,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     try
     {
       SCPResponse(&GotLastLine);
+      DEBUG_PRINTF(L"GotLastLine = %d", GotLastLine);
 
       // This can happen only if SCP command is not executed and return code is 0
       // It has never happened to me (return code is usually 127)
@@ -1460,6 +1462,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     catch (const std::exception & E)
     {
+      DEBUG_PRINTF(L"E.what = %s", ::MB2W(E.what()).c_str());
       if (GotLastLine && FTerminal->GetActive())
       {
         FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
@@ -1475,6 +1478,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       !OperationProgress->Cancel; IFile++)
     {
       std::wstring FileName = FilesToCopy->GetString(IFile);
+      DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
       bool CanProceed;
 
       std::wstring FileNameOnly =
