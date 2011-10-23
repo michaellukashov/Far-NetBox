@@ -4988,8 +4988,8 @@ void TCopyDialog::CustomCopyParam()
 bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, TStrings * FileList,
   std::wstring & TargetDirectory, 
-  // TGUICopyParamType * Params,
-  TCopyParamType * Params,
+  TGUICopyParamType * Params,
+  // TCopyParamType * Params,
   int Options,
   int CopyParamAttrs)
 {
