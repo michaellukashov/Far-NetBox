@@ -489,6 +489,7 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
 {
     std::wstring FileName = L"testfile";
     ::DeleteFile(FileName);
+    std::string str = "test string";
     {
         unsigned int CreateAttr = FILE_ATTRIBUTE_NORMAL;
         HANDLE File = ::CreateFile(FileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ,
@@ -498,18 +499,28 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
         TFileBuffer *BlockBuf = new TFileBuffer();
         // BlockBuf->SetSize(1024);
         BlockBuf->SetPosition(0);
-        std::string str = "test string";
         BlockBuf->Insert(0, str.c_str(), str.size());
         BOOST_TEST_MESSAGE("BlockBuf->GetSize = " << BlockBuf->GetSize());
         BOOST_CHECK(BlockBuf->GetSize() == str.size());
         BlockBuf->WriteToStream(FileStream, BlockBuf->GetSize());
         delete FileStream; FileStream = NULL;
         delete BlockBuf; BlockBuf = NULL;
-        BOOST_CHECK(::FileExists(FileName));
+        BOOST_REQUIRE(::FileExists(FileName));
     }
     {
         WIN32_FIND_DATA Rec;
         BOOST_CHECK(FileSearchRec(FileName, Rec));
+    }
+    {
+        HANDLE File = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ,
+          NULL, OPEN_EXISTING, 0, NULL);
+        TStream *FileStream = new TSafeHandleStream(File);
+        TFileBuffer *BlockBuf = new TFileBuffer();
+        BlockBuf->ReadStream(FileStream, str.size(), true);
+        BOOST_TEST_MESSAGE("BlockBuf->GetSize = " << BlockBuf->GetSize());
+        BOOST_CHECK(BlockBuf->GetSize() == str.size());
+        delete FileStream; FileStream = NULL;
+        delete BlockBuf; BlockBuf = NULL;
     }
 }
 
