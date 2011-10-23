@@ -783,13 +783,13 @@ __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
   switch (Origin)
   {
-    soFromBeginning:
+    case soFromBeginning:
         FPosition = Offset;
         break;
-    soFromCurrent:
+    case soFromCurrent:
         FPosition += Offset;
         break;
-    soFromEnd:
+    case soFromEnd:
         FPosition = FSize + Offset;
         break;
   }
