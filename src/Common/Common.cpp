@@ -1329,8 +1329,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
-  ::Error(SNotImplemented, 51);
-  TDateTime Result = TDateTime(); // SystemTimeToDateTime(SysTime);
+  TDateTime Result = SystemTimeToDateTime(SysTime);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1349,8 +1348,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      ::Error(SNotImplemented, 52);
-      TDateTime DateTime = TDateTime(); // FIXME SystemTimeToDateTime(SystemTime);
+      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
 
@@ -1368,8 +1366,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      ::Error(SNotImplemented, 53);
-      TDateTime DateTime = TDateTime(); // FIXME SystemTimeToDateTime(SystemTime);
+      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
     }
@@ -1652,6 +1649,14 @@ std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
     ss << d;
     Result = ss.str();
     return Result;
+}
+
+TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
+{
+  TDateTime Result(0.0);
+  // ComposeDateTime ( DoEncodeDate ( SystemTime.Year , SystemTime.Month , SystemTime.Day ) , DoEncodeTime ( SystemTime.Hour , SystemTime.Minute , SystemTime.Second , SystemTime.MilliSecond ) );
+  ::TryEncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, Result);
+  return Result;
 }
 
 //---------------------------------------------------------------------------
