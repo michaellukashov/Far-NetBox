@@ -1554,10 +1554,6 @@ std::wstring TCustomFarPlugin::FormatConsoleTitle()
     if (FCurrentProgress >= 0)
     {
         Title = FORMAT(L"{%d%%} %s", FCurrentProgress, FCurrentTitle.c_str());
-        std::wstring Buffer;
-        Buffer.resize(512);
-        GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L"{%d%%} %s", FCurrentProgress, FCurrentTitle);
-        Title = Buffer;
     }
     else
     {
