@@ -1650,11 +1650,19 @@ std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
     Result = ss.str();
     return Result;
 }
+/*
+TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
+{
+  TDateTime Result = Trunc(Date);
+  Result.Set(Time.GetHour(), Time.GetMinute(), Time.GetSecond(), Time.GetMillisecond());
+  return Result;
+}
+*/
 
 TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
 {
   TDateTime Result(0.0);
-  // ComposeDateTime ( DoEncodeDate ( SystemTime.Year , SystemTime.Month , SystemTime.Day ) , DoEncodeTime ( SystemTime.Hour , SystemTime.Minute , SystemTime.Second , SystemTime.MilliSecond ) );
+  // ComposeDateTime(DoEncodeDate(SystemTime.Year, SystemTime.Month, SystemTime.Day), DoEncodeTime(SystemTime.Hour, SystemTime.Minute, SystemTime.Second, SystemTime.MilliSecond));
   ::TryEncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, Result);
   return Result;
 }
