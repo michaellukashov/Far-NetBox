@@ -65,7 +65,7 @@ void TFileOperationProgressType::ClearTransfer()
   }
   LocalSize = 0;
   TransferSize = 0;
-  LocalyUsed = 0;
+  LocallyUsed = 0;
   SkippedSize = 0;
   TransferedSize = 0;
   TransferingFile = false;
@@ -208,20 +208,20 @@ void TFileOperationProgressType::SetLocalSize(__int64 ASize)
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::AddLocalyUsed(__int64 ASize)
+void TFileOperationProgressType::AddLocallyUsed(__int64 ASize)
 {
-  LocalyUsed += ASize;
-  if (LocalyUsed > LocalSize)
+  LocallyUsed += ASize;
+  if (LocallyUsed > LocalSize)
   {
-    LocalSize = LocalyUsed;
+    LocalSize = LocallyUsed;
   }
   DoProgress();
 }
 //---------------------------------------------------------------------------
-bool TFileOperationProgressType::IsLocalyDone()
+bool TFileOperationProgressType::IsLocallyDone()
 {
-  assert(LocalyUsed <= LocalSize);
-  return (LocalyUsed == LocalSize);
+  assert(LocallyUsed <= LocalSize);
+  return (LocallyUsed == LocalSize);
 }
 //---------------------------------------------------------------------------
 unsigned long TFileOperationProgressType::AdjustToCPSLimit(
@@ -266,7 +266,7 @@ unsigned long TFileOperationProgressType::AdjustToCPSLimit(
 unsigned long TFileOperationProgressType::LocalBlockSize()
 {
   unsigned long Result = TRANSFER_BUF_SIZE;
-  if (LocalyUsed + Result > LocalSize) Result = (unsigned long)(LocalSize - LocalyUsed);
+  if (LocallyUsed + Result > LocalSize) Result = (unsigned long)(LocalSize - LocallyUsed);
   Result = AdjustToCPSLimit(Result);
   return Result;
 }
@@ -308,7 +308,7 @@ void TFileOperationProgressType::RollbackTransfer()
   SkippedSize = 0;
   TransferedSize = 0;
   TransferSize = 0;
-  LocalyUsed = 0;
+  LocallyUsed = 0;
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::AddTransfered(__int64 ASize,
@@ -351,7 +351,7 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
   TotalSkipped += ASize;
   SkippedSize += ASize;
   AddTransfered(ASize, false);
-  AddLocalyUsed(ASize);
+  AddLocallyUsed(ASize);
 }
 //---------------------------------------------------------------------------
 unsigned long TFileOperationProgressType::TransferBlockSize()

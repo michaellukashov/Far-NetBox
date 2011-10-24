@@ -2966,7 +2966,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
                     FullLine.erase(0, MaxWidth);
 
                     int P;
-                    while ((P = Line.find_first_of(L"\t")) >= 0)
+                    while ((P = Line.find_first_of(L"\t")) != std::wstring::npos)
                     {
                         Line.erase(P, 1);
                         Line.insert(P, ::StringOfChar(' ',

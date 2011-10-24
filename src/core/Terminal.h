@@ -1,4 +1,3 @@
-//---------------------------------------------------------------------------
 #ifndef TerminalH
 #define TerminalH
 
@@ -345,6 +344,9 @@ protected:
   virtual int QueryUserException(const std::wstring Query,
     const std::exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
+  virtual int QueryUserException(const std::wstring Query,
+    const ExtException * E, int Answers, const TQueryParams * Params,
+    TQueryType QueryType = qtConfirmation);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions, TStrings * Prompts, TStrings * Results);
   virtual void DisplayBanner(const std::wstring & Banner);
@@ -366,7 +368,7 @@ protected:
 
 public:
   TTerminal(TSessionData * SessionData, TConfiguration * Configuration);
-  ~TTerminal();
+  virtual ~TTerminal();
   void Open();
   void Close();
   void Reopen(int Params);
@@ -492,9 +494,9 @@ public:
   deletelocalfile_signal_type &GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(const deletelocalfile_slot_type &value) { FOnDeleteLocalFile.connect(value); }
   // __property const TRemoteTokenList * Groups = { read = GetGroups };
-  const TRemoteTokenList * GetGroups();
+  // const TRemoteTokenList * GetGroups();
   // __property const TRemoteTokenList * Users = { read = GetUsers };
-  const TRemoteTokenList * GetUsers();
+  // const TRemoteTokenList * GetUsers();
   // __property const TRemoteTokenList * Membership = { read = GetMembership };
   const TRemoteTokenList * GetMembership();
   // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };

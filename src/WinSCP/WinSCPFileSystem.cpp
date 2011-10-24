@@ -319,6 +319,10 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FLastEditorID = -1;
   FLoadingSessionList = false;
   FPathHistory = new TStringList;
+
+  FLastMultipleEditReadOnly = false;
+  FEditorPendingSave = false;
+  FOutputLog = false;
 }
 //---------------------------------------------------------------------------
 TWinSCPFileSystem::~TWinSCPFileSystem()
@@ -1437,7 +1441,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   int Params = GUIConfiguration->GetSynchronizeParams();
   bool SaveSettings = false;
 
-  TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
   TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   int Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
@@ -1598,7 +1602,7 @@ void TWinSCPFileSystem::Synchronize()
           }
         }
       } BOOST_SCOPE_EXIT_END
-    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TCopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
     int CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     int Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
@@ -1826,10 +1830,10 @@ void TWinSCPFileSystem::FileProperties()
         if (FTerminal->GetIsCapable(fcGroupChanging)) Flags |= cpGroup;
 
         TRemoteProperties NewProperties = CurrentProperties;
-        // FIXME
-        ::Error(SNotImplemented, 10);
         if (PropertiesDialog(FileList, FTerminal->GetCurrentDirectory(),
-            (TStrings *)FTerminal->GetGroups(), (TStrings *)FTerminal->GetUsers(), &NewProperties, Flags))
+            // (TStrings *)FTerminal->GetGroups(), (TStrings *)FTerminal->GetUsers(),
+            NULL, NULL,
+            &NewProperties, Flags))
         {
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
@@ -1855,7 +1859,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(std::wstring Token, bool Separa
 {
   if (!Token.empty())
   {
-    if (Token.find_first_of(L" ") > 0)
+    if (Token.find_first_of(L" ") != std::wstring::npos)
     {
       Token = FORMAT(L"\"%s\"", Token.c_str());
     }
@@ -2489,7 +2493,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
         (OpMode & OPM_SILENT) &&
         (!EditView || FarConfiguration->GetEditorDownloadDefaultMode());
 
-      TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+      TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
       if (EditView)
       {
         EditViewCopyParam(CopyParam);
@@ -2617,10 +2621,11 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   std::wstring DestPath)
 {
   int Result = 1;
+  DEBUG_PRINTF(L"DestPath = %s", DestPath.c_str());
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
-  TCopyParamType CopyParam;
+  TGUICopyParamType CopyParam;
 
   if (Edit)
   {
@@ -2650,12 +2655,12 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     Confirmed = CopyDialog(true, Move, FFileList, DestPath,
       &CopyParam, Options, CopyParamAttrs);
 
-    if (Confirmed && !Edit) // FIXME && CopyParam.Queue)
+    if (Confirmed && !Edit && CopyParam.GetQueue())
     {
       // these parameters are known only after transfer dialog
-      Params |= cpNoConfirmation | cpNewerOnly; // FIXME
-        // FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
-        // FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+      Params |=
+        FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
+        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList,
         DestPath, &CopyParam, Params));
       Confirmed = false;
@@ -2677,8 +2682,8 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
       // these parameters are known only after transfer dialog
       Params |=
         FLAGMASK(!Ask, cpNoConfirmation) |
-        FLAGMASK(Edit, cpTemporary) // |
-        // FLAGMASK(CopyParam.NewerOnly, cpNewerOnly)
+        FLAGMASK(Edit, cpTemporary) |
+        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
         ;
       FTerminal->CopyToRemote(FFileList, DestPath, &CopyParam, Params);
     }
@@ -3440,8 +3445,14 @@ std::wstring TWinSCPFileSystem::ProgressBar(int Percentage, int Width)
 {
   std::wstring Result;
   // OEM character set (Ansi does not have the ascii art we need)
-  Result = ::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
-  Result += ::StringOfChar('\xB0', (Width - 5) - Result.size());
+  // Result = ::StringOfChar('\xDB', (Width - 5) * Percentage / 100);
+  // Result += ::StringOfChar('\xB0', (Width - 5) - Result.size());
+  std::string res1;
+  res1.resize((Width - 5) * Percentage / 100, '\xDB');
+  std::string res2;
+  res2.resize((Width - 5) - res1.size(), '\xB0');
+  std::string res = res1 + res2;
+  Result = ::MB2W(res.c_str());
   Result += FORMAT(L"%4d%%", Percentage);
   return Result;
 }
@@ -3982,7 +3993,7 @@ void TWinSCPFileSystem::MultipleEdit(std::wstring Directory,
   if (Edit)
   {
     std::wstring TempDir;
-    TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+    TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
     EditViewCopyParam(CopyParam);
 
     TStrings * FileList = new TStringList;

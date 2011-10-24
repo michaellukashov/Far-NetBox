@@ -29,18 +29,17 @@ public:
   TMemoryStream *GetMemory() { return FMemory; }
   void SetMemory(TMemoryStream * value);
   // __property char * Data = { read=GetData };
-  char *GetData() const { ::Error(SNotImplemented, 210); return NULL; } // FIXME (char *)FMemory->Memory; }
+  char *GetData() const { return (char *)FMemory->GetMemory(); }
   // __property int Size = { read=FSize, write=SetSize };
-  int GetSize() { return FSize; }
-  void SetSize(int value);
+  __int64 GetSize() { return FSize; }
+  void SetSize(__int64 value);
   // __property int Position = { read=GetPosition, write=SetPosition };
-  int GetPosition() const;
-  void SetPosition(int value);
+  __int64 GetPosition() const;
+  void SetPosition(__int64 value);
 
 private:
-  TMemoryStream * FMemory;
+  TMemoryStream *FMemory;
   int FSize;
-
 };
 
 //---------------------------------------------------------------------------
@@ -49,8 +48,9 @@ class TSafeHandleStream : public THandleStream
 {
 public:
   TSafeHandleStream(HANDLE AHandle);
-  virtual int Read(void * Buffer, int Count);
-  virtual int Write(const void * Buffer, int Count);
+  virtual ~TSafeHandleStream();
+  virtual __int64 Read(void *Buffer, __int64 Count);
+  virtual __int64 Write(const void *Buffer, __int64 Count);
 };
 
 //---------------------------------------------------------------------------

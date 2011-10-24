@@ -31,8 +31,8 @@ std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 // Keeps "/" for root path
 std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
 {
-  if ((Path.size() > 1) && ::IsDelimiter(Path, L"/", Path.size()))
-      return Path.substr(0, Path.size());
+  if ((Path.size() > 0) && ::IsDelimiter(Path, L"/", Path.size() - 1))
+      return Path.substr(0, Path.size() - 1);
     else return Path;
 }
 //---------------------------------------------------------------------------
@@ -76,7 +76,7 @@ std::wstring UnixExtractFileName(const std::wstring Path)
   std::wstring Result;
   if (Pos != std::wstring::npos)
   {
-    Result = Path.substr(Pos, Path.size() - Pos);
+    Result = Path.substr(Pos + 1, Path.size() - Pos);
   }
   else
   {
@@ -96,11 +96,11 @@ std::wstring ExtractFileName(const std::wstring & Path, bool Unix)
 {
   if (Unix)
   {
-    return UnixExtractFileName(Path);
+    return ::UnixExtractFileName(Path);
   }
   else
   {
-    return ExtractFileName(Path, false);
+    return ::ExtractFilename(Path, L'\\');
   }
 }
 //---------------------------------------------------------------------------
@@ -176,7 +176,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
   {
     Result = Base;
   }
-  else if (Path[1] == '/')
+  else if (Path[0] == '/')
   {
     Result = UnixExcludeTrailingBackslash(Path);
   }
@@ -1203,8 +1203,8 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
         }
         FFileName = UnixExtractFileName(::Trim(Line));
-        DEBUG_PRINTF(L"FFileName = '%s'", FFileName.c_str());
-        DEBUG_PRINTF(L"Line = '%s'", Line.c_str());
+        // DEBUG_PRINTF(L"FFileName = '%s'", FFileName.c_str());
+        // DEBUG_PRINTF(L"Line = '%s'", Line.c_str());
       }
     }
 
@@ -2176,7 +2176,7 @@ void TRights::SetOctal(std::wstring value)
     bool Correct = (AValue.size() == 4);
     if (Correct)
     {
-      for (int i = 0; (i <= AValue.size()) && Correct; i++)
+      for (int i = 0; (i < AValue.size()) && Correct; i++)
       {
         Correct = (AValue[i] >= '0') && (AValue[i] <= '7');
       }

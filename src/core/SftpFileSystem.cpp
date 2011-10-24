@@ -1391,7 +1391,7 @@ protected:
       Result = !FEnd;
       if (Result)
       {
-        OperationProgress->AddLocalyUsed(BlockBuf.GetSize());
+        OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
         // We do ASCII transfer: convert EOL of current block
         if (OperationProgress->AsciiTransfer)
@@ -3974,7 +3974,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       // File is regular file (not directory)
       assert(File);
 
-      std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, true),
+      std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
       std::wstring DestFullName = LocalCanonify(TargetDir + DestFileName);
       std::wstring DestPartinalFullName;
@@ -4912,7 +4912,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       {
         if (LocalHandle) CloseHandle(LocalHandle);
         if (FileStream) delete FileStream;
-        if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocalyUsed == 0) &&
+        if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
             (OverwriteMode == omOverwrite))
         {
           FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, LocalFileName.c_str()),
@@ -5193,7 +5193,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
                 BlockBuf.WriteToStream(FileStream, BlockBuf.GetSize());
               );
 
-              OperationProgress->AddLocalyUsed(BlockBuf.GetSize());
+              OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
             }
 
             if (OperationProgress->Cancel == csCancel)

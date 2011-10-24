@@ -320,11 +320,22 @@ std::wstring SystemTemporaryDirectory()
   return TempDir;
 }
 
-std::wstring SysErrorMessage(int code)
+std::wstring SysErrorMessage(int ErrorCode)
 {
-    ::Error(SNotImplemented, 41); 
-    std::wstring result;
-    return result;
+    // ::Error(SNotImplemented, 41); 
+    std::wstring Result;
+    // LPTSTR lpszTemp;
+    wchar_t Buffer[255];
+    int Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+      FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
+      (LPTSTR)Buffer,
+      sizeof(Buffer), NULL);
+    while ((Len > 0) && ((Buffer[Len - 1] >= 0) && 
+      (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
+      Len--;
+    // SetString(Result, Buffer, Len);
+    Result = std::wstring(Buffer, Len);
+    return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -855,17 +866,10 @@ char HexToChar(const std::wstring Hex, int MinChars)
 //---------------------------------------------------------------------------
 bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
 {
-::Error(SNotImplemented, 42);
-/*
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  bool Result = (FindFirst(FileName, FindAttrs, Rec) == 0);
-  if (Result)
-  {
-    FindClose(Rec);
-  }
-  return Result;
-*/ 
-    return false;
+    HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
+    bool Result = (hFind != INVALID_HANDLE_VALUE);
+    FindClose(hFind);
+    return Result;
 }
 //---------------------------------------------------------------------------
 void ProcessLocalDirectory(std::wstring DirName,
@@ -1238,31 +1242,30 @@ TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
   TDateTimeParams * Params = GetDateTimeParams();
 
   TDateTime Result;
-  ::Error(SNotImplemented, 49);
-  Result = TDateTime(); // FIXME Params->UnixEpoch + (double(TimeStamp) / 86400);
+  // DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
+  // ::Error(SNotImplemented, 49);
+  Result = TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
 
   if (Params->DaylightHack)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      // Result -= Params->CurrentDifference;
+      Result = Result - Params->CurrentDifference;
     }
     else if (DSTMode == dstmKeep)
     {
-      // Result -= Params->BaseDifference;
+      Result = Result - Params->BaseDifference;
     }
   }
   else
   {
-    // Result -= Params->BaseDifference;
+    Result = Result - Params->BaseDifference;
   }
-/*
   if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
   {
-    Result -= (IsDateInDST(Result) ?
+    Result = Result - (IsDateInDST(Result) ?
       Params->DaylightDifference : Params->StandardDifference);
   }
-*/
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1634,7 +1637,7 @@ void DecodeTime(const TDateTime &DateTime, unsigned int &Hour,
 
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime)
 {
-    DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
+    // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
     // ::Error(SNotImplemented, 59);
     std::wstring Result;
     // DateTimeToString(Result, fmt, DateTime);
@@ -2296,7 +2299,7 @@ double StrToFloat(std::wstring Value)
 
 std::wstring FormatFloat(std::wstring Format, double value)
 {
-    DEBUG_PRINTF(L"Format = %s", Format.c_str());
+    // DEBUG_PRINTF(L"Format = %s", Format.c_str());
     // #,##0 "B"
     // FIXME
     // ::Error(SNotImplemented, 78);
@@ -2319,18 +2322,29 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
 
 //---------------------------------------------------------------------------
 
-unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count)
+__int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
 {
-    // FIXME
-    ::Error(SNotImplemented, 80);
-    return 0;
+  __int64 Result = -1;
+  // DEBUG_PRINTF(L"Handle = %d, Count = %d", Handle, Count);
+  DWORD res = 0;
+  if (::ReadFile(Handle, (LPVOID)Buffer, (DWORD)Count, &res, NULL))
+    Result = res;
+  else
+    Result = -1;
+  // DEBUG_PRINTF(L"Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
+  return Result;
 }
 
-unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count)
+__int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count)
 {
-    // FIXME
-    ::Error(SNotImplemented, 81);
-    return 0;
+  __int64 Result = -1;
+  DWORD res = 0;
+  if (::WriteFile(Handle, Buffer, Count, &res, NULL))
+    Result = res;
+  else
+    Result = -1;
+  // DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
+  return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -2370,15 +2384,17 @@ std::wstring FileSearch(const std::wstring FileName, const std::wstring Director
 int FileGetAttr(const std::wstring &filename)
 {
     // FIXME
-    ::Error(SNotImplemented, 85);
-    return 0;
+    // ::Error(SNotImplemented, 85);
+    int attr = GetFileAttributes(filename.c_str());
+    return attr;
 }
 
 int FileSetAttr(const std::wstring &filename, int attrs)
 {
     // FIXME
-    ::Error(SNotImplemented, 86);
-    return 0;
+    // ::Error(SNotImplemented, 86);
+    int res = SetFileAttributes(filename.c_str(), attrs);
+    return res;
 }
 
 bool ForceDirectories(const std::wstring Dir)
@@ -2390,9 +2406,9 @@ bool ForceDirectories(const std::wstring Dir)
 
 bool DeleteFile(const std::wstring File)
 {
-    DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
+    // DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
     ::DeleteFile(File.c_str());
-    DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
+    // DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
     return !::FileExists(File);
 }
 
@@ -2648,7 +2664,7 @@ std::wstring ExtractFileExt(std::wstring FileName)
 
 std::wstring get_full_path_name(const std::wstring &path)
 {
-  std::wstring buf(0, MAX_PATH);
+  std::wstring buf(MAX_PATH, 0);
   DWORD size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), (LPWSTR)buf.c_str(), NULL);
   if (size > buf.size())
   {
@@ -2667,7 +2683,7 @@ std::wstring ExpandFileName(const std::wstring FileName)
 
 std::wstring GetUniversalName(std::wstring FileName)
 {
-    ::Error(SNotImplemented, 35);
+    // ::Error(SNotImplemented, 35);
     std::wstring Result = FileName;
     return Result;
 }
@@ -2675,17 +2691,18 @@ std::wstring GetUniversalName(std::wstring FileName)
 std::wstring ExpandUNCFileName(std::wstring FileName)
 {
     std::wstring Result = ExpandFileName(FileName);
-    if ((Result.size() >= 3) && (Result[2] == L':') && (::UpCase(Result[1]) >= 'A')
-      && (::UpCase(Result[1]) <= 'Z'))
+    if ((Result.size() >= 3) && (Result[1] == L':') && (::UpCase(Result[0]) >= 'A')
+      && (::UpCase(Result[0]) <= 'Z'))
     {
       Result = GetUniversalName(Result);
     }
     return Result;
 }
 
-void FileSeek(HANDLE file, __int64 offset, __int64 size)
+__int64 FileSeek(HANDLE file, __int64 offset, __int64 size)
 {
     ::Error(SNotImplemented, 300);
+    return 0;
 }
 
 void InitPlatformId()
@@ -2701,3 +2718,12 @@ void InitPlatformId()
       // Win32CSDVersion = OSVersionInfo.szCSDVersion;
   }
 }
+
+//---------------------------------------------------------------------------
+bool Win32Check(bool RetVal)
+{
+  if (!RetVal)
+    RaiseLastOSError();
+  return RetVal;
+}
+//---------------------------------------------------------------------------

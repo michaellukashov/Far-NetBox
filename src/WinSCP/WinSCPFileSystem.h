@@ -161,8 +161,7 @@ protected:
   void TerminalCaptureLog(const std::wstring & AddedLine, bool StdError);
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     std::wstring & TargetDirectory, 
-    // TGUICopyParamType * Params,
-    TCopyParamType * Params,
+    TGUICopyParamType * Params,
     int Options,
     int CopyParamAttrs);
   bool LinkDialog(std::wstring & FileName, std::wstring & PointTo, bool & Symbolic,
@@ -266,7 +265,7 @@ private:
   bool FLastMultipleEditReadOnly;
   int FLastEditorID;
   bool FEditorPendingSave;
-  TCopyParamType FLastEditCopyParam;
+  TGUICopyParamType FLastEditCopyParam;
   bool FNoProgress;
   bool FNoProgressFinish;
   TKeepaliveThread * FKeepaliveThread;

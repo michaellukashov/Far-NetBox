@@ -17,7 +17,7 @@ namespace dt = boost::date_time;
 namespace bg = boost::gregorian;
 
 //---------------------------------------------------------------------------
-#define EXCEPTION throw ExtException(NULL, L"")
+#define EXCEPTION throw ExtException(L"", NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
   strncpy(dest, source, sizeof(dest)); \
@@ -289,8 +289,8 @@ std::wstring FormatFloat(std::wstring Format, double value);
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
 //---------------------------------------------------------------------------
 
-unsigned long FileRead(HANDLE Handle, void *Buffer, unsigned long Count);
-unsigned long FileWrite(HANDLE Handle, const void *Buffer, unsigned long Count);
+__int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count);
+__int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count);
 
 //---------------------------------------------------------------------------
 
@@ -353,4 +353,8 @@ std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext);
 std::wstring ExtractFileExt(std::wstring FileName);
 std::wstring ExpandUNCFileName(std::wstring FileName);
 
-void FileSeek(HANDLE file, __int64 offset, __int64 size);
+__int64 FileSeek(HANDLE file, __int64 offset, __int64 size);
+
+//---------------------------------------------------------------------------
+bool Win32Check(bool RetVal);
+//---------------------------------------------------------------------------

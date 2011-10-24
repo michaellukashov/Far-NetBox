@@ -10,12 +10,13 @@
 
 #include "Classes.h"
 #include "Common.h"
+#include "Exceptions.h"
 
 namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
-const std::wstring sLineBreak = L"\n";
-
+static const std::wstring sLineBreak = L"\n";
+static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
 
 void TStrings::SetTextStr(const std::wstring Text)
@@ -217,13 +218,23 @@ void TStrings::InsertObject(int Index, std::wstring Key, TObject *AObject)
     PutObject(Index, AObject);
 }
 
-bool TStrings::Equals(TStrings *value)
+bool TStrings::Equals(TStrings *Strings)
 {
-    ::Error(SNotImplemented, 2);
+  bool Result = false;
+  int Count = GetCount();
+  if (Count != Strings->GetCount())
     return false;
+  for (int I = 0; I < Count; I++)
+  {
+    if (GetString(I) != Strings->GetString(I))
+        return false;
+  }
+  Result = true;
+  return Result;
 }
 void TStrings::PutObject(int Index, TObject *AObject)
 {
+    ::Error(SNotImplemented, 1204);
 }
 void TStrings::PutString(int Index, std::wstring S)
 {
@@ -630,27 +641,44 @@ std::wstring TSHFileInfo::GetFileType(std::wstring strFileName)
 }
 
 //---------------------------------------------------------------------------
-
-void TStream::ReadBuffer(void *Buffer, unsigned long int Count)
+class EStreamError : public ExtException
 {
-    ::Error(SNotImplemented, 400);
+public:
+    EStreamError(const std::wstring Msg) :
+        ExtException(Msg)
+    {}
+};
+
+/*
+class EWriteError : public ExtException
+{
+public:
+    EWriteError(const std::wstring Msg) :
+        ExtException(Msg)
+    {}
+};
+
+class EReadError : public ExtException
+{
+public:
+    EReadError(const std::wstring Msg) :
+        ExtException(Msg)
+    {}
+};
+*/
+//---------------------------------------------------------------------------
+
+void TStream::ReadBuffer(void *Buffer, __int64 Count)
+{
+  if ((Count != 0) && (Read(Buffer, Count) != Count))
+    throw EReadError(::W2MB(FMTLOAD(SReadError).c_str()).c_str());
 }
 
-unsigned long TStream::Read(void *Buffer, unsigned long int Count)
+void TStream::WriteBuffer(const void *Buffer, __int64 Count)
 {
-    ::Error(SNotImplemented, 401);
-    return 0;
-}
-
-void TStream::WriteBuffer(void *Buffer, unsigned long int Count)
-{
-    ::Error(SNotImplemented, 402);
-}
-
-unsigned long TStream::Write(void *Buffer, unsigned long int Count)
-{
-    ::Error(SNotImplemented, 403);
-    return 0;
+  // DEBUG_PRINTF(L"Count = %d", Count);
+  if ((Count != 0) && (Write(Buffer, Count) != Count))
+    throw EWriteError(::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
 }
 
 //---------------------------------------------------------------------------
@@ -658,6 +686,208 @@ void ReadError(const std::wstring &Name)
 {
   throw std::exception("InvalidRegType"); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
+
+//---------------------------------------------------------------------------
+TStream::TStream()
+{
+}
+
+TStream::~TStream()
+{
+}
+//---------------------------------------------------------------------------
+THandleStream::THandleStream(HANDLE AHandle) :
+    FHandle(AHandle)
+{
+}
+THandleStream::~THandleStream()
+{
+    // if (FHandle > 0)
+    //   CloseHandle(FHandle);
+}
+
+__int64 THandleStream::Read(void *Buffer, __int64 Count)
+{
+  __int64 Result = ::FileRead(FHandle, Buffer, Count);
+  // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
+  if (Result == -1) Result = 0;
+  return Result;
+}
+
+__int64 THandleStream::Write(const void *Buffer, __int64 Count)
+{
+  __int64 Result = ::FileWrite(FHandle, Buffer, Count);
+  // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Count = %d", Result, FHandle, Count);
+  if (Result == -1) Result = 0;
+  return Result;
+}
+__int64 THandleStream::Seek(__int64 Offset, __int64 Origin)
+{
+    __int64 Result = ::FileSeek(FHandle, Offset, Origin);
+    // DEBUG_PRINTF(L"Result = %d, FHandle = %d, Offset = %d, Origin = %d", Result, FHandle, Offset, Origin);
+    return Result;
+}
+__int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+{
+    ::Error(SNotImplemented, 1202);
+    return 0;
+}
+
+void THandleStream::SetSize(const __int64 NewSize)
+{
+    __int64 res = Seek(NewSize, soFromBeginning);
+    // LARGE_INTEGER li;
+    // li.QuadPart = size;
+    // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
+        // handleLastErrorImpl(_path);
+    // DEBUG_PRINTF(L"FHandle = %d, res = %d", FHandle, res);
+    ::Win32Check(::SetEndOfFile(FHandle));
+}
+
+//---------------------------------------------------------------------------
+TMemoryStream::TMemoryStream() :
+    FMemory(NULL),
+    FSize(0),
+    FPosition(0),
+    FCapacity(0)
+{
+}
+
+TMemoryStream::~TMemoryStream()
+{
+    Clear();
+}
+
+__int64 TMemoryStream::Read(void *Buffer, __int64 Count)
+{
+  __int64 Result = 0;
+  if ((FPosition >= 0) && (Count >= 0))
+  {
+    Result = FSize - FPosition;
+    if (Result > 0)
+    {
+      if (Result > Count) Result = Count;
+      memmove((char *)FMemory + FPosition, Buffer, Result);
+      FPosition += Result;
+      return Result;
+    }
+  }
+  Result = 0;
+  return Result;
+}
+
+__int64 TMemoryStream::Seek(__int64 Offset, __int64 Origin)
+{
+    return Seek(Offset, soFromCurrent);
+}
+
+__int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
+{
+  switch (Origin)
+  {
+    case soFromBeginning:
+        FPosition = Offset;
+        break;
+    case soFromCurrent:
+        FPosition += Offset;
+        break;
+    case soFromEnd:
+        FPosition = FSize + Offset;
+        break;
+  }
+  __int64 Result = FPosition;
+  return Result;
+}
+
+void TMemoryStream::SaveToStream(TStream *Stream)
+{
+    if (FSize != 0) Stream->WriteBuffer(FMemory, FSize);
+}
+
+void TMemoryStream::SaveToFile(const std::wstring FileName)
+{
+  // TFileStream Stream(FileName, fmCreate);
+  // SaveToStream(Stream);
+  ::Error(SNotImplemented, 1203);
+}
+
+void TMemoryStream::Clear()
+{
+  SetCapacity(0);
+  FSize = 0;
+  FPosition = 0;
+}
+
+void TMemoryStream::SetSize(const __int64 NewSize)
+{
+  __int64 OldPosition = FPosition;
+  SetCapacity(NewSize);
+  FSize = NewSize;
+  if (OldPosition > NewSize) Seek(0, soFromEnd);
+}
+
+void TMemoryStream::SetCapacity(__int64 NewCapacity)
+{
+  SetPointer(Realloc(NewCapacity), FSize);
+  FCapacity = NewCapacity;
+}
+
+void *TMemoryStream::Realloc(__int64 &NewCapacity)
+{
+  // DEBUG_PRINTF(L"FSize = %d, NewCapacity1 = %d", FSize, NewCapacity);
+  if ((NewCapacity > 0) && (NewCapacity != FSize))
+    NewCapacity = (NewCapacity + (MemoryDelta - 1)) & ~(MemoryDelta - 1);
+  // DEBUG_PRINTF(L"NewCapacity2 = %d", NewCapacity);
+  void *Result = FMemory;
+  if (NewCapacity != FCapacity)
+  {
+    if (NewCapacity == 0)
+    {
+      free(FMemory);
+      Result = NULL;
+    }
+    else
+    {
+      if (FCapacity == 0)
+        Result = malloc(NewCapacity);
+      else
+        Result = realloc(FMemory, NewCapacity);
+      if (Result == NULL)
+        throw EStreamError(FMTLOAD(SMemoryStreamError));
+    }
+  }
+  return Result;
+}
+
+void TMemoryStream::SetPointer(void *Ptr, __int64 Size)
+{
+  FMemory = Ptr;
+  FSize = Size;
+}
+
+__int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
+{
+  __int64 Result = 0;
+  if ((FPosition >= 0) && (Count >= 0))
+  {
+    __int64 Pos = FPosition + Count;
+    if (Pos > 0)
+    {
+      if (Pos > FSize)
+      {
+        if (Pos > FCapacity)
+          SetCapacity(Pos);
+        FSize = Pos;
+      }
+      memmove((char *)Buffer, (char *)FMemory + FPosition, Count);
+      FPosition = Pos;
+      Result = Count;
+    }
+  }
+  return Result;
+}
+
+//---------------------------------------------------------------------------
 
 bool IsRelative(const std::wstring &Value)
 {

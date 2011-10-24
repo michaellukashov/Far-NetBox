@@ -270,7 +270,7 @@ public:
   TDateTime GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
   void SetIgnoreCancelBeforeFinish(TDateTime value) { FIgnoreCancelBeforeFinish = value; }
   // __property TGUICopyParamType DefaultCopyParam = { read = FDefaultCopyParam, write = SetDefaultCopyParam };
-  TGUICopyParamType GetDefaultCopyParam() { return FDefaultCopyParam; }
+  TGUICopyParamType &GetDefaultCopyParam() { return FDefaultCopyParam; }
   void SetDefaultCopyParam(const TGUICopyParamType & value);
   // __property bool BeepOnFinish = { read = FBeepOnFinish, write = FBeepOnFinish };
   bool GetBeepOnFinish() { return FBeepOnFinish; }

@@ -598,7 +598,7 @@ bool TWinSCPPlugin::TransferConfigurationDialog()
   std::wstring Caption = FORMAT(L"%s - %s",
     GetMsg(PLUGIN_TITLE).c_str(), StripHotKey(GetMsg(CONFIG_TRANSFER)).c_str());
 
-  TCopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+  TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
   if (Result)
   {
@@ -699,7 +699,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
           {
             Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
-        TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+        TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
         if (ResumeOnButton->GetChecked()) CopyParam.SetResumeSupport(rsOn);
         if (ResumeSmartButton->GetChecked()) CopyParam.SetResumeSupport(rsSmart);
@@ -773,7 +773,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
           {
             Configuration->EndUpdate();
           } BOOST_SCOPE_EXIT_END
-        TGUICopyParamType CopyParam = GUIConfiguration->GetDefaultCopyParam();
+        TGUICopyParamType &CopyParam = GUIConfiguration->GetDefaultCopyParam();
 
         FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
         CopyParam.SetQueue(QueueCheck->GetChecked());
@@ -1187,7 +1187,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   new TFarSeparator(this);
 
   Button = new TFarButton(this);
-  Button->SetCaption(GetMsg(MSG_BUTTON_Close));
+  Button->SetCaption(GetMsg(MSG_BUTTON_CLOSE));
   Button->SetDefault(true);
   Button->SetResult(brOK);
   Button->SetCenterGroup(true);
@@ -3957,8 +3957,9 @@ private:
 };
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const std::wstring Directory, TStrings * GroupList,
-  TStrings * UserList, int AAllowedChanges) :
+  TStrings * FileList, const std::wstring Directory,
+  TStrings * GroupList, TStrings * UserList,
+  int AAllowedChanges) :
   TFarDialog(AFarPlugin),
   RightsContainer(NULL),
   OwnerComboBox(NULL),
@@ -4214,11 +4215,12 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
-  const std::wstring Directory, TStrings * GroupList, TStrings * UserList,
+  const std::wstring Directory,
   // const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
+  TStrings * GroupList, TStrings * UserList,
   TRemoteProperties * Properties, int AllowedChanges)
 {
-  bool Result;
+  bool Result = false;
   TPropertiesDialog * Dialog = new TPropertiesDialog(FPlugin, FileList,
     Directory, GroupList, UserList, AllowedChanges);
   {
@@ -4694,11 +4696,11 @@ void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
   TFarEdit * Edit = dynamic_cast<TFarEdit *>(Sender);
   assert(Edit != NULL);
   TFileMasks Masks = Edit->GetText();
-  int Start, Length;
+  int Start = 0, Length = 0;
   if (!Masks.GetIsValid(Start, Length))
   {
     Edit->SetFocus();
-    throw ExtException(FORMAT(GetMsg(MASK_ERROR).c_str(), (Masks.GetMasks().substr(Start+1, Length))));
+    throw ExtException(FORMAT(GetMsg(EDIT_MASK_ERROR).c_str(), Masks.GetMasks().c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -4753,7 +4755,8 @@ private:
 //---------------------------------------------------------------------------
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, TStrings * FileList,
-  int Options, int CopyParamAttrs) : TFarDialog(AFarPlugin)
+  int Options, int CopyParamAttrs) :
+  TFarDialog(AFarPlugin)
 {
   FToRemote = ToRemote;
   FOptions = Options;
@@ -4773,13 +4776,13 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     std::wstring Prompt;
     if (FileList->GetCount() > 1)
     {
-      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), (FileList->GetCount()));
+      Prompt = FORMAT(GetMsg(Move ? MOVE_FILES_PROMPT : COPY_FILES_PROMPT).c_str(), FileList->GetCount());
     }
     else
     {
       Prompt = FORMAT(GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT).c_str(),
-        (ToRemote ? ExtractFileName(FileList->GetString(0), true) :
-            UnixExtractFileName(FileList->GetString(0))));
+        (ToRemote ? ExtractFileName(FileList->GetString(0), true).c_str() :
+            UnixExtractFileName(FileList->GetString(0)).c_str()));
     }
 
     Text = new TFarText(this);
@@ -4858,9 +4861,9 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
   {
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
-    DirectoryEdit->GetText() =
+    DirectoryEdit->SetText(
       (FToRemote ? UnixIncludeTrailingBackslash(TargetDirectory) :
-        IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask();
+        IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
 
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
@@ -4881,7 +4884,7 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
       }
       else
       {
-        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText(), true));
+        Params->SetFileMask(ExtractFileName(DirectoryEdit->GetText(), false));
         TargetDirectory = ExtractFilePath(DirectoryEdit->GetText());
       }
 
@@ -4919,13 +4922,13 @@ bool TCopyDialog::CloseQuery()
       {
         TWinSCPPlugin* WinSCPPlugin = dynamic_cast<TWinSCPPlugin*>(FarPlugin);
 
-        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), (Directory)),
+        if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(CREATE_LOCAL_DIRECTORY).c_str(), Directory.c_str()),
               NULL, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!ForceDirectories(Directory))
           {
             DirectoryEdit->SetFocus();
-            throw ExtException(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), (Directory)));
+            throw ExtException(FORMAT(GetMsg(CREATE_LOCAL_DIR_ERROR).c_str(), Directory.c_str()));
           }
         }
         else
@@ -4987,8 +4990,7 @@ void TCopyDialog::CustomCopyParam()
 bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, TStrings * FileList,
   std::wstring & TargetDirectory, 
-  // TGUICopyParamType * Params,
-  TCopyParamType * Params,
+  TGUICopyParamType * Params,
   int Options,
   int CopyParamAttrs)
 {
@@ -5000,7 +5002,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
       {
         delete Dialog;
       } BOOST_SCOPE_EXIT_END
-    Result = Dialog->Execute(TargetDirectory, (TGUICopyParamType *)Params);
+    Result = Dialog->Execute(TargetDirectory, Params);
   }
   return Result;
 }
@@ -5372,7 +5374,7 @@ std::wstring TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability)
 std::wstring TFileSystemInfoDialog::CapabilityStr(TFSCapability Capability1,
   TFSCapability Capability2)
 {
-  return FORMAT(L"%s/%s", (CapabilityStr(Capability1), CapabilityStr(Capability2)));
+  return FORMAT(L"%s/%s", CapabilityStr(Capability1).c_str(), CapabilityStr(Capability2).c_str());
 }
 //---------------------------------------------------------------------
 std::wstring TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
@@ -5388,7 +5390,7 @@ std::wstring TFileSystemInfoDialog::SpaceStr(__int64 Bytes)
     std::wstring SizeUnorderedStr = FormatBytes(Bytes, false);
     if (Result != SizeUnorderedStr)
     {
-      Result = FORMAT(L"%s (%s)", (Result, SizeUnorderedStr));
+      Result = FORMAT(L"%s (%s)", Result.c_str(), SizeUnorderedStr.c_str());
     }
   }
   return Result;
@@ -5405,14 +5407,14 @@ void TFileSystemInfoDialog::Feed(const feedfilesystemdata_slot_type &AddItem)
   std::wstring Str = FSessionInfo.CSCipher;
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
-    Str += FORMAT(L"/%s", (FSessionInfo.SCCipher));
+    Str += FORMAT(L"/%s", FSessionInfo.SCCipher.c_str());
   }
   sig(ServerLabels, SERVER_CIPHER, Str);
 
   Str = DefaultStr(FSessionInfo.CSCompression, LoadStr(NO_STR));
   if (FSessionInfo.CSCompression != FSessionInfo.SCCompression)
   {
-    Str += FORMAT(L"/%s", (DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR))));
+    Str += FORMAT(L"/%s", DefaultStr(FSessionInfo.SCCompression, LoadStr(NO_STR)).c_str());
   }
   sig(ServerLabels, SERVER_COMPRESSION, Str);
   if (FSessionInfo.ProtocolName != FFileSystemInfo.ProtocolName)
@@ -5558,7 +5560,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
         Value.resize(Value.size() - 2);
       }
 
-      FClipboard += FORMAT(L"%s\r\n%s\r\n", (LabelStr, Value));
+      FClipboard += FORMAT(L"%s\r\n%s\r\n", LabelStr.c_str(), Value.c_str());
     }
     else
     {
@@ -5568,7 +5570,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       {
         LabelStr.resize(LabelStr.size() - 1);
       }
-      FClipboard += FORMAT(L"%s = %s\r\n", (LabelStr, Value));
+      FClipboard += FORMAT(L"%s = %s\r\n", LabelStr.c_str(), Value.c_str());
     }
   }
 }
@@ -6936,7 +6938,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
 void TSynchronizeChecklistDialog::UpdateControls()
 {
   ButtonSeparator->SetCaption(
-    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), (FChecked, ListBox->GetItems()->GetCount())));
+    FORMAT(GetMsg(CHECKLIST_CHECKED).c_str(), FChecked, ListBox->GetItems()->GetCount()));
   CheckAllButton->SetEnabled((FChecked < ListBox->GetItems()->GetCount()));
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
@@ -7283,7 +7285,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipRight);
 
   CloseButton = new TFarButton(this);
-  CloseButton->SetCaption(GetMsg(MSG_BUTTON_Close));
+  CloseButton->SetCaption(GetMsg(MSG_BUTTON_CLOSE));
   CloseButton->SetResult(brCancel);
   CloseButton->SetCenterGroup(true);
 }
@@ -7610,7 +7612,7 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
   std::wstring & NewName)
 {
   return FPlugin->InputBox(GetMsg(RENAME_FILE_TITLE).c_str(),
-    FORMAT(GetMsg(RENAME_FILE).c_str(), (File->GetFileName())), NewName, 0) &&
+    FORMAT(GetMsg(RENAME_FILE).c_str(), File->GetFileName().c_str()), NewName, 0) &&
     !NewName.empty();
 }
 //---------------------------------------------------------------------------
@@ -8057,7 +8059,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
       {
         if (ProgressData->Operation == Info->Operation)
         {
-          Values[1] = FORMAT(L"%d%%", (ProgressData->OverallProgress()));
+          Values[1] = FORMAT(L"%d%%", ProgressData->OverallProgress());
         }
         else if (ProgressData->Operation == foCalculateSize)
         {
@@ -8078,7 +8080,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
         (Info->Side == osRemote));
       if (ProgressData->Operation == Info->Operation)
       {
-        Values[1] = FORMAT(L"%d%%", (ProgressData->TransferProgress()));
+        Values[1] = FORMAT(L"%d%%", ProgressData->TransferProgress());
       }
     }
     else
@@ -8088,7 +8090,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
   }
 
   Line = FORMAT(L"%1s %1s  %-*.*s %s",
-    (Operation, Direction, PathMaxLen, PathMaxLen, Values[0], Values[1]));
+    (Operation, Direction.c_str(), PathMaxLen, PathMaxLen, Values[0], Values[1]));
 
   return true;
 }

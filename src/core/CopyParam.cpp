@@ -282,7 +282,7 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
           (*InvalidChar == TokenPrefix) &&
           (((FileName.size() - Pos) <= 1) ||
            (((Char = HexToChar(FileName.substr(Pos + 1, 2))) == '\0') ||
-            (FTokenizibleChars.find_first_of(Char) == 0))))
+            (FTokenizibleChars.find_first_of(Char) == std::wstring::npos))))
       {
         InvalidChar++;
       }
@@ -407,15 +407,18 @@ std::wstring TCopyParamType::Untokenize(std::wstring FileName)
 std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
   TOperationSide Side, bool FirstLevel) const
 {
+  // DEBUG_PRINTF(L"FirstLevel = %d, Side = %d, FileName = %s", FirstLevel, Side, FileName.c_str());
   if (FirstLevel)
   {
-    FileName = MaskFileName(FileName, GetFileMask());
+    FileName = ::MaskFileName(FileName, GetFileMask());
   }
-  switch (GetFileNameCase()) {
+  // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+  switch (GetFileNameCase())
+  {
     case ncUpperCase: FileName = ::UpperCase(FileName); break;
     case ncLowerCase: FileName = ::LowerCase(FileName); break;
     case ncFirstUpperCase: FileName = ::UpperCase(FileName.substr(0, 1)) +
-      ::LowerCase(FileName.substr(2, FileName.size()-1)); break;
+      ::LowerCase(FileName.substr(1, FileName.size() - 1)); break;
     case ncLowerCaseShort:
       if ((FileName.size() <= 12) && (FileName.find_first_of(L".") <= 9) &&
           (FileName == ::UpperCase(FileName)))
@@ -436,6 +439,7 @@ std::wstring TCopyParamType::ChangeFileName(std::wstring FileName,
   {
     FileName = RestoreChars(FileName);
   }
+  // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return FileName;
 }
 //---------------------------------------------------------------------------

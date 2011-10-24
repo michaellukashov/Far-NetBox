@@ -287,6 +287,7 @@ set ( TESTNETBOX_01_SOURCES
     ${PROJECT_ROOT}/src/Common/Classes.cpp
     ${PROJECT_ROOT}/src/Common/Common.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
+    ${PROJECT_ROOT}/src/core/FileBuffer.cpp
     ${TESTNETBOX_01_DIR}/testnetbox_01.cpp
     ${PROJECT_ROOT}/src/resource/TextsCore1.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc

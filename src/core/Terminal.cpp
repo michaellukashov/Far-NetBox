@@ -493,6 +493,10 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FTunnelUI = NULL;
   FTunnelOpening = false;
   FCallbackGuard = NULL;
+  FOperationProgress = NULL;
+  FClosedOnCompletion = NULL;
+  FTunnel = NULL;
+  FAnyInformation = false;;
   Self = this;
 }
 //---------------------------------------------------------------------------
@@ -1063,15 +1067,28 @@ int TTerminal::QueryUserException(const std::wstring Query,
 {
   int Result;
   TStringList MoreMessages;
-  if (!std::string(E->what()).empty() && !Query.empty())
+  DEBUG_PRINTF(L"E->what = %s", ::MB2W(E->what()).c_str());
+
+  if ((E != NULL) && !std::string(E->what()).empty() && !Query.empty())
   {
     MoreMessages.Add(std::wstring(::MB2W(E->what())));
   }
-
-  const ExtException *EE = dynamic_cast<const ExtException*>(E);
-  if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
+  Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
+    MoreMessages.GetCount() ? &MoreMessages : NULL,
+    Answers, Params, QueryType);
+  return Result;
+}
+//---------------------------------------------------------------------------
+int TTerminal::QueryUserException(const std::wstring Query,
+  const ExtException *E, int Answers, const TQueryParams * Params,
+  TQueryType QueryType)
+{
+  int Result;
+  TStringList MoreMessages;
+  if ((E != NULL) && (E->GetMoreMessages() != NULL))
   {
-    MoreMessages.AddStrings(EE->GetMoreMessages());
+    DEBUG_PRINTF(L"E->GetMoreMessages = %s", E->GetMoreMessages()->GetText());
+    MoreMessages.AddStrings(E->GetMoreMessages());
   }
   Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
     MoreMessages.GetCount() ? &MoreMessages : NULL,
@@ -1529,6 +1546,7 @@ std::wstring TTerminal::PeekCurrentDirectory()
   return TranslateLockedPath(FCurrentDirectory, true);
 }
 //---------------------------------------------------------------------------
+/*
 const TRemoteTokenList * TTerminal::GetGroups()
 {
   assert(FFileSystem);
@@ -1542,6 +1560,7 @@ const TRemoteTokenList * TTerminal::GetUsers()
   LookupUsersGroups();
   return &FUsers;
 }
+*/
 //---------------------------------------------------------------------------
 const TRemoteTokenList * TTerminal::GetMembership()
 {
@@ -3609,7 +3628,7 @@ bool TTerminal::CreateLocalFile(const std::wstring FileName,
 {
   assert(AHandle);
   bool Result = true;
-
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
     Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
   );
