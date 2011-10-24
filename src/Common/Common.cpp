@@ -2410,11 +2410,29 @@ int FileSetAttr(const std::wstring &filename, int attrs)
     return res;
 }
 
+bool CreateDir(const std::wstring Dir)
+{
+  return ::CreateDirectory(Dir.c_str(), NULL);
+}
+
 bool ForceDirectories(const std::wstring Dir)
 {
-    // FIXME
-    ::Error(SNotImplemented, 87);
+  DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
+  bool Result = true;
+  if (Dir.empty())
+  {
     return false;
+  }
+  std::wstring Dir2 = ExcludeTrailingBackslash(Dir);
+  DEBUG_PRINTF(L"Dir2 = %s", Dir2.c_str());
+  if ((Dir2.size() < 3) || DirectoryExists(Dir2)
+    || (ExtractFilePath(Dir2) == Dir2))
+  {
+    return Result;
+  }
+  Result = ForceDirectories(ExtractFilePath(Dir2)) && CreateDir(Dir2);
+  DEBUG_PRINTF(L"Result = %d", Result);
+  return Result;
 }
 
 bool DeleteFile(const std::wstring File)
