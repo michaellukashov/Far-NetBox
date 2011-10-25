@@ -80,6 +80,8 @@ std::wstring ExcludeTrailingBackslash(const std::wstring Str);
 std::wstring ExtractFileDir(const std::wstring Str);
 std::wstring ExtractFilePath(const std::wstring Str);
 std::wstring GetCurrentDir();
+bool CreateDir(const std::wstring Dir);
+bool RemoveDir(const std::wstring Dir);
 
 bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2);
 bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2);

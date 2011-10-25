@@ -2415,6 +2415,11 @@ bool CreateDir(const std::wstring Dir)
   return ::CreateDirectory(Dir.c_str(), NULL);
 }
 
+bool RemoveDir(const std::wstring Dir)
+{
+  return ::RemoveDirectory(Dir.c_str());
+}
+
 bool ForceDirectories(const std::wstring Dir)
 {
   DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
@@ -2441,13 +2446,6 @@ bool DeleteFile(const std::wstring File)
     ::DeleteFile(File.c_str());
     // DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
     return !::FileExists(File);
-}
-
-bool RemoveDir(const std::wstring Dir)
-{
-    // FIXME
-    ::Error(SNotImplemented, 89);
-    return false;
 }
 
 //---------------------------------------------------------------------------
