@@ -1243,8 +1243,7 @@ void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
       }
     }
   }
-    else
-  if (ModifiesFiles && GetAutoReadDirectory() && Configuration->GetAutoReadDirectoryAfterOp())
+  else if (ModifiesFiles && GetAutoReadDirectory() && Configuration->GetAutoReadDirectoryAfterOp())
   {
     if (!InTransaction()) ReadDirectory(true);
       else FReadDirectoryPending = true;
