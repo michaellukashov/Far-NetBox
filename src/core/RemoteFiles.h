@@ -73,8 +73,8 @@ public:
   const TRemoteToken * Find(const std::wstring & Name) const;
   void Log(TTerminal * Terminal, const char * Title);
 
-  int Count() const;
-  const TRemoteToken * Token(int Index) const;
+  int GetCount() const;
+  const TRemoteToken * GetToken(int Index) const;
 
 private:
   typedef std::vector<TRemoteToken> TTokens;
