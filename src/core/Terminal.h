@@ -494,9 +494,9 @@ public:
   deletelocalfile_signal_type &GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
   void SetOnDeleteLocalFile(const deletelocalfile_slot_type &value) { FOnDeleteLocalFile.connect(value); }
   // __property const TRemoteTokenList * Groups = { read = GetGroups };
-  // const TRemoteTokenList * GetGroups();
+  const TRemoteTokenList * GetGroups();
   // __property const TRemoteTokenList * Users = { read = GetUsers };
-  // const TRemoteTokenList * GetUsers();
+  const TRemoteTokenList * GetUsers();
   // __property const TRemoteTokenList * Membership = { read = GetMembership };
   const TRemoteTokenList * GetMembership();
   // __property TFileOperationProgressEvent OnProgress  = { read=FOnProgress, write=FOnProgress };

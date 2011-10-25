@@ -1550,7 +1550,7 @@ std::wstring TTerminal::PeekCurrentDirectory()
   return TranslateLockedPath(FCurrentDirectory, true);
 }
 //---------------------------------------------------------------------------
-/*
+
 const TRemoteTokenList * TTerminal::GetGroups()
 {
   assert(FFileSystem);
@@ -1564,7 +1564,7 @@ const TRemoteTokenList * TTerminal::GetUsers()
   LookupUsersGroups();
   return &FUsers;
 }
-*/
+
 //---------------------------------------------------------------------------
 const TRemoteTokenList * TTerminal::GetMembership()
 {

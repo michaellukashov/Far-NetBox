@@ -154,8 +154,8 @@ protected:
   bool IsSynchronizedBrowsing();
   bool PropertiesDialog(TStrings * FileList,
     const std::wstring Directory, 
-    // const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
-    TStrings * GroupList, TStrings * UserList,
+    // TStrings * GroupList, TStrings * UserList,
+    const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     TRemoteProperties * Properties, int AllowedChanges);
   bool ExecuteCommand(const std::wstring Command);
   void TerminalCaptureLog(const std::wstring & AddedLine, bool StdError);
