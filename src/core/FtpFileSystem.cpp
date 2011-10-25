@@ -1225,7 +1225,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (DirectoryExists(FileName))
+          if (::DirectoryExists(::ExtractFilePath(FileName)))
           {
             FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
