@@ -3393,6 +3393,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()
 {
+  DEBUG_PRINTF(L"FUsersGroupsLookedup = %d, GetSessionData()->GetLookupUserGroups = %d, GetIsCapable(fcUserGroupListing) = %d", FUsersGroupsLookedup, GetSessionData()->GetLookupUserGroups(), GetIsCapable(fcUserGroupListing));
   if (!FUsersGroupsLookedup && GetSessionData()->GetLookupUserGroups() &&
       GetIsCapable(fcUserGroupListing))
   {
@@ -3404,6 +3405,7 @@ void TTerminal::LookupUsersGroups()
       LogEvent(L"Looking up groups and users.");
       FFileSystem->LookupUsersGroups();
       ReactOnCommand(fsLookupUsersGroups);
+      DEBUG_PRINTF(L"after ReactOnCommand");
 
       if (GetLog()->GetLogging())
       {
