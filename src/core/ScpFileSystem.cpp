@@ -949,17 +949,17 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         ExecCommand(fsListCurrentDirectory,
           0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, Params);
       }
-        else
+      else
       {
         FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
-          (FileList->GetDirectory())));
+          FileList->GetDirectory().c_str()));
         ExecCommand(fsListDirectory,
           0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
-            DelimitStr(FileList->GetDirectory().c_str()),
+            DelimitStr(FileList->GetDirectory().c_str()).c_str(),
           Params);
       }
 
-      TRemoteFile * File;
+      TRemoteFile * File = NULL;
 
       // If output is not empty, we have succesfully got file listing,
       // otherwise there was an error, in case it was "permission denied"
