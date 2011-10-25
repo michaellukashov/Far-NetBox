@@ -3995,6 +3995,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
       UsedGroupList->SetDuplicates(dupIgnore);
       UsedGroupList->SetSorted(true);
     }
+    DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->GetCount());
     if ((UserList == NULL) || (UserList->GetCount() == 0))
     {
       UsedUserList = new TStringList();
@@ -4068,6 +4069,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
         for (int Index = 0; Index < UserList->GetCount(); Index++)
         {
             DEBUG_PRINTF(L"user = %s", UserList->GetToken(Index)->GetName().c_str());
+            GroupComboBox->GetItems()->Add(UserList->GetToken(Index)->GetName());
         }
     }
 
@@ -4091,6 +4093,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
         for (int Index = 0; Index < GroupList->GetCount(); Index++)
         {
             DEBUG_PRINTF(L"group = %s", GroupList->GetToken(Index)->GetName().c_str());
+            GroupComboBox->GetItems()->Add(GroupList->GetToken(Index)->GetName());
         }
     }
 
