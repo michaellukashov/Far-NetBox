@@ -1526,10 +1526,14 @@ std::wstring TTerminal::GetCurrentDirectory()
 {
   if (FFileSystem)
   {
-    FCurrentDirectory = FFileSystem->GetCurrentDirectory();
-    if (FCurrentDirectory.empty())
+    std::wstring currentDirectory = FFileSystem->GetCurrentDirectory();
+    if (FCurrentDirectory != currentDirectory)
     {
-      ReadCurrentDirectory();
+        FCurrentDirectory = currentDirectory;
+        if (FCurrentDirectory.empty())
+        {
+          ReadCurrentDirectory();
+        }
     }
   }
 
@@ -2184,8 +2188,12 @@ void TTerminal::ReadCurrentDirectory()
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
       assert(FDirectoryChangesCache != NULL);
-      FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
-        FLastDirectoryChange, GetCurrentDirectory());
+      std::wstring currentDirectory = GetCurrentDirectory();
+      if (!currentDirectory.empty())
+      {
+        FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
+            FLastDirectoryChange, currentDirectory);
+      }
       // not to broke the cache, if the next directory change would not
       // be initialited by ChangeDirectory(), which sets it
       // (HomeDirectory() particularly)
