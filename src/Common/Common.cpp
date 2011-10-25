@@ -2433,10 +2433,13 @@ bool ForceDirectories(const std::wstring Dir)
   }
   std::wstring Dir2 = ExcludeTrailingBackslash(Dir);
   // DEBUG_PRINTF(L"Dir2 = %s", Dir2.c_str());
-  if ((Dir2.size() < 3) || DirectoryExists(Dir2) ||
-    (ExtractFilePath(Dir2).empty()))
+  if ((Dir2.size() < 3) || DirectoryExists(Dir2))
   {
-    return CreateDir(Dir2);
+    return Result;
+  }
+  if (ExtractFilePath(Dir2).empty())
+  {
+    return ::CreateDir(Dir2);
   }
   Result = ForceDirectories(ExtractFilePath(Dir2)) && CreateDir(Dir2);
   // DEBUG_PRINTF(L"Result = %d", Result);
