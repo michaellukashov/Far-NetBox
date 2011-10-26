@@ -47,16 +47,16 @@ project ( NetBox )
 
 set ( CMAKE_BUILD_TYPE Debug )
 
-set ( PLATFORM x86 )
 set ( FAR_VERSION Far2 )
+set ( PLATFORM x86 )
 
 set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------
 
-set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------------------------------
 
