@@ -2469,7 +2469,7 @@ std::wstring Format(const wchar_t *format, ...)
     va_start(args, format);
     result = ::Format(format, args);
     va_end(args);
-    return result;
+    return result.c_str();
 }
 
 //---------------------------------------------------------------------------
@@ -2480,10 +2480,10 @@ std::wstring Format(const wchar_t *format, va_list args)
     if (format && *format)
     {
         int len = _vscwprintf(format, args);
-        result.resize(len + sizeof(wchar_t));
-        vswprintf_s(&result[0], result.size(), format, args);
+        result.resize(len + 1); // sizeof(wchar_t));
+        vswprintf_s(&result[0], len + 1, format, args);
     }
-    return result;
+    return result.c_str();
 }
 
 //---------------------------------------------------------------------------
