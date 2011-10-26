@@ -3934,7 +3934,9 @@ class TPropertiesDialog : public TFarDialog
 {
 public:
   TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
-    const std::wstring Directory, TStrings * GroupList, TStrings * UserList,
+    const std::wstring Directory,
+    // TStrings * GroupList, TStrings * UserList,
+    const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     int AllowedChanges);
 
   bool Execute(TRemoteProperties * Properties);
@@ -3958,7 +3960,8 @@ private:
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   TStrings * FileList, const std::wstring Directory,
-  TStrings * GroupList, TStrings * UserList,
+  const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
+  // TStrings * GroupList, TStrings * UserList,
   int AAllowedChanges) :
   TFarDialog(AFarPlugin),
   RightsContainer(NULL),
@@ -3992,6 +3995,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
       UsedGroupList->SetDuplicates(dupIgnore);
       UsedGroupList->SetSorted(true);
     }
+    DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->GetCount());
     if ((UserList == NULL) || (UserList->GetCount() == 0))
     {
       UsedUserList = new TStringList();
@@ -4055,7 +4059,19 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     OwnerComboBox = new TFarComboBox(this);
     OwnerComboBox->SetWidth(20);
     OwnerComboBox->SetEnabled(FAllowedChanges & cpOwner);
-    OwnerComboBox->GetItems()->Assign(UsedUserList ? UsedUserList : UserList);
+    if (UsedUserList)
+    {
+        OwnerComboBox->GetItems()->Assign(UsedUserList);
+    }
+    else if (UserList)
+    {
+        DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->GetCount());
+        for (int Index = 0; Index < UserList->GetCount(); Index++)
+        {
+            DEBUG_PRINTF(L"user = %s", UserList->GetToken(Index)->GetName().c_str());
+            GroupComboBox->GetItems()->Add(UserList->GetToken(Index)->GetName());
+        }
+    }
 
     SetNextItemPosition(ipNewLine);
 
@@ -4068,7 +4084,18 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     GroupComboBox = new TFarComboBox(this);
     GroupComboBox->SetWidth(OwnerComboBox->GetWidth());
     GroupComboBox->SetEnabled(FAllowedChanges & cpGroup);
-    GroupComboBox->GetItems()->Assign(UsedGroupList ? UsedGroupList : GroupList);
+    if (UsedGroupList)
+    {
+        GroupComboBox->GetItems()->Assign(UsedGroupList);
+    }
+    else if (GroupList)
+    {
+        for (int Index = 0; Index < GroupList->GetCount(); Index++)
+        {
+            DEBUG_PRINTF(L"group = %s", GroupList->GetToken(Index)->GetName().c_str());
+            GroupComboBox->GetItems()->Add(GroupList->GetToken(Index)->GetName());
+        }
+    }
 
     SetNextItemPosition(ipNewLine);
 
@@ -4216,8 +4243,8 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
   const std::wstring Directory,
-  // const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
-  TStrings * GroupList, TStrings * UserList,
+  const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
+  // TStrings * GroupList, TStrings * UserList,
   TRemoteProperties * Properties, int AllowedChanges)
 {
   bool Result = false;

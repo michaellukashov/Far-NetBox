@@ -652,6 +652,7 @@ std::wstring ExtractFileDir(const std::wstring str)
 std::wstring ExtractFilePath(const std::wstring str)
 {
     std::wstring result = ::ExtractFileDir(str);
+    // DEBUG_PRINTF(L"str = %s, result = %s", str.c_str(), result.c_str());
     return result;
 }
 
@@ -2375,13 +2376,14 @@ bool RenameFile(const std::wstring &from, const std::wstring &to)
 
 bool DirectoryExists(const std::wstring &filename)
 {
-    if ((filename == L".") ||
-        (filename == L".."))
+    // DEBUG_PRINTF(L"filename = %s", filename.c_str());
+    if ((filename == L".") || (filename == L".."))
       return true;
 
     int attr = GetFileAttributes(filename.c_str());
+    // DEBUG_PRINTF(L"attr = %d, FILE_ATTRIBUTE_DIRECTORY = %d", attr, FILE_ATTRIBUTE_DIRECTORY);
 
-    if (FLAGSET(attr, FILE_ATTRIBUTE_DIRECTORY))
+    if ((attr != 0xFFFFFFFF) && FLAGSET(attr, FILE_ATTRIBUTE_DIRECTORY))
       return true;
     return false;
 }
@@ -2412,26 +2414,35 @@ int FileSetAttr(const std::wstring &filename, int attrs)
 
 bool CreateDir(const std::wstring Dir)
 {
+  // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
   return ::CreateDirectory(Dir.c_str(), NULL);
+}
+
+bool RemoveDir(const std::wstring Dir)
+{
+  return ::RemoveDirectory(Dir.c_str());
 }
 
 bool ForceDirectories(const std::wstring Dir)
 {
-  DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
+  // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
   bool Result = true;
   if (Dir.empty())
   {
     return false;
   }
   std::wstring Dir2 = ExcludeTrailingBackslash(Dir);
-  DEBUG_PRINTF(L"Dir2 = %s", Dir2.c_str());
-  if ((Dir2.size() < 3) || DirectoryExists(Dir2)
-    || (ExtractFilePath(Dir2) == Dir2))
+  // DEBUG_PRINTF(L"Dir2 = %s", Dir2.c_str());
+  if ((Dir2.size() < 3) || DirectoryExists(Dir2))
   {
     return Result;
   }
+  if (ExtractFilePath(Dir2).empty())
+  {
+    return ::CreateDir(Dir2);
+  }
   Result = ForceDirectories(ExtractFilePath(Dir2)) && CreateDir(Dir2);
-  DEBUG_PRINTF(L"Result = %d", Result);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 
@@ -2441,13 +2452,6 @@ bool DeleteFile(const std::wstring File)
     ::DeleteFile(File.c_str());
     // DEBUG_PRINTF(L"FileExists(File) = %d", ::FileExists(File));
     return !::FileExists(File);
-}
-
-bool RemoveDir(const std::wstring Dir)
-{
-    // FIXME
-    ::Error(SNotImplemented, 89);
-    return false;
 }
 
 //---------------------------------------------------------------------------

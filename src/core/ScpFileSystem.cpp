@@ -786,7 +786,7 @@ void TSCPFileSystem::DetectReturnVar()
 
       try
       {
-        FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index]));
+        FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
         // DEBUG_PRINTF(L"GetOutput()->GetString(0) = %s", GetOutput()->GetString(0).c_str());
         if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
@@ -1556,9 +1556,9 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (DirectoryExists(FileName))
+          if (::DirectoryExists(::ExtractFilePath(FileName)))
           {
-            FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir)+
+            FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir) +
               FileNameOnly, true);
           }
         }

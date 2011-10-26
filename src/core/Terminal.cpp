@@ -1243,8 +1243,7 @@ void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
       }
     }
   }
-    else
-  if (ModifiesFiles && GetAutoReadDirectory() && Configuration->GetAutoReadDirectoryAfterOp())
+  else if (ModifiesFiles && GetAutoReadDirectory() && Configuration->GetAutoReadDirectoryAfterOp())
   {
     if (!InTransaction()) ReadDirectory(true);
       else FReadDirectoryPending = true;
@@ -1526,10 +1525,14 @@ std::wstring TTerminal::GetCurrentDirectory()
 {
   if (FFileSystem)
   {
-    FCurrentDirectory = FFileSystem->GetCurrentDirectory();
-    if (FCurrentDirectory.empty())
+    std::wstring currentDirectory = FFileSystem->GetCurrentDirectory();
+    if (FCurrentDirectory != currentDirectory)
     {
-      ReadCurrentDirectory();
+        FCurrentDirectory = currentDirectory;
+        if (FCurrentDirectory.empty())
+        {
+          ReadCurrentDirectory();
+        }
     }
   }
 
@@ -1546,7 +1549,7 @@ std::wstring TTerminal::PeekCurrentDirectory()
   return TranslateLockedPath(FCurrentDirectory, true);
 }
 //---------------------------------------------------------------------------
-/*
+
 const TRemoteTokenList * TTerminal::GetGroups()
 {
   assert(FFileSystem);
@@ -1560,7 +1563,7 @@ const TRemoteTokenList * TTerminal::GetUsers()
   LookupUsersGroups();
   return &FUsers;
 }
-*/
+
 //---------------------------------------------------------------------------
 const TRemoteTokenList * TTerminal::GetMembership()
 {
@@ -2184,8 +2187,12 @@ void TTerminal::ReadCurrentDirectory()
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
       assert(FDirectoryChangesCache != NULL);
-      FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
-        FLastDirectoryChange, GetCurrentDirectory());
+      std::wstring currentDirectory = GetCurrentDirectory();
+      if (!currentDirectory.empty())
+      {
+        FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
+            FLastDirectoryChange, currentDirectory);
+      }
       // not to broke the cache, if the next directory change would not
       // be initialited by ChangeDirectory(), which sets it
       // (HomeDirectory() particularly)
@@ -3385,6 +3392,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()
 {
+  DEBUG_PRINTF(L"FUsersGroupsLookedup = %d, GetSessionData()->GetLookupUserGroups = %d, GetIsCapable(fcUserGroupListing) = %d", FUsersGroupsLookedup, GetSessionData()->GetLookupUserGroups(), GetIsCapable(fcUserGroupListing));
   if (!FUsersGroupsLookedup && GetSessionData()->GetLookupUserGroups() &&
       GetIsCapable(fcUserGroupListing))
   {
@@ -3396,6 +3404,7 @@ void TTerminal::LookupUsersGroups()
       LogEvent(L"Looking up groups and users.");
       FFileSystem->LookupUsersGroups();
       ReactOnCommand(fsLookupUsersGroups);
+      DEBUG_PRINTF(L"after ReactOnCommand");
 
       if (GetLog()->GetLogging())
       {

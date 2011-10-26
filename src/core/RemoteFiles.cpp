@@ -694,12 +694,12 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const char * Title)
   }
 }
 //---------------------------------------------------------------------------
-int TRemoteTokenList::Count() const
+int TRemoteTokenList::GetCount() const
 {
   return (int)FTokens.size();
 }
 //---------------------------------------------------------------------------
-const TRemoteToken * TRemoteTokenList::Token(int Index) const
+const TRemoteToken * TRemoteTokenList::GetToken(int Index) const
 {
   return &FTokens[Index];
 }

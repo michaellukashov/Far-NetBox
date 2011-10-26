@@ -531,4 +531,19 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(test23, base_fixture_t)
+{
+    std::wstring Dir1 = L"subdir1";
+    std::wstring Dir2 = L"subdir1/subdir2";
+    ::RemoveDir(Dir2);
+    ::RemoveDir(Dir1);
+    BOOST_TEST_MESSAGE("DirectoryExists(Dir2) = " << DirectoryExists(Dir2));
+    BOOST_CHECK(!::DirectoryExists(Dir2));
+    ::ForceDirectories(Dir2);
+    BOOST_CHECK(::DirectoryExists(Dir2));
+    ::RemoveDir(Dir2);
+    ::ForceDirectories(Dir2);
+    BOOST_CHECK(::DirectoryExists(Dir2));
+}
+
 BOOST_AUTO_TEST_SUITE_END()

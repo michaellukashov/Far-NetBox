@@ -2014,8 +2014,7 @@ int TCustomFarFileSystem::MakeDirectory(wchar_t *Name, int OpMode)
             StrToFar(NameStr);
             if (NameStr != Name)
             {
-                // strcpy(Name, NameStr.c_str());
-                wcscpy_s(Name, NameStr.size(), NameStr.c_str());
+                wcscpy(Name, NameStr.c_str());
             }
         } BOOST_SCOPE_EXIT_END
         StrFromFar(NameStr);
