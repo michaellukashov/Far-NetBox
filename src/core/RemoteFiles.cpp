@@ -221,23 +221,23 @@ static void CutFirstDirectory(std::wstring & S, bool Unix)
   }
   else
   {
-    if (S[1] == Sep[1])
+    if (S[0] == Sep[0])
     {
       Root = true;
-      S.erase(1, 1);
+      S.erase(0, 1);
     }
     else
     {
       Root = false;
     }
-    if (S[1] == '.')
+    if (S[0] == '.')
     {
-      S.erase(1, 4);
+      S.erase(0, 4);
     }
-    P = ::AnsiPos(S, Sep[1]);
-    if (P)
+    P = ::AnsiPos(S, Sep[0]);
+    if (P != std::wstring::npos)
     {
-      S.erase(1, P);
+      S.erase(0, P + 1);
       S = L"..." + Sep + S;
     }
     else

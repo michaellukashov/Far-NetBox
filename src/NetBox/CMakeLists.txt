@@ -47,16 +47,16 @@ project ( NetBox )
 
 set ( CMAKE_BUILD_TYPE Debug )
 
-set ( PLATFORM x86 )
 set ( FAR_VERSION Far2 )
+set ( PLATFORM x86 )
 
 set ( OUTPUT_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------
 
-set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
-set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_ROOT}/${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
+set ( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${FAR_VERSION}_${PLATFORM}/Plugins/NetBox )
 
 #-------------------------------------------------------------------------------
 
@@ -243,6 +243,18 @@ set ( NETBOX_LIBRARIES
     zlib.lib
     ws2_32.lib
     winhttp.lib
+    kernel32.lib
+    user32.lib
+    gdi32.lib
+    winspool.lib
+    comdlg32.lib
+    advapi32.lib
+    shell32.lib
+    ole32.lib
+    oleaut32.lib
+    uuid.lib
+    odbc32.lib
+    odbccp32.lib
     Version.lib
     libputty
     libcurl
