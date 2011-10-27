@@ -1195,7 +1195,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           {
             FLinkTo = Line.substr(
               P + std::wstring(SYMLINKSTR).size(), Line.size() - P + std::wstring(SYMLINKSTR).size() + 1);
-            Line.resize(P - 1);
+            Line.resize(P);
           }
           else
           {
@@ -1294,7 +1294,7 @@ std::wstring TRemoteFile::GetListingStr()
   {
     LinkPart = std::wstring(SYMLINKSTR) + GetLinkTo();
   }
-  return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s", 
+  return FORMAT(L"%c%s %3s %-8s %-8s %9s %-12s %s%s", 
     GetType(), GetRights()->GetText().c_str(), IntToStr(GetINodeBlocks()).c_str(),
     GetOwner().GetName().c_str(),
     GetGroup().GetName().c_str(), IntToStr(GetSize()).c_str(), GetModificationStr().c_str(),
