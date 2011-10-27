@@ -243,25 +243,29 @@ void TCopyParamType::SetReplaceInvalidChars(bool value)
 //---------------------------------------------------------------------------
 wchar_t * TCopyParamType::ReplaceChar(std::wstring & FileName, wchar_t * InvalidChar) const
 {
-  int Index = InvalidChar - FileName.c_str() + 1;
-  ::Error(SNotImplemented, 205); 
-  if (false) // FIXME FileName.GetByteType(Index) == mbSingleByte)
+  if (0)
   {
-    if (GetInvalidCharsReplacement() == TokenReplacement)
-    {
-      FileName.insert(Index + 1, CharToHex(FileName[Index]));
-      FileName[Index] = TokenPrefix;
-      InvalidChar = (wchar_t *)FileName.c_str() + Index + 2;
-    }
-    else
-    {
-      FileName[Index] = GetInvalidCharsReplacement();
-      InvalidChar++;
-    }
-  }
-  else
-  {
-    InvalidChar++;
+      int Index = InvalidChar - FileName.c_str();
+      DEBUG_PRINTF(L"FileName = %s, InvalidChar = %s", FileName.c_str(), InvalidChar);
+      // ::Error(SNotImplemented, 205); 
+      if (false) // FIXME FileName.GetByteType(Index) == mbSingleByte)
+      {
+        if (GetInvalidCharsReplacement() == TokenReplacement)
+        {
+          FileName.insert(Index + 1, CharToHex(FileName[Index]));
+          FileName[Index] = TokenPrefix;
+          InvalidChar = (wchar_t *)FileName.c_str() + Index + 2;
+        }
+        else
+        {
+          FileName[Index] = GetInvalidCharsReplacement();
+          InvalidChar++;
+        }
+      }
+      else
+      {
+        InvalidChar++;
+      }
   }
   return InvalidChar;
 }

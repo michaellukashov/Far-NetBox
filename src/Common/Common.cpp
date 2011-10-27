@@ -945,7 +945,7 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
 {
   const TDayTable *DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
-    (Day >= 1) && (Day <= (*DayTable)[Month]))
+    (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
     for (int I = 1; I <= Month - 1; I++)
         Day += (*DayTable)[I - 1];

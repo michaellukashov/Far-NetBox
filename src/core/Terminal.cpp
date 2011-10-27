@@ -2465,6 +2465,8 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   try
   {
     LogEvent(FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
+    DEBUG_PRINTF(L"SymlinkFile->GetLinkTo = %s", SymlinkFile->GetLinkTo().c_str());
+    DEBUG_PRINTF(L"SymlinkFile->GetFileName = %s", SymlinkFile->GetFileName().c_str());
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
@@ -3415,9 +3417,9 @@ void TTerminal::LookupUsersGroups()
 
       if (GetLog()->GetLogging())
       {
-        FGroups.Log(this, "groups");
-        FGroups.Log(this, "membership");
-        FGroups.Log(this, "users");
+        FGroups.Log(this, L"groups");
+        FGroups.Log(this, L"membership");
+        FGroups.Log(this, L"users");
       }
     }
     catch (const std::exception &E)

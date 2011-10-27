@@ -71,7 +71,7 @@ public:
   bool Exists(const std::wstring & Name) const;
   const TRemoteToken * Find(unsigned int ID) const;
   const TRemoteToken * Find(const std::wstring & Name) const;
-  void Log(TTerminal * Terminal, const char * Title);
+  void Log(TTerminal * Terminal, const wchar_t * Title);
 
   int GetCount() const;
   const TRemoteToken * GetToken(int Index) const;
