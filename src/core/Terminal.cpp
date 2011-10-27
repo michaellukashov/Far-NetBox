@@ -2465,6 +2465,7 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   try
   {
     LogEvent(FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
+    DEBUG_PRINTF(L"GetLinkTo = %s", SymlinkFile->GetLinkTo().c_str());
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
