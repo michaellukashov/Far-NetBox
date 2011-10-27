@@ -1085,10 +1085,17 @@ int TTerminal::QueryUserException(const std::wstring Query,
 {
   int Result;
   TStringList MoreMessages;
-  if ((E != NULL) && (E->GetMoreMessages() != NULL))
+  if (E != NULL)
   {
-    DEBUG_PRINTF(L"E->GetMoreMessages = %s", E->GetMoreMessages()->GetText());
-    MoreMessages.AddStrings(E->GetMoreMessages());
+    if (E->GetMoreMessages() != NULL)
+    {
+      DEBUG_PRINTF(L"E->GetMoreMessages = %s", E->GetMoreMessages()->GetText());
+      MoreMessages.AddStrings(E->GetMoreMessages());
+    }
+    else if (!std::string(E->what()).empty() && !Query.empty())
+    {
+      MoreMessages.Add(std::wstring(::MB2W(E->what())));
+    }
   }
   Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
     MoreMessages.GetCount() ? &MoreMessages : NULL,

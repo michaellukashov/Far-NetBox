@@ -79,7 +79,7 @@ ExtException::ExtException(std::wstring Msg) :
 
 //---------------------------------------------------------------------------
 ExtException::ExtException(std::wstring Msg, const std::exception *E) :
-  parent(), // ::W2MB(Msg.c_str()).c_str()),
+  parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
   DEBUG_PRINTF(L"Msg = %s, E = %x", Msg.c_str(), E);

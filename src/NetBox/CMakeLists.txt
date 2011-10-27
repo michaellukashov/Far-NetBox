@@ -239,6 +239,10 @@ set_target_properties( libputty
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
+    libputty
+    libcurl
+    libeay32
+    ssleay32
     libssh2.lib
     zlib.lib
     ws2_32.lib
@@ -256,10 +260,6 @@ set ( NETBOX_LIBRARIES
     odbc32.lib
     odbccp32.lib
     Version.lib
-    libputty
-    libcurl
-    libeay32
-    ssleay32
 )
 
 add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )

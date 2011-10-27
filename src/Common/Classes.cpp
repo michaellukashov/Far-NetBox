@@ -39,7 +39,7 @@ void TStrings::SetTextStr(const std::wstring Text)
             P++;
         }
         std::wstring S;
-        S.resize(P - Start + 1);
+        S.resize(P - Start);
         memcpy((wchar_t *)S.c_str(), Start, (P - Start) * sizeof(wchar_t));
         Add(S);
         if (*P == 0x0D) P++;
