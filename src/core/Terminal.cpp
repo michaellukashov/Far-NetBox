@@ -3417,9 +3417,9 @@ void TTerminal::LookupUsersGroups()
 
       if (GetLog()->GetLogging())
       {
-        FGroups.Log(this, "groups");
-        FGroups.Log(this, "membership");
-        FGroups.Log(this, "users");
+        FGroups.Log(this, L"groups");
+        FGroups.Log(this, L"membership");
+        FGroups.Log(this, L"users");
       }
     }
     catch (const std::exception &E)

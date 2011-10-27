@@ -678,7 +678,7 @@ const TRemoteToken * TRemoteTokenList::Find(const std::wstring & Name) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteTokenList::Log(TTerminal * Terminal, const char * Title)
+void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
 {
   if (!FTokens.empty())
   {
