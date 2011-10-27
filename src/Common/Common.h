@@ -165,6 +165,9 @@ TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsi
 std::wstring FormatDateTime(const std::wstring &fmt, TDateTime DateTime);
 TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
 
+TDateTime EncodeDate(int Year, int Month, int Day);
+TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+
 //---------------------------------------------------------------------------
 class TCriticalSection
 {
