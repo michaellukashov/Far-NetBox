@@ -357,7 +357,11 @@ std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, TDateTime DateTim
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs
-  Result += FormatDateTime(TimeFormat, TDateTime(DateTime - int(DateTime)));
+  // Result += FormatDateTime(TimeFormat, TDateTime(DateTime - int(DateTime)));
+  // DEBUG_PRINTF(L"TimeFormat = %s", TimeFormat.c_str());
+  unsigned int H, M, S, MS;
+  DateTime.DecodeTime(H, M, S, MS);
+  Result += FORMAT(L"%d:%02d:%02d", H, M, S);
   return Result;
 }
 //---------------------------------------------------------------------------
