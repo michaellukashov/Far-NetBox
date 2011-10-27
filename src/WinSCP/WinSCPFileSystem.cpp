@@ -3399,6 +3399,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       if (ProgressData.TotalSizeSet)
       {
         Value = FormatDateTimeSpan(Configuration->GetTimeFormat(), ProgressData.TotalTimeLeft());
+        DEBUG_PRINTF(L"Value = %s", Value.c_str());
         LabelText = TimeLeftLabel;
       }
       else
