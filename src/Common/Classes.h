@@ -813,11 +813,7 @@ private:
     double FValue;
 };
 
-static TDateTime Now()
-{
-    TDateTime result(0.0);
-    return result;
-}
+TDateTime Now();
 
 //---------------------------------------------------------------------------
 

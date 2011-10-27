@@ -490,6 +490,16 @@ void TDateTime::DecodeTime(unsigned int &H,
 }
 
 //---------------------------------------------------------------------------
+TDateTime Now()
+{
+  TDateTime result(0.0);
+  SYSTEMTIME SystemTime;
+  ::GetLocalTime(&SystemTime);
+  result = EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay) +
+      EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds);
+  return result;
+}
+//---------------------------------------------------------------------------
 TSHFileInfo::TSHFileInfo()
 {
 
