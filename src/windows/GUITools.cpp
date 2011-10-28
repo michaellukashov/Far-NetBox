@@ -268,15 +268,18 @@ std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
 
   if (!UseOrders || (Bytes < __int64(100*1024)))
   {
-    Result = FormatFloat(L"#,##0 \"B\"", Bytes);
+    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
+    Result = FORMAT(L"%.0f B", (double)Bytes);
   }
   else if (Bytes < __int64(100*1024*1024))
   {
-    Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
+    // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
+    Result = FORMAT(L"%.0f KiB", (double)Bytes / 1024.0);
   }
   else
   {
-    Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
+    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
+    Result = FORMAT(L"%.0f MiB", (double)Bytes / (1024*1024.0));
   }
   return Result;
 }
@@ -354,7 +357,11 @@ std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, TDateTime DateTim
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs
-  Result += FormatDateTime(TimeFormat, TDateTime(DateTime - int(DateTime)));
+  // Result += FormatDateTime(TimeFormat, TDateTime(DateTime - int(DateTime)));
+  // DEBUG_PRINTF(L"TimeFormat = %s", TimeFormat.c_str());
+  unsigned int H, M, S, MS;
+  DateTime.DecodeTime(H, M, S, MS);
+  Result += FORMAT(L"%d:%02d:%02d", H, M, S);
   return Result;
 }
 //---------------------------------------------------------------------------

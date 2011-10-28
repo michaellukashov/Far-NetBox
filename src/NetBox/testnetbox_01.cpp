@@ -546,4 +546,11 @@ BOOST_FIXTURE_TEST_CASE(test23, base_fixture_t)
     BOOST_CHECK(::DirectoryExists(Dir2));
 }
 
+BOOST_FIXTURE_TEST_CASE(test24, base_fixture_t)
+{
+    TDateTime now = Now();
+    BOOST_TEST_MESSAGE("now = " << (double)now);
+    BOOST_CHECK(now > 0.0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
