@@ -1221,7 +1221,7 @@ bool TSessionData::GetCanLogin()
 //---------------------------------------------------------------------------
 std::wstring TSessionData::GetSessionKey()
 {
-  return FORMAT(L"%s@%s", GetUserName(), GetHostName());
+  return FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetInternalStorageKey()
