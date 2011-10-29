@@ -5,7 +5,7 @@
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
 class TSFTPPacket;
-class TOverwriteFileParams;
+struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
