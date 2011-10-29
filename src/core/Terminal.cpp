@@ -2157,16 +2157,19 @@ void TTerminal::DoStartup()
     {
       Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
+    DEBUG_PRINTF(L"before DoInformation");
     DoInformation(LoadStr(STATUS_STARTUP), true);
 
     // Make sure that directory would be loaded at last
     FReadCurrentDirectoryPending = true;
     FReadDirectoryPending = GetAutoReadDirectory();
 
+    DEBUG_PRINTF(L"before FFileSystem->DoStartup");
     FFileSystem->DoStartup();
-
+    DEBUG_PRINTF(L"before LookupUsersGroups");
     LookupUsersGroups();
 
+    DEBUG_PRINTF(L"before DoInformation");
     DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true);
     if (!GetSessionData()->GetRemoteDirectory().empty())
     {
