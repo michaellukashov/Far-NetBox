@@ -2305,9 +2305,13 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
     Response->SetReservedBy(this);
   }
   FPacketReservations->Add((TObject *)Response);
-  if (FPacketReservations->GetCount() >= FPacketNumbers.size())
+  if (FPacketNumbers.size() <= FPacketReservations->GetCount())
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
+  }
+  if (FPacketNumbers.size() <= Packet->GetMessageNumber())
+  {
+    FPacketNumbers.resize(Packet->GetMessageNumber() + 10);
   }
   DEBUG_PRINTF(L"Packet->GetMessageNumber = %d", Packet->GetMessageNumber());
   FPacketNumbers[Packet->GetMessageNumber()] = FPacketReservations->GetCount() - 1;
