@@ -542,7 +542,8 @@ public:
 
   inline std::wstring GetUtfString()
   {
-    std::wstring Result = DecodeUTF(GetString());
+    // std::wstring Result = DecodeUTF(GetString());
+    std::wstring Result = GetString(); // TODO: check
     return Result;
   }
 
