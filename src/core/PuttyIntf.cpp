@@ -213,7 +213,7 @@ void old_keyfile_warning(void)
 void display_banner(void * frontend, const char * banner, int size)
 {
   assert(frontend);
-  std::wstring Banner(::MB2W(banner), size);
+  std::wstring Banner(::MB2W(std::string(banner, size).c_str()).c_str());
   ((TSecureShell *)frontend)->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
