@@ -98,7 +98,7 @@ ExtException::ExtException(std::wstring Msg, const std::exception *E) :
       {
         FMoreMessages = new TStringList();
       }
-      FMoreMessages->Append(Msg);
+      FMoreMessages->Append(GetMessage());
     }
   }
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
