@@ -2617,7 +2617,7 @@ void TSFTPFileSystem::DoStartup()
       std::wstring ExtensionName = Packet.GetString();
       std::wstring ExtensionData = Packet.GetString();
       std::wstring ExtensionDisplayData = DisplayableStr(ExtensionData);
-      DEBUG_PRINTF(L"ExtensionDisplayData = %s", ExtensionDisplayData.c_str());
+      // DEBUG_PRINTF(L"ExtensionName = %s", ExtensionName.c_str());
 
       if (ExtensionName == SFTP_EXT_NEWLINE)
       {
