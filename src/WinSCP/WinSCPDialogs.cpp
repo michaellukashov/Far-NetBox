@@ -1443,6 +1443,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 bool TWinSCPFileSystem::BannerDialog(std::wstring SessionName,
   const std::wstring & Banner, bool & NeverShowAgain, int Options)
 {
+  DEBUG_PRINTF(L"begin");
   bool Result;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
   {
@@ -1495,6 +1496,7 @@ bool TWinSCPFileSystem::BannerDialog(std::wstring SessionName,
       }
     }
   }
+  DEBUG_PRINTF(L"end");
   return Result;
 }
 //---------------------------------------------------------------------------
