@@ -2617,6 +2617,7 @@ void TSFTPFileSystem::DoStartup()
       std::wstring ExtensionName = Packet.GetString();
       std::wstring ExtensionData = Packet.GetString();
       std::wstring ExtensionDisplayData = DisplayableStr(ExtensionData);
+      DEBUG_PRINTF(L"ExtensionDisplayData = %s", ExtensionDisplayData.c_str());
 
       if (ExtensionName == SFTP_EXT_NEWLINE)
       {
@@ -2795,7 +2796,7 @@ void TSFTPFileSystem::DoStartup()
 
   // use UTF when forced or ...
   // when "auto" and version is at least 4 and the server is not know not to use UTF
-  FUtfNever = ((Pos(GetSessionInfo().SshImplementation, L"Foxit-WAC-Server")) == 1) ||
+  FUtfNever = ((::Pos(GetSessionInfo().SshImplementation, L"Foxit-WAC-Server")) == 0) ||
     (FTerminal->GetSessionData()->GetNotUtf() == asOn);
   FUtfStrings =
     (FTerminal->GetSessionData()->GetNotUtf() == asOff) ||
@@ -2817,8 +2818,8 @@ void TSFTPFileSystem::DoStartup()
 
   FOpenSSH =
     // Sun SSH is based on OpenSSH (suffers the same bugs)
-    (Pos(GetSessionInfo().SshImplementation, L"OpenSSH") == 1) ||
-    (Pos(GetSessionInfo().SshImplementation, L"Sun_SSH") == 1);
+    (::Pos(GetSessionInfo().SshImplementation, L"OpenSSH") == 0) ||
+    (::Pos(GetSessionInfo().SshImplementation, L"Sun_SSH") == 0);
 
   FMaxPacketSize = FTerminal->GetSessionData()->GetSFTPMaxPacketSize();
   if (FMaxPacketSize == 0)
@@ -2831,7 +2832,7 @@ void TSFTPFileSystem::DoStartup()
     }
     // full string is "1.77 sshlib: Momentum SSH Server",
     // possibly it is sshlib-related
-    else if (Pos(GetSessionInfo().SshImplementation, L"Momentum SSH Server") != 0)
+    else if (::Pos(GetSessionInfo().SshImplementation, L"Momentum SSH Server") != std::wstring::npos)
     {
       FMaxPacketSize = 4 + (32 * 1024);
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to Momentum sftp-server limit of %d bytes",
