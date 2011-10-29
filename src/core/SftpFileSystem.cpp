@@ -2096,7 +2096,9 @@ unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
       // message is in UTF only since SFTP specification 01 (specification 00
       // is also version 3)
       // (in other words, always use UTF unless server is know to be buggy)
+      DEBUG_PRINTF(L"FUtfNever = %d", FUtfNever);
       ServerMessage = Packet->GetString(!FUtfNever);
+      DEBUG_PRINTF(L"ServerMessage = %s", ServerMessage.c_str());
       // SSH-2.0-Maverick_SSHD omits the language tag
       // and I believe I've seen one more server doind the same.
       // On the next instance, we should probably already implement workround.
