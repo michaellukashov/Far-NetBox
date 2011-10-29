@@ -1001,7 +1001,7 @@ public:
     FResponses = new TList();
   }
 
-  ~TSFTPQueue()
+  virtual ~TSFTPQueue()
   {
     TSFTPQueuePacket * Request;
     TSFTPPacket * Response;
@@ -1194,6 +1194,8 @@ public:
   {
     FMissedRequests = 0;
   }
+  virtual ~TSFTPFixedLenQueue()
+  {}
 
   bool Init(int QueueLen)
   {
@@ -1285,6 +1287,8 @@ public:
     TSFTPFixedLenQueue(AFileSystem)
   {
   }
+  virtual ~TSFTPDownloadQueue()
+  {}
 
   bool Init(int QueueLen, const std::wstring AHandle, __int64 ATransfered,
     TFileOperationProgressType * AOperationProgress)
@@ -1472,6 +1476,8 @@ public:
   {
     FIndex = 0;
   }
+  virtual ~TSFTPLoadFilesPropertiesQueue()
+  {}
 
   bool Init(int QueueLen, TStrings * FileList)
   {
@@ -1549,6 +1555,8 @@ public:
   {
     FIndex = 0;
   }
+  virtual ~TSFTPCalculateFilesChecksumQueue()
+  {}
 
   bool Init(int QueueLen, const std::wstring & Alg, TStrings * FileList)
   {
