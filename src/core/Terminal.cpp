@@ -2171,6 +2171,7 @@ void TTerminal::DoStartup()
 
     DEBUG_PRINTF(L"before DoInformation");
     DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true);
+    DEBUG_PRINTF(L"GetSessionData()->GetRemoteDirectory = %s", GetSessionData()->GetRemoteDirectory().c_str());
     if (!GetSessionData()->GetRemoteDirectory().empty())
     {
       ChangeDirectory(GetSessionData()->GetRemoteDirectory());
@@ -3372,6 +3373,7 @@ void TTerminal::HomeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::ChangeDirectory(const std::wstring Directory)
 {
+  DEBUG_PRINTF(L"begin");
   assert(FFileSystem);
   try
   {
@@ -3400,6 +3402,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()
