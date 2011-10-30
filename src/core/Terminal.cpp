@@ -594,7 +594,7 @@ void TTerminal::RecryptPasswords()
 //---------------------------------------------------------------------------
 bool TTerminal::IsAbsolutePath(const std::wstring Path)
 {
-  return !Path.empty() && Path[1] == '/';
+  return !Path.empty() && Path[0] == '/';
 }
 //---------------------------------------------------------------------------
 std::wstring TTerminal::ExpandFileName(std::wstring Path,
