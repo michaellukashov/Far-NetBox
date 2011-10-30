@@ -537,7 +537,7 @@ public:
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
     Result.resize(Len);
-    Result = ::MB2W(std::string(FData + FPosition, Len).c_str()).c_str();
+    Result = ::MB2W(std::string(FData + FPosition, Len).c_str());
     FPosition += Len;
     return Result;
   }
