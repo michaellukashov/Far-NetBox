@@ -141,13 +141,15 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(bool, ShowFtpWelcomeMessage); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
-    KEYEX(bool,  PermanentLogging, Logging); \
-    KEYEX(String,PermanentLogFileName, LogFileName); \
-    KEY(bool,    LogFileAppend); \
+    KEYEX(bool, Logging, Logging); \
+    KEYEX(String, LogFileName, LogFileName); \
+    KEY(bool, LogFileAppend); \
     KEY(int, LogWindowLines); \
     KEY(int, LogProtocol); \
-    KEYEX(bool,  PermanentLogActions, LogActions); \
+    KEYEX(bool, LogActions, LogActions); \
   );
+    // DEBUG_PRINTF(L"GetLogging = %d", GetLogging()); \
+    // DEBUG_PRINTF(L"GetPermanentLogging = %d", GetPermanentLogging()); \
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
