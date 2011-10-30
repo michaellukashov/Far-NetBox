@@ -5007,74 +5007,75 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         {
             FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
               NULL, &LocalHandle, NULL, &MTime, NULL, &DestFileSize, false);
+
+            FTerminal->LogEvent(L"Confirming overwriting of file.");
+            TOverwriteFileParams FileParams;
+            FileParams.SourceSize = OperationProgress->TransferSize;
+            FileParams.SourceTimestamp = File->GetModification();
+            FileParams.DestTimestamp = UnixToDateTime(MTime,
+              FTerminal->GetSessionData()->GetDSTMode());
+            FileParams.DestSize = DestFileSize;
+            std::wstring PrevDestFileName = DestFileName;
+            SFTPConfirmOverwrite(DestFileName, Params, OperationProgress, OverwriteMode, &FileParams);
+            if (PrevDestFileName != DestFileName)
+            {
+              DestFullName = TargetDir + DestFileName;
+              DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
+              if (ResumeAllowed)
+              {
+                if (FileExists(DestPartinalFullName))
+                {
+                  FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
+                    THROWOSIFFALSE(::DeleteFile(DestPartinalFullName));
+                  )
+                }
+                LocalFileName = DestPartinalFullName;
+              }
+              else
+              {
+                LocalFileName = DestFullName;
+              }
+            }
+
+            if (OverwriteMode == omOverwrite)
+            {
+              // is NULL when overwritting read-only file
+              if (LocalHandle)
+              {
+                CloseHandle(LocalHandle);
+                LocalHandle = NULL;
+              }
+            }
+            else
+            {
+              // is NULL when overwritting read-only file, so following will
+              // probably fail anyway
+              if (LocalHandle == NULL)
+              {
+                FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+                  NULL, &LocalHandle, NULL, NULL, NULL, NULL);
+              }
+              ResumeAllowed = false;
+              FileSeek((HANDLE)LocalHandle, DestFileSize, 0);
+              if (OverwriteMode == omAppend)
+              {
+                FTerminal->LogEvent(L"Appending to file.");
+              }
+              else
+              {
+                FTerminal->LogEvent(L"Resuming file transfer (append style).");
+                assert(OverwriteMode == omResume);
+                OperationProgress->AddResumed(DestFileSize);
+              }
+            }
         }
         catch (const EOSError &E)
         {
-            if (E.ErrorCode == ERROR_FILE_NOT_FOUND)
+            if (E.ErrorCode != ERROR_FILE_NOT_FOUND)
             {
-                throw EOpenFileError();
+                // throw EFileNotFoundError();
+                throw;
             }
-        }
-
-        FTerminal->LogEvent(L"Confirming overwriting of file.");
-        TOverwriteFileParams FileParams;
-        FileParams.SourceSize = OperationProgress->TransferSize;
-        FileParams.SourceTimestamp = File->GetModification();
-        FileParams.DestTimestamp = UnixToDateTime(MTime,
-          FTerminal->GetSessionData()->GetDSTMode());
-        FileParams.DestSize = DestFileSize;
-        std::wstring PrevDestFileName = DestFileName;
-        SFTPConfirmOverwrite(DestFileName, Params, OperationProgress, OverwriteMode, &FileParams);
-        if (PrevDestFileName != DestFileName)
-        {
-          DestFullName = TargetDir + DestFileName;
-          DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
-          if (ResumeAllowed)
-          {
-            if (FileExists(DestPartinalFullName))
-            {
-              FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
-                THROWOSIFFALSE(::DeleteFile(DestPartinalFullName));
-              )
-            }
-            LocalFileName = DestPartinalFullName;
-          }
-          else
-          {
-            LocalFileName = DestFullName;
-          }
-        }
-
-        if (OverwriteMode == omOverwrite)
-        {
-          // is NULL when overwritting read-only file
-          if (LocalHandle)
-          {
-            CloseHandle(LocalHandle);
-            LocalHandle = NULL;
-          }
-        }
-        else
-        {
-          // is NULL when overwritting read-only file, so following will
-          // probably fail anyway
-          if (LocalHandle == NULL)
-          {
-            FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-              NULL, &LocalHandle, NULL, NULL, NULL, NULL);
-          }
-          ResumeAllowed = false;
-          FileSeek((HANDLE)LocalHandle, DestFileSize, 0);
-          if (OverwriteMode == omAppend)
-          {
-            FTerminal->LogEvent(L"Appending to file.");
-          }
-          else
-          {
-            FTerminal->LogEvent(L"Resuming file transfer (append style).");
-            assert(OverwriteMode == omResume);
-            OperationProgress->AddResumed(DestFileSize);
-          }
         }
       }
 
