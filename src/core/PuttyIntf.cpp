@@ -483,7 +483,7 @@ std::wstring KeyTypeName(TKeyType KeyType)
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams
 {
-  std::wstring Buffer;
+  std::string Buffer;
   int Pos;
   int Len;
 };
@@ -504,15 +504,15 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
   Params->Buffer[Params->Pos] = (wchar_t)Output;
 }
 //---------------------------------------------------------------------------
-std::wstring DecodeUTF(const std::wstring UTF)
+std::string DecodeUTF(const std::string UTF)
 {
   charset_state State;
-  char * Str;
+  char *Str;
   TUnicodeEmitParams Params;
   std::wstring Result;
 
   State.s0 = 0;
-  Str = (char *)::W2MB(UTF.c_str()).c_str();
+  Str = (char *)UTF.c_str();
   Params.Pos = 0;
   Params.Len = UTF.size();
   Params.Buffer.resize(Params.Len);
@@ -529,7 +529,7 @@ std::wstring DecodeUTF(const std::wstring UTF)
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams2
 {
-  std::wstring Buffer;
+  std::string Buffer;
   int Pos;
   int Len;
 };
@@ -550,23 +550,23 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
   Params->Buffer[Params->Pos] = (unsigned char)Output;
 }
 //---------------------------------------------------------------------------
-std::wstring EncodeUTF(const std::wstring Source)
+std::string EncodeUTF(const std::string Source)
 {
   // std::wstring::c_bstr() returns NULL for empty strings
   // (as opposite to std::wstring::c_str() which returns "")
   if (Source.empty())
   {
-    return L"";
+    return "";
   }
   else
   {
     charset_state State;
-    wchar_t * Str;
+    char *Str;
     TUnicodeEmitParams2 Params;
     std::wstring Result;
 
     State.s0 = 0;
-    Str = (wchar_t *)Source.c_str();
+    Str = (char *)Source.c_str();
     Params.Pos = 0;
     Params.Len = Source.size();
     Params.Buffer.resize(Params.Len);

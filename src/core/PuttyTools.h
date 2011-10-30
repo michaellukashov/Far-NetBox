@@ -6,8 +6,8 @@ enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };
 TKeyType KeyType(std::wstring FileName);
 std::wstring KeyTypeName(TKeyType KeyType);
 //---------------------------------------------------------------------------
-std::wstring DecodeUTF(const std::wstring UTF);
-std::wstring EncodeUTF(const std::wstring Source);
+std::string DecodeUTF(const std::string UTF);
+std::string EncodeUTF(const std::string Source);
 //---------------------------------------------------------------------------
 __int64 ParseSize(std::wstring SizeStr);
 //---------------------------------------------------------------------------
