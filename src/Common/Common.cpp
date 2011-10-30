@@ -889,24 +889,22 @@ void ProcessLocalDirectory(std::wstring DirName,
   DirName = IncludeTrailingBackslash(DirName);
   std::wstring FileName = DirName + L"*.*";
   HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
-  if (h != INVALID_HANDLE_VALUE) // FindAttrs, 
+  if (h != INVALID_HANDLE_VALUE)
   {
+    BOOST_SCOPE_EXIT ( (&h) )
     {
-        BOOST_SCOPE_EXIT ( (&h) )
-        {
-            ::FindClose(h);
-        } BOOST_SCOPE_EXIT_END
-      processlocalfile_signal_type sig;
-      sig.connect(CallBackFunc);
-      do
+        ::FindClose(h);
+    } BOOST_SCOPE_EXIT_END
+    processlocalfile_signal_type sig;
+    sig.connect(CallBackFunc);
+    do
+    {
+      if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
       {
-        if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
-        {
-          sig(DirName + SearchRec.cFileName, SearchRec, Param);
-        }
+        sig(DirName + SearchRec.cFileName, SearchRec, Param);
+      }
 
-      } while (::FindNextFile(h, &SearchRec) == 0);
-    }
+    } while (::FindNextFile(h, &SearchRec) == 0);
   }
 }
 //---------------------------------------------------------------------------
