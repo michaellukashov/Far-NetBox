@@ -2280,18 +2280,6 @@ bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
-//---------------------------------------------------------------------------
-
-class EOSError : public std::exception
-{
-public:
-    EOSError(std::wstring msg, DWORD code) : std::exception(::W2MB(msg.c_str()).c_str()),
-        ErrorCode(code)
-    {
-    }
-    DWORD ErrorCode;
-};
-
 void RaiseLastOSError()
 {
   int LastError = ::GetLastError();
