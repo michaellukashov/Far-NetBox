@@ -5,6 +5,7 @@
 #include <ShellAPI.h>
 
 #include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
 #include <boost/algorithm/string.hpp>
 #include "boost/date_time.hpp"
 #include "boost/date_time/local_time/local_time.hpp"
@@ -879,8 +880,6 @@ void ProcessLocalDirectory(std::wstring DirName,
   int FindAttrs)
 {
 ::Error(SNotImplemented, 43);
-/*
-  assert(CallBackFunc);
   if (FindAttrs < 0)
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
@@ -888,26 +887,27 @@ void ProcessLocalDirectory(std::wstring DirName,
   WIN32_FIND_DATA SearchRec;
 
   DirName = IncludeTrailingBackslash(DirName);
-  if (FindFirst(DirName + "*.*", FindAttrs, SearchRec) == 0)
+  std::wstring FileName = DirName + L"*.*";
+  HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
+  if (h != INVALID_HANDLE_VALUE) // FindAttrs, 
   {
     {
-        BOOST_SCOPE_EXIT ( (&SearchRec) )
+        BOOST_SCOPE_EXIT ( (&h) )
         {
-            ::FindClose(SearchRec);
-        }
+            ::FindClose(h);
+        } BOOST_SCOPE_EXIT_END
       processlocalfile_signal_type sig;
       sig.connect(CallBackFunc);
       do
       {
-        if ((SearchRec.Name != ".") && (SearchRec.Name != ".."))
+        if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
         {
-          sig(DirName + SearchRec.Name, SearchRec, Param);
+          sig(DirName + SearchRec.cFileName, SearchRec, Param);
         }
 
-      } while (FindNext(SearchRec) == 0);
+      } while (::FindNextFile(h, &SearchRec) == 0);
     }
   }
-  */
 }
 //---------------------------------------------------------------------------
 class EConvertError : public ExtException
