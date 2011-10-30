@@ -13,6 +13,15 @@
 #include "FileMasks.h"
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
+class EFileNotFoundError : public std::exception
+{
+public:
+    EFileNotFoundError() : std::exception()
+    {
+    }
+};
+
+//---------------------------------------------------------------------------
 class TCopyParamType;
 class TFileOperationProgressType;
 class TRemoteDirectory;
@@ -119,6 +128,10 @@ typedef informationevent_signal_type::slot_type informationevent_slot_type;
       throw;                                                                \
     }                                                                       \
     catch (const EFatal &E)                                                      \
+    {                                                                       \
+      throw;                                                                \
+    }                                                                       \
+    catch (const EFileNotFoundError &E)                                                      \
     {                                                                       \
       throw;                                                                \
     }                                                                       \

@@ -4795,9 +4795,8 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
       SFTPSink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (const EOpenFileError &E)
+    catch (const EFileNotFoundError &E)
     {
-        DEBUG_PRINTF(L"EOpenFileError cought");
         Retry = true;
     }
     catch (const std::exception & E)
@@ -5004,8 +5003,18 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       {
         __int64 DestFileSize;
         __int64 MTime;
-        FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
-          NULL, &LocalHandle, NULL, &MTime, NULL, &DestFileSize, false);
+        try
+        {
+            FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE,
+              NULL, &LocalHandle, NULL, &MTime, NULL, &DestFileSize, false);
+        }
+        catch (const EOSError &E)
+        {
+            if (E.ErrorCode == ERROR_FILE_NOT_FOUND)
+            {
+                throw EOpenFileError();
+            }
+        }
 
         FTerminal->LogEvent(L"Confirming overwriting of file.");
         TOverwriteFileParams FileParams;
