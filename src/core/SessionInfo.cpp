@@ -931,7 +931,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
       ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
         Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().empty()).c_str(),
-         BooleanToEngStr(!Data->GetTunnelPublicKeyFile().empty()).c_str())
+         BooleanToEngStr(!Data->GetTunnelPublicKeyFile().empty()).c_str());
       ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
     }
     ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
@@ -988,18 +988,20 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       wchar_t const * BugFlags = L"A+-";
       for (int Index = 0; Index < BUG_COUNT; Index++)
       {
-        Bugs += BugFlags[Data->GetBug((TSshBug)Index)] + (Index<BUG_COUNT-1? L"," : L"");
+        Bugs += BugFlags[Data->GetBug((TSshBug)Index)];
+        Bugs += Index<BUG_COUNT-1? L"," : L"";
       }
       ADF(L"SSH Bugs: %s", Bugs.c_str());
       Bugs = L"";
       for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
       {
-        Bugs += BugFlags[Data->GetSFTPBug((TSftpBug)Index)] + (Index<SFTP_BUG_COUNT-1 ? L"," : L"");
+        Bugs += BugFlags[Data->GetSFTPBug((TSftpBug)Index)];
+        Bugs += Index<SFTP_BUG_COUNT-1 ? L"," : L"";
       }
       ADF(L"SFTP Bugs: %s", Bugs.c_str());
       ADF(L"Return code variable: %s; Lookup user groups: %s",
-        (Data->GetDetectReturnVar() ? std::wstring(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
-        BooleanToEngStr(Data->GetLookupUserGroups()).c_str()));
+        Data->GetDetectReturnVar() ? std::wstring(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
+        BooleanToEngStr(Data->GetLookupUserGroups()).c_str());
       ADF(L"Shell: %s", Data->GetShell().empty() ? std::wstring(L"default").c_str() : Data->GetShell().c_str());
       ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
       ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",
