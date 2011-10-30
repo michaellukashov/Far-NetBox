@@ -3670,6 +3670,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = FileGetAttr(FileName);
+    // if ((Attrs == -1) && (Access != GENERIC_WRITE)) RaiseLastOSError();
     if (Attrs == -1) RaiseLastOSError();
   )
 
