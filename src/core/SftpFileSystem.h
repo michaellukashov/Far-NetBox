@@ -90,7 +90,6 @@ protected:
   std::wstring FHomeDirectory;
   std::wstring FEOL;
   TList * FPacketReservations;
-  // Variant FPacketNumbers;
   std::vector<unsigned int> FPacketNumbers;
   char FPreviousLoggedPacket;
   int FNotLoggedPackets;

@@ -543,12 +543,9 @@ public:
     // cannot happen anyway as Need() would raise exception
     assert(Len < SFTP_MAX_PACKET_LEN);
     ResultA.resize(Len);
-    // ResultA = std::string(FData + FPosition, Len);
     memcpy((char *)ResultA.c_str(), FData + FPosition, Len);
     FPosition += Len;
-    // std::wstring Result = std::wstring(::MB2W(ResultA.c_str()).c_str(), ResultA.size());
-    // std::wstring Result = ::MB2W(ResultA.c_str());
-    DEBUG_PRINTF(L"Result = %s", ::MB2W(ResultA.c_str()).c_str());
+    // DEBUG_PRINTF(L"Result = %s", ::MB2W(ResultA.c_str()).c_str());
     return ResultA;
   }
 
@@ -561,8 +558,7 @@ public:
   inline std::string GetUtfString()
   {
     std::string Result = DecodeUTF(GetStringA());
-    // std::string Result = GetStringA();
-    DEBUG_PRINTF(L"Result = %s", ::MB2W(Result.c_str()).c_str());
+    // DEBUG_PRINTF(L"Result = %s", ::MB2W(Result.c_str()).c_str());
     return Result;
   }
 
@@ -2115,9 +2111,7 @@ unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
       // message is in UTF only since SFTP specification 01 (specification 00
       // is also version 3)
       // (in other words, always use UTF unless server is know to be buggy)
-      DEBUG_PRINTF(L"FUtfNever = %d", FUtfNever);
       ServerMessage = Packet->GetStringW(!FUtfNever);
-      DEBUG_PRINTF(L"ServerMessage = %s", ServerMessage.c_str());
       // SSH-2.0-Maverick_SSHD omits the language tag
       // and I believe I've seen one more server doind the same.
       // On the next instance, we should probably already implement workround.
@@ -2338,11 +2332,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
-  // if (FPacketNumbers.size() <= Packet->GetMessageNumber())
-  // {
-    // FPacketNumbers.resize(Packet->GetMessageNumber() + 10);
-  // }
-  DEBUG_PRINTF(L"Packet->GetMessageNumber = %d", Packet->GetMessageNumber());
+  // DEBUG_PRINTF(L"Packet->GetMessageNumber = %d", Packet->GetMessageNumber());
   FPacketNumbers[FPacketReservations->GetCount() - 1] = Packet->GetMessageNumber();
 }
 //---------------------------------------------------------------------------
