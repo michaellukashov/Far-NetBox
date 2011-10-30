@@ -505,6 +505,7 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
         BlockBuf->WriteToStream(FileStream, BlockBuf->GetSize());
         delete FileStream; FileStream = NULL;
         delete BlockBuf; BlockBuf = NULL;
+        ::CloseHandle(File);
         BOOST_REQUIRE(::FileExists(FileName));
     }
     {
@@ -518,7 +519,7 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
           0, // FILE_SHARE_READ,
           NULL,
           OPEN_ALWAYS, // OPEN_EXISTING,
-          FILE_ATTRIBUTE_NORMAL, // 0,
+          0, // FILE_ATTRIBUTE_NORMAL, // 0,
           NULL);
         DEBUG_PRINTF(L"File = %d", File);
         TStream *FileStream = new TSafeHandleStream(File);
@@ -528,6 +529,7 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
         BOOST_CHECK(BlockBuf->GetSize() == str.size());
         delete FileStream; FileStream = NULL;
         delete BlockBuf; BlockBuf = NULL;
+        ::CloseHandle(File);
     }
 }
 
