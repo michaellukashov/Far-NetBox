@@ -4795,10 +4795,6 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
       SFTPSink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (const EFileNotFoundError &E)
-    {
-        Retry = true;
-    }
     catch (const std::exception & E)
     {
       Retry = true;
@@ -5073,7 +5069,6 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
         {
             if (E.ErrorCode != ERROR_FILE_NOT_FOUND)
             {
-                // throw EFileNotFoundError();
                 throw;
             }
         }
