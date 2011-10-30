@@ -901,6 +901,7 @@ void TConfiguration::SetLogFileName(std::wstring value)
   {
     FPermanentLogFileName = value;
     FLogFileName = value;
+    DEBUG_PRINTF(L"FLogFileName = %s", FLogFileName.c_str());
     Changed();
   }
 }
