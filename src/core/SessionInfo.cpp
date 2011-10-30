@@ -597,6 +597,7 @@ void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring & Line)
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
 {
+  // DEBUG_PRINTF(L"begin: Line = %s", Line.c_str());
   if (FTopIndex < 0)
   {
     FTopIndex = 0;
@@ -627,6 +628,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
       fputc('\n', (FILE *)FFile);
     }
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
@@ -811,8 +813,10 @@ void TSessionLog::OpenLogFile()
         Index += Replacement.size() - 1;
       }
     }
-    FFile = _wfopen(NewFileName.c_str(),
-      (FConfiguration->GetLogFileAppend() && !FLoggingActions ? L"a" : L"w"));
+    // FFile = _wfopen(NewFileName.c_str(),
+      // FConfiguration->GetLogFileAppend() && !FLoggingActions ? L"a" : L"w");
+    FFile = _fsopen(::W2MB(NewFileName.c_str()).c_str(),
+      FConfiguration->GetLogFileAppend() && !FLoggingActions ? "a" : "w", SH_DENYWR);
     if (FFile)
     {
       setvbuf((FILE *)FFile, NULL, _IONBF, BUFSIZ);
