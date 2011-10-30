@@ -905,7 +905,7 @@ void ProcessLocalDirectory(std::wstring DirName,
             sig(DirName + SearchRec.cFileName, SearchRec, Param);
         }
       }
-    } while (::FindNextFile(h, &SearchRec) == 0);
+    } while (::FindNextFile(h, &SearchRec));
   }
 }
 //---------------------------------------------------------------------------
