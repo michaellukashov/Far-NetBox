@@ -620,11 +620,13 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
       {
         std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
         fputc(LogLineMarks[Type], (FILE *)FFile);
-        fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
+        // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
+        fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Timestamp.c_str()).c_str());
       }
       // use fwrite instead of fprintf to make sure that even
       // non-ascii data (unicode) gets in.
-      fwrite(Line.c_str(), 1, Line.size() * sizeof(wchar_t), (FILE *)FFile);
+      // fwrite(Line.c_str(), 1, Line.size() * sizeof(wchar_t), (FILE *)FFile);
+      fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Line.c_str()).c_str());
       fputc('\n', (FILE *)FFile);
     }
   }
