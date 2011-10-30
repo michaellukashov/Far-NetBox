@@ -306,16 +306,17 @@ public:
     Add(Data, ALength);
   }
 
-  void AddString(const std::wstring Value)
+  void AddStringA(const std::wstring Value)
   {
-    AddCardinal(Value.size());
-    Add(Value.c_str(), Value.size());
+    std::string ValueA = ::W2MB(Value.c_str());
+    AddCardinal(ValueA.size());
+    Add(ValueA.c_str(), ValueA.size());
   }
 
   inline void AddUtfString(const std::wstring Value)
   {
-    // AddString(EncodeUTF(Value));
-    AddString(Value);
+    // AddStringA(EncodeUTF(Value));
+    AddStringA(Value);
   }
 
   inline void AddString(const std::wstring Value, bool Utf)
@@ -326,7 +327,7 @@ public:
     }
     else
     {
-      AddString(Value);
+      AddStringA(Value);
     }
   }
 
@@ -541,10 +542,26 @@ public:
     return Result;
   }
 
+  std::wstring GetStringA()
+  {
+    std::string ResultA;
+    unsigned long Len = GetCardinal();
+    Need(Len);
+    // cannot happen anyway as Need() would raise exception
+    assert(Len < SFTP_MAX_PACKET_LEN);
+    ResultA.resize(Len);
+    ResultA = std::string(FData + FPosition, Len);
+    FPosition += Len;
+    std::wstring Result = ::MB2W(ResultA.c_str());
+    DEBUG_PRINTF(L"Result = %s", Result.c_str());
+    return Result;
+  }
+
   inline std::wstring GetUtfString()
   {
     // std::wstring Result = DecodeUTF(GetString());
     std::wstring Result = GetString(); // TODO: check
+    DEBUG_PRINTF(L"Result = %s", Result.c_str());
     return Result;
   }
 
@@ -556,7 +573,7 @@ public:
     }
     else
     {
-      return GetString();
+      return GetStringA();
     }
   }
 
@@ -1329,7 +1346,7 @@ protected:
     unsigned long Size)
   {
     Request->ChangeType(SSH_FXP_READ);
-    Request->AddString(FHandle);
+    Request->AddStringA(FHandle);
     Request->AddInt64(Offset);
     Request->AddCardinal(Size);
   }
@@ -1417,7 +1434,7 @@ protected:
         }
 
         Request->ChangeType(SSH_FXP_WRITE);
-        Request->AddString(FHandle);
+        Request->AddStringA(FHandle);
         Request->AddInt64(FTransfered);
         Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
         FLastBlockSize = BlockBuf.GetSize();
@@ -1597,10 +1614,10 @@ protected:
         assert(!File->GetIsParentDirectory() && !File->GetIsThisDirectory());
 
         Request->ChangeType(SSH_FXP_EXTENDED);
-        Request->AddString(SFTP_EXT_CHECK_FILE_NAME);
+        Request->AddStringA(SFTP_EXT_CHECK_FILE_NAME);
         Request->AddPathString(FFileSystem->LocalCanonify(File->GetFullFileName()),
           FFileSystem->FUtfStrings);
-        Request->AddString(FAlg);
+        Request->AddStringA(FAlg);
         Request->AddInt64(0); // offset
         Request->AddInt64(0); // length (0 = till end)
         Request->AddCardinal(0); // block size (0 = no blocks or "one block")
@@ -2771,10 +2788,10 @@ void TSFTPFileSystem::DoStartup()
     if (SupportsExtension(SFTP_EXT_VENDOR_ID))
     {
       TSFTPPacket Packet(SSH_FXP_EXTENDED);
-      Packet.AddString(SFTP_EXT_VENDOR_ID);
-      Packet.AddString(FTerminal->GetConfiguration()->GetCompanyName());
-      Packet.AddString(FTerminal->GetConfiguration()->GetProductName());
-      Packet.AddString(FTerminal->GetConfiguration()->GetProductVersion());
+      Packet.AddStringA(SFTP_EXT_VENDOR_ID);
+      Packet.AddStringA(FTerminal->GetConfiguration()->GetCompanyName());
+      Packet.AddStringA(FTerminal->GetConfiguration()->GetProductName());
+      Packet.AddStringA(FTerminal->GetConfiguration()->GetProductVersion());
       Packet.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo().dwFileVersionLS));
       SendPacket(&Packet);
       // we are not interested in the response, do not wait for it
@@ -2871,7 +2888,7 @@ void TSFTPFileSystem::LookupUsersGroups()
   for (int Index = 0; Index < LENOF(Packets); Index++)
   {
     TSFTPPacket * Packet = Packets[Index];
-    Packet->AddString(SFTP_EXT_OWNER_GROUP);
+    Packet->AddStringA(SFTP_EXT_OWNER_GROUP);
     Packet->AddByte(ListTypes[Index]);
     SendPacket(Packet);
     ReserveResponse(Packet, Packet);
@@ -2942,7 +2959,7 @@ void TSFTPFileSystem::TryOpenDirectory(const std::wstring Directory)
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_HANDLE);
     std::wstring Handle = Packet.GetString();
     Packet.ChangeType(SSH_FXP_CLOSE);
-    Packet.AddString(Handle);
+    Packet.AddStringA(Handle);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS, asAll);
   }
   else
@@ -3014,7 +3031,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       if (Self->FTerminal->GetActive())
       {
         Packet.ChangeType(SSH_FXP_CLOSE);
-        Packet.AddString(Handle);
+        Packet.AddStringA(Handle);
         Self->SendPacket(&Packet);
         // we are not interested in the response, do not wait for it
         Self->ReserveResponse(&Packet, NULL);
@@ -3025,7 +3042,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     TRemoteFile * File;
 
     Packet.ChangeType(SSH_FXP_READDIR);
-    Packet.AddString(Handle);
+    Packet.AddStringA(Handle);
 
     SendPacket(&Packet);
 
@@ -3037,7 +3054,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         TSFTPPacket ListingPacket = Response;
 
         Packet.ChangeType(SSH_FXP_READDIR);
-        Packet.AddString(Handle);
+        Packet.AddStringA(Handle);
 
         SendPacket(&Packet);
         ReserveResponse(&Packet, &Response);
@@ -3214,7 +3231,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
   {
     assert(Packet->GetType() == SSH_FXP_FSTAT);
     // actualy handle, not filename
-    Packet->AddString(FileName);
+    Packet->AddStringA(FileName);
   }
 
   if (FVersion >= 4)
@@ -3632,7 +3649,7 @@ void TSFTPFileSystem::SpaceAvailable(const std::wstring Path,
   TSpaceAvailable & ASpaceAvailable)
 {
   TSFTPPacket Packet(SSH_FXP_EXTENDED);
-  Packet.AddString(SFTP_EXT_SPACE_AVAILABLE);
+  Packet.AddStringA(SFTP_EXT_SPACE_AVAILABLE);
   Packet.AddPathString(LocalCanonify(Path), FUtfStrings);
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
   ASpaceAvailable.BytesOnDevice = Packet.GetInt64();
@@ -4588,7 +4605,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const std::wstring Handle,
       if (Request)
       {
         P->ChangeType(SSH_FXP_CLOSE);
-        P->AddString(Handle);
+        P->AddStringA(Handle);
         SendPacket(P);
         ReserveResponse(P, Packet);
       }
