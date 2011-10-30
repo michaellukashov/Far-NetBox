@@ -2338,12 +2338,12 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
-  if (FPacketNumbers.size() <= Packet->GetMessageNumber())
-  {
-    FPacketNumbers.resize(Packet->GetMessageNumber() + 10);
-  }
+  // if (FPacketNumbers.size() <= Packet->GetMessageNumber())
+  // {
+    // FPacketNumbers.resize(Packet->GetMessageNumber() + 10);
+  // }
   DEBUG_PRINTF(L"Packet->GetMessageNumber = %d", Packet->GetMessageNumber());
-  FPacketNumbers[Packet->GetMessageNumber()] = FPacketReservations->GetCount() - 1;
+  FPacketNumbers[FPacketReservations->GetCount() - 1] = Packet->GetMessageNumber();
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
