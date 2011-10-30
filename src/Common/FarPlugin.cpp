@@ -1698,6 +1698,7 @@ int TCustomFarPlugin::FarEditorControl(int Command, void *Param)
     {
     case ECTL_GETINFO:
     case ECTL_SETPARAM:
+    case ECTL_GETFILENAME:
         // noop
         break;
 
@@ -2877,6 +2878,14 @@ int TFarEditorInfo::GetEditorID()
 std::wstring TFarEditorInfo::GetFileName()
 {
     std::wstring Result = L""; // FIXME FEditorInfo->GetFileName();
+    // return StrFromFar(Result);
+    
+    const int buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
+    if (buffLen)
+    {
+        Result.resize(buffLen + 1, 0);
+        FarPlugin->FarEditorControl(ECTL_GETFILENAME, &Result[0]);
+    }
     return StrFromFar(Result);
 };
 //---------------------------------------------------------------------------
