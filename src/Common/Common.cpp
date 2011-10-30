@@ -879,7 +879,6 @@ void ProcessLocalDirectory(std::wstring DirName,
   const processlocalfile_slot_type &CallBackFunc, void * Param,
   int FindAttrs)
 {
-::Error(SNotImplemented, 43);
   if (FindAttrs < 0)
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
@@ -906,7 +905,6 @@ void ProcessLocalDirectory(std::wstring DirName,
             sig(DirName + SearchRec.cFileName, SearchRec, Param);
         }
       }
-
     } while (::FindNextFile(h, &SearchRec) == 0);
   }
 }
