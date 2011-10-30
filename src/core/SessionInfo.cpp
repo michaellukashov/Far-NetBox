@@ -962,7 +962,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     if (Data->GetUsesSsh())
     {
       ADF(L"SSH protocol version: %s; Compression: %s",
-        Data->GetSshProtStr(), BooleanToEngStr(Data->GetCompression()).c_str());
+        Data->GetSshProtStr().c_str(), BooleanToEngStr(Data->GetCompression()).c_str());
       ADF(L"Bypass authentication: %s",
        BooleanToEngStr(Data->GetSshNoUserAuth()).c_str());
       ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
