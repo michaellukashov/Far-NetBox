@@ -901,7 +901,10 @@ void ProcessLocalDirectory(std::wstring DirName,
     {
       if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
       {
-        sig(DirName + SearchRec.cFileName, SearchRec, Param);
+        if ((SearchRec.dwFileAttributes & FindAttrs) != 0)
+        {
+            sig(DirName + SearchRec.cFileName, SearchRec, Param);
+        }
       }
 
     } while (::FindNextFile(h, &SearchRec) == 0);
