@@ -3908,6 +3908,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
+  DEBUG_PRINTF(L"FileName = %s, TargetDir = %s", FileName.c_str(), TargetDir.c_str());
   // the same in TFTPFileSystem
   bool Retry;
 
@@ -3948,6 +3949,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
     }
   }
   while (Retry);
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
@@ -4792,6 +4794,11 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
     {
       SFTPSink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
+    }
+    catch (const EOpenFileError &E)
+    {
+        DEBUG_PRINTF(L"EOpenFileError cought");
+        Retry = true;
     }
     catch (const std::exception & E)
     {

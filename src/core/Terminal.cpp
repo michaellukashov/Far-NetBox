@@ -3665,6 +3665,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
+  DEBUG_PRINTF(L"begin: FileName = %s, Access = %d", FileName.c_str(), Access);
   int Attrs = 0;
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
@@ -3747,6 +3748,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
 
   if (AAttrs) *AAttrs = Attrs;
   if (AHandle) *AHandle = Handle;
+  DEBUG_PRINTF(L"end: Attrs = %d, Handle = %d", Attrs, Handle);
 }
 //---------------------------------------------------------------------------
 bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
