@@ -2,6 +2,7 @@
 #include "stdafx.h"
 // #include <ShFolder.h>
 #include <shlobj.h>
+#include <ShellAPI.h>
 
 #include "boostdefines.hpp"
 #include <boost/algorithm/string.hpp>
@@ -1671,9 +1672,6 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
 {
-//FIXME
-  ::Error(SNotImplemented, 60);
-/*
   SHFILEOPSTRUCT Data;
 
   memset(&Data, 0, sizeof(Data));
@@ -1683,7 +1681,7 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
   FileList.resize(FileList.size() + 2);
   FileList[FileList.size() - 1] = '\0';
   Data.pFrom = FileList.c_str();
-  Data.pTo = "";
+  Data.pTo = L"";
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
     FOF_NOERRORUI | FOF_SILENT;
   if (ToRecycleBin)
@@ -1705,8 +1703,6 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
     SetLastError(ErrorCode);
   }
   return Result;
-  */
-  return false;
 }
 //---------------------------------------------------------------------------
 int CancelAnswer(int Answers)
