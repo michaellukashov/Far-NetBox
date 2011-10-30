@@ -4842,7 +4842,10 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
       }
       catch (const std::exception &E)
       {
-        CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
+        if (OperationProgress->Cancel != csCancel)
+        {
+            CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
+        }
         OnceDoneOperation = odoIdle;
       }
 
