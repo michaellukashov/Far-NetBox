@@ -122,6 +122,10 @@ typedef informationevent_signal_type::slot_type informationevent_slot_type;
     {                                                                       \
       throw;                                                                \
     }                                                                       \
+    catch (const EOSError &E)                                                      \
+    {                                                                       \
+      throw;                                                                \
+    }                                                                       \
     catch (const std::exception &E)                                                   \
     {                                                                       \
       TERMINAL->FileOperationLoopQuery(E, OperationProgress, MESSAGE, ALLOW_SKIP); \
