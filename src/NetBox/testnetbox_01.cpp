@@ -546,6 +546,8 @@ BOOST_FIXTURE_TEST_CASE(test23, base_fixture_t)
     ::RemoveDir(Dir2);
     ::ForceDirectories(Dir2);
     BOOST_CHECK(::DirectoryExists(Dir2));
+    BOOST_CHECK(::RecursiveDeleteFile(Dir1, false));
+    BOOST_CHECK(!::DirectoryExists(Dir1));
 }
 
 BOOST_FIXTURE_TEST_CASE(test24, base_fixture_t)
