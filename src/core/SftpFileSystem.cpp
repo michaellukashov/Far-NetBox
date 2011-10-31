@@ -4704,7 +4704,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
         );
       }
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (::FindNextFile(findHandle, &SearchRec) == 0);
+        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
       );
     };
   }

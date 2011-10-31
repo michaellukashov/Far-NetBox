@@ -4037,7 +4037,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (::FindNextFile(findHandle, &SearchRec) == 0);
+            Found = (::FindNextFile(findHandle, &SearchRec) != 0);
           );
         }
       }

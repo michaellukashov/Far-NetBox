@@ -1993,7 +1993,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         }
         FindOK = false;
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-          FindOK = (FindNextFile(findHandle, &SearchRec) == 0);
+          FindOK = (FindNextFile(findHandle, &SearchRec) != 0);
         );
       };
     }
