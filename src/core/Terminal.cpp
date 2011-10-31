@@ -3373,7 +3373,7 @@ void TTerminal::HomeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::ChangeDirectory(const std::wstring Directory)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   assert(FFileSystem);
   try
   {
@@ -3402,7 +3402,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()
@@ -3652,7 +3652,7 @@ bool TTerminal::CreateLocalFile(const std::wstring FileName,
 {
   assert(AHandle);
   bool Result = true;
-  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+  // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
     Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
   );
@@ -3665,7 +3665,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
-  DEBUG_PRINTF(L"begin: FileName = %s, Access = %d", FileName.c_str(), Access);
+  // DEBUG_PRINTF(L"begin: FileName = %s, Access = %d", FileName.c_str(), Access);
   int Attrs = 0;
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
@@ -3748,7 +3748,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
 
   if (AAttrs) *AAttrs = Attrs;
   if (AHandle) *AHandle = Handle;
-  DEBUG_PRINTF(L"end: Attrs = %d, Handle = %d", Attrs, Handle);
+  // DEBUG_PRINTF(L"end: Attrs = %d, Handle = %d", Attrs, Handle);
 }
 //---------------------------------------------------------------------------
 bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,

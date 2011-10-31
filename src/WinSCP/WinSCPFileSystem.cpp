@@ -2622,7 +2622,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
   std::wstring DestPath)
 {
   int Result = 1;
-  DEBUG_PRINTF(L"DestPath = %s", DestPath.c_str());
+  // DEBUG_PRINTF(L"DestPath = %s", DestPath.c_str());
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
@@ -3271,7 +3271,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   TOperationSide Side, bool /*Temp*/, const std::wstring & FileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   USEDPARAM(Side);
 
   if ((Operation != foCalculateSize) &&
@@ -3324,7 +3324,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       FSynchronizeController->LogOperation(soDelete, FileName);
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ShowOperationProgress(
