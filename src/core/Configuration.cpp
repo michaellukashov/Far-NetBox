@@ -141,12 +141,12 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
     KEY(bool, ShowFtpWelcomeMessage); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
-    KEYEX(bool,  PermanentLogging, Logging); \
-    KEYEX(String,PermanentLogFileName, LogFileName); \
-    KEY(bool,    LogFileAppend); \
+    KEYEX(bool, Logging, Logging); \
+    KEYEX(String, LogFileName, LogFileName); \
+    KEY(bool, LogFileAppend); \
     KEY(int, LogWindowLines); \
     KEY(int, LogProtocol); \
-    KEYEX(bool,  PermanentLogActions, LogActions); \
+    KEYEX(bool, LogActions, LogActions); \
   );
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
@@ -599,7 +599,6 @@ void * TConfiguration::GetFileApplicationInfo(const std::wstring FileName)
   {
     if (!FApplicationInfo)
     {
-      // DEBUG_PRINTF(L"ModuleFileName = %s", ModuleFileName().c_str());
       FApplicationInfo = CreateFileInfo(ModuleFileName());
     }
     Result = FApplicationInfo;
@@ -618,7 +617,6 @@ void * TConfiguration::GetApplicationInfo()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileProductName(const std::wstring FileName)
 {
-    // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   return GetFileFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
@@ -713,7 +711,6 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
     {
       TTranslation Translation;
       Translation = GetTranslation(Info, 0);
-      // DEBUG_PRINTF(L"Info = %x, Key = %s, Language = %x, CharSet = %x", Info, Key.c_str(), Translation.Language, Translation.CharSet);
       try
       {
         Result = ::GetFileInfoString(Info, Translation, Key);
@@ -734,7 +731,6 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetFileInfoString(const std::wstring Key)
 {
-    // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------

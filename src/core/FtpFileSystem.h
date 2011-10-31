@@ -11,7 +11,7 @@ class TFileZillaIntf;
 class TFileZillaImpl;
 class TCriticalSection;
 class TMessageQueue;
-class TOverwriteFileParams;
+struct TOverwriteFileParams;
 struct TListDataEntry;
 struct TFileTransferData;
 struct TFtpsCertificateData;

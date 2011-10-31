@@ -5,7 +5,7 @@
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
 class TSFTPPacket;
-class TOverwriteFileParams;
+struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 //---------------------------------------------------------------------------
@@ -90,7 +90,6 @@ protected:
   std::wstring FHomeDirectory;
   std::wstring FEOL;
   TList * FPacketReservations;
-  // Variant FPacketNumbers;
   std::vector<unsigned int> FPacketNumbers;
   char FPreviousLoggedPacket;
   int FNotLoggedPackets;
@@ -107,7 +106,9 @@ protected:
   TSFTPFileSystem *Self;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
-    const std::wstring FileName, unsigned long Flags);
+    // const std::string RemoteHandle,
+    const std::wstring FileName,
+    unsigned long Flags);
   void CustomReadFile(const std::wstring FileName,
     TRemoteFile *& File, char Type, TRemoteFile * ALinkedByFile = NULL,
     int AllowStatus = -1);
@@ -153,10 +154,10 @@ protected:
     const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags,
     TUploadSessionAction & Action, bool & ChildError);
-  std::wstring SFTPOpenRemoteFile(const std::wstring & FileName,
+  std::string SFTPOpenRemoteFile(const std::wstring & FileName,
     unsigned int OpenType, __int64 Size = -1);
   int SFTPOpenRemote(void * AOpenParams, void * Param2);
-  void SFTPCloseRemote(const std::wstring Handle,
+  void SFTPCloseRemote(const std::string Handle,
     const std::wstring FileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPDirectorySource(const std::wstring DirectoryName,
@@ -183,14 +184,11 @@ protected:
   inline void BusyEnd();
   inline unsigned long TransferBlockSize(unsigned long Overhead,
     TFileOperationProgressType * OperationProgress, unsigned long MaxPacketSize = 0);
-  inline unsigned long UploadBlockSize(const std::wstring & Handle,
+  inline unsigned long UploadBlockSize(const std::string & Handle,
     TFileOperationProgressType * OperationProgress);
   inline unsigned long DownloadBlockSize(
     TFileOperationProgressType * OperationProgress);
   inline int PacketLength(char * LenBuf, int ExpectedType);
-
-  static std::wstring DecodeUTF(const std::wstring UTF);
-  static std::wstring EncodeUTF(const std::wstring Source);
 };
 //---------------------------------------------------------------------------
 #endif // SftpFileSystemH

@@ -2,8 +2,10 @@
 #include "stdafx.h"
 // #include <ShFolder.h>
 #include <shlobj.h>
+#include <ShellAPI.h>
 
 #include "boostdefines.hpp"
+#include <boost/scope_exit.hpp>
 #include <boost/algorithm/string.hpp>
 #include "boost/date_time.hpp"
 #include "boost/date_time/local_time/local_time.hpp"
@@ -877,9 +879,6 @@ void ProcessLocalDirectory(std::wstring DirName,
   const processlocalfile_slot_type &CallBackFunc, void * Param,
   int FindAttrs)
 {
-::Error(SNotImplemented, 43);
-/*
-  assert(CallBackFunc);
   if (FindAttrs < 0)
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
@@ -887,26 +886,27 @@ void ProcessLocalDirectory(std::wstring DirName,
   WIN32_FIND_DATA SearchRec;
 
   DirName = IncludeTrailingBackslash(DirName);
-  if (FindFirst(DirName + "*.*", FindAttrs, SearchRec) == 0)
+  std::wstring FileName = DirName + L"*.*";
+  HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
+  if (h != INVALID_HANDLE_VALUE)
   {
+    BOOST_SCOPE_EXIT ( (&h) )
     {
-        BOOST_SCOPE_EXIT ( (&SearchRec) )
-        {
-            ::FindClose(SearchRec);
-        }
-      processlocalfile_signal_type sig;
-      sig.connect(CallBackFunc);
-      do
+        ::FindClose(h);
+    } BOOST_SCOPE_EXIT_END
+    processlocalfile_signal_type sig;
+    sig.connect(CallBackFunc);
+    do
+    {
+      if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
       {
-        if ((SearchRec.Name != ".") && (SearchRec.Name != ".."))
+        if ((SearchRec.dwFileAttributes & FindAttrs) != 0)
         {
-          sig(DirName + SearchRec.Name, SearchRec, Param);
+            sig(DirName + SearchRec.cFileName, SearchRec, Param);
         }
-
-      } while (FindNext(SearchRec) == 0);
-    }
+      }
+    } while (::FindNextFile(h, &SearchRec));
   }
-  */
 }
 //---------------------------------------------------------------------------
 class EConvertError : public ExtException
@@ -1671,9 +1671,6 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
 {
-//FIXME
-  ::Error(SNotImplemented, 60);
-/*
   SHFILEOPSTRUCT Data;
 
   memset(&Data, 0, sizeof(Data));
@@ -1683,7 +1680,7 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
   FileList.resize(FileList.size() + 2);
   FileList[FileList.size() - 1] = '\0';
   Data.pFrom = FileList.c_str();
-  Data.pTo = "";
+  Data.pTo = L"";
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
     FOF_NOERRORUI | FOF_SILENT;
   if (ToRecycleBin)
@@ -1705,8 +1702,6 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
     SetLastError(ErrorCode);
   }
   return Result;
-  */
-  return false;
 }
 //---------------------------------------------------------------------------
 int CancelAnswer(int Answers)
@@ -2279,18 +2274,6 @@ bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
     ::Error(SNotImplemented, 76);
     return false;
 }
-
-//---------------------------------------------------------------------------
-
-class EOSError : public std::exception
-{
-public:
-    EOSError(std::wstring msg, DWORD code) : std::exception(::W2MB(msg.c_str()).c_str()),
-        ErrorCode(code)
-    {
-    }
-    DWORD ErrorCode;
-};
 
 void RaiseLastOSError()
 {

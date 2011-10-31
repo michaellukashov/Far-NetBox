@@ -1463,14 +1463,14 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 //---------------------------------------------------------------------------
 void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
-  static const struct { int Bit, Mask; const char * Desc; } EventTypes[] =
+  static const struct { int Bit, Mask; const wchar_t * Desc; } EventTypes[] =
   {
-    { FD_READ_BIT, FD_READ, "read" },
-    { FD_WRITE_BIT, FD_WRITE, "write" },
-    { FD_OOB_BIT, FD_OOB, "oob" },
-    { FD_ACCEPT_BIT, FD_ACCEPT, "accept" },
-    { FD_CONNECT_BIT, FD_CONNECT, "connect" },
-    { FD_CLOSE_BIT, FD_CLOSE, "close" },
+    { FD_READ_BIT, FD_READ, L"read" },
+    { FD_WRITE_BIT, FD_WRITE, L"write" },
+    { FD_OOB_BIT, FD_OOB, L"oob" },
+    { FD_ACCEPT_BIT, FD_ACCEPT, L"accept" },
+    { FD_CONNECT_BIT, FD_CONNECT, L"connect" },
+    { FD_CLOSE_BIT, FD_CLOSE, L"close" },
   };
 
   for (int Event = 0; Event < LENOF(EventTypes); Event++)

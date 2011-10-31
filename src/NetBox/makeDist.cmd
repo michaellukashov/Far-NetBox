@@ -6,7 +6,9 @@
 :: This file is used to create a distribution package
 ::
 
+
 @echo off
+exit 0 /b
 
 set PLUGINNAME=NetBox
 set PLUGINARCH=%1

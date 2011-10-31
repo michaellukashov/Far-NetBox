@@ -29,3 +29,6 @@ ipch/
 *.orig
 tags
 src/NetBox/build
+
+*.vsp
+*.psess

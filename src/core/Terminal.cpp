@@ -594,7 +594,7 @@ void TTerminal::RecryptPasswords()
 //---------------------------------------------------------------------------
 bool TTerminal::IsAbsolutePath(const std::wstring Path)
 {
-  return !Path.empty() && Path[1] == '/';
+  return !Path.empty() && Path[0] == '/';
 }
 //---------------------------------------------------------------------------
 std::wstring TTerminal::ExpandFileName(std::wstring Path,
@@ -2157,17 +2157,21 @@ void TTerminal::DoStartup()
     {
       Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
+    DEBUG_PRINTF(L"before DoInformation");
     DoInformation(LoadStr(STATUS_STARTUP), true);
 
     // Make sure that directory would be loaded at last
     FReadCurrentDirectoryPending = true;
     FReadDirectoryPending = GetAutoReadDirectory();
 
+    DEBUG_PRINTF(L"before FFileSystem->DoStartup");
     FFileSystem->DoStartup();
-
+    DEBUG_PRINTF(L"before LookupUsersGroups");
     LookupUsersGroups();
 
+    DEBUG_PRINTF(L"before DoInformation");
     DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true);
+    DEBUG_PRINTF(L"GetSessionData()->GetRemoteDirectory = %s", GetSessionData()->GetRemoteDirectory().c_str());
     if (!GetSessionData()->GetRemoteDirectory().empty())
     {
       ChangeDirectory(GetSessionData()->GetRemoteDirectory());
@@ -3369,6 +3373,7 @@ void TTerminal::HomeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::ChangeDirectory(const std::wstring Directory)
 {
+  DEBUG_PRINTF(L"begin");
   assert(FFileSystem);
   try
   {
@@ -3397,6 +3402,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()
@@ -3659,11 +3665,13 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
+  DEBUG_PRINTF(L"begin: FileName = %s, Access = %d", FileName.c_str(), Access);
   int Attrs = 0;
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
     Attrs = FileGetAttr(FileName);
+    // if ((Attrs == -1) && (Access != GENERIC_WRITE)) RaiseLastOSError();
     if (Attrs == -1) RaiseLastOSError();
   )
 
@@ -3740,6 +3748,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
 
   if (AAttrs) *AAttrs = Attrs;
   if (AHandle) *AHandle = Handle;
+  DEBUG_PRINTF(L"end: Attrs = %d, Handle = %d", Attrs, Handle);
 }
 //---------------------------------------------------------------------------
 bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
@@ -4833,7 +4842,10 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
       }
       catch (const std::exception &E)
       {
-        CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
+        if (OperationProgress->Cancel != csCancel)
+        {
+            CommandError(&E, LoadStr(TOLOCAL_COPY_ERROR));
+        }
         OnceDoneOperation = odoIdle;
       }
 

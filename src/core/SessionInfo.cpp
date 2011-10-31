@@ -597,6 +597,7 @@ void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring & Line)
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
 {
+  // DEBUG_PRINTF(L"begin: Line = %s", Line.c_str());
   if (FTopIndex < 0)
   {
     FTopIndex = 0;
@@ -619,14 +620,17 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
       {
         std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
         fputc(LogLineMarks[Type], (FILE *)FFile);
-        fwrite(Timestamp.c_str(), Timestamp.size(), 1, (FILE *)FFile);
+        // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
+        fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Timestamp.c_str()).c_str());
       }
       // use fwrite instead of fprintf to make sure that even
       // non-ascii data (unicode) gets in.
-      fwrite(Line.c_str(), Line.size(), 1, (FILE *)FFile);
+      // fwrite(Line.c_str(), 1, Line.size() * sizeof(wchar_t), (FILE *)FFile);
+      fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Line.c_str()).c_str());
       fputc('\n', (FILE *)FFile);
     }
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
@@ -811,8 +815,10 @@ void TSessionLog::OpenLogFile()
         Index += Replacement.size() - 1;
       }
     }
-    FFile = _wfopen(NewFileName.c_str(),
-      (FConfiguration->GetLogFileAppend() && !FLoggingActions ? L"a" : L"w"));
+    // FFile = _wfopen(NewFileName.c_str(),
+      // FConfiguration->GetLogFileAppend() && !FLoggingActions ? L"a" : L"w");
+    FFile = _fsopen(::W2MB(NewFileName.c_str()).c_str(),
+      FConfiguration->GetLogFileAppend() && !FLoggingActions ? "a" : "w", SH_DENYWR);
     if (FFile)
     {
       setvbuf((FILE *)FFile, NULL, _IONBF, BUFSIZ);
@@ -925,7 +931,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
       ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
         Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().empty()).c_str(),
-         BooleanToEngStr(!Data->GetTunnelPublicKeyFile().empty()).c_str())
+         BooleanToEngStr(!Data->GetTunnelPublicKeyFile().empty()).c_str());
       ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
     }
     ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
@@ -962,7 +968,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     if (Data->GetUsesSsh())
     {
       ADF(L"SSH protocol version: %s; Compression: %s",
-        Data->GetSshProtStr(), BooleanToEngStr(Data->GetCompression()).c_str());
+        Data->GetSshProtStr().c_str(), BooleanToEngStr(Data->GetCompression()).c_str());
       ADF(L"Bypass authentication: %s",
        BooleanToEngStr(Data->GetSshNoUserAuth()).c_str());
       ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
@@ -982,18 +988,20 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       wchar_t const * BugFlags = L"A+-";
       for (int Index = 0; Index < BUG_COUNT; Index++)
       {
-        Bugs += BugFlags[Data->GetBug((TSshBug)Index)] + (Index<BUG_COUNT-1? L"," : L"");
+        Bugs += BugFlags[Data->GetBug((TSshBug)Index)];
+        Bugs += Index<BUG_COUNT-1? L"," : L"";
       }
       ADF(L"SSH Bugs: %s", Bugs.c_str());
       Bugs = L"";
       for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
       {
-        Bugs += BugFlags[Data->GetSFTPBug((TSftpBug)Index)] + (Index<SFTP_BUG_COUNT-1 ? L"," : L"");
+        Bugs += BugFlags[Data->GetSFTPBug((TSftpBug)Index)];
+        Bugs += Index<SFTP_BUG_COUNT-1 ? L"," : L"";
       }
       ADF(L"SFTP Bugs: %s", Bugs.c_str());
       ADF(L"Return code variable: %s; Lookup user groups: %s",
-        (Data->GetDetectReturnVar() ? std::wstring(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
-        BooleanToEngStr(Data->GetLookupUserGroups()).c_str()));
+        Data->GetDetectReturnVar() ? std::wstring(L"Autodetect").c_str() : Data->GetReturnVar().c_str(),
+        BooleanToEngStr(Data->GetLookupUserGroups()).c_str());
       ADF(L"Shell: %s", Data->GetShell().empty() ? std::wstring(L"default").c_str() : Data->GetShell().c_str());
       ADF(L"EOL: %d, UTF: %d", Data->GetEOLType(), Data->GetNotUtf());
       ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s",

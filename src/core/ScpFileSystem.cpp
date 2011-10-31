@@ -2027,8 +2027,8 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime()) Options = L"-p";
   if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
 
-  FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
-    L"\"%s\"", (FilesToCopy->GetCount(), TargetDir)));
+  FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory \"%s\"",
+      FilesToCopy->GetCount(), TargetDir.c_str()));
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   {

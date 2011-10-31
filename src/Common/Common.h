@@ -277,6 +277,18 @@ int AnsiCompareText(const std::wstring str1, const std::wstring str2);
 int AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2);
 
+//---------------------------------------------------------------------------
+
+class EOSError : public std::exception
+{
+public:
+    EOSError(std::wstring msg, DWORD code) : std::exception(::W2MB(msg.c_str()).c_str()),
+        ErrorCode(code)
+    {
+    }
+    DWORD ErrorCode;
+};
+
 void RaiseLastOSError();
 
 //---------------------------------------------------------------------------
@@ -302,11 +314,14 @@ __int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count);
 
 enum FileAttributesEnum
 {
-    faReadOnly,
-    faHidden,
-    faDirectory,
-    faSysFile,
-    faArchive,
+    faReadOnly = 0x00000001,
+    faHidden = 0x00000002,
+    faSysFile = 0x00000004,
+    faVolumeId = 0x00000008,
+    faDirectory = 0x00000010,
+    faArchive = 0x00000020,
+    faSymLink = 0x00000040,
+    faAnyFile = 0x0000003f,
 };
 
 bool FileExists(const std::wstring &filename);

@@ -1563,6 +1563,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
         (MoreMessageDialog(GetMsg(CANCEL_OPERATION), NULL,
           qtConfirmation, qaOK | qaCancel) == qaOK))
     {
+      DEBUG_PRINTF(L"after MoreMessageDialog");
       Continue = false;
     }
   }
@@ -3616,6 +3617,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       {
         Result = MoreMessageDialog(GetMsg(CANCEL_OPERATION), NULL,
           qtConfirmation, qaOK | qaCancel);
+        DEBUG_PRINTF(L"after MoreMessageDialog: Result = %d", Result);
       }
       switch (Result) {
         case qaYes:

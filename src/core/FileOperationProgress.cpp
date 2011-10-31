@@ -172,7 +172,10 @@ int TFileOperationProgressType::OverallProgress()
 void TFileOperationProgressType::DoProgress()
 {
   SetThreadExecutionState(ES_SYSTEM_REQUIRED);
-  FOnProgress(*this, Cancel);
+  if (!FOnProgress.empty())
+  {
+    FOnProgress(*this, Cancel);
+  }
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Finish(std::wstring FileName,
