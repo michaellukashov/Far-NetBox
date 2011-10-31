@@ -3669,7 +3669,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
-    FileNameOnly = ExtractFileName(FileName, true);
+    FileNameOnly = ExtractFileName(FileName, false);
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
