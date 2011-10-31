@@ -4695,6 +4695,8 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
+  TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+      boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   try
   {
 
@@ -4706,8 +4708,6 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
-    TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
-        boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
     OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
@@ -4753,7 +4753,10 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   }
   catch (const std::exception &E)
   {
-    CommandError(&E, LoadStr(TOREMOTE_COPY_ERROR));
+    if (OperationProgress->Cancel != csCancel)
+    {
+        CommandError(&E, LoadStr(TOREMOTE_COPY_ERROR));
+    }
     OnceDoneOperation = odoIdle;
   }
 
@@ -4761,6 +4764,8 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   {
     CloseOnCompletion(OnceDoneOperation);
   }
+  delete OperationProgress;
+  OperationProgress = NULL;
 
   return Result;
 }
@@ -4822,6 +4827,8 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
       {
         FOperationProgress = NULL;
         OperationProgress->Stop();
+        delete OperationProgress;
+        OperationProgress = NULL;
       } BOOST_SCOPE_EXIT_END
       if (TotalSizeKnown)
       {
