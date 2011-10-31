@@ -2481,7 +2481,7 @@ std::wstring TSFTPFileSystem::Canonify(std::wstring Path)
   {
     Result = RealPath(Path);
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
