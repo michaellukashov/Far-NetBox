@@ -1961,7 +1961,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         std::wstring FileName = IncludeTrailingBackslash(DirectoryName) + SearchRec.cFileName;
         try
         {
-          if ((SearchRec.cFileName != L".") && (SearchRec.cFileName != L".."))
+          if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
           {
             SCPSource(FileName, TargetDirFull, CopyParam, Params, OperationProgress, Level + 1);
           }

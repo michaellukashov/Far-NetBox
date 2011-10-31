@@ -4686,7 +4686,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
       std::wstring FileName = DirectoryName + SearchRec.cFileName;
       try
       {
-        if ((SearchRec.cFileName != L".") && (SearchRec.cFileName != L".."))
+        if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
         {
           SFTPSourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~tfFirstLevel);
