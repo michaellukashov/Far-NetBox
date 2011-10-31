@@ -2144,6 +2144,7 @@ unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     }
     std::wstring Error = FMTLOAD(SFTP_ERROR_FORMAT2, MessageStr.c_str(),
       int(Code), LanguageTag.c_str(), ServerMessage.c_str(), int(Packet->GetRequestType()));
+    DEBUG_PRINTF(L"Error = %s", Error.c_str());
     FTerminal->TerminalError(NULL, Error);
     return 0;
   }
