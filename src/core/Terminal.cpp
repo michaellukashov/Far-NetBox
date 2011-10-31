@@ -1416,7 +1416,7 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
 //---------------------------------------------------------------------------
 std::wstring TTerminal::TranslateLockedPath(std::wstring Path, bool Lock)
 {
-  if (!GetSessionData()->GetLockInHome() || Path.empty() || (Path[1] != '/'))
+  if (!GetSessionData()->GetLockInHome() || Path.empty() || (Path[0] != '/'))
     return Path;
 
   if (Lock)
@@ -3783,7 +3783,7 @@ std::wstring TTerminal::FileUrl(const std::wstring Protocol,
 {
   assert(FileName.size() > 0);
   return Protocol + L"://" + EncodeUrlChars(GetSessionData()->GetSessionName()) +
-    (FileName[1] == '/' ? L"" : L"/") + EncodeUrlChars(FileName, L"/");
+    (FileName[0] == '/' ? L"" : L"/") + EncodeUrlChars(FileName, L"/");
 }
 //---------------------------------------------------------------------------
 std::wstring TTerminal::FileUrl(const std::wstring FileName)

@@ -166,7 +166,7 @@ bool IsUnixRootPath(const std::wstring Path)
 bool IsUnixHiddenFile(const std::wstring FileName)
 {
   return (FileName != ROOTDIRECTORY) && (FileName != PARENTDIRECTORY) &&
-    !FileName.empty() && (FileName[1] == '.');
+    !FileName.empty() && (FileName[0] == '.');
 }
 //---------------------------------------------------------------------------
 std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
