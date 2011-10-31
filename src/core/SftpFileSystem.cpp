@@ -2237,7 +2237,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           if (FNotLoggedPackets)
           {
             FTerminal->LogEvent(FORMAT(L"%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
-              (FNotLoggedPackets)));
+              FNotLoggedPackets));
             FNotLoggedPackets = 0;
           }
           FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
