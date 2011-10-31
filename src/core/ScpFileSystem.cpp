@@ -1939,16 +1939,14 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
       }
     } BOOST_SCOPE_EXIT_END
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-    // TSearchRec SearchRec;
     WIN32_FIND_DATA SearchRec;
     HANDLE findHandle = 0;
     bool FindOK = false;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, (DirectoryName)),
     std::wstring path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
     findHandle = FindFirstFile(path.c_str(),
-        // FindAttrs, 
         &SearchRec);
-      FindOK = (findHandle != 0);
+      FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
     );
 
     {
@@ -1993,7 +1991,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
         }
         FindOK = false;
         FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-          FindOK = (FindNextFile(findHandle, &SearchRec) != 0);
+          FindOK = (FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
         );
       };
     }

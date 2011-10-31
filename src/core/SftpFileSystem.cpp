@@ -4664,16 +4664,14 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   }
 
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  // TSearchRec SearchRec;
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
   HANDLE findHandle = 0;
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     std::wstring path = DirectoryName + L"*.*";
     findHandle = FindFirstFile(path.c_str(),
-      // FindAttrs, 
       &SearchRec);
-    FindOK = (findHandle != 0);
+    FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
   );
 
   {
@@ -4704,7 +4702,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
         );
       }
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
+        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
       );
     };
   }
