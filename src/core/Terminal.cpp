@@ -1416,7 +1416,7 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
 //---------------------------------------------------------------------------
 std::wstring TTerminal::TranslateLockedPath(std::wstring Path, bool Lock)
 {
-  if (!GetSessionData()->GetLockInHome() || Path.empty() || (Path[1] != '/'))
+  if (!GetSessionData()->GetLockInHome() || Path.empty() || (Path[0] != '/'))
     return Path;
 
   if (Lock)
@@ -3373,7 +3373,7 @@ void TTerminal::HomeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::ChangeDirectory(const std::wstring Directory)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   assert(FFileSystem);
   try
   {
@@ -3402,7 +3402,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()
@@ -3652,7 +3652,7 @@ bool TTerminal::CreateLocalFile(const std::wstring FileName,
 {
   assert(AHandle);
   bool Result = true;
-  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+  // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   FILE_OPERATION_LOOP (FMTLOAD(CREATE_FILE_ERROR, FileName.c_str()),
     Result = DoCreateLocalFile(FileName, OperationProgress, AHandle, NoConfirmation);
   );
@@ -3665,7 +3665,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
   __int64 * AMTime, __int64 * AATime, __int64 * ASize,
   bool TryWriteReadOnly)
 {
-  DEBUG_PRINTF(L"begin: FileName = %s, Access = %d", FileName.c_str(), Access);
+  // DEBUG_PRINTF(L"begin: FileName = %s, Access = %d", FileName.c_str(), Access);
   int Attrs = 0;
   HANDLE Handle = 0;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
@@ -3748,7 +3748,7 @@ void TTerminal::OpenLocalFile(const std::wstring FileName,
 
   if (AAttrs) *AAttrs = Attrs;
   if (AHandle) *AHandle = Handle;
-  DEBUG_PRINTF(L"end: Attrs = %d, Handle = %d", Attrs, Handle);
+  // DEBUG_PRINTF(L"end: Attrs = %d, Handle = %d", Attrs, Handle);
 }
 //---------------------------------------------------------------------------
 bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
@@ -3783,7 +3783,7 @@ std::wstring TTerminal::FileUrl(const std::wstring Protocol,
 {
   assert(FileName.size() > 0);
   return Protocol + L"://" + EncodeUrlChars(GetSessionData()->GetSessionName()) +
-    (FileName[1] == '/' ? L"" : L"/") + EncodeUrlChars(FileName, L"/");
+    (FileName[0] == '/' ? L"" : L"/") + EncodeUrlChars(FileName, L"/");
 }
 //---------------------------------------------------------------------------
 std::wstring TTerminal::FileUrl(const std::wstring FileName)
@@ -4037,7 +4037,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (::FindNextFile(findHandle, &SearchRec) == 0);
+            Found = (::FindNextFile(findHandle, &SearchRec) != 0);
           );
         }
       }
@@ -4695,6 +4695,8 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
+  TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
+      boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
   try
   {
 
@@ -4706,8 +4708,6 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
         (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
     }
 
-    TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
-        boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
     OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osLocal,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
@@ -4753,7 +4753,10 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   }
   catch (const std::exception &E)
   {
-    CommandError(&E, LoadStr(TOREMOTE_COPY_ERROR));
+    if (OperationProgress->Cancel != csCancel)
+    {
+        CommandError(&E, LoadStr(TOREMOTE_COPY_ERROR));
+    }
     OnceDoneOperation = odoIdle;
   }
 
@@ -4761,6 +4764,8 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   {
     CloseOnCompletion(OnceDoneOperation);
   }
+  delete OperationProgress;
+  OperationProgress = NULL;
 
   return Result;
 }
@@ -4822,6 +4827,8 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
       {
         FOperationProgress = NULL;
         OperationProgress->Stop();
+        delete OperationProgress;
+        OperationProgress = NULL;
       } BOOST_SCOPE_EXIT_END
       if (TotalSizeKnown)
       {

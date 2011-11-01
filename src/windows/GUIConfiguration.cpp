@@ -954,7 +954,6 @@ TStrings * TGUIConfiguration::GetLocales()
     Exts->SetCaseSensitive(false);
 
     int FindAttrs = faReadOnly | faArchive;
-    // TSearchRec SearchRec;
     WIN32_FIND_DATA SearchRec;
     bool Found;
 

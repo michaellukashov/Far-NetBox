@@ -2144,6 +2144,7 @@ unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     }
     std::wstring Error = FMTLOAD(SFTP_ERROR_FORMAT2, MessageStr.c_str(),
       int(Code), LanguageTag.c_str(), ServerMessage.c_str(), int(Packet->GetRequestType()));
+    DEBUG_PRINTF(L"Error = %s", Error.c_str());
     FTerminal->TerminalError(NULL, Error);
     return 0;
   }
@@ -2236,7 +2237,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
           if (FNotLoggedPackets)
           {
             FTerminal->LogEvent(FORMAT(L"%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
-              (FNotLoggedPackets)));
+              FNotLoggedPackets));
             FNotLoggedPackets = 0;
           }
           FTerminal->GetLog()->Add(llOutput, FORMAT(L"Type: %s, Size: %d, Number: %d",
@@ -2480,7 +2481,7 @@ std::wstring TSFTPFileSystem::Canonify(std::wstring Path)
   {
     Result = RealPath(Path);
   }
-  catch(...)
+  catch (...)
   {
     if (FTerminal->GetActive())
     {
@@ -3668,7 +3669,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   {
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
-    FileNameOnly = ExtractFileName(FileName, true);
+    FileNameOnly = ExtractFileName(FileName, false);
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
@@ -3908,7 +3909,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
-  DEBUG_PRINTF(L"FileName = %s, TargetDir = %s", FileName.c_str(), TargetDir.c_str());
+  // DEBUG_PRINTF(L"FileName = %s, TargetDir = %s", FileName.c_str(), TargetDir.c_str());
   // the same in TFTPFileSystem
   bool Retry;
 
@@ -3949,7 +3950,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
     }
   }
   while (Retry);
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
@@ -4663,16 +4664,14 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   }
 
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  // TSearchRec SearchRec;
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
   HANDLE findHandle = 0;
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     std::wstring path = DirectoryName + L"*.*";
     findHandle = FindFirstFile(path.c_str(),
-      // FindAttrs, 
       &SearchRec);
-    FindOK = (findHandle != 0);
+    FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
   );
 
   {
@@ -4685,7 +4684,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
       std::wstring FileName = DirectoryName + SearchRec.cFileName;
       try
       {
-        if ((SearchRec.cFileName != L".") && (SearchRec.cFileName != L".."))
+        if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
         {
           SFTPSourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
             Flags & ~tfFirstLevel);
@@ -4703,7 +4702,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
         );
       }
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (::FindNextFile(findHandle, &SearchRec) == 0);
+        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
       );
     };
   }
