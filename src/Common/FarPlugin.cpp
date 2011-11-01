@@ -1464,7 +1464,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
     TPoint Size, Cursor;
     TerminalInfo(&Size, &Cursor);
 
-    std::wstring Blank; // = std::wstring::StringOfChar(' ', Size.x);
+    std::wstring Blank = ::StringOfChar(' ', Size.x);
     Blank.resize(Size.x);
     for (int Y = 0; Y < Size.y; Y++)
     {
