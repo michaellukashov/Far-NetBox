@@ -1264,6 +1264,7 @@ void TSCPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError
 {
   int ReturnCode;
   std::wstring Line = AddedLine;
+  // DEBUG_PRINTF(L"Line = %s", Line.c_str());
   if (StdError ||
       !RemoveLastLine(Line, ReturnCode) ||
       !Line.empty())
