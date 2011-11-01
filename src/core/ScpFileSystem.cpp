@@ -1276,7 +1276,7 @@ void TSCPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError
 void TSCPFileSystem::AnyCommand(const std::wstring Command,
   const captureoutput_slot_type *OutputEvent)
 {
-  assert(!FSecureShell->GetOnCaptureOutput().empty());
+  assert(FSecureShell->GetOnCaptureOutput().empty());
   if (OutputEvent)
   {
     FSecureShell->SetOnCaptureOutput(boost::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));
