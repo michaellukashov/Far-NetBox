@@ -342,7 +342,7 @@ int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
     return result;
 #endif
     return FarPlugin->GetFiles(plugin, panelItem, itemsNumber,
-        move, (wchar_t *)*destPath, opMode);
+        move, destPath, opMode);
 }
 
 int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
