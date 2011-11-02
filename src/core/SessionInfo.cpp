@@ -772,29 +772,30 @@ void TSessionLog::OpenLogFile()
     assert(FConfiguration != NULL);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     std::wstring NewFileName = StripPathQuotes(ExpandEnvironmentVariables(FCurrentLogFileName));
-    TDateTime N = Now();
+    SYSTEMTIME t;
+    ::GetLocalTime(&t);
     for (int Index = 1; Index < NewFileName.size(); Index++)
     {
-      if (NewFileName[Index] == '!')
+      if ((NewFileName[Index] == '&') && (Index < NewFileName.size() - 1))
       {
         std::wstring Replacement;
         // keep consistent with TFileCustomCommand::PatternReplacement
         switch (tolower(NewFileName[Index + 1]))
         {
           case 'y':
-            Replacement = FormatDateTime(L"yyyy", N);
+            Replacement = FORMAT(L"%04d", t.wYear);
             break;
 
           case 'm':
-            Replacement = FormatDateTime(L"mm", N);
+            Replacement = FORMAT(L"%02d", t.wMonth);
             break;
 
           case 'd':
-            Replacement = FormatDateTime(L"dd", N);
+            Replacement = FORMAT(L"%02d", t.wDay);
             break;
 
           case 't':
-            Replacement = FormatDateTime(L"hhnnss", N);
+            Replacement = FORMAT(L"%02d%02d%02d", t.wHour, t.wMinute, t.wSecond);
             break;
 
           case '@':
@@ -805,12 +806,12 @@ void TSessionLog::OpenLogFile()
             Replacement = MakeValidFileName(FSessionData->GetSessionName());
             break;
 
-          case '!':
-            Replacement = L"!";
+          case '&':
+            Replacement = L"&";
             break;
 
           default:
-            Replacement = std::wstring(L"!") + NewFileName[Index + 1];
+            Replacement = std::wstring(L"&") + NewFileName[Index + 1];
             break;
         }
         NewFileName.erase(Index, 2);
