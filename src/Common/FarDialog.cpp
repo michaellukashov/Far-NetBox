@@ -2651,7 +2651,7 @@ long TFarLister::ItemProc(int Msg, long Param)
                 std::wstring value = GetItems()->GetString(Index).substr(0, DisplayWidth - 1);
                 Buf += value;
             }
-            std::wstring value; // = std::wstring::StringOfChar(' ', DisplayWidth - Buf.size());
+            std::wstring value = ::StringOfChar(' ', DisplayWidth - Buf.size());
             value.resize(DisplayWidth - Buf.size());
             Buf += value;
             StrToFar(Buf);

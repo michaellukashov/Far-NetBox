@@ -835,7 +835,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
             Self->RedrawPanel(true);
           }
         } BOOST_SCOPE_EXIT_END
-      FarControl(FCTL_SETCMDLINE, 0, NULL);
+      FarControl(FCTL_SETCMDLINE, 0, (LONG_PTR)L"");
       FPlugin->ShowConsoleTitle(Command);
       {
           BOOST_SCOPE_EXIT ( (&Self) )

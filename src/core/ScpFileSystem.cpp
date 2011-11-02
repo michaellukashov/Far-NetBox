@@ -1264,6 +1264,7 @@ void TSCPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError
 {
   int ReturnCode;
   std::wstring Line = AddedLine;
+  // DEBUG_PRINTF(L"Line = %s", Line.c_str());
   if (StdError ||
       !RemoveLastLine(Line, ReturnCode) ||
       !Line.empty())
@@ -1276,7 +1277,7 @@ void TSCPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError
 void TSCPFileSystem::AnyCommand(const std::wstring Command,
   const captureoutput_slot_type *OutputEvent)
 {
-  assert(!FSecureShell->GetOnCaptureOutput().empty());
+  assert(FSecureShell->GetOnCaptureOutput().empty());
   if (OutputEvent)
   {
     FSecureShell->SetOnCaptureOutput(boost::bind(&TSCPFileSystem::CaptureOutput, this, _1, _2));

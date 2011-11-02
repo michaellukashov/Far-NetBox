@@ -642,7 +642,7 @@ std::wstring ExtractFileDir(const std::wstring str)
     // it used to return Path when no slash was found
     if (Pos > 0)
     {
-      result = str.substr(0, Pos);
+      result = str.substr(0, Pos + 1);
     }
     else
     {
