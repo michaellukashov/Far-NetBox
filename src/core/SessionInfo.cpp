@@ -106,24 +106,24 @@ public:
     {
       if ((FLog->FLoggingActions) && (FState != Cancelled))
       {
-        const char * Name = ActionName();
+        const wchar_t *Name = ActionName();
         std::wstring Attrs;
         if (FRecursive)
         {
           Attrs = L" recursive=\"true\"";
         }
-        FLog->Add(llAction, FORMAT(L"  <%s%s>", (Name,  Attrs)));
+        FLog->Add(llAction, FORMAT(L"  <%s%s>", Name,  Attrs.c_str()));
         for (int Index = 0; Index < FNames->GetCount(); Index++)
         {
           std::wstring Value = FValues->GetString(Index);
           if (Value.empty())
           {
-            FLog->Add(llAction, FORMAT(L"    <%s />", (FNames->GetString(Index))));
+            FLog->Add(llAction, FORMAT(L"    <%s />", FNames->GetString(Index).c_str()));
           }
           else
           {
             FLog->Add(llAction, FORMAT(L"    <%s value=\"%s\" />",
-              (FNames->GetString(Index), XmlEscape(Value))));
+              FNames->GetString(Index).c_str(), XmlEscape(Value).c_str()));
           }
         }
         if (FFileList != NULL)
@@ -134,14 +134,14 @@ public:
             TRemoteFile * File = FFileList->GetFile(Index);
 
             FLog->Add(llAction, L"      <file>");
-            FLog->Add(llAction, FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName())));
-            FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1))));
+            FLog->Add(llAction, FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName()).c_str()));
+            FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1)).c_str()));
             if (!File->GetIsDirectory())
             {
-              FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize())));
+              FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize()).c_str()));
             }
-            FLog->Add(llAction, FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification())));
-            FLog->Add(llAction, FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText())));
+            FLog->Add(llAction, FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification()).c_str()));
+            FLog->Add(llAction, FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText()).c_str()));
             FLog->Add(llAction, L"      </file>");
           }
           FLog->Add(llAction, L"    </files>");
@@ -154,7 +154,7 @@ public:
             for (int Index = 0; Index < FErrorMessages->GetCount(); Index++)
             {
               FLog->Add(llAction,
-                FORMAT(L"      <message>%s</message>", XmlEscape(FErrorMessages->GetString(Index).c_str())));
+                FORMAT(L"      <message>%s</message>", XmlEscape(FErrorMessages->GetString(Index).c_str()).c_str()));
             }
             FLog->Add(llAction, L"    </result>");
           }
@@ -268,20 +268,20 @@ protected:
     FLog->RecordPendingActions();
   }
 
-  const char * ActionName()
+  const wchar_t *ActionName()
   {
     switch (FAction)
     {
-      case laUpload: return "upload";
-      case laDownload: return "download";
-      case laTouch: return "touch";
-      case laChmod: return "chmod";
-      case laMkdir: return "mkdir";
-      case laRm: return "rm";
-      case laMv: return "mv";
-      case laCall: return "call";
-      case laLs: return "ls";
-      default: assert(false); return "";
+      case laUpload: return L"upload";
+      case laDownload: return L"download";
+      case laTouch: return L"touch";
+      case laChmod: return L"chmod";
+      case laMkdir: return L"mkdir";
+      case laRm: return L"rm";
+      case laMv: return L"mv";
+      case laCall: return L"call";
+      case laLs: return L"ls";
+      default: assert(false); return L"";
     }
   }
 
@@ -717,7 +717,7 @@ void TSessionLog::ReflectSettings()
     FLogging = ALogging;
     Add(llAction, L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     Add(llAction, FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-      XmlEscape(FSessionData->GetSessionName()), XmlTimestamp()));
+      XmlEscape(FSessionData->GetSessionName()).c_str(), XmlTimestamp().c_str()));
     StateChange();
   }
   else if (!LoggingActions && FLoggingActions)
