@@ -853,9 +853,9 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             Button->SetBrackets(brNone);
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
-            // DEBUG_PRINTF(L"Caption = %s", Caption.c_str());
-            if ((Params->Timeout > 0) &&
-                (Params->TimeoutButton == (unsigned int)Index))
+            // DEBUG_PRINTF(L"Caption = '%s'", Caption.c_str());
+            if ((FParams->Timeout > 0) &&
+                (FParams->TimeoutButton == (unsigned int)Index))
             {
                 FTimeoutButtonCaption = Caption;
                 Caption = FORMAT(Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
@@ -864,7 +864,10 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
-            Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
+            else
+            {
+                Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
+            }
             Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
             Button->SetBottom(Button->GetTop());
             Button->SetResult(Index + 1);
@@ -875,7 +878,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
             }
 
-            if (MaxMessageWidth < Button->GetRight()- GetBorderBox()->GetLeft())
+            if (MaxMessageWidth < Button->GetRight() - GetBorderBox()->GetLeft())
             {
                 for (int PIndex = 0; PIndex < GetItemCount(); PIndex++)
                 {
@@ -889,7 +892,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                 ButtonLines++;
             }
 
-            // DEBUG_PRINTF(L"Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetRight(), GetBorderBox()->GetLeft());
+            // DEBUG_PRINTF(L"Button->GetLeft = %d, Button->GetRight = %d, GetBorderBox()->GetLeft = %d", Button->GetLeft(), Button->GetRight(), GetBorderBox()->GetLeft());
             if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
             {
                 MaxLen = Button->GetRight() - GetBorderBox()->GetLeft();
