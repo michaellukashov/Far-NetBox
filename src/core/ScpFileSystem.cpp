@@ -1904,11 +1904,11 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
 {
   int Attrs;
 
-  FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", (DirectoryName)));
+  FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
 
   OperationProgress->SetFile(DirectoryName);
   std::wstring DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(DirectoryName, true), osLocal, Level == 0);
+    ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
@@ -1924,7 +1924,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
 
   // Send directory modes (rights), filesize and file name
   Buf = FORMAT(L"D%s 0 %s",
-    (CopyParam->RemoteFileRights(Attrs).GetOctal(), DestFileName));
+    CopyParam->RemoteFileRights(Attrs).GetOctal().c_str(), DestFileName.c_str());
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
@@ -1943,7 +1943,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     WIN32_FIND_DATA SearchRec;
     HANDLE findHandle = 0;
     bool FindOK = false;
-    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, (DirectoryName)),
+    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     std::wstring path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
     findHandle = FindFirstFile(path.c_str(),
         &SearchRec);
