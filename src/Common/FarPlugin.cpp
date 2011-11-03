@@ -857,7 +857,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             Button->SetBrackets(brNone);
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
-            DEBUG_PRINTF(L"Caption = '%s'", Caption.c_str());
+            // DEBUG_PRINTF(L"Caption = '%s'", Caption.c_str());
             if ((FParams->Timeout > 0) &&
                 (FParams->TimeoutButton == (unsigned int)Index))
             {
