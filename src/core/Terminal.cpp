@@ -1050,7 +1050,7 @@ int TTerminal::QueryUser(const std::wstring Query,
   TStrings * MoreMessages, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
+  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
   int Answer = AbortAnswer(Answers);
   if (!FOnQueryUser.empty())
   {
