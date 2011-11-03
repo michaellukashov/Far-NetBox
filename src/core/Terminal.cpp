@@ -4817,7 +4817,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         } BOOST_SCOPE_EXIT_END
         // dirty trick: when moving, do not pass copy param to avoid exclude mask
         CalculateFilesSize(FilesToCopy, TotalSize, csIgnoreErrors,
-          (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
+            (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
         TotalSizeKnown = true;
       }
     }
