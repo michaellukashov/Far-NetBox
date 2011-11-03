@@ -987,18 +987,9 @@ void TFarMessageDialog::Idle()
         else
         {
             std::wstring Caption =
-                FORMAT(L" %s ", (FORMAT(FParams->TimeoutStr.c_str(),
-                                       FTimeoutButtonCaption, int((FParams->Timeout - Running) / 1000))).c_str());
+                FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
+                    FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000))).c_str();
             Caption += ::StringOfChar(L' ', FTimeoutButton->GetCaption().size() - Caption.size());
-            /*
-            std::wstring Buffer;
-            Buffer.resize(512);
-            std::wstring Buffer2;
-            Buffer2.resize(512);
-            GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer2.c_str(), FTimeoutButtonCaption.c_str(), FParams->TimeoutStr.c_str(), int((FParams->Timeout - Running) / 1000));
-            GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Buffer2.c_str());
-            std::wstring Caption = Buffer;
-            */
             FTimeoutButton->SetCaption(Caption);
         }
     }
