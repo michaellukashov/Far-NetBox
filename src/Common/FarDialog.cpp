@@ -13,13 +13,14 @@
 //---------------------------------------------------------------------------
 std::wstring StripHotKey(std::wstring Text)
 {
-    size_t Len = Text.length();
+    std::wstring Result = Text;
+    size_t Len = Result.size();
     int Pos = 0;
     while (Pos < Len)
     {
-        if (Text[Pos] == '&')
+        if (Result[Pos] == '&')
         {
-            Text.erase(Pos, 1);
+            Result.erase(Pos, 1);
             Len--;
         }
         else
@@ -27,7 +28,7 @@ std::wstring StripHotKey(std::wstring Text)
             Pos++;
         }
     }
-    return Text;
+    return Result;
 }
 
 //---------------------------------------------------------------------------
