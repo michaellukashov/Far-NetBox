@@ -1748,10 +1748,6 @@ int TCustomFarPlugin::FarVersion()
 std::wstring TCustomFarPlugin::FormatFarVersion(int Version)
 {
     return FORMAT(L"%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
-    // std::wstring Buffer;
-    // Buffer.resize(512);
-    // GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L"%d.%d.%d", ((Version >> 8) & 0xFF, Version & 0xFF, Version >> 16));
-    // return Buffer;
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::TemporaryDir()
