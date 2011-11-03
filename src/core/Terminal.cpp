@@ -3106,8 +3106,10 @@ void TTerminal::RenameFile(const TRemoteFile * File,
     if (DuplicateFile)
     {
       std::wstring QuestionFmt;
-      if (DuplicateFile->GetIsDirectory()) QuestionFmt = LoadStr(DIRECTORY_OVERWRITE);
-        else QuestionFmt = LoadStr(FILE_OVERWRITE);
+      if (DuplicateFile->GetIsDirectory())
+        QuestionFmt = LoadStr(DIRECTORY_OVERWRITE);
+      else
+        QuestionFmt = LoadStr(FILE_OVERWRITE);
       int Result;
       TQueryParams Params(qpNeverAskAgainCheck);
       Result = QueryUser(FORMAT(QuestionFmt.c_str(), NewName.c_str()), NULL,

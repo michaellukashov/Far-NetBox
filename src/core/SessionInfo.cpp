@@ -106,24 +106,24 @@ public:
     {
       if ((FLog->FLoggingActions) && (FState != Cancelled))
       {
-        const char * Name = ActionName();
+        const wchar_t *Name = ActionName();
         std::wstring Attrs;
         if (FRecursive)
         {
           Attrs = L" recursive=\"true\"";
         }
-        FLog->Add(llAction, FORMAT(L"  <%s%s>", (Name,  Attrs)));
+        FLog->Add(llAction, FORMAT(L"  <%s%s>", Name,  Attrs.c_str()));
         for (int Index = 0; Index < FNames->GetCount(); Index++)
         {
           std::wstring Value = FValues->GetString(Index);
           if (Value.empty())
           {
-            FLog->Add(llAction, FORMAT(L"    <%s />", (FNames->GetString(Index))));
+            FLog->Add(llAction, FORMAT(L"    <%s />", FNames->GetString(Index).c_str()));
           }
           else
           {
             FLog->Add(llAction, FORMAT(L"    <%s value=\"%s\" />",
-              (FNames->GetString(Index), XmlEscape(Value))));
+              FNames->GetString(Index).c_str(), XmlEscape(Value).c_str()));
           }
         }
         if (FFileList != NULL)
@@ -134,14 +134,14 @@ public:
             TRemoteFile * File = FFileList->GetFile(Index);
 
             FLog->Add(llAction, L"      <file>");
-            FLog->Add(llAction, FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName())));
-            FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1))));
+            FLog->Add(llAction, FORMAT(L"        <filename value=\"%s\" />", XmlEscape(File->GetFileName()).c_str()));
+            FLog->Add(llAction, FORMAT(L"        <type value=\"%s\" />", XmlEscape(std::wstring(File->GetType(), 1)).c_str()));
             if (!File->GetIsDirectory())
             {
-              FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize())));
+              FLog->Add(llAction, FORMAT(L"        <size value=\"%s\" />", IntToStr(File->GetSize()).c_str()));
             }
-            FLog->Add(llAction, FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification())));
-            FLog->Add(llAction, FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText())));
+            FLog->Add(llAction, FORMAT(L"        <modification value=\"%s\" />", XmlTimestamp(File->GetModification()).c_str()));
+            FLog->Add(llAction, FORMAT(L"        <permissions value=\"%s\" />", XmlEscape(File->GetRights()->GetText()).c_str()));
             FLog->Add(llAction, L"      </file>");
           }
           FLog->Add(llAction, L"    </files>");
@@ -154,7 +154,7 @@ public:
             for (int Index = 0; Index < FErrorMessages->GetCount(); Index++)
             {
               FLog->Add(llAction,
-                FORMAT(L"      <message>%s</message>", XmlEscape(FErrorMessages->GetString(Index).c_str())));
+                FORMAT(L"      <message>%s</message>", XmlEscape(FErrorMessages->GetString(Index).c_str()).c_str()));
             }
             FLog->Add(llAction, L"    </result>");
           }
@@ -268,20 +268,20 @@ protected:
     FLog->RecordPendingActions();
   }
 
-  const char * ActionName()
+  const wchar_t *ActionName()
   {
     switch (FAction)
     {
-      case laUpload: return "upload";
-      case laDownload: return "download";
-      case laTouch: return "touch";
-      case laChmod: return "chmod";
-      case laMkdir: return "mkdir";
-      case laRm: return "rm";
-      case laMv: return "mv";
-      case laCall: return "call";
-      case laLs: return "ls";
-      default: assert(false); return "";
+      case laUpload: return L"upload";
+      case laDownload: return L"download";
+      case laTouch: return L"touch";
+      case laChmod: return L"chmod";
+      case laMkdir: return L"mkdir";
+      case laRm: return L"rm";
+      case laMv: return L"mv";
+      case laCall: return L"call";
+      case laLs: return L"ls";
+      default: assert(false); return L"";
     }
   }
 
@@ -618,14 +618,17 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
     {
       if (Type != llAction)
       {
-        std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+        SYSTEMTIME t;
+        ::GetLocalTime(&t);
+        // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+        std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
+            t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
         fputc(LogLineMarks[Type], (FILE *)FFile);
         // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
         fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Timestamp.c_str()).c_str());
       }
       // use fwrite instead of fprintf to make sure that even
       // non-ascii data (unicode) gets in.
-      // fwrite(Line.c_str(), 1, Line.size() * sizeof(wchar_t), (FILE *)FFile);
       fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Line.c_str()).c_str());
       fputc('\n', (FILE *)FFile);
     }
@@ -717,7 +720,7 @@ void TSessionLog::ReflectSettings()
     FLogging = ALogging;
     Add(llAction, L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     Add(llAction, FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-      XmlEscape(FSessionData->GetSessionName()), XmlTimestamp()));
+      XmlEscape(FSessionData->GetSessionName()).c_str(), XmlTimestamp().c_str()));
     StateChange();
   }
   else if (!LoggingActions && FLoggingActions)
@@ -769,29 +772,30 @@ void TSessionLog::OpenLogFile()
     assert(FConfiguration != NULL);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     std::wstring NewFileName = StripPathQuotes(ExpandEnvironmentVariables(FCurrentLogFileName));
-    TDateTime N = Now();
+    SYSTEMTIME t;
+    ::GetLocalTime(&t);
     for (int Index = 1; Index < NewFileName.size(); Index++)
     {
-      if (NewFileName[Index] == '!')
+      if ((NewFileName[Index] == '&') && (Index < NewFileName.size() - 1))
       {
         std::wstring Replacement;
         // keep consistent with TFileCustomCommand::PatternReplacement
         switch (tolower(NewFileName[Index + 1]))
         {
           case 'y':
-            Replacement = FormatDateTime(L"yyyy", N);
+            Replacement = FORMAT(L"%04d", t.wYear);
             break;
 
           case 'm':
-            Replacement = FormatDateTime(L"mm", N);
+            Replacement = FORMAT(L"%02d", t.wMonth);
             break;
 
           case 'd':
-            Replacement = FormatDateTime(L"dd", N);
+            Replacement = FORMAT(L"%02d", t.wDay);
             break;
 
           case 't':
-            Replacement = FormatDateTime(L"hhnnss", N);
+            Replacement = FORMAT(L"%02d%02d%02d", t.wHour, t.wMinute, t.wSecond);
             break;
 
           case '@':
@@ -802,12 +806,12 @@ void TSessionLog::OpenLogFile()
             Replacement = MakeValidFileName(FSessionData->GetSessionName());
             break;
 
-          case '!':
-            Replacement = L"!";
+          case '&':
+            Replacement = L"&";
             break;
 
           default:
-            Replacement = std::wstring(L"!") + NewFileName[Index + 1];
+            Replacement = std::wstring(L"&") + NewFileName[Index + 1];
             break;
         }
         NewFileName.erase(Index, 2);

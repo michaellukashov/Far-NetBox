@@ -640,7 +640,7 @@ int TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::GetFiles(HANDLE Plugin,
         struct PluginPanelItem *PanelItem, int ItemsNumber, int Move,
-        wchar_t *DestPath, int OpMode)
+        const wchar_t **DestPath, int OpMode)
 {
     TCustomFarFileSystem *FileSystem = (TCustomFarFileSystem *)Plugin;
     try
@@ -2041,19 +2041,19 @@ int TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem *PanelItem,
 }
 //---------------------------------------------------------------------------
 int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
-        int ItemsNumber, int Move, wchar_t *DestPath, int OpMode)
+        int ItemsNumber, int Move, const wchar_t **DestPath, int OpMode)
 {
     ResetCachedInfo();
     TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     int Result;
-    std::wstring DestPathStr = DestPath;
+    std::wstring DestPathStr = *DestPath;
     {
         BOOST_SCOPE_EXIT ( (&DestPathStr) (&DestPath) (&PanelItems) )
         {
             StrToFar(DestPathStr);
-            if (DestPathStr != DestPath)
+            if (DestPathStr != *DestPath)
             {
-                wcscpy_s(DestPath, DestPathStr.size(), DestPathStr.c_str());
+                // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
             }
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
