@@ -1696,8 +1696,9 @@ void TTerminal::EndTransaction()
 //---------------------------------------------------------------------------
 void TTerminal::SetExceptionOnFail(bool value)
 {
-  if (value) FExceptionOnFail++;
-    else
+  if (value)
+    FExceptionOnFail++;
+  else
   {
     if (FExceptionOnFail == 0)
       throw std::exception("ExceptionOnFail is already zero.");
