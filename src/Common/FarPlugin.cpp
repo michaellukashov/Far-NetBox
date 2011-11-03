@@ -859,17 +859,12 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
             {
                 FTimeoutButtonCaption = Caption;
                 Caption = FORMAT(Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
-                std::wstring Buffer;
-                Buffer.resize(512);
+                std::wstring Buffer(512, 0);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), Params->TimeoutStr.c_str(), Caption.c_str(), int(Params->Timeout / 1000));
                 SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
             Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
-            std::wstring Buffer;
-            Buffer.resize(512);
-            GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), L" %s ", Caption.c_str(), int(Params->Timeout / 1000));
-            Button->SetCaption(Buffer.c_str());
             Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
             Button->SetBottom(Button->GetTop());
             Button->SetResult(Index + 1);
@@ -890,7 +885,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
                         PrevButton->Move(0, -1);
                     }
                 }
-                Button->Move(- (Button->GetLeft() - GetBorderBox()->GetLeft()), 0);
+                Button->Move(-(Button->GetLeft() - GetBorderBox()->GetLeft()), 0);
                 ButtonLines++;
             }
 
@@ -924,11 +919,12 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin, unsigned int AFla
         TRect rect = GetClientRect();
         // DEBUG_PRINTF(L"rect.Left = %d, MaxLen = %d, rect.Right = %d", rect.Left, MaxLen, rect.Right);
         TPoint S(
-            rect.Left + MaxLen + (- (rect.Right + 1)),
+            // rect.Left + MaxLen + (-(rect.Right + 1)),
+            rect.Left + MaxLen - rect.Right,
             rect.Top + MessageLines->GetCount() +
             (Params->MoreMessages != NULL ? 1 : 0) + ButtonLines +
             (!Params->CheckBoxLabel.empty() ? 1 : 0) +
-            (- (rect.Bottom + 1)));
+            (-(rect.Bottom + 1)));
 
         if (Params->MoreMessages != NULL)
         {
@@ -1144,7 +1140,6 @@ int TCustomFarPlugin::Message(unsigned int Flags,
 {
     // DEBUG_PRINTF(L"Message = %s", Message.c_str());
     // throw ExtException(Message);
-    // _asm int 3;
     // when message is shown while some "custom" output is on screen,
     // make the output actually background of FAR screen
     if (FTerminalScreenShowing)
