@@ -579,8 +579,8 @@ class TFarDialog : public TObject
     friend class TFarListBox;
     typedef TFarDialog self;
 public:
-    TFarDialog(TCustomFarPlugin *AFarPlugin);
-    ~TFarDialog();
+    explicit TFarDialog(TCustomFarPlugin *AFarPlugin);
+    virtual ~TFarDialog();
 
     int ShowModal();
     void ShowGroup(int Group, bool Show);
@@ -702,8 +702,8 @@ public:
     void SetEnabled(bool value);
 
 protected:
-    TFarDialogContainer(TFarDialog *ADialog);
-    ~TFarDialogContainer();
+    explicit TFarDialogContainer(TFarDialog *ADialog);
+    virtual ~TFarDialogContainer();
 
     TFarDialog *GetDialog() { return FDialog; }
 
@@ -789,8 +789,8 @@ protected:
     notify_signal_type FOnExit;
     mouse_click_signal_type FOnMouseClick;
 
-    TFarDialogItem(TFarDialog *ADialog, int AType);
-    ~TFarDialogItem();
+    explicit TFarDialogItem(TFarDialog *ADialog, int AType);
+    virtual ~TFarDialogItem();
 
     FarDialogItem *GetDialogItem();
     bool GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
@@ -1036,7 +1036,7 @@ class TFarList : public TStringList
     friend TFarComboBox;
     typedef TFarList self;
 public:
-    TFarList(TFarDialogItem *ADialogItem = NULL);
+    explicit TFarList(TFarDialogItem *ADialogItem = NULL);
     virtual ~TFarList();
 
     virtual void Assign(TPersistent *Source);
@@ -1085,8 +1085,8 @@ class TFarListBox : public TFarDialogItem
 {
     typedef TFarListBox self;
 public:
-    TFarListBox(TFarDialog *ADialog);
-    ~TFarListBox();
+    explicit TFarListBox(TFarDialog *ADialog);
+    virtual ~TFarListBox();
 
     void SetItems(TStrings *value);
 
@@ -1120,8 +1120,8 @@ class TFarComboBox : public TFarDialogItem
 {
     typedef TFarComboBox self;
 public:
-    TFarComboBox(TFarDialog *ADialog);
-    ~TFarComboBox();
+    explicit TFarComboBox(TFarDialog *ADialog);
+    virtual ~TFarComboBox();
 
     void ResizeToFitContent();
 
@@ -1151,7 +1151,7 @@ class TFarLister : public TFarDialogItem
 {
     typedef TFarLister self;
 public:
-    TFarLister(TFarDialog *ADialog);
+    explicit TFarLister(TFarDialog *ADialog);
     virtual ~TFarLister();
 
     TStrings *GetItems();
