@@ -1535,8 +1535,9 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
 
 TDateTime Date()
 {
-    TDateTime result;
-    ::Error(SNotImplemented, 44);
+    SYSTEMTIME t;
+    ::GetLocalTime(&t);
+    TDateTime result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
     return result;
 }
 
