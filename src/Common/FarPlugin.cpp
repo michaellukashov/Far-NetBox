@@ -768,16 +768,16 @@ private:
     TDateTime FLastTimerTime;
     TFarButton *FTimeoutButton;
     std::wstring FTimeoutButtonCaption;
-    TFarCheckBox *CheckBox;
+    TFarCheckBox *FCheckBox;
 };
 //---------------------------------------------------------------------------
 TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin,
     TFarMessageParams *Params) :
     TFarDialog(Plugin),
-    FParams(Params),
     FCheckBoxChecked(false),
+    FParams(Params),
     FTimeoutButton(NULL),
-    CheckBox(NULL)
+    FCheckBox(NULL)
 {
     assert(Params != NULL);
 }
@@ -910,17 +910,17 @@ void TFarMessageDialog::Init(unsigned int AFlags,
         if (!FParams->CheckBoxLabel.empty())
         {
             SetNextItemPosition(ipNewLine);
-            CheckBox = new TFarCheckBox(this);
-            CheckBox->SetCaption(FParams->CheckBoxLabel);
+            FCheckBox = new TFarCheckBox(this);
+            FCheckBox->SetCaption(FParams->CheckBoxLabel);
 
-            if (MaxLen < CheckBox->GetRight() - GetBorderBox()->GetLeft())
+            if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
             {
-                MaxLen = CheckBox->GetRight() - GetBorderBox()->GetLeft();
+                MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft();
             }
         }
         else
         {
-            CheckBox = NULL;
+            FCheckBox = NULL;
         }
 
         TRect rect = GetClientRect();
@@ -1006,17 +1006,17 @@ void TFarMessageDialog::Change()
 
     if (GetHandle() != NULL)
     {
-        if ((CheckBox != NULL) && (FCheckBoxChecked != CheckBox->GetChecked()))
+        if ((FCheckBox != NULL) && (FCheckBoxChecked != FCheckBox->GetChecked()))
         {
             for (int Index = 0; Index < GetItemCount(); Index++)
             {
                 TFarButton *Button = dynamic_cast<TFarButton *>(GetItem(Index));
                 if ((Button != NULL) && (Button->GetTag() == 0))
                 {
-                    Button->SetEnabled(!CheckBox->GetChecked());
+                    Button->SetEnabled(!FCheckBox->GetChecked());
                 }
             }
-            FCheckBoxChecked = CheckBox->GetChecked();
+            FCheckBoxChecked = FCheckBox->GetChecked();
         }
     }
 }
@@ -1026,18 +1026,18 @@ int TFarMessageDialog::Execute(bool &ACheckBox)
     FStartTime = Now();
     FLastTimerTime = FStartTime;
     FCheckBoxChecked = !ACheckBox;
-    if (CheckBox != NULL)
+    if (FCheckBox != NULL)
     {
-        CheckBox->SetChecked(ACheckBox);
+        FCheckBox->SetChecked(ACheckBox);
     }
 
     int Result = ShowModal();
     assert(Result != 0);
     if (Result > 0)
     {
-        if (CheckBox != NULL)
+        if (FCheckBox != NULL)
         {
-            ACheckBox = CheckBox->GetChecked();
+            ACheckBox = FCheckBox->GetChecked();
         }
         Result--;
     }
