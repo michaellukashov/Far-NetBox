@@ -1858,7 +1858,7 @@ bool TFarButton::HotKey(char HotKey)
     int P = GetCaption().find_first_of(L"&");
     bool Result =
         GetVisible() && GetEnabled() &&
-        (P > 0) && (P < GetCaption().size()) &&
+        (P >= 0) && (P < GetCaption().size()) &&
         (GetCaption()[P + 1] == HotKey);
     if (Result)
     {
