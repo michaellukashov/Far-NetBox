@@ -18,7 +18,7 @@
 std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 {
   // it used to return "/" when input path was empty
-  if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size()))
+  if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size() - 1))
   {
     return Path + L"/";
   }
