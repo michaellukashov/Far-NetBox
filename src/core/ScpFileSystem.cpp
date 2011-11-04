@@ -621,6 +621,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
       do
       {
         Line = FSecureShell->ReceiveLine();
+        DEBUG_PRINTF(L"Line = %s", Line.c_str());
         IsLast = IsLastLine(Line);
         if (!IsLast || !Line.empty())
         {
@@ -687,6 +688,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
         ::Busy(false);
       }
     } BOOST_SCOPE_EXIT_END
+    DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
     SendCommand(Cmd);
 
     int COParams = coWaitForLastLine;
@@ -788,7 +790,7 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
-        // DEBUG_PRINTF(L"GetOutput()->GetString(0) = %s", GetOutput()->GetString(0).c_str());
+        DEBUG_PRINTF(L"GetOutput()->GetString(0) = %s", GetOutput()->GetString(0).c_str());
         if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
