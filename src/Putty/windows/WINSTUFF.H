@@ -9,7 +9,6 @@
 #include <winsock2.h>
 #endif
 #include <windows.h>
-#include <Commdlg.h>
 #include <stdio.h>		       /* for FILENAME_MAX */
 
 #include "tree234.h"
