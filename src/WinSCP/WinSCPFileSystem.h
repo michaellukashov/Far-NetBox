@@ -92,6 +92,7 @@ friend class TKeepaliveThread;
 friend class TQueueDialog;
 public:
   TWinSCPFileSystem(TCustomFarPlugin * APlugin);
+  virtual void Init(TSecureShell * SecureShell);
   virtual ~TWinSCPFileSystem();
 
   virtual void Close();

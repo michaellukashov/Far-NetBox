@@ -315,15 +315,19 @@ TStrings * TCommandSet::CreateCommandList()
   return CommandList;
 }
 //===========================================================================
-TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal, TSecureShell * SecureShell):
+TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(ATerminal)
+{
+  Self = this;
+}
+
+void TSCPFileSystem::Init(TSecureShell *SecureShell)
 {
   FSecureShell = SecureShell;
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FOutput = new TStringList();
   FProcessingCommand = false;
-  Self = this;
 
   FFileSystemInfo.ProtocolBaseName = L"SCP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
@@ -790,8 +794,10 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
-        DEBUG_PRINTF(L"GetOutput()->GetString(0) = %s", GetOutput()->GetString(0).c_str());
-        if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
+        // DEBUG_PRINTF(L"GetOutput()->GetCount = %d, GetOutput()->GetString(0) = %s", GetOutput()->GetCount(), GetOutput()->GetString(0).c_str());
+        std::wstring str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
+        int val = StrToIntDef(str, 256);
+        if ((GetOutput()->GetCount() != 1) || str.empty() || (val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
           Abort();

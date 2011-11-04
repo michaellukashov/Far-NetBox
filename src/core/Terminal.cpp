@@ -754,14 +754,16 @@ void TTerminal::Open()
                     (GetSessionData()->GetFSProtocol() == fsSFTP && FSecureShell->SshFallbackCmd()))
                 {
                   FFSProtocol = cfsSCP;
-                  FFileSystem = new TSCPFileSystem(this, FSecureShell);
+                  FFileSystem = new TSCPFileSystem(this);
+                  FFileSystem->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SCP protocol.");
                 }
                 else
                 {
                   FFSProtocol = cfsSFTP;
-                  FFileSystem = new TSFTPFileSystem(this, FSecureShell);
+                  FFileSystem = new TSFTPFileSystem(this);
+                  FFileSystem->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SFTP protocol.");
                 }

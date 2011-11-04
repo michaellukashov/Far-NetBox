@@ -252,6 +252,7 @@ TCustomFarFileSystem * TNetBoxPlugin::OpenPluginEx(int OpenFrom, int Item)
     else
     {
       FileSystem = new TWinSCPFileSystem(this);
+      FileSystem->Init(NULL);
 
       if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
           OpenFrom == OPEN_FINDLIST)

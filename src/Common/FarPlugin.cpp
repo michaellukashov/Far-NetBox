@@ -27,7 +27,8 @@ TFarMessageParams::TFarMessageParams()
     ClickEvent = NULL;
 }
 //---------------------------------------------------------------------------
-TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst): TObject()
+TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
+    TObject()
 {
     // DEBUG_PRINTF(L"TCustomFarPlugin: begin");
     InitPlatformId();
@@ -1781,10 +1782,13 @@ unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
 TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin) :
     TObject(),
-    FPlugin(NULL)
+    FPlugin(APlugin)
+{
+};
+
+void TCustomFarFileSystem::Init()
 {
     FCriticalSection = new TCriticalSection;
-    FPlugin = APlugin;
     FPanelInfo[0] = NULL;
     FPanelInfo[1] = NULL;
     FClosed = false;
@@ -1793,7 +1797,8 @@ TCustomFarFileSystem::TCustomFarFileSystem(TCustomFarPlugin *APlugin) :
     ClearOpenPluginInfo(FOpenPluginInfo);
     FInstances++;
     // DEBUG_PRINTF(L"FInstances = %d", FInstances);
-};
+}
+
 //---------------------------------------------------------------------------
 TCustomFarFileSystem::~TCustomFarFileSystem()
 {

@@ -444,7 +444,9 @@ class TCustomFarFileSystem : public TObject
     friend TCustomFarPlugin;
 public:
     TCustomFarFileSystem(TCustomFarPlugin *APlugin);
+    virtual void Init();
     virtual ~TCustomFarFileSystem();
+
     void GetOpenPluginInfo(struct OpenPluginInfo *Info);
     int GetFindData(struct PluginPanelItem **PanelItem,
         int *ItemsNumber, int OpMode);

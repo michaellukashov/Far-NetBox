@@ -288,11 +288,15 @@ void TKeepaliveThread::Execute()
   CloseHandle(FEvent);
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin)
 {
   Self = this;
+}
+//---------------------------------------------------------------------------
+void TWinSCPFileSystem::Init(TSecureShell * SecureShell)
+{
+  TCustomFarFileSystem::Init();
   FReloadDirectory = false;
   FProgressSaveScreenHandle = 0;
   FSynchronizationSaveScreenHandle = 0;
@@ -324,6 +328,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FEditorPendingSave = false;
   FOutputLog = false;
 }
+
 //---------------------------------------------------------------------------
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
