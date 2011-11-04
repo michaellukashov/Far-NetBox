@@ -64,7 +64,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
-    // If it is not SSH/PFwd plug, them it must be Proxy plug.
+    // If it is not SSH/PFwd plug, then it must be Proxy plug.
     // Get SSH/PFwd plug which it wraps.
     Proxy_Socket ProxySocket = ((Proxy_Plug)plug)->proxy_socket;
     plug = ProxySocket->plug;
