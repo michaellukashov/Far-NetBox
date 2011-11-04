@@ -505,7 +505,7 @@ void TSCPFileSystem::EnsureLocation()
   if (!FCachedDirectoryChange.empty())
   {
     FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
-      (FCachedDirectoryChange)));
+      FCachedDirectoryChange.c_str()));
     std::wstring Directory = FCachedDirectoryChange;
     FCachedDirectoryChange = L"";
     try
@@ -614,7 +614,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
     if (Params & coWaitForLastLine)
     {
       std::wstring Line;
-      bool IsLast;
+      bool IsLast = true;
       unsigned int Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
@@ -993,7 +993,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        bool Empty;
+        bool Empty = true;
         if (ListCurrentDirectory)
         {
           // Empty file list -> probably "permision denied", we
