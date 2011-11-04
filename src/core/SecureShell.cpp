@@ -815,7 +815,7 @@ int TSecureShell::Receive(char * Buf, int Len)
 //---------------------------------------------------------------------------
 std::wstring TSecureShell::ReceiveLine()
 {
-  unsigned Index;
+  unsigned Index = 0;
   char Ch;
   std::string Line;
   bool EOL = false;

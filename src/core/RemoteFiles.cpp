@@ -991,7 +991,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         int P = Line.find_first_of(L' '); \
         if (P != std::wstring::npos) \
         { \
-            Col = Line.substr(0, P); Line.erase(0, P); \
+            Col = Line.substr(0, P); Line.erase(0, P + 1); \
         } \
         else \
         { \
@@ -1148,8 +1148,8 @@ void TRemoteFile::SetListingStr(std::wstring value)
           if ((P = (unsigned int)Col.find(L':')) != std::wstring::npos)
           {
             unsigned int CurrMonth, CurrDay;
-            Hour = (unsigned int)StrToInt(Col.substr(0, P-1));
-            Min = (unsigned int)StrToInt(Col.substr(P, Col.size() - P));
+            Hour = (unsigned int)StrToInt(Col.substr(0, P));
+            Min = (unsigned int)StrToInt(Col.substr(P + 1, Col.size() - P - 1));
             // DEBUG_PRINTF(L"Hour = %d, Min = %d", Hour, Min);
             if (Hour > 23 || Hour > 59) Abort();
             // When we don't got year, we assume current year
@@ -1190,7 +1190,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        int P;
+        int P = -1;
 
         FLinkTo = L"";
         if (GetIsSymLink())
