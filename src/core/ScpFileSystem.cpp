@@ -1009,7 +1009,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FTerminal->ReadFile(
             UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
               PARENTDIRECTORY, File);
-          Empty = (File == NULL);
+          Empty = (File == NULL || (wcscmp(File->GetFileName().c_str(), PARENTDIRECTORY) == 0));
           if (!Empty)
           {
             assert(File->GetIsParentDirectory());
