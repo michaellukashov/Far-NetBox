@@ -3115,11 +3115,12 @@ static void ssh_agent_callback(void *sshv, void *reply, int replylen)
 
     ssh->agent_response = reply;
     ssh->agent_response_len = replylen;
+	logeventf(ssh, "ssh->version = %d", ssh->version);
 
     if (ssh->version == 1)
-	do_ssh1_login(ssh, NULL, -1, NULL);
+		do_ssh1_login(ssh, NULL, -1, NULL);
     else
-	do_ssh2_authconn(ssh, NULL, -1, NULL);
+		do_ssh2_authconn(ssh, NULL, -1, NULL);
 }
 
 static void ssh_dialog_callback(void *sshv, int ret)
@@ -7487,6 +7488,15 @@ static void do_ssh2_authconn(Ssh ssh, unsigned char *in, int inlen,
 		s->agent_responselen = ssh->agent_response_len;
 	    }
 	    s->agent_response = (unsigned char *) r;
+		logeventf(ssh, "s->agent_responselen = %d",
+			s->agent_responselen);
+		if (s->agent_responselen) {
+			logeventf(ssh, "s->agent_response[4] = %d",
+				(int)s->agent_response[4]);
+			logeventf(ssh, "SSH2_AGENT_IDENTITIES_ANSWER = %d, s->agent_response = %s",
+				(int)SSH2_AGENT_IDENTITIES_ANSWER,
+				s->agent_response);
+		}
 	    if (s->agent_response && s->agent_responselen >= 5 &&
 		s->agent_response[4] == SSH2_AGENT_IDENTITIES_ANSWER) {
 		int keyi;
