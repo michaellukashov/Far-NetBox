@@ -1759,7 +1759,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
     if (verify_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
           (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #endif
-    if (0)
+    // if (0)
     {
       StoredKeys = ::MB2W(StoredKeys2.c_str()); // PackStr(StoredKeys);
       std::wstring Buf = StoredKeys;
