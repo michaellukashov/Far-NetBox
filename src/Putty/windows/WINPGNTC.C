@@ -168,7 +168,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
     *out = NULL;
     *outlen = 0;
 
-    hwnd = FindWindowA("Pageant", "Pageant");
+    hwnd = FindWindow("Pageant", "Pageant");
     if (!hwnd)
 	return 1;		       /* *out == NULL, so failure */
     mapname = dupprintf("PageantRequest%08x", (unsigned)GetCurrentThreadId());
@@ -211,7 +211,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
     }
 #endif /* NO_SECURITY */
 
-    filemap = CreateFileMappingA(INVALID_HANDLE_VALUE, psa, PAGE_READWRITE,
+    filemap = CreateFileMapping(INVALID_HANDLE_VALUE, psa, PAGE_READWRITE,
 				0, AGENT_MAX_MSGLEN, mapname);
     if (filemap == NULL || filemap == INVALID_HANDLE_VALUE)
 	return 1;		       /* *out == NULL, so failure */
@@ -250,7 +250,8 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
      * query is required to be synchronous) or CreateThread failed.
      * Either way, we need a synchronous request.
      */
-    id = SendMessageA(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
+	ChangeWindowMessageFilterEx(hwnd, WM_COPYDATA, MSGFLT_ALLOW, NULL);
+    id = SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
     if (id > 0) {
 	retlen = 4 + GET_32BIT(p);
 	ret = snewn(retlen, unsigned char);
