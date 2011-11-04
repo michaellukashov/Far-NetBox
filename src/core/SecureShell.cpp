@@ -1819,7 +1819,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
       int R = FUI->QueryUser(
-        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType, Fingerprint.c_str()),
+        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType.c_str(), Fingerprint.c_str()),
         NULL, Answers, &Params, qtWarning);
 
       switch (R) {

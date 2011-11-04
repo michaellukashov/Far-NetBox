@@ -90,6 +90,8 @@ void call_sha1_key_internal(void * handle, unsigned char * key, int len);
 
 size_t strftime2( char *s, size_t maxsize, const char *fmt, const struct tm *t );
 
+void win_misc_cleanup();
+
 #ifdef __cplusplus
 }
 #endif /* C++ */

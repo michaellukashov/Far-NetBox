@@ -50,6 +50,7 @@ void PuttyFinalize()
   random_unref();
 
   sk_cleanup();
+  win_misc_cleanup();
   DeleteCriticalSection(&noise_section);
 }
 //---------------------------------------------------------------------------
@@ -345,7 +346,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   std::wstring RegKey = ::MB2W(SubKey);
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().size();
   assert(RegKey.substr(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
-  RegKey = RegKey.substr(PuttyKeyLen + 1, RegKey.size() - PuttyKeyLen);
+  RegKey = RegKey.substr(PuttyKeyLen, RegKey.size() - PuttyKeyLen);
   // DEBUG_PRINTF(L"RegKey = %s", RegKey.c_str());
   if (!RegKey.empty())
   {
