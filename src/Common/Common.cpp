@@ -11,6 +11,7 @@
 #include "boost/date_time/local_time/local_time.hpp"
 
 #include "Common.h"
+#include "Classes.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
@@ -36,6 +37,11 @@ inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
     return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
+//---------------------------------------------------------------------------
+void Abort()
+{
+    throw EAbort("");
+}
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
 {

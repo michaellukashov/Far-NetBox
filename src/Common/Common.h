@@ -234,11 +234,7 @@ void InitPlatformId();
 #define USEDPARAM(p) ((void)p)
 
 //---------------------------------------------------------------------------
-static void Abort()
-{
-    throw std::exception();
-}
-
+void Abort();
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data);
 
