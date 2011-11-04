@@ -50,6 +50,7 @@ void PuttyFinalize()
   random_unref();
 
   sk_cleanup();
+  win_misc_cleanup();
   DeleteCriticalSection(&noise_section);
 }
 //---------------------------------------------------------------------------
