@@ -1161,7 +1161,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
             Sec = 0;
             FModificationFmt = mfMDHM;
           }
-            else
+          else
           {
             Year = (unsigned int)StrToInt(Col);
             if (Year > 10000) Abort();
