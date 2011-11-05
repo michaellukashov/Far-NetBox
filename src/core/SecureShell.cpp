@@ -234,7 +234,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   if (!Data->GetTunnelPortFwd().empty())
   {
     assert(!Simple);
-    DEBUG_PRINTF(L"Data->GetTunnelPortFwd = %s", Data->GetTunnelPortFwd().c_str());
+    // DEBUG_PRINTF(L"Data->GetTunnelPortFwd = %s", Data->GetTunnelPortFwd().c_str());
     ASCOPY(cfg->portfwd, ::W2MB(Data->GetTunnelPortFwd().c_str()));
     // cfg->portfwd = ::StrNew(::W2MB(Data->GetTunnelPortFwd().c_str()).c_str());
     // when setting up a tunnel, do not open shell/sftp
@@ -325,7 +325,7 @@ void TSecureShell::Open()
   FUI->Information(LoadStr(STATUS_LOOKUPHOST), true);
   StoreToConfig(FSessionData, FConfig, GetSimple());
 
-  char * RealHost;
+  char * RealHost = NULL;
   FreeBackend(); // in case we are reconnecting
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
     (char *)::W2MB(FSessionData->GetHostName().c_str()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
