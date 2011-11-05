@@ -256,6 +256,8 @@ class TTunnelUI : public TSessionUI
 {
 public:
   TTunnelUI(TTerminal * Terminal);
+  virtual ~TTunnelUI()
+  {}
   virtual void Information(const std::wstring & Str, bool Status);
   virtual int QueryUser(const std::wstring Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
