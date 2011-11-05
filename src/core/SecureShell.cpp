@@ -1172,6 +1172,7 @@ void inline TSecureShell::LogEvent(const std::wstring & Str)
 //---------------------------------------------------------------------------
 void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 {
+  DEBUG_PRINTF(L"Socket = %d, Event = %d, Startup = %d", Socket, Event, Startup);
   int Events;
 
   if (Startup)
@@ -1183,6 +1184,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     Events = 0;
   }
 
+  DEBUG_PRINTF(L"Events = %d, Configuration->GetActualLogProtocol = %d", Events, Configuration->GetActualLogProtocol());
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
@@ -1220,7 +1222,7 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
     assert(value);
     assert((FActive && (FSocket == value)) || (!FActive && Startup));
 
-    // filter our "local proxy" connection, which have no socket
+    // filter our "local proxy" connection, which has no socket
     if (value != INVALID_SOCKET)
     {
       SocketEventSelect(value, FSocketEvent, Startup);
