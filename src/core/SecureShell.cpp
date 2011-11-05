@@ -136,7 +136,9 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   // user-configurable settings
   ASCOPY(cfg->host, ::W2MB(Data->GetHostName().c_str()));
+  // cfg->host = ::StrNew(::W2MB(Data->GetHostName().c_str()).c_str());
   ASCOPY(cfg->username, ::W2MB(Data->GetUserName().c_str()));
+  // cfg->username = ::StrNew(::W2MB(Data->GetUserName().c_str())).c_str();
   cfg->port = Data->GetPortNumber();
   cfg->protocol = PROT_SSH;
   // always set 0, as we will handle keepalives ourselves to avoid
@@ -147,6 +149,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   cfg->agentfwd = Data->GetAgentFwd();
   cfg->addressfamily = Data->GetAddressFamily();
   ASCOPY(cfg->ssh_rekey_data, ::W2MB(Data->GetRekeyData().c_str()));
+  // cfg->ssh_rekey_data = ::StrNew(::W2MB(Data->GetRekeyData().c_str())).c_str();
   cfg->ssh_rekey_time = Data->GetRekeyTime();
 
   for (int c = 0; c < CIPHER_COUNT; c++)
@@ -182,6 +185,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   if (SPublicKeyFile.empty()) SPublicKeyFile = Configuration->GetDefaultKeyFile();
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
   ASCOPY(cfg->keyfile.path, ::W2MB(SPublicKeyFile.c_str()));
+  // cfg->keyfile.path = ::StrNew(::W2MB(SPublicKeyFile.c_str())).c_str();
   cfg->sshprot = Data->GetSshProt();
   cfg->ssh2_des_cbc = Data->GetSsh2DES();
   cfg->ssh_no_userauth = Data->GetSshNoUserAuth();
@@ -193,16 +197,21 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   cfg->proxy_type = Data->GetProxyMethod();
   ASCOPY(cfg->proxy_host, ::W2MB(Data->GetProxyHost().c_str()));
+  // cfg->proxy_host = ::StrNew(::W2MB(Data->GetProxyHost().c_str())).c_str();
   cfg->proxy_port = Data->GetProxyPort();
   ASCOPY(cfg->proxy_username, ::W2MB(Data->GetProxyUsername().c_str()));
+  // cfg->proxy_username = ::StrNew(::W2MB(Data->GetProxyUsername().c_str())).c_str();
   ASCOPY(cfg->proxy_password, ::W2MB(Data->GetProxyPassword().c_str()));
+  // cfg->proxy_password = ::StrNew(::W2MB(Data->GetProxyPassword().c_str())).c_str();
   if (Data->GetProxyMethod() == pmCmd)
   {
     ASCOPY(cfg->proxy_telnet_command, ::W2MB(Data->GetProxyLocalCommand().c_str()));
+    // cfg->proxy_telnet_command = ::StrNew(::W2MB(Data->GetProxyLocalCommand().c_str())).c_str();
   }
   else
   {
     ASCOPY(cfg->proxy_telnet_command, ::W2MB(Data->GetProxyTelnetCommand().c_str()));
+    // cfg->proxy_telnet_command = ::StrNew(::W2MB(Data->GetProxyTelnetCommand().c_str())).c_str();
   }
   cfg->proxy_dns = Data->GetProxyDNS();
   cfg->even_proxy_localhost = Data->GetProxyLocalhost();
@@ -225,7 +234,9 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   if (!Data->GetTunnelPortFwd().empty())
   {
     assert(!Simple);
+    DEBUG_PRINTF(L"Data->GetTunnelPortFwd = %s", Data->GetTunnelPortFwd().c_str());
     ASCOPY(cfg->portfwd, ::W2MB(Data->GetTunnelPortFwd().c_str()));
+    // cfg->portfwd = ::StrNew(::W2MB(Data->GetTunnelPortFwd().c_str()).c_str());
     // when setting up a tunnel, do not open shell/sftp
     cfg->ssh_no_shell = TRUE;
   }
@@ -391,7 +402,7 @@ void TSecureShell::Init()
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyLogEvent(const std::wstring & Str)
 {
-  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
+  DEBUG_PRINTF(L"Str = %s", Str.c_str());
   #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.find(std::wstring(SERVER_VERSION_MSG)) == 0)
@@ -547,6 +558,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   for (int Index = 0; Index < Prompts->GetCount(); Index++)
   {
     std::wstring Prompt = Prompts->GetString(Index);
+    DEBUG_PRINTF(L"Prompt = %s", Prompt.c_str());
     if (PromptTranslation != NULL)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
@@ -596,6 +608,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Result = true;
       Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
+      DEBUG_PRINTF(L"Results = %s", Results->GetText().c_str());
+      DEBUG_PRINTF(L"FSessionData->GetPassword = %s", FSessionData->GetPassword().c_str());
     }
   }
 
