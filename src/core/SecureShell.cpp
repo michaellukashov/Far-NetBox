@@ -1089,7 +1089,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   {
     Line = ::TrimRight(FStdErrorTemp.substr(0, P));
     FStdErrorTemp.erase(0, P + 1);
-    // DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
+    DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
     AddStdErrorLine(Line);
   }
 }
@@ -1204,6 +1204,8 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 {
+  DEBUG_PRINTF(L"FActive = %d, Startup = %d", FActive, Startup);
+  DEBUG_PRINTF(L"value = %d, INVALID_SOCKET = %d", value, INVALID_SOCKET);
   if (!FActive && !Startup)
   {
     // no-op
@@ -1243,13 +1245,14 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
+  DEBUG_PRINTF(L"Configuration->GetActualLogProtocol = %d", Configuration->GetActualLogProtocol());
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
   }
 
   SocketEventSelect(value, FSocketEvent, Startup);
-
+  DEBUG_PRINTF(L"Startup = %d, FPortFwdSockets.size = %d", Startup, FPortFwdSockets.size());
   if (Startup)
   {
     FPortFwdSockets.insert(value);

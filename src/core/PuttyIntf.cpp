@@ -72,6 +72,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   }
 
   bool pfwd = is_pfwd(plug);
+  DEBUG_PRINTF(L"pfwd = %d", pfwd);
   if (pfwd)
   {
     plug = (Plug)get_pfwd_backend(plug);
