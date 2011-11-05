@@ -218,7 +218,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   // #pragma option push -w-eas
   // after 0.53b values were reversed, however putty still stores
-  // settings to registry in save way as before
+  // settings to registry in same way as before
   cfg->sshbug_ignore1 = Data->GetBug(sbIgnore1);
   cfg->sshbug_plainpw1 = Data->GetBug(sbPlainPW1);
   cfg->sshbug_rsa1 = Data->GetBug(sbRSA1);
@@ -300,6 +300,9 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       }
     }
   }
+
+  cfg->connect_timeout = Data->GetTimeout() * 1000;
+  // cfg->sndbuf = Data->GetSshSendBuf();
 
   // permanent settings
   cfg->nopty = TRUE;
