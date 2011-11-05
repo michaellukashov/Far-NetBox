@@ -508,6 +508,7 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
 //---------------------------------------------------------------------------
 std::string DecodeUTF(const std::string UTF)
 {
+  DEBUG_PRINTF(L"UTF = %s", ::MB2W(UTF.c_str()).c_str());
   charset_state State;
   char *Str;
   TUnicodeEmitParams Params;
@@ -556,6 +557,7 @@ std::string EncodeUTF(const std::string Source)
 {
   // std::wstring::c_bstr() returns NULL for empty strings
   // (as opposite to std::wstring::c_str() which returns "")
+  DEBUG_PRINTF(L"Source = %s", ::MB2W(Source.c_str()).c_str());
   if (Source.empty())
   {
     return "";
