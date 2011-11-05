@@ -625,7 +625,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
       do
       {
         Line = FSecureShell->ReceiveLine();
-        DEBUG_PRINTF(L"Line = %s", Line.c_str());
+        // DEBUG_PRINTF(L"Line = %s", Line.c_str());
         IsLast = IsLastLine(Line);
         if (!IsLast || !Line.empty())
         {
@@ -692,7 +692,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
         ::Busy(false);
       }
     } BOOST_SCOPE_EXIT_END
-    DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
+    // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
     SendCommand(Cmd);
 
     int COParams = coWaitForLastLine;

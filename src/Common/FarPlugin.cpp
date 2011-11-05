@@ -2975,7 +2975,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
                         s.resize(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1);
                         Line.append(s.c_str(), P);
                     }
-                    DEBUG_PRINTF(L"Line = %s", Line.c_str());
+                    // DEBUG_PRINTF(L"Line = %s", Line.c_str());
                     Result->Add(Line);
                 }
                 while (!FullLine.empty());
