@@ -958,8 +958,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     if (Data->GetProxyMethod() != pmNone)
     {
       ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
-        (Data->GetProxyHost().c_str(), Data->GetProxyPort(),
-         Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().empty()).c_str()));
+        Data->GetProxyHost().c_str(), Data->GetProxyPort(),
+        Data->GetProxyUsername().c_str(), BooleanToEngStr(!Data->GetProxyPassword().empty()).c_str());
       if (Data->GetProxyMethod() == pmTelnet)
       {
         ADF(L"Telnet command: %s", Data->GetProxyTelnetCommand().c_str());
