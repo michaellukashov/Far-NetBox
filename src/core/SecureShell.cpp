@@ -1532,6 +1532,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
   WSANETWORKEVENTS * Events)
 {
+  DEBUG_PRINTF(L"begin");
   CheckConnection();
 
   bool Result = false;
@@ -1628,7 +1629,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
-
+  DEBUG_PRINTF(L"end");
   return Result;
 }
 //---------------------------------------------------------------------------

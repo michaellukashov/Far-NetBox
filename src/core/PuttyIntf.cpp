@@ -62,7 +62,7 @@ void DontSaveRandomSeed()
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
   void * frontend;
-
+  DEBUG_PRINTF(L"is_ssh(plug) = %d, is_pfwd(plug) = %d, skt = %d, startup = %d", is_ssh(plug), is_pfwd(plug), skt, startup);
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
     // If it is not SSH/PFwd plug, then it must be Proxy plug.
