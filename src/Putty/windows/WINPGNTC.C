@@ -161,7 +161,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
     unsigned char *p, *ret;
     int id, retlen;
     COPYDATASTRUCT cds;
-    SECURITY_ATTRIBUTES sa, *psa;
+    SECURITY_ATTRIBUTES sa, *psa = NULL;
     PSECURITY_DESCRIPTOR psd = NULL;
     PSID usersid = NULL;
 
