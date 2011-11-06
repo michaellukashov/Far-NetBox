@@ -68,8 +68,8 @@ BOOL CApiLog::InitLog(HWND hTargetWnd, int nLogMessage)
 
 void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 {
-	ASSERT(nMessageType>=0 || nMessageType<=8);
-	ASSERT(m_hTargetWnd || m_pApiLogParent);
+	assert(nMessageType>=0 || nMessageType<=8);
+	assert(m_hTargetWnd || m_pApiLogParent);
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
 
@@ -89,8 +89,8 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 
 void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
 {
-	ASSERT(nMessageType>=0 || nMessageType<=8);
-	ASSERT(m_hTargetWnd || m_pApiLogParent);
+	assert(nMessageType>=0 || nMessageType<=8);
+	assert(m_hTargetWnd || m_pApiLogParent);
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
 	
@@ -103,8 +103,8 @@ void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
 
 void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 {
-	ASSERT(nMessageType>=0 || nMessageType<=8);
-	ASSERT(m_hTargetWnd || m_pApiLogParent);
+	assert(nMessageType>=0 || nMessageType<=8);
+	assert(m_hTargetWnd || m_pApiLogParent);
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
 
@@ -127,9 +127,9 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 
 void CApiLog::LogMessage(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const
 {
-	ASSERT(nMessageType>=4 || nMessageType<=8);
-	ASSERT(m_hTargetWnd || m_pApiLogParent);
-	ASSERT(nSourceLine>0);
+	assert(nMessageType>=4 || nMessageType<=8);
+	assert(m_hTargetWnd || m_pApiLogParent);
+	assert(nSourceLine>0);
 
 
 	int pos=SourceFile.ReverseFind('\\');
@@ -163,9 +163,9 @@ BOOL CApiLog::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) con
 
 void CApiLog::LogMessageRaw(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const
 {
-	ASSERT(nMessageType>=4 || nMessageType<=8);
-	ASSERT(m_hTargetWnd || m_pApiLogParent);
-	ASSERT(nSourceLine>0);
+	assert(nMessageType>=4 || nMessageType<=8);
+	assert(m_hTargetWnd || m_pApiLogParent);
+	assert(nSourceLine>0);
 
 	int pos=SourceFile.ReverseFind('\\');
 	if (pos!=-1)
@@ -185,9 +185,9 @@ void CApiLog::LogMessageRaw(std::wstring SourceFile, int nSourceLine, void *pIns
 void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
 {
 #ifdef MPEXT
-	ASSERT(m_pApiLogParent);
-	ASSERT(m_pApiLogParent->m_hTargetWnd == 0);
-	ASSERT(m_pApiLogParent->m_nLogMessage == 0);
+	assert(m_pApiLogParent);
+	assert(m_pApiLogParent->m_hTargetWnd == 0);
+	assert(m_pApiLogParent->m_nLogMessage == 0);
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
 	//Displays a message in the message log	
@@ -200,15 +200,15 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
 #else
 	if (m_hTargetWnd)
 	{
-		ASSERT(m_nLogMessage);
+		assert(m_nLogMessage);
 		if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_nDebugLevel)
 			return;
 	}
 	else
 	{
-		ASSERT(m_pApiLogParent);
-		ASSERT(m_pApiLogParent->m_hTargetWnd);
-		ASSERT(m_pApiLogParent->m_nLogMessage);
+		assert(m_pApiLogParent);
+		assert(m_pApiLogParent->m_hTargetWnd);
+		assert(m_pApiLogParent->m_nLogMessage);
 		if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 			return;
 	}

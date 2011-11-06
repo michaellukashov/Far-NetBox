@@ -39,8 +39,8 @@
 typedef struct
 {
 	int id; //Type of command, see below
-	CString param1; //Parameters for this command
-	CString param2;
+	std::wstring param1; //Parameters for this command
+	std::wstring param2;
 	int	param4;
 	CServerPath path;
 	CServerPath newPath; //Used for rename
@@ -138,9 +138,9 @@ class COverwriteRequestData : public CAsyncRequestData
 public:
 	COverwriteRequestData();
 	virtual ~COverwriteRequestData();
-	CString FileName1;
-	CString FileName2;
-	CString path1,path2;
+	std::wstring FileName1;
+	std::wstring FileName2;
+	std::wstring path1,path2;
 	__int64 size1;
 	__int64 size2;
 	CTime *time1;
@@ -164,7 +164,7 @@ class CGssNeedPassRequestData : public CAsyncRequestData
 public:
 	CGssNeedPassRequestData();
 	virtual ~CGssNeedPassRequestData();
-	CString pass;
+	std::wstring pass;
 	int nOldOpState;
 };
 
@@ -173,7 +173,7 @@ class CGssNeedUserRequestData : public CAsyncRequestData
 public:
 	CGssNeedUserRequestData();
 	virtual ~CGssNeedUserRequestData();
-	CString user;
+	std::wstring user;
 	int nOldOpState;
 };
 #endif
@@ -184,7 +184,7 @@ class CNewHostKeyRequestData : public CAsyncRequestData
 public:
 	CNewHostKeyRequestData();
 	virtual ~CNewHostKeyRequestData();
-	CString Hostkey;
+	std::wstring Hostkey;
 };
 
 class CChangedHostKeyRequestData : public CAsyncRequestData
@@ -192,7 +192,7 @@ class CChangedHostKeyRequestData : public CAsyncRequestData
 public:
 	CChangedHostKeyRequestData();
 	virtual ~CChangedHostKeyRequestData();
-	CString Hostkey;
+	std::wstring Hostkey;
 };
 
 class CKeyboardInteractiveRequestData : public CAsyncRequestData
@@ -293,10 +293,10 @@ public:
 #endif
 	int SetDebugLevel( int nDebugLevel );
 
-	int CustomCommand(CString command);
-	int Delete(CString FileName, const CServerPath &path = CServerPath());
-	int RemoveDir(CString DirName, const CServerPath &path = CServerPath());
-	int Rename(CString oldName,CString newName, const CServerPath &path = CServerPath(), const CServerPath &newPath = CServerPath());
+	int CustomCommand(std::wstring command);
+	int Delete(std::wstring FileName, const CServerPath &path = CServerPath());
+	int RemoveDir(std::wstring DirName, const CServerPath &path = CServerPath());
+	int Rename(std::wstring oldName,std::wstring newName, const CServerPath &path = CServerPath(), const CServerPath &newPath = CServerPath());
 	int MakeDir(const CServerPath &path);
 	
 	
@@ -309,7 +309,7 @@ public:
 	int Disconnect();
 	void Destroy();
 	int Cancel();
-	int Chmod(int nValue, CString FileName, const CServerPath &path = CServerPath());
+	int Chmod(int nValue, std::wstring FileName, const CServerPath &path = CServerPath());
 	CFileZillaApi();
 	virtual ~CFileZillaApi();
 	//Initialization
@@ -329,7 +329,7 @@ public:
 	
 	int List(int nListMode=FZ_LIST_USECACHE); //Lists current folder
 	int List(const CServerPath& path, int nListMode=FZ_LIST_USECACHE);
-	int List(const CServerPath& parent, CString dirname, int nListMode=FZ_LIST_USECACHE);
+	int List(const CServerPath& parent, std::wstring dirname, int nListMode=FZ_LIST_USECACHE);
 
 	int FileTransfer(const t_transferfile &TransferFile);
 	int GetCurrentServer(t_server &server);
