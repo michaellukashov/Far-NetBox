@@ -770,7 +770,7 @@ static const char *sk_tcp_socket_error(Socket s);
 #ifdef MPEXT
 extern char *do_select(Plug plug, SOCKET skt, int startup);
 #else
-extern char *do_select(SOCKET skt, int startup);
+extern char *do_select(Plug plug, SOCKET skt, int startup);
 #endif
 
 Socket sk_register(void *sock, Plug plug)
@@ -823,7 +823,7 @@ Socket sk_register(void *sock, Plug plug)
 #ifdef MPEXT
     errstr = do_select(plug, ret->s, 1);
 #else
-    errstr = do_select(ret->s, 1);
+    errstr = do_select(plug, ret->s, 1);
 #endif
     if (errstr) {
 	ret->error = errstr;
@@ -860,7 +860,7 @@ static DWORD try_connect(Actual_Socket sock
 #ifdef MPEXT
 	do_select(sock->plug, sock->s, 0);
 #else
-	do_select(sock->s, 0);
+	do_select(sock->plug, sock->s, 0);
 #endif
         p_closesocket(sock->s);
     }
@@ -1308,7 +1308,7 @@ Socket sk_newlistener(char *srcaddr, int port, Plug plug, int local_host_only,
 #ifdef MPEXT
     errstr = do_select(plug, s, 1);
 #else
-    errstr = do_select(s, 1);
+    errstr = do_select(plug, s, 1);
 #endif
     if (errstr) {
 	p_closesocket(s);
@@ -1348,7 +1348,7 @@ static void sk_tcp_close(Socket sock)
 #ifdef MPEXT
     extern char *do_select(Plug plug, SOCKET skt, int startup);
 #else
-    extern char *do_select(SOCKET skt, int startup);
+    extern char *do_select(Plug plug, SOCKET skt, int startup);
 #endif
     Actual_Socket s = (Actual_Socket) sock;
 
@@ -1359,7 +1359,7 @@ static void sk_tcp_close(Socket sock)
 #ifdef MPEXT
     do_select(s->plug, s->s, 0);
 #else
-    do_select(s->s, 0);
+    do_select(s->plug, s->s, 0);
 #endif
     p_closesocket(s->s);
     if (s->addr)
@@ -1736,7 +1736,7 @@ static void sk_tcp_set_frozen(Socket sock, int is_frozen)
 #ifdef MPEXT
 	do_select(s->plug, s->s, 1);
 #else
-	do_select(s->s, 1);
+	do_select(s->plug, s->s, 1);
 #endif
 	if (s->frozen_readable) {
 	    char c;
@@ -1756,7 +1756,7 @@ void socket_reselect_all(void)
 #ifdef MPEXT
 	    do_select(s->plug, s->s, 1);
 #else
-	    do_select(s->s, 1);
+	    do_select(s->plug, s->s, 1);
 #endif
     }
 }
