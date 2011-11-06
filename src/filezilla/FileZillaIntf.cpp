@@ -25,9 +25,10 @@ void TFileZillaIntf::Finalize()
 void TFileZillaIntf::SetResourceModule(void * ResourceHandle)
 {
   // set afx resource handles, taken from AfxWinInit (mfc/appinit.cpp)
-  AFX_MODULE_STATE * ModuleState = AfxGetModuleState();
-  ModuleState->m_hCurrentInstanceHandle = (HINSTANCE)ResourceHandle;
-  ModuleState->m_hCurrentResourceHandle = (HINSTANCE)ResourceHandle;
+  // FIXME
+  // AFX_MODULE_STATE * ModuleState = AfxGetModuleState();
+  // ModuleState->m_hCurrentInstanceHandle = (HINSTANCE)ResourceHandle;
+  // ModuleState->m_hCurrentResourceHandle = (HINSTANCE)ResourceHandle;
 }
 //---------------------------------------------------------------------------
 TFileZillaIntf::TFileZillaIntf() :
