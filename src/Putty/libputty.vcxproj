@@ -88,7 +88,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;.\windows;.\charset;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT;NO_SECURITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;NO_SECURITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -101,7 +101,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;.\windows;.\charset;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;NO_SECURITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -116,7 +116,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;.\windows;.\charset;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;NO_SECURITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -133,7 +133,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;.\windows;.\charset;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_MT;_CRTIMP=;Library;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS;NETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL;USE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;NO_SECURITY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
