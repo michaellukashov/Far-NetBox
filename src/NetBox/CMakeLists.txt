@@ -70,6 +70,8 @@ include_directories (
     ${PROJECT_ROOT}/src/Putty
     ${PROJECT_ROOT}/src/Putty/windows
     ${PROJECT_ROOT}/src/Putty/charset
+    ${PROJECT_ROOT}/src/filezilla
+    ${PROJECT_ROOT}/src/filezilla/misc
     ${PROJECT_ROOT}/libs
     ${PROJECT_ROOT}/libs/boost
     ${PROJECT_ROOT}/libs/libcurl/include
@@ -161,6 +163,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/resource/TextsCore1.rc
     ${PROJECT_ROOT}/src/resource/TextsCore2.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc
+    ${PROJECT_ROOT}/src/resource/TextsFileZilla.rc
 )
 
 #-------------------------------------------------------------------------------
