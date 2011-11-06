@@ -66,7 +66,7 @@ to tim.kosse@gmx.de
 
 #ifdef _DEBUG
 	#undef THIS_FILE
-	static char THIS_FILE[]=__FILE__;
+	static wchar_t THIS_FILE[]=__FILE__;
 	#ifdef DEBUG_NEW
 		#define new DEBUG_NEW
 	#endif
@@ -353,7 +353,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 		addrinfo hints, *res0, *res1;
 		SOCKET hSocket;
 		int error;
-		char port[10];
+		wchar_t port[10];
 
 		m_pOwnerSocket->p_freeaddrinfo(m_addrInfo);
 		m_nextAddr = 0;
@@ -813,7 +813,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
 	return res;
 }
 
-int CAsyncSocketExLayer::DoLayerCallback(int nType, int nParam1, int nParam2, char* str /*=0*/)
+int CAsyncSocketExLayer::DoLayerCallback(int nType, int nParam1, int nParam2, wchar_t* str /*=0*/)
 {
 	if (!m_pOwnerSocket)
 		return 0;

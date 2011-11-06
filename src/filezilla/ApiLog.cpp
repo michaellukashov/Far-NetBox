@@ -22,6 +22,8 @@
 
 #include "stdafx.h"
 #include "ApiLog.h"
+#include "FileZillaApi.h"
+#include "Common.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -77,7 +79,9 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
     
     va_start(ap, pMsgFormat);
     std::wstring text;
-	text.FormatV(pMsgFormat, ap);
+	// text.FormatV(pMsgFormat, ap);
+    text = ::Format(pMsgFormat, ap);
+    
 	va_end(ap);
 	
 #ifdef MPEXT

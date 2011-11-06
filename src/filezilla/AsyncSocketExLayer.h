@@ -126,7 +126,7 @@ protected:
 	CAsyncSocketEx *m_pOwnerSocket;
 
 	//Calls OnLayerCallback on owner socket
-	int DoLayerCallback(int nType, int nParam1, int nParam2, char* str = 0);
+	int DoLayerCallback(int nType, int nParam1, int nParam2, wchar_t* str = 0);
 
 	int GetLayerState();
 	BOOL TriggerEvent(long lEvent, int nErrorCode, BOOL bPassThrough = FALSE );

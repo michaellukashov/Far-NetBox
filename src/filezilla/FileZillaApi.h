@@ -143,8 +143,8 @@ public:
 	std::wstring path1,path2;
 	__int64 size1;
 	__int64 size2;
-	CTime *time1;
-	CTime *time2;
+	time_t *time1;
+	time_t *time2;
 	const t_transferfile *pTransferFile;
 };
 
@@ -198,7 +198,7 @@ public:
 class CKeyboardInteractiveRequestData : public CAsyncRequestData
 {
 public:
-	char data[20480];
+	wchar_t data[20480];
 };
 #endif
 

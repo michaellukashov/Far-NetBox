@@ -76,7 +76,7 @@ to tim.kosse@gmx.de
 class CAsyncSocketExHelperWindow;
 
 extern "C" {
-	typedef int (FAR PASCAL *t_getaddrinfo)(const char* nodename, const char* servname, const struct addrinfo* hints, struct addrinfo** res);
+	typedef int (FAR PASCAL *t_getaddrinfo)(const wchar_t* nodename, const wchar_t* servname, const struct addrinfo* hints, struct addrinfo** res);
 	typedef	void (FAR PASCAL *t_freeaddrinfo)(struct addrinfo* ai);
 }
 
@@ -89,7 +89,7 @@ struct t_callbackMsg
 	int nType;
 	int nParam1;
 	int nParam2;
-	char* str;
+	wchar_t* str;
 };
 
 #endif //NOLAYERS
@@ -243,7 +243,7 @@ protected:
 	long m_lEvent;
 
 	//AsyncGetHostByName
-	char *m_pAsyncGetHostByNameBuffer; //Buffer for hostend structure
+	wchar_t *m_pAsyncGetHostByNameBuffer; //Buffer for hostend structure
 	HANDLE m_hAsyncGetHostByNameHandle; //TaskHandle
 	int m_nAsyncGetHostByNamePort; //Port to connect to
 

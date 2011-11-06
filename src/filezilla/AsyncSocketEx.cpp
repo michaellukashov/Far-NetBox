@@ -77,7 +77,7 @@ to tim.kosse@gmx.de
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
+static wchar_t THIS_FILE[]=__FILE__;
 #endif
 
 #ifndef CCRITICALSECTIONWRAPPERINCLUDED
@@ -949,7 +949,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 		}
 		addrinfo hints, *res0, *res;
 		int error;
-		char port[10];
+		wchar_t port[10];
 		BOOL ret = FALSE;
 
 		memset(&hints, 0, sizeof(addrinfo));
@@ -1258,7 +1258,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 		{
 			if (m_pAsyncGetHostByNameBuffer)
 				delete [] m_pAsyncGetHostByNameBuffer;
-			m_pAsyncGetHostByNameBuffer=new char[MAXGETHOSTSTRUCT];
+			m_pAsyncGetHostByNameBuffer=new wchar_t[MAXGETHOSTSTRUCT];
 
 			m_nAsyncGetHostByNamePort=nHostPort;
 
@@ -1299,7 +1299,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 		addrinfo hints;
 		int error;
 		BOOL ret;
-		char port[10];
+		wchar_t port[10];
 
 		memset(&hints, 0, sizeof(addrinfo));
 		hints.ai_family = m_SocketData.nFamily;
