@@ -2935,9 +2935,9 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
           Contact.Country, Contact.StateProvince), Contact.Town).c_str());
   }
 
-  if (strlen(Contact.Other) > 0)
+  if (wcslen(Contact.Other) > 0)
   {
-    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3), (Contact.Other));
+    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
   }
 
   return Result;
@@ -2945,7 +2945,7 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
 //---------------------------------------------------------------------------
 std::wstring FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
 {
-  return FormatDateTime("ddddd tt",
+  return FormatDateTime(L"ddddd tt",
     EncodeDateVerbose(
       (unsigned short)ValidityTime.Year, (unsigned short)ValidityTime.Month,
       (unsigned short)ValidityTime.Day) +
@@ -3037,7 +3037,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     std::wstring Summary = LoadStr(VerificationResultStr);
     if (Data.VerificationResult != X509_V_OK)
     {
-      Summary += " " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
+      Summary += L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
     }
 
     FSessionInfo.Certificate =
@@ -3052,13 +3052,13 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     RequestResult = 0;
 
     THierarchicalStorage * Storage =
-      FTerminal->Configuration->CreateScpStorage(false);
+      FTerminal->GetConfiguration()->CreateScpStorage(false);
     {
         BOOST_SCOPE_EXIT ( (Storage) )
         {
           delete Storage;
         } BOOST_SCOPE_EXIT_END
-      Storage->AccessMode = smRead;
+      Storage->SetAccessMode(smRead);
 
       if (Storage->OpenSubKey(CertificateStorageKey, false) &&
           Storage->ValueExists(FSessionInfo.CertificateFingerprint))
@@ -3069,7 +3069,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
     if (RequestResult == 0)
     {
-      std::wstring Buf = FTerminal->GetSessionData()->HostKey;
+      std::wstring Buf = FTerminal->GetSessionData()->GetHostKey();
       while ((RequestResult == 0) && !Buf.empty())
       {
         std::wstring ExpectedKey = CutToChar(Buf, ';', false);
@@ -3088,7 +3088,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = &ClipboardHandler.Copy;
+      Aliases[0].OnClick.connect(boost::bind(&TClipboardHandler::Copy, ClipboardHandler, _1));
 
       TQueryParams Params;
       Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
@@ -3124,17 +3124,17 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (RequestResult == 2)
       {
         THierarchicalStorage * Storage =
-          FTerminal->Configuration->CreateScpStorage(false);
+          FTerminal->GetConfiguration()->CreateScpStorage(false);
         {
             BOOST_SCOPE_EXIT ( (Storage) )
             {
               delete Storage;
             } BOOST_SCOPE_EXIT_END
-          Storage->AccessMode = smReadWrite;
+          Storage->SetAccessMode(smReadWrite);
 
           if (Storage->OpenSubKey(CertificateStorageKey, true))
           {
-            Storage->WriteString(FSessionInfo.CertificateFingerprint, "");
+            Storage->WriteString(FSessionInfo.CertificateFingerprint, L"");
           }
         }
       }
@@ -3171,14 +3171,14 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       TRemoteFile * File = new TRemoteFile();
       try
       {
-        File->Terminal = FTerminal;
+        File->SetTerminal(FTerminal);
 
-        File->FileName = Entry->Name;
-        if (strlen(Entry->Permissions) >= 10)
+        File->SetFileName(Entry->Name);
+        if (wcslen(Entry->Permissions) >= 10)
         {
           try
           {
-            File->Rights->Text = Entry->Permissions + 1;
+            File->GetRights()->SetText(Entry->Permissions + 1);
           }
           catch (...)
           {
@@ -3186,30 +3186,30 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           }
         }
 
-        const wchar_t * Space = strchr(Entry->OwnerGroup, ' ');
+        const wchar_t * Space = wcschr(Entry->OwnerGroup, ' ');
         if (Space != NULL)
         {
-          File->Owner.Name = std::wstring(Entry->OwnerGroup, Space - Entry->OwnerGroup);
-          File->Group.Name = Space + 1;
+          File->GetOwner().SetName(std::wstring(Entry->OwnerGroup, Space - Entry->OwnerGroup));
+          File->GetGroup().SetName(Space + 1);
         }
         else
         {
-          File->Owner.Name = Entry->OwnerGroup;
+          File->GetOwner().SetName(Entry->OwnerGroup);
         }
 
-        File->Size = Entry->Size;
+        File->SetSize(Entry->Size);
 
         if (Entry->Link)
         {
-          File->Type = FILETYPE_SYMLINK;
+          File->SetType(FILETYPE_SYMLINK);
         }
         else if (Entry->Dir)
         {
-          File->Type = FILETYPE_DIRECTORY;
+          File->SetType(FILETYPE_DIRECTORY);
         }
         else
         {
-          File->Type = '-';
+          File->SetType('-');
         }
 
         // ModificationFmt must be set after Modification
@@ -3221,28 +3221,28 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
               (unsigned short)Entry->Day);
           if (Entry->HasTime)
           {
-            File->Modification = Modification +
-              EncodeTimeVerbose((unsigned short)Entry->Hour, (unsigned short)Entry->Minute, 0, 0);
+            File->SetModification(Modification +
+              EncodeTimeVerbose((unsigned short)Entry->Hour, (unsigned short)Entry->Minute, 0, 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway
-            File->ModificationFmt = mfMDHM;
+            File->SetModificationFmt(mfMDHM);
           }
           else
           {
-            File->Modification = Modification;
-            File->ModificationFmt = mfMDY;
+            File->SetModification(Modification);
+            File->SetModificationFmt(mfMDY);
           }
         }
         else
         {
           // With SCP we estimate date to be today, if we have at least time
 
-          File->Modification = double(0);
-          File->ModificationFmt = mfNone;
+          File->SetModification(TDateTime(double(0)));
+          File->SetModificationFmt(mfNone);
         }
-        File->LastAccess = File->Modification;
+        File->SetLastAccess(File->GetModification());
 
-        File->LinkTo = Entry->LinkTarget;
+        File->SetLinkTo(Entry->LinkTarget);
 
         File->Complete();
       }
@@ -3254,7 +3254,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
             (Entry->Name, Entry->Permissions, Entry->OwnerGroup, IntToStr(Entry->Size),
              int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
              Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate)));
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()));
+        throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
       }
 
       FFileList->AddFile(File);
@@ -3293,7 +3293,7 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
   }
   else
   {
-    if (FTerminal->Configuration->->GetActualLogProtocol() >= 1)
+    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
     {
       FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", (int(Reply), Command)));
     }
@@ -3346,7 +3346,7 @@ bool TFTPFileSystem::CheckError(int ReturnCode, const wchar_t * Context)
   else
   {
     FTerminal->FatalError(NULL,
-      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context.c_str()).c_str(), IntToHex(ReturnCode, 4)));
+      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), IntToHex(ReturnCode, 4)));
     assert(false);
   }
 
@@ -3377,7 +3377,7 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
         {
           Quote = Str[Index];
           State = QUOTED;
-          Str.Delete(Index, 1);
+          Str.erase(Index, 1);
         }
         else
         {
@@ -3391,7 +3391,7 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
         if (Str[Index] == Quote)
         {
           State = QUOTE;
-          Str.Delete(Index, 1);
+          Str.erase(Index, 1);
         }
         else
         {
