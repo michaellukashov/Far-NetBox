@@ -22,7 +22,7 @@ friend class TFileZillaImpl;
 friend class TFileListHelper;
 
 public:
-  TFTPFileSystem(TTerminal * ATerminal);
+  explicit TFTPFileSystem(TTerminal * ATerminal);
   virtual ~TFTPFileSystem();
 
   virtual void Open();
@@ -85,7 +85,7 @@ protected:
 
   virtual std::wstring GetCurrentDirectory();
 
-  const char * GetOption(int OptionID) const;
+  const wchar_t * GetOption(int OptionID) const;
   int GetOptionVal(int OptionID) const;
 
   enum
@@ -113,22 +113,22 @@ protected:
   bool KeepWaitingForReply(unsigned int& ReplyToAwait, bool WantLastCode);
   inline bool NoFinalLastCode();
 
-  bool HandleStatus(const char * Status, int Type);
+  bool HandleStatus(const wchar_t * Status, int Type);
   bool HandleAsynchRequestOverwrite(
-    char * FileName1, size_t FileName1Len, const char * FileName2,
-    const char * Path1, const char * Path2,
+    wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
+    const wchar_t * Path1, const wchar_t * Path2,
     __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult);
   bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
-  bool HandleListData(const char * Path, const TListDataEntry * Entries,
+  bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count);
   bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);
   bool HandleReply(int Command, unsigned int Reply);
   bool HandleCapabilities(bool Mfmt);
-  bool CheckError(int ReturnCode, const char * Context);
+  bool CheckError(int ReturnCode, const wchar_t * Context);
   void EnsureLocation();
   std::wstring ActualCurrentDirectory();
   void Discard();
