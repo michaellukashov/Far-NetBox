@@ -1194,7 +1194,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     Events = 0;
   }
 
-  DEBUG_PRINTF(L"Events = %d, Configuration->GetActualLogProtocol = %d", Events, Configuration->GetActualLogProtocol());
+  // DEBUG_PRINTF(L"Events = %d, Configuration->GetActualLogProtocol = %d", Events, Configuration->GetActualLogProtocol());
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
@@ -1257,7 +1257,7 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
-  DEBUG_PRINTF(L"Configuration->GetActualLogProtocol = %d", Configuration->GetActualLogProtocol());
+  // DEBUG_PRINTF(L"Configuration->GetActualLogProtocol = %d", Configuration->GetActualLogProtocol());
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
