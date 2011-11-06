@@ -835,8 +835,9 @@ Socket sk_register(void *sock, Plug plug)
     return (Socket) ret;
 }
 
-static DWORD try_connect(Actual_Socket sock,
+static DWORD try_connect(Actual_Socket sock
 #ifdef MPEXT
+						,
                          int timeout,
                          int sndbuf
 #endif
@@ -903,11 +904,12 @@ static DWORD try_connect(Actual_Socket sock,
 	p_setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *) &b, sizeof(b));
     }
 
+#ifdef MPEXT
     if (sndbuf > 0)
     {
 	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
     }
-
+#endif
     /*
      * Bind to local address.
      */
@@ -1084,8 +1086,9 @@ static DWORD try_connect(Actual_Socket sock,
 }
 
 Socket sk_new(SockAddr addr, int port, int privport, int oobinline,
-	      int nodelay, int keepalive, Plug plug,
+	      int nodelay, int keepalive, Plug plug
 #ifdef MPEXT
+		  ,
 	      int timeout,
 	      int sndbuf
 #endif
@@ -1136,7 +1139,11 @@ Socket sk_new(SockAddr addr, int port, int privport, int oobinline,
 #ifdef MPEXT
         ret->error = NULL;
 #endif
-        err = try_connect(ret, timeout, sndbuf);
+        err = try_connect(ret
+#ifdef MPEXT
+			, timeout, sndbuf
+#endif
+	   );
     } while (err && sk_nextaddr(ret->addr, &ret->step));
 
     return (Socket) ret;
