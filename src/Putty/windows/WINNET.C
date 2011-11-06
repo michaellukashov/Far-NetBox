@@ -994,7 +994,7 @@ static DWORD try_connect(Actual_Socket sock
 #ifndef MPEXT
     /* Set up a select mechanism. This could be an AsyncSelect on a
      * window, or an EventSelect on an event object. */
-    errstr = do_select(s, 1);
+    errstr = do_select(sock->plug, s, 1);
     if (errstr) {
 	sock->error = errstr;
 	err = 1;
