@@ -46,38 +46,20 @@ std::wstring SshVersionString()
 }
 
 //---------------------------------------------------------------------------
-struct TThreadRec
+DWORD WINAPI threadstartroutine(void *Parameter)
 {
-    // TThreadRec(const threadfunc_slot_type &Func, void *Parameter) :
-    TThreadRec(TThreadFunc *Func, void *Parameter) :
-        Func(Func),
-        Parameter(Parameter)
-    {}
-    // const threadfunc_slot_type &Func;
-    TThreadFunc *Func;
-    void *Parameter;
-};
-//---------------------------------------------------------------------------
-DWORD WINAPI threadstartroutine(TThreadRec *rec)
-{
-    // threadfunc_signal_type sig;
-    // sig.connect(rec->Func);
-    // return sig(rec->Parameter);
-    // return (*rec->Func)(rec->Parameter);
-    TSimpleThread *SimpleThread = (TSimpleThread *)rec->Parameter;
+    TSimpleThread *SimpleThread = (TSimpleThread *)Parameter;
     return TSimpleThread::ThreadProc(SimpleThread);
 }
 //---------------------------------------------------------------------------
 int BeginThread(void *SecurityAttributes, DWORD StackSize,
-  // const threadfunc_slot_type &ThreadFunc, void *Parameter, DWORD CreationFlags,
-  TThreadFunc *ThreadFunc, void *Parameter, DWORD CreationFlags,
+  void *Parameter, DWORD CreationFlags,
   DWORD &ThreadId)
 {
-  TThreadRec *P = new TThreadRec(ThreadFunc, Parameter);
   HANDLE Result = ::CreateThread((LPSECURITY_ATTRIBUTES)SecurityAttributes,
     StackSize,
     (LPTHREAD_START_ROUTINE)&threadstartroutine,
-    P,
+    Parameter,
     CreationFlags, &ThreadId);
   // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
   return (int)Result;
@@ -90,11 +72,10 @@ void EndThread(int ExitCode)
 
 //---------------------------------------------------------------------------
 int StartThread(void *SecurityAttributes, unsigned StackSize,
-  // const threadfunc_slot_type &ThreadFunc, void *Parameter, unsigned CreationFlags,
-  TThreadFunc *ThreadFunc, void *Parameter, unsigned CreationFlags,
+  void *Parameter, unsigned CreationFlags,
   DWORD &ThreadId)
 {
-  return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
+  return BeginThread(SecurityAttributes, StackSize, Parameter,
     CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------

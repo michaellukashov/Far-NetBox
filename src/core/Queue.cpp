@@ -163,11 +163,7 @@ TSimpleThread::~TSimpleThread()
 void TSimpleThread::Init()
 {
   DWORD ThreadID;
-  FThread = reinterpret_cast<HANDLE>(
-    // StartThread(NULL, 0, FThreadSlot, this, CREATE_SUSPENDED, ThreadID));
-    StartThread(NULL, 0, (TThreadFunc *)&TSimpleThread::ThreadProc, this, CREATE_SUSPENDED, ThreadID));
-    // StartThread(NULL, 0, &TSimpleThread::ThreadProc, this, CREATE_SUSPENDED, ThreadID));
-    // StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+  FThread = reinterpret_cast<HANDLE>(StartThread(NULL, 0, this, CREATE_SUSPENDED, ThreadID));
 }
 
 //---------------------------------------------------------------------------

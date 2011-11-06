@@ -29,8 +29,6 @@ protected:
   virtual void Finished();
 
 private:
-  // const threadfunc_slot_type &FThreadSlot;
-private:
   TSimpleThread(const TSimpleThread &);
   TSimpleThread &operator = (const TSimpleThread &);
 };
