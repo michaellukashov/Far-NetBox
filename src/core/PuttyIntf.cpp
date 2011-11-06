@@ -50,7 +50,9 @@ void PuttyFinalize()
   random_unref();
 
   sk_cleanup();
+#ifdef MPEXT
   win_misc_cleanup();
+#endif
   DeleteCriticalSection(&noise_section);
 }
 //---------------------------------------------------------------------------

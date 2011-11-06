@@ -301,8 +301,10 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
     }
   }
 
+#ifdef MPEXT
   cfg->connect_timeout = Data->GetTimeout() * 1000;
   // cfg->sndbuf = Data->GetSshSendBuf();
+#endif
 
   // permanent settings
   cfg->nopty = TRUE;
@@ -1562,7 +1564,11 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
       unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
+#ifdef MPEXT
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))
+#else
+        handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]);
+#endif
         {
           Result = true;
         }
@@ -1786,7 +1792,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
           (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #else
     if (verify_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
-          (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
+          (char *)StoredKeys2.c_str()))
 #endif
     // if (0)
     {
