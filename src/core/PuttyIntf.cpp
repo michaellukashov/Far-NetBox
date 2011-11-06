@@ -63,7 +63,7 @@ void DontSaveRandomSeed()
 //---------------------------------------------------------------------------
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
-  void * frontend;
+  void *frontend = NULL;
   DEBUG_PRINTF(L"is_ssh(plug) = %d, is_pfwd(plug) = %d, skt = %d, startup = %d", is_ssh(plug), is_pfwd(plug), skt, startup);
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
