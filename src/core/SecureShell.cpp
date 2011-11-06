@@ -1029,12 +1029,14 @@ int TSecureShell::TranslatePuttyMessage(
   for (unsigned int Index = 0; Index < Count; Index++)
   {
     const char * Original = Translation[Index].Original;
+    DEBUG_PRINTF(L"Original = %s", ::MB2W(Original).c_str());
     const char * Div = strchr(Original, '%');
     if (Div == NULL)
     {
       if (strcmp(::W2MB(Message.c_str()).c_str(), Original) == 0)
       {
         Message = LoadStr(Translation[Index].Translation);
+        DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
       }
@@ -1050,6 +1052,7 @@ int TSecureShell::TranslatePuttyMessage(
       {
         Message = FMTLOAD(Translation[Index].Translation,
           ::TrimRight(Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen)).c_str());
+        DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
       }
@@ -1532,7 +1535,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
   WSANETWORKEVENTS * Events)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   CheckConnection();
 
   bool Result = false;
@@ -1629,7 +1632,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
   return Result;
 }
 //---------------------------------------------------------------------------
