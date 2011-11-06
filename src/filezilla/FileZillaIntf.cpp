@@ -370,7 +370,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       {
         ASSERT(FZ_MSG_PARAM(wParam) == 0);
         t_directory * Directory = (t_directory *)lParam;
-        CString Path = Directory->path.GetPath();
+        std::wstring Path = Directory->path.GetPath();
         std::vector<TListDataEntry> Entries(Directory->num);
 
         for (int Index = 0; Index < Directory->num; Index++)
