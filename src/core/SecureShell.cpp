@@ -423,6 +423,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
         Ptr = wcschr(Ptr + 1, '-');
     }
     FSessionInfo.SshImplementation = (Ptr != NULL) ? Ptr + 1 : L"";
+    DEBUG_PRINTF(L"FSessionInfo.SshImplementation = %s", FSessionInfo.SshImplementation.c_str());
   }
   #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
   else if (Str.find(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
@@ -435,6 +436,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
       { "Connect failed [%]", PFWD_TRANSL_CONNECT },
     };
     TranslatePuttyMessage(Translation, LENOF(Translation), FLastTunnelError);
+    DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
   }
   LogEvent(Str);
 }
