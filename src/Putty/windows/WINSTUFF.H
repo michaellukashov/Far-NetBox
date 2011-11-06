@@ -10,6 +10,7 @@
 #endif
 #include <windows.h>
 #include <stdio.h>		       /* for FILENAME_MAX */
+#include <Commdlg.h>
 
 #include "tree234.h"
 
