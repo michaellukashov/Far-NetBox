@@ -384,7 +384,8 @@ protected:
   TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
 
 public:
-  TTerminal(TSessionData * SessionData, TConfiguration * Configuration);
+  explicit TTerminal();
+  virtual void Init(TSessionData *SessionData, TConfiguration *Configuration);
   virtual ~TTerminal();
   void Open();
   void Close();
@@ -567,9 +568,11 @@ public:
 class TSecondaryTerminal : public TTerminal
 {
 public:
-  TSecondaryTerminal(TTerminal * MainTerminal,
-    TSessionData * SessionData, TConfiguration * Configuration,
-    const std::wstring & Name);
+  explicit TSecondaryTerminal(TTerminal * MainTerminal);
+  virtual void Init(TSessionData *SessionData, TConfiguration *Configuration,
+    const std::wstring &Name);
+  virtual ~TSecondaryTerminal()
+  {}
 
 protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
@@ -587,8 +590,8 @@ private:
 class TTerminalList : public TObjectList
 {
 public:
-  TTerminalList(TConfiguration * AConfiguration);
-  ~TTerminalList();
+  explicit TTerminalList(TConfiguration * AConfiguration);
+  virtual ~TTerminalList();
 
   virtual TTerminal * NewTerminal(TSessionData * Data);
   virtual void FreeTerminal(TTerminal * Terminal);

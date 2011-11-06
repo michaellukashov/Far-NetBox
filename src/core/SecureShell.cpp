@@ -407,7 +407,7 @@ void TSecureShell::Init()
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyLogEvent(const std::wstring & Str)
 {
-  DEBUG_PRINTF(L"Str = %s", Str.c_str());
+  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
   #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.find(std::wstring(SERVER_VERSION_MSG)) == 0)
@@ -425,7 +425,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
         Ptr = wcschr(Ptr + 1, '-');
     }
     FSessionInfo.SshImplementation = (Ptr != NULL) ? Ptr + 1 : L"";
-    DEBUG_PRINTF(L"FSessionInfo.SshImplementation = %s", FSessionInfo.SshImplementation.c_str());
+    // DEBUG_PRINTF(L"FSessionInfo.SshImplementation = %s", FSessionInfo.SshImplementation.c_str());
   }
   #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
   else if (Str.find(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
@@ -438,7 +438,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
       { "Connect failed [%]", PFWD_TRANSL_CONNECT },
     };
     TranslatePuttyMessage(Translation, LENOF(Translation), FLastTunnelError);
-    DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
+    // DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
   }
   LogEvent(Str);
 }
@@ -565,7 +565,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   for (int Index = 0; Index < Prompts->GetCount(); Index++)
   {
     std::wstring Prompt = Prompts->GetString(Index);
-    DEBUG_PRINTF(L"Prompt = %s", Prompt.c_str());
+    // DEBUG_PRINTF(L"Prompt = %s", Prompt.c_str());
     if (PromptTranslation != NULL)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
@@ -615,8 +615,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Result = true;
       Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
-      DEBUG_PRINTF(L"Results = %s", Results->GetText().c_str());
-      DEBUG_PRINTF(L"FSessionData->GetPassword = %s", FSessionData->GetPassword().c_str());
+      // DEBUG_PRINTF(L"Results = %s", Results->GetText().c_str());
+      // DEBUG_PRINTF(L"FSessionData->GetPassword = %s", FSessionData->GetPassword().c_str());
     }
   }
 
@@ -1033,14 +1033,14 @@ int TSecureShell::TranslatePuttyMessage(
   for (unsigned int Index = 0; Index < Count; Index++)
   {
     const char * Original = Translation[Index].Original;
-    DEBUG_PRINTF(L"Original = %s", ::MB2W(Original).c_str());
+    // DEBUG_PRINTF(L"Original = %s", ::MB2W(Original).c_str());
     const char * Div = strchr(Original, '%');
     if (Div == NULL)
     {
       if (strcmp(::W2MB(Message.c_str()).c_str(), Original) == 0)
       {
         Message = LoadStr(Translation[Index].Translation);
-        DEBUG_PRINTF(L"Message = %s", Message.c_str());
+        // DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
       }
@@ -1056,7 +1056,7 @@ int TSecureShell::TranslatePuttyMessage(
       {
         Message = FMTLOAD(Translation[Index].Translation,
           ::TrimRight(Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen)).c_str());
-        DEBUG_PRINTF(L"Message = %s", Message.c_str());
+        // DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
       }
@@ -1099,7 +1099,7 @@ void TSecureShell::AddStdError(std::wstring Str)
   {
     Line = ::TrimRight(FStdErrorTemp.substr(0, P));
     FStdErrorTemp.erase(0, P + 1);
-    DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
+    // DEBUG_PRINTF(L"P = %d, Line = '%s', FStdErrorTemp = '%s'", P, Line.c_str(), FStdErrorTemp.c_str());
     AddStdErrorLine(Line);
   }
 }
@@ -1182,7 +1182,7 @@ void inline TSecureShell::LogEvent(const std::wstring & Str)
 //---------------------------------------------------------------------------
 void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 {
-  DEBUG_PRINTF(L"Socket = %d, Event = %d, Startup = %d", Socket, Event, Startup);
+  // DEBUG_PRINTF(L"Socket = %d, Event = %d, Startup = %d", Socket, Event, Startup);
   int Events;
 
   if (Startup)
@@ -1216,8 +1216,8 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 {
-  DEBUG_PRINTF(L"FActive = %d, Startup = %d", FActive, Startup);
-  DEBUG_PRINTF(L"value = %d, INVALID_SOCKET = %d", value, INVALID_SOCKET);
+  // DEBUG_PRINTF(L"FActive = %d, Startup = %d", FActive, Startup);
+  // DEBUG_PRINTF(L"value = %d, INVALID_SOCKET = %d", value, INVALID_SOCKET);
   if (!FActive && !Startup)
   {
     // no-op
@@ -1264,7 +1264,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
   }
 
   SocketEventSelect(value, FSocketEvent, Startup);
-  DEBUG_PRINTF(L"Startup = %d, FPortFwdSockets.size = %d", Startup, FPortFwdSockets.size());
+  // DEBUG_PRINTF(L"Startup = %d, FPortFwdSockets.size = %d", Startup, FPortFwdSockets.size());
   if (Startup)
   {
     FPortFwdSockets.insert(value);

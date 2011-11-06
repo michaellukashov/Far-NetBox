@@ -8,7 +8,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
-class TSimpleThread
+class TSimpleThread : public TObject
 {
 public:
   TSimpleThread();
@@ -20,6 +20,7 @@ public:
   void Close();
   bool IsFinished();
 
+  static int ThreadProc(void *Thread);
 protected:
   HANDLE FThread;
   bool FFinished;
@@ -27,7 +28,8 @@ protected:
   virtual void Execute() = 0;
   virtual void Finished();
 
-  static int ThreadProc(void *Thread);
+private:
+  // const threadfunc_slot_type &FThreadSlot;
 private:
   TSimpleThread(const TSimpleThread &);
   TSimpleThread &operator = (const TSimpleThread &);

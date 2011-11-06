@@ -57,7 +57,7 @@ struct TFileSystemInfo
 class TSessionUI
 {
 public:
-  TSessionUI()
+  explicit TSessionUI()
   {}
   virtual ~TSessionUI()
   {}

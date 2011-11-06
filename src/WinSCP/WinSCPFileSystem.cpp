@@ -2957,7 +2957,8 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 {
   bool Result = false;
   assert(!FTerminal);
-  FTerminal = new TTerminal(Data, Configuration);
+  FTerminal = new TTerminal();
+  FTerminal->Init(Data, Configuration);
   try
   {
     FTerminal->SetOnQueryUser(boost::bind(&TWinSCPFileSystem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));

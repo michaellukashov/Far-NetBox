@@ -64,7 +64,7 @@ void DontSaveRandomSeed()
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
   void *frontend = NULL;
-  DEBUG_PRINTF(L"is_ssh(plug) = %d, is_pfwd(plug) = %d, skt = %d, startup = %d", is_ssh(plug), is_pfwd(plug), skt, startup);
+  // DEBUG_PRINTF(L"is_ssh(plug) = %d, is_pfwd(plug) = %d, skt = %d, startup = %d", is_ssh(plug), is_pfwd(plug), skt, startup);
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
     // If it is not SSH/PFwd plug, then it must be Proxy plug.
@@ -74,7 +74,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   }
 
   bool pfwd = is_pfwd(plug);
-  DEBUG_PRINTF(L"pfwd = %d", pfwd);
+  // DEBUG_PRINTF(L"pfwd = %d", pfwd);
   if (pfwd)
   {
     plug = (Plug)get_pfwd_backend(plug);
@@ -510,7 +510,7 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
 //---------------------------------------------------------------------------
 std::string DecodeUTF(const std::string UTF)
 {
-  DEBUG_PRINTF(L"UTF = %s", ::MB2W(UTF.c_str()).c_str());
+  // DEBUG_PRINTF(L"UTF = %s", ::MB2W(UTF.c_str()).c_str());
   charset_state State;
   char *Str;
   TUnicodeEmitParams Params;
@@ -559,7 +559,7 @@ std::string EncodeUTF(const std::string Source)
 {
   // std::wstring::c_bstr() returns NULL for empty strings
   // (as opposite to std::wstring::c_str() which returns "")
-  DEBUG_PRINTF(L"Source = %s", ::MB2W(Source.c_str()).c_str());
+  // DEBUG_PRINTF(L"Source = %s", ::MB2W(Source.c_str()).c_str());
   if (Source.empty())
   {
     return "";

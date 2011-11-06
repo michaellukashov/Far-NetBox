@@ -5,6 +5,7 @@
 #include "CoreMain.h"
 #include "FarConfiguration.h"
 #include "WinSCPPlugin.h"
+#include "Queue.h"
 //---------------------------------------------------------------------------
 
 TConfiguration * CreateConfiguration()
@@ -47,23 +48,29 @@ std::wstring SshVersionString()
 //---------------------------------------------------------------------------
 struct TThreadRec
 {
-    TThreadRec(const threadfunc_slot_type &Func, void *Parameter) :
+    // TThreadRec(const threadfunc_slot_type &Func, void *Parameter) :
+    TThreadRec(TThreadFunc *Func, void *Parameter) :
         Func(Func),
         Parameter(Parameter)
     {}
-    const threadfunc_slot_type &Func;
+    // const threadfunc_slot_type &Func;
+    TThreadFunc *Func;
     void *Parameter;
 };
 //---------------------------------------------------------------------------
 DWORD WINAPI threadstartroutine(TThreadRec *rec)
 {
-    threadfunc_signal_type sig;
-    sig.connect(rec->Func);
-    return sig(rec->Parameter);
+    // threadfunc_signal_type sig;
+    // sig.connect(rec->Func);
+    // return sig(rec->Parameter);
+    // return (*rec->Func)(rec->Parameter);
+    TSimpleThread *SimpleThread = (TSimpleThread *)rec->Parameter;
+    return TSimpleThread::ThreadProc(SimpleThread);
 }
 //---------------------------------------------------------------------------
 int BeginThread(void *SecurityAttributes, DWORD StackSize,
-  const threadfunc_slot_type &ThreadFunc, void *Parameter, DWORD CreationFlags,
+  // const threadfunc_slot_type &ThreadFunc, void *Parameter, DWORD CreationFlags,
+  TThreadFunc *ThreadFunc, void *Parameter, DWORD CreationFlags,
   DWORD &ThreadId)
 {
   TThreadRec *P = new TThreadRec(ThreadFunc, Parameter);
@@ -83,7 +90,8 @@ void EndThread(int ExitCode)
 
 //---------------------------------------------------------------------------
 int StartThread(void *SecurityAttributes, unsigned StackSize,
-  const threadfunc_slot_type &ThreadFunc, void *Parameter, unsigned CreationFlags,
+  // const threadfunc_slot_type &ThreadFunc, void *Parameter, unsigned CreationFlags,
+  TThreadFunc *ThreadFunc, void *Parameter, unsigned CreationFlags,
   DWORD &ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, ThreadFunc, Parameter,
