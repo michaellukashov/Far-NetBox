@@ -774,7 +774,7 @@ void TTerminal::Open()
                 {
                   FFSProtocol = cfsSCP;
                   FFileSystem = new TSCPFileSystem(this);
-                  FFileSystem->Init(FSecureShell);
+                  ((TSCPFileSystem *)FFileSystem)->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SCP protocol.");
                 }
@@ -782,7 +782,7 @@ void TTerminal::Open()
                 {
                   FFSProtocol = cfsSFTP;
                   FFileSystem = new TSFTPFileSystem(this);
-                  FFileSystem->Init(FSecureShell);
+                  ((TSFTPFileSystem *)FFileSystem)->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SFTP protocol.");
                 }
