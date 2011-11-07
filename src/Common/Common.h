@@ -36,8 +36,8 @@ namespace bg = boost::gregorian;
 //---------------------------------------------------------------------------
 extern const char EngShortMonthNames[12][4];
 //---------------------------------------------------------------------------
-std::wstring ReplaceChar(std::wstring Str, char A, char B);
-std::wstring DeleteChar(std::wstring Str, char C);
+std::wstring ReplaceChar(std::wstring Str, wchar_t A, wchar_t B);
+std::wstring DeleteChar(std::wstring Str, wchar_t C);
 void PackStr(std::wstring &Str);
 std::wstring MakeValidFileName(std::wstring FileName);
 std::wstring RootKeyToStr(HKEY RootKey);

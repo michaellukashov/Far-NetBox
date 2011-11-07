@@ -118,7 +118,7 @@ std::wstring ReplaceChar(std::wstring Str, wchar_t A, wchar_t B)
   return Str;
 }
 //---------------------------------------------------------------------------
-std::wstring DeleteChar(std::wstring Str, char C)
+std::wstring DeleteChar(std::wstring Str, wchar_t C)
 {
   size_t P;
   while ((P = Str.find_first_of(C, 0)) != std::wstring::npos)
