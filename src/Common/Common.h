@@ -112,16 +112,6 @@ struct TPasLibModule;
 TPasLibModule * FindModule(void * Instance);
 __int64 Round(double Number);
 //---------------------------------------------------------------------------
-/* struct TSearchRec
-    int Time;
-    __int64 Size;
-    int Attr;
-    std::wstring Name;
-    int ExcludeAttr;   
-    HANDLE FindHandle;
-    TWin32FindData FindData;
-}; */
-//---------------------------------------------------------------------------
 // typedef void (* TProcessLocalFileEvent)
   // (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
 typedef boost::signal3<void, const std::wstring, const WIN32_FIND_DATA, void *> processlocalfile_signal_type;
