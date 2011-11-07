@@ -1911,7 +1911,7 @@ int TCustomFarFileSystem::GetFindData(
     TObjectList *PanelItems = new TObjectList();
     bool Result;
     {
-        BOOST_SCOPE_EXIT ( (&PanelItems) )
+        BOOST_SCOPE_EXIT ( (PanelItems) )
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -2007,7 +2007,7 @@ int TCustomFarFileSystem::MakeDirectory(wchar_t *Name, int OpMode)
             StrToFar(NameStr);
             if (NameStr != Name)
             {
-                wcscpy_s(Name, NameStr.c_str(), NameStr.size());
+                wcscpy_s(Name, NameStr.size(), NameStr.c_str());
             }
         } BOOST_SCOPE_EXIT_END
         StrFromFar(NameStr);
@@ -2040,7 +2040,7 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
     int Result;
     std::wstring DestPathStr = *DestPath;
     {
-        BOOST_SCOPE_EXIT ( (&DestPathStr) (&DestPath) (&PanelItems) )
+        BOOST_SCOPE_EXIT ( (&DestPathStr) (&DestPath) (PanelItems) )
         {
             StrToFar(DestPathStr);
             if (DestPathStr != *DestPath)
@@ -2063,7 +2063,7 @@ int TCustomFarFileSystem::PutFiles(struct PluginPanelItem *PanelItem,
     TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     int Result;
     {
-        BOOST_SCOPE_EXIT ( (&PanelItems) )
+        BOOST_SCOPE_EXIT ( (PanelItems) )
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -2251,7 +2251,7 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
         bool CaseConversion, const std::wstring StatusColumnTypes,
         const std::wstring StatusColumnWidths)
 {
-    int ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
+    size_t ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
     assert(Mode >= 0 && Mode < LENOF(FPanelModes));
     assert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
@@ -2320,7 +2320,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
 int TFarPanelModes::CommaCount(const std::wstring ColumnTypes)
 {
     int Count = 0;
-    for (int Index = 1; Index <= ColumnTypes.size(); Index++)
+    for (size_t Index = 1; Index <= ColumnTypes.size(); Index++)
     {
         if (ColumnTypes[Index] == ',')
         {
@@ -2633,7 +2633,8 @@ TObjectList *TFarPanelInfo::GetItems()
             // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
             PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
             memset(ppi, 0, size);
-            size_t size2 = FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi);
+            // size_t size2 =
+            FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi);
             // DEBUG_PRINTF(L"size2 = %d", size2);
             // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
 
@@ -2647,7 +2648,7 @@ TFarPanelItem *TFarPanelInfo::FindFileName(const std::wstring FileName)
 {
     TObjectList *AItems = GetItems();
     TFarPanelItem *PanelItem;
-    for (int Index = 0; Index < AItems->GetCount(); Index++)
+    for (size_t Index = 0; Index < AItems->GetCount(); Index++)
     {
         PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
         if (PanelItem->GetFileName() == FileName)
@@ -2662,7 +2663,7 @@ TFarPanelItem *TFarPanelInfo::FindUserData(void *UserData)
 {
     TObjectList *AItems = GetItems();
     TFarPanelItem *PanelItem;
-    for (int Index = 0; Index < AItems->GetCount(); Index++)
+    for (size_t Index = 0; Index < AItems->GetCount(); Index++)
     {
         PanelItem = static_cast<TFarPanelItem *>(AItems->GetItem(Index));
         if (PanelItem->GetUserData() == UserData)
@@ -2682,7 +2683,7 @@ void TFarPanelInfo::ApplySelection()
 //---------------------------------------------------------------------------
 TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 {
-    int Index = GetFocusedIndex();
+    size_t Index = GetFocusedIndex();
     // DEBUG_PRINTF(L"Index = %d, GetItems = %x, GetItems()->GetCount = %d", Index, GetItems(), GetItems()->GetCount());
     if ((Index >= 0) && (GetItems()->GetCount() > 0))
     {
@@ -2848,7 +2849,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
 //---------------------------------------------------------------------------
 bool TFarMenuItems::GetFlag(int Index, int Flag)
 {
-    return int(GetObject(Index)) & Flag;
+    return ((int)(GetObject(Index)) & Flag) > 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2913,7 +2914,7 @@ TFarPluginEnvGuard::TFarPluginEnvGuard()
 
     // keep the assertion, but be robust, in case we are called from incorrectly
     // programmed plugin (e.g. EMenu)
-    FANSIApis = AreFileApisANSI();
+    FANSIApis = AreFileApisANSI() > 0;
     assert(FANSIApis == FarPlugin->GetANSIApis());
 
     if (!FANSIApis)
@@ -2939,7 +2940,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
     TStringList Lines;
     Lines.SetText(Text);
     TStringList WrappedLines;
-    for (int Index = 0; Index < Lines.GetCount(); Index++)
+    for (size_t Index = 0; Index < Lines.GetCount(); Index++)
     {
         std::wstring WrappedLine = Lines.GetString(Index);
         if (!WrappedLine.empty())
@@ -2950,7 +2951,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
             WrappedLine = ::ReplaceChar(WrappedLine, '\3', '\'');
             WrappedLine = ::ReplaceChar(WrappedLine, '\4', '\"');
             WrappedLines.SetText(WrappedLine);
-            for (int WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); WrappedIndex++)
+            for (size_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); WrappedIndex++)
             {
                 std::wstring FullLine = WrappedLines.GetString(WrappedIndex);
                 do
@@ -2961,7 +2962,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
                     std::wstring Line = FullLine.substr(0, MaxWidth);
                     FullLine.erase(0, MaxWidth);
 
-                    int P;
+                    size_t P;
                     while ((P = Line.find_first_of(L"\t")) != std::wstring::npos)
                     {
                         Line.erase(P, 1);
@@ -2987,7 +2988,7 @@ void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
 std::wstring StrFromFar(const char *S)
 {
     // FIXME
-    std::wstring Result; // = S;
+    std::wstring Result = ::MB2W(S);
     // OemToChar(Result.c_str(), Result.c_str());
     return Result;
 }
