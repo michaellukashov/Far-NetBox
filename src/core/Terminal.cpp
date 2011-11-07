@@ -2326,7 +2326,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const 
     FileList = DoReadDirectoryListing(Directory, false);
     if (FileList != NULL)
     {
-      int Index = 0;
+      size_t Index = 0;
       while (Index < FileList->GetCount())
       {
         TRemoteFile * File = FileList->GetFile(Index);
@@ -2446,7 +2446,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
   if (FileList)
   {
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
+      BOOST_SCOPE_EXIT ( (&FileList) )
       {
         delete FileList;
       } BOOST_SCOPE_EXIT_END
@@ -2455,7 +2455,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
       TRemoteFile *File;
       processfile_signal_type sig;
       sig.connect(CallBackFunc);
-      for (int Index = 0; Index < FileList->GetCount(); Index++)
+      for (size_t Index = 0; Index < FileList->GetCount(); Index++)
       {
         File = FileList->GetFile(Index);
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3986,11 +3986,11 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   }
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Data) )
+    BOOST_SCOPE_EXIT ( (&Data) )
     {
       if (Data.LocalFileList != NULL)
       {
-        for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+        for (size_t Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
         {
           TSynchronizeFileData *FileData = reinterpret_cast<TSynchronizeFileData*>
             (Data.LocalFileList->GetObject(Index));
@@ -4017,7 +4017,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     if (Found)
     {
       {
-        BOOST_SCOPE_EXIT ( (&Self) (&findHandle) )
+        BOOST_SCOPE_EXIT ( (&findHandle) )
         {
           ::FindClose(findHandle);
         } BOOST_SCOPE_EXIT_END
@@ -4079,7 +4079,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
-      for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+      for (size_t Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
       {
         FileData = reinterpret_cast<TSynchronizeFileData *>
           (Data.LocalFileList->GetObject(Index));
@@ -4841,7 +4841,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         TotalSizeKnown = true;
       }
     }
-    OperationProgress->Start((Params & cpDelete != 0 ? foMove : foCopy), osRemote,
+    OperationProgress->Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = OperationProgress;
@@ -4933,7 +4933,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->GetCount() == 1) && !(bool)(void *)(Prompts->GetObject(0)) &&
+  if ((Prompts->GetCount() == 1) && !((void *)(Prompts->GetObject(0) != NULL)) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
