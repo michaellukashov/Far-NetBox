@@ -288,11 +288,15 @@ void TKeepaliveThread::Execute()
   CloseHandle(FEvent);
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   TCustomFarFileSystem(APlugin)
 {
   Self = this;
+}
+//---------------------------------------------------------------------------
+void TWinSCPFileSystem::Init(TSecureShell * SecureShell)
+{
+  TCustomFarFileSystem::Init();
   FReloadDirectory = false;
   FProgressSaveScreenHandle = 0;
   FSynchronizationSaveScreenHandle = 0;
@@ -324,6 +328,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   FEditorPendingSave = false;
   FOutputLog = false;
 }
+
 //---------------------------------------------------------------------------
 TWinSCPFileSystem::~TWinSCPFileSystem()
 {
@@ -2952,7 +2957,8 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 {
   bool Result = false;
   assert(!FTerminal);
-  FTerminal = new TTerminal(Data, Configuration);
+  FTerminal = new TTerminal();
+  FTerminal->Init(Data, Configuration);
   try
   {
     FTerminal->SetOnQueryUser(boost::bind(&TWinSCPFileSystem::TerminalQueryUser, this, _1, _2, _3, _4, _5, _6, _7, _8));

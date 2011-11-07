@@ -166,6 +166,10 @@ DECL_WINDOWS_FUNCTION(static, int, connect,
 		      (SOCKET, const struct sockaddr FAR *, int));
 DECL_WINDOWS_FUNCTION(static, int, bind,
 		      (SOCKET, const struct sockaddr FAR *, int));
+#ifdef MPEXT
+DECL_WINDOWS_FUNCTION(static, int, getsockopt,
+		      (SOCKET, int, int, char FAR *, int *));
+#endif
 DECL_WINDOWS_FUNCTION(static, int, setsockopt,
 		      (SOCKET, int, int, const char FAR *, int));
 DECL_WINDOWS_FUNCTION(static, SOCKET, socket, (int, int, int));
@@ -293,6 +297,9 @@ void sk_init(void)
     GET_WINDOWS_FUNCTION(winsock_module, inet_ntoa);
     GET_WINDOWS_FUNCTION(winsock_module, connect);
     GET_WINDOWS_FUNCTION(winsock_module, bind);
+    #ifdef MPEXT
+    GET_WINDOWS_FUNCTION(winsock_module, getsockopt);
+    #endif
     GET_WINDOWS_FUNCTION(winsock_module, setsockopt);
     GET_WINDOWS_FUNCTION(winsock_module, socket);
     GET_WINDOWS_FUNCTION(winsock_module, listen);
@@ -763,7 +770,7 @@ static const char *sk_tcp_socket_error(Socket s);
 #ifdef MPEXT
 extern char *do_select(Plug plug, SOCKET skt, int startup);
 #else
-extern char *do_select(SOCKET skt, int startup);
+extern char *do_select(Plug plug, SOCKET skt, int startup);
 #endif
 
 Socket sk_register(void *sock, Plug plug)
@@ -816,7 +823,7 @@ Socket sk_register(void *sock, Plug plug)
 #ifdef MPEXT
     errstr = do_select(plug, ret->s, 1);
 #else
-    errstr = do_select(ret->s, 1);
+    errstr = do_select(plug, ret->s, 1);
 #endif
     if (errstr) {
 	ret->error = errstr;
@@ -828,7 +835,13 @@ Socket sk_register(void *sock, Plug plug)
     return (Socket) ret;
 }
 
-static DWORD try_connect(Actual_Socket sock)
+static DWORD try_connect(Actual_Socket sock
+#ifdef MPEXT
+						,
+                         int timeout,
+                         int sndbuf
+#endif
+)
 {
     SOCKET s;
 #ifndef NO_IPV6
@@ -839,12 +852,15 @@ static DWORD try_connect(Actual_Socket sock)
     char *errstr;
     short localport;
     int family;
+#ifdef MPEXT
+    struct timeval rcvtimeo;
+#endif
 
     if (sock->s != INVALID_SOCKET) {
 #ifdef MPEXT
 	do_select(sock->plug, sock->s, 0);
 #else
-	do_select(sock->s, 0);
+	do_select(sock->plug, sock->s, 0);
 #endif
         p_closesocket(sock->s);
     }
@@ -888,13 +904,12 @@ static DWORD try_connect(Actual_Socket sock)
 	p_setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *) &b, sizeof(b));
     }
 
-#ifdef MPEXT2
+#ifdef MPEXT
+    if (sndbuf > 0)
     {
-	int bufsize = 262144;
-	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &bufsize, sizeof(bufsize));
+	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
     }
 #endif
-
     /*
      * Bind to local address.
      */
@@ -979,11 +994,28 @@ static DWORD try_connect(Actual_Socket sock)
 #ifndef MPEXT
     /* Set up a select mechanism. This could be an AsyncSelect on a
      * window, or an EventSelect on an event object. */
-    errstr = do_select(s, 1);
+    errstr = do_select(sock->plug, s, 1);
     if (errstr) {
 	sock->error = errstr;
 	err = 1;
 	goto ret;
+    }
+#endif
+
+#ifdef MPEXT
+    if (timeout > 0)
+    {
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &rcvtimeo) < 0)
+        {
+            rcvtimeo.tv_sec = -1;
+        }
+        else
+        {
+            struct timeval timeoutval;
+            timeoutval.tv_sec = timeout / 1000;
+            timeoutval.tv_usec = (timeout % 1000) * 1000;
+            p_setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void *) &timeoutval, sizeof(timeoutval));
+        }
     }
 #endif
 
@@ -1021,6 +1053,11 @@ static DWORD try_connect(Actual_Socket sock)
     }
 
 #ifdef MPEXT
+    if ((timeout > 0) && (rcvtimeo.tv_sec >= 0))
+    {
+        p_setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void *) &rcvtimeo, sizeof(rcvtimeo));
+    }
+
     // MP: Calling EventSelect only after connect makes sure we receive FD_CLOSE.
     /* Set up a select mechanism. This could be an AsyncSelect on a
      * window, or an EventSelect on an event object. */
@@ -1049,7 +1086,13 @@ static DWORD try_connect(Actual_Socket sock)
 }
 
 Socket sk_new(SockAddr addr, int port, int privport, int oobinline,
-	      int nodelay, int keepalive, Plug plug)
+	      int nodelay, int keepalive, Plug plug
+#ifdef MPEXT
+		  ,
+	      int timeout,
+	      int sndbuf
+#endif
+	      )
 {
     static const struct socket_function_table fn_table = {
 	sk_tcp_plug,
@@ -1096,7 +1139,11 @@ Socket sk_new(SockAddr addr, int port, int privport, int oobinline,
 #ifdef MPEXT
         ret->error = NULL;
 #endif
-        err = try_connect(ret);
+        err = try_connect(ret
+#ifdef MPEXT
+			, timeout, sndbuf
+#endif
+	   );
     } while (err && sk_nextaddr(ret->addr, &ret->step));
 
     return (Socket) ret;
@@ -1261,7 +1308,7 @@ Socket sk_newlistener(char *srcaddr, int port, Plug plug, int local_host_only,
 #ifdef MPEXT
     errstr = do_select(plug, s, 1);
 #else
-    errstr = do_select(s, 1);
+    errstr = do_select(plug, s, 1);
 #endif
     if (errstr) {
 	p_closesocket(s);
@@ -1301,7 +1348,7 @@ static void sk_tcp_close(Socket sock)
 #ifdef MPEXT
     extern char *do_select(Plug plug, SOCKET skt, int startup);
 #else
-    extern char *do_select(SOCKET skt, int startup);
+    extern char *do_select(Plug plug, SOCKET skt, int startup);
 #endif
     Actual_Socket s = (Actual_Socket) sock;
 
@@ -1312,7 +1359,7 @@ static void sk_tcp_close(Socket sock)
 #ifdef MPEXT
     do_select(s->plug, s->s, 0);
 #else
-    do_select(s->s, 0);
+    do_select(s->plug, s->s, 0);
 #endif
     p_closesocket(s->s);
     if (s->addr)
@@ -1456,7 +1503,7 @@ int select_result(WPARAM wParam, LPARAM lParam)
 	    plug_log(s->plug, 1, s->addr, s->port,
 		     winsock_error_string(err), err);
 	    while (s->addr && sk_nextaddr(s->addr, &s->step)) {
-		err = try_connect(s);
+		err = try_connect(s, 0, 0);
 	    }
 	}
 	if (err != 0)
@@ -1689,7 +1736,7 @@ static void sk_tcp_set_frozen(Socket sock, int is_frozen)
 #ifdef MPEXT
 	do_select(s->plug, s->s, 1);
 #else
-	do_select(s->s, 1);
+	do_select(s->plug, s->s, 1);
 #endif
 	if (s->frozen_readable) {
 	    char c;
@@ -1709,7 +1756,7 @@ void socket_reselect_all(void)
 #ifdef MPEXT
 	    do_select(s->plug, s->s, 1);
 #else
-	    do_select(s->s, 1);
+	    do_select(s->plug, s->s, 1);
 #endif
     }
 }

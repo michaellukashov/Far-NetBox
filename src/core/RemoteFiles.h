@@ -212,12 +212,16 @@ class TRemoteDirectoryFile : public TRemoteFile
 {
 public:
   TRemoteDirectoryFile();
+  virtual ~TRemoteDirectoryFile()
+  {}
 };
 //---------------------------------------------------------------------------
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
   TRemoteParentDirectory(TTerminal * Terminal);
+  virtual ~TRemoteParentDirectory()
+  {}
 };
 //---------------------------------------------------------------------------
 class TRemoteFileList : public TObjectList
@@ -233,6 +237,8 @@ protected:
   virtual void Clear();
 public:
   TRemoteFileList();
+  virtual ~TRemoteFileList()
+  {}
   TRemoteFile * FindFile(const std::wstring &FileName);
   virtual void DuplicateTo(TRemoteFileList * Copy);
   virtual void AddFile(TRemoteFile * File);
@@ -268,6 +274,8 @@ protected:
   virtual void Clear();
 public:
   TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
+  virtual ~TRemoteDirectory()
+  {}
   virtual void AddFile(TRemoteFile * File);
   virtual void SetDirectory(std::wstring value);
   virtual void DuplicateTo(TRemoteFileList * Copy);
@@ -318,6 +326,8 @@ class TRemoteDirectoryChangesCache : private TStringList
 {
 public:
   TRemoteDirectoryChangesCache(int MaxSize);
+  virtual ~TRemoteDirectoryChangesCache()
+  {}
 
   void AddDirectoryChange(const std::wstring SourceDir,
     const std::wstring Change, const std::wstring TargetDir);

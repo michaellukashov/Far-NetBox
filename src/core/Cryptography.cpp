@@ -391,8 +391,6 @@ void AES256EncyptWithMAC(std::wstring Input, std::wstring Password,
     reinterpret_cast<const unsigned char *>(Password.c_str()), Password.size(),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
   Output = Input;
-  // FIXME ::Unique(Output);
-  ::Error(SNotImplemented, 207); 
   fcrypt_encrypt((unsigned char *)(Output.c_str()), Output.size(), &aes);
   Mac.resize(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   fcrypt_end((unsigned char *)(Mac.c_str()), &aes);
@@ -417,8 +415,6 @@ bool AES256DecryptWithMAC(std::wstring Input, std::wstring Password,
     reinterpret_cast<const unsigned char *>(Password.c_str()), Password.size(),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), NULL, &aes);
   Output = Input;
-  // FIXME ::Unique(Output);
-  ::Error(SNotImplemented, 208);
   fcrypt_decrypt((unsigned char *)(Output.c_str()), Output.size(), &aes);
   std::wstring Mac2;
   Mac2.resize(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -531,8 +527,6 @@ void ScramblePassword(std::wstring & Password)
 //---------------------------------------------------------------------------
 bool UnscramblePassword(std::wstring & Password)
 {
-  // FIXME ::Unique(Password);
-  ::Error(SNotImplemented, 209); 
   char * S = (char *)::W2MB(Password.c_str()).c_str();
   int Last = 31;
   while (*S != '\0')

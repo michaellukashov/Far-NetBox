@@ -161,7 +161,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
     unsigned char *p, *ret;
     int id, retlen;
     COPYDATASTRUCT cds;
-    SECURITY_ATTRIBUTES sa, *psa;
+    SECURITY_ATTRIBUTES sa, *psa = NULL;
     PSECURITY_DESCRIPTOR psd = NULL;
     PSID usersid = NULL;
 
@@ -218,7 +218,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
     p = MapViewOfFile(filemap, FILE_MAP_WRITE, 0, 0, 0);
     memcpy(p, in, inlen);
     cds.dwData = AGENT_COPYDATA_ID;
-    cds.cbData = 1 + strlen(mapname);
+    cds.cbData = strlen(mapname) + 1;
     cds.lpData = mapname;
 #ifdef WINDOWS_ASYNC_AGENT
     if (callback != NULL && !(flags & FLAG_SYNCAGENT)) {
@@ -250,6 +250,7 @@ int agent_query(void *in, int inlen, void **out, int *outlen,
      * query is required to be synchronous) or CreateThread failed.
      * Either way, we need a synchronous request.
      */
+	// ChangeWindowMessageFilterEx(hwnd, WM_COPYDATA, MSGFLT_ALLOW, NULL);
     id = SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
     if (id > 0) {
 	retlen = 4 + GET_32BIT(p);

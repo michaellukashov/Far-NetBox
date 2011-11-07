@@ -11,6 +11,7 @@
 #include "boost/date_time/local_time/local_time.hpp"
 
 #include "Common.h"
+#include "Classes.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
 #include "Interface.h"
@@ -36,6 +37,11 @@ inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
     return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
+//---------------------------------------------------------------------------
+void Abort()
+{
+    throw EAbort("");
+}
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
 {
@@ -626,8 +632,8 @@ std::wstring ExcludeTrailingBackslash(const std::wstring str)
 std::wstring IncludeTrailingBackslash(const std::wstring str)
 {
     std::wstring result = str;
-    if ((str.size() == 0) || (str[str.size() - 1] != L'/') ||
-        (str[str.size() - 1] != L'\\'))
+    if ((str.size() == 0) || ((str[str.size() - 1] != L'/') &&
+        (str[str.size() - 1] != L'\\')))
     {
         result += L'\\';
     }
@@ -1535,8 +1541,9 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
 
 TDateTime Date()
 {
-    TDateTime result;
-    ::Error(SNotImplemented, 44);
+    SYSTEMTIME t;
+    ::GetLocalTime(&t);
+    TDateTime result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
     return result;
 }
 

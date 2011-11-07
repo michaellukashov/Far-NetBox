@@ -1689,9 +1689,13 @@ struct TSinkFileParams
   unsigned int Flags;
 };
 //===========================================================================
-TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal,
-  TSecureShell * SecureShell):
+TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) :
   TCustomFileSystem(ATerminal)
+{
+  Self = this;
+}
+
+void TSFTPFileSystem::Init(TSecureShell * SecureShell)
 {
   FSecureShell = SecureShell;
   FPacketReservations = new TList();

@@ -315,15 +315,19 @@ TStrings * TCommandSet::CreateCommandList()
   return CommandList;
 }
 //===========================================================================
-TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal, TSecureShell * SecureShell):
+TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(ATerminal)
+{
+  Self = this;
+}
+
+void TSCPFileSystem::Init(TSecureShell *SecureShell)
 {
   FSecureShell = SecureShell;
   FCommandSet = new TCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FOutput = new TStringList();
   FProcessingCommand = false;
-  Self = this;
 
   FFileSystemInfo.ProtocolBaseName = L"SCP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
@@ -505,7 +509,7 @@ void TSCPFileSystem::EnsureLocation()
   if (!FCachedDirectoryChange.empty())
   {
     FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
-      (FCachedDirectoryChange)));
+      FCachedDirectoryChange.c_str()));
     std::wstring Directory = FCachedDirectoryChange;
     FCachedDirectoryChange = L"";
     try
@@ -614,13 +618,14 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
     if (Params & coWaitForLastLine)
     {
       std::wstring Line;
-      bool IsLast;
+      bool IsLast = true;
       unsigned int Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
       do
       {
         Line = FSecureShell->ReceiveLine();
+        // DEBUG_PRINTF(L"Line = %s", Line.c_str());
         IsLast = IsLastLine(Line);
         if (!IsLast || !Line.empty())
         {
@@ -687,6 +692,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
         ::Busy(false);
       }
     } BOOST_SCOPE_EXIT_END
+    // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
     SendCommand(Cmd);
 
     int COParams = coWaitForLastLine;
@@ -788,8 +794,10 @@ void TSCPFileSystem::DetectReturnVar()
       {
         FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
         ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
-        // DEBUG_PRINTF(L"GetOutput()->GetString(0) = %s", GetOutput()->GetString(0).c_str());
-        if ((GetOutput()->GetCount() != 1) || (StrToIntDef(GetOutput()->GetString(0), 256) > 255))
+        // DEBUG_PRINTF(L"GetOutput()->GetCount = %d, GetOutput()->GetString(0) = %s", GetOutput()->GetCount(), GetOutput()->GetString(0).c_str());
+        std::wstring str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
+        int val = StrToIntDef(str, 256);
+        if ((GetOutput()->GetCount() != 1) || str.empty() || (val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
           Abort();
@@ -993,7 +1001,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        bool Empty;
+        bool Empty = true;
         if (ListCurrentDirectory)
         {
           // Empty file list -> probably "permision denied", we
@@ -1001,7 +1009,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           FTerminal->ReadFile(
             UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
               PARENTDIRECTORY, File);
-          Empty = (File == NULL);
+          Empty = (File == NULL || (wcscmp(File->GetFileName().c_str(), PARENTDIRECTORY) == 0));
           if (!Empty)
           {
             assert(File->GetIsParentDirectory());
@@ -1904,11 +1912,11 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
 {
   int Attrs;
 
-  FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", (DirectoryName)));
+  FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
 
   OperationProgress->SetFile(DirectoryName);
   std::wstring DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(DirectoryName, true), osLocal, Level == 0);
+    ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
   FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
@@ -1924,7 +1932,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
 
   // Send directory modes (rights), filesize and file name
   Buf = FORMAT(L"D%s 0 %s",
-    (CopyParam->RemoteFileRights(Attrs).GetOctal(), DestFileName));
+    CopyParam->RemoteFileRights(Attrs).GetOctal().c_str(), DestFileName.c_str());
   FSecureShell->SendLine(Buf);
   SCPResponse();
 
@@ -1943,7 +1951,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     WIN32_FIND_DATA SearchRec;
     HANDLE findHandle = 0;
     bool FindOK = false;
-    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, (DirectoryName)),
+    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
     std::wstring path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
     findHandle = FindFirstFile(path.c_str(),
         &SearchRec);

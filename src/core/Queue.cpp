@@ -144,7 +144,9 @@ int TSimpleThread::ThreadProc(void * Thread)
 }
 //---------------------------------------------------------------------------
 TSimpleThread::TSimpleThread() :
+  TObject(),
   FThread(NULL), FFinished(true)
+  // FThreadSlot(boost::bind(&TSimpleThread::ThreadProc, _1))
 {
 }
 //---------------------------------------------------------------------------
@@ -161,10 +163,7 @@ TSimpleThread::~TSimpleThread()
 void TSimpleThread::Init()
 {
   DWORD ThreadID;
-  FThread = reinterpret_cast<HANDLE>(
-    StartThread(NULL, 0, boost::bind(&TSimpleThread::ThreadProc, _1), this, CREATE_SUSPENDED, ThreadID));
-    // StartThread(NULL, 0, (TThreadFunc *)ThreadProc, this, CREATE_SUSPENDED, ThreadID));
-    // StartThread(NULL, 0, ThreadProc, this, CREATE_SUSPENDED, ThreadID));
+  FThread = reinterpret_cast<HANDLE>(StartThread(NULL, 0, this, CREATE_SUSPENDED, ThreadID));
 }
 
 //---------------------------------------------------------------------------
@@ -753,6 +752,7 @@ void TTerminalQueue::ProcessEvent()
       {
         FOverallTerminals++;
         TerminalItem = new TTerminalItem(this, FOverallTerminals);
+        TerminalItem->Init();
         FTerminals->Add((TObject *)TerminalItem);
       }
       else if (FFreeTerminals > 0)
@@ -864,10 +864,12 @@ class TBackgroundTerminal : public TSecondaryTerminal
 {
 friend class TTerminalItem;
 public:
-  TBackgroundTerminal(TTerminal * MainTerminal,
-    TSessionData * SessionData, TConfiguration * Configuration,
-    TTerminalItem * Item, const std::wstring & Name);
-
+  explicit TBackgroundTerminal(TTerminal * MainTerminal,
+    TTerminalItem * Item);
+  virtual void Init(TSessionData *SessionData, TConfiguration *Configuration,
+    const std::wstring & Name);
+  virtual ~TBackgroundTerminal()
+  {}
 protected:
   virtual bool DoQueryReopen(const std::exception * E);
 
@@ -876,11 +878,17 @@ private:
 };
 //---------------------------------------------------------------------------
 TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal,
-    TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,
-    const std::wstring & Name) :
-  TSecondaryTerminal(MainTerminal, SessionData, Configuration, Name), FItem(Item)
+    TTerminalItem *Item) :
+  TSecondaryTerminal(MainTerminal),
+  FItem(Item)
 {
 }
+void TBackgroundTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration,
+    const std::wstring &Name)
+{
+    TSecondaryTerminal::Init(SessionData, Configuration, Name);
+}
+
 //---------------------------------------------------------------------------
 bool TBackgroundTerminal::DoQueryReopen(const std::exception * /*E*/)
 {
@@ -907,8 +915,8 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   FCriticalSection = new TCriticalSection();
   Self = this;
 
-  FTerminal = new TBackgroundTerminal(FQueue->FTerminal, Queue->FSessionData,
-    FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
+  FTerminal = new TBackgroundTerminal(FQueue->FTerminal, this);
+  FTerminal->Init(Queue->FSessionData, FQueue->FConfiguration, FORMAT(L"Background %d", Index));
   try
   {
     FTerminal->SetUseBusyCursor(false);

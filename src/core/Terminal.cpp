@@ -196,7 +196,8 @@ const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(int Index) c
 class TTunnelThread : public TSimpleThread
 {
 public:
-  TTunnelThread(TSecureShell * SecureShell);
+  explicit TTunnelThread(TSecureShell * SecureShell);
+  virtual void Init();
   virtual ~TTunnelThread();
 
   virtual void Terminate();
@@ -205,18 +206,26 @@ protected:
   virtual void Execute();
 
 private:
-  TSecureShell * FSecureShell;
+  TSecureShell *FSecureShell;
   bool FTerminated;
   TTunnelThread *Self;
 };
 //---------------------------------------------------------------------------
 TTunnelThread::TTunnelThread(TSecureShell * SecureShell) :
+  TSimpleThread(),
   FSecureShell(SecureShell),
-  FTerminated(false)
+  FTerminated(false),
+  Self(NULL)
+{
+}
+//---------------------------------------------------------------------------
+void TTunnelThread::Init()
 {
   Self = this;
+  TSimpleThread::Init();
   Start();
 }
+
 //---------------------------------------------------------------------------
 TTunnelThread::~TTunnelThread()
 {
@@ -231,6 +240,7 @@ void TTunnelThread::Terminate()
 //---------------------------------------------------------------------------
 void TTunnelThread::Execute()
 {
+  // DEBUG_PRINTF(L"begin");
   try
   {
     BOOST_SCOPE_EXIT ( (&Self) )
@@ -247,15 +257,19 @@ void TTunnelThread::Execute()
   }
   catch (...)
   {
+    DEBUG_PRINTF(L"exception cought");
     // do not pass std::exception out of thread's proc
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 class TTunnelUI : public TSessionUI
 {
 public:
-  TTunnelUI(TTerminal * Terminal);
+  explicit TTunnelUI(TTerminal * Terminal);
+  virtual ~TTunnelUI()
+  {}
   virtual void Information(const std::wstring & Str, bool Status);
   virtual int QueryUser(const std::wstring Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
@@ -459,9 +473,13 @@ void TCallbackGuard::Verify()
   }
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TTerminal::TTerminal(TSessionData * SessionData,
-  TConfiguration * Configuration)
+TTerminal::TTerminal() :
+  TObject(),
+  TSessionUI()
+{
+}
+
+void TTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration)
 {
   FConfiguration = Configuration;
   FSessionData = new TSessionData(L"");
@@ -499,6 +517,7 @@ TTerminal::TTerminal(TSessionData * SessionData,
   FAnyInformation = false;;
   Self = this;
 }
+
 //---------------------------------------------------------------------------
 TTerminal::~TTerminal()
 {
@@ -754,14 +773,16 @@ void TTerminal::Open()
                     (GetSessionData()->GetFSProtocol() == fsSFTP && FSecureShell->SshFallbackCmd()))
                 {
                   FFSProtocol = cfsSCP;
-                  FFileSystem = new TSCPFileSystem(this, FSecureShell);
+                  FFileSystem = new TSCPFileSystem(this);
+                  FFileSystem->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SCP protocol.");
                 }
                 else
                 {
                   FFSProtocol = cfsSFTP;
-                  FFileSystem = new TSFTPFileSystem(this, FSecureShell);
+                  FFileSystem = new TSFTPFileSystem(this);
+                  FFileSystem->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SFTP protocol.");
                 }
@@ -893,6 +914,7 @@ void TTerminal::OpenTunnel()
     }
 
     FTunnelThread = new TTunnelThread(FTunnel);
+    FTunnelThread->Init();
   }
   catch (...)
   {
@@ -1050,7 +1072,7 @@ int TTerminal::QueryUser(const std::wstring Query,
   TStrings * MoreMessages, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
-  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), (MoreMessages ? MoreMessages->GetCommaText().c_str() : std::wstring().c_str())));
+  LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
   int Answer = AbortAnswer(Answers);
   if (!FOnQueryUser.empty())
   {
@@ -1067,7 +1089,7 @@ int TTerminal::QueryUserException(const std::wstring Query,
 {
   int Result;
   TStringList MoreMessages;
-  DEBUG_PRINTF(L"E->what = %s", ::MB2W(E->what()).c_str());
+  // DEBUG_PRINTF(L"E->what = %s", ::MB2W(E->what()).c_str());
 
   if ((E != NULL) && !std::string(E->what()).empty() && !Query.empty())
   {
@@ -1089,7 +1111,6 @@ int TTerminal::QueryUserException(const std::wstring Query,
   {
     if (E->GetMoreMessages() != NULL)
     {
-      DEBUG_PRINTF(L"E->GetMoreMessages = %s", E->GetMoreMessages()->GetText());
       MoreMessages.AddStrings(E->GetMoreMessages());
     }
     else if (!std::string(E->what()).empty() && !Query.empty())
@@ -1696,8 +1717,9 @@ void TTerminal::EndTransaction()
 //---------------------------------------------------------------------------
 void TTerminal::SetExceptionOnFail(bool value)
 {
-  if (value) FExceptionOnFail++;
-    else
+  if (value)
+    FExceptionOnFail++;
+  else
   {
     if (FExceptionOnFail == 0)
       throw std::exception("ExceptionOnFail is already zero.");
@@ -2157,21 +2179,16 @@ void TTerminal::DoStartup()
     {
       Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
-    DEBUG_PRINTF(L"before DoInformation");
     DoInformation(LoadStr(STATUS_STARTUP), true);
 
     // Make sure that directory would be loaded at last
     FReadCurrentDirectoryPending = true;
     FReadDirectoryPending = GetAutoReadDirectory();
 
-    DEBUG_PRINTF(L"before FFileSystem->DoStartup");
     FFileSystem->DoStartup();
-    DEBUG_PRINTF(L"before LookupUsersGroups");
     LookupUsersGroups();
 
-    DEBUG_PRINTF(L"before DoInformation");
     DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true);
-    DEBUG_PRINTF(L"GetSessionData()->GetRemoteDirectory = %s", GetSessionData()->GetRemoteDirectory().c_str());
     if (!GetSessionData()->GetRemoteDirectory().empty())
     {
       ChangeDirectory(GetSessionData()->GetRemoteDirectory());
@@ -2469,8 +2486,8 @@ void TTerminal::ReadSymlink(TRemoteFile * SymlinkFile,
   try
   {
     LogEvent(FORMAT(L"Reading symlink \"%s\".", SymlinkFile->GetFileName().c_str()));
-    DEBUG_PRINTF(L"SymlinkFile->GetLinkTo = %s", SymlinkFile->GetLinkTo().c_str());
-    DEBUG_PRINTF(L"SymlinkFile->GetFileName = %s", SymlinkFile->GetFileName().c_str());
+    // DEBUG_PRINTF(L"SymlinkFile->GetLinkTo = %s", SymlinkFile->GetLinkTo().c_str());
+    // DEBUG_PRINTF(L"SymlinkFile->GetFileName = %s", SymlinkFile->GetFileName().c_str());
     FFileSystem->ReadSymlink(SymlinkFile, File);
     ReactOnCommand(fsReadSymlink);
   }
@@ -3421,7 +3438,6 @@ void TTerminal::LookupUsersGroups()
       LogEvent(L"Looking up groups and users.");
       FFileSystem->LookupUsersGroups();
       ReactOnCommand(fsLookupUsersGroups);
-      DEBUG_PRINTF(L"after ReactOnCommand");
 
       if (GetLog()->GetLogging())
       {
@@ -3465,8 +3481,8 @@ TTerminal * TTerminal::GetCommandSession()
 
     try
     {
-      FCommandSession = new TSecondaryTerminal(this, GetSessionData(),
-        Configuration, L"Shell");
+      FCommandSession = new TSecondaryTerminal(this);
+      ((TSecondaryTerminal *)FCommandSession)->Init(GetSessionData(), Configuration, L"Shell");
 
       FCommandSession->SetAutoReadDirectory(false);
 
@@ -4816,7 +4832,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         } BOOST_SCOPE_EXIT_END
         // dirty trick: when moving, do not pass copy param to avoid exclude mask
         CalculateFilesSize(FilesToCopy, TotalSize, csIgnoreErrors,
-          (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
+            (FLAGCLEAR(Params, cpDelete) ? CopyParam : NULL));
         TotalSizeKnown = true;
       }
     }
@@ -4873,12 +4889,16 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
   return Result;
 }
 //---------------------------------------------------------------------------
-TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal,
-  TSessionData * ASessionData, TConfiguration * Configuration, const std::wstring & Name) :
-  TTerminal(ASessionData, Configuration),
+TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
+  TTerminal(),
   FMainTerminal(MainTerminal), FMasterPasswordTried(false),
   FMasterTunnelPasswordTried(false)
 {
+}
+void TSecondaryTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration,
+    const std::wstring &Name)
+{
+  TTerminal::Init(SessionData, Configuration);
   GetLog()->SetParent(FMainTerminal->GetLog());
   GetLog()->SetName(Name);
   GetSessionData()->NonPersistant();
@@ -4960,7 +4980,9 @@ TTerminalList::~TTerminalList()
 //---------------------------------------------------------------------------
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 {
-  return new TTerminal(Data, FConfiguration);
+  TTerminal *Result = new TTerminal();
+  Result->Init(Data, FConfiguration);
+  return Result;
 }
 //---------------------------------------------------------------------------
 TTerminal * TTerminalList::NewTerminal(TSessionData * Data)

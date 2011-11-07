@@ -20,6 +20,8 @@ extern "C"
 #include <ssh.h>
 #include <proxy.h>
 #include <storage.h>
+
+extern CRITICAL_SECTION noise_section;
 }
 //---------------------------------------------------------------------------
 #endif

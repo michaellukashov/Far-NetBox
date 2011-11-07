@@ -4808,8 +4808,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     else
     {
       Prompt = FORMAT(GetMsg(Move ? MOVE_FILE_PROMPT : COPY_FILE_PROMPT).c_str(),
-        (ToRemote ? ExtractFileName(FileList->GetString(0), true).c_str() :
-            UnixExtractFileName(FileList->GetString(0)).c_str()));
+        ToRemote ? ExtractFileName(FileList->GetString(0), true).c_str() :
+            UnixExtractFileName(FileList->GetString(0)).c_str());
     }
 
     Text = new TFarText(this);
@@ -4890,8 +4890,7 @@ bool TCopyDialog::Execute(std::wstring & TargetDirectory,
 
     DirectoryEdit->SetText(
       (FToRemote ? UnixIncludeTrailingBackslash(TargetDirectory) :
-        IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
-
+        ::IncludeTrailingBackslash(TargetDirectory)) + Params->GetFileMask());
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
   }

@@ -13,6 +13,7 @@ struct TCopyParamType;
 struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
+class TSecureShell;
 //---------------------------------------------------------------------------
 enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
@@ -28,6 +29,10 @@ const int dfForceDelete = 0x04;
 class TCustomFileSystem
 {
 public:
+  TCustomFileSystem()
+  {}
+  virtual void Init(TSecureShell * SecureShell)
+  {}
   virtual ~TCustomFileSystem();
 
   virtual void Open() = 0;

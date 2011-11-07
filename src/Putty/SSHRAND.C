@@ -34,7 +34,7 @@ void noise_get_light(void (*func) (void *, int));
 #define POOLSIZE 1200		       /* size of random pool */
 
 #ifdef MPEXT
-CRITICAL_SECTION noise_section;
+extern CRITICAL_SECTION noise_section;
 #endif MPEXT
 
 struct RandPool {
@@ -64,7 +64,7 @@ static void random_stir(void)
      * back to here. Prevent recursive stirs.
      */
     if (pool.stir_pending)
-        return;
+	return;
     pool.stir_pending = TRUE;
 
     noise_get_light(random_add_noise);
@@ -105,7 +105,7 @@ static void random_stir(void)
 	     */
 
 	    for (k = 0; k < sizeof(digest) / sizeof(*digest); k++)
-            digest[k] ^= ((word32 *) (pool.pool + j))[k];
+		digest[k] ^= ((word32 *) (pool.pool + j))[k];
 
 	    /*
 	     * Munge our unrevealed first block of the pool into
@@ -164,6 +164,9 @@ void random_add_noise(void *noise, int length)
 	pool.incomingpos = 0;
     }
 
+#ifdef MPEXT
+    if (length > 0)
+#endif
     memcpy(pool.incomingb + pool.incomingpos, p, length);
     pool.incomingpos += length;
 }
@@ -219,8 +222,9 @@ void random_ref(void)
         InitializeCriticalSection(&noise_section);
 #endif
 	memset(&pool, 0, sizeof(pool));    /* just to start with */
-    noise_get_heavy(random_add_heavynoise_bitbybit);
-    random_stir();
+
+	noise_get_heavy(random_add_heavynoise_bitbybit);
+	random_stir();
 
 	next_noise_collection =
 	    schedule_timer(NOISE_REGULAR_INTERVAL, random_timer, &pool);

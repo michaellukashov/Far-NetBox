@@ -59,6 +59,9 @@ typedef struct winSsh_gss_ctx {
 } winSsh_gss_ctx;
 
 
+#ifdef MPEXT
+static
+#endif
 const Ssh_gss_buf gss_mech_krb5={9,"\x2A\x86\x48\x86\xF7\x12\x01\x02\x02"};
 
 const char *gsslogmsg = NULL;
@@ -77,18 +80,18 @@ struct ssh_gss_liblist *ssh_gss_setup(const Config *cfg)
     /* MIT Kerberos GSSAPI implementation */
     /* TODO: For 64-bit builds, check for gssapi64.dll */
     module = NULL;
-    if (RegOpenKeyA(HKEY_LOCAL_MACHINE, "SOFTWARE\\MIT\\Kerberos", &regkey)
+    if (RegOpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\MIT\\Kerberos", &regkey)
 	== ERROR_SUCCESS) {
 	DWORD type, size;
 	LONG ret;
 	char *buffer;
 
 	/* Find out the string length */
-        ret = RegQueryValueExA(regkey, "InstallDir", NULL, &type, NULL, &size);
+        ret = RegQueryValueEx(regkey, "InstallDir", NULL, &type, NULL, &size);
 
 	if (ret == ERROR_SUCCESS && type == REG_SZ) {
 	    buffer = snewn(size + 20, char);
-	    ret = RegQueryValueExA(regkey, "InstallDir", NULL,
+	    ret = RegQueryValueEx(regkey, "InstallDir", NULL,
 				  &type, buffer, &size);
 	    if (ret == ERROR_SUCCESS && type == REG_SZ) {
 		strcat(buffer, "\\bin\\gssapi32.dll");

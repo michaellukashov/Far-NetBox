@@ -13,13 +13,14 @@
 //---------------------------------------------------------------------------
 std::wstring StripHotKey(std::wstring Text)
 {
-    size_t Len = Text.length();
+    std::wstring Result = Text;
+    size_t Len = Result.size();
     int Pos = 0;
     while (Pos < Len)
     {
-        if (Text[Pos] == '&')
+        if (Result[Pos] == '&')
         {
-            Text.erase(Pos, 1);
+            Result.erase(Pos, 1);
             Len--;
         }
         else
@@ -27,7 +28,7 @@ std::wstring StripHotKey(std::wstring Text)
             Pos++;
         }
     }
-    return Text;
+    return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -1857,7 +1858,7 @@ bool TFarButton::HotKey(char HotKey)
     int P = GetCaption().find_first_of(L"&");
     bool Result =
         GetVisible() && GetEnabled() &&
-        (P > 0) && (P < GetCaption().size()) &&
+        (P >= 0) && (P < GetCaption().size()) &&
         (GetCaption()[P + 1] == HotKey);
     if (Result)
     {

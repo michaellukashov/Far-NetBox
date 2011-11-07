@@ -18,7 +18,7 @@
 std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 {
   // it used to return "/" when input path was empty
-  if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size()))
+  if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size() - 1))
   {
     return Path + L"/";
   }
@@ -31,9 +31,14 @@ std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 // Keeps "/" for root path
 std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
 {
-  if ((Path.size() > 0) && ::IsDelimiter(Path, L"/", Path.size() - 1))
+  if (!Path.empty() && ::IsDelimiter(Path, L"/", Path.size() - 1))
+  {
       return Path.substr(0, Path.size() - 1);
-    else return Path;
+  }
+  else
+  {
+      return Path;
+  }
 }
 //---------------------------------------------------------------------------
 bool UnixComparePaths(const std::wstring Path1, const std::wstring Path2)
@@ -986,7 +991,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
         int P = Line.find_first_of(L' '); \
         if (P != std::wstring::npos) \
         { \
-            Col = Line.substr(0, P); Line.erase(0, P); \
+            Col = Line.substr(0, P); Line.erase(0, P + 1); \
         } \
         else \
         { \
@@ -1143,8 +1148,8 @@ void TRemoteFile::SetListingStr(std::wstring value)
           if ((P = (unsigned int)Col.find(L':')) != std::wstring::npos)
           {
             unsigned int CurrMonth, CurrDay;
-            Hour = (unsigned int)StrToInt(Col.substr(0, P-1));
-            Min = (unsigned int)StrToInt(Col.substr(P, Col.size() - P));
+            Hour = (unsigned int)StrToInt(Col.substr(0, P));
+            Min = (unsigned int)StrToInt(Col.substr(P + 1, Col.size() - P - 1));
             // DEBUG_PRINTF(L"Hour = %d, Min = %d", Hour, Min);
             if (Hour > 23 || Hour > 59) Abort();
             // When we don't got year, we assume current year
@@ -1156,7 +1161,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
             Sec = 0;
             FModificationFmt = mfMDHM;
           }
-            else
+          else
           {
             Year = (unsigned int)StrToInt(Col);
             if (Year > 10000) Abort();
@@ -1185,7 +1190,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        int P;
+        int P = -1;
 
         FLinkTo = L"";
         if (GetIsSymLink())
@@ -1309,10 +1314,12 @@ std::wstring TRemoteFile::GetFullFileName() const
     assert(GetTerminal());
     assert(GetDirectory() != NULL);
     std::wstring Path;
-    if (GetIsParentDirectory()) Path = GetDirectory()->GetParentPath();
-      else
-    if (GetIsDirectory()) Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName());
-      else Path = GetDirectory()->GetFullDirectory() + GetFileName();
+    if (GetIsParentDirectory())
+        Path = GetDirectory()->GetParentPath();
+    else if (GetIsDirectory())
+        Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName());
+    else
+        Path = GetDirectory()->GetFullDirectory() + GetFileName();
     return GetTerminal()->TranslateLockedPath(Path, true);
   }
   else

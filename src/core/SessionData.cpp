@@ -1308,7 +1308,6 @@ void TSessionData::SetUserName(std::wstring value)
   SetPassword(XPassword);
   if (!XPassword.empty())
   {
-    // FIXME ::Unique(XPassword);
     memset((void *)XPassword.c_str(), 0, XPassword.size());
   }
 }
@@ -1955,8 +1954,6 @@ void TSessionData::SetTunnelHostName(std::wstring value)
     SetTunnelPassword(XTunnelPassword);
     if (!XTunnelPassword.empty())
     {
-      ::Error(SNotImplemented, 241); 
-      // FIXME ::Unique(XTunnelPassword);
       memset((void *)XTunnelPassword.c_str(), 0, XTunnelPassword.size());
     }
   }
@@ -1975,8 +1972,6 @@ void TSessionData::SetTunnelUserName(std::wstring value)
   SetTunnelPassword(XTunnelPassword);
   if (!XTunnelPassword.empty())
   {
-    ::Error(SNotImplemented, 242); 
-    // FIXME ::Unique(XTunnelPassword);
     memset((void *)XTunnelPassword.c_str(), 0, XTunnelPassword.size());
   }
 }

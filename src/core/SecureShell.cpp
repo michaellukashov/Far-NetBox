@@ -136,7 +136,9 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   // user-configurable settings
   ASCOPY(cfg->host, ::W2MB(Data->GetHostName().c_str()));
+  // cfg->host = ::StrNew(::W2MB(Data->GetHostName().c_str()).c_str());
   ASCOPY(cfg->username, ::W2MB(Data->GetUserName().c_str()));
+  // cfg->username = ::StrNew(::W2MB(Data->GetUserName().c_str())).c_str();
   cfg->port = Data->GetPortNumber();
   cfg->protocol = PROT_SSH;
   // always set 0, as we will handle keepalives ourselves to avoid
@@ -147,6 +149,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   cfg->agentfwd = Data->GetAgentFwd();
   cfg->addressfamily = Data->GetAddressFamily();
   ASCOPY(cfg->ssh_rekey_data, ::W2MB(Data->GetRekeyData().c_str()));
+  // cfg->ssh_rekey_data = ::StrNew(::W2MB(Data->GetRekeyData().c_str())).c_str();
   cfg->ssh_rekey_time = Data->GetRekeyTime();
 
   for (int c = 0; c < CIPHER_COUNT; c++)
@@ -182,6 +185,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   if (SPublicKeyFile.empty()) SPublicKeyFile = Configuration->GetDefaultKeyFile();
   SPublicKeyFile = StripPathQuotes(ExpandEnvironmentVariables(SPublicKeyFile));
   ASCOPY(cfg->keyfile.path, ::W2MB(SPublicKeyFile.c_str()));
+  // cfg->keyfile.path = ::StrNew(::W2MB(SPublicKeyFile.c_str())).c_str();
   cfg->sshprot = Data->GetSshProt();
   cfg->ssh2_des_cbc = Data->GetSsh2DES();
   cfg->ssh_no_userauth = Data->GetSshNoUserAuth();
@@ -193,23 +197,28 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   cfg->proxy_type = Data->GetProxyMethod();
   ASCOPY(cfg->proxy_host, ::W2MB(Data->GetProxyHost().c_str()));
+  // cfg->proxy_host = ::StrNew(::W2MB(Data->GetProxyHost().c_str())).c_str();
   cfg->proxy_port = Data->GetProxyPort();
   ASCOPY(cfg->proxy_username, ::W2MB(Data->GetProxyUsername().c_str()));
+  // cfg->proxy_username = ::StrNew(::W2MB(Data->GetProxyUsername().c_str())).c_str();
   ASCOPY(cfg->proxy_password, ::W2MB(Data->GetProxyPassword().c_str()));
+  // cfg->proxy_password = ::StrNew(::W2MB(Data->GetProxyPassword().c_str())).c_str();
   if (Data->GetProxyMethod() == pmCmd)
   {
     ASCOPY(cfg->proxy_telnet_command, ::W2MB(Data->GetProxyLocalCommand().c_str()));
+    // cfg->proxy_telnet_command = ::StrNew(::W2MB(Data->GetProxyLocalCommand().c_str())).c_str();
   }
   else
   {
     ASCOPY(cfg->proxy_telnet_command, ::W2MB(Data->GetProxyTelnetCommand().c_str()));
+    // cfg->proxy_telnet_command = ::StrNew(::W2MB(Data->GetProxyTelnetCommand().c_str())).c_str();
   }
   cfg->proxy_dns = Data->GetProxyDNS();
   cfg->even_proxy_localhost = Data->GetProxyLocalhost();
 
   // #pragma option push -w-eas
   // after 0.53b values were reversed, however putty still stores
-  // settings to registry in save way as before
+  // settings to registry in same way as before
   cfg->sshbug_ignore1 = Data->GetBug(sbIgnore1);
   cfg->sshbug_plainpw1 = Data->GetBug(sbPlainPW1);
   cfg->sshbug_rsa1 = Data->GetBug(sbRSA1);
@@ -225,7 +234,9 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   if (!Data->GetTunnelPortFwd().empty())
   {
     assert(!Simple);
+    // DEBUG_PRINTF(L"Data->GetTunnelPortFwd = %s", Data->GetTunnelPortFwd().c_str());
     ASCOPY(cfg->portfwd, ::W2MB(Data->GetTunnelPortFwd().c_str()));
+    // cfg->portfwd = ::StrNew(::W2MB(Data->GetTunnelPortFwd().c_str()).c_str());
     // when setting up a tunnel, do not open shell/sftp
     cfg->ssh_no_shell = TRUE;
   }
@@ -290,6 +301,11 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
     }
   }
 
+#ifdef MPEXT
+  cfg->connect_timeout = Data->GetTimeout() * 1000;
+  // cfg->sndbuf = Data->GetSshSendBuf();
+#endif
+
   // permanent settings
   cfg->nopty = TRUE;
   cfg->tcp_keepalives = 0;
@@ -314,7 +330,7 @@ void TSecureShell::Open()
   FUI->Information(LoadStr(STATUS_LOOKUPHOST), true);
   StoreToConfig(FSessionData, FConfig, GetSimple());
 
-  char * RealHost;
+  char * RealHost = NULL;
   FreeBackend(); // in case we are reconnecting
   const char * InitError = FBackend->init(this, &FBackendHandle, FConfig,
     (char *)::W2MB(FSessionData->GetHostName().c_str()).c_str(), FSessionData->GetPortNumber(), &RealHost, 0,
@@ -409,6 +425,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
         Ptr = wcschr(Ptr + 1, '-');
     }
     FSessionInfo.SshImplementation = (Ptr != NULL) ? Ptr + 1 : L"";
+    // DEBUG_PRINTF(L"FSessionInfo.SshImplementation = %s", FSessionInfo.SshImplementation.c_str());
   }
   #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
   else if (Str.find(std::wstring(FORWARDING_FAILURE_MSG)) == 0)
@@ -421,6 +438,7 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
       { "Connect failed [%]", PFWD_TRANSL_CONNECT },
     };
     TranslatePuttyMessage(Translation, LENOF(Translation), FLastTunnelError);
+    // DEBUG_PRINTF(L"FLastTunnelError = %s", FLastTunnelError.c_str());
   }
   LogEvent(Str);
 }
@@ -530,7 +548,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     assert(false);
   }
 
-  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(), Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
+  LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(),
+    Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
 
   Name = ::Trim(Name);
 
@@ -546,6 +565,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   for (int Index = 0; Index < Prompts->GetCount(); Index++)
   {
     std::wstring Prompt = Prompts->GetString(Index);
+    // DEBUG_PRINTF(L"Prompt = %s", Prompt.c_str());
     if (PromptTranslation != NULL)
     {
       TranslatePuttyMessage(PromptTranslation, PromptTranslationCount, Prompt);
@@ -595,6 +615,8 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Result = true;
       Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTried = true;
+      // DEBUG_PRINTF(L"Results = %s", Results->GetText().c_str());
+      // DEBUG_PRINTF(L"FSessionData->GetPassword = %s", FSessionData->GetPassword().c_str());
     }
   }
 
@@ -815,7 +837,7 @@ int TSecureShell::Receive(char * Buf, int Len)
 //---------------------------------------------------------------------------
 std::wstring TSecureShell::ReceiveLine()
 {
-  unsigned Index;
+  unsigned Index = 0;
   char Ch;
   std::string Line;
   bool EOL = false;
@@ -1011,12 +1033,14 @@ int TSecureShell::TranslatePuttyMessage(
   for (unsigned int Index = 0; Index < Count; Index++)
   {
     const char * Original = Translation[Index].Original;
+    // DEBUG_PRINTF(L"Original = %s", ::MB2W(Original).c_str());
     const char * Div = strchr(Original, '%');
     if (Div == NULL)
     {
       if (strcmp(::W2MB(Message.c_str()).c_str(), Original) == 0)
       {
         Message = LoadStr(Translation[Index].Translation);
+        // DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
       }
@@ -1032,6 +1056,7 @@ int TSecureShell::TranslatePuttyMessage(
       {
         Message = FMTLOAD(Translation[Index].Translation,
           ::TrimRight(Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen)).c_str());
+        // DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
       }
@@ -1157,6 +1182,7 @@ void inline TSecureShell::LogEvent(const std::wstring & Str)
 //---------------------------------------------------------------------------
 void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 {
+  // DEBUG_PRINTF(L"Socket = %d, Event = %d, Startup = %d", Socket, Event, Startup);
   int Events;
 
   if (Startup)
@@ -1168,6 +1194,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     Events = 0;
   }
 
+  // DEBUG_PRINTF(L"Events = %d, Configuration->GetActualLogProtocol = %d", Events, Configuration->GetActualLogProtocol());
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Selecting events %d for socket %d", int(Events), int(Socket)));
@@ -1189,6 +1216,8 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 {
+  // DEBUG_PRINTF(L"FActive = %d, Startup = %d", FActive, Startup);
+  // DEBUG_PRINTF(L"value = %d, INVALID_SOCKET = %d", value, INVALID_SOCKET);
   if (!FActive && !Startup)
   {
     // no-op
@@ -1203,7 +1232,7 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
     assert(value);
     assert((FActive && (FSocket == value)) || (!FActive && Startup));
 
-    // filter our "local proxy" connection, which have no socket
+    // filter our "local proxy" connection, which has no socket
     if (value != INVALID_SOCKET)
     {
       SocketEventSelect(value, FSocketEvent, Startup);
@@ -1228,13 +1257,14 @@ void TSecureShell::UpdateSocket(SOCKET value, bool Startup)
 //---------------------------------------------------------------------------
 void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Startup)
 {
+  // DEBUG_PRINTF(L"Configuration->GetActualLogProtocol = %d", Configuration->GetActualLogProtocol());
   if (Configuration->GetActualLogProtocol() >= 2)
   {
     LogEvent(FORMAT(L"Updating forwarding socket %d (%d)", int(value), int(Startup)));
   }
 
   SocketEventSelect(value, FSocketEvent, Startup);
-
+  // DEBUG_PRINTF(L"Startup = %d, FPortFwdSockets.size = %d", Startup, FPortFwdSockets.size());
   if (Startup)
   {
     FPortFwdSockets.insert(value);
@@ -1509,6 +1539,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
   WSANETWORKEVENTS * Events)
 {
+  // DEBUG_PRINTF(L"begin");
   CheckConnection();
 
   bool Result = false;
@@ -1533,7 +1564,11 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
       unsigned int WaitResult = WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, MSec);
       if (WaitResult < WAIT_OBJECT_0 + HandleCount)
       {
+#ifdef MPEXT
         if (handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]))
+#else
+        handle_got_event(Handles[WaitResult - WAIT_OBJECT_0]);
+#endif
         {
           Result = true;
         }
@@ -1605,7 +1640,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
-
+  // DEBUG_PRINTF(L"end");
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1751,15 +1786,15 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   std::wstring StoredKeys;
   if (!Result)
   {
-    std::string StoredKeys2;
-    StoredKeys2.resize(10240);
+    std::string StoredKeys2(10240, 0);
 #ifdef MPEXT
     if (retrieve_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
           (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #else
     if (verify_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
-          (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
+          (char *)StoredKeys2.c_str()))
 #endif
+    // if (0)
     {
       StoredKeys = ::MB2W(StoredKeys2.c_str()); // PackStr(StoredKeys);
       std::wstring Buf = StoredKeys;
@@ -1819,7 +1854,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
       int R = FUI->QueryUser(
-        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType, Fingerprint.c_str()),
+        FMTLOAD((Unknown ? UNKNOWN_KEY2 : DIFFERENT_KEY3), KeyType.c_str(), Fingerprint.c_str()),
         NULL, Answers, &Params, qtWarning);
 
       switch (R) {
