@@ -248,6 +248,8 @@ class TKeepaliveThread : public TSimpleThread
 {
 public:
   TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
+  virtual ~TKeepaliveThread()
+  {}
   virtual void Execute();
   virtual void Terminate();
 
@@ -270,17 +272,16 @@ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
 //---------------------------------------------------------------------------
 void TKeepaliveThread::Terminate()
 {
-  TSimpleThread::Terminate();
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 void TKeepaliveThread::Execute()
 {
-  while (!GetTerminated())
+  while (!IsFinished())
   {
     static long MillisecondsPerDay = 24 * 60 * 60 * 1000;
     if ((WaitForSingleObject(FEvent, double(FInterval) * MillisecondsPerDay) != WAIT_FAILED) &&
-        !GetTerminated())
+        !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
     }
