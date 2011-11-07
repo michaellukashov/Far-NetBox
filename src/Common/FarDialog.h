@@ -1018,7 +1018,7 @@ public:
     virtual void SetCaption(std::wstring value) { SetData(value); }
     bool GetCenterGroup() { return TFarDialogItem::GetCenterGroup(); }
     void SetCenterGroup(bool value) { TFarDialogItem::SetCenterGroup(value); }
-    bool GetColor() { return TFarDialogItem::GetColor(0); }
+    bool GetColor() { return (bool)TFarDialogItem::GetColor(0); }
     void SetColor(bool value) { TFarDialogItem::SetColor(0, value); }
 
 protected:

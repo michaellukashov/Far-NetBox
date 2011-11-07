@@ -163,7 +163,7 @@ public:
 
   virtual void Writebool(const std::wstring Name, bool Value);
   virtual void Writeint(const std::wstring Name, int Value);
-  virtual void WriteInt64(std::wstring Name, __int64 Value);
+  virtual void WriteInt64(const std::wstring Name, __int64 Value);
   virtual void WriteDateTime(const std::wstring Name, TDateTime Value);
   virtual void WriteFloat(const std::wstring Name, double Value);
   virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value);
