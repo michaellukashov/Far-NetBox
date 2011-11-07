@@ -517,7 +517,7 @@ void TNetBoxPlugin::OldFar()
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::HandleException(const std::exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exeption, EFatal>)
+  if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exception, EFatal>)
   {
     ShowExtendedException(E);
   }
