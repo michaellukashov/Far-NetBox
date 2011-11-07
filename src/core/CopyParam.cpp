@@ -380,11 +380,11 @@ std::wstring TCopyParamType::ValidLocalPath(std::wstring Path) const
 // not used yet
 std::wstring TCopyParamType::Untokenize(std::wstring FileName)
 {
-  wchar_t * Token;
+  wchar_t *Token;
   std::wstring Result = FileName;
   while ((Token = AnsiStrScan(Result.c_str(), TokenPrefix)) != NULL)
   {
-    int Index = Token - Result.c_str() + 1;
+    size_t Index = Token - Result.c_str() + 1;
     if (Index > Result.size() - 2)
     {
       Result = FileName;
