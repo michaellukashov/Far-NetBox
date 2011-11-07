@@ -633,6 +633,7 @@ int TNetBoxPlugin::MoreMessageDialog(std::wstring Str,
         } \
       }
     #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
+    #pragma warning(push)
     #pragma warning(disable: 4127)
     ADD_BUTTON_EX(Yes, true);
     ADD_BUTTON(No);

@@ -3539,7 +3539,8 @@ void TTerminal::AnyCommand(const std::wstring Command,
     TCallSessionAction &FAction;
     captureoutput_signal_type FOutputEvent;
   private:
-    #pragma warning push(disable: 4822)
+    #pragma warning(push)
+    #pragma warning(disable: 4822)
     TOutputProxy(const TOutputProxy &);
     void operator=(const TOutputProxy &);
     #pragma warning(pop)
