@@ -2015,7 +2015,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
       }
       else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
       {
-        FILE_OPERATION_LOOP (L"", FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+        FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
           THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
         )
       }

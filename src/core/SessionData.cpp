@@ -739,7 +739,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
     }
     #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
-    WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS(), );
+    WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS());
     #undef WRITE_DATA_CONV_FUNC
     WRITE_DATA_EX(bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
