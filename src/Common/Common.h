@@ -239,16 +239,6 @@ void Abort();
 void Error(int ErrorID, int data);
 
 //---------------------------------------------------------------------------
-class TCompThread : public TObject
-{
-public:
-  TCompThread(bool value) {}
-  void Resume() {}
-  void Terminate() {}
-  void SetEvent(HANDLE Event) {}
-  bool GetTerminated() { return true; }
-};
-//---------------------------------------------------------------------------
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
