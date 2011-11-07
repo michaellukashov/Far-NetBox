@@ -524,7 +524,7 @@ void TWinSCPPlugin::OldFar()
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::HandleException(const std::exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0)) // || E->InheritsFrom(__classid(EFatal)))
+  if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exeption, EFatal>(E))
   {
     ShowExtendedException(E);
   }
