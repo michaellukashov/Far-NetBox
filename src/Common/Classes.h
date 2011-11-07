@@ -283,7 +283,7 @@ public:
     std::wstring ExtractName(const std::wstring &S);
     const std::wstring GetValue(const std::wstring Name);
     void SetValue(const std::wstring Name, const std::wstring Value);
-    std::wstring GetCommaText() const;
+    std::wstring GetCommaText();
     void AddStrings(TStrings *Strings);
     void Append(const std::wstring &value);
     virtual void Insert(int Index, const std::wstring AString) = 0;
@@ -305,8 +305,8 @@ public:
     void Assign(TPersistent *Source);
 protected:
     TDuplicatesEnum FDuplicates;
-    mutable wchar_t FDelimiter;
-    mutable wchar_t FQuoteChar;
+    wchar_t FDelimiter;
+    wchar_t FQuoteChar;
     int FUpdateCount;
 };
 

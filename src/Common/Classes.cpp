@@ -151,8 +151,8 @@ int TList::IndexOf(void *value) const
     while ((Result < FList.size()) && (FList[Result] != value))
       Result++;
     if (Result == FList.size())
-      Result = -1;
-    return Result;
+      Result = (size_t)-1;
+    return (int)Result;
 }
 void TList::Clear()
 {
@@ -254,7 +254,7 @@ void TObjectList::Notify(void *Ptr, int Action)
     parent::Notify(Ptr, Action);
 }
 //---------------------------------------------------------------------------
-static const std::wstring sLineBreak = L"\n";
+const std::wstring sLineBreak = L"\n";
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
 
@@ -287,17 +287,17 @@ void TStrings::SetTextStr(const std::wstring Text)
     }
 }
 
-std::wstring TStrings::GetCommaText() const
+std::wstring TStrings::GetCommaText()
 {
     wchar_t LOldDelimiter = GetDelimiter();
     wchar_t LOldQuoteChar = GetQuoteChar();
     FDelimiter = L',';
     FQuoteChar = L'"';
-
-    BOOST_SCOPE_EXIT( (&FDelimiter) (&FQuoteChar) (LOldDelimiter) (LOldQuoteChar) )
+    TStrings *Self = this;
+    BOOST_SCOPE_EXIT( (&Self) (LOldDelimiter) (LOldQuoteChar) )
     {
-        FDelimiter = LOldDelimiter;
-        FQuoteChar = LOldQuoteChar;
+        Self->FDelimiter = LOldDelimiter;
+        Self->FQuoteChar = LOldQuoteChar;
     } BOOST_SCOPE_EXIT_END
 
     std::wstring Result = GetDelimitedText();
@@ -475,9 +475,8 @@ bool TStrings::Equals(TStrings *Strings)
 }
 void TStrings::PutObject(int Index, TObject *AObject)
 {
-    std::wstring *TempString = GetString(Index);
-    Delete(Index);
-    InsertObject(Index, TempString, AObject);
+    (void)Index;
+    (void)AObject;
 }
 void TStrings::PutString(int Index, std::wstring S)
 {
@@ -1872,6 +1871,7 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo &Value)
 TShortCut::TShortCut()
 {
 }
+
 TShortCut::TShortCut(int value)
 {
 }

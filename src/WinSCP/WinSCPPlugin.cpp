@@ -640,6 +640,8 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
         } \
       }
     #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
+    #pragma warning(push)
+    #pragma warning(disable: 4822)
     ADD_BUTTON_EX(Yes, true);
     ADD_BUTTON(No);
     ADD_BUTTON_EX(OK, true);
@@ -652,6 +654,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
     ADD_BUTTON(NoToAll);
     ADD_BUTTON_EX(YesToAll, true);
     ADD_BUTTON(Help);
+    #pragma warning(pop)
     #undef ADD_BUTTON
     #undef ADD_BUTTON_EX
 
