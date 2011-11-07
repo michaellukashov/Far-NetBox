@@ -693,7 +693,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(int, L"Utf", GetNotUtf(), );
     }
 
-    WRITE_DATA_EX(int, L"ProxyMethod", GetProxyMethod());
+    WRITE_DATA_EX(int, L"ProxyMethod", GetProxyMethod(), );
     if (PuttyExport)
     {
       // support for Putty 0.53b and older
