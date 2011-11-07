@@ -262,7 +262,7 @@ void TStrings::SetTextStr(const std::wstring Text)
 {
     TStrings *Self = this;
     Self->BeginUpdate();
-    BOOST_SCOPE_EXIT( (&Self) )
+    BOOST_SCOPE_EXIT( (Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -355,7 +355,7 @@ void TStrings::Assign(TPersistent *Source)
     BeginUpdate();
     {
         TStrings *Self = this;
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
             Self->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -495,7 +495,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
     BeginUpdate();
     {
         TStrings *Self = this;
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
             Self->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -554,7 +554,7 @@ const std::wstring TStrings::GetValue(const std::wstring Name)
   size_t I = IndexOfName(Name);
   if (I != std::wstring::npos)
   {
-    Result = GetString(I).substr(Name.size() + 1, -1);
+    Result = GetString(I).substr(Name.size() + 1, (size_t)-1);
   }
   return Result;
 }
@@ -578,7 +578,7 @@ void TStrings::AddStrings(TStrings *Strings)
   BeginUpdate();
   {
     TStrings *Self = this;
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -1574,7 +1574,7 @@ bool TRegistry::DeleteKey(const std::wstring &Key)
   if (DeleteKey != 0)
   {
     TRegistry *Self = this;
-    BOOST_SCOPE_EXIT( (&Self) (&OldKey) (&DeleteKey) )
+    BOOST_SCOPE_EXIT( (Self) (OldKey) (DeleteKey) )
     {
         Self->SetCurrentKey(OldKey);
         RegCloseKey(DeleteKey);
