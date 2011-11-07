@@ -3,7 +3,6 @@
 
 #include <WinBase.h>
 
-// #include <boost/type_traits/is_base_of.hpp>
 #include "boostdefines.hpp"
 #include <boost/signals/signal3.hpp>
 #include "boost/date_time/gregorian/gregorian.hpp"
@@ -316,7 +315,6 @@ bool RemoveDir(const std::wstring Dir);
 template <class Base, class Derived>
 bool InheritsFrom(const Base *t)
 {
-    // return boost::is_base_of<Base, Derived>::value == true;
     return dynamic_cast<const Derived *>(t) != NULL;
 }
 
