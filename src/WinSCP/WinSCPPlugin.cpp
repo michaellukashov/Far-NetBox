@@ -109,7 +109,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      BOOST_SCOPE_EXIT ( (MenuItems) )
       {
         delete MenuItems;
       } BOOST_SCOPE_EXIT_END
@@ -216,7 +216,7 @@ int TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem;
-    for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
+    for (size_t Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Event, Param);
@@ -273,7 +273,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
         std::wstring Name = (wchar_t *)Item;
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          int P = Name.find(L"\1");
+          size_t P = Name.find(L"\1");
           if (P != std::wstring::npos)
           {
             Directory = Name.substr(P + 1, Name.size() - P);
@@ -332,7 +332,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      BOOST_SCOPE_EXIT ( (MenuItems) )
       {
         delete MenuItems;
       } BOOST_SCOPE_EXIT_END
@@ -571,7 +571,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
   int Result;
   TStrings * ButtonLabels = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (&ButtonLabels) )
+      BOOST_SCOPE_EXIT ( (ButtonLabels) )
       {
         delete ButtonLabels;
       } BOOST_SCOPE_EXIT_END
@@ -582,7 +582,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
       Flags = Params->Flags;
     }
 
-    int TitleId;
+    int TitleId = 0;
     switch (Type) {
       case qtConfirmation: TitleId = MSG_TITLE_CONFIRMATION; break;
       case qtInformation: TitleId = MSG_TITLE_INFORMATION; break;
@@ -641,7 +641,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
       }
     #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
     #pragma warning(push)
-    #pragma warning(disable: 4822)
+    #pragma warning(disable: 4127)
     ADD_BUTTON_EX(Yes, true);
     ADD_BUTTON(No);
     ADD_BUTTON_EX(OK, true);
