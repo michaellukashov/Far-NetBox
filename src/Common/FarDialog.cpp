@@ -2762,7 +2762,7 @@ long TFarLister::ItemProc(int Msg, long Param)
         }
         else
         {
-            int NewTopIndex = GetTopIndex();
+            size_t NewTopIndex = GetTopIndex();
 
             if (((P.x == GetWidth() - 1) && (P.y == 0)) ||
                     ((P.x < GetWidth() - 1) && (P.y < GetHeight() / 2)))
@@ -2784,7 +2784,7 @@ long TFarLister::ItemProc(int Msg, long Param)
             {
                 assert(P.x == GetWidth() - 1);
                 assert((P.y > 0) && (P.y < GetHeight() - 1));
-                NewTopIndex = ceil(float(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1));
+                NewTopIndex = (size_t)ceil(float(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1));
             }
 
             Result = true;
