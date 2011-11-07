@@ -1949,6 +1949,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     } BOOST_SCOPE_EXIT_END
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     WIN32_FIND_DATA SearchRec;
+    memset(&SearchRec, 0, sizeof(SearchRec));
     HANDLE findHandle = 0;
     bool FindOK = false;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
