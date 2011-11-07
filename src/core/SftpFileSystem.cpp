@@ -1021,7 +1021,7 @@ public:
     TSFTPPacket * Response;
 
     assert(FResponses->GetCount() == FRequests->GetCount());
-    for (int Index = 0; Index < FRequests->GetCount(); Index++)
+    for (size_t Index = 0; Index < FRequests->GetCount(); Index++)
     {
       Request = reinterpret_cast<TSFTPQueuePacket*>(FRequests->GetItem(Index));
       assert(Request);
@@ -1061,7 +1061,7 @@ public:
       {
         FFileSystem->ReceiveResponse(Request, Response);
       }
-      catch (const std::exception & E)
+      catch (const std::exception &E)
       {
         if (FFileSystem->FTerminal->GetActive())
         {
@@ -1152,14 +1152,14 @@ protected:
       Token = NULL;
     }
 
-    void * Token;
+    void *Token;
   };
 
-  virtual bool InitRequest(TSFTPQueuePacket * Request) = 0;
+  virtual bool InitRequest(TSFTPQueuePacket *Request) = 0;
 
-  virtual bool End(TSFTPPacket * Response) = 0;
+  virtual bool End(TSFTPPacket *Response) = 0;
 
-  virtual void SendPacket(TSFTPQueuePacket * Packet)
+  virtual void SendPacket(TSFTPQueuePacket *Packet)
   {
     FFileSystem->SendPacket(Packet);
   }
@@ -1187,7 +1187,7 @@ protected:
 
     if (Request != NULL)
     {
-      TSFTPPacket * Response = new TSFTPPacket();
+      TSFTPPacket *Response = new TSFTPPacket();
       FRequests->Add((TObject *)Request);
       FResponses->Add((TObject *)Response);
 
@@ -1204,7 +1204,7 @@ protected:
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
 public:
-  TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem) : TSFTPQueue(AFileSystem)
+  TSFTPFixedLenQueue(TSFTPFileSystem *AFileSystem) : TSFTPQueue(AFileSystem)
   {
     FMissedRequests = 0;
   }
@@ -1237,7 +1237,7 @@ protected:
 class TSFTPAsynchronousQueue : public TSFTPQueue
 {
 public:
-  TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem) : TSFTPQueue(AFileSystem)
+  TSFTPAsynchronousQueue(TSFTPFileSystem *AFileSystem) : TSFTPQueue(AFileSystem)
   {
     FFileSystem->FSecureShell->RegisterReceiveHandler(boost::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this, _1));
     FReceiveHandlerRegistered = true;
@@ -1297,7 +1297,7 @@ private:
 class TSFTPDownloadQueue : public TSFTPFixedLenQueue
 {
 public:
-  TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem) :
+  TSFTPDownloadQueue(TSFTPFileSystem *AFileSystem) :
     TSFTPFixedLenQueue(AFileSystem)
   {
   }
@@ -1320,7 +1320,7 @@ public:
     InitRequest(Packet, Offset, Missing);
   }
 
-  bool ReceivePacket(TSFTPPacket * Packet, unsigned long & BlockSize)
+  bool ReceivePacket(TSFTPPacket *Packet, unsigned long &BlockSize)
   {
     void * Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_DATA, asEOF, &Token);
@@ -1338,7 +1338,7 @@ protected:
     return true;
   }
 
-  void InitRequest(TSFTPPacket * Request, __int64 Offset,
+  void InitRequest(TSFTPPacket *Request, __int64 Offset,
     unsigned long Size)
   {
     Request->ChangeType(SSH_FXP_READ);
@@ -1347,13 +1347,13 @@ protected:
     Request->AddCardinal(Size);
   }
 
-  virtual bool End(TSFTPPacket * Response)
+  virtual bool End(TSFTPPacket *Response)
   {
     return (Response->GetType() != SSH_FXP_DATA);
   }
 
 private:
-  TFileOperationProgressType * OperationProgress;
+  TFileOperationProgressType *OperationProgress;
   __int64 FTransfered;
   std::string FHandle;
 };
@@ -1378,7 +1378,7 @@ public:
   }
 
   bool Init(const std::wstring AFileName,
-    HANDLE AFile, TFileOperationProgressType * AOperationProgress,
+    HANDLE AFile, TFileOperationProgressType *AOperationProgress,
     const std::string AHandle, __int64 ATransfered)
   {
     FFileName = AFileName;
@@ -1391,7 +1391,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket * Request)
+  virtual bool InitRequest(TSFTPQueuePacket *Request)
   {
     FTerminal = FFileSystem->FTerminal;
     // Buffer for one block of data
@@ -1442,7 +1442,7 @@ protected:
     return Result;
   }
 
-  virtual void SendPacket(TSFTPQueuePacket * Packet)
+  virtual void SendPacket(TSFTPQueuePacket *Packet)
   {
     TSFTPAsynchronousQueue::SendPacket(Packet);
     OperationProgress->AddTransfered(FLastBlockSize);
