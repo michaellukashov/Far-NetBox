@@ -91,6 +91,8 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>include;..\openssl\x86\inc32;..\zlib\src;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>LIBSSH2DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -103,6 +105,8 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>include;..\openssl\x64\inc32;..\zlib\src;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>LIBSSH2DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -117,6 +121,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>include;..\openssl\x86\inc32;..\zlib\src;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>LIBSSH2DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -133,6 +139,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>include;..\openssl\x64\inc32;..\zlib\src;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>LIBSSH2DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>

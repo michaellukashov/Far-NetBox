@@ -693,7 +693,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(int, L"Utf", GetNotUtf(), );
     }
 
-    WRITE_DATA_EX(int, L"ProxyMethod", GetProxyMethod());
+    WRITE_DATA_EX(int, L"ProxyMethod", GetProxyMethod(), );
     if (PuttyExport)
     {
       // support for Putty 0.53b and older
@@ -739,7 +739,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(String, L"ProxyTelnetCommand", GetProxyTelnetCommand(), );
     }
     #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
-    WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS(), );
+    WRITE_DATA_CONV(int, L"ProxyDNS", GetProxyDNS());
     #undef WRITE_DATA_CONV_FUNC
     WRITE_DATA_EX(bool, L"ProxyLocalhost", GetProxyLocalhost(), );
 
@@ -922,20 +922,20 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol;
-  int APortNumber;
+  int APortNumber = 0;
   TFtps AFtps = ftpsNone;
   if (LowerCase(Url.substr(0, 4)) == L"scp:")
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    Url.erase(1, 4);
+    Url.erase(0, 4);
     ProtocolDefined = true;
   }
   else if (LowerCase(Url.substr(0, 5)) == L"sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    Url.erase(1, 5);
+    Url.erase(0, 5);
     ProtocolDefined = true;
   }
   else if (LowerCase(Url.substr(0, 4)) == L"ftp:")
@@ -943,7 +943,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
-    Url.erase(1, 4);
+    Url.erase(0, 4);
     ProtocolDefined = true;
   }
   else if (LowerCase(Url.substr(0, 5)) == L"ftps:")
@@ -951,13 +951,13 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    Url.erase(1, 5);
+    Url.erase(0, 5);
     ProtocolDefined = true;
   }
 
   if (ProtocolDefined && (Url.substr(0, 2) == L"//"))
   {
-    Url.erase(1, 2);
+    Url.erase(0, 2);
   }
 
   if (AProtocolDefined != NULL)
@@ -972,7 +972,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = NULL;
-    for (int Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); Index++)
+    for (size_t Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); Index++)
     {
       TSessionData * AData = (TSessionData *)StoredSessions->GetItem(Index);
       if (AnsiSameText(AData->Name, DecodedUrl) ||

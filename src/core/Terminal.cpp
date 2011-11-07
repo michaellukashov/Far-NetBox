@@ -774,7 +774,7 @@ void TTerminal::Open()
                 {
                   FFSProtocol = cfsSCP;
                   FFileSystem = new TSCPFileSystem(this);
-                  FFileSystem->Init(FSecureShell);
+                  ((TSCPFileSystem *)FFileSystem)->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SCP protocol.");
                 }
@@ -782,7 +782,7 @@ void TTerminal::Open()
                 {
                   FFSProtocol = cfsSFTP;
                   FFileSystem = new TSFTPFileSystem(this);
-                  FFileSystem->Init(FSecureShell);
+                  ((TSFTPFileSystem *)FFileSystem)->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SFTP protocol.");
                 }
@@ -1425,7 +1425,7 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   // assert(CallBackFunc);
   fileoperation_signal_type sig;
   sig.connect(CallBackFunc);
-  int Result;
+  int Result = 0;
   FILE_OPERATION_LOOP_EX
   (
     AllowSkip, Message,
@@ -1908,7 +1908,7 @@ int TTerminal::ConfirmFileOverwrite(const std::wstring FileName,
   TOperationSide Side, int Params, TFileOperationProgressType * OperationProgress,
   std::wstring Message)
 {
-  int Result;
+  int Result = 0;
   // duplicated in TSFTPFileSystem::SFTPConfirmOverwrite
   bool CanAlternateResume =
     (FileParams != NULL) &&
@@ -2326,7 +2326,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const 
     FileList = DoReadDirectoryListing(Directory, false);
     if (FileList != NULL)
     {
-      int Index = 0;
+      size_t Index = 0;
       while (Index < FileList->GetCount())
       {
         TRemoteFile * File = FileList->GetFile(Index);
@@ -2446,7 +2446,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
   if (FileList)
   {
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
+      BOOST_SCOPE_EXIT ( (&FileList) )
       {
         delete FileList;
       } BOOST_SCOPE_EXIT_END
@@ -2455,7 +2455,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
       TRemoteFile *File;
       processfile_signal_type sig;
       sig.connect(CallBackFunc);
-      for (int Index = 0; Index < FileList->GetCount(); Index++)
+      for (size_t Index = 0; Index < FileList->GetCount(); Index++)
       {
         File = FileList->GetFile(Index);
         if (!File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -2597,7 +2597,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Self->EndTransaction();
             }
           } BOOST_SCOPE_EXIT_END
-        int Index = 0;
+        size_t Index = 0;
         std::wstring FileName;
         bool Success;
         while ((Index < FileList->GetCount()) && (Progress->Cancel == csContinue))
@@ -2606,7 +2606,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           try
           {
             {
-              BOOST_SCOPE_EXIT ( (&Self) (&Progress) (FileName) (Success) (OnceDoneOperation) )
+              BOOST_SCOPE_EXIT ( (&Progress) (FileName) (Success) (OnceDoneOperation) )
               {
                 Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
@@ -2881,7 +2881,7 @@ void TTerminal::CustomCommandOnFiles(std::wstring Command,
   else
   {
     std::wstring FileList;
-    for (int i = 0; i < Files->GetCount(); i++)
+    for (size_t i = 0; i < Files->GetCount(); i++)
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(Files->GetObject(i));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -3211,7 +3211,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
           // this is just optimization to avoid checking existence of current
           // directory after each move operation.
           std::wstring curDirectory = Self->GetCurrentDirectory();
-          for (int Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
+          for (size_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
           {
             const TRemoteFile *File =
               reinterpret_cast<const TRemoteFile *>(FileList->GetObject(Index));
@@ -3539,8 +3539,11 @@ void TTerminal::AnyCommand(const std::wstring Command,
     TCallSessionAction &FAction;
     captureoutput_signal_type FOutputEvent;
   private:
+    #pragma warning(push)
+    #pragma warning(disable: 4822)
     TOutputProxy(const TOutputProxy &);
     void operator=(const TOutputProxy &);
+    #pragma warning(pop)
   };
 
   TCallSessionAction Action(GetLog(), Command, GetCurrentDirectory());
@@ -3776,10 +3779,11 @@ bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
   if (!CopyParam->AllowAnyTransfer())
   {
     WIN32_FIND_DATA FindData;
-    HANDLE Handle;
+    memset(&FindData, 0, sizeof(FindData));
+    HANDLE Handle = 0;
     TFileOperationProgressType * OperationProgress = GetOperationProgress();
     FILE_OPERATION_LOOP (FMTLOAD(FILE_NOT_EXISTS, FileName.c_str()),
-      Handle = FindFirstFile(FileName.c_str(), &FindData);
+      Handle = ::FindFirstFile(FileName.c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
         Abort();
@@ -3885,7 +3889,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
     assert(!FOperationProgress);
     FOperationProgress = OperationProgress;
     WIN32_FIND_DATA Rec;
-    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    for (size_t Index = 0; Index < FileList->GetCount(); Index++)
     {
       std::wstring FileName = FileList->GetString(Index);
       if (FileSearchRec(FileName, Rec))
@@ -3982,11 +3986,11 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   }
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Data) )
+    BOOST_SCOPE_EXIT ( (&Data) )
     {
       if (Data.LocalFileList != NULL)
       {
-        for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+        for (size_t Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
         {
           TSynchronizeFileData *FileData = reinterpret_cast<TSynchronizeFileData*>
             (Data.LocalFileList->GetObject(Index));
@@ -3997,13 +4001,14 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     } BOOST_SCOPE_EXIT_END
     bool Found = false;
     WIN32_FIND_DATA SearchRec;
+    memset(&SearchRec, 0, sizeof(SearchRec));
     Data.LocalFileList = new TStringList();
     Data.LocalFileList->SetSorted(true);
     Data.LocalFileList->SetCaseSensitive(false);
     TFileOperationProgressType *OperationProgress = GetOperationProgress();
     HANDLE findHandle = 0;
+    int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-      int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
       std::wstring path = Data.LocalDirectory + L"*.*";
       findHandle = FindFirstFile(path.c_str(), /*FindAttrs, */&SearchRec);
       Found = (findHandle != 0);
@@ -4012,7 +4017,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     if (Found)
     {
       {
-        BOOST_SCOPE_EXIT ( (&Self) (&findHandle) )
+        BOOST_SCOPE_EXIT ( (&findHandle) )
         {
           ::FindClose(findHandle);
         } BOOST_SCOPE_EXIT_END
@@ -4055,7 +4060,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (::FindNextFile(findHandle, &SearchRec) != 0);
+            Found = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
           );
         }
       }
@@ -4074,7 +4079,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         FLAGSET(Params, spUseCache));
 
       TSynchronizeFileData * FileData;
-      for (int Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
+      for (size_t Index = 0; Index < Data.LocalFileList->GetCount(); Index++)
       {
         FileData = reinterpret_cast<TSynchronizeFileData *>
           (Data.LocalFileList->GetObject(Index));
@@ -4535,7 +4540,7 @@ void TTerminal::SynchronizeLocalTimestamp(const std::wstring /*FileName*/,
       NULL, NULL, NULL, NULL);
     FILETIME WrTime = DateTimeToFileTime(ChecklistItem->Remote.Modification,
       GetSessionData()->GetDSTMode());
-    bool Result = SetFileTime(Handle, NULL, NULL, &WrTime);
+    bool Result = (bool)SetFileTime(Handle, NULL, NULL, &WrTime);
     CloseHandle(Handle);
     if (!Result)
     {
@@ -4718,7 +4723,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   try
   {
 
-    __int64 Size;
+    __int64 Size = 0;
     if (CopyParam->GetCalculateSize())
     {
       // dirty trick: when moving, do not pass copy param to avoid exclude mask
@@ -4817,7 +4822,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         // by calling EndTransaction
         Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
-    __int64 TotalSize;
+    __int64 TotalSize = 0;
     bool TotalSizeKnown = false;
     TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
       boost::bind(&TTerminal::DoFinished, this, _1, _2, _3, _4, _5, _6));
@@ -4836,7 +4841,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
         TotalSizeKnown = true;
       }
     }
-    OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osRemote,
+    OperationProgress->Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
       FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = OperationProgress;
@@ -4928,7 +4933,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 {
   bool AResult = false;
 
-  if ((Prompts->GetCount() == 1) && !bool(Prompts->GetObject(0)) &&
+  if ((Prompts->GetCount() == 1) && !((void *)(Prompts->GetObject(0) != NULL)) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
@@ -5014,7 +5019,7 @@ int TTerminalList::GetActiveCount()
 {
   int Result = 0;
   TTerminal * Terminal;
-  for (int i = 0; i < GetCount(); i++)
+  for (size_t i = 0; i < GetCount(); i++)
   {
     Terminal = GetTerminal(i);
     if (Terminal->GetActive())
@@ -5028,7 +5033,7 @@ int TTerminalList::GetActiveCount()
 void TTerminalList::Idle()
 {
   TTerminal * Terminal;
-  for (int i = 0; i < GetCount(); i++)
+  for (size_t i = 0; i < GetCount(); i++)
   {
     Terminal = GetTerminal(i);
     if (Terminal->GetStatus() == ssOpened)
@@ -5040,7 +5045,7 @@ void TTerminalList::Idle()
 //---------------------------------------------------------------------------
 void TTerminalList::RecryptPasswords()
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
     GetTerminal(Index)->RecryptPasswords();
   }

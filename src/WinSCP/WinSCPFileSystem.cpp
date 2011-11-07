@@ -244,10 +244,12 @@ void TFarInteractiveCustomCommand::Prompt(int /*Index*/,
 //---------------------------------------------------------------------------
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
-class TKeepaliveThread : public TCompThread
+class TKeepaliveThread : public TSimpleThread
 {
 public:
   TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
+  virtual ~TKeepaliveThread()
+  {}
   virtual void Execute();
   virtual void Terminate();
 
@@ -259,28 +261,27 @@ private:
 //---------------------------------------------------------------------------
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   TDateTime Interval) :
-  TCompThread(true)
+  TSimpleThread()
 {
   FEvent = CreateEvent(NULL, false, false, NULL);
 
   FFileSystem = FileSystem;
   FInterval = Interval;
-  Resume();
+  Start();
 }
 //---------------------------------------------------------------------------
 void TKeepaliveThread::Terminate()
 {
-  TCompThread::Terminate();
   SetEvent(FEvent);
 }
 //---------------------------------------------------------------------------
 void TKeepaliveThread::Execute()
 {
-  while (!GetTerminated())
+  while (!IsFinished())
   {
     static long MillisecondsPerDay = 24 * 60 * 60 * 1000;
     if ((WaitForSingleObject(FEvent, double(FInterval) * MillisecondsPerDay) != WAIT_FAILED) &&
-        !GetTerminated())
+        !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
     }

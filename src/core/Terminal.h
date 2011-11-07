@@ -119,23 +119,23 @@ typedef informationevent_signal_type::slot_type informationevent_slot_type;
     try { \
       OPERATION;                                                            \
     }                                                                       \
-    catch (const EAbort &E)                                                      \
+    catch (const EAbort &)                                                      \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (const EScpSkipFile &E)                                                \
+    catch (const EScpSkipFile &)                                                \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (const EFatal &E)                                                      \
+    catch (const EFatal &)                                                      \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (const EFileNotFoundError &E)                                                      \
+    catch (const EFileNotFoundError &)                                                      \
     {                                                                       \
       throw;                                                                \
     }                                                                       \
-    catch (const EOSError &E)                                                      \
+    catch (const EOSError &)                                                      \
     {                                                                       \
       throw;                                                                \
     }                                                                       \

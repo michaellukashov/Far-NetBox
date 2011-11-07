@@ -3,7 +3,6 @@
 
 #include <WinBase.h>
 
-// #include <boost/type_traits/is_base_of.hpp>
 #include "boostdefines.hpp"
 #include <boost/signals/signal3.hpp>
 #include "boost/date_time/gregorian/gregorian.hpp"
@@ -111,16 +110,6 @@ bool IsExactly2008R2();
 struct TPasLibModule;
 TPasLibModule * FindModule(void * Instance);
 __int64 Round(double Number);
-//---------------------------------------------------------------------------
-/* struct TSearchRec
-    int Time;
-    __int64 Size;
-    int Attr;
-    std::wstring Name;
-    int ExcludeAttr;   
-    HANDLE FindHandle;
-    TWin32FindData FindData;
-}; */
 //---------------------------------------------------------------------------
 // typedef void (* TProcessLocalFileEvent)
   // (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
@@ -239,16 +228,6 @@ void Abort();
 void Error(int ErrorID, int data);
 
 //---------------------------------------------------------------------------
-class TCompThread : public TObject
-{
-public:
-  TCompThread(bool value) {}
-  void Resume() {}
-  void Terminate() {}
-  void SetEvent(HANDLE Event) {}
-  bool GetTerminated() { return true; }
-};
-//---------------------------------------------------------------------------
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
@@ -336,7 +315,6 @@ bool RemoveDir(const std::wstring Dir);
 template <class Base, class Derived>
 bool InheritsFrom(const Base *t)
 {
-    // return boost::is_base_of<Base, Derived>::value == true;
     return dynamic_cast<const Derived *>(t) != NULL;
 }
 

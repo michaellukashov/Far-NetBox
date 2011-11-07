@@ -575,7 +575,7 @@ int TNetBoxPlugin::MoreMessageDialog(std::wstring Str,
       Flags = Params->Flags;
     }
 
-    int TitleId;
+    int TitleId = 0;
     switch (Type) {
       case qtConfirmation: TitleId = MSG_TITLE_CONFIRMATION; break;
       case qtInformation: TitleId = MSG_TITLE_INFORMATION; break;
@@ -633,6 +633,8 @@ int TNetBoxPlugin::MoreMessageDialog(std::wstring Str,
         } \
       }
     #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
+    #pragma warning(push)
+    #pragma warning(disable: 4127)
     ADD_BUTTON_EX(Yes, true);
     ADD_BUTTON(No);
     ADD_BUTTON_EX(OK, true);
@@ -645,6 +647,7 @@ int TNetBoxPlugin::MoreMessageDialog(std::wstring Str,
     ADD_BUTTON(NoToAll);
     ADD_BUTTON_EX(YesToAll, true);
     ADD_BUTTON(Help);
+    #pragma warning(pop)
     #undef ADD_BUTTON
     #undef ADD_BUTTON_EX
 

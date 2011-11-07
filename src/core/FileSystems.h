@@ -9,7 +9,7 @@ class TTerminal;
 class TRights;
 class TRemoteFile;
 class TRemoteFileList;
-struct TCopyParamType;
+class TCopyParamType;
 struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
@@ -31,7 +31,7 @@ class TCustomFileSystem
 public:
   TCustomFileSystem()
   {}
-  virtual void Init(TSecureShell * SecureShell)
+  virtual void Init()
   {}
   virtual ~TCustomFileSystem();
 
