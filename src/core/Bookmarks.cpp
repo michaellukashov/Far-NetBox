@@ -51,7 +51,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
           delete BookmarkKeys;
         } BOOST_SCOPE_EXIT_END
         Storage->GetSubKeyNames(BookmarkKeys);
-        for (int Index = 0; Index < BookmarkKeys->GetCount(); Index++)
+        for (size_t Index = 0; Index < BookmarkKeys->GetCount(); Index++)
         {
           std::wstring Key = BookmarkKeys->GetString(Index);
           if (Storage->OpenSubKey(Key, false))
@@ -164,7 +164,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
   {
     if (Storage->OpenSubKey(Keys[i], true))
     {
-      for (int Index = 0; Index < FBookmarkLists->GetCount(); Index++)
+      for (size_t Index = 0; Index < FBookmarkLists->GetCount(); Index++)
       {
         TBookmarkList * BookmarkList = reinterpret_cast<TBookmarkList *>(FBookmarkLists->GetObject(Index));
         if (All || BookmarkList->GetModified())
@@ -426,7 +426,7 @@ TBookmark * TBookmarkList::FindByName(const std::wstring Node, const std::wstrin
 //---------------------------------------------------------------------------
 TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
 {
-  for (int Index = 0; Index < FBookmarks->GetCount(); Index++)
+  for (size_t Index = 0; Index < FBookmarks->GetCount(); Index++)
   {
     if (GetBookmark(Index)->GetShortCut() == ShortCut)
     {
@@ -472,7 +472,7 @@ void TBookmarkList::SetNodeOpened(std::wstring Index, bool value)
 //---------------------------------------------------------------------------
 void TBookmarkList::ShortCuts(TShortCuts & ShortCuts)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
     TBookmark * Bookmark = GetBookmark(Index);
     if (Bookmark->GetShortCut() != 0)
