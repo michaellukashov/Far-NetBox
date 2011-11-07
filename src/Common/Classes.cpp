@@ -41,6 +41,7 @@ TPersistent *TPersistent::GetOwner()
 
 void TPersistent::AssignError(TPersistent *Source)
 {
+  (void)Source;
   std::wstring SourceName = L"nil";
   // if (Source != NULL)
     // SourceName = Source.ClassName
@@ -146,7 +147,7 @@ void TList::Insert(size_t Index, void *Item)
 }
 int TList::IndexOf(void *value) const
 {
-    int Result = 0;
+    size_t Result = 0;
     while ((Result < FList.size()) && (FList[Result] != value))
       Result++;
     if (Result == FList.size())
@@ -164,6 +165,8 @@ void TList::Sort(CompareFunc func)
 }
 void TList::Notify(void *Ptr, int Action)
 {
+    (void)Ptr;
+    (void)Action;
 }
 void TList::Sort()
 {
@@ -303,14 +306,14 @@ std::wstring TStrings::GetCommaText() const
 std::wstring TStrings::GetDelimitedText() const
 {
     std::wstring Result;
-    int Count = GetCount();
+    size_t Count = GetCount();
     if ((Count == 1) && GetString(0).empty())
     {
       Result = GetQuoteChar() + GetQuoteChar();
     }
     else
     {
-        for (int i = 0; i < GetCount(); i++)
+        for (size_t i = 0; i < GetCount(); i++)
         {
             std::wstring line = GetString(i);
             Result += GetQuoteChar() + line + GetQuoteChar() + GetDelimiter();
@@ -437,9 +440,11 @@ void TStrings::EndUpdate()
 }
 void TStrings::SetUpdateState(bool Updating)
 {
+    (void)Updating;
 }
 TObject *TStrings::GetObject(int Index)
 {
+    (void)Index;
     return NULL;
 }
 int TStrings::AddObject(std::wstring S, TObject *AObject)
@@ -457,10 +462,10 @@ void TStrings::InsertObject(int Index, std::wstring Key, TObject *AObject)
 bool TStrings::Equals(TStrings *Strings)
 {
   bool Result = false;
-  int Count = GetCount();
+  size_t Count = GetCount();
   if (Count != Strings->GetCount())
     return false;
-  for (int I = 0; I < Count; I++)
+  for (size_t I = 0; I < Count; I++)
   {
     if (GetString(I) != Strings->GetString(I))
         return false;
@@ -470,7 +475,9 @@ bool TStrings::Equals(TStrings *Strings)
 }
 void TStrings::PutObject(int Index, TObject *AObject)
 {
-    ::Error(SNotImplemented, 1204);
+    std::wstring *TempString = GetString(Index);
+    Delete(Index);
+    InsertObject(Index, TempString, AObject);
 }
 void TStrings::PutString(int Index, std::wstring S)
 {
@@ -515,18 +522,18 @@ int TStrings::IndexOf(const std::wstring S)
 }
 int TStrings::IndexOfName(const std::wstring &Name)
 {
-  int Result = -1;
+  size_t Result = (size_t)-1;
   for (Result = 0; Result < GetCount(); Result++)
   {
     std::wstring S = GetString(Result);
-    int P = ::AnsiPos(S, L'=');
+    size_t P = ::AnsiPos(S, L'=');
     if ((P != std::wstring::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
     {
         return Result;
     }
   }
-  Result = -1;
-  return Result;
+  Result = (size_t)-1;
+  return (int)Result;
 }
 const std::wstring TStrings::GetName(int Index)
 {
@@ -535,7 +542,7 @@ const std::wstring TStrings::GetName(int Index)
 std::wstring TStrings::ExtractName(const std::wstring &S)
 {
    std::wstring Result = S;
-   int P = ::AnsiPos(Result, L'=');
+   size_t P = ::AnsiPos(Result, L'=');
    if (P != std::wstring::npos)
     Result.resize(P);
    else
@@ -545,8 +552,8 @@ std::wstring TStrings::ExtractName(const std::wstring &S)
 const std::wstring TStrings::GetValue(const std::wstring Name)
 {
   std::wstring Result;
-  int I = IndexOfName(Name);
-  if (I >= 0)
+  size_t I = IndexOfName(Name);
+  if (I != std::wstring::npos)
   {
     Result = GetString(I).substr(Name.size() + 1, -1);
   }
@@ -554,7 +561,7 @@ const std::wstring TStrings::GetValue(const std::wstring Name)
 }
 void TStrings::SetValue(const std::wstring Name, const std::wstring Value)
 {
-  int I = IndexOfName(Name);
+  size_t I = IndexOfName(Name);
   if (!Value.empty())
   {
     if (I == std::wstring::npos)
@@ -576,7 +583,7 @@ void TStrings::AddStrings(TStrings *Strings)
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
-    for (int I = 0; I < Strings->GetCount(); I++)
+    for (size_t I = 0; I < Strings->GetCount(); I++)
     {
       AddObject(Strings->GetString(I), Strings->GetObject(I));
     }
@@ -704,13 +711,13 @@ void TStringList::PutString(int Index, std::wstring S)
     {
       ::Error(SSortedListError, 0);
     }
-    if ((Index < 0) || (Index > FList.size()))
+    if ((Index < 0) || ((size_t)Index > FList.size()))
     {
       ::Error(SListIndexError, Index);
     }
     Changing();
     // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
-    if (Index < FList.size())
+    if ((size_t)Index < FList.size())
     {
       TStringItem item;
       item.FString = S;
@@ -735,7 +742,7 @@ void TStringList::Delete(size_t Index)
 }
 TObject *TStringList::GetObject(int Index)
 {
-    if ((Index < 0) || (Index >= FList.size()))
+    if ((Index < 0) || ((size_t)Index >= FList.size()))
     {
         ::Error(SListIndexError, Index);
     }
@@ -747,7 +754,7 @@ void TStringList::InsertObject(int Index, std::wstring Key, TObject *AObject)
     {
         ::Error(SSortedListError, 0);
     }
-    if ((Index < 0) || (Index > GetCount()))
+    if ((Index < 0) || ((size_t)Index > GetCount()))
     {
         ::Error(SListIndexError, Index);
     }
@@ -755,7 +762,7 @@ void TStringList::InsertObject(int Index, std::wstring Key, TObject *AObject)
 }
 void TStringList::InsertItem(int Index, const std::wstring S, TObject *AObject)
 {
-    if ((Index < 0) || (Index > GetCount()))
+    if ((Index < 0) || ((size_t)Index > GetCount()))
     {
         ::Error(SListIndexError, Index);
     }
@@ -814,7 +821,7 @@ void TStringList::LoadFromFile(const std::wstring &FileName)
 
 void TStringList::PutObject(int Index, TObject *AObject)
 {
-    if ((Index < 0) || (Index >= FList.size()))
+    if ((Index < 0) || ((size_t)Index >= FList.size()))
     {
       ::Error(SListIndexError, Index);
     }
@@ -844,7 +851,7 @@ void TStringList::Changed()
 }
 void TStringList::Insert(int Index, const std::wstring S)
 {
-  if ((Index < 0) || (Index > FList.size()))
+  if ((Index < 0) || ((size_t)Index > FList.size()))
   {
     ::Error(SListIndexError, Index);
   }
@@ -1236,13 +1243,14 @@ __int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 
 void THandleStream::SetSize(const __int64 NewSize)
 {
-    __int64 res = Seek(NewSize, soFromBeginning);
+    // __int64 res =
+    Seek(NewSize, soFromBeginning);
     // LARGE_INTEGER li;
     // li.QuadPart = size;
     // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
         // handleLastErrorImpl(_path);
     // DEBUG_PRINTF(L"FHandle = %d, res = %d", FHandle, res);
-    ::Win32Check(::SetEndOfFile(FHandle));
+    ::Win32Check(::SetEndOfFile(FHandle) > 0);
 }
 
 //---------------------------------------------------------------------------
@@ -1268,7 +1276,7 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
     if (Result > 0)
     {
       if (Result > Count) Result = Count;
-      memmove((char *)FMemory + FPosition, Buffer, Result);
+      memmove((char *)FMemory + FPosition, Buffer, (int)Result);
       FPosition += Result;
       return Result;
     }
@@ -1279,7 +1287,9 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
 
 __int64 TMemoryStream::Seek(__int64 Offset, __int64 Origin)
 {
-    return Seek(Offset, soFromCurrent);
+    // return Seek(Offset, soFromCurrent);
+    ::Error(SNotImplemented, 1303);
+    return 0;
 }
 
 __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
@@ -1350,9 +1360,9 @@ void *TMemoryStream::Realloc(__int64 &NewCapacity)
     else
     {
       if (FCapacity == 0)
-        Result = malloc(NewCapacity);
+        Result = malloc((int)NewCapacity);
       else
-        Result = realloc(FMemory, NewCapacity);
+        Result = realloc(FMemory, (int)NewCapacity);
       if (Result == NULL)
         throw EStreamError(FMTLOAD(SMemoryStreamError));
     }
@@ -1380,7 +1390,7 @@ __int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
           SetCapacity(Pos);
         FSize = Pos;
       }
-      memmove((char *)Buffer, (char *)FMemory + FPosition, Count);
+      memmove((char *)Buffer, (char *)FMemory + FPosition, (int)Count);
       FPosition = Pos;
       Result = Count;
     }
@@ -1482,7 +1492,7 @@ void TRegistry::GetValueNames(TStrings * Strings)
   if (GetKeyInfo(Info))
   {
     S.resize(Info.MaxValueLen + 1);
-    for (int I = 0; I < Info.NumSubKeys; I++)
+    for (size_t I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxValueLen + 1;
       RegEnumValue(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
@@ -1499,7 +1509,7 @@ void TRegistry::GetKeyNames(TStrings * Strings)
   if (GetKeyInfo(Info))
   {
     S.resize(Info.MaxSubKeyLen + 1);
-    for (int I = 0; I < Info.NumSubKeys; I++)
+    for (size_t I = 0; I < Info.NumSubKeys; I++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
       RegEnumKeyEx(GetCurrentKey(), I, &S[0], &Len, NULL, NULL, NULL, NULL);
@@ -1662,7 +1672,7 @@ int TRegistry::GetDataSize(const std::wstring ValueName)
 
 bool TRegistry::Readbool(const std::wstring Name)
 {
-  bool Result = Readint(Name);
+  bool Result = Readint(Name) != 0;
   return Result;
 }
 
@@ -1714,7 +1724,7 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
   {
     Result.resize(Len);
     GetData(Name, (void *)Result.c_str(), Len, RegData);
-    if ((RegData == rdString) || (RegData = rdExpandString))
+    if ((RegData == rdString) || (RegData == rdExpandString))
     {
       PackStr(Result);
     }
@@ -1858,3 +1868,18 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo &Value)
   return Result;
 }
 
+//---------------------------------------------------------------------------
+TShortCut::TShortCut()
+{
+}
+TShortCut::TShortCut(int value)
+{
+}
+TShortCut::operator int() const
+{
+    return 0;
+}
+bool TShortCut::operator < (const TShortCut &rhs) const
+{
+    return false;
+}
