@@ -1314,10 +1314,12 @@ std::wstring TRemoteFile::GetFullFileName() const
     assert(GetTerminal());
     assert(GetDirectory() != NULL);
     std::wstring Path;
-    if (GetIsParentDirectory()) Path = GetDirectory()->GetParentPath();
-      else
-    if (GetIsDirectory()) Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName());
-      else Path = GetDirectory()->GetFullDirectory() + GetFileName();
+    if (GetIsParentDirectory())
+        Path = GetDirectory()->GetParentPath();
+    else if (GetIsDirectory())
+        Path = UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName());
+    else
+        Path = GetDirectory()->GetFullDirectory() + GetFileName();
     return GetTerminal()->TranslateLockedPath(Path, true);
   }
   else
