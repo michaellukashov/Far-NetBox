@@ -1922,7 +1922,7 @@ int TCustomFarFileSystem::GetFindData(
             *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
             memset(*PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
             *ItemsNumber = PanelItems->GetCount();
-            for (int Index = 0; Index < PanelItems->GetCount(); Index++)
+            for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
             {
                 ((TCustomFarPanelItem *)PanelItems->GetItem(Index))->FillPanelItem(
                     &((*PanelItem)[Index]));
@@ -2002,7 +2002,7 @@ int TCustomFarFileSystem::MakeDirectory(wchar_t *Name, int OpMode)
     std::wstring NameStr = Name;
     int Result;
     {
-        BOOST_SCOPE_EXIT ( (&NameStr) (Name) )
+        BOOST_SCOPE_EXIT ( (NameStr) (Name) )
         {
             StrToFar(NameStr);
             if (NameStr != Name)
@@ -2040,7 +2040,7 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
     int Result;
     std::wstring DestPathStr = *DestPath;
     {
-        BOOST_SCOPE_EXIT ( (&DestPathStr) (&DestPath) (PanelItems) )
+        BOOST_SCOPE_EXIT ( (DestPathStr) (DestPath) (PanelItems) )
         {
             StrToFar(DestPathStr);
             if (DestPathStr != *DestPath)
@@ -2050,7 +2050,7 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
         StrFromFar(DestPathStr);
-        Result = GetFilesEx(PanelItems, Move, DestPathStr, OpMode);
+        Result = GetFilesEx(PanelItems, Move > 0, DestPathStr, OpMode);
     }
 
     return Result;
@@ -2067,7 +2067,7 @@ int TCustomFarFileSystem::PutFiles(struct PluginPanelItem *PanelItem,
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
-        Result = PutFilesEx(PanelItems, Move, OpMode);
+        Result = PutFilesEx(PanelItems, Move > 0, OpMode);
     }
 
     return Result;
@@ -2262,7 +2262,7 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
     if (ColumnTitles)
     {
         FPanelModes[Mode].ColumnTitles = new wchar_t *[ColumnTypesCount];
-        for (int Index = 0; Index < ColumnTypesCount; Index++)
+        for (size_t Index = 0; Index < ColumnTypesCount; Index++)
         {
             // FPanelModes[Mode].ColumnTitles[Index] = StrToFar(
                 // TCustomFarPlugin::DuplicateStr(ColumnTitles->GetString(Index)));

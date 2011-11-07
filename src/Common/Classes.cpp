@@ -326,7 +326,7 @@ void TStrings::SetDelimitedText(const std::wstring Value)
 {
     TStrings *Self = this;
     Self->BeginUpdate();
-    BOOST_SCOPE_EXIT( (&Self) )
+    BOOST_SCOPE_EXIT( (Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
