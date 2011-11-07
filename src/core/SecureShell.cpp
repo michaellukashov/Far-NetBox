@@ -1884,7 +1884,7 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
   }
   else
   {
-    int CipherType;
+    int CipherType = 0;
     if (AlgType == L"cipher")
     {
       CipherType = CIPHER_TYPE_BOTH;
