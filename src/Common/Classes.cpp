@@ -294,7 +294,7 @@ std::wstring TStrings::GetCommaText()
     FDelimiter = L',';
     FQuoteChar = L'"';
     TStrings *Self = this;
-    BOOST_SCOPE_EXIT( (&Self) (LOldDelimiter) (LOldQuoteChar) )
+    BOOST_SCOPE_EXIT( (Self) (LOldDelimiter) (LOldQuoteChar) )
     {
         Self->FDelimiter = LOldDelimiter;
         Self->FQuoteChar = LOldQuoteChar;
@@ -1610,9 +1610,10 @@ bool TRegistry::KeyExists(const std::wstring Key)
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   unsigned OldAccess = FAccess;
   {
-    BOOST_SCOPE_EXIT( (&FAccess) (&OldAccess) )
+    TRegistry *Self = this;
+    BOOST_SCOPE_EXIT( (Self) (OldAccess) )
     {
-        FAccess = OldAccess;
+        Self->FAccess = OldAccess;
     } BOOST_SCOPE_EXIT_END
 
     FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
