@@ -397,7 +397,7 @@ void TCopyParamList::Delete(int Index)
 int TCopyParamList::Find(const TCopyParamRuleData & Value) const
 {
   int Result = -1;
-  int i = 0;
+  size_t i = 0;
   while ((i < FRules->GetCount()) && (Result < 0))
   {
     if (FRules->GetItem(i) != NULL)
@@ -424,7 +424,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
       if (Storage->OpenSubKey(Name, false))
       {
         {
-            BOOST_SCOPE_EXIT ( (&Storage) )
+            BOOST_SCOPE_EXIT ( (Storage) )
             {
               Storage->CloseSubKey();
             } BOOST_SCOPE_EXIT_END
@@ -461,7 +461,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
       {
-        BOOST_SCOPE_EXIT ( (&Storage) )
+        BOOST_SCOPE_EXIT ( (Storage) )
         {
           Storage->CloseSubKey();
         } BOOST_SCOPE_EXIT_END
@@ -634,7 +634,7 @@ std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
-      BOOST_SCOPE_EXIT ( (&Storage) ) \
+      BOOST_SCOPE_EXIT ( (Storage) ) \
       { \
         Storage->CloseSubKey(); \
       } BOOST_SCOPE_EXIT_END \
@@ -676,7 +676,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", true, true))
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       Storage->CloseSubKey();
     } BOOST_SCOPE_EXIT_END
@@ -696,7 +696,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", true, true))
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       Storage->CloseSubKey();
     } BOOST_SCOPE_EXIT_END
@@ -717,7 +717,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey(L"Interface\\CopyParam", false, true))
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       Storage->CloseSubKey();
     } BOOST_SCOPE_EXIT_END
@@ -755,7 +755,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       Storage->CloseSubKey();
     } BOOST_SCOPE_EXIT_END
@@ -946,7 +946,7 @@ TStrings * TGUIConfiguration::GetLocales()
   std::wstring LocalesExts;
   TStringList * Exts = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (&Exts) )
+      BOOST_SCOPE_EXIT ( (Exts) )
       {
         delete Exts;
       } BOOST_SCOPE_EXIT_END

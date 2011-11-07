@@ -324,7 +324,7 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
     wchar_t * InvalidChar = (wchar_t *)FileName.c_str();
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
-      int Index = InvalidChar - FileName.c_str() + 1;
+      size_t Index = InvalidChar - FileName.c_str() + 1;
       ::Error(SNotImplemented, 206); 
       if ((FileName.size() >= Index + 2) &&
           false // FIXME (FileName.ByteType(Index) == mbSingleByte) &&
