@@ -2597,7 +2597,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               Self->EndTransaction();
             }
           } BOOST_SCOPE_EXIT_END
-        int Index = 0;
+        size_t Index = 0;
         std::wstring FileName;
         bool Success;
         while ((Index < FileList->GetCount()) && (Progress->Cancel == csContinue))
@@ -2606,7 +2606,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           try
           {
             {
-              BOOST_SCOPE_EXIT ( (&Self) (&Progress) (FileName) (Success) (OnceDoneOperation) )
+              BOOST_SCOPE_EXIT ( (&Progress) (FileName) (Success) (OnceDoneOperation) )
               {
                 Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
@@ -2881,7 +2881,7 @@ void TTerminal::CustomCommandOnFiles(std::wstring Command,
   else
   {
     std::wstring FileList;
-    for (int i = 0; i < Files->GetCount(); i++)
+    for (size_t i = 0; i < Files->GetCount(); i++)
     {
       TRemoteFile * File = static_cast<TRemoteFile *>(Files->GetObject(i));
       bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
@@ -3211,7 +3211,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
           // this is just optimization to avoid checking existence of current
           // directory after each move operation.
           std::wstring curDirectory = Self->GetCurrentDirectory();
-          for (int Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
+          for (size_t Index = 0; !PossiblyMoved && (Index < FileList->GetCount()); Index++)
           {
             const TRemoteFile *File =
               reinterpret_cast<const TRemoteFile *>(FileList->GetObject(Index));
@@ -3539,7 +3539,7 @@ void TTerminal::AnyCommand(const std::wstring Command,
     TCallSessionAction &FAction;
     captureoutput_signal_type FOutputEvent;
   private:
-    #pragma warning(disable: 4822)
+    #pragma warning push(disable: 4822)
     TOutputProxy(const TOutputProxy &);
     void operator=(const TOutputProxy &);
     #pragma warning(pop)
@@ -3888,7 +3888,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
     assert(!FOperationProgress);
     FOperationProgress = OperationProgress;
     WIN32_FIND_DATA Rec;
-    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    for (size_t Index = 0; Index < FileList->GetCount(); Index++)
     {
       std::wstring FileName = FileList->GetString(Index);
       if (FileSearchRec(FileName, Rec))
