@@ -102,7 +102,7 @@ bool TNetBoxPlugin::ConfigureEx(int /*Item*/)
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      BOOST_SCOPE_EXIT ( (MenuItems) )
       {
         delete MenuItems;
       } BOOST_SCOPE_EXIT_END
@@ -208,7 +208,7 @@ int TNetBoxPlugin::ProcessEditorEventEx(int Event, void * Param)
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem;
-    for (int Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
+    for (size_t Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
       FileSystem->ProcessEditorEvent(Event, Param);
@@ -265,7 +265,7 @@ TCustomFarFileSystem * TNetBoxPlugin::OpenPluginEx(int OpenFrom, int Item)
         std::wstring Name = (wchar_t *)Item;
         if (OpenFrom == OPEN_SHORTCUT)
         {
-          int P = Name.find(L"\1");
+          size_t P = Name.find(L"\1");
           if (P != std::string::npos)
           {
             Directory = Name.substr(P + 1, Name.size() - P);
@@ -324,7 +324,7 @@ void TNetBoxPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-      BOOST_SCOPE_EXIT ( (&MenuItems) )
+      BOOST_SCOPE_EXIT ( (MenuItems) )
       {
         delete MenuItems;
       } BOOST_SCOPE_EXIT_END
@@ -517,7 +517,7 @@ void TNetBoxPlugin::OldFar()
 //---------------------------------------------------------------------------
 void TNetBoxPlugin::HandleException(const std::exception * E, int OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0)) // || E->InheritsFrom(__classid(EFatal)))
+  if (((OpMode & OPM_FIND) == 0) || ::InheritsFrom<std::exception, EFatal>(E))
   {
     ShowExtendedException(E);
   }
@@ -564,7 +564,7 @@ int TNetBoxPlugin::MoreMessageDialog(std::wstring Str,
   int Result;
   TStrings * ButtonLabels = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (&ButtonLabels) )
+      BOOST_SCOPE_EXIT ( (ButtonLabels) )
       {
         delete ButtonLabels;
       } BOOST_SCOPE_EXIT_END

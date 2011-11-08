@@ -324,7 +324,7 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
     wchar_t * InvalidChar = (wchar_t *)FileName.c_str();
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
-      int Index = InvalidChar - FileName.c_str() + 1;
+      size_t Index = InvalidChar - FileName.c_str() + 1;
       ::Error(SNotImplemented, 206); 
       if ((FileName.size() >= Index + 2) &&
           false // FIXME (FileName.ByteType(Index) == mbSingleByte) &&
@@ -380,11 +380,11 @@ std::wstring TCopyParamType::ValidLocalPath(std::wstring Path) const
 // not used yet
 std::wstring TCopyParamType::Untokenize(std::wstring FileName)
 {
-  wchar_t * Token;
+  wchar_t *Token;
   std::wstring Result = FileName;
   while ((Token = AnsiStrScan(Result.c_str(), TokenPrefix)) != NULL)
   {
-    int Index = Token - Result.c_str() + 1;
+    size_t Index = Token - Result.c_str() + 1;
     if (Index > Result.size() - 2)
     {
       Result = FileName;

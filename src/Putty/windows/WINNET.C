@@ -16,7 +16,9 @@
 
 #ifdef MPEXT
 // ws2tcpip.h does not compile without _MSC_VER defined
+#ifndef _MSC_VER
 #define _MSC_VER 1000
+#endif
 #endif
 #include <ws2tcpip.h>
 
@@ -1005,7 +1007,7 @@ static DWORD try_connect(Actual_Socket sock
 #ifdef MPEXT
     if (timeout > 0)
     {
-        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &rcvtimeo) < 0)
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, (int *)&rcvtimeo) < 0)
         {
             rcvtimeo.tv_sec = -1;
         }

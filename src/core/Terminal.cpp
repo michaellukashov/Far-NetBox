@@ -141,7 +141,7 @@ TSynchronizeChecklist::TSynchronizeChecklist() :
 //---------------------------------------------------------------------------
 TSynchronizeChecklist::~TSynchronizeChecklist()
 {
-  for (int Index = 0; Index < FList->GetCount(); Index++)
+  for (size_t Index = 0; Index < FList->GetCount(); Index++)
   {
     delete reinterpret_cast<TItem *>(FList->GetItem(Index));
   }
@@ -243,7 +243,7 @@ void TTunnelThread::Execute()
   // DEBUG_PRINTF(L"begin");
   try
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
         if (Self->FSecureShell->GetActive())
         {
@@ -674,7 +674,7 @@ void TTerminal::Open()
   try
   {
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         // Prevent calling Information with active=false unless there was at least
         // one call with active=true
@@ -689,7 +689,7 @@ void TTerminal::Open()
         FStatus = ssOpening;
 
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             if (Self->FSessionData->GetTunnel())
             {
@@ -740,7 +740,7 @@ void TTerminal::Open()
             {
               assert(FSecureShell == NULL);
               {
-                BOOST_SCOPE_EXIT ( (&Self) )
+                BOOST_SCOPE_EXIT ( (Self) )
                 {
                   delete Self->FSecureShell;
                   Self->FSecureShell = NULL;
@@ -906,7 +906,7 @@ void TTerminal::OpenTunnel()
 
     FTunnelOpening = true;
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FTunnelOpening = false;
       } BOOST_SCOPE_EXIT_END
@@ -965,7 +965,7 @@ void TTerminal::Reopen(int Params)
   // however I'm not sure why we mind having excaption-on-fail enabled here
   int PrevExceptionOnFail = FExceptionOnFail;
   {
-    BOOST_SCOPE_EXIT ( (&Self) (PrevRemoteDirectory)
+    BOOST_SCOPE_EXIT ( (Self) (PrevRemoteDirectory)
         (OrigFSProtocol) (PrevAutoReadDirectory) (PrevReadCurrentDirectoryPending)
         (PrevReadDirectoryPending) (PrevExceptionOnFail) )
     {
@@ -1050,7 +1050,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   }
 
   if (AResult && (Configuration->GetRememberPassword()) &&
-      (Prompts->GetCount() == 1) && !bool(Prompts->GetObject(0)) &&
+      (Prompts->GetCount() == 1) && !(Prompts->GetObject(0) != NULL) &&
       ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
        (Kind == pkTIS) || (Kind == pkCryptoCard)))
   {
@@ -1698,7 +1698,7 @@ void TTerminal::EndTransaction()
     if (FInTransaction == 0)
     {
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FReadCurrentDirectoryPending = false;
           Self->FReadDirectoryPending = false;
@@ -1801,7 +1801,7 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   {
     ECommand * ECmd = new ECommand(Msg, E);
     {
-      BOOST_SCOPE_EXIT ( (&ECmd) )
+      BOOST_SCOPE_EXIT ( (ECmd) )
       {
         delete ECmd;
       } BOOST_SCOPE_EXIT_END
@@ -2175,7 +2175,7 @@ void TTerminal::DoStartup()
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
@@ -2254,7 +2254,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     {
       DoStartReadDirectory();
       {
-        BOOST_SCOPE_EXIT ( (&Self) (ReloadOnly) )
+        BOOST_SCOPE_EXIT ( (Self) (ReloadOnly) )
         {
           Self->DoReadDirectory(ReloadOnly);
         } BOOST_SCOPE_EXIT_END
@@ -2283,7 +2283,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     {
       TRemoteDirectory *Files = new TRemoteDirectory(this, FFiles);
       {
-        BOOST_SCOPE_EXIT ( (&Self) (&Files) (Cancel) (ReloadOnly) )
+        BOOST_SCOPE_EXIT ( (Self) (Files) (Cancel) (ReloadOnly) )
         {
           Self->DoReadDirectoryProgress(-1, Cancel);
           Self->FReadingCurrentDirectory = false;
@@ -2391,7 +2391,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(std::wstring Directory, bool
 
       SetExceptionOnFail(true);
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -2420,7 +2420,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
   {
     SetExceptionOnFail(true);
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->SetExceptionOnFail(false);
       } BOOST_SCOPE_EXIT_END
@@ -2446,7 +2446,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
   if (FileList)
   {
     {
-      BOOST_SCOPE_EXIT ( (&FileList) )
+      BOOST_SCOPE_EXIT ( (FileList) )
       {
         delete FileList;
       } BOOST_SCOPE_EXIT_END
@@ -2524,7 +2524,7 @@ bool TTerminal::FileExists(const std::wstring FileName, TRemoteFile ** AFile)
   {
     SetExceptionOnFail(true);
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->SetExceptionOnFail(false);
       } BOOST_SCOPE_EXIT_END
@@ -2578,7 +2578,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 
     FOperationProgress = Progress;
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
+      BOOST_SCOPE_EXIT ( (Self) (Progress) )
       {
         Self->FOperationProgress = NULL;
         Progress->Stop();
@@ -2590,7 +2590,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
       }
 
       {
-          BOOST_SCOPE_EXIT ( (&Self) (Side) )
+          BOOST_SCOPE_EXIT ( (Self) (Side) )
           {
             if (Side == osRemote)
             {
@@ -2606,7 +2606,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           try
           {
             {
-              BOOST_SCOPE_EXIT ( (&Progress) (FileName) (Success) (OnceDoneOperation) )
+              BOOST_SCOPE_EXIT ( (Progress) (FileName) (Success) (OnceDoneOperation) )
               {
                 Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
@@ -3201,7 +3201,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
   bool Result;
   BeginTransaction();
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
+    BOOST_SCOPE_EXIT ( (Self) (FileList) )
     {
         if (Self->GetActive())
         {
@@ -3876,7 +3876,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress->Start(foCalculateSize, osLocal, FileList->GetCount());
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
+    BOOST_SCOPE_EXIT ( (Self) (OperationProgress) )
     {
       Self->FOperationProgress = NULL;
       OperationProgress->Stop();
@@ -3986,7 +3986,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   }
 
   {
-    BOOST_SCOPE_EXIT ( (&Data) )
+    BOOST_SCOPE_EXIT ( (Data) )
     {
       if (Data.LocalFileList != NULL)
       {
@@ -4017,7 +4017,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     if (Found)
     {
       {
-        BOOST_SCOPE_EXIT ( (&findHandle) )
+        BOOST_SCOPE_EXIT ( (findHandle) )
         {
           ::FindClose(findHandle);
         } BOOST_SCOPE_EXIT_END
@@ -4094,7 +4094,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         {
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
           {
-            BOOST_SCOPE_EXIT ( (&ChecklistItem) )
+            BOOST_SCOPE_EXIT ( (ChecklistItem) )
             {
               delete ChecklistItem;
             } BOOST_SCOPE_EXIT_END
@@ -4173,7 +4173,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
   {
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
     {
-      BOOST_SCOPE_EXIT ( (&ChecklistItem) )
+      BOOST_SCOPE_EXIT ( (ChecklistItem) )
       {
         delete ChecklistItem;
       }
@@ -4351,8 +4351,8 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   BeginTransaction();
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&DownloadList) (&DeleteRemoteList)
-      (&UploadList) (&DeleteLocalList) )
+    BOOST_SCOPE_EXIT ( (Self) (DownloadList) (DeleteRemoteList)
+      (UploadList) (DeleteLocalList) )
     {
         delete DownloadList;
         delete DeleteRemoteList;
@@ -4540,7 +4540,7 @@ void TTerminal::SynchronizeLocalTimestamp(const std::wstring /*FileName*/,
       NULL, NULL, NULL, NULL);
     FILETIME WrTime = DateTimeToFileTime(ChecklistItem->Remote.Modification,
       GetSessionData()->GetDSTMode());
-    bool Result = (bool)SetFileTime(Handle, NULL, NULL, &WrTime);
+    bool Result = SetFileTime(Handle, NULL, NULL, &WrTime) > 0;
     CloseHandle(Handle);
     if (!Result)
     {
@@ -4613,7 +4613,7 @@ void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
     // FileFind
     FOnFindingFile.connect(*Params.OnFindingFile);
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FOnFindingFile.disconnect_all_slots();
       } BOOST_SCOPE_EXIT_END
@@ -4732,11 +4732,11 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
     }
 
     OperationProgress->Start((Params & cpDelete ? foMove : foCopy), osLocal,
-      FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
+      FilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = OperationProgress;
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
+      BOOST_SCOPE_EXIT ( (Self) (OperationProgress) )
       {
         OperationProgress->Stop();
         Self->FOperationProgress = NULL;
@@ -4749,7 +4749,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
       std::wstring UnlockedTargetDir = TranslateLockedPath(TargetDir, false);
       BeginTransaction();
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             if (Self->GetActive())
             {
@@ -4804,7 +4804,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
   bool OwnsFileList = (FilesToCopy == NULL);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  BOOST_SCOPE_EXIT( (OwnsFileList) (&FilesToCopy) )
+  BOOST_SCOPE_EXIT( (OwnsFileList) (FilesToCopy) )
   {
     if (OwnsFileList) delete FilesToCopy;
   } BOOST_SCOPE_EXIT_END
@@ -4816,7 +4816,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
 
   BeginTransaction();
   {
-    BOOST_SCOPE_EXIT( (&Self) )
+    BOOST_SCOPE_EXIT( (Self) )
     {
         // If session is still active (no fatal error) we reload directory
         // by calling EndTransaction
@@ -4831,7 +4831,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
     {
       SetExceptionOnFail(true);
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -4842,11 +4842,11 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
       }
     }
     OperationProgress->Start(((Params & cpDelete) != 0 ? foMove : foCopy), osRemote,
-      FilesToCopy->GetCount(), Params & cpTemporary, TargetDir, CopyParam->GetCPSLimit());
+      FilesToCopy->GetCount(), (Params & cpTemporary) > 0, TargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = OperationProgress;
     {
-      BOOST_SCOPE_EXIT ( (&FOperationProgress) (&OperationProgress) )
+      BOOST_SCOPE_EXIT ( (FOperationProgress) (OperationProgress) )
       {
         FOperationProgress = NULL;
         OperationProgress->Stop();
@@ -4860,7 +4860,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
 
       try
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
             if (Self->GetActive())
             {

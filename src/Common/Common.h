@@ -19,7 +19,7 @@ namespace bg = boost::gregorian;
 #define EXCEPTION throw ExtException(L"", NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
-  strncpy(dest, source, sizeof(dest)); \
+  strncpy_s(dest, source, sizeof(dest)); \
   dest[sizeof(dest)-1] = '\0'
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
@@ -36,8 +36,8 @@ namespace bg = boost::gregorian;
 //---------------------------------------------------------------------------
 extern const char EngShortMonthNames[12][4];
 //---------------------------------------------------------------------------
-std::wstring ReplaceChar(std::wstring Str, char A, char B);
-std::wstring DeleteChar(std::wstring Str, char C);
+std::wstring ReplaceChar(std::wstring Str, wchar_t A, wchar_t B);
+std::wstring DeleteChar(std::wstring Str, wchar_t C);
 void PackStr(std::wstring &Str);
 std::wstring MakeValidFileName(std::wstring FileName);
 std::wstring RootKeyToStr(HKEY RootKey);

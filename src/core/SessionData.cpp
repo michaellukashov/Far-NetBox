@@ -903,7 +903,7 @@ void TSessionData::Remove()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -921,7 +921,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 {
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
-  TFSProtocol AFSProtocol;
+  TFSProtocol AFSProtocol = fsSCPonly;
   int APortNumber = 0;
   TFtps AFtps = ftpsNone;
   if (LowerCase(Url.substr(0, 4)) == L"scp:")
@@ -989,7 +989,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     {
       DefaultsOnly = false;
       Assign(Data);
-      int P = 1;
+      size_t P = 1;
       while (!AnsiSameText(DecodeUrlChars(Url.substr(0, P)), Data->Name))
       {
         P++;
@@ -1012,7 +1012,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       Assign(StoredSessions->GetDefaultSettings());
       Name = L"";
 
-      int PSlash = Url.find_first_of(L"/");
+      size_t PSlash = Url.find_first_of(L"/");
       if (PSlash == 0)
       {
         PSlash = Url.size() + 1;
@@ -1020,7 +1020,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
       std::wstring ConnectInfo = Url.substr(0, PSlash - 1);
 
-      int P = ::LastDelimiter(ConnectInfo, L"@");
+      size_t P = ::LastDelimiter(ConnectInfo, L"@");
 
       std::wstring UserInfo;
       std::wstring HostInfo;
@@ -2102,14 +2102,14 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   TStringList *SubKeys = new TStringList();
   TList * Loaded = new TList;
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) (&Loaded) )
+    BOOST_SCOPE_EXIT ( (SubKeys) (Loaded) )
     {
       delete SubKeys;
       delete Loaded;
     } BOOST_SCOPE_EXIT_END
     Storage->GetSubKeyNames(SubKeys);
     // DEBUG_PRINTF(L"SubKeys->GetCount = %d", SubKeys->GetCount());
-    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
+    for (size_t Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       TSessionData *SessionData;
       std::wstring SessionName = SubKeys->GetString(Index);
@@ -2154,7 +2154,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 
     if (!AsModified)
     {
-      for (int Index = 0; Index < TObjectList::GetCount(); Index++)
+      for (size_t Index = 0; Index < TObjectList::GetCount(); Index++)
       {
         if (Loaded->IndexOf(GetItem(Index)) < 0)
         {
@@ -2171,7 +2171,7 @@ void TStoredSessionList::Load(std::wstring aKey, bool UseDefaults)
   // DEBUG_PRINTF(L"aKey = %s", aKey.c_str());
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2183,7 +2183,7 @@ void TStoredSessionList::Load()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2217,7 +2217,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   // DEBUG_PRINTF(L"begin");
   TSessionData * FactoryDefaults = new TSessionData(L"");
   {
-    BOOST_SCOPE_EXIT ( (&FactoryDefaults) )
+    BOOST_SCOPE_EXIT ( (FactoryDefaults) )
     {
       delete FactoryDefaults;
     } BOOST_SCOPE_EXIT_END
@@ -2241,7 +2241,7 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
   // DEBUG_PRINTF(L"begin")
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2280,7 +2280,7 @@ void TStoredSessionList::Export(const std::wstring FileName)
 {
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   {
-    BOOST_SCOPE_EXIT ( (&Storage) )
+    BOOST_SCOPE_EXIT ( (Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2334,7 +2334,7 @@ void TStoredSessionList::Cleanup()
     if (Configuration->GetStorage() == stRegistry) Clear();
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
     {
-      BOOST_SCOPE_EXIT ( (&Storage) )
+      BOOST_SCOPE_EXIT ( (Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -2404,7 +2404,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
   TRegistryStorage * TargetStorage = NULL;
   TStringList * KeyList = NULL;
   {
-    BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) (&KeyList) )
+    BOOST_SCOPE_EXIT ( (SourceStorage) (TargetStorage) (KeyList) )
     {
       delete SourceStorage;
       delete TargetStorage;
@@ -2423,17 +2423,17 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
       TSessionData * Session;
       std::wstring HostKeyName;
       assert(Sessions != NULL);
-      for (int Index = 0; Index < Sessions->GetCount(); Index++)
+      for (size_t Index = 0; Index < Sessions->GetCount(); Index++)
       {
         Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
           HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName()));
           std::wstring KeyName;
-          for (int KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
+          for (size_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
             KeyName = KeyList->GetString(KeyIndex);
-            int P = KeyName.find(HostKeyName);
+            size_t P = KeyName.find(HostKeyName);
             if ((P != std::wstring::npos) && (P == KeyName.size() - HostKeyName.size() + 1))
             {
               TargetStorage->WriteStringRaw(KeyName,

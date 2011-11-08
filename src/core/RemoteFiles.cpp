@@ -2490,7 +2490,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * FileList)
 {
   // TODO: Modification and LastAccess
   TRemoteProperties CommonProperties;
-  for (int Index = 0; Index < FileList->GetCount(); Index++)
+  for (size_t Index = 0; Index < FileList->GetCount(); Index++)
   {
     TRemoteFile * File = (TRemoteFile *)(FileList->GetObject(Index));
     assert(File);

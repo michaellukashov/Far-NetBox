@@ -71,7 +71,7 @@ TNamedObject * TNamedObjectList::AtObject(int Index)
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
-  int i = 0;
+  size_t i = 0;
   while ((i < TObjectList::GetCount()) && IsHidden((TNamedObject *)GetItem(i))) i++;
   FHiddenCount = i;
 }

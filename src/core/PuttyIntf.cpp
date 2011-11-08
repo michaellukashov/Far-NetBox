@@ -35,10 +35,12 @@ void PuttyInitialize()
 
   std::wstring VersionString = SshVersionString();
   assert(!VersionString.empty() && (VersionString.size() < sizeof(sshver)));
-  strcpy(sshver, ::W2MB(VersionString.c_str()).c_str());
+  std::string vs = ::W2MB(VersionString.c_str());
+  strcpy_s(sshver, vs.size(), vs.c_str());
   std::wstring AppName = AppNameString();
   assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
-  strcpy(appname_, ::W2MB(AppName.c_str()).c_str());
+  std::string appname = ::W2MB(AppName.c_str());
+  strcpy_s(appname_, appname.size(), appname.c_str());
 }
 //---------------------------------------------------------------------------
 void PuttyFinalize()
@@ -73,7 +75,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
     plug = ProxySocket->plug;
   }
 
-  bool pfwd = is_pfwd(plug);
+  bool pfwd = is_pfwd(plug) > 0;
   // DEBUG_PRINTF(L"pfwd = %d", pfwd);
   if (pfwd)
   {
@@ -86,11 +88,11 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   TSecureShell * SecureShell = reinterpret_cast<TSecureShell*>(frontend);
   if (!pfwd)
   {
-    SecureShell->UpdateSocket(skt, startup);
+    SecureShell->UpdateSocket(skt, startup > 0);
   }
   else
   {
-    SecureShell->UpdatePortFwdSocket(skt, startup);
+    SecureShell->UpdatePortFwdSocket(skt, startup > 0);
   }
 
   return NULL;
@@ -143,7 +145,7 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
       {
         prompt_t * Prompt = p->prompts[Index];
         std::string Str = ::W2MB(Results.GetString(Index).c_str());
-        Prompt->result = strdup(Str.c_str());
+        Prompt->result = _strdup(Str.c_str());
         Prompt->result_len = Str.size();
         Prompt->result[Prompt->result_len] = '\0';
         // DEBUG_PRINTF(L"Prompt->result = %s", ::MB2W(Prompt->result).c_str());
@@ -180,7 +182,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_list Param;
   char Buf[200];
   va_start(Param, fmt);
-  vsnprintf(Buf, sizeof(Buf), fmt, Param); \
+  vsnprintf_s(Buf, sizeof(Buf), fmt, Param); \
   Buf[sizeof(Buf) - 1] = '\0'; \
   va_end(Param);
 
@@ -224,7 +226,7 @@ void display_banner(void * frontend, const char * banner, int size)
 static void SSHFatalError(const char * Format, va_list Param)
 {
   char Buf[200];
-  vsnprintf(Buf, sizeof(Buf), Format, Param);
+  vsnprintf_s(Buf, sizeof(Buf), Format, Param);
   Buf[sizeof(Buf) - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
@@ -328,7 +330,7 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 {
   if (*cfg->username)
   {
-    strncpy(user, cfg->username, len);
+    strncpy_s(user, 1, cfg->username, len);
     user[len-1] = '\0';
   }
   else
@@ -431,7 +433,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != NULL);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    strncpy(DataStr, ::W2MB(Value.c_str()).c_str(), *DataSize);
+    strncpy_s(DataStr, 1, ::W2MB(Value.c_str()).c_str(), *DataSize);
     DataStr[*DataSize - 1] = '\0';
     *DataSize = strlen(DataStr);
   }
@@ -602,7 +604,7 @@ bool HasGSSAPI()
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
     {
-      BOOST_SCOPE_EXIT ( (&List) )
+      BOOST_SCOPE_EXIT ( (List) )
       {
         ssh_gss_cleanup(List);
       } BOOST_SCOPE_EXIT_END

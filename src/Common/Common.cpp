@@ -111,16 +111,16 @@ const char EngShortMonthNames[12][4] =
   {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 //---------------------------------------------------------------------------
-std::wstring ReplaceChar(std::wstring Str, char A, char B)
+std::wstring ReplaceChar(std::wstring Str, wchar_t A, wchar_t B)
 {
-  for (int Index = 0; Index < Str.size(); Index++)
+  for (size_t Index = 0; Index < Str.size(); Index++)
     if (Str[Index] == A) Str[Index] = B;
   return Str;
 }
 //---------------------------------------------------------------------------
-std::wstring DeleteChar(std::wstring Str, char C)
+std::wstring DeleteChar(std::wstring Str, wchar_t C)
 {
-  int P;
+  size_t P;
   while ((P = Str.find_first_of(C, 0)) != std::wstring::npos)
   {
     Str.erase(P, 1);
@@ -137,7 +137,7 @@ void PackStr(std::wstring &Str)
 std::wstring MakeValidFileName(std::wstring FileName)
 {
   std::wstring IllegalChars = L":;,=+<>|\"[] \\/?*";
-  for (int Index = 0; Index < IllegalChars.size(); Index++)
+  for (size_t Index = 0; Index < IllegalChars.size(); Index++)
   {
     FileName = ReplaceChar(FileName, IllegalChars[Index], L'-');
   }
