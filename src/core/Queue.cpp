@@ -1555,7 +1555,7 @@ void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
   ResetStats();
 }
 //---------------------------------------------------------------------------
-int TTerminalQueueStatus::GetCount()
+size_t TTerminalQueueStatus::GetCount()
 {
   return FList->GetCount();
 }

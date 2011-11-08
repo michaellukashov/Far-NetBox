@@ -273,7 +273,7 @@ public:
   TQueueItemProxy *FindByQueueItem(TQueueItem *QueueItem);
 
   // __property int Count = { read = GetCount };
-  int GetCount();
+  size_t GetCount();
   // __property int ActiveCount = { read = GetActiveCount };
   int GetActiveCount();
   // __property TQueueItemProxy *Items[int Index] = { read = GetItem };
