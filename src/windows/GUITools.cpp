@@ -57,7 +57,7 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     TSessionData * ExportData = NULL;
     TRegistryStorage * SourceStorage = NULL;
     {
-        BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
+        BOOST_SCOPE_EXIT ( (Storage) (ExportData) (SourceStorage) )
         {
           delete Storage;
           delete ExportData;

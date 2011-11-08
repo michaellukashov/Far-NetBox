@@ -268,7 +268,7 @@ std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
 //---------------------------------------------------------------------------
 std::wstring DelimitStr(std::wstring Str, std::wstring Chars)
 {
-  for (int i = 1; i <= Str.size(); i++)
+  for (size_t i = 0; i < Str.size(); i++)
   {
     if (::IsDelimiter(Str, Chars, i))
     {
@@ -514,8 +514,8 @@ std::wstring EscapePuttyCommandParam(std::wstring Param)
         break;
 
       case L'\\':
-        int i2 = i;
-        while ((i2 <= Param.size()) && (Param[i2] == L'\\'))
+        size_t i2 = i;
+        while ((i2 < Param.size()) && (Param[i2] == L'\\'))
         {
           i2++;
         }
@@ -683,11 +683,11 @@ bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2)
   // ExtractShortPathName returns empty string if file does not exist
   if (ShortPath1.empty() || ShortPath2.empty())
   {
-    Result = AnsiSameText(Path1, Path2);
+    Result = AnsiSameText(Path1, Path2) == 1;
   }
   else
   {
-    Result = AnsiSameText(ShortPath1, ShortPath2);
+    Result = AnsiSameText(ShortPath1, ShortPath2) == 1;
   }
   return Result;
 }
@@ -695,7 +695,7 @@ bool CompareFileName(const std::wstring & Path1, const std::wstring & Path2)
 bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2)
 {
   // TODO: ExpandUNCFileName
-  return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
+  return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2)) == 1;
 }
 //---------------------------------------------------------------------------
 bool IsReservedName(std::wstring FileName)
@@ -799,7 +799,7 @@ std::wstring CharToHex(char Ch, bool UpperCase)
 std::wstring StrToHex(const std::wstring Str, bool UpperCase, char Separator)
 {
   std::wstring Result;
-  for (size_t i = 1; i <= Str.size(); i++)
+  for (size_t i = 1; i < Str.size(); i++)
   {
     Result += CharToHex(Str[i], UpperCase);
     if ((Separator != L'\0') && (i < Str.size()))
@@ -840,7 +840,7 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
-  int I = 0;
+  size_t I = 0;
   while (I < Hex.size())
   {
     int A = Digits.find_first_of((wchar_t)toupper(Hex[I]));
@@ -1951,18 +1951,18 @@ bool CutToken(std::wstring & Str, std::wstring & Token)
   Token = L"";
 
   // inspired by Putty's sftp_getcmd() from PSFTP.C
-  int Index = 1;
-  while ((Index <= Str.size()) &&
+  size_t Index = 0;
+  while ((Index < Str.size()) &&
     ((Str[Index] == L' ') || (Str[Index] == L'\t')))
   {
     Index++;
   }
 
-  if (Index <= Str.size())
+  if (Index < Str.size())
   {
     bool Quoting = false;
 
-    while (Index <= Str.size())
+    while (Index < Str.size())
     {
       if (!Quoting && ((Str[Index] == L' ') || (Str[Index] == L'\t')))
       {
@@ -1986,7 +1986,7 @@ bool CutToken(std::wstring & Str, std::wstring & Token)
       }
     }
 
-    if (Index <= Str.size())
+    if (Index < Str.size())
     {
       Index++;
     }
@@ -2197,10 +2197,10 @@ int AnsiPos(const std::wstring str, wchar_t c)
     return result == std::wstring::npos ? -1 : result;
 }
 
-int Pos(const std::wstring str, const std::wstring substr)
+size_t Pos(const std::wstring str, const std::wstring substr)
 {
-    int result = str.find(substr);
-    return result == std::wstring::npos ? -1 : result;
+    size_t result = str.find(substr);
+    return result;
 }
 
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
@@ -2213,7 +2213,7 @@ std::wstring StringReplace(const std::wstring str, const std::wstring from, cons
 bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
 {
     wchar_t c = str[index];
-    for (int i = 0; i < delim.size(); i++)
+    for (size_t i = 0; i < delim.size(); i++)
     {
         if (delim[i] == c)
         {
@@ -2223,9 +2223,9 @@ bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
     return false;
 }
 
-int LastDelimiter(const std::wstring str, const std::wstring delim)
+size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 {
-    for (int i = str.size() - 1; i >= 0; i--)
+    for (size_t i = str.size() - 1; i >= 0; i--)
     {
         if (::IsDelimiter(str, delim, i))
         {

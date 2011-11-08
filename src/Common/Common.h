@@ -237,10 +237,10 @@ wchar_t UpCase(const wchar_t c);
 wchar_t LowCase(const wchar_t c);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
 int AnsiPos(const std::wstring str, wchar_t c);
-int Pos(const std::wstring str, const std::wstring substr);
+size_t Pos(const std::wstring str, const std::wstring substr);
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
 bool IsDelimiter(const std::wstring str, const std::wstring delim, int index);
-int LastDelimiter(const std::wstring str, const std::wstring delim);
+size_t LastDelimiter(const std::wstring str, const std::wstring delim);
 //---------------------------------------------------------------------------
 
 bool CompareText(const std::wstring str1, const std::wstring str2);

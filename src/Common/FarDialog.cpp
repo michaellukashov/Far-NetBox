@@ -2634,7 +2634,7 @@ long TFarLister::ItemProc(int Msg, long Param)
     if (Msg == DN_DRAWDLGITEM)
     {
         bool AScrollBar = GetScrollBar();
-        int ScrollBarPos = 0;
+        size_t ScrollBarPos = 0;
         if (GetItems()->GetCount() - GetHeight() > 0)
         {
             ScrollBarPos = (int)(float(GetHeight() - 3) * (float(FTopIndex) / (GetItems()->GetCount() - GetHeight()))) + 1;
@@ -2764,7 +2764,7 @@ long TFarLister::ItemProc(int Msg, long Param)
         {
             size_t NewTopIndex = GetTopIndex();
 
-            if (((P.x == GetWidth() - 1) && (P.y == 0)) ||
+            if (((P.x == (int)GetWidth() - 1) && (P.y == 0)) ||
                     ((P.x < GetWidth() - 1) && (P.y < GetHeight() / 2)))
             {
                 if (NewTopIndex > 0)

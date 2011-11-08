@@ -916,7 +916,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
     {
-      BOOST_SCOPE_EXIT ( (&Storage) )
+      BOOST_SCOPE_EXIT ( (Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END

@@ -2789,7 +2789,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       {
         THierarchicalStorage * Storage = NULL;
         {
-          BOOST_SCOPE_EXIT ( (&Storage) )
+          BOOST_SCOPE_EXIT ( (Storage) )
           {
             delete Storage;
           } BOOST_SCOPE_EXIT_END
