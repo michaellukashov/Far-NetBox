@@ -1036,12 +1036,12 @@ void TConfiguration::SetSessionReopenTimeout(int value)
   SET_CONFIG_PROPERTY(SessionReopenTimeout);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetTunnelLocalPortNumberLow(int value)
+void TConfiguration::SetTunnelLocalPortNumberLow(size_t value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberLow);
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetTunnelLocalPortNumberHigh(int value)
+void TConfiguration::SetTunnelLocalPortNumberHigh(size_t value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberHigh);
 }

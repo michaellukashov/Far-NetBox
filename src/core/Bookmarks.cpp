@@ -176,7 +176,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
           {
             if (i < 3)
             {
-              for (int IndexB = 0; IndexB < BookmarkList->GetCount(); IndexB++)
+              for (size_t IndexB = 0; IndexB < BookmarkList->GetCount(); IndexB++)
               {
                 TBookmark * Bookmark = BookmarkList->GetBookmark(IndexB);
                 // avoid creating empty subfolder if there's no shortcut
@@ -436,7 +436,7 @@ TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
   return NULL;
 }
 //---------------------------------------------------------------------------
-int TBookmarkList::GetCount()
+size_t TBookmarkList::GetCount()
 {
   return FBookmarks->GetCount();
 }

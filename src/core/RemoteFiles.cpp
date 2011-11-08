@@ -699,9 +699,9 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
   }
 }
 //---------------------------------------------------------------------------
-int TRemoteTokenList::GetCount() const
+size_t TRemoteTokenList::GetCount() const
 {
-  return (int)FTokens.size();
+  return FTokens.size();
 }
 //---------------------------------------------------------------------------
 const TRemoteToken * TRemoteTokenList::GetToken(int Index) const

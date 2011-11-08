@@ -1384,7 +1384,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit((Prompts->GetObject(Index))));
+    FEdits->Add(GenerateEdit((Prompts->GetObject(Index)) != NULL));
   }
 }
 //---------------------------------------------------------------------------

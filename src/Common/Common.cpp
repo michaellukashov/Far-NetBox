@@ -240,7 +240,7 @@ std::wstring CopyToChars(const std::wstring &Str, size_t &From, std::wstring Cha
   {
     if (Delimiter != NULL)
     {
-      *Delimiter = Str[P];
+      *Delimiter = (char)Str[P];
     }
     Result = Str.substr(From, P - From);
     From = P + 1;
@@ -1214,7 +1214,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
         TGuard Guard(&Section);
         if (DSTCacheCount < LENOF(DSTCache))
         {
-          NewCache.Year = Year;
+          NewCache.Year = (unsigned short)Year;
           DSTCache[DSTCacheCount] = NewCache;
           DSTCache[DSTCacheCount].Filled = true;
           DSTCacheCount++;

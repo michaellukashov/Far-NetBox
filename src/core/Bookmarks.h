@@ -58,7 +58,7 @@ public:
   void ShortCuts(TShortCuts & ShortCuts);
 
   // __property int Count = { read = GetCount };
-  int GetCount();
+  size_t GetCount();
   // __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
   TBookmark * GetBookmark(int Index);
   // __property bool NodeOpened[std::wstring Index] = { read = GetNodeOpened, write = SetNodeOpened };

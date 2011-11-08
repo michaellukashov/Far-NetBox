@@ -73,7 +73,7 @@ public:
   const TRemoteToken * Find(const std::wstring & Name) const;
   void Log(TTerminal * Terminal, const wchar_t * Title);
 
-  int GetCount() const;
+  size_t GetCount() const;
   const TRemoteToken * GetToken(int Index) const;
 
 private:
