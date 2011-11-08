@@ -757,9 +757,9 @@ TCustomCommand::TCustomCommand()
 }
 //---------------------------------------------------------------------------
 void TCustomCommand::GetToken(
-  const std::wstring & Command, int Index, int & Len, char & PatternCmd)
+  const std::wstring & Command, size_t Index, int &Len, char & PatternCmd)
 {
-  assert(Index < (int)Command.size());
+  assert(Index < Command.size());
   const wchar_t * Ptr = Command.c_str() + Index - 1;
 
   if (Ptr[0] == '!')
