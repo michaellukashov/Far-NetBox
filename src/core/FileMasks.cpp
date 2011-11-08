@@ -904,7 +904,7 @@ bool TCustomCommand::FindPattern(const std::wstring & Command,
   char PatternCmd)
 {
   bool Result = false;
-  int Index = 1;
+  size_t Index = 1;
 
   while (!Result && (Index <= Command.size()))
   {
