@@ -1005,7 +1005,7 @@ static DWORD try_connect(Actual_Socket sock
 #ifdef MPEXT
     if (timeout > 0)
     {
-        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &rcvtimeo) < 0)
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, (int *)&rcvtimeo) < 0)
         {
             rcvtimeo.tv_sec = -1;
         }
