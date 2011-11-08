@@ -6553,7 +6553,7 @@ private:
   std::wstring FActions[TSynchronizeChecklist::ActionCount];
   int FScroll;
   bool FCanScrollRight;
-  int FChecked;
+  size_t FChecked;
 
   void AdaptSize();
   int ColumnWidth(int Index);
@@ -7114,7 +7114,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
   if (Result)
   {
     TFarList * List = ListBox->GetItems();
-    int Count = List->GetCount();
+    size_t Count = List->GetCount();
     for (size_t Index = 0; Index < Count; Index++)
     {
       TSynchronizeChecklist::TItem * ChecklistItem =
