@@ -130,7 +130,7 @@ void TFarDialog::SetBounds(const TRect &value)
                 Coord.Y = (short int)FBounds.Top;
                 SendMessage(DM_MOVEDIALOG, true, (int)&Coord);
             }
-            for (int i = 0; i < GetItemCount(); i++)
+            for (size_t i = 0; i < GetItemCount(); i++)
             {
                 GetItem(i)->DialogResized();
             }
@@ -310,7 +310,7 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
     R.Left = Left;
     R.Top = Top;
 
-    if (FDialogItemsCapacity == GetItems()->GetCount())
+    if (FDialogItemsCapacity == (int)GetItems()->GetCount())
     {
         int DialogItemsDelta = 10;
         FarDialogItem *NewDialogItems;
@@ -662,7 +662,7 @@ bool TFarDialog::HotKey(unsigned long Key)
     if (Result)
     {
         Result = false;
-        for (int i = 0; i < GetItemCount(); i++)
+        for (size_t i = 0; i < GetItemCount(); i++)
         {
             if (GetItem(i)->HotKey(HotKey))
             {
@@ -677,7 +677,7 @@ bool TFarDialog::HotKey(unsigned long Key)
 TFarDialogItem *TFarDialog::ItemAt(int X, int Y)
 {
     TFarDialogItem *Result = NULL;
-    for (int i = 0; i < GetItemCount(); i++)
+    for (size_t i = 0; i < GetItemCount(); i++)
     {
         TRect Bounds = GetItem(i)->GetActualBounds();
         if ((Bounds.Left <= X) && (X <= Bounds.Right) &&
@@ -692,7 +692,7 @@ TFarDialogItem *TFarDialog::ItemAt(int X, int Y)
 bool TFarDialog::CloseQuery()
 {
     bool Result = true;
-    for (int i = 0; i < GetItemCount() && Result; i++)
+    for (size_t i = 0; i < GetItemCount() && Result; i++)
     {
         if (!GetItem(i)->CloseQuery())
         {
@@ -714,7 +714,7 @@ void TFarDialog::RefreshBounds()
 //---------------------------------------------------------------------------
 void TFarDialog::Init()
 {
-    for (int i = 0; i < GetItemCount(); i++)
+    for (size_t i = 0; i < GetItemCount(); i++)
     {
         GetItem(i)->Init();
     }
@@ -811,7 +811,7 @@ void TFarDialog::Change()
                 delete NotifiedContainers;
             } BOOST_SCOPE_EXIT_END
             TFarDialogItem *DItem;
-            for (int i = 0; i < GetItemCount(); i++)
+            for (size_t i = 0; i < GetItemCount(); i++)
             {
                 DItem = GetItem(i);
                 DItem->Change();
@@ -996,7 +996,7 @@ void TFarDialogContainer::SetPosition(int Index, int value)
     if (Position != value)
     {
         Position = value;
-        for (int Index = 0; Index < GetItemCount(); Index++)
+        for (size_t Index = 0; Index < GetItemCount(); Index++)
         {
             dynamic_cast<TFarDialogItem *>((*FItems)[Index])->DialogResized();
         }
@@ -1012,7 +1012,7 @@ void TFarDialogContainer::SetEnabled(bool value)
     if (FEnabled != value)
     {
         FEnabled = true;
-        for (int Index = 0; Index < GetItemCount(); Index++)
+        for (size_t Index = 0; Index < GetItemCount(); Index++)
         {
             dynamic_cast<TFarDialogItem *>((*FItems)[Index])->UpdateEnabled();
         }
@@ -1855,7 +1855,7 @@ long TFarButton::ItemProc(int Msg, long Param)
 //---------------------------------------------------------------------------
 bool TFarButton::HotKey(char HotKey)
 {
-    int P = GetCaption().find_first_of(L"&");
+    size_t P = GetCaption().find_first_of(L"&");
     bool Result =
         GetVisible() && GetEnabled() &&
         (P >= 0) && (P < GetCaption().size()) &&
@@ -2138,7 +2138,7 @@ void TFarList::Assign(TPersistent *Source)
     TFarList *FarList = dynamic_cast<TFarList *>(Source);
     if (FarList != NULL)
     {
-        for (int Index = 0; Index < FarList->GetCount(); Index++)
+        for (size_t Index = 0; Index < FarList->GetCount(); Index++)
         {
             SetFlags(Index, FarList->GetFlags(Index));
         }
@@ -2198,7 +2198,7 @@ void TFarList::Changed()
             PrevSelected = GetSelected();
             PrevTopIndex = GetTopIndex();
         }
-        if (FListItems->ItemsNumber != GetCount())
+        if (FListItems->ItemsNumber != (int)GetCount())
         {
             FarListItem *Items = FListItems->Items;
             if (GetCount())
@@ -2207,7 +2207,7 @@ void TFarList::Changed()
                 for (size_t Index = 0; Index < GetCount(); Index++)
                 {
                     memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
-                    if (Index < FListItems->ItemsNumber)
+                    if (Index < (size_t)FListItems->ItemsNumber)
                     {
                         FListItems->Items[Index].Flags = Items[Index].Flags;
                     }
@@ -2220,7 +2220,7 @@ void TFarList::Changed()
             delete[] Items;
             FListItems->ItemsNumber = GetCount();
         }
-        for (int i = 0; i < GetCount(); i++)
+        for (size_t i = 0; i < GetCount(); i++)
         {
             std::wstring value = GetString(i);
             delete[] FListItems->Items[i].Text;
@@ -2329,7 +2329,7 @@ int TFarList::GetTopIndex()
 int TFarList::GetMaxLength()
 {
     size_t Result = 0;
-    for (int i = 0; i < GetCount(); i++)
+    for (size_t i = 0; i < GetCount(); i++)
     {
         if (Result < GetString(i).size())
         {
@@ -2427,7 +2427,7 @@ long TFarList::ItemProc(int Msg, long Param)
         }
         else
         {
-            assert(Param >= 0 && Param < GetCount());
+            assert(Param >= 0 && Param < (int)GetCount());
             GetDialogItem()->UpdateData(GetString(Param));
         }
     }
@@ -2637,15 +2637,15 @@ long TFarLister::ItemProc(int Msg, long Param)
         int ScrollBarPos = 0;
         if (GetItems()->GetCount() - GetHeight() > 0)
         {
-            ScrollBarPos = float(GetHeight() - 3) * (float(FTopIndex) / (GetItems()->GetCount() - GetHeight())) + 1;
+            ScrollBarPos = (int)(float(GetHeight() - 3) * (float(FTopIndex) / (GetItems()->GetCount() - GetHeight()))) + 1;
         }
         int DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
         int Color = GetDialog()->GetSystemColor(
                         FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
         std::wstring Buf;
-        for (int Row = 0; Row < GetHeight(); Row++)
+        for (size_t Row = 0; Row < GetHeight(); Row++)
         {
-            int Index = GetTopIndex() + Row;
+            size_t Index = GetTopIndex() + Row;
             Buf = L" ";
             if (Index < GetItems()->GetCount())
             {
@@ -2683,7 +2683,7 @@ long TFarLister::ItemProc(int Msg, long Param)
     {
         Result = true;
 
-        int NewTopIndex = GetTopIndex();
+        size_t NewTopIndex = GetTopIndex();
         if ((Param == KEY_UP) || (Param == KEY_LEFT))
         {
             if (NewTopIndex > 0)
@@ -2772,8 +2772,8 @@ long TFarLister::ItemProc(int Msg, long Param)
                     NewTopIndex--;
                 }
             }
-            else if (((P.x == GetWidth() - 1) && (P.y == GetHeight() - 1)) ||
-                     ((P.x < GetWidth() - 1) && (P.y >= GetHeight() / 2)))
+            else if (((P.x == GetWidth() - 1) && (P.y == (int)GetHeight() - 1)) ||
+                     ((P.x < GetWidth() - 1) && (P.y >= (int)GetHeight() / 2)))
             {
                 if (NewTopIndex < GetItems()->GetCount() - GetHeight())
                 {
@@ -2783,7 +2783,7 @@ long TFarLister::ItemProc(int Msg, long Param)
             else
             {
                 assert(P.x == GetWidth() - 1);
-                assert((P.y > 0) && (P.y < GetHeight() - 1));
+                assert((P.y > 0) && (P.y < (int)GetHeight() - 1));
                 NewTopIndex = (size_t)ceil(float(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1));
             }
 

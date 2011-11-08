@@ -177,7 +177,7 @@ void TTabbedDialog::SelectTab(int Tab)
     FTab = Tab;
   }
 
-  for (int i = 0; i < GetItemCount(); i++)
+  for (size_t i = 0; i < GetItemCount(); i++)
   {
     TFarDialogItem * I = GetItem(i);
     if ((I->GetGroup() == Tab) && I->CanFocus())
@@ -197,7 +197,7 @@ void TTabbedDialog::SelectTab(int Tab)
 TTabButton * TTabbedDialog::TabButton(int Tab)
 {
   TTabButton * Result = NULL;
-  for (int i = 0; i < GetItemCount(); i++)
+  for (size_t i = 0; i < GetItemCount(); i++)
   {
     TTabButton * T = dynamic_cast<TTabButton*>(GetItem(i));
     if ((T != NULL) && (T->GetTab() == Tab))
@@ -1266,7 +1266,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   FSessionData = NULL;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
        (Kind == pkKeybInteractive)) &&
-      (Prompts->GetCount() == 1) && !bool(Prompts->GetObject(0)) &&
+      (Prompts->GetCount() == 1) && !(Prompts->GetObject(0) != NULL) &&
       !SessionName.empty() &&
       StoredCredentialsTried)
   {
@@ -1324,7 +1324,7 @@ void TPasswordDialog::GenerateLabel(std::wstring Caption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < Caption.size())
+  if (GetSize().x - 10 < (int)Caption.size())
   {
     Caption.resize(GetSize().x - 10 - 4);
     Caption += L" ...";
