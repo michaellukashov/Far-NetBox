@@ -1950,7 +1950,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
       } BOOST_SCOPE_EXIT_END
     if (FileList != NULL)
     {
-      for (int Index = 0; Index < FileList->GetCount(); Index++)
+      for (size_t Index = 0; Index < FileList->GetCount(); Index++)
       {
         TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
         if (File != NULL)
@@ -3608,7 +3608,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
   {
     ProgressData.Suspend();
     {
-        BOOST_SCOPE_EXIT ( (ProgressData) )
+        BOOST_SCOPE_EXIT ( (&ProgressData) )
         {
           ProgressData.Resume();
         } BOOST_SCOPE_EXIT_END

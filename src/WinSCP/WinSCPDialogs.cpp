@@ -1384,7 +1384,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit((Prompts->GetObject(Index))) != NULL);
+    FEdits->Add(GenerateEdit((Prompts->GetObject(Index))));
   }
 }
 //---------------------------------------------------------------------------
@@ -5765,7 +5765,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         FirstHistory = FPathHistory->GetCount() - MaxHistory + 1;
       }
 
-      for (int i = FirstHistory; i < FPathHistory->GetCount(); i++)
+      for (size_t i = FirstHistory; i < FPathHistory->GetCount(); i++)
       {
         std::wstring Path = FPathHistory->GetString(i);
         BookmarkPaths->Add(Path);
@@ -5780,7 +5780,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
           delete BookmarkDirectories;
         } BOOST_SCOPE_EXIT_END
         BookmarkDirectories->SetSorted(true);
-        for (int i = 0; i < BookmarkList->GetCount(); i++)
+        for (size_t i = 0; i < BookmarkList->GetCount(); i++)
         {
           TBookmark * Bookmark = BookmarkList->GetBookmark(i);
           std::wstring RemoteDirectory = Bookmark->GetRemote();

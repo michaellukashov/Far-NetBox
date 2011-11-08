@@ -2281,7 +2281,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
               if ((Reservation >= 0) && (Reservation > Index))
               {
                 Reservation--;
-                assert(Reservation == FPacketReservations->IndexOf((TObject *)Packet));
+                assert(Reservation == (int)FPacketReservations->IndexOf((TObject *)Packet));
               }
             }
             break;
@@ -3513,7 +3513,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
               
             OperationProgress->SetFile(File->GetFileName());
 
-            for (int Index = 0; Index < SubFiles->GetCount(); Index++)
+            for (size_t Index = 0; Index < SubFiles->GetCount(); Index++)
             {
               TRemoteFile * SubFile = SubFiles->GetFile(Index);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);

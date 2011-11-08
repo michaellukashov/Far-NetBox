@@ -222,7 +222,7 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
+std::wstring CopyToChars(const std::wstring &Str, size_t &From, std::wstring Chars,
     bool Trim, char *Delimiter)
 {
   size_t P;
@@ -843,7 +843,7 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
   size_t I = 0;
   while (I < Hex.size())
   {
-    int A = Digits.find_first_of((wchar_t)toupper(Hex[I]));
+    size_t A = Digits.find_first_of((wchar_t)toupper(Hex[I]));
     if (A == std::wstring::npos)
     {
       if ((MinChars < 0) || (I <= (size_t)MinChars))

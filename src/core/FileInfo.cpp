@@ -60,7 +60,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
         else
         {
           {
-              BOOST_SCOPE_EXIT ( (&Mem) )
+              BOOST_SCOPE_EXIT ( (Mem) )
               {
                 FreeResource(Mem);
               } BOOST_SCOPE_EXIT_END

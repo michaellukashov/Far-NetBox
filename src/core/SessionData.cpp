@@ -2222,7 +2222,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       delete FactoryDefaults;
     } BOOST_SCOPE_EXIT_END
     DoSave(Storage, FDefaultSettings, All, RecryptPasswordOnly, FactoryDefaults);
-    for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
+    for (size_t Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
     {
       TSessionData * SessionData = (TSessionData *)GetItem(Index);
       DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults);
@@ -2270,7 +2270,7 @@ void TStoredSessionList::RecryptPasswords()
 void TStoredSessionList::Saved()
 {
   FDefaultSettings->SetModified(false);
-  for (int Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
+  for (size_t Index = 0; Index < GetCount() + GetHiddenCount(); Index++)
   {
     ((TSessionData *)GetItem(Index))->SetModified(false);
   }
@@ -2294,14 +2294,14 @@ void TStoredSessionList::Export(const std::wstring FileName)
 //---------------------------------------------------------------------
 void TStoredSessionList::SelectAll(bool Select)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
     GetSession(Index)->SetSelected(Select);
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Import(TStoredSessionList * From,
   bool OnlySelected)
 {
-  for (int Index = 0; Index < From->GetCount(); Index++)
+  for (size_t Index = 0; Index < From->GetCount(); Index++)
   {
     if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
@@ -2319,7 +2319,7 @@ void TStoredSessionList::Import(TStoredSessionList * From,
 void TStoredSessionList::SelectSessionsToImport
   (TStoredSessionList * Dest, bool SSHOnly)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
     GetSession(Index)->SetSelected(
       (!SSHOnly || (GetSession(Index)->GetProtocol() == ptSSH)) &&
@@ -2350,7 +2350,7 @@ void TStoredSessionList::Cleanup()
 //---------------------------------------------------------------------------
 int TStoredSessionList::IndexOf(TSessionData * Data)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
     if (Data == GetSession(Index)) return Index;
   return -1;
 }

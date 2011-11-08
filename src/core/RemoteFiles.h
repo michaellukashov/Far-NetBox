@@ -531,7 +531,7 @@ bool IsUnixHiddenFile(const std::wstring Path);
 std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path);
 std::wstring FromUnixPath(const std::wstring Path);
 std::wstring ToUnixPath(const std::wstring Path);
-std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix);
+std::wstring MinimizeName(const std::wstring FileName, size_t MaxLen, bool Unix);
 std::wstring MakeFileList(TStrings * FileList);
 TDateTime ReduceDateTimePrecision(TDateTime DateTime,
   TModificationFmt Precision);

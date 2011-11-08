@@ -199,7 +199,7 @@ namespace Masks {
 bool TMask::GetMatches(const std::wstring Str)
 {
     // DEBUG_PRINTF(L"GetMatches: FMask = %s, Str = %s", FMask.c_str(), Str.c_str());
-    return CmpName(FMask.c_str(), Str.c_str(), true, true);
+    return CmpName(FMask.c_str(), Str.c_str(), true, true) == 0;
 }
 
 } // namespace Masks

@@ -45,7 +45,7 @@ std::wstring BooleanToStr(bool B);
 std::wstring BooleanToEngStr(bool B);
 std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default);
 std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim);
-std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs, bool Trim,
+std::wstring CopyToChars(const std::wstring & Str, size_t & From, std::wstring Chs, bool Trim,
   char * Delimiter = NULL);
 std::wstring DelimitStr(std::wstring Str, std::wstring Chars);
 std::wstring ShellDelimitStr(std::wstring Str, char Quote);
