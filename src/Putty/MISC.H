@@ -7,6 +7,7 @@
 
 #include "puttymem.h"
 
+#include <stdlib.h>
 #include <stdio.h>		       /* for FILE * */
 #include <stdarg.h>		       /* for va_list */
 #include <time.h>                      /* for struct tm */
