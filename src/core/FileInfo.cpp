@@ -120,7 +120,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
 bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   unsigned int DataSize, void * Data)
 {
-  bool Result;
+  bool Result = false;
   // DEBUG_PRINTF(L"IsWin7 = %d, Handle = %d, DataSize = %d", IsWin7(), Handle, DataSize);
   if (IsWin7())
   {

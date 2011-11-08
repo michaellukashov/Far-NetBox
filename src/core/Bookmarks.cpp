@@ -29,7 +29,7 @@ TBookmarks::~TBookmarks()
 //---------------------------------------------------------------------------
 void TBookmarks::Clear()
 {
-  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
+  for (size_t i = 0; i < FBookmarkLists->GetCount(); i++)
   {
     delete FBookmarkLists->GetObject(i);
   }
@@ -46,7 +46,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
     {
       TStrings * BookmarkKeys = new TStringList();
       {
-        BOOST_SCOPE_EXIT ( (&BookmarkKeys) )
+        BOOST_SCOPE_EXIT ( (BookmarkKeys) )
         {
           delete BookmarkKeys;
         } BOOST_SCOPE_EXIT_END
@@ -94,7 +94,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring Ke
     std::wstring Name;
     std::wstring Directory;
     TShortCut ShortCut(0);
-    for (int i = 0; i < Names->GetCount(); i++)
+    for (size_t i = 0; i < Names->GetCount(); i++)
     {
       Name = Names->GetString(i);
       bool IsDirectory = (Index == 0) || (Index == 1);
@@ -146,7 +146,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring Ke
     }
 
     Storage->GetSubKeyNames(Names);
-    for (int i = 0; i < Names->GetCount(); i++)
+    for (size_t i = 0; i < Names->GetCount(); i++)
     {
       Name = Names->GetString(i);
       if (Storage->OpenSubKey(Name, false))
@@ -231,7 +231,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 void TBookmarks::ModifyAll(bool Modify)
 {
   TBookmarkList * BookmarkList;
-  for (int i = 0; i < FBookmarkLists->GetCount(); i++)
+  for (size_t i = 0; i < FBookmarkLists->GetCount(); i++)
   {
     BookmarkList = reinterpret_cast<TBookmarkList *>(FBookmarkLists->GetObject(i));
     assert(BookmarkList);
@@ -299,7 +299,7 @@ TBookmarkList::~TBookmarkList()
 //---------------------------------------------------------------------------
 void TBookmarkList::Clear()
 {
-  for (int i = 0; i < FBookmarks->GetCount(); i++)
+  for (size_t i = 0; i < FBookmarks->GetCount(); i++)
   {
     delete FBookmarks->GetObject(i);
   }
@@ -314,7 +314,7 @@ void TBookmarkList::Assign(TPersistent * Source)
   if (SourceList)
   {
     Clear();
-    for (int i = 0; i < SourceList->FBookmarks->GetCount(); i++)
+    for (size_t i = 0; i < SourceList->FBookmarks->GetCount(); i++)
     {
       TBookmark * Bookmark = new TBookmark();
       Bookmark->Assign(reinterpret_cast<TBookmark *>(SourceList->FBookmarks->GetObject(i)));

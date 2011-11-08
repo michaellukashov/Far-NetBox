@@ -846,7 +846,7 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
     int A = Digits.find_first_of((wchar_t)toupper(Hex[I]));
     if (A == std::wstring::npos)
     {
-      if ((MinChars < 0) || (I <= MinChars))
+      if ((MinChars < 0) || (I <= (size_t)MinChars))
       {
         Result = 0;
       }
@@ -896,7 +896,7 @@ void ProcessLocalDirectory(std::wstring DirName,
   HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
   if (h != INVALID_HANDLE_VALUE)
   {
-    BOOST_SCOPE_EXIT ( (&h) )
+    BOOST_SCOPE_EXIT ( (h) )
     {
         ::FindClose(h);
     } BOOST_SCOPE_EXIT_END
@@ -1863,8 +1863,8 @@ std::wstring DecodeUrlChars(std::wstring S)
 //---------------------------------------------------------------------------
 std::wstring DoEncodeUrl(std::wstring S, std::wstring Chars)
 {
-  int i = 1;
-  while (i <= S.size())
+  size_t i = 0;
+  while (i < S.size())
   {
     if (Chars.find_first_of(S[i]) != std::wstring::npos)
     {
@@ -1895,7 +1895,7 @@ std::wstring EncodeUrlChars(std::wstring S, std::wstring Ignore)
 std::wstring NonUrlChars()
 {
   std::wstring S;
-  for (unsigned int I = 0; I <= 255; I++)
+  for (unsigned int I = 0; I < 256; I++)
   {
     char C = static_cast<char>(I);
     if (((C >= 'a') && (C <= 'z')) ||
@@ -2191,10 +2191,10 @@ std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, con
     return result;
 }
 
-int AnsiPos(const std::wstring str, wchar_t c)
+size_t AnsiPos(const std::wstring str, wchar_t c)
 {
-    int result = str.find_first_of(c);
-    return result == std::wstring::npos ? -1 : result;
+    size_t result = str.find_first_of(c);
+    return result;
 }
 
 size_t Pos(const std::wstring str, const std::wstring substr)
@@ -2244,18 +2244,18 @@ bool CompareText(const std::wstring str1, const std::wstring str2)
     return false;
 }
 
-int AnsiCompare(const std::wstring str1, const std::wstring str2)
+bool AnsiCompare(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 // Case-sensitive compare
-int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
+bool AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
-int AnsiSameText(const std::wstring str1, const std::wstring str2)
+bool AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
     return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
@@ -2265,14 +2265,14 @@ bool SameText(const std::wstring str1, const std::wstring str2)
     return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
-int AnsiCompareText(const std::wstring str1, const std::wstring str2)
+bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str());
+    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
 }
 
-int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
+bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str());
+    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
@@ -2318,8 +2318,8 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
     TTimeStamp result = {0, 0};
     double fractpart, intpart;
     fractpart = modf(DateTime, &intpart);
-    result.Time = fractpart * MSecsPerDay;
-    result.Date = intpart + DateDelta;
+    result.Time = (int)(fractpart * MSecsPerDay);
+    result.Date = (int)(intpart + DateDelta);
     // DEBUG_PRINTF(L"DateTime = %f, time = %u, Date = %u", DateTime, result.Time, result.Date);
     return result;
 }
@@ -2405,12 +2405,12 @@ int FileSetAttr(const std::wstring &filename, int attrs)
 bool CreateDir(const std::wstring Dir)
 {
   // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
-  return ::CreateDirectory(Dir.c_str(), NULL);
+  return ::CreateDirectory(Dir.c_str(), NULL) == 0;
 }
 
 bool RemoveDir(const std::wstring Dir)
 {
-  return ::RemoveDirectory(Dir.c_str());
+  return ::RemoveDirectory(Dir.c_str()) == 0;
 }
 
 bool ForceDirectories(const std::wstring Dir)
@@ -2664,7 +2664,7 @@ char *StrNew(const char *str)
 {
     const size_t sz = strlen(str) + 1;
     char *Result = new char[sz];
-    strncpy(Result, str, sz);
+    strncpy_s(Result, 1, str, sz);
     return Result;
 }
 

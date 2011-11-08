@@ -1348,7 +1348,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
-  if (S.x < Instructions.size())
+  if (S.x < (int)Instructions.size())
   {
     S.x = Instructions.size();
   }
@@ -1359,7 +1359,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
   {
-    if (S.x < Prompts->GetString(Index).size())
+    if (S.x < (int)Prompts->GetString(Index).size())
     {
       S.x = Prompts->GetString(Index).size();
     }
@@ -1384,7 +1384,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit(bool(Prompts->GetObject(Index))));
+    FEdits->Add(GenerateEdit((Prompts->GetObject(Index))) != NULL);
   }
 }
 //---------------------------------------------------------------------------
@@ -2755,9 +2755,9 @@ void TSessionDialog::UpdateControls()
 
   // SSH tab
   SshTab->SetEnabled(SshProtocol);
-  CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetSelected());
+  CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetSelected() != 0);
   CipherDownButton->SetEnabled(
-    CipherListBox->GetItems()->GetSelected() < CipherListBox->GetItems()->GetCount() - 1);
+    CipherListBox->GetItems()->GetSelected() < (int)CipherListBox->GetItems()->GetCount() - 1);
 
   // Authentication tab
   AuthenticatonTab->SetEnabled(SshProtocol);
@@ -2799,7 +2799,7 @@ void TSessionDialog::UpdateControls()
     (BugRekey2Combo->GetItems()->GetSelected() != 2));
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
   KexDownButton->SetEnabled(
-    (KexListBox->GetItems()->GetSelected() < KexListBox->GetItems()->GetCount() - 1));
+    (KexListBox->GetItems()->GetSelected() < (int)KexListBox->GetItems()->GetCount() - 1));
 
   // Bugs tab
   BugsTab->SetEnabled(SshProtocol);
@@ -2822,7 +2822,7 @@ void TSessionDialog::UpdateControls()
   ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
   TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
-  if (ProxyMethodCombo->GetItems()->GetSelected() >= OtherProxyMethodCombo->GetItems()->GetCount())
+  if (ProxyMethodCombo->GetItems()->GetSelected() >= (int)OtherProxyMethodCombo->GetItems()->GetCount())
   {
     OtherProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -3034,7 +3034,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // Proxy tab
   SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
-  if (SessionData->GetProxyMethod() >= FtpProxyMethodCombo->GetItems()->GetCount())
+  if (SessionData->GetProxyMethod() >= (int)FtpProxyMethodCombo->GetItems()->GetCount())
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -4052,13 +4052,13 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     Text = new TFarText(this);
     Text->SetCaption(GetMsg(PROPERTIES_OWNER));
-    Text->SetEnabled(FAllowedChanges & cpOwner);
+    Text->SetEnabled((FAllowedChanges & cpOwner) != 0);
 
     SetNextItemPosition(ipRight);
 
     OwnerComboBox = new TFarComboBox(this);
     OwnerComboBox->SetWidth(20);
-    OwnerComboBox->SetEnabled(FAllowedChanges & cpOwner);
+    OwnerComboBox->SetEnabled((FAllowedChanges & cpOwner) != 0);
     if (UsedUserList)
     {
         OwnerComboBox->GetItems()->Assign(UsedUserList);
@@ -4077,13 +4077,13 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     Text = new TFarText(this);
     Text->SetCaption(GetMsg(PROPERTIES_GROUP));
-    Text->SetEnabled(FAllowedChanges & cpGroup);
+    Text->SetEnabled((FAllowedChanges & cpGroup) != 0);
 
     SetNextItemPosition(ipRight);
 
     GroupComboBox = new TFarComboBox(this);
     GroupComboBox->SetWidth(OwnerComboBox->GetWidth());
-    GroupComboBox->SetEnabled(FAllowedChanges & cpGroup);
+    GroupComboBox->SetEnabled((FAllowedChanges & cpGroup) != 0);
     if (UsedGroupList)
     {
         GroupComboBox->GetItems()->Assign(UsedGroupList);
@@ -5340,7 +5340,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   SpaceAvailablePathEdit = new TFarEdit(this);
   SpaceAvailablePathEdit->SetRight(
-    - (GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11));
+    - ((int)GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11));
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
@@ -5379,7 +5379,7 @@ TLabelList * TFileSystemInfoDialog::CreateLabelArray(int Count)
   TLabelList * List = new TLabelList();
   try
   {
-    for (size_t Index = 0; Index < Count; Index++)
+    for (int Index = 0; Index < Count; Index++)
     {
       List->Add(new TFarText(this));
     }
@@ -5533,7 +5533,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
   if (List != NULL)
   {
     std::wstring S = GetMsg(Label);
-    if (List->MaxLen < S.size())
+    if (List->MaxLen < (int)S.size())
     {
       List->MaxLen = S.size();
     }
@@ -5757,8 +5757,8 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       int BookmarksOffset = -1;
 
       int MaxLength = FPlugin->MaxMenuItemLength();
-      int MaxHistory = 40;
-      int FirstHistory = 0;
+      size_t MaxHistory = 40;
+      size_t FirstHistory = 0;
 
       if (FPathHistory->GetCount() > MaxHistory)
       {
@@ -5825,7 +5825,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
             FirstItemFocused = BookmarkItems->GetCount();
           }
 
-          for (int ii = 0; ii < BookmarkDirectories->GetCount(); ii++)
+          for (size_t ii = 0; ii < BookmarkDirectories->GetCount(); ii++)
           {
             std::wstring Path = BookmarkDirectories->GetString(ii);
             BookmarkItems->Add(Path);
@@ -5838,7 +5838,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       {
         BookmarkItems->SetItemFocused(FirstItemFocused);
       }
-      else if (ItemFocused < BookmarkItems->GetCount())
+      else if (ItemFocused < (int)BookmarkItems->GetCount())
       {
         BookmarkItems->SetItemFocused(ItemFocused);
       }
@@ -6728,7 +6728,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = static_cast<float>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      FWidths[Index] = floor(W);
+      FWidths[Index] = (int)floor(W);
       Temp[Index] = W - FWidths[Index];
     }
     else
@@ -6765,7 +6765,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 std::wstring TSynchronizeChecklistDialog::FormatSize(
   __int64 Size, int Column)
 {
-  int Width = FWidths[Column];
+  size_t Width = FWidths[Column];
   std::wstring Result = FormatFloat(L"#,##0", Size);
 
   if (Result.size() > Width)
@@ -6988,7 +6988,7 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
       {
         List->EndUpdate();
       } BOOST_SCOPE_EXIT_END
-    int Count = List->GetCount();
+    size_t Count = List->GetCount();
     for (size_t Index = 0; Index < Count; Index++)
     {
       List->SetChecked(Index, Check);
@@ -7051,7 +7051,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
     else if ((KeyCode == KEY_SPACE) || (KeyCode == KEY_INS) ||
              (KeyCode == KEY_ADD) || (KeyCode == KEY_SUBTRACT))
     {
-      int Index = ListBox->GetItems()->GetSelected();
+      size_t Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
       {
         if (ListBox->GetItems()->GetChecked(Index) && (KeyCode != KEY_ADD))

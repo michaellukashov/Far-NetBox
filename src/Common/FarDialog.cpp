@@ -2765,7 +2765,7 @@ long TFarLister::ItemProc(int Msg, long Param)
             size_t NewTopIndex = GetTopIndex();
 
             if (((P.x == (int)GetWidth() - 1) && (P.y == 0)) ||
-                    ((P.x < GetWidth() - 1) && (P.y < GetHeight() / 2)))
+                    ((P.x < (int)GetWidth() - 1) && (P.y < GetHeight() / 2)))
             {
                 if (NewTopIndex > 0)
                 {
