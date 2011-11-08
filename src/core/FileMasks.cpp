@@ -764,7 +764,7 @@ void TCustomCommand::GetToken(
 
   if (Ptr[0] == L'!')
   {
-    PatternCmd = Ptr[1];
+    PatternCmd = (char)Ptr[1];
     if (PatternCmd == L'!')
     {
       Len = 2;
@@ -845,7 +845,7 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
           ::IsDelimiter(Command, Quotes, Index + Len) &&
           (Command[Index - 1] == Command[Index + Len]))
       {
-        Quote = Command[Index - 1];
+        Quote = (char)Command[Index - 1];
       }
       std::wstring Pattern = Command.substr(Index, Len);
       std::wstring Replacement;
