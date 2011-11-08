@@ -511,7 +511,8 @@ void ScramblePassword(std::wstring & Password)
   Buf[Padding] = (char)('0' + (Len % 10));
   Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
-  strcpy(Buf + Padding + 3, ::W2MB(Password.c_str()).c_str());
+  std::string pwd = ::W2MB(Password.c_str());
+  strcpy_s(Buf + Padding + 3, pwd.size(), pwd.c_str());
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
@@ -549,8 +550,8 @@ bool UnscramblePassword(std::wstring & Password)
   bool Result = false;
   if (strlen(S) >= 3)
   {
-    int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
-    int Total = (((Len + 3) / 17) * 17 + 17);
+    size_t Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
+    size_t Total = (((Len + 3) / 17) * 17 + 17);
     if ((Len >= 0) && (Total == Password.size()) && (Total - (S - (char *)Password.c_str()) - 3 == Len))
     {
       Password.erase(Password.size() - Len, 1);
@@ -572,7 +573,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = (unsigned char)Index;
   }
-  srand((unsigned int)time(NULL) ^ (unsigned int)getpid());
+  srand((unsigned int)time(NULL) ^ (unsigned int)_getpid());
 }
 //---------------------------------------------------------------------------
 void CryptographyFinalize()
@@ -582,7 +583,7 @@ void CryptographyFinalize()
   ScrambleTable = NULL;
 }
 //---------------------------------------------------------------------------
-int PasswordMaxLength()
+size_t PasswordMaxLength()
 {
   return 128;
 }
@@ -599,7 +600,7 @@ int IsValidPassword(std::wstring Password)
     int B = 0;
     int C = 0;
     int D = 0;
-    for (int Index = 1; Index <= Password.size(); Index++)
+    for (size_t Index = 1; Index <= Password.size(); Index++)
     {
       if ((Password[Index] >= 'a') && (Password[Index] <= 'z'))
       {

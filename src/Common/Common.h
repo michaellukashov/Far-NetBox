@@ -19,7 +19,7 @@ namespace bg = boost::gregorian;
 #define EXCEPTION throw ExtException(L"", NULL)
 #define THROWOSIFFALSE(C) if (!(C)) RaiseLastOSError();
 #define SCOPY(dest, source) \
-  strncpy(dest, source, sizeof(dest)); \
+  strncpy_s(dest, source, sizeof(dest)); \
   dest[sizeof(dest)-1] = '\0'
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)

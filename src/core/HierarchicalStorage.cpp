@@ -60,7 +60,7 @@ std::wstring MungeIniName(const std::wstring Str)
 //---------------------------------------------------------------------------
 std::wstring UnMungeIniName(const std::wstring Str)
 {
-  int P = Str.find(L"%3D");
+  size_t P = Str.find(L"%3D");
   // make this fast for now
   if (P != std::wstring::npos)
   {
@@ -150,12 +150,12 @@ void THierarchicalStorage::ClearSubKeys()
 {
   TStringList *SubKeys = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    BOOST_SCOPE_EXIT ( (SubKeys) )
     {
       delete SubKeys;
     } BOOST_SCOPE_EXIT_END
     GetSubKeyNames(SubKeys);
-    for (int Index = 0; Index < SubKeys->GetCount(); Index++)
+    for (size_t Index = 0; Index < SubKeys->GetCount(); Index++)
     {
       RecursiveDeleteSubKey(SubKeys->GetString(Index));
     }
@@ -177,7 +177,7 @@ bool THierarchicalStorage::HasSubKeys()
   bool Result;
   TStrings * SubKeys = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&SubKeys) )
+    BOOST_SCOPE_EXIT ( (SubKeys) )
     {
       delete SubKeys;
     } BOOST_SCOPE_EXIT_END
@@ -202,7 +202,7 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
 {
   TStrings * Names = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
+    BOOST_SCOPE_EXIT ( (Names) )
     {
       delete Names;
     } BOOST_SCOPE_EXIT_END
@@ -226,7 +226,7 @@ void THierarchicalStorage::ClearValues()
 {
   TStrings * Names = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
+    BOOST_SCOPE_EXIT ( (Names) )
     {
       delete Names;
     } BOOST_SCOPE_EXIT_END
@@ -363,7 +363,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   bool Result = true;
   TStrings * Names = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&Names) )
+    BOOST_SCOPE_EXIT ( (Names) )
     {
       delete Names;
     } BOOST_SCOPE_EXIT_END
@@ -629,7 +629,7 @@ TIniFileStorage::~TIniFileStorage()
 {
   TStrings * Strings = new TStringList;
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Strings) )
+    BOOST_SCOPE_EXIT ( (Self) (Strings) )
     {
       delete Self->FOriginal;
       delete Strings;
@@ -671,7 +671,7 @@ TIniFileStorage::~TIniFileStorage()
       {
         TStream * Stream = new THandleStream(Handle);
         {
-          BOOST_SCOPE_EXIT ( (&Handle) (&Stream) )
+          BOOST_SCOPE_EXIT ( (&Handle) (Stream) )
           {
             ::CloseHandle(Handle);
             delete Stream;
@@ -702,7 +702,7 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
   {
     TStringList * Sections = new TStringList();
     {
-      BOOST_SCOPE_EXIT ( (&Sections) )
+      BOOST_SCOPE_EXIT ( (Sections) )
       {
         delete Sections;
       } BOOST_SCOPE_EXIT_END
@@ -748,7 +748,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
 {
   TStrings * Sections = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
+    BOOST_SCOPE_EXIT ( (Sections) )
     {
       delete Sections;
     } BOOST_SCOPE_EXIT_END
@@ -812,7 +812,7 @@ void TIniFileStorage::ApplyOverrides()
 
   TStrings * Sections = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&Sections) )
+    BOOST_SCOPE_EXIT ( (Sections) )
     {
       delete Sections;
     } BOOST_SCOPE_EXIT_END
@@ -831,7 +831,7 @@ void TIniFileStorage::ApplyOverrides()
         // this all uses raw names (munged)
         TStrings * Names = new TStringList;
         {
-            BOOST_SCOPE_EXIT ( (&Names) )
+            BOOST_SCOPE_EXIT ( (Names) )
             {
               delete Names;
             } BOOST_SCOPE_EXIT_END

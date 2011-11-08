@@ -154,7 +154,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
-    int pcipher;
+    int pcipher = 0;
     switch (Data->GetCipher(c)) {
       case cipWarn: pcipher = CIPHER_WARN; break;
       case cip3DES: pcipher = CIPHER_3DES; break;
@@ -169,7 +169,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
 
   for (int k = 0; k < KEX_COUNT; k++)
   {
-    int pkex;
+    int pkex = 0;
     switch (Data->GetKex(k)) {
       case kexWarn: pkex = KEX_WARN; break;
       case kexDHGroup1: pkex = KEX_DHGROUP1; break;
@@ -265,7 +265,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       if (Data->GetSftpServer().empty())
       {
         cfg->ssh_subsys = TRUE;
-        strcpy(cfg->remote_cmd, "sftp");
+        strcpy_s(cfg->remote_cmd, 4, "sftp");
       }
       else
       {
@@ -562,7 +562,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions = ::Trim(Instructions);
 
-  for (int Index = 0; Index < Prompts->GetCount(); Index++)
+  for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
   {
     std::wstring Prompt = Prompts->GetString(Index);
     // DEBUG_PRINTF(L"Prompt = %s", Prompt.c_str());
@@ -592,7 +592,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().empty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        !bool(Prompts->GetObject(0)))
+        !(Prompts->GetObject(0) != NULL))
     {
       LogEvent(L"Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -741,7 +741,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
       {
         FFrozen = true;
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FFrozen = false;
           } BOOST_SCOPE_EXIT_END
@@ -786,7 +786,7 @@ int TSecureShell::Receive(char * Buf, int Len)
     OutLen = Len;
 
     {
-        BOOST_SCOPE_EXIT ( (&OutPtr) )
+        BOOST_SCOPE_EXIT ( (OutPtr) )
         {
           OutPtr = NULL;
         } BOOST_SCOPE_EXIT_END
@@ -902,7 +902,7 @@ int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
 
   int Answer;
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FWaiting--;
     } BOOST_SCOPE_EXIT_END
@@ -1088,7 +1088,7 @@ void TSecureShell::AddStdError(std::wstring Str)
 {
   FStdError += Str;
 
-  int P;
+  size_t P;
   Str = DeleteChar(Str, '\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
@@ -1447,7 +1447,7 @@ void TSecureShell::WaitForData()
 //---------------------------------------------------------------------------
 bool TSecureShell::SshFallbackCmd() const
 {
-  return ssh_fallback_cmd(FBackendHandle);
+  return ssh_fallback_cmd(FBackendHandle) != 0;
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
@@ -1555,7 +1555,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
     {
-      BOOST_SCOPE_EXIT ( (&Handles) )
+      BOOST_SCOPE_EXIT ( (Handles) )
       {
         sfree(Handles);
       } BOOST_SCOPE_EXIT_END
