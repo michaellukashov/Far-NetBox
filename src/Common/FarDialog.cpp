@@ -15,7 +15,7 @@ std::wstring StripHotKey(std::wstring Text)
 {
     std::wstring Result = Text;
     size_t Len = Result.size();
-    int Pos = 0;
+    size_t Pos = 0;
     while (Pos < Len)
     {
         if (Result[Pos] == '&')
@@ -91,7 +91,7 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
 //---------------------------------------------------------------------------
 TFarDialog::~TFarDialog()
 {
-    for (int i = 0; i < GetItemCount(); i++)
+    for (size_t i = 0; i < GetItemCount(); i++)
     {
         GetItem(i)->Detach();
     }
@@ -258,12 +258,12 @@ int TFarDialog::GetWidth() const
     return GetSize().x;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHeight(const int &value)
+void TFarDialog::SetHeight(const size_t &value)
 {
     SetSize(TPoint(GetWidth(), value));
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetHeight() const
+size_t TFarDialog::GetHeight() const
 {
     return GetSize().y;
 }
@@ -821,7 +821,7 @@ void TFarDialog::Change()
                 }
             }
 
-            for (int Index = 0; Index < NotifiedContainers->GetCount(); Index++)
+            for (size_t Index = 0; Index < NotifiedContainers->GetCount(); Index++)
             {
                 ((TFarDialogContainer *)(*NotifiedContainers)[Index])->Change();
             }
@@ -867,7 +867,7 @@ void TFarDialog::ProcessGroup(int Group, const processgroupevent_slot_type &Call
         } BOOST_SCOPE_EXIT_END
         processgroupevent_signal_type processgroupevent;
         processgroupevent.connect(Callback);
-        for (int i = 0; i < GetItemCount(); i++)
+        for (size_t i = 0; i < GetItemCount(); i++)
         {
             TFarDialogItem *I = GetItem(i);
             if (I->GetGroup() == Group)
@@ -1573,7 +1573,7 @@ void TFarDialogItem::SetHeight(int value)
     SetBounds(R);
 }
 //---------------------------------------------------------------------------
-int TFarDialogItem::GetHeight()
+size_t TFarDialogItem::GetHeight()
 {
     return GetActualBounds().Height() + 1;
 }
@@ -2191,8 +2191,8 @@ void TFarList::Changed()
 
     if ((GetUpdateCount() == 0) && !FNoDialogUpdate)
     {
-        int PrevSelected = 0;
-        int PrevTopIndex = 0;
+        size_t PrevSelected = 0;
+        size_t PrevTopIndex = 0;
         if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
         {
             PrevSelected = GetSelected();
@@ -2204,7 +2204,7 @@ void TFarList::Changed()
             if (GetCount())
             {
                 FListItems->Items = new FarListItem[GetCount()];
-                for (int Index = 0; Index < GetCount(); Index++)
+                for (size_t Index = 0; Index < GetCount(); Index++)
                 {
                     memset(&FListItems->Items[Index], 0, sizeof(FListItems->Items[Index]));
                     if (Index < FListItems->ItemsNumber)
@@ -2328,7 +2328,7 @@ int TFarList::GetTopIndex()
 //---------------------------------------------------------------------------
 int TFarList::GetMaxLength()
 {
-    int Result = 0;
+    size_t Result = 0;
     for (int i = 0; i < GetCount(); i++)
     {
         if (Result < GetString(i).size())
@@ -2336,7 +2336,7 @@ int TFarList::GetMaxLength()
             Result = GetString(i).size();
         }
     }
-    return Result;
+    return (int)Result;
 }
 //---------------------------------------------------------------------------
 int TFarList::GetVisibleCount()

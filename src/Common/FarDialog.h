@@ -600,8 +600,8 @@ public:
     TPoint GetClientSize() const;
     int GetWidth() const;
     void SetWidth(const int &value);
-    int GetHeight() const;
-    void SetHeight(const int &value);
+    size_t GetHeight() const;
+    void SetHeight(const size_t &value);
     std::wstring GetCaption() const;
     void SetCaption(const std::wstring &value);
     HANDLE GetHandle() const { return FHandle; }
@@ -743,7 +743,7 @@ public:
     void SetBottom(int value) { SetCoordinate(3, value); }
     int GetWidth();
     void SetWidth(int value);
-    int GetHeight();
+    size_t GetHeight();
     void SetHeight(int value);
     unsigned int GetFlags();
     void SetFlags(unsigned int value);

@@ -199,7 +199,7 @@ std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default)
 //---------------------------------------------------------------------------
 std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 {
-  int P = Str.find_first_of(Ch, 0);
+  size_t P = Str.find_first_of(Ch, 0);
   std::wstring Result;
   // DEBUG_PRINTF(L"P = %d", P);
   if (P != std::wstring::npos)
@@ -225,8 +225,8 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
     bool Trim, char *Delimiter)
 {
-  int P;
-  for (P = From; P <= Str.size(); P++)
+  size_t P;
+  for (P = From; P < Str.size(); P++)
   {
     if (::IsDelimiter(Str, Chars, P))
     {
@@ -236,7 +236,7 @@ std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
   // DEBUG_PRINTF(L"CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
 
   std::wstring Result;
-  if (P <= Str.size())
+  if (P < Str.size())
   {
     if (Delimiter != NULL)
     {
@@ -257,7 +257,7 @@ std::wstring CopyToChars(const std::wstring &Str, int &From, std::wstring Chars,
   if (Trim)
   {
     Result = ::TrimRight(Result);
-    while ((P <= Str.size()) && (Str[P] == L' '))
+    while ((P < Str.size()) && (Str[P] == L' '))
     {
       P++;
     }
@@ -500,7 +500,7 @@ std::wstring EscapePuttyCommandParam(std::wstring Param)
 {
   bool Space = false;
 
-  for (int i = 1; i <= Param.size(); i++)
+  for (size_t i = 0; i < Param.size(); i++)
   {
     switch (Param[i])
     {
@@ -519,7 +519,7 @@ std::wstring EscapePuttyCommandParam(std::wstring Param)
         {
           i2++;
         }
-        if ((i2 <= Param.size()) && (Param[i2] == L'"'))
+        if ((i2 < Param.size()) && (Param[i2] == L'"'))
         {
           while (Param[i] == L'\\')
           {
@@ -726,8 +726,8 @@ bool IsReservedName(std::wstring FileName)
 std::wstring DisplayableStr(const std::wstring Str)
 {
   bool Displayable = true;
-  int Index = 1;
-  while ((Index <= Str.size()) && Displayable)
+  size_t Index = 0;
+  while ((Index < Str.size()) && Displayable)
   {
     if ((Str[Index] < L'\32') &&
         (Str[Index] != L'\n') && (Str[Index] != L'\r') && (Str[Index] != L'\t') && (Str[Index] != L'\b'))
@@ -741,7 +741,7 @@ std::wstring DisplayableStr(const std::wstring Str)
   if (Displayable)
   {
     Result = L"\"";
-    for (int Index = 1; Index <= Str.size(); Index++)
+    for (size_t Index = 1; Index <= Str.size(); Index++)
     {
       switch (Str[Index])
       {
@@ -799,7 +799,7 @@ std::wstring CharToHex(char Ch, bool UpperCase)
 std::wstring StrToHex(const std::wstring Str, bool UpperCase, char Separator)
 {
   std::wstring Result;
-  for (int i = 1; i <= Str.size(); i++)
+  for (size_t i = 1; i <= Str.size(); i++)
   {
     Result += CharToHex(Str[i], UpperCase);
     if ((Separator != L'\0') && (i < Str.size()))
@@ -814,15 +814,15 @@ std::wstring HexToStr(const std::wstring Hex)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   std::wstring Result;
-  int L, P1, P2;
-  L = Hex.size();
+  size_t L, P1, P2;
+  L = Hex.size() - 1;
   if (L % 2 == 0)
   {
-    for (int i = 1; i <= Hex.size(); i += 2)
+    for (size_t i = 0; i < Hex.size(); i += 2)
     {
       P1 = Digits.find_first_of((char)toupper(Hex[i]));
       P2 = Digits.find_first_of((char)toupper(Hex[i + 1]));
-      if (P1 <= 0 || P2 <= 0)
+      if (P1 == std::wstring::npos || P2 == std::wstring::npos)
       {
         Result = L"";
         break;
@@ -840,11 +840,11 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
-  int I = 1;
-  while (I <= Hex.size())
+  int I = 0;
+  while (I < Hex.size())
   {
     int A = Digits.find_first_of((wchar_t)toupper(Hex[I]));
-    if (A <= 0)
+    if (A == std::wstring::npos)
     {
       if ((MinChars < 0) || (I <= MinChars))
       {
@@ -1459,8 +1459,8 @@ std::wstring FixedLenDateTimeFormat(const std::wstring & Format)
   std::wstring Result = Format;
   bool AsIs = false;
 
-  int Index = 1;
-  while (Index <= Result.size())
+  size_t Index = 0;
+  while (Index < Result.size())
   {
     wchar_t F = Result[Index];
     if ((F == L'\'') || (F == L'\"'))
@@ -1835,7 +1835,7 @@ std::wstring LoadStrPart(int Ident, int Part)
 //---------------------------------------------------------------------------
 std::wstring DecodeUrlChars(std::wstring S)
 {
-  int i = 1;
+  size_t i = 1;
   while (i <= S.size())
   {
     switch (S[i])
