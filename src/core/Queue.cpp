@@ -1106,7 +1106,7 @@ bool TTerminalItem::WaitForUserAction(
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) )
+    BOOST_SCOPE_EXIT ( (Self) (&PrevStatus) )
     {
       Self->FUserAction = NULL;
       Self->FItem->SetStatus(PrevStatus);
@@ -1230,7 +1230,7 @@ void TTerminalItem::OperationProgress(
     ProgressData.Suspend();
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) (&ProgressData) )
+      BOOST_SCOPE_EXIT ( (Self) (&PrevStatus) (&ProgressData) )
       {
         Self->FItem->SetStatus(PrevStatus);
         ProgressData.Resume();
@@ -1362,7 +1362,7 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
 void TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       {
         TGuard Guard(Self->FSection);
@@ -1479,7 +1479,7 @@ bool TQueueItemProxy::ProcessUserAction(void * Arg)
   bool Result;
   FProcessingUserAction = true;
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FProcessingUserAction = false;
     } BOOST_SCOPE_EXIT_END

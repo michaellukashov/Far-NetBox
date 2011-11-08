@@ -2022,7 +2022,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 {
   BusyStart();
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->BusyEnd();
     } BOOST_SCOPE_EXIT_END
@@ -2371,7 +2371,7 @@ int TSFTPFileSystem::ReceiveResponse(
   unsigned int MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket());
   {
-    BOOST_SCOPE_EXIT ( (&Self) (Response) (&AResponse) )
+    BOOST_SCOPE_EXIT ( (Self) (Response) (&AResponse) )
     {
         if (!Response)
         {
@@ -3021,7 +3021,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
   TSFTPPacket Response;
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Packet) (Handle) )
+    BOOST_SCOPE_EXIT ( (Self) (&Packet) (Handle) )
     {
       if (Self->FTerminal->GetActive())
       {
@@ -3101,7 +3101,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         FTerminal->SetExceptionOnFail(true);
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FTerminal->SetExceptionOnFail(false);
           } BOOST_SCOPE_EXIT_END
@@ -3433,7 +3433,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this);
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
+      BOOST_SCOPE_EXIT ( (Self) (&Queue) (&Progress) )
       {
         Queue.DisposeSafe();
         Self->FTerminal->FOperationProgress = NULL;
@@ -3499,7 +3499,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
           TStrings * SubFileList = new TStringList();
           bool Success = false;
           {
-            BOOST_SCOPE_EXIT ( (&Self) (&SubFiles) (&SubFileList) (&FirstLevel)
+            BOOST_SCOPE_EXIT ( (Self) (&SubFiles) (&SubFileList) (&FirstLevel)
                 (&File) (&Success) (&OnceDoneOperation) (&OperationProgress) )
             {
               delete SubFiles;
@@ -3550,7 +3550,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
         TRemoteFile * File = NULL;
 
         {
-          BOOST_SCOPE_EXIT ( (&Self) (&FirstLevel) (&File)
+          BOOST_SCOPE_EXIT ( (Self) (&FirstLevel) (&File)
             (&Success) (&OnceDoneOperation) (&OperationProgress) )
           {
             if (FirstLevel)
@@ -3609,7 +3609,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
   FTerminal->FOperationProgress = Progress;
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
+    BOOST_SCOPE_EXIT ( (Self) (&Progress) )
     {
       Self->FTerminal->FOperationProgress = NULL;
       Progress->Stop();
@@ -3678,7 +3678,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     FAvoidBusy = true;
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
+      BOOST_SCOPE_EXIT ( (Self) (&FileName) (&Success) (&OnceDoneOperation)
         (&OperationProgress) )
       {
         Self->FAvoidBusy = false;
@@ -3987,7 +3987,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&File) )
+    BOOST_SCOPE_EXIT ( (Self) (&File) )
     {
       if (File != NULL)
       {
@@ -4197,7 +4197,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       }
 
       {
-        BOOST_SCOPE_EXIT ( (&Self) (&TransferFinished) (&OpenParams)
+        BOOST_SCOPE_EXIT ( (Self) (&TransferFinished) (&OpenParams)
             (&CloseRequest) (&DoResume) (&DestFileName) (&OperationProgress) )
         {
           if (Self->FTerminal->GetActive())
@@ -4679,7 +4679,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   );
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&findHandle) )
+    BOOST_SCOPE_EXIT ( (Self) (&findHandle) )
     {
       ::FindClose(findHandle);
     } BOOST_SCOPE_EXIT_END
@@ -4750,7 +4750,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     FAvoidBusy = true;
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
+      BOOST_SCOPE_EXIT ( (Self) (&FileName) (&Success) (&OnceDoneOperation)
         (&OperationProgress))
       {
         Self->FAvoidBusy = false;
@@ -4936,7 +4936,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     TSFTPOverwriteMode OverwriteMode = omOverwrite;
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
+      BOOST_SCOPE_EXIT ( (Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
         (&ResumeAllowed) (&OverwriteMode) (&LocalFileName)
         (&DestFileName) (&RemoteHandle)
         (&OperationProgress) )

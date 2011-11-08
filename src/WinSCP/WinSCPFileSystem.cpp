@@ -407,7 +407,7 @@ TWinSCPPlugin * TWinSCPFileSystem::WinSCPPlugin()
 void TWinSCPFileSystem::Close()
 {
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->TCustomFarFileSystem::Close();
       } BOOST_SCOPE_EXIT_END
@@ -480,7 +480,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     // Do not know if OPM_SILENT is even used.
     FNoProgress = FLAGSET(OpMode, OPM_FIND) || FLAGSET(OpMode, OPM_SILENT);
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FNoProgress = false;
         } BOOST_SCOPE_EXIT_END
@@ -491,7 +491,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       }
 
       TRemoteFile * File;
-      for (int Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
+      for (size_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
       {
         File = FTerminal->GetFiles()->GetFile(Index);
         PanelItems->Add((TObject *)new TRemoteFilePanelItem(File));
@@ -553,7 +553,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     {
       FLoadingSessionList = true;
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FLoadingSessionList = false;
         } BOOST_SCOPE_EXIT_END
@@ -828,7 +828,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
   {
     FTerminal->BeginTransaction();
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           if (Self->FTerminal->GetActive())
           {
@@ -844,7 +844,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
       FarControl(FCTL_SETCMDLINE, 0, (LONG_PTR)L"");
       FPlugin->ShowConsoleTitle(Command);
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FPlugin->ScrollTerminalScreen(1);
             Self->FPlugin->SaveTerminalScreen();
@@ -1060,7 +1060,7 @@ void TWinSCPFileSystem::CreateLink()
       int Params = dfNoRecursive;
       GetTerminal()->SetExceptionOnFail(true);
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->GetTerminal()->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -1091,7 +1091,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
 
   FTerminal->SetExceptionOnFail(true);
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FTerminal->SetExceptionOnFail(false);
     } BOOST_SCOPE_EXIT_END
@@ -1141,7 +1141,7 @@ void TWinSCPFileSystem::ApplyCommand()
             Command = InteractiveCustomCommand.Complete(Command, false);
 
             {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->GetPanelInfo()->ApplySelection();
                 if (Self->UpdatePanel())
@@ -1167,7 +1167,7 @@ void TWinSCPFileSystem::ApplyCommand()
               }
 
               {
-                BOOST_SCOPE_EXIT ( (&Self) (&Params) )
+                BOOST_SCOPE_EXIT ( (Self) (&Params) )
                 {
                   if (FLAGSET(Params, ccShowResults))
                   {
@@ -1375,7 +1375,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
     FSynchronizationStart = Now();
     FSynchronizationCompare = true;
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FPlugin->ClearConsoleTitle();
         Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1390,7 +1390,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
     FSynchronizationStart = Now();
     FSynchronizationCompare = false;
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPlugin->ClearConsoleTitle();
           Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1469,7 +1469,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
 
     TSynchronizeChecklist * Checklist = NULL;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (&Checklist) )
+        BOOST_SCOPE_EXIT ( (Self) (&Checklist) )
         {
           delete Checklist;
           if (Self->UpdatePanel())
@@ -1482,7 +1482,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       FSynchronizationStart = Now();
       FSynchronizationCompare = true;
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FPlugin->ClearConsoleTitle();
             Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1510,7 +1510,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
         FSynchronizationStart = Now();
         FSynchronizationCompare = false;
         {
-            BOOST_SCOPE_EXIT ( (&Self) )
+            BOOST_SCOPE_EXIT ( (Self) )
             {
               Self->FPlugin->ClearConsoleTitle();
               Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1597,7 +1597,7 @@ void TWinSCPFileSystem::Synchronize()
   FSynchronizeController = &Controller;
 
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FSynchronizeController = NULL;
         // plugin might have been closed during some synchronisation already
@@ -1746,7 +1746,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
         if (RemoteTransferDialog(FileList, Target, FileMask, Move))
         {
           {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->GetPanelInfo()->ApplySelection();
                 if (Self->UpdatePanel())
@@ -1785,7 +1785,7 @@ void TWinSCPFileSystem::RenameFile()
     if (RenameFileDialog(File, NewName))
     {
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             if (Self->UpdatePanel())
             {
@@ -1845,7 +1845,7 @@ void TWinSCPFileSystem::FileProperties()
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
           {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->GetPanelInfo()->ApplySelection();
                 if (Self->UpdatePanel())
@@ -2166,7 +2166,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     {
       bool Result;
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FSavedFindFolder = L"";
           } BOOST_SCOPE_EXIT_END
@@ -2201,7 +2201,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
       }
       FTerminal->SetExceptionOnFail(true);
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FTerminal->SetExceptionOnFail(false);
             if (!Self->FNoProgress)
@@ -2321,7 +2321,7 @@ int TWinSCPFileSystem::MakeDirectoryEx(std::wstring & Name, int OpMode)
 
       FPlugin->ShowConsoleTitle(GetMsg(CREATING_FOLDER));
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FPlugin->ClearConsoleTitle();
           } BOOST_SCOPE_EXIT_END
@@ -2420,7 +2420,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     FFileList = CreateFileList(PanelItems, osRemote);
     FPanelItems = PanelItems;
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPanelItems = NULL;
           SAFE_DESTROY(Self->FFileList);
@@ -2490,7 +2490,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 
     FFileList = CreateFileList(PanelItems, osRemote);
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPanelItems = NULL;
           SAFE_DESTROY(Self->FFileList);
@@ -2682,7 +2682,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     // remote panel
     FNoProgressFinish = Edit;
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FNoProgressFinish = false;
         } BOOST_SCOPE_EXIT_END
@@ -2709,7 +2709,7 @@ int TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMod
   {
     FFileList = CreateFileList(PanelItems, osLocal);
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPanelItems = NULL;
           SAFE_DESTROY(Self->FFileList);
@@ -3661,7 +3661,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload, std::wstring FileName,
   }
 
   {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevAutoReadDirectory) )
+      BOOST_SCOPE_EXIT ( (Self) (&PrevAutoReadDirectory) )
       {
         Self->FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
         SAFE_DESTROY(Self->FFileList);
@@ -4005,7 +4005,7 @@ void TWinSCPFileSystem::MultipleEdit(std::wstring Directory,
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
+        BOOST_SCOPE_EXIT ( (Self) (&FileList) )
         {
           Self->FNoProgressFinish = false;
           delete FileList;

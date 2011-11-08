@@ -458,7 +458,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   bool Result;
   TWinSCPDialog * Dialog = new TWinSCPDialog(this);
   {
-      BOOST_SCOPE_EXIT ( (&Dialog) )
+      BOOST_SCOPE_EXIT ( (Dialog) )
       {
         delete Dialog;
       } BOOST_SCOPE_EXIT_END
@@ -886,7 +886,7 @@ void TTransferEditorConfigurationDialog::Change()
   {
     LockChanges();
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
@@ -2426,7 +2426,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
       } BOOST_SCOPE_EXIT_END
@@ -2682,7 +2682,7 @@ void TSessionDialog::Change()
 
     LockChanges();
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
@@ -3884,7 +3884,7 @@ void TRightsContainer::SetRights(const TRights & value)
   {
     GetDialog()->LockChanges();
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->GetDialog()->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
@@ -7927,8 +7927,8 @@ void TQueueDialog::RefreshQueue()
   if (QueueListBox->GetItems()->GetCount() > 0)
   {
     bool Change = false;
-    int TopIndex = QueueListBox->GetItems()->GetTopIndex();
-    int Index = TopIndex;
+    size_t TopIndex = QueueListBox->GetItems()->GetTopIndex();
+    size_t Index = TopIndex;
 
     int ILine = 0;
     while ((Index - ILine > 0) &&
@@ -7979,7 +7979,7 @@ void TQueueDialog::LoadQueue()
 {
   TFarList * List = new TFarList();
   {
-      BOOST_SCOPE_EXIT ( (&List) )
+      BOOST_SCOPE_EXIT ( (List) )
       {
         delete List;
       } BOOST_SCOPE_EXIT_END
