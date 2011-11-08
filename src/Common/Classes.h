@@ -677,39 +677,23 @@ private:
 class TMemIniFile
 {
 public:
-    TMemIniFile(const std::wstring AFileName)
-    {}
-    void GetStrings(TStrings *Strings)
-    {}
-    void ReadSections(TStrings *Strings)
-    {}
-    void ReadSection(std::wstring Section, TStrings *Strings)
-    {}
-    void EraseSection(std::wstring Section)
-    {}
-    bool SectionExists(std::wstring Section) { return false; }
-    bool ValueExists(std::wstring Section, std::wstring Name) { return false; }
-    bool DeleteKey(std::wstring Section, std::wstring Name)
-    { return false; }
-    bool Readbool(const std::wstring Section, const std::wstring Name, const bool Default)
-    { return false; }
-    int Readint(const std::wstring Section, const std::wstring Name, int Default)
-    { return 0; }
-    std::wstring ReadString(const std::wstring Section, const std::wstring Name, const std::wstring Default)
-    { return L""; }
-
-    void Writebool(const std::wstring Section, const std::wstring Name, bool Value)
-    {}
-    void WriteDateTime(const std::wstring Section, const std::wstring Name, TDateTime Value)
-    {}
-    void WriteFloat(const std::wstring Section, const std::wstring Name, double Value)
-    {}
-    void WriteString(const std::wstring Section, const std::wstring Name, const std::wstring Value)
-    {}
-    void WriteStringRaw(const std::wstring Section, const std::wstring Name, const std::wstring Value)
-    {}
-    void Writeint(const std::wstring Section, const std::wstring Name, int Value)
-    {}
+    TMemIniFile(const std::wstring AFileName);
+    void GetStrings(TStrings *Strings);
+    void ReadSections(TStrings *Strings);
+    void ReadSection(std::wstring Section, TStrings *Strings);
+    void EraseSection(std::wstring Section);
+    bool SectionExists(std::wstring Section);
+    bool ValueExists(std::wstring Section, std::wstring Name);
+    bool DeleteKey(std::wstring Section, std::wstring Name);
+    bool Readbool(const std::wstring Section, const std::wstring Name, const bool Default);
+    int Readint(const std::wstring Section, const std::wstring Name, int Default);
+    std::wstring ReadString(const std::wstring Section, const std::wstring Name, const std::wstring Default);
+    void Writebool(const std::wstring Section, const std::wstring Name, bool Value);
+    void WriteDateTime(const std::wstring Section, const std::wstring Name, TDateTime Value);
+    void WriteFloat(const std::wstring Section, const std::wstring Name, double Value);
+    void WriteString(const std::wstring Section, const std::wstring Name, const std::wstring Value);
+    void WriteStringRaw(const std::wstring Section, const std::wstring Name, const std::wstring Value);
+    void Writeint(const std::wstring Section, const std::wstring Name, int Value);
 };
 
 //---------------------------------------------------------------------------
