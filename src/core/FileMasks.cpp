@@ -760,12 +760,12 @@ void TCustomCommand::GetToken(
   const std::wstring & Command, size_t Index, size_t &Len, char & PatternCmd)
 {
   assert(Index < Command.size());
-  const wchar_t * Ptr = Command.c_str() + Index - 1;
+  const wchar_t *Ptr = Command.c_str() + Index - 1;
 
-  if (Ptr[0] == '!')
+  if (Ptr[0] == L'!')
   {
     PatternCmd = Ptr[1];
-    if (PatternCmd == '!')
+    if (PatternCmd == L'!')
     {
       Len = 2;
     }
@@ -814,11 +814,11 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
   bool LastPass)
 {
   std::wstring Result;
-  int Index = 1;
+  size_t Index = 0;
 
-  while (Index <= Command.size())
+  while (Index < Command.size())
   {
-    int Len;
+    size_t Len;
     char PatternCmd;
     GetToken(Command, Index, Len, PatternCmd);
 
@@ -840,7 +840,7 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
     else
     {
       char Quote = NoQuote;
-      if ((Index > 1) && (Index + Len - 1 < Command.size()) &&
+      if ((Index > 0) && (Index + Len - 1 < Command.size()) &&
           ::IsDelimiter(Command, Quotes, Index - 1) &&
           ::IsDelimiter(Command, Quotes, Index + Len) &&
           (Command[Index - 1] == Command[Index + Len]))
@@ -887,11 +887,11 @@ void TCustomCommand::Validate(const std::wstring & Command)
 void TCustomCommand::CustomValidate(const std::wstring & Command,
   void * Arg)
 {
-  int Index = 1;
+  size_t Index = 0;
 
-  while (Index <= Command.size())
+  while (Index < Command.size())
   {
-    int Len;
+    size_t Len;
     char PatternCmd;
     GetToken(Command, Index, Len, PatternCmd);
     ValidatePattern(Command, Index, Len, PatternCmd, Arg);
@@ -904,11 +904,11 @@ bool TCustomCommand::FindPattern(const std::wstring & Command,
   char PatternCmd)
 {
   bool Result = false;
-  size_t Index = 1;
+  size_t Index = 0;
 
-  while (!Result && (Index <= Command.size()))
+  while (!Result && (Index < Command.size()))
   {
-    int Len;
+    size_t Len;
     char APatternCmd;
     GetToken(Command, Index, Len, APatternCmd);
     if (((PatternCmd != '!') && (PatternCmd == APatternCmd)) ||
