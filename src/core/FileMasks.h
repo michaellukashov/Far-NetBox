@@ -128,7 +128,7 @@ protected:
   static const char NoQuote;
   static const std::wstring Quotes;
   void GetToken(const std::wstring & Command,
-    size_t Index, int &Len, char & PatternCmd);
+    size_t Index, size_t &Len, char & PatternCmd);
   void CustomValidate(const std::wstring & Command, void * Arg);
   bool FindPattern(const std::wstring & Command, char PatternCmd);
 
