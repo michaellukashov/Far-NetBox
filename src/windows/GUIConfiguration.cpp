@@ -1036,7 +1036,7 @@ TStrings * TGUIConfiguration::GetLocales()
         Index++;
       }
 */
-      for (int Index = 0; Index < Exts->GetCount(); Index++)
+      for (size_t Index = 0; Index < Exts->GetCount(); Index++)
       {
         if ((Exts->GetObject(Index) == NULL) &&
             (Exts->GetString(Index).size() == 3) &&

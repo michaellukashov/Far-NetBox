@@ -155,7 +155,7 @@ TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
 //---------------------------------------------------------------------------
 void TTabbedDialog::HideTabs()
 {
-  for (int i = 0; i < GetItemCount(); i++)
+  for (size_t i = 0; i < GetItemCount(); i++)
   {
     TFarDialogItem * I = GetItem(i);
     if (I->GetGroup())
@@ -177,7 +177,7 @@ void TTabbedDialog::SelectTab(int Tab)
     FTab = Tab;
   }
 
-  for (int i = 0; i < GetItemCount(); i++)
+  for (size_t i = 0; i < GetItemCount(); i++)
   {
     TFarDialogItem * I = GetItem(i);
     if ((I->GetGroup() == Tab) && I->CanFocus())
@@ -197,7 +197,7 @@ void TTabbedDialog::SelectTab(int Tab)
 TTabButton * TTabbedDialog::TabButton(int Tab)
 {
   TTabButton * Result = NULL;
-  for (int i = 0; i < GetItemCount(); i++)
+  for (size_t i = 0; i < GetItemCount(); i++)
   {
     TTabButton * T = dynamic_cast<TTabButton*>(GetItem(i));
     if ((T != NULL) && (T->GetTab() == Tab))
@@ -1266,7 +1266,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   FSessionData = NULL;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
        (Kind == pkKeybInteractive)) &&
-      (Prompts->GetCount() == 1) && !bool(Prompts->GetObject(0)) &&
+      (Prompts->GetCount() == 1) && !(Prompts->GetObject(0) != NULL) &&
       !SessionName.empty() &&
       StoredCredentialsTried)
   {
@@ -1324,7 +1324,7 @@ void TPasswordDialog::GenerateLabel(std::wstring Caption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < Caption.size())
+  if (GetSize().x - 10 < (int)Caption.size())
   {
     Caption.resize(GetSize().x - 10 - 4);
     Caption += L" ...";
@@ -1357,7 +1357,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
     S.y += 2;
   }
 
-  for (int Index = 0; Index < Prompts->GetCount(); Index++)
+  for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
   {
     if (S.x < Prompts->GetString(Index).size())
     {
@@ -1380,7 +1380,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
     GenerateLabel(L"", Truncated);
   }
 
-  for (int Index = 0; Index < Prompts->GetCount(); Index++)
+  for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
@@ -1398,7 +1398,7 @@ void TPasswordDialog::ShowPromptClick(TFarButton * /*Sender*/,
 //---------------------------------------------------------------------------
 bool TPasswordDialog::Execute(TStrings * Results)
 {
-  for (int Index = 0; Index < FEdits->GetCount(); Index++)
+  for (size_t Index = 0; Index < FEdits->GetCount(); Index++)
   {
     reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->SetText(Results->GetString(Index));
   }
@@ -1406,7 +1406,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
   bool Result = (ShowModal() != brCancel);
   if (Result)
   {
-    for (int Index = 0; Index < FEdits->GetCount(); Index++)
+    for (size_t Index = 0; Index < FEdits->GetCount(); Index++)
     {
       Results->PutString(Index, reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText());
     }
@@ -2136,7 +2136,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+  for (size_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
   {
     TFarEdit * Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index] = Edit;
@@ -2431,7 +2431,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
         Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
       } BOOST_SCOPE_EXIT_END
     TunnelLocalPortNumberEdit->GetItems()->Add(GetMsg(LOGIN_TUNNEL_LOCAL_PORT_NUMBER_AUTOASSIGN));
-    for (int Index = Configuration->GetTunnelLocalPortNumberLow();
+    for (size_t Index = Configuration->GetTunnelLocalPortNumberLow();
          Index <= Configuration->GetTunnelLocalPortNumberHigh(); Index++)
     {
       TunnelLocalPortNumberEdit->GetItems()->Add(IntToStr(Index));
@@ -3004,7 +3004,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
           delete PostLoginCommands;
         } BOOST_SCOPE_EXIT_END
     PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
-    for (int Index = 0; (Index < PostLoginCommands->GetCount()) &&
+    for (size_t Index = 0; (Index < PostLoginCommands->GetCount()) &&
                         (Index < LENOF(PostLoginCommandsEdits)); Index++)
     {
       PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
@@ -3093,7 +3093,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     } BOOST_SCOPE_EXIT_END
     CipherListBox->GetItems()->Clear();
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
-    for (int Index = 0; Index < CIPHER_COUNT; Index++)
+    for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
     {
       TObject *Obj = (TObject*)SessionData->GetCipher(Index);
       CipherListBox->GetItems()->AddObject(
@@ -3116,7 +3116,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     KexListBox->GetItems()->Clear();
     // DEBUG_PRINTF(L"KEX_NAME_WARN = %d, KEX_COUNT = %d, KEX_NAME_GSSGEX = %d", KEX_NAME_WARN, KEX_COUNT, KEX_NAME_GSSGEX);
     assert(KEX_NAME_WARN+KEX_COUNT+1 == KEX_NAME_GSSGEX);
-    for (int Index = 0; Index < KEX_COUNT; Index++)
+    for (size_t Index = 0; Index < KEX_COUNT; Index++)
     {
       KexListBox->GetItems()->AddObject(
         GetMsg(KEX_NAME_WARN + int(SessionData->GetKex(Index))),
@@ -3232,7 +3232,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
         {
           delete PostLoginCommands;
         } BOOST_SCOPE_EXIT_END
-      for (int Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
+      for (size_t Index = 0; Index < LENOF(PostLoginCommandsEdits); Index++)
       {
         std::wstring Text = PostLoginCommandsEdits[Index]->GetText();
         if (!Text.empty())
@@ -3319,7 +3319,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     if (SshProt2Button->GetChecked()) SessionData->SetSshProt(ssh2);
       else SessionData->SetSshProt(ssh2only);
 
-    for (int Index = 0; Index < CIPHER_COUNT; Index++)
+    for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
     {
       TObject *Obj = (TObject *)CipherListBox->GetItems()->GetObject(Index);
       SessionData->SetCipher(Index, (TCipher)(int)Obj);
@@ -3330,7 +3330,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetRekeyTime(RekeyTimeEdit->GetAsInteger());
     SessionData->SetRekeyData(RekeyDataEdit->GetText());
 
-    for (int Index = 0; Index < KEX_COUNT; Index++)
+    for (size_t Index = 0; Index < KEX_COUNT; Index++)
     {
       SessionData->SetKex(Index, (TKex)(int)KexListBox->GetItems()->GetObject(Index));
     }
@@ -3425,7 +3425,7 @@ int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
   else
   {
     AllowScpFallback = false;
-    for (int Index = 0; Index < TransferProtocolCombo->GetItems()->GetCount(); Index++)
+    for (size_t Index = 0; Index < TransferProtocolCombo->GetItems()->GetCount(); Index++)
     {
       if (FSOrder[Index] == FSProtocol)
       {
@@ -3668,7 +3668,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   static int SpecialLabels[] = { PROPERTIES_SETUID_RIGHTS, PROPERTIES_SETGID_RIGHTS,
     PROPERTIES_STICKY_BIT_RIGHTS };
 
-  for (int RowIndex = 0; RowIndex < 3; RowIndex++)
+  for (size_t RowIndex = 0; RowIndex < 3; RowIndex++)
   {
     GetDialog()->SetNextItemPosition(ipNewLine);
     Text = new TFarText(GetDialog());
@@ -3683,7 +3683,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
     GetDialog()->SetNextItemPosition(ipRight);
 
-    for (int ColIndex = 0; ColIndex < 3; ColIndex++)
+    for (size_t ColIndex = 0; ColIndex < 3; ColIndex++)
     {
       CheckBox = new TFarCheckBox(GetDialog());
       FCheckBoxes[(RowIndex + 1)* 3 + ColIndex] = CheckBox;
@@ -4003,7 +4003,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
       UsedUserList->SetSorted(true);
     }
 
-    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    for (size_t Index = 0; Index < FileList->GetCount(); Index++)
     {
       File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
       assert(File);
@@ -4066,7 +4066,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     else if (UserList)
     {
         DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->GetCount());
-        for (int Index = 0; Index < UserList->GetCount(); Index++)
+        for (size_t Index = 0; Index < UserList->GetCount(); Index++)
         {
             DEBUG_PRINTF(L"user = %s", UserList->GetToken(Index)->GetName().c_str());
             GroupComboBox->GetItems()->Add(UserList->GetToken(Index)->GetName());
@@ -4090,7 +4090,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     }
     else if (GroupList)
     {
-        for (int Index = 0; Index < GroupList->GetCount(); Index++)
+        for (size_t Index = 0; Index < GroupList->GetCount(); Index++)
         {
             DEBUG_PRINTF(L"group = %s", GroupList->GetToken(Index)->GetName().c_str());
             GroupComboBox->GetItems()->Add(GroupList->GetToken(Index)->GetName());
@@ -5379,7 +5379,7 @@ TLabelList * TFileSystemInfoDialog::CreateLabelArray(int Count)
   TLabelList * List = new TLabelList();
   try
   {
-    for (int Index = 0; Index < Count; Index++)
+    for (size_t Index = 0; Index < Count; Index++)
     {
       List->Add(new TFarText(this));
     }
@@ -6710,7 +6710,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 
   int TotalRatio = 0;
   int FixedRatio = 0;
-  for (int Index = 0; Index < FColumns; Index++)
+  for (size_t Index = 0; Index < FColumns; Index++)
   {
     if (Ratio[Index] >= 0)
     {
@@ -6723,7 +6723,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
   }
 
   int TotalAssigned = 0;
-  for (int Index = 0; Index < FColumns; Index++)
+  for (size_t Index = 0; Index < FColumns; Index++)
   {
     if (Ratio[Index] >= 0)
     {
@@ -6743,7 +6743,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
   {
     int GrowIndex = 0;
     double MaxMissing = 0.0;
-    for (int Index = 0; Index < FColumns; Index++)
+    for (size_t Index = 0; Index < FColumns; Index++)
     {
       if (MaxMissing < Temp[Index])
       {
@@ -6902,7 +6902,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
           delete List;
         } BOOST_SCOPE_EXIT_END
     List->BeginUpdate();
-    for (int Index = 0; Index < FChecklist->GetCount(); Index++)
+    for (size_t Index = 0; Index < FChecklist->GetCount(); Index++)
     {
       const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
 
@@ -6912,7 +6912,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     List->EndUpdate();
 
     // items must be checked in second pass once the internal array is allocated
-    for (int Index = 0; Index < FChecklist->GetCount(); Index++)
+    for (size_t Index = 0; Index < FChecklist->GetCount(); Index++)
     {
       const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->GetItem(Index);
 
@@ -6934,7 +6934,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
   std::wstring HeaderStr = GetMsg(CHECKLIST_HEADER);
   std::wstring HeaderCaption(::StringOfChar(' ', 2));
 
-  for (int Index = 0; Index < FColumns; Index++)
+  for (size_t Index = 0; Index < FColumns; Index++)
   {
     AddColumn(HeaderCaption, CutToChar(HeaderStr, '|', false), Index, true);
   }
@@ -6948,7 +6948,7 @@ void TSynchronizeChecklistDialog::RefreshChecklist(bool Scroll)
       {
         List->EndUpdate();
       } BOOST_SCOPE_EXIT_END
-    for (int Index = 0; Index < List->GetCount(); Index++)
+    for (size_t Index = 0; Index < List->GetCount(); Index++)
     {
       if (!Scroll || (LastDelimiter(List->GetString(Index), L"{}") > 0))
       {
@@ -6989,7 +6989,7 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
         List->EndUpdate();
       } BOOST_SCOPE_EXIT_END
     int Count = List->GetCount();
-    for (int Index = 0; Index < Count; Index++)
+    for (size_t Index = 0; Index < Count; Index++)
     {
       List->SetChecked(Index, Check);
     }
@@ -7115,7 +7115,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
   {
     TFarList * List = ListBox->GetItems();
     int Count = List->GetCount();
-    for (int Index = 0; Index < Count; Index++)
+    for (size_t Index = 0; Index < Count; Index++)
     {
       TSynchronizeChecklist::TItem * ChecklistItem =
         reinterpret_cast<TSynchronizeChecklist::TItem *>(List->GetObject(Index));
@@ -7985,7 +7985,7 @@ void TQueueDialog::LoadQueue()
       } BOOST_SCOPE_EXIT_END
     std::wstring Line;
     TQueueItemProxy * QueueItem;
-    for (int Index = 0; Index < FStatus->GetCount(); Index++)
+    for (size_t Index = 0; Index < FStatus->GetCount(); Index++)
     {
       QueueItem = FStatus->GetItem(Index);
       int ILine = 0;
