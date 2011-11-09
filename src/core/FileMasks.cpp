@@ -654,7 +654,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
           char PartDelimiter = NextPartDelimiter;
           int PartFrom = NextPartFrom;
           std::wstring PartStr = ::CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
-          // DEBUG_PRINTF(L"PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
+          DEBUG_PRINTF(L"PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
 
           int PartStart = MaskStart + PartFrom - 1;
           int PartEnd = MaskStart + NextPartFrom - 2;
@@ -676,10 +676,10 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
             }
             else
             {
-              if ((PartStr.size() >= 1) && (PartStr[1] == '='))
+              if ((PartStr.size() >= 1) && (PartStr[0] == '='))
               {
                 SizeMask = TMask::Close;
-                PartStr.erase(1, 1);
+                PartStr.erase(0, 1);
               }
               else
               {
@@ -701,7 +701,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
               D = ::LastDelimiter(PartStr, L"\\/");
             }
 
-            if (D > 0)
+            if (D >= 0)
             {
               // make sure sole "/" (root dir) is preserved as is
               CreateMaskMask(
