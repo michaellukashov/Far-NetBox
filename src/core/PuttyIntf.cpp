@@ -36,11 +36,11 @@ void PuttyInitialize()
   std::wstring VersionString = SshVersionString();
   assert(!VersionString.empty() && (VersionString.size() < sizeof(sshver)));
   std::string vs = ::W2MB(VersionString.c_str());
-  strcpy_s(sshver, vs.size(), vs.c_str());
+  strcpy_s(sshver, sizeof(sshver), vs.c_str());
   std::wstring AppName = AppNameString();
   assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
   std::string appname = ::W2MB(AppName.c_str());
-  strcpy_s(appname_, appname.size(), appname.c_str());
+  strcpy_s(appname_, sizeof(appname_), appname.c_str());
 }
 //---------------------------------------------------------------------------
 void PuttyFinalize()
