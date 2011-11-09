@@ -956,13 +956,12 @@ TStrings * TGUIConfiguration::GetLocales()
     int FindAttrs = faReadOnly | faArchive;
     WIN32_FIND_DATA SearchRec;
     bool Found;
-
-    Found = false; // FIXME  (bool)(FindFirst(ChangeFileExt(ModuleFileName(), L".*"),
-      // FindAttrs, SearchRec) == 0);
+    HANDLE findHandle = FindFirstFile(::ChangeFileExt(ModuleFileName(), L".*").c_str(), &SearchRec);
+    Found = (findHandle != 0) && ((SearchRec.dwFileAttributes & FindAttrs) != 0);
     {
-        BOOST_SCOPE_EXIT ( (&SearchRec) )
+        BOOST_SCOPE_EXIT ( (findHandle) )
         {
-          // FIXME FindClose(SearchRec);
+          ::FindClose(findHandle);
         } BOOST_SCOPE_EXIT_END
       std::wstring Ext;
       while (Found)
@@ -975,7 +974,7 @@ TStrings * TGUIConfiguration::GetLocales()
           LocalesExts += Ext;
           Exts->Add(Ext);
         }
-        Found = false; // FIXME (FindNext(SearchRec) == 0);
+        Found = (::FindNextFile(findHandle, &SearchRec) != 0) && ((SearchRec.dwFileAttributes & FindAttrs) != 0);
       }
     }
 
