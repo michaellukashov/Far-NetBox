@@ -134,7 +134,7 @@ private:
   std::wstring FTunnelUserName;
   std::wstring FTunnelPassword;
   std::wstring FTunnelPublicKeyFile;
-  int FTunnelLocalPortNumber;
+  size_t FTunnelLocalPortNumber;
   std::wstring FTunnelPortFwd;
   bool FFtpPasvMode;
   bool FFtpForcePasvIp;

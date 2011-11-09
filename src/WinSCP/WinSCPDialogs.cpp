@@ -7869,7 +7869,7 @@ void TQueueDialog::UpdateControls()
     (QueueItem->GetIndex() > FStatus->GetActiveCount()));
   MoveDownButton->SetEnabled((QueueItem != NULL) &&
     (QueueItem->GetStatus() == TQueueItem::qsPending) &&
-    (QueueItem->GetIndex() < FStatus->GetCount() - 1));
+    (QueueItem->GetIndex() < (int)FStatus->GetCount() - 1));
 }
 //---------------------------------------------------------------------------
 void TQueueDialog::Idle()

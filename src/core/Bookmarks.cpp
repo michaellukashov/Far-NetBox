@@ -406,7 +406,7 @@ int TBookmarkList::IndexOf(TBookmark * Bookmark)
 //---------------------------------------------------------------------------
 void TBookmarkList::KeyChanged(int Index)
 {
-  assert(Index < GetCount());
+  assert(Index < (int)GetCount());
   TBookmark * Bookmark = reinterpret_cast<TBookmark *>(FBookmarks->GetObject(Index));
   assert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)

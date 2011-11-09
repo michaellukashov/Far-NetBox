@@ -2068,7 +2068,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         Self->ReadCommandOutput(ECParams);
       }
     } BOOST_SCOPE_EXIT_END
-    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+    for (size_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       std::wstring FileName = FilesToCopy->GetString(IFile);
