@@ -355,7 +355,7 @@ void TStrings::Assign(TPersistent *Source)
     BeginUpdate();
     {
         TStrings *Self = this;
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
             Self->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -495,7 +495,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
     BeginUpdate();
     {
         TStrings *Self = this;
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
             Self->EndUpdate();
         } BOOST_SCOPE_EXIT_END
@@ -578,7 +578,7 @@ void TStrings::AddStrings(TStrings *Strings)
   BeginUpdate();
   {
     TStrings *Self = this;
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END

@@ -149,7 +149,7 @@ void TFarConfiguration::Load()
 {
   FForceInheritance = true;
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
         Self->FForceInheritance = false;
     } BOOST_SCOPE_EXIT_END
@@ -161,7 +161,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
         Self->FForceInheritance = false;
     } BOOST_SCOPE_EXIT_END

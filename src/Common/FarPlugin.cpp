@@ -358,7 +358,7 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
         TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
         {
-            BOOST_SCOPE_EXIT ( (Self) (FileSystem) )
+            BOOST_SCOPE_EXIT ( (&Self) (FileSystem) )
             {
                 Self->FOpenedPlugins->Remove(FileSystem);
             } BOOST_SCOPE_EXIT_END

@@ -1273,7 +1273,7 @@ void TRemoteFile::FindLinkedFile()
     try
     {
       {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
             Self->GetTerminal()->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -1590,7 +1590,7 @@ void TRemoteDirectoryCache::Clear()
   TGuard Guard(FSection);
 
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->TStringList::Clear();
     } BOOST_SCOPE_EXIT_END

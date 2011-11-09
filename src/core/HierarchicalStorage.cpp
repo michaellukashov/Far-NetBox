@@ -629,7 +629,7 @@ TIniFileStorage::~TIniFileStorage()
 {
   TStrings * Strings = new TStringList;
   {
-    BOOST_SCOPE_EXIT ( (Self) (Strings) )
+    BOOST_SCOPE_EXIT ( (&Self) (Strings) )
     {
       delete Self->FOriginal;
       delete Strings;
