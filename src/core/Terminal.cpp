@@ -3876,7 +3876,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress->Start(foCalculateSize, osLocal, FileList->GetCount());
   {
-    BOOST_SCOPE_EXIT ( (&Self) (OperationProgress) )
+    BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
     {
       Self->FOperationProgress = NULL;
       OperationProgress->Stop();
@@ -4736,7 +4736,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
 
     FOperationProgress = OperationProgress;
     {
-      BOOST_SCOPE_EXIT ( (&Self) (OperationProgress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
       {
         OperationProgress->Stop();
         Self->FOperationProgress = NULL;
@@ -4846,9 +4846,9 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
 
     FOperationProgress = OperationProgress;
     {
-      BOOST_SCOPE_EXIT ( (FOperationProgress) (OperationProgress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
       {
-        FOperationProgress = NULL;
+        Self->FOperationProgress = NULL;
         OperationProgress->Stop();
         delete OperationProgress;
         OperationProgress = NULL;
