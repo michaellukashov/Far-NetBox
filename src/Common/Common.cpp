@@ -2662,7 +2662,7 @@ char *StrNew(const char *str)
 {
     const size_t sz = strlen(str) + 1;
     char *Result = new char[sz];
-    strncpy_s(Result, 1, str, sz);
+    strncpy_s(Result, sz, str, sz);
     return Result;
 }
 
