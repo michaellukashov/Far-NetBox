@@ -199,7 +199,7 @@ namespace Masks {
 bool TMask::GetMatches(const std::wstring Str)
 {
     // DEBUG_PRINTF(L"GetMatches: FMask = %s, Str = %s", FMask.c_str(), Str.c_str());
-    return CmpName(FMask.c_str(), Str.c_str(), true, true);
+    return CmpName(FMask.c_str(), Str.c_str(), true, true) == 0;
 }
 
 } // namespace Masks
@@ -217,9 +217,9 @@ std::wstring MaskFilePart(const std::wstring Part, const std::wstring Mask, bool
 {
   std::wstring Result;
   // DEBUG_PRINTF(L"Mask = %s, Masked = %d", Mask.c_str(), Masked);
-  int RestStart = 0;
+  size_t RestStart = 0;
   bool Delim = false;
-  for (int Index = 0; Index < Mask.size(); Index++)
+  for (size_t Index = 0; Index < Mask.size(); Index++)
   {
     switch (Mask[Index])
     {   /*
@@ -269,7 +269,7 @@ std::wstring MaskFileName(std::wstring FileName, const std::wstring Mask)
   if (!Mask.empty() && (Mask != L"*") && (Mask != L"*.*"))
   {
     bool Masked = false;
-    int P = ::LastDelimiter(Mask, L".");
+    size_t P = ::LastDelimiter(Mask, L".");
     if (P != std::wstring::npos)
     {
       int P2 = ::LastDelimiter(FileName, L".");
@@ -312,7 +312,7 @@ bool IsFileNameMask(const std::wstring Mask)
 //---------------------------------------------------------------------------
 std::wstring DelimitFileNameMask(std::wstring Mask)
 {
-  for (int i = 1; i <= Mask.size(); i++)
+  for (size_t i = 1; i <= Mask.size(); i++)
   {
     if (wcschr(L"\\*?", Mask[i]) != NULL)
     {
@@ -337,7 +337,7 @@ std::wstring TFileMasks::TParams::ToString() const
 //---------------------------------------------------------------------------
 bool TFileMasks::IsMask(const std::wstring Mask)
 {
-    int result = ::LastDelimiter(Mask, L"?*[");
+    size_t result = ::LastDelimiter(Mask, L"?*[");
     // DEBUG_PRINTF(L"isMask: result = %d", result);
     return result != std::wstring::npos;
 }
@@ -612,7 +612,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
     FStr = Str;
     Clear();
 
-    int NextMaskFrom = 0;
+    size_t NextMaskFrom = 0;
     bool Include = true;
     while (NextMaskFrom <= Str.size())
     {
@@ -647,7 +647,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         Mask.LowSizeMask = TMask::None;
 
         char NextPartDelimiter = '\0';
-        int NextPartFrom = 0;
+        size_t NextPartFrom = 0;
         while (NextPartFrom <= MaskStr.size())
         {
           // DEBUG_PRINTF(L"NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
@@ -691,7 +691,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
           }
           else if (!PartStr.empty())
           {
-            int D = ::LastDelimiter(PartStr, L"\\/");
+            size_t D = ::LastDelimiter(PartStr, L"\\/");
 
             Mask.DirectoryOnly = (D > 0) && (D == PartStr.size());
 
@@ -757,15 +757,15 @@ TCustomCommand::TCustomCommand()
 }
 //---------------------------------------------------------------------------
 void TCustomCommand::GetToken(
-  const std::wstring & Command, int Index, int & Len, char & PatternCmd)
+  const std::wstring & Command, size_t Index, size_t &Len, char & PatternCmd)
 {
-  assert(Index <= Command.size());
-  const wchar_t * Ptr = Command.c_str() + Index - 1;
+  assert(Index < Command.size());
+  const wchar_t *Ptr = Command.c_str() + Index - 1;
 
-  if (Ptr[0] == '!')
+  if (Ptr[0] == L'!')
   {
-    PatternCmd = Ptr[1];
-    if (PatternCmd == '!')
+    PatternCmd = (char)Ptr[1];
+    if (PatternCmd == L'!')
     {
       Len = 2;
     }
@@ -814,11 +814,11 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
   bool LastPass)
 {
   std::wstring Result;
-  int Index = 1;
+  size_t Index = 0;
 
-  while (Index <= Command.size())
+  while (Index < Command.size())
   {
-    int Len;
+    size_t Len;
     char PatternCmd;
     GetToken(Command, Index, Len, PatternCmd);
 
@@ -840,12 +840,12 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
     else
     {
       char Quote = NoQuote;
-      if ((Index > 1) && (Index + Len - 1 < Command.size()) &&
+      if ((Index > 0) && (Index + Len - 1 < Command.size()) &&
           ::IsDelimiter(Command, Quotes, Index - 1) &&
           ::IsDelimiter(Command, Quotes, Index + Len) &&
           (Command[Index - 1] == Command[Index + Len]))
       {
-        Quote = Command[Index - 1];
+        Quote = (char)Command[Index - 1];
       }
       std::wstring Pattern = Command.substr(Index, Len);
       std::wstring Replacement;
@@ -887,11 +887,11 @@ void TCustomCommand::Validate(const std::wstring & Command)
 void TCustomCommand::CustomValidate(const std::wstring & Command,
   void * Arg)
 {
-  int Index = 1;
+  size_t Index = 0;
 
-  while (Index <= Command.size())
+  while (Index < Command.size())
   {
-    int Len;
+    size_t Len;
     char PatternCmd;
     GetToken(Command, Index, Len, PatternCmd);
     ValidatePattern(Command, Index, Len, PatternCmd, Arg);
@@ -904,11 +904,11 @@ bool TCustomCommand::FindPattern(const std::wstring & Command,
   char PatternCmd)
 {
   bool Result = false;
-  int Index = 1;
+  size_t Index = 0;
 
-  while (!Result && (Index <= Command.size()))
+  while (!Result && (Index < Command.size()))
   {
-    int Len;
+    size_t Len;
     char APatternCmd;
     GetToken(Command, Index, Len, APatternCmd);
     if (((PatternCmd != '!') && (PatternCmd == APatternCmd)) ||

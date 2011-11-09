@@ -33,7 +33,7 @@ void TSessionPanelItem::SetPanelModes(TFarPanelModes * PanelModes)
   assert(FarPlugin);
   TStrings * ColumnTitles = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&ColumnTitles) )
+    BOOST_SCOPE_EXIT ( (ColumnTitles) )
     {
       delete ColumnTitles;
     } BOOST_SCOPE_EXIT_END
@@ -172,7 +172,7 @@ void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
   assert(FarPlugin);
   TStrings * ColumnTitles = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (&ColumnTitles) )
+    BOOST_SCOPE_EXIT ( (ColumnTitles) )
     {
       delete ColumnTitles;
     } BOOST_SCOPE_EXIT_END
@@ -407,7 +407,7 @@ TWinSCPPlugin * TWinSCPFileSystem::WinSCPPlugin()
 void TWinSCPFileSystem::Close()
 {
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->TCustomFarFileSystem::Close();
       } BOOST_SCOPE_EXIT_END
@@ -480,7 +480,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     // Do not know if OPM_SILENT is even used.
     FNoProgress = FLAGSET(OpMode, OPM_FIND) || FLAGSET(OpMode, OPM_SILENT);
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FNoProgress = false;
         } BOOST_SCOPE_EXIT_END
@@ -491,7 +491,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       }
 
       TRemoteFile * File;
-      for (int Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
+      for (size_t Index = 0; Index < FTerminal->GetFiles()->GetCount(); Index++)
       {
         File = FTerminal->GetFiles()->GetFile(Index);
         PanelItems->Add((TObject *)new TRemoteFilePanelItem(File));
@@ -508,13 +508,13 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     TSessionData * Data;
     TStringList * ChildPaths = new TStringList();
     {
-        BOOST_SCOPE_EXIT ( (&ChildPaths) )
+        BOOST_SCOPE_EXIT ( (ChildPaths) )
         {
           delete ChildPaths;
         } BOOST_SCOPE_EXIT_END
       ChildPaths->SetCaseSensitive(false);
       // DEBUG_PRINTF(L"StoredSessions->GetCount = %d", StoredSessions->GetCount());
-      for (int Index = 0; Index < StoredSessions->GetCount(); Index++)
+      for (size_t Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
         Data = StoredSessions->GetSession(Index);
         if (Data->Name.substr(0, Folder.size()) == Folder)
@@ -553,7 +553,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     {
       FLoadingSessionList = true;
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FLoadingSessionList = false;
         } BOOST_SCOPE_EXIT_END
@@ -637,7 +637,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
   }
 
   {
-      BOOST_SCOPE_EXIT ( (&Data) (&NewData) (&FillInConnect) )
+      BOOST_SCOPE_EXIT ( (Data) (NewData) (FillInConnect) )
       {
         if (NewData || FillInConnect)
         {
@@ -828,7 +828,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
   {
     FTerminal->BeginTransaction();
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           if (Self->FTerminal->GetActive())
           {
@@ -844,7 +844,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
       FarControl(FCTL_SETCMDLINE, 0, (LONG_PTR)L"");
       FPlugin->ShowConsoleTitle(Command);
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FPlugin->ScrollTerminalScreen(1);
             Self->FPlugin->SaveTerminalScreen();
@@ -1060,7 +1060,7 @@ void TWinSCPFileSystem::CreateLink()
       int Params = dfNoRecursive;
       GetTerminal()->SetExceptionOnFail(true);
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->GetTerminal()->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -1091,7 +1091,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(
 
   FTerminal->SetExceptionOnFail(true);
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FTerminal->SetExceptionOnFail(false);
     } BOOST_SCOPE_EXIT_END
@@ -1119,7 +1119,7 @@ void TWinSCPFileSystem::ApplyCommand()
   if (FileList != NULL)
   {
     {
-        BOOST_SCOPE_EXIT ( (&FileList) )
+        BOOST_SCOPE_EXIT ( (FileList) )
         {
             delete FileList;
         } BOOST_SCOPE_EXIT_END
@@ -1141,7 +1141,7 @@ void TWinSCPFileSystem::ApplyCommand()
             Command = InteractiveCustomCommand.Complete(Command, false);
 
             {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->GetPanelInfo()->ApplySelection();
                 if (Self->UpdatePanel())
@@ -1167,7 +1167,7 @@ void TWinSCPFileSystem::ApplyCommand()
               }
 
               {
-                BOOST_SCOPE_EXIT ( (&Self) (&Params) )
+                BOOST_SCOPE_EXIT ( (Self) (&Params) )
                 {
                   if (FLAGSET(Params, ccShowResults))
                   {
@@ -1204,7 +1204,7 @@ void TWinSCPFileSystem::ApplyCommand()
           TStrings * LocalFileList = NULL;
           TStrings * RemoteFileList = NULL;
           {
-            BOOST_SCOPE_EXIT ( (&RemoteFileList) (&LocalFileList) )
+            BOOST_SCOPE_EXIT ( (RemoteFileList) (LocalFileList) )
             {
               delete RemoteFileList;
               delete LocalFileList;
@@ -1289,7 +1289,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   {
                     std::wstring LocalFile = LocalFileList->GetString(0);
 
-                    for (int Index = 0; Index < RemoteFileList->GetCount(); Index++)
+                    for (size_t Index = 0; Index < RemoteFileList->GetCount(); Index++)
                     {
                       std::wstring FileName = RemoteFileList->GetString(Index);
                       TCustomCommandData Data(FTerminal);
@@ -1303,7 +1303,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   {
                     std::wstring FileName = RemoteFileList->GetString(0);
 
-                    for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
+                    for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
                     {
                       TCustomCommandData Data(FTerminal);
                       TLocalCustomCommand CustomCommand(
@@ -1320,7 +1320,7 @@ void TWinSCPFileSystem::ApplyCommand()
                       throw ExtException(GetMsg(CUSTOM_COMMAND_PAIRS_DOWNLOAD_FAILED));
                     }
 
-                    for (int Index = 0; Index < LocalFileList->GetCount(); Index++)
+                    for (size_t Index = 0; Index < LocalFileList->GetCount(); Index++)
                     {
                       std::wstring FileName = RemoteFileList->GetString(Index);
                       TCustomCommandData Data(FTerminal);
@@ -1334,7 +1334,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 }
                 else
                 {
-                  for (int Index = 0; Index < RemoteFileList->GetCount(); Index++)
+                  for (size_t Index = 0; Index < RemoteFileList->GetCount(); Index++)
                   {
                     TCustomCommandData Data(FTerminal);
                     TLocalCustomCommand CustomCommand(Data,
@@ -1359,7 +1359,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
 {
   TSynchronizeChecklist * AChecklist = NULL;
   {
-      BOOST_SCOPE_EXIT ( (&AChecklist) (&Checklist) )
+      BOOST_SCOPE_EXIT ( (AChecklist) (&Checklist) )
       {
         if (Checklist == NULL)
         {
@@ -1375,7 +1375,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
     FSynchronizationStart = Now();
     FSynchronizationCompare = true;
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FPlugin->ClearConsoleTitle();
         Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1390,7 +1390,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
     FSynchronizationStart = Now();
     FSynchronizationCompare = false;
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPlugin->ClearConsoleTitle();
           Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1469,7 +1469,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
 
     TSynchronizeChecklist * Checklist = NULL;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (&Checklist) )
+        BOOST_SCOPE_EXIT ( (Self) (&Checklist) )
         {
           delete Checklist;
           if (Self->UpdatePanel())
@@ -1482,7 +1482,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       FSynchronizationStart = Now();
       FSynchronizationCompare = true;
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FPlugin->ClearConsoleTitle();
             Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1510,7 +1510,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
         FSynchronizationStart = Now();
         FSynchronizationCompare = false;
         {
-            BOOST_SCOPE_EXIT ( (&Self) )
+            BOOST_SCOPE_EXIT ( (Self) )
             {
               Self->FPlugin->ClearConsoleTitle();
               Self->FPlugin->RestoreScreen(Self->FSynchronizationSaveScreenHandle);
@@ -1597,7 +1597,7 @@ void TWinSCPFileSystem::Synchronize()
   FSynchronizeController = &Controller;
 
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FSynchronizeController = NULL;
         // plugin might have been closed during some synchronisation already
@@ -1737,7 +1737,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
       assert(!FPanelItems);
 
       {
-          BOOST_SCOPE_EXIT ( (&FileList) )
+          BOOST_SCOPE_EXIT ( (FileList) )
           {
             delete FileList;
           } BOOST_SCOPE_EXIT_END
@@ -1746,7 +1746,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
         if (RemoteTransferDialog(FileList, Target, FileMask, Move))
         {
           {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->GetPanelInfo()->ApplySelection();
                 if (Self->UpdatePanel())
@@ -1785,7 +1785,7 @@ void TWinSCPFileSystem::RenameFile()
     if (RenameFileDialog(File, NewName))
     {
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             if (Self->UpdatePanel())
             {
@@ -1808,7 +1808,7 @@ void TWinSCPFileSystem::FileProperties()
     assert(!FPanelItems);
 
     {
-        BOOST_SCOPE_EXIT ( (&FileList) )
+        BOOST_SCOPE_EXIT ( (FileList) )
         {
           delete FileList;
         } BOOST_SCOPE_EXIT_END
@@ -1845,7 +1845,7 @@ void TWinSCPFileSystem::FileProperties()
           NewProperties = TRemoteProperties::ChangedProperties(CurrentProperties,
             NewProperties);
           {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->GetPanelInfo()->ApplySelection();
                 if (Self->UpdatePanel())
@@ -1943,14 +1943,14 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   TStrings * FileList = CreateSelectedFileList(osRemote);
   TStrings * FileNames = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (&FileList) (&FileNames) )
+      BOOST_SCOPE_EXIT ( (FileList) (FileNames) )
       {
         delete FileList;
         delete FileNames;
       } BOOST_SCOPE_EXIT_END
     if (FileList != NULL)
     {
-      for (int Index = 0; Index < FileList->GetCount(); Index++)
+      for (size_t Index = 0; Index < FileList->GetCount(); Index++)
       {
         TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->GetObject(Index));
         if (File != NULL)
@@ -2042,7 +2042,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 {
   TBookmarkList * BookmarkList = new TBookmarkList();
   {
-      BOOST_SCOPE_EXIT ( (&BookmarkList) )
+      BOOST_SCOPE_EXIT ( (BookmarkList) )
       {
         delete BookmarkList;
       } BOOST_SCOPE_EXIT_END
@@ -2166,7 +2166,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     {
       bool Result;
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FSavedFindFolder = L"";
           } BOOST_SCOPE_EXIT_END
@@ -2201,7 +2201,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
       }
       FTerminal->SetExceptionOnFail(true);
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FTerminal->SetExceptionOnFail(false);
             if (!Self->FNoProgress)
@@ -2321,7 +2321,7 @@ int TWinSCPFileSystem::MakeDirectoryEx(std::wstring & Name, int OpMode)
 
       FPlugin->ShowConsoleTitle(GetMsg(CREATING_FOLDER));
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FPlugin->ClearConsoleTitle();
           } BOOST_SCOPE_EXIT_END
@@ -2373,7 +2373,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
 {
     processsession_signal_type sig;
     sig.connect(ProcessSession);
-  for (int Index = 0; Index < PanelItems->GetCount(); Index++)
+  for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
   {
     TFarPanelItem * PanelItem = (TFarPanelItem *)PanelItems->GetItem(Index);
     assert(PanelItem);
@@ -2394,7 +2394,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       assert(PanelItem->GetUserData() == NULL);
       std::wstring Folder = UnixIncludeTrailingBackslash(
         UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
-      int Index = 0;
+      size_t Index = 0;
       while (Index < StoredSessions->GetCount())
       {
         TSessionData *Data = StoredSessions->GetSession(Index);
@@ -2420,7 +2420,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
     FFileList = CreateFileList(PanelItems, osRemote);
     FPanelItems = PanelItems;
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPanelItems = NULL;
           SAFE_DESTROY(Self->FFileList);
@@ -2490,7 +2490,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 
     FFileList = CreateFileList(PanelItems, osRemote);
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPanelItems = NULL;
           SAFE_DESTROY(Self->FFileList);
@@ -2606,7 +2606,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   TSessionData * ExportData = NULL;
   TSessionData * FactoryDefaults = new TSessionData(L"");
   {
-      BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&Storage) (&ExportData) )
+      BOOST_SCOPE_EXIT ( (FactoryDefaults) (Storage) (ExportData) )
       {
         delete FactoryDefaults;
         delete Storage;
@@ -2682,7 +2682,7 @@ int TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     // remote panel
     FNoProgressFinish = Edit;
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FNoProgressFinish = false;
         } BOOST_SCOPE_EXIT_END
@@ -2709,7 +2709,7 @@ int TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMod
   {
     FFileList = CreateFileList(PanelItems, osLocal);
     {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
           Self->FPanelItems = NULL;
           SAFE_DESTROY(Self->FFileList);
@@ -2780,7 +2780,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   {
     std::wstring FileName;
     TFarPanelItem * PanelItem;
-    for (int i = 0; i < PanelItems->GetCount(); i++)
+    for (size_t i = 0; i < PanelItems->GetCount(); i++)
     {
       PanelItem = (TFarPanelItem *)PanelItems->GetItem(i);
       bool AnyData = false;
@@ -2789,7 +2789,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       {
         THierarchicalStorage * Storage = NULL;
         {
-          BOOST_SCOPE_EXIT ( (&Storage) )
+          BOOST_SCOPE_EXIT ( (Storage) )
           {
             delete Storage;
           } BOOST_SCOPE_EXIT_END
@@ -2872,7 +2872,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
     std::wstring FileName;
     TFarPanelItem * PanelItem;
     TObject * Data = NULL;
-    for (int Index = 0; Index < PanelItems->GetCount(); Index++)
+    for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
     {
       PanelItem = (TFarPanelItem *)PanelItems->GetItem(Index);
       assert(PanelItem);
@@ -3027,14 +3027,14 @@ void TWinSCPFileSystem::LogAuthentication(
   FAuthenticationLog->Add(Msg);
   TStringList * AuthenticationLogLines = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (&AuthenticationLogLines) )
+      BOOST_SCOPE_EXIT ( (AuthenticationLogLines) )
       {
         delete AuthenticationLogLines;
       } BOOST_SCOPE_EXIT_END
-    int Width = 42;
-    int Height = 11;
+    size_t Width = 42;
+    size_t Height = 11;
     FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines, Width);
-    int Count;
+    size_t Count;
     std::wstring Message;
     if (AuthenticationLogLines->GetCount() == 0)
     {
@@ -3218,7 +3218,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   {
     assert(Instructions.empty());
     assert(Prompts->GetCount() == 1);
-    assert(bool(Prompts->GetObject(0)));
+    assert((Prompts->GetObject(0)) != NULL);
     std::wstring AResult = Results->GetString(0);
 
     Result = FPlugin->InputBox(Name, StripHotKey(Prompts->GetString(0)), AResult, FIB_NOUSELASTHISTORY);
@@ -3292,7 +3292,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     if (!FPanelItems)
     {
       TObjectList *PanelItems = GetPanelInfo()->GetItems();
-      for (int Index = 0; Index < PanelItems->GetCount(); Index++)
+      for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
       {
         if (((TFarPanelItem *)PanelItems->GetItem(Index))->GetFileName() == FileName)
         {
@@ -3485,7 +3485,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     for (int Index = 0; Index < FQueueStatus->GetActiveCount(); Index++)
     {
       QueueItem = FQueueStatus->GetItem(Index);
-      if ((bool)QueueItem->GetUserData())
+      if (QueueItem->GetUserData() != NULL)
       {
         QueueItem->Update();
         Result = FQueueStatus;
@@ -3661,7 +3661,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload, std::wstring FileName,
   }
 
   {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevAutoReadDirectory) )
+      BOOST_SCOPE_EXIT ( (Self) (&PrevAutoReadDirectory) )
       {
         Self->FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
         SAFE_DESTROY(Self->FFileList);
@@ -3677,7 +3677,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
   if (Info != NULL)
   {
     {
-        BOOST_SCOPE_EXIT ( (&Info) )
+        BOOST_SCOPE_EXIT ( (Info) )
         {
           delete Info;
         } BOOST_SCOPE_EXIT_END
@@ -3734,7 +3734,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
       if (Info != NULL)
       {
         {
-            BOOST_SCOPE_EXIT ( (&Info) )
+            BOOST_SCOPE_EXIT ( (Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3760,7 +3760,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
       if (Info != NULL)
       {
         {
-            BOOST_SCOPE_EXIT ( (&Info) )
+            BOOST_SCOPE_EXIT ( (Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3811,7 +3811,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
     if (Info != NULL)
     {
       {
-            BOOST_SCOPE_EXIT ( (&Info) )
+            BOOST_SCOPE_EXIT ( (Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3849,7 +3849,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
     if (Info != NULL)
     {
       {
-            BOOST_SCOPE_EXIT ( (&Info) )
+            BOOST_SCOPE_EXIT ( (Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3918,7 +3918,7 @@ void TWinSCPFileSystem::MultipleEdit()
     if (FileList != NULL)
     {
       {
-            BOOST_SCOPE_EXIT ( (&FileList) )
+            BOOST_SCOPE_EXIT ( (FileList) )
             {
               delete FileList;
             } BOOST_SCOPE_EXIT_END
@@ -4005,7 +4005,7 @@ void TWinSCPFileSystem::MultipleEdit(std::wstring Directory,
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
+        BOOST_SCOPE_EXIT ( (Self) (FileList) )
         {
           Self->FNoProgressFinish = false;
           delete FileList;
@@ -4058,7 +4058,7 @@ void TWinSCPFileSystem::EditHistory()
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-    BOOST_SCOPE_EXIT ( (&MenuItems) )
+    BOOST_SCOPE_EXIT ( (MenuItems) )
     {
       delete MenuItems;
     } BOOST_SCOPE_EXIT_END
@@ -4086,7 +4086,7 @@ void TWinSCPFileSystem::EditHistory()
         UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
       FTerminal->ReadFile(FullFileName, File);
       {
-            BOOST_SCOPE_EXIT ( (&File) )
+            BOOST_SCOPE_EXIT ( (File) )
             {
               delete File;
             } BOOST_SCOPE_EXIT_END

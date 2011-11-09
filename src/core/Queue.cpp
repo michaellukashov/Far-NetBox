@@ -299,7 +299,7 @@ TTerminalQueue::~TTerminalQueue()
     }
     delete FTerminals;
 
-    for (int Index = 0; Index < FItems->GetCount(); Index++)
+    for (size_t Index = 0; Index < FItems->GetCount(); Index++)
     {
       delete GetItem(Index);
     }
@@ -418,7 +418,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item)
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-      int Index = FItems->Remove((TObject *)Item);
+      size_t Index = FItems->Remove((TObject *)Item);
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
@@ -465,7 +465,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
 
       TQueueItem * Item;
       TQueueItemProxy * ItemProxy;
-      for (int Index = 0; Index < FItems->GetCount(); Index++)
+      for (size_t Index = 0; Index < FItems->GetCount(); Index++)
       {
         Item = GetItem(Index);
         if (Current != NULL)
@@ -596,7 +596,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
           FItems->Move(Index, FItemsInProcess);
         }
 
-        if ((FTransfersLimit > 0) && (FTerminals->GetCount() >= FTransfersLimit))
+        if ((FTransfersLimit > 0) && (FTerminals->GetCount() >= (size_t)FTransfersLimit))
         {
           FTemporaryTerminals++;
         }
@@ -742,13 +742,13 @@ void TTerminalQueue::ProcessEvent()
     TerminalItem = NULL;
     Item = NULL;
 
-    if (FItems->GetCount() > FItemsInProcess)
+    if (FItems->GetCount() > (size_t)FItemsInProcess)
     {
       TGuard Guard(FItemsSection);
 
       if ((FFreeTerminals == 0) &&
           ((FTransfersLimit <= 0) ||
-           (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
+           (FTerminals->GetCount() < (size_t)(FTransfersLimit + FTemporaryTerminals))))
       {
         FOverallTerminals++;
         TerminalItem = new TTerminalItem(this, FOverallTerminals);
@@ -1106,7 +1106,7 @@ bool TTerminalItem::WaitForUserAction(
   TQueueItem::TStatus PrevStatus = FItem->GetStatus();
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) )
+    BOOST_SCOPE_EXIT ( (Self) (&PrevStatus) )
     {
       Self->FUserAction = NULL;
       Self->FItem->SetStatus(PrevStatus);
@@ -1230,7 +1230,7 @@ void TTerminalItem::OperationProgress(
     ProgressData.Suspend();
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&PrevStatus) (&ProgressData) )
+      BOOST_SCOPE_EXIT ( (Self) (&PrevStatus) (&ProgressData) )
       {
         Self->FItem->SetStatus(PrevStatus);
         ProgressData.Resume();
@@ -1362,7 +1362,7 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
 void TQueueItem::Execute(TTerminalItem * TerminalItem)
 {
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       {
         TGuard Guard(Self->FSection);
@@ -1479,7 +1479,7 @@ bool TQueueItemProxy::ProcessUserAction(void * Arg)
   bool Result;
   FProcessingUserAction = true;
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FProcessingUserAction = false;
     } BOOST_SCOPE_EXIT_END
@@ -1512,7 +1512,7 @@ TTerminalQueueStatus::TTerminalQueueStatus() :
 //---------------------------------------------------------------------------
 TTerminalQueueStatus::~TTerminalQueueStatus()
 {
-  for (int Index = 0; Index < FList->GetCount(); Index++)
+  for (size_t Index = 0; Index < FList->GetCount(); Index++)
   {
     delete GetItem(Index);
   }
@@ -1531,7 +1531,7 @@ int TTerminalQueueStatus::GetActiveCount()
   {
     FActiveCount = 0;
 
-    while ((FActiveCount < FList->GetCount()) &&
+    while ((FActiveCount < (int)FList->GetCount()) &&
       (GetItem(FActiveCount)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
@@ -1555,7 +1555,7 @@ void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
   ResetStats();
 }
 //---------------------------------------------------------------------------
-int TTerminalQueueStatus::GetCount()
+size_t TTerminalQueueStatus::GetCount()
 {
   return FList->GetCount();
 }
@@ -1569,7 +1569,7 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
   TQueueItem * QueueItem)
 {
   TQueueItemProxy * Item;
-  for (int Index = 0; Index < FList->GetCount(); Index++)
+  for (size_t Index = 0; Index < FList->GetCount(); Index++)
   {
     Item = GetItem(Index);
     if (Item->FQueueItem == QueueItem)
@@ -1612,7 +1612,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
 
   assert(FilesToCopy != NULL);
   FFilesToCopy = new TStringList();
-  for (int Index = 0; Index < FilesToCopy->GetCount(); Index++)
+  for (size_t Index = 0; Index < FilesToCopy->GetCount(); Index++)
   {
     FFilesToCopy->AddObject(FilesToCopy->GetString(Index),
       ((FilesToCopy->GetObject(Index) == NULL) || (Side == osLocal)) ? NULL :
@@ -1629,7 +1629,7 @@ TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
 //---------------------------------------------------------------------------
 TTransferQueueItem::~TTransferQueueItem()
 {
-  for (int Index = 0; Index < FFilesToCopy->GetCount(); Index++)
+  for (size_t Index = 0; Index < FFilesToCopy->GetCount(); Index++)
   {
     delete FFilesToCopy->GetObject(Index);
   }

@@ -720,7 +720,7 @@ public:
   ~TSynchronizeChecklist();
 
   // __property int Count = { read = GetCount };
-  int GetCount() const;
+  size_t GetCount() const;
   // __property const TItem * Item[int Index] = { read = GetItem };
   const TItem * GetItem(int Index) const;
 

@@ -54,7 +54,7 @@ void TFileBuffer::SetMemory(TMemoryStream *value)
 //---------------------------------------------------------------------------
 DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
 {
-  DWORD Result;
+  DWORD Result = 0;
   try
   {
     SetSize(GetPosition() + Len);

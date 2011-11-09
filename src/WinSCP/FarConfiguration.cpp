@@ -76,7 +76,7 @@ void TFarConfiguration::Saved()
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
-      BOOST_SCOPE_EXIT ( (&Storage) ) \
+      BOOST_SCOPE_EXIT ( (Storage) ) \
       { \
         Storage->CloseSubKey(); \
       } BOOST_SCOPE_EXIT_END \
@@ -149,7 +149,7 @@ void TFarConfiguration::Load()
 {
   FForceInheritance = true;
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
         Self->FForceInheritance = false;
     } BOOST_SCOPE_EXIT_END
@@ -161,7 +161,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
         Self->FForceInheritance = false;
     } BOOST_SCOPE_EXIT_END

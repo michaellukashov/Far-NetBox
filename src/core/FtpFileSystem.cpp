@@ -578,7 +578,7 @@ void TFTPFileSystem::AnyCommand(const std::wstring Command,
   assert(FOnCaptureOutput.empty());
   FOnCaptureOutput.connect(*OutputEvent);
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FOnCaptureOutput = NULL;
     } BOOST_SCOPE_EXIT_END
@@ -1479,7 +1479,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
     {
       FTerminal->ExceptionOnFail = true;
       {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FTerminal->SetExceptionOnFail(false);
           } BOOST_SCOPE_EXIT_END
@@ -2208,7 +2208,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
   unsigned int Reply;
 
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FReply = 0;
         assert(Self->FCommandReply == 0);
@@ -2294,7 +2294,7 @@ unsigned int TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   unsigned int Reply;
 
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FReply = 0;
         Self->FCommandReply = 0;
@@ -2343,7 +2343,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
   std::wstring Error, unsigned int * Code, TStrings ** Response)
 {
   {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->ResetReply();
       } BOOST_SCOPE_EXIT_END
@@ -3046,7 +3046,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     THierarchicalStorage * Storage =
       FTerminal->Configuration->CreateScpStorage(false);
     {
-        BOOST_SCOPE_EXIT ( (&Storage) )
+        BOOST_SCOPE_EXIT ( (Storage) )
         {
           delete Storage;
         } BOOST_SCOPE_EXIT_END
@@ -3118,7 +3118,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         THierarchicalStorage * Storage =
           FTerminal->Configuration->CreateScpStorage(false);
         {
-            BOOST_SCOPE_EXIT ( (&Storage) )
+            BOOST_SCOPE_EXIT ( (Storage) )
             {
               delete Storage;
             } BOOST_SCOPE_EXIT_END

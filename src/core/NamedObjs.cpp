@@ -31,7 +31,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
   if (List && (List->IndexOf(this) == -1))
     while (List->FindByName(Name))
     {
-      int N = 0, P;
+      size_t N = 0, P = 0;
       // If name already contains number parenthesis remove it (and remember it)
       if ((Name[Name.size() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) > 0))
         try
@@ -91,18 +91,18 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 TNamedObject * TNamedObjectList::FindByName(std::wstring Name,
   bool CaseSensitive)
 {
-  for (int Index = 0; Index < TObjectList::GetCount(); Index++)
+  for (size_t Index = 0; Index < TObjectList::GetCount(); Index++)
     if (!((TNamedObject *)GetItem(Index))->CompareName(Name, CaseSensitive))
       return (TNamedObject *)GetItem(Index);
   return NULL;
 }
 //---------------------------------------------------------------------------
-void TNamedObjectList::SetCount(int value)
+void TNamedObjectList::SetCount(size_t value)
 {
   TObjectList::SetCount(value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
-int TNamedObjectList::GetCount()
+size_t TNamedObjectList::GetCount()
 {
   return TObjectList::GetCount() - GetHiddenCount();
 }

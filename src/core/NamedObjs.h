@@ -37,8 +37,8 @@ public:
   virtual TNamedObject * AtObject(int Index);
   TNamedObject * FindByName(std::wstring Name, bool CaseSensitive = false);
   // __property int Count = { read = GetCount, write = SetCount };
-  int GetCount();
-  void SetCount(int value);
+  size_t GetCount();
+  void SetCount(size_t value);
   // __property int HiddenCount = { read = FHiddenCount, write = FHiddenCount };
   int GetHiddenCount() { return FHiddenCount; }
   void SetHiddenCount(int value) { FHiddenCount = value; }

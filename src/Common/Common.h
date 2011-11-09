@@ -45,7 +45,7 @@ std::wstring BooleanToStr(bool B);
 std::wstring BooleanToEngStr(bool B);
 std::wstring DefaultStr(const std::wstring & Str, const std::wstring & Default);
 std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim);
-std::wstring CopyToChars(const std::wstring & Str, int & From, std::wstring Chs, bool Trim,
+std::wstring CopyToChars(const std::wstring & Str, size_t & From, std::wstring Chs, bool Trim,
   char * Delimiter = NULL);
 std::wstring DelimitStr(std::wstring Str, std::wstring Chars);
 std::wstring ShellDelimitStr(std::wstring Str, char Quote);
@@ -236,20 +236,20 @@ std::wstring LowerCase(const std::wstring str);
 wchar_t UpCase(const wchar_t c);
 wchar_t LowCase(const wchar_t c);
 std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to);
-int AnsiPos(const std::wstring str, wchar_t c);
-int Pos(const std::wstring str, const std::wstring substr);
+size_t AnsiPos(const std::wstring str, wchar_t c);
+size_t Pos(const std::wstring str, const std::wstring substr);
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
 bool IsDelimiter(const std::wstring str, const std::wstring delim, int index);
-int LastDelimiter(const std::wstring str, const std::wstring delim);
+size_t LastDelimiter(const std::wstring str, const std::wstring delim);
 //---------------------------------------------------------------------------
 
 bool CompareText(const std::wstring str1, const std::wstring str2);
-int AnsiCompare(const std::wstring str1, const std::wstring str2);
-int AnsiCompareStr(const std::wstring str1, const std::wstring str2);
-int AnsiSameText(const std::wstring str1, const std::wstring str2);
+bool AnsiCompare(const std::wstring str1, const std::wstring str2);
+bool AnsiCompareStr(const std::wstring str1, const std::wstring str2);
+bool AnsiSameText(const std::wstring str1, const std::wstring str2);
 bool SameText(const std::wstring str1, const std::wstring str2);
-int AnsiCompareText(const std::wstring str1, const std::wstring str2);
-int AnsiCompareIC(const std::wstring str1, const std::wstring str2);
+bool AnsiCompareText(const std::wstring str1, const std::wstring str2);
+bool AnsiCompareIC(const std::wstring str1, const std::wstring str2);
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2);
 
 //---------------------------------------------------------------------------

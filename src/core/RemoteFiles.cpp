@@ -70,14 +70,14 @@ std::wstring UnixExtractFileDir(const std::wstring Path)
 // must return trailing backslash
 std::wstring UnixExtractFilePath(const std::wstring Path)
 {
-  int Pos = ::LastDelimiter(Path, L"/");
+  size_t Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
   return (Pos > 0) ? Path.substr(0, Pos) : std::wstring();
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileName(const std::wstring Path)
 {
-  int Pos = ::LastDelimiter(Path, L"/");
+  size_t Pos = ::LastDelimiter(Path, L"/");
   std::wstring Result;
   if (Pos != std::wstring::npos)
   {
@@ -117,12 +117,12 @@ bool ExtractCommonPath(TStrings * Files, std::wstring & Path)
   bool Result = !Path.empty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->GetCount(); Index++)
+    for (size_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.empty() &&
         (Files->GetString(Index).substr(0, Path.size()) != Path))
       {
-        int PrevLen = Path.size();
+        size_t PrevLen = Path.size();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
         if (Path.size() == PrevLen)
         {
@@ -144,12 +144,12 @@ bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path)
   bool Result = !Path.empty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->GetCount(); Index++)
+    for (size_t Index = 1; Index < Files->GetCount(); Index++)
     {
       while (!Path.empty() &&
         (Files->GetString(Index).substr(0, Path.size()) != Path))
       {
-        int PrevLen = Path.size();
+        size_t PrevLen = Path.size();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
         if (Path.size() == PrevLen)
         {
@@ -218,7 +218,7 @@ std::wstring ToUnixPath(const std::wstring Path)
 static void CutFirstDirectory(std::wstring & S, bool Unix)
 {
   bool Root;
-  int P;
+  size_t P;
   std::wstring Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
@@ -256,7 +256,7 @@ static void CutFirstDirectory(std::wstring & S, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
+std::wstring MinimizeName(const std::wstring FileName, size_t MaxLen, bool Unix)
 {
   std::wstring Drive, Dir, Name, Result;
   std::wstring Sep = Unix ? L"/" : L"\\";
@@ -264,7 +264,7 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
   Result = FileName;
   if (Unix)
   {
-    int P = ::LastDelimiter(Result, L"/");
+    size_t P = ::LastDelimiter(Result, L"/");
     if (P != std::wstring::npos)
     {
       Dir = Result.substr(0, P);
@@ -315,7 +315,7 @@ std::wstring MinimizeName(const std::wstring FileName, int MaxLen, bool Unix)
 std::wstring MakeFileList(TStrings * FileList)
 {
   std::wstring Result;
-  for (int Index = 0; Index < FileList->GetCount(); Index++)
+  for (size_t Index = 0; Index < FileList->GetCount(); Index++)
   {
     if (!Result.empty())
     {
@@ -699,9 +699,9 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
   }
 }
 //---------------------------------------------------------------------------
-int TRemoteTokenList::GetCount() const
+size_t TRemoteTokenList::GetCount() const
 {
-  return (int)FTokens.size();
+  return FTokens.size();
 }
 //---------------------------------------------------------------------------
 const TRemoteToken * TRemoteTokenList::GetToken(int Index) const
@@ -988,7 +988,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     #define GETNCOL  \
       { if (Line.empty()) throw ExtException(L""); \
-        int P = Line.find_first_of(L' '); \
+        size_t P = Line.find_first_of(L' '); \
         if (P != std::wstring::npos) \
         { \
             Col = Line.substr(0, P); Line.erase(0, P + 1); \
@@ -1190,7 +1190,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        int P = -1;
+        size_t P = -1;
 
         FLinkTo = L"";
         if (GetIsSymLink())
@@ -1273,7 +1273,7 @@ void TRemoteFile::FindLinkedFile()
     try
     {
       {
-        BOOST_SCOPE_EXIT ( (&Self) )
+        BOOST_SCOPE_EXIT ( (Self) )
         {
             Self->GetTerminal()->SetExceptionOnFail(false);
         } BOOST_SCOPE_EXIT_END
@@ -1384,7 +1384,7 @@ void TRemoteFileList::AddFile(TRemoteFile * File)
 void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy)
 {
   Copy->Clear();
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
     TRemoteFile * File = GetFile(Index);
     Copy->AddFile(File->Duplicate(false));
@@ -1427,14 +1427,14 @@ std::wstring TRemoteFileList::GetParentPath()
 __int64 TRemoteFileList::GetTotalSize()
 {
   __int64 Result = 0;
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
     if (!GetFile(Index)->GetIsDirectory()) Result += GetFile(Index)->GetSize();
   return Result;
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::FindFile(const std::wstring &FileName)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
     if (GetFile(Index)->GetFileName() == FileName) return GetFile(Index);
   return NULL;
 }
@@ -1521,7 +1521,7 @@ TStrings * TRemoteDirectory::GetSelectedFiles()
     FSelectedFiles->Clear();
   }
 
-  for (int Index = 0; Index < GetCount(); Index ++)
+  for (size_t Index = 0; Index < GetCount(); Index ++)
   {
     if (GetFile(Index)->GetSelected())
     {
@@ -1590,11 +1590,11 @@ void TRemoteDirectoryCache::Clear()
   TGuard Guard(FSection);
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->TStringList::Clear();
     } BOOST_SCOPE_EXIT_END
-    for (int Index = 0; Index < GetCount(); Index++)
+    for (size_t Index = 0; Index < GetCount(); Index++)
     {
       delete (TRemoteFileList *)GetObject(Index);
       PutObject(Index, NULL);
@@ -1754,7 +1754,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
   std::wstring SourceDir)
 {
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
     if (GetName(Index).substr(0, SourceDir.size()) == SourceDir)
     {
@@ -1772,7 +1772,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   DirectoryChangeKey(UnixExcludeTrailingBackslash(UnixExtractFilePath(TargetDir)),
     UnixExtractFileName(TargetDir), Key);
 
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
     std::wstring Name = GetName(Index);
     if ((Name.substr(0, TargetDir.size()) == TargetDir) ||
@@ -2183,7 +2183,7 @@ void TRights::SetOctal(std::wstring value)
     bool Correct = (AValue.size() == 4);
     if (Correct)
     {
-      for (int i = 0; (i < AValue.size()) && Correct; i++)
+      for (size_t i = 0; (i < AValue.size()) && Correct; i++)
       {
         Correct = (AValue[i] >= '0') && (AValue[i] <= '7');
       }

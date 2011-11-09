@@ -769,7 +769,7 @@ public:
     }
     else
     {
-      FMessageNumber = SFTPNoMessageNumber;
+      FMessageNumber = (unsigned int)SFTPNoMessageNumber;
     }
   }
 
@@ -789,7 +789,7 @@ public:
     SetCapacity(20480);
     wchar_t Byte[3];
     memset(Byte, '\0', sizeof(Byte));
-    int Index = 1;
+    size_t Index = 0;
     unsigned int Length = 0;
     while (Index < Dump.size())
     {
@@ -969,7 +969,7 @@ private:
     FLength = 0;
     FPosition = 0;
     FMessageNumber = SFTPNoMessageNumber;
-    FType = -1;
+    FType = (unsigned char)-1;
     FReservedBy = NULL;
     Self = this;
   }
@@ -1098,7 +1098,7 @@ public:
     TSFTPQueuePacket * Request = NULL;
     TSFTPPacket * Response = NULL;
     {
-      BOOST_SCOPE_EXIT ( (&Request) (&Response) )
+      BOOST_SCOPE_EXIT ( (Request) (Response) )
       {
         delete Request;
         delete Response;
@@ -1641,7 +1641,7 @@ protected:
 private:
   std::wstring FAlg;
   TStrings * FFileList;
-  int FIndex;
+  size_t FIndex;
 };
 //---------------------------------------------------------------------------
 class TSFTPBusy
@@ -1760,7 +1760,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       std::wstring Value;
       std::wstring Line;
       FFileSystemInfo.AdditionalInfo += LoadStr(SFTP_EXTENSION_INFO) + L"\r\n";
-      for (int Index = 0; Index < FExtensions->GetCount(); Index++)
+      for (size_t Index = 0; Index < FExtensions->GetCount(); Index++)
       {
         std::wstring Name = FExtensions->GetName(Index);
         std::wstring Value = FExtensions->GetValue(Name);
@@ -1834,7 +1834,7 @@ void TSFTPFileSystem::Idle()
 void TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
-  for (int i = 0; i < FPacketReservations->GetCount(); i++)
+  for (size_t i = 0; i < FPacketReservations->GetCount(); i++)
   {
     assert(FPacketReservations->GetItem(i) == NULL);
     delete (TSFTPPacket *)FPacketReservations->GetItem(i);
@@ -2022,7 +2022,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 {
   BusyStart();
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->BusyEnd();
     } BOOST_SCOPE_EXIT_END
@@ -2164,7 +2164,7 @@ unsigned long TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::RemoveReservation(int Reservation)
 {
-  for (int Index = Reservation+1; Index < FPacketReservations->GetCount(); Index++)
+  for (size_t Index = Reservation+1; Index < FPacketReservations->GetCount(); Index++)
   {
     FPacketNumbers[Index-1] = FPacketNumbers[Index];
   }
@@ -2262,7 +2262,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       {
         TSFTPPacket * ReservedPacket;
         unsigned int MessageNumber;
-        for (int Index = 0; Index < FPacketReservations->GetCount(); Index++)
+        for (size_t Index = 0; Index < FPacketReservations->GetCount(); Index++)
         {
           MessageNumber = (unsigned int)FPacketNumbers[Index];
           if (MessageNumber == Packet->GetMessageNumber())
@@ -2281,7 +2281,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
               if ((Reservation >= 0) && (Reservation > Index))
               {
                 Reservation--;
-                assert(Reservation == FPacketReservations->IndexOf((TObject *)Packet));
+                assert(Reservation == (int)FPacketReservations->IndexOf((TObject *)Packet));
               }
             }
             break;
@@ -2371,7 +2371,7 @@ int TSFTPFileSystem::ReceiveResponse(
   unsigned int MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket());
   {
-    BOOST_SCOPE_EXIT ( (&Self) (Response) (&AResponse) )
+    BOOST_SCOPE_EXIT ( (Self) (Response) (AResponse) )
     {
         if (!Response)
         {
@@ -2694,13 +2694,13 @@ void TSFTPFileSystem::DoStartup()
             int(FSupport->BlockMasks),
             int(FSupport->MaxReadSize)));
           FTerminal->LogEvent(FORMAT(   L"  Attribute extensions (%d)\n", FSupport->AttribExtensions->GetCount()));
-          for (int Index = 0; Index < FSupport->AttribExtensions->GetCount(); Index++)
+          for (size_t Index = 0; Index < FSupport->AttribExtensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->AttribExtensions->GetString(Index).c_str()));
           }
           FTerminal->LogEvent(FORMAT(   L"  Extensions (%d)\n", FSupport->Extensions->GetCount()));
-          for (int Index = 0; Index < FSupport->Extensions->GetCount(); Index++)
+          for (size_t Index = 0; Index < FSupport->Extensions->GetCount(); Index++)
           {
             FTerminal->LogEvent(
               FORMAT(L"    %s", FSupport->Extensions->GetString(Index).c_str()));
@@ -3021,7 +3021,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
   TSFTPPacket Response;
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Packet) (Handle) )
+    BOOST_SCOPE_EXIT ( (Self) (&Packet) (Handle) )
     {
       if (Self->FTerminal->GetActive())
       {
@@ -3101,7 +3101,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       {
         FTerminal->SetExceptionOnFail(true);
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->FTerminal->SetExceptionOnFail(false);
           } BOOST_SCOPE_EXIT_END
@@ -3374,7 +3374,7 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
   ReadFile(RealFileName, File);
 
   {
-    BOOST_SCOPE_EXIT ( (&File) )
+    BOOST_SCOPE_EXIT ( (File) )
     {
         delete File;
     } BOOST_SCOPE_EXIT_END
@@ -3433,7 +3433,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this);
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
+      BOOST_SCOPE_EXIT ( (Self) (&Queue) (Progress) )
       {
         Queue.DisposeSafe();
         Self->FTerminal->FOperationProgress = NULL;
@@ -3483,7 +3483,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
   // recurse into subdirectories only if we have callback function
   if (OnCalculatedChecksum != NULL)
   {
-    for (int Index = 0; Index < FileList->GetCount(); Index++)
+    for (size_t Index = 0; Index < FileList->GetCount(); Index++)
     {
       TRemoteFile * File = (TRemoteFile *)FileList->GetObject(Index);
       assert(File != NULL);
@@ -3499,8 +3499,8 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
           TStrings * SubFileList = new TStringList();
           bool Success = false;
           {
-            BOOST_SCOPE_EXIT ( (&Self) (&SubFiles) (&SubFileList) (&FirstLevel)
-                (&File) (&Success) (&OnceDoneOperation) (&OperationProgress) )
+            BOOST_SCOPE_EXIT ( (SubFiles) (SubFileList) (&FirstLevel)
+                (&File) (&Success) (&OnceDoneOperation) (OperationProgress) )
             {
               delete SubFiles;
               delete SubFileList;
@@ -3513,7 +3513,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
               
             OperationProgress->SetFile(File->GetFileName());
 
-            for (int Index = 0; Index < SubFiles->GetCount(); Index++)
+            for (size_t Index = 0; Index < SubFiles->GetCount(); Index++)
             {
               TRemoteFile * SubFile = SubFiles->GetFile(Index);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
@@ -3550,8 +3550,8 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
         TRemoteFile * File = NULL;
 
         {
-          BOOST_SCOPE_EXIT ( (&Self) (&FirstLevel) (&File)
-            (&Success) (&OnceDoneOperation) (&OperationProgress) )
+          BOOST_SCOPE_EXIT ( (&FirstLevel) (&File)
+            (&Success) (&OnceDoneOperation) (OperationProgress) )
           {
             if (FirstLevel)
             {
@@ -3609,7 +3609,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
   FTerminal->FOperationProgress = Progress;
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
+    BOOST_SCOPE_EXIT ( (Self) (&Progress) )
     {
       Self->FTerminal->FOperationProgress = NULL;
       Progress->Stop();
@@ -3668,7 +3668,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
   std::wstring FileName, FileNameOnly;
   std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
-  int Index = 0;
+  size_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     bool Success = false;
@@ -3678,8 +3678,8 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     FAvoidBusy = true;
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
-        (&OperationProgress) )
+      BOOST_SCOPE_EXIT ( (Self) (&FileName) (&Success) (&OnceDoneOperation)
+        (OperationProgress) )
       {
         Self->FAvoidBusy = false;
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -3844,7 +3844,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
 bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
   bool PartialBiggerThanSource, TFileOperationProgressType * OperationProgress)
 {
-  bool ResumeTransfer;
+  bool ResumeTransfer = false;
   assert(OperationProgress);
   if (PartialBiggerThanSource)
   {
@@ -3977,9 +3977,9 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
 
-  HANDLE File;
-  __int64 MTime, ATime;
-  __int64 Size;
+  HANDLE File = 0;
+  __int64 MTime = 0, ATime = 0;
+  __int64 Size = 0;
 
   FTerminal->OpenLocalFile(FileName, GENERIC_READ, &OpenParams.LocalFileAttrs,
     &File, NULL, &MTime, &ATime, &Size);
@@ -3987,7 +3987,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&File) )
+    BOOST_SCOPE_EXIT ( (File) )
     {
       if (File != NULL)
       {
@@ -4016,7 +4016,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       bool DestFileExists = false;
       TRights DestRights;
 
-      __int64 ResumeOffset;
+      __int64 ResumeOffset = 0;
 
       FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
 
@@ -4197,8 +4197,8 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
       }
 
       {
-        BOOST_SCOPE_EXIT ( (&Self) (&TransferFinished) (&OpenParams)
-            (&CloseRequest) (&DoResume) (&DestFileName) (&OperationProgress) )
+        BOOST_SCOPE_EXIT ( (Self) (&TransferFinished) (&OpenParams)
+            (&CloseRequest) (&DoResume) (&DestFileName) (OperationProgress) )
         {
           if (Self->FTerminal->GetActive())
           {
@@ -4434,9 +4434,9 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
   assert(OpenParams);
   TFileOperationProgressType * OperationProgress = OpenParams->OperationProgress;
 
-  int OpenType;
+  int OpenType = 0;
   bool Success = false;
-  bool ConfirmOverwriting;
+  bool ConfirmOverwriting = false;
 
   do
   {
@@ -4679,7 +4679,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
   );
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&findHandle) )
+    BOOST_SCOPE_EXIT ( (&findHandle) )
     {
       ::FindClose(findHandle);
     } BOOST_SCOPE_EXIT_END
@@ -4739,7 +4739,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
   const TRemoteFile * File;
   bool Success;
-  int Index = 0;
+  size_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     Success = false;
@@ -4750,7 +4750,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
     FAvoidBusy = true;
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
+      BOOST_SCOPE_EXIT ( (Self) (&FileName) (&Success) (&OnceDoneOperation)
         (&OperationProgress))
       {
         Self->FAvoidBusy = false;
@@ -4863,7 +4863,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     {
       int Attrs = 0;
       FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
-        int Attrs = FileGetAttr(DestFullName);
+        Attrs = FileGetAttr(DestFullName);
         if ((Attrs & faDirectory) == 0) EXCEPTION;
       );
 
@@ -4936,10 +4936,10 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
     TSFTPOverwriteMode OverwriteMode = omOverwrite;
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
+      BOOST_SCOPE_EXIT ( (Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
         (&ResumeAllowed) (&OverwriteMode) (&LocalFileName)
         (&DestFileName) (&RemoteHandle)
-        (&OperationProgress) )
+        (OperationProgress) )
       {
         if (LocalHandle) CloseHandle(LocalHandle);
         if (FileStream) delete FileStream;
@@ -5140,7 +5140,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
           int GapCount = 0;
           unsigned long Missing = 0;
           unsigned long DataLen = 0;
-          unsigned long BlockSize;
+          unsigned long BlockSize = 0;
           bool ConvertToken = false;
 
           while (!Eof)

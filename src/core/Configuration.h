@@ -42,8 +42,8 @@ private:
   int FSessionReopenBackground;
   int FSessionReopenTimeout;
   std::wstring FIniFileStorageName;
-  int FTunnelLocalPortNumberLow;
-  int FTunnelLocalPortNumberHigh;
+  size_t FTunnelLocalPortNumberLow;
+  size_t FTunnelLocalPortNumberHigh;
   int FCacheDirectoryChangesMaxSize;
   bool FShowFtpWelcomeMessage;
   std::wstring FDefaultRandomSeedFile;
@@ -208,11 +208,11 @@ public:
   int GetSessionReopenTimeout() { return FSessionReopenTimeout; }
   void SetSessionReopenTimeout(int value);
   // __property int TunnelLocalPortNumberLow = { read = FTunnelLocalPortNumberLow, write = SetTunnelLocalPortNumberLow };
-  int GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
-  void SetTunnelLocalPortNumberLow(int value);
+  size_t GetTunnelLocalPortNumberLow() { return FTunnelLocalPortNumberLow; }
+  void SetTunnelLocalPortNumberLow(size_t value);
   // __property int TunnelLocalPortNumberHigh = { read = FTunnelLocalPortNumberHigh, write = SetTunnelLocalPortNumberHigh };
-  int GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
-  void SetTunnelLocalPortNumberHigh(int value);
+  size_t GetTunnelLocalPortNumberHigh() { return FTunnelLocalPortNumberHigh; }
+  void SetTunnelLocalPortNumberHigh(size_t value);
   // __property int CacheDirectoryChangesMaxSize = { read = FCacheDirectoryChangesMaxSize, write = SetCacheDirectoryChangesMaxSize };
   int GetCacheDirectoryChangesMaxSize() { return FCacheDirectoryChangesMaxSize; }
   void SetCacheDirectoryChangesMaxSize(int value);

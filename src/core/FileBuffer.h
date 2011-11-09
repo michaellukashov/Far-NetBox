@@ -39,7 +39,7 @@ public:
 
 private:
   TMemoryStream *FMemory;
-  int FSize;
+  __int64 FSize;
 };
 
 //---------------------------------------------------------------------------

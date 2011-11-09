@@ -291,7 +291,7 @@ std::wstring TCommandSet::GetReturnVar()
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::ExtractCommand(std::wstring Command)
 {
-  int P = Command.find_first_of(L" ");
+  size_t P = Command.find_first_of(L" ");
   if (P != std::wstring::npos)
   {
     Command.resize(P);
@@ -372,14 +372,14 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
     std::wstring UName;
     FTerminal->SetExceptionOnFail(true);
     {
-      BOOST_SCOPE_EXIT ( (&Self) )
+      BOOST_SCOPE_EXIT ( (Self) )
       {
         Self->FTerminal->SetExceptionOnFail (false);
       } BOOST_SCOPE_EXIT_END
       try
       {
         AnyCommand(L"uname -a", NULL);
-        for (int Index = 0; Index < GetOutput()->GetCount(); Index++)
+        for (size_t Index = 0; Index < GetOutput()->GetCount(); Index++)
         {
           if (Index > 0)
           {
@@ -561,7 +561,7 @@ bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
   if (LastLine.empty()) LastLine = LAST_LINE;
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
-  int Pos = Line.find(LastLine);
+  size_t Pos = Line.find(LastLine);
   // DEBUG_PRINTF(L"Line = %s, LastLine = %s, Pos = %d", Line.c_str(), LastLine.c_str(), Pos);
   if (Pos != std::wstring::npos)
   {
@@ -611,7 +611,7 @@ void TSCPFileSystem::SkipFirstLine()
 void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
 {
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FProcessingCommand = false;
     } BOOST_SCOPE_EXIT_END
@@ -685,7 +685,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
     ::Busy(true);
   }
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       if (Self->FTerminal->GetUseBusyCursor())
       {
@@ -714,8 +714,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
   va_end(args);
   if (Params & ecRaiseExcept)
   {
-    int MinL = FCommandSet->GetMinLines(Cmd);
-    int MaxL = FCommandSet->GetMaxLines(Cmd);
+    size_t MinL = FCommandSet->GetMinLines(Cmd);
+    size_t MaxL = FCommandSet->GetMaxLines(Cmd);
     if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
         ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
@@ -861,7 +861,7 @@ void TSCPFileSystem::ClearAliases()
       {
         delete CommandList;
       } BOOST_SCOPE_EXIT_END
-      for (int Index = 0; Index < CommandList->GetCount(); Index++)
+      for (size_t Index = 0; Index < CommandList->GetCount(); Index++)
       {
         ClearAlias(CommandList->GetString(Index));
       }
@@ -878,7 +878,7 @@ void TSCPFileSystem::UnsetNationalVars()
   try
   {
     FTerminal->LogEvent(L"Clearing national user variables.");
-    for (int Index = 0; Index < NationalVarCount; Index++)
+    for (size_t Index = 0; Index < NationalVarCount; Index++)
     {
       ExecCommand(fsUnset, 0, NationalVars[Index], false);
     }
@@ -992,7 +992,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             OutputCopy->Delete(0);
           }
 
-          for (int Index = 0; Index < OutputCopy->GetCount(); Index++)
+          for (size_t Index = 0; Index < OutputCopy->GetCount(); Index++)
           {
             File = CreateRemoteFile(OutputCopy->GetString(Index));
             FileList->AddFile(File);
@@ -1293,7 +1293,7 @@ void TSCPFileSystem::AnyCommand(const std::wstring Command,
   }
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->FOnCaptureOutput.disconnect_all_slots();
       Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
@@ -1415,7 +1415,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   SkipFirstLine();
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&GotLastLine) (&CopyBatchStarted)
+    BOOST_SCOPE_EXIT ( (Self) (&GotLastLine) (&CopyBatchStarted)
         (&Failed) )
     {
         // Tell remote side, that we're done.
@@ -1473,7 +1473,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     CopyBatchStarted = true;
 
-    for (int IFile = 0; (IFile < FilesToCopy->GetCount()) &&
+    for (size_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
       !OperationProgress->Cancel; IFile++)
     {
       std::wstring FileName = FilesToCopy->GetString(IFile);
@@ -1642,7 +1642,7 @@ void TSCPFileSystem::SCPSource(const std::wstring FileName,
   bool Dir = FLAGSET(Attrs, faDirectory);
   TSafeHandleStream * Stream = new TSafeHandleStream(File);
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&File) (&Stream) )
+    BOOST_SCOPE_EXIT ( (&File) (&Stream) )
     {
       if (File != NULL)
       {
@@ -1937,7 +1937,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
   SCPResponse();
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&DirectoryName) )
+    BOOST_SCOPE_EXIT ( (Self) (&DirectoryName) )
     {
       if (Self->FTerminal->GetActive())
       {
@@ -1960,7 +1960,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
     );
 
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&findHandle) )
+      BOOST_SCOPE_EXIT ( (&findHandle) )
       {
         FindClose(findHandle);
       } BOOST_SCOPE_EXIT_END
@@ -2040,7 +2040,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&CloseSCP) (&OperationProgress) )
+    BOOST_SCOPE_EXIT ( (Self) (&CloseSCP) (&OperationProgress) )
     {
       // In case that copying doesn't cause fatal error (ie. connection is
       // still active) but wasn't succesful (exception or user termination)
@@ -2103,7 +2103,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           {
             FTerminal->SetExceptionOnFail (true);
             {
-              BOOST_SCOPE_EXIT ( (&Self) )
+              BOOST_SCOPE_EXIT ( (Self) )
               {
                 Self->FTerminal->SetExceptionOnFail(false);
               } BOOST_SCOPE_EXIT_END
@@ -2383,7 +2383,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
             /* TODO 1 : Turn off read-only attr */
 
             {
-              BOOST_SCOPE_EXIT ( (&Self) (&File) (&FileStream) )
+              BOOST_SCOPE_EXIT ( (&File) (&FileStream) )
               {
                 if (File) CloseHandle(File);
                 if (FileStream) delete FileStream;

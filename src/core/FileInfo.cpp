@@ -60,7 +60,7 @@ unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int
         else
         {
           {
-              BOOST_SCOPE_EXIT ( (&Mem) )
+              BOOST_SCOPE_EXIT ( (Mem) )
               {
                 FreeResource(Mem);
               } BOOST_SCOPE_EXIT_END
@@ -120,7 +120,7 @@ unsigned int GetFileVersionInfoSizeFix(const wchar_t * FileName, unsigned long *
 bool GetFileVersionInfoFix(const wchar_t * FileName, unsigned long Handle,
   unsigned int DataSize, void * Data)
 {
-  bool Result;
+  bool Result = false;
   // DEBUG_PRINTF(L"IsWin7 = %d, Handle = %d, DataSize = %d", IsWin7(), Handle, DataSize);
   if (IsWin7())
   {

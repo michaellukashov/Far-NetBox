@@ -182,7 +182,7 @@ void TSynchronizeChecklist::Sort()
   FList->Sort(Compare);
 }
 //---------------------------------------------------------------------------
-int TSynchronizeChecklist::GetCount() const
+size_t TSynchronizeChecklist::GetCount() const
 {
   return FList->GetCount();
 }

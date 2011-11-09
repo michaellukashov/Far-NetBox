@@ -14,7 +14,7 @@
 //---------------------------------------------------------------------------
 std::wstring XmlEscape(std::wstring Str)
 {
-  for (int i = 1; i <= Str.size(); i++)
+  for (size_t i = 0; i < Str.size(); i++)
   {
     const wchar_t * Repl = NULL;
     switch (Str[i])
@@ -113,7 +113,7 @@ public:
           Attrs = L" recursive=\"true\"";
         }
         FLog->Add(llAction, FORMAT(L"  <%s%s>", Name,  Attrs.c_str()));
-        for (int Index = 0; Index < FNames->GetCount(); Index++)
+        for (size_t Index = 0; Index < FNames->GetCount(); Index++)
         {
           std::wstring Value = FValues->GetString(Index);
           if (Value.empty())
@@ -129,7 +129,7 @@ public:
         if (FFileList != NULL)
         {
           FLog->Add(llAction, L"    <files>");
-          for (int Index = 0; Index < FFileList->GetCount(); Index++)
+          for (size_t Index = 0; Index < FFileList->GetCount(); Index++)
           {
             TRemoteFile * File = FFileList->GetFile(Index);
 
@@ -151,7 +151,7 @@ public:
           if (FErrorMessages != NULL)
           {
             FLog->Add(llAction, L"    <result success=\"false\">");
-            for (int Index = 0; Index < FErrorMessages->GetCount(); Index++)
+            for (size_t Index = 0; Index < FErrorMessages->GetCount(); Index++)
             {
               FLog->Add(llAction,
                 FORMAT(L"      <message>%s</message>", XmlEscape(FErrorMessages->GetString(Index).c_str()).c_str()));
@@ -670,7 +670,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
 
         BeginUpdate();
         {
-          BOOST_SCOPE_EXIT ( (&Self) )
+          BOOST_SCOPE_EXIT ( (Self) )
           {
             Self->DeleteUnnecessary();
             Self->EndUpdate();
@@ -774,7 +774,7 @@ void TSessionLog::OpenLogFile()
     std::wstring NewFileName = StripPathQuotes(ExpandEnvironmentVariables(FCurrentLogFileName));
     SYSTEMTIME t;
     ::GetLocalTime(&t);
-    for (int Index = 1; Index < NewFileName.size(); Index++)
+    for (size_t Index = 1; Index < NewFileName.size(); Index++)
     {
       if ((NewFileName[Index] == '&') && (Index < NewFileName.size() - 1))
       {
@@ -864,7 +864,7 @@ void TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -874,7 +874,7 @@ void TSessionLog::DeleteUnnecessary()
     }
     else
     {
-      while (!FConfiguration->GetLogWindowComplete() && (GetCount() > FConfiguration->GetLogWindowLines()))
+      while (!FConfiguration->GetLogWindowComplete() && ((int)GetCount() > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
         FTopIndex++;
@@ -905,7 +905,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
   BeginUpdate();
   {
-    BOOST_SCOPE_EXIT ( (&Self) )
+    BOOST_SCOPE_EXIT ( (Self) )
     {
       Self->DeleteUnnecessary();
 
@@ -916,7 +916,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"WinSCP %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
     THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
     {
-      BOOST_SCOPE_EXIT ( (&Storage) )
+      BOOST_SCOPE_EXIT ( (Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
