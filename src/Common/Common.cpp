@@ -2403,12 +2403,12 @@ int FileSetAttr(const std::wstring &filename, int attrs)
 bool CreateDir(const std::wstring Dir)
 {
   // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
-  return ::CreateDirectory(Dir.c_str(), NULL) == 0;
+  return ::CreateDirectory(Dir.c_str(), NULL) != 0;
 }
 
 bool RemoveDir(const std::wstring Dir)
 {
-  return ::RemoveDirectory(Dir.c_str()) == 0;
+  return ::RemoveDirectory(Dir.c_str()) != 0;
 }
 
 bool ForceDirectories(const std::wstring Dir)
