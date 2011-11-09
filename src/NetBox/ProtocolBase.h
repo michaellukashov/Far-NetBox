@@ -59,8 +59,8 @@ public:
             if (moveUp)
             {
                 const size_t lastSlash = newPath.rfind(L'/');
-                assert(lastSlash != std::string::npos);
-                if (lastSlash != std::string::npos && lastSlash != 0)
+                assert(lastSlash != std::wstring::npos);
+                if ((lastSlash != std::wstring::npos) && (lastSlash != 0))
                 {
                     newPath.erase(lastSlash);
                 }
@@ -192,7 +192,7 @@ protected:
         std::string r = ::W2MB(src, m_Session.GetCodePage());
         if (replace)
         {
-            while (r.find(L'#') != std::string::npos)
+            while (r.find(L'#') != std::wstring::npos)
             {
                 r.replace(r.find(L'#'), 1, "%23");    //libcurl think that it is an URL instead of path :-/
             }

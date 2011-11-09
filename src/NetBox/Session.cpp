@@ -146,7 +146,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     std::wstring prefixCmd(prefix);
     const size_t preffixDelim = prefixCmd.find(L':');
-    if (preffixDelim == std::string::npos)
+    if (preffixDelim == std::wstring::npos)
     {
         return PSession();    //wtf?
     }
@@ -163,7 +163,7 @@ PSession CSession::Create(const wchar_t *prefix)
 
     std::wstring protoScheme(prefixCmd);
     const size_t schemeDelim = protoScheme.find(L':');
-    if (schemeDelim == std::string::npos)
+    if (schemeDelim == std::wstring::npos)
     {
         return PSession();    //no scheme specified
     }
@@ -230,14 +230,14 @@ PSession CSession::Load(const wchar_t *fileName)
     //Determine session name from file name
     std::wstring sessionName = fileName;
     const size_t startPos = sessionName.rfind(L'\\');
-    assert(startPos != std::string::npos);
-    if (startPos != std::string::npos)
+    assert(startPos != std::wstring::npos);
+    if (startPos != std::wstring::npos)
     {
         sessionName.erase(0, startPos + 1);
     }
     const size_t endPos = sessionName.rfind(L'.');
-    assert(endPos != std::string::npos);
-    if (endPos != std::string::npos)
+    assert(endPos != std::wstring::npos);
+    if (endPos != std::wstring::npos)
     {
         sessionName.erase(endPos);
     }
@@ -452,8 +452,8 @@ void CSession::ExportFromRegistry()
                     break;
                 }
 
-                size_t pos = std::string::npos;
-                while ((pos = sessionName.find_first_of(L"<>:\"/\\|?*")) != std::string::npos)
+                size_t pos = std::wstring::npos;
+                while ((pos = sessionName.find_first_of(L"<>:\"/\\|?*")) != std::wstring::npos)
                 {
                     sessionName[pos] = L'_';
                 }

@@ -611,7 +611,7 @@ int CPanel::GetFiles(PluginPanelItem *panelItem, const int itemsNumber, const wc
             remotePath += pi->FindData.lpwszFileName;
             // DEBUG_PRINTF(L"CPanel::GetFiles: remotePath = %s", remotePath);
             size_t slash;
-            while ((slash = remotePath.find(L'\\')) != std::string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::wstring::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -839,7 +839,7 @@ int CPanel::PutFiles(const wchar_t *sourcePath, PluginPanelItem *panelItem, cons
             }
             remotePath += localPath.substr(localRelativePath.length());
             size_t slash;
-            while ((slash = remotePath.find(L'\\')) != std::string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::wstring::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -1060,7 +1060,7 @@ int CPanel::DeleteFiles(PluginPanelItem *panelItem, int itemsNumber, const int o
             }
             remotePath += pi->FindData.lpwszFileName;
             size_t slash;
-            while ((slash = remotePath.find(L'\\')) != std::string::npos)
+            while ((slash = remotePath.find(L'\\')) != std::wstring::npos)
             {
                 remotePath[slash] = L'/';
             }
@@ -1149,7 +1149,7 @@ void CPanel::ShowErrorDialog(const DWORD errCode, const std::wstring &title, con
 
     //Replace all '\r\n' to '\n'
     size_t rnPos;
-    while ((rnPos = errInfo.find('\r')) != std::string::npos)
+    while ((rnPos = errInfo.find('\r')) != std::wstring::npos)
     {
         errInfo[rnPos] = ' ';
     }

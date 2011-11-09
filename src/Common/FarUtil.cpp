@@ -63,7 +63,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse scheme name
     const size_t delimScheme = urlParse.find(L"://");
-    if (delimScheme != std::string::npos)
+    if (delimScheme != std::wstring::npos)
     {
         if (scheme)
         {
@@ -75,13 +75,13 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse path
     const size_t delimPath = urlParse.find(L'/');
-    if (delimPath != std::string::npos)
+    if (delimPath != std::wstring::npos)
     {
         std::wstring parsePath = urlParse.substr(delimPath);
         urlParse.erase(delimPath);
         //Parse query
         const size_t delimQuery = parsePath.rfind(L'?');
-        if (delimQuery != std::string::npos)
+        if (delimQuery != std::wstring::npos)
         {
             if (query)
             {
@@ -101,7 +101,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
 
     //Parse user name/password
     const size_t delimLogin = urlParse.rfind(L'@');
-    if (delimLogin != std::string::npos)
+    if (delimLogin != std::wstring::npos)
     {
         std::wstring parseLogin = urlParse.substr(0, delimLogin);
         const size_t delimPwd = parseLogin.rfind(L':');
@@ -127,7 +127,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
     }
 
     const size_t delimPort = urlParse.rfind(L':');
-    if (delimPort != std::string::npos)
+    if (delimPort != std::wstring::npos)
     {
         if (port)
         {

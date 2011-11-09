@@ -357,7 +357,7 @@ bool CSessionEditor::Validate() const
     else
     {
         static const wchar_t *restrictedSymbols = L"<>:\"/\\|?*";
-        if (name.find_first_of(restrictedSymbols) != std::string::npos)
+        if (name.find_first_of(restrictedSymbols) != std::wstring::npos)
         {
             CFarPlugin::MessageBox(m_Title.c_str(), CFarPlugin::GetString(StringEdErrNameInvalid), FMSG_MB_OK | FMSG_WARNING);
             return false;

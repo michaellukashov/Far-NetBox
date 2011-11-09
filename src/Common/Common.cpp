@@ -2225,14 +2225,14 @@ bool IsDelimiter(const std::wstring str, const std::wstring delim, size_t index)
 
 size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 {
-    for (size_t i = str.size() - 1; i >= 0; i--)
+    for (int i = (int)str.size() - 1; i >= 0; i--)
     {
         if (::IsDelimiter(str, delim, i))
         {
             return i;
         }
     }
-    return std::string::npos;
+    return std::wstring::npos;
 }
 
 //---------------------------------------------------------------------------
