@@ -419,7 +419,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item)
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
       size_t Index = FItems->Remove((TObject *)Item);
-      assert(Index < FItemsInProcess);
+      assert(Index < (size_t)FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
       delete Item;
@@ -1444,7 +1444,7 @@ bool TQueueItemProxy::Move(bool Sooner)
   }
   else
   {
-    if (I < FQueueStatus->GetCount() - 1)
+    if (I < (int)FQueueStatus->GetCount() - 1)
     {
       Result = FQueueStatus->GetItem(I + 1)->Move(this);
     }

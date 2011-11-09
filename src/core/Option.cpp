@@ -23,14 +23,14 @@ void TOptions::Add(std::wstring Value)
   else
   {
     bool Switch = false;
-    int Index = 0; // shut up
+    size_t Index = 0; // shut up
     if (!FNoMoreSwitches &&
         (Value.size() >= 2) &&
         (FSwitchMarks.find_first_of(Value[0]) != std::wstring::npos))
     {
       Index = 2;
       Switch = true;
-      while (Switch && (Index <= Value.size()))
+      while (Switch && (Index < Value.size()))
       {
         if (::IsDelimiter(Value, FSwitchValueDelimiters, Index))
         {

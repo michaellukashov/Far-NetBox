@@ -4361,7 +4361,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
 
         Self->EndTransaction();
     } BOOST_SCOPE_EXIT_END
-    int IIndex = 0;
+    size_t IIndex = 0;
     while (IIndex < Checklist->GetCount())
     {
       const TSynchronizeChecklist::TItem * ChecklistItem;

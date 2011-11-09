@@ -146,7 +146,7 @@ void TSynchronizeController::SynchronizeChange(
           {
             SubdirsChanged = false;
             assert(Checklist != NULL);
-            for (int Index = 0; Index < Checklist->GetCount(); Index++)
+            for (size_t Index = 0; Index < Checklist->GetCount(); Index++)
             {
               const TSynchronizeChecklist::TItem * Item = Checklist->GetItem(Index);
               // note that there may be action saDeleteRemote even if nothing has changed

@@ -207,7 +207,7 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
       delete Names;
     } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->GetCount(); Index++)
+    for (size_t Index = 0; Index < Names->GetCount(); Index++)
     {
       if (MaintainKeys)
       {
@@ -231,7 +231,7 @@ void THierarchicalStorage::ClearValues()
       delete Names;
     } BOOST_SCOPE_EXIT_END
     GetValueNames(Names);
-    for (int Index = 0; Index < Names->GetCount(); Index++)
+    for (size_t Index = 0; Index < Names->GetCount(); Index++)
     {
       DeleteValue(Names->GetString(Index));
     }
@@ -245,7 +245,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
 
   if (Strings)
   {
-    for (int Index = 0; Index < Strings->GetCount(); Index++)
+    for (size_t Index = 0; Index < Strings->GetCount(); Index++)
     {
       if (MaintainKeys)
       {
@@ -369,7 +369,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     } BOOST_SCOPE_EXIT_END
     Registry->GetValueNames(Names);
     std::vector<unsigned char> Buffer(1024, 0);
-    int Index = 0;
+    size_t Index = 0;
     while ((Index < Names->GetCount()) && Result)
     {
       std::wstring Name = MungeStr(Names->GetString(Index));
@@ -456,7 +456,7 @@ bool TRegistryStorage::DeleteSubKey(const std::wstring SubKey)
 void TRegistryStorage::GetSubKeyNames(TStrings* Strings)
 {
   FRegistry->GetKeyNames(Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (size_t Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->PutString(Index, UnMungeStr(Strings->GetString(Index)));
   }
@@ -713,7 +713,7 @@ bool TIniFileStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool
       if (Sections->GetCount())
       {
         Result = Sections->Find(NewKey, Index);
-        if (!Result && Index < Sections->GetCount() &&
+        if (!Result && Index < (int)Sections->GetCount() &&
             Sections->GetString(Index).substr(0, NewKey.size()+1) == NewKey + L"\\")
         {
           Result = true;
@@ -754,7 +754,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
     } BOOST_SCOPE_EXIT_END
     Strings->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->GetCount(); i++)
+    for (size_t i = 0; i < Sections->GetCount(); i++)
     {
       std::wstring Section = Sections->GetString(i);
       if (AnsiCompareText(GetCurrentSubKey(),
@@ -779,7 +779,7 @@ void TIniFileStorage::GetSubKeyNames(TStrings* Strings)
 void TIniFileStorage::GetValueNames(TStrings* Strings)
 {
   FIniFile->ReadSection(GetCurrentSection(), Strings);
-  for (int Index = 0; Index < Strings->GetCount(); Index++)
+  for (size_t Index = 0; Index < Strings->GetCount(); Index++)
   {
     Strings->PutString(Index, UnMungeIniName(Strings->GetString(Index)));
   }
@@ -818,7 +818,7 @@ void TIniFileStorage::ApplyOverrides()
     } BOOST_SCOPE_EXIT_END
     Sections->Clear();
     FIniFile->ReadSections(Sections);
-    for (int i = 0; i < Sections->GetCount(); i++)
+    for (size_t i = 0; i < Sections->GetCount(); i++)
     {
       std::wstring Section = Sections->GetString(i);
 
@@ -837,7 +837,7 @@ void TIniFileStorage::ApplyOverrides()
             } BOOST_SCOPE_EXIT_END
           FIniFile->ReadSection(Section, Names);
 
-          for (int ii = 0; ii < Names->GetCount(); ii++)
+          for (size_t ii = 0; ii < Names->GetCount(); ii++)
           {
             std::wstring Name = Names->GetString(ii);
             std::wstring Value = FIniFile->ReadString(Section, Name, L"");

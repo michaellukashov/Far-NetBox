@@ -968,7 +968,7 @@ private:
     FCapacity = 0;
     FLength = 0;
     FPosition = 0;
-    FMessageNumber = SFTPNoMessageNumber;
+    FMessageNumber = (unsigned int)SFTPNoMessageNumber;
     FType = (unsigned char)-1;
     FReservedBy = NULL;
     Self = this;
@@ -1433,7 +1433,7 @@ protected:
         Request->AddStringA(FHandle);
         Request->AddInt64(FTransfered);
         Request->AddData(BlockBuf.GetData(), BlockBuf.GetSize());
-        FLastBlockSize = BlockBuf.GetSize();
+        FLastBlockSize = (unsigned long)BlockBuf.GetSize();
 
         FTransfered += BlockBuf.GetSize();
       }
@@ -1512,7 +1512,7 @@ protected:
   virtual bool InitRequest(TSFTPQueuePacket * Request)
   {
     bool Result = false;
-    while (!Result && (FIndex < FFileList->GetCount()))
+    while (!Result && (FIndex < (int)FFileList->GetCount()))
     {
       TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FFileList->GetObject(FIndex));
       FIndex++;
@@ -1546,7 +1546,7 @@ protected:
   virtual bool SendRequest()
   {
     bool Result =
-      (FIndex < FFileList->GetCount()) &&
+      (FIndex < (int)FFileList->GetCount()) &&
       TSFTPFixedLenQueue::SendRequest();
     return Result;
   }
@@ -2278,7 +2278,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             {
               FTerminal->LogEvent(L"Discarding reserved response");
               RemoveReservation(Index);
-              if ((Reservation >= 0) && (Reservation > Index))
+              if ((Reservation >= 0) && (Reservation > (int)Index))
               {
                 Reservation--;
                 assert(Reservation == (int)FPacketReservations->IndexOf((TObject *)Packet));
@@ -2371,7 +2371,7 @@ int TSFTPFileSystem::ReceiveResponse(
   unsigned int MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket());
   {
-    BOOST_SCOPE_EXIT ( (Self) (Response) (AResponse) )
+    BOOST_SCOPE_EXIT ( (Response) (AResponse) )
     {
         if (!Response)
         {
