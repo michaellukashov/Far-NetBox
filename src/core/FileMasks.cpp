@@ -650,11 +650,11 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         size_t NextPartFrom = 0;
         while (NextPartFrom < MaskStr.size())
         {
-          DEBUG_PRINTF(L"NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
+          // DEBUG_PRINTF(L"NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
           char PartDelimiter = NextPartDelimiter;
           int PartFrom = NextPartFrom;
           std::wstring PartStr = ::CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
-          DEBUG_PRINTF(L"PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
+          // DEBUG_PRINTF(L"PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
 
           int PartStart = MaskStart + PartFrom - 1;
           int PartEnd = MaskStart + NextPartFrom - 2;

@@ -2008,6 +2008,7 @@ bool TSessionData::GetTunnelAutoassignLocalPortNumber()
 //---------------------------------------------------------------------
 void TSessionData::SetTunnelPortFwd(std::wstring value)
 {
+  // DEBUG_PRINTF(L"value = %s", value.c_str());
   SET_SESSION_PROPERTY(TunnelPortFwd);
 }
 //---------------------------------------------------------------------
