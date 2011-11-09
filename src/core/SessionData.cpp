@@ -993,7 +993,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       while (!AnsiSameText(DecodeUrlChars(Url.substr(0, P)), Data->Name))
       {
         P++;
-        assert(P <= Url.size());
+        assert(P < Url.size());
       }
       ARemoteDirectory = Url.substr(P + 1, Url.size() - P);
 

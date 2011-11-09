@@ -3358,9 +3358,9 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
   State = INIT;
   assert((Str.Length() > 0) && ((Str[1] == '"') || (Str[1] == '\'')));
 
-  int Index = 1;
+  int Index = 0;
   char Quote;
-  while (Index <= Str.Length())
+  while (Index < Str.Length())
   {
     switch (State)
     {

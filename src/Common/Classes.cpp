@@ -138,7 +138,7 @@ void TList::Insert(size_t Index, void *Item)
     }
     // if (FCount == FCapacity)
       // Grow();
-    if (Index <= FList.size())
+    if (Index < FList.size())
     {
         FList.insert(FList.begin() + Index, Item);
     }
@@ -1752,7 +1752,7 @@ int TRegistry::ReadBinaryData(const std::wstring Name,
   {
     Result = Info.DataSize;
     TRegDataType RegData = Info.RegData;
-    if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
+    if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result < BufSize))
         GetData(Name, Buffer, Result, RegData);
     else
         ReadError(Name);

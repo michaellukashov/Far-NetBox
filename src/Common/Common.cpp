@@ -741,7 +741,7 @@ std::wstring DisplayableStr(const std::wstring Str)
   if (Displayable)
   {
     Result = L"\"";
-    for (size_t Index = 1; Index <= Str.size(); Index++)
+    for (size_t Index = 1; Index < Str.size(); Index++)
     {
       switch (Str[Index])
       {

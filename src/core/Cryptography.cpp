@@ -600,7 +600,7 @@ int IsValidPassword(std::wstring Password)
     int B = 0;
     int C = 0;
     int D = 0;
-    for (size_t Index = 1; Index <= Password.size(); Index++)
+    for (size_t Index = 1; Index < Password.size(); Index++)
     {
       if ((Password[Index] >= 'a') && (Password[Index] <= 'z'))
       {

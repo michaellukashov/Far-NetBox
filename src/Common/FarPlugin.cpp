@@ -2320,7 +2320,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
 int TFarPanelModes::CommaCount(const std::wstring ColumnTypes)
 {
     int Count = 0;
-    for (size_t Index = 1; Index <= ColumnTypes.size(); Index++)
+    for (size_t Index = 0; Index < ColumnTypes.size(); Index++)
     {
         if (ColumnTypes[Index] == ',')
         {
