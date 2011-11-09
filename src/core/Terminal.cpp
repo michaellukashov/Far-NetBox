@@ -1948,7 +1948,7 @@ int TTerminal::ConfirmFileOverwrite(const std::wstring FileName,
     if (FileParams != NULL)
     {
       Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message.c_str(),
-        IntToStr(FileParams->SourceSize).c_str(),
+        IntToStr((int)FileParams->SourceSize).c_str(),
         UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision).c_str(),
         IntToStr(FileParams->DestSize).c_str(),
         UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision).c_str());
@@ -4060,7 +4060,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+            Found = (::FindNextFile(findHandle, &SearchRec) != 0) && ((SearchRec.dwFileAttributes & FindAttrs) != 0);
           );
         }
       }
