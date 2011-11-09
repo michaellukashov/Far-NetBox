@@ -1752,7 +1752,7 @@ int TRegistry::ReadBinaryData(const std::wstring Name,
   {
     Result = Info.DataSize;
     TRegDataType RegData = Info.RegData;
-    if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result < BufSize))
+    if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
         GetData(Name, Buffer, Result, RegData);
     else
         ReadError(Name);
