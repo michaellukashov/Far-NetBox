@@ -3876,7 +3876,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress->Start(foCalculateSize, osLocal, FileList->GetCount());
   {
-    BOOST_SCOPE_EXIT ( (Self) (OperationProgress) )
+    BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
     {
       Self->FOperationProgress = NULL;
       OperationProgress->Stop();
