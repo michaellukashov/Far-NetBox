@@ -2210,7 +2210,7 @@ std::wstring StringReplace(const std::wstring str, const std::wstring from, cons
     return result;
 }
 
-bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
+bool IsDelimiter(const std::wstring str, const std::wstring delim, size_t index)
 {
     wchar_t c = str[index];
     for (size_t i = 0; i < delim.size(); i++)

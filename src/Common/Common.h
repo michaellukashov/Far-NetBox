@@ -239,7 +239,7 @@ std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, con
 size_t AnsiPos(const std::wstring str, wchar_t c);
 size_t Pos(const std::wstring str, const std::wstring substr);
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to);
-bool IsDelimiter(const std::wstring str, const std::wstring delim, int index);
+bool IsDelimiter(const std::wstring str, const std::wstring delim, size_t index);
 size_t LastDelimiter(const std::wstring str, const std::wstring delim);
 //---------------------------------------------------------------------------
 
