@@ -2237,22 +2237,20 @@ size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 
 //---------------------------------------------------------------------------
 
-bool CompareText(const std::wstring str1, const std::wstring str2)
+int CompareText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    ::Error(SNotImplemented, 74);
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
-bool AnsiCompare(const std::wstring str1, const std::wstring str2)
+int AnsiCompare(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 // Case-sensitive compare
-bool AnsiCompareStr(const std::wstring str1, const std::wstring str2)
+int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 bool AnsiSameText(const std::wstring str1, const std::wstring str2)
@@ -2265,14 +2263,14 @@ bool SameText(const std::wstring str1, const std::wstring str2)
     return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
-bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
+int AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
-bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
+int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
