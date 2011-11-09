@@ -3876,7 +3876,7 @@ void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
   TOnceDoneOperation OnceDoneOperation = odoIdle;
   OperationProgress->Start(foCalculateSize, osLocal, FileList->GetCount());
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) )
+    BOOST_SCOPE_EXIT ( (&Self) (OperationProgress) )
     {
       Self->FOperationProgress = NULL;
       OperationProgress->Stop();
@@ -4351,7 +4351,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   BeginTransaction();
 
   {
-    BOOST_SCOPE_EXIT ( (Self) (DownloadList) (DeleteRemoteList)
+    BOOST_SCOPE_EXIT ( (&Self) (DownloadList) (DeleteRemoteList)
       (UploadList) (DeleteLocalList) )
     {
         delete DownloadList;
