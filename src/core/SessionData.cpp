@@ -1996,7 +1996,7 @@ void TSessionData::SetTunnelPublicKeyFile(std::wstring value)
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::SetTunnelLocalPortNumber(int value)
+void TSessionData::SetTunnelLocalPortNumber(size_t value)
 {
   SET_SESSION_PROPERTY(TunnelLocalPortNumber);
 }
