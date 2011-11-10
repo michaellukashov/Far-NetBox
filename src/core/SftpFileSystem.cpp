@@ -241,7 +241,7 @@ public:
   {
     Init();
     FLength = Source.size();
-    SetCapacity (FLength);
+    SetCapacity(FLength);
     memcpy(GetData(), Source.c_str(), Source.size());
   }
 
