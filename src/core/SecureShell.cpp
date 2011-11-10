@@ -265,7 +265,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       if (Data->GetSftpServer().empty())
       {
         cfg->ssh_subsys = TRUE;
-        strcpy_s(cfg->remote_cmd, 4, "sftp");
+        strcpy_s(cfg->remote_cmd, sizeof(cfg->remote_cmd), "sftp");
       }
       else
       {
