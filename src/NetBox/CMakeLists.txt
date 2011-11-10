@@ -18,7 +18,7 @@ set ( CMAKE_LINK_FLAGS
 
 # definitions
 add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL" )
-add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT" )
+add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT;NO_SECURITY" )
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
