@@ -1276,7 +1276,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
         Repeat = false;
         if (Result)
         {
-            Text = StrFromFar(DestText);
+            Text = StrFromFar(DestText.c_str());
             if (OnValidate)
             {
                 try
