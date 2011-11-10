@@ -741,7 +741,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
       {
         FFrozen = true;
         {
-          BOOST_SCOPE_EXIT ( (Self) )
+          BOOST_SCOPE_EXIT ( (&Self) )
           {
             Self->FFrozen = false;
           } BOOST_SCOPE_EXIT_END
@@ -902,7 +902,7 @@ int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
 
   int Answer;
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FWaiting--;
     } BOOST_SCOPE_EXIT_END

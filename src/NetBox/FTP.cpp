@@ -207,7 +207,7 @@ bool CFTP::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorIn
     static const char *delimiters = "\r\n";
     size_t lastPos = response.find_first_not_of(delimiters, 0);
     size_t nextPos = response.find_first_of(delimiters, lastPos);
-    while (std::string::npos != nextPos || std::string::npos != lastPos)
+    while ((std::wstring::npos != nextPos) || (std::wstring::npos != lastPos))
     {
         const std::string singleString = response.substr(lastPos, nextPos - lastPos);
         if (_strnicmp(singleString.c_str(), "total ", 6))
@@ -515,7 +515,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         {
             item.Type = FTPItem::Link;
             const size_t linkDelim = item.Name.find(L" -> ");
-            if (linkDelim != std::string::npos)
+            if (linkDelim != std::wstring::npos)
             {
                 item.LinkPath = item.Name.substr(linkDelim + 4);
                 item.Name.erase(linkDelim);
@@ -606,7 +606,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         st.wMinute = static_cast<WORD>(minutes);
         item.Name = FtpToLocalCP(name);
         const size_t delim = item.Name.find(';');
-        if (delim != std::string::npos)
+        if (delim != std::wstring::npos)
         {
             item.Name.erase(delim);
         }
@@ -624,7 +624,7 @@ bool CFTP::ParseFtpList(const char *text, FTPItem &item) const
         st.wMinute = static_cast<WORD>(minutes);
         item.Name = FtpToLocalCP(name);
         const size_t delim = item.Name.find(';');
-        if (delim != std::string::npos)
+        if (delim != std::wstring::npos)
         {
             item.Name.erase(delim);
         }

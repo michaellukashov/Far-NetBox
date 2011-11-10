@@ -234,7 +234,7 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &erro
         //name
         item.Name = path;
         const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
-        if (nameDelim != std::string::npos)
+        if (nameDelim != std::wstring::npos)
         {
             item.Name.erase(0, nameDelim + 1);
         }

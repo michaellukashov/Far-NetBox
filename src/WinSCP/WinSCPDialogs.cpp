@@ -886,7 +886,7 @@ void TTransferEditorConfigurationDialog::Change()
   {
     LockChanges();
     {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
@@ -2426,7 +2426,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
   {
-      BOOST_SCOPE_EXIT ( (Self) )
+      BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->TunnelLocalPortNumberEdit->GetItems()->EndUpdate();
       } BOOST_SCOPE_EXIT_END
@@ -2682,7 +2682,7 @@ void TSessionDialog::Change()
 
     LockChanges();
     {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
@@ -3884,7 +3884,7 @@ void TRightsContainer::SetRights(const TRights & value)
   {
     GetDialog()->LockChanges();
     {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
           Self->GetDialog()->UnlockChanges();
         } BOOST_SCOPE_EXIT_END

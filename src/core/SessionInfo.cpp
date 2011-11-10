@@ -670,7 +670,7 @@ void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
 
         BeginUpdate();
         {
-          BOOST_SCOPE_EXIT ( (Self) )
+          BOOST_SCOPE_EXIT ( (&Self) )
           {
             Self->DeleteUnnecessary();
             Self->EndUpdate();
@@ -864,7 +864,7 @@ void TSessionLog::DeleteUnnecessary()
 {
   BeginUpdate();
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -905,7 +905,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
   BeginUpdate();
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->DeleteUnnecessary();
 

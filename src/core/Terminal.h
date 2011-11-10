@@ -237,7 +237,7 @@ private:
   TSessionData * FTunnelData;
   TSessionLog * FTunnelLog;
   TTunnelUI * FTunnelUI;
-  int FTunnelLocalPortNumber;
+  size_t FTunnelLocalPortNumber;
   std::wstring FTunnelError;
   queryuser_signal_type FOnQueryUser;
   promptuser_signal_type FOnPromptUser;

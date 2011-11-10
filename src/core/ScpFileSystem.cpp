@@ -372,7 +372,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
     std::wstring UName;
     FTerminal->SetExceptionOnFail(true);
     {
-      BOOST_SCOPE_EXIT ( (Self) )
+      BOOST_SCOPE_EXIT ( (&Self) )
       {
         Self->FTerminal->SetExceptionOnFail (false);
       } BOOST_SCOPE_EXIT_END
@@ -611,7 +611,7 @@ void TSCPFileSystem::SkipFirstLine()
 void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
 {
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FProcessingCommand = false;
     } BOOST_SCOPE_EXIT_END
@@ -685,7 +685,7 @@ void TSCPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
     ::Busy(true);
   }
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       if (Self->FTerminal->GetUseBusyCursor())
       {
@@ -1293,7 +1293,7 @@ void TSCPFileSystem::AnyCommand(const std::wstring Command,
   }
 
   {
-    BOOST_SCOPE_EXIT ( (Self) )
+    BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FOnCaptureOutput.disconnect_all_slots();
       Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
@@ -1415,7 +1415,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   SkipFirstLine();
 
   {
-    BOOST_SCOPE_EXIT ( (Self) (&GotLastLine) (&CopyBatchStarted)
+    BOOST_SCOPE_EXIT ( (&Self) (&GotLastLine) (&CopyBatchStarted)
         (&Failed) )
     {
         // Tell remote side, that we're done.
@@ -1937,7 +1937,7 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
   SCPResponse();
 
   {
-    BOOST_SCOPE_EXIT ( (Self) (&DirectoryName) )
+    BOOST_SCOPE_EXIT ( (&Self) (&DirectoryName) )
     {
       if (Self->FTerminal->GetActive())
       {
@@ -2040,7 +2040,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   FTerminal->LogEvent(CopyParam->GetLogStr());
 
   {
-    BOOST_SCOPE_EXIT ( (Self) (&CloseSCP) (&OperationProgress) )
+    BOOST_SCOPE_EXIT ( (&Self) (&CloseSCP) (&OperationProgress) )
     {
       // In case that copying doesn't cause fatal error (ie. connection is
       // still active) but wasn't succesful (exception or user termination)
@@ -2103,7 +2103,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
           {
             FTerminal->SetExceptionOnFail (true);
             {
-              BOOST_SCOPE_EXIT ( (Self) )
+              BOOST_SCOPE_EXIT ( (&Self) )
               {
                 Self->FTerminal->SetExceptionOnFail(false);
               } BOOST_SCOPE_EXIT_END

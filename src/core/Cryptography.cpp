@@ -512,7 +512,7 @@ void ScramblePassword(std::wstring & Password)
   Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
   std::string pwd = ::W2MB(Password.c_str());
-  strcpy_s(Buf + Padding + 3, pwd.size(), pwd.c_str());
+  strcpy_s(Buf + Padding + 3, sizeof(Buf) - Padding - 3, pwd.c_str());
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
@@ -600,7 +600,7 @@ int IsValidPassword(std::wstring Password)
     int B = 0;
     int C = 0;
     int D = 0;
-    for (size_t Index = 1; Index <= Password.size(); Index++)
+    for (size_t Index = 1; Index < Password.size(); Index++)
     {
       if ((Password[Index] >= 'a') && (Password[Index] <= 'z'))
       {

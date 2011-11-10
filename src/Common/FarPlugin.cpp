@@ -358,7 +358,7 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
         TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
         {
-            BOOST_SCOPE_EXIT ( (Self) (FileSystem) )
+            BOOST_SCOPE_EXIT ( (&Self) (FileSystem) )
             {
                 Self->FOpenedPlugins->Remove(FileSystem);
             } BOOST_SCOPE_EXIT_END
@@ -2320,7 +2320,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
 int TFarPanelModes::CommaCount(const std::wstring ColumnTypes)
 {
     int Count = 0;
-    for (size_t Index = 1; Index <= ColumnTypes.size(); Index++)
+    for (size_t Index = 0; Index < ColumnTypes.size(); Index++)
     {
         if (ColumnTypes[Index] == ',')
         {

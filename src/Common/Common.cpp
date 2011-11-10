@@ -741,7 +741,7 @@ std::wstring DisplayableStr(const std::wstring Str)
   if (Displayable)
   {
     Result = L"\"";
-    for (size_t Index = 1; Index <= Str.size(); Index++)
+    for (size_t Index = 1; Index < Str.size(); Index++)
     {
       switch (Str[Index])
       {
@@ -2210,7 +2210,7 @@ std::wstring StringReplace(const std::wstring str, const std::wstring from, cons
     return result;
 }
 
-bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
+bool IsDelimiter(const std::wstring str, const std::wstring delim, size_t index)
 {
     wchar_t c = str[index];
     for (size_t i = 0; i < delim.size(); i++)
@@ -2225,34 +2225,32 @@ bool IsDelimiter(const std::wstring str, const std::wstring delim, int index)
 
 size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 {
-    for (size_t i = str.size() - 1; i >= 0; i--)
+    for (int i = (int)str.size() - 1; i >= 0; i--)
     {
         if (::IsDelimiter(str, delim, i))
         {
             return i;
         }
     }
-    return std::string::npos;
+    return std::wstring::npos;
 }
 
 //---------------------------------------------------------------------------
 
-bool CompareText(const std::wstring str1, const std::wstring str2)
+int CompareText(const std::wstring str1, const std::wstring str2)
 {
-    // FIXME
-    ::Error(SNotImplemented, 74);
-    return false;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
-bool AnsiCompare(const std::wstring str1, const std::wstring str2)
+int AnsiCompare(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 // Case-sensitive compare
-bool AnsiCompareStr(const std::wstring str1, const std::wstring str2)
+int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StrCmp(str1.c_str(), str2.c_str());
 }
 
 bool AnsiSameText(const std::wstring str1, const std::wstring str2)
@@ -2265,14 +2263,14 @@ bool SameText(const std::wstring str1, const std::wstring str2)
     return StrCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
-bool AnsiCompareText(const std::wstring str1, const std::wstring str2)
+int AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
-bool AnsiCompareIC(const std::wstring str1, const std::wstring str2)
+int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str()) == 0;
+    return StrCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
@@ -2405,12 +2403,12 @@ int FileSetAttr(const std::wstring &filename, int attrs)
 bool CreateDir(const std::wstring Dir)
 {
   // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
-  return ::CreateDirectory(Dir.c_str(), NULL) == 0;
+  return ::CreateDirectory(Dir.c_str(), NULL) != 0;
 }
 
 bool RemoveDir(const std::wstring Dir)
 {
-  return ::RemoveDirectory(Dir.c_str()) == 0;
+  return ::RemoveDirectory(Dir.c_str()) != 0;
 }
 
 bool ForceDirectories(const std::wstring Dir)
@@ -2664,7 +2662,7 @@ char *StrNew(const char *str)
 {
     const size_t sz = strlen(str) + 1;
     char *Result = new char[sz];
-    strncpy_s(Result, 1, str, sz);
+    strncpy_s(Result, sz, str, sz);
     return Result;
 }
 

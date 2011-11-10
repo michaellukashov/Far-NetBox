@@ -115,7 +115,7 @@ void TFarDialog::SetBounds(const TRect &value)
     {
         LockChanges();
         {
-            BOOST_SCOPE_EXIT ( (Self) )
+            BOOST_SCOPE_EXIT ( (&Self) )
             {
                 Self->UnlockChanges();
             } BOOST_SCOPE_EXIT_END
@@ -733,7 +733,7 @@ int TFarDialog::ShowModal()
     TFarDialog *PrevTopDialog = GetFarPlugin()->FTopDialog;
     GetFarPlugin()->FTopDialog = this;
     {
-        BOOST_SCOPE_EXIT ( (Self) (PrevTopDialog) )
+        BOOST_SCOPE_EXIT ( (&Self) (PrevTopDialog) )
         {
             Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
         } BOOST_SCOPE_EXIT_END
@@ -861,7 +861,7 @@ void TFarDialog::ProcessGroup(int Group, const processgroupevent_slot_type &Call
 {
     LockChanges();
     {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
             Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
@@ -922,7 +922,7 @@ void TFarDialog::UnlockChanges()
     FChangesLocked--;
     if (FChangesLocked == 0)
     {
-        BOOST_SCOPE_EXIT ( (Self) )
+        BOOST_SCOPE_EXIT ( (&Self) )
         {
             if (Self->GetHandle())
             {
@@ -2168,7 +2168,7 @@ void TFarList::Put(int Index, const std::wstring S)
     {
         FNoDialogUpdate = true;
         {
-            BOOST_SCOPE_EXIT ( (Self) )
+            BOOST_SCOPE_EXIT ( (&Self) )
             {
                 Self->FNoDialogUpdate = false;
             } BOOST_SCOPE_EXIT_END
@@ -2234,7 +2234,7 @@ void TFarList::Changed()
         {
             GetDialogItem()->GetDialog()->LockChanges();
             {
-                BOOST_SCOPE_EXIT ( (Self) )
+                BOOST_SCOPE_EXIT ( (&Self) )
                 {
                     Self->GetDialogItem()->GetDialog()->UnlockChanges();
                 } BOOST_SCOPE_EXIT_END

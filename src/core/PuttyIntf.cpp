@@ -36,11 +36,11 @@ void PuttyInitialize()
   std::wstring VersionString = SshVersionString();
   assert(!VersionString.empty() && (VersionString.size() < sizeof(sshver)));
   std::string vs = ::W2MB(VersionString.c_str());
-  strcpy_s(sshver, vs.size(), vs.c_str());
+  strcpy_s(sshver, sizeof(sshver), vs.c_str());
   std::wstring AppName = AppNameString();
   assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
   std::string appname = ::W2MB(AppName.c_str());
-  strcpy_s(appname_, appname.size(), appname.c_str());
+  strcpy_s(appname_, sizeof(appname_), appname.c_str());
 }
 //---------------------------------------------------------------------------
 void PuttyFinalize()
@@ -330,7 +330,7 @@ int get_remote_username(Config * cfg, char *user, size_t len)
 {
   if (*cfg->username)
   {
-    strncpy_s(user, 1, cfg->username, len);
+    strncpy_s(user, len, cfg->username, len);
     user[len-1] = '\0';
   }
   else
@@ -433,7 +433,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != NULL);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    strncpy_s(DataStr, 1, ::W2MB(Value.c_str()).c_str(), *DataSize);
+    strncpy_s(DataStr, *DataSize, ::W2MB(Value.c_str()).c_str(), *DataSize);
     DataStr[*DataSize - 1] = '\0';
     *DataSize = strlen(DataStr);
   }

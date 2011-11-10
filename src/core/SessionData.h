@@ -511,7 +511,7 @@ public:
   void SetTunnelPortNumber(int value);
   void SetTunnelUserName(std::wstring value);
   void SetTunnelPublicKeyFile(std::wstring value);
-  void SetTunnelLocalPortNumber(int value);
+  void SetTunnelLocalPortNumber(size_t value);
   void SetFtpPasvMode(bool value);
   void SetFtpForcePasvIp(bool value);
   void SetFtpAccount(std::wstring value);

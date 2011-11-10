@@ -993,7 +993,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       while (!AnsiSameText(DecodeUrlChars(Url.substr(0, P)), Data->Name))
       {
         P++;
-        assert(P <= Url.size());
+        assert(P < Url.size());
       }
       ARemoteDirectory = Url.substr(P + 1, Url.size() - P);
 
@@ -1996,7 +1996,7 @@ void TSessionData::SetTunnelPublicKeyFile(std::wstring value)
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::SetTunnelLocalPortNumber(int value)
+void TSessionData::SetTunnelLocalPortNumber(size_t value)
 {
   SET_SESSION_PROPERTY(TunnelLocalPortNumber);
 }
@@ -2008,6 +2008,7 @@ bool TSessionData::GetTunnelAutoassignLocalPortNumber()
 //---------------------------------------------------------------------
 void TSessionData::SetTunnelPortFwd(std::wstring value)
 {
+  // DEBUG_PRINTF(L"value = %s", value.c_str());
   SET_SESSION_PROPERTY(TunnelPortFwd);
 }
 //---------------------------------------------------------------------

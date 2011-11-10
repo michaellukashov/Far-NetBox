@@ -37,7 +37,7 @@ unsigned char SimpleDecryptNextChar(std::string &Str)
 std::wstring EncryptPassword(std::wstring Password, std::wstring Key, int /* Algorithm */)
 {
   std::string Result("");
-  int Shift = 0;
+  size_t Shift = 0;
   size_t Index = 0;
 
   // if (!RandSeed) Randomize();

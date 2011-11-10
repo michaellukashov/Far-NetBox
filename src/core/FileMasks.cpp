@@ -614,7 +614,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
 
     size_t NextMaskFrom = 0;
     bool Include = true;
-    while (NextMaskFrom <= Str.size())
+    while (NextMaskFrom < Str.size())
     {
       int MaskStart = NextMaskFrom;
       char NextMaskDelimiter;
@@ -648,7 +648,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
 
         char NextPartDelimiter = '\0';
         size_t NextPartFrom = 0;
-        while (NextPartFrom <= MaskStr.size())
+        while (NextPartFrom < MaskStr.size())
         {
           // DEBUG_PRINTF(L"NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
           char PartDelimiter = NextPartDelimiter;
@@ -676,10 +676,10 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
             }
             else
             {
-              if ((PartStr.size() >= 1) && (PartStr[1] == '='))
+              if ((PartStr.size() >= 1) && (PartStr[0] == '='))
               {
                 SizeMask = TMask::Close;
-                PartStr.erase(1, 1);
+                PartStr.erase(0, 1);
               }
               else
               {
@@ -693,7 +693,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
           {
             size_t D = ::LastDelimiter(PartStr, L"\\/");
 
-            Mask.DirectoryOnly = (D > 0) && (D == PartStr.size());
+            Mask.DirectoryOnly = (D != std::wstring::npos) && (D == PartStr.size());
 
             if (Mask.DirectoryOnly)
             {
@@ -701,7 +701,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
               D = ::LastDelimiter(PartStr, L"\\/");
             }
 
-            if (D > 0)
+            if (D != std::wstring::npos)
             {
               // make sure sole "/" (root dir) is preserved as is
               CreateMaskMask(
