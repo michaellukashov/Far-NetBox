@@ -961,23 +961,23 @@ bool TInteractiveCustomCommand::PatternReplacement(int Index, const std::wstring
   std::wstring & Replacement, bool & Delimit)
 {
   bool Result;
-  if ((Pattern.size() >= 3) && (Pattern[2] == '?'))
+  if ((Pattern.size() >= 3) && (Pattern[1] == '?'))
   {
     std::wstring PromptStr;
-    int Pos = Pattern.substr(3, Pattern.size() - 2).find_first_of(L"?");
-    if (Pos > 0)
+    int Pos = Pattern.substr(2, Pattern.size() - 2).find_first_of(L"?");
+    if (Pos != std::wstring::npos)
     {
-      Replacement = Pattern.substr(3 + Pos, Pattern.size() - 3 - Pos);
-      if ((Pos > 1) && (Pattern[3 + Pos - 2] == '\\'))
+      Replacement = Pattern.substr(2 + Pos, Pattern.size() - 3 - Pos);
+      if ((Pos > 0) && (Pattern[2 + Pos - 2] == '\\'))
       {
         Delimit = false;
         Pos--;
       }
-      PromptStr = Pattern.substr(3, Pos - 1);
+      PromptStr = Pattern.substr(2, Pos - 1);
     }
     else
     {
-      PromptStr = Pattern.substr(3, Pattern.size() - 3);
+      PromptStr = Pattern.substr(2, Pattern.size() - 3);
     }
 
     Prompt(Index, PromptStr, Replacement);

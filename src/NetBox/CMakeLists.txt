@@ -18,7 +18,7 @@ set ( CMAKE_LINK_FLAGS
 
 # definitions
 add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL" )
-add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT" )
+add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT;NO_SECURITY" )
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
@@ -322,19 +322,8 @@ target_link_libraries ( testnetbox_01 )
 
 set ( TESTNETBOX_02_DIR ${PROJECT_ROOT}/src/NetBox )
 
-set ( TESTNETBOX_02_SOURCES
-    ${PROJECT_ROOT}/src/Common/Classes.cpp
-    ${PROJECT_ROOT}/src/Common/Common.cpp
-    ${PROJECT_ROOT}/src/Common/FarUtil.cpp
-    ${PROJECT_ROOT}/src/Common/FarDialog.cpp
-    ${PROJECT_ROOT}/src/Common/FarPlugin.cpp
-    ${PROJECT_ROOT}/src/core/Exceptions.cpp
-    ${PROJECT_ROOT}/src/core/FileOperationProgress.cpp
-    ${PROJECT_ROOT}/src/core/Cryptography.cpp
-    ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
-    ${PROJECT_ROOT}/src/core/HierarchicalStorage.cpp
-    ${PROJECT_ROOT}/src/resource/TextsCore1.rc
-    ${PROJECT_ROOT}/src/resource/rtlconsts.rc
+set ( TESTNETBOX_02_SOURCES ${COMMON_SOURCES}
+    ${PROJECT_ROOT}/src/resource/testnetbox_02.rc
     ${TESTNETBOX_02_DIR}/testnetbox_02.cpp
 )
 
@@ -344,32 +333,9 @@ set_target_properties( testnetbox_02
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
     LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
 )
-
 add_dependencies ( testnetbox_02
     libputty
 )
 
 target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
-
-#-------------------------------------------------------
-# target testnetbox_10
-
-set ( TESTNETBOX_10_DIR ${PROJECT_ROOT}/src/NetBox )
-
-set ( TESTNETBOX_10_SOURCES ${COMMON_SOURCES}
-    ${PROJECT_ROOT}/src/resource/testnetbox_10.rc
-    ${TESTNETBOX_10_DIR}/testnetbox_10.cpp
-)
-
-add_executable( testnetbox_10 ${TESTNETBOX_10_SOURCES} )
-set_target_properties( testnetbox_10
-    PROPERTIES
-    COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
-)
-add_dependencies ( testnetbox_10
-    libputty
-)
-
-target_link_libraries ( testnetbox_10 ${NETBOX_LIBRARIES} )
 

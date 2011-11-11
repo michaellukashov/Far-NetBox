@@ -72,7 +72,7 @@ std::wstring UnixExtractFilePath(const std::wstring Path)
 {
   size_t Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
-  return (Pos > 0) ? Path.substr(0, Pos) : std::wstring();
+  return (Pos != std::wstring::npos) ? Path.substr(0, Pos) : std::wstring();
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileName(const std::wstring Path)
@@ -193,7 +193,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
     while ((P = Result.find(L"/../")) != std::wstring::npos)
     {
       int P2 = ::LastDelimiter(Result.substr(0, P-1), L"/");
-      assert(P2 > 0);
+      assert(P2 != std::wstring::npos);
       Result.erase(P2, P - P2 + 3);
     }
     while ((P = Result.find(L"/./")) != std::wstring::npos)
