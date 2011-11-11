@@ -133,9 +133,6 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/WinSCPSecurity.cpp
     ${PROJECT_ROOT}/src/Common/Classes.cpp
     ${PROJECT_ROOT}/src/Common/Common.cpp
-    ${PROJECT_ROOT}/src/Common/FarUtil.cpp
-    ${PROJECT_ROOT}/src/Common/FarPlugin.cpp
-    ${PROJECT_ROOT}/src/Common/FarDialog.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
     ${PROJECT_ROOT}/src/WinSCP/WinSCPDialogs.cpp
@@ -159,6 +156,9 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/NetBox/Session.cpp
     ${PROJECT_ROOT}/src/NetBox/NetBoxPlugin.cpp
     ${PROJECT_ROOT}/src/NetBox/ProgressWindow.cpp
+    ${PROJECT_ROOT}/src/NetBox/FarUtil.cpp
+    ${PROJECT_ROOT}/src/NetBox/FarPlugin.cpp
+    ${PROJECT_ROOT}/src/NetBox/FarDialog.cpp
     ${PROJECT_ROOT}/src/resource/TextsCore1.rc
     ${PROJECT_ROOT}/src/resource/TextsCore2.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc
