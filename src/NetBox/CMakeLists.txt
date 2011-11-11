@@ -67,7 +67,6 @@ include_directories (
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
     ${PROJECT_ROOT}/src/Common
-    ${PROJECT_ROOT}/src/WinSCP
     ${PROJECT_ROOT}/src/Putty
     ${PROJECT_ROOT}/src/Putty/windows
     ${PROJECT_ROOT}/src/Putty/charset
@@ -135,11 +134,6 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/Common/Common.cpp
     ${PROJECT_ROOT}/src/windows/GUIConfiguration.cpp
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
-    ${PROJECT_ROOT}/src/WinSCP/WinSCPDialogs.cpp
-    ${PROJECT_ROOT}/src/WinSCP/WinSCPFileSystem.cpp
-    ${PROJECT_ROOT}/src/WinSCP/WinSCPPlugin.cpp
-    ${PROJECT_ROOT}/src/WinSCP/FarInterface.cpp
-    ${PROJECT_ROOT}/src/WinSCP/FarConfiguration.cpp
     ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
     ${PROJECT_ROOT}/src/NetBox/Logging.cpp
     ${PROJECT_ROOT}/src/NetBox/Settings.cpp
@@ -159,6 +153,11 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/NetBox/FarUtil.cpp
     ${PROJECT_ROOT}/src/NetBox/FarPlugin.cpp
     ${PROJECT_ROOT}/src/NetBox/FarDialog.cpp
+    ${PROJECT_ROOT}/src/NetBox/WinSCPDialogs.cpp
+    ${PROJECT_ROOT}/src/NetBox/WinSCPFileSystem.cpp
+    ${PROJECT_ROOT}/src/NetBox/WinSCPPlugin.cpp
+    ${PROJECT_ROOT}/src/NetBox/FarInterface.cpp
+    ${PROJECT_ROOT}/src/NetBox/FarConfiguration.cpp
     ${PROJECT_ROOT}/src/resource/TextsCore1.rc
     ${PROJECT_ROOT}/src/resource/TextsCore2.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc
