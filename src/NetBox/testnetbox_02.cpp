@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // testnetbox_02.cpp
 // Тесты для NetBox
-// testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all
+// testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
 #include "stdafx.h"
