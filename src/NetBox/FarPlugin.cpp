@@ -10,6 +10,9 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
+#include "FileMasks.h"
+#include "puttyexp.h"
+
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TCustomFarPlugin *FarPlugin = NULL;
@@ -63,9 +66,6 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
     {
         FNormalConsoleSize = TPoint(-1, -1);
     }
-#ifdef NETBOX_DEBUG
-    RunTests();
-#endif
     // DEBUG_PRINTF(L"TCustomFarPlugin: end");
 }
 //---------------------------------------------------------------------------
@@ -1781,8 +1781,12 @@ void TCustomFarPlugin::RunTests()
     DEBUG_PRINTF(L"begin");
     {
         TFileMasks m(L"*.txt;*.log");
-        bool res = m.Matches(L"test.exe"));
+        bool res = m.Matches(L"test.exe");
         DEBUG_PRINTF(L"res = %d", res);
+    }
+    {
+        random_ref();
+        random_unref();
     }
     DEBUG_PRINTF(L"end");
 }

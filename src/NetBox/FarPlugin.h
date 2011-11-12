@@ -426,9 +426,10 @@ protected:
 
     TCriticalSection *GetCriticalSection() const { return FCriticalSection; }
 
-private:
+#ifdef NETBOX_DEBUG
+public:
     void RunTests();
-
+#endif
 private:
     PluginInfo FPluginInfo;
     TStringList *FSavedTitles;
