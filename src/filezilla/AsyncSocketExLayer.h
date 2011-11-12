@@ -63,7 +63,7 @@ to tim.kosse@gmx.de
 */#if !defined(AFX_ASYNCSOCKETEXLAYER_H__90C7FDB6_F3F1_4CC0_B77B_858458A563F3__INCLUDED_)
 #define AFX_ASYNCSOCKETEXLAYER_H__90C7FDB6_F3F1_4CC0_B77B_858458A563F3__INCLUDED_
 
-#include "AsyncSocketEx.h"	// Hinzugefügt von der Klassenansicht
+#include "AsyncSocketEx.h"	// Hinzugefï¿½gt von der Klassenansicht
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
@@ -97,8 +97,8 @@ protected:
 	virtual BOOL GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
 	virtual BOOL GetSockName( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
 #ifdef _AFX
-	virtual BOOL GetPeerName( std::wstring& rPeerAddress, UINT& rPeerPort );
-	virtual BOOL GetSockName( std::wstring& rPeerAddress, UINT& rPeerPort );
+	virtual BOOL GetPeerName( CString& rPeerAddress, UINT& rPeerPort );
+	virtual BOOL GetSockName( CString& rPeerAddress, UINT& rPeerPort );
 #endif
 	virtual BOOL Listen( int nConnectionBacklog);
 	virtual int Receive(void* lpBuf, int nBufLen, int nFlags = 0);
@@ -116,8 +116,8 @@ protected:
 	BOOL GetPeerNameNext( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
 	BOOL GetSockNameNext( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
 	#ifdef _AFX
-		BOOL GetPeerNameNext( std::wstring& rPeerAddress, UINT& rPeerPort );
-		BOOL GetSockNameNext( std::wstring& rPeerAddress, UINT& rPeerPort );
+		BOOL GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPort );
+		BOOL GetSockNameNext( CString& rPeerAddress, UINT& rPeerPort );
 	#endif
 	BOOL ListenNext( int nConnectionBacklog);
 	int ReceiveNext(void *lpBuf, int nBufLen, int nFlags = 0);
@@ -126,7 +126,7 @@ protected:
 	CAsyncSocketEx *m_pOwnerSocket;
 
 	//Calls OnLayerCallback on owner socket
-	int DoLayerCallback(int nType, int nParam1, int nParam2, wchar_t* str = 0);
+	int DoLayerCallback(int nType, int nParam1, int nParam2, char* str = 0);
 
 	int GetLayerState();
 	BOOL TriggerEvent(long lEvent, int nErrorCode, BOOL bPassThrough = FALSE );

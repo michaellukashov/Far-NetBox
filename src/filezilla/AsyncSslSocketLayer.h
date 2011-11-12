@@ -30,9 +30,9 @@ This class only has a couple of public functions:
   You can call this function only after receiving a layerspecific callback with the SSL_VERIFY_CERT 
   id. Set result to 1 if you trust the certificate and 0 if you don't trust it.
   nID has to be the priv_data element of the t_SslCertData structure and nCode has to be SSL_VERIFY_CERT.
-- CreateSslCertificate(LPCTSTR filename, int bits, unsigned wchar_t* country, unsigned wchar_t* state,
-			unsigned wchar_t* locality, unsigned wchar_t* organization, unsigned wchar_t* unit, unsigned wchar_t* cname,
-			unsigned wchar_t *email, std::wstring& err);
+- CreateSslCertificate(LPCTSTR filename, int bits, unsigned char* country, unsigned char* state,
+			unsigned char* locality, unsigned char* organization, unsigned char* unit, unsigned char* cname,
+			unsigned char *email, CString& err);
   Creates a new self-signed SSL certificate and stores it in the given file
 - SendRaw(const void* lpBuf, int nBufLen, int nFlags = 0)
   Sends a raw, unencrypted message. This may be useful after successful initialization to tell the other
@@ -59,7 +59,7 @@ Valid notification IDs are:
 - SSL_VERBOSE_WARNING 3
   SSL_VERBOSE_INFO 4
   This two notifications contain some additional information. The value given by param2 is a 
-  pointer to a null-terminated wchar_t string (wchar_t *) with some useful information.
+  pointer to a null-terminated char string (char *) with some useful information.
 - SSL_VERIFY_CERT 2
   This notification is sent each time a remote certificate has to be verified.
   param2 is a pointer to a t_SslCertData structure which contains some information
@@ -94,7 +94,7 @@ Version 2.0:
 #define ASYNCSSLSOCKETLEAYER_INCLUDED
 
 #ifndef _AFX
-// #define CString CStdString
+#define CString CStdString
 #endif
 
 #include "AsyncSocketExLayer.h"
@@ -126,7 +126,7 @@ struct t_SslCertData
 		int y,M,d,h,m,s;
 	} validFrom, validUntil;
 
-	unsigned wchar_t hash[20];
+	unsigned char hash[20];
 
 	int verificationResult;
 	int verificationDepth;
@@ -138,7 +138,7 @@ class CCriticalSectionWrapper;
 class CAsyncSslSocketLayer : public CAsyncSocketExLayer
 {
 public:
-	BOOL SetCertStorage(std::wstring file);
+	BOOL SetCertStorage(CString file);
 	CAsyncSslSocketLayer();
 	virtual ~CAsyncSslSocketLayer();
 
@@ -148,11 +148,11 @@ public:
 	bool IsUsingSSL();
 	int InitSSLConnection(bool clientMode, void* pContext = 0);
 
-	static bool CreateSslCertificate(LPCTSTR filename, int bits, unsigned wchar_t* country, unsigned wchar_t* state,
-			unsigned wchar_t* locality, unsigned wchar_t* organization, unsigned wchar_t* unit, unsigned wchar_t* cname,
-			unsigned wchar_t *email, std::wstring& err);
+	static bool CreateSslCertificate(LPCTSTR filename, int bits, unsigned char* country, unsigned char* state,
+			unsigned char* locality, unsigned char* organization, unsigned char* unit, unsigned char* cname,
+			unsigned char *email, CString& err);
 
-	int SetCertKeyFile(const wchar_t* cert, const wchar_t* key, const wchar_t* pass, std::wstring* error = 0);
+	int SetCertKeyFile(const char* cert, const char* key, const char* pass, CString* error = 0);
 
 	// Send raw text, useful to send a confirmation after the ssl connection
 	// has been initialized
@@ -184,7 +184,7 @@ private:
 	//Will be called from the OpenSSL library
 	static void apps_ssl_info_callback(const SSL *s, int where, int ret);
 	static int verify_callback(int preverify_ok, X509_STORE_CTX *ctx);
-	static int pem_passwd_cb(wchar_t *buf, int size, int rwflag, void *userdata);
+	static int pem_passwd_cb(char *buf, int size, int rwflag, void *userdata);
 
 	bool m_bUseSSL;
 	BOOL m_bFailureSent;
@@ -200,7 +200,7 @@ private:
 	int m_nSslAsyncNotifyId;
 	BOOL m_bBlocking;
 	BOOL m_bSslEstablished;
-	std::wstring m_CertStorage;
+	CString m_CertStorage;
 	int m_nVerificationResult;
 	int m_nVerificationDepth;
 	
@@ -227,11 +227,11 @@ private:
 	BIO* m_sslbio;	//The data to encrypt / the decrypted data has to go though this bio
 
 	//Send buffer
-	wchar_t* m_pNetworkSendBuffer;
+	char* m_pNetworkSendBuffer;
 	int m_nNetworkSendBufferLen;
 	int m_nNetworkSendBufferMaxLen;
 
-	wchar_t* m_pRetrySendBuffer;
+	char* m_pRetrySendBuffer;
 	int m_nRetrySendBufferLen;
 
 	bool m_mayTriggerRead;
@@ -241,7 +241,7 @@ private:
 
 	bool m_onCloseCalled;
 
-	wchar_t* m_pKeyPassword;
+	char* m_pKeyPassword;
 };
 
 #define SSL_INFO 0

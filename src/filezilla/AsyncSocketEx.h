@@ -76,7 +76,7 @@ to tim.kosse@gmx.de
 class CAsyncSocketExHelperWindow;
 
 extern "C" {
-	typedef int (FAR PASCAL *t_getaddrinfo)(const wchar_t* nodename, const wchar_t* servname, const struct addrinfo* hints, struct addrinfo** res);
+	typedef int (FAR PASCAL *t_getaddrinfo)(const char* nodename, const char* servname, const struct addrinfo* hints, struct addrinfo** res);
 	typedef	void (FAR PASCAL *t_freeaddrinfo)(struct addrinfo* ai);
 }
 
@@ -89,7 +89,7 @@ struct t_callbackMsg
 	int nType;
 	int nParam1;
 	int nParam2;
-	wchar_t* str;
+	char* str;
 };
 
 #endif //NOLAYERS
@@ -130,13 +130,13 @@ public:
 
 	//Gets the address of the peer socket to which the socket is connected.
 #ifdef _AFX
-	BOOL GetPeerName( std::wstring& rPeerAddress, UINT& rPeerPort );
+	BOOL GetPeerName( CString& rPeerAddress, UINT& rPeerPort );
 #endif
 	BOOL GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
 
 	//Gets the local name for a socket.
 #ifdef _AFX
-	BOOL GetSockName( std::wstring& rSocketAddress, UINT& rSocketPort );
+	BOOL GetSockName( CString& rSocketAddress, UINT& rSocketPort );
 #endif
 	BOOL GetSockName( SOCKADDR* lpSockAddr, int* lpSockAddrLen );
 
@@ -243,7 +243,7 @@ protected:
 	long m_lEvent;
 
 	//AsyncGetHostByName
-	wchar_t *m_pAsyncGetHostByNameBuffer; //Buffer for hostend structure
+	char *m_pAsyncGetHostByNameBuffer; //Buffer for hostend structure
 	HANDLE m_hAsyncGetHostByNameHandle; //TaskHandle
 	int m_nAsyncGetHostByNamePort; //Port to connect to
 
@@ -356,7 +356,7 @@ inline TCHAR* Inet6AddrToString(in6_addr& addr)
 {
 	LPTSTR buf = new TCHAR[512];
 
-	_sntprintf(buf, 512, L"%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
+	_sntprintf(buf, 512, _T("%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x"),
 			 addr.s6_bytes[0], addr.s6_bytes[1], addr.s6_bytes[2], addr.s6_bytes[3],
 			 addr.s6_bytes[4], addr.s6_bytes[5], addr.s6_bytes[6], addr.s6_bytes[7],
 			 addr.s6_bytes[8], addr.s6_bytes[9], addr.s6_bytes[10], addr.s6_bytes[11],

@@ -28,14 +28,14 @@ class t_server
 public:
 	t_server();
 	~t_server();
-	std::wstring host;
+	CString host;
 	int port;
-	std::wstring user, pass, account;
+	CString user, pass, account;
 	BOOL fwbypass;
-	std::wstring path;
+	CString path;
 	BOOL bDontRememberPass;
 	int nServerType;
-	std::wstring name; //Name of server, used in SiteManager
+	CString name; //Name of server, used in SiteManager
 	int nPasv;
 	int nTimeZoneOffset;
 	int nUTF8;
@@ -52,8 +52,8 @@ const bool operator != (const t_server &a,const t_server &b);
 
 typedef struct
 {
-    std::wstring localfile;
-    std::wstring remotefile;
+    CString localfile;
+    CString remotefile;
     CServerPath remotepath;
     BOOL get;
     __int64 size;

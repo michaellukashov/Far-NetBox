@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// ApiLog.h: Schnittstelle für die Klasse CApiLog.
+// ApiLog.h: Schnittstelle fï¿½r die Klasse CApiLog.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -39,8 +39,8 @@ public:
 	void LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const;
 	void LogMessageRaw(int nMessageType, LPCTSTR pMsg) const;
 	void LogMessage(int nMessageType, UINT nFormatID, ...) const;
-	void LogMessage(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const;
-	void LogMessageRaw(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const;
+	void LogMessage(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const;
+	void LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const;
 
 	BOOL SetDebugLevel(int nLogLevel);
 	int GetDebugLevel();

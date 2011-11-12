@@ -10,9 +10,9 @@ class TFileZillaIntern;
 //---------------------------------------------------------------------------
 struct TListDataEntry
 {
-  const wchar_t * Name;
-  const wchar_t * Permissions;
-  const wchar_t * OwnerGroup;
+  const char * Name;
+  const char * Permissions;
+  const char * OwnerGroup;
   __int64 Size;
   bool Dir;
   bool Link;
@@ -23,21 +23,21 @@ struct TListDataEntry
   int Minute;
   bool HasTime;
   bool HasDate;
-  const wchar_t * LinkTarget;
+  const char * LinkTarget;
 };
 //---------------------------------------------------------------------------
 struct TFtpsCertificateData
 {
   struct TContact
   {
-    const wchar_t * Organization;
-    const wchar_t * Unit;
-    const wchar_t * CommonName;
-    const wchar_t * Mail;
-    const wchar_t * Country;
-    const wchar_t * StateProvince;
-    const wchar_t * Town;
-    const wchar_t * Other;
+    const char * Organization;
+    const char * Unit;
+    const char * CommonName;
+    const char * Mail;
+    const char * Country;
+    const char * StateProvince;
+    const char * Town;
+    const char * Other;
   };
 
   TContact Subject;
@@ -56,7 +56,7 @@ struct TFtpsCertificateData
   TValidityTime ValidFrom;
   TValidityTime ValidUntil;
 
-  const unsigned wchar_t * Hash;
+  const unsigned char * Hash;
   static const size_t HashLen = 20;
 
   int VerificationResult;

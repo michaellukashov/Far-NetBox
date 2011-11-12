@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// ServerPath.h: Schnittstelle für die Klasse CServerPath.
+// ServerPath.h: Schnittstelle fï¿½r die Klasse CServerPath.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -30,31 +30,31 @@
 class CServerPath  
 {
 public:
-	BOOL AddSubdir(std::wstring subdir);
-	BOOL AddSubdirs(std::wstring subdirs);
-	std::wstring GetSubdirsOf(const CServerPath &path) const;
-	std::wstring GetSafePath() const;
-	BOOL SetSafePath(std::wstring path);
+	BOOL AddSubdir(CString subdir);
+	BOOL AddSubdirs(CString subdirs);
+	CString GetSubdirsOf(const CServerPath &path) const;
+	CString GetSafePath() const;
+	BOOL SetSafePath(CString path);
 	const BOOL IsEmpty() const;
 	BOOL IsParentOf(const CServerPath &path, BOOL bCompareNoCase = FALSE) const;
 	BOOL IsSubdirOf(const CServerPath &path, BOOL bCompareNoCase = FALSE) const;
 	CServerPath GetParent() const;
 	BOOL HasParent() const;
-	std::wstring GetLastSegment() const;
+	CString GetLastSegment() const;
 	CServerPath();
 	CServerPath(int nServerType);
-	CServerPath(std::wstring path);
-	CServerPath(std::wstring path, int nServerType);
-	CServerPath(std::wstring subdir, const CServerPath &parent); //If subdir is absolute, parent is ignored
+	CServerPath(CString path);
+	CServerPath(CString path, int nServerType);
+	CServerPath(CString subdir, const CServerPath &parent); //If subdir is absolute, parent is ignored
 	CServerPath(const CServerPath &path);
 
 	virtual ~CServerPath();
 
 	void SetServer(const t_server &server);
-	BOOL SetPath(std::wstring &newpath, BOOL bIsFile);
-	BOOL SetPath(std::wstring newpath);
-	BOOL ChangePath(std::wstring &subdir, BOOL bIsFile = FALSE);
-	const std::wstring GetPath() const;
+	BOOL SetPath(CString &newpath, BOOL bIsFile);
+	BOOL SetPath(CString newpath);
+	BOOL ChangePath(CString &subdir, BOOL bIsFile = FALSE);
+	const CString GetPath() const;
 
 	const bool MatchNoCase(const CServerPath &op) const;
 
@@ -63,18 +63,18 @@ public:
 	const bool operator == (const CServerPath &op) const;
 	const bool operator != (const CServerPath &op) const;
 
-	std::wstring FormatFilename(std::wstring fn, bool omitPath = false) const;
+	CString FormatFilename(CString fn, bool omitPath = false) const;
 	
 protected:
 	BOOL m_bEmpty;
-	std::list<std::wstring> m_Segments;
-	typedef std::list<std::wstring>::iterator tIter;
-		typedef std::list<std::wstring>::const_iterator tConstIter;
-	typedef std::list<std::wstring>::const_iterator tConstIter;
-	std::wstring m_Prefix;
+	std::list<CString> m_Segments;
+	typedef std::list<CString>::iterator tIter;
+		typedef std::list<CString>::const_iterator tConstIter;
+	typedef std::list<CString>::const_iterator tConstIter;
+	CString m_Prefix;
 	int m_nServerType;
 };
 
-const BOOL operator == (const CServerPath &a, const std::wstring &b);
+const BOOL operator == (const CServerPath &a, const CString &b);
 
 #endif // !defined(AFX_SERVERPATH_H__DF62E6B4_541A_4425_BA73_22B09A12DFE1__INCLUDED_)
