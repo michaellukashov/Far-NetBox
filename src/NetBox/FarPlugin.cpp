@@ -63,6 +63,9 @@ TCustomFarPlugin::TCustomFarPlugin(HINSTANCE HInst) :
     {
         FNormalConsoleSize = TPoint(-1, -1);
     }
+#ifdef NETBOX_DEBUG
+    RunTests();
+#endif
     // DEBUG_PRINTF(L"TCustomFarPlugin: end");
 }
 //---------------------------------------------------------------------------
@@ -1772,7 +1775,18 @@ int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD *Rec)
     }
     return Result;
 }
-//---------------------------------------------------------------------------
+
+void TCustomFarPlugin::RunTests()
+{
+    DEBUG_PRINTF(L"begin");
+    {
+        TFileMasks m(L"*.txt;*.log");
+        bool res = m.Matches(L"test.exe"));
+        DEBUG_PRINTF(L"res = %d", res);
+    }
+    DEBUG_PRINTF(L"end");
+}
+
 //---------------------------------------------------------------------------
 unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------

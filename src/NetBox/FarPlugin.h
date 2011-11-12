@@ -427,6 +427,9 @@ protected:
     TCriticalSection *GetCriticalSection() const { return FCriticalSection; }
 
 private:
+    void RunTests();
+
+private:
     PluginInfo FPluginInfo;
     TStringList *FSavedTitles;
     std::wstring FCurrentTitle;
