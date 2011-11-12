@@ -3,8 +3,11 @@
 #define StdAfxH
 //---------------------------------------------------------------------------
 #define _int64 __int64
-#define CStringA std::wstring
+// #define CStringA CString
+// #define CStringW std::wstring
 //---------------------------------------------------------------------------
+#define __fastcall
+
 #ifndef _AFXDLL
 #define _AFXDLL
 #endif
@@ -98,7 +101,7 @@ public:
   UINT Read(void * lpBuf, UINT nCount)
   {
     ASSERT_VALID(this);
-    ASSERT(m_hFile != (UINT)hFileNull);
+    ASSERT(m_hFile != hFileNull);
 
     if (nCount == 0)
     {
