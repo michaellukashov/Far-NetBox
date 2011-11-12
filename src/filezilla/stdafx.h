@@ -5,10 +5,18 @@
 #define _int64 __int64
 #define CStringA std::wstring
 //---------------------------------------------------------------------------
+#ifndef _AFXDLL
 #define _AFXDLL
+#endif
+
 #ifndef MPEXT
 #define MPEXT
 #endif
+
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT _WIN32_MAXVER
+#endif
+
 #define MPEXT_NO_ZLIB
 #define MPEXT_NO_GSS
 #define MPEXT_NO_SFTP
