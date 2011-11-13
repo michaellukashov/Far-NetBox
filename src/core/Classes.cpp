@@ -63,9 +63,26 @@ size_t TList::GetCount() const
 {
     return FList.size();
 }
-void TList::SetCount(size_t value)
+void TList::SetCount(size_t NewCount)
 {
-    FList.resize(value);
+    // FList.resize(value);
+  if ((int)NewCount < 0) //  or (NewCount > MaxListSize) then
+    ::Error(SListCountError, NewCount);
+  // if (NewCount > FCapacity)
+    // SetCapacity(NewCount);
+  if (NewCount > FCount)
+  {
+    // FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
+    // FList.resize(NewCount);
+  }
+  else
+  {
+    int sz = FList.size();
+    for (int I = sz - 1; I > NewCount)
+      Delete(I);
+  }
+  // FCount := NewCount;
+  FList.resize(NewCount);
 }
 
 void *TList::operator [](size_t Index) const
@@ -128,7 +145,12 @@ void TList::Delete(size_t Index)
     {
       ::Error(SListIndexError, Index);
     }
+    void *Temp = GetItem(Index);
     FList.erase(FList.begin() + Index);
+  if (Temp != NULL)
+  {
+    Notify(Temp, lnDeleted);
+  }
 }
 void TList::Insert(size_t Index, void *Item)
 {
@@ -249,9 +271,10 @@ void TObjectList::Notify(void *Ptr, int Action)
     if (Action == lnDeleted)
     {
       ((TObject *)Ptr)->Free();
+      delete (TObject *)Ptr;
     }
   }
-    parent::Notify(Ptr, Action);
+  parent::Notify(Ptr, Action);
 }
 //---------------------------------------------------------------------------
 const std::wstring sLineBreak = L"\n";
@@ -623,9 +646,9 @@ size_t TStringList::GetCount() const
 }
 void TStringList::Clear()
 {
-    FList.clear();
-      // SetCount(0);
-      // SetCapacity(0);
+    // FList.clear();
+    SetCount(0);
+    // SetCapacity(0);
 }
 size_t TStringList::Add(std::wstring S)
 {
