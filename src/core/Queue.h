@@ -296,7 +296,7 @@ class TLocatedQueueItem : public TQueueItem
 {
 protected:
   explicit TLocatedQueueItem(TTerminal *Terminal);
-  virtual TLocatedQueueItem()
+  virtual ~TLocatedQueueItem()
   {}
 
   virtual void DoExecute(TTerminal *Terminal);
