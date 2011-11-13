@@ -70,7 +70,7 @@ void TList::SetCount(size_t NewCount)
     ::Error(SListCountError, NewCount);
   // if (NewCount > FCapacity)
     // SetCapacity(NewCount);
-  if (NewCount > FCount)
+  if (NewCount > FList.size())
   {
     // FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
     // FList.resize(NewCount);
@@ -78,7 +78,7 @@ void TList::SetCount(size_t NewCount)
   else
   {
     int sz = FList.size();
-    for (int I = sz - 1; I > NewCount)
+    for (int I = sz - 1; I > (int)NewCount; I--)
       Delete(I);
   }
   // FCount := NewCount;
@@ -178,7 +178,9 @@ int TList::IndexOf(void *value) const
 }
 void TList::Clear()
 {
-    FList.clear();
+    // FList.clear();
+    SetCount(0);
+    // SetCapacity(0);
 }
 
 void TList::Sort(CompareFunc func)
@@ -203,6 +205,7 @@ TObjectList::TObjectList() :
 }
 TObjectList::~TObjectList()
 {
+    Clear();
 }
 
 TObject *TObjectList::operator [](size_t Index) const
@@ -646,8 +649,8 @@ size_t TStringList::GetCount() const
 }
 void TStringList::Clear()
 {
-    // FList.clear();
-    SetCount(0);
+    FList.clear();
+    // SetCount(0);
     // SetCapacity(0);
 }
 size_t TStringList::Add(std::wstring S)
