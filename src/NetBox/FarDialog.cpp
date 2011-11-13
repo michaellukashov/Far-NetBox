@@ -1062,6 +1062,7 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
 TFarDialogItem::~TFarDialogItem()
 {
     assert(!GetDialog());
+    delete[] GetDialogItem()->PtrData;
 }
 //---------------------------------------------------------------------------
 FarDialogItem *TFarDialogItem::GetDialogItem()
@@ -2127,6 +2128,11 @@ TFarList::TFarList(TFarDialogItem *ADialogItem) :
 //---------------------------------------------------------------------------
 TFarList::~TFarList()
 {
+    for (size_t i = 0; i < GetCount(); i++)
+    {
+        std::wstring value = GetString(i);
+        delete[] FListItems->Items[i].Text;
+    }
     delete[] FListItems->Items;
     delete FListItems;
 }
