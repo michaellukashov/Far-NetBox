@@ -1965,6 +1965,7 @@ void TCustomFarFileSystem::FreeFindData(
         assert(ItemsNumber > 0);
         for (int Index = 0; Index < ItemsNumber; Index++)
         {
+            delete[] PanelItem[Index].FindData.lpwszFileName;
             delete[] PanelItem[Index].Description;
             delete[] PanelItem[Index].Owner;
             for (int CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; CustomIndex++)
