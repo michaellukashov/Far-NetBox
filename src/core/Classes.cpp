@@ -273,7 +273,7 @@ void TObjectList::Notify(void *Ptr, int Action)
   {
     if (Action == lnDeleted)
     {
-      ((TObject *)Ptr)->Free();
+      // ((TObject *)Ptr)->Free();
       delete (TObject *)Ptr;
     }
   }
