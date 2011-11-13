@@ -238,7 +238,9 @@ protected:
 public:
   TRemoteFileList();
   virtual ~TRemoteFileList()
-  {}
+  {
+    Clear();
+  }
   TRemoteFile * FindFile(const std::wstring &FileName);
   virtual void DuplicateTo(TRemoteFileList * Copy);
   virtual void AddFile(TRemoteFile * File);
@@ -275,7 +277,9 @@ protected:
 public:
   TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
   virtual ~TRemoteDirectory()
-  {}
+  {
+    Clear();
+  }
   virtual void AddFile(TRemoteFile * File);
   virtual void SetDirectory(std::wstring value);
   virtual void DuplicateTo(TRemoteFileList * Copy);
