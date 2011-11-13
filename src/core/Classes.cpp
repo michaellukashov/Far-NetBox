@@ -1275,7 +1275,7 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
     if (Result > 0)
     {
       if (Result > Count) Result = Count;
-      memmove((char *)FMemory + FPosition, Buffer, (int)Result);
+      memmove(Buffer, (char *)FMemory + FPosition, (int)Result);
       FPosition += Result;
       return Result;
     }
@@ -1389,7 +1389,7 @@ __int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
           SetCapacity(Pos);
         FSize = Pos;
       }
-      memmove((char *)Buffer, (char *)FMemory + FPosition, (int)Count);
+      memmove((char *)FMemory + FPosition, (char *)Buffer, (int)Count);
       FPosition = Pos;
       Result = Count;
     }
