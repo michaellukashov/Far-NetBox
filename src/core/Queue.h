@@ -166,7 +166,7 @@ protected:
   void DoEvent(TQueueEvent Event);
 };
 //---------------------------------------------------------------------------
-class TQueueItem
+class TQueueItem : public TObject
 {
 friend class TTerminalQueue;
 friend class TTerminalItem;
@@ -295,7 +295,9 @@ private:
 class TLocatedQueueItem : public TQueueItem
 {
 protected:
-  TLocatedQueueItem(TTerminal *Terminal);
+  explicit TLocatedQueueItem(TTerminal *Terminal);
+  virtual TLocatedQueueItem()
+  {}
 
   virtual void DoExecute(TTerminal *Terminal);
   virtual std::wstring StartupDirectory();
@@ -307,7 +309,7 @@ private:
 class TTransferQueueItem : public TLocatedQueueItem
 {
 public:
-  TTransferQueueItem(TTerminal *Terminal,
+  explicit TTransferQueueItem(TTerminal *Terminal,
     TStrings *FilesToCopy, const std::wstring & TargetDir,
     const TCopyParamType *CopyParam, int Params, TOperationSide Side);
   virtual ~TTransferQueueItem();
@@ -322,10 +324,11 @@ protected:
 class TUploadQueueItem : public TTransferQueueItem
 {
 public:
-  TUploadQueueItem(TTerminal *Terminal,
+  explicit TUploadQueueItem(TTerminal *Terminal,
     TStrings *FilesToCopy, const std::wstring & TargetDir,
     const TCopyParamType *CopyParam, int Params);
-
+  virtual ~TUploadQueueItem()
+  {}
 protected:
   virtual void DoExecute(TTerminal *Terminal);
 };
@@ -336,7 +339,8 @@ public:
   TDownloadQueueItem(TTerminal *Terminal,
     TStrings *FilesToCopy, const std::wstring &TargetDir,
     const TCopyParamType *CopyParam, int Params);
-
+  virtual ~TDownloadQueueItem()
+  {}
 protected:
   virtual void DoExecute(TTerminal *Terminal);
 };
