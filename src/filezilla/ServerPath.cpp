@@ -48,7 +48,7 @@ CServerPath::CServerPath(int nServerType)
 	m_bEmpty = TRUE;
 }
 
-CServerPath::CServerPath(std::wstring path)
+CServerPath::CServerPath(CString path)
 {
 	m_nServerType = FZ_SERVERTYPE_FTP;
 	path.TrimLeft( _T(" ") );
@@ -76,7 +76,7 @@ CServerPath::CServerPath(std::wstring path)
 	*this = CServerPath(path, m_nServerType);
 }
 
-CServerPath::CServerPath(std::wstring path, int nServerType)
+CServerPath::CServerPath(CString path, int nServerType)
 {
 	m_nServerType = nServerType;
 	path.TrimLeft( _T(" ") );
@@ -207,10 +207,10 @@ void CServerPath::SetServer(const t_server &server)
 	m_nServerType=server.nServerType;
 }
 
-BOOL CServerPath::SetPath(std::wstring &newpath, BOOL bIsFile /*=FALSE*/)
+BOOL CServerPath::SetPath(CString &newpath, BOOL bIsFile /*=FALSE*/)
 {
-	std::wstring file;
-	std::wstring path=newpath;
+	CString file;
+	CString path=newpath;
 
 	path.TrimLeft( _T(" ") );
 	path.TrimRight( _T(" ") );
@@ -405,11 +405,11 @@ BOOL CServerPath::SetPath(std::wstring &newpath, BOOL bIsFile /*=FALSE*/)
 	return TRUE;
 }
 
-const std::wstring CServerPath::GetPath() const
+const CString CServerPath::GetPath() const
 {
 	if (m_bEmpty)
 		return "";
-	std::wstring path;
+	CString path;
 	tConstIter iter;
 	switch (m_nServerType&FZ_SERVERTYPE_HIGHMASK)
 	{
@@ -503,7 +503,7 @@ const bool CServerPath::operator==(const CServerPath &op) const
 	return true;
 }
 
-const BOOL operator==(const CServerPath &a, const std::wstring &b)
+const BOOL operator==(const CServerPath &a, const CString &b)
 {
 	CServerPath path(b);
 	return a==path;
@@ -520,7 +520,7 @@ const bool CServerPath::operator!=(const CServerPath &op) const
 		return true;
 }
 
-std::wstring CServerPath::GetLastSegment() const
+CString CServerPath::GetLastSegment() const
 {
 	if (!HasParent())
 		return _T("");
@@ -569,8 +569,8 @@ BOOL CServerPath::IsSubdirOf(const CServerPath &path, BOOL bCompareNoCase /*=FAL
 			return TRUE;
 		if (bCompareNoCase)
 		{
-			std::wstring Segment1 = *iter1;
-			std::wstring Segment2 = *iter2;
+			CString Segment1 = *iter1;
+			CString Segment2 = *iter2;
 			Segment1.MakeLower();
 			Segment2.MakeLower();
 			if (Segment1 != Segment2)
@@ -598,7 +598,7 @@ const BOOL CServerPath::IsEmpty() const
 	return m_bEmpty;
 }
 
-BOOL CServerPath::SetSafePath(std::wstring path)
+BOOL CServerPath::SetSafePath(CString path)
 {
 	m_bEmpty = TRUE;
 	m_Prefix = "";
@@ -640,19 +640,19 @@ BOOL CServerPath::SetSafePath(std::wstring path)
 	return TRUE;
 }
 
-std::wstring CServerPath::GetSafePath() const
+CString CServerPath::GetSafePath() const
 {
 	if (m_bEmpty)
 		return _T("");
 
-	std::wstring safepath;
+	CString safepath;
 	safepath.Format(_T("%d %d "), m_nServerType, m_Prefix.GetLength());
 	if (m_Prefix!="")
 		safepath+=m_Prefix+" ";
 	tConstIter iter = m_Segments.begin();
 	while(iter!=m_Segments.end())
 	{
-		std::wstring len;
+		CString len;
 		len.Format(_T("%d "), iter->GetLength());
 		safepath+=len;
 		safepath+=*iter;
@@ -663,14 +663,14 @@ std::wstring CServerPath::GetSafePath() const
 	return safepath;
 }
 
-std::wstring CServerPath::GetSubdirsOf(const CServerPath &path) const
+CString CServerPath::GetSubdirsOf(const CServerPath &path) const
 {
 	assert(IsParentOf(path));
 	CServerPath subdirs=path;
-	std::wstring ret;
+	CString ret;
 	while(IsParentOf(subdirs))
 	{
-		std::wstring tmp;
+		CString tmp;
 		tmp.Format(_T(" %d %s"), subdirs.GetLastSegment().GetLength(),subdirs.GetLastSegment());
 		ret += tmp;
 		subdirs = subdirs.GetParent();
@@ -679,7 +679,7 @@ std::wstring CServerPath::GetSubdirsOf(const CServerPath &path) const
 	return ret;
 }
 
-BOOL CServerPath::AddSubdirs(std::wstring subdirs)
+BOOL CServerPath::AddSubdirs(CString subdirs)
 {
 	// Do nothing if subdirs is empty
 	if (subdirs == _T(""))
@@ -717,7 +717,7 @@ BOOL CServerPath::AddSubdirs(std::wstring subdirs)
 	return TRUE;
 }
 
-BOOL CServerPath::AddSubdir(std::wstring subdir)
+BOOL CServerPath::AddSubdir(CString subdir)
 {
 	subdir.TrimLeft( _T(" ") );
 	subdir.TrimRight( _T(" ") );
@@ -745,7 +745,7 @@ BOOL CServerPath::AddSubdir(std::wstring subdir)
 	return TRUE;
 }
 
-CServerPath::CServerPath(std::wstring subdir, const CServerPath &parent)
+CServerPath::CServerPath(CString subdir, const CServerPath &parent)
 {
 	*this=parent;
 	subdir.TrimLeft( _T(" ") );
@@ -857,7 +857,7 @@ CServerPath::CServerPath(std::wstring subdir, const CServerPath &parent)
 					m_Segments.clear();
 				else if (subdir[0]=='/')
 				{
-					std::wstring firstSegment;
+					CString firstSegment;
 					if (m_Segments.empty())
 						firstSegment = "C:";
 					else
@@ -939,10 +939,10 @@ CServerPath::CServerPath(std::wstring subdir, const CServerPath &parent)
 }
 
 
-BOOL CServerPath::ChangePath(std::wstring &subdir, BOOL bIsFile /*=FALSE*/)
+BOOL CServerPath::ChangePath(CString &subdir, BOOL bIsFile /*=FALSE*/)
 {
 	CServerPath newpath = *this;
-	std::wstring dir = subdir;
+	CString dir = subdir;
 	if (!(newpath.m_nServerType&FZ_SERVERTYPE_HIGHMASK))
 		newpath.m_nServerType = FZ_SERVERTYPE_FTP;
 	
@@ -1092,7 +1092,7 @@ BOOL CServerPath::ChangePath(std::wstring &subdir, BOOL bIsFile /*=FALSE*/)
 					newpath.m_Segments.clear();
 				else if (dir[0]=='/')
 				{
-					std::wstring firstSegment;
+					CString firstSegment;
 					if (newpath.m_Segments.empty())
 						firstSegment = "C:";
 					else
@@ -1250,7 +1250,7 @@ BOOL CServerPath::ChangePath(std::wstring &subdir, BOOL bIsFile /*=FALSE*/)
 	return TRUE;
 }
 
-BOOL CServerPath::SetPath(std::wstring newpath)
+BOOL CServerPath::SetPath(CString newpath)
 {
 	return SetPath(newpath, FALSE);
 }
@@ -1272,8 +1272,8 @@ const bool CServerPath::MatchNoCase(const CServerPath &op) const
 	{
 		if (iter2==op.m_Segments.end())
 			return FALSE;
-		std::wstring Segment1=*iter1;
-		std::wstring Segment2=*iter2;
+		CString Segment1=*iter1;
+		CString Segment2=*iter2;
 		Segment1.MakeLower();
 		Segment2.MakeLower();
 		if (Segment1!=Segment2)
@@ -1286,7 +1286,7 @@ const bool CServerPath::MatchNoCase(const CServerPath &op) const
 	return TRUE;
 }
 
-std::wstring CServerPath::FormatFilename(std::wstring fn, bool omitPath /*=false*/) const
+CString CServerPath::FormatFilename(CString fn, bool omitPath /*=false*/) const
 {
 	if (m_bEmpty)
 		return fn;
@@ -1294,7 +1294,7 @@ std::wstring CServerPath::FormatFilename(std::wstring fn, bool omitPath /*=false
 	if (fn == "")
 		return "";
 
-	std::wstring path;
+	CString path;
 	tConstIter iter;
 	switch (m_nServerType&FZ_SERVERTYPE_HIGHMASK)
 	{

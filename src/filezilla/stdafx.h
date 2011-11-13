@@ -11,6 +11,8 @@
 #ifndef _AFXDLL
 #define _AFXDLL
 #endif
+// #undef _MSC_EXTENSIONS
+// #define _M_CEE
 
 #ifndef MPEXT
 #define MPEXT

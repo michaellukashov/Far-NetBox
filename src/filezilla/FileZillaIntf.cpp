@@ -86,7 +86,10 @@ bool __fastcall TFileZillaIntf::GetCurrentPath(char * Path, size_t MaxLen)
   bool Result = Check(FFileZillaApi->GetCurrentPath(APath), "getcurrentpath");
   if (Result)
   {
-    strncpy(Path, APath.GetPath(), MaxLen);
+    // char nstring[APath.Size()];
+    // strcpy_s(nstring, APath);
+    // strncpy(Path, APath.GetPath(), MaxLen);
+    strcpy_s(Path, MaxLen, APath.GetPath().GetBuffer(MaxLen));
     Path[MaxLen - 1] = '\0';
   }
   return Result;

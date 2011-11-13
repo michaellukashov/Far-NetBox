@@ -37,28 +37,28 @@ public:
   virtual ~TFileZillaImpl()
   {}
 
-  virtual const wchar_t * Option(int OptionID) const;
+  virtual const char * Option(int OptionID) const;
   virtual int OptionVal(int OptionID) const;
 
 protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam);
 
-  virtual bool HandleStatus(const wchar_t * Status, int Type);
+  virtual bool HandleStatus(const char * Status, int Type);
   virtual bool HandleAsynchRequestOverwrite(
-    wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
-    const wchar_t * Path1, const wchar_t * Path2,
+    char * FileName1, size_t FileName1Len, const char * FileName2,
+    const char * Path1, const char * Path2,
     __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult);
   virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
-  virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
+  virtual bool HandleListData(const char * Path, const TListDataEntry * Entries,
     unsigned int Count);
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);
   virtual bool HandleReply(int Command, unsigned int Reply);
   virtual bool HandleCapabilities(bool Mfmt);
-  virtual bool CheckError(int ReturnCode, const wchar_t * Context);
+  virtual bool CheckError(int ReturnCode, const char * Context);
 
 private:
   TFTPFileSystem * FFileSystem;
@@ -70,7 +70,7 @@ TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) :
 {
 }
 //---------------------------------------------------------------------------
-const wchar_t * TFileZillaImpl::Option(int OptionID) const
+const char * TFileZillaImpl::Option(int OptionID) const
 {
   return FFileSystem->GetOption(OptionID);
 }
@@ -85,14 +85,14 @@ bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lPar
   return FFileSystem->PostMessage(Type, wParam, lParam);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
+bool TFileZillaImpl::HandleStatus(const char * Status, int Type)
 {
   return FFileSystem->HandleStatus(Status, Type);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleAsynchRequestOverwrite(
-  wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
-  const wchar_t * Path1, const wchar_t * Path2,
+  char * FileName1, size_t FileName1Len, const char * FileName2,
+  const char * Path1, const char * Path2,
   __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
   bool HasTime1, bool HasTime2, void * UserData, int & RequestResult)
 {
@@ -107,7 +107,7 @@ bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
   return FFileSystem->HandleAsynchRequestVerifyCertificate(Data, RequestResult);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleListData(const wchar_t * Path,
+bool TFileZillaImpl::HandleListData(const char * Path,
   const TListDataEntry * Entries, unsigned int Count)
 {
   return FFileSystem->HandleListData(Path, Entries, Count);
@@ -131,7 +131,7 @@ bool TFileZillaImpl::HandleCapabilities(bool Mfmt)
   return FFileSystem->HandleCapabilities(Mfmt);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::CheckError(int ReturnCode, const wchar_t * Context)
+bool TFileZillaImpl::CheckError(int ReturnCode, const char * Context)
 {
   return FFileSystem->CheckError(ReturnCode, Context);
 }
