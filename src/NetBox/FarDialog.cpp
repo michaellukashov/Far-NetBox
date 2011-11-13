@@ -1062,7 +1062,8 @@ TFarDialogItem::TFarDialogItem(TFarDialog *ADialog, int AType) :
 TFarDialogItem::~TFarDialogItem()
 {
     assert(!GetDialog());
-    delete[] GetDialogItem()->PtrData;
+    if (GetDialog())
+        delete[] GetDialogItem()->PtrData;
 }
 //---------------------------------------------------------------------------
 FarDialogItem *TFarDialogItem::GetDialogItem()
