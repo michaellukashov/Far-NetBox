@@ -236,7 +236,7 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
     }
     else
     {   
-        DEBUG_PRINTF(L"Str = %s", Str.c_str());
+        // DEBUG_PRINTF(L"Str = %s", Str.c_str());
         const size_t sz = Str.size() + 1;
         wchar_t *Result = new wchar_t[sz];
         wcscpy_s(Result, sz, Str.c_str());
