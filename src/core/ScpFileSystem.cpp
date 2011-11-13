@@ -1477,12 +1477,12 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       !OperationProgress->Cancel; IFile++)
     {
       std::wstring FileName = FilesToCopy->GetString(IFile);
-      // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+      DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
       bool CanProceed;
 
       std::wstring FileNameOnly =
         CopyParam->ChangeFileName(ExtractFileName(FileName, false), osLocal, true);
-      // DEBUG_PRINTF(L"CheckExistence = %d, FileNameOnly = %s", CheckExistence, FileNameOnly.c_str());
+      DEBUG_PRINTF(L"CheckExistence = %d, FileNameOnly = %s", CheckExistence, FileNameOnly.c_str());
       if (CheckExistence)
       {
         // previously there was assertion on FTerminal->FFiles->Loaded, but it
@@ -1574,6 +1574,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
         try
         {
+          DEBUG_PRINTF(L"FileName = %s, TargetDirFull = %s", FileName.c_str(), TargetDirFull.c_str());
           SCPSource(FileName, TargetDirFull,
             CopyParam, Params, OperationProgress, 0);
           OperationProgress->Finish(FileName, true, OnceDoneOperation);
