@@ -2477,6 +2477,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   std::wstring & DestPath, int OpMode)
 {
   int Result;
+  DEBUG_PRINTF(L"begin, DestPath = %s, Connected = %d", DestPath.c_str(), Connected());
   if (Connected())
   {
     // FAR WORKAROUND
@@ -2595,6 +2596,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   {
     Result = -1;
   }
+  DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------

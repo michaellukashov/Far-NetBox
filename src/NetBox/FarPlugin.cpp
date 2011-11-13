@@ -1924,7 +1924,7 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
 int TCustomFarFileSystem::GetFindData(
     struct PluginPanelItem **PanelItem, int *ItemsNumber, int OpMode)
 {
-    // DEBUG_PRINTF(L"begin");
+    DEBUG_PRINTF(L"begin");
     ResetCachedInfo();
     TObjectList *PanelItems = new TObjectList();
     bool Result;
@@ -1934,7 +1934,7 @@ int TCustomFarFileSystem::GetFindData(
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
         Result = !FClosed && GetFindDataEx(PanelItems, OpMode);
-        // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount = %d", Result, PanelItems->GetCount());
+        DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount = %d", Result, PanelItems->GetCount());
         if (Result && PanelItems->GetCount())
         {
             *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
@@ -1952,7 +1952,7 @@ int TCustomFarFileSystem::GetFindData(
             *ItemsNumber = 0;
         }
     }
-    // DEBUG_PRINTF(L"end: Result = %d", Result);
+    DEBUG_PRINTF(L"end: Result = %d", Result);
     return Result;
 }
 //---------------------------------------------------------------------------
