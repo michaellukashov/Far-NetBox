@@ -2316,7 +2316,7 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
         {
             for (int Index = 0; Index < ColumnTypesCount; Index++)
             {
-                delete[] Mode.ColumnTitles[Index];
+                // delete[] Mode.ColumnTitles[Index];
             }
             // delete[] Mode.ColumnTitles;
         }
