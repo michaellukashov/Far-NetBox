@@ -1512,6 +1512,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
             FTerminal->OpenLocalFile(FileName, GENERIC_READ,
               NULL, NULL, NULL, &MTime, NULL,
               &FileParams.SourceSize);
+            DEBUG_PRINTF(L"FileParams.SourceSize = %d", FileParams.SourceSize);
             FileParams.SourceTimestamp = UnixToDateTime(MTime,
               FTerminal->GetSessionData()->GetDSTMode());
             FileParams.DestSize = File->GetSize();
