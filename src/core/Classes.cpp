@@ -200,7 +200,7 @@ void TList::Sort()
 }
 //---------------------------------------------------------------------------
 TObjectList::TObjectList() :
-    FOwnsObjects(false)
+    FOwnsObjects(true)
 {
 }
 TObjectList::~TObjectList()
