@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // testnetbox_02.cpp
 // Тесты для NetBox
-// testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all
+// testnetbox_02 --run_test=testnetbox_02/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
 #include "stdafx.h"
@@ -33,6 +33,7 @@
 #include "TextsCore.h"
 #include "FileOperationProgress.h"
 #include "HierarchicalStorage.h"
+#include "CoreMain.h"
 
 using namespace boost::unit_test;
 
@@ -51,12 +52,14 @@ public:
     {
         // BOOST_TEST_MESSAGE("base_fixture_t ctor");
         FarPlugin = CreateStub();
+        // CoreInitialize();
     }
 
     virtual ~base_fixture_t()
     {
         delete FarPlugin;
         FarPlugin = NULL;
+        // CoreFinalize();
     }
 
     bool scp_test(std::string host, int port, std::string user, std::string password);
@@ -572,11 +575,11 @@ BOOST_FIXTURE_TEST_CASE(test19, base_fixture_t)
     BOOST_CHECK(ProgramsFolder.size() > 0);
 }
 
-BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
-{
-    random_ref();
-    random_unref();
-}
+// BOOST_FIXTURE_TEST_CASE(test20, base_fixture_t)
+// {
+    // random_ref();
+    // random_unref();
+// }
 
 BOOST_FIXTURE_TEST_CASE(test21, base_fixture_t)
 {
@@ -591,6 +594,11 @@ BOOST_FIXTURE_TEST_CASE(test21, base_fixture_t)
     std::wstring dec = ::DecryptPassword(enc, L"234556");
     BOOST_TEST_MESSAGE("dec = " << ::W2MB(dec.c_str()).c_str());
     BOOST_CHECK(dec == L"1234ABC");
+}
+
+BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
+{
+    // FarPlugin->RunTests();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

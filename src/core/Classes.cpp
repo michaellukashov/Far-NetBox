@@ -63,9 +63,26 @@ size_t TList::GetCount() const
 {
     return FList.size();
 }
-void TList::SetCount(size_t value)
+void TList::SetCount(size_t NewCount)
 {
-    FList.resize(value);
+    // FList.resize(value);
+  if ((int)NewCount < 0) //  or (NewCount > MaxListSize) then
+    ::Error(SListCountError, NewCount);
+  // if (NewCount > FCapacity)
+    // SetCapacity(NewCount);
+  if (NewCount > FList.size())
+  {
+    // FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
+    // FList.resize(NewCount);
+  }
+  else
+  {
+    int sz = FList.size();
+    for (int I = sz - 1; I > (int)NewCount; I--)
+      Delete(I);
+  }
+  // FCount := NewCount;
+  FList.resize(NewCount);
 }
 
 void *TList::operator [](size_t Index) const
@@ -128,7 +145,12 @@ void TList::Delete(size_t Index)
     {
       ::Error(SListIndexError, Index);
     }
+    void *Temp = GetItem(Index);
     FList.erase(FList.begin() + Index);
+  if (Temp != NULL)
+  {
+    Notify(Temp, lnDeleted);
+  }
 }
 void TList::Insert(size_t Index, void *Item)
 {
@@ -156,7 +178,9 @@ int TList::IndexOf(void *value) const
 }
 void TList::Clear()
 {
-    FList.clear();
+    // FList.clear();
+    SetCount(0);
+    // SetCapacity(0);
 }
 
 void TList::Sort(CompareFunc func)
@@ -176,11 +200,12 @@ void TList::Sort()
 }
 //---------------------------------------------------------------------------
 TObjectList::TObjectList() :
-    FOwnsObjects(false)
+    FOwnsObjects(true)
 {
 }
 TObjectList::~TObjectList()
 {
+    Clear();
 }
 
 TObject *TObjectList::operator [](size_t Index) const
@@ -248,10 +273,11 @@ void TObjectList::Notify(void *Ptr, int Action)
   {
     if (Action == lnDeleted)
     {
-      ((TObject *)Ptr)->Free();
+      // ((TObject *)Ptr)->Free();
+      delete (TObject *)Ptr;
     }
   }
-    parent::Notify(Ptr, Action);
+  parent::Notify(Ptr, Action);
 }
 //---------------------------------------------------------------------------
 const std::wstring sLineBreak = L"\n";
@@ -624,8 +650,8 @@ size_t TStringList::GetCount() const
 void TStringList::Clear()
 {
     FList.clear();
-      // SetCount(0);
-      // SetCapacity(0);
+    // SetCount(0);
+    // SetCapacity(0);
 }
 size_t TStringList::Add(std::wstring S)
 {
@@ -1275,7 +1301,7 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
     if (Result > 0)
     {
       if (Result > Count) Result = Count;
-      memmove((char *)FMemory + FPosition, Buffer, (int)Result);
+      memmove(Buffer, (char *)FMemory + FPosition, (int)Result);
       FPosition += Result;
       return Result;
     }
@@ -1389,7 +1415,7 @@ __int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
           SetCapacity(Pos);
         FSize = Pos;
       }
-      memmove((char *)Buffer, (char *)FMemory + FPosition, (int)Count);
+      memmove((char *)FMemory + FPosition, (char *)Buffer, (int)Count);
       FPosition = Pos;
       Result = Count;
     }

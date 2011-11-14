@@ -260,6 +260,7 @@ void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNu
     panelInstance->FreeItemList(panelItem, itemsNumber);
     FarPlugin->FreeFindData(plugin, panelItem, itemsNumber);
 #endif
+    FarPlugin->FreeFindData(plugin, panelItem, itemsNumber);
 }
 
 int WINAPI ProcessHostFileW(HANDLE Plugin,

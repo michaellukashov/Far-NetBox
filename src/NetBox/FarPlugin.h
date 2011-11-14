@@ -426,6 +426,10 @@ protected:
 
     TCriticalSection *GetCriticalSection() const { return FCriticalSection; }
 
+#ifdef NETBOX_DEBUG
+public:
+    void RunTests();
+#endif
 private:
     PluginInfo FPluginInfo;
     TStringList *FSavedTitles;
@@ -562,12 +566,14 @@ private:
     static void ClearKeyBarTitles(KeyBarTitles &Titles);
 };
 //---------------------------------------------------------------------------
-class TCustomFarPanelItem : TObject
+class TCustomFarPanelItem : public TObject
 {
     friend class TCustomFarFileSystem;
 public:
 
 protected:
+    virtual ~TCustomFarPanelItem()
+    {}
     virtual void GetData(
         unsigned long &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
@@ -579,10 +585,12 @@ protected:
     void FillPanelItem(struct PluginPanelItem *PanelItem);
 };
 //---------------------------------------------------------------------------
-class TFarPanelItem : TCustomFarPanelItem
+class TFarPanelItem : public TCustomFarPanelItem
 {
 public:
-    TFarPanelItem(PluginPanelItem *APanelItem);
+    explicit TFarPanelItem(PluginPanelItem *APanelItem);
+    virtual ~TFarPanelItem()
+    {}
     unsigned long GetFlags();
     unsigned long GetFileAttributes();
     std::wstring GetFileName();
@@ -609,7 +617,9 @@ private:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-    THintPanelItem(const std::wstring AHint);
+    explicit THintPanelItem(const std::wstring AHint);
+    virtual ~THintPanelItem()
+    {}
 
 protected:
     virtual void GetData(
@@ -661,7 +671,9 @@ enum MENUITEMFLAGS_EX
 class TFarMenuItems : public TStringList
 {
 public:
-    TFarMenuItems();
+    explicit TFarMenuItems();
+    virtual ~TFarMenuItems()
+    {}
     void AddSeparator(bool Visible = true);
     virtual int Add(std::wstring Text, bool Visible = true);
 

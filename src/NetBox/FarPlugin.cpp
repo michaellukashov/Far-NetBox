@@ -10,6 +10,9 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "TextsCore.h"
+#include "FileMasks.h"
+#include "puttyexp.h"
+
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TCustomFarPlugin *FarPlugin = NULL;
@@ -233,7 +236,7 @@ wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
     }
     else
     {   
-        // DEBUG_PRINTF(L"Str.size = %d", Str.size());
+        // DEBUG_PRINTF(L"Str = %s", Str.c_str());
         const size_t sz = Str.size() + 1;
         wchar_t *Result = new wchar_t[sz];
         wcscpy_s(Result, sz, Str.c_str());
@@ -1772,7 +1775,22 @@ int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD *Rec)
     }
     return Result;
 }
-//---------------------------------------------------------------------------
+
+void TCustomFarPlugin::RunTests()
+{
+    DEBUG_PRINTF(L"begin");
+    {
+        TFileMasks m(L"*.txt;*.log");
+        bool res = m.Matches(L"test.exe");
+        DEBUG_PRINTF(L"res = %d", res);
+    }
+    {
+        random_ref();
+        random_unref();
+    }
+    DEBUG_PRINTF(L"end");
+}
+
 //---------------------------------------------------------------------------
 unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
@@ -1947,6 +1965,7 @@ void TCustomFarFileSystem::FreeFindData(
         assert(ItemsNumber > 0);
         for (int Index = 0; Index < ItemsNumber; Index++)
         {
+            delete[] PanelItem[Index].FindData.lpwszFileName;
             delete[] PanelItem[Index].Description;
             delete[] PanelItem[Index].Owner;
             for (int CustomIndex = 0; CustomIndex < PanelItem[Index].CustomColumnNumber; CustomIndex++)
@@ -2289,7 +2308,7 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
     if (Mode.ColumnTypes)
     {
         int ColumnTypesCount = Mode.ColumnTypes ?
-                               CommaCount(std::wstring(Mode.ColumnTypes)) + 1 : 0;
+            CommaCount(std::wstring(Mode.ColumnTypes)) + 1 : 0;
 
         delete[] Mode.ColumnTypes;
         delete[] Mode.ColumnWidths;
@@ -2297,7 +2316,7 @@ void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
         {
             for (int Index = 0; Index < ColumnTypesCount; Index++)
             {
-                // delete[] Mode.ColumnTitles[Index]; // TODO: check memory leaks
+                // delete[] Mode.ColumnTitles[Index];
             }
             // delete[] Mode.ColumnTitles;
         }

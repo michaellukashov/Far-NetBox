@@ -88,7 +88,7 @@
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -109,7 +109,7 @@
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -134,7 +134,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -162,7 +162,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\Common;..\core;..\resource;..\windows;..\WinSCP;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -197,16 +197,16 @@
     <ClCompile Include="Logging.cpp" />
     <ClCompile Include="WebDAV.cpp" />
     <ClCompile Include=".\NetBoxPlugin.cpp" />
-    <ClCompile Include="..\Common\FarDialog.cpp" />
-    <ClCompile Include="..\Common\FarPlugin.cpp" />
-    <ClCompile Include="..\Common\FarUtil.cpp" />
-    <ClCompile Include="..\Common\Common.cpp" />
-    <ClCompile Include="..\Common\Classes.cpp" />
-    <ClCompile Include="..\WinSCP\WinSCPFileSystem.cpp" />
-    <ClCompile Include="..\WinSCP\WinSCPDialogs.cpp" />
-    <ClCompile Include="..\WinSCP\WinSCPPlugin.cpp" />
-    <ClCompile Include="..\WinSCP\FarConfiguration.cpp" />
-    <ClCompile Include="..\WinSCP\FarInterface.cpp" />
+    <ClCompile Include=".\FarDialog.cpp" />
+    <ClCompile Include=".\FarPlugin.cpp" />
+    <ClCompile Include=".\FarUtil.cpp" />
+    <ClCompile Include=".\WinSCPFileSystem.cpp" />
+    <ClCompile Include=".\WinSCPDialogs.cpp" />
+    <ClCompile Include=".\WinSCPPlugin.cpp" />
+    <ClCompile Include=".\FarConfiguration.cpp" />
+    <ClCompile Include=".\FarInterface.cpp" />
+    <ClCompile Include="..\core\Common.cpp" />
+    <ClCompile Include="..\core\Classes.cpp" />
     <ClCompile Include="..\core\RemoteFiles.cpp" />
     <ClCompile Include="..\core\Terminal.cpp" />
     <ClCompile Include="..\core\Exceptions.cpp" />

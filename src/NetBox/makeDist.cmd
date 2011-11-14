@@ -31,17 +31,17 @@ if exist %PKGDIR% rmdir /S /Q %PKGDIR%
 
 :: Copy files
 mkdir %PKGDIR%
-call ..\Common\makeCopyCommon.cmd %~d0%~p0 %PKGDIR%
+call .\makeCopyCommon.cmd %~d0%~p0 %PKGDIR%
 mkdir %PKGDIR%\Sessions
 copy Sessions %PKGDIR%\Sessions > NUL
 if "%PLUGINARCH%" equ "src"    (
-    call ..\Common\makeCopySources.cmd %~d0%~p0 %PKGDIR%
+    call .\makeCopySources.cmd %~d0%~p0 %PKGDIR%
     mkdir %PKGDIR%\tinyXML
     copy ..\libs\tinyXML %PKGDIR%\tinyXML > NUL
 ) else (
     copy ..\libs\openssl\%PLUGINARCH%\out32dll\*.dll %PKGDIR% > NUL
     copy ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
-    call ..\Common\makeCopyCommon.cmd %~d0%~p0 ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
+    call .\makeCopyCommon.cmd %~d0%~p0 ..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
 )
 :: Make archive
 call "C:\Program Files\7-Zip\7z.exe" a -t7z -r %PKGNAME% %PKGDIR% > NUL
