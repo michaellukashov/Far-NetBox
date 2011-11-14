@@ -676,7 +676,7 @@ std::wstring GetCurrentDir()
     {
         ::GetCurrentDirectory(sizeof(path), path);
     }
-    DEBUG_PRINTF(L"path = %s", path);
+    // DEBUG_PRINTF(L"path = %s", path);
     result = path;
     return result;
 }
