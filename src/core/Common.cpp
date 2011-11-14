@@ -668,7 +668,14 @@ std::wstring GetCurrentDir()
 {
     std::wstring result;
     wchar_t path[MAX_PATH + 1];
-    GetCurrentDirectory(sizeof(path), path);
+    if (FarPlugin)
+    {
+        FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(sizeof(path), path);
+    }
+    else
+    {
+        ::GetCurrentDirectory(sizeof(path), path);
+    }
     DEBUG_PRINTF(L"path = %s", path);
     result = path;
     return result;
