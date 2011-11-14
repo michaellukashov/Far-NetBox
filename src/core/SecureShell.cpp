@@ -293,7 +293,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
       {
         // see psftp_connect() from psftp.c
         cfg->ssh_subsys2 = FALSE;
-        cfg->remote_cmd_ptr2 = StrNew(
+        cfg->remote_cmd_ptr2 = ::StrNew(
           "test -x /usr/lib/sftp-server && exec /usr/lib/sftp-server\n"
           "test -x /usr/local/lib/sftp-server && exec /usr/local/lib/sftp-server\n"
           "exec sftp-server");

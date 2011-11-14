@@ -3674,6 +3674,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     bool Success = false;
     FileName = FilesToCopy->GetString(Index);
     FileNameOnly = ExtractFileName(FileName, false);
+    // DEBUG_PRINTF(L"FileName = %s, FileNameOnly = %s", FileName.c_str(), FileNameOnly.c_str());
     assert(!FAvoidBusy);
     FAvoidBusy = true;
 
