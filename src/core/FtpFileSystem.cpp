@@ -97,7 +97,7 @@ bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   bool HasTime1, bool HasTime2, void * UserData, int & RequestResult)
 {
   return FFileSystem->HandleAsynchRequestOverwrite(
-    FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, Time1, Time2,
+    ::MB2W(FileName1).c_str(), FileName1Len, FileName2, Path1, Path2, Size1, Size2, Time1, Time2,
     HasTime1, HasTime2, UserData, RequestResult);
 }
 //---------------------------------------------------------------------------

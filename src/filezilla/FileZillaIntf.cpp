@@ -3,6 +3,7 @@
 //---------------------------------------------------------------------------
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
+#include "Classes.h"
 //---------------------------------------------------------------------------
 #ifndef _DEBUG
 #pragma comment(lib, "nafxcw.lib")
@@ -87,7 +88,8 @@ bool TFileZillaIntf::GetCurrentPath(char * Path, size_t MaxLen)
     // char nstring[APath.Size()];
     // strcpy_s(nstring, APath);
     // strncpy(Path, APath.GetPath(), MaxLen);
-    strcpy_s(Path, MaxLen, APath.GetPath().GetBuffer(MaxLen));
+	CString path = APath.GetPath();
+    strcpy_s(Path, MaxLen, ::W2MB(path.GetBuffer(MaxLen)).c_str());
     Path[MaxLen - 1] = '\0';
   }
   return Result;
@@ -254,14 +256,14 @@ bool TFileZillaIntf::PostMessage(WPARAM wParam, LPARAM lParam)
 void CopyContact(TFtpsCertificateData::TContact & Dest,
   const t_SslCertData::t_Contact& Source)
 {
-  Dest.Organization = Source.Organization;
-  Dest.Unit = Source.Unit;
-  Dest.CommonName = Source.CommonName;
-  Dest.Mail = Source.Mail;
-  Dest.Country = Source.Country;
-  Dest.StateProvince = Source.StateProvince;
-  Dest.Town = Source.Town;
-  Dest.Other = Source.Other;
+  Dest.Organization = (const char *)Source.Organization;
+  Dest.Unit = (const char *)Source.Unit;
+  Dest.CommonName = (const char *)Source.CommonName;
+  Dest.Mail = (const char *)Source.Mail;
+  Dest.Country = (const char *)Source.Country;
+  Dest.StateProvince = (const char *)Source.StateProvince;
+  Dest.Town = (const char *)Source.Town;
+  Dest.Other = (const char *)Source.Other;
 }
 //---------------------------------------------------------------------------
 void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
@@ -288,7 +290,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         ASSERT(FZ_MSG_PARAM(wParam) == 0);
         t_ffam_statusmessage * Status = (t_ffam_statusmessage *)lParam;
         ASSERT(Status->post);
-        Result = HandleStatus(Status->status, Status->type);
+        Result = HandleStatus(::W2MB(Status->status.c_str()).c_str(), Status->type);
         delete Status;
       }
 
@@ -303,7 +305,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         try
         {
           ASSERT(Data != NULL);
-          strncpy(FileName1, Data->FileName1, sizeof(FileName1));
+          strncpy(FileName1, ::W2MB(Data->FileName1.GetBuffer(Data->FileName1.GetLength())).c_str(), sizeof(FileName1));
           FileName1[sizeof(FileName1) - 1] = '\0';
           Result = HandleAsynchRequestOverwrite(
             FileName1, sizeof(FileName1), Data->FileName2, Data->path1, Data->path2,
