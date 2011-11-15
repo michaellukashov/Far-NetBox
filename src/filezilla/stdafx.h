@@ -6,7 +6,7 @@
 // #define CStringA CString
 // #define CStringW std::wstring
 //---------------------------------------------------------------------------
-#define __fastcall
+// #define __fastcall
 
 #ifndef _AFXDLL
 #define _AFXDLL
