@@ -21,12 +21,13 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include <assert.h>
 #include "ServerPath.h"
 #include "structures.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static wchar_t THIS_FILE[]=__FILE__;
+static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
