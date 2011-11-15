@@ -431,8 +431,12 @@ void TFTPFileSystem::Open()
     }
 
     FActive = FFileZillaIntf->Connect(
-      ::W2MB(HostName.c_str()).c_str(), Data->GetPortNumber(), UserName.c_str(),
-      Password.c_str(), Account.c_str(), false, Path.c_str(),
+      ::W2MB(HostName.c_str()).c_str(), Data->GetPortNumber(),
+	  ::W2MB(UserName.c_str()).c_str(),
+      ::W2MB(Password.c_str()).c_str(),
+	  ::W2MB(Account.c_str()).c_str(),
+	  false,
+	  ::W2MB(Path.c_str()).c_str(),
       ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
 
     assert(FActive);
@@ -588,7 +592,7 @@ void TFTPFileSystem::AnyCommand(const std::wstring Command,
     {
       Self->FOnCaptureOutput.disconnect_all_slots();
     } BOOST_SCOPE_EXIT_END
-    FFileZillaIntf->CustomCommand(Command.c_str());
+    FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -608,7 +612,7 @@ void TFTPFileSystem::AnnounceFileListOperation()
 void TFTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
 {
   std::wstring Command = FORMAT(L"CWD %s", (Directory));
-  FFileZillaIntf->CustomCommand(Command.c_str());
+  FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
@@ -709,7 +713,9 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
       std::wstring FileNameOnly = UnixExtractFileName(FileName);
       std::wstring FilePath = UnixExtractFilePath(FileName);
       // FZAPI wants octal number represented as decadic
-      FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
+      FFileZillaIntf->Chmod(Rights.GetNumberDecadic(),
+		::W2MB(FileNameOnly.c_str()).c_str(),
+		::W2MB(FilePath.c_str()).c_str());
 
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
@@ -911,8 +917,11 @@ void TFTPFileSystem::FileTransfer(const std::wstring & FileName,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
-    FFileZillaIntf->FileTransfer(LocalFile.c_str(), RemoteFile.c_str(),
-      RemotePath.c_str(), Get, Size, Type, &UserData);
+    FFileZillaIntf->FileTransfer(
+	  ::W2MB(LocalFile.c_str()).c_str(),
+	  ::W2MB(RemoteFile.c_str()).c_str(),
+      ::W2MB(RemotePath.c_str()).c_str(),
+	  Get, Size, Type, &UserData);
     // we may actually catch reponse code of the listing
     // command (when checking for existence of the remote file)
     unsigned int Reply = WaitForCommandReply();
@@ -1538,7 +1547,7 @@ void TFTPFileSystem::CreateDirectory(const std::wstring ADirName)
     // ignore file list
     TFileListHelper Helper(this, NULL, true);
 
-    FFileZillaIntf->MakeDir(DirName.c_str());
+    FFileZillaIntf->MakeDir(::W2MB(DirName.c_str()).c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -1589,11 +1598,13 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
       {
         EnsureLocation();
       }
-      FFileZillaIntf->RemoveDir(FileNameOnly.c_str(), FilePath.c_str());
+      FFileZillaIntf->RemoveDir(::W2MB(FileNameOnly.c_str()).c_str(),
+		::W2MB(FilePath.c_str()).c_str());
     }
     else
     {
-      FFileZillaIntf->Delete(FileNameOnly.c_str(), FilePath.c_str());
+      FFileZillaIntf->Delete(::W2MB(FileNameOnly.c_str()).c_str(),
+		::W2MB(FilePath.c_str()).c_str());
     }
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -1622,7 +1633,7 @@ void TFTPFileSystem::DoStartup()
       std::wstring Command = PostLoginCommands->GetString(Index);
       if (!Command.empty())
       {
-        FFileZillaIntf->CustomCommand(Command.c_str());
+        FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
 
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
       }
@@ -1696,7 +1707,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // directory anyway, see comments in EnsureLocation
   if (FCurrentDirectory.empty())
   {
-    FFileZillaIntf->CustomCommand(L"PWD");
+    FFileZillaIntf->CustomCommand("PWD");
 
     unsigned int Code;
     TStrings * Response = NULL;
@@ -1736,7 +1747,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
       if (Result)
       {
-        FFileZillaIntf->SetCurrentPath(FCurrentDirectory.c_str());
+        FFileZillaIntf->SetCurrentPath(::W2MB(FCurrentDirectory.c_str()).c_str());
       }
       else
       {
@@ -1760,7 +1771,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
   // 1) List() lists again the last listed directory, not the current working directory
   // 2) we handle this way the cached directory change
   std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
-  FFileZillaIntf->List(Directory.c_str());
+  FFileZillaIntf->List(::W2MB(Directory.c_str()).c_str());
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
 
@@ -1906,8 +1917,10 @@ void TFTPFileSystem::RenameFile(const std::wstring AFileName,
     // ignore file list
     TFileListHelper Helper(this, NULL, true);
 
-    FFileZillaIntf->Rename(FileNameOnly.c_str(), NewNameOnly.c_str(),
-      FilePathOnly.c_str(), NewPathOnly.c_str());
+    FFileZillaIntf->Rename(::W2MB(FileNameOnly.c_str()).c_str(),
+		::W2MB(NewNameOnly.c_str()).c_str(),
+      ::W2MB(FilePathOnly.c_str()).c_str(),
+	  ::W2MB(NewPathOnly.c_str()).c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -2926,7 +2939,10 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
   std::wstring Result =
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
       FormatContactList(FormatContactList(FormatContactList(
-        Contact.Organization, Contact.Unit), Contact.CommonName).c_str(), Contact.Mail).c_str());
+        ::MB2W(Contact.Organization).c_str(),
+		::MB2W(Contact.Unit).c_str()),
+		::MB2W(Contact.CommonName).c_str()),
+			::MB2W(Contact.Mail).c_str()));
 
   if ((wcslen(Contact.Country) > 0) ||
       (wcslen(Contact.StateProvince) > 0) ||
@@ -2935,7 +2951,9 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
     Result +=
       FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
         FormatContactList(FormatContactList(
-          Contact.Country, Contact.StateProvince), Contact.Town).c_str());
+          ::MB2W(Contact.Country).c_str(),
+		  ::MB2W(Contact.StateProvince).c_str()).c_str(),
+			::MB2W(Contact.Town).c_str()).c_str());
   }
 
   if (wcslen(Contact.Other) > 0)
