@@ -72,7 +72,7 @@ TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) :
 //---------------------------------------------------------------------------
 const char * TFileZillaImpl::Option(int OptionID) const
 {
-  return FFileSystem->GetOption(OptionID);
+  return ::W2MB(FFileSystem->GetOption(OptionID)).c_str();
 }
 //---------------------------------------------------------------------------
 int TFileZillaImpl::OptionVal(int OptionID) const
@@ -87,7 +87,7 @@ bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lPar
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleStatus(const char * Status, int Type)
 {
-  return FFileSystem->HandleStatus(Status, Type);
+  return FFileSystem->HandleStatus(::MB2W(Status).c_str(), Type);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleAsynchRequestOverwrite(
