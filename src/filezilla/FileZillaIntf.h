@@ -136,60 +136,60 @@ public:
   bool Init();
   void Destroying();
 
-  bool __fastcall SetCurrentPath(const char * Path);
-  bool __fastcall GetCurrentPath(char * Path, size_t MaxLen);
+  bool SetCurrentPath(const char * Path);
+  bool GetCurrentPath(char * Path, size_t MaxLen);
 
   bool Cancel();
 
-  bool __fastcall Connect(const char * Host, int Port, const char * User,
+  bool Connect(const char * Host, int Port, const char * User,
     const char * Pass, const char * Account, bool FwByPass,
     const char * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
     bool bForcePasvIp);
   bool Close();
 
   bool List();
-  bool __fastcall List(const char * Path);
+  bool List(const char * Path);
 
-  bool __fastcall CustomCommand(const char * Command);
+  bool CustomCommand(const char * Command);
 
-  bool __fastcall MakeDir(const char* Path);
-  bool __fastcall Chmod(int Value, const char* FileName, const char* Path);
-  bool __fastcall Delete(const char* FileName, const char* Path);
-  bool __fastcall RemoveDir(const char* FileName, const char* Path);
-  bool __fastcall Rename(const char* OldName, const char* NewName,
+  bool MakeDir(const char* Path);
+  bool Chmod(int Value, const char* FileName, const char* Path);
+  bool Delete(const char* FileName, const char* Path);
+  bool RemoveDir(const char* FileName, const char* Path);
+  bool Rename(const char* OldName, const char* NewName,
     const char* Path, const char* NewPath);
 
-  bool __fastcall FileTransfer(const char * LocalFile, const char * RemoteFile,
+  bool FileTransfer(const char * LocalFile, const char * RemoteFile,
     const char * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
 
-  virtual const char * __fastcall Option(int OptionID) const = 0;
-  virtual int __fastcall OptionVal(int OptionID) const = 0;
+  virtual const char * Option(int OptionID) const = 0;
+  virtual int OptionVal(int OptionID) const = 0;
 
-  void __fastcall SetDebugLevel(TLogLevel Level);
-  bool __fastcall HandleMessage(WPARAM wParam, LPARAM lParam);
+  void SetDebugLevel(TLogLevel Level);
+  bool HandleMessage(WPARAM wParam, LPARAM lParam);
 
 protected:
-  bool __fastcall PostMessage(WPARAM wParam, LPARAM lParam);
-  virtual bool __fastcall DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
+  bool PostMessage(WPARAM wParam, LPARAM lParam);
+  virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
-  virtual bool __fastcall HandleStatus(const char * Status, int Type) = 0;
-  virtual bool __fastcall HandleAsynchRequestOverwrite(
+  virtual bool HandleStatus(const char * Status, int Type) = 0;
+  virtual bool HandleAsynchRequestOverwrite(
     char * FileName1, size_t FileName1Len, const char * FileName2,
     const char * Path1, const char * Path2,
     __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult) = 0;
-  virtual bool __fastcall HandleAsynchRequestVerifyCertificate(
+  virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
-  virtual bool __fastcall HandleListData(const char * Path, const TListDataEntry * Entries,
+  virtual bool HandleListData(const char * Path, const TListDataEntry * Entries,
     unsigned int Count) = 0;
-  virtual bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
+  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;
-  virtual bool __fastcall HandleReply(int Command, unsigned int Reply) = 0;
-  virtual bool __fastcall HandleCapabilities(bool Mfmt) = 0;
-  virtual bool __fastcall CheckError(int ReturnCode, const char * Context);
+  virtual bool HandleReply(int Command, unsigned int Reply) = 0;
+  virtual bool HandleCapabilities(bool Mfmt) = 0;
+  virtual bool CheckError(int ReturnCode, const char * Context);
 
-  inline bool __fastcall Check(int ReturnCode, const char * Context, int Expected = -1);
+  inline bool Check(int ReturnCode, const char * Context, int Expected = -1);
 
 private:
   CFileZillaApi * FFileZillaApi;
