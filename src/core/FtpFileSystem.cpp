@@ -97,7 +97,10 @@ bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   bool HasTime1, bool HasTime2, void * UserData, int & RequestResult)
 {
   return FFileSystem->HandleAsynchRequestOverwrite(
-    ::MB2W(FileName1).c_str(), FileName1Len, FileName2, Path1, Path2, Size1, Size2, Time1, Time2,
+    (wchar_t *)::MB2W(FileName1).c_str(), FileName1Len,
+	(wchar_t *)::MB2W(FileName2).c_str(),
+	(wchar_t *)::MB2W(Path1).c_str(),
+	(wchar_t *)::MB2W(Path2).c_str(), Size1, Size2, Time1, Time2,
     HasTime1, HasTime2, UserData, RequestResult);
 }
 //---------------------------------------------------------------------------
@@ -110,7 +113,7 @@ bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
 bool TFileZillaImpl::HandleListData(const char * Path,
   const TListDataEntry * Entries, unsigned int Count)
 {
-  return FFileSystem->HandleListData(Path, Entries, Count);
+  return FFileSystem->HandleListData(::MB2W(Path).c_str(), Entries, Count);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleTransferStatus(bool Valid, __int64 TransferSize,
@@ -133,7 +136,7 @@ bool TFileZillaImpl::HandleCapabilities(bool Mfmt)
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::CheckError(int ReturnCode, const char * Context)
 {
-  return FFileSystem->CheckError(ReturnCode, Context);
+  return FFileSystem->CheckError(ReturnCode, ::MB2W(Context).c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -428,7 +431,7 @@ void TFTPFileSystem::Open()
     }
 
     FActive = FFileZillaIntf->Connect(
-      HostName.c_str(), Data->GetPortNumber(), UserName.c_str(),
+      ::W2MB(HostName.c_str()).c_str(), Data->GetPortNumber(), UserName.c_str(),
       Password.c_str(), Account.c_str(), false, Path.c_str(),
       ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
 
@@ -546,9 +549,9 @@ std::wstring TFTPFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
 //---------------------------------------------------------------------------
 std::wstring TFTPFileSystem::ActualCurrentDirectory()
 {
-  wchar_t CurrentPath[1024];
+  char CurrentPath[1024];
   FFileZillaIntf->GetCurrentPath(CurrentPath, sizeof(CurrentPath));
-  return UnixExcludeTrailingBackslash(std::wstring(CurrentPath));
+  return UnixExcludeTrailingBackslash(std::wstring(::MB2W(CurrentPath)));
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::EnsureLocation()
