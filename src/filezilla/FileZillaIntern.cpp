@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 //---------------------------------------------------------------------------
+#include <assert.h>
 #include "FileZillaIntern.h"
 #include "FileZillaIntf.h"
 #include "FileZillaApi.h"
