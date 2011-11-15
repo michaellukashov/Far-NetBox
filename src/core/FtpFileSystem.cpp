@@ -3206,16 +3206,17 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
             // ignore permissions errors with FTP
           }
         }
-
-        const wchar_t * Space = wcschr(Entry->OwnerGroup, ' ');
+		// FIXME
+		std::wstring own = ::MB2W(Entry->OwnerGroup).c_str();
+        const wchar_t * Space = wcschr(own.c_str(), ' ');
         if (Space != NULL)
         {
-          File->GetOwner().SetName(std::wstring(Entry->OwnerGroup, Space - Entry->OwnerGroup));
+          File->GetOwner().SetName(std::wstring(own.c_str(), Space - own.c_str()));
           File->GetGroup().SetName(Space + 1);
         }
         else
         {
-          File->GetOwner().SetName(Entry->OwnerGroup);
+          File->GetOwner().SetName(::MB2W(Entry->OwnerGroup).c_str());
         }
 
         File->SetSize(Entry->Size);
@@ -3263,7 +3264,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         }
         File->SetLastAccess(File->GetModification());
 
-        File->SetLinkTo(Entry->LinkTarget);
+        File->SetLinkTo(::MB2W(Entry->LinkTarget).c_str());
 
         File->Complete();
       }
