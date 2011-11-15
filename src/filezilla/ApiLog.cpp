@@ -88,7 +88,7 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, text);
+	SendLogMessage(nMessageType, (LPCTSTR)::W2MB(text.c_str()).c_str());
 }
 
 void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
@@ -113,13 +113,13 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 		return;
 
 	std::wstring str;
-	str.LoadString(nFormatID);
+	// FIXME str.LoadString(nFormatID);
 
 	va_list ap;
     
     va_start(ap, nFormatID);
     std::wstring text;
-	text.FormatV(str, ap);
+	// FIXME text.FormatV(str, ap);
 	va_end(ap);
 	
 #ifdef MPEXT
