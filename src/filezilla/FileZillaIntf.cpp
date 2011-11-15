@@ -308,7 +308,10 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           strncpy(FileName1, ::W2MB(Data->FileName1.GetBuffer(Data->FileName1.GetLength())).c_str(), sizeof(FileName1));
           FileName1[sizeof(FileName1) - 1] = '\0';
           Result = HandleAsynchRequestOverwrite(
-            FileName1, sizeof(FileName1), Data->FileName2, Data->path1, Data->path2,
+            FileName1, sizeof(FileName1),
+			::W2MB(Data->FileName2.GetBuffer(Data->FileName2.GetLength())).c_str(),
+			::W2MB(Data->path1.GetBuffer(Data->path1.GetLength())).c_str(),
+			::W2MB(Data->path2.GetBuffer(Data->path2.GetLength())).c_str(),
             Data->size1, Data->size2,
             (Data->time1 != NULL) ? Data->time1->GetTime() : 0,
             (Data->time2 != NULL) ? Data->time2->GetTime() : 0,
@@ -381,9 +384,9 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           t_directory::t_direntry & Source = Directory->direntry[Index];
           TListDataEntry & Dest = Entries[Index];
 
-          Dest.Name = Source.name;
-          Dest.Permissions = Source.permissionstr;
-          Dest.OwnerGroup = Source.ownergroup;
+          Dest.Name = (const char *)Source.name.GetBuffer(Source.name.GetLength());
+          Dest.Permissions = (const char *)Source.permissionstr.GetBuffer(Source.permissionstr.GetLength());
+          Dest.OwnerGroup = (const char *)Source.ownergroup.GetBuffer(Source.ownergroup.GetLength());
           Dest.Size = Source.size;
           Dest.Dir = Source.dir;
           Dest.Link = Source.bLink;
@@ -394,13 +397,13 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Minute = Source.date.minute;
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
-          Dest.LinkTarget = Source.linkTarget;
+          Dest.LinkTarget = (const char *)Source.linkTarget.GetBuffer(Source.linkTarget.GetLength());
         }
 
         int Num = Directory->num;
         delete Directory;
 
-        Result = HandleListData(Path, &Entries[0], Num);
+        Result = HandleListData(::W2MB(Path.GetBuffer(Path.GetLength())).c_str(), &Entries[0], Num);
       }
       break;
 
