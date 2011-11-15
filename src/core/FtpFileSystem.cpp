@@ -2944,9 +2944,9 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
 		::MB2W(Contact.CommonName).c_str()),
 			::MB2W(Contact.Mail).c_str()));
 
-  if ((wcslen(Contact.Country) > 0) ||
-      (wcslen(Contact.StateProvince) > 0) ||
-      (wcslen(Contact.Town) > 0))
+  if ((strlen(Contact.Country) > 0) ||
+      (strlen(Contact.StateProvince) > 0) ||
+      (strlen(Contact.Town) > 0))
   {
     Result +=
       FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
@@ -2956,7 +2956,7 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
 			::MB2W(Contact.Town).c_str()).c_str());
   }
 
-  if (wcslen(Contact.Other) > 0)
+  if (strlen(Contact.Other) > 0)
   {
     Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
   }
@@ -3194,12 +3194,12 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       {
         File->SetTerminal(FTerminal);
 
-        File->SetFileName(Entry->Name);
-        if (wcslen(Entry->Permissions) >= 10)
+        File->SetFileName(::MB2W(Entry->Name).c_str());
+        if (strlen(Entry->Permissions) >= 10)
         {
           try
           {
-            File->GetRights()->SetText(Entry->Permissions + 1);
+            File->GetRights()->SetText(::MB2W(Entry->Permissions + 1).c_str());
           }
           catch (...)
           {
