@@ -246,6 +246,19 @@
     <ClCompile Include="..\filezilla\AsyncSslSocketLayer.cpp" />
     <ClCompile Include="..\filezilla\AsyncSocketExLayer.cpp" />
     <ClCompile Include="..\filezilla\AsyncSocketEx.cpp" />
+    <ClCompile Include="..\filezilla\FileZillaApi.cpp" />
+    <ClCompile Include="..\filezilla\FzApiStructures.cpp" />
+    <ClCompile Include="..\filezilla\Crypt.cpp" />
+    <ClCompile Include="..\filezilla\ControlSocket.cpp" />
+    <ClCompile Include="..\filezilla\FtpControlSocket.cpp" />
+    <ClCompile Include="..\filezilla\MainThread.cpp" />
+    <ClCompile Include="..\filezilla\TransferSocket.cpp" />
+    <ClCompile Include="..\filezilla\PathFunctions.cpp" />
+    <ClCompile Include="..\filezilla\FtpListResult.cpp" />
+    <ClCompile Include="..\filezilla\AsyncProxySocketLayer.cpp" />
+    <ClCompile Include="..\filezilla\FtpControlSocket.cpp" />
+    <ClCompile Include="..\filezilla\misc\Fzutf8.cpp" />
+    <ClCompile Include="..\filezilla\misc\CBase64Coding.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
