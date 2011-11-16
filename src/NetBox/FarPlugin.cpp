@@ -2503,6 +2503,11 @@ TFarPanelItem::TFarPanelItem(PluginPanelItem *APanelItem):
     assert(APanelItem);
     FPanelItem = APanelItem;
 }
+TFarPanelItem::~TFarPanelItem()
+{
+    delete FPanelItem;
+}
+
 //---------------------------------------------------------------------------
 void TFarPanelItem::GetData(
     unsigned long & /*Flags*/, std::wstring & /*FileName*/, __int64 & /*Size*/,
