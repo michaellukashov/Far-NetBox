@@ -5,11 +5,11 @@
 #include "FileZillaIntern.h"
 #include "Classes.h"
 //---------------------------------------------------------------------------
-#ifndef _DEBUG
-#pragma comment(lib, "nafxcw.lib")
-#else
-#pragma comment(lib, "nafxcwd.lib")
-#endif
+// #ifndef _DEBUG
+// #pragma comment(lib, "nafxcw.lib")
+// #else
+// #pragma comment(lib, "nafxcwd.lib")
+// #endif
 //---------------------------------------------------------------------------
 void TFileZillaIntf::Initialize()
 {
