@@ -260,7 +260,6 @@
     <ClCompile Include="..\filezilla\PathFunctions.cpp" />
     <ClCompile Include="..\filezilla\FtpListResult.cpp" />
     <ClCompile Include="..\filezilla\AsyncProxySocketLayer.cpp" />
-    <ClCompile Include="..\filezilla\FtpControlSocket.cpp" />
     <ClCompile Include="..\filezilla\misc\Fzutf8.cpp" />
     <ClCompile Include="..\filezilla\misc\CBase64Coding.cpp" />
     <ClCompile Include="stdafx.cpp">
