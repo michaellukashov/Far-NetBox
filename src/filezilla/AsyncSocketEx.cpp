@@ -949,7 +949,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 		}
 		addrinfo hints, *res0, *res;
 		int error;
-		wchar_t port[10];
+		char port[10];
 		BOOL ret = FALSE;
 
 		memset(&hints, 0, sizeof(addrinfo));
@@ -1258,7 +1258,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 		{
 			if (m_pAsyncGetHostByNameBuffer)
 				delete [] m_pAsyncGetHostByNameBuffer;
-			m_pAsyncGetHostByNameBuffer=new wchar_t[MAXGETHOSTSTRUCT];
+			m_pAsyncGetHostByNameBuffer=new char[MAXGETHOSTSTRUCT];
 
 			m_nAsyncGetHostByNamePort=nHostPort;
 
@@ -1299,7 +1299,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 		addrinfo hints;
 		int error;
 		BOOL ret;
-		wchar_t port[10];
+		char port[10];
 
 		memset(&hints, 0, sizeof(addrinfo));
 		hints.ai_family = m_SocketData.nFamily;
@@ -1416,7 +1416,7 @@ BOOL CAsyncSocketEx::Connect(const SOCKADDR* lpSockAddr, int nSockAddrLen)
 }
 
 #ifdef _AFX
-BOOL CAsyncSocketEx::GetPeerName( std::wstring& rPeerAddress, UINT& rPeerPort )
+BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
 {
 #ifndef NOLAYERS
 	if (m_pFirstLayer)
@@ -1481,7 +1481,7 @@ BOOL CAsyncSocketEx::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 }
 
 #ifdef _AFX
-BOOL CAsyncSocketEx::GetSockName(std::wstring& rSocketAddress, UINT& rSocketPort)
+BOOL CAsyncSocketEx::GetSockName(CString& rSocketAddress, UINT& rSocketPort)
 {
 	SOCKADDR* sockAddr;
 	int nSockAddrLen;
