@@ -71,10 +71,6 @@ to tim.kosse@gmx.de
 #include "AsyncSocketExLayer.h"
 #endif //NOLAYERS
 
-#ifdef MPEXT
-#pragma warn -inl
-#endif
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
