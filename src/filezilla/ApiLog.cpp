@@ -126,7 +126,7 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, ::W2MB(text).c_str());
+	SendLogMessage(nMessageType, ::W2MB(text.c_str()).c_str());
 }
 
 void CApiLog::LogMessage(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const
