@@ -688,7 +688,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
 						delete [] tmp;
 					}
 				}
-				assert(m_pNetworkSendBuffer);
+				ASSERT(m_pNetworkSendBuffer);
 				memcpy(m_pNetworkSendBuffer + m_nNetworkSendBufferLen, buffer, numread-numsent);
 				m_nNetworkSendBufferLen += numread - numsent;
 			}
