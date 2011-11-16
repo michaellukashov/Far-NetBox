@@ -8,9 +8,9 @@
 //---------------------------------------------------------------------------
 // #define __fastcall
 
-#ifndef _AFXDLL
-#define _AFXDLL
-#endif
+// #ifndef _AFXDLL
+// #define _AFXDLL
+// #endif
 // #undef _MSC_EXTENSIONS
 // #define _M_CEE
 
