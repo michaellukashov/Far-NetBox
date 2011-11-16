@@ -78,9 +78,10 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 	va_list ap;
     
     va_start(ap, pMsgFormat);
-    std::wstring text;
-	// text.FormatV(pMsgFormat, ap);
-    text = ::Format(pMsgFormat, ap);
+    // std::wstring text;
+    // text = ::Format(pMsgFormat, ap);
+    Cstring text;
+	text.FormatV(pMsgFormat, ap);
     
 	va_end(ap);
 	
@@ -88,7 +89,7 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, (LPCTSTR)::W2MB(text.c_str()).c_str());
+	SendLogMessage(nMessageType, text); // (LPCTSTR)::W2MB(text.c_str()).c_str());
 }
 
 void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
@@ -112,21 +113,22 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
 
-	std::wstring str;
-	// FIXME str.LoadString(nFormatID);
+	// std::wstring str;
+	Cstring str;
+	FIXME str.LoadString(nFormatID);
 
 	va_list ap;
     
     va_start(ap, nFormatID);
     std::wstring text;
-	// FIXME text.FormatV(str, ap);
+	text.FormatV(str, ap);
 	va_end(ap);
 	
 #ifdef MPEXT
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, ::W2MB(text.c_str()).c_str());
+	SendLogMessage(nMessageType, text); // (LPCTSTR)::W2MB(text.c_str()).c_str());
 }
 
 void CApiLog::LogMessage(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const
