@@ -24,11 +24,11 @@
 /**
  * File read/write wrapper
  */
-class CFile
+class CNBFile
 {
 public:
-    CFile() : m_File(INVALID_HANDLE_VALUE), m_LastError(0) {}
-    ~CFile()
+    CNBFile() : m_File(INVALID_HANDLE_VALUE), m_LastError(0) {}
+    ~CNBFile()
     {
         Close();
     }
@@ -161,7 +161,7 @@ public:
      */
     static DWORD SaveFile(const wchar_t *fileName, const std::vector<char>& fileContent)
     {
-        CFile f;
+        CNBFile f;
         if (f.OpenWrite(fileName) && !fileContent.empty())
         {
             f.Write(&fileContent[0], fileContent.size());
@@ -178,7 +178,7 @@ public:
     static DWORD SaveFile(const wchar_t *fileName, const char *fileContent)
     {
         assert(fileContent);
-        CFile f;
+        CNBFile f;
         if (f.OpenWrite(fileName) && *fileContent)
         {
             f.Write(fileContent, strlen(fileContent));
@@ -196,7 +196,7 @@ public:
     {
         fileContent.clear();
 
-        CFile f;
+        CNBFile f;
         if (f.OpenRead(fileName))
         {
             const __int64 fs = f.GetFileSize();
