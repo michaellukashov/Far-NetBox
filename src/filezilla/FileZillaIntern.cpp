@@ -6,8 +6,6 @@
 #include "FileZillaIntf.h"
 #include "FileZillaApi.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
-//---------------------------------------------------------------------------
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
   FOwner(AOwner)
 {
