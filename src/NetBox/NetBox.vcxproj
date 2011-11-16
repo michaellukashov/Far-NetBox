@@ -63,7 +63,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
   </PropertyGroup>
@@ -90,6 +90,7 @@
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
