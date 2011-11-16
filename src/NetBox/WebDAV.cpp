@@ -157,8 +157,8 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &erro
 
 #ifdef _DEBUG
     //////////////////////////////////////////////////////////////////////////
-    //CFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
-    //CFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
+    //CNBFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
+    //CNBFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
     //////////////////////////////////////////////////////////////////////////
 #endif  //_DEBUG
 
@@ -338,7 +338,7 @@ bool CWebDAV::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const
     // DEBUG_PRINTF(L"CWebDAV::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
-    CFile outFile;
+    CNBFile outFile;
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
@@ -379,7 +379,7 @@ bool CWebDAV::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const
     // DEBUG_PRINTF(L"CWebDAV::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
     assert(localPath && *localPath);
 
-    CFile inFile;
+    CNBFile inFile;
     if (!inFile.OpenRead(localPath))
     {
         errorInfo = FormatErrorDescription(inFile.LastError());
