@@ -80,7 +80,7 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
     va_start(ap, pMsgFormat);
     // std::wstring text;
     // text = ::Format(pMsgFormat, ap);
-    Cstring text;
+    CString text;
 	text.FormatV(pMsgFormat, ap);
     
 	va_end(ap);
@@ -114,7 +114,7 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 		return;
 
 	// std::wstring str;
-	Cstring str;
+	CString str;
 	FIXME str.LoadString(nFormatID);
 
 	va_list ap;
