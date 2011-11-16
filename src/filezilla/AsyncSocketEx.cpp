@@ -77,7 +77,7 @@ to tim.kosse@gmx.de
 
 #ifdef _DEBUG
 #undef THIS_FILE
-static wchar_t THIS_FILE[]=__FILE__;
+static char THIS_FILE[]=__FILE__;
 #endif
 
 #ifndef CCRITICALSECTIONWRAPPERINCLUDED
