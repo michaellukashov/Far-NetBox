@@ -3,16 +3,11 @@
 #define StdAfxH
 //---------------------------------------------------------------------------
 #define _int64 __int64
-// #define CStringA CString
-// #define CStringW std::wstring
 //---------------------------------------------------------------------------
-// #define __fastcall
 
 #ifndef _AFXDLL
-#define _AFXDLL
+// #define _AFXDLL
 #endif
-// #undef _MSC_EXTENSIONS
-// #define _M_CEE
 
 #ifndef MPEXT
 #define MPEXT
