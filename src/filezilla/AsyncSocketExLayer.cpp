@@ -66,7 +66,7 @@ to tim.kosse@gmx.de
 
 #ifdef _DEBUG
 	#undef THIS_FILE
-	static wchar_t THIS_FILE[]=__FILE__;
+	static char THIS_FILE[]=__FILE__;
 	#ifdef DEBUG_NEW
 		#define new DEBUG_NEW
 	#endif
@@ -353,7 +353,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 		addrinfo hints, *res0, *res1;
 		SOCKET hSocket;
 		int error;
-		wchar_t port[10];
+		char port[10];
 
 		m_pOwnerSocket->p_freeaddrinfo(m_addrInfo);
 		m_nextAddr = 0;
@@ -472,12 +472,12 @@ BOOL CAsyncSocketExLayer::ConnectNext( const SOCKADDR* lpSockAddr, int nSockAddr
 //Gets the address of the peer socket to which the socket is connected
 #ifdef _AFX
 
-BOOL CAsyncSocketExLayer::GetPeerName( std::wstring& rPeerAddress, UINT& rPeerPort )
+BOOL CAsyncSocketExLayer::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
 {
 	return GetPeerNameNext(rPeerAddress, rPeerPort);
 }
 
-BOOL CAsyncSocketExLayer::GetPeerNameNext( std::wstring& rPeerAddress, UINT& rPeerPort )
+BOOL CAsyncSocketExLayer::GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPort )
 {
 	if (m_pNextLayer)
 		return m_pNextLayer->GetPeerName(rPeerAddress, rPeerPort);
@@ -551,12 +551,12 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( SOCKADDR* lpSockAddr, int* lpSockAddr
 //Gets the address of the sock socket to which the socket is connected
 #ifdef _AFX
 
-BOOL CAsyncSocketExLayer::GetSockName( std::wstring& rSockAddress, UINT& rSockPort )
+BOOL CAsyncSocketExLayer::GetSockName( CString& rSockAddress, UINT& rSockPort )
 {
 	return GetSockNameNext(rSockAddress, rSockPort);
 }
 
-BOOL CAsyncSocketExLayer::GetSockNameNext( std::wstring& rSockAddress, UINT& rSockPort )
+BOOL CAsyncSocketExLayer::GetSockNameNext( CString& rSockAddress, UINT& rSockPort )
 {
 	if (m_pNextLayer)
 		return m_pNextLayer->GetSockName(rSockAddress, rSockPort);
@@ -813,7 +813,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
 	return res;
 }
 
-int CAsyncSocketExLayer::DoLayerCallback(int nType, int nParam1, int nParam2, wchar_t* str /*=0*/)
+int CAsyncSocketExLayer::DoLayerCallback(int nType, int nParam1, int nParam2, char* str /*=0*/)
 {
 	if (!m_pOwnerSocket)
 		return 0;

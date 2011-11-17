@@ -78,9 +78,10 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 	va_list ap;
     
     va_start(ap, pMsgFormat);
-    std::wstring text;
-	// text.FormatV(pMsgFormat, ap);
-    text = ::Format(pMsgFormat, ap);
+    // std::wstring text;
+    // text = ::Format(pMsgFormat, ap);
+    CString text;
+	text.FormatV(pMsgFormat, ap);
     
 	va_end(ap);
 	
@@ -88,7 +89,7 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, (LPCTSTR)::W2MB(text.c_str()).c_str());
+	SendLogMessage(nMessageType, text); // (LPCTSTR)::W2MB(text.c_str()).c_str());
 }
 
 void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
@@ -112,24 +113,26 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 	if (nMessageType>=FZ_LOG_APIERROR && (nMessageType-FZ_LOG_APIERROR)>=m_pApiLogParent->m_nDebugLevel)
 		return;
 
-	std::wstring str;
-	// FIXME str.LoadString(nFormatID);
+	// std::wstring str;
+	CString str;
+	str.LoadString(nFormatID);
 
 	va_list ap;
     
     va_start(ap, nFormatID);
-    std::wstring text;
-	// FIXME text.FormatV(str, ap);
+    // std::wstring text;
+    CString text;
+	text.FormatV(str, ap);
 	va_end(ap);
 	
 #ifdef MPEXT
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, ::W2MB(text.c_str()).c_str());
+	SendLogMessage(nMessageType, text); // (LPCTSTR)::W2MB(text.c_str()).c_str());
 }
 
-void CApiLog::LogMessage(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const
+void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const
 {
 	assert(nMessageType>=4 || nMessageType<=8);
 	assert(m_hTargetWnd || m_pApiLogParent);
@@ -143,7 +146,7 @@ void CApiLog::LogMessage(std::wstring SourceFile, int nSourceLine, void *pInstan
 	va_list ap;
     
 	va_start(ap, pMsgFormat);
-	std::wstring text;
+	CString text;
 	text.FormatV(pMsgFormat, ap);
 	va_end(ap);
 
@@ -152,7 +155,7 @@ void CApiLog::LogMessage(std::wstring SourceFile, int nSourceLine, void *pInstan
 		return;
 #endif
 
-	std::wstring msg;
+	CString msg;
 	msg.Format(_T("%s(%d): %s   caller=0x%08x"), SourceFile, nSourceLine, text, (int)this);
 	
 	SendLogMessage(nMessageType, msg);
@@ -165,7 +168,7 @@ BOOL CApiLog::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) con
 }
 #endif
 
-void CApiLog::LogMessageRaw(std::wstring SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const
+void CApiLog::LogMessageRaw(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsg) const
 {
 	assert(nMessageType>=4 || nMessageType<=8);
 	assert(m_hTargetWnd || m_pApiLogParent);
@@ -180,7 +183,7 @@ void CApiLog::LogMessageRaw(std::wstring SourceFile, int nSourceLine, void *pIns
 		return;
 #endif
 
-	std::wstring msg;
+	CString msg;
 	msg.Format(_T("%s(%d): %s   caller=0x%08x"), SourceFile, nSourceLine, pMsg, (int)this);
 	
 	SendLogMessage(nMessageType, msg);

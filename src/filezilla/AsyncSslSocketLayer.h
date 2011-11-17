@@ -93,6 +93,8 @@ Version 2.0:
 #ifndef ASYNCSSLSOCKETLEAYER_INCLUDED
 #define ASYNCSSLSOCKETLEAYER_INCLUDED
 
+#include <wincrypt.h>
+
 #ifndef _AFX
 #define CString CStdString
 #endif

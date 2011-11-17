@@ -223,7 +223,7 @@ CURLcode CEasyURL::SetOutput(std::string &out, int *progress)
 }
 
 
-CURLcode CEasyURL::SetOutput(CFile *out, int *progress)
+CURLcode CEasyURL::SetOutput(CNBFile *out, int *progress)
 {
     assert(m_Prepared);
     assert(out);
@@ -237,7 +237,7 @@ CURLcode CEasyURL::SetOutput(CFile *out, int *progress)
 }
 
 
-CURLcode CEasyURL::SetInput(CFile *in, int *progress)
+CURLcode CEasyURL::SetInput(CNBFile *in, int *progress)
 {
     assert(m_Prepared);
     assert(in);

@@ -107,7 +107,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetOutput(CFile *out, int *progress);
+    CURLcode SetOutput(CNBFile *out, int *progress);
 
     /**
      * Set input as file (upload operations)
@@ -115,7 +115,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetInput(CFile *in, int *progress);
+    CURLcode SetInput(CNBFile *in, int *progress);
 
     /**
      * Set abort event handle
@@ -192,7 +192,7 @@ private:
         union
         {
             std::string *String;
-            CFile  *File;
+            CNBFile  *File;
         };
         HANDLE AbortEvent;
     };
@@ -206,7 +206,7 @@ private:
             None,
             TypeFile
         } Type;
-        CFile  *File;
+        CNBFile  *File;
         int    *Progress;
         unsigned __int64 Current;
         unsigned __int64 Total;

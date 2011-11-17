@@ -211,7 +211,7 @@ PSession CSession::Load(const wchar_t *fileName)
 {
     assert(fileName && *fileName);
 
-    CFile xmlFile;
+    CNBFile xmlFile;
     if (!xmlFile.OpenRead(fileName))
     {
         return PSession();
@@ -517,7 +517,7 @@ bool CSession::Save(const wchar_t *fileName) const
         return false;
     }
 
-    return (CFile::SaveFile(fileName, xmlContent) == ERROR_SUCCESS);
+    return (CNBFile::SaveFile(fileName, xmlContent) == ERROR_SUCCESS);
 }
 
 
