@@ -98,7 +98,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
