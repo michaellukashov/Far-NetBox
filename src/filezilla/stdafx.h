@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 
 #ifndef _AFXDLL
-// #define _AFXDLL
+#define _AFXDLL
 #endif
 
 #ifndef MPEXT
