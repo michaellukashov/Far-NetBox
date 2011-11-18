@@ -26,9 +26,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -98,14 +98,14 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;</AdditionalLibraryDirectories>
       <AdditionalDependencies>libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>msvcprtd.lib%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -260,6 +260,9 @@
     <ClCompile Include="..\filezilla\PathFunctions.cpp" />
     <ClCompile Include="..\filezilla\FtpListResult.cpp" />
     <ClCompile Include="..\filezilla\AsyncProxySocketLayer.cpp" />
+    <ClCompile Include="..\filezilla\structures.cpp" />
+    <ClCompile Include="..\filezilla\MFC64bitFix.cpp" />
+    <ClCompile Include="..\filezilla\Options.cpp" />
     <ClCompile Include="..\filezilla\misc\Fzutf8.cpp" />
     <ClCompile Include="..\filezilla\misc\CBase64Coding.cpp" />
     <ClCompile Include="stdafx.cpp">
