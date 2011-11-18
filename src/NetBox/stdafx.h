@@ -19,6 +19,12 @@
 
 #pragma once
 
+//---------------------------------------------------------------------------
+#ifdef _AFXDLL
+// #include "../filezilla/stdafx.h"
+#endif
+//---------------------------------------------------------------------------
+
 #define WIN32_LEAN_AND_MEAN
 #define SECURITY_WIN32
 #include <windows.h>

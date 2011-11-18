@@ -263,6 +263,7 @@
     <ClCompile Include="..\filezilla\structures.cpp" />
     <ClCompile Include="..\filezilla\MFC64bitFix.cpp" />
     <ClCompile Include="..\filezilla\Options.cpp" />
+    <ClCompile Include="..\filezilla\afxdll.cpp" />
     <ClCompile Include="..\filezilla\misc\Fzutf8.cpp" />
     <ClCompile Include="..\filezilla\misc\CBase64Coding.cpp" />
     <ClCompile Include="stdafx.cpp">
