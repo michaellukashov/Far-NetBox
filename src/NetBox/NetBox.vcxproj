@@ -284,6 +284,7 @@
     <ResourceCompile Include="..\resource\TextsCore1.rc" />
     <ResourceCompile Include="..\resource\TextsCore2.rc" />
     <ResourceCompile Include="..\resource\rtlconsts.rc" />
+    <ResourceCompile Include="..\resource\TextsFileZilla.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EasyURL.h" />
