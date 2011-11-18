@@ -16,7 +16,9 @@
  *  You should have received a copy of the GNU General Public License     *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  **************************************************************************/
-
+#ifdef _AFXDLL
+#include "../filezilla/stdafx.h"
+#endif
 #include "stdafx.h"
 #include "SessionManager.h"
 #include "Panel.h"
@@ -414,6 +416,9 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
 
 //---------------------------------------------------------------------------
 static int Processes = 0;
+#ifdef _AFXDLL
+static AFX_EXTENSION_MODULE MyExtDLL = { NULL, NULL } ;
+#endif
 //---------------------------------------------------------------------------
 void DllProcessAttach(HINSTANCE HInst)
 {
@@ -422,7 +427,12 @@ void DllProcessAttach(HINSTANCE HInst)
 
     assert(!Processes);
     Processes++;
-    // DEBUG_PRINTF(L"DllProcessAttach: end");
+#ifdef _AFXDLL
+    AfxInitExtensionModule(MyExtDLL, hinstance);
+    // Insert this DLL into the resource chain
+    new CDynLinkLibrary(MyExtDLL);
+#endif
+ // DEBUG_PRINTF(L"DllProcessAttach: end");
 }
 
 //---------------------------------------------------------------------------
@@ -435,6 +445,9 @@ void DllProcessDetach()
   {
     assert(FarPlugin);
     SAFE_DESTROY(FarPlugin);
+#ifdef _AFXDLL
+    AfxTermExtensionModule(MyExtDLL);
+#endif
   }
   // DEBUG_PRINTF(L"DllProcessDetach: end");
 }
