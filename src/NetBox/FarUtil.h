@@ -224,10 +224,10 @@ private:
 /**
  * Critical section wrapper
  */
-class CCriticalSection : public CRITICAL_SECTION
+class CNBCriticalSection : public CRITICAL_SECTION
 {
 public:
-    CCriticalSection(const DWORD spinCount = 1024)
+    CNBCriticalSection(const DWORD spinCount = 1024)
     {
         if (!InitializeCriticalSectionAndSpinCount(&m_SyncObj, spinCount))
         {
@@ -235,7 +235,7 @@ public:
         }
     }
 
-    ~CCriticalSection()
+    ~CNBCriticalSection()
     {
         DeleteCriticalSection(&m_SyncObj);
     }
@@ -264,7 +264,7 @@ private:
 class CLock
 {
 public:
-    CLock(CCriticalSection &syncObj) : m_SyncObj(syncObj)
+    CLock(CNBCriticalSection &syncObj) : m_SyncObj(syncObj)
     {
         m_SyncObj.Enter();
     }
@@ -273,7 +273,7 @@ public:
         m_SyncObj.Leave();
     }
 private:
-    CCriticalSection &m_SyncObj;
+    CNBCriticalSection &m_SyncObj;
 };
 
 #pragma warning(default: 4512)  //assignment operator could not be generated
