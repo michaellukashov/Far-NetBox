@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 
 #ifndef _AFXDLL
-// #define _AFXDLL
+#define _AFXDLL
 #endif
 
 #ifndef MPEXT
@@ -24,7 +24,7 @@
 #define MPEXT_NO_CACHE
 #define MPEXT_NO_SPEED_LIM_RULES
 #define MPEXT_NO_SSLDLL
-#define _AFX_NOFORCE_LIBS
+// #define _AFX_NOFORCE_LIBS
 //---------------------------------------------------------------------------
 #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
 #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
