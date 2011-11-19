@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "fzafx.h"
 #include "ControlSocket.h"
 #include "mainthread.h"
 #include "AsyncProxySocketLayer.h"

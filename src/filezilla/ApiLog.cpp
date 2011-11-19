@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "fzafx.h"
 #include "ApiLog.h"
 #include "FileZillaApi.h"
 #include "Common.h"

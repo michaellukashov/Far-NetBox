@@ -19,7 +19,7 @@
 // MainThread.cpp: Implementierungsdatei
 //
 
-#include "stdafx.h"
+#include "fzafx.h"
 #include "MainThread.h"
 #ifndef MPEXT
 #include "fileexistsdlg.h"

@@ -59,7 +59,9 @@ Feel free to use this class, as long as you don't claim that you wrote it
 and this copyright notice stays intact in the source files.
 If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
-*/#include "stdafx.h"
+*/
+
+#include "fzafx.h"
 #include "AsyncSocketExLayer.h"
 
 #include "AsyncSocketEx.h"

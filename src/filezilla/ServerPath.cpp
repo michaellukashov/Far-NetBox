@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "fzafx.h"
 #include <assert.h>
 #include "ServerPath.h"
 #include "structures.h"

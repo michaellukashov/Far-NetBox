@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "fzafx.h"
 #include "afxdll.h"
 
 #ifdef _AFXDLL

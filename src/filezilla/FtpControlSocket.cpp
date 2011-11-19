@@ -19,7 +19,7 @@
 // CFtpControlSocket.cpp: Implementierungsdatei
 //
 
-#include "stdafx.h"
+#include "fzafx.h"
 #include "FtpControlSocket.h"
 #include "mainthread.h"
 #include "transfersocket.h"

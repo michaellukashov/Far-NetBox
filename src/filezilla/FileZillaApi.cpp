@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "fzafx.h"
 #include "FileZillaApi.h"
 #include "mainthread.h"
 #ifndef MPEXT_NO_CACHE

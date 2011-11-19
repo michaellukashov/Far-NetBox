@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "fzafx.h"
 #include "CBase64Coding.hpp"
 #pragma hdrstop
 
