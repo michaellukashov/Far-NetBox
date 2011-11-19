@@ -220,7 +220,9 @@ void InitPlatformId();
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #endif
+#ifndef USEDPARAM
 #define USEDPARAM(p) ((void)p)
+#endif
 
 //---------------------------------------------------------------------------
 void Abort();
