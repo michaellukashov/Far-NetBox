@@ -460,7 +460,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
     CurDir = FSessionsFolder;
     Format = L"winscp";
     Flags = OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
-    PanelTitle = FORMAT(L" %s ", GetMsg(STORED_SESSION_TITLE).c_str());
+    PanelTitle = FORMAT(L" %s ", GetMsg(NB_STORED_SESSION_TITLE).c_str());
 
     TSessionPanelItem::SetPanelModes(PanelModes);
     TSessionPanelItem::SetKeyBarTitles(KeyBarTitles);
