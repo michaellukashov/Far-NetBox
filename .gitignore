@@ -32,3 +32,4 @@ src/NetBox/build
 
 *.vsp
 *.psess
+*.i
