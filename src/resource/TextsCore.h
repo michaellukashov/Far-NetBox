@@ -334,7 +334,7 @@
 #define AUTH_TRANSL_TRY_PUBLIC_KEY 479
 #define AUTH_PASSWORD           480
 #define OPEN_TUNNEL             481
-#define STATUS_CLOSED           482
+#define NB_STATUS_CLOSED           482
 #define STATUS_LOOKUPHOST       484
 #define STATUS_CONNECT          485
 #define STATUS_AUTHENTICATE     486
