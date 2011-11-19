@@ -16,6 +16,11 @@
  *  You should have received a copy of the GNU General Public License     *
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+#ifdef _AFXDLL
+#include "afxdll.h"
+#endif
+
 #include "Strings.h"
 
 #include "stdafx.h"
@@ -31,10 +36,6 @@
 #include "resource.h"
 #include "Common.h"
 
-//---------------------------------------------------------------------------
-#ifdef _AFXDLL
-#include "../filezilla/afxdll.h"
-#endif
 //---------------------------------------------------------------------------
 
 std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
