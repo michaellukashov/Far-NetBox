@@ -27,12 +27,12 @@ int Win32BuildNumber = 0;
 // int Win32CSDVersion = 0;
 //---------------------------------------------------------------------------
 
-inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
+inline int StringCmp(const wchar_t *s1, const wchar_t *s2)
 {
     return ::CompareString(0, SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
-inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
+inline int StringCmpI(const wchar_t *s1, const wchar_t *s2)
 {
     return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
@@ -2247,38 +2247,38 @@ size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 
 int CompareText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StringCmp(str1.c_str(), str2.c_str());
 }
 
 int AnsiCompare(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StringCmp(str1.c_str(), str2.c_str());
 }
 
 // Case-sensitive compare
 int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StringCmp(str1.c_str(), str2.c_str());
 }
 
 bool AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StringCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool SameText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StringCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 int AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str());
+    return StringCmpI(str1.c_str(), str2.c_str());
 }
 
 int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str());
+    return StringCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
