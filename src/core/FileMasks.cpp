@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------
 
 inline int IsSlash(wchar_t x) { return x==L'\\' || x==L'/'; }
-inline int __cdecl StrCmpI(const wchar_t *s1, const wchar_t *s2) { return CompareString(0,NORM_IGNORECASE|SORT_STRINGSORT,s1,-1,s2,-1)-2; }
+inline int __cdecl StringCmpI(const wchar_t *s1, const wchar_t *s2) { return CompareString(0,NORM_IGNORECASE|SORT_STRINGSORT,s1,-1,s2,-1)-2; }
 inline wchar_t __cdecl Upper(wchar_t Ch) { CharUpperBuff(&Ch, 1); return Ch; }
 inline wchar_t __cdecl Lower(wchar_t Ch) { CharLowerBuff(&Ch, 1); return Ch; }
 
@@ -108,7 +108,7 @@ static int CmpName_Body(const wchar_t *pattern,const wchar_t *str, bool CmpNameS
                             return FALSE;
 
                         if (!patdot && dot )
-                            return !StrCmpI(pattern+1,dot+1);
+                            return !StringCmpI(pattern+1,dot+1);
                     }
                 }
 
