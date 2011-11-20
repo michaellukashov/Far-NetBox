@@ -22,7 +22,7 @@
 #include "SFTP.h"
 #include "Settings.h"
 #include "Logging.h"
-#include "Strings.h"
+#include "FarTexts.h"
 
 static const char *ParamCodePage = "CodePage";
 static const char *ParamKeyFile =  "KeyFile";

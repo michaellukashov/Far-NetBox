@@ -20,7 +20,7 @@
 #include "stdafx.h"
 #include "SessionManager.h"
 #include "Settings.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Common.h"
 
 

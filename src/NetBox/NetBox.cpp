@@ -21,7 +21,7 @@
 #include "afxdll.h"
 #endif
 
-#include "Strings.h"
+#include "FarTexts.h"
 
 #include "stdafx.h"
 #include "SessionManager.h"

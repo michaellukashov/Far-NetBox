@@ -22,7 +22,7 @@
 #include "Settings.h"
 #include "Session.h"
 #include "SessionManager.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Logging.h"
 #include "resource.h"
 

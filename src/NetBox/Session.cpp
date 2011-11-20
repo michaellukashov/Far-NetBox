@@ -19,7 +19,7 @@
 
 #include "stdafx.h"
 #include "Session.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Settings.h"
 #include "Protocol.h"
 #include "tinyXML\tinyxml.h"

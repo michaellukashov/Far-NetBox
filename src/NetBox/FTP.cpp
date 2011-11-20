@@ -22,7 +22,7 @@
 #include <Wininet.h>
 
 #include "FTP.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Common.h"
 
 static const char *ParamCodePage = "CodePage";

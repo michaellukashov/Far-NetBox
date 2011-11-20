@@ -22,7 +22,7 @@
 #include "tinyXML\tinyxml.h"
 #include <Winhttp.h>
 
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Settings.h"
 #include "Logging.h"
 #include "WebDAV.h"

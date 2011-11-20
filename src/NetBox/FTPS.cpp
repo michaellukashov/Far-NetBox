@@ -20,7 +20,7 @@
 #include "stdafx.h"
 #include "FTPS.h"
 #include "Logging.h"
-#include "Strings.h"
+#include "FarTexts.h"
 
 PSessionEditor CSessionFTPS::CreateEditorInstance()
 {
