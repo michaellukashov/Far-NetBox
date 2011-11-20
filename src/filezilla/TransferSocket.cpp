@@ -42,6 +42,9 @@ static char THIS_FILE[] = __FILE__;
 #define STATE_STARTING		1
 #define STATE_STARTED		2
 
+#define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
+#define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+
 /////////////////////////////////////////////////////////////////////////////
 // CTransferSocket
 

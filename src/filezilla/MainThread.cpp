@@ -39,6 +39,9 @@ static char THIS_FILE[] = __FILE__;
 #define ECS m_CriticalSection.Lock()
 #define LCS m_CriticalSection.Unlock()
 
+#define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
+#define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+
 /////////////////////////////////////////////////////////////////////////////
 // CMainThread
 

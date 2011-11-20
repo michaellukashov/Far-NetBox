@@ -49,7 +49,7 @@ class CFileFix;
 // #include <FileZillaOpt.h>
 // #include <Options.h>
 // #include <Crypt.h>
-#include <TextsFileZilla.h>
+// #include <TextsFileZilla.h>
 // #include <structures.h>
 #include <FzApiStructures.h>
 //---------------------------------------------------------------------------

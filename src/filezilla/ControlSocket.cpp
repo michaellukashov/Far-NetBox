@@ -37,11 +37,18 @@
 #include <idna.h>
 #endif
 
+#include <TextsFileZilla.h>
+#include <FileZillaOpt.h>
+#include <Options.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
+
+#define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
+#define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
 
 #ifndef MPEXT
 std::list<CControlSocket::t_ActiveList> CControlSocket::m_InstanceList[2];
