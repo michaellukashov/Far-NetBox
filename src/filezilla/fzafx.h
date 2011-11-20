@@ -43,14 +43,14 @@
 class CFileFix;
 #define CFile CFileFix
 //---------------------------------------------------------------------------
-#include "MFC64bitFix.h"
-#include <ApiLog.h>
-#include <FileZillaApi.h>
-#include <FileZillaOpt.h>
-#include <Options.h>
-#include <Crypt.h>
-#include <TextsFileZilla.h>
-#include <structures.h>
+// #include "MFC64bitFix.h"
+// #include <ApiLog.h>
+// #include <FileZillaApi.h>
+// #include <FileZillaOpt.h>
+// #include <Options.h>
+// #include <Crypt.h>
+// #include <TextsFileZilla.h>
+// #include <structures.h>
 //---------------------------------------------------------------------------
 #include <oleauto.h>
 #include <afxdisp.h>
@@ -72,7 +72,7 @@ const int FILEEXISTS_RESUME_ASKONFAIL = 5; // Used by queue for automatic resumi
 class t_ffam_statusmessage
 {
 public:
-  std::wstring status;
+  CString status;
   int type;
   BOOL post;
 };
