@@ -58,7 +58,7 @@ class CFileFix;
 //---------------------------------------------------------------------------
 #define _strlwr strlwr
 #ifndef USEDPARAM
-#define USEDPARAM(p) ((p) == (p))
+#define USEDPARAM(p) (void)(p);
 #endif
 //---------------------------------------------------------------------------
 const int FILEEXISTS_ASK = -1;
