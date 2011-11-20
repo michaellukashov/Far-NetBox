@@ -2530,7 +2530,7 @@ void TFTPFileSystem::SetLastCode(int Code)
 //---------------------------------------------------------------------------
 void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
 {
-  int Code;
+  int Code = 0;
 
   if (!FOnCaptureOutput.empty())
   {
