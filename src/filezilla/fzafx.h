@@ -25,8 +25,8 @@
 #define MPEXT_NO_SSLDLL
 #define _AFX_NOFORCE_LIBS
 //---------------------------------------------------------------------------
-#define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
-#define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
+// #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
+// #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
 //---------------------------------------------------------------------------
 #include <afx.h>
 #include "wtypes.h"
