@@ -32,6 +32,8 @@
 #include "AsyncSslSocketLayer.h"
 #endif
 
+#include <ApiLog.h>
+
 //This structure holds the commands which will be processed by the api.
 //You don't have to fill this struct, you may use the command specific 
 //functions which is easier.

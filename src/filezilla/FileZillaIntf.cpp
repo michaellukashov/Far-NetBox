@@ -3,6 +3,8 @@
 //---------------------------------------------------------------------------
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
+#include "FzApiStructures.h"
+#include "structures.h"
 #include "Classes.h"
 //---------------------------------------------------------------------------
 // #ifndef _DEBUG
@@ -32,7 +34,7 @@ void TFileZillaIntf::SetResourceModule(void * ResourceHandle)
 TFileZillaIntf::TFileZillaIntf() :
   FFileZillaApi(NULL),
   FIntern(new TFileZillaIntern(this)),
-  FServer(new t_server)
+  FServer(new t_server())
 {
 }
 //---------------------------------------------------------------------------
@@ -290,7 +292,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         ASSERT(FZ_MSG_PARAM(wParam) == 0);
         t_ffam_statusmessage * Status = (t_ffam_statusmessage *)lParam;
         ASSERT(Status->post);
-        Result = HandleStatus(::W2MB(Status->status.c_str()).c_str(), Status->type);
+        Result = HandleStatus(::W2MB(Status->status.GetBuffer(Status->status.GetLength())).c_str(), Status->type);
         delete Status;
       }
 

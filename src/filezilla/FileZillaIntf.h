@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #include <time.h>
 #include <FileZillaOpt.h>
+#include <FileZillaApi.h>
 //---------------------------------------------------------------------------
 class CFileZillaApi;
 class TFileZillaIntern;
