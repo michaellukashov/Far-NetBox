@@ -21,7 +21,7 @@
 
 //---------------------------------------------------------------------------
 #ifdef _AFXDLL
-// #include "fzafx.h"
+#include "fzafx.h"
 #endif
 //---------------------------------------------------------------------------
 
@@ -31,7 +31,6 @@
 #include <winsock2.h>
 #include <time.h>
 
-#include <string>
 #include <string>
 #include <vector>
 #include <list>
