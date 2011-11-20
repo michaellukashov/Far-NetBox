@@ -51,6 +51,7 @@ class CFileFix;
 // #include <Crypt.h>
 // #include <TextsFileZilla.h>
 // #include <structures.h>
+#include <FzApiStructures.h>
 //---------------------------------------------------------------------------
 #include <oleauto.h>
 #include <afxdisp.h>

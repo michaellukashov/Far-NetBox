@@ -5,6 +5,9 @@
 #ifndef MPEXT_NO_SPEED_LIM_RULES
 #include <SpeedLimit.h>
 #endif
+
+#include <ApiLog.h>
+
 //---------------------------------------------------------------------------
 class COptions
 {
