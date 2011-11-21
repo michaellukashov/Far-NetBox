@@ -61,7 +61,7 @@ public:
 	void SendToMessageLog(HWND hWnd, UINT nMsg);
 	void AddData(char *data,int size);
 	CFtpListResult(t_server server, bool *bUTF8 = 0);
-	~CFtpListResult();
+	virtual ~CFtpListResult();
 	t_directory::t_direntry *getList(int &num, CTime EntryTime);
 
 private:
