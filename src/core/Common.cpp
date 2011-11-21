@@ -1288,7 +1288,7 @@ __int64 Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
-  return ((Number - Floor) > (Ceil - Number)) ? Ceil : Floor;
+  return ((Number - Floor) > (Ceil - Number)) ? (__int64)Ceil : (__int64)Floor;
 }
 //---------------------------------------------------------------------------
 #define TIME_POSIX_TO_WIN(t, ft) (*(LONGLONG*)&(ft) = \
@@ -1302,7 +1302,7 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
   double value = double(DateTime - Params->UnixEpoch) * 86400;
   double intpart;
   modf(value, &intpart);
-  return intpart + Params->CurrentDifferenceSec;
+  return (__int64)intpart + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
 FILETIME DateTimeToFileTime(const TDateTime DateTime,
