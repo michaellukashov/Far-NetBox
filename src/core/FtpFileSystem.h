@@ -23,6 +23,7 @@ friend class TFileListHelper;
 
 public:
   explicit TFTPFileSystem(TTerminal * ATerminal);
+  virtual void Init();
   virtual ~TFTPFileSystem();
 
   virtual void Open();

@@ -731,6 +731,7 @@ void TTerminal::Open()
               #else
               FFSProtocol = cfsFTP;
               FFileSystem = new TFTPFileSystem(this);
+              ((TFTPFileSystem*)FFileSystem)->Init();
               FFileSystem->Open();
               GetLog()->AddSeparator();
               LogEvent(L"Using FTP protocol.");

@@ -228,6 +228,12 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FDoListAll(false),
   FMfmt(false)
 {
+  Self = this;
+}
+
+void TFTPFileSystem::Init()
+{
+  TCustomFileSystem::Init();
   ResetReply();
 
   FListAll = FTerminal->GetSessionData()->GetFtpListAll();
@@ -235,8 +241,8 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
   FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
-  Self = this;
 }
+
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem()
 {
