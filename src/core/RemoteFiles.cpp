@@ -31,7 +31,7 @@ std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 // Keeps "/" for root path
 std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
 {
-  if (!Path.empty() && ::IsDelimiter(Path, L"/", Path.size() - 1))
+  if ((Path.size() > 1) && ::IsDelimiter(Path, L"/", Path.size() - 1))
   {
       return Path.substr(0, Path.size() - 1);
   }
