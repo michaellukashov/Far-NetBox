@@ -72,7 +72,8 @@ std::wstring UnixExtractFilePath(const std::wstring Path)
 {
   size_t Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
-  return (Pos != std::wstring::npos) ? Path.substr(0, Pos) : std::wstring();
+  std::wstring Result = (Pos != std::wstring::npos) ? Path.substr(0, Pos) : std::wstring();
+  return UnixIncludeTrailingBackslash(Result);
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileName(const std::wstring Path)
