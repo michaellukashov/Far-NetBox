@@ -405,7 +405,8 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         }
 
         int Num = Directory->num;
-        Result = HandleListData(::W2MB(Path.GetBuffer(Path.GetLength())).c_str(), &Entries[0], Num);
+        TListDataEntry * pEntries = Num > 0 ? &Entries[0] : NULL;
+        Result = HandleListData(::W2MB(Path.GetBuffer(Path.GetLength())).c_str(), pEntries, Num);
         delete Directory;
       }
       break;
