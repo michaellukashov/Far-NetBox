@@ -3395,7 +3395,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 					m_Operation.nOpState = FILETRANSFER_RETRSTOR;
 				BOOL res = FALSE;
 				if (!m_pDataFile)
-					m_pDataFile = new CFile;
+					m_pDataFile = new CFile();
 				if (pData->transferfile.get)
 				{
 					if (pData->transferdata.bResume)
