@@ -1155,6 +1155,10 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
     TFileTransferData UserData;
 
     std::wstring FilePath = UnixExtractFilePath(FileName);
+      if (FilePath.empty())
+      {
+          FilePath = L"/";
+      }
     unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
 
     {
