@@ -6,6 +6,7 @@
 #include "FzApiStructures.h"
 #include "structures.h"
 #include "Classes.h"
+#include "Common.h"
 //---------------------------------------------------------------------------
 // #ifndef _DEBUG
 // #pragma comment(lib, "nafxcw.lib")
@@ -285,6 +286,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
+  DEBUG_PRINTF(L"MessageID = %u", MessageID);
   switch (MessageID)
   {
     case FZ_MSG_STATUS:
