@@ -520,9 +520,9 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         if (Data->Name.substr(0, Folder.size()) == Folder)
         {
           std::wstring Name = Data->Name.substr(
-            Folder.size() + 1, Data->Name.size() - Folder.size());
+            Folder.size(), Data->Name.size() - Folder.size());
           int Slash = Name.find_first_of(L'/');
-          if (Slash > 0)
+          if (Slash != std::wstring::npos)
           {
             Name.resize(Slash - 1);
             if (ChildPaths->IndexOf(Name.c_str()) < 0)
