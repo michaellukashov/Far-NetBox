@@ -163,7 +163,7 @@ public:
   bool FileTransfer(const char * LocalFile, const char * RemoteFile,
     const char * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
 
-  virtual const char * Option(int OptionID) const = 0;
+  virtual const wchar_t * Option(int OptionID) const = 0;
   virtual int OptionVal(int OptionID) const = 0;
 
   void SetDebugLevel(TLogLevel Level);

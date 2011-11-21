@@ -41,7 +41,7 @@ public:
   virtual ~TFileZillaImpl()
   {}
 
-  virtual const char * Option(int OptionID) const;
+  virtual const wchar_t * Option(int OptionID) const;
   virtual int OptionVal(int OptionID) const;
 
 protected:
@@ -74,9 +74,9 @@ TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) :
 {
 }
 //---------------------------------------------------------------------------
-const char * TFileZillaImpl::Option(int OptionID) const
+const wchar_t * TFileZillaImpl::Option(int OptionID) const
 {
-  return ::W2MB(FFileSystem->GetOption(OptionID)).c_str();
+  return FFileSystem->GetOption(OptionID);
 }
 //---------------------------------------------------------------------------
 int TFileZillaImpl::OptionVal(int OptionID) const
