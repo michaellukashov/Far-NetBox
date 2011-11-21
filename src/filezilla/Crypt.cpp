@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "fzafx.h"
-#include "crypt.h"
+#include "Crypt.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
