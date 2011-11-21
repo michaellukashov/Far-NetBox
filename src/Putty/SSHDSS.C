@@ -389,11 +389,11 @@ static void *dss_createkey(unsigned char *pub_blob, int pub_len,
     hashlen = -1;
     getstring(&pb, &priv_len, &hash, &hashlen);
     if (hashlen == 20) {
-	SHA_Init(&s);
+	putty_SHA_Init(&s);
 	sha_mpint(&s, dss->p);
 	sha_mpint(&s, dss->q);
 	sha_mpint(&s, dss->g);
-	SHA_Final(&s, digest);
+	putty_SHA_Final(&s, digest);
 	if (0 != memcmp(hash, digest, 20)) {
 	    dss_freekey(dss);
 	    return NULL;
@@ -566,18 +566,18 @@ static unsigned char *dss_sign(void *key, char *data, int datalen, int *siglen)
     /*
      * Hash some identifying text plus x.
      */
-    SHA512_Init(&ss);
+    putty_SHA512_Init(&ss);
     SHA512_Bytes(&ss, "DSA deterministic k generator", 30);
     sha512_mpint(&ss, dss->x);
-    SHA512_Final(&ss, digest512);
+    putty_SHA512_Final(&ss, digest512);
 
     /*
      * Now hash that digest plus the message hash.
      */
-    SHA512_Init(&ss);
+    putty_SHA512_Init(&ss);
     SHA512_Bytes(&ss, digest512, sizeof(digest512));
     SHA512_Bytes(&ss, digest, sizeof(digest));
-    SHA512_Final(&ss, digest512);
+    putty_SHA512_Final(&ss, digest512);
 
     memset(&ss, 0, sizeof(ss));
 

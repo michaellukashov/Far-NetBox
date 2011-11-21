@@ -733,14 +733,14 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 	if (private_blob_len % cipherblk)
 	    goto error;
 
-	SHA_Init(&s);
+	putty_SHA_Init(&s);
 	SHA_Bytes(&s, "\0\0\0\0", 4);
 	SHA_Bytes(&s, passphrase, passlen);
-	SHA_Final(&s, key + 0);
-	SHA_Init(&s);
+	putty_SHA_Final(&s, key + 0);
+	putty_SHA_Init(&s);
 	SHA_Bytes(&s, "\0\0\0\1", 4);
 	SHA_Bytes(&s, passphrase, passlen);
-	SHA_Final(&s, key + 20);
+	putty_SHA_Final(&s, key + 20);
 	aes256_decrypt_pubkey(key, private_blob, private_blob_len);
     }
 
@@ -786,11 +786,11 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 	    unsigned char mackey[20];
 	    char header[] = "putty-private-key-file-mac-key";
 
-	    SHA_Init(&s);
+	    putty_SHA_Init(&s);
 	    SHA_Bytes(&s, header, sizeof(header)-1);
 	    if (cipher && passphrase)
 		SHA_Bytes(&s, passphrase, passlen);
-	    SHA_Final(&s, mackey);
+	    putty_SHA_Final(&s, mackey);
 
 	    hmac_sha1_simple(mackey, 20, macdata, maclen, binary);
 
@@ -1113,11 +1113,11 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 	DO_STR(pub_blob, pub_blob_len);
 	DO_STR(priv_blob_encrypted, priv_encrypted_len);
 
-	SHA_Init(&s);
+	putty_SHA_Init(&s);
 	SHA_Bytes(&s, header, sizeof(header)-1);
 	if (passphrase)
 	    SHA_Bytes(&s, passphrase, strlen(passphrase));
-	SHA_Final(&s, mackey);
+	putty_SHA_Final(&s, mackey);
 	hmac_sha1_simple(mackey, 20, macdata, maclen, priv_mac);
 	memset(macdata, 0, maclen);
 	sfree(macdata);
@@ -1131,14 +1131,14 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 
 	passlen = strlen(passphrase);
 
-	SHA_Init(&s);
+	putty_SHA_Init(&s);
 	SHA_Bytes(&s, "\0\0\0\0", 4);
 	SHA_Bytes(&s, passphrase, passlen);
-	SHA_Final(&s, key + 0);
-	SHA_Init(&s);
+	putty_SHA_Final(&s, key + 0);
+	putty_SHA_Init(&s);
 	SHA_Bytes(&s, "\0\0\0\1", 4);
 	SHA_Bytes(&s, passphrase, passlen);
-	SHA_Final(&s, key + 20);
+	putty_SHA_Final(&s, key + 20);
 	aes256_encrypt_pubkey(key, priv_blob_encrypted,
 			      priv_encrypted_len);
 

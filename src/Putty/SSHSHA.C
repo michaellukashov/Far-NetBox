@@ -91,7 +91,7 @@ void SHATransform(word32 * digest, word32 * block)
  * the end, and pass those blocks to the core SHA algorithm.
  */
 
-void SHA_Init(SHA_State * s)
+void putty_SHA_Init(SHA_State * s)
 {
     SHA_Core_Init(s->h);
     s->blkused = 0;
@@ -144,7 +144,7 @@ void SHA_Bytes(SHA_State * s, void *p, int len)
     }
 }
 
-void SHA_Final(SHA_State * s, unsigned char *output)
+void putty_SHA_Final(SHA_State * s, unsigned char *output)
 {
     int i;
     int pad;
@@ -186,9 +186,9 @@ void SHA_Simple(void *p, int len, unsigned char *output)
 {
     SHA_State s;
 
-    SHA_Init(&s);
+    putty_SHA_Init(&s);
     SHA_Bytes(&s, p, len);
-    SHA_Final(&s, output);
+    putty_SHA_Final(&s, output);
 }
 
 /*
@@ -200,7 +200,7 @@ static void *sha1_init(void)
     SHA_State *s;
 
     s = snew(SHA_State);
-    SHA_Init(s);
+    putty_SHA_Init(s);
     return s;
 }
 
@@ -215,7 +215,7 @@ static void sha1_final(void *handle, unsigned char *output)
 {
     SHA_State *s = handle;
 
-    SHA_Final(s, output);
+    putty_SHA_Final(s, output);
     sfree(s);
 }
 
@@ -247,13 +247,13 @@ static void sha1_key_internal(void *handle, unsigned char *key, int len)
     memset(foo, 0x36, 64);
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
-    SHA_Init(&keys[0]);
+    putty_SHA_Init(&keys[0]);
     SHA_Bytes(&keys[0], foo, 64);
 
     memset(foo, 0x5C, 64);
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
-    SHA_Init(&keys[1]);
+    putty_SHA_Init(&keys[1]);
     SHA_Bytes(&keys[1], foo, 64);
 
     memset(foo, 0, 64);		       /* burn the evidence */
@@ -289,10 +289,10 @@ static void hmacsha1_genresult(void *handle, unsigned char *hmac)
     unsigned char intermediate[20];
 
     s = keys[2];		       /* structure copy */
-    SHA_Final(&s, intermediate);
+    putty_SHA_Final(&s, intermediate);
     s = keys[1];		       /* structure copy */
     SHA_Bytes(&s, intermediate, 20);
-    SHA_Final(&s, hmac);
+    putty_SHA_Final(&s, hmac);
 }
 
 static void sha1_do_hmac(void *handle, unsigned char *blk, int len,
@@ -369,10 +369,10 @@ void hmac_sha1_simple(void *key, int keylen, void *data, int datalen,
 
     sha1_key_internal(states, key, keylen);
     SHA_Bytes(&states[0], data, datalen);
-    SHA_Final(&states[0], intermediate);
+    putty_SHA_Final(&states[0], intermediate);
 
     SHA_Bytes(&states[1], intermediate, 20);
-    SHA_Final(&states[1], output);
+    putty_SHA_Final(&states[1], output);
 }
 
 const struct ssh_mac ssh_hmac_sha1 = {

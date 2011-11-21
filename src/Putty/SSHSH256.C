@@ -93,7 +93,7 @@ void SHA256_Block(SHA256_State *s, uint32 *block) {
 
 #define BLKSIZE 64
 
-void SHA256_Init(SHA256_State *s) {
+void putty_SHA256_Init(SHA256_State *s) {
     SHA256_Core_Init(s);
     s->blkused = 0;
     s->lenhi = s->lenlo = 0;
@@ -141,7 +141,7 @@ void SHA256_Bytes(SHA256_State *s, const void *p, int len) {
     }
 }
 
-void SHA256_Final(SHA256_State *s, unsigned char *digest) {
+void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
     int i;
     int pad;
     unsigned char c[64];
@@ -181,9 +181,9 @@ void SHA256_Final(SHA256_State *s, unsigned char *digest) {
 void SHA256_Simple(const void *p, int len, unsigned char *output) {
     SHA256_State s;
 
-    SHA256_Init(&s);
+    putty_SHA256_Init(&s);
     SHA256_Bytes(&s, p, len);
-    SHA256_Final(&s, output);
+    putty_SHA256_Final(&s, output);
 }
 
 /*
@@ -195,7 +195,7 @@ static void *sha256_init(void)
     SHA256_State *s;
 
     s = snew(SHA256_State);
-    SHA256_Init(s);
+    putty_SHA256_Init(s);
     return s;
 }
 
@@ -210,7 +210,7 @@ static void sha256_final(void *handle, unsigned char *output)
 {
     SHA256_State *s = handle;
 
-    SHA256_Final(s, output);
+    putty_SHA256_Final(s, output);
     sfree(s);
 }
 
