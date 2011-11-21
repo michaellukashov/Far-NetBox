@@ -1480,8 +1480,8 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		CString retmsg = GetReply();
 		BOOL error = FALSE;
 		int code = GetReplyCode();
-        DEBUG_PRINTF(L"m_Operation.nOpState = %u, code = %d", m_Operation.nOpState, code);
-        DEBUG_PRINTF(L"LIST_PWD = %u, LIST_PWD2 = %u, LIST_PWD3 = %u", LIST_PWD, LIST_PWD2, LIST_PWD3);
+        // DEBUG_PRINTF(L"m_Operation.nOpState = %u, code = %d", m_Operation.nOpState, code);
+        // DEBUG_PRINTF(L"LIST_PWD = %u, LIST_PWD2 = %u, LIST_PWD3 = %u", LIST_PWD, LIST_PWD2, LIST_PWD3);
 		switch (m_Operation.nOpState)
 		{
 		case LIST_PWD: //Reply to PWD command
@@ -1859,7 +1859,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 			m_Operation.nOpState = LIST_PWD;
 	}
 	CString cmd;
-    DEBUG_PRINTF(L"m_Operation.nOpState = %u", m_Operation.nOpState);
+    // DEBUG_PRINTF(L"m_Operation.nOpState = %u", m_Operation.nOpState);
 	if (m_Operation.nOpState == LIST_PWD)
 		cmd=_T("PWD");
 	else if (m_Operation.nOpState==LIST_CWD)
