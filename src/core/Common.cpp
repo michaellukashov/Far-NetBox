@@ -2145,6 +2145,7 @@ bool TryStrToInt(const std::wstring value, __int64 &Value)
     try
     {
         Value = boost::lexical_cast<__int64>(value);
+        result = true;
     }
     catch (const boost::bad_lexical_cast &)
     {
@@ -2159,6 +2160,7 @@ bool TryStrToInt(const std::wstring value, int &Value)
     try
     {
         Value = boost::lexical_cast<int>(value);
+        result = true;
     }
     catch (const boost::bad_lexical_cast &)
     {
