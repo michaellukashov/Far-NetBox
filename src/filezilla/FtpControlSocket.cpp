@@ -1152,7 +1152,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		int sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
         {
-            DEBUG_PRINTF(L"utf8 = %s", (wchar_t *)utf8);
+            DEBUG_PRINTF(L"utf8 = %s", ::MB2W(utf8).c_str());
 			res = CAsyncSocketEx::Send(utf8, strlen(utf8));
         }
 		else
@@ -1194,7 +1194,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		if (!m_awaitsReply && !m_sendBuffer)
         {
             DEBUG_PRINTF(L"str = %s", str.GetBuffer(str.GetLength()));
-            DEBUG_PRINTF(L"lpszAsciiSend = %s", (wchar_t *)lpszAsciiSend);
+            DEBUG_PRINTF(L"lpszAsciiSend = %s", ::MB2W((char *)lpszAsciiSend).c_str());
 			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend));
         }
 		else
