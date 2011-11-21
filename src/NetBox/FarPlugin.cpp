@@ -998,6 +998,7 @@ void TFarMessageDialog::Idle()
             std::wstring Caption =
                 FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
                     FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000))).c_str();
+            DEBUG_PRINTF(L"FTimeoutButton->GetCaption = %s", FTimeoutButton->GetCaption().c_str());
             Caption += ::StringOfChar(L' ', FTimeoutButton->GetCaption().size() - Caption.size());
             FTimeoutButton->SetCaption(Caption);
         }
