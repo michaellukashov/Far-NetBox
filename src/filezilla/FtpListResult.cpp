@@ -372,7 +372,7 @@ CFtpListResult::CFtpListResult(t_server server, bool *bUTF8)
 	m_MonthNamesMap[_T("joulu")] = 12;
 
 	//There are more languages and thus month 
-	//names, but as long knowbody reports a 
+	//names, but as long nobody reports a 
 	//problem, I won't add them, there are way 
 	//too much languages
 
