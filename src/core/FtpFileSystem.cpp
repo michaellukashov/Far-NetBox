@@ -2553,6 +2553,7 @@ void TFTPFileSystem::SetLastCode(int Code)
 void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
 {
   int Code = 0;
+  DEBUG_PRINTF(L"Response = %s", Response.c_str());
 
   if (!FOnCaptureOutput.empty())
   {
@@ -2581,11 +2582,11 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     (Response.size() >= 3) &&
     TryStrToInt(Response.substr(0, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
-    ((Response.size() == 3) || (Response[4] == ' ') || (Response[4] == '-'));
+    ((Response.size() == 3) || (Response[3] == ' ') || (Response[3] == '-'));
 
   if (HasCodePrefix && !FMultineResponse)
   {
-    FMultineResponse = (Response.size() >= 4) && (Response[4] == '-');
+    FMultineResponse = (Response.size() >= 4) && (Response[3] == '-');
     FLastResponse->Clear();
     if (Response.size() >= 5)
     {
@@ -2595,20 +2596,20 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
   }
   else
   {
-    int Start;
+    int Start = 0;
     // response with code prefix
     if (HasCodePrefix && (FLastCode == Code))
     {
       // End of multiline response?
-      if ((Response.size() <= 3) || (Response[4] == ' '))
+      if ((Response.size() <= 3) || (Response[3] == ' '))
       {
         FMultineResponse = false;
       }
-      Start = 5;
+      Start = 4;
     }
     else
     {
-      Start = (((Response.size() >= 1) && (Response[1] == ' ')) ? 2 : 1);
+      Start = (((Response.size() >= 1) && (Response[0] == ' ')) ? 1 : 0);
     }
 
     // Intermediate empty lines are being added
