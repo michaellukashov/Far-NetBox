@@ -999,7 +999,8 @@ void TFarMessageDialog::Idle()
                 FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
                     FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000)).c_str()).c_str();
             DEBUG_PRINTF(L"FTimeoutButton->GetCaption = %s", FTimeoutButton->GetCaption().c_str());
-            Caption += ::StringOfChar(L' ', FTimeoutButton->GetCaption().size() - Caption.size());
+            size_t sz = FTimeoutButton->GetCaption().size() > Caption.size() ? FTimeoutButton->GetCaption().size() - Caption.size() : 0;
+            Caption += ::StringOfChar(L' ', sz);
             FTimeoutButton->SetCaption(Caption);
         }
     }
