@@ -17,9 +17,13 @@
 #include "TextsCore.h"
 #include "TextsFileZilla.h"
 #include "HelpCore.h"
+#ifdef MPEXT
 #define OPENSSL_NO_EC
 #define OPENSSL_NO_ECDSA
 #define OPENSSL_NO_ECDH
+#define OPENSSL_NO_ENGINE
+#define OPENSSL_NO_DEPRECATED
+#endif
 #include <openssl/x509_vfy.h>
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \

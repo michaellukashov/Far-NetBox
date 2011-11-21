@@ -104,6 +104,8 @@ Version 2.0:
 #define OPENSSL_NO_EC
 #define OPENSSL_NO_ECDSA
 #define OPENSSL_NO_ECDH
+#define OPENSSL_NO_ENGINE
+#define OPENSSL_NO_DEPRECATED
 #endif
 #include <openssl/ssl.h>
 

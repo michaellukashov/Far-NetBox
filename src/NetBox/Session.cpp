@@ -28,6 +28,9 @@
 #include "SFTP.h"
 #include "WebDAV.h"
 
+#define OPENSSL_NO_EC
+#define OPENSSL_NO_ECDSA
+#define OPENSSL_NO_ECDH
 #define OPENSSL_NO_ENGINE
 #define OPENSSL_NO_DEPRECATED
 #include <openssl/evp.h>
