@@ -3067,7 +3067,7 @@ void TWinSCPFileSystem::TerminalInformation(
 {
   if (Active)
   {
-    if (GetTerminal()->GetStatus() == ssOpening)
+    if (GetTerminal() && (GetTerminal()->GetStatus() == ssOpening))
     {
       if (FAuthenticationLog == NULL)
       {
