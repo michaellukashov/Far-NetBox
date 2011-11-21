@@ -4,7 +4,7 @@
 
 #include "fzafx.h"
 
-// void InitExtensionModule(HINSTANCE HInst);
-// void TermExtensionModule();
+void InitExtensionModule(HINSTANCE HInst);
+void TermExtensionModule();
 
 #endif

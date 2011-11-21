@@ -430,7 +430,7 @@ void DllProcessAttach(HINSTANCE HInst)
     assert(!Processes);
     Processes++;
 #ifdef _AFXDLL
-    // InitExtensionModule(HInst);
+    InitExtensionModule(HInst);
 #endif
  // DEBUG_PRINTF(L"DllProcessAttach: end");
 }
@@ -446,7 +446,7 @@ void DllProcessDetach()
     assert(FarPlugin);
     SAFE_DESTROY(FarPlugin);
 #ifdef _AFXDLL
-    // TermExtensionModule();
+    TermExtensionModule();
 #endif
   }
   // DEBUG_PRINTF(L"DllProcessDetach: end");
