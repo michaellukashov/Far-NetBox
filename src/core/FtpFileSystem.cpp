@@ -1731,7 +1731,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   {
     FFileZillaIntf->CustomCommand("PWD");
 
-    unsigned int Code;
+    unsigned int Code = 0;
     TStrings * Response = NULL;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
@@ -3453,7 +3453,7 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
         else
         {
           // end of quoted string, trim the rest
-          Str.resize(Index - 1);
+          Str.resize(Index);
           State = DONE;
         }
         break;
