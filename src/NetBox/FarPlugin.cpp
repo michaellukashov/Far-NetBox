@@ -869,7 +869,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
                 Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), int(FParams->Timeout / 1000));
                 std::wstring Buffer(512, 0);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), FParams->TimeoutStr.c_str(), Caption.c_str(), int(FParams->Timeout / 1000));
-                SetCaption(Buffer.c_str());
+                Button->SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
             else
