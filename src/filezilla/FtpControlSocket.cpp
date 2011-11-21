@@ -371,6 +371,8 @@ bool CFtpControlSocket::InitConnect()
 
 void CFtpControlSocket::Connect(t_server &server)
 {
+    AFX_MANAGE_STATE(AfxGetModuleState());
+    afxCurrentResourceHandle = ::HInst;
 	USES_CONVERSION;
 
 	if (m_Operation.nOpMode)

@@ -62,6 +62,9 @@ class CFileFix;
 #define USEDPARAM(p) (void)(p);
 #endif
 //---------------------------------------------------------------------------
+extern HINSTANCE HInst;
+
+//---------------------------------------------------------------------------
 const int FILEEXISTS_ASK = -1;
 const int FILEEXISTS_OVERWRITE = 0;
 const int FILEEXISTS_OVERWRITEIFNEWER = 1;
