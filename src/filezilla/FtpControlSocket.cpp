@@ -43,6 +43,9 @@
 #include <Options.h>
 #include <Crypt.h>
 
+#include "Classes.h"
+#include "Common.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -1854,6 +1857,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 			m_Operation.nOpState = LIST_PWD;
 	}
 	CString cmd;
+    DEBUG_PRINTF(L"m_Operation.nOpState = %u", m_Operation.nOpState);
 	if (m_Operation.nOpState == LIST_PWD)
 		cmd=_T("PWD");
 	else if (m_Operation.nOpState==LIST_CWD)
@@ -2126,6 +2130,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
 		return;
 	}
+    DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
 	if (cmd != _T(""))
 		Send(cmd);
 }
