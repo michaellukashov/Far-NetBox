@@ -3410,7 +3410,7 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
   } State;
 
   State = INIT;
-  assert((Str.size() > 0) && ((Str[1] == '"') || (Str[1] == '\'')));
+  assert((Str.size() > 0) && ((Str[0] == '"') || (Str[0] == '\'')));
 
   int Index = 0;
   wchar_t Quote;
