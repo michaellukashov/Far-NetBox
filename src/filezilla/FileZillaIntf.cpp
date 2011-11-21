@@ -286,7 +286,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
   unsigned int MessageID = FZ_MSG_ID(wParam);
 
-  DEBUG_PRINTF(L"MessageID = %u, lParam = %u", MessageID, lParam);
+  // DEBUG_PRINTF(L"MessageID = %u, lParam = %u", MessageID, lParam);
   switch (MessageID)
   {
     case FZ_MSG_STATUS:

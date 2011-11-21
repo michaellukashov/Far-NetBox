@@ -2557,7 +2557,7 @@ void TFTPFileSystem::SetLastCode(int Code)
 void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
 {
   int Code = 0;
-  DEBUG_PRINTF(L"Response = %s", Response.c_str());
+  // DEBUG_PRINTF(L"Response = %s", Response.c_str());
 
   if (!FOnCaptureOutput.empty())
   {
@@ -2702,8 +2702,8 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 {
   TLogLineType LogType = (TLogLineType)-1;
   std::wstring Status(AStatus);
-  DEBUG_PRINTF(L"Status = %s", Status.c_str());
-  DEBUG_PRINTF(L"Type = %d", Type);
+  // DEBUG_PRINTF(L"Status = %s", Status.c_str());
+  // DEBUG_PRINTF(L"Type = %d", Type);
   switch (Type)
   {
     case TFileZillaIntf::LOG_STATUS:
