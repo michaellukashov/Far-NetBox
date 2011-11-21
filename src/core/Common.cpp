@@ -2096,27 +2096,47 @@ std::wstring IntToStr(int value)
 
 int StrToInt(const std::wstring value)
 {
-    return TryStrToInt(value, 0);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return 0;
 }
 
 __int64 ToInt(const std::wstring value)
 {
-    return TryStrToInt(value, 0);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return 0;
 }
 
 int StrToIntDef(const std::wstring value, int defval)
 {
-    return TryStrToInt(value, defval);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return defval;
 }
 
 __int64 StrToInt64(const std::wstring value)
 {
-    return TryStrToInt(value, 0);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return 0;
 }
 
 __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
-    return TryStrToInt(value, defval);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return defval;
 }
 
 bool TryStrToInt(const std::wstring value, __int64 &Value)
@@ -2125,6 +2145,20 @@ bool TryStrToInt(const std::wstring value, __int64 &Value)
     try
     {
         Value = boost::lexical_cast<__int64>(value);
+    }
+    catch (const boost::bad_lexical_cast &)
+    {
+        result = false;
+    }
+    return result;
+}
+
+bool TryStrToInt(const std::wstring value, int &Value)
+{
+    bool result = false;
+    try
+    {
+        Value = boost::lexical_cast<int>(value);
     }
     catch (const boost::bad_lexical_cast &)
     {
