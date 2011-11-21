@@ -18,9 +18,7 @@
 
 #include "fzafx.h"
 
-#ifndef MPEXT
 #include "MFC64bitFix.h"
-#endif
 
 __int64 GetLength64(CFile &file)
 {

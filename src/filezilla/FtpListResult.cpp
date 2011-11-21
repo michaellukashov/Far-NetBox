@@ -23,6 +23,7 @@
 #include "fzafx.h"
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
+#include "FileZillaOpt.h"
 #include "Options.h"
 #include "misc/utf8.h"
 

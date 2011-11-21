@@ -3,6 +3,7 @@
 #include <Options.h>
 #include <FileZillaIntern.h>
 #include <FileZillaIntf.h>
+#include <Crypt.h>
 //---------------------------------------------------------------------------
 CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
 {
