@@ -2119,16 +2119,16 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval)
     return TryStrToInt(value, defval);
 }
 
-__int64 TryStrToInt(const std::wstring value, __int64 defval)
+bool TryStrToInt(const std::wstring value, __int64 &Value)
 {
-    __int64 result = 0;
+    bool result = false;
     try
     {
-        result = boost::lexical_cast<__int64>(value);
+        Value = boost::lexical_cast<__int64>(value);
     }
     catch (const boost::bad_lexical_cast &)
     {
-        result = defval;
+        result = false;
     }
     return result;
 }
