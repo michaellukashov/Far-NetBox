@@ -65,8 +65,6 @@ int CFileZillaApi::Init(HWND hOwnerWnd, int nReplyMessageID /*=0*/)
 int CFileZillaApi::Init(CApiLog * pParent)
 #endif
 {
-	// AFX_MANAGE_STATE(AfxGetModuleState());
-	// AfxCoreInitModule();
 	//Check parameters
 	//-> No check needed, if hOwnerWnd is NULL, use blocking mode and don't send status messages
 
