@@ -1135,6 +1135,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 	ShowStatus(str, 2);
 	str += "\r\n";
 	int res = 0;
+    DEBUG_PRINTF(L"m_bUTF8 = %d", m_bUTF8);
 	if (m_bUTF8)
 	{
 		LPCWSTR unicode = T2CW(str);
@@ -1150,7 +1151,10 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 
 		int sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
+        {
+            DEBUG_PRINTF(L"utf8 = %s", (wchar_t *)utf8);
 			res = CAsyncSocketEx::Send(utf8, strlen(utf8));
+        }
 		else
 			res = -2;
 		if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -1188,7 +1192,10 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 
 		int sendLen = strlen(lpszAsciiSend);
 		if (!m_awaitsReply && !m_sendBuffer)
+        {
+            DEBUG_PRINTF(L"lpszAsciiSend = %s", (wchar_t *)lpszAsciiSend);
 			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend));
+        }
 		else
 			res = -2;
 		if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -2111,7 +2118,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 			cmd += _T(" -a");
-
+        DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
 		if (!Send(cmd))
 			return;
 
@@ -3953,6 +3960,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==".") && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 				cmd += " -a";
+            DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
 			if(!Send(cmd))
 				bError=TRUE;
 			else if(pData->bPasv)
@@ -3982,6 +3990,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 		{
 			CString command = _T("MDTM ");
 			command += pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
+            DEBUG_PRINTF(L"command = %s", command.GetBuffer(command.GetLength()));
 
 			if (!Send(command))
 				bError=TRUE;

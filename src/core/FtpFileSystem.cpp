@@ -2557,7 +2557,7 @@ void TFTPFileSystem::SetLastCode(int Code)
 void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
 {
   int Code = 0;
-  // DEBUG_PRINTF(L"Response = %s", Response.c_str());
+  DEBUG_PRINTF(L"Response = %s", Response.c_str());
 
   if (!FOnCaptureOutput.empty())
   {
@@ -2588,6 +2588,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     (Code >= 100) && (Code <= 599) &&
     ((Response.size() == 3) || (Response[3] == L' ') || (Response[3] == L'-'));
 
+  DEBUG_PRINTF(L"Code = %d", Code);
   if (HasCodePrefix && !FMultineResponse)
   {
     FMultineResponse = (Response.size() >= 4) && (Response[3] == L'-');
