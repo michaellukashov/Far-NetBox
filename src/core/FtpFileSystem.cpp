@@ -2698,7 +2698,7 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 {
   TLogLineType LogType = (TLogLineType)-1;
   std::wstring Status(AStatus);
-  DEBUG_PRINTF(L"Status = %s", Status);
+  DEBUG_PRINTF(L"Status = %s", Status.c_str());
   DEBUG_PRINTF(L"Type = %d", Type);
   switch (Type)
   {
