@@ -19,6 +19,12 @@
 #include "fzafx.h"
 #include "pathfunctions.h"
 
+#include <MFC64bitFix.h>
+#include <TextsFileZilla.h>
+#include <FileZillaOpt.h>
+#include <Options.h>
+#include <Crypt.h>
+
 void PathRemoveArgs(CString &path)
 {
 	path.TrimLeft( _T(" ") );

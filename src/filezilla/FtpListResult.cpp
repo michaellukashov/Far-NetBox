@@ -26,6 +26,8 @@
 #include "Options.h"
 #include "misc/utf8.h"
 
+#include <TextsFileZilla.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;

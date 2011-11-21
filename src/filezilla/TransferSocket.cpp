@@ -30,6 +30,11 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
+#include <TextsFileZilla.h>
+#include <FileZillaOpt.h>
+#include <Options.h>
+#include <Crypt.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
