@@ -2582,11 +2582,11 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     (Response.size() >= 3) &&
     TryStrToInt(Response.substr(0, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
-    ((Response.size() == 3) || (Response[3] == ' ') || (Response[3] == '-'));
+    ((Response.size() == 3) || (Response[3] == L' ') || (Response[3] == L'-'));
 
   if (HasCodePrefix && !FMultineResponse)
   {
-    FMultineResponse = (Response.size() >= 4) && (Response[3] == '-');
+    FMultineResponse = (Response.size() >= 4) && (Response[3] == L'-');
     FLastResponse->Clear();
     if (Response.size() >= 5)
     {
@@ -2601,7 +2601,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     if (HasCodePrefix && (FLastCode == Code))
     {
       // End of multiline response?
-      if ((Response.size() <= 3) || (Response[3] == ' '))
+      if ((Response.size() <= 3) || (Response[3] == L' '))
       {
         FMultineResponse = false;
       }
@@ -2609,7 +2609,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     }
     else
     {
-      Start = (((Response.size() >= 1) && (Response[0] == ' ')) ? 1 : 0);
+      Start = (((Response.size() >= 1) && (Response[0] == L' ')) ? 1 : 0);
     }
 
     // Intermediate empty lines are being added
