@@ -3218,12 +3218,12 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       {
         File->SetTerminal(FTerminal);
 
-        File->SetFileName(::MB2W(Entry->Name).c_str());
-        if (strlen(Entry->Permissions) >= 10)
+        File->SetFileName(std::wstring(Entry->Name));
+        if (wcslen(Entry->Permissions) >= 10)
         {
           try
           {
-            File->GetRights()->SetText(::MB2W(Entry->Permissions + 1).c_str());
+            File->GetRights()->SetText(Entry->Permissions + 1);
           }
           catch (...)
           {
@@ -3231,7 +3231,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           }
         }
 		// FIXME
-		std::wstring own = ::MB2W(Entry->OwnerGroup).c_str();
+		std::wstring own = Entry->OwnerGroup;
         const wchar_t * Space = wcschr(own.c_str(), ' ');
         if (Space != NULL)
         {
@@ -3240,7 +3240,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         }
         else
         {
-          File->GetOwner().SetName(::MB2W(Entry->OwnerGroup).c_str());
+          File->GetOwner().SetName(Entry->OwnerGroup);
         }
 
         File->SetSize(Entry->Size);
@@ -3288,7 +3288,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         }
         File->SetLastAccess(File->GetModification());
 
-        File->SetLinkTo(::MB2W(Entry->LinkTarget).c_str());
+        File->SetLinkTo(Entry->LinkTarget);
 
         File->Complete();
       }
@@ -3297,9 +3297,9 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         delete File;
         std::wstring EntryData =
           FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-            ::MB2W(Entry->Name).c_str(),
-            ::MB2W(Entry->Permissions).c_str(),
-            ::MB2W(Entry->OwnerGroup).c_str(),
+            Entry->Name,
+            Entry->Permissions,
+            Entry->OwnerGroup,
             IntToStr(Entry->Size).c_str(),
              int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
              Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));

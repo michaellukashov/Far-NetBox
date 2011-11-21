@@ -11,9 +11,9 @@ class TFileZillaIntern;
 //---------------------------------------------------------------------------
 struct TListDataEntry
 {
-  const char * Name;
-  const char * Permissions;
-  const char * OwnerGroup;
+  const wchar_t *Name;
+  const wchar_t *Permissions;
+  const wchar_t *OwnerGroup;
   __int64 Size;
   bool Dir;
   bool Link;
@@ -24,7 +24,7 @@ struct TListDataEntry
   int Minute;
   bool HasTime;
   bool HasDate;
-  const char * LinkTarget;
+  const wchar_t *LinkTarget;
 };
 //---------------------------------------------------------------------------
 struct TFtpsCertificateData

@@ -388,9 +388,9 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           t_directory::t_direntry & Source = Directory->direntry[Index];
           TListDataEntry & Dest = Entries[Index];
 
-          Dest.Name = (const char *)Source.name.GetBuffer(Source.name.GetLength());
-          Dest.Permissions = (const char *)Source.permissionstr.GetBuffer(Source.permissionstr.GetLength());
-          Dest.OwnerGroup = (const char *)Source.ownergroup.GetBuffer(Source.ownergroup.GetLength());
+          Dest.Name = (const wchar_t *)Source.name.GetBuffer(Source.name.GetLength());
+          Dest.Permissions = (const wchar_t *)Source.permissionstr.GetBuffer(Source.permissionstr.GetLength());
+          Dest.OwnerGroup = (const wchar_t *)Source.ownergroup.GetBuffer(Source.ownergroup.GetLength());
           Dest.Size = Source.size;
           Dest.Dir = Source.dir;
           Dest.Link = Source.bLink;
@@ -401,7 +401,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.Minute = Source.date.minute;
           Dest.HasTime = Source.date.hastime;
           Dest.HasDate = Source.date.hasdate;
-          Dest.LinkTarget = (const char *)Source.linkTarget.GetBuffer(Source.linkTarget.GetLength());
+          Dest.LinkTarget = (const wchar_t *)Source.linkTarget.GetBuffer(Source.linkTarget.GetLength());
         }
 
         int Num = Directory->num;
