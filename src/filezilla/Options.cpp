@@ -18,7 +18,7 @@ CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
   const TFileZillaIntf * Intf = Intern->GetOwner();
   ASSERT(Intf != NULL);
   const wchar_t *res = Intf->Option(OptionID);
-  DEBUG_PRINTF(L"res = %s", res);
+  // DEBUG_PRINTF(L"res = %s", res);
   CString Result = res;
   switch (OptionID)
   {
