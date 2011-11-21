@@ -594,7 +594,7 @@ void TFTPFileSystem::EnsureLocation()
     if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
-        (FCurrentDirectory)));
+        FCurrentDirectory.c_str()));
       DoChangeDirectory(FCurrentDirectory);
     }
   }
@@ -633,7 +633,7 @@ void TFTPFileSystem::AnnounceFileListOperation()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
 {
-  std::wstring Command = FORMAT(L"CWD %s", (Directory));
+  std::wstring Command = FORMAT(L"CWD %s", Directory.c_str());
   FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
@@ -1330,7 +1330,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TUploadSessionAction & Action)
 {
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", (FileName)));
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   Action.FileName(ExpandUNCFileName(FileName));
 
@@ -1338,7 +1338,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
 
   if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", (FileName)));
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
     THROW_SKIP_FILE_NULL;
   }
 
@@ -1989,10 +1989,10 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     else
     {
       FFileSystemInfo.AdditionalInfo =
-        FORMAT(L"%s\r\n", (LoadStr(FTP_FEATURE_INFO)));
+        FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
       for (int Index = 0; Index < FFeatures->GetCount(); Index++)
       {
-        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", (FFeatures->GetString(Index)));
+        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
       }
     }
 
@@ -2950,7 +2950,7 @@ std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
 {
   if (!Entry1.empty() && !Entry2.empty())
   {
-    return FORMAT(L"%s, %s", (Entry1, Entry2));
+    return FORMAT(L"%s, %s", Entry1.c_str(), Entry2.c_str());
   }
   else
   {
@@ -2964,9 +2964,9 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
       FormatContactList(FormatContactList(FormatContactList(
         ::MB2W(Contact.Organization).c_str(),
-		::MB2W(Contact.Unit).c_str()),
-		::MB2W(Contact.CommonName).c_str()),
-			::MB2W(Contact.Mail).c_str()));
+		::MB2W(Contact.Unit).c_str()).c_str(),
+		::MB2W(Contact.CommonName).c_str()).c_str(),
+			::MB2W(Contact.Mail).c_str()).c_str());
 
   if ((strlen(Contact.Country) > 0) ||
       (strlen(Contact.StateProvince) > 0) ||
@@ -3297,9 +3297,12 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         delete File;
         std::wstring EntryData =
           FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-            (Entry->Name, Entry->Permissions, Entry->OwnerGroup, IntToStr(Entry->Size),
+            ::MB2W(Entry->Name).c_str(),
+            ::MB2W(Entry->Permissions).c_str(),
+            ::MB2W(Entry->OwnerGroup).c_str(),
+            IntToStr(Entry->Size).c_str(),
              int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
-             Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate)));
+             Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
         throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
       }
 
@@ -3341,7 +3344,7 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
   {
     if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", (int(Reply), Command)));
+      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", int(Reply), Command));
     }
 
     // reply with Command 0 is not associated with current operation
