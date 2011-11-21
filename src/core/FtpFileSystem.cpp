@@ -3392,7 +3392,7 @@ bool TFTPFileSystem::CheckError(int ReturnCode, const wchar_t * Context)
   else
   {
     FTerminal->FatalError(NULL,
-      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), IntToHex(ReturnCode, 4)));
+      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), IntToHex(ReturnCode, 4).c_str()));
     assert(false);
   }
 
