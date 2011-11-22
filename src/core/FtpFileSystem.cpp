@@ -2670,6 +2670,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
         FLastResponse->Delete(0);
         FLastResponse->Delete(FLastResponse->GetCount() - 1);
         FFeatures->Assign(FLastResponse);
+        DEBUG_PRINTF(L"FFeatures = %s", FFeatures->GetText().c_str());
       }
       else
       {
