@@ -164,6 +164,29 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/resource/TextsCore2.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc
     ${PROJECT_ROOT}/src/resource/TextsFileZilla.rc
+    ${PROJECT_ROOT}/src/filezilla/FileZillaIntf.cpp
+    ${PROJECT_ROOT}/src/filezilla/FileZillaIntern.cpp
+    ${PROJECT_ROOT}/src/filezilla/ApiLog.cpp
+    ${PROJECT_ROOT}/src/filezilla/ServerPath.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncSslSocketLayer.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncSocketExLayer.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncSocketEx.cpp
+    ${PROJECT_ROOT}/src/filezilla/FileZillaApi.cpp
+    ${PROJECT_ROOT}/src/filezilla/FzApiStructures.cpp
+    ${PROJECT_ROOT}/src/filezilla/Crypt.cpp
+    ${PROJECT_ROOT}/src/filezilla/ControlSocket.cpp
+    ${PROJECT_ROOT}/src/filezilla/FtpControlSocket.cpp
+    ${PROJECT_ROOT}/src/filezilla/MainThread.cpp
+    ${PROJECT_ROOT}/src/filezilla/TransferSocket.cpp
+    ${PROJECT_ROOT}/src/filezilla/PathFunctions.cpp
+    ${PROJECT_ROOT}/src/filezilla/FtpListResult.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncProxySocketLayer.cpp
+    ${PROJECT_ROOT}/src/filezilla/structures.cpp
+    ${PROJECT_ROOT}/src/filezilla/MFC64bitFix.cpp
+    ${PROJECT_ROOT}/src/filezilla/Options.cpp
+    ${PROJECT_ROOT}/src/filezilla/afxdll.cpp
+    ${PROJECT_ROOT}/src/filezilla/misc/Fzutf8.cpp
+    ${PROJECT_ROOT}/src/filezilla/misc/CBase64Coding.cpp
 )
 
 #-------------------------------------------------------------------------------
