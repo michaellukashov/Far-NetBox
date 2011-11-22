@@ -670,6 +670,7 @@ void TTerminal::ResetConnection()
 //---------------------------------------------------------------------------
 void TTerminal::Open()
 {
+  DEBUG_PRINTF(L"begin");
   FLog->ReflectSettings();
   try
   {
@@ -834,6 +835,7 @@ void TTerminal::Open()
     // any std::exception while opening session is fatal
     FatalError(&E, L"");
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 bool TTerminal::IsListenerFree(unsigned int PortNumber)
@@ -2173,6 +2175,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
 //---------------------------------------------------------------------------
 void TTerminal::DoStartup()
 {
+  DEBUG_PRINTF(L"begin");
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
   {
@@ -2197,10 +2200,12 @@ void TTerminal::DoStartup()
 
   }
   LogEvent(L"Startup conversation with host finished.");
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::ReadCurrentDirectory()
 {
+  DEBUG_PRINTF(L"begin");
   assert(FFileSystem);
   try
   {
@@ -2239,10 +2244,12 @@ void TTerminal::ReadCurrentDirectory()
   {
     CommandError(&E, LoadStr(READ_CURRENT_DIR_ERROR));
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 {
+  DEBUG_PRINTF(L"begin");
   bool LoadedFromCache = false;
 
   if (GetSessionData()->GetCacheDirectories() && FDirectoryCache->HasFileList(GetCurrentDirectory()))
@@ -2308,14 +2315,17 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       CommandError(&E, ::FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
 {
+  DEBUG_PRINTF(L"begin");
   assert(FileList);
   assert(FFileSystem);
   FFileSystem->ReadDirectory(FileList);
   ReactOnCommand(fsListDirectory);
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const TFileMasks & Mask)
