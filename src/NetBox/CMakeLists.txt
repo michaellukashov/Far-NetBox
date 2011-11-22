@@ -342,9 +342,9 @@ add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
 set_target_properties( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-add_dependencies ( testnetbox_01
+add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
     libputty
 )
 
