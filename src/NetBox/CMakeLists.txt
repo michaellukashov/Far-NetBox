@@ -10,8 +10,7 @@ set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT;WINSCP" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_LINK_FLAGS
-    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB"
-    #/NODEFAULTLIB:LIBCMTD.LIB
+    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB /NODEFAULTLIB:LIBCMTD.LIB"
     #/NODEFAULTLIB:LIBCPMTD.LIB"
     # /NODEFAULTLIB:MSVCPRTD.LIB"
 )
@@ -265,6 +264,14 @@ set_target_properties( libputty
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
+    mfc100ud.lib
+    Atl.lib
+    uafxcwd.lib
+    comctl32.lib
+    msvcrtd.lib
+    msvcprtd.lib
+    msvcmrtd.lib
+    msvcurtd.lib
     libputty
     libcurl
     libeay32
