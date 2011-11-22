@@ -577,7 +577,12 @@ std::wstring TFTPFileSystem::ActualCurrentDirectory()
 {
   char CurrentPath[1024];
   FFileZillaIntf->GetCurrentPath(CurrentPath, sizeof(CurrentPath));
-  return UnixExcludeTrailingBackslash(std::wstring(::MB2W(CurrentPath)));
+  std::wstring fn = UnixExcludeTrailingBackslash(std::wstring(::MB2W(CurrentPath)));
+    if (fn.empty())
+    {
+        fn = L"/";
+    }
+  return fn;
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::EnsureLocation()
@@ -674,6 +679,10 @@ void TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
 void TFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
   FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
+    if (FCurrentDirectory.empty())
+    {
+        FCurrentDirectory = L"/";
+    }
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
@@ -1536,9 +1545,14 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
     {
       TRemoteFile * File = NULL;
       // ignore non-fatal error when the directory already exists
+      std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
+        if (fn.empty())
+        {
+            fn = L"/";
+        }
       bool Rethrow =
         !FTerminal->GetActive() ||
-        !FTerminal->FileExists(UnixExcludeTrailingBackslash(DestFullName), &File) ||
+        !FTerminal->FileExists(fn, &File) ||
         !File->GetIsDirectory();
       delete File;
       if (Rethrow)
@@ -1767,6 +1781,10 @@ void TFTPFileSystem::ReadCurrentDirectory()
           if (Unquote(Path))
           {
             FCurrentDirectory = UnixExcludeTrailingBackslash(Path);
+            if (FCurrentDirectory.empty())
+            {
+                FCurrentDirectory = L"/";
+            }
             Result = true;
           }
         }
