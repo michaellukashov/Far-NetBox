@@ -1792,6 +1792,10 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   std::wstring Key;
   bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
+  if (Key.empty())
+  {
+    Key = L"/";
+  }
   DEBUG_PRINTF(L"Key = %s", Key.c_str());
   Result = (IndexOfName(Key.c_str()) >= 0);
   DEBUG_PRINTF(L"Result = %d", Result);
