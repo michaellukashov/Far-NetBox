@@ -524,7 +524,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
           int Slash = Name.find_first_of(L'/');
           if (Slash != std::wstring::npos)
           {
-            Name.resize(Slash - 1);
+            Name.resize(Slash);
             if (ChildPaths->IndexOf(Name.c_str()) < 0)
             {
               PanelItems->Add((TObject *)new TSessionFolderPanelItem(Name));
