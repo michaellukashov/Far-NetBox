@@ -33,7 +33,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
     {
       size_t N = 0, P = 0;
       // If name already contains number parenthesis remove it (and remember it)
-      if ((Name[Name.size() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) > 0))
+      if ((Name[Name.size() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) != std::wstring::npos))
         try
         {
           N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));

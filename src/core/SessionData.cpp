@@ -1184,7 +1184,7 @@ void TSessionData::ValidatePath(const std::wstring Path)
 //---------------------------------------------------------------------
 void TSessionData::ValidateName(const std::wstring Name)
 {
-  if (::LastDelimiter(Name, L"/") > 0)
+  if (::LastDelimiter(Name, L"/") != std::wstring::npos)
   {
     throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
   }

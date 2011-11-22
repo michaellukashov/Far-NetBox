@@ -265,7 +265,7 @@ void TCopyParamList::Modify()
 //---------------------------------------------------------------------
 void TCopyParamList::ValidateName(const std::wstring Name)
 {
-  if (::LastDelimiter(Name, FInvalidChars) > 0)
+  if (::LastDelimiter(Name, FInvalidChars) != std::wstring::npos)
   {
     throw ExtException(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), FInvalidChars.c_str()));
   }
