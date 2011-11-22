@@ -299,6 +299,7 @@ int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
 
 int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
 {
+    DEBUG_PRINTF(L"begin, dir = %s", dir);
     assert(FarPlugin);
     TFarPluginGuard Guard;
 #ifndef WINSCP
@@ -309,11 +310,14 @@ int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
     // DEBUG_PRINTF(L"SetDirectoryW: result = %u", result);
     return result;
 #endif
-    return FarPlugin->SetDirectory(plugin, dir, opMode);
+    int result = FarPlugin->SetDirectory(plugin, dir, opMode);
+    DEBUG_PRINTF(L"end, result = %d", result);
+    return result;
 }
 
 int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
 {
+    DEBUG_PRINTF(L"begin, name = %s", *name);
     assert(FarPlugin);
     TFarPluginGuard Guard;
 #ifndef WINSCP
@@ -321,7 +325,9 @@ int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->MakeDirectory(name, opMode);
 #endif
-    return FarPlugin->MakeDirectory(plugin, (wchar_t *)*name, opMode);
+    int result = FarPlugin->MakeDirectory(plugin, (wchar_t *)*name, opMode);
+    DEBUG_PRINTF(L"end, result = %d", result);
+    return result;
 }
 
 int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
@@ -355,6 +361,7 @@ int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
 
 int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
 {
+    DEBUG_PRINTF(L"begin, srcPath = %s", srcPath);
     assert(FarPlugin);
     TFarPluginGuard Guard;
 #ifndef WINSCP
@@ -362,8 +369,10 @@ int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
     CPanel *panelInstance = static_cast<CPanel *>(plugin);
     return panelInstance->PutFiles(srcPath, panelItem, itemsNumber, move != 0, opMode);
 #endif
-    return FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
+    int result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
         move, opMode);
+    DEBUG_PRINTF(L"end, result = %d", result);
+    return result;
 }
 
 int WINAPI ProcessEditorEventW(int Event, void * Param)
