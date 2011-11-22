@@ -3404,7 +3404,7 @@ void TTerminal::HomeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::ChangeDirectory(const std::wstring Directory)
 {
-  // DEBUG_PRINTF(L"begin");
+  DEBUG_PRINTF(L"begin, Directory = %s", Directory.c_str());
   assert(FFileSystem);
   try
   {
@@ -3433,7 +3433,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
-  // DEBUG_PRINTF(L"end");
+  DEBUG_PRINTF(L"end, FLastDirectoryChange = %s", FLastDirectoryChange.c_str());
 }
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()

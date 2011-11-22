@@ -2148,6 +2148,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
 {
+  DEBUG_PRINTF(L"begin, Dir = %s", Dir.c_str());
   if (!SessionList() && !Connected())
   {
     return false;
@@ -2300,6 +2301,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
 
     return true;
   }
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 int TWinSCPFileSystem::MakeDirectoryEx(std::wstring & Name, int OpMode)
