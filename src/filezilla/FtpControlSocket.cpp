@@ -1868,7 +1868,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 			m_Operation.nOpState = LIST_PWD;
 	}
 	CString cmd;
-    // DEBUG_PRINTF(L"m_Operation.nOpState = %u", m_Operation.nOpState);
+    DEBUG_PRINTF(L"m_Operation.nOpState = %u", m_Operation.nOpState);
 	if (m_Operation.nOpState == LIST_PWD)
 		cmd=_T("PWD");
 	else if (m_Operation.nOpState==LIST_CWD)
