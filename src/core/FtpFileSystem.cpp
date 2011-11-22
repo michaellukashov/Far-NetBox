@@ -1731,6 +1731,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // and immediatelly after call to CWD,
   // later our current directory may be not synchronized with FZAPI current
   // directory anyway, see comments in EnsureLocation
+  DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
   if (FCurrentDirectory.empty())
   {
     FFileZillaIntf->CustomCommand("PWD");
@@ -1781,6 +1782,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
     }
   }
+  DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)

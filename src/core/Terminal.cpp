@@ -2214,6 +2214,7 @@ void TTerminal::ReadCurrentDirectory()
 
     LogEvent(L"Getting current directory name.");
     std::wstring OldDirectory = FFileSystem->GetCurrentDirectory();
+    DEBUG_PRINTF(L"OldDirectory = %s", OldDirectory.c_str());
 
     FFileSystem->ReadCurrentDirectory();
     ReactOnCommand(fsCurrentDirectory);
