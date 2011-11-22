@@ -554,7 +554,7 @@ int TStrings::IndexOfName(const std::wstring &Name)
     size_t P = ::AnsiPos(S, L'=');
     if ((P != std::wstring::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
     {
-        return Result;
+        return (int)Result;
     }
   }
   Result = (size_t)-1;
