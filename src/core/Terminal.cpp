@@ -2263,7 +2263,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     {
       DoStartReadDirectory();
       {
-        BOOST_SCOPE_EXIT ( (&Self) (ReloadOnly) )
+        BOOST_SCOPE_EXIT ( (&Self) (&ReloadOnly) )
         {
           Self->DoReadDirectory(ReloadOnly);
         } BOOST_SCOPE_EXIT_END
