@@ -1195,7 +1195,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		if (!m_awaitsReply && !m_sendBuffer)
         {
             DEBUG_PRINTF(L"str = %s", str.GetBuffer(str.GetLength()));
-            DEBUG_PRINTF(L"lpszAsciiSend = %s", ::MB2W((char *)lpszAsciiSend).c_str());
+            DEBUG_PRINTF2(L"lpszAsciiSend = %s", lpszAsciiSend);
 			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend));
         }
 		else
@@ -5824,7 +5824,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
 	if (!m_sendBufferLen || !m_sendBuffer || m_awaitsReply)
 		return;
 
-    DEBUG_PRINTF(L"m_sendBuffer = %s", ::MB2W(m_sendBuffer).c_str());
+    DEBUG_PRINTF2("m_sendBuffer = %s", m_sendBuffer);
 	int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen);
 	if (res == -1)
 	{
