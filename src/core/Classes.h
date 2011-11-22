@@ -67,7 +67,7 @@ inline int __cdecl debug_printf2(const char *format, ...)
 #ifdef NETBOX_DEBUG
 // #define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: %s:%d %s: "format, ::MB2W(__FILE__).c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
 #define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
-#define DEBUG_PRINTF2(format, ...) debug_printf2("NetBox: [%s:%d] %s: "format "\n", ::W2MB(ExtractFilename(::MB2W(__FILE__).c_str()).c_str(), '\\').c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
+#define DEBUG_PRINTF2(format, ...) debug_printf2("NetBox: [%s:%d] %s: "format "\n", ::W2MB(ExtractFilename(::MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
