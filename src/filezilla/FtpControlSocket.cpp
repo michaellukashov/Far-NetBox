@@ -1136,6 +1136,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 	str += "\r\n";
 	int res = 0;
     DEBUG_PRINTF(L"m_bUTF8 = %d", m_bUTF8);
+    DEBUG_PRINTF(L"str = %s", str.GetBuffer(str.GetLength()));
 	if (m_bUTF8)
 	{
 		LPCWSTR unicode = T2CW(str);
@@ -5823,6 +5824,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
 	if (!m_sendBufferLen || !m_sendBuffer || m_awaitsReply)
 		return;
 
+    DEBUG_PRINTF(L"m_sendBuffer = %s", ::MB2W(m_sendBuffer).c_str());
 	int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen);
 	if (res == -1)
 	{
