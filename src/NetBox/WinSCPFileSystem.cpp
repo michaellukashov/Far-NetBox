@@ -1025,7 +1025,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::CreateLink()
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   RequireCapability(fcResolveSymlink);
   RequireCapability(fcSymbolicLink);
 
@@ -1073,7 +1073,7 @@ void TWinSCPFileSystem::CreateLink()
       RedrawPanel();
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TemporarilyDownloadFiles(
@@ -1412,7 +1412,7 @@ bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 void TWinSCPFileSystem::GetSynchronizeOptions(
   int Params, TSynchronizeOptions & Options)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
     Options.Filter = new TStringList();
@@ -1429,7 +1429,7 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
     }
     Options.Filter->Sort();
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FullSynchronize(bool Source)
@@ -1569,7 +1569,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
         (MoreMessageDialog(GetMsg(CANCEL_OPERATION), NULL,
           qtConfirmation, qaOK | qaCancel) == qaOK))
     {
-      DEBUG_PRINTF(L"after MoreMessageDialog");
+      // DEBUG_PRINTF(L"after MoreMessageDialog");
       Continue = false;
     }
   }
@@ -1723,7 +1723,7 @@ void TWinSCPFileSystem::CustomCommandGetParamValue(
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TransferFiles(bool Move)
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   if (Move)
   {
     RequireCapability(fcRemoteMove);
@@ -1767,12 +1767,12 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
       }
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::RenameFile()
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   TFarPanelItem * PanelItem = GetPanelInfo()->GetFocusedItem();
   assert(PanelItem != NULL);
 
@@ -1796,12 +1796,12 @@ void TWinSCPFileSystem::RenameFile()
       }
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::FileProperties()
 {
-  DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin");
   TStrings * FileList = CreateSelectedFileList(osRemote);
   if (FileList)
   {
@@ -1859,7 +1859,7 @@ void TWinSCPFileSystem::FileProperties()
       }
     }
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::InsertTokenOnCommandLine(std::wstring Token, bool Separate)
@@ -2148,7 +2148,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
 {
-  DEBUG_PRINTF(L"begin, Dir = %s", Dir.c_str());
+  // DEBUG_PRINTF(L"begin, Dir = %s", Dir.c_str());
   if (!SessionList() && !Connected())
   {
     return false;
@@ -2301,7 +2301,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
 
     return true;
   }
-  DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 int TWinSCPFileSystem::MakeDirectoryEx(std::wstring & Name, int OpMode)
@@ -2479,7 +2479,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   std::wstring & DestPath, int OpMode)
 {
   int Result;
-  DEBUG_PRINTF(L"begin, DestPath = %s, Connected = %d", DestPath.c_str(), Connected());
+  // DEBUG_PRINTF(L"begin, DestPath = %s, Connected = %d", DestPath.c_str(), Connected());
   if (Connected())
   {
     // FAR WORKAROUND
@@ -2598,7 +2598,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   {
     Result = -1;
   }
-  DEBUG_PRINTF(L"end, Result = %d", Result);
+  // DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------

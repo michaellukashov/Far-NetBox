@@ -1135,8 +1135,8 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 	ShowStatus(str, 2);
 	str += "\r\n";
 	int res = 0;
-    DEBUG_PRINTF(L"m_bUTF8 = %d", m_bUTF8);
-    DEBUG_PRINTF(L"str = %s", str.GetBuffer(str.GetLength()));
+    // DEBUG_PRINTF(L"m_bUTF8 = %d", m_bUTF8);
+    // DEBUG_PRINTF(L"str = %s", str.GetBuffer(str.GetLength()));
 	if (m_bUTF8)
 	{
 		LPCWSTR unicode = T2CW(str);
@@ -1153,7 +1153,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		int sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
         {
-            DEBUG_PRINTF(L"utf8 = %s", ::MB2W(utf8).c_str());
+            // DEBUG_PRINTF(L"utf8 = %s", ::MB2W(utf8).c_str());
 			res = CAsyncSocketEx::Send(utf8, strlen(utf8));
         }
 		else
@@ -1194,8 +1194,8 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		int sendLen = strlen(lpszAsciiSend);
 		if (!m_awaitsReply && !m_sendBuffer)
         {
-            DEBUG_PRINTF(L"str = %s", str.GetBuffer(str.GetLength()));
-            DEBUG_PRINTF2("lpszAsciiSend = %s", (char *)lpszAsciiSend);
+            // DEBUG_PRINTF(L"str = %s", str.GetBuffer(str.GetLength()));
+            // DEBUG_PRINTF2("lpszAsciiSend = %s", (char *)lpszAsciiSend);
 			res = CAsyncSocketEx::Send(lpszAsciiSend, strlen(lpszAsciiSend));
         }
 		else
@@ -1868,7 +1868,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 			m_Operation.nOpState = LIST_PWD;
 	}
 	CString cmd;
-    DEBUG_PRINTF(L"m_Operation.nOpState = %u", m_Operation.nOpState);
+    // DEBUG_PRINTF(L"m_Operation.nOpState = %u", m_Operation.nOpState);
 	if (m_Operation.nOpState == LIST_PWD)
 		cmd=_T("PWD");
 	else if (m_Operation.nOpState==LIST_CWD)
@@ -2120,7 +2120,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 		if (m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 			cmd += _T(" -a");
-        DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
+        // DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
 		if (!Send(cmd))
 			return;
 
@@ -2141,7 +2141,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
 		return;
 	}
-    DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
+    // DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
 	if (cmd != _T(""))
 		Send(cmd);
 }
@@ -3962,7 +3962,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			if ((m_pOwner->GetOption(FZAPI_OPTION_SHOWHIDDEN) || pData->transferfile.remotefile.Left(1)==".") && !(m_CurrentServer.nServerType & (FZ_SERVERTYPE_SUB_FTP_MVS | FZ_SERVERTYPE_SUB_FTP_VMS | FZ_SERVERTYPE_SUB_FTP_BS2000)))
 #endif
 				cmd += " -a";
-            DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
+            // DEBUG_PRINTF(L"cmd = %s", cmd.GetBuffer(cmd.GetLength()));
 			if(!Send(cmd))
 				bError=TRUE;
 			else if(pData->bPasv)
@@ -3992,7 +3992,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 		{
 			CString command = _T("MDTM ");
 			command += pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
-            DEBUG_PRINTF(L"command = %s", command.GetBuffer(command.GetLength()));
+            // DEBUG_PRINTF(L"command = %s", command.GetBuffer(command.GetLength()));
 
 			if (!Send(command))
 				bError=TRUE;
@@ -5824,7 +5824,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
 	if (!m_sendBufferLen || !m_sendBuffer || m_awaitsReply)
 		return;
 
-    DEBUG_PRINTF2("m_sendBuffer = %s", m_sendBuffer);
+    // DEBUG_PRINTF2("m_sendBuffer = %s", m_sendBuffer);
 	int res = CAsyncSocketEx::Send(m_sendBuffer, m_sendBufferLen);
 	if (res == -1)
 	{

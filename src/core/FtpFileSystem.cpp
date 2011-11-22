@@ -1745,7 +1745,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // and immediatelly after call to CWD,
   // later our current directory may be not synchronized with FZAPI current
   // directory anyway, see comments in EnsureLocation
-  DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
+  // DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
   if (FCurrentDirectory.empty())
   {
     FFileZillaIntf->CustomCommand("PWD");
@@ -1800,7 +1800,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
     }
   }
-  DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
+  // DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
@@ -2018,7 +2018,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       {
         FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
       }
-      DEBUG_PRINTF(L"FFileSystemInfo.AdditionalInfo = %s", FFileSystemInfo.AdditionalInfo.c_str());
+      // DEBUG_PRINTF(L"FFileSystemInfo.AdditionalInfo = %s", FFileSystemInfo.AdditionalInfo.c_str());
     }
 
     for (int Index = 0; Index < fcCount; Index++)
@@ -2578,7 +2578,7 @@ void TFTPFileSystem::SetLastCode(int Code)
 void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
 {
   int Code = 0;
-  DEBUG_PRINTF(L"Response = %s", Response.c_str());
+  // DEBUG_PRINTF(L"Response = %s", Response.c_str());
 
   if (!FOnCaptureOutput.empty())
   {
@@ -2609,7 +2609,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
     (Code >= 100) && (Code <= 599) &&
     ((Response.size() == 3) || (Response[3] == L' ') || (Response[3] == L'-'));
 
-  DEBUG_PRINTF(L"Code = %d", Code);
+  // DEBUG_PRINTF(L"Code = %d", Code);
   if (HasCodePrefix && !FMultineResponse)
   {
     FMultineResponse = (Response.size() >= 4) && (Response[3] == L'-');
@@ -2691,7 +2691,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
         FLastResponse->Delete(0);
         FLastResponse->Delete(FLastResponse->GetCount() - 1);
         FFeatures->Assign(FLastResponse);
-        DEBUG_PRINTF(L"FFeatures = %s", FFeatures->GetText().c_str());
+        // DEBUG_PRINTF(L"FFeatures = %s", FFeatures->GetText().c_str());
       }
       else
       {
