@@ -778,7 +778,7 @@ void TWinSCPFileSystem::RequireCapability(int Capability)
   if (!FTerminal->GetIsCapable(static_cast<TFSCapability>(Capability)))
   {
     throw ExtException(FORMAT(GetMsg(OPERATION_NOT_SUPPORTED).c_str(),
-      (FTerminal->GetFileSystemInfo().ProtocolName)));
+      FTerminal->GetFileSystemInfo().ProtocolName.c_str()));
   }
 }
 //---------------------------------------------------------------------------
