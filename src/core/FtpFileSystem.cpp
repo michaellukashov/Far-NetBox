@@ -1998,6 +1998,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       {
         FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
       }
+      DEBUG_PRINTF(L"FFileSystemInfo.AdditionalInfo = %s", FFileSystemInfo.AdditionalInfo.c_str());
     }
 
     for (int Index = 0; Index < fcCount; Index++)
