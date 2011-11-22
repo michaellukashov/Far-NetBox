@@ -869,7 +869,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
                 Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), int(FParams->Timeout / 1000));
                 std::wstring Buffer(512, 0);
                 GetFarPlugin()->GetFarStandardFunctions().sprintf((wchar_t *)Buffer.c_str(), FParams->TimeoutStr.c_str(), Caption.c_str(), int(FParams->Timeout / 1000));
-                SetCaption(Buffer.c_str());
+                Button->SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
             else
@@ -997,8 +997,10 @@ void TFarMessageDialog::Idle()
         {
             std::wstring Caption =
                 FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
-                    FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000))).c_str();
-            Caption += ::StringOfChar(L' ', FTimeoutButton->GetCaption().size() - Caption.size());
+                    FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000)).c_str()).c_str();
+            // DEBUG_PRINTF(L"FTimeoutButton->GetCaption = %s", FTimeoutButton->GetCaption().c_str());
+            size_t sz = FTimeoutButton->GetCaption().size() > Caption.size() ? FTimeoutButton->GetCaption().size() - Caption.size() : 0;
+            Caption += ::StringOfChar(L' ', sz);
             FTimeoutButton->SetCaption(Caption);
         }
     }
@@ -2503,6 +2505,11 @@ TFarPanelItem::TFarPanelItem(PluginPanelItem *APanelItem):
     assert(APanelItem);
     FPanelItem = APanelItem;
 }
+TFarPanelItem::~TFarPanelItem()
+{
+    delete FPanelItem;
+}
+
 //---------------------------------------------------------------------------
 void TFarPanelItem::GetData(
     unsigned long & /*Flags*/, std::wstring & /*FileName*/, __int64 & /*Size*/,

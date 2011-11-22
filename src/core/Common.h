@@ -220,7 +220,9 @@ void InitPlatformId();
 #else
 #define CHECK(p) { bool __CHECK_RESULT__ = (p); assert(__CHECK_RESULT__); }
 #endif
+#ifndef USEDPARAM
 #define USEDPARAM(p) ((void)p)
+#endif
 
 //---------------------------------------------------------------------------
 void Abort();
@@ -273,7 +275,8 @@ __int64 ToInt(const std::wstring value);
 int StrToIntDef(const std::wstring value, int defval);
 __int64 StrToInt64(const std::wstring value);
 __int64 StrToInt64Def(const std::wstring value, __int64 defval);
-__int64 TryStrToInt(const std::wstring value, __int64 defval);
+bool TryStrToInt(const std::wstring value, int &Value);
+bool TryStrToInt(const std::wstring value, __int64 &Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(std::wstring Value);

@@ -10,15 +10,15 @@ set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT;WINSCP" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_LINK_FLAGS
-    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB"
-    #/NODEFAULTLIB:LIBCMTD.LIB
+    "/INCREMENTAL:NO /NODEFAULTLIB:LIBCMT.LIB /NODEFAULTLIB:MSVCRT.LIB /NODEFAULTLIB:LIBCMTD.LIB"
     #/NODEFAULTLIB:LIBCPMTD.LIB"
     # /NODEFAULTLIB:MSVCPRTD.LIB"
 )
 
 # definitions
-add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS;_USRDLL" )
-add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;NO_FILEZILLA;MPEXT;NO_SECURITY" )
+add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS" )
+add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY" )
+add_definitions ( "-D_USRDLL;_AFXDLL;_AFXEXT;_DLL" )
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
@@ -70,6 +70,8 @@ include_directories (
     ${PROJECT_ROOT}/src/Putty
     ${PROJECT_ROOT}/src/Putty/windows
     ${PROJECT_ROOT}/src/Putty/charset
+    ${PROJECT_ROOT}/src/filezilla
+    ${PROJECT_ROOT}/src/filezilla/misc
     ${PROJECT_ROOT}/libs
     ${PROJECT_ROOT}/libs/boost
     ${PROJECT_ROOT}/libs/libcurl/include
@@ -161,6 +163,30 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/resource/TextsCore1.rc
     ${PROJECT_ROOT}/src/resource/TextsCore2.rc
     ${PROJECT_ROOT}/src/resource/rtlconsts.rc
+    ${PROJECT_ROOT}/src/resource/TextsFileZilla.rc
+    ${PROJECT_ROOT}/src/filezilla/FileZillaIntf.cpp
+    ${PROJECT_ROOT}/src/filezilla/FileZillaIntern.cpp
+    ${PROJECT_ROOT}/src/filezilla/ApiLog.cpp
+    ${PROJECT_ROOT}/src/filezilla/ServerPath.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncSslSocketLayer.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncSocketExLayer.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncSocketEx.cpp
+    ${PROJECT_ROOT}/src/filezilla/FileZillaApi.cpp
+    ${PROJECT_ROOT}/src/filezilla/FzApiStructures.cpp
+    ${PROJECT_ROOT}/src/filezilla/Crypt.cpp
+    ${PROJECT_ROOT}/src/filezilla/ControlSocket.cpp
+    ${PROJECT_ROOT}/src/filezilla/FtpControlSocket.cpp
+    ${PROJECT_ROOT}/src/filezilla/MainThread.cpp
+    ${PROJECT_ROOT}/src/filezilla/TransferSocket.cpp
+    ${PROJECT_ROOT}/src/filezilla/PathFunctions.cpp
+    ${PROJECT_ROOT}/src/filezilla/FtpListResult.cpp
+    ${PROJECT_ROOT}/src/filezilla/AsyncProxySocketLayer.cpp
+    ${PROJECT_ROOT}/src/filezilla/structures.cpp
+    ${PROJECT_ROOT}/src/filezilla/MFC64bitFix.cpp
+    ${PROJECT_ROOT}/src/filezilla/Options.cpp
+    ${PROJECT_ROOT}/src/filezilla/afxdll.cpp
+    ${PROJECT_ROOT}/src/filezilla/misc/Fzutf8.cpp
+    ${PROJECT_ROOT}/src/filezilla/misc/CBase64Coding.cpp
 )
 
 #-------------------------------------------------------------------------------
@@ -238,6 +264,14 @@ set_target_properties( libputty
 #-------------------------------------------------------------------------------
 
 set ( NETBOX_LIBRARIES
+    mfc100ud.lib
+    Atl.lib
+    uafxcwd.lib
+    comctl32.lib
+    msvcrtd.lib
+    msvcprtd.lib
+    msvcmrtd.lib
+    msvcurtd.lib
     libputty
     libcurl
     libeay32
@@ -308,9 +342,9 @@ add_executable( testnetbox_01 ${TESTNETBOX_01_SOURCES} )
 set_target_properties( testnetbox_01
     PROPERTIES
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
-    LINK_FLAGS "${CMAKE_LINK_FLAGS} /NODEFAULTLIB:MSVCRTD.LIB"
+    LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
-add_dependencies ( testnetbox_01
+add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
     libputty
 )
 

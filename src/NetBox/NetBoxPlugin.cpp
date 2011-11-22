@@ -18,7 +18,7 @@
 #include "FarConfiguration.h"
 #include "FarTexts.h"
 #include "FarDialog.h"
-#include "Strings.h"
+#include "FarTexts.h"
 //---------------------------------------------------------------------------
 #ifndef WINSCP
 TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)

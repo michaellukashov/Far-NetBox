@@ -302,7 +302,7 @@ BEGIN
   AUTH_TRANSL_TRY_PUBLIC_KEY, "Trying public key authentication."
   AUTH_PASSWORD, "Authenticating with pre-entered password."
   OPEN_TUNNEL, "Opening tunnel..."
-  STATUS_CLOSED, "Connection terminated."
+  NB_STATUS_CLOSED, "Connection terminated."
   STATUS_LOOKUPHOST, "Searching for host..."
   STATUS_CONNECT, "Connecting to host..."
   STATUS_AUTHENTICATE, "Authenticating..."

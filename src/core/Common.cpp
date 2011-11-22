@@ -27,12 +27,12 @@ int Win32BuildNumber = 0;
 // int Win32CSDVersion = 0;
 //---------------------------------------------------------------------------
 
-inline int StrCmp(const wchar_t *s1, const wchar_t *s2)
+inline int StringCmp(const wchar_t *s1, const wchar_t *s2)
 {
     return ::CompareString(0, SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
-inline int StrCmpI(const wchar_t *s1, const wchar_t *s2)
+inline int StringCmpI(const wchar_t *s1, const wchar_t *s2)
 {
     return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
@@ -1288,7 +1288,7 @@ __int64 Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
-  return ((Number - Floor) > (Ceil - Number)) ? Ceil : Floor;
+  return ((Number - Floor) > (Ceil - Number)) ? (__int64)Ceil : (__int64)Floor;
 }
 //---------------------------------------------------------------------------
 #define TIME_POSIX_TO_WIN(t, ft) (*(LONGLONG*)&(ft) = \
@@ -1302,7 +1302,7 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
   double value = double(DateTime - Params->UnixEpoch) * 86400;
   double intpart;
   modf(value, &intpart);
-  return intpart + Params->CurrentDifferenceSec;
+  return (__int64)intpart + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
 FILETIME DateTimeToFileTime(const TDateTime DateTime,
@@ -2096,39 +2096,75 @@ std::wstring IntToStr(int value)
 
 int StrToInt(const std::wstring value)
 {
-    return TryStrToInt(value, 0);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return 0;
 }
 
 __int64 ToInt(const std::wstring value)
 {
-    return TryStrToInt(value, 0);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return 0;
 }
 
 int StrToIntDef(const std::wstring value, int defval)
 {
-    return TryStrToInt(value, defval);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return defval;
 }
 
 __int64 StrToInt64(const std::wstring value)
 {
-    return TryStrToInt(value, 0);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return 0;
 }
 
 __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
-    return TryStrToInt(value, defval);
+    __int64 Value = 0;
+    if (TryStrToInt(value, Value))
+        return Value;
+    else
+        return defval;
 }
 
-__int64 TryStrToInt(const std::wstring value, __int64 defval)
+bool TryStrToInt(const std::wstring value, __int64 &Value)
 {
-    __int64 result = 0;
+    bool result = false;
     try
     {
-        result = boost::lexical_cast<__int64>(value);
+        Value = boost::lexical_cast<__int64>(value);
+        result = true;
     }
     catch (const boost::bad_lexical_cast &)
     {
-        result = defval;
+        result = false;
+    }
+    return result;
+}
+
+bool TryStrToInt(const std::wstring value, int &Value)
+{
+    bool result = false;
+    try
+    {
+        Value = boost::lexical_cast<int>(value);
+        result = true;
+    }
+    catch (const boost::bad_lexical_cast &)
+    {
+        result = false;
     }
     return result;
 }
@@ -2247,38 +2283,38 @@ size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 
 int CompareText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StringCmp(str1.c_str(), str2.c_str());
 }
 
 int AnsiCompare(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StringCmp(str1.c_str(), str2.c_str());
 }
 
 // Case-sensitive compare
 int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str());
+    return StringCmp(str1.c_str(), str2.c_str());
 }
 
 bool AnsiSameText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StringCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 bool SameText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmp(str1.c_str(), str2.c_str()) == 0;
+    return StringCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
 int AnsiCompareText(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str());
+    return StringCmpI(str1.c_str(), str2.c_str());
 }
 
 int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StrCmpI(str1.c_str(), str2.c_str());
+    return StringCmpI(str1.c_str(), str2.c_str());
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)

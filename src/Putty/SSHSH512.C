@@ -167,7 +167,7 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
  * at the end, and pass those blocks to the core SHA512 algorithm.
  */
 
-void SHA512_Init(SHA512_State *s) {
+void putty_SHA512_Init(SHA512_State *s) {
     int i;
     SHA512_Core_Init(s);
     s->blkused = 0;
@@ -224,7 +224,7 @@ void SHA512_Bytes(SHA512_State *s, const void *p, int len) {
     }
 }
 
-void SHA512_Final(SHA512_State *s, unsigned char *digest) {
+void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
     int i;
     int pad;
     unsigned char c[BLKSIZE];
@@ -271,9 +271,9 @@ void SHA512_Final(SHA512_State *s, unsigned char *digest) {
 void SHA512_Simple(const void *p, int len, unsigned char *output) {
     SHA512_State s;
 
-    SHA512_Init(&s);
+    putty_SHA512_Init(&s);
     SHA512_Bytes(&s, p, len);
-    SHA512_Final(&s, output);
+    putty_SHA512_Final(&s, output);
 }
 
 #ifdef TEST
@@ -332,11 +332,11 @@ int main(void) {
 	} else {
 	    SHA512_State s;
 	    int n;
-	    SHA512_Init(&s);
+	    putty_SHA512_Init(&s);
 	    for (n = 0; n < 1000000 / 40; n++)
 		SHA512_Bytes(&s, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 			     40);
-	    SHA512_Final(&s, digest);
+	    putty_SHA512_Final(&s, digest);
 	}
 	for (j = 0; j < 64; j++) {
 	    if (digest[j] != tests[i].digest512[j]) {

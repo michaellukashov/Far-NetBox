@@ -20,7 +20,7 @@
 #include "stdafx.h"
 #include "SCP.h"
 #include "Logging.h"
-#include "Strings.h"
+#include "FarTexts.h"
 
 PSessionEditor CSessionSCP::CreateEditorInstance()
 {

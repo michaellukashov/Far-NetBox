@@ -22,7 +22,7 @@
 #include <Wininet.h>
 
 #include "FTP.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Common.h"
 
 static const char *ParamCodePage = "CodePage";
@@ -304,7 +304,7 @@ bool CFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     assert(localPath && *localPath);
     // DEBUG_PRINTF(L"GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
 
-    CFile outFile;
+    CNBFile outFile;
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
@@ -336,7 +336,7 @@ bool CFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const un
     assert(localPath && *localPath);
     // DEBUG_PRINTF(L"PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
 
-    CFile inFile;
+    CNBFile inFile;
     if (!inFile.OpenRead(localPath))
     {
         errorInfo = FormatErrorDescription(inFile.LastError());

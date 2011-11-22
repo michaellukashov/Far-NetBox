@@ -19,7 +19,7 @@
 
 #include "stdafx.h"
 #include "FarUtil.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Logging.h"
 #include "resource.h"
 

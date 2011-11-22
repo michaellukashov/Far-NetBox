@@ -589,8 +589,7 @@ class TFarPanelItem : public TCustomFarPanelItem
 {
 public:
     explicit TFarPanelItem(PluginPanelItem *APanelItem);
-    virtual ~TFarPanelItem()
-    {}
+    virtual ~TFarPanelItem();
     unsigned long GetFlags();
     unsigned long GetFileAttributes();
     std::wstring GetFileName();

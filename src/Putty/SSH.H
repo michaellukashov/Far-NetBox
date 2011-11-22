@@ -125,15 +125,9 @@ void hmacmd5_key(void *handle, void const *key, int len);
 void hmacmd5_do_hmac(void *handle, unsigned char const *blk, int len,
 		     unsigned char *hmac);
 
-// #ifdef MPEXT
+#ifdef MPEXT
 // Resolve ambiguity with OpenSSL
-#define SHA_Init putty_SHA_Init
-#define SHA_Final putty_SHA_Final
-#define SHA256_Init putty_SHA256_Init
-#define SHA256_Final putty_SHA256_Final
-#define SHA512_Init putty_SHA512_Init
-#define SHA512_Final putty_SHA512_Final
-// #endif
+#endif
 
 typedef struct {
     uint32 h[5];
@@ -141,9 +135,9 @@ typedef struct {
     int blkused;
     uint32 lenhi, lenlo;
 } SHA_State;
-void SHA_Init(SHA_State * s);
+void putty_SHA_Init(SHA_State * s);
 void SHA_Bytes(SHA_State * s, void *p, int len);
-void SHA_Final(SHA_State * s, unsigned char *output);
+void putty_SHA_Final(SHA_State * s, unsigned char *output);
 void SHA_Simple(void *p, int len, unsigned char *output);
 
 void hmac_sha1_simple(void *key, int keylen, void *data, int datalen,
@@ -154,9 +148,9 @@ typedef struct {
     int blkused;
     uint32 lenhi, lenlo;
 } SHA256_State;
-void SHA256_Init(SHA256_State * s);
+void putty_SHA256_Init(SHA256_State * s);
 void SHA256_Bytes(SHA256_State * s, const void *p, int len);
-void SHA256_Final(SHA256_State * s, unsigned char *output);
+void putty_SHA256_Final(SHA256_State * s, unsigned char *output);
 void SHA256_Simple(const void *p, int len, unsigned char *output);
 
 typedef struct {
@@ -165,9 +159,9 @@ typedef struct {
     int blkused;
     uint32 len[4];
 } SHA512_State;
-void SHA512_Init(SHA512_State * s);
+void putty_SHA512_Init(SHA512_State * s);
 void SHA512_Bytes(SHA512_State * s, const void *p, int len);
-void SHA512_Final(SHA512_State * s, unsigned char *output);
+void putty_SHA512_Final(SHA512_State * s, unsigned char *output);
 void SHA512_Simple(const void *p, int len, unsigned char *output);
 
 struct ssh_cipher {

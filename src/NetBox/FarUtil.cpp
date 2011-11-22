@@ -20,7 +20,7 @@
 
 #include "Common.h"
 #include "FarUtil.h"
-#include "Strings.h"
+#include "FarTexts.h"
 
 std::wstring GetSystemErrorMessage(const DWORD errCode)
 {

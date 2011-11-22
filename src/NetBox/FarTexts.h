@@ -1,16 +1,16 @@
-#include "Strings.h"
+#pragma once
 
-/*
-enum
+//! Plugin strings
+enum PluginString
 {
   PLUGIN_NAME,
   PLUGIN_TITLE,
 
   SESSION_NAME_COL_TITLE,
-  STORED_SESSION_TITLE,
+  NB_STORED_SESSION_TITLE,
 
-  STATUS_CLOSED,
-  STATUS_INITWINSOCK,
+  NB_STATUS_CLOSED,
+  NB_STATUS_INITWINSOCK,
   STATUS_LOOKUPHOST,
   STATUS_CONNECT,
   STATUS_AUTHENTICATE,
@@ -40,7 +40,7 @@ enum
   MSG_BUTTON_Next,
   MSG_BUTTON_Append,
 
-  MSG_BUTTON_Close,
+  MSG_BUTTON_CLOSE,
   MSG_CHECK_NEVER_ASK_AGAIN,
   MSG_CHECK_NEVER_SHOW_AGAIN,
   MSG_BUTTON_TIMEOUT,
@@ -63,7 +63,7 @@ enum
   WARN_FATAL_ERROR,
   CREATE_LOCAL_DIR_ERROR,
   CREATE_LOCAL_DIRECTORY,
-  MASK_ERROR,
+  EDIT_MASK_ERROR,
   VIEW_FROM_FIND_NOT_SUPPORTED,
   PENDING_QUEUE_ITEMS,
   GSSAPI_NOT_INSTALLED,
@@ -313,7 +313,7 @@ enum
   LOGIN_AUTH_SSH_NO_USER_AUTH,
   LOGIN_AUTH_GROUP,
   LOGIN_AUTH_TRY_AGENT,
-  LOGIN_AUTH_TIS,
+  LOGIN_AUTH_TIS, // "Attempt &TIS or CryptoCard authentication (SSH-1)"
   LOGIN_AUTH_KI,
   LOGIN_AUTH_KI_PASSWORD,
   LOGIN_AUTH_AGENT_FWD,
@@ -657,5 +657,128 @@ enum
   CREATING_FOLDER,
 
   MENU_EDIT_HISTORY,
+
+    StringTitle,
+
+    StringOK,
+    StringCancel,
+
+    StringSession,
+    StringProxy,
+
+    //Edit link dialog
+    StringEdCrtTitle,
+    StringEdEdtTitle,
+    StringEdName,
+    StringEdURL,
+    StringEdCP,
+    StringEdAuth,
+    StringEdAuthUser,
+    StringEdAuthPsw,
+    StringEdAuthPromtpPsw,
+    StringEdAuthShowPsw,
+    StringEdAuthCert,
+    StringEdErrURLEmpty,
+    StringEdErrURLInvalid,
+    StringEdErrNameEmpty,
+    StringEdErrNameInvalid,
+
+    //Configure menu
+    StringSettingsMenuTitle,
+    StringMainSettingsMenuTitle,
+    StringProxySettingsMenuTitle,
+    StringLoggingSettingsMenuTitle,
+    StringAboutMenuTitle,
+
+    //Main configure dialog
+    StringCfgAddToDM,
+    StringCfgAddToPM,
+    StringCfgUseOwnKey,
+    StringCfgPrefix,
+    StringCfgAltPrefixes,
+    StringCfgTimeout,
+    StringCfgSessionsPath,
+
+    //Proxy configure dialog
+    StringProxySettingsDialogTitle,
+    StringProxySettingsProxyType,
+    proxyTypeItem1,
+    proxyTypeItem2,
+    proxyTypeItem3,
+    proxyTypeItem4,
+
+    StringProxySettingsProxyHost,
+    StringProxySettingsProxyPort,
+    StringProxySettingsProxyLogin,
+    StringProxySettingsProxyPassword,
+
+    //Logging configure dialog
+    StringLoggingDialogTitle,
+    StringLoggingDialogEnableLogging,
+    StringLoggingOptionsSeparatorTitle,
+    StringLoggingOptionsLevel,
+    StringLoggingOptionsLevelItem1,
+    StringLoggingOptionsLevelItem2,
+    StringLoggingDialogLogToFile,
+    StringLogFileName,
+
+    //About menu
+    StringAboutDialogTitle,
+    StringPluginDescriptionText,
+    StringPluginVersion,
+    StringPluginDescriptionClose,
+
+    //Prompt to crypto key
+    StringSessionPwd,
+
+    //Create directory dialog
+    StringMKDirTitle,
+    StringMKDirName,
+
+    //Delete items dialog
+    StringDelTitle,
+    StringDelQuestion,
+    StringDelQuestSession,
+    StringDelQuestFolder,
+    StringDelQuestFile,
+    StringDelSelected,
+    StringDelBtnDelete,
+
+    //Copy dialog
+    StringCopyTitle,
+    StringCopyPath,
+    StringCopySelected,
+    StringCopyBtnCopy,
+
+    //Move dialog
+    StringMoveTitle,
+    StringMovePath,
+    StringMoveSelected,
+    StringMoveBtnCopy,
+
+    //Progress titles
+    StringPrgConnect,
+    StringPrgChangeDir,
+    StringPrgGetList,
+    StringPrgRcvFile,
+    StringPrgSendFile,
+    StringPrgTo,
+    StringPrgDelete,
+
+    //Error messages
+    StringErrKeyFile,
+    StringErrEstablish,
+    StringErrCreateDir,
+    StringErrChangeDir,
+    StringErrListDir,
+    StringErrCopyFile,
+    StringErrRenameMove,
+    StringErrDeleteFile,
+    StringErrDeleteDir,
+
+    StringOperationCanceledByUser,
+
+    StringCreateNewSessionItem,
+
+    StringSSLErrorContinue,
 };
-*/

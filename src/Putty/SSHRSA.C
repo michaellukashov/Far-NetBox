@@ -239,21 +239,21 @@ static Bignum rsa_privkey_op(Bignum input, struct RSAKey *key)
 		if (digestused >= lenof(digest512)) {
 		    unsigned char seqbuf[4];
 		    PUT_32BIT(seqbuf, hashseq);
-		    SHA512_Init(&ss);
+		    putty_SHA512_Init(&ss);
 		    SHA512_Bytes(&ss, "RSA deterministic blinding", 26);
 		    SHA512_Bytes(&ss, seqbuf, sizeof(seqbuf));
 		    sha512_mpint(&ss, key->private_exponent);
-		    SHA512_Final(&ss, digest512);
+		    putty_SHA512_Final(&ss, digest512);
 		    hashseq++;
 
 		    /*
 		     * Now hash that digest plus the signature
 		     * input.
 		     */
-		    SHA512_Init(&ss);
+		    putty_SHA512_Init(&ss);
 		    SHA512_Bytes(&ss, digest512, sizeof(digest512));
 		    sha512_mpint(&ss, input);
-		    SHA512_Final(&ss, digest512);
+		    putty_SHA512_Final(&ss, digest512);
 
 		    digestused = 0;
 		}

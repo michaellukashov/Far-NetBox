@@ -19,7 +19,7 @@
 
 #include "stdafx.h"
 #include "ProgressWindow.h"
-#include "Strings.h"
+#include "FarTexts.h"
 
 #define WND_WIDTH 60
 

@@ -17,6 +17,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  **************************************************************************/
 
+#include "FarTexts.h"
+
+#ifdef _AFXDLL
+#include "afxdll.h"
+#endif
+
 #include "stdafx.h"
 #include "SessionManager.h"
 #include "Panel.h"
@@ -27,14 +33,15 @@
 #include "SCP.h"
 #include "Settings.h"
 #include "Logging.h"
-#include "Strings.h"
 #include "resource.h"
 #include "Common.h"
+
+//---------------------------------------------------------------------------
 
 std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
 
 //---------------------------------------------------------------------------
-TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
+extern TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
 
 //---------------------------------------------------------------------------
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
@@ -422,7 +429,10 @@ void DllProcessAttach(HINSTANCE HInst)
 
     assert(!Processes);
     Processes++;
-    // DEBUG_PRINTF(L"DllProcessAttach: end");
+#ifdef _AFXDLL
+    InitExtensionModule(HInst);
+#endif
+ // DEBUG_PRINTF(L"DllProcessAttach: end");
 }
 
 //---------------------------------------------------------------------------
@@ -435,6 +445,9 @@ void DllProcessDetach()
   {
     assert(FarPlugin);
     SAFE_DESTROY(FarPlugin);
+#ifdef _AFXDLL
+    TermExtensionModule();
+#endif
   }
   // DEBUG_PRINTF(L"DllProcessDetach: end");
 }

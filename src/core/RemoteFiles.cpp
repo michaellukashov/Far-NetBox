@@ -17,7 +17,6 @@
 //---------------------------------------------------------------------------
 std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 {
-  // it used to return "/" when input path was empty
   if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size() - 1))
   {
     return Path + L"/";
@@ -31,7 +30,7 @@ std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 // Keeps "/" for root path
 std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
 {
-  if (!Path.empty() && ::IsDelimiter(Path, L"/", Path.size() - 1))
+  if ((Path.size() > 1) && ::IsDelimiter(Path, L"/", Path.size() - 1))
   {
       return Path.substr(0, Path.size() - 1);
   }
@@ -72,7 +71,8 @@ std::wstring UnixExtractFilePath(const std::wstring Path)
 {
   size_t Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
-  return (Pos != std::wstring::npos) ? Path.substr(0, Pos) : std::wstring();
+  std::wstring Result = (Pos != std::wstring::npos) ? Path.substr(0, Pos) : std::wstring();
+  return UnixIncludeTrailingBackslash(Result);
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileName(const std::wstring Path)
@@ -1788,18 +1788,27 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   const std::wstring SourceDir, const std::wstring Change, std::wstring & TargetDir)
 {
+  // DEBUG_PRINTF(L"begin, SourceDir = %s, Change = %s", SourceDir.c_str(), Change.c_str());
   std::wstring Key;
   bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
+  if (Key.empty())
+  {
+    Key = L"/";
+  }
+  // DEBUG_PRINTF(L"Key = %s", Key.c_str());
   Result = (IndexOfName(Key.c_str()) >= 0);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   if (Result)
   {
     TargetDir = GetValue(Key);
     // TargetDir is not "//" here only when Change is full path to symbolic link
+    // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
     if (TargetDir == L"//")
     {
       TargetDir = Key;
     }
+    // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
   }
   else
   {
@@ -1811,9 +1820,11 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
       if (Result)
       {
         TargetDir = Directory;
+        // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
       }
     }
   }
+  // DEBUG_PRINTF(L"end, Result = %d, TargetDir = %s", Result, TargetDir.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------

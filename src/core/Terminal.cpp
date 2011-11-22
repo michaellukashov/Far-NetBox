@@ -670,6 +670,7 @@ void TTerminal::ResetConnection()
 //---------------------------------------------------------------------------
 void TTerminal::Open()
 {
+  // DEBUG_PRINTF(L"begin");
   FLog->ReflectSettings();
   try
   {
@@ -731,6 +732,7 @@ void TTerminal::Open()
               #else
               FFSProtocol = cfsFTP;
               FFileSystem = new TFTPFileSystem(this);
+              ((TFTPFileSystem*)FFileSystem)->Init();
               FFileSystem->Open();
               GetLog()->AddSeparator();
               LogEvent(L"Using FTP protocol.");
@@ -833,6 +835,7 @@ void TTerminal::Open()
     // any std::exception while opening session is fatal
     FatalError(&E, L"");
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 bool TTerminal::IsListenerFree(unsigned int PortNumber)
@@ -2172,6 +2175,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
 //---------------------------------------------------------------------------
 void TTerminal::DoStartup()
 {
+  // DEBUG_PRINTF(L"begin");
   LogEvent(L"Doing startup conversation with host.");
   BeginTransaction();
   {
@@ -2196,11 +2200,13 @@ void TTerminal::DoStartup()
 
   }
   LogEvent(L"Startup conversation with host finished.");
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::ReadCurrentDirectory()
 {
   assert(FFileSystem);
+  // DEBUG_PRINTF(L"begin, FFileSystem->GetCurrentDirectory = %s", FFileSystem->GetCurrentDirectory().c_str());
   try
   {
     // reset flag is case we are called externally (like from console dialog)
@@ -2208,6 +2214,7 @@ void TTerminal::ReadCurrentDirectory()
 
     LogEvent(L"Getting current directory name.");
     std::wstring OldDirectory = FFileSystem->GetCurrentDirectory();
+    // DEBUG_PRINTF(L"OldDirectory = %s", OldDirectory.c_str());
 
     FFileSystem->ReadCurrentDirectory();
     ReactOnCommand(fsCurrentDirectory);
@@ -2238,10 +2245,12 @@ void TTerminal::ReadCurrentDirectory()
   {
     CommandError(&E, LoadStr(READ_CURRENT_DIR_ERROR));
   }
+  // DEBUG_PRINTF(L"end, FFileSystem->GetCurrentDirectory = %s", FFileSystem->GetCurrentDirectory().c_str());
 }
 //---------------------------------------------------------------------------
 void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 {
+  // DEBUG_PRINTF(L"begin");
   bool LoadedFromCache = false;
 
   if (GetSessionData()->GetCacheDirectories() && FDirectoryCache->HasFileList(GetCurrentDirectory()))
@@ -2254,7 +2263,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     {
       DoStartReadDirectory();
       {
-        BOOST_SCOPE_EXIT ( (&Self) (ReloadOnly) )
+        BOOST_SCOPE_EXIT ( (&Self) (&ReloadOnly) )
         {
           Self->DoReadDirectory(ReloadOnly);
         } BOOST_SCOPE_EXIT_END
@@ -2307,14 +2316,17 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       CommandError(&E, ::FmtLoadStr(LIST_DIR_ERROR, FFiles->GetDirectory().c_str()));
     }
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
 {
+  // DEBUG_PRINTF(L"begin");
   assert(FileList);
   assert(FFileSystem);
   FFileSystem->ReadDirectory(FileList);
   ReactOnCommand(fsListDirectory);
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const TFileMasks & Mask)
@@ -3392,7 +3404,7 @@ void TTerminal::HomeDirectory()
 //---------------------------------------------------------------------------
 void TTerminal::ChangeDirectory(const std::wstring Directory)
 {
-  // DEBUG_PRINTF(L"begin");
+  // DEBUG_PRINTF(L"begin, Directory = %s", Directory.c_str());
   assert(FFileSystem);
   try
   {
@@ -3400,6 +3412,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
     assert(!GetSessionData()->GetCacheDirectoryChanges() || (FDirectoryChangesCache != NULL));
     // never use directory change cache during startup, this ensures, we never
     // end-up initially in non-existing directory
+    // DEBUG_PRINTF(L"PeekCurrentDirectory = %s", PeekCurrentDirectory().c_str());
     if ((GetStatus() == ssOpened) &&
         GetSessionData()->GetCacheDirectoryChanges() &&
         FDirectoryChangesCache->GetDirectoryChange(PeekCurrentDirectory(),
@@ -3421,12 +3434,12 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
   {
     CommandError(&E, FMTLOAD(CHANGE_DIR_ERROR, Directory.c_str()));
   }
-  // DEBUG_PRINTF(L"end");
+  // DEBUG_PRINTF(L"end, FLastDirectoryChange = %s", FLastDirectoryChange.c_str());
 }
 //---------------------------------------------------------------------------
 void TTerminal::LookupUsersGroups()
 {
-  DEBUG_PRINTF(L"FUsersGroupsLookedup = %d, GetSessionData()->GetLookupUserGroups = %d, GetIsCapable(fcUserGroupListing) = %d", FUsersGroupsLookedup, GetSessionData()->GetLookupUserGroups(), GetIsCapable(fcUserGroupListing));
+  // DEBUG_PRINTF(L"FUsersGroupsLookedup = %d, GetSessionData()->GetLookupUserGroups = %d, GetIsCapable(fcUserGroupListing) = %d", FUsersGroupsLookedup, GetSessionData()->GetLookupUserGroups(), GetIsCapable(fcUserGroupListing));
   if (!FUsersGroupsLookedup && GetSessionData()->GetLookupUserGroups() &&
       GetIsCapable(fcUserGroupListing))
   {

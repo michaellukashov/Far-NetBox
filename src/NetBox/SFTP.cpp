@@ -22,7 +22,7 @@
 #include "SFTP.h"
 #include "Settings.h"
 #include "Logging.h"
-#include "Strings.h"
+#include "FarTexts.h"
 
 static const char *ParamCodePage = "CodePage";
 static const char *ParamKeyFile =  "KeyFile";
@@ -398,7 +398,7 @@ bool CSFTP::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const u
     }
 
     //Open destination file
-    CFile outFile;
+    CNBFile outFile;
     if (!outFile.OpenWrite(localPath))
     {
         errorInfo = FormatErrorDescription(outFile.LastError());
@@ -456,7 +456,7 @@ bool CSFTP::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const u
     }
 
     //Open source file
-    CFile inFile;
+    CNBFile inFile;
     if (!inFile.OpenRead(localPath))
     {
         errorInfo = FormatErrorDescription(inFile.LastError());

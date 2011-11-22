@@ -19,7 +19,7 @@
 
 #include "stdafx.h"
 #include "Session.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "Settings.h"
 #include "Protocol.h"
 #include "tinyXML\tinyxml.h"
@@ -28,6 +28,9 @@
 #include "SFTP.h"
 #include "WebDAV.h"
 
+#define OPENSSL_NO_EC
+#define OPENSSL_NO_ECDSA
+#define OPENSSL_NO_ECDH
 #define OPENSSL_NO_ENGINE
 #define OPENSSL_NO_DEPRECATED
 #include <openssl/evp.h>
@@ -211,7 +214,7 @@ PSession CSession::Load(const wchar_t *fileName)
 {
     assert(fileName && *fileName);
 
-    CFile xmlFile;
+    CNBFile xmlFile;
     if (!xmlFile.OpenRead(fileName))
     {
         return PSession();
@@ -517,7 +520,7 @@ bool CSession::Save(const wchar_t *fileName) const
         return false;
     }
 
-    return (CFile::SaveFile(fileName, xmlContent) == ERROR_SUCCESS);
+    return (CNBFile::SaveFile(fileName, xmlContent) == ERROR_SUCCESS);
 }
 
 

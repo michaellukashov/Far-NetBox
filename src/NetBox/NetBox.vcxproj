@@ -26,25 +26,29 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -63,9 +67,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,22 +89,26 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;_AFXDLL;_AFXEXT;_DLL;NETBOX_EXPORTS;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mfc100ud.lib;Atl.lib;uafxcwd.lib;comctl32.lib;msvcrtd.lib;msvcprtd.lib;msvcmrtd.lib;msvcurtd.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -108,8 +117,8 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;_AFXDLL;_DLL;NETBOX_EXPORTS;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -133,8 +142,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -161,8 +170,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;NO_FILEZILLA;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;NETBOX_EXPORTS;WINSCP;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -235,6 +244,29 @@
     <ClCompile Include="..\core\WinSCPSecurity.cpp" />
     <ClCompile Include="..\windows\GUIConfiguration.cpp" />
     <ClCompile Include="..\windows\GUITools.cpp" />
+    <ClCompile Include="..\filezilla\FileZillaIntf.cpp" />
+    <ClCompile Include="..\filezilla\FileZillaIntern.cpp" />
+    <ClCompile Include="..\filezilla\ApiLog.cpp" />
+    <ClCompile Include="..\filezilla\ServerPath.cpp" />
+    <ClCompile Include="..\filezilla\AsyncSslSocketLayer.cpp" />
+    <ClCompile Include="..\filezilla\AsyncSocketExLayer.cpp" />
+    <ClCompile Include="..\filezilla\AsyncSocketEx.cpp" />
+    <ClCompile Include="..\filezilla\FileZillaApi.cpp" />
+    <ClCompile Include="..\filezilla\FzApiStructures.cpp" />
+    <ClCompile Include="..\filezilla\Crypt.cpp" />
+    <ClCompile Include="..\filezilla\ControlSocket.cpp" />
+    <ClCompile Include="..\filezilla\FtpControlSocket.cpp" />
+    <ClCompile Include="..\filezilla\MainThread.cpp" />
+    <ClCompile Include="..\filezilla\TransferSocket.cpp" />
+    <ClCompile Include="..\filezilla\PathFunctions.cpp" />
+    <ClCompile Include="..\filezilla\FtpListResult.cpp" />
+    <ClCompile Include="..\filezilla\AsyncProxySocketLayer.cpp" />
+    <ClCompile Include="..\filezilla\structures.cpp" />
+    <ClCompile Include="..\filezilla\MFC64bitFix.cpp" />
+    <ClCompile Include="..\filezilla\Options.cpp" />
+    <ClCompile Include="..\filezilla\afxdll.cpp" />
+    <ClCompile Include="..\filezilla\misc\Fzutf8.cpp" />
+    <ClCompile Include="..\filezilla\misc\CBase64Coding.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -254,6 +286,7 @@
     <ResourceCompile Include="..\resource\TextsCore1.rc" />
     <ResourceCompile Include="..\resource\TextsCore2.rc" />
     <ResourceCompile Include="..\resource\rtlconsts.rc" />
+    <ResourceCompile Include="..\resource\TextsFileZilla.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EasyURL.h" />

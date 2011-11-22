@@ -21,7 +21,7 @@
 
 #include "Settings.h"
 #include "Protocol.h"
-#include "Strings.h"
+#include "FarTexts.h"
 #include "SessionManager.h"
 
 
