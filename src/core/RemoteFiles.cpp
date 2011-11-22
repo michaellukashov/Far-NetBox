@@ -1788,18 +1788,23 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   const std::wstring SourceDir, const std::wstring Change, std::wstring & TargetDir)
 {
+  DEBUG_PRINTF(L"begin, SourceDir = %s, Change = %s", SourceDir.c_str(), Change.c_str());
   std::wstring Key;
   bool Result;
   Key = TTerminal::ExpandFileName(Change, SourceDir);
+  DEBUG_PRINTF(L"Key = %s", Key.c_str());
   Result = (IndexOfName(Key.c_str()) >= 0);
+  DEBUG_PRINTF(L"Result = %d", Result);
   if (Result)
   {
     TargetDir = GetValue(Key);
     // TargetDir is not "//" here only when Change is full path to symbolic link
+    DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
     if (TargetDir == L"//")
     {
       TargetDir = Key;
     }
+    DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
   }
   else
   {
@@ -1811,9 +1816,11 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
       if (Result)
       {
         TargetDir = Directory;
+        DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
       }
     }
   }
+  DEBUG_PRINTF(L"end, Result = %d, TargetDir = %s", Result, TargetDir.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------

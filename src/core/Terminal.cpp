@@ -2205,8 +2205,8 @@ void TTerminal::DoStartup()
 //---------------------------------------------------------------------------
 void TTerminal::ReadCurrentDirectory()
 {
-  DEBUG_PRINTF(L"begin");
   assert(FFileSystem);
+  DEBUG_PRINTF(L"begin, FFileSystem->GetCurrentDirectory = %s", FFileSystem->GetCurrentDirectory().c_str());
   try
   {
     // reset flag is case we are called externally (like from console dialog)
@@ -2245,7 +2245,7 @@ void TTerminal::ReadCurrentDirectory()
   {
     CommandError(&E, LoadStr(READ_CURRENT_DIR_ERROR));
   }
-  DEBUG_PRINTF(L"end");
+  DEBUG_PRINTF(L"end, FFileSystem->GetCurrentDirectory = %s", FFileSystem->GetCurrentDirectory().c_str());
 }
 //---------------------------------------------------------------------------
 void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
@@ -3412,6 +3412,7 @@ void TTerminal::ChangeDirectory(const std::wstring Directory)
     assert(!GetSessionData()->GetCacheDirectoryChanges() || (FDirectoryChangesCache != NULL));
     // never use directory change cache during startup, this ensures, we never
     // end-up initially in non-existing directory
+    DEBUG_PRINTF(L"PeekCurrentDirectory = %s", PeekCurrentDirectory().c_str());
     if ((GetStatus() == ssOpened) &&
         GetSessionData()->GetCacheDirectoryChanges() &&
         FDirectoryChangesCache->GetDirectoryChange(PeekCurrentDirectory(),
