@@ -2732,6 +2732,8 @@ void TSessionDialog::UpdateControls()
   bool InternalHTTPProtocol =
     (FSProtocol == fsHTTP) || (FSProtocol == fsHTTPS);
   bool SshProtocol = InternalSshProtocol;
+  bool HTTPProtocol = FSProtocol == fsHTTP;
+  bool HTTPSProtocol = FSProtocol == fsHTTPS;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   bool FtpProtocol = (FSProtocol == fsFTP);
@@ -2742,8 +2744,8 @@ void TSessionDialog::UpdateControls()
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
-  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol);
-  PrivateKeyEdit->SetEnabled(SshProtocol);
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !HTTPSProtocol);
+  PrivateKeyEdit->SetEnabled(SshProtocol || HTTPSProtocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
