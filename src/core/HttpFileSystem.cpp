@@ -62,16 +62,16 @@ extern const wchar_t NationalVars[NationalVarCount][15];
 
 class TSessionData;
 //---------------------------------------------------------------------------
-class TCommandSet
+class THTTPCommandSet
 {
 private:
   TCommandType CommandSet[ShellCommandCount];
   TSessionData * FSessionData;
   std::wstring FReturnVar;
 public:
-  TCommandSet(TSessionData *aSessionData);
+  THTTPCommandSet(TSessionData *aSessionData);
   void Default();
-  void CopyFrom(TCommandSet * Source);
+  void CopyFrom(THTTPCommandSet * Source);
   std::wstring Command(TFSCommand Cmd, ...);
   std::wstring Command(TFSCommand Cmd, va_list args);
   TStrings * CreateCommandList();
@@ -106,53 +106,53 @@ public:
 };
 const wchar_t FullTimeOption[] = L"--full-time";
 //---------------------------------------------------------------------------
-TCommandSet::TCommandSet(TSessionData *aSessionData):
+THTTPCommandSet::THTTPCommandSet(TSessionData *aSessionData):
   FSessionData(aSessionData), FReturnVar(L"")
 {
   assert(FSessionData);
   Default();
 }
 //---------------------------------------------------------------------------
-void TCommandSet::CopyFrom(TCommandSet * Source)
+void THTTPCommandSet::CopyFrom(THTTPCommandSet * Source)
 {
   memcpy(&CommandSet, Source->CommandSet, sizeof(CommandSet));
 }
 //---------------------------------------------------------------------------
-void TCommandSet::Default()
+void THTTPCommandSet::Default()
 {
 }
 //---------------------------------------------------------------------------
-int TCommandSet::GetMaxLines(TFSCommand Cmd)
+int THTTPCommandSet::GetMaxLines(TFSCommand Cmd)
 {
   CHECK_CMD;
   return CommandSet[Cmd].MaxLines;
 }
 //---------------------------------------------------------------------------
-int TCommandSet::GetMinLines(TFSCommand Cmd)
+int THTTPCommandSet::GetMinLines(TFSCommand Cmd)
 {
   CHECK_CMD;
   return CommandSet[Cmd].MinLines;
 }
 //---------------------------------------------------------------------------
-bool TCommandSet::GetModifiesFiles(TFSCommand Cmd)
+bool THTTPCommandSet::GetModifiesFiles(TFSCommand Cmd)
 {
   CHECK_CMD;
   return CommandSet[Cmd].ModifiesFiles;
 }
 //---------------------------------------------------------------------------
-bool TCommandSet::GetChangesDirectory(TFSCommand Cmd)
+bool THTTPCommandSet::GetChangesDirectory(TFSCommand Cmd)
 {
   CHECK_CMD;
   return CommandSet[Cmd].ChangesDirectory;
 }
 //---------------------------------------------------------------------------
-bool TCommandSet::GetInteractiveCommand(TFSCommand Cmd)
+bool THTTPCommandSet::GetInteractiveCommand(TFSCommand Cmd)
 {
   CHECK_CMD;
   return CommandSet[Cmd].InteractiveCommand;
 }
 //---------------------------------------------------------------------------
-bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
+bool THTTPCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
 {
   //CHECK_CMD;
   // #56: we send "echo last line" from all commands on same line
@@ -160,19 +160,19 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
   return true; //CommandSet[Cmd].OneLineCommand;
 }
 //---------------------------------------------------------------------------
-void TCommandSet::SetCommand(TFSCommand Cmd, std::wstring value)
+void THTTPCommandSet::SetCommand(TFSCommand Cmd, std::wstring value)
 {
   CHECK_CMD;
   wcscpy((wchar_t *)CommandSet[Cmd].Command, value.substr(0, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::GetCommand(TFSCommand Cmd)
+std::wstring THTTPCommandSet::GetCommand(TFSCommand Cmd)
 {
   CHECK_CMD;
   return CommandSet[Cmd].Command;
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
+std::wstring THTTPCommandSet::Command(TFSCommand Cmd, ...)
 {
   std::wstring result;
   va_list args;
@@ -182,7 +182,7 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, ...)
   return result;
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::Command(TFSCommand Cmd, va_list args)
+std::wstring THTTPCommandSet::Command(TFSCommand Cmd, va_list args)
 {
   // DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
   std::wstring result;
@@ -191,7 +191,7 @@ std::wstring TCommandSet::Command(TFSCommand Cmd, va_list args)
   return result.c_str();
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
+std::wstring THTTPCommandSet::FullCommand(TFSCommand Cmd, ...)
 {
   std::wstring Result;
   va_list args;
@@ -201,7 +201,7 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, ...)
   return Result.c_str();
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
+std::wstring THTTPCommandSet::FullCommand(TFSCommand Cmd, va_list args)
 {
   std::wstring Separator;
   if (GetOneLineCommand(Cmd))
@@ -227,17 +227,17 @@ std::wstring TCommandSet::FullCommand(TFSCommand Cmd, va_list args)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::GetFirstLine()
+std::wstring THTTPCommandSet::GetFirstLine()
 {
   return FIRST_LINE;
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::GetLastLine()
+std::wstring THTTPCommandSet::GetLastLine()
 {
   return LAST_LINE;
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::GetReturnVar()
+std::wstring THTTPCommandSet::GetReturnVar()
 {
   assert(GetSessionData());
   if (!FReturnVar.empty())
@@ -248,7 +248,7 @@ std::wstring TCommandSet::GetReturnVar()
       return std::wstring(L"$") + GetSessionData()->GetReturnVar();
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::ExtractCommand(std::wstring Command)
+std::wstring THTTPCommandSet::ExtractCommand(std::wstring Command)
 {
   size_t P = Command.find_first_of(L" ");
   if (P != std::wstring::npos)
@@ -258,7 +258,7 @@ std::wstring TCommandSet::ExtractCommand(std::wstring Command)
   return Command;
 }
 //---------------------------------------------------------------------------
-TStrings * TCommandSet::CreateCommandList()
+TStrings * THTTPCommandSet::CreateCommandList()
 {
   TStrings * CommandList = new TStringList();
   for (int Index = 0; Index < ShellCommandCount; Index++)
@@ -283,7 +283,7 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
 void THTTPFileSystem::Init(TSecureShell *SecureShell)
 {
   FSecureShell = SecureShell;
-  FCommandSet = new TCommandSet(FTerminal->GetSessionData());
+  FCommandSet = new THTTPCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FOutput = new TStringList();
   FProcessingCommand = false;
@@ -813,7 +813,7 @@ void THTTPFileSystem::ClearAliases()
   try
   {
     FTerminal->LogEvent(L"Clearing all aliases.");
-    ClearAlias(TCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
+    ClearAlias(THTTPCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
     TStrings * CommandList = FCommandSet->CreateCommandList();
     {
       BOOST_SCOPE_EXIT ( (&CommandList) )
