@@ -7,12 +7,12 @@
 class TCommandSet;
 class TSecureShell;
 //---------------------------------------------------------------------------
-class TSCPFileSystem : public TCustomFileSystem
+class THTTPSFileSystem : public TCustomFileSystem
 {
 public:
-  TSCPFileSystem(TTerminal *ATerminal);
+  explicit THTTPSFileSystem(TTerminal *ATerminal);
   virtual void Init(TSecureShell *SecureShell);
-  virtual ~TSCPFileSystem();
+  virtual ~THTTPSFileSystem();
 
   virtual void Open();
   virtual void Close();
@@ -88,7 +88,7 @@ private:
   bool FProcessingCommand;
   int FLsFullTime;
   captureoutput_signal_type FOnCaptureOutput;
-  TSCPFileSystem *Self;
+  THTTPSFileSystem *Self;
 
   void ClearAliases();
   void ClearAlias(std::wstring Alias);
@@ -129,8 +129,8 @@ private:
   static bool RemoveLastLine(std::wstring & Line,
     int & ReturnCode, std::wstring LastLine = L"");
 private:
-  TSCPFileSystem(const TSCPFileSystem &);
-  void operator=(const TSCPFileSystem &);
+  THTTPSFileSystem(const THTTPSFileSystem &);
+  void operator=(const THTTPSFileSystem &);
 };
 //---------------------------------------------------------------------------
 #endif // ScpFileSystemH
