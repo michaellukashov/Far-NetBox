@@ -25,7 +25,7 @@ bool FindFile(std::wstring & Path)
     {
       std::wstring Paths;
       Paths.resize(Len - 1);
-      // FIXME GetEnvironmentVariable(L"PATH", Paths.c_str(), Len);
+      GetEnvironmentVariable(L"PATH", (LPWSTR)Paths.c_str(), Len);
 
       std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
       Result = !NewPath.empty();
@@ -35,6 +35,7 @@ bool FindFile(std::wstring & Path)
       }
     }
   }
+  DEBUG_PRINTF(L"Result = %s", Result.c_str());
   ::Error(SNotImplemented, 95);
   return Result;
 }
