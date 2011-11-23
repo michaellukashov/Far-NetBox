@@ -305,42 +305,41 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
 bool DeleteDirectory(const std::wstring DirName)
 {
   bool retval = true;
-  ::Error(SNotImplemented, 100);
-  /* // FIXME 
-  TSearchRec sr;
-  if (FindFirst(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
+  WIN32_FIND_DATA sr;
+  // sr.dwFileAttributes = faAnyFile;
+  HANDLE h = ::FindFirstFileW(DirName.c_str(), &sr);
+  if (h != INVALID_HANDLE_VALUE)
   {
-    if (FLAGSET(sr.Attr, faDirectory))
+    if (FLAGSET(sr.dwFileAttributes, faDirectory))
     {
-      if (sr.Name != L"." && sr.Name != L"..")
-        retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+      if ((wcscmp(sr.cFileName, L".") != 0) && (wcscmp(sr.cFileName, L"..") != 0))
+        retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
     }
     else
     {
-      retval = DeleteFile(DirName + L"\\" + sr.Name);
+      retval = ::DeleteFile(DirName + L"\\" + sr.cFileName);
     }
 
     if (retval)
     {
-      while (FindNext(sr) == 0)
-      { // VCL Function
-        if (FLAGSET(sr.Attr, faDirectory))
+      while (::FindNextFile(h, &sr) == 0)
+      {
+        if (FLAGSET(sr.dwFileAttributes, faDirectory))
         {
-          if (sr.Name != "." && sr.Name != L"..")
-            retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+          if ((wcscmp(sr.cFileName, L".") != 0) && (wcscmp(sr.cFileName, L"..") != 0))
+            retval = ::DeleteDirectory(DirName + L"\\" + sr.cFileName);
         }
         else
         {
-          retval = DeleteFile(DirName + L"\\" + sr.Name);
+          retval = ::DeleteFile(DirName + L"\\" + sr.cFileName);
         }
 
         if (!retval) break;
       }
     }
   }
-  FindClose(sr);
-  if (retval) retval = RemoveDir(DirName); // VCL function
-  */
+  ::FindClose(h);
+  if (retval) retval = ::RemoveDir(DirName);
   return retval;
 }
 //---------------------------------------------------------------------------
