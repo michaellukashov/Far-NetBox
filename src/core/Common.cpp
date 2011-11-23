@@ -2422,9 +2422,46 @@ bool DirectoryExists(const std::wstring &filename)
 
 std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList)
 {
+  DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
     // FIXME
-    ::Error(SNotImplemented, 84);
-    return std::wstring(L"");
+    // ::Error(SNotImplemented, 84);
+    // return std::wstring(L"");
+  size_t i;
+  std::wstring Temp;
+  std::wstring Result;
+  Temp = DirectoryList;
+  wchar_t PathSeparator = L'\\';
+  std::wstring PathSeparators = L"/\\";
+  do
+  {
+    i = ::Pos(Temp, PathSeparators);
+    while ((Temp.size() > 0) && (i == 0))
+    {
+      Temp.erase(0, 1);
+      i = ::Pos(Temp, PathSeparators);
+    }
+    i = ::Pos(Temp, PathSeparators);
+    if (i != std::wstring::npos)
+    {
+      Result = Temp.substr(0, i - 1);
+      Temp.erase(0, i);
+      DEBUG_PRINTF(L"Result = %s, Temp = %s", Result.c_str(), Temp.c_str());
+    }
+    else
+    {
+      Result = Temp;
+      Temp = L"";
+    }
+    // if ((Result.size() > 0) && (Result[Result.size() - 1] != PathSeparator))
+      // Result = Result + PathSeparator;
+    Result = ::IncludeTrailingBackslash(Result);
+    Result = Result + FileName;
+    if (!::FileExists(Result))
+      Result = L"";
+  }
+  while (!(Temp.size() == 0) || (Result.size() != 0));
+  DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  return Result;
 }
 
 
