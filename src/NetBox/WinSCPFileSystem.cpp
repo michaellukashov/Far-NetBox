@@ -2349,6 +2349,18 @@ int TWinSCPFileSystem::MakeDirectoryEx(std::wstring & Name, int OpMode)
     {
       TSessionData::ValidateName(Name);
       FNewSessionsFolder = Name;
+      /* TODO: set focus on created session directory
+      if (UpdatePanel())
+      {
+        if (SelectSession != NULL)
+        {
+          FocusSession(SelectSession);
+        }
+        // rarely we need to redraw even when new session is created
+        // (e.g. when there there were only the focused hint line before)
+        RedrawPanel();
+      }
+      */
       return 1;
     }
     else
