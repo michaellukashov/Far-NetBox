@@ -1658,15 +1658,18 @@ std::wstring TSessionData::GetDefaultSessionName()
 std::wstring TSessionData::GetSessionName()
 {
   DEBUG_PRINTF(L"Name = %s", Name.c_str());
+  std::wstring Result;
   if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
   {
-    return Name;
+    Result = Name;
   }
   else
   {
-    return GetDefaultSessionName();
+    Result = GetDefaultSessionName();
   }
+  DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  return Result;
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetSessionUrl()
