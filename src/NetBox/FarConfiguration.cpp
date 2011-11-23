@@ -39,7 +39,7 @@ void TFarConfiguration::Default()
   SetDisksMenuHotKey(0);
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
-  SetCommandPrefixes(L"winscp,scp,sftp");
+  SetCommandPrefixes(L"winscp,scp,sftp,http,https");
   SetHostNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
