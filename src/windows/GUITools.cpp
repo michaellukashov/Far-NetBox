@@ -137,31 +137,29 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring Path, const std::wstring Params)
 {
-  return ((int)ShellExecute(NULL, L"open", (wchar_t *)Path.data(),
+  return ((int)::ShellExecute(NULL, L"open", (wchar_t *)Path.data(),
     (wchar_t *)Params.data(), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle)
 {
+  // DEBUG_PRINTF(L"Path = %s, Params = %s", Path.c_str(), Params.c_str());
   bool Result = false;
-  ::Error(SNotImplemented, 97);
-/* // FIXME
-  TShellExecuteInfo ExecuteInfo;
+  _SHELLEXECUTEINFOW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = Application->Handle;
-  ExecuteInfo.lpFile = (char*)Path.data();
-  ExecuteInfo.lpParameters = (char*)Params.data();
+  ExecuteInfo.hwnd = (HWND)::GetModuleHandle(0);
+  ExecuteInfo.lpFile = (wchar_t *)Path.data();
+  ExecuteInfo.lpParameters = (wchar_t *)Params.data();
   ExecuteInfo.nShow = SW_SHOW;
 
-  Result = (ShellExecuteEx(&ExecuteInfo) != 0);
+  Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
     Handle = ExecuteInfo.hProcess;
   }
-  */
   return Result;
 }
 //---------------------------------------------------------------------------
