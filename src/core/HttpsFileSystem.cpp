@@ -283,7 +283,7 @@ THTTPSFileSystem::THTTPSFileSystem(TTerminal *ATerminal) :
 
 void THTTPSFileSystem::Init(TSecureShell *SecureShell)
 {
-  FSecureShell = SecureShell;
+  // FSecureShell = SecureShell;
   FCommandSet = new THTTPSCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FOutput = new TStringList();
@@ -302,27 +302,27 @@ THTTPSFileSystem::~THTTPSFileSystem()
 {
   delete FCommandSet;
   delete FOutput;
-  delete FSecureShell;
+  // delete FSecureShell;
 }
 //---------------------------------------------------------------------------
 void THTTPSFileSystem::Open()
 {
-  FSecureShell->Open();
+  // FSecureShell->Open();
 }
 //---------------------------------------------------------------------------
 void THTTPSFileSystem::Close()
 {
-  FSecureShell->Close();
+  // FSecureShell->Close();
 }
 //---------------------------------------------------------------------------
 bool THTTPSFileSystem::GetActive()
 {
-  return FSecureShell->GetActive();
+  return false; // FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
 const TSessionInfo & THTTPSFileSystem::GetSessionInfo()
 {
-  return FSecureShell->GetSessionInfo();
+  return FSessionInfo; // FSecureShell->GetSessionInfo();
 }
 //---------------------------------------------------------------------------
 const TFileSystemInfo & THTTPSFileSystem::GetFileSystemInfo(bool Retrieve)
@@ -370,22 +370,22 @@ bool THTTPSFileSystem::TemporaryTransferFile(const std::wstring & /*FileName*/)
 //---------------------------------------------------------------------------
 bool THTTPSFileSystem::GetStoredCredentialsTried()
 {
-  return FSecureShell->GetStoredCredentialsTried();
+  return false; // FSecureShell->GetStoredCredentialsTried();
 }
 //---------------------------------------------------------------------------
 std::wstring THTTPSFileSystem::GetUserName()
 {
-  return FSecureShell->GetUserName();
+  return FUserName; // FSecureShell->GetUserName();
 }
 //---------------------------------------------------------------------------
 void THTTPSFileSystem::Idle()
 {
   // Keep session alive
   if ((FTerminal->GetSessionData()->GetPingType ()!= ptOff) &&
-      (Now() - FSecureShell->GetLastDataSent()> FTerminal->GetSessionData()->GetPingIntervalDT()))
+      (Now() /*- FSecureShell->GetLastDataSent() */ > FTerminal->GetSessionData()->GetPingIntervalDT()))
   {
-    if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand) &&
-        FSecureShell->GetReady())
+    if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand)) // &&
+        // FSecureShell->GetReady())
     {
       if (!FProcessingCommand)
       {
@@ -396,16 +396,16 @@ void THTTPSFileSystem::Idle()
         FTerminal->LogEvent(L"Cannot send keepalive, command is being executed");
         // send at least SSH-level keepalive, if nothing else, it at least updates
         // LastDataSent, no the next keepalive attempt is postponed
-        FSecureShell->KeepAlive();
+        // FSecureShell->KeepAlive();
       }
     }
     else
     {
-      FSecureShell->KeepAlive();
+      // FSecureShell->KeepAlive();
     }
   }
 
-  FSecureShell->Idle();
+  // FSecureShell->Idle();
 }
 //---------------------------------------------------------------------------
 std::wstring THTTPSFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
@@ -497,13 +497,13 @@ void THTTPSFileSystem::SendCommand(const std::wstring Cmd)
   EnsureLocation();
 
   std::wstring Line;
-  FSecureShell->ClearStdError();
+  // FSecureShell->ClearStdError();
   FReturnCode = 0;
   FOutput->Clear();
   // We suppose, that 'Cmd' already contains command that ensures,
   // that 'LastLine' will be printed
   // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
-  FSecureShell->SendLine(Cmd);
+  // FSecureShell->SendLine(Cmd);
   FProcessingCommand = true;
 }
 //---------------------------------------------------------------------------
@@ -561,7 +561,7 @@ bool THTTPSFileSystem::IsLastLine(std::wstring & Line)
 //---------------------------------------------------------------------------
 void THTTPSFileSystem::SkipFirstLine()
 {
-  std::wstring Line = FSecureShell->ReceiveLine();
+  std::wstring Line = L""; // FSecureShell->ReceiveLine();
   if (Line != FCommandSet->GetFirstLine())
   {
     FTerminal->TerminalError(NULL, FMTLOAD(FIRST_LINE_EXPECTED, Line.c_str()));
@@ -584,7 +584,7 @@ void THTTPSFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
       // contain CR/LF, we can recognize last line
       do
       {
-        Line = FSecureShell->ReceiveLine();
+        Line = L""; // FSecureShell->ReceiveLine();
         // DEBUG_PRINTF(L"Line = %s", Line.c_str());
         IsLast = IsLastLine(Line);
         if (!IsLast || !Line.empty())
@@ -606,7 +606,7 @@ void THTTPSFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
     }
     if (Params & coRaiseExcept)
     {
-      std::wstring Message = FSecureShell->GetStdError();
+      std::wstring Message = L""; // FSecureShell->GetStdError();
       if ((Params & coExpectNoOutput) && FOutput->GetCount())
       {
         if (!Message.empty()) Message += L"\n";
@@ -1245,10 +1245,10 @@ void THTTPSFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdErr
 void THTTPSFileSystem::AnyCommand(const std::wstring Command,
   const captureoutput_slot_type *OutputEvent)
 {
-  assert(FSecureShell->GetOnCaptureOutput().empty());
+  // assert(FSecureShell->GetOnCaptureOutput().empty());
   if (OutputEvent)
   {
-    FSecureShell->SetOnCaptureOutput(boost::bind(&THTTPSFileSystem::CaptureOutput, this, _1, _2));
+    // FSecureShell->SetOnCaptureOutput(boost::bind(&THTTPSFileSystem::CaptureOutput, this, _1, _2));
     FOnCaptureOutput.connect(*OutputEvent);
   }
 
@@ -1256,7 +1256,7 @@ void THTTPSFileSystem::AnyCommand(const std::wstring Command,
     BOOST_SCOPE_EXIT ( (&Self) )
     {
       Self->FOnCaptureOutput.disconnect_all_slots();
-      Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
+      // Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
     } BOOST_SCOPE_EXIT_END
     ExecCommand(fsAnyCommand, 0, Command.c_str(),
       ecDefault | ecIgnoreWarnings);
@@ -1286,7 +1286,7 @@ void THTTPSFileSystem::SCPResponse(bool * GotLastLine)
   // Taken from scp.c response() and modified
 
   char Resp;
-  FSecureShell->Receive(&Resp, 1);
+  // FSecureShell->Receive(&Resp, 1);
 
   switch (Resp)
   {
@@ -1298,7 +1298,7 @@ void THTTPSFileSystem::SCPResponse(bool * GotLastLine)
     case 1:     /* error */
     case 2:     /* fatal error */
       // pscp adds 'Resp' to 'Msg', why?
-      std::wstring MsgW = FSecureShell->ReceiveLine();
+      std::wstring MsgW = L""; // FSecureShell->ReceiveLine();
       std::string Msg = ::W2MB(MsgW.c_str());
       std::string Line = Resp + Msg;
       std::wstring LineW = ::MB2W(Line.c_str());
@@ -1310,7 +1310,7 @@ void THTTPSFileSystem::SCPResponse(bool * GotLastLine)
         }
 
         /* TODO 1 : Show stderror to user? */
-        FSecureShell->ClearStdError();
+        // FSecureShell->ClearStdError();
 
         try
         {
@@ -1389,11 +1389,11 @@ void THTTPSFileSystem::CopyToRemote(TStrings * FilesToCopy,
               {
                 // What about case, remote side sends fatal error ???
                 // (Not sure, if it causes remote side to terminate scp)
-                Self->FSecureShell->SendLine(L"E");
-                Self->SCPResponse();
+                // Self->FSecureShell->SendLine(L"E");
+                // Self->SCPResponse();
               };
               /* TODO 1 : Show stderror to user? */
-              Self->FSecureShell->ClearStdError();
+              // Self->FSecureShell->ClearStdError();
 
               Self->ReadCommandOutput(coExpectNoOutput | coWaitForLastLine | coOnlyReturnCode |
                 (Failed ? 0 : coRaiseExcept));
@@ -1713,8 +1713,8 @@ void THTTPSFileSystem::SCPSource(const std::wstring FileName,
               // Send last file access and modification time
               swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                 static_cast<unsigned long>(ATime));
-              FSecureShell->SendLine(Buf.c_str());
-              SCPResponse();
+              // FSecureShell->SendLine(Buf.c_str());
+              // SCPResponse();
             }
 
             // Send file modes (rights), filesize and file name
@@ -1726,8 +1726,8 @@ void THTTPSFileSystem::SCPSource(const std::wstring FileName,
               (int)(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
                 OperationProgress->LocalSize),
               DestFileName.c_str());
-            FSecureShell->SendLine(Buf.c_str());
-            SCPResponse();
+            // FSecureShell->SendLine(Buf.c_str());
+            // SCPResponse();
             // Indicate we started transfering file, we need to finish it
             // If not, it's fatal error
             OperationProgress->TransferingFile = true;
@@ -1744,9 +1744,9 @@ void THTTPSFileSystem::SCPSource(const std::wstring FileName,
               while (!OperationProgress->IsTransferDone())
               {
                 unsigned long BlockSize = OperationProgress->TransferBlockSize();
-                FSecureShell->Send(
-                  AsciiBuf.GetData() + (unsigned int)OperationProgress->TransferedSize,
-                  BlockSize);
+                // FSecureShell->Send(
+                  // AsciiBuf.GetData() + (unsigned int)OperationProgress->TransferedSize,
+                  // BlockSize);
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
                 {
@@ -1769,7 +1769,7 @@ void THTTPSFileSystem::SCPSource(const std::wstring FileName,
               FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
             }
-            FSecureShell->Send(BlockBuf.GetData(), BlockBuf.GetSize());
+            // FSecureShell->Send(BlockBuf.GetData(), BlockBuf.GetSize());
             OperationProgress->AddTransfered(BlockBuf.GetSize());
           }
 
@@ -1781,7 +1781,7 @@ void THTTPSFileSystem::SCPSource(const std::wstring FileName,
         }
         while (!OperationProgress->IsLocallyDone() || !OperationProgress->IsTransferDone());
 
-        FSecureShell->SendNull();
+        // FSecureShell->SendNull();
         try
         {
           SCPResponse();
@@ -1894,7 +1894,7 @@ void THTTPSFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
   // Send directory modes (rights), filesize and file name
   Buf = FORMAT(L"D%s 0 %s",
     CopyParam->RemoteFileRights(Attrs).GetOctal().c_str(), DestFileName.c_str());
-  FSecureShell->SendLine(Buf);
+  // FSecureShell->SendLine(Buf);
   SCPResponse();
 
   {
@@ -1904,8 +1904,8 @@ void THTTPSFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
       {
         // Tell remote side, that we're done.
         Self->FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
-        Self->FSecureShell->SendLine(L"E");
-        Self->SCPResponse();
+        // Self->FSecureShell->SendLine(L"E");
+        // Self->SCPResponse();
       }
     } BOOST_SCOPE_EXIT_END
     int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
@@ -2016,7 +2016,7 @@ void THTTPSFileSystem::CopyToLocal(TStrings * FilesToCopy,
         // terminated, so we need not to terminate it. There is also
         // possibility that remote side waits for confirmation, so it will hang.
         // This should not happen (hope)
-        std::wstring Line = Self->FSecureShell->ReceiveLine();
+        std::wstring Line = L""; // Self->FSecureShell->ReceiveLine();
         LastLineRead = Self->IsLastLine(Line);
         if (!LastLineRead)
         {
@@ -2120,10 +2120,10 @@ void THTTPSFileSystem::SCPSendError(const std::wstring Message, bool Fatal)
   char ErrorLevel = (char)(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
     ((int)ErrorLevel)));
-  FSecureShell->Send(&ErrorLevel, 1);
+  // FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
   // characters can terminate remote scp
-  FSecureShell->SendLine(L"scp: error");
+  // FSecureShell->SendLine(L"scp: error");
 }
 //---------------------------------------------------------------------------
 void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
@@ -2148,7 +2148,7 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
 
   FileData.SetTime = 0;
 
-  FSecureShell->SendNull();
+  // FSecureShell->SendNull();
 
   while (!OperationProgress->Cancel)
   {
@@ -2164,7 +2164,7 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
     try
     {
       // Receive control record
-      std::wstring Line = FSecureShell->ReceiveLine();
+      std::wstring Line = L""; // FSecureShell->ReceiveLine();
 
       if (Line.size() == 0) FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE));
 
@@ -2174,7 +2174,7 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
         // and we don't need to terminate it manualy, see CopyToLocal()
         OperationProgress->Cancel = csRemoteAbort;
         /* TODO 1 : Show stderror to user? */
-        FSecureShell->ClearStdError();
+        // FSecureShell->ClearStdError();
         try
         {
           // coIgnoreWarnings should allow batch transfer to continue when
@@ -2221,7 +2221,7 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
             return; // Unreachable
 
           case 'E': // Exit
-            FSecureShell->SendNull();
+            // FSecureShell->SendNull();
             return;
 
           case 'T':
@@ -2234,7 +2234,7 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
                 FTerminal->GetSessionData()->GetDSTMode()), FTerminal->GetSessionData()->GetDSTMode());
               SourceTimestamp = UnixToDateTime(MTime,
                 FTerminal->GetSessionData()->GetDSTMode());
-              FSecureShell->SendNull();
+              // FSecureShell->SendNull();
               // File time is only valid until next pass
               FileData.SetTime = 2;
               continue;
@@ -2407,7 +2407,7 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
               }
 
               // We succeded, so we confirm transfer to remote side
-              FSecureShell->SendNull();
+              // FSecureShell->SendNull();
               // From now we need to finish file transfer, if not it's fatal error
               OperationProgress->TransferingFile = true;
 
@@ -2432,7 +2432,7 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(BlockBuf.GetData(), BlockBuf.GetSize());
+                  // FSecureShell->Receive(BlockBuf.GetData(), BlockBuf.GetSize());
                   OperationProgress->AddTransfered(BlockBuf.GetSize());
 
                   if (OperationProgress->AsciiTransfer)
@@ -2476,16 +2476,16 @@ void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
               }
               catch (const EScp &E)
               {
-                FSecureShell->SendNull();
+                // FSecureShell->SendNull();
                 throw;
               }
               catch (const EScpFileSkipped &E)
               {
-                FSecureShell->SendNull();
+                // FSecureShell->SendNull();
                 throw;
               }
 
-              FSecureShell->SendNull();
+              // FSecureShell->SendNull();
 
               if (FileData.SetTime && CopyParam->GetPreserveTime())
               {

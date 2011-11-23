@@ -78,7 +78,7 @@ protected:
   virtual std::wstring GetCurrentDirectory();
 
 private:
-  TSecureShell * FSecureShell;
+  // TSecureShell * FSecureShell;
   THTTPSCommandSet * FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   std::wstring FCurrentDirectory;
@@ -88,6 +88,8 @@ private:
   bool FProcessingCommand;
   int FLsFullTime;
   captureoutput_signal_type FOnCaptureOutput;
+  TSessionInfo FSessionInfo;
+  std::wstring FUserName;
   THTTPSFileSystem *Self;
 
   void ClearAliases();
