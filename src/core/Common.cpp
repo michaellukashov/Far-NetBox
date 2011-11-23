@@ -417,7 +417,7 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
     int P = Command.find_first_of(L'"');
     if (P)
     {
-      Program = ::Trim(Command.substr(0, P-1));
+      Program = ::Trim(Command.substr(0, P));
       Params = ::Trim(Command.substr(P + 1, Command.size() - P));
     }
     else
