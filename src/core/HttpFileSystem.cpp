@@ -54,7 +54,6 @@ struct TCommandType
 #define LastLineSeparator L":"
 #define LAST_LINE L"WinSCP: this is end-of-file"
 #define FIRST_LINE L"WinSCP: this is begin-of-file"
-extern const TCommandType DefaultCommandSet[];
 
 #define NationalVarCount 10
 extern const wchar_t NationalVars[NationalVarCount][15];
@@ -107,40 +106,6 @@ public:
 };
 const wchar_t FullTimeOption[] = L"--full-time";
 //---------------------------------------------------------------------------
-#define F false
-#define T true
-// TODO: remove "mf" and "cd", it is implemented in TTerminal already
-const TCommandType DefaultCommandSet[ShellCommandCount] = {
-//                       min max mf cd ia  command
-/*Null*/                { -1, -1, F, F, F, L"" },
-/*VarValue*/            { -1, -1, F, F, F, L"echo \"$%s\"" /* variable */ },
-/*LastLine*/            { -1, -1, F, F, F, L"echo \"%s" LastLineSeparator L"%s\"" /* last line, return var */ },
-/*FirstLine*/           { -1, -1, F, F, F, L"echo \"%s\"" /* first line */ },
-/*CurrentDirectory*/    {  1,  1, F, F, F, L"pwd" },
-/*ChangeDirectory*/     {  0,  0, F, T, F, L"cd %s" /* directory */ },
-// list directory can be empty on permission denied, this is handled in ReadDirectory
-/*ListDirectory*/       { -1, -1, F, F, F, L"%s %s \"%s\"" /* listing command, options, directory */ },
-/*ListCurrentDirectory*/{ -1, -1, F, F, F, L"%s %s" /* listing command, options */ },
-/*ListFile*/            {  1,  1, F, F, F, L"%s -d %s \"%s\"" /* listing command, options, file/directory */ },
-/*LookupUserGroups*/    {  0,  1, F, F, F, L"groups" },
-/*CopyToRemote*/        { -1, -1, T, F, T, L"scp -r %s -d -t \"%s\"" /* options, directory */ },
-/*CopyToLocal*/         { -1, -1, F, F, T, L"scp -r %s -d -f \"%s\"" /* options, file */ },
-/*DeleteFile*/          {  0,  0, T, F, F, L"rm -f -r \"%s\"" /* file/directory */},
-/*RenameFile*/          {  0,  0, T, F, F, L"mv -f \"%s\" \"%s\"" /* file/directory, new name*/},
-/*CreateDirectory*/     {  0,  0, T, F, F, L"mkdir \"%s\"" /* new directory */},
-/*ChangeMode*/          {  0,  0, T, F, F, L"chmod %s %s \"%s\"" /* options, mode, filename */},
-/*ChangeGroup*/         {  0,  0, T, F, F, L"chgrp %s \"%s\" \"%s\"" /* options, group, filename */},
-/*ChangeOwner*/         {  0,  0, T, F, F, L"chown %s \"%s\" \"%s\"" /* options, owner, filename */},
-/*HomeDirectory*/       {  0,  0, F, T, F, L"cd" },
-/*Unset*/               {  0,  0, F, F, F, L"unset \"%s\"" /* variable */ },
-/*Unalias*/             {  0,  0, F, F, F, L"unalias \"%s\"" /* alias */ },
-/*CreateLink*/          {  0,  0, T, F, F, L"ln %s \"%s\" \"%s\"" /*symbolic (-s), filename, point to*/},
-/*CopyFile*/            {  0,  0, T, F, F, L"cp -p -r -f \"%s\" \"%s\"" /* file/directory, target name*/},
-/*AnyCommand*/          {  0, -1, T, T, F, L"%s" }
-};
-#undef F
-#undef T
-//---------------------------------------------------------------------------
 TCommandSet::TCommandSet(TSessionData *aSessionData):
   FSessionData(aSessionData), FReturnVar(L"")
 {
@@ -155,8 +120,6 @@ void TCommandSet::CopyFrom(TCommandSet * Source)
 //---------------------------------------------------------------------------
 void TCommandSet::Default()
 {
-  assert(sizeof(CommandSet) == sizeof(DefaultCommandSet));
-  memcpy(&CommandSet, &DefaultCommandSet, sizeof(CommandSet));
 }
 //---------------------------------------------------------------------------
 int TCommandSet::GetMaxLines(TFSCommand Cmd)
