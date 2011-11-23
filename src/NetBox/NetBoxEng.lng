@@ -210,6 +210,8 @@
 "SCP"
 "SFTP"
 "FTP"
+"HTTP"
+"HTTPS"
 "Allow SCP &fallback"
 "Insecure"
 "Use buttons on top or Ctrl+PgUp and Ctrl+PgDn keys to "
