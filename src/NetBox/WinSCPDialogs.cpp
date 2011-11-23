@@ -1844,6 +1844,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   #ifndef NO_FILEZILLA
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
   #endif
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
