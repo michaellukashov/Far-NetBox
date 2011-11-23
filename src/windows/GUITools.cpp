@@ -166,22 +166,20 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
 bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
   const std::wstring Params, const processmessages_signal_type &ProcessMessages)
 {
-  ::Error(SNotImplemented, 98);
   bool Result = false;
-/* // FIXME 
-  TShellExecuteInfo ExecuteInfo;
+  _SHELLEXECUTEINFOW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = Handle;
-  ExecuteInfo.lpFile = (char*)Path.data();
-  ExecuteInfo.lpParameters = (char*)Params.data();
+  ExecuteInfo.hwnd = (HWND)::GetModuleHandle(0);
+  ExecuteInfo.lpFile = (wchar_t *)Path.data();
+  ExecuteInfo.lpParameters = (wchar_t *)Params.data();
   ExecuteInfo.nShow = SW_SHOW;
 
   Result = (ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
-    if (ProcessMessages != NULL)
+    if (!ProcessMessages.empty())
     {
       unsigned long WaitResult;
       do
@@ -189,7 +187,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
         WaitResult = WaitForSingleObject(ExecuteInfo.hProcess, 200);
         if (WaitResult == WAIT_FAILED)
         {
-          throw std::exception(LoadStr(DOCUMENT_WAIT_ERROR));
+          throw ExtException(LoadStr(DOCUMENT_WAIT_ERROR));
         }
         ProcessMessages();
       }
@@ -200,7 +198,6 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
       WaitForSingleObject(ExecuteInfo.hProcess, INFINITE);
     }
   }
-  */
   return Result;
 }
 //---------------------------------------------------------------------------
