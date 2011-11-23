@@ -137,9 +137,8 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring Path, const std::wstring Params)
 {
-  ::Error(SNotImplemented, 96);
-  return false; // FIXME ((int)ShellExecute(NULL, L"open", (char*)Path.data(),
-    // (char*)Params.data(), NULL, SW_SHOWNORMAL) > 32);
+  return ((int)ShellExecute(NULL, L"open", (wchar_t *)Path.data(),
+    (wchar_t *)Params.data(), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring Path, const std::wstring Params,
