@@ -58,6 +58,7 @@ std::wstring SysErrorMessage(int code);
 std::wstring GetShellFolderPath(int CSIdl);
 std::wstring StripPathQuotes(const std::wstring Path);
 std::wstring AddPathQuotes(std::wstring Path);
+std::wstring ReplaceStrAll(std::wstring Str, std::wstring What, std::wstring ByWhat);
 void SplitCommand(std::wstring Command, std::wstring &Program,
   std::wstring & Params, std::wstring & Dir);
 std::wstring ExtractProgram(std::wstring Command);
