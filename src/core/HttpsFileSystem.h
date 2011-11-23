@@ -4,7 +4,7 @@
 
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
-class TCommandSet;
+class THTTPSCommandSet;
 class TSecureShell;
 //---------------------------------------------------------------------------
 class THTTPSFileSystem : public TCustomFileSystem
@@ -79,7 +79,7 @@ protected:
 
 private:
   TSecureShell * FSecureShell;
-  TCommandSet * FCommandSet;
+  THTTPSCommandSet * FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   std::wstring FCurrentDirectory;
   TStrings * FOutput;
