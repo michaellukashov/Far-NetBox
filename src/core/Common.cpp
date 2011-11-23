@@ -2423,10 +2423,6 @@ bool DirectoryExists(const std::wstring &filename)
 std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList)
 {
   // DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
-  DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
-    // FIXME
-    // ::Error(SNotImplemented, 84);
-    // return std::wstring(L"");
   size_t i;
   std::wstring Temp;
   std::wstring Result;
@@ -2453,8 +2449,6 @@ std::wstring FileSearch(const std::wstring FileName, const std::wstring Director
       Result = Temp;
       Temp = L"";
     }
-    // if ((Result.size() > 0) && (Result[Result.size() - 1] != PathSeparator))
-      // Result = Result + PathSeparator;
     Result = ::IncludeTrailingBackslash(Result);
     Result = Result + FileName;
     if (!::FileExists(Result))
