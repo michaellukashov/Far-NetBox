@@ -1660,6 +1660,31 @@ std::wstring TSessionData::GetDefaultSessionName()
   std::wstring hostName = GetHostName();
   std::wstring userName = GetUserName();
   DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
+  switch (GetFSProtocol())
+  {
+    case fsHTTP:
+    {
+        if (LowerCase(hostName.substr(0, 5)) == L"http:")
+        {
+            hostName.erase(0, 5);
+        }
+        hostName = ::ReplaceStrAll(hostName, "/", "_");
+        break;
+    }
+    case fsHTTPS:
+    {
+        if (LowerCase(hostName.substr(0, 6)) == L"https:")
+        {
+            hostName.erase(0, 6);
+        }
+        hostName = ::ReplaceStrAll(hostName, "/", "_");
+        break;
+    }
+    default:
+    {
+        break;
+    }
+  }
   if (!hostName.empty() && !userName.empty())
   {
     return FORMAT(L"%s@%s", userName.c_str(), hostName.c_str());
