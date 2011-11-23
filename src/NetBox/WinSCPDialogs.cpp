@@ -2702,14 +2702,22 @@ void TSessionDialog::TransferProtocolComboChange()
   LoadPing(FSessionData);
   if (GetFSProtocol() == fsFTP)
   {
-    if (PortNumberEdit->GetAsInteger() == 22)
+    // if (PortNumberEdit->GetAsInteger() == 22)
     {
       PortNumberEdit->SetAsInteger(21);
     }
   }
+  else if (GetFSProtocol() == fsHTTP)
+  {
+    PortNumberEdit->SetAsInteger(80);
+  }
+  else if (GetFSProtocol() == fsHTTPS)
+  {
+    PortNumberEdit->SetAsInteger(443);
+  }
   else
   {
-    if (PortNumberEdit->GetAsInteger() == 21)
+    // if (PortNumberEdit->GetAsInteger() == 21)
     {
       PortNumberEdit->SetAsInteger(22);
     }
