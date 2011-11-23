@@ -28,6 +28,8 @@ const TKex DefaultKexList[KEX_COUNT] =
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"", L"HTTP", L"HTTPS" };
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
+const int HTTPPortNumber = 80;
+const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
 //---------------------------------------------------------------------
 TDateTime SecToDateTime(int Sec)
@@ -954,6 +956,20 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     Url.erase(0, 5);
     ProtocolDefined = true;
   }
+  else if (LowerCase(Url.substr(0, 5)) == L"http:")
+  {
+    AFSProtocol = fsHTTP;
+    APortNumber = HTTPPortNumber;
+    Url.erase(0, 5);
+    ProtocolDefined = true;
+  }
+  else if (LowerCase(Url.substr(0, 6)) == L"https:")
+  {
+    AFSProtocol = fsHTTPS;
+    APortNumber = HTTPSPortNumber;
+    Url.erase(0, 6);
+    ProtocolDefined = true;
+  }
 
   if (ProtocolDefined && (Url.substr(0, 2) == L"//"))
   {
@@ -1699,6 +1715,12 @@ std::wstring TSessionData::GetSessionUrl()
 
       case fsFTP:
         Url = L"ftp://";
+        break;
+      case fsHTTP:
+        Url = L"http://";
+        break;
+      case fsHTTPS:
+        Url = L"https://";
         break;
     }
 
