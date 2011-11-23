@@ -18,6 +18,8 @@
 #ifndef NO_FILEZILLA
 #include "FtpFileSystem.h"
 #endif
+#include "HttpFileSystem.h"
+#include "HttpsFileSystem.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
@@ -737,6 +739,22 @@ void TTerminal::Open()
               GetLog()->AddSeparator();
               LogEvent(L"Using FTP protocol.");
               #endif
+            }
+            else if (GetSessionData()->GetFSProtocol() == fsHTTP)
+              FFSProtocol = cfsHTTP;
+              FFileSystem = new THTTPFileSystem(this);
+              ((THTTPFileSystem*)FFileSystem)->Init();
+              FFileSystem->Open();
+              GetLog()->AddSeparator();
+              LogEvent(L"Using HTTP protocol.");
+            }
+            else if (GetSessionData()->GetFSProtocol() == fsHTTPS)
+              FFSProtocol = cfsHTTPS;
+              FFileSystem = new THTTSPFileSystem(this);
+              ((THTTSPFileSystem*)FFileSystem)->Init();
+              FFileSystem->Open();
+              GetLog()->AddSeparator();
+              LogEvent(L"Using HTTPS protocol.");
             }
             else
             {
