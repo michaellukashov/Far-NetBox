@@ -1659,7 +1659,7 @@ std::wstring TSessionData::GetDefaultSessionName()
 {
   std::wstring hostName = GetHostName();
   std::wstring userName = GetUserName();
-  DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
+  // DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
   switch (GetFSProtocol())
   {
     case fsHTTP:
@@ -1701,7 +1701,7 @@ std::wstring TSessionData::GetDefaultSessionName()
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetSessionName()
 {
-  DEBUG_PRINTF(L"Name = %s", Name.c_str());
+  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
   std::wstring Result;
   if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
@@ -1712,7 +1712,7 @@ std::wstring TSessionData::GetSessionName()
   {
     Result = GetDefaultSessionName();
   }
-  DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 //---------------------------------------------------------------------
