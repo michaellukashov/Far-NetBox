@@ -25,9 +25,6 @@
 #define MPEXT_NO_SSLDLL
 #define _AFX_NOFORCE_LIBS
 //---------------------------------------------------------------------------
-// #define GetOption(OPTION) GetInstanceOption(this->m_pApiLogParent, OPTION)
-// #define GetOptionVal(OPTION) GetInstanceOptionVal(this->m_pApiLogParent, OPTION)
-//---------------------------------------------------------------------------
 #include <afx.h>
 #include "wtypes.h"
 #include <afxmt.h>
@@ -43,14 +40,6 @@
 class CFileFix;
 #define CFile CFileFix
 //---------------------------------------------------------------------------
-// #include "MFC64bitFix.h"
-// #include <ApiLog.h>
-// #include <FileZillaApi.h>
-// #include <FileZillaOpt.h>
-// #include <Options.h>
-// #include <Crypt.h>
-// #include <TextsFileZilla.h>
-// #include <structures.h>
 #include <FzApiStructures.h>
 //---------------------------------------------------------------------------
 #include <oleauto.h>
