@@ -193,6 +193,8 @@ friend class TRemoteFile;
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
+friend class THTTPFileSystem;
+friend class THTTPSFileSystem;
 friend class TTunnelUI;
 friend class TCallbackGuard;
 
