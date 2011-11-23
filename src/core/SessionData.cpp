@@ -1657,13 +1657,15 @@ void TSessionData::SetRekeyTime(unsigned int value)
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetDefaultSessionName()
 {
-  if (!GetHostName().empty() && !GetUserName().empty())
+  std::wstring hostName = GetHostName();
+  DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
+  if (!hostName.empty() && !GetUserName().empty())
   {
-    return FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
+    return FORMAT(L"%s@%s", GetUserName().c_str(), hostName.c_str());
   }
-  else if (!GetHostName().empty())
+  else if (!hostName.empty())
   {
-    return GetHostName();
+    return hostName;
   }
   else
   {
