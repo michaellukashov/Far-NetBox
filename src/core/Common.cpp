@@ -2430,16 +2430,12 @@ std::wstring FileSearch(const std::wstring FileName, const std::wstring Director
 
 int FileGetAttr(const std::wstring &filename)
 {
-    // FIXME
-    // ::Error(SNotImplemented, 85);
     int attr = GetFileAttributes(filename.c_str());
     return attr;
 }
 
 int FileSetAttr(const std::wstring &filename, int attrs)
 {
-    // FIXME
-    // ::Error(SNotImplemented, 86);
     int res = SetFileAttributes(filename.c_str(), attrs);
     return res;
 }
