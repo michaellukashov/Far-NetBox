@@ -2422,6 +2422,7 @@ bool DirectoryExists(const std::wstring &filename)
 
 std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList)
 {
+  // DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
   DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
     // FIXME
     // ::Error(SNotImplemented, 84);
@@ -2445,7 +2446,7 @@ std::wstring FileSearch(const std::wstring FileName, const std::wstring Director
     {
       Result = Temp.substr(0, i - 1);
       Temp.erase(0, i);
-      DEBUG_PRINTF(L"Result = %s, Temp = %s", Result.c_str(), Temp.c_str());
+      // DEBUG_PRINTF(L"Result = %s, Temp = %s", Result.c_str(), Temp.c_str());
     }
     else
     {
@@ -2460,7 +2461,7 @@ std::wstring FileSearch(const std::wstring FileName, const std::wstring Director
       Result = L"";
   }
   while (!(Temp.size() == 0) || (Result.size() != 0));
-  DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
 

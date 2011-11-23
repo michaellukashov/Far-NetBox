@@ -23,11 +23,11 @@ bool FindFile(std::wstring & Path)
     int Len = GetEnvironmentVariable(L"PATH", NULL, 0);
     if (Len > 0)
     {
-      DEBUG_PRINTF(L"Len = %d", Len);
+      // DEBUG_PRINTF(L"Len = %d", Len);
       std::wstring Paths;
       Paths.resize(Len - 1);
       GetEnvironmentVariable(L"PATH", (LPWSTR)Paths.c_str(), Len);
-      DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
+      // DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
 
       std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
       Result = !NewPath.empty();
@@ -37,7 +37,7 @@ bool FindFile(std::wstring & Path)
       }
     }
   }
-  DEBUG_PRINTF(L"Result = %d", Result);
+  // DEBUG_PRINTF(L"Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
