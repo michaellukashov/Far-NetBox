@@ -5,7 +5,7 @@
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
 
-#include "ScpFileSystem.h"
+#include "HttpsFileSystem.h"
 
 #include "Terminal.h"
 #include "Common.h"

@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
-#ifndef ScpFileSystemH
-#define ScpFileSystemH
+#ifndef HttpFileSystemH
+#define HttpFileSystemH
 
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
