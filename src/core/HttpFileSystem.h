@@ -4,8 +4,8 @@
 
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
-class TCommandSet;
-class TSecureShell;
+class THTTPCommandSet;
+// class TSecureShell;
 //---------------------------------------------------------------------------
 class THTTPFileSystem : public TCustomFileSystem
 {
@@ -78,8 +78,8 @@ protected:
   virtual std::wstring GetCurrentDirectory();
 
 private:
-  TSecureShell * FSecureShell;
-  TCommandSet * FCommandSet;
+  // TSecureShell * FSecureShell;
+  THTTPCommandSet * FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   std::wstring FCurrentDirectory;
   TStrings * FOutput;
@@ -88,6 +88,8 @@ private:
   bool FProcessingCommand;
   int FLsFullTime;
   captureoutput_signal_type FOnCaptureOutput;
+  TSessionInfo FSessionInfo;
+  std::wstring FUserName;
   THTTPFileSystem *Self;
 
   void ClearAliases();
