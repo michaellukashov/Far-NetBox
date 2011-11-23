@@ -2729,6 +2729,8 @@ void TSessionDialog::UpdateControls()
   TFSProtocol FSProtocol = GetFSProtocol();
   bool InternalSshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
+  bool InternalHTTPProtocol =
+    (FSProtocol == fsHTTP) || (FSProtocol == fsHTTPS);
   bool SshProtocol = InternalSshProtocol;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
@@ -2873,7 +2875,7 @@ void TSessionDialog::UpdateControls()
   ProxyDNSOffButton->SetEnabled(ProxySettings);
 
   // Tunnel tab
-  TunnelTab->SetEnabled(InternalSshProtocol);
+  TunnelTab->SetEnabled(InternalSshProtocol || InternalHTTPProtocol);
 }
 //---------------------------------------------------------------------------
 bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
