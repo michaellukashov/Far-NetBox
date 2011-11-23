@@ -1532,6 +1532,8 @@ private:
   TFarEdit * PrivateKeyEdit;
   TFarComboBox * TransferProtocolCombo;
   TFarCheckBox * AllowScpFallbackCheck;
+  TFarText * HostNameLabel;
+  TFarText * URLLabel;
   TFarText * InsecureLabel;
   TFarCheckBox * UpdateDirectoriesCheck;
   TFarCheckBox * CacheDirectoriesCheck;
@@ -1783,8 +1785,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetCaption(GetMsg(LOGIN_GROUP_SESSION));
   GroupTop = Separator->GetTop();
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_HOST_NAME));
+  HostNameLabel = new TFarText(this);
+  HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
+  URLLabel = new TFarText(this);
+  URLLabel->SetCaption(GetMsg(StringEdURL));
 
   HostNameEdit = new TFarEdit(this);
   HostNameEdit->SetRight(CRect.Right - 12 - 2);
@@ -2746,6 +2750,8 @@ void TSessionDialog::UpdateControls()
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol || HTTPSProtocol);
+  HostNameLabel->SetVisible(!InternalHTTPProtocol);
+  URLLabel->SetVisible(InternalHTTPProtocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
