@@ -105,10 +105,6 @@ public:
   std::wstring GetReturnVar();
   void SetReturnVar(std::wstring value) { FReturnVar = value; }
 };
-//===========================================================================
-const wchar_t NationalVars[NationalVarCount][15] =
-  {L"LANG", L"LANGUAGE", L"LC_CTYPE", L"LC_COLLATE", L"LC_MONETARY", L"LC_NUMERIC",
-   L"LC_TIME", L"LC_MESSAGES", L"LC_ALL", L"HUMAN_BLOCKS" };
 const wchar_t FullTimeOption[] = L"--full-time";
 //---------------------------------------------------------------------------
 #define F false
