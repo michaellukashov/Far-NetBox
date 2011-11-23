@@ -1664,20 +1664,20 @@ std::wstring TSessionData::GetDefaultSessionName()
   {
     case fsHTTP:
     {
-        if (LowerCase(hostName.substr(0, 5)) == L"http:")
+        if (LowerCase(hostName.substr(0, 7)) == L"http://")
         {
-            hostName.erase(0, 5);
+            hostName.erase(0, 7);
         }
-        hostName = ::ReplaceStrAll(hostName, "/", "_");
+        hostName = ::ReplaceStrAll(hostName, L"/", L"_");
         break;
     }
     case fsHTTPS:
     {
-        if (LowerCase(hostName.substr(0, 6)) == L"https:")
+        if (LowerCase(hostName.substr(0, 8)) == L"https://")
         {
-            hostName.erase(0, 6);
+            hostName.erase(0, 8);
         }
-        hostName = ::ReplaceStrAll(hostName, "/", "_");
+        hostName = ::ReplaceStrAll(hostName, L"/", L"_");
         break;
     }
     default:
