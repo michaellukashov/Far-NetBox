@@ -741,17 +741,21 @@ void TTerminal::Open()
               #endif
             }
             else if (GetSessionData()->GetFSProtocol() == fsHTTP)
+            {
               FFSProtocol = cfsHTTP;
               FFileSystem = new THTTPFileSystem(this);
-              ((THTTPFileSystem*)FFileSystem)->Init();
+              ((THTTPFileSystem*)FFileSystem)->Init(FSecureShell);
+              FSecureShell = NULL;
               FFileSystem->Open();
               GetLog()->AddSeparator();
               LogEvent(L"Using HTTP protocol.");
             }
             else if (GetSessionData()->GetFSProtocol() == fsHTTPS)
+            {
               FFSProtocol = cfsHTTPS;
-              FFileSystem = new THTTSPFileSystem(this);
-              ((THTTSPFileSystem*)FFileSystem)->Init();
+              FFileSystem = new THTTPSFileSystem(this);
+              ((THTTPSFileSystem*)FFileSystem)->Init(FSecureShell);
+              FSecureShell = NULL;
               FFileSystem->Open();
               GetLog()->AddSeparator();
               LogEvent(L"Using HTTPS protocol.");
