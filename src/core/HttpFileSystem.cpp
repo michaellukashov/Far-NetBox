@@ -369,9 +369,9 @@ void THTTPFileSystem::Open()
 {
   DEBUG_PRINTF(L"begin");
   // FSecureShell->Open();
-  // DiscardMessages();
+  DiscardMessages();
 
-  // ResetCaches();
+  ResetCaches();
   FCurrentDirectory = L"";
   FHomeDirectory = L"";
 
@@ -1607,6 +1607,12 @@ void THTTPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdErro
     assert(!FOnCaptureOutput.empty());
     FOnCaptureOutput(Line, StdError);
   }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::ResetCaches()
+{
+  delete FFileListCache;
+  FFileListCache = NULL;
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::AnyCommand(const std::wstring Command,
