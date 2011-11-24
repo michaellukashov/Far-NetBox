@@ -164,6 +164,14 @@ protected:
   virtual std::wstring GetCurrentDirectory();
 
 private:
+  enum TCommand
+  {
+    CMD_UNKNOWN,
+    PASS,
+    SYST,
+    FEAT
+  };
+
   // TSecureShell * FSecureShell;
   THTTPCommandSet * FCommandSet;
   TFileSystemInfo FFileSystemInfo;
@@ -182,8 +190,18 @@ private:
   bool FPasswordFailed;
   std::wstring FSystem;
   bool FActive;
+  bool FWaitingForReply;
   unsigned int FReply;
   unsigned int FCommandReply;
+  TCommand FLastCommand;
+  bool FMultineResponse;
+  int FLastCode;
+  int FLastCodeClass;
+  int FLastReadDirectoryProgress;
+  TStrings * FLastResponse;
+  TStrings * FLastError;
+  TCriticalSection * FQueueCriticalSection;
+  TCriticalSection * FTransferStatusCriticalSection;
   THTTPFileSystem *Self;
 
   void ClearAliases();

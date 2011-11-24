@@ -32,6 +32,11 @@ const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
+const int DummyCodeClass = 8;
+const int DummyTimeoutCode = 801;
+const int DummyCancelCode = 802;
+const int DummyDisconnectCode = 803;
+//---------------------------------------------------------------------------
 #define THROW_FILE_SKIPPED(MESSAGE, EXCEPTION) \
   throw EScpFileSkipped(MESSAGE, EXCEPTION)
 
@@ -276,6 +281,24 @@ TStrings * THTTPCommandSet::CreateCommandList()
   return CommandList;
 }
 //===========================================================================
+struct TFileTransferData
+{
+  TFileTransferData()
+  {
+    Params = 0;
+    AutoResume = false;
+    OverwriteResult = -1;
+    CopyParam = NULL;
+  }
+
+  std::wstring FileName;
+  int Params;
+  bool AutoResume;
+  int OverwriteResult;
+  const TCopyParamType * CopyParam;
+};
+
+//===========================================================================
 THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(ATerminal),
   // FSecureShell(NULL),
@@ -286,8 +309,17 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FCURLIntf(NULL),
   FPasswordFailed(false),
   FActive(false),
+  FWaitingForReply(false),
   FReply(0),
-  FCommandReply(0)
+  FCommandReply(0),
+  FMultineResponse(false),
+  FLastCode(0),
+  FLastCodeClass(0),
+  FLastReadDirectoryProgress(0),
+  FLastResponse(NULL),
+  FLastError(NULL),
+  FQueueCriticalSection(NULL),
+  FTransferStatusCriticalSection(NULL)
 {
   Self = this;
 }
@@ -2981,7 +3013,7 @@ void THTTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       // REPLY_NOTCONNECTED happens if connection is closed between moment
       // when FZAPI interface method dispatches the command to FZAPI thread
       // and moment when FZAPI thread receives the command
-      // bool Disconnected =
+      bool Disconnected = false;
         // FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
         // FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
@@ -3194,12 +3226,12 @@ void THTTPFileSystem::HandleReplyStatus(std::wstring Response)
       {
         FSystem = ::TrimRight(FLastResponse->GetText());
         // full name is "Personal FTP Server PRO K6.0"
-        if ((FListAll == asAuto) &&
-            (::Pos(FSystem, L"Personal FTP Server") != std::wstring::npos))
-        {
-          FTerminal->LogEvent(L"Server is known not to support LIST -a");
-          FListAll = asOff;
-        }
+        // if ((FListAll == asAuto) &&
+            // (::Pos(FSystem, L"Personal FTP Server") != std::wstring::npos))
+        // {
+          // FTerminal->LogEvent(L"Server is known not to support LIST -a");
+          // FListAll = asOff;
+        // }
       }
       else
       {
@@ -3214,12 +3246,12 @@ void THTTPFileSystem::HandleReplyStatus(std::wstring Response)
       {
         FLastResponse->Delete(0);
         FLastResponse->Delete(FLastResponse->GetCount() - 1);
-        FFeatures->Assign(FLastResponse);
+        // FFeatures->Assign(FLastResponse);
         // DEBUG_PRINTF(L"FFeatures = %s", FFeatures->GetText().c_str());
       }
       else
       {
-        FFeatures->Clear();
+        // FFeatures->Clear();
       }
     }
   }
