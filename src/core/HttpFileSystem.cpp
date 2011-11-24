@@ -13,8 +13,9 @@
 #include "Interface.h"
 #include "TextsCore.h"
 #include "SecureShell.h"
-#include "EasyURL.h"
 #include "FileZillaIntf.h"
+#include "EasyURL.h"
+#include "Settings.h"
 
 #include <stdio.h>
 //---------------------------------------------------------------------------
@@ -326,10 +327,10 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FLastCode(0),
   FLastCodeClass(0),
   FLastReadDirectoryProgress(0),
-  FLastResponse(NULL),
-  FLastError(NULL),
-  FQueueCriticalSection(NULL),
-  FTransferStatusCriticalSection(NULL),
+  FLastResponse(new TStringList()),
+  FLastError(new TStringList()),
+  FQueueCriticalSection(new TCriticalSection),
+  FTransferStatusCriticalSection(new TCriticalSection),
   FDoListAll(false)
 {
   Self = this;
@@ -448,7 +449,7 @@ void THTTPFileSystem::Open()
 
     // ask for username if it was not specified in advance, even on retry,
     // but keep previous one as default,
-    if (Data->GetUserName().empty())
+    if (0) // Data->GetUserName().empty())
     {
       FTerminal->LogEvent(L"Username prompt (no username provided)");
 
@@ -471,7 +472,7 @@ void THTTPFileSystem::Open()
 
     // ask for password if it was not specified in advance,
     // on retry ask always
-    if ((Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
+    if (0) // (Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
     {
       FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
 
