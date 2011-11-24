@@ -13,6 +13,7 @@
 #include "Interface.h"
 #include "TextsCore.h"
 #include "SecureShell.h"
+#include "EasyURL.h"
 
 #include <stdio.h>
 //---------------------------------------------------------------------------
@@ -276,7 +277,15 @@ TStrings * THTTPCommandSet::CreateCommandList()
 }
 //===========================================================================
 THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
-  TCustomFileSystem(ATerminal)
+  TCustomFileSystem(ATerminal),
+  // FSecureShell(NULL),
+  FCommandSet(NULL),
+  FOutput(NULL),
+  FReturnCode(0),
+  FProcessingCommand(false),
+  FCURLIntf(NULL),
+  FPasswordFailed(false),
+  FActive(false)
 {
   Self = this;
 }
@@ -323,12 +332,12 @@ void THTTPFileSystem::Open()
 
   FLastDataSent = Now();
 
-  FMultineResponse = false;
+  // FMultineResponse = false;
 
   // initialize FZAPI on the first connect only
   if (FCURLIntf == NULL)
   {
-    FCURLIntf = new TCURLImpl(this);
+    FCURLIntf = new CEasyURL();
 
     try
     {
@@ -387,8 +396,8 @@ void THTTPFileSystem::Open()
   do
   {
     FSystem = L"";
-    FFeatures->Clear();
-    FFileSystemInfoValid = false;
+    // FFeatures->Clear();
+    // FFileSystemInfoValid = false;
 
     // TODO: the same for account? it ever used?
 
@@ -436,14 +445,16 @@ void THTTPFileSystem::Open()
       }
     }
 
-    FActive = FCURLIntf->Connect(
-      ::W2MB(HostName.c_str()).c_str(), Data->GetPortNumber(),
-	  ::W2MB(UserName.c_str()).c_str(),
-      ::W2MB(Password.c_str()).c_str(),
-	  ::W2MB(Account.c_str()).c_str(),
-	  false,
-	  ::W2MB(Path.c_str()).c_str(),
-      ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
+    ProxySettings proxySettings; // TODO: init proxySettings
+    FActive = FCURLIntf->Initialize(
+      HostName.c_str(), // Data->GetPortNumber(),
+	  UserName.c_str(),
+      Password.c_str(),
+	  // ::W2MB(Account.c_str()).c_str(),
+      proxySettings);
+	  // false,
+	  // ::W2MB(Path.c_str()).c_str(),
+      // ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
 
     assert(FActive);
 
@@ -2710,5 +2721,1193 @@ void THTTPFileSystem::SCPSink(const std::wstring TargetDir,
       Success = false;
       if (!FTerminal->HandleException(&E)) throw;
     }
+  }
+}
+
+// from FtpFileSystem
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam)
+{
+  if (Type == TFileZillaIntf::MSG_TRANSFERSTATUS)
+  {
+    // Stop here if FileTransferProgress is proceeding,
+    // it makes "pause" in queue work.
+    // Paused queue item stops in some of the TFileOperationProgressType
+    // methods called from FileTransferProgress
+    TGuard Guard(FTransferStatusCriticalSection);
+  }
+
+  TGuard Guard(FQueueCriticalSection);
+
+  FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
+  SetEvent(FQueueEvent);
+
+  return true;
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::ProcessMessage()
+{
+  bool Result;
+  TMessageQueue::value_type Message;
+
+  {
+    TGuard Guard(FQueueCriticalSection);
+
+    Result = !FQueue->empty();
+    if (Result)
+    {
+      Message = FQueue->front();
+      FQueue->pop_front();
+    }
+    else
+    {
+      // now we are perfecly sure that the queue is empty as it is locked,
+      // so reset the event
+      ResetEvent(FQueueEvent);
+    }
+  }
+
+  if (Result)
+  {
+    FFileZillaIntf->HandleMessage(Message.first, Message.second);
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::DiscardMessages()
+{
+  while (ProcessMessage());
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::WaitForMessages()
+{
+  unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  if (Result != WAIT_OBJECT_0)
+  {
+    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
+  }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::PoolForFatalNonCommandReply()
+{
+  assert(FReply == 0);
+  assert(FCommandReply == 0);
+  assert(!FWaitingForReply);
+
+  FWaitingForReply = true;
+
+  unsigned int Reply;
+
+  {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FReply = 0;
+        assert(Self->FCommandReply == 0);
+        Self->FCommandReply = 0;
+        assert(Self->FWaitingForReply);
+        Self->FWaitingForReply = false;
+      } BOOST_SCOPE_EXIT_END
+    // discard up to one reply
+    // (it should not happen here that two replies are posted anyway)
+    while (ProcessMessage() && (FReply == 0));
+    Reply = FReply;
+  }
+
+  if (Reply != 0)
+  {
+    // throws
+    GotNonCommandReply(Reply);
+  }
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::NoFinalLastCode()
+{
+  return (FLastCodeClass == 0) || (FLastCodeClass == 1);
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode)
+{
+  // to keep waiting,
+  // non-command reply must be unset,
+  // the reply we wait for must be unset or
+  // last code must be unset (if we wait for it)
+  return
+     (FReply == 0) &&
+     ((ReplyToAwait == 0) ||
+      (WantLastCode && NoFinalLastCode()));
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode)
+{
+  try
+  {
+    while (KeepWaitingForReply(ReplyToAwait, WantLastCode))
+    {
+      WaitForMessages();
+      // wait for the first reply only,
+      // i.e. in case two replies are posted get the first only.
+      // e.g. when server closes the connection, but posts error message before,
+      // sometime it happens that command (like download) fails because of the error
+      // and does not catch the disconnection. then asynchronous "disconnect reply"
+      // is posted immediately afterwards. leave detection of that to Idle()
+      while (ProcessMessage() && KeepWaitingForReply(ReplyToAwait, WantLastCode));
+    }
+
+    if (FReply != 0)
+    {
+      // throws
+      GotNonCommandReply(FReply);
+    }
+  }
+  catch (...)
+  {
+    // even if non-fatal error happens, we must process pending message,
+    // so that we "eat" the reply message, so that it gets not mistakenly
+    // associated with future connect
+    if (FTerminal->GetActive())
+    {
+      DoWaitForReply(ReplyToAwait, WantLastCode);
+    }
+    throw;
+  }
+}
+//---------------------------------------------------------------------------
+unsigned int THTTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
+{
+  assert(FReply == 0);
+  assert(FCommandReply == 0);
+  assert(!FWaitingForReply);
+  assert(!FTransferStatusCriticalSection->GetAcquired());
+
+  ResetReply();
+  FWaitingForReply = true;
+
+  unsigned int Reply;
+
+  {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->FReply = 0;
+        Self->FCommandReply = 0;
+        assert(Self->FWaitingForReply);
+        Self->FWaitingForReply = false;
+      } BOOST_SCOPE_EXIT_END
+    unsigned int & ReplyToAwait = (Command ? FCommandReply : FReply);
+    DoWaitForReply(ReplyToAwait, WantLastCode);
+
+    Reply = ReplyToAwait;
+  }
+
+  return Reply;
+}
+//---------------------------------------------------------------------------
+unsigned int THTTPFileSystem::WaitForCommandReply(bool WantLastCode)
+{
+  return WaitForReply(true, WantLastCode);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::WaitForFatalNonCommandReply()
+{
+  WaitForReply(false, false);
+  assert(false);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::ResetReply()
+{
+  FLastCode = 0;
+  FLastCodeClass = 0;
+  assert(FLastResponse != NULL);
+  FLastResponse->Clear();
+  assert(FLastError != NULL);
+  FLastError->Clear();
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::GotNonCommandReply(unsigned int Reply)
+{
+  assert(FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
+  GotReply(Reply);
+  // should never get here as GotReply should raise fatal exception
+  assert(false);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
+  std::wstring Error, unsigned int * Code, TStrings ** Response)
+{
+  {
+      BOOST_SCOPE_EXIT ( (&Self) )
+      {
+        Self->ResetReply();
+      } BOOST_SCOPE_EXIT_END
+    if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
+    {
+      assert(Reply == TFileZillaIntf::REPLY_OK);
+
+      // With REPLY_2XX_CODE treat "OK" non-2xx code like an error
+      if (FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2))
+      {
+        GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
+      }
+    }
+    else if (FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
+        FLAGSET(Flags, REPLY_ALLOW_CANCEL))
+    {
+      assert(
+        (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
+        (Reply == (TFileZillaIntf::REPLY_ABORTED | TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)));
+      // noop
+    }
+    // we do not expect these with our usage of FZ
+    else if (Reply &
+          (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
+           TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
+           TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
+           TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
+    {
+      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", int(Reply)).c_str()));
+    }
+    else
+    {
+      // everything else must be an error or disconnect notification
+      assert(
+        FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
+        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
+
+      // TODO: REPLY_CRITICALERROR ignored
+
+      // REPLY_NOTCONNECTED happens if connection is closed between moment
+      // when FZAPI interface method dispatches the command to FZAPI thread
+      // and moment when FZAPI thread receives the command
+      bool Disconnected =
+        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
+        FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
+
+      TStrings * MoreMessages = new TStringList();
+      try
+      {
+        if (Disconnected)
+        {
+          if (FLAGCLEAR(Flags, REPLY_CONNECT))
+          {
+            MoreMessages->Add(LoadStr(LOST_CONNECTION));
+            Discard();
+            FTerminal->Closed();
+          }
+          else
+          {
+            // For connection failure, do not report that connection was lost,
+            // its obvious.
+            // Also do not report to terminal that we are closed as
+            // that turns terminal into closed mode, but we want to
+            // pretend (at least with failed authentication) to retry
+            // with the same connection (as with SSH), so we explicitly
+            // close terminal in Open() only after we give up
+            Discard();
+          }
+        }
+
+        if (FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
+        {
+          MoreMessages->Add(LoadStr(USER_TERMINATED));
+        }
+
+        if (FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
+        {
+          MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
+        }
+
+        if (FLastCode == 530)
+        {
+          MoreMessages->Add(LoadStr(AUTHENTICATION_FAILED));
+        }
+
+        if (FLastCode == 425)
+        {
+          if (!FTerminal->GetSessionData()->GetFtpPasvMode())
+          {
+            MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION));
+          }
+        }
+
+        MoreMessages->AddStrings(FLastError);
+        // already cleared from WaitForReply, but GotReply can be also called
+        // from Closed. then make sure that error from previous command not
+        // associated with session closure is not reused
+        FLastError->Clear();
+
+        MoreMessages->AddStrings(FLastResponse);
+        // see comment for FLastError
+        FLastResponse->Clear();
+
+        if (MoreMessages->GetCount() == 0)
+        {
+          delete MoreMessages;
+          MoreMessages = NULL;
+        }
+      }
+      catch (...)
+      {
+        delete MoreMessages;
+        throw;
+      }
+
+      if (Error.empty() && (MoreMessages != NULL))
+      {
+        assert(MoreMessages->GetCount() > 0);
+        Error = MoreMessages->GetString(0);
+        MoreMessages->Delete(0);
+      }
+
+      if (Disconnected)
+      {
+        // for fatal error, it is essential that there is some message
+        assert(!Error.empty());
+        ExtException *E = new ExtException(Error, MoreMessages, true);
+        {
+            BOOST_SCOPE_EXIT ( (&E) )
+            {
+              delete E;
+            } BOOST_SCOPE_EXIT_END
+          FTerminal->FatalError(E, L"");
+        }
+      }
+      else
+      {
+        throw ExtException(Error, MoreMessages, true);
+      }
+    }
+
+    if ((Code != NULL) && (FLastCodeClass != DummyCodeClass))
+    {
+      *Code = FLastCode;
+    }
+
+    if (Response != NULL)
+    {
+      *Response = FLastResponse;
+      FLastResponse = new TStringList();
+    }
+  }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::SetLastCode(int Code)
+{
+  FLastCode = Code;
+  FLastCodeClass = (Code / 100);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::HandleReplyStatus(std::wstring Response)
+{
+  int Code = 0;
+  // DEBUG_PRINTF(L"Response = %s", Response.c_str());
+
+  if (!FOnCaptureOutput.empty())
+  {
+    FOnCaptureOutput(Response, false);
+  }
+
+  // Two forms of multiline responses were observed
+  // (the first is according to the RFC 959):
+
+  // 211-Features:
+  //  MDTM
+  //  REST STREAM
+  //  SIZE
+  // 211 End
+
+  // 211-Features:
+  // 211-MDTM
+  // 211-REST STREAM
+  // 211-SIZE
+  // 211-AUTH TLS
+  // 211-PBSZ
+  // 211-PROT
+  // 211 End
+
+  bool HasCodePrefix =
+    (Response.size() >= 3) &&
+    TryStrToInt(Response.substr(0, 3), Code) &&
+    (Code >= 100) && (Code <= 599) &&
+    ((Response.size() == 3) || (Response[3] == L' ') || (Response[3] == L'-'));
+
+  // DEBUG_PRINTF(L"Code = %d", Code);
+  if (HasCodePrefix && !FMultineResponse)
+  {
+    FMultineResponse = (Response.size() >= 4) && (Response[3] == L'-');
+    FLastResponse->Clear();
+    if (Response.size() >= 5)
+    {
+      FLastResponse->Add(Response.substr(4, Response.size() - 4));
+    }
+    SetLastCode(Code);
+  }
+  else
+  {
+    int Start = 0;
+    // response with code prefix
+    if (HasCodePrefix && (FLastCode == Code))
+    {
+      // End of multiline response?
+      if ((Response.size() <= 3) || (Response[3] == L' '))
+      {
+        FMultineResponse = false;
+      }
+      Start = 4;
+    }
+    else
+    {
+      Start = (((Response.size() >= 1) && (Response[0] == L' ')) ? 1 : 0);
+    }
+
+    // Intermediate empty lines are being added
+    if (FMultineResponse || (Response.size() >= Start))
+    {
+      FLastResponse->Add(Response.substr(Start, Response.size() - Start + 1));
+    }
+  }
+
+  if (!FMultineResponse)
+  {
+    if (FLastCode == 220)
+    {
+      if (FTerminal->GetConfiguration()->GetShowFtpWelcomeMessage())
+      {
+        FTerminal->DisplayBanner(FLastResponse->GetText());
+      }
+    }
+    else if (FLastCommand == PASS)
+    {
+      // 530 = "Not logged in."
+      if (FLastCode == 530)
+      {
+        FPasswordFailed = true;
+      };
+    }
+    else if (FLastCommand == SYST)
+    {
+      assert(FSystem.empty());
+      // Possitive reply to "SYST" must be 215, see RFC 959
+      if (FLastCode == 215)
+      {
+        FSystem = ::TrimRight(FLastResponse->GetText());
+        // full name is "Personal FTP Server PRO K6.0"
+        if ((FListAll == asAuto) &&
+            (::Pos(FSystem, L"Personal FTP Server") != std::wstring::npos))
+        {
+          FTerminal->LogEvent(L"Server is known not to support LIST -a");
+          FListAll = asOff;
+        }
+      }
+      else
+      {
+        FSystem = L"";
+      }
+    }
+    else if (FLastCommand == FEAT)
+    {
+      // Response to FEAT must be multiline, where leading and trailing line
+      // is "meaningless". See RFC 2389.
+      if ((FLastCode == 211) && (FLastResponse->GetCount() > 2))
+      {
+        FLastResponse->Delete(0);
+        FLastResponse->Delete(FLastResponse->GetCount() - 1);
+        FFeatures->Assign(FLastResponse);
+        // DEBUG_PRINTF(L"FFeatures = %s", FFeatures->GetText().c_str());
+      }
+      else
+      {
+        FFeatures->Clear();
+      }
+    }
+  }
+}
+//---------------------------------------------------------------------------
+std::wstring THTTPFileSystem::ExtractStatusMessage(std::wstring Status)
+{
+  // CApiLog::LogMessage
+  // (note that the formatting may not be present when LogMessageRaw is used)
+  int P1 = ::Pos(Status, L"): ");
+  if (P1 != std::wstring::npos)
+  {
+    int P2 = ::Pos(Status, L".cpp(");
+    if ((P2 != std::wstring::npos) && (P2 < P1))
+    {
+      int P3 = ::Pos(Status, L"   caller=0x");
+      if ((P3 != std::wstring::npos) && (P3 > P1))
+      {
+        Status = Status.substr(P1 + 3, P3 - P1 - 3);
+      }
+    }
+  }
+  return Status;
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
+{
+  TLogLineType LogType = (TLogLineType)-1;
+  std::wstring Status(AStatus);
+  // DEBUG_PRINTF(L"Status = %s", Status.c_str());
+  // DEBUG_PRINTF(L"Type = %d", Type);
+  switch (Type)
+  {
+    case TFileZillaIntf::LOG_STATUS:
+      FTerminal->Information(Status, true);
+      LogType = llMessage;
+      break;
+
+    case TFileZillaIntf::LOG_COMMAND:
+      if (Status == L"SYST")
+      {
+        FLastCommand = SYST;
+      }
+      else if (Status == L"FEAT")
+      {
+        FLastCommand = FEAT;
+      }
+      else if (Status.substr(0, 5) == L"PASS ")
+      {
+        FLastCommand = PASS;
+      }
+      else
+      {
+        FLastCommand = CMD_UNKNOWN;
+      }
+      LogType = llInput;
+      break;
+
+    case TFileZillaIntf::LOG_ERROR:
+    case TFileZillaIntf::LOG_APIERROR:
+    case TFileZillaIntf::LOG_WARNING:
+      // when timeout message occurs, break loop waiting for response code
+      // by setting dummy one
+      if (Type == TFileZillaIntf::LOG_ERROR)
+      {
+        if (Status == FTimeoutStatus)
+        {
+          if (NoFinalLastCode())
+          {
+            SetLastCode(DummyTimeoutCode);
+          }
+        }
+        else if (Status == FDisconnectStatus)
+        {
+          if (NoFinalLastCode())
+          {
+            SetLastCode(DummyDisconnectCode);
+          }
+        }
+      }
+      // there can be multiple error messages associated with single failure
+      // (such as "cannot open local file..." followed by "download failed")
+      Status = ExtractStatusMessage(Status);
+      FLastError->Add(Status);
+      LogType = llMessage;
+      break;
+
+    case TFileZillaIntf::LOG_REPLY:
+      HandleReplyStatus(AStatus);
+      LogType = llOutput;
+      break;
+
+    case TFileZillaIntf::LOG_INFO:
+      Status = ExtractStatusMessage(Status);
+      LogType = llMessage;
+      break;
+
+    default:
+      assert(false);
+      break;
+  }
+
+  if (FTerminal->GetLog()->GetLogging() && (LogType != (TLogLineType)-1))
+  {
+    FTerminal->GetLog()->Add(LogType, Status);
+  }
+
+  return true;
+}
+//---------------------------------------------------------------------------
+TDateTime THTTPFileSystem::ConvertLocalTimestamp(time_t Time)
+{
+  // This reverses how FZAPI converts FILETIME to time_t,
+  // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
+  __int64 Timestamp;
+  tm * Tm = localtime(&Time);
+  if (Tm != NULL)
+  {
+    SYSTEMTIME SystemTime;
+    SystemTime.wYear = static_cast<WORD>(Tm->tm_year + 1900);
+    SystemTime.wMonth = static_cast<WORD>(Tm->tm_mon + 1);
+    SystemTime.wDayOfWeek = 0;
+    SystemTime.wDay = static_cast<WORD>(Tm->tm_mday);
+    SystemTime.wHour = static_cast<WORD>(Tm->tm_hour);
+    SystemTime.wMinute = static_cast<WORD>(Tm->tm_min);
+    SystemTime.wSecond = static_cast<WORD>(Tm->tm_sec);
+    SystemTime.wMilliseconds = 0;
+
+    FILETIME LocalTime;
+    SystemTimeToFileTime(&SystemTime, &LocalTime);
+    FILETIME FileTime;
+    LocalFileTimeToFileTime(&LocalTime, &FileTime);
+    Timestamp = ConvertTimestampToUnixSafe(FileTime, dstmUnix);
+  }
+  else
+  {
+    // incorrect, but at least something
+    Timestamp = Time;
+  }
+
+  return UnixToDateTime(Timestamp, dstmUnix);
+}
+//---------------------------------------------------------------------------
+TDateTime THTTPFileSystem::ConvertRemoteTimestamp(time_t Time, bool HasTime)
+{
+  TDateTime Result;
+  tm * Tm = localtime(&Time);
+  if (Tm != NULL)
+  {
+    // should be the same as HandleListData
+    Result = EncodeDateVerbose(
+      static_cast<unsigned short>(Tm->tm_year + 1900),
+      static_cast<unsigned short>(Tm->tm_mon + 1),
+      static_cast<unsigned short>(Tm->tm_mday));
+    if (HasTime)
+    {
+      Result = Result + EncodeTimeVerbose(
+        static_cast<unsigned short>(Tm->tm_hour),
+        static_cast<unsigned short>(Tm->tm_min),
+        static_cast<unsigned short>(Tm->tm_sec), 0);
+    }
+  }
+  else
+  {
+    // incorrect, but at least something
+    Result = UnixToDateTime(Time, dstmUnix);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleAsynchRequestOverwrite(
+  wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
+  const wchar_t * /*Path1*/, const wchar_t * /*Path2*/,
+  __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
+  bool HasTime1, bool HasTime2, void * AUserData, int & RequestResult)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else
+  {
+    TFileTransferData & UserData = *((TFileTransferData *)AUserData);
+    if (UserData.OverwriteResult >= 0)
+    {
+      // on retry, use the same answer as on the first attempt
+      RequestResult = UserData.OverwriteResult;
+    }
+    else
+    {
+      TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
+      std::wstring FileName = FileName1;
+      assert(UserData.FileName == FileName);
+      TOverwriteMode OverwriteMode = omOverwrite;
+      TOverwriteFileParams FileParams;
+      bool NoFileParams =
+        (Size1 < 0) || (Time1 == 0) ||
+        (Size2 < 0) || (Time2 == 0);
+      if (!NoFileParams)
+      {
+        FileParams.SourceSize = Size2;
+        FileParams.DestSize = Size1;
+
+        if (OperationProgress->Side == osLocal)
+        {
+          FileParams.SourceTimestamp = ConvertLocalTimestamp(Time2);
+          FileParams.DestTimestamp = ConvertRemoteTimestamp(Time1, HasTime1);
+          FileParams.DestPrecision = (HasTime1 ? mfMDHM : mfMDY);
+        }
+        else
+        {
+          FileParams.SourceTimestamp = ConvertRemoteTimestamp(Time2, HasTime2);
+          FileParams.SourcePrecision = (HasTime2 ? mfMDHM : mfMDY);
+          FileParams.DestTimestamp = ConvertLocalTimestamp(Time1);
+        }
+      }
+
+      if (ConfirmOverwrite(FileName, OverwriteMode, OperationProgress,
+            (NoFileParams ? NULL : &FileParams), UserData.Params,
+            UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize)))
+      {
+        switch (OverwriteMode)
+        {
+          case omOverwrite:
+            if (FileName != FileName1)
+            {
+              wcsncpy(FileName1, FileName.c_str(), FileName1Len);
+              FileName1[FileName1Len - 1] = '\0';
+              UserData.FileName = FileName1;
+              RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
+            }
+            else
+            {
+              RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+            }
+            break;
+
+          case omResume:
+            RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
+            break;
+
+          default:
+            assert(false);
+            RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+            break;
+        }
+      }
+      else
+      {
+        RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+      }
+    }
+
+    // remember the answer for the retries
+    UserData.OverwriteResult = RequestResult;
+
+    if (RequestResult == TFileZillaIntf::FILEEXISTS_SKIP)
+    {
+      // when user chosses not to overwrite, break loop waiting for response code
+      // by setting dummy one, az FZAPI won't do anything then
+      SetLastCode(DummyTimeoutCode);
+    }
+
+    return true;
+  }
+}
+//---------------------------------------------------------------------------
+struct TClipboardHandler
+{
+  std::wstring Text;
+
+  void Copy(TObject * /*Sender*/)
+  {
+    CopyToClipboard(Text);
+  }
+};
+//---------------------------------------------------------------------------
+std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
+{
+  if (!Entry1.empty() && !Entry2.empty())
+  {
+    return FORMAT(L"%s, %s", Entry1.c_str(), Entry2.c_str());
+  }
+  else
+  {
+    return Entry1 + Entry2;
+  }
+}
+//---------------------------------------------------------------------------
+std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
+{
+  std::wstring Result =
+    FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
+      FormatContactList(FormatContactList(FormatContactList(
+        ::MB2W(Contact.Organization).c_str(),
+		::MB2W(Contact.Unit).c_str()).c_str(),
+		::MB2W(Contact.CommonName).c_str()).c_str(),
+			::MB2W(Contact.Mail).c_str()).c_str());
+
+  if ((strlen(Contact.Country) > 0) ||
+      (strlen(Contact.StateProvince) > 0) ||
+      (strlen(Contact.Town) > 0))
+  {
+    Result +=
+      FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
+        FormatContactList(FormatContactList(
+          ::MB2W(Contact.Country).c_str(),
+		  ::MB2W(Contact.StateProvince).c_str()).c_str(),
+			::MB2W(Contact.Town).c_str()).c_str());
+  }
+
+  if (strlen(Contact.Other) > 0)
+  {
+    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+std::wstring FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
+{
+  return FormatDateTime(L"ddddd tt",
+    EncodeDateVerbose(
+      (unsigned short)ValidityTime.Year, (unsigned short)ValidityTime.Month,
+      (unsigned short)ValidityTime.Day) +
+    EncodeTimeVerbose(
+      (unsigned short)ValidityTime.Hour, (unsigned short)ValidityTime.Min,
+      (unsigned short)ValidityTime.Sec, 0));
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleAsynchRequestVerifyCertificate(
+  const TFtpsCertificateData & Data, int & RequestResult)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else
+  {
+    FSessionInfo.CertificateFingerprint =
+      StrToHex(std::wstring((const wchar_t*)Data.Hash, Data.HashLen), false, ':');
+
+    int VerificationResultStr;
+    switch (Data.VerificationResult)
+    {
+      case X509_V_OK:
+        VerificationResultStr = CERT_OK;
+        break;
+      case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+        VerificationResultStr = CERT_ERR_UNABLE_TO_GET_ISSUER_CERT;
+        break;
+      case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
+        VerificationResultStr = CERT_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE;
+        break;
+      case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
+        VerificationResultStr = CERT_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY;
+        break;
+      case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+        VerificationResultStr = CERT_ERR_CERT_SIGNATURE_FAILURE;
+        break;
+      case X509_V_ERR_CERT_NOT_YET_VALID:
+        VerificationResultStr = CERT_ERR_CERT_NOT_YET_VALID;
+        break;
+      case X509_V_ERR_CERT_HAS_EXPIRED:
+        VerificationResultStr = CERT_ERR_CERT_HAS_EXPIRED;
+        break;
+      case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+        VerificationResultStr = CERT_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD;
+        break;
+      case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+        VerificationResultStr = CERT_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD;
+        break;
+      case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+        VerificationResultStr = CERT_ERR_DEPTH_ZERO_SELF_SIGNED_CERT;
+        break;
+      case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+        VerificationResultStr = CERT_ERR_SELF_SIGNED_CERT_IN_CHAIN;
+        break;
+      case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+        VerificationResultStr = CERT_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY;
+        break;
+      case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+        VerificationResultStr = CERT_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE;
+        break;
+      case X509_V_ERR_INVALID_CA:
+        VerificationResultStr = CERT_ERR_INVALID_CA;
+        break;
+      case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+        VerificationResultStr = CERT_ERR_PATH_LENGTH_EXCEEDED;
+        break;
+      case X509_V_ERR_INVALID_PURPOSE:
+        VerificationResultStr = CERT_ERR_INVALID_PURPOSE;
+        break;
+      case X509_V_ERR_CERT_UNTRUSTED:
+        VerificationResultStr = CERT_ERR_CERT_UNTRUSTED;
+        break;
+      case X509_V_ERR_CERT_REJECTED:
+        VerificationResultStr = CERT_ERR_CERT_REJECTED;
+        break;
+      case X509_V_ERR_KEYUSAGE_NO_CERTSIGN:
+        VerificationResultStr = CERT_ERR_KEYUSAGE_NO_CERTSIGN;
+        break;
+      case X509_V_ERR_CERT_CHAIN_TOO_LONG:
+        VerificationResultStr = CERT_ERR_CERT_CHAIN_TOO_LONG;
+        break;
+      default:
+        VerificationResultStr = CERT_ERR_UNKNOWN;
+        break;
+    }
+
+    std::wstring Summary = LoadStr(VerificationResultStr);
+    if (Data.VerificationResult != X509_V_OK)
+    {
+      Summary += L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1);
+    }
+
+    FSessionInfo.Certificate =
+      FMTLOAD(CERT_TEXT,
+        FormatContact(Data.Subject).c_str(),
+        FormatContact(Data.Issuer).c_str(),
+        FormatValidityTime(Data.ValidFrom).c_str(),
+        FormatValidityTime(Data.ValidUntil).c_str(),
+        FSessionInfo.CertificateFingerprint.c_str(),
+        Summary.c_str());
+
+    RequestResult = 0;
+
+    THierarchicalStorage * Storage =
+      FTerminal->GetConfiguration()->CreateScpStorage(false);
+    {
+        BOOST_SCOPE_EXIT ( (Storage) )
+        {
+          delete Storage;
+        } BOOST_SCOPE_EXIT_END
+      Storage->SetAccessMode(smRead);
+
+      if (Storage->OpenSubKey(CertificateStorageKey, false) &&
+          Storage->ValueExists(FSessionInfo.CertificateFingerprint))
+      {
+        RequestResult = 1;
+      }
+    }
+
+    if (RequestResult == 0)
+    {
+      std::wstring Buf = FTerminal->GetSessionData()->GetHostKey();
+      while ((RequestResult == 0) && !Buf.empty())
+      {
+        std::wstring ExpectedKey = CutToChar(Buf, ';', false);
+        if (ExpectedKey == FSessionInfo.CertificateFingerprint)
+        {
+          RequestResult = 1;
+        }
+      }
+    }
+
+    if (RequestResult == 0)
+    {
+      TClipboardHandler ClipboardHandler;
+      ClipboardHandler.Text = FSessionInfo.CertificateFingerprint;
+
+      TQueryButtonAlias Aliases[1];
+      Aliases[0].Button = qaRetry;
+      Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
+      Aliases[0].OnClick.connect(boost::bind(&TClipboardHandler::Copy, ClipboardHandler, _1));
+
+      TQueryParams Params;
+      Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
+      Params.NoBatchAnswers = qaYes | qaRetry;
+      Params.Aliases = Aliases;
+      Params.AliasesCount = LENOF(Aliases);
+      int Answer = FTerminal->QueryUser(
+        FMTLOAD(VERIFY_CERT_PROMPT2, FSessionInfo.Certificate.c_str()),
+        NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
+
+      switch (Answer)
+      {
+        case qaYes:
+          // 2 = always, as used by FZ's VerifyCertDlg.cpp,
+          // however FZAPI takes all non-zero values equally
+          RequestResult = 2;
+          break;
+
+        case qaNo:
+          RequestResult = 1;
+          break;
+
+        case qaCancel:
+          RequestResult = 0;
+          break;
+
+        default:
+          assert(false);
+          RequestResult = 0;
+          break;
+      }
+
+      if (RequestResult == 2)
+      {
+        THierarchicalStorage * Storage =
+          FTerminal->GetConfiguration()->CreateScpStorage(false);
+        {
+            BOOST_SCOPE_EXIT ( (Storage) )
+            {
+              delete Storage;
+            } BOOST_SCOPE_EXIT_END
+          Storage->SetAccessMode(smReadWrite);
+
+          if (Storage->OpenSubKey(CertificateStorageKey, true))
+          {
+            Storage->WriteString(FSessionInfo.CertificateFingerprint, L"");
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleListData(const wchar_t * Path,
+  const TListDataEntry * Entries, unsigned int Count)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else if (FIgnoreFileList)
+  {
+    // directory listing provided implicitly by FZAPI during certain operations is ignored
+    assert(FFileList == NULL);
+    return false;
+  }
+  else
+  {
+    assert(FFileList != NULL);
+    // this can actually fail in real life,
+    // when connected to server with case insensitive paths
+    assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
+    USEDPARAM(Path);
+
+    for (unsigned int Index = 0; Index < Count; Index++)
+    {
+      const TListDataEntry * Entry = &Entries[Index];
+      TRemoteFile * File = new TRemoteFile();
+      try
+      {
+        File->SetTerminal(FTerminal);
+
+        File->SetFileName(std::wstring(Entry->Name));
+        if (wcslen(Entry->Permissions) >= 10)
+        {
+          try
+          {
+            File->GetRights()->SetText(Entry->Permissions + 1);
+          }
+          catch (...)
+          {
+            // ignore permissions errors with FTP
+          }
+        }
+		// FIXME
+		std::wstring own = Entry->OwnerGroup;
+        const wchar_t * Space = wcschr(own.c_str(), ' ');
+        if (Space != NULL)
+        {
+          File->GetOwner().SetName(std::wstring(own.c_str(), Space - own.c_str()));
+          File->GetGroup().SetName(Space + 1);
+        }
+        else
+        {
+          File->GetOwner().SetName(Entry->OwnerGroup);
+        }
+
+        File->SetSize(Entry->Size);
+
+        if (Entry->Link)
+        {
+          File->SetType(FILETYPE_SYMLINK);
+        }
+        else if (Entry->Dir)
+        {
+          File->SetType(FILETYPE_DIRECTORY);
+        }
+        else
+        {
+          File->SetType('-');
+        }
+
+        // ModificationFmt must be set after Modification
+        if (Entry->HasDate)
+        {
+          // should be the same as ConvertRemoteTimestamp
+          TDateTime Modification =
+            EncodeDateVerbose((unsigned short)Entry->Year, (unsigned short)Entry->Month,
+              (unsigned short)Entry->Day);
+          if (Entry->HasTime)
+          {
+            File->SetModification(Modification +
+              EncodeTimeVerbose((unsigned short)Entry->Hour, (unsigned short)Entry->Minute, 0, 0));
+            // not exact as we got year as well, but it is most probably
+            // guessed by FZAPI anyway
+            File->SetModificationFmt(mfMDHM);
+          }
+          else
+          {
+            File->SetModification(Modification);
+            File->SetModificationFmt(mfMDY);
+          }
+        }
+        else
+        {
+          // With SCP we estimate date to be today, if we have at least time
+
+          File->SetModification(TDateTime(double(0)));
+          File->SetModificationFmt(mfNone);
+        }
+        File->SetLastAccess(File->GetModification());
+
+        File->SetLinkTo(Entry->LinkTarget);
+
+        File->Complete();
+      }
+      catch (const std::exception & E)
+      {
+        delete File;
+        std::wstring EntryData =
+          FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+            Entry->Name,
+            Entry->Permissions,
+            Entry->OwnerGroup,
+            IntToStr(Entry->Size).c_str(),
+             int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
+             Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
+        throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
+      }
+
+      FFileList->AddFile(File);
+    }
+    return true;
+  }
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
+  __int64 Bytes, int /*Percent*/, int /*TimeElapsed*/, int /*TimeLeft*/, int /*TransferRate*/,
+  bool FileTransfer)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else if (!Valid)
+  {
+  }
+  else if (FileTransfer)
+  {
+    FileTransferProgress(TransferSize, Bytes);
+  }
+  else
+  {
+    ReadDirectoryProgress(Bytes);
+  }
+  return true;
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleReply(int Command, unsigned int Reply)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else
+  {
+    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+    {
+      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", int(Reply), Command));
+    }
+
+    // reply with Command 0 is not associated with current operation
+    // so do not treat is as a reply
+    // (it is typically used asynchronously to notify about disconnects)
+    if (Command != 0)
+    {
+      assert(FCommandReply == 0);
+      FCommandReply = Reply;
+    }
+    else
+    {
+      assert(FReply == 0);
+      FReply = Reply;
+    }
+    return true;
   }
 }
