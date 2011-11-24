@@ -58,7 +58,20 @@ class TCURLIntf
 public:
     virtual ~TCURLIntf()
     {}
+    virtual void Init() = 0;
 
+  enum TLogLevel
+  {
+    LOG_STATUS = 0,
+    LOG_ERROR = 1,
+    LOG_COMMAND = 2,
+    LOG_REPLY = 3,
+    LOG_LIST = 4,
+    LOG_APIERROR = 5,
+    LOG_WARNING = 6,
+    LOG_INFO = 7,
+    LOG_DEBUG = 8
+  };
     /**
      * Initialize easy curl
      * \param url URL to connect
@@ -139,6 +152,8 @@ public:
     virtual const char *GetTopURL() const = 0;
     // virtual operator CURL *() = 0;
     virtual bool Aborted() const = 0;
+
+    virtual void SetDebugLevel(TLogLevel Level) = 0;
 };
 
 /**
@@ -148,6 +163,7 @@ class CEasyURL : public TCURLIntf
 {
 public:
     explicit CEasyURL();
+    virtual void Init();
     virtual ~CEasyURL();
 
     /**
@@ -242,6 +258,8 @@ public:
         return m_Progress.Aborted;
     }
 
+    virtual void SetDebugLevel(TLogLevel Level) { FDebugLevel = Level; }
+
 private:
     int DebugOutput(const char *data, size_t size);
 
@@ -313,5 +331,6 @@ private:
     HANDLE m_regex;
     RegExpMatch *m_match;
     int m_brackets;
+    TLogLevel FDebugLevel;
 };
 

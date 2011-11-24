@@ -27,7 +27,12 @@ CEasyURL::CEasyURL() :
     m_Prepared(false),
     m_regex(INVALID_HANDLE_VALUE),
     m_match(NULL),
-    m_brackets(0)
+    m_brackets(0),
+    FDebugLevel(LOG_STATUS)
+{
+}
+
+void CEasyURL::Init()
 {
     m_Input.AbortEvent = m_Output.AbortEvent = m_Progress.AbortEvent = NULL;
     m_Input.Type = InputReader::None;
@@ -47,7 +52,6 @@ CEasyURL::CEasyURL() :
         }
     }
 }
-
 
 CEasyURL::~CEasyURL()
 {

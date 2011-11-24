@@ -43,6 +43,7 @@ PProtocol CSessionWebDAV::CreateClientInstance() const
 CWebDAV::CWebDAV(const CSession *session)
     : CProtocolBase(session)
 {
+    m_CURL.Init();
 }
 
 
