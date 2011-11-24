@@ -163,6 +163,10 @@ protected:
 
   virtual std::wstring GetCurrentDirectory();
 
+protected:
+  const wchar_t * GetOption(int OptionID) const;
+  int GetOptionVal(int OptionID) const;
+
 private:
   enum TCommand
   {

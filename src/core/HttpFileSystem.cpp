@@ -489,7 +489,14 @@ void THTTPFileSystem::Open()
       }
     }
 
-    ProxySettings proxySettings; // TODO: init proxySettings
+    ProxySettings proxySettings;
+    // init proxySettings
+    proxySettings.proxyType = static_cast<int>(session->GetPropertyNumeric(ParamProxyType, m_Settings.ProxyType()));
+    proxySettings.proxyHost = session->GetProperty(ParamProxyHost, m_Settings.ProxyHost().c_str());
+    proxySettings.proxyPort = static_cast<int>(session->GetPropertyNumeric(ParamProxyPort, m_Settings.ProxyPort()));
+    proxySettings.proxyLogin = session->GetProperty(ParamProxyLogin, m_Settings.ProxyLogin().c_str());
+    proxySettings.proxyPassword = session->GetProperty(ParamProxyPassword, m_Settings.ProxyPassword().c_str());
+
     FActive = FCURLIntf->Initialize(
       HostName.c_str(), // Data->GetPortNumber(),
 	  UserName.c_str(),
@@ -2900,6 +2907,160 @@ void THTTPFileSystem::SCPSink(const std::wstring TargetDir,
 }
 
 // from FtpFileSystem
+//---------------------------------------------------------------------------
+const wchar_t * THTTPFileSystem::GetOption(int OptionID) const
+{
+  TSessionData * Data = FTerminal->GetSessionData();
+
+  switch (OptionID)
+  {
+    case OPTION_PROXYHOST:
+    case OPTION_FWHOST:
+      FOptionScratch = Data->GetProxyHost();
+      break;
+
+    case OPTION_PROXYUSER:
+    case OPTION_FWUSER:
+      FOptionScratch = Data->GetProxyUsername();
+      break;
+
+    case OPTION_PROXYPASS:
+    case OPTION_FWPASS:
+      FOptionScratch = Data->GetProxyPassword();
+      break;
+
+    case OPTION_ANONPWD:
+    case OPTION_TRANSFERIP:
+    case OPTION_TRANSFERIP6:
+      FOptionScratch = L"";
+      break;
+
+    default:
+      assert(false);
+      FOptionScratch = L"";
+  }
+
+  return FOptionScratch.c_str();
+}
+//---------------------------------------------------------------------------
+int THTTPFileSystem::GetOptionVal(int OptionID) const
+{
+  TSessionData * Data = FTerminal->GetSessionData();
+  int Result;
+
+  switch (OptionID)
+  {
+    case OPTION_PROXYTYPE:
+      switch (Data->GetProxyMethod())
+      {
+        case pmNone:
+          Result = 0; // PROXYTYPE_NOPROXY;
+          break;
+
+        case pmSocks4:
+          Result = 2; // PROXYTYPE_SOCKS4A
+          break;
+
+        case pmSocks5:
+          Result = 3; // PROXYTYPE_SOCKS5
+          break;
+
+        case pmHTTP:
+          Result = 4; // PROXYTYPE_HTTP11
+          break;
+
+        case pmTelnet:
+        case pmCmd:
+        default:
+          assert(false);
+          Result = 0; // PROXYTYPE_NOPROXY;
+          break;
+      }
+      break;
+
+    case OPTION_PROXYPORT:
+    case OPTION_FWPORT:
+      Result = Data->GetProxyPort();
+      break;
+
+    case OPTION_PROXYUSELOGON:
+      Result = !Data->GetProxyUsername().empty();
+      break;
+
+    case OPTION_LOGONTYPE:
+      Result = Data->GetFtpProxyLogonType();
+      break;
+
+    case OPTION_TIMEOUTLENGTH:
+      Result = Data->GetTimeout();
+      break;
+
+    case OPTION_DEBUGSHOWLISTING:
+      // Listing is logged on FZAPI level 5 (what is strangely LOG_APIERROR)
+      Result = (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1);
+      break;
+
+    case OPTION_PASV:
+      // should never get here t_server.nPasv being nonzero
+      assert(false);
+      Result = FALSE;
+      break;
+
+    case OPTION_PRESERVEDOWNLOADFILETIME:
+    case OPTION_MPEXT_PRESERVEUPLOADFILETIME:
+      Result = FFileTransferPreserveTime ? TRUE : FALSE;
+      break;
+
+    case OPTION_LIMITPORTRANGE:
+      Result = FALSE;
+      break;
+
+    case OPTION_PORTRANGELOW:
+    case OPTION_PORTRANGEHIGH:
+      // should never get here OPTION_LIMITPORTRANGE being zero
+      assert(false);
+      Result = 0;
+      break;
+
+    case OPTION_ENABLE_IPV6:
+      Result = ((Data->GetAddressFamily() == afIPv6) ? TRUE : FALSE);
+      break;
+
+    case OPTION_KEEPALIVE:
+      Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
+      break;
+
+    case OPTION_INTERVALLOW:
+    case OPTION_INTERVALHIGH:
+      Result = Data->GetFtpPingInterval();
+      break;
+
+    case OPTION_VMSALLREVISIONS:
+      Result = FALSE;
+      break;
+
+    case OPTION_SPEEDLIMIT_DOWNLOAD_TYPE:
+    case OPTION_SPEEDLIMIT_UPLOAD_TYPE:
+      Result = (FFileTransferCPSLimit == 0 ? 0 : 1);
+      break;
+
+    case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
+    case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
+      Result = (FFileTransferCPSLimit / 1024); // FZAPI expects KiB/s
+      break;
+
+    case OPTION_MPEXT_SHOWHIDDEN:
+      Result = (FDoListAll ? TRUE : FALSE);
+      break;
+
+    default:
+      assert(false);
+      Result = FALSE;
+      break;
+  }
+
+  return Result;
+}
 //---------------------------------------------------------------------------
 bool THTTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam)
 {
