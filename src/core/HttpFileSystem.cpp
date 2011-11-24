@@ -303,6 +303,8 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(ATerminal),
   // FSecureShell(NULL),
   FCommandSet(NULL),
+  FFileList(NULL),
+  FFileListCache(NULL),
   FOutput(NULL),
   FReturnCode(0),
   FProcessingCommand(false),
@@ -310,6 +312,7 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FPasswordFailed(false),
   FActive(false),
   FWaitingForReply(false),
+  FIgnoreFileList(false),
   FReply(0),
   FCommandReply(0),
   FMultineResponse(false),
@@ -3543,6 +3546,7 @@ std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
   }
 }
 //---------------------------------------------------------------------------
+/*
 std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   std::wstring Result =
@@ -3583,6 +3587,7 @@ std::wstring FormatValidityTime(const TFtpsCertificateData::TValidityTime & Vali
       (unsigned short)ValidityTime.Hour, (unsigned short)ValidityTime.Min,
       (unsigned short)ValidityTime.Sec, 0));
 }
+*/
 //---------------------------------------------------------------------------
 /*
 bool THTTPFileSystem::HandleAsynchRequestVerifyCertificate(

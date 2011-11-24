@@ -177,6 +177,8 @@ private:
   TFileSystemInfo FFileSystemInfo;
   std::wstring FCurrentDirectory;
   std::wstring FHomeDirectory;
+  TRemoteFileList * FFileList;
+  TRemoteFileList * FFileListCache;
   TStrings * FOutput;
   int FReturnCode;
   std::wstring FCachedDirectoryChange;
@@ -191,6 +193,7 @@ private:
   std::wstring FSystem;
   bool FActive;
   bool FWaitingForReply;
+  bool FIgnoreFileList;
   unsigned int FReply;
   unsigned int FCommandReply;
   TCommand FLastCommand;
