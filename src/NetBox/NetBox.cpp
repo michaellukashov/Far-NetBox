@@ -68,9 +68,8 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-#ifndef WINSCP
     CFarPlugin::Initialize(psi);
-
+#ifndef WINSCP
     m_Settings.Load();
     CLogger::Initialize(m_Settings.EnableLogging(), m_Settings.LoggingLevel(),
         m_Settings.LogToFile(), m_Settings.LogFileName());
