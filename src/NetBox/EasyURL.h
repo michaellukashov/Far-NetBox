@@ -53,15 +53,11 @@ private:
     curl_slist *m_SList;
 };
 
-
-/**
- * CURL easy wrapper
- */
-class CEasyURL
+class TCURLIntf
 {
 public:
-    explicit CEasyURL();
-    ~CEasyURL();
+    virtual ~TCURLIntf()
+    {}
 
     /**
      * Initialize easy curl
@@ -70,13 +66,13 @@ public:
      * \param password password
      * \return false if error
      */
-    bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
-        const struct ProxySettings &proxySettings);
+    virtual bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
+        const struct ProxySettings &proxySettings) = 0;
 
     /**
      * Close curl
      */
-    void Close();
+    virtual void Close() = 0;
 
     /**
      * Prepare easy curl state
@@ -84,14 +80,14 @@ public:
      * \param handleTimeout true to handle timeout
      * \return curl status
      */
-    CURLcode Prepare(const char *path, const bool handleTimeout = true);
+    virtual CURLcode Prepare(const char *path, const bool handleTimeout = true) = 0;
 
     /**
      * Set slist
      * \param slist slist object
      * \return curl status
      */
-    CURLcode SetSlist(CSlistURL &slist);
+    virtual CURLcode SetSlist(CSlistURL &slist) = 0;
 
     /**
      * Set output as std::string buffer
@@ -99,7 +95,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetOutput(std::string &out, int *progress);
+    virtual CURLcode SetOutput(std::string &out, int *progress) = 0;
 
     /**
      * Set output as file
@@ -107,7 +103,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetOutput(CNBFile *out, int *progress);
+    virtual CURLcode SetOutput(CNBFile *out, int *progress) = 0;
 
     /**
      * Set input as file (upload operations)
@@ -115,32 +111,123 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetInput(CNBFile *in, int *progress);
+    virtual CURLcode SetInput(CNBFile *in, int *progress) = 0;
 
     /**
      * Set abort event handle
      * \param event abort event handle
      */
-    void SetAbortEvent(HANDLE event);
+    virtual void SetAbortEvent(HANDLE event) = 0;
 
     /**
      * Perform request
      * \return curl status
      */
-    CURLcode Perform();
+    virtual CURLcode Perform() = 0;
 
     /**
      * Execute FTP command
      * \param cmd command std::string
      * \return curl status
      */
-    CURLcode ExecuteFtpCommand(const char *cmd);
+    virtual CURLcode ExecuteFtpCommand(const char *cmd) = 0;
 
     /**
      * Get top URL
      * \return top URL
      */
-    inline const char *GetTopURL() const
+    virtual const char *GetTopURL() const = 0;
+    // virtual operator CURL *() = 0;
+    virtual bool Aborted() const = 0;
+};
+
+/**
+ * CURL easy wrapper
+ */
+class CEasyURL : public TCURLIntf
+{
+public:
+    explicit CEasyURL();
+    virtual ~CEasyURL();
+
+    /**
+     * Initialize easy curl
+     * \param url URL to connect
+     * \param userName user name
+     * \param password password
+     * \return false if error
+     */
+    virtual bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
+        const struct ProxySettings &proxySettings);
+
+    /**
+     * Close curl
+     */
+    virtual void Close();
+
+    /**
+     * Prepare easy curl state
+     * \param path reauested path
+     * \param handleTimeout true to handle timeout
+     * \return curl status
+     */
+    virtual CURLcode Prepare(const char *path, const bool handleTimeout = true);
+
+    /**
+     * Set slist
+     * \param slist slist object
+     * \return curl status
+     */
+    virtual CURLcode SetSlist(CSlistURL &slist);
+
+    /**
+     * Set output as std::string buffer
+     * \param out output std::string buffer
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    virtual CURLcode SetOutput(std::string &out, int *progress);
+
+    /**
+     * Set output as file
+     * \param out output file
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    virtual CURLcode SetOutput(CNBFile *out, int *progress);
+
+    /**
+     * Set input as file (upload operations)
+     * \param in input file
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    virtual CURLcode SetInput(CNBFile *in, int *progress);
+
+    /**
+     * Set abort event handle
+     * \param event abort event handle
+     */
+    virtual void SetAbortEvent(HANDLE event);
+
+    /**
+     * Perform request
+     * \return curl status
+     */
+    virtual CURLcode Perform();
+
+    /**
+     * Execute FTP command
+     * \param cmd command std::string
+     * \return curl status
+     */
+    virtual CURLcode ExecuteFtpCommand(const char *cmd);
+
+    /**
+     * Get top URL
+     * \return top URL
+     */
+    virtual const char *GetTopURL() const
     {
         return m_TopURL.c_str();
     }
@@ -150,7 +237,7 @@ public:
         return m_CURL;
     }
 
-    bool Aborted() const
+    virtual bool Aborted() const
     {
         return m_Progress.Aborted;
     }
