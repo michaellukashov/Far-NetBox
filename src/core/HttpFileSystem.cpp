@@ -14,6 +14,7 @@
 #include "TextsCore.h"
 #include "SecureShell.h"
 #include "EasyURL.h"
+#include "FileZillaIntf.h"
 
 #include <stdio.h>
 //---------------------------------------------------------------------------
@@ -312,7 +313,13 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FPasswordFailed(false),
   FActive(false),
   FWaitingForReply(false),
+  FFileTransferAbort(ftaNone),
   FIgnoreFileList(false),
+  FFileTransferCancelled(false),
+  FFileTransferResumed(0),
+  FFileTransferPreserveTime(false),
+  FFileTransferCPSLimit(0),
+  FAwaitingProgress(false),
   FReply(0),
   FCommandReply(0),
   FMultineResponse(false),
@@ -679,6 +686,19 @@ std::wstring THTTPFileSystem::DelimitStr(std::wstring Str)
   return Str;
 }
 //---------------------------------------------------------------------------
+std::wstring THTTPFileSystem::ActualCurrentDirectory()
+{
+  char CurrentPath[1024];
+  // FFileZillaIntf->GetCurrentPath(CurrentPath, sizeof(CurrentPath));
+  std::wstring fn = UnixExcludeTrailingBackslash(std::wstring(::MB2W(CurrentPath)));
+    if (fn.empty())
+    {
+        fn = L"/";
+    }
+  return fn;
+}
+
+//---------------------------------------------------------------------------
 void THTTPFileSystem::EnsureLocation()
 {
   if (!FCachedDirectoryChange.empty())
@@ -706,6 +726,18 @@ void THTTPFileSystem::EnsureLocation()
     }
   }
 }
+
+void THTTPFileSystem::Discard()
+{
+  // remove all pending messages, to get complete log
+  // note that we need to retry discard on reconnect, as there still may be another
+  // "disconnect/timeout/..." status messages coming
+  DiscardMessages();
+  assert(FActive);
+  FActive = false;
+}
+//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 void THTTPFileSystem::SendCommand(const std::wstring Cmd)
 {
@@ -1415,6 +1447,112 @@ void THTTPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
 {
   assert(false);
 }
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::ConfirmOverwrite(std::wstring & FileName,
+  TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
+  const TOverwriteFileParams * FileParams, int Params, bool AutoResume)
+{
+  bool Result;
+  bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
+  // when resuming transfer after interrupted connection,
+  // do nothing (dummy resume) when the files has the same size.
+  // this is workaround for servers that strangely fails just after successful
+  // upload.
+  bool CanResume =
+    (FileParams != NULL) &&
+    (((FileParams->DestSize < FileParams->SourceSize)) ||
+     ((FileParams->DestSize == FileParams->SourceSize) && CanAutoResume));
+
+  int Answer;
+  if (CanAutoResume && CanResume)
+  {
+    Answer = qaRetry;
+  }
+  else
+  {
+    // retry = "resume"
+    // all = "yes to newer"
+    // ignore = "rename"
+    int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    if (CanResume)
+    {
+      Answers |= qaRetry;
+    }
+    TQueryButtonAlias Aliases[3];
+    Aliases[0].Button = qaRetry;
+    Aliases[0].Alias = LoadStr(RESUME_BUTTON);
+    Aliases[1].Button = qaAll;
+    Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
+    Aliases[2].Button = qaIgnore;
+    Aliases[2].Alias = LoadStr(RENAME_BUTTON);
+    TQueryParams QueryParams(qpNeverAskAgainCheck);
+    QueryParams.Aliases = Aliases;
+    QueryParams.AliasesCount = LENOF(Aliases);
+    SUSPEND_OPERATION
+    (
+      Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
+        Answers, &QueryParams,
+        OperationProgress->Side == osLocal ? osRemote : osLocal,
+        Params, OperationProgress);
+    )
+  }
+
+  Result = true;
+
+  switch (Answer)
+  {
+    // resume
+    case qaRetry:
+      OverwriteMode = omResume;
+      assert(FileParams != NULL);
+      assert(CanResume);
+      FFileTransferResumed = FileParams->DestSize;
+      break;
+
+    // rename
+    case qaIgnore:
+      if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
+            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, FileName))
+      {
+        OverwriteMode = omOverwrite;
+      }
+      else
+      {
+        if (!OperationProgress->Cancel)
+        {
+          OperationProgress->Cancel = csCancel;
+        }
+        FFileTransferAbort = ftaCancel;
+        Result = false;
+      }
+      break;
+
+    case qaYes:
+      OverwriteMode = omOverwrite;
+      break;
+
+    case qaCancel:
+      if (!OperationProgress->Cancel)
+      {
+        OperationProgress->Cancel = csCancel;
+      }
+      FFileTransferAbort = ftaCancel;
+      Result = false;
+      break;
+
+    case qaNo:
+      FFileTransferAbort = ftaSkip;
+      Result = false;
+      break;
+
+    default:
+      assert(false);
+      Result = false;
+      break;
+  }
+  return Result;
+}
+
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CustomCommandOnFile(const std::wstring FileName,
     const TRemoteFile * File, std::wstring Command, int Params,
@@ -3533,6 +3671,7 @@ struct TClipboardHandler
     CopyToClipboard(Text);
   }
 };
+/*
 //---------------------------------------------------------------------------
 std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
 {
@@ -3546,7 +3685,6 @@ std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
   }
 }
 //---------------------------------------------------------------------------
-/*
 std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   std::wstring Result =
@@ -3953,5 +4091,110 @@ bool THTTPFileSystem::HandleReply(int Command, unsigned int Reply)
       FReply = Reply;
     }
     return true;
+  }
+}
+
+//---------------------------------------------------------------------------
+void THTTPFileSystem::ResetFileTransfer()
+{
+  FFileTransferAbort = ftaNone;
+  FFileTransferCancelled = false;
+  FFileTransferResumed = 0;
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
+{
+  // with FTP we do not know exactly how many entries we have received,
+  // instead we know number of bytes received only.
+  // so we report approximation based on average size of entry.
+  int Progress = int(Bytes / 80);
+  if (Progress - FLastReadDirectoryProgress >= 10)
+  {
+    bool Cancel = false;
+    FLastReadDirectoryProgress = Progress;
+    FTerminal->DoReadDirectoryProgress(Progress, Cancel);
+    if (Cancel)
+    {
+      FTerminal->DoReadDirectoryProgress(-2, Cancel);
+      FFileZillaIntf->Cancel();
+    }
+  }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
+  __int64 Bytes)
+{
+  TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
+
+  OperationProgress->SetTransferSize(TransferSize);
+
+  if (FFileTransferResumed > 0)
+  {
+    OperationProgress->AddResumed(FFileTransferResumed);
+    FFileTransferResumed = 0;
+  }
+
+  __int64 Diff = Bytes - OperationProgress->TransferedSize;
+  assert(Diff >= 0);
+  if (Diff >= 0)
+  {
+    OperationProgress->AddTransfered(Diff);
+  }
+
+  if (OperationProgress->Cancel == csCancel)
+  {
+    FFileTransferCancelled = true;
+    FFileTransferAbort = ftaCancel;
+    FFileZillaIntf->Cancel();
+  }
+
+  if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
+  {
+    FFileTransferCPSLimit = OperationProgress->CPSLimit;
+  }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::FileTransferProgress(__int64 TransferSize,
+  __int64 Bytes)
+{
+  TGuard Guard(FTransferStatusCriticalSection);
+
+  DoFileTransferProgress(TransferSize, Bytes);
+}
+
+//---------------------------------------------------------------------------
+void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
+  const std::wstring & LocalFile, const std::wstring & RemoteFile,
+  const std::wstring & RemotePath, bool Get, __int64 Size, int Type,
+  TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
+{
+  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
+    FFileZillaIntf->FileTransfer(
+	  ::W2MB(LocalFile.c_str()).c_str(),
+	  ::W2MB(RemoteFile.c_str()).c_str(),
+      ::W2MB(RemotePath.c_str()).c_str(),
+	  Get, Size, Type, &UserData);
+    // we may actually catch reponse code of the listing
+    // command (when checking for existence of the remote file)
+    unsigned int Reply = WaitForCommandReply();
+    GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
+  );
+
+  switch (FFileTransferAbort)
+  {
+    case ftaSkip:
+      THROW_SKIP_FILE_NULL;
+
+    case ftaCancel:
+      Abort();
+      break;
+  }
+
+  if (!FFileTransferCancelled)
+  {
+    // show completion of transfer
+    // call non-guarded variant to avoid deadlock with keepalives
+    // (we are not waiting for reply anymore so keepalives are free to proceed)
+    DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
   }
 }

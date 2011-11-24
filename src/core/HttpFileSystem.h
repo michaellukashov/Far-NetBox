@@ -193,7 +193,13 @@ private:
   std::wstring FSystem;
   bool FActive;
   bool FWaitingForReply;
+  enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
   bool FIgnoreFileList;
+  bool FFileTransferCancelled;
+  __int64 FFileTransferResumed;
+  bool FFileTransferPreserveTime;
+  unsigned long FFileTransferCPSLimit;
+  bool FAwaitingProgress;
   unsigned int FReply;
   unsigned int FCommandReply;
   TCommand FLastCommand;
