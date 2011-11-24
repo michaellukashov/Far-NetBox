@@ -192,7 +192,6 @@ private:
   void DetectReturnVar();
   bool IsLastLine(std::wstring & Line);
   static bool IsTotalListingLine(const std::wstring Line);
-  void EnsureLocation();
   void ExecCommand(const std::wstring & Cmd, int Params,
     const std::wstring & CmdString);
   void ExecCommand(TFSCommand Cmd, int Params = -1, ...);

@@ -2728,28 +2728,28 @@ void THTTPFileSystem::SCPSink(const std::wstring TargetDir,
 //---------------------------------------------------------------------------
 bool THTTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam)
 {
-  if (Type == TFileZillaIntf::MSG_TRANSFERSTATUS)
+  if (0) // if (Type == TFileZillaIntf::MSG_TRANSFERSTATUS)
   {
     // Stop here if FileTransferProgress is proceeding,
     // it makes "pause" in queue work.
     // Paused queue item stops in some of the TFileOperationProgressType
     // methods called from FileTransferProgress
-    TGuard Guard(FTransferStatusCriticalSection);
+    // TGuard Guard(FTransferStatusCriticalSection);
   }
 
-  TGuard Guard(FQueueCriticalSection);
+  // TGuard Guard(FQueueCriticalSection);
 
-  FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
-  SetEvent(FQueueEvent);
+  // FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
+  // SetEvent(FQueueEvent);
 
   return true;
 }
 //---------------------------------------------------------------------------
 bool THTTPFileSystem::ProcessMessage()
 {
-  bool Result;
-  TMessageQueue::value_type Message;
-
+  bool Result = false;
+  // TMessageQueue::value_type Message;
+  /*
   {
     TGuard Guard(FQueueCriticalSection);
 
@@ -2771,6 +2771,7 @@ bool THTTPFileSystem::ProcessMessage()
   {
     FFileZillaIntf->HandleMessage(Message.first, Message.second);
   }
+  */
 
   return Result;
 }
@@ -2785,7 +2786,7 @@ void THTTPFileSystem::WaitForMessages()
   unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
   if (Result != WAIT_OBJECT_0)
   {
-    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#1", IntToStr(Result).c_str()));
+    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#1", IntToStr(Result).c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2925,7 +2926,7 @@ void THTTPFileSystem::ResetReply()
 //---------------------------------------------------------------------------
 void THTTPFileSystem::GotNonCommandReply(unsigned int Reply)
 {
-  assert(FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
+  // assert(FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
   GotReply(Reply);
   // should never get here as GotReply should raise fatal exception
   assert(false);
@@ -2939,48 +2940,48 @@ void THTTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
       {
         Self->ResetReply();
       } BOOST_SCOPE_EXIT_END
-    if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
+    if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
     {
-      assert(Reply == TFileZillaIntf::REPLY_OK);
+      // assert(Reply == TFileZillaIntf::REPLY_OK);
 
       // With REPLY_2XX_CODE treat "OK" non-2xx code like an error
       if (FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2))
       {
-        GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
+        // GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
       }
     }
-    else if (FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
-        FLAGSET(Flags, REPLY_ALLOW_CANCEL))
+    else if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
+        // FLAGSET(Flags, REPLY_ALLOW_CANCEL))
     {
-      assert(
-        (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
-        (Reply == (TFileZillaIntf::REPLY_ABORTED | TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)));
+      // assert(
+        // (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
+        // (Reply == (TFileZillaIntf::REPLY_ABORTED | TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)));
       // noop
     }
     // we do not expect these with our usage of FZ
-    else if (Reply &
-          (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
-           TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
-           TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
-           TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
+    else if (0) // Reply &
+          // (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
+           // TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
+           // TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
+           // TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", int(Reply)).c_str()));
+      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#2", FORMAT(L"0x%x", int(Reply)).c_str()));
     }
     else
     {
       // everything else must be an error or disconnect notification
-      assert(
-        FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
-        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
+      // assert(
+        // FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
+        // FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
 
       // TODO: REPLY_CRITICALERROR ignored
 
       // REPLY_NOTCONNECTED happens if connection is closed between moment
       // when FZAPI interface method dispatches the command to FZAPI thread
       // and moment when FZAPI thread receives the command
-      bool Disconnected =
-        FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
-        FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
+      // bool Disconnected =
+        // FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
+        // FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
       TStrings * MoreMessages = new TStringList();
       try
@@ -3006,12 +3007,12 @@ void THTTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
           }
         }
 
-        if (FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
+        if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
         {
           MoreMessages->Add(LoadStr(USER_TERMINATED));
         }
 
-        if (FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
+        if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
         {
           MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
         }
@@ -3248,6 +3249,7 @@ bool THTTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
   std::wstring Status(AStatus);
   // DEBUG_PRINTF(L"Status = %s", Status.c_str());
   // DEBUG_PRINTF(L"Type = %d", Type);
+  /*
   switch (Type)
   {
     case TFileZillaIntf::LOG_STATUS:
@@ -3318,6 +3320,7 @@ bool THTTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
       assert(false);
       break;
   }
+  */
 
   if (FTerminal->GetLog()->GetLogging() && (LogType != (TLogLineType)-1))
   {
@@ -3446,34 +3449,34 @@ bool THTTPFileSystem::HandleAsynchRequestOverwrite(
               wcsncpy(FileName1, FileName.c_str(), FileName1Len);
               FileName1[FileName1Len - 1] = '\0';
               UserData.FileName = FileName1;
-              RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
+              // RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
             }
             else
             {
-              RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+              // RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
             }
             break;
 
           case omResume:
-            RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
+            // RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
             break;
 
           default:
             assert(false);
-            RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+            // RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
             break;
         }
       }
       else
       {
-        RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+        // RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
       }
     }
 
     // remember the answer for the retries
     UserData.OverwriteResult = RequestResult;
 
-    if (RequestResult == TFileZillaIntf::FILEEXISTS_SKIP)
+    if (0) // RequestResult == TFileZillaIntf::FILEEXISTS_SKIP)
     {
       // when user chosses not to overwrite, break loop waiting for response code
       // by setting dummy one, az FZAPI won't do anything then
