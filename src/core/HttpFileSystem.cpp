@@ -306,7 +306,9 @@ THTTPFileSystem::~THTTPFileSystem()
 //---------------------------------------------------------------------------
 void THTTPFileSystem::Open()
 {
+  DEBUG_PRINTF(L"begin");
   // FSecureShell->Open();
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::Close()
@@ -651,7 +653,7 @@ void THTTPFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
         ::Busy(false);
       }
     } BOOST_SCOPE_EXIT_END
-    // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
+    DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
     SendCommand(Cmd);
 
     int COParams = coWaitForLastLine;
