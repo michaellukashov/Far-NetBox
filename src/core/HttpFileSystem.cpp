@@ -110,6 +110,7 @@ THTTPCommandSet::THTTPCommandSet(TSessionData *aSessionData):
   FSessionData(aSessionData), FReturnVar(L"")
 {
   assert(FSessionData);
+  memset(&CommandSet, 0, sizeof(CommandSet));
   Default();
 }
 //---------------------------------------------------------------------------
@@ -308,6 +309,171 @@ void THTTPFileSystem::Open()
 {
   DEBUG_PRINTF(L"begin");
   // FSecureShell->Open();
+  // DiscardMessages();
+
+  // ResetCaches();
+  FCurrentDirectory = L"";
+  FHomeDirectory = L"";
+
+  TSessionData *Data = FTerminal->GetSessionData();
+
+  FSessionInfo.LoginTime = Now();
+  FSessionInfo.ProtocolBaseName = L"HTTP";
+  FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
+
+  FLastDataSent = Now();
+
+  FMultineResponse = false;
+
+  // initialize FZAPI on the first connect only
+  if (FCURLIntf == NULL)
+  {
+    FCURLIntf = new TCURLImpl(this);
+
+    try
+    {
+      TCURLIntf::TLogLevel LogLevel;
+      switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
+      {
+        default:
+        case 0:
+        case 1:
+          LogLevel = TCURLIntf::LOG_WARNING;
+          break;
+
+        case 2:
+          LogLevel = TCURLIntf::LOG_INFO;
+          break;
+      }
+      FCURLIntf->SetDebugLevel(LogLevel);
+
+      FCURLIntf->Init();
+    }
+    catch (...)
+    {
+      delete FCURLIntf;
+      FCURLIntf = NULL;
+      throw;
+    }
+  }
+
+  std::wstring HostName = Data->GetHostName();
+  std::wstring UserName = Data->GetUserName();
+  std::wstring Password = Data->GetPassword();
+  std::wstring Account = Data->GetFtpAccount();
+  std::wstring Path = Data->GetRemoteDirectory();
+  int ServerType = 0;
+  // int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
+  // int TimeZoneOffset = int(Round(double(Data->GetTimeDifference()) * 24 * 60));
+  int UTF8 = 0;
+  switch (Data->GetNotUtf())
+  {
+    case asOn:
+      UTF8 = 2;
+      break;
+
+    case asOff:
+      UTF8 = 1;
+      break;
+
+    case asAuto:
+      UTF8 = 0;
+      break;
+  };
+
+  FPasswordFailed = false;
+  bool PromptedForCredentials = false;
+
+  do
+  {
+    FSystem = L"";
+    FFeatures->Clear();
+    FFileSystemInfoValid = false;
+
+    // TODO: the same for account? it ever used?
+
+    // ask for username if it was not specified in advance, even on retry,
+    // but keep previous one as default,
+    if (Data->GetUserName().empty())
+    {
+      FTerminal->LogEvent(L"Username prompt (no username provided)");
+
+      if (!FPasswordFailed && !PromptedForCredentials)
+      {
+        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+        PromptedForCredentials = true;
+      }
+
+      if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
+            LoadStr(USERNAME_PROMPT2), true, 0, UserName))
+      {
+        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+      }
+      else
+      {
+        FUserName = UserName;
+      }
+    }
+
+    // ask for password if it was not specified in advance,
+    // on retry ask always
+    if ((Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
+    {
+      FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
+
+      if (!FPasswordFailed && !PromptedForCredentials)
+      {
+        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+        PromptedForCredentials = true;
+      }
+
+      // on retry ask for new password
+      Password = L"";
+      if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+            LoadStr(PASSWORD_PROMPT), false, 0, Password))
+      {
+        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+      }
+    }
+
+    FActive = FCURLIntf->Connect(
+      ::W2MB(HostName.c_str()).c_str(), Data->GetPortNumber(),
+	  ::W2MB(UserName.c_str()).c_str(),
+      ::W2MB(Password.c_str()).c_str(),
+	  ::W2MB(Account.c_str()).c_str(),
+	  false,
+	  ::W2MB(Path.c_str()).c_str(),
+      ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
+
+    assert(FActive);
+
+    FPasswordFailed = false;
+
+    try
+    {
+      // do not wait for FTP response code as Connect is complex operation
+      GotReply(WaitForCommandReply(false), REPLY_CONNECT, LoadStr(CONNECTION_FAILED));
+
+      // we have passed, even if we got 530 on the way (if it is possible at all),
+      // ignore it
+      assert(!FPasswordFailed);
+      FPasswordFailed = false;
+    }
+    catch (...)
+    {
+      if (FPasswordFailed)
+      {
+        FTerminal->Information(LoadStr(FTP_ACCESS_DENIED), false);
+      }
+      else
+      {
+        // see handling of REPLY_CONNECT in GotReply
+        FTerminal->Closed();
+        throw;
+      }
+    }
+  }
+  while (FPasswordFailed);
   DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
@@ -1286,7 +1452,7 @@ void THTTPFileSystem::SCPResponse(bool * GotLastLine)
 {
   // Taken from scp.c response() and modified
 
-  char Resp;
+  char Resp = 0;
   // FSecureShell->Receive(&Resp, 1);
 
   switch (Resp)

@@ -82,6 +82,7 @@ private:
   THTTPCommandSet * FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   std::wstring FCurrentDirectory;
+  std::wstring FHomeDirectory;
   TStrings * FOutput;
   int FReturnCode;
   std::wstring FCachedDirectoryChange;
