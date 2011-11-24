@@ -329,7 +329,8 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FLastResponse(NULL),
   FLastError(NULL),
   FQueueCriticalSection(NULL),
-  FTransferStatusCriticalSection(NULL)
+  FTransferStatusCriticalSection(NULL),
+  FDoListAll(false)
 {
   Self = this;
 }
@@ -491,11 +492,11 @@ void THTTPFileSystem::Open()
 
     ProxySettings proxySettings;
     // init proxySettings
-    proxySettings.proxyType = static_cast<int>(session->GetPropertyNumeric(ParamProxyType, m_Settings.ProxyType()));
-    proxySettings.proxyHost = session->GetProperty(ParamProxyHost, m_Settings.ProxyHost().c_str());
-    proxySettings.proxyPort = static_cast<int>(session->GetPropertyNumeric(ParamProxyPort, m_Settings.ProxyPort()));
-    proxySettings.proxyLogin = session->GetProperty(ParamProxyLogin, m_Settings.ProxyLogin().c_str());
-    proxySettings.proxyPassword = session->GetProperty(ParamProxyPassword, m_Settings.ProxyPassword().c_str());
+    proxySettings.proxyType = GetOptionVal(OPTION_PROXYTYPE);
+    proxySettings.proxyHost = GetOption(OPTION_PROXYHOST);
+    proxySettings.proxyPort = GetOptionVal(OPTION_PROXYPORT);
+    proxySettings.proxyLogin = GetOption(OPTION_PROXYUSER);
+    proxySettings.proxyPassword = GetOption(OPTION_PROXYPASS);
 
     FActive = FCURLIntf->Initialize(
       HostName.c_str(), // Data->GetPortNumber(),

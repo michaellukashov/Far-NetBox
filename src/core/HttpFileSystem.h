@@ -215,6 +215,8 @@ private:
   TStrings * FLastError;
   TCriticalSection * FQueueCriticalSection;
   TCriticalSection * FTransferStatusCriticalSection;
+  bool FDoListAll;
+  mutable std::wstring FOptionScratch;
   THTTPFileSystem *Self;
 
   void ClearAliases();
