@@ -4116,7 +4116,7 @@ void THTTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
     if (Cancel)
     {
       FTerminal->DoReadDirectoryProgress(-2, Cancel);
-      FFileZillaIntf->Cancel();
+      // FFileZillaIntf->Cancel();
     }
   }
 }
@@ -4145,7 +4145,7 @@ void THTTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
   {
     FFileTransferCancelled = true;
     FFileTransferAbort = ftaCancel;
-    FFileZillaIntf->Cancel();
+    // FFileZillaIntf->Cancel();
   }
 
   if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
@@ -4169,11 +4169,11 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
-    FFileZillaIntf->FileTransfer(
-	  ::W2MB(LocalFile.c_str()).c_str(),
-	  ::W2MB(RemoteFile.c_str()).c_str(),
-      ::W2MB(RemotePath.c_str()).c_str(),
-	  Get, Size, Type, &UserData);
+    // FFileZillaIntf->FileTransfer(
+	  // ::W2MB(LocalFile.c_str()).c_str(),
+	  // ::W2MB(RemoteFile.c_str()).c_str(),
+      // ::W2MB(RemotePath.c_str()).c_str(),
+	  // Get, Size, Type, &UserData);
     // we may actually catch reponse code of the listing
     // command (when checking for existence of the remote file)
     unsigned int Reply = WaitForCommandReply();
