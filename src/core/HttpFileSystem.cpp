@@ -285,7 +285,9 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FProcessingCommand(false),
   FCURLIntf(NULL),
   FPasswordFailed(false),
-  FActive(false)
+  FActive(false),
+  FReply(0),
+  FCommandReply(0)
 {
   Self = this;
 }
@@ -2783,11 +2785,11 @@ void THTTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void THTTPFileSystem::WaitForMessages()
 {
-  unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
-  if (Result != WAIT_OBJECT_0)
-  {
-    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#1", IntToStr(Result).c_str()));
-  }
+  // unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  // if (Result != WAIT_OBJECT_0)
+  // {
+    // FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#1", IntToStr(Result).c_str()));
+  // }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::PoolForFatalNonCommandReply()

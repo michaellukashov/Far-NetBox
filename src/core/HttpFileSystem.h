@@ -182,6 +182,8 @@ private:
   bool FPasswordFailed;
   std::wstring FSystem;
   bool FActive;
+  unsigned int FReply;
+  unsigned int FCommandReply;
   THTTPFileSystem *Self;
 
   void ClearAliases();
