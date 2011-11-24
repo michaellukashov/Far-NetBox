@@ -2955,19 +2955,19 @@ int THTTPFileSystem::GetOptionVal(int OptionID) const
       switch (Data->GetProxyMethod())
       {
         case pmNone:
-          Result = 0; // PROXYTYPE_NOPROXY;
+          Result = PROXY_NONE;
           break;
 
         case pmSocks4:
-          Result = 2; // PROXYTYPE_SOCKS4A
+          Result = PROXY_SOCKS4;
           break;
 
         case pmSocks5:
-          Result = 3; // PROXYTYPE_SOCKS5
+          Result = PROXY_SOCKS5;
           break;
 
         case pmHTTP:
-          Result = 4; // PROXYTYPE_HTTP11
+          Result = PROXY_HTTP;
           break;
 
         case pmTelnet:
