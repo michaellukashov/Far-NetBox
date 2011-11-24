@@ -357,7 +357,12 @@ THTTPFileSystem::~THTTPFileSystem()
 {
   delete FCommandSet;
   delete FOutput;
+  delete FLastResponse;
+  delete FLastError;
+  delete FQueueCriticalSection;
+  delete FTransferStatusCriticalSection;
   // delete FSecureShell;
+  delete FCURLIntf;
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::Open()
