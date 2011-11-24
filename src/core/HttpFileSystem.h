@@ -3,10 +3,12 @@
 #define HttpFileSystemH
 
 #include <FileSystems.h>
+#include "FtpFileSystem.h"
 //---------------------------------------------------------------------------
 class TCURLIntf;
 class THTTPCommandSet;
 // class TSecureShell;
+struct TListDataEntry;
 //---------------------------------------------------------------------------
 class THTTPFileSystem : public TCustomFileSystem
 {
@@ -71,6 +73,8 @@ public:
   virtual std::wstring GetUserName();
 
 protected:
+  enum TOverwriteMode { omOverwrite, omResume };
+protected:
   bool PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam);
   bool ProcessMessage();
   void DiscardMessages();
@@ -95,8 +99,8 @@ protected:
     const wchar_t * Path1, const wchar_t * Path2,
     __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
     bool HasTime1, bool HasTime2, void * UserData, int & RequestResult);
-  bool HandleAsynchRequestVerifyCertificate(
-    const TFtpsCertificateData & Data, int & RequestResult);
+  // bool HandleAsynchRequestVerifyCertificate(
+    // const TFtpsCertificateData & Data, int & RequestResult);
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count);
   bool HandleTransferStatus(bool Valid, __int64 TransferSize,

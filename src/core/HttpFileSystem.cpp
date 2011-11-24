@@ -3547,6 +3547,7 @@ std::wstring FormatValidityTime(const TFtpsCertificateData::TValidityTime & Vali
       (unsigned short)ValidityTime.Sec, 0));
 }
 //---------------------------------------------------------------------------
+/*
 bool THTTPFileSystem::HandleAsynchRequestVerifyCertificate(
   const TFtpsCertificateData & Data, int & RequestResult)
 {
@@ -3736,6 +3737,7 @@ bool THTTPFileSystem::HandleAsynchRequestVerifyCertificate(
     return true;
   }
 }
+*/
 //---------------------------------------------------------------------------
 bool THTTPFileSystem::HandleListData(const wchar_t * Path,
   const TListDataEntry * Entries, unsigned int Count)
