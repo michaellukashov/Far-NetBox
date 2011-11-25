@@ -566,7 +566,7 @@ void THTTPFileSystem::Open()
       }
     }
     #else
-    //Check initial path existing
+    // Check initial path existing
     std::wstring path;
     std::wstring query;
     ::ParseURL(HostName.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
@@ -579,11 +579,11 @@ void THTTPFileSystem::Open()
     std::wstring errorInfo;
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
-        // Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
-        // return false;
+        FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", path.c_str()));
+        // return;
     }
     FCurrentDirectory = path;
-    while(FCurrentDirectory.size() > 1 && FCurrentDirectory[FCurrentDirectory.length() - 1] == L'/')
+    while (FCurrentDirectory.size() > 1 && FCurrentDirectory[FCurrentDirectory.length() - 1] == L'/')
     {
         FCurrentDirectory.erase(FCurrentDirectory.length() - 1);
     }
@@ -4455,10 +4455,10 @@ bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &resp
     slist.Append("Connection: Keep-Alive");
 
     CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "PROPFIND"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_MAXREDIRS, 5));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDS, requestData));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDSIZE, requestDataLen));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "PROPFIND"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_MAXREDIRS, 5));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDS, requestData));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDSIZE, requestDataLen));
 
     CHECK_CUCALL(urlCode, FCURLIntf->Perform());
     // DEBUG_PRINTF(L"urlCode = %d", urlCode);
@@ -4487,7 +4487,7 @@ bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &resp
 bool THTTPFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
 {
     long responseCode = 0;
-    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
     {
         if (responseCode != expect)
         {
@@ -4503,7 +4503,7 @@ bool THTTPFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo
 bool THTTPFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
 {
     long responseCode = 0;
-    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
     {
         if (responseCode != expect1 && responseCode != expect2)
         {
@@ -4776,12 +4776,12 @@ std::string THTTPFileSystem::EscapeUTF8URL(const wchar_t *src) const
 CURLcode THTTPFileSystem::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
 {
     CURLcode urlCode = FCURLIntf->Prepare(webDavPath, handleTimeout);
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_FOLLOWLOCATION, 1));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POST301, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POST301, 1));
 
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYHOST, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYHOST, 0L));
     return urlCode;
 }
 
@@ -4857,7 +4857,7 @@ bool THTTPFileSystem::MakeDirectory(const wchar_t *path, std::wstring &errorInfo
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "MKCOL"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MKCOL"));
 
     CHECK_CUCALL(urlCode, FCURLIntf->Perform());
     if (urlCode != CURLE_OK)
@@ -5163,7 +5163,7 @@ bool THTTPFileSystem::Rename(const wchar_t *srcPath, const wchar_t *dstPath, con
     slist.Append(dstParam.c_str());
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "MOVE"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MOVE"));
 
     CHECK_CUCALL(urlCode, FCURLIntf->Perform());
 
@@ -5186,7 +5186,7 @@ bool THTTPFileSystem::Delete(const wchar_t *path, const ItemType /*type*/, std::
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "DELETE"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "DELETE"));
 
     CHECK_CUCALL(urlCode, FCURLIntf->Perform());
     if (urlCode != CURLE_OK)
