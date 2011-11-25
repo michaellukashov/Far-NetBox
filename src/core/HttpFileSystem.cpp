@@ -1250,8 +1250,8 @@ void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     // 1) List() lists again the last listed directory, not the current working directory
     // 2) we handle this way the cached directory change
     std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
+    DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
     // FCURLIntf->List(Directory);
-
     // GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
 
     FLastDataSent = Now();
