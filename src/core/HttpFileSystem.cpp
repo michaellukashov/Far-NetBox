@@ -4789,9 +4789,9 @@ CURLcode THTTPFileSystem::CURLPrepare(const char *webDavPath, const bool handleT
 
 bool THTTPFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
-    assert(abortEvent);
+  assert(abortEvent);
 
-    TSessionData *Data = FTerminal->GetSessionData();
+  TSessionData *Data = FTerminal->GetSessionData();
   std::wstring HostName = Data->GetHostName();
   std::wstring UserName = Data->GetUserName();
   std::wstring Password = Data->GetPassword();
@@ -4825,7 +4825,7 @@ bool THTTPFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
     // }
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
-        // Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
+        FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", path.c_str()));
         return false;
     }
     FCurrentDirectory = path;
