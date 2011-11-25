@@ -290,6 +290,15 @@ private:
 
 private:
     /**
+     * Format error description
+     * \param errCode system error code
+     * \param info additional info
+     * \return error description
+     */
+    std::wstring FormatErrorDescription(const DWORD errCode, const wchar_t *info = NULL) const;
+
+private:
+    /**
      * Send PROPFIND request
      * \param dir directory to load
      * \param response response buffer
@@ -329,7 +338,7 @@ private:
      * \param defaultVal default namespace id
      * \return namespace id
      */
-    std::wstring GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const;
+    std::string GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const;
 
     /**
      * Parse internet datetime

@@ -4662,7 +4662,7 @@ std::wstring THTTPFileSystem::GetBadResponseInfo(const int code) const
 }
 
 
-std::wstring THTTPFileSystem::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
+std::string THTTPFileSystem::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
 {
     assert(element);
     assert(name);
@@ -4681,7 +4681,7 @@ std::wstring THTTPFileSystem::GetNamespace(const TiXmlElement *element, const ch
         }
         attr = attr->Next();
     }
-    return ::MB2W(ns.c_str());
+    return ns;
 }
 
 
@@ -4894,7 +4894,7 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
         currentPath.erase(0, 1);
     }
 
-    const std::string decodedResp = DecodeHex(response);
+    const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
 
 #ifdef _DEBUG
     //////////////////////////////////////////////////////////////////////////
@@ -5178,7 +5178,6 @@ bool THTTPFileSystem::Rename(const wchar_t *srcPath, const wchar_t *dstPath, con
     return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
 }
 
-
 bool THTTPFileSystem::Delete(const wchar_t *path, const ItemType /*type*/, std::wstring &errorInfo)
 {
     const std::string webDavPath = EscapeUTF8URL(path);
@@ -5201,367 +5200,22 @@ bool THTTPFileSystem::Delete(const wchar_t *path, const ItemType /*type*/, std::
     return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
 }
 
-
-bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::string &response, std::wstring &errInfo)
+std::wstring THTTPFileSystem::FormatErrorDescription(const DWORD errCode, const wchar_t *info) const
 {
-    const std::string webDavPath = EscapeUTF8URL(dir);
-    // DEBUG_PRINTF(L"THTTPFileSystem::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+    assert(errCode || info);
 
-    response.clear();
-
-    static const char *requestData =
-        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-        "<D:propfind xmlns:D=\"DAV:\">"
-        "<D:prop xmlns:Z=\"urn:schemas-microsoft-com:\">"
-        "<D:resourcetype/>"
-        "<D:getcontentlength/>"
-        "<D:creationdate/>"
-        "<D:getlastmodified/>"
-        "<Z:Win32LastAccessTime/>"
-        "<Z:Win32FileAttributes/>"
-        "</D:prop>"
-        "</D:propfind>";
-
-    static const size_t requestDataLen = strlen(requestData);
-
-    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
-    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(response, &m_ProgressPercent));
-
-    CSlistURL slist;
-    slist.Append("Depth: 1");
-    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
-    char contentLength[64];
-    sprintf_s(contentLength, "Content-Length: %d", requestDataLen);
-    slist.Append(contentLength);
-    slist.Append("Connection: Keep-Alive");
-
-    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "PROPFIND"));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_MAXREDIRS, 5));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDS, requestData));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDSIZE, requestDataLen));
-
-    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
-    // DEBUG_PRINTF(L"urlCode = %d", urlCode);
-    if (urlCode != CURLE_OK)
+    std::wstring errDescr;
+    if (info)
     {
-        errInfo = ::MB2W(curl_easy_strerror(urlCode));
-        return false;
+        errDescr = info;
     }
-
-    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
+    if (errCode)
     {
-        // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
-        return false;
-    }
-
-    if (response.empty())
-    {
-        errInfo = L"Server return empty response";
-        return false;
-    }
-
-    return true;
-}
-
-
-bool THTTPFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
-{
-    long responseCode = 0;
-    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
-    {
-        if (responseCode != expect)
+        if (!errDescr.empty())
         {
-            errInfo = GetBadResponseInfo(responseCode);
-            // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
-            return false;
+            errDescr += L'\n';
         }
+        errDescr += GetSystemErrorMessage(errCode);
     }
-    return true;
-}
-
-
-bool THTTPFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
-{
-    long responseCode = 0;
-    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
-    {
-        if (responseCode != expect1 && responseCode != expect2)
-        {
-            errInfo = GetBadResponseInfo(responseCode);
-            return false;
-        }
-    }
-    return true;
-}
-
-
-std::wstring THTTPFileSystem::GetBadResponseInfo(const int code) const
-{
-    const wchar_t *descr = NULL;
-    switch (code)
-    {
-    case HTTP_STATUS_CONTINUE           :
-        descr = L"OK to continue with request";
-        break;
-    case HTTP_STATUS_SWITCH_PROTOCOLS   :
-        descr = L"Server has switched protocols in upgrade header";
-        break;
-    case HTTP_STATUS_OK                 :
-        descr = L"Request completed";
-        break;
-    case HTTP_STATUS_CREATED            :
-        descr = L"Object created, reason = new URI";
-        break;
-    case HTTP_STATUS_ACCEPTED           :
-        descr = L"Async completion (TBS)";
-        break;
-    case HTTP_STATUS_PARTIAL            :
-        descr = L"Partial completion";
-        break;
-    case HTTP_STATUS_NO_CONTENT         :
-        descr = L"No info to return";
-        break;
-    case HTTP_STATUS_RESET_CONTENT      :
-        descr = L"Request completed, but clear form";
-        break;
-    case HTTP_STATUS_PARTIAL_CONTENT    :
-        descr = L"Partial GET furfilled";
-        break;
-    case HTTP_STATUS_WEBDAV_MULTI_STATUS:
-        descr = L"WebDAV Multi-Status";
-        break;
-    case HTTP_STATUS_AMBIGUOUS          :
-        descr = L"Server couldn't decide what to return";
-        break;
-    case HTTP_STATUS_MOVED              :
-        descr = L"Object permanently moved";
-        break;
-    case HTTP_STATUS_REDIRECT           :
-        descr = L"Object temporarily moved";
-        break;
-    case HTTP_STATUS_REDIRECT_METHOD    :
-        descr = L"Redirection w/ new access method";
-        break;
-    case HTTP_STATUS_NOT_MODIFIED       :
-        descr = L"If-modified-since was not modified";
-        break;
-    case HTTP_STATUS_USE_PROXY          :
-        descr = L"Redirection to proxy, location header specifies proxy to use";
-        break;
-    case HTTP_STATUS_REDIRECT_KEEP_VERB :
-        descr = L"HTTP/1.1: keep same verb";
-        break;
-    case HTTP_STATUS_BAD_REQUEST        :
-        descr = L"Invalid syntax";
-        break;
-    case HTTP_STATUS_DENIED             :
-        descr = L"Unauthorized";
-        break;
-    case HTTP_STATUS_PAYMENT_REQ        :
-        descr = L"Payment required";
-        break;
-    case HTTP_STATUS_FORBIDDEN          :
-        descr = L"Request forbidden";
-        break;
-    case HTTP_STATUS_NOT_FOUND          :
-        descr = L"Object not found";
-        break;
-    case HTTP_STATUS_BAD_METHOD         :
-        descr = L"Method is not allowed";
-        break;
-    case HTTP_STATUS_NONE_ACCEPTABLE    :
-        descr = L"No response acceptable to client found";
-        break;
-    case HTTP_STATUS_PROXY_AUTH_REQ     :
-        descr = L"Proxy authentication required";
-        break;
-    case HTTP_STATUS_REQUEST_TIMEOUT    :
-        descr = L"Server timed out waiting for request";
-        break;
-    case HTTP_STATUS_CONFLICT           :
-        descr = L"User should resubmit with more info";
-        break;
-    case HTTP_STATUS_GONE               :
-        descr = L"The resource is no longer available";
-        break;
-    case HTTP_STATUS_LENGTH_REQUIRED    :
-        descr = L"The server refused to accept request w/o a length";
-        break;
-    case HTTP_STATUS_PRECOND_FAILED     :
-        descr = L"Precondition given in request failed";
-        break;
-    case HTTP_STATUS_REQUEST_TOO_LARGE  :
-        descr = L"Request entity was too large";
-        break;
-    case HTTP_STATUS_URI_TOO_LONG       :
-        descr = L"Request URI too long";
-        break;
-    case HTTP_STATUS_UNSUPPORTED_MEDIA  :
-        descr = L"Unsupported media type";
-        break;
-    case 416                            :
-        descr = L"Requested Range Not Satisfiable";
-        break;
-    case 417                            :
-        descr = L"Expectation Failed";
-        break;
-    case HTTP_STATUS_RETRY_WITH         :
-        descr = L"Retry after doing the appropriate action";
-        break;
-    case HTTP_STATUS_SERVER_ERROR       :
-        descr = L"Internal server error";
-        break;
-    case HTTP_STATUS_NOT_SUPPORTED      :
-        descr = L"Required not supported";
-        break;
-    case HTTP_STATUS_BAD_GATEWAY        :
-        descr = L"Error response received from gateway";
-        break;
-    case HTTP_STATUS_SERVICE_UNAVAIL    :
-        descr = L"Temporarily overloaded";
-        break;
-    case HTTP_STATUS_GATEWAY_TIMEOUT    :
-        descr = L"Timed out waiting for gateway";
-        break;
-    case HTTP_STATUS_VERSION_NOT_SUP    :
-        descr = L"HTTP version not supported";
-        break;
-    }
-
-    std::wstring errInfo = L"Incorrect response code: ";
-
-    errInfo += ::NumberToWString(code);
-
-    if (descr)
-    {
-        errInfo += L' ';
-        errInfo += descr;
-    }
-
-    return errInfo;
-}
-
-
-std::string THTTPFileSystem::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
-{
-    assert(element);
-    assert(name);
-    assert(defaultVal);
-
-    std::string ns = defaultVal;
-    const TiXmlAttribute *attr = element->FirstAttribute();
-    while (attr)
-    {
-        if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
-        {
-            ns = attr->Name();
-            ns.erase(0, ns.find(':') + 1);
-            ns += ':';
-            break;
-        }
-        attr = attr->Next();
-    }
-    return ns;
-}
-
-
-FILETIME THTTPFileSystem::ParseDateTime(const char *dt) const
-{
-    assert(dt);
-
-    FILETIME ft;
-    ZeroMemory(&ft, sizeof(ft));
-    SYSTEMTIME st;
-    ZeroMemory(&st, sizeof(st));
-
-    if (WinHttpTimeToSystemTime(::MB2W(dt).c_str(), &st))
-    {
-        SystemTimeToFileTime(&st, &ft);
-    }
-    else if (strlen(dt) > 18)
-    {
-        //rfc 3339 date-time
-        st.wYear =   static_cast<WORD>(atoi(dt +  0));
-        st.wMonth =  static_cast<WORD>(atoi(dt +  5));
-        st.wDay =    static_cast<WORD>(atoi(dt +  8));
-        st.wHour =   static_cast<WORD>(atoi(dt + 11));
-        st.wMinute = static_cast<WORD>(atoi(dt + 14));
-        st.wSecond = static_cast<WORD>(atoi(dt + 17));
-        SystemTimeToFileTime(&st, &ft);
-    }
-
-    return ft;
-}
-
-
-std::string THTTPFileSystem::DecodeHex(const std::string &src) const
-{
-    const size_t cntLength = src.length();
-    std::string result;
-    result.reserve(cntLength);
-
-    for (size_t i = 0; i < cntLength; ++i)
-    {
-        const char chkChar = src[i];
-        if (chkChar != L'%' || (i + 2 >= cntLength) || !IsHexadecimal(src[i + 1]) || !IsHexadecimal(src[i + 2]))
-        {
-            result += chkChar;
-        }
-        else
-        {
-            const char ch1 = src[i + 1];
-            const char ch2 = src[i + 2];
-            const char encChar = (((ch1 & 0xf) + ((ch1 >= 'A') ? 9 : 0)) << 4) | ((ch2 & 0xf) + ((ch2 >= 'A') ? 9 : 0));
-            result += encChar;
-            i += 2;
-        }
-    }
-
-    return result;
-}
-
-
-std::string THTTPFileSystem::EscapeUTF8URL(const wchar_t *src) const
-{
-    assert(src && src[0] == L'/');
-
-    std::string plainText = ::W2MB(src, CP_UTF8);
-    const size_t cntLength = plainText.length();
-
-    std::string result;
-    result.reserve(cntLength);
-
-    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()%{}^[]`";
-
-    for (size_t i = 0; i < cntLength; ++i)
-    {
-        const char chkChar = plainText[i];
-        if (*std::find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
-                (chkChar >= 'a' && chkChar <= 'z') ||
-                (chkChar >= 'A' && chkChar <= 'Z') ||
-                (chkChar >= '0' && chkChar <= '9'))
-        {
-            result += chkChar;
-        }
-        else
-        {
-            char encChar[4];
-            sprintf_s(encChar, "%%%02X", static_cast<unsigned char>(chkChar));
-            result += encChar;
-        }
-    }
-    return result;
-}
-
-CURLcode THTTPFileSystem::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
-{
-    CURLcode urlCode = FCURLIntf->Prepare(webDavPath, handleTimeout);
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_FOLLOWLOCATION, 1));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POST301, 1));
-
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYPEER, 0L));
-    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYHOST, 0L));
-    return urlCode;
+    return errDescr;
 }
