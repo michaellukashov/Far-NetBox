@@ -413,6 +413,7 @@ void THTTPFileSystem::Open()
   if (FCURLIntf == NULL)
   {
     FCURLIntf = new CEasyURL();
+    FCURLIntf->Init();
 
     try
     {
@@ -430,8 +431,6 @@ void THTTPFileSystem::Open()
           break;
       }
       FCURLIntf->SetDebugLevel(LogLevel);
-
-      FCURLIntf->Init();
     }
     catch (...)
     {
