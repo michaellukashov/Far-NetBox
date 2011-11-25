@@ -104,14 +104,14 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
 }
 
 
-void CEasyURL::Close()
+bool CEasyURL::Close()
 {
     if (m_CURL)
     {
         curl_easy_cleanup(m_CURL);
     }
     m_CURL = NULL;
-
+    return true;
 }
 
 

@@ -85,7 +85,7 @@ public:
     /**
      * Close curl
      */
-    virtual void Close() = 0;
+    virtual bool Close() = 0;
 
     /**
      * Prepare easy curl state
@@ -180,7 +180,7 @@ public:
     /**
      * Close curl
      */
-    virtual void Close();
+    virtual bool Close();
 
     /**
      * Prepare easy curl state
