@@ -251,7 +251,6 @@ private:
     TFileOperationProgressType * OperationProgress, int Level);
   void SendCommand(const std::wstring Cmd);
   void SkipFirstLine();
-  void SkipStartupMessage();
   void UnsetNationalVars();
   TRemoteFile * CreateRemoteFile(const std::wstring & ListingStr,
     TRemoteFile * LinkedByFile = NULL);

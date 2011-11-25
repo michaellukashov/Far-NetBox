@@ -1013,32 +1013,14 @@ std::wstring THTTPFileSystem::GetCurrentDirectory()
 void THTTPFileSystem::DoStartup()
 {
   DEBUG_PRINTF(L"begin");
-  // SkipStartupMessage and DetectReturnVar must succeed,
+  // DetectReturnVar must succeed,
   // otherwise session is to be closed.
   FTerminal->SetExceptionOnFail(true);
-  SkipStartupMessage();
-  if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
+  // if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
   FTerminal->SetExceptionOnFail(false);
-
-  #define COND_OPER(OPER) if (FTerminal->GetSessionData()->Get##OPER()) OPER()
-  COND_OPER(ClearAliases);
-  COND_OPER(UnsetNationalVars);
-  #undef COND_OPER
   DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void THTTPFileSystem::SkipStartupMessage()
-{
-  try
-  {
-    FTerminal->LogEvent(L"Skipping host startup message (if any).");
-    ExecCommand(fsNull, 0, NULL);
-  }
-  catch (const std::exception & E)
-  {
-    FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR));
-  }
-}
 //---------------------------------------------------------------------------
 void THTTPFileSystem::LookupUsersGroups()
 {
