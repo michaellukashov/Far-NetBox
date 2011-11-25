@@ -596,6 +596,7 @@ void THTTPFileSystem::Open()
 void THTTPFileSystem::Close()
 {
   // FSecureShell->Close();
+  FCURLIntf->Close();
 }
 //---------------------------------------------------------------------------
 bool THTTPFileSystem::GetActive()
@@ -4788,11 +4789,26 @@ bool THTTPFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
 {
     assert(abortEvent);
 
-    const wchar_t *url = m_Session.GetURL();
+    TSessionData *Data = FTerminal->GetSessionData();
+  std::wstring HostName = Data->GetHostName();
+  std::wstring UserName = Data->GetUserName();
+  std::wstring Password = Data->GetPassword();
+  std::wstring Account = Data->GetFtpAccount();
+  std::wstring Path = Data->GetRemoteDirectory();
+
+    ProxySettings proxySettings;
+    // init proxySettings
+    proxySettings.proxyType = GetOptionVal(OPTION_PROXYTYPE);
+    proxySettings.proxyHost = GetOption(OPTION_PROXYHOST);
+    proxySettings.proxyPort = GetOptionVal(OPTION_PROXYPORT);
+    proxySettings.proxyLogin = GetOption(OPTION_PROXYUSER);
+    proxySettings.proxyPassword = GetOption(OPTION_PROXYPASS);
+
+  const wchar_t *url = HostName.c_str();
     // DEBUG_PRINTF(L"WebDAV: connecting to %s", url);
     //Initialize curl
-    FCURLIntf->Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
-        m_Session.GetProxySettings());
+    FCURLIntf->Initialize(url, UserName.c_str(), Password.c_str(),
+        proxySettings);
     FCURLIntf->SetAbortEvent(abortEvent);
 
     //Check initial path existing
@@ -4807,30 +4823,23 @@ bool THTTPFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
     // }
     if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
-        Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
+        // Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
         return false;
     }
-    m_CurrentDirectory = path;
-    while(m_CurrentDirectory.size() > 1 && m_CurrentDirectory[m_CurrentDirectory.length() - 1] == L'/')
+    FCurrentDirectory = path;
+    while(GetCurrentDirectory().size() > 1 && GetCurrentDirectory()[GetCurrentDirectory().size() - 1] == L'/')
     {
-        m_CurrentDirectory.erase(m_CurrentDirectory.length() - 1);
+        FCurrentDirectory.erase(FCurrentDirectory.size() - 1);
     }
     return true;
 }
-
-
-void THTTPFileSystem::Close()
-{
-    FCURLIntf->Close();
-}
-
 
 bool THTTPFileSystem::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"THTTPFileSystem::CheckExisting: path = %s", path);
     assert(type == ItemDirectory);
 
-    std::string responseDummy;
+    std::wstring responseDummy;
     isExist = SendPropFindRequest(path, responseDummy, errorInfo);
     // DEBUG_PRINTF(L"THTTPFileSystem::CheckExisting: path = %s, isExist = %d", path, isExist);
     return true;
@@ -4868,14 +4877,14 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
     assert(items);
     assert(itemsNum);
 
-    std::string response;
-    if (!SendPropFindRequest(m_CurrentDirectory.c_str(), response, errorInfo))
+    std::wstring response;
+    if (!SendPropFindRequest(FCurrentDirectory.c_str(), response, errorInfo))
     {
         return false;
     }
 
     //Erase slashes (to compare in xml parse)
-    std::wstring currentPath(m_CurrentDirectory);
+    std::wstring currentPath(FCurrentDirectory);
     while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
     {
         currentPath.erase(currentPath.length() - 1);
