@@ -1018,6 +1018,10 @@ void THTTPFileSystem::DoStartup()
   FTerminal->SetExceptionOnFail(true);
   // if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
   FTerminal->SetExceptionOnFail(false);
+
+  // retrieve initialize working directory to save it as home directory
+  ReadCurrentDirectory();
+  FHomeDirectory = FCurrentDirectory;
   DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
