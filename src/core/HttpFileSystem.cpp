@@ -895,7 +895,7 @@ void THTTPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
       {
         Line = L""; // FSecureShell->ReceiveLine();
         // DEBUG_PRINTF(L"Line = %s", Line.c_str());
-        IsLast = IsLastLine(Line);
+        IsLast = true; // IsLastLine(Line);
         if (!IsLast || !Line.empty())
         {
           FOutput->Add(Line);
@@ -905,7 +905,7 @@ void THTTPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
 
             if (Total % 10 == 0)
             {
-              bool Cancel; //dummy
+              bool Cancel = false; //dummy
               FTerminal->DoReadDirectoryProgress(Total, Cancel);
             }
           }
