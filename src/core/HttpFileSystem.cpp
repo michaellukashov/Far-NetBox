@@ -283,6 +283,10 @@ TStrings * THTTPCommandSet::CreateCommandList()
   return CommandList;
 }
 //===========================================================================
+class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> >
+{
+};
+//===========================================================================
 struct TFileTransferData
 {
   TFileTransferData()
@@ -331,6 +335,8 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FLastError(new TStringList()),
   FQueueCriticalSection(new TCriticalSection),
   FTransferStatusCriticalSection(new TCriticalSection),
+  FQueue(new TMessageQueue),
+  FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FDoListAll(false)
 {
   Self = this;
@@ -344,7 +350,7 @@ void THTTPFileSystem::Init(TSecureShell *SecureShell)
   FOutput = new TStringList();
   FProcessingCommand = false;
 
-  FFileSystemInfo.ProtocolBaseName = L"SCP";
+  FFileSystemInfo.ProtocolBaseName = L"HTTP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   // capabilities of SCP protocol are fixed
   for (int Index = 0; Index < fcCount; Index++)
@@ -356,13 +362,23 @@ void THTTPFileSystem::Init(TSecureShell *SecureShell)
 THTTPFileSystem::~THTTPFileSystem()
 {
   delete FCommandSet;
+  FCommandSet = NULL;
   delete FOutput;
+  FOutput = NULL;
   delete FLastResponse;
+  FLastResponse = NULL;
   delete FLastError;
+  FLastError = NULL;
   delete FQueueCriticalSection;
+  FQueueCriticalSection = NULL;
   delete FTransferStatusCriticalSection;
+  FTransferStatusCriticalSection = NULL;
   // delete FSecureShell;
+  delete FQueue;
+  FQueue = NULL;
   delete FCURLIntf;
+  FCURLIntf = NULL;
+  CloseHandle(FQueueEvent);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::Open()
@@ -383,9 +399,9 @@ void THTTPFileSystem::Open()
 
   FLastDataSent = Now();
 
-  // FMultineResponse = false;
+  FMultineResponse = false;
 
-  // initialize FZAPI on the first connect only
+  // initialize FCURLIntf on the first connect only
   if (FCURLIntf == NULL)
   {
     FCURLIntf = new CEasyURL();
@@ -3083,13 +3099,13 @@ bool THTTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lPara
     // it makes "pause" in queue work.
     // Paused queue item stops in some of the TFileOperationProgressType
     // methods called from FileTransferProgress
-    // TGuard Guard(FTransferStatusCriticalSection);
+    TGuard Guard(FTransferStatusCriticalSection);
   }
 
-  // TGuard Guard(FQueueCriticalSection);
+  TGuard Guard(FQueueCriticalSection);
 
-  // FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
-  // SetEvent(FQueueEvent);
+  FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
+  SetEvent(FQueueEvent);
 
   return true;
 }
@@ -3097,8 +3113,7 @@ bool THTTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lPara
 bool THTTPFileSystem::ProcessMessage()
 {
   bool Result = false;
-  // TMessageQueue::value_type Message;
-  /*
+  TMessageQueue::value_type Message;
   {
     TGuard Guard(FQueueCriticalSection);
 
@@ -3118,9 +3133,8 @@ bool THTTPFileSystem::ProcessMessage()
 
   if (Result)
   {
-    FFileZillaIntf->HandleMessage(Message.first, Message.second);
+    // FFileZillaIntf->HandleMessage(Message.first, Message.second);
   }
-  */
 
   return Result;
 }
@@ -3132,11 +3146,11 @@ void THTTPFileSystem::DiscardMessages()
 //---------------------------------------------------------------------------
 void THTTPFileSystem::WaitForMessages()
 {
-  // unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
-  // if (Result != WAIT_OBJECT_0)
-  // {
-    // FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#1", IntToStr(Result).c_str()));
-  // }
+  unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
+  if (Result != WAIT_OBJECT_0)
+  {
+    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#1", IntToStr(Result).c_str()));
+  }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::PoolForFatalNonCommandReply()

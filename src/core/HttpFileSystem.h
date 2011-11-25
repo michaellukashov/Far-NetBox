@@ -1,6 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef HttpFileSystemH
-#define HttpFileSystemH
+#pragma once
 
 #include <FileSystems.h>
 #include "FtpFileSystem.h"
@@ -9,6 +7,7 @@ class TCURLIntf;
 class THTTPCommandSet;
 // class TSecureShell;
 struct TListDataEntry;
+class TMessageQueue;
 //---------------------------------------------------------------------------
 class THTTPFileSystem : public TCustomFileSystem
 {
@@ -215,6 +214,8 @@ private:
   TStrings * FLastError;
   TCriticalSection * FQueueCriticalSection;
   TCriticalSection * FTransferStatusCriticalSection;
+  TMessageQueue *FQueue;
+  HANDLE FQueueEvent;
   bool FDoListAll;
   mutable std::wstring FOptionScratch;
   THTTPFileSystem *Self;
@@ -267,5 +268,4 @@ private:
   THTTPFileSystem(const THTTPFileSystem &);
   void operator=(const THTTPFileSystem &);
 };
-//---------------------------------------------------------------------------
-#endif // ScpFileSystemH
+
