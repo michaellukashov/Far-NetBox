@@ -595,12 +595,24 @@ void THTTPFileSystem::Open()
 void THTTPFileSystem::Close()
 {
   // FSecureShell->Close();
-  FCURLIntf->Close();
+  assert(FActive);
+  if (FCURLIntf->Close())
+  {
+    // CHECK(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
+    assert(FActive);
+    Discard();
+    FTerminal->Closed();
+  }
+  else
+  {
+    assert(false);
+  }
 }
 //---------------------------------------------------------------------------
 bool THTTPFileSystem::GetActive()
 {
-  return false; // FSecureShell->GetActive();
+  // return FSecureShell->GetActive();
+  return FActive;
 }
 //---------------------------------------------------------------------------
 const TSessionInfo & THTTPFileSystem::GetSessionInfo()
