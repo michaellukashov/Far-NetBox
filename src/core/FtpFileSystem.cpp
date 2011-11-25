@@ -1827,7 +1827,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   bool GotNoFilesForAll = false;
-  bool Repeat;
+  bool Repeat = false;
 
   do
   {
