@@ -309,6 +309,31 @@ struct TFileTransferData
   const TCopyParamType * CopyParam;
 };
 
+//---------------------------------------------------------------------------
+class TFileListHelper
+{
+public:
+  TFileListHelper(THTTPFileSystem * FileSystem, TRemoteFileList * FileList,
+      bool IgnoreFileList) :
+    FFileSystem(FileSystem),
+    FFileList(FFileSystem->FFileList),
+    FIgnoreFileList(FFileSystem->FIgnoreFileList)
+  {
+    FFileSystem->FFileList = FileList;
+    FFileSystem->FIgnoreFileList = IgnoreFileList;
+  }
+
+  ~TFileListHelper()
+  {
+    FFileSystem->FFileList = FFileList;
+    FFileSystem->FIgnoreFileList = FIgnoreFileList;
+  }
+
+private:
+  THTTPFileSystem * FFileSystem;
+  TRemoteFileList * FFileList;
+  bool FIgnoreFileList;
+};
 //===========================================================================
 THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -344,6 +369,7 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FAbortEvent(CreateEvent(NULL, true, false, NULL)),
   m_ProgressPercent(0),
+  FListAll(asAuto),
   FDoListAll(false)
 {
   Self = this;
@@ -1209,128 +1235,82 @@ void THTTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
   FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
 }
+
+void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
+{
+    FileList->Clear();
+    // FZAPI does not list parent directory, add it
+    FileList->AddFile(new TRemoteParentDirectory(FTerminal));
+
+    FLastReadDirectoryProgress = 0;
+
+    TFileListHelper Helper(this, FileList, false);
+
+    // always specify path to list, do not attempt to list "current" dir as:
+    // 1) List() lists again the last listed directory, not the current working directory
+    // 2) we handle this way the cached directory change
+    std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
+    // FCURLIntf->List(Directory);
+
+    // GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+
+    FLastDataSent = Now();
+}
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   DEBUG_PRINTF(L"begin");
   assert(FileList);
-  // emtying file list moved before command execution
-  FileList->Clear();
-
-  bool Again = false;
+  bool GotNoFilesForAll = false;
+  bool Repeat = false;
 
   do
   {
-    Again = false;
+    Repeat = false;
     try
     {
-      int Params = ecDefault | ecReadProgress |
-        FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
-      const wchar_t * Options =
-        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : L"";
-      bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrentDirectory());
-      if (ListCurrentDirectory)
-      {
-        FTerminal->LogEvent(L"Listing current directory.");
-        ExecCommand(fsListCurrentDirectory,
-          0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, Params);
-      }
-      else
-      {
-        FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
-          FileList->GetDirectory().c_str()));
-        ExecCommand(fsListDirectory,
-          0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
-            DelimitStr(FileList->GetDirectory().c_str()).c_str(),
-          Params);
-      }
+      FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
+      DoReadDirectory(FileList);
 
-      TRemoteFile * File = NULL;
-
-      // If output is not empty, we have succesfully got file listing,
-      // otherwise there was an error, in case it was "permission denied"
-      // we try to get at least parent directory (see "else" statement below)
-      if (FOutput->GetCount() > 0)
+      // We got no files with "-a", but again no files w/o "-a",
+      // so it was not "-a"'s problem, revert to auto and let it decide the next time
+      if (GotNoFilesForAll && (FileList->GetCount() == 0))
       {
-        // Copy LS command output, because eventual symlink analysis would
-        // modify FTerminal->Output
-        TStringList * OutputCopy = new TStringList();
+        assert(FListAll == asOff);
+        FListAll = asAuto;
+      }
+      else if (FListAll == asAuto)
+      {
+        // some servers take "-a" as a mask and return empty directory listing
+        // (note that it's actually never empty here, there's always at least parent directory,
+        // added explicitly by DoReadDirectory)
+        if ((FileList->GetCount() == 0) ||
+            ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
         {
-          BOOST_SCOPE_EXIT ( (&OutputCopy) )
-          {
-            delete OutputCopy;
-          } BOOST_SCOPE_EXIT_END
-          OutputCopy->Assign(FOutput);
-
-          // delete leading "total xxx" line
-          // On some hosts there is not "total" but "totalt". What's the reason??
-          // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-          if (IsTotalListingLine(OutputCopy->GetString(0)))
-          {
-            OutputCopy->Delete(0);
-          }
-
-          for (size_t Index = 0; Index < OutputCopy->GetCount(); Index++)
-          {
-            File = CreateRemoteFile(OutputCopy->GetString(Index));
-            FileList->AddFile(File);
-          }
-        }
-      }
-      else
-      {
-        bool Empty = true;
-        if (ListCurrentDirectory)
-        {
-          // Empty file list -> probably "permision denied", we
-          // at least get link to parent directory ("..")
-          FTerminal->ReadFile(
-            UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
-              PARENTDIRECTORY, File);
-          Empty = (File == NULL || (wcscmp(File->GetFileName().c_str(), PARENTDIRECTORY) == 0));
-          if (!Empty)
-          {
-            assert(File->GetIsParentDirectory());
-            FileList->AddFile(File);
-          }
+          Repeat = true;
+          FListAll = asOff;
+          GotNoFilesForAll = true;
         }
         else
         {
-          Empty = true;
-        }
-
-        if (Empty)
-        {
-          throw ExtException(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+          // reading first directory has succeeded, always use "-a"
+          FListAll = asOn;
         }
       }
 
-      if (FLsFullTime == asAuto)
-      {
-          FTerminal->LogEvent(
-            FORMAT(L"Directory listing with %s succeed, next time all errors during "
-              L"directory listing will be displayed immediatelly.",
-              FullTimeOption));
-          FLsFullTime = asOn;
-      }
+      // use "-a" even for implicit directory reading by FZAPI?
+      // (e.g. before file transfer)
+      FDoListAll = (FListAll == asOn);
     }
-    catch (const std::exception & E)
+    catch (...)
     {
-      if (FTerminal->GetActive())
+      FDoListAll = false;
+      // reading the first directory has failed,
+      // further try without "-a" only as the server may not support it
+      if ((FListAll == asAuto) && FTerminal->GetActive())
       {
-        if (FLsFullTime == asAuto)
-        {
-          FTerminal->FLog->AddException(&E);
-          FLsFullTime = asOff;
-          Again = true;
-          FTerminal->LogEvent(
-            FORMAT(L"Directory listing with %s failed, try again regular listing.",
-            FullTimeOption));
-        }
-        else
-        {
-          throw;
-        }
+        FListAll = asOff;
+        Repeat = true;
       }
       else
       {
@@ -1338,7 +1318,7 @@ void THTTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
     }
   }
-  while (Again);
+  while (Repeat);
   DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------

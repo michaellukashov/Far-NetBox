@@ -13,6 +13,8 @@ class TiXmlElement;
 //---------------------------------------------------------------------------
 class THTTPFileSystem : public TCustomFileSystem
 {
+friend class CEasyURL;
+friend class TFileListHelper;
 public:
   explicit THTTPFileSystem(TTerminal *ATerminal);
   virtual void Init(TSecureShell *SecureShell);
@@ -218,6 +220,7 @@ private:
   TCriticalSection * FTransferStatusCriticalSection;
   TMessageQueue *FQueue;
   HANDLE FQueueEvent;
+  TAutoSwitch FListAll;
   bool FDoListAll;
   mutable std::wstring FOptionScratch;
   HANDLE FAbortEvent;
