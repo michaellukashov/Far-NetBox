@@ -154,6 +154,7 @@ public:
     virtual bool Aborted() const = 0;
 
     virtual void SetDebugLevel(TLogLevel Level) = 0;
+    virtual CURL *GetCURL() = 0;
 };
 
 /**
@@ -246,6 +247,11 @@ public:
     virtual const char *GetTopURL() const
     {
         return m_TopURL.c_str();
+    }
+
+    virtual CURL *GetCURL()
+    {
+        return m_CURL;
     }
 
     operator CURL *()
