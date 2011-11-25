@@ -4883,7 +4883,7 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
         return false;
     }
 
-    //Erase slashes (to compare in xml parse)
+    // Erase slashes (to compare in xml parse)
     std::wstring currentPath(FCurrentDirectory);
     while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
     {
@@ -4897,11 +4897,9 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
     const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
 
 #ifdef _DEBUG
-    //////////////////////////////////////////////////////////////////////////
-    //CNBFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
-    //CNBFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
-    //////////////////////////////////////////////////////////////////////////
-#endif  //_DEBUG
+    // CNBFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
+    // CNBFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
+#endif
 
     //! WebDAV item description
     struct WebDAVItem
@@ -4910,12 +4908,12 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
         {
             LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
         }
-        std::wstring             Name;
-        DWORD               Attributes;
-        FILETIME            Created;
-        FILETIME            Modified;
-        FILETIME            LastAccess;
-        unsigned __int64    Size;
+        std::wstring Name;
+        DWORD Attributes;
+        FILETIME Created;
+        FILETIME Modified;
+        FILETIME LastAccess;
+        unsigned __int64 Size;
     };
     std::vector<WebDAVItem> wdavItems;
 
