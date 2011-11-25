@@ -4453,7 +4453,7 @@ bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &resp
     static const size_t requestDataLen = strlen(requestData);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
-    std::string resp = ::W2MB(response.c_str()).c_str();
+    std::string resp;
     CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(resp, &m_ProgressPercent));
 
     CSlistURL slist;
@@ -4483,7 +4483,7 @@ bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &resp
         // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
         return false;
     }
-
+    response = ::MB2W(resp.c_str());
     if (response.empty())
     {
         errInfo = L"Server return empty response";
