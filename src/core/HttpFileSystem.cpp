@@ -1161,8 +1161,15 @@ void THTTPFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.empty())
   {
-    ExecCommand(fsCurrentDirectory);
-    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
+    // ExecCommand(fsCurrentDirectory);
+    std::wstring response;
+    std::wstring errorInfo;
+    bool isExist = SendPropFindRequest(FCurrentDirectory.c_str(), response, errorInfo);
+    DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
+    if (FOutput->GetCount())
+    {
+        FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
+    }
   }
   else
   {
