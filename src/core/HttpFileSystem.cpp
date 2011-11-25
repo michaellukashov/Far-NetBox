@@ -1001,6 +1001,7 @@ std::wstring THTTPFileSystem::GetCurrentDirectory()
 //---------------------------------------------------------------------------
 void THTTPFileSystem::DoStartup()
 {
+  DEBUG_PRINTF(L"begin");
   // SkipStartupMessage and DetectReturnVar must succeed,
   // otherwise session is to be closed.
   FTerminal->SetExceptionOnFail (true);
@@ -1012,6 +1013,7 @@ void THTTPFileSystem::DoStartup()
   COND_OPER(ClearAliases);
   COND_OPER(UnsetNationalVars);
   #undef COND_OPER
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::SkipStartupMessage()
