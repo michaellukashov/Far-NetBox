@@ -1159,6 +1159,7 @@ void THTTPFileSystem::UnsetNationalVars()
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ReadCurrentDirectory()
 {
+  DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
   if (FCachedDirectoryChange.empty())
   {
     // ExecCommand(fsCurrentDirectory);
@@ -1175,6 +1176,7 @@ void THTTPFileSystem::ReadCurrentDirectory()
   {
     FCurrentDirectory = FCachedDirectoryChange;
   }
+  DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::HomeDirectory()
