@@ -1,6 +1,9 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include <stdio.h>
+#include <winhttp.h>
+
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
@@ -14,10 +17,12 @@
 #include "TextsCore.h"
 #include "SecureShell.h"
 #include "FileZillaIntf.h"
-#include "EasyURL.h"
 #include "Settings.h"
+#include "FarUtil.h"
+#include "tinyXML\tinyxml.h"
 
-#include <stdio.h>
+//---------------------------------------------------------------------------
+// #define WEBDAV_ASYNC 1
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
@@ -193,7 +198,7 @@ std::wstring THTTPCommandSet::Command(TFSCommand Cmd, ...)
 //---------------------------------------------------------------------------
 std::wstring THTTPCommandSet::Command(TFSCommand Cmd, va_list args)
 {
-  // DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
+  // DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str());
   std::wstring result;
   result = ::Format(GetCommand(Cmd).c_str(), args);
   // DEBUG_PRINTF(L"result = %s", result.c_str());
@@ -338,6 +343,7 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FQueue(new TMessageQueue),
   FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FAbortEvent(CreateEvent(NULL, true, false, NULL)),
+  m_ProgressPercent(0),
   FDoListAll(false)
 {
   Self = this;
@@ -535,7 +541,7 @@ void THTTPFileSystem::Open()
     FCURLIntf->SetAbortEvent(FAbortEvent);
 
     FPasswordFailed = false;
-
+    #ifdef WEBDAV_ASYNC
     try
     {
       // do not wait for FTP response code as Connect is complex operation
@@ -559,6 +565,29 @@ void THTTPFileSystem::Open()
         throw;
       }
     }
+    #else
+    //Check initial path existing
+    std::wstring path;
+    std::wstring query;
+    ::ParseURL(HostName.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    bool dirExist = false;
+    DEBUG_PRINTF(L"path = %s, query = %s", path.c_str(), query.c_str());
+    // if (!query.empty())
+    // {
+        // path += query;
+    // }
+    std::wstring errorInfo;
+    if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
+    {
+        // Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
+        // return false;
+    }
+    FCurrentDirectory = path;
+    while(FCurrentDirectory.size() > 1 && FCurrentDirectory[FCurrentDirectory.length() - 1] == L'/')
+    {
+        FCurrentDirectory.erase(FCurrentDirectory.length() - 1);
+    }
+    #endif
   }
   while (FPasswordFailed);
   DEBUG_PRINTF(L"end");
@@ -814,7 +843,7 @@ bool THTTPFileSystem::RemoveLastLine(std::wstring & Line,
     {
       IsLastLine = true;
       // DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
-      // if ((Pos != std::wstring::npos) && (Pos != 0)) 
+      // if ((Pos != std::wstring::npos) && (Pos != 0))
       {
         Line.resize(Pos);
       }
@@ -1387,7 +1416,7 @@ void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
 void THTTPFileSystem::CreateLink(const std::wstring FileName,
   const std::wstring PointTo, bool Symbolic)
 {
-  ExecCommand(fsCreateLink, 0, 
+  ExecCommand(fsCreateLink, 0,
     Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
@@ -1656,7 +1685,7 @@ void THTTPFileSystem::AnyCommand(const std::wstring Command,
 //---------------------------------------------------------------------------
 std::wstring THTTPFileSystem::FileUrl(const std::wstring FileName)
 {
-  return FTerminal->FileUrl(L"scp", FileName);
+  return FTerminal->FileUrl(L"http", FileName);
 }
 //---------------------------------------------------------------------------
 TStrings * THTTPFileSystem::GetFixedPaths()
@@ -2010,7 +2039,7 @@ void THTTPFileSystem::SCPSource(const std::wstring FileName,
     }
     else
     {
-      std::wstring AbsoluteFileName = FTerminal->AbsolutePath(DestFileName, false); // TargetDir + 
+      std::wstring AbsoluteFileName = FTerminal->AbsolutePath(DestFileName, false); // TargetDir +
       // DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
       assert(File);
 
@@ -4387,4 +4416,1143 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
     // (we are not waiting for reply anymore so keepalives are free to proceed)
     DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
   }
+}
+
+// from WebDAV
+bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &response, std::wstring &errInfo)
+{
+    const std::string webDavPath = EscapeUTF8URL(dir);
+    // DEBUG_PRINTF(L"THTTPFileSystem::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+
+    response.clear();
+
+    static const char *requestData =
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        "<D:propfind xmlns:D=\"DAV:\">"
+        "<D:prop xmlns:Z=\"urn:schemas-microsoft-com:\">"
+        "<D:resourcetype/>"
+        "<D:getcontentlength/>"
+        "<D:creationdate/>"
+        "<D:getlastmodified/>"
+        "<Z:Win32LastAccessTime/>"
+        "<Z:Win32FileAttributes/>"
+        "</D:prop>"
+        "</D:propfind>";
+
+    static const size_t requestDataLen = strlen(requestData);
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    std::string resp = ::W2MB(response.c_str()).c_str();
+    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(resp, &m_ProgressPercent));
+
+    CSlistURL slist;
+    slist.Append("Depth: 1");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    char contentLength[64];
+    sprintf_s(contentLength, "Content-Length: %d", requestDataLen);
+    slist.Append(contentLength);
+    slist.Append("Connection: Keep-Alive");
+
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "PROPFIND"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_MAXREDIRS, 5));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDS, requestData));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDSIZE, requestDataLen));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    // DEBUG_PRINTF(L"urlCode = %d", urlCode);
+    if (urlCode != CURLE_OK)
+    {
+        errInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
+    {
+        // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
+        return false;
+    }
+
+    if (response.empty())
+    {
+        errInfo = L"Server return empty response";
+        return false;
+    }
+
+    return true;
+}
+
+
+bool THTTPFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
+{
+    long responseCode = 0;
+    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool THTTPFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
+{
+    long responseCode = 0;
+    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect1 && responseCode != expect2)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            return false;
+        }
+    }
+    return true;
+}
+
+
+std::wstring THTTPFileSystem::GetBadResponseInfo(const int code) const
+{
+    const wchar_t *descr = NULL;
+    switch (code)
+    {
+    case HTTP_STATUS_CONTINUE           :
+        descr = L"OK to continue with request";
+        break;
+    case HTTP_STATUS_SWITCH_PROTOCOLS   :
+        descr = L"Server has switched protocols in upgrade header";
+        break;
+    case HTTP_STATUS_OK                 :
+        descr = L"Request completed";
+        break;
+    case HTTP_STATUS_CREATED            :
+        descr = L"Object created, reason = new URI";
+        break;
+    case HTTP_STATUS_ACCEPTED           :
+        descr = L"Async completion (TBS)";
+        break;
+    case HTTP_STATUS_PARTIAL            :
+        descr = L"Partial completion";
+        break;
+    case HTTP_STATUS_NO_CONTENT         :
+        descr = L"No info to return";
+        break;
+    case HTTP_STATUS_RESET_CONTENT      :
+        descr = L"Request completed, but clear form";
+        break;
+    case HTTP_STATUS_PARTIAL_CONTENT    :
+        descr = L"Partial GET furfilled";
+        break;
+    case HTTP_STATUS_WEBDAV_MULTI_STATUS:
+        descr = L"WebDAV Multi-Status";
+        break;
+    case HTTP_STATUS_AMBIGUOUS          :
+        descr = L"Server couldn't decide what to return";
+        break;
+    case HTTP_STATUS_MOVED              :
+        descr = L"Object permanently moved";
+        break;
+    case HTTP_STATUS_REDIRECT           :
+        descr = L"Object temporarily moved";
+        break;
+    case HTTP_STATUS_REDIRECT_METHOD    :
+        descr = L"Redirection w/ new access method";
+        break;
+    case HTTP_STATUS_NOT_MODIFIED       :
+        descr = L"If-modified-since was not modified";
+        break;
+    case HTTP_STATUS_USE_PROXY          :
+        descr = L"Redirection to proxy, location header specifies proxy to use";
+        break;
+    case HTTP_STATUS_REDIRECT_KEEP_VERB :
+        descr = L"HTTP/1.1: keep same verb";
+        break;
+    case HTTP_STATUS_BAD_REQUEST        :
+        descr = L"Invalid syntax";
+        break;
+    case HTTP_STATUS_DENIED             :
+        descr = L"Unauthorized";
+        break;
+    case HTTP_STATUS_PAYMENT_REQ        :
+        descr = L"Payment required";
+        break;
+    case HTTP_STATUS_FORBIDDEN          :
+        descr = L"Request forbidden";
+        break;
+    case HTTP_STATUS_NOT_FOUND          :
+        descr = L"Object not found";
+        break;
+    case HTTP_STATUS_BAD_METHOD         :
+        descr = L"Method is not allowed";
+        break;
+    case HTTP_STATUS_NONE_ACCEPTABLE    :
+        descr = L"No response acceptable to client found";
+        break;
+    case HTTP_STATUS_PROXY_AUTH_REQ     :
+        descr = L"Proxy authentication required";
+        break;
+    case HTTP_STATUS_REQUEST_TIMEOUT    :
+        descr = L"Server timed out waiting for request";
+        break;
+    case HTTP_STATUS_CONFLICT           :
+        descr = L"User should resubmit with more info";
+        break;
+    case HTTP_STATUS_GONE               :
+        descr = L"The resource is no longer available";
+        break;
+    case HTTP_STATUS_LENGTH_REQUIRED    :
+        descr = L"The server refused to accept request w/o a length";
+        break;
+    case HTTP_STATUS_PRECOND_FAILED     :
+        descr = L"Precondition given in request failed";
+        break;
+    case HTTP_STATUS_REQUEST_TOO_LARGE  :
+        descr = L"Request entity was too large";
+        break;
+    case HTTP_STATUS_URI_TOO_LONG       :
+        descr = L"Request URI too long";
+        break;
+    case HTTP_STATUS_UNSUPPORTED_MEDIA  :
+        descr = L"Unsupported media type";
+        break;
+    case 416                            :
+        descr = L"Requested Range Not Satisfiable";
+        break;
+    case 417                            :
+        descr = L"Expectation Failed";
+        break;
+    case HTTP_STATUS_RETRY_WITH         :
+        descr = L"Retry after doing the appropriate action";
+        break;
+    case HTTP_STATUS_SERVER_ERROR       :
+        descr = L"Internal server error";
+        break;
+    case HTTP_STATUS_NOT_SUPPORTED      :
+        descr = L"Required not supported";
+        break;
+    case HTTP_STATUS_BAD_GATEWAY        :
+        descr = L"Error response received from gateway";
+        break;
+    case HTTP_STATUS_SERVICE_UNAVAIL    :
+        descr = L"Temporarily overloaded";
+        break;
+    case HTTP_STATUS_GATEWAY_TIMEOUT    :
+        descr = L"Timed out waiting for gateway";
+        break;
+    case HTTP_STATUS_VERSION_NOT_SUP    :
+        descr = L"HTTP version not supported";
+        break;
+    }
+
+    std::wstring errInfo = L"Incorrect response code: ";
+
+    errInfo += ::NumberToWString(code);
+
+    if (descr)
+    {
+        errInfo += L' ';
+        errInfo += descr;
+    }
+
+    return errInfo;
+}
+
+
+std::wstring THTTPFileSystem::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
+{
+    assert(element);
+    assert(name);
+    assert(defaultVal);
+
+    std::string ns = defaultVal;
+    const TiXmlAttribute *attr = element->FirstAttribute();
+    while (attr)
+    {
+        if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
+        {
+            ns = attr->Name();
+            ns.erase(0, ns.find(':') + 1);
+            ns += ':';
+            break;
+        }
+        attr = attr->Next();
+    }
+    return ::MB2W(ns.c_str());
+}
+
+
+FILETIME THTTPFileSystem::ParseDateTime(const char *dt) const
+{
+    assert(dt);
+
+    FILETIME ft;
+    ZeroMemory(&ft, sizeof(ft));
+    SYSTEMTIME st;
+    ZeroMemory(&st, sizeof(st));
+
+    if (WinHttpTimeToSystemTime(::MB2W(dt).c_str(), &st))
+    {
+        SystemTimeToFileTime(&st, &ft);
+    }
+    else if (strlen(dt) > 18)
+    {
+        //rfc 3339 date-time
+        st.wYear =   static_cast<WORD>(atoi(dt +  0));
+        st.wMonth =  static_cast<WORD>(atoi(dt +  5));
+        st.wDay =    static_cast<WORD>(atoi(dt +  8));
+        st.wHour =   static_cast<WORD>(atoi(dt + 11));
+        st.wMinute = static_cast<WORD>(atoi(dt + 14));
+        st.wSecond = static_cast<WORD>(atoi(dt + 17));
+        SystemTimeToFileTime(&st, &ft);
+    }
+
+    return ft;
+}
+
+
+std::string THTTPFileSystem::DecodeHex(const std::string &src) const
+{
+    const size_t cntLength = src.length();
+    std::string result;
+    result.reserve(cntLength);
+
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = src[i];
+        if (chkChar != L'%' || (i + 2 >= cntLength) || !IsHexadecimal(src[i + 1]) || !IsHexadecimal(src[i + 2]))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            const char ch1 = src[i + 1];
+            const char ch2 = src[i + 2];
+            const char encChar = (((ch1 & 0xf) + ((ch1 >= 'A') ? 9 : 0)) << 4) | ((ch2 & 0xf) + ((ch2 >= 'A') ? 9 : 0));
+            result += encChar;
+            i += 2;
+        }
+    }
+
+    return result;
+}
+
+
+std::string THTTPFileSystem::EscapeUTF8URL(const wchar_t *src) const
+{
+    assert(src && src[0] == L'/');
+
+    std::string plainText = ::W2MB(src, CP_UTF8);
+    const size_t cntLength = plainText.length();
+
+    std::string result;
+    result.reserve(cntLength);
+
+    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()%{}^[]`";
+
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = plainText[i];
+        if (*std::find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
+                (chkChar >= 'a' && chkChar <= 'z') ||
+                (chkChar >= 'A' && chkChar <= 'Z') ||
+                (chkChar >= '0' && chkChar <= '9'))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            char encChar[4];
+            sprintf_s(encChar, "%%%02X", static_cast<unsigned char>(chkChar));
+            result += encChar;
+        }
+    }
+    return result;
+}
+
+CURLcode THTTPFileSystem::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
+{
+    CURLcode urlCode = FCURLIntf->Prepare(webDavPath, handleTimeout);
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POST301, 1));
+
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYHOST, 0L));
+    return urlCode;
+}
+
+bool THTTPFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
+{
+    assert(abortEvent);
+
+    const wchar_t *url = m_Session.GetURL();
+    // DEBUG_PRINTF(L"WebDAV: connecting to %s", url);
+    //Initialize curl
+    FCURLIntf->Initialize(url, m_Session.GetUserName(), m_Session.GetPassword(),
+        m_Session.GetProxySettings());
+    FCURLIntf->SetAbortEvent(abortEvent);
+
+    //Check initial path existing
+    std::wstring path;
+    // std::wstring query;
+    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    bool dirExist = false;
+    // DEBUG_PRINTF(L"path = %s, query = %s", path.c_str(), query.c_str());
+    // if (!query.empty())
+    // {
+        // path += query;
+    // }
+    if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
+    {
+        Log2(L"WebDAV: error: path %s does not exist.", path.c_str());
+        return false;
+    }
+    m_CurrentDirectory = path;
+    while(m_CurrentDirectory.size() > 1 && m_CurrentDirectory[m_CurrentDirectory.length() - 1] == L'/')
+    {
+        m_CurrentDirectory.erase(m_CurrentDirectory.length() - 1);
+    }
+    return true;
+}
+
+
+void THTTPFileSystem::Close()
+{
+    FCURLIntf->Close();
+}
+
+
+bool THTTPFileSystem::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"THTTPFileSystem::CheckExisting: path = %s", path);
+    assert(type == ItemDirectory);
+
+    std::string responseDummy;
+    isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    // DEBUG_PRINTF(L"THTTPFileSystem::CheckExisting: path = %s, isExist = %d", path, isExist);
+    return true;
+}
+
+
+bool THTTPFileSystem::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"MakeDirectory: begin: path = %s", path);
+    const std::string webDavPath = EscapeUTF8URL(path);
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "MKCOL"));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
+    // DEBUG_PRINTF(L"MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
+    return result;
+}
+
+
+bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
+{
+    assert(items);
+    assert(itemsNum);
+
+    std::string response;
+    if (!SendPropFindRequest(m_CurrentDirectory.c_str(), response, errorInfo))
+    {
+        return false;
+    }
+
+    //Erase slashes (to compare in xml parse)
+    std::wstring currentPath(m_CurrentDirectory);
+    while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
+    {
+        currentPath.erase(currentPath.length() - 1);
+    }
+    while (!currentPath.empty() && currentPath[0] == L'/')
+    {
+        currentPath.erase(0, 1);
+    }
+
+    const std::string decodedResp = DecodeHex(response);
+
+#ifdef _DEBUG
+    //////////////////////////////////////////////////////////////////////////
+    //CNBFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
+    //CNBFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
+    //////////////////////////////////////////////////////////////////////////
+#endif  //_DEBUG
+
+    //! WebDAV item description
+    struct WebDAVItem
+    {
+        WebDAVItem() : Attributes(0), Size(0)
+        {
+            LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
+        }
+        std::wstring             Name;
+        DWORD               Attributes;
+        FILETIME            Created;
+        FILETIME            Modified;
+        FILETIME            LastAccess;
+        unsigned __int64    Size;
+    };
+    std::vector<WebDAVItem> wdavItems;
+
+    TiXmlDocument xmlDoc;
+    xmlDoc.Parse(decodedResp.c_str());
+    if (xmlDoc.Error())
+    {
+        errorInfo = L"Error parsing response xml:\n[";
+        errorInfo += ::NumberToWString(xmlDoc.ErrorId());
+        errorInfo += L"]: ";
+        errorInfo += ::MB2W(xmlDoc.ErrorDesc());
+        return false;
+    }
+
+    const TiXmlElement *xmlRoot = xmlDoc.RootElement();
+
+    //Determine global namespace
+    const std::string glDavNs = GetNamespace(xmlRoot, "DAV:", "D:");
+    const std::string glMsNs = GetNamespace(xmlRoot, "urn:schemas-microsoft-com:", "Z:");
+
+    const TiXmlNode *xmlRespNode = NULL;
+    while ((xmlRespNode = xmlRoot->IterateChildren((glDavNs + "response").c_str(), xmlRespNode)) != NULL)
+    {
+        WebDAVItem item;
+
+        const TiXmlElement *xmlRespElem = xmlRespNode->ToElement();
+        const std::string davNamespace = GetNamespace(xmlRespElem, "DAV:", glDavNs.c_str());
+        const std::string msNamespace = GetNamespace(xmlRespElem, "urn:schemas-microsoft-com:", glMsNs.c_str());
+        const TiXmlElement *xmlHref = xmlRespNode->FirstChildElement((glDavNs + "href").c_str());
+        if (!xmlHref || !xmlHref->GetText())
+        {
+            continue;
+        }
+
+        const std::wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
+        std::wstring path;
+        ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
+        if (path.empty())
+        {
+            path = href;
+        }
+        while (!path.empty() && path[path.length() - 1] == L'/')
+        {
+            path.erase(path.length() - 1);
+        }
+        while (!path.empty() && path[0] == L'/')
+        {
+            path.erase(0, 1);
+        }
+
+        //Check for self-link (compare paths)
+        if (_wcsicmp(path.c_str(), currentPath.c_str()) == 0)
+        {
+            continue;
+        }
+
+        //name
+        item.Name = path;
+        const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
+        if (nameDelim != std::wstring::npos)
+        {
+            item.Name.erase(0, nameDelim + 1);
+        }
+
+        //Find correct 'propstat' node (with HTTP 200 OK status)
+        const TiXmlElement *xmlProps = NULL;
+        const TiXmlNode *xmlPropsNode = NULL;
+        while (xmlProps == NULL && (xmlPropsNode = xmlRespNode->IterateChildren((glDavNs + "propstat").c_str(), xmlPropsNode)) != NULL)
+        {
+            const TiXmlElement *xmlStatus = xmlPropsNode->FirstChildElement((glDavNs + "status").c_str());
+            if (xmlStatus && strstr(xmlStatus->GetText(), "200"))
+            {
+                xmlProps = xmlPropsNode->FirstChildElement((glDavNs + "prop").c_str());
+            }
+        }
+        if (xmlProps)
+        {
+            /************************************************************************/
+            /* WebDAV [D:] (DAV:)
+            /************************************************************************/
+            //attributes
+            const TiXmlElement *xmlResType = xmlProps->FirstChildElement((davNamespace + "resourcetype").c_str());
+            if (xmlResType && xmlResType->FirstChildElement((glDavNs + "collection").c_str()))
+            {
+                item.Attributes = FILE_ATTRIBUTE_DIRECTORY;
+            }
+
+            //size
+            const TiXmlElement *xmlSize = xmlProps->FirstChildElement((davNamespace + "getcontentlength").c_str());
+            if (xmlSize && xmlSize->GetText())
+            {
+                item.Size = _atoi64(xmlSize->GetText());
+            }
+
+            //creation datetime
+            const TiXmlElement *xmlCrDate = xmlProps->FirstChildElement((davNamespace + "creationdate").c_str());
+            if (xmlCrDate && xmlCrDate->GetText())
+            {
+                item.Created = ParseDateTime(xmlCrDate->GetText());
+            }
+
+            //last modified datetime
+            const TiXmlElement *xmlLmDate = xmlProps->FirstChildElement((davNamespace + "getlastmodified").c_str());
+            if (xmlLmDate && xmlLmDate->GetText())
+            {
+                item.Modified = ParseDateTime(xmlLmDate->GetText());
+            }
+
+            /************************************************************************/
+            /* Win32 [Z:] (urn:schemas-microsoft-com)
+            /************************************************************************/
+            //last access datetime
+            // TODO: process D:creationdate D:getlastmodified
+            const TiXmlElement *xmlLaDate = xmlProps->FirstChildElement((msNamespace + "Win32LastAccessTime").c_str());
+            if (xmlLaDate && xmlLaDate->GetText())
+            {
+                item.LastAccess = ParseDateTime(xmlLaDate->GetText());
+            }
+
+            //attributes
+            const TiXmlElement *xmlAttr = xmlProps->FirstChildElement((msNamespace + "Win32FileAttributes").c_str());
+            if (xmlAttr && xmlAttr->GetText())
+            {
+                DWORD attr = 0;
+                sscanf_s(xmlAttr->GetText(), "%x", &attr);
+                item.Attributes |= attr;
+            }
+        }
+        wdavItems.push_back(item);
+    }
+
+    *itemsNum = static_cast<int>(wdavItems.size());
+    if (*itemsNum)
+    {
+        *items = new PluginPanelItem[*itemsNum];
+        ZeroMemory(*items, sizeof(PluginPanelItem) * (*itemsNum));
+        for (int i = 0; i < *itemsNum; ++i)
+        {
+            PluginPanelItem &farItem = (*items)[i];
+            const size_t nameSize = wdavItems[i].Name.length() + 1;
+            wchar_t *name = new wchar_t[nameSize];
+            wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
+            farItem.FindData.lpwszFileName = name;
+            farItem.FindData.dwFileAttributes = wdavItems[i].Attributes;
+            if ((farItem.FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+            {
+                farItem.FindData.nFileSize = wdavItems[i].Size;
+            }
+            farItem.FindData.ftCreationTime = wdavItems[i].Created;
+            farItem.FindData.ftLastWriteTime = wdavItems[i].Modified;
+            farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
+        }
+    }
+
+    return true;
+}
+
+
+bool THTTPFileSystem::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    assert(localPath && *localPath);
+
+    CNBFile outFile;
+    if (!outFile.OpenWrite(localPath))
+    {
+        errorInfo = FormatErrorDescription(outFile.LastError());
+        // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: errorInfo = %s", errorInfo.c_str());
+        return false;
+    }
+
+    const std::string webDavPath = EscapeUTF8URL(remotePath);
+    // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(&outFile, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+
+    outFile.Close();
+    m_ProgressPercent = -1;
+
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: errorInfo = %s", errorInfo.c_str());
+        return false;
+    }
+
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+    // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
+    return result;
+}
+
+
+bool THTTPFileSystem::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"THTTPFileSystem::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    assert(localPath && *localPath);
+
+    CNBFile inFile;
+    if (!inFile.OpenRead(localPath))
+    {
+        errorInfo = FormatErrorDescription(inFile.LastError());
+        return false;
+    }
+
+    const std::string webDavPath = EscapeUTF8URL(remotePath);
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
+    CSlistURL slist;
+    slist.Append("Expect:");    //Expect: 100-continue is not wanted
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, FCURLIntf->SetInput(&inFile, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+
+    inFile.Close();
+    m_ProgressPercent = -1;
+
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+}
+
+
+bool THTTPFileSystem::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
+{
+    const std::string srcWebDavPath = EscapeUTF8URL(srcPath);
+    const std::string dstWebDavPath = EscapeUTF8URL(dstPath);
+
+    CURLcode urlCode = CURLPrepare(srcWebDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Depth: infinity");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    std::string dstParam = "Destination: ";
+    dstParam += FCURLIntf->GetTopURL();
+    dstParam += dstWebDavPath;
+    slist.Append(dstParam.c_str());
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "MOVE"));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+}
+
+
+bool THTTPFileSystem::Delete(const wchar_t *path, const ItemType /*type*/, std::wstring &errorInfo)
+{
+    const std::string webDavPath = EscapeUTF8URL(path);
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "DELETE"));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+}
+
+
+bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::string &response, std::wstring &errInfo)
+{
+    const std::string webDavPath = EscapeUTF8URL(dir);
+    // DEBUG_PRINTF(L"THTTPFileSystem::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+
+    response.clear();
+
+    static const char *requestData =
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        "<D:propfind xmlns:D=\"DAV:\">"
+        "<D:prop xmlns:Z=\"urn:schemas-microsoft-com:\">"
+        "<D:resourcetype/>"
+        "<D:getcontentlength/>"
+        "<D:creationdate/>"
+        "<D:getlastmodified/>"
+        "<Z:Win32LastAccessTime/>"
+        "<Z:Win32FileAttributes/>"
+        "</D:prop>"
+        "</D:propfind>";
+
+    static const size_t requestDataLen = strlen(requestData);
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(response, &m_ProgressPercent));
+
+    CSlistURL slist;
+    slist.Append("Depth: 1");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    char contentLength[64];
+    sprintf_s(contentLength, "Content-Length: %d", requestDataLen);
+    slist.Append(contentLength);
+    slist.Append("Connection: Keep-Alive");
+
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_CUSTOMREQUEST, "PROPFIND"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_MAXREDIRS, 5));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDS, requestData));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POSTFIELDSIZE, requestDataLen));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    // DEBUG_PRINTF(L"urlCode = %d", urlCode);
+    if (urlCode != CURLE_OK)
+    {
+        errInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
+    {
+        // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
+        return false;
+    }
+
+    if (response.empty())
+    {
+        errInfo = L"Server return empty response";
+        return false;
+    }
+
+    return true;
+}
+
+
+bool THTTPFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
+{
+    long responseCode = 0;
+    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool THTTPFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
+{
+    long responseCode = 0;
+    if (curl_easy_getinfo(FCURLIntf, CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect1 && responseCode != expect2)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            return false;
+        }
+    }
+    return true;
+}
+
+
+std::wstring THTTPFileSystem::GetBadResponseInfo(const int code) const
+{
+    const wchar_t *descr = NULL;
+    switch (code)
+    {
+    case HTTP_STATUS_CONTINUE           :
+        descr = L"OK to continue with request";
+        break;
+    case HTTP_STATUS_SWITCH_PROTOCOLS   :
+        descr = L"Server has switched protocols in upgrade header";
+        break;
+    case HTTP_STATUS_OK                 :
+        descr = L"Request completed";
+        break;
+    case HTTP_STATUS_CREATED            :
+        descr = L"Object created, reason = new URI";
+        break;
+    case HTTP_STATUS_ACCEPTED           :
+        descr = L"Async completion (TBS)";
+        break;
+    case HTTP_STATUS_PARTIAL            :
+        descr = L"Partial completion";
+        break;
+    case HTTP_STATUS_NO_CONTENT         :
+        descr = L"No info to return";
+        break;
+    case HTTP_STATUS_RESET_CONTENT      :
+        descr = L"Request completed, but clear form";
+        break;
+    case HTTP_STATUS_PARTIAL_CONTENT    :
+        descr = L"Partial GET furfilled";
+        break;
+    case HTTP_STATUS_WEBDAV_MULTI_STATUS:
+        descr = L"WebDAV Multi-Status";
+        break;
+    case HTTP_STATUS_AMBIGUOUS          :
+        descr = L"Server couldn't decide what to return";
+        break;
+    case HTTP_STATUS_MOVED              :
+        descr = L"Object permanently moved";
+        break;
+    case HTTP_STATUS_REDIRECT           :
+        descr = L"Object temporarily moved";
+        break;
+    case HTTP_STATUS_REDIRECT_METHOD    :
+        descr = L"Redirection w/ new access method";
+        break;
+    case HTTP_STATUS_NOT_MODIFIED       :
+        descr = L"If-modified-since was not modified";
+        break;
+    case HTTP_STATUS_USE_PROXY          :
+        descr = L"Redirection to proxy, location header specifies proxy to use";
+        break;
+    case HTTP_STATUS_REDIRECT_KEEP_VERB :
+        descr = L"HTTP/1.1: keep same verb";
+        break;
+    case HTTP_STATUS_BAD_REQUEST        :
+        descr = L"Invalid syntax";
+        break;
+    case HTTP_STATUS_DENIED             :
+        descr = L"Unauthorized";
+        break;
+    case HTTP_STATUS_PAYMENT_REQ        :
+        descr = L"Payment required";
+        break;
+    case HTTP_STATUS_FORBIDDEN          :
+        descr = L"Request forbidden";
+        break;
+    case HTTP_STATUS_NOT_FOUND          :
+        descr = L"Object not found";
+        break;
+    case HTTP_STATUS_BAD_METHOD         :
+        descr = L"Method is not allowed";
+        break;
+    case HTTP_STATUS_NONE_ACCEPTABLE    :
+        descr = L"No response acceptable to client found";
+        break;
+    case HTTP_STATUS_PROXY_AUTH_REQ     :
+        descr = L"Proxy authentication required";
+        break;
+    case HTTP_STATUS_REQUEST_TIMEOUT    :
+        descr = L"Server timed out waiting for request";
+        break;
+    case HTTP_STATUS_CONFLICT           :
+        descr = L"User should resubmit with more info";
+        break;
+    case HTTP_STATUS_GONE               :
+        descr = L"The resource is no longer available";
+        break;
+    case HTTP_STATUS_LENGTH_REQUIRED    :
+        descr = L"The server refused to accept request w/o a length";
+        break;
+    case HTTP_STATUS_PRECOND_FAILED     :
+        descr = L"Precondition given in request failed";
+        break;
+    case HTTP_STATUS_REQUEST_TOO_LARGE  :
+        descr = L"Request entity was too large";
+        break;
+    case HTTP_STATUS_URI_TOO_LONG       :
+        descr = L"Request URI too long";
+        break;
+    case HTTP_STATUS_UNSUPPORTED_MEDIA  :
+        descr = L"Unsupported media type";
+        break;
+    case 416                            :
+        descr = L"Requested Range Not Satisfiable";
+        break;
+    case 417                            :
+        descr = L"Expectation Failed";
+        break;
+    case HTTP_STATUS_RETRY_WITH         :
+        descr = L"Retry after doing the appropriate action";
+        break;
+    case HTTP_STATUS_SERVER_ERROR       :
+        descr = L"Internal server error";
+        break;
+    case HTTP_STATUS_NOT_SUPPORTED      :
+        descr = L"Required not supported";
+        break;
+    case HTTP_STATUS_BAD_GATEWAY        :
+        descr = L"Error response received from gateway";
+        break;
+    case HTTP_STATUS_SERVICE_UNAVAIL    :
+        descr = L"Temporarily overloaded";
+        break;
+    case HTTP_STATUS_GATEWAY_TIMEOUT    :
+        descr = L"Timed out waiting for gateway";
+        break;
+    case HTTP_STATUS_VERSION_NOT_SUP    :
+        descr = L"HTTP version not supported";
+        break;
+    }
+
+    std::wstring errInfo = L"Incorrect response code: ";
+
+    errInfo += ::NumberToWString(code);
+
+    if (descr)
+    {
+        errInfo += L' ';
+        errInfo += descr;
+    }
+
+    return errInfo;
+}
+
+
+std::string THTTPFileSystem::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
+{
+    assert(element);
+    assert(name);
+    assert(defaultVal);
+
+    std::string ns = defaultVal;
+    const TiXmlAttribute *attr = element->FirstAttribute();
+    while (attr)
+    {
+        if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
+        {
+            ns = attr->Name();
+            ns.erase(0, ns.find(':') + 1);
+            ns += ':';
+            break;
+        }
+        attr = attr->Next();
+    }
+    return ns;
+}
+
+
+FILETIME THTTPFileSystem::ParseDateTime(const char *dt) const
+{
+    assert(dt);
+
+    FILETIME ft;
+    ZeroMemory(&ft, sizeof(ft));
+    SYSTEMTIME st;
+    ZeroMemory(&st, sizeof(st));
+
+    if (WinHttpTimeToSystemTime(::MB2W(dt).c_str(), &st))
+    {
+        SystemTimeToFileTime(&st, &ft);
+    }
+    else if (strlen(dt) > 18)
+    {
+        //rfc 3339 date-time
+        st.wYear =   static_cast<WORD>(atoi(dt +  0));
+        st.wMonth =  static_cast<WORD>(atoi(dt +  5));
+        st.wDay =    static_cast<WORD>(atoi(dt +  8));
+        st.wHour =   static_cast<WORD>(atoi(dt + 11));
+        st.wMinute = static_cast<WORD>(atoi(dt + 14));
+        st.wSecond = static_cast<WORD>(atoi(dt + 17));
+        SystemTimeToFileTime(&st, &ft);
+    }
+
+    return ft;
+}
+
+
+std::string THTTPFileSystem::DecodeHex(const std::string &src) const
+{
+    const size_t cntLength = src.length();
+    std::string result;
+    result.reserve(cntLength);
+
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = src[i];
+        if (chkChar != L'%' || (i + 2 >= cntLength) || !IsHexadecimal(src[i + 1]) || !IsHexadecimal(src[i + 2]))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            const char ch1 = src[i + 1];
+            const char ch2 = src[i + 2];
+            const char encChar = (((ch1 & 0xf) + ((ch1 >= 'A') ? 9 : 0)) << 4) | ((ch2 & 0xf) + ((ch2 >= 'A') ? 9 : 0));
+            result += encChar;
+            i += 2;
+        }
+    }
+
+    return result;
+}
+
+
+std::string THTTPFileSystem::EscapeUTF8URL(const wchar_t *src) const
+{
+    assert(src && src[0] == L'/');
+
+    std::string plainText = ::W2MB(src, CP_UTF8);
+    const size_t cntLength = plainText.length();
+
+    std::string result;
+    result.reserve(cntLength);
+
+    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()%{}^[]`";
+
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = plainText[i];
+        if (*std::find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
+                (chkChar >= 'a' && chkChar <= 'z') ||
+                (chkChar >= 'A' && chkChar <= 'Z') ||
+                (chkChar >= '0' && chkChar <= '9'))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            char encChar[4];
+            sprintf_s(encChar, "%%%02X", static_cast<unsigned char>(chkChar));
+            result += encChar;
+        }
+    }
+    return result;
+}
+
+CURLcode THTTPFileSystem::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
+{
+    CURLcode urlCode = FCURLIntf->Prepare(webDavPath, handleTimeout);
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_POST301, 1));
+
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf, CURLOPT_SSL_VERIFYHOST, 0L));
+    return urlCode;
 }
