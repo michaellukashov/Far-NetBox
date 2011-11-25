@@ -1212,11 +1212,12 @@ void THTTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
+  DEBUG_PRINTF(L"begin");
   assert(FileList);
   // emtying file list moved before command execution
   FileList->Clear();
 
-  bool Again;
+  bool Again = false;
 
   do
   {
@@ -1338,6 +1339,7 @@ void THTTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     }
   }
   while (Again);
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
