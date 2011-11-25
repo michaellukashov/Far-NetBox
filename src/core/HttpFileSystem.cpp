@@ -337,6 +337,7 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FTransferStatusCriticalSection(new TCriticalSection),
   FQueue(new TMessageQueue),
   FQueueEvent(CreateEvent(NULL, true, false, NULL)),
+  FAbortEvent(CreateEvent(NULL, true, false, NULL)),
   FDoListAll(false)
 {
   Self = this;
@@ -379,6 +380,7 @@ THTTPFileSystem::~THTTPFileSystem()
   delete FCURLIntf;
   FCURLIntf = NULL;
   CloseHandle(FQueueEvent);
+  CloseHandle(FAbortEvent);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::Open()
@@ -529,8 +531,8 @@ void THTTPFileSystem::Open()
 	  // false,
 	  // ::W2MB(Path.c_str()).c_str(),
       // ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
-
     assert(FActive);
+    FCURLIntf->SetAbortEvent(FAbortEvent);
 
     FPasswordFailed = false;
 
