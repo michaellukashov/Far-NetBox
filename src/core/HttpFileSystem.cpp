@@ -1679,6 +1679,10 @@ void THTTPFileSystem::ResetCaches()
 void THTTPFileSystem::AnyCommand(const std::wstring Command,
   const captureoutput_slot_type *OutputEvent)
 {
+  // end-user has right to expect that client current directory is really
+  // current directory for the server
+  EnsureLocation();
+
   // assert(FSecureShell->GetOnCaptureOutput().empty());
   if (OutputEvent)
   {
