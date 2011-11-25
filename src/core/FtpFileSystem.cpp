@@ -595,7 +595,7 @@ void TFTPFileSystem::EnsureLocation()
     // It may not be because:
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
-    // makes FAPI change its current directory (and not restoring it back afterwards)
+    // makes FZAPI change its current directory (and not restoring it back afterwards)
     if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
