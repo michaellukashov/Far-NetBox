@@ -22,6 +22,17 @@
 #include "tinyXML\tinyxml.h"
 
 //---------------------------------------------------------------------------
+std::wstring ExcludeLeadingBackslash(const std::wstring str)
+{
+    std::wstring path = str;
+    while (!path.empty() && path[0] == L'/')
+    {
+        path.erase(0, 1);
+    }
+    return path;
+}
+
+//---------------------------------------------------------------------------
 // #define WEBDAV_ASYNC 1
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
@@ -4940,7 +4951,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
     }
 
     // Erase slashes (to compare in xml parse)
-    std::wstring currentPath = ::ExcludeTrailingBackslash(Directory);
+    std::wstring currentPath = ::ExcludeLeadingBackslash(::ExcludeTrailingBackslash(Directory));
 
     const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
 
@@ -5003,14 +5014,8 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
         {
             path = href;
         }
-        while (!path.empty() && path[path.length() - 1] == L'/')
-        {
-            path.erase(path.length() - 1);
-        }
-        while (!path.empty() && path[0] == L'/')
-        {
-            path.erase(0, 1);
-        }
+        path = ::ExcludeLeadingBackslash(::ExcludeTrailingBackslash(path));
+        DEBUG_PRINTF(L"href = %s, path = %s, currentPath = %s", href.c_str(), path.c_str(), currentPath.c_str());
 
         //Check for self-link (compare paths)
         if (_wcsicmp(path.c_str(), currentPath.c_str()) == 0)
