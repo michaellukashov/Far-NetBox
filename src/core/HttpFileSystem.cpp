@@ -5035,22 +5035,42 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
     if (Count)
     {
         Entries.resize(Count);
-        // ZeroMemory(*items, sizeof(PluginPanelItem) * (*itemsNum));
         for (int i = 0; i < Count; ++i)
         {
             TListDataEntry &Dest = Entries[i];
-            const size_t nameSize = wdavItems[i].Name.length() + 1;
-            wchar_t *name = new wchar_t[nameSize];
-            wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
-            farItem.FindData.lpwszFileName = name;
-            farItem.FindData.dwFileAttributes = wdavItems[i].Attributes;
-            if ((farItem.FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
-            {
-                farItem.FindData.nFileSize = wdavItems[i].Size;
-            }
-            farItem.FindData.ftCreationTime = wdavItems[i].Created;
-            farItem.FindData.ftLastWriteTime = wdavItems[i].Modified;
-            farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
+            WebDAVItem &item = wdavItems[i];
+            // const size_t nameSize = wdavItems[i].Name.length() + 1;
+            // wchar_t *name = new wchar_t[nameSize];
+            // wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
+            // farItem.FindData.lpwszFileName = name;
+            Dest.Name = wdavItems[i].Name.c_str();
+            Dest.Permissions = NULL;
+            Dest.OwnerGroup = NULL;
+            // farItem.FindData.dwFileAttributes = wdavItems[i].Attributes;
+            int dir = item.Attributes & FILE_ATTRIBUTE_DIRECTORY;
+            // farItem.FindData.nFileSize = wdavItems[i].Size;
+            Dest.Size = dir == 0 ? item.Size : 0;
+            Dest.Dir = dir != 0;
+            Dest.Link = false;
+            // farItem.FindData.ftCreationTime = wdavItems[i].Created;
+            // farItem.FindData.ftLastWriteTime = wdavItems[i].Modified;
+            // farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
+            FILETIME ft = item.Created;
+            SYSTEMTIME st;
+            ::FileTimeToSystemTime(&ft, &st);
+            TDateTime dt = ::SystemTimeToDateTime(st);
+            unsigned int Y, M, D;
+            unsigned int HH, MM, SS, MS;
+            dt.DecodeDate(Y, M, D);
+            dt.DecodeTime(HH, MM, SS, MS);
+            Dest.Year = Y;
+            Dest.Month = M;
+            Dest.Day = D;
+            Dest.Hour = HH;
+            Dest.Minute = MM;
+            Dest.HasTime = true;
+            Dest.HasDate = true;
+            Dest.LinkTarget = NULL;
         }
     }
     TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
