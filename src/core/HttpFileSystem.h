@@ -115,7 +115,6 @@ protected:
   void EnsureLocation();
   std::wstring ActualCurrentDirectory();
   void Discard();
-  void DoChangeDirectory(const std::wstring & Directory);
 
   void Sink(const std::wstring FileName,
     const TRemoteFile * File, const std::wstring TargetDir,
@@ -145,8 +144,9 @@ protected:
   void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
   void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
   void ResetCaches();
-  void CaptureOutput(const std::wstring & Str);
-  void DoReadDirectory(TRemoteFileList * FileList);
+  void CaptureOutput(const std::wstring &Str);
+  void DoReadDirectory(TRemoteFileList *FileList);
+  void DoChangeDirectory(const std::wstring &Directory);
   void FileTransfer(const std::wstring & FileName, const std::wstring & LocalFile,
     const std::wstring & RemoteFile, const std::wstring & RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
