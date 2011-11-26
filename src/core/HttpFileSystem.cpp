@@ -973,11 +973,12 @@ void THTTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         std::wstring FileName = FilesToCopy->GetString(Index);
         const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
         bool Success = false;
-
+        FTerminal->SetExceptionOnFail(true);
         {
             BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
             {
                 OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+                Self->FTerminal->SetExceptionOnFail(false);
             } BOOST_SCOPE_EXIT_END
             try
             {
