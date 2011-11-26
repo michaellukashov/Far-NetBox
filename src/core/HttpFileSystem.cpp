@@ -4956,7 +4956,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
     const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
 
 #ifdef _DEBUG
-    CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", ::W2MB(response.c_str()).c_str());
+    // CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", ::W2MB(response.c_str()).c_str());
     // CNBFile::SaveFile(L"c:\\webdav_response_decoded.xml", decodedResp.c_str());
 #endif
 
