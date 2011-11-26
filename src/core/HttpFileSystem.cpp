@@ -447,6 +447,7 @@ std::wstring THTTPFileSystem::ActualCurrentDirectory()
 void THTTPFileSystem::EnsureLocation()
 {
   // if we do not know what's the current directory, do nothing
+  /*
   if (!FCurrentDirectory.empty())
   {
     // Make sure that the FZAPI current working directory,
@@ -455,14 +456,37 @@ void THTTPFileSystem::EnsureLocation()
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
     // makes FZAPI change its current directory (and not restoring it back afterwards)
-    /*
     if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
         FCurrentDirectory.c_str()));
       DoChangeDirectory(FCurrentDirectory);
     }
-    */
+  }
+  */
+  if (!FCachedDirectoryChange.empty())
+  {
+    FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
+      FCachedDirectoryChange.c_str()));
+    std::wstring Directory = FCachedDirectoryChange;
+    FCachedDirectoryChange = L"";
+    try
+    {
+      ChangeDirectory(Directory);
+    }
+    catch (...)
+    {
+      // when location to cached directory fails, pretend again
+      // location in cached directory
+      // here used to be check (CurrentDirectory != Directory), but it is
+      // false always (currentdirectory is already set to cached directory),
+      // making the condition below useless. check removed.
+      if (FTerminal->GetActive())
+      {
+        FCachedDirectoryChange = Directory;
+      }
+      throw;
+    }
   }
 }
 
@@ -505,6 +529,7 @@ void THTTPFileSystem::LookupUsersGroups()
 void THTTPFileSystem::ReadCurrentDirectory()
 {
   DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
+  /*
   std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
   std::wstring response;
   std::wstring errorInfo;
@@ -514,6 +539,26 @@ void THTTPFileSystem::ReadCurrentDirectory()
   if (isExist)
   {
       FCurrentDirectory = Path;
+  }
+  */
+  if (FCachedDirectoryChange.empty())
+  {
+    //ExecCommand(fsCurrentDirectory);
+    std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
+    std::wstring response;
+    std::wstring errorInfo;
+    bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
+    // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
+    // TODO: cache response
+    if (isExist)
+    {
+        FCurrentDirectory = Path;
+    }
+    // FCurrentDirectory = Path;
+  }
+  else
+  {
+    FCurrentDirectory = FCachedDirectoryChange;
   }
   DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
 }
@@ -563,16 +608,19 @@ void THTTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
 
   // make next ReadCurrentDirectory retrieve actual server-side current directory
   // FCurrentDirectory = L"";
+  FCachedDirectoryChange = L"";
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
-  // FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
+  FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
+  /*
   FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
   if (FCurrentDirectory.empty())
   {
       FCurrentDirectory = L"/";
   }
+  */
 }
 
 void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)

@@ -147,7 +147,7 @@ private:
   std::wstring FCurrentDirectory;
   std::wstring FHomeDirectory;
   TRemoteFileList * FFileList;
-  // std::wstring FCachedDirectoryChange;
+  std::wstring FCachedDirectoryChange;
   bool FProcessingCommand;
   int FLsFullTime;
   captureoutput_signal_type FOnCaptureOutput;
