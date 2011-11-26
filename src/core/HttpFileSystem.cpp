@@ -5044,8 +5044,8 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             // wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
             // farItem.FindData.lpwszFileName = name;
             Dest.Name = wdavItems[i].Name.c_str();
-            Dest.Permissions = "";
-            Dest.OwnerGroup = "";
+            Dest.Permissions = L"";
+            Dest.OwnerGroup = L"";
             // farItem.FindData.dwFileAttributes = wdavItems[i].Attributes;
             int dir = item.Attributes & FILE_ATTRIBUTE_DIRECTORY;
             // farItem.FindData.nFileSize = wdavItems[i].Size;
@@ -5070,7 +5070,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             Dest.Minute = MM;
             Dest.HasTime = true;
             Dest.HasDate = true;
-            Dest.LinkTarget = "";
+            Dest.LinkTarget = L"";
         }
     }
     DEBUG_PRINTF(L"Count = %d", Count);
