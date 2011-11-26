@@ -1220,6 +1220,8 @@ void THTTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
   // std::wstring Command = FORMAT(L"CWD %s", Directory.c_str());
   // FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
   // GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
+  DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
+  // CheckExisting
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
