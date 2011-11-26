@@ -118,11 +118,6 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FFileTransferPreserveTime(false),
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
-  FReply(0),
-  FCommandReply(0),
-  FMultineResponse(false),
-  FLastCode(0),
-  FLastCodeClass(0),
   FLastReadDirectoryProgress(0),
   FLastResponse(new TStringList()),
   FLastError(new TStringList()),
@@ -179,8 +174,6 @@ void THTTPFileSystem::Open()
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
   FLastDataSent = Now();
-
-  FMultineResponse = false;
 
   // initialize FCURLIntf on the first connect only
   if (FCURLIntf == NULL)
@@ -1535,36 +1528,6 @@ bool THTTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
   return true;
 }
 //---------------------------------------------------------------------------
-bool THTTPFileSystem::HandleReply(int Command, unsigned int Reply)
-{
-  if (!FActive)
-  {
-    return false;
-  }
-  else
-  {
-    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
-    {
-      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", int(Reply), Command));
-    }
-
-    // reply with Command 0 is not associated with current operation
-    // so do not treat is as a reply
-    // (it is typically used asynchronously to notify about disconnects)
-    if (Command != 0)
-    {
-      assert(FCommandReply == 0);
-      FCommandReply = Reply;
-    }
-    else
-    {
-      assert(FReply == 0);
-      FReply = Reply;
-    }
-    return true;
-  }
-}
-
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ResetFileTransfer()
 {
@@ -2334,8 +2297,8 @@ bool THTTPFileSystem::GetFile(const wchar_t *remotePath, const wchar_t *localPat
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
-    // slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
-    slist.Append("Content-Type: application/octet-stream");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    // slist.Append("Content-Type: application/octet-stream");
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
