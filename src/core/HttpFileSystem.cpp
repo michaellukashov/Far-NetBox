@@ -54,12 +54,6 @@ const int DummyCodeClass = 8;
 const int DummyTimeoutCode = 801;
 const int DummyCancelCode = 802;
 const int DummyDisconnectCode = 803;
-//---------------------------------------------------------------------------
-#define THROW_FILE_SKIPPED(MESSAGE, EXCEPTION) \
-  throw EScpFileSkipped(MESSAGE, EXCEPTION)
-
-#define THROW_SCP_ERROR(MESSAGE, EXCEPTION) \
-  throw EScp(MESSAGE, EXCEPTION)
 //===========================================================================
 
 class TSessionData;
