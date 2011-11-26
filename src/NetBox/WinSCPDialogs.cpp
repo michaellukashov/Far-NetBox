@@ -2715,7 +2715,7 @@ void AdjustRemoteDir(TFarEdit *HostNameEdit,
     std::wstring remotedir = RemoteDirectoryEdit->GetText();
     if (remotedir.empty() && !dir.empty())
     {
-        UpdateDirectoriesCheck->SetChecked(true);
+        // UpdateDirectoriesCheck->SetChecked(true);
         RemoteDirectoryEdit->SetText(dir);
         HostNameEdit->SetText(hostName);
     }
