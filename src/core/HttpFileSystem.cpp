@@ -1608,7 +1608,8 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
     bool res = GetFile(FileName.c_str(), LocalFile.c_str(), Size, errorInfo);
     if (!res)
     {
-      FFileTransferAbort = ftaSkip;
+      // FFileTransferAbort = ftaSkip;
+      FFileTransferAbort = ftaCancel;
       // FFileTransferCancelled = false;
     }
   );
