@@ -188,7 +188,7 @@ private:
   TRemoteFileList * FFileListCache;
   TStrings * FOutput;
   int FReturnCode;
-  std::wstring FCachedDirectoryChange;
+  // std::wstring FCachedDirectoryChange;
   bool FProcessingCommand;
   int FLsFullTime;
   captureoutput_signal_type FOnCaptureOutput;
