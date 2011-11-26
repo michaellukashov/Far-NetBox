@@ -5173,7 +5173,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             path = href;
         }
         path = ::ExcludeLeadingBackslash(::ExcludeTrailingBackslash(path));
-        DEBUG_PRINTF(L"href = %s, path = %s, currentPath = %s", href.c_str(), path.c_str(), currentPath.c_str());
+        // DEBUG_PRINTF(L"href = %s, path = %s, currentPath = %s", href.c_str(), path.c_str(), currentPath.c_str());
 
         //Check for self-link (compare paths)
         if (_wcsicmp(path.c_str(), currentPath.c_str()) == 0)
@@ -5265,7 +5265,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             TListDataEntry &Dest = Entries[i];
             WebDAVItem &item = wdavItems[i];
             Dest.Name = wdavItems[i].Name.c_str();
-            DEBUG_PRINTF(L"Dest.Name = %s", Dest.Name);
+            // DEBUG_PRINTF(L"Dest.Name = %s", Dest.Name);
             Dest.Permissions = L"";
             Dest.OwnerGroup = L"";
             int dir = item.Attributes & FILE_ATTRIBUTE_DIRECTORY;
@@ -5290,7 +5290,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             Dest.LinkTarget = L"";
         }
     }
-    DEBUG_PRINTF(L"Count = %d", Count);
+    // DEBUG_PRINTF(L"Count = %d", Count);
     TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
     HandleListData(Directory.c_str(), pEntries, Entries.size());
     return true;
