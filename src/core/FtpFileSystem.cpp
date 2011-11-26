@@ -208,9 +208,9 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   TCustomFileSystem(ATerminal),
   FFileZillaIntf(NULL),
-  FQueueCriticalSection(new TCriticalSection),
-  FTransferStatusCriticalSection(new TCriticalSection),
-  FQueue(new TMessageQueue),
+  FQueueCriticalSection(new TCriticalSection()),
+  FTransferStatusCriticalSection(new TCriticalSection()),
+  FQueue(new TMessageQueue()),
   FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FReply(0),
   FCommandReply(0),
