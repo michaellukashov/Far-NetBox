@@ -4626,8 +4626,16 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
 	  // Get, Size, Type, &UserData);
     // we may actually catch reponse code of the listing
     // command (when checking for existence of the remote file)
-    unsigned int Reply = WaitForCommandReply();
-    GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
+    // unsigned int Reply = WaitForCommandReply();
+    // GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
+    std::wstring errorInfo;
+    DEBUG_PRINTF(L"RemoteFile = %s, FileName = %s", RemoteFile.c_str(), FileName.c_str());
+    bool res = GetFile(FileName.c_str(), LocalFile.c_str(), Size, errorInfo);
+    if (!res)
+    {
+      FFileTransferAbort = ftaSkip;
+      // FFileTransferCancelled = false;
+    }
   );
 
   switch (FFileTransferAbort)
