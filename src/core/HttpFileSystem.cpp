@@ -33,27 +33,16 @@ std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
 }
 
 //---------------------------------------------------------------------------
-// #define WEBDAV_ASYNC 1
-//---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
-const int coRaiseExcept = 1;
-const int coExpectNoOutput = 2;
-const int coWaitForLastLine = 4;
-const int coOnlyReturnCode = 8;
-const int coIgnoreWarnings = 16;
-const int coReadProgress = 32;
-
 const int ecRaiseExcept = 1;
 const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
-const int DummyCodeClass = 8;
-const int DummyTimeoutCode = 801;
-const int DummyCancelCode = 802;
-const int DummyDisconnectCode = 803;
+const int tfFirstLevel = 0x01;
+const int tfAutoResume = 0x02;
 //===========================================================================
 
 class TSessionData;
@@ -75,9 +64,6 @@ struct TFileTransferData
   const TCopyParamType * CopyParam;
 };
 
-//---------------------------------------------------------------------------
-const int tfFirstLevel = 0x01;
-const int tfAutoResume = 0x02;
 //---------------------------------------------------------------------------
 struct TSinkFileParams
 {
