@@ -4844,11 +4844,7 @@ bool THTTPFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
         FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", path.c_str()));
         return false;
     }
-    FCurrentDirectory = path;
-    while(GetCurrentDirectory().size() > 1 && GetCurrentDirectory()[GetCurrentDirectory().size() - 1] == L'/')
-    {
-        FCurrentDirectory.erase(FCurrentDirectory.size() - 1);
-    }
+    FCurrentDirectory = ::ExcludeTrailingBackslash(path);
     return true;
 }
 
