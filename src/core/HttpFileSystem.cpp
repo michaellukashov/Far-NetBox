@@ -1251,7 +1251,7 @@ void THTTPFileSystem::ReadCurrentDirectory()
   std::wstring response;
   std::wstring errorInfo;
   bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
-  DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
+  // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
   // TODO: cache response
   if (isExist)
   {
@@ -1275,7 +1275,7 @@ void THTTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
   // std::wstring Command = FORMAT(L"CWD %s", Directory.c_str());
   // FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
   // GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
-  DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
+  // DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
   // CheckExisting
 }
 //---------------------------------------------------------------------------
@@ -1337,7 +1337,7 @@ void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     // 1) List() lists again the last listed directory, not the current working directory
     // 2) we handle this way the cached directory change
     std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
-    DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
+    // DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
     // FCURLIntf->List(Directory);
     // GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
     GetList(Directory);
