@@ -40,7 +40,7 @@ extern const wchar_t SshProtList[][10];
 extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
-extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11];
+extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------

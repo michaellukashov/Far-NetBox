@@ -22,6 +22,8 @@
 #include "tinyXML\tinyxml.h"
 
 //---------------------------------------------------------------------------
+static const std::wstring CONST_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
+//---------------------------------------------------------------------------
 std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
 {
     std::wstring path = str;
@@ -139,7 +141,7 @@ void THTTPFileSystem::Init(TSecureShell *SecureShell)
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FProcessingCommand = false;
 
-  FFileSystemInfo.ProtocolBaseName = L"HTTP";
+  FFileSystemInfo.ProtocolBaseName = CONST_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   // capabilities of SCP protocol are fixed
   for (int Index = 0; Index < fcCount; Index++)
@@ -173,7 +175,7 @@ void THTTPFileSystem::Open()
   TSessionData *Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
-  FSessionInfo.ProtocolBaseName = L"HTTP";
+  FSessionInfo.ProtocolBaseName = CONST_PROTOCOL_BASE_NAME;
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
   FLastDataSent = Now();

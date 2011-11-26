@@ -25,7 +25,7 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
-const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"", L"HTTP", L"HTTPS" };
+const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
