@@ -64,10 +64,6 @@ const int DummyDisconnectCode = 803;
 
 class TSessionData;
 //===========================================================================
-class TMessageQueue : public std::list<std::pair<WPARAM, LPARAM> >
-{
-};
-//===========================================================================
 struct TFileTransferData
 {
   TFileTransferData()
@@ -151,10 +147,7 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   FLastReadDirectoryProgress(0),
   FLastResponse(new TStringList()),
   FLastError(new TStringList()),
-  FQueueCriticalSection(new TCriticalSection()),
   FTransferStatusCriticalSection(new TCriticalSection()),
-  FQueue(new TMessageQueue()),
-  FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FAbortEvent(CreateEvent(NULL, true, false, NULL)),
   m_ProgressPercent(0),
   FListAll(asAuto),
@@ -187,16 +180,11 @@ THTTPFileSystem::~THTTPFileSystem()
   FLastResponse = NULL;
   delete FLastError;
   FLastError = NULL;
-  delete FQueueCriticalSection;
-  FQueueCriticalSection = NULL;
   delete FTransferStatusCriticalSection;
   FTransferStatusCriticalSection = NULL;
   // delete FSecureShell;
-  delete FQueue;
-  FQueue = NULL;
   delete FCURLIntf;
   FCURLIntf = NULL;
-  CloseHandle(FQueueEvent);
   CloseHandle(FAbortEvent);
 }
 //---------------------------------------------------------------------------
@@ -204,7 +192,6 @@ void THTTPFileSystem::Open()
 {
   DEBUG_PRINTF(L"begin");
   // FSecureShell->Open();
-  DiscardMessages();
 
   ResetCaches();
   FCurrentDirectory = L"";
@@ -351,31 +338,6 @@ void THTTPFileSystem::Open()
     FCURLIntf->SetAbortEvent(FAbortEvent);
 
     FPasswordFailed = false;
-    #ifdef WEBDAV_ASYNC
-    try
-    {
-      // do not wait for FTP response code as Connect is complex operation
-      GotReply(WaitForCommandReply(false), REPLY_CONNECT, LoadStr(CONNECTION_FAILED));
-
-      // we have passed, even if we got 530 on the way (if it is possible at all),
-      // ignore it
-      assert(!FPasswordFailed);
-      FPasswordFailed = false;
-    }
-    catch (...)
-    {
-      if (FPasswordFailed)
-      {
-        FTerminal->Information(LoadStr(FTP_ACCESS_DENIED), false);
-      }
-      else
-      {
-        // see handling of REPLY_CONNECT in GotReply
-        FTerminal->Closed();
-        throw;
-      }
-    }
-    #else
     // Check initial path existing
     std::wstring path;
     std::wstring query;
@@ -393,7 +355,6 @@ void THTTPFileSystem::Open()
         // return;
     }
     FCurrentDirectory = ::UnixExcludeTrailingBackslash(path);
-    #endif
   }
   while (FPasswordFailed);
   DEBUG_PRINTF(L"end");
@@ -405,7 +366,6 @@ void THTTPFileSystem::Close()
   assert(FActive);
   if (FCURLIntf->Close())
   {
-    // CHECK(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
     assert(FActive);
     Discard();
     FTerminal->Closed();
@@ -599,7 +559,6 @@ void THTTPFileSystem::Discard()
   // remove all pending messages, to get complete log
   // note that we need to retry discard on reconnect, as there still may be another
   // "disconnect/timeout/..." status messages coming
-  DiscardMessages();
   assert(FActive);
   FActive = false;
 }
@@ -659,11 +618,6 @@ void THTTPFileSystem::AnnounceFileListOperation()
 //---------------------------------------------------------------------------
 void THTTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
 {
-  // std::wstring Command = FORMAT(L"CWD %s", Directory.c_str());
-  // FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
-  // GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
-  // DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
-  // CheckExisting
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
@@ -725,8 +679,6 @@ void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     // 2) we handle this way the cached directory change
     std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
     // DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
-    // FCURLIntf->List(Directory);
-    // GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
     GetList(Directory);
 
     FLastDataSent = Now();
@@ -1531,607 +1483,6 @@ int THTTPFileSystem::GetOptionVal(int OptionID) const
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THTTPFileSystem::PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam)
-{
-  if (0) // if (Type == TFileZillaIntf::MSG_TRANSFERSTATUS)
-  {
-    // Stop here if FileTransferProgress is proceeding,
-    // it makes "pause" in queue work.
-    // Paused queue item stops in some of the TFileOperationProgressType
-    // methods called from FileTransferProgress
-    TGuard Guard(FTransferStatusCriticalSection);
-  }
-
-  TGuard Guard(FQueueCriticalSection);
-
-  FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
-  SetEvent(FQueueEvent);
-
-  return true;
-}
-//---------------------------------------------------------------------------
-bool THTTPFileSystem::ProcessMessage()
-{
-  bool Result = false;
-  TMessageQueue::value_type Message;
-  {
-    TGuard Guard(FQueueCriticalSection);
-
-    Result = !FQueue->empty();
-    if (Result)
-    {
-      Message = FQueue->front();
-      FQueue->pop_front();
-    }
-    else
-    {
-      // now we are perfecly sure that the queue is empty as it is locked,
-      // so reset the event
-      ResetEvent(FQueueEvent);
-    }
-  }
-
-  if (Result)
-  {
-    // FFileZillaIntf->HandleMessage(Message.first, Message.second);
-  }
-
-  return Result;
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::DiscardMessages()
-{
-  while (ProcessMessage());
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::WaitForMessages()
-{
-  unsigned int Result = WaitForSingleObject(FQueueEvent, INFINITE);
-  if (Result != WAIT_OBJECT_0)
-  {
-    FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#1", IntToStr(Result).c_str()));
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::PoolForFatalNonCommandReply()
-{
-  assert(FReply == 0);
-  assert(FCommandReply == 0);
-  assert(!FWaitingForReply);
-
-  FWaitingForReply = true;
-
-  unsigned int Reply;
-
-  {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->FReply = 0;
-        assert(Self->FCommandReply == 0);
-        Self->FCommandReply = 0;
-        assert(Self->FWaitingForReply);
-        Self->FWaitingForReply = false;
-      } BOOST_SCOPE_EXIT_END
-    // discard up to one reply
-    // (it should not happen here that two replies are posted anyway)
-    while (ProcessMessage() && (FReply == 0));
-    Reply = FReply;
-  }
-
-  if (Reply != 0)
-  {
-    // throws
-    GotNonCommandReply(Reply);
-  }
-}
-//---------------------------------------------------------------------------
-bool THTTPFileSystem::NoFinalLastCode()
-{
-  return (FLastCodeClass == 0) || (FLastCodeClass == 1);
-}
-//---------------------------------------------------------------------------
-bool THTTPFileSystem::KeepWaitingForReply(unsigned int & ReplyToAwait, bool WantLastCode)
-{
-  // to keep waiting,
-  // non-command reply must be unset,
-  // the reply we wait for must be unset or
-  // last code must be unset (if we wait for it)
-  return
-     (FReply == 0) &&
-     ((ReplyToAwait == 0) ||
-      (WantLastCode && NoFinalLastCode()));
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::DoWaitForReply(unsigned int & ReplyToAwait, bool WantLastCode)
-{
-  try
-  {
-    while (KeepWaitingForReply(ReplyToAwait, WantLastCode))
-    {
-      WaitForMessages();
-      // wait for the first reply only,
-      // i.e. in case two replies are posted get the first only.
-      // e.g. when server closes the connection, but posts error message before,
-      // sometime it happens that command (like download) fails because of the error
-      // and does not catch the disconnection. then asynchronous "disconnect reply"
-      // is posted immediately afterwards. leave detection of that to Idle()
-      while (ProcessMessage() && KeepWaitingForReply(ReplyToAwait, WantLastCode));
-    }
-
-    if (FReply != 0)
-    {
-      // throws
-      GotNonCommandReply(FReply);
-    }
-  }
-  catch (...)
-  {
-    // even if non-fatal error happens, we must process pending message,
-    // so that we "eat" the reply message, so that it gets not mistakenly
-    // associated with future connect
-    if (FTerminal->GetActive())
-    {
-      DoWaitForReply(ReplyToAwait, WantLastCode);
-    }
-    throw;
-  }
-}
-//---------------------------------------------------------------------------
-unsigned int THTTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
-{
-  assert(FReply == 0);
-  assert(FCommandReply == 0);
-  assert(!FWaitingForReply);
-  assert(!FTransferStatusCriticalSection->GetAcquired());
-
-  ResetReply();
-  FWaitingForReply = true;
-
-  unsigned int Reply = 0;
-
-  {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->FReply = 0;
-        Self->FCommandReply = 0;
-        assert(Self->FWaitingForReply);
-        Self->FWaitingForReply = false;
-      } BOOST_SCOPE_EXIT_END
-    unsigned int & ReplyToAwait = (Command ? FCommandReply : FReply);
-    DoWaitForReply(ReplyToAwait, WantLastCode);
-
-    Reply = ReplyToAwait;
-  }
-
-  return Reply;
-}
-//---------------------------------------------------------------------------
-unsigned int THTTPFileSystem::WaitForCommandReply(bool WantLastCode)
-{
-  return WaitForReply(true, WantLastCode);
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::WaitForFatalNonCommandReply()
-{
-  WaitForReply(false, false);
-  assert(false);
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::ResetReply()
-{
-  FLastCode = 0;
-  FLastCodeClass = 0;
-  assert(FLastResponse != NULL);
-  FLastResponse->Clear();
-  assert(FLastError != NULL);
-  FLastError->Clear();
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::GotNonCommandReply(unsigned int Reply)
-{
-  // assert(FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
-  GotReply(Reply);
-  // should never get here as GotReply should raise fatal exception
-  assert(false);
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
-  std::wstring Error, unsigned int * Code, TStrings ** Response)
-{
-  {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->ResetReply();
-      } BOOST_SCOPE_EXIT_END
-    if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
-    {
-      // assert(Reply == TFileZillaIntf::REPLY_OK);
-
-      // With REPLY_2XX_CODE treat "OK" non-2xx code like an error
-      if (FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2))
-      {
-        // GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
-      }
-    }
-    else if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
-        // FLAGSET(Flags, REPLY_ALLOW_CANCEL))
-    {
-      // assert(
-        // (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
-        // (Reply == (TFileZillaIntf::REPLY_ABORTED | TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)));
-      // noop
-    }
-    // we do not expect these with our usage of FZ
-    else if (0) // Reply &
-          // (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
-           // TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
-           // TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
-           // TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
-    {
-      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"http#2", FORMAT(L"0x%x", int(Reply)).c_str()));
-    }
-    else
-    {
-      // everything else must be an error or disconnect notification
-      // assert(
-        // FLAGSET(Reply, TFileZillaIntf::REPLY_ERROR) ||
-        // FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED));
-
-      // TODO: REPLY_CRITICALERROR ignored
-
-      // REPLY_NOTCONNECTED happens if connection is closed between moment
-      // when FZAPI interface method dispatches the command to FZAPI thread
-      // and moment when FZAPI thread receives the command
-      bool Disconnected = false;
-        // FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED) ||
-        // FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
-
-      TStrings * MoreMessages = new TStringList();
-      try
-      {
-        if (Disconnected)
-        {
-          if (FLAGCLEAR(Flags, REPLY_CONNECT))
-          {
-            MoreMessages->Add(LoadStr(LOST_CONNECTION));
-            Discard();
-            FTerminal->Closed();
-          }
-          else
-          {
-            // For connection failure, do not report that connection was lost,
-            // its obvious.
-            // Also do not report to terminal that we are closed as
-            // that turns terminal into closed mode, but we want to
-            // pretend (at least with failed authentication) to retry
-            // with the same connection (as with SSH), so we explicitly
-            // close terminal in Open() only after we give up
-            Discard();
-          }
-        }
-
-        if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_ABORTED))
-        {
-          MoreMessages->Add(LoadStr(USER_TERMINATED));
-        }
-
-        if (0) // FLAGSET(Reply, TFileZillaIntf::REPLY_NOTSUPPORTED))
-        {
-          MoreMessages->Add(LoadStr(FZ_NOTSUPPORTED));
-        }
-
-        if (FLastCode == 530)
-        {
-          MoreMessages->Add(LoadStr(AUTHENTICATION_FAILED));
-        }
-
-        if (FLastCode == 425)
-        {
-          if (!FTerminal->GetSessionData()->GetFtpPasvMode())
-          {
-            MoreMessages->Add(LoadStr(FTP_CANNOT_OPEN_ACTIVE_CONNECTION));
-          }
-        }
-
-        MoreMessages->AddStrings(FLastError);
-        // already cleared from WaitForReply, but GotReply can be also called
-        // from Closed. then make sure that error from previous command not
-        // associated with session closure is not reused
-        FLastError->Clear();
-
-        MoreMessages->AddStrings(FLastResponse);
-        // see comment for FLastError
-        FLastResponse->Clear();
-
-        if (MoreMessages->GetCount() == 0)
-        {
-          delete MoreMessages;
-          MoreMessages = NULL;
-        }
-      }
-      catch (...)
-      {
-        delete MoreMessages;
-        throw;
-      }
-
-      if (Error.empty() && (MoreMessages != NULL))
-      {
-        assert(MoreMessages->GetCount() > 0);
-        Error = MoreMessages->GetString(0);
-        MoreMessages->Delete(0);
-      }
-
-      if (Disconnected)
-      {
-        // for fatal error, it is essential that there is some message
-        assert(!Error.empty());
-        ExtException *E = new ExtException(Error, MoreMessages, true);
-        {
-            BOOST_SCOPE_EXIT ( (&E) )
-            {
-              delete E;
-            } BOOST_SCOPE_EXIT_END
-          FTerminal->FatalError(E, L"");
-        }
-      }
-      else
-      {
-        throw ExtException(Error, MoreMessages, true);
-      }
-    }
-
-    if ((Code != NULL) && (FLastCodeClass != DummyCodeClass))
-    {
-      *Code = FLastCode;
-    }
-
-    if (Response != NULL)
-    {
-      *Response = FLastResponse;
-      FLastResponse = new TStringList();
-    }
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::SetLastCode(int Code)
-{
-  FLastCode = Code;
-  FLastCodeClass = (Code / 100);
-}
-//---------------------------------------------------------------------------
-void THTTPFileSystem::HandleReplyStatus(std::wstring Response)
-{
-  int Code = 0;
-  // DEBUG_PRINTF(L"Response = %s", Response.c_str());
-
-  if (!FOnCaptureOutput.empty())
-  {
-    FOnCaptureOutput(Response, false);
-  }
-
-  // Two forms of multiline responses were observed
-  // (the first is according to the RFC 959):
-
-  // 211-Features:
-  //  MDTM
-  //  REST STREAM
-  //  SIZE
-  // 211 End
-
-  // 211-Features:
-  // 211-MDTM
-  // 211-REST STREAM
-  // 211-SIZE
-  // 211-AUTH TLS
-  // 211-PBSZ
-  // 211-PROT
-  // 211 End
-
-  bool HasCodePrefix =
-    (Response.size() >= 3) &&
-    TryStrToInt(Response.substr(0, 3), Code) &&
-    (Code >= 100) && (Code <= 599) &&
-    ((Response.size() == 3) || (Response[3] == L' ') || (Response[3] == L'-'));
-
-  // DEBUG_PRINTF(L"Code = %d", Code);
-  if (HasCodePrefix && !FMultineResponse)
-  {
-    FMultineResponse = (Response.size() >= 4) && (Response[3] == L'-');
-    FLastResponse->Clear();
-    if (Response.size() >= 5)
-    {
-      FLastResponse->Add(Response.substr(4, Response.size() - 4));
-    }
-    SetLastCode(Code);
-  }
-  else
-  {
-    int Start = 0;
-    // response with code prefix
-    if (HasCodePrefix && (FLastCode == Code))
-    {
-      // End of multiline response?
-      if ((Response.size() <= 3) || (Response[3] == L' '))
-      {
-        FMultineResponse = false;
-      }
-      Start = 4;
-    }
-    else
-    {
-      Start = (((Response.size() >= 1) && (Response[0] == L' ')) ? 1 : 0);
-    }
-
-    // Intermediate empty lines are being added
-    if (FMultineResponse || (Response.size() >= Start))
-    {
-      FLastResponse->Add(Response.substr(Start, Response.size() - Start + 1));
-    }
-  }
-
-  if (!FMultineResponse)
-  {
-    if (FLastCode == 220)
-    {
-      if (FTerminal->GetConfiguration()->GetShowFtpWelcomeMessage())
-      {
-        FTerminal->DisplayBanner(FLastResponse->GetText());
-      }
-    }
-    else if (FLastCommand == PASS)
-    {
-      // 530 = "Not logged in."
-      if (FLastCode == 530)
-      {
-        FPasswordFailed = true;
-      };
-    }
-    else if (FLastCommand == SYST)
-    {
-      assert(FSystem.empty());
-      // Possitive reply to "SYST" must be 215, see RFC 959
-      if (FLastCode == 215)
-      {
-        FSystem = ::TrimRight(FLastResponse->GetText());
-        // full name is "Personal FTP Server PRO K6.0"
-        // if ((FListAll == asAuto) &&
-            // (::Pos(FSystem, L"Personal FTP Server") != std::wstring::npos))
-        // {
-          // FTerminal->LogEvent(L"Server is known not to support LIST -a");
-          // FListAll = asOff;
-        // }
-      }
-      else
-      {
-        FSystem = L"";
-      }
-    }
-    else if (FLastCommand == FEAT)
-    {
-      // Response to FEAT must be multiline, where leading and trailing line
-      // is "meaningless". See RFC 2389.
-      if ((FLastCode == 211) && (FLastResponse->GetCount() > 2))
-      {
-        FLastResponse->Delete(0);
-        FLastResponse->Delete(FLastResponse->GetCount() - 1);
-        // FFeatures->Assign(FLastResponse);
-        // DEBUG_PRINTF(L"FFeatures = %s", FFeatures->GetText().c_str());
-      }
-      else
-      {
-        // FFeatures->Clear();
-      }
-    }
-  }
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPFileSystem::ExtractStatusMessage(std::wstring Status)
-{
-  // CApiLog::LogMessage
-  // (note that the formatting may not be present when LogMessageRaw is used)
-  int P1 = ::Pos(Status, L"): ");
-  if (P1 != std::wstring::npos)
-  {
-    int P2 = ::Pos(Status, L".cpp(");
-    if ((P2 != std::wstring::npos) && (P2 < P1))
-    {
-      int P3 = ::Pos(Status, L"   caller=0x");
-      if ((P3 != std::wstring::npos) && (P3 > P1))
-      {
-        Status = Status.substr(P1 + 3, P3 - P1 - 3);
-      }
-    }
-  }
-  return Status;
-}
-//---------------------------------------------------------------------------
-bool THTTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
-{
-  TLogLineType LogType = (TLogLineType)-1;
-  std::wstring Status(AStatus);
-  // DEBUG_PRINTF(L"Status = %s", Status.c_str());
-  // DEBUG_PRINTF(L"Type = %d", Type);
-  /*
-  switch (Type)
-  {
-    case TFileZillaIntf::LOG_STATUS:
-      FTerminal->Information(Status, true);
-      LogType = llMessage;
-      break;
-
-    case TFileZillaIntf::LOG_COMMAND:
-      if (Status == L"SYST")
-      {
-        FLastCommand = SYST;
-      }
-      else if (Status == L"FEAT")
-      {
-        FLastCommand = FEAT;
-      }
-      else if (Status.substr(0, 5) == L"PASS ")
-      {
-        FLastCommand = PASS;
-      }
-      else
-      {
-        FLastCommand = CMD_UNKNOWN;
-      }
-      LogType = llInput;
-      break;
-
-    case TFileZillaIntf::LOG_ERROR:
-    case TFileZillaIntf::LOG_APIERROR:
-    case TFileZillaIntf::LOG_WARNING:
-      // when timeout message occurs, break loop waiting for response code
-      // by setting dummy one
-      if (Type == TFileZillaIntf::LOG_ERROR)
-      {
-        if (Status == FTimeoutStatus)
-        {
-          if (NoFinalLastCode())
-          {
-            SetLastCode(DummyTimeoutCode);
-          }
-        }
-        else if (Status == FDisconnectStatus)
-        {
-          if (NoFinalLastCode())
-          {
-            SetLastCode(DummyDisconnectCode);
-          }
-        }
-      }
-      // there can be multiple error messages associated with single failure
-      // (such as "cannot open local file..." followed by "download failed")
-      Status = ExtractStatusMessage(Status);
-      FLastError->Add(Status);
-      LogType = llMessage;
-      break;
-
-    case TFileZillaIntf::LOG_REPLY:
-      HandleReplyStatus(AStatus);
-      LogType = llOutput;
-      break;
-
-    case TFileZillaIntf::LOG_INFO:
-      Status = ExtractStatusMessage(Status);
-      LogType = llMessage;
-      break;
-
-    default:
-      assert(false);
-      break;
-  }
-  */
-
-  if (FTerminal->GetLog()->GetLogging() && (LogType != (TLogLineType)-1))
-  {
-    FTerminal->GetLog()->Add(LogType, Status);
-  }
-
-  return true;
-}
 //---------------------------------------------------------------------------
 TDateTime THTTPFileSystem::ConvertLocalTimestamp(time_t Time)
 {
@@ -2191,103 +1542,6 @@ TDateTime THTTPFileSystem::ConvertRemoteTimestamp(time_t Time, bool HasTime)
     Result = UnixToDateTime(Time, dstmUnix);
   }
   return Result;
-}
-//---------------------------------------------------------------------------
-bool THTTPFileSystem::HandleAsynchRequestOverwrite(
-  wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
-  const wchar_t * /*Path1*/, const wchar_t * /*Path2*/,
-  __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
-  bool HasTime1, bool HasTime2, void * AUserData, int & RequestResult)
-{
-  if (!FActive)
-  {
-    return false;
-  }
-  else
-  {
-    TFileTransferData & UserData = *((TFileTransferData *)AUserData);
-    if (UserData.OverwriteResult >= 0)
-    {
-      // on retry, use the same answer as on the first attempt
-      RequestResult = UserData.OverwriteResult;
-    }
-    else
-    {
-      TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
-      std::wstring FileName = FileName1;
-      assert(UserData.FileName == FileName);
-      TOverwriteMode OverwriteMode = omOverwrite;
-      TOverwriteFileParams FileParams;
-      bool NoFileParams =
-        (Size1 < 0) || (Time1 == 0) ||
-        (Size2 < 0) || (Time2 == 0);
-      if (!NoFileParams)
-      {
-        FileParams.SourceSize = Size2;
-        FileParams.DestSize = Size1;
-
-        if (OperationProgress->Side == osLocal)
-        {
-          FileParams.SourceTimestamp = ConvertLocalTimestamp(Time2);
-          FileParams.DestTimestamp = ConvertRemoteTimestamp(Time1, HasTime1);
-          FileParams.DestPrecision = (HasTime1 ? mfMDHM : mfMDY);
-        }
-        else
-        {
-          FileParams.SourceTimestamp = ConvertRemoteTimestamp(Time2, HasTime2);
-          FileParams.SourcePrecision = (HasTime2 ? mfMDHM : mfMDY);
-          FileParams.DestTimestamp = ConvertLocalTimestamp(Time1);
-        }
-      }
-
-      if (ConfirmOverwrite(FileName, OverwriteMode, OperationProgress,
-            (NoFileParams ? NULL : &FileParams), UserData.Params,
-            UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize)))
-      {
-        switch (OverwriteMode)
-        {
-          case omOverwrite:
-            if (FileName != FileName1)
-            {
-              wcsncpy(FileName1, FileName.c_str(), FileName1Len);
-              FileName1[FileName1Len - 1] = '\0';
-              UserData.FileName = FileName1;
-              // RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
-            }
-            else
-            {
-              // RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
-            }
-            break;
-
-          case omResume:
-            // RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
-            break;
-
-          default:
-            assert(false);
-            // RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
-            break;
-        }
-      }
-      else
-      {
-        // RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
-      }
-    }
-
-    // remember the answer for the retries
-    UserData.OverwriteResult = RequestResult;
-
-    if (0) // RequestResult == TFileZillaIntf::FILEEXISTS_SKIP)
-    {
-      // when user chosses not to overwrite, break loop waiting for response code
-      // by setting dummy one, az FZAPI won't do anything then
-      SetLastCode(DummyTimeoutCode);
-    }
-
-    return true;
-  }
 }
 //---------------------------------------------------------------------------
 struct TClipboardHandler

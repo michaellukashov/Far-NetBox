@@ -77,32 +77,7 @@ public:
 protected:
   enum TOverwriteMode { omOverwrite, omResume };
 protected:
-  bool PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam);
-  bool ProcessMessage();
-  void DiscardMessages();
-  void WaitForMessages();
-  unsigned int WaitForReply(bool Command, bool WantLastCode);
-  unsigned int WaitForCommandReply(bool WantLastCode = true);
-  void WaitForFatalNonCommandReply();
-  void PoolForFatalNonCommandReply();
-  void GotNonCommandReply(unsigned int Reply);
-  void GotReply(unsigned int Reply, unsigned int Flags = 0,
-    std::wstring Error = L"", unsigned int * Code = NULL,
-    TStrings ** Response = NULL);
-  void ResetReply();
-  void HandleReplyStatus(std::wstring Response);
-  void DoWaitForReply(unsigned int& ReplyToAwait, bool WantLastCode);
-  bool KeepWaitingForReply(unsigned int& ReplyToAwait, bool WantLastCode);
-  inline bool NoFinalLastCode();
 
-  bool HandleStatus(const wchar_t * Status, int Type);
-  bool HandleAsynchRequestOverwrite(
-    wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
-    const wchar_t * Path1, const wchar_t * Path2,
-    __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
-    bool HasTime1, bool HasTime2, void * UserData, int & RequestResult);
-  // bool HandleAsynchRequestVerifyCertificate(
-    // const TFtpsCertificateData & Data, int & RequestResult);
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     unsigned int Count);
   bool HandleTransferStatus(bool Valid, __int64 TransferSize,
@@ -214,10 +189,7 @@ private:
   int FLastReadDirectoryProgress;
   TStrings *FLastResponse;
   TStrings *FLastError;
-  TCriticalSection *FQueueCriticalSection;
   TCriticalSection *FTransferStatusCriticalSection;
-  TMessageQueue *FQueue;
-  HANDLE FQueueEvent;
   TAutoSwitch FListAll;
   bool FDoListAll;
   mutable std::wstring FOptionScratch;
