@@ -1232,6 +1232,7 @@ void THTTPFileSystem::ReadCurrentDirectory()
   std::wstring errorInfo;
   bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
   DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
+  // TODO: cache response
   if (isExist)
   {
       FCurrentDirectory = Path;
