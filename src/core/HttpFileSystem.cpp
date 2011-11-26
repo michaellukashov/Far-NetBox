@@ -1602,8 +1602,8 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
   const std::wstring & RemotePath, bool Get, __int64 Size, int Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
+  std::wstring errorInfo;
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
-    std::wstring errorInfo;
     DEBUG_PRINTF(L"RemoteFile = %s, FileName = %s", RemoteFile.c_str(), FileName.c_str());
     bool res = GetFile(FileName.c_str(), LocalFile.c_str(), Size, errorInfo);
     if (!res)
@@ -1616,7 +1616,7 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
   switch (FFileTransferAbort)
   {
     case ftaSkip:
-      THROW_SKIP_FILE_NULL;
+      THROW_SKIP_FILE(errorInfo, NULL);
 
     case ftaCancel:
       Abort();
