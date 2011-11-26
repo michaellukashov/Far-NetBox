@@ -3319,7 +3319,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (const std::exception & E)
+      catch (const std::exception &E)
       {
         delete File;
         std::wstring EntryData =
