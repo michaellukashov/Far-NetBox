@@ -5039,22 +5039,13 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
         {
             TListDataEntry &Dest = Entries[i];
             WebDAVItem &item = wdavItems[i];
-            // const size_t nameSize = wdavItems[i].Name.length() + 1;
-            // wchar_t *name = new wchar_t[nameSize];
-            // wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
-            // farItem.FindData.lpwszFileName = name;
             Dest.Name = wdavItems[i].Name.c_str();
             Dest.Permissions = L"";
             Dest.OwnerGroup = L"";
-            // farItem.FindData.dwFileAttributes = wdavItems[i].Attributes;
             int dir = item.Attributes & FILE_ATTRIBUTE_DIRECTORY;
-            // farItem.FindData.nFileSize = wdavItems[i].Size;
             Dest.Size = dir == 0 ? item.Size : 0;
             Dest.Dir = dir != 0;
             Dest.Link = false;
-            // farItem.FindData.ftCreationTime = wdavItems[i].Created;
-            // farItem.FindData.ftLastWriteTime = wdavItems[i].Modified;
-            // farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
             FILETIME ft = item.Created;
             SYSTEMTIME st;
             ::FileTimeToSystemTime(&ft, &st);
@@ -5073,7 +5064,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             Dest.LinkTarget = L"";
         }
     }
-    DEBUG_PRINTF(L"Count = %d", Count);
+    // DEBUG_PRINTF(L"Count = %d", Count);
     TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
     HandleListData(Directory.c_str(), pEntries, Entries.size());
     return true;
