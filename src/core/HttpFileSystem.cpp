@@ -741,25 +741,6 @@ void THTTPFileSystem::CreateLink(const std::wstring FileName,
     // Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
 }
 //---------------------------------------------------------------------------
-void THTTPFileSystem::ChangeFileToken(const std::wstring & DelimitedName,
-  const TRemoteToken & Token, TFSCommand Cmd, const std::wstring & RecursiveStr)
-{
-  std::wstring Str;
-  if (Token.GetIDValid())
-  {
-    Str = IntToStr(Token.GetID());
-  }
-  else if (Token.GetNameValid())
-  {
-    Str = Token.GetName();
-  }
-
-  if (!Str.empty())
-  {
-    // ExecCommand(Cmd, 0, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
-  }
-}
-//---------------------------------------------------------------------------
 void THTTPFileSystem::ChangeFileProperties(const std::wstring FileName,
   const TRemoteFile * File, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)

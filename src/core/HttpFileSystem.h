@@ -184,8 +184,6 @@ private:
   TRemoteFile * CreateRemoteFile(const std::wstring & ListingStr,
     TRemoteFile * LinkedByFile = NULL);
   void CaptureOutput(const std::wstring & AddedLine, bool StdError);
-  void ChangeFileToken(const std::wstring & DelimitedName,
-    const TRemoteToken & Token, TFSCommand Cmd, const std::wstring & RecursiveStr);
 
 private:
   enum
