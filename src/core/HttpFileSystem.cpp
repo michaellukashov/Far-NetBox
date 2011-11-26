@@ -631,11 +631,7 @@ void THTTPFileSystem::Open()
         FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", path.c_str()));
         // return;
     }
-    FCurrentDirectory = path;
-    while (FCurrentDirectory.size() > 1 && FCurrentDirectory[FCurrentDirectory.length() - 1] == L'/')
-    {
-        FCurrentDirectory.erase(FCurrentDirectory.length() - 1);
-    }
+    FCurrentDirectory = ::UnixExcludeTrailingBackslash(path);
     #endif
   }
   while (FPasswordFailed);
