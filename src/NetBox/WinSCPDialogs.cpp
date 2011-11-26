@@ -2778,7 +2778,7 @@ void TSessionDialog::UpdateControls()
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol || HTTPSProtocol);
-  HostNameLabel->SetCaption(!InternalHTTPProtocol ? GetMsg(LOGIN_HOST_NAME) : GetMsg(StringEdURL));
+  HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
