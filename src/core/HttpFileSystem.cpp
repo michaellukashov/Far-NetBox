@@ -1306,7 +1306,7 @@ void THTTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
   }
 
   // DoChangeDirectory(Directory);
-  FCurrentDirectory = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + ::UnixExcludeLeadingBackslash(Directory);
+  FCurrentDirectory = AbsolutePath(Directory, false);
 
   // make next ReadCurrentDirectory retrieve actual server-side current directory
   // FCurrentDirectory = L"";
