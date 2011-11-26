@@ -2694,7 +2694,7 @@ void TSessionDialog::Change()
 //---------------------------------------------------------------------------
 void AdjustRemoteDir(TFarEdit *HostNameEdit,
     TFarEdit *RemoteDirectoryEdit,
-    TFarCheckBox *PreserveDirectoryChangesCheck)
+    TFarCheckBox *UpdateDirectoriesCheck)
 {
     std::wstring hostName = HostNameEdit->GetText();
     if (LowerCase(hostName.substr(0, 7)) == L"http://")
@@ -2710,12 +2710,14 @@ void AdjustRemoteDir(TFarEdit *HostNameEdit,
     if (P != std::wstring::npos)
     {
         dir = hostName.substr(P, hostName.size() - P);
+        hostName.resize(hostName.size() - dir.size());
     }
     std::wstring remotedir = RemoteDirectoryEdit->GetText();
-    if (remotedir.empty() || (remotedir != dir))
+    if (remotedir.empty() && !dir.empty())
     {
-        PreserveDirectoryChangesCheck->SetEnabled(true);
+        UpdateDirectoriesCheck->SetChecked(true);
         RemoteDirectoryEdit->SetText(dir);
+        HostNameEdit->SetText(hostName);
     }
 }
 //---------------------------------------------------------------------------
@@ -2738,12 +2740,12 @@ void TSessionDialog::TransferProtocolComboChange()
   else if (GetFSProtocol() == fsHTTP)
   {
     PortNumberEdit->SetAsInteger(80);
-    ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, PreserveDirectoryChangesCheck);
+    ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
   }
   else if (GetFSProtocol() == fsHTTPS)
   {
     PortNumberEdit->SetAsInteger(443);
-    // ::AdjustRemoteDir(PreserveDirectoryChangesCheck, RemoteDirectoryEdit);
+    ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
   }
   else
   {
@@ -3193,6 +3195,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     else if (Action == saConnect)
     {
       Action = saEdit;
+    }
+
+    if ((GetFSProtocol() == fsHTTP) || (GetFSProtocol() == fsHTTPS))
+    {
+      ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
 
     // save session data
