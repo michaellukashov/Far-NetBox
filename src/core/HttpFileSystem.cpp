@@ -22,7 +22,7 @@
 #include "tinyXML\tinyxml.h"
 
 //---------------------------------------------------------------------------
-std::wstring ExcludeLeadingBackslash(const std::wstring str)
+std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
 {
     std::wstring path = str;
     while (!path.empty() && path[0] == L'/')
@@ -1310,7 +1310,7 @@ void THTTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
   }
 
   // DoChangeDirectory(Directory);
-  FCurrentDirectory = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + Directory;
+  FCurrentDirectory = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + ::UnixExcludeLeadingBackslash(Directory);
 
   // make next ReadCurrentDirectory retrieve actual server-side current directory
   // FCurrentDirectory = L"";
@@ -1336,7 +1336,8 @@ void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
     TFileListHelper Helper(this, FileList, false);
 
-    // always specify path to list, do not attempt to list "current" dir as:
+    // always specify path to list, do not attempt to 
+    // list "current" dir as:
     // 1) List() lists again the last listed directory, not the current working directory
     // 2) we handle this way the cached directory change
     std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
@@ -5117,7 +5118,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
     }
 
     // Erase slashes (to compare in xml parse)
-    std::wstring currentPath = ::ExcludeLeadingBackslash(::ExcludeTrailingBackslash(Directory));
+    std::wstring currentPath = ::UnixExcludeLeadingBackslash(::ExcludeTrailingBackslash(Directory));
 
     const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
 
@@ -5180,7 +5181,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
         {
             path = href;
         }
-        path = ::ExcludeLeadingBackslash(::ExcludeTrailingBackslash(path));
+        path = ::UnixExcludeLeadingBackslash(::ExcludeTrailingBackslash(path));
         // DEBUG_PRINTF(L"href = %s, path = %s, currentPath = %s", href.c_str(), path.c_str(), currentPath.c_str());
 
         //Check for self-link (compare paths)
