@@ -104,9 +104,6 @@ THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(ATerminal),
   // FSecureShell(NULL),
   FFileList(NULL),
-  FFileListCache(NULL),
-  FOutput(NULL),
-  FReturnCode(0),
   FProcessingCommand(false),
   FCURLIntf(NULL),
   FPasswordFailed(false),
@@ -140,7 +137,6 @@ void THTTPFileSystem::Init(TSecureShell *SecureShell)
 {
   // FSecureShell = SecureShell;
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
-  FOutput = new TStringList();
   FProcessingCommand = false;
 
   FFileSystemInfo.ProtocolBaseName = L"HTTP";
@@ -154,8 +150,6 @@ void THTTPFileSystem::Init(TSecureShell *SecureShell)
 //---------------------------------------------------------------------------
 THTTPFileSystem::~THTTPFileSystem()
 {
-  delete FOutput;
-  FOutput = NULL;
   delete FLastResponse;
   FLastResponse = NULL;
   delete FLastError;
@@ -173,7 +167,6 @@ void THTTPFileSystem::Open()
   DEBUG_PRINTF(L"begin");
   // FSecureShell->Open();
 
-  ResetCaches();
   FCurrentDirectory = L"";
   FHomeDirectory = L"";
 
@@ -369,39 +362,7 @@ const TSessionInfo & THTTPFileSystem::GetSessionInfo()
 //---------------------------------------------------------------------------
 const TFileSystemInfo & THTTPFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-  if (FFileSystemInfo.AdditionalInfo.empty() && Retrieve)
-  {
-    std::wstring UName;
-    FTerminal->SetExceptionOnFail(true);
-    {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->FTerminal->SetExceptionOnFail(false);
-      } BOOST_SCOPE_EXIT_END
-      try
-      {
-        AnyCommand(L"uname -a", NULL);
-        for (size_t Index = 0; Index < GetOutput()->GetCount(); Index++)
-        {
-          if (Index > 0)
-          {
-            UName += L"; ";
-          }
-          UName += GetOutput()->GetString(Index);
-        }
-      }
-      catch (...)
-      {
-        if (!FTerminal->GetActive())
-        {
-          throw;
-        }
-      }
-    }
-
-    FFileSystemInfo.RemoteSystem = UName;
-  }
-
+  ::Error(SNotImplemented, 1009);
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
@@ -423,31 +384,7 @@ std::wstring THTTPFileSystem::GetUserName()
 void THTTPFileSystem::Idle()
 {
   // Keep session alive
-  if ((FTerminal->GetSessionData()->GetPingType ()!= ptOff) &&
-      (Now() /*- FSecureShell->GetLastDataSent()*/ > FTerminal->GetSessionData()->GetPingIntervalDT()))
-  {
-    if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand)) // &&
-        // FSecureShell->GetReady())
-    {
-      if (!FProcessingCommand)
-      {
-        // ExecCommand(fsNull, 0, NULL);
-      }
-      else
-      {
-        FTerminal->LogEvent(L"Cannot send keepalive, command is being executed");
-        // send at least SSH-level keepalive, if nothing else, it at least updates
-        // LastDataSent, no the next keepalive attempt is postponed
-        // FSecureShell->KeepAlive();
-      }
-    }
-    else
-    {
-      // FSecureShell->KeepAlive();
-    }
-  }
-
-  // FSecureShell->Idle();
+  return;
 }
 //---------------------------------------------------------------------------
 std::wstring THTTPFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
@@ -773,12 +710,6 @@ void THTTPFileSystem::CustomReadFile(const std::wstring FileName,
   // const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
   // ExecCommand(fsListFile,
     // Params, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str());
-  if (FOutput->GetCount())
-  {
-    int LineIndex = 0;
-
-    File = CreateRemoteFile(FOutput->GetString(LineIndex), ALinkedByFile);
-  }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::DeleteFile(const std::wstring FileName,
@@ -1008,12 +939,6 @@ void THTTPFileSystem::AnyCommand(const std::wstring Command,
 }
 
 //---------------------------------------------------------------------------
-void THTTPFileSystem::ResetCaches()
-{
-  delete FFileListCache;
-  FFileListCache = NULL;
-}
-//---------------------------------------------------------------------------
 std::wstring THTTPFileSystem::FileUrl(const std::wstring FileName)
 {
   return FTerminal->FileUrl(L"http", FileName);
@@ -1059,7 +984,7 @@ void THTTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
             {
                 OperationProgress->Finish(FileName, Success, OnceDoneOperation);
             } BOOST_SCOPE_EXIT_END
-                try
+            try
             {
                 SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
                     OperationProgress, tfFirstLevel);
@@ -1462,77 +1387,6 @@ int THTTPFileSystem::GetOptionVal(int OptionID) const
 
   return Result;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TDateTime THTTPFileSystem::ConvertLocalTimestamp(time_t Time)
-{
-  // This reverses how FZAPI converts FILETIME to time_t,
-  // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
-  __int64 Timestamp;
-  tm * Tm = localtime(&Time);
-  if (Tm != NULL)
-  {
-    SYSTEMTIME SystemTime;
-    SystemTime.wYear = static_cast<WORD>(Tm->tm_year + 1900);
-    SystemTime.wMonth = static_cast<WORD>(Tm->tm_mon + 1);
-    SystemTime.wDayOfWeek = 0;
-    SystemTime.wDay = static_cast<WORD>(Tm->tm_mday);
-    SystemTime.wHour = static_cast<WORD>(Tm->tm_hour);
-    SystemTime.wMinute = static_cast<WORD>(Tm->tm_min);
-    SystemTime.wSecond = static_cast<WORD>(Tm->tm_sec);
-    SystemTime.wMilliseconds = 0;
-
-    FILETIME LocalTime;
-    SystemTimeToFileTime(&SystemTime, &LocalTime);
-    FILETIME FileTime;
-    LocalFileTimeToFileTime(&LocalTime, &FileTime);
-    Timestamp = ConvertTimestampToUnixSafe(FileTime, dstmUnix);
-  }
-  else
-  {
-    // incorrect, but at least something
-    Timestamp = Time;
-  }
-
-  return UnixToDateTime(Timestamp, dstmUnix);
-}
-//---------------------------------------------------------------------------
-TDateTime THTTPFileSystem::ConvertRemoteTimestamp(time_t Time, bool HasTime)
-{
-  TDateTime Result;
-  tm * Tm = localtime(&Time);
-  if (Tm != NULL)
-  {
-    // should be the same as HandleListData
-    Result = EncodeDateVerbose(
-      static_cast<unsigned short>(Tm->tm_year + 1900),
-      static_cast<unsigned short>(Tm->tm_mon + 1),
-      static_cast<unsigned short>(Tm->tm_mday));
-    if (HasTime)
-    {
-      Result = Result + EncodeTimeVerbose(
-        static_cast<unsigned short>(Tm->tm_hour),
-        static_cast<unsigned short>(Tm->tm_min),
-        static_cast<unsigned short>(Tm->tm_sec), 0);
-    }
-  }
-  else
-  {
-    // incorrect, but at least something
-    Result = UnixToDateTime(Time, dstmUnix);
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
-struct TClipboardHandler
-{
-  std::wstring Text;
-
-  void Copy(TObject * /*Sender*/)
-  {
-    CopyToClipboard(Text);
-  }
-};
 //---------------------------------------------------------------------------
 bool THTTPFileSystem::HandleListData(const wchar_t * Path,
   const TListDataEntry * Entries, unsigned int Count)

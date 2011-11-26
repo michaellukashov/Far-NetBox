@@ -125,18 +125,8 @@ protected:
     const std::wstring & RemoteFile, const std::wstring & RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
-  TDateTime ConvertLocalTimestamp(time_t Time);
-  TDateTime ConvertRemoteTimestamp(time_t Time, bool HasTime);
-  void SetLastCode(int Code);
-
-  static bool Unquote(std::wstring & Str);
-  static std::wstring ExtractStatusMessage(std::wstring Status);
 
 protected:
-  // __property TStrings * Output = { read = FOutput };
-  TStrings *GetOutput() { return FOutput; };
-  // __property int ReturnCode = { read = FReturnCode };
-  int GetReturnCode() { return FReturnCode; }
 
   virtual std::wstring GetCurrentDirectory();
 
@@ -158,9 +148,6 @@ private:
   std::wstring FCurrentDirectory;
   std::wstring FHomeDirectory;
   TRemoteFileList * FFileList;
-  TRemoteFileList * FFileListCache;
-  TStrings * FOutput;
-  int FReturnCode;
   // std::wstring FCachedDirectoryChange;
   bool FProcessingCommand;
   int FLsFullTime;
