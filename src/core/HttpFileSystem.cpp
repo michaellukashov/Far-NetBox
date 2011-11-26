@@ -975,7 +975,7 @@ void THTTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         bool Success = false;
         FTerminal->SetExceptionOnFail(true);
         {
-            BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+            BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
             {
                 OperationProgress->Finish(FileName, Success, OnceDoneOperation);
                 Self->FTerminal->SetExceptionOnFail(false);
@@ -1609,9 +1609,12 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
     bool res = GetFile(FileName.c_str(), LocalFile.c_str(), Size, errorInfo);
     if (!res)
     {
-      // FFileTransferAbort = ftaSkip;
-      FFileTransferAbort = ftaCancel;
-      // FFileTransferCancelled = false;
+      FFileTransferAbort = ftaSkip;
+      // FFileTransferAbort = ftaCancel;
+      if (::FileExists(LocalFile))
+      {
+        ::DeleteFile(LocalFile);
+      }
     }
   );
 
