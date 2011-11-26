@@ -1085,10 +1085,10 @@ void THTTPFileSystem::Sink(const std::wstring FileName,
         {
             FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
                 int Attrs = FileGetAttr(DestFullName);
-            if (FLAGCLEAR(Attrs, faDirectory))
-            {
-                EXCEPTION;
-            }
+                if (FLAGCLEAR(Attrs, faDirectory))
+                {
+                    EXCEPTION;
+                }
             );
 
             FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
@@ -1096,25 +1096,25 @@ void THTTPFileSystem::Sink(const std::wstring FileName,
                 {
                     RaiseLastOSError();
                 }
-                );
+            );
 
-                TSinkFileParams SinkFileParams;
-                SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
-                SinkFileParams.CopyParam = CopyParam;
-                SinkFileParams.Params = Params;
-                SinkFileParams.OperationProgress = OperationProgress;
-                SinkFileParams.Skipped = false;
-                SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
+            TSinkFileParams SinkFileParams;
+            SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+            SinkFileParams.CopyParam = CopyParam;
+            SinkFileParams.Params = Params;
+            SinkFileParams.OperationProgress = OperationProgress;
+            SinkFileParams.Skipped = false;
+            SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-                FTerminal->ProcessDirectory(FileName, boost::bind(&THTTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
+            FTerminal->ProcessDirectory(FileName, boost::bind(&THTTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
 
-                // Do not delete directory if some of its files were skip.
-                // Throw "skip file" for the directory to avoid attempt to deletion
-                // of any parent directory
-                if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
-                {
-                    THROW_SKIP_FILE_NULL;
-                }
+            // Do not delete directory if some of its files were skip.
+            // Throw "skip file" for the directory to avoid attempt to deletion
+            // of any parent directory
+            if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
+            {
+                THROW_SKIP_FILE_NULL;
+            }
         }
         else
         {
@@ -1139,11 +1139,11 @@ void THTTPFileSystem::Sink(const std::wstring FileName,
         int Attrs;
         FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
             Attrs = FileGetAttr(DestFullName);
-        if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
-        {
-            EXCEPTION;
-        }
-        );
+            if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
+            {
+                EXCEPTION;
+            }
+            );
 
         OperationProgress->TransferingFile = false; // not set with FTP protocol
 
@@ -2334,7 +2334,8 @@ bool THTTPFileSystem::GetFile(const wchar_t *remotePath, const wchar_t *localPat
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
     CSlistURL slist;
-    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    // slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Type: application/octet-stream");
     slist.Append("Content-Length: 0");
     slist.Append("Connection: Keep-Alive");
     CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
