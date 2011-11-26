@@ -2091,7 +2091,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
 
     std::wstring response;
     std::wstring errorInfo;
-    if (!SendPropFindRequest(FCurrentDirectory.c_str(), response, errorInfo))
+    if (!SendPropFindRequest(Directory.c_str(), response, errorInfo))
     {
         return false;
     }
