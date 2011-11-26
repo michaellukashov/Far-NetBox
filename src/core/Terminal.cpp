@@ -560,7 +560,7 @@ void TTerminal::Idle()
   {
     if (Configuration->GetActualLogProtocol() >= 1)
     {
-      LogEvent(L"Session upkeep");
+      // LogEvent(L"Session upkeep");
     }
 
     assert(FFileSystem != NULL);
