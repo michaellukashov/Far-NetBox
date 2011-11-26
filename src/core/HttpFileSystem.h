@@ -5,7 +5,6 @@
 #include "EasyURL.h"
 //---------------------------------------------------------------------------
 class TCURLIntf;
-class THTTPCommandSet;
 // class TSecureShell;
 struct TListDataEntry;
 class TMessageQueue;
@@ -180,7 +179,6 @@ private:
   };
 
   // TSecureShell * FSecureShell;
-  THTTPCommandSet * FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   std::wstring FCurrentDirectory;
   std::wstring FHomeDirectory;
@@ -227,42 +225,15 @@ private:
   int m_ProgressPercent; ///< Progress percent value
   THTTPFileSystem *Self;
 
-  void ClearAliases();
-  void ClearAlias(std::wstring Alias);
   void CustomReadFile(const std::wstring FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
   static std::wstring DelimitStr(std::wstring Str);
-  void DetectReturnVar();
-  bool IsLastLine(std::wstring & Line);
-  static bool IsTotalListingLine(const std::wstring Line);
-  void ExecCommand(const std::wstring & Cmd, int Params,
-    const std::wstring & CmdString);
-  void ExecCommand(TFSCommand Cmd, int Params = -1, ...);
-  void ReadCommandOutput(int Params, const std::wstring * Cmd = NULL);
-  void SCPResponse(bool * GotLastLine = NULL);
-  void SCPDirectorySource(const std::wstring DirectoryName,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, int Level);
-  void SCPError(const std::wstring Message, bool Fatal);
-  void SCPSendError(const std::wstring Message, bool Fatal);
-  void SCPSink(const std::wstring TargetDir,
-    const std::wstring FileName, const std::wstring SourceDir,
-    const TCopyParamType * CopyParam, bool & Success,
-    TFileOperationProgressType * OperationProgress, int Params, int Level);
-  void SCPSource(const std::wstring FileName,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, int Level);
-  void SendCommand(const std::wstring Cmd);
-  void SkipFirstLine();
-  void UnsetNationalVars();
   TRemoteFile * CreateRemoteFile(const std::wstring & ListingStr,
     TRemoteFile * LinkedByFile = NULL);
   void CaptureOutput(const std::wstring & AddedLine, bool StdError);
   void ChangeFileToken(const std::wstring & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const std::wstring & RecursiveStr);
 
-  static bool RemoveLastLine(std::wstring & Line,
-    int & ReturnCode, std::wstring LastLine = L"");
 private:
   enum
   {
