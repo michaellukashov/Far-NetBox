@@ -1253,6 +1253,10 @@ void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
     // FCURLIntf->List(Directory);
     // GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
+    std::vector<TListDataEntry> Entries;
+    GetList(Directory, Entries);
+    TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
+    HandleListData(Directory.c_str(), pEntries, Entries.size());
 
     FLastDataSent = Now();
 }
@@ -4865,12 +4869,9 @@ bool THTTPFileSystem::MakeDirectory(const wchar_t *path, std::wstring &errorInfo
     return result;
 }
 
-
-bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &errorInfo)
+bool THTTPFileSystem::GetList(const std::wstring &Directory, std::vector<TListDataEntry> &Entries)
 {
-    assert(items);
-    assert(itemsNum);
-
+    Entries.clear();
     std::wstring response;
     if (!SendPropFindRequest(FCurrentDirectory.c_str(), response, errorInfo))
     {
@@ -4878,21 +4879,13 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
     }
 
     // Erase slashes (to compare in xml parse)
-    std::wstring currentPath(FCurrentDirectory);
-    while (!currentPath.empty() && currentPath[currentPath.length() - 1] == L'/')
-    {
-        currentPath.erase(currentPath.length() - 1);
-    }
-    while (!currentPath.empty() && currentPath[0] == L'/')
-    {
-        currentPath.erase(0, 1);
-    }
+    std::wstring currentPath = ::ExcludeTrailingBackslash(Directory);
 
     const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
 
 #ifdef _DEBUG
-    // CNBFile::SaveFile(L"d:\\webdav_response_raw.xml", response.c_str());
-    // CNBFile::SaveFile(L"d:\\webdav_response_decoded.xml", decodedResp.c_str());
+    // CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", response.c_str());
+    // CNBFile::SaveFile(L"c:\\webdav_response_decoded.xml", decodedResp.c_str());
 #endif
 
     //! WebDAV item description
@@ -5039,14 +5032,14 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
         wdavItems.push_back(item);
     }
 
-    *itemsNum = static_cast<int>(wdavItems.size());
-    if (*itemsNum)
+    unsigned int Count = static_cast<int>(wdavItems.size());
+    if (Count)
     {
-        *items = new PluginPanelItem[*itemsNum];
-        ZeroMemory(*items, sizeof(PluginPanelItem) * (*itemsNum));
-        for (int i = 0; i < *itemsNum; ++i)
+        Entries.resize(Count);
+        // ZeroMemory(*items, sizeof(PluginPanelItem) * (*itemsNum));
+        for (int i = 0; i < Count; ++i)
         {
-            PluginPanelItem &farItem = (*items)[i];
+            TListDataEntry &Dest = Entries[i];
             const size_t nameSize = wdavItems[i].Name.length() + 1;
             wchar_t *name = new wchar_t[nameSize];
             wcscpy_s(name, nameSize, wdavItems[i].Name.c_str());
@@ -5061,10 +5054,8 @@ bool THTTPFileSystem::GetList(PluginPanelItem **items, int *itemsNum, std::wstri
             farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
         }
     }
-
     return true;
 }
-
 
 bool THTTPFileSystem::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
 {
