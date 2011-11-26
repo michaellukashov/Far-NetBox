@@ -1253,10 +1253,7 @@ void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
     // FCURLIntf->List(Directory);
     // GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-    std::vector<TListDataEntry> Entries;
-    GetList(Directory, Entries);
-    TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
-    HandleListData(Directory.c_str(), pEntries, Entries.size());
+    GetList(Directory);
 
     FLastDataSent = Now();
 }
@@ -4869,10 +4866,12 @@ bool THTTPFileSystem::MakeDirectory(const wchar_t *path, std::wstring &errorInfo
     return result;
 }
 
-bool THTTPFileSystem::GetList(const std::wstring &Directory, std::vector<TListDataEntry> &Entries)
+bool THTTPFileSystem::GetList(const std::wstring &Directory)
 {
-    Entries.clear();
+    std::vector<TListDataEntry> Entries;
+
     std::wstring response;
+    std::wstring errorInfo;
     if (!SendPropFindRequest(FCurrentDirectory.c_str(), response, errorInfo))
     {
         return false;
@@ -5054,6 +5053,8 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory, std::vector<TListDa
             farItem.FindData.ftLastAccessTime = wdavItems[i].LastAccess;
         }
     }
+    TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
+    HandleListData(Directory.c_str(), pEntries, Entries.size());
     return true;
 }
 

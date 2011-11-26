@@ -280,7 +280,7 @@ private:
     virtual bool Connect(HANDLE abortEvent, std::wstring &errorInfo);
     virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
     virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
-    virtual bool GetList(const std::wstring &Directory, std::vector<TListDataEntry> &Entries);
+    virtual bool GetList(const std::wstring &Directory);
     virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
     virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
     virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);
