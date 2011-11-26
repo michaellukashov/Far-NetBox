@@ -321,6 +321,19 @@ struct TFileTransferData
 };
 
 //---------------------------------------------------------------------------
+const int tfFirstLevel = 0x01;
+const int tfAutoResume = 0x02;
+//---------------------------------------------------------------------------
+struct TSinkFileParams
+{
+  std::wstring TargetDir;
+  const TCopyParamType * CopyParam;
+  int Params;
+  TFileOperationProgressType * OperationProgress;
+  bool Skipped;
+  unsigned int Flags;
+};
+//---------------------------------------------------------------------------
 class TFileListHelper
 {
 public:
@@ -2483,122 +2496,267 @@ void THTTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  bool CloseSCP = false;
-  Params &= ~(cpAppend | cpResume);
-  std::wstring Options = L"";
-  if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime()) Options = L"-p";
-  if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
+    Params &= ~cpAppend;
+    std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
-  FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory \"%s\"",
-      FilesToCopy->GetCount(), TargetDir.c_str()));
-  FTerminal->LogEvent(CopyParam->GetLogStr());
-
-  {
-    BOOST_SCOPE_EXIT ( (&Self) (&CloseSCP) (&OperationProgress) )
+    int Index = 0;
+    while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
     {
-      // In case that copying doesn't cause fatal error (ie. connection is
-      // still active) but wasn't succesful (exception or user termination)
-      // we need to ensure, that SCP on remote side is closed
-      if (Self->FTerminal->GetActive() && (CloseSCP ||
-          (OperationProgress->Cancel == csCancel) ||
-          (OperationProgress->Cancel == csCancelTransfer)))
-      {
-        bool LastLineRead;
+        std::wstring FileName = FilesToCopy->GetString(Index);
+        const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
+        bool Success = false;
 
-        // If we get LastLine, it means that remote side 'scp' is already
-        // terminated, so we need not to terminate it. There is also
-        // possibility that remote side waits for confirmation, so it will hang.
-        // This should not happen (hope)
-        std::wstring Line = L""; // Self->FSecureShell->ReceiveLine();
-        LastLineRead = Self->IsLastLine(Line);
-        if (!LastLineRead)
         {
-          Self->SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"std::exception"), true);
-        }
-        // Just in case, remote side already sent some more data (it's probable)
-        // but we don't want to raise exception (user asked to terminate, it's not error)
-        int ECParams = coOnlyReturnCode;
-        if (!LastLineRead) ECParams |= coWaitForLastLine;
-        Self->ReadCommandOutput(ECParams);
-      }
-    } BOOST_SCOPE_EXIT_END
-    for (size_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; IFile++)
-    {
-      std::wstring FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = (TRemoteFile *)FilesToCopy->GetObject(IFile);
-      assert(File);
-
-      try
-      {
-        bool Success = true; // Have to be set to true (see ::SCPSink)
-        SendCommand(FCommandSet->FullCommand(fsCopyToLocal,
-          Options.c_str(), DelimitStr(FileName).c_str()));
-        SkipFirstLine();
-
-        // Filename is used for error messaging and excluding files only
-        // Send in full path to allow path-based excluding
-        std::wstring FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
-        // DEBUG_PRINTF(L"FileName = '%s', FullFileName = '%s'", FileName.c_str(), FullFileName.c_str());
-        SCPSink(TargetDir, FullFileName, UnixExtractFilePath(FullFileName),
-          CopyParam, Success, OperationProgress, Params, 0);
-        // operation succeded (no exception), so it's ok that
-        // remote side closed SCP, but we continue with next file
-        if (OperationProgress->Cancel == csRemoteAbort)
-        {
-          OperationProgress->Cancel = csContinue;
-        }
-
-        // Move operation -> delete file/directory afterwards
-        // but only if copying succeded
-        if ((Params & cpDelete) && Success && !OperationProgress->Cancel)
-        {
-          try
-          {
-            FTerminal->SetExceptionOnFail(true);
+            BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
             {
-              BOOST_SCOPE_EXIT ( (&Self) )
-              {
-                Self->FTerminal->SetExceptionOnFail(false);
-              } BOOST_SCOPE_EXIT_END
-              FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
-                // pass full file name in FileName, in case we are not moving
-                // from current directory
-                FTerminal->DeleteFile(FileName, File)
-              );
-            }
-          }
-          catch (const EFatal &E)
-          {
-            throw;
-          }
-          catch (...)
-          {
-            // If user selects skip (or abort), nothing special actualy occurs
-            // we just run DoFinished with Success = false, so file won't
-            // be deselected in panel (depends on assigned event handler)
-
-            // On csCancel we would later try to close remote SCP, but it
-            // is closed already
-            if (OperationProgress->Cancel == csCancel)
+                OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+            } BOOST_SCOPE_EXIT_END
+                try
             {
-              OperationProgress->Cancel = csRemoteAbort;
+                SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
+                    OperationProgress, tfFirstLevel);
+                Success = true;
+                FLastDataSent = Now();
             }
-            Success = false;
-          }
+            catch (const EScpSkipFile &E)
+            {
+                DEBUG_PRINTF(L"before FTerminal->HandleException");
+                SUSPEND_OPERATION (
+                    if (!FTerminal->HandleException(&E)) throw;
+                );
+            }
         }
-
-        OperationProgress->Finish(FileName,
-          (!OperationProgress->Cancel && Success), OnceDoneOperation);
-      }
-      catch (...)
-      {
-        OperationProgress->Finish(FileName, false, OnceDoneOperation);
-        CloseSCP = (OperationProgress->Cancel != csRemoteAbort);
-        throw;
-      }
+        Index++;
     }
-  }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::SinkRobust(const std::wstring FileName,
+    const TRemoteFile * File, const std::wstring TargetDir,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags)
+{
+    // the same in TSFTPFileSystem
+    bool Retry;
+
+    TDownloadSessionAction Action(FTerminal->GetLog());
+
+    do
+    {
+        Retry = false;
+        try
+        {
+            Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
+                Flags, Action);
+        }
+        catch (const std::exception & E)
+        {
+            Retry = true;
+            if (FTerminal->GetActive() ||
+                !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
+            {
+                FTerminal->RollbackAction(Action, OperationProgress, &E);
+                throw;
+            }
+        }
+
+        if (Retry)
+        {
+            OperationProgress->RollbackTransfer();
+            Action.Restart();
+            assert(File != NULL);
+            if (!File->GetIsDirectory())
+            {
+                // prevent overwrite confirmations
+                Params |= cpNoConfirmation;
+                Flags |= tfAutoResume;
+            }
+        }
+    }
+    while (Retry);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::Sink(const std::wstring FileName,
+    const TRemoteFile * File, const std::wstring TargetDir,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TDownloadSessionAction & Action)
+{
+    std::wstring OnlyFileName = UnixExtractFileName(FileName);
+
+    Action.FileName(FileName);
+
+    TFileMasks::TParams MaskParams;
+    MaskParams.Size = File->GetSize();
+
+    if (!CopyParam->AllowTransfer(FileName, osRemote, File->GetIsDirectory(), MaskParams))
+    {
+        FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+        THROW_SKIP_FILE_NULL;
+    }
+
+    assert(File);
+    FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+
+    OperationProgress->SetFile(OnlyFileName);
+
+    std::wstring DestFileName = CopyParam->ChangeFileName(OnlyFileName,
+        osRemote, FLAGSET(Flags, tfFirstLevel));
+    std::wstring DestFullName = TargetDir + DestFileName;
+
+    if (File->GetIsDirectory())
+    {
+        Action.Cancel();
+        if (!File->GetIsSymLink())
+        {
+            FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
+                int Attrs = FileGetAttr(DestFullName);
+            if (FLAGCLEAR(Attrs, faDirectory))
+            {
+                EXCEPTION;
+            }
+            );
+
+            FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
+                if (!ForceDirectories(DestFullName))
+                {
+                    RaiseLastOSError();
+                }
+                );
+
+                TSinkFileParams SinkFileParams;
+                SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+                SinkFileParams.CopyParam = CopyParam;
+                SinkFileParams.Params = Params;
+                SinkFileParams.OperationProgress = OperationProgress;
+                SinkFileParams.Skipped = false;
+                SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
+
+                FTerminal->ProcessDirectory(FileName, boost::bind(&THTTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
+
+                // Do not delete directory if some of its files were skip.
+                // Throw "skip file" for the directory to avoid attempt to deletion
+                // of any parent directory
+                if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
+                {
+                    THROW_SKIP_FILE_NULL;
+                }
+        }
+        else
+        {
+            // file is symlink to directory, currently do nothing, but it should be
+            // reported to user
+        }
+    }
+    else
+    {
+        FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", FileName.c_str()));
+
+        // Will we use ASCII of BINARY file tranfer?
+        OperationProgress->SetAsciiTransfer(
+            CopyParam->UseAsciiTransfer(FileName, osRemote, MaskParams));
+        FTerminal->LogEvent(std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+            L" transfer mode selected.");
+
+        // Suppose same data size to transfer as to write
+        OperationProgress->SetTransferSize(File->GetSize());
+        OperationProgress->SetLocalSize(OperationProgress->TransferSize);
+
+        int Attrs;
+        FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
+            Attrs = FileGetAttr(DestFullName);
+        if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
+        {
+            EXCEPTION;
+        }
+        );
+
+        OperationProgress->TransferingFile = false; // not set with FTP protocol
+
+        ResetFileTransfer();
+
+        TFileTransferData UserData;
+
+        std::wstring FilePath = UnixExtractFilePath(FileName);
+        if (FilePath.empty())
+        {
+            FilePath = L"/";
+        }
+        unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+
+        {
+            // ignore file list
+            TFileListHelper Helper(this, NULL, true);
+
+            FFileTransferCPSLimit = OperationProgress->CPSLimit;
+            FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+            UserData.FileName = DestFileName;
+            UserData.Params = Params;
+            UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+            UserData.CopyParam = CopyParam;
+            FileTransfer(FileName, DestFullName, OnlyFileName,
+                FilePath, true, File->GetSize(), TransferType, UserData, OperationProgress);
+        }
+
+        // in case dest filename is changed from overwrite dialog
+        if (DestFileName != UserData.FileName)
+        {
+            DestFullName = TargetDir + UserData.FileName;
+            Attrs = FileGetAttr(DestFullName);
+        }
+
+        Action.Destination(ExpandUNCFileName(DestFullName));
+
+        if (Attrs == -1)
+        {
+            Attrs = faArchive;
+        }
+        int NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+        if ((NewAttrs & Attrs) != NewAttrs)
+        {
+            FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
+                THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs | NewAttrs) == 0);
+            );
+        }
+    }
+
+    if (FLAGSET(Params, cpDelete))
+    {
+        // If file is directory, do not delete it recursively, because it should be
+        // empty already. If not, it should not be deleted (some files were
+        // skipped or some new files were copied to it, while we were downloading)
+        int Params = dfNoRecursive;
+        FTerminal->DeleteFile(FileName, File, &Params);
+    }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::SinkFile(std::wstring FileName,
+    const TRemoteFile * File, void * Param)
+{
+    TSinkFileParams * Params = (TSinkFileParams *)Param;
+    assert(Params->OperationProgress);
+    try
+    {
+        SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
+            Params->Params, Params->OperationProgress, Params->Flags);
+    }
+    catch (const EScpSkipFile &E)
+    {
+        TFileOperationProgressType * OperationProgress = Params->OperationProgress;
+
+        Params->Skipped = true;
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
+        SUSPEND_OPERATION (
+            if (!FTerminal->HandleException(&E))
+            {
+                throw;
+            }
+            );
+
+            if (OperationProgress->Cancel)
+            {
+                Abort();
+            }
+    }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::SCPError(const std::wstring Message, bool Fatal)
