@@ -1215,20 +1215,36 @@ void THTTPFileSystem::AnnounceFileListOperation()
   // noop
 }
 //---------------------------------------------------------------------------
-void THTTPFileSystem::ChangeDirectory(const std::wstring Directory)
+void THTTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
 {
-  std::wstring ToDir;
-  if (!Directory.empty() &&
-      ((Directory[0] != L'~') || (Directory.substr(0, 2) == L"~ ")))
+  std::wstring Directory = ADirectory;
+  try
   {
-    ToDir = L"\"" + DelimitStr(Directory) + L"\"";
+    // For changing directory, we do not make paths absolute, instead we
+    // delegate this to the server, hence we sychronize current working
+    // directory with the server and only then we ask for the change with
+    // relative path.
+    // But if synchronization fails, typically because current working directory
+    // no longer exists, we fall back to out own resolution, to give
+    // user chance to leave the non-existing directory.
+    EnsureLocation();
   }
-  else
+  catch (...)
   {
-    ToDir = DelimitStr(Directory);
+    if (FTerminal->GetActive())
+    {
+      Directory = AbsolutePath(Directory, false);
+    }
+    else
+    {
+      throw;
+    }
   }
-  ExecCommand(fsChangeDirectory, 0, ToDir.c_str());
-  FCachedDirectoryChange = L"";
+
+  DoChangeDirectory(Directory);
+
+  // make next ReadCurrentDirectory retrieve actual server-side current directory
+  FCurrentDirectory = L"";
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
