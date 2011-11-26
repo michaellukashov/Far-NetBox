@@ -2692,6 +2692,33 @@ void TSessionDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
+void AdjustRemoteDir(TFarEdit *HostNameEdit,
+    TFarEdit *RemoteDirectoryEdit,
+    TFarCheckBox *PreserveDirectoryChangesCheck)
+{
+    std::wstring hostName = HostNameEdit->GetText();
+    if (LowerCase(hostName.substr(0, 7)) == L"http://")
+    {
+        hostName.erase(0, 7);
+    }
+    else if (LowerCase(hostName.substr(0, 7)) == L"https://")
+    {
+        hostName.erase(0, 8);
+    }
+    std::wstring dir;
+    size_t P = hostName.find_first_of(L'/');
+    if (P != std::wstring::npos)
+    {
+        dir = hostName.substr(P, hostName.size() - P);
+    }
+    std::wstring remotedir = RemoteDirectoryEdit->GetText();
+    if (remotedir.empty() || (remotedir != dir))
+    {
+        PreserveDirectoryChangesCheck->SetEnabled(true);
+        RemoteDirectoryEdit->SetText(dir);
+    }
+}
+//---------------------------------------------------------------------------
 void TSessionDialog::TransferProtocolComboChange()
 {
   // note that this modifies the session for good,
@@ -2711,10 +2738,12 @@ void TSessionDialog::TransferProtocolComboChange()
   else if (GetFSProtocol() == fsHTTP)
   {
     PortNumberEdit->SetAsInteger(80);
+    ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, PreserveDirectoryChangesCheck);
   }
   else if (GetFSProtocol() == fsHTTPS)
   {
     PortNumberEdit->SetAsInteger(443);
+    // ::AdjustRemoteDir(PreserveDirectoryChangesCheck, RemoteDirectoryEdit);
   }
   else
   {
