@@ -4945,7 +4945,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
     const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
 
 #ifdef _DEBUG
-    // CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", response.c_str());
+    CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", ::W2MB(response.c_str()).c_str());
     // CNBFile::SaveFile(L"c:\\webdav_response_decoded.xml", decodedResp.c_str());
 #endif
 
@@ -5102,6 +5102,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             TListDataEntry &Dest = Entries[i];
             WebDAVItem &item = wdavItems[i];
             Dest.Name = wdavItems[i].Name.c_str();
+            DEBUG_PRINTF(L"Dest.Name = %s", Dest.Name);
             Dest.Permissions = L"";
             Dest.OwnerGroup = L"";
             int dir = item.Attributes & FILE_ATTRIBUTE_DIRECTORY;
@@ -5126,7 +5127,7 @@ bool THTTPFileSystem::GetList(const std::wstring &Directory)
             Dest.LinkTarget = L"";
         }
     }
-    // DEBUG_PRINTF(L"Count = %d", Count);
+    DEBUG_PRINTF(L"Count = %d", Count);
     TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
     HandleListData(Directory.c_str(), pEntries, Entries.size());
     return true;
