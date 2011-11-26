@@ -214,10 +214,10 @@ private:
   int FLastCode;
   int FLastCodeClass;
   int FLastReadDirectoryProgress;
-  TStrings * FLastResponse;
-  TStrings * FLastError;
-  TCriticalSection * FQueueCriticalSection;
-  TCriticalSection * FTransferStatusCriticalSection;
+  TStrings *FLastResponse;
+  TStrings *FLastError;
+  TCriticalSection *FQueueCriticalSection;
+  TCriticalSection *FTransferStatusCriticalSection;
   TMessageQueue *FQueue;
   HANDLE FQueueEvent;
   TAutoSwitch FListAll;
