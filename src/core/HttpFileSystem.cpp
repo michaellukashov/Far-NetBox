@@ -304,26 +304,6 @@ void THTTPFileSystem::Open()
     FCURLIntf->SetAbortEvent(FAbortEvent);
 
     FPasswordFailed = false;
-    // Check initial path existing
-    /*
-    std::wstring path;
-    std::wstring query;
-    ::ParseURL(HostName.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
-    bool dirExist = false;
-    DEBUG_PRINTF(L"path = %s, query = %s", path.c_str(), query.c_str());
-    // if (!query.empty())
-    // {
-        // path += query;
-    // }
-    bool dirExist = false;
-    std::wstring errorInfo;
-    if (!CheckExisting(Path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
-    {
-        FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", Path.c_str()));
-        // return;
-    }
-    FCurrentDirectory = ::UnixExcludeTrailingBackslash(Path);
-    */
   }
   while (FPasswordFailed);
   DEBUG_PRINTF(L"end");
