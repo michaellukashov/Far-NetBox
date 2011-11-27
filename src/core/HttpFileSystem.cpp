@@ -7,6 +7,8 @@
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 
 #include "HttpFileSystem.h"
 
@@ -20,6 +22,8 @@
 #include "Settings.h"
 #include "FarUtil.h"
 #include "tinyXML\tinyxml.h"
+
+namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
 static const std::wstring CONST_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
@@ -768,13 +772,28 @@ void THTTPFileSystem::CopyFile(const std::wstring FileName,
 void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
 {
   // ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
-  ::Error(SNotImplemented, 1013);
+  // ::Error(SNotImplemented, 1013);
   DEBUG_PRINTF(L"FCurrentDirectory = %s, DirName = %s", FCurrentDirectory.c_str(), DirName.c_str());
   std::wstring errorInfo;
   bool res = MakeDirectory(DirName.c_str(), errorInfo);
   if (!res)
   {
-    THROW_SKIP_FILE(errorInfo, NULL);
+      std::vector<std::wstring> dirnames;
+      std::wstring delim = L"/";
+      alg::split(dirnames, DirName, alg::is_any_of(delim), alg::token_compress_on);
+      std::wstring curdir;
+      std::wstring dir;
+      BOOST_FOREACH(dir, dirnames)
+      {
+          curdir += L"/" + dir;
+          res = MakeDirectory(curdir.c_str(), errorInfo);
+          if (!res)
+            break;
+      }
+      if (!res)
+      {
+        THROW_SKIP_FILE(errorInfo, NULL);
+      }
   }
 }
 //---------------------------------------------------------------------------
