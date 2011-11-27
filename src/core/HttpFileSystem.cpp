@@ -235,7 +235,7 @@ void THTTPFileSystem::Open()
   std::wstring Password = Data->GetPassword();
   std::wstring Account = Data->GetFtpAccount();
   std::wstring Path = Data->GetRemoteDirectory();
-  std::wstring url = FORMAT(L"http://%s:%d%s", HostName.c_str(), Port, Path);
+  std::wstring url = FORMAT(L"http://%s:%d%s", HostName.c_str(), Port, Path.c_str());
   do
   {
     FSystem = L"";
@@ -296,7 +296,7 @@ void THTTPFileSystem::Open()
 
     DEBUG_PRINTF(L"url = %s", url.c_str());
     FActive = FCURLIntf->Initialize(
-      url.c_str(), // HostName.c_str(), // Data->GetPortNumber(),
+      url.c_str(),
 	  UserName.c_str(),
       Password.c_str(),
       proxySettings);
@@ -305,6 +305,7 @@ void THTTPFileSystem::Open()
 
     FPasswordFailed = false;
     // Check initial path existing
+    /*
     std::wstring path;
     std::wstring query;
     ::ParseURL(HostName.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
@@ -314,13 +315,15 @@ void THTTPFileSystem::Open()
     // {
         // path += query;
     // }
+    bool dirExist = false;
     std::wstring errorInfo;
-    if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
+    if (!CheckExisting(Path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
     {
-        FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", path.c_str()));
+        FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", Path.c_str()));
         // return;
     }
-    FCurrentDirectory = ::UnixExcludeTrailingBackslash(path);
+    FCurrentDirectory = ::UnixExcludeTrailingBackslash(Path);
+    */
   }
   while (FPasswordFailed);
   DEBUG_PRINTF(L"end");
