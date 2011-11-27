@@ -805,10 +805,10 @@ void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
       std::wstring dir;
       BOOST_FOREACH(dir, dirnames)
       {
+          if (dir.empty())
+            continue;
           curdir += L"/" + dir;
           res = MakeDirectory(curdir.c_str(), errorInfo);
-          if (!res)
-            break;
       }
       if (!res)
       {
