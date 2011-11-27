@@ -733,15 +733,35 @@ TRemoteFile * THTTPFileSystem::CreateRemoteFile(
 void THTTPFileSystem::CustomReadFile(const std::wstring FileName,
   TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
-  ::Error(SNotImplemented, 1007);
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   File = NULL;
-  int Params = ecDefault |
-    FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
+  /*
+  // int Params = ecDefault |
+    // FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
   // the auto-detection of --full-time support is not implemented for fsListFile,
   // so we use it only if we already know that it is supported (asOn).
   // const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
   // ExecCommand(fsListFile,
     // Params, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str());
+  */
+  bool isExist = false;
+  std::wstring errorInfo;
+  bool res = CheckExisting(FileName.c_str(), ItemDirectory, isExist, errorInfo);
+  if (res && isExist)
+  {
+    File = new TRemoteFile();
+    File->SetType(FILETYPE_DIRECTORY);
+  }
+  else
+  {
+    isExist = false;
+    errorInfo.clear();
+    bool res = CheckExisting(FileName.c_str(), ItemFile, isExist, errorInfo);
+    if (res && isExist)
+    {
+      File = new TRemoteFile();
+    }
+  }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::DeleteFile(const std::wstring FileName,
