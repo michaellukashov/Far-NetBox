@@ -970,11 +970,339 @@ void THTTPFileSystem::SpaceAvailable(const std::wstring Path,
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam,
+  const std::wstring ATargetDir, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  ::Error(SNotImplemented, 1005);
+  // ::Error(SNotImplemented, 1005);
+  assert((FilesToCopy != NULL) && (OperationProgress != NULL));
+
+  Params &= ~cpAppend;
+  std::wstring FileName, FileNameOnly;
+  std::wstring TargetDir = AbsolutePath(ATargetDir, false);
+  std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
+  int Index = 0;
+  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  {
+    bool Success = false;
+    FileName = FilesToCopy->GetString(Index);
+    FileNameOnly = ExtractFileName(FileName, false);
+
+    {
+      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+      {
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      } BOOST_SCOPE_EXIT_END
+      try
+      {
+        if (FTerminal->GetSessionData()->GetCacheDirectories())
+        {
+          FTerminal->DirectoryModified(TargetDir, false);
+
+          if (::DirectoryExists(::ExtractFilePath(FileName)))
+          {
+            FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
+          }
+        }
+        SourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
+          tfFirstLevel);
+        Success = true;
+        FLastDataSent = Now();
+      }
+      catch (const EScpSkipFile &E)
+      {
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
+        SUSPEND_OPERATION (
+          if (!FTerminal->HandleException(&E)) throw;
+        );
+      }
+    }
+    Index++;
+  }
+}
+
+//---------------------------------------------------------------------------
+void THTTPFileSystem::SourceRobust(const std::wstring FileName,
+  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
+  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+{
+  bool Retry = false;
+
+  TUploadSessionAction Action(FTerminal->GetLog());
+
+  do
+  {
+    Retry = false;
+    try
+    {
+      Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
+        Flags, Action);
+    }
+    catch (const std::exception & E)
+    {
+      Retry = true;
+      if (FTerminal->GetActive() ||
+          !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
+      {
+        FTerminal->RollbackAction(Action, OperationProgress, &E);
+        throw;
+      }
+    }
+
+    if (Retry)
+    {
+      OperationProgress->RollbackTransfer();
+      Action.Restart();
+      // prevent overwrite confirmations
+      // (should not be set for directories!)
+      Params |= cpNoConfirmation;
+      Flags |= tfAutoResume;
+    }
+  }
+  while (Retry);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::Source(const std::wstring FileName,
+  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
+  TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  TUploadSessionAction & Action)
+{
+  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+
+  Action.FileName(ExpandUNCFileName(FileName));
+
+  OperationProgress->SetFile(FileName, false);
+
+  if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
+  {
+    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+    THROW_SKIP_FILE_NULL;
+  }
+
+  __int64 Size;
+  int Attrs;
+
+  FTerminal->OpenLocalFile(FileName, GENERIC_READ, &Attrs,
+    NULL, NULL, NULL, NULL, &Size);
+
+  OperationProgress->SetFileInProgress();
+
+  bool Dir = FLAGSET(Attrs, faDirectory);
+  if (Dir)
+  {
+    DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
+      Attrs, CopyParam, Params, OperationProgress, Flags);
+    Action.Cancel();
+  }
+  else
+  {
+    std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
+      osLocal, FLAGSET(Flags, tfFirstLevel));
+
+    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
+
+    OperationProgress->SetLocalSize(Size);
+
+    // Suppose same data size to transfer as to read
+    // (not true with ASCII transfer)
+    OperationProgress->SetTransferSize(OperationProgress->LocalSize);
+    OperationProgress->TransferingFile = false;
+
+    // Will we use ASCII of BINARY file tranfer?
+    TFileMasks::TParams MaskParams;
+    MaskParams.Size = Size;
+    OperationProgress->SetAsciiTransfer(
+      CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
+    FTerminal->LogEvent(
+      std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+        L" transfer mode selected.");
+
+    ResetFileTransfer();
+
+    TFileTransferData UserData;
+
+    unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+
+    {
+      // ignore file list
+      TFileListHelper Helper(this, NULL, true);
+
+      FFileTransferCPSLimit = OperationProgress->CPSLimit;
+      // not used for uploads anyway
+      FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+      // not used for uploads, but we get new name (if any) back in this field
+      UserData.FileName = DestFileName;
+      UserData.Params = Params;
+      UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+      UserData.CopyParam = CopyParam;
+      FileTransfer(FileName, FileName, DestFileName,
+        TargetDir, false, Size, TransferType, UserData, OperationProgress);
+    }
+
+    std::wstring DestFullName = TargetDir + UserData.FileName;
+    // only now, we know the final destination
+    Action.Destination(DestFullName);
+
+    /*
+    // we are not able to tell if setting timestamp succeeded,
+    // so we log it always (if supported)
+    if (FFileTransferPreserveTime && FMfmt)
+    {
+      // Inspired by SysUtils::FileAge
+      WIN32_FIND_DATA FindData;
+      HANDLE Handle = FindFirstFile(DestFullName.c_str(), &FindData);
+      if (Handle != INVALID_HANDLE_VALUE)
+      {
+        TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
+          UnixToDateTime(
+            ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
+            dstmUnix));
+        FindClose(Handle);
+      }
+    }
+    */
+  }
+
+  /* TODO : Delete also read-only files. */
+  if (FLAGSET(Params, cpDelete))
+  {
+    if (!Dir)
+    {
+      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+        THROWOSIFFALSE(::DeleteFile(FileName));
+      )
+    }
+  }
+  else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+  {
+    FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
+      THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
+    )
+  }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::DirectorySource(const std::wstring DirectoryName,
+  const std::wstring TargetDir, int Attrs, const TCopyParamType * CopyParam,
+  int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
+{
+  std::wstring DestDirectoryName = CopyParam->ChangeFileName(
+    ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    FLAGSET(Flags, tfFirstLevel));
+  std::wstring DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+
+  OperationProgress->SetFile(DirectoryName);
+
+  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  WIN32_FIND_DATA SearchRec;
+  bool FindOK = false;
+  HANDLE findHandle = 0;
+
+  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+    // FindOK = (bool)(FindFirst(DirectoryName + "*.*",
+      // FindAttrs, SearchRec) == 0);
+    std::wstring path = DirectoryName + L"*.*";
+    findHandle = FindFirstFile(path.c_str(),
+      &SearchRec);
+    FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+  );
+
+  bool CreateDir = true;
+
+  {
+    BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
+    {
+      ::FindClose(findHandle);
+    } BOOST_SCOPE_EXIT_END
+    while (FindOK && !OperationProgress->Cancel)
+    {
+      std::wstring FileName = DirectoryName + SearchRec.cFileName;
+      try
+      {
+        if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+        {
+          SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
+            Flags & ~(tfFirstLevel | tfAutoResume));
+          // if any file got uploaded (i.e. there were any file in the
+          // directory and at least one was not skipped),
+          // do not try to create the directory,
+          // as it should be already created by FZAPI during upload
+          CreateDir = false;
+        }
+      }
+      catch (const EScpSkipFile &E)
+      {
+        // If ESkipFile occurs, just log it and continue with next file
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
+        SUSPEND_OPERATION (
+          // here a message to user was displayed, which was not appropriate
+          // when user refused to overwrite the file in subdirectory.
+          // hopefuly it won't be missing in other situations.
+          if (!FTerminal->HandleException(&E)) throw;
+        );
+      }
+
+      FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+      );
+    };
+  }
+
+  if (CreateDir)
+  {
+    TRemoteProperties Properties;
+    if (CopyParam->GetPreserveRights())
+    {
+      Properties.Valid = TValidProperties() << vpRights;
+      Properties.Rights = CopyParam->RemoteFileRights(Attrs);
+    }
+
+    try
+    {
+      FTerminal->SetExceptionOnFail(true);
+      {
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->FTerminal->SetExceptionOnFail(false);
+          } BOOST_SCOPE_EXIT_END
+        FTerminal->CreateDirectory(DestFullName, &Properties);
+      }
+    }
+    catch (...)
+    {
+      TRemoteFile * File = NULL;
+      // ignore non-fatal error when the directory already exists
+      std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
+        if (fn.empty())
+        {
+            fn = L"/";
+        }
+      bool Rethrow =
+        !FTerminal->GetActive() ||
+        !FTerminal->FileExists(fn, &File) ||
+        !File->GetIsDirectory();
+      delete File;
+      if (Rethrow)
+      {
+        throw;
+      }
+    }
+  }
+
+  /* TODO : Delete also read-only directories. */
+  /* TODO : Show error message on failure. */
+  if (!OperationProgress->Cancel)
+  {
+    if (FLAGSET(Params, cpDelete))
+    {
+      RemoveDir(DirectoryName);
+    }
+    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+    {
+      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+        THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
+      )
+    }
+  }
 }
 
 //---------------------------------------------------------------------------
