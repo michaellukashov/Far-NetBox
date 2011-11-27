@@ -769,6 +769,13 @@ void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
 {
   // ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
   ::Error(SNotImplemented, 1013);
+  DEBUG_PRINTF(L"FCurrentDirectory = %s, DirName = %s", FCurrentDirectory.c_str(), DirName.c_str());
+  std::wstring errorInfo;
+  bool res = MakeDirectory(DirName.c_str(), errorInfo);
+  if (!res)
+  {
+    THROW_SKIP_FILE(errorInfo, NULL);
+  }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CreateLink(const std::wstring FileName,
