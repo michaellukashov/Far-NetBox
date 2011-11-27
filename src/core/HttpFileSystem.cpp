@@ -101,6 +101,7 @@ private:
   TRemoteFileList * FFileList;
   bool FIgnoreFileList;
 };
+
 //===========================================================================
 THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(ATerminal),
@@ -236,8 +237,6 @@ void THTTPFileSystem::Open()
   do
   {
     FSystem = L"";
-    // FFeatures->Clear();
-    // FFileSystemInfoValid = false;
 
     // TODO: the same for account? it ever used?
 
