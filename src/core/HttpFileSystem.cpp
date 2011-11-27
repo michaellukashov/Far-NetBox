@@ -748,23 +748,27 @@ void THTTPFileSystem::DeleteFile(const std::wstring FileName,
   Action.Recursive();
   assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
   // ExecCommand(fsDeleteFile, 0, DelimitStr(FileName).c_str());
+  ::Error(SNotImplemented, 1010);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
   // ExecCommand(fsRenameFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
+  ::Error(SNotImplemented, 1011);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CopyFile(const std::wstring FileName,
   const std::wstring NewName)
 {
   // ExecCommand(fsCopyFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
+  ::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
 {
   // ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
+  ::Error(SNotImplemented, 1013);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CreateLink(const std::wstring FileName,
@@ -772,6 +776,7 @@ void THTTPFileSystem::CreateLink(const std::wstring FileName,
 {
   // ExecCommand(fsCreateLink, 0,
     // Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
+  ::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::ChangeFileProperties(const std::wstring FileName,
