@@ -1143,7 +1143,7 @@ void THTTPFileSystem::Source(const std::wstring FileName,
     // only now, we know the final destination
     Action.Destination(DestFullName);
 
-    /*
+    /* TODO: implement setting datetime
     // we are not able to tell if setting timestamp succeeded,
     // so we log it always (if supported)
     if (FFileTransferPreserveTime && FMfmt)
@@ -1953,15 +1953,27 @@ void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
   std::wstring errorInfo;
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     DEBUG_PRINTF(L"RemoteFile = %s, FileName = %s", RemoteFile.c_str(), FileName.c_str());
-    bool res = GetFile(FileName.c_str(), LocalFile.c_str(), Size, errorInfo);
-    if (!res)
+    if (Get)
     {
-      FFileTransferAbort = ftaSkip;
-      // FFileTransferAbort = ftaCancel;
-      if (::FileExists(LocalFile))
-      {
-        ::DeleteFile(LocalFile);
-      }
+        bool res = GetFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+        if (!res)
+        {
+          FFileTransferAbort = ftaSkip;
+          // FFileTransferAbort = ftaCancel;
+          if (::FileExists(LocalFile))
+          {
+            ::DeleteFile(LocalFile);
+          }
+        }
+    }
+    else
+    {
+        bool res = PutFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+        if (!res)
+        {
+          FFileTransferAbort = ftaSkip;
+          // FFileTransferAbort = ftaCancel;
+        }
     }
   );
 
