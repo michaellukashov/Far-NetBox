@@ -207,11 +207,6 @@ void THTTPFileSystem::Open()
     }
   }
 
-  std::wstring HostName = Data->GetHostName();
-  std::wstring UserName = Data->GetUserName();
-  std::wstring Password = Data->GetPassword();
-  std::wstring Account = Data->GetFtpAccount();
-  std::wstring Path = Data->GetRemoteDirectory();
   int ServerType = 0;
   // int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
   // int TimeZoneOffset = int(Round(double(Data->GetTimeDifference()) * 24 * 60));
@@ -234,6 +229,13 @@ void THTTPFileSystem::Open()
   FPasswordFailed = false;
   bool PromptedForCredentials = false;
 
+  std::wstring HostName = Data->GetHostName();
+  int Port = Data->GetPortNumber();
+  std::wstring UserName = Data->GetUserName();
+  std::wstring Password = Data->GetPassword();
+  std::wstring Account = Data->GetFtpAccount();
+  std::wstring Path = Data->GetRemoteDirectory();
+  std::wstring url = FORMAT(L"http://%s:%d%s", HostName.c_str(), Port, Path);
   do
   {
     FSystem = L"";
@@ -292,15 +294,12 @@ void THTTPFileSystem::Open()
     proxySettings.proxyLogin = GetOption(OPTION_PROXYUSER);
     proxySettings.proxyPassword = GetOption(OPTION_PROXYPASS);
 
+    DEBUG_PRINTF(L"url = %s", url.c_str());
     FActive = FCURLIntf->Initialize(
-      HostName.c_str(), // Data->GetPortNumber(),
+      url.c_str(), // HostName.c_str(), // Data->GetPortNumber(),
 	  UserName.c_str(),
       Password.c_str(),
-	  // ::W2MB(Account.c_str()).c_str(),
       proxySettings);
-	  // false,
-	  // ::W2MB(Path.c_str()).c_str(),
-      // ServerType, Pasv, TimeZoneOffset, UTF8, Data->GetFtpForcePasvIp());
     assert(FActive);
     FCURLIntf->SetAbortEvent(FAbortEvent);
 
