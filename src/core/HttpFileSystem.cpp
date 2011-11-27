@@ -769,10 +769,16 @@ void THTTPFileSystem::DeleteFile(const std::wstring FileName,
 {
   USEDPARAM(File);
   USEDPARAM(Params);
-  Action.Recursive();
-  assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
+  // Action.Recursive();
+  // assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
   // ExecCommand(fsDeleteFile, 0, DelimitStr(FileName).c_str());
-  ::Error(SNotImplemented, 1010);
+  std::wstring FullFileName = File->GetFullFileName();
+  ItemType type = File->GetIsDirectory() ? ItemDirectory : ItemFile;
+  std::wstring errorInfo;
+  bool res = Delete(FullFileName.c_str(), type, errorInfo);
+  if (!res)
+  {
+  }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::RenameFile(const std::wstring FileName,
