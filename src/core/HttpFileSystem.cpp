@@ -518,21 +518,8 @@ void THTTPFileSystem::LookupUsersGroups()
 void THTTPFileSystem::ReadCurrentDirectory()
 {
   DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
-  /*
-  std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
-  std::wstring response;
-  std::wstring errorInfo;
-  bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
-  // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
-  // TODO: cache response
-  if (isExist)
-  {
-      FCurrentDirectory = Path;
-  }
-  */
   if (FCachedDirectoryChange.empty())
   {
-    //ExecCommand(fsCurrentDirectory);
     std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
     std::wstring response;
     std::wstring errorInfo;
@@ -735,15 +722,6 @@ void THTTPFileSystem::CustomReadFile(const std::wstring FileName,
 {
   DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   File = NULL;
-  /*
-  // int Params = ecDefault |
-    // FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
-  // the auto-detection of --full-time support is not implemented for fsListFile,
-  // so we use it only if we already know that it is supported (asOn).
-  // const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
-  // ExecCommand(fsListFile,
-    // Params, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str());
-  */
   bool isExist = false;
   std::wstring errorInfo;
   bool res = CheckExisting(FileName.c_str(), ItemDirectory, isExist, errorInfo);
@@ -769,9 +747,6 @@ void THTTPFileSystem::DeleteFile(const std::wstring FileName,
 {
   USEDPARAM(File);
   USEDPARAM(Params);
-  // Action.Recursive();
-  // assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
-  // ExecCommand(fsDeleteFile, 0, DelimitStr(FileName).c_str());
   std::wstring FullFileName = File->GetFullFileName();
   ItemType type = File->GetIsDirectory() ? ItemDirectory : ItemFile;
   std::wstring errorInfo;
@@ -784,21 +759,17 @@ void THTTPFileSystem::DeleteFile(const std::wstring FileName,
 void THTTPFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  // ExecCommand(fsRenameFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
   ::Error(SNotImplemented, 1011);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CopyFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  // ExecCommand(fsCopyFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
   ::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
 {
-  // ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
-  // ::Error(SNotImplemented, 1013);
   DEBUG_PRINTF(L"FCurrentDirectory = %s, DirName = %s", FCurrentDirectory.c_str(), DirName.c_str());
   std::wstring errorInfo;
   bool res = MakeDirectory(DirName.c_str(), errorInfo);
@@ -826,8 +797,6 @@ void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
 void THTTPFileSystem::CreateLink(const std::wstring FileName,
   const std::wstring PointTo, bool Symbolic)
 {
-  // ExecCommand(fsCreateLink, 0,
-    // Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
   ::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
