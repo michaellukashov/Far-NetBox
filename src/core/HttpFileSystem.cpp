@@ -230,6 +230,10 @@ void THTTPFileSystem::Open()
   bool PromptedForCredentials = false;
 
   std::wstring HostName = Data->GetHostName();
+    if (::LowerCase(HostName.substr(0, 7)) == L"http://")
+    {
+        HostName.erase(0, 7);
+    }
   int Port = Data->GetPortNumber();
   std::wstring UserName = Data->GetUserName();
   std::wstring Password = Data->GetPassword();
