@@ -229,8 +229,7 @@ class TRemoteFileList : public TObjectList
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
-friend class THTTPFileSystem;
-friend class THTTPSFileSystem;
+friend class TWebDAVFileSystem;
 protected:
   std::wstring FDirectory;
   TDateTime FTimestamp;
@@ -267,8 +266,7 @@ class TRemoteDirectory : public TRemoteFileList
 {
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
-friend class THTTPFileSystem;
-friend class THTTPSFileSystem;
+friend class TWebDAVFileSystem;
 private:
   bool FIncludeParentDirectory;
   bool FIncludeThisDirectory;

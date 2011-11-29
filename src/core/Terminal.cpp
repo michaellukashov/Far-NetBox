@@ -743,8 +743,8 @@ void TTerminal::Open()
             else if (GetSessionData()->GetFSProtocol() == fsHTTP)
             {
               FFSProtocol = cfsHTTP;
-              FFileSystem = new THTTPFileSystem(this);
-              ((THTTPFileSystem*)FFileSystem)->Init(FSecureShell);
+              FFileSystem = new TWebDAVFileSystem(this);
+              ((TWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
               FSecureShell = NULL;
               FFileSystem->Open();
               GetLog()->AddSeparator();
@@ -753,8 +753,8 @@ void TTerminal::Open()
             else if (GetSessionData()->GetFSProtocol() == fsHTTPS)
             {
               FFSProtocol = cfsHTTPS;
-              FFileSystem = new THTTPSFileSystem(this);
-              ((THTTPSFileSystem*)FFileSystem)->Init(FSecureShell);
+              FFileSystem = new TWebDAVFileSystem(this);
+              ((TTWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
               FSecureShell = NULL;
               FFileSystem->Open();
               GetLog()->AddSeparator();
