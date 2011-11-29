@@ -2487,12 +2487,11 @@ bool THTTPFileSystem::MakeDirectory(const wchar_t *path, std::wstring &errorInfo
     return result;
 }
 
-bool THTTPFileSystem::GetList(const std::wstring &Directory)
+bool THTTPFileSystem::GetList(const std::wstring &Directory, std::wstring &errorInfo)
 {
     std::vector<TListDataEntry> Entries;
 
     std::wstring response;
-    std::wstring errorInfo;
     if (!SendPropFindRequest(Directory.c_str(), response, errorInfo))
     {
         return false;
