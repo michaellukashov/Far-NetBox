@@ -760,7 +760,18 @@ void THTTPFileSystem::DeleteFile(const std::wstring FileName,
 void THTTPFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ::Error(SNotImplemented, 1011);
+  // ::Error(SNotImplemented, 1011);
+  std::wstring errorInfo;
+  ItemType type = ItemFile; // File->GetIsDirectory() ? ItemDirectory : ItemFile;
+  bool res = Rename(FileName.c_str(), NewName.c_str(), type, errorInfo);
+  if (!res)
+  {
+    ItemType type = ItemDirectory;
+    bool res = Rename(FileName.c_str(), NewName.c_str(), type, errorInfo);
+    if (!res)
+    {
+    }
+  }
 }
 //---------------------------------------------------------------------------
 void THTTPFileSystem::CopyFile(const std::wstring FileName,
