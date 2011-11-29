@@ -2039,6 +2039,7 @@ bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &resp
     // DEBUG_PRINTF(L"THTTPFileSystem::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
 
     response.clear();
+    errInfo.clear();
 
     static const char *requestData =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
@@ -2273,7 +2274,6 @@ std::wstring THTTPFileSystem::GetBadResponseInfo(const int code) const
 
     return errInfo;
 }
-
 
 std::string THTTPFileSystem::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
 {
