@@ -346,7 +346,7 @@ const TSessionInfo & THTTPFileSystem::GetSessionInfo()
 //---------------------------------------------------------------------------
 const TFileSystemInfo & THTTPFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-  ::Error(SNotImplemented, 1009);
+  // ::Error(SNotImplemented, 1009);
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
