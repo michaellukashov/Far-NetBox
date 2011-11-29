@@ -10,14 +10,14 @@ struct TListDataEntry;
 class TMessageQueue;
 class TiXmlElement;
 //---------------------------------------------------------------------------
-class THTTPFileSystem : public TCustomFileSystem
+class THTTPSFileSystem : public TCustomFileSystem
 {
 friend class CEasyURL;
 friend class TFileListHelper;
 public:
-  explicit THTTPFileSystem(TTerminal *ATerminal);
+  explicit THTTPSFileSystem(TTerminal *ATerminal);
   virtual void Init(TSecureShell *SecureShell);
-  virtual ~THTTPFileSystem();
+  virtual ~THTTPSFileSystem();
 
   virtual void Open();
   virtual void Close();
@@ -176,7 +176,7 @@ private:
   mutable std::wstring FOptionScratch;
   HANDLE FAbortEvent;
   int m_ProgressPercent; ///< Progress percent value
-  THTTPFileSystem *Self;
+  THTTPSFileSystem *Self;
 
   void CustomReadFile(const std::wstring FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
@@ -298,7 +298,7 @@ private:
 protected:
     CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);
 private:
-  THTTPFileSystem(const THTTPFileSystem &);
-  void operator=(const THTTPFileSystem &);
+  THTTPSFileSystem(const THTTPSFileSystem &);
+  void operator=(const THTTPSFileSystem &);
 };
 
