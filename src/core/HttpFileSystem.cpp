@@ -28,7 +28,7 @@ namespace alg = boost::algorithm;
 //---------------------------------------------------------------------------
 static const std::wstring CONST_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
 //---------------------------------------------------------------------------
-std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
+static std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
 {
     std::wstring path = str;
     while (!path.empty() && path[0] == L'/')
