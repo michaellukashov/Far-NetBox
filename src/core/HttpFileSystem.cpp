@@ -761,6 +761,8 @@ void THTTPFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
   // ::Error(SNotImplemented, 1011);
+  DEBUG_PRINTF(L"FileName = %s, NewName = %s", FileName.c_str(), NewName.c_str());
+  DEBUG_PRINTF(L"FCurrentDirectory = %s", FCurrentDirectory.c_str());
   std::wstring errorInfo;
   ItemType type = ItemFile; // File->GetIsDirectory() ? ItemDirectory : ItemFile;
   bool res = Rename(FileName.c_str(), NewName.c_str(), type, errorInfo);
