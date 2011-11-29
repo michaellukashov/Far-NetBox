@@ -120,9 +120,9 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
     }
     if (!Password.empty())
     {
-      Params += FORMAT(L"-pw %s ", (EscapePuttyCommandParam(Password)));
+      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Password).c_str());
     }
-    Params += FORMAT(L"-load %s", (EscapePuttyCommandParam(SessionName)));
+    Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
 
     if (!ExecuteShell(Program, Params))
     {
@@ -228,7 +228,7 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
   std::wstring Result;
   if (Count == 1)
   {
-    Result = FORMAT(SingleItemFormat.c_str(), FirstItem);
+    Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
   }
   else
   {
