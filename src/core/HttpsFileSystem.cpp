@@ -1,11 +1,16 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include <stdio.h>
+#include <winhttp.h>
+
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 #include <boost/bind.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 
-#include "HttpsFileSystem.h"
+#include "HttpFileSystem.h"
 
 #include "Terminal.h"
 #include "Common.h"
@@ -13,283 +18,130 @@
 #include "Interface.h"
 #include "TextsCore.h"
 #include "SecureShell.h"
+#include "FileZillaIntf.h"
+#include "Settings.h"
+#include "FarUtil.h"
+#include "tinyXML\tinyxml.h"
 
-#include <stdio.h>
+namespace alg = boost::algorithm;
+
+//---------------------------------------------------------------------------
+static const std::wstring CONST_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
+//---------------------------------------------------------------------------
+std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
+{
+    std::wstring path = str;
+    while (!path.empty() && path[0] == L'/')
+    {
+        path.erase(0, 1);
+    }
+    return path;
+}
+
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
-const int coRaiseExcept = 1;
-const int coExpectNoOutput = 2;
-const int coWaitForLastLine = 4;
-const int coOnlyReturnCode = 8;
-const int coIgnoreWarnings = 16;
-const int coReadProgress = 32;
-
 const int ecRaiseExcept = 1;
 const int ecIgnoreWarnings = 2;
 const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
-#define THROW_FILE_SKIPPED(MESSAGE, EXCEPTION) \
-  throw EScpFileSkipped(MESSAGE, EXCEPTION)
-
-#define THROW_SCP_ERROR(MESSAGE, EXCEPTION) \
-  throw EScp(MESSAGE, EXCEPTION)
+const int tfFirstLevel = 0x01;
+const int tfAutoResume = 0x02;
 //===========================================================================
-#define MaxShellCommand fsAnyCommand
-#define ShellCommandCount MaxShellCommand + 1
-#define MaxCommandLen 40
-struct TCommandType
-{
-  int MinLines;
-  int MaxLines;
-  bool ModifiesFiles;
-  bool ChangesDirectory;
-  bool InteractiveCommand;
-  wchar_t Command[MaxCommandLen];
-};
-
-// Only one character! See THTTPSFileSystem::ReadCommandOutput()
-#define LastLineSeparator L":"
-#define LAST_LINE L"WinSCP: this is end-of-file"
-#define FIRST_LINE L"WinSCP: this is begin-of-file"
-
-#define NationalVarCount 10
-extern const wchar_t NationalVars[NationalVarCount][15];
-
-#define CHECK_CMD assert((Cmd >=0) && (Cmd <= MaxShellCommand))
 
 class TSessionData;
-//---------------------------------------------------------------------------
-class THTTPSCommandSet
-{
-private:
-  TCommandType CommandSet[ShellCommandCount];
-  TSessionData * FSessionData;
-  std::wstring FReturnVar;
-public:
-  THTTPSCommandSet(TSessionData *aSessionData);
-  void Default();
-  void CopyFrom(THTTPSCommandSet * Source);
-  std::wstring Command(TFSCommand Cmd, ...);
-  std::wstring Command(TFSCommand Cmd, va_list args);
-  TStrings * CreateCommandList();
-  std::wstring FullCommand(TFSCommand Cmd, ...);
-  std::wstring FullCommand(TFSCommand Cmd, va_list args);
-  static std::wstring ExtractCommand(std::wstring Command);
-  // __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
-  int GetMaxLines(TFSCommand Cmd);
-  // __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
-  int GetMinLines(TFSCommand Cmd);
-  // __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
-  bool GetModifiesFiles(TFSCommand Cmd);
-  // __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
-  bool GetChangesDirectory(TFSCommand Cmd);
-  // __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
-  bool GetOneLineCommand(TFSCommand Cmd);
-  // __property std::wstring Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
-  std::wstring GetCommand(TFSCommand Cmd);
-  void SetCommand(TFSCommand Cmd, std::wstring value);
-  // __property std::wstring FirstLine = { read = GetFirstLine };
-  std::wstring GetFirstLine();
-  // __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
-  bool GetInteractiveCommand(TFSCommand Cmd);
-  // __property std::wstring LastLine  = { read=GetLastLine };
-  std::wstring GetLastLine();
-  //  __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
-  TSessionData * GetSessionData() { return FSessionData; }
-  void SetSessionData(TSessionData * value) { FSessionData = value; }
-  // __property std::wstring ReturnVar  = { read=GetReturnVar, write=FReturnVar };
-  std::wstring GetReturnVar();
-  void SetReturnVar(std::wstring value) { FReturnVar = value; }
-};
 //===========================================================================
-const wchar_t FullTimeOption[] = L"--full-time";
-//---------------------------------------------------------------------------
-THTTPSCommandSet::THTTPSCommandSet(TSessionData *aSessionData):
-  FSessionData(aSessionData), FReturnVar(L"")
+struct TFileTransferData
 {
-  assert(FSessionData);
-  Default();
-}
-//---------------------------------------------------------------------------
-void THTTPSCommandSet::CopyFrom(THTTPSCommandSet * Source)
-{
-  memcpy(&CommandSet, Source->CommandSet, sizeof(CommandSet));
-}
-//---------------------------------------------------------------------------
-void THTTPSCommandSet::Default()
-{
-}
-//---------------------------------------------------------------------------
-int THTTPSCommandSet::GetMaxLines(TFSCommand Cmd)
-{
-  CHECK_CMD;
-  return CommandSet[Cmd].MaxLines;
-}
-//---------------------------------------------------------------------------
-int THTTPSCommandSet::GetMinLines(TFSCommand Cmd)
-{
-  CHECK_CMD;
-  return CommandSet[Cmd].MinLines;
-}
-//---------------------------------------------------------------------------
-bool THTTPSCommandSet::GetModifiesFiles(TFSCommand Cmd)
-{
-  CHECK_CMD;
-  return CommandSet[Cmd].ModifiesFiles;
-}
-//---------------------------------------------------------------------------
-bool THTTPSCommandSet::GetChangesDirectory(TFSCommand Cmd)
-{
-  CHECK_CMD;
-  return CommandSet[Cmd].ChangesDirectory;
-}
-//---------------------------------------------------------------------------
-bool THTTPSCommandSet::GetInteractiveCommand(TFSCommand Cmd)
-{
-  CHECK_CMD;
-  return CommandSet[Cmd].InteractiveCommand;
-}
-//---------------------------------------------------------------------------
-bool THTTPSCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
-{
-  //CHECK_CMD;
-  // #56: we send "echo last line" from all commands on same line
-  // just as it was in 1.0
-  return true; //CommandSet[Cmd].OneLineCommand;
-}
-//---------------------------------------------------------------------------
-void THTTPSCommandSet::SetCommand(TFSCommand Cmd, std::wstring value)
-{
-  CHECK_CMD;
-  wcscpy((wchar_t *)CommandSet[Cmd].Command, value.substr(0, MaxCommandLen - 1).c_str());
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::GetCommand(TFSCommand Cmd)
-{
-  CHECK_CMD;
-  return CommandSet[Cmd].Command;
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::Command(TFSCommand Cmd, ...)
-{
-  std::wstring result;
-  va_list args;
-  va_start(args, Cmd);
-  result = Command(Cmd, args);
-  va_end(args);
-  return result;
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::Command(TFSCommand Cmd, va_list args)
-{
-  // DEBUG_PRINTF(L"Cmd = %d, GetCommand(Cmd) = %s", Cmd, GetCommand(Cmd).c_str()); 
-  std::wstring result;
-  result = ::Format(GetCommand(Cmd).c_str(), args);
-  // DEBUG_PRINTF(L"result = %s", result.c_str());
-  return result.c_str();
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::FullCommand(TFSCommand Cmd, ...)
-{
-  std::wstring Result;
-  va_list args;
-  va_start(args, Cmd);
-  Result = FullCommand(Cmd, args);
-  va_end(args);
-  return Result.c_str();
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::FullCommand(TFSCommand Cmd, va_list args)
-{
-  std::wstring Separator;
-  if (GetOneLineCommand(Cmd))
-    Separator = L" ; ";
-  else
-    Separator = L"\n";
-  std::wstring Line = Command(Cmd, args);
-  std::wstring LastLineCmd =
-    Command(fsLastLine, GetLastLine().c_str(), GetReturnVar().c_str());
-  std::wstring FirstLineCmd;
-  if (GetInteractiveCommand(Cmd))
+  TFileTransferData()
   {
-    FirstLineCmd = Command(fsFirstLine, GetFirstLine().c_str()) + Separator;
-    // DEBUG_PRINTF(L"FirstLineCmd1 = '%s'", FirstLineCmd.c_str());
+    Params = 0;
+    AutoResume = false;
+    OverwriteResult = -1;
+    CopyParam = NULL;
   }
 
-  std::wstring Result;
-  if (!Line.empty())
-    Result = FORMAT(L"%s%s%s%s", FirstLineCmd.c_str(), Line.c_str(), Separator.c_str(), LastLineCmd.c_str());
-  else
-    Result = FORMAT(L"%s%s", FirstLineCmd.c_str(), LastLineCmd.c_str());
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
-  return Result;
-}
+  std::wstring FileName;
+  int Params;
+  bool AutoResume;
+  int OverwriteResult;
+  const TCopyParamType * CopyParam;
+};
+
 //---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::GetFirstLine()
+struct TSinkFileParams
 {
-  return FIRST_LINE;
-}
+  std::wstring TargetDir;
+  const TCopyParamType * CopyParam;
+  int Params;
+  TFileOperationProgressType * OperationProgress;
+  bool Skipped;
+  unsigned int Flags;
+};
 //---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::GetLastLine()
+class TFileListHelper
 {
-  return LAST_LINE;
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::GetReturnVar()
-{
-  assert(GetSessionData());
-  if (!FReturnVar.empty())
-      return std::wstring(L"$") + FReturnVar;
-  else if (GetSessionData()->GetDetectReturnVar())
-      return L"0";
-  else
-      return std::wstring(L"$") + GetSessionData()->GetReturnVar();
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSCommandSet::ExtractCommand(std::wstring Command)
-{
-  size_t P = Command.find_first_of(L" ");
-  if (P != std::wstring::npos)
+public:
+  TFileListHelper(THTTPFileSystem * FileSystem, TRemoteFileList * FileList,
+      bool IgnoreFileList) :
+    FFileSystem(FileSystem),
+    FFileList(FFileSystem->FFileList),
+    FIgnoreFileList(FFileSystem->FIgnoreFileList)
   {
-    Command.resize(P);
+    FFileSystem->FFileList = FileList;
+    FFileSystem->FIgnoreFileList = IgnoreFileList;
   }
-  return Command;
-}
-//---------------------------------------------------------------------------
-TStrings * THTTPSCommandSet::CreateCommandList()
-{
-  TStrings * CommandList = new TStringList();
-  for (int Index = 0; Index < ShellCommandCount; Index++)
+
+  ~TFileListHelper()
   {
-    std::wstring Cmd = GetCommand((TFSCommand)Index);
-    if (!Cmd.empty())
-    {
-      Cmd = ExtractCommand(Cmd);
-      if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) < 0))
-        CommandList->Add(Cmd);
-    }
+    FFileSystem->FFileList = FFileList;
+    FFileSystem->FIgnoreFileList = FIgnoreFileList;
   }
-  return CommandList;
-}
+
+private:
+  THTTPFileSystem * FFileSystem;
+  TRemoteFileList * FFileList;
+  bool FIgnoreFileList;
+};
+
 //===========================================================================
-THTTPSFileSystem::THTTPSFileSystem(TTerminal *ATerminal) :
-  TCustomFileSystem(ATerminal)
+THTTPFileSystem::THTTPFileSystem(TTerminal *ATerminal) :
+  TCustomFileSystem(ATerminal),
+  // FSecureShell(NULL),
+  FFileList(NULL),
+  FProcessingCommand(false),
+  FCURLIntf(NULL),
+  FPasswordFailed(false),
+  FActive(false),
+  FWaitingForReply(false),
+  FFileTransferAbort(ftaNone),
+  FIgnoreFileList(false),
+  FFileTransferCancelled(false),
+  FFileTransferResumed(0),
+  FFileTransferPreserveTime(false),
+  FFileTransferCPSLimit(0),
+  FAwaitingProgress(false),
+  FLastReadDirectoryProgress(0),
+  FLastResponse(new TStringList()),
+  FLastError(new TStringList()),
+  FTransferStatusCriticalSection(new TCriticalSection()),
+  FAbortEvent(CreateEvent(NULL, true, false, NULL)),
+  m_ProgressPercent(0),
+  FListAll(asAuto),
+  FDoListAll(false)
 {
   Self = this;
 }
 
-void THTTPSFileSystem::Init(TSecureShell *SecureShell)
+void THTTPFileSystem::Init(TSecureShell *SecureShell)
 {
   // FSecureShell = SecureShell;
-  FCommandSet = new THTTPSCommandSet(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
-  FOutput = new TStringList();
   FProcessingCommand = false;
 
-  FFileSystemInfo.ProtocolBaseName = L"SCP";
+  FFileSystemInfo.ProtocolBaseName = CONST_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   // capabilities of SCP protocol are fixed
   for (int Index = 0; Index < fcCount; Index++)
@@ -298,122 +150,233 @@ void THTTPSFileSystem::Init(TSecureShell *SecureShell)
   }
 }
 //---------------------------------------------------------------------------
-THTTPSFileSystem::~THTTPSFileSystem()
+THTTPFileSystem::~THTTPFileSystem()
 {
-  delete FCommandSet;
-  delete FOutput;
+  delete FLastResponse;
+  FLastResponse = NULL;
+  delete FLastError;
+  FLastError = NULL;
+  delete FTransferStatusCriticalSection;
+  FTransferStatusCriticalSection = NULL;
   // delete FSecureShell;
+  delete FCURLIntf;
+  FCURLIntf = NULL;
+  CloseHandle(FAbortEvent);
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::Open()
+void THTTPFileSystem::Open()
 {
+  DEBUG_PRINTF(L"begin");
   // FSecureShell->Open();
+
+  FCurrentDirectory = L"";
+  FHomeDirectory = L"";
+
+  TSessionData *Data = FTerminal->GetSessionData();
+
+  FSessionInfo.LoginTime = Now();
+  FSessionInfo.ProtocolBaseName = CONST_PROTOCOL_BASE_NAME;
+  FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
+
+  FLastDataSent = Now();
+
+  // initialize FCURLIntf on the first connect only
+  if (FCURLIntf == NULL)
+  {
+    FCURLIntf = new CEasyURL();
+    FCURLIntf->Init();
+
+    try
+    {
+      TCURLIntf::TLogLevel LogLevel;
+      switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
+      {
+        default:
+        case 0:
+        case 1:
+          LogLevel = TCURLIntf::LOG_WARNING;
+          break;
+
+        case 2:
+          LogLevel = TCURLIntf::LOG_INFO;
+          break;
+      }
+      FCURLIntf->SetDebugLevel(LogLevel);
+    }
+    catch (...)
+    {
+      delete FCURLIntf;
+      FCURLIntf = NULL;
+      throw;
+    }
+  }
+
+  int ServerType = 0;
+  // int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
+  // int TimeZoneOffset = int(Round(double(Data->GetTimeDifference()) * 24 * 60));
+  int UTF8 = 0;
+  switch (Data->GetNotUtf())
+  {
+    case asOn:
+      UTF8 = 2;
+      break;
+
+    case asOff:
+      UTF8 = 1;
+      break;
+
+    case asAuto:
+      UTF8 = 0;
+      break;
+  };
+
+  FPasswordFailed = false;
+  bool PromptedForCredentials = false;
+
+  std::wstring HostName = Data->GetHostName();
+    if (::LowerCase(HostName.substr(0, 7)) == L"http://")
+    {
+        HostName.erase(0, 7);
+    }
+  int Port = Data->GetPortNumber();
+  std::wstring UserName = Data->GetUserName();
+  std::wstring Password = Data->GetPassword();
+  std::wstring Account = Data->GetFtpAccount();
+  std::wstring Path = Data->GetRemoteDirectory();
+  std::wstring url = FORMAT(L"http://%s:%d%s", HostName.c_str(), Port, Path.c_str());
+  do
+  {
+    FSystem = L"";
+
+    // TODO: the same for account? it ever used?
+
+    // ask for username if it was not specified in advance, even on retry,
+    // but keep previous one as default,
+    if (0) // Data->GetUserName().empty())
+    {
+      FTerminal->LogEvent(L"Username prompt (no username provided)");
+
+      if (!FPasswordFailed && !PromptedForCredentials)
+      {
+        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+        PromptedForCredentials = true;
+      }
+
+      if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
+            LoadStr(USERNAME_PROMPT2), true, 0, UserName))
+      {
+        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+      }
+      else
+      {
+        FUserName = UserName;
+      }
+    }
+
+    // ask for password if it was not specified in advance,
+    // on retry ask always
+    if (0) // (Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
+    {
+      FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
+
+      if (!FPasswordFailed && !PromptedForCredentials)
+      {
+        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+        PromptedForCredentials = true;
+      }
+
+      // on retry ask for new password
+      Password = L"";
+      if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+            LoadStr(PASSWORD_PROMPT), false, 0, Password))
+      {
+        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+      }
+    }
+
+    ProxySettings proxySettings;
+    // init proxySettings
+    proxySettings.proxyType = GetOptionVal(OPTION_PROXYTYPE);
+    proxySettings.proxyHost = GetOption(OPTION_PROXYHOST);
+    proxySettings.proxyPort = GetOptionVal(OPTION_PROXYPORT);
+    proxySettings.proxyLogin = GetOption(OPTION_PROXYUSER);
+    proxySettings.proxyPassword = GetOption(OPTION_PROXYPASS);
+
+    DEBUG_PRINTF(L"url = %s", url.c_str());
+    FActive = FCURLIntf->Initialize(
+      url.c_str(),
+	  UserName.c_str(),
+      Password.c_str(),
+      proxySettings);
+    assert(FActive);
+    FCURLIntf->SetAbortEvent(FAbortEvent);
+
+    FPasswordFailed = false;
+  }
+  while (FPasswordFailed);
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::Close()
+void THTTPFileSystem::Close()
 {
   // FSecureShell->Close();
+  assert(FActive);
+  if (FCURLIntf->Close())
+  {
+    assert(FActive);
+    Discard();
+    FTerminal->Closed();
+  }
+  else
+  {
+    assert(false);
+  }
 }
 //---------------------------------------------------------------------------
-bool THTTPSFileSystem::GetActive()
+bool THTTPFileSystem::GetActive()
 {
-  return false; // FSecureShell->GetActive();
+  // return FSecureShell->GetActive();
+  return FActive;
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & THTTPSFileSystem::GetSessionInfo()
+const TSessionInfo & THTTPFileSystem::GetSessionInfo()
 {
   return FSessionInfo; // FSecureShell->GetSessionInfo();
 }
 //---------------------------------------------------------------------------
-const TFileSystemInfo & THTTPSFileSystem::GetFileSystemInfo(bool Retrieve)
+const TFileSystemInfo & THTTPFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-  if (FFileSystemInfo.AdditionalInfo.empty() && Retrieve)
-  {
-    std::wstring UName;
-    FTerminal->SetExceptionOnFail(true);
-    {
-      BOOST_SCOPE_EXIT ( (&Self) )
-      {
-        Self->FTerminal->SetExceptionOnFail (false);
-      } BOOST_SCOPE_EXIT_END
-      try
-      {
-        AnyCommand(L"uname -a", NULL);
-        for (size_t Index = 0; Index < GetOutput()->GetCount(); Index++)
-        {
-          if (Index > 0)
-          {
-            UName += L"; ";
-          }
-          UName += GetOutput()->GetString(Index);
-        }
-      }
-      catch (...)
-      {
-        if (!FTerminal->GetActive())
-        {
-          throw;
-        }
-      }
-    }
-
-    FFileSystemInfo.RemoteSystem = UName;
-  }
-
+  // ::Error(SNotImplemented, 1009);
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool THTTPSFileSystem::TemporaryTransferFile(const std::wstring & /*FileName*/)
+bool THTTPFileSystem::TemporaryTransferFile(const std::wstring & /*FileName*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool THTTPSFileSystem::GetStoredCredentialsTried()
+bool THTTPFileSystem::GetStoredCredentialsTried()
 {
   return false; // FSecureShell->GetStoredCredentialsTried();
 }
 //---------------------------------------------------------------------------
-std::wstring THTTPSFileSystem::GetUserName()
+std::wstring THTTPFileSystem::GetUserName()
 {
-  return FUserName; // FSecureShell->GetUserName();
+  return FUserName;
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::Idle()
+void THTTPFileSystem::Idle()
 {
   // Keep session alive
-  if ((FTerminal->GetSessionData()->GetPingType ()!= ptOff) &&
-      (Now() /*- FSecureShell->GetLastDataSent() */ > FTerminal->GetSessionData()->GetPingIntervalDT()))
-  {
-    if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand)) // &&
-        // FSecureShell->GetReady())
-    {
-      if (!FProcessingCommand)
-      {
-        ExecCommand(fsNull, 0, NULL);
-      }
-      else
-      {
-        FTerminal->LogEvent(L"Cannot send keepalive, command is being executed");
-        // send at least SSH-level keepalive, if nothing else, it at least updates
-        // LastDataSent, no the next keepalive attempt is postponed
-        // FSecureShell->KeepAlive();
-      }
-    }
-    else
-    {
-      // FSecureShell->KeepAlive();
-    }
-  }
-
-  // FSecureShell->Idle();
+  return;
 }
 //---------------------------------------------------------------------------
-std::wstring THTTPSFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
+std::wstring THTTPFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
 {
   return ::AbsolutePath(GetCurrentDirectory(), Path);
 }
 //---------------------------------------------------------------------------
-bool THTTPSFileSystem::IsCapable(int Capability) const
+bool THTTPFileSystem::IsCapable(int Capability) const
 {
   assert(FTerminal);
   switch (Capability)
@@ -429,6 +392,7 @@ bool THTTPSFileSystem::IsCapable(int Capability) const
     case fcHardLink:
     case fcSymbolicLink:
     case fcResolveSymlink:
+      return false;
     case fcRename:
     case fcRemoteMove:
     case fcRemoteCopy:
@@ -454,7 +418,7 @@ bool THTTPSFileSystem::IsCapable(int Capability) const
   }
 }
 //---------------------------------------------------------------------------
-std::wstring THTTPSFileSystem::DelimitStr(std::wstring Str)
+std::wstring THTTPFileSystem::DelimitStr(std::wstring Str)
 {
   if (!Str.empty())
   {
@@ -464,8 +428,32 @@ std::wstring THTTPSFileSystem::DelimitStr(std::wstring Str)
   return Str;
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::EnsureLocation()
+std::wstring THTTPFileSystem::ActualCurrentDirectory()
 {
+  return FCurrentDirectory;
+}
+
+//---------------------------------------------------------------------------
+void THTTPFileSystem::EnsureLocation()
+{
+  // if we do not know what's the current directory, do nothing
+  /*
+  if (!FCurrentDirectory.empty())
+  {
+    // Make sure that the FZAPI current working directory,
+    // is actually our working directory.
+    // It may not be because:
+    // 1) We did cached directory change
+    // 2) Listing was requested for non-current directory, which
+    // makes FZAPI change its current directory (and not restoring it back afterwards)
+    if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
+    {
+      FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
+        FCurrentDirectory.c_str()));
+      DoChangeDirectory(FCurrentDirectory);
+    }
+  }
+  */
   if (!FCachedDirectoryChange.empty())
   {
     FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
@@ -491,528 +479,207 @@ void THTTPSFileSystem::EnsureLocation()
     }
   }
 }
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::SendCommand(const std::wstring Cmd)
-{
-  EnsureLocation();
 
-  std::wstring Line;
-  // FSecureShell->ClearStdError();
-  FReturnCode = 0;
-  FOutput->Clear();
-  // We suppose, that 'Cmd' already contains command that ensures,
-  // that 'LastLine' will be printed
-  // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
-  // FSecureShell->SendLine(Cmd);
-  FProcessingCommand = true;
+void THTTPFileSystem::Discard()
+{
+  // remove all pending messages, to get complete log
+  // note that we need to retry discard on reconnect, as there still may be another
+  // "disconnect/timeout/..." status messages coming
+  assert(FActive);
+  FActive = false;
 }
 //---------------------------------------------------------------------------
-bool THTTPSFileSystem::IsTotalListingLine(const std::wstring Line)
-{
-  // On some hosts there is not "total" but "totalt". What's the reason??
-  // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-  return !::AnsiCompareIC(Line.substr(0, 5), L"total");
-}
-//---------------------------------------------------------------------------
-bool THTTPSFileSystem::RemoveLastLine(std::wstring & Line,
-    int & ReturnCode, std::wstring LastLine)
-{
-  bool IsLastLine = false;
-  if (LastLine.empty()) LastLine = LAST_LINE;
-  // #55: fixed so, even when last line of command output does not
-  // contain CR/LF, we can recognize last line
-  size_t Pos = Line.find(LastLine);
-  // DEBUG_PRINTF(L"Line = %s, LastLine = %s, Pos = %d", Line.c_str(), LastLine.c_str(), Pos);
-  if (Pos != std::wstring::npos)
-  {
-    // 2003-07-14: There must be nothing after return code number to
-    // consider string as last line. This fixes bug with 'set' command
-    // in console window
-    std::wstring ReturnCodeStr = ::TrimRight(Line.substr(Pos + LastLine.size() + 1,
-      Line.size() - Pos + LastLine.size()));
-    // DEBUG_PRINTF(L"ReturnCodeStr = '%s'", ReturnCodeStr.c_str());
-    if (TryStrToInt(ReturnCodeStr, ReturnCode) || (ReturnCodeStr == L"0"))
-    {
-      IsLastLine = true;
-      // DEBUG_PRINTF(L"Line1 = %s", Line.c_str());
-      // if ((Pos != std::wstring::npos) && (Pos != 0)) 
-      {
-        Line.resize(Pos);
-      }
-      // DEBUG_PRINTF(L"Line2 = %s", Line.c_str());
-    }
-  }
-  return IsLastLine;
-}
-//---------------------------------------------------------------------------
-bool THTTPSFileSystem::IsLastLine(std::wstring & Line)
-{
-  bool Result = false;
-  try
-  {
-    Result = RemoveLastLine(Line, FReturnCode, FCommandSet->GetLastLine());
-  }
-  catch (const std::exception &E)
-  {
-    FTerminal->TerminalError(&E, LoadStr(CANT_DETECT_RETURN_CODE));
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::SkipFirstLine()
-{
-  std::wstring Line = L""; // FSecureShell->ReceiveLine();
-  if (Line != FCommandSet->GetFirstLine())
-  {
-    FTerminal->TerminalError(NULL, FMTLOAD(FIRST_LINE_EXPECTED, Line.c_str()));
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
-{
-  {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->FProcessingCommand = false;
-    } BOOST_SCOPE_EXIT_END
-    if (Params & coWaitForLastLine)
-    {
-      std::wstring Line;
-      bool IsLast = true;
-      unsigned int Total = 0;
-      // #55: fixed so, even when last line of command output does not
-      // contain CR/LF, we can recognize last line
-      do
-      {
-        Line = L""; // FSecureShell->ReceiveLine();
-        // DEBUG_PRINTF(L"Line = %s", Line.c_str());
-        IsLast = IsLastLine(Line);
-        if (!IsLast || !Line.empty())
-        {
-          FOutput->Add(Line);
-          if (FLAGSET(Params, coReadProgress))
-          {
-            Total++;
 
-            if (Total % 10 == 0)
-            {
-              bool Cancel; //dummy
-              FTerminal->DoReadDirectoryProgress(Total, Cancel);
-            }
-          }
-        }
-      }
-      while (!IsLast);
-    }
-    if (Params & coRaiseExcept)
-    {
-      std::wstring Message = L""; // FSecureShell->GetStdError();
-      if ((Params & coExpectNoOutput) && FOutput->GetCount())
-      {
-        if (!Message.empty()) Message += L"\n";
-        Message += FOutput->GetText();
-      }
-      while (!Message.empty() && (::LastDelimiter(Message, L"\n\r") == Message.size()))
-      {
-        Message.resize(Message.size() - 1);
-      }
-
-      bool WrongReturnCode =
-        (GetReturnCode() > 1) || (GetReturnCode() == 1 && !(Params & coIgnoreWarnings));
-
-      if (Params & coOnlyReturnCode && WrongReturnCode)
-      {
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
-      }
-        else
-      if (!(Params & coOnlyReturnCode) &&
-          ((!Message.empty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
-           WrongReturnCode))
-      {
-        assert(Cmd != NULL);
-        FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, Cmd->c_str(), GetReturnCode(), Message.c_str()));
-      }
-    }
-  }
-}
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::ExecCommand(const std::wstring & Cmd, int Params,
-  const std::wstring &CmdString)
-{
-  if (Params < 0) Params = ecDefault;
-  if (FTerminal->GetUseBusyCursor())
-  {
-    ::Busy(true);
-  }
-  {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      if (Self->FTerminal->GetUseBusyCursor())
-      {
-        ::Busy(false);
-      }
-    } BOOST_SCOPE_EXIT_END
-    // DEBUG_PRINTF(L"Cmd = %s", Cmd.c_str());
-    SendCommand(Cmd);
-
-    int COParams = coWaitForLastLine;
-    if (Params & ecRaiseExcept) COParams |= coRaiseExcept;
-    if (Params & ecIgnoreWarnings) COParams |= coIgnoreWarnings;
-    if (Params & ecReadProgress) COParams |= coReadProgress;
-    ReadCommandOutput(COParams, &CmdString);
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
-{
-  if (Params < 0) Params = ecDefault;
-  va_list args;
-  va_start(args, Params);
-  std::wstring FullCommand = FCommandSet->FullCommand(Cmd, args);
-  std::wstring Command = FCommandSet->Command(Cmd, args);
-  ExecCommand(FullCommand, Params, Command);
-  va_end(args);
-  if (Params & ecRaiseExcept)
-  {
-    size_t MinL = FCommandSet->GetMinLines(Cmd);
-    size_t MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
-        ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
-    {
-      FTerminal->TerminalError(::FmtLoadStr(INVALID_OUTPUT_ERROR,
-        FullCommand.c_str(), GetOutput()->GetText().c_str()));
-    }
-  }
-}
-//---------------------------------------------------------------------------
-std::wstring THTTPSFileSystem::GetCurrentDirectory()
+std::wstring THTTPFileSystem::GetCurrentDirectory()
 {
   return FCurrentDirectory;
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::DoStartup()
+void THTTPFileSystem::DoStartup()
 {
-  // SkipStartupMessage and DetectReturnVar must succeed,
+  DEBUG_PRINTF(L"begin");
+  // DetectReturnVar must succeed,
   // otherwise session is to be closed.
-  FTerminal->SetExceptionOnFail (true);
-  SkipStartupMessage();
-  if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
-  FTerminal->SetExceptionOnFail (false);
+  FTerminal->SetExceptionOnFail(true);
+  // if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
+  FTerminal->SetExceptionOnFail(false);
 
-  #define COND_OPER(OPER) if (FTerminal->GetSessionData()->Get##OPER()) OPER()
-  COND_OPER(ClearAliases);
-  COND_OPER(UnsetNationalVars);
-  #undef COND_OPER
+  // retrieve initialize working directory to save it as home directory
+  ReadCurrentDirectory();
+  FHomeDirectory = FCurrentDirectory;
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::SkipStartupMessage()
+//---------------------------------------------------------------------------
+void THTTPFileSystem::LookupUsersGroups()
 {
-  try
-  {
-    FTerminal->LogEvent(L"Skipping host startup message (if any).");
-    ExecCommand(fsNull, 0, NULL);
-  }
-  catch (const std::exception & E)
-  {
-    FTerminal->CommandError(&E, LoadStr(SKIP_STARTUP_MESSAGE_ERROR));
-  }
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::LookupUsersGroups()
+void THTTPFileSystem::ReadCurrentDirectory()
 {
-  ExecCommand(fsLookupUsersGroups);
-  FTerminal->FUsers.Clear();
-  FTerminal->FGroups.Clear();
-  if (FOutput->GetCount() > 0)
-  {
-    std::wstring Groups = FOutput->GetString(0);
-    while (!Groups.empty())
-    {
-      std::wstring NewGroup = CutToChar(Groups, ' ', false);
-      FTerminal->FGroups.Add(TRemoteToken(NewGroup));
-      FTerminal->FMembership.Add(TRemoteToken(NewGroup));
-    }
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::DetectReturnVar()
-{
-  // This suppose that something was already executed (probably SkipStartupMessage())
-  // or return code variable is already set on start up.
-
-  try
-  {
-    // #60 17.10.01: "status" and "?" switched
-    std::wstring ReturnVars[2] = { L"status", L"?" };
-    std::wstring NewReturnVar = L"";
-    FTerminal->LogEvent(L"Detecting variable containing return code of last command.");
-    for (int Index = 0; Index < 2; Index++)
-    {
-      bool Success = true;
-
-      try
-      {
-        FTerminal->LogEvent(FORMAT(L"Trying \"$%s\".", ReturnVars[Index].c_str()));
-        ExecCommand(fsVarValue, 0, ReturnVars[Index].c_str());
-        // DEBUG_PRINTF(L"GetOutput()->GetCount = %d, GetOutput()->GetString(0) = %s", GetOutput()->GetCount(), GetOutput()->GetString(0).c_str());
-        std::wstring str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
-        int val = StrToIntDef(str, 256);
-        if ((GetOutput()->GetCount() != 1) || str.empty() || (val > 255))
-        {
-          FTerminal->LogEvent(L"The response is not numerical exit code");
-          Abort();
-        }
-      }
-      catch (const EFatal &E)
-      {
-        // if fatal error occurs, we need to exit ...
-        throw;
-      }
-      catch (const std::exception &E)
-      {
-        // ...otherwise, we will try next variable (if any)
-        Success = false;
-      }
-
-      if (Success)
-      {
-        NewReturnVar = ReturnVars[Index];
-        break;
-      }
-    }
-
-    if (NewReturnVar.empty())
-    {
-      Abort();
-    }
-      else
-    {
-      FCommandSet->SetReturnVar(NewReturnVar);
-      FTerminal->LogEvent(FORMAT(L"Return code variable \"%s\" selected.",
-        FCommandSet->GetReturnVar().c_str()));
-    }
-  }
-  catch (const std::exception &E)
-  {
-    FTerminal->CommandError(&E, LoadStr(DETECT_RETURNVAR_ERROR));
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::ClearAlias(std::wstring Alias)
-{
-  if (!Alias.empty())
-  {
-    // this command usually fails, because there will never be
-    // aliases on all commands -> see last false parametr
-    // DEBUG_PRINTF(L"Alias = %s", Alias.c_str());
-    ExecCommand(fsUnalias, 0, Alias.c_str(), false);
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::ClearAliases()
-{
-  try
-  {
-    FTerminal->LogEvent(L"Clearing all aliases.");
-    ClearAlias(THTTPSCommandSet::ExtractCommand(FTerminal->GetSessionData()->GetListingCommand()));
-    TStrings * CommandList = FCommandSet->CreateCommandList();
-    {
-      BOOST_SCOPE_EXIT ( (&CommandList) )
-      {
-        delete CommandList;
-      } BOOST_SCOPE_EXIT_END
-      for (size_t Index = 0; Index < CommandList->GetCount(); Index++)
-      {
-        ClearAlias(CommandList->GetString(Index));
-      }
-    }
-  }
-  catch (const std::exception &E)
-  {
-    FTerminal->CommandError(&E, LoadStr(UNALIAS_ALL_ERROR));
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::UnsetNationalVars()
-{
-  try
-  {
-    FTerminal->LogEvent(L"Clearing national user variables.");
-    for (size_t Index = 0; Index < NationalVarCount; Index++)
-    {
-      ExecCommand(fsUnset, 0, NationalVars[Index], false);
-    }
-  }
-  catch (const std::exception &E)
-  {
-    FTerminal->CommandError(&E, LoadStr(UNSET_NATIONAL_ERROR));
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::ReadCurrentDirectory()
-{
+  DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
   if (FCachedDirectoryChange.empty())
   {
-    ExecCommand(fsCurrentDirectory);
-    FCurrentDirectory = UnixExcludeTrailingBackslash(FOutput->GetString(0));
+    std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
+    std::wstring response;
+    std::wstring errorInfo;
+    bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
+    // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
+    // TODO: cache response
+    if (isExist)
+    {
+        FCurrentDirectory = Path;
+    }
+    else if (!errorInfo.empty() && !FCurrentDirectory.empty())
+    {
+        THROW_SKIP_FILE(errorInfo, NULL);
+    }
+    // FCurrentDirectory = Path;
   }
   else
   {
     FCurrentDirectory = FCachedDirectoryChange;
   }
+  DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::HomeDirectory()
+void THTTPFileSystem::HomeDirectory()
 {
-  ExecCommand(fsHomeDirectory);
+  // ExecCommand(fsHomeDirectory);
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::AnnounceFileListOperation()
+void THTTPFileSystem::AnnounceFileListOperation()
 {
   // noop
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::ChangeDirectory(const std::wstring Directory)
+void THTTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
 {
-  std::wstring ToDir;
-  if (!Directory.empty() &&
-      ((Directory[0] != L'~') || (Directory.substr(0, 2) == L"~ ")))
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
+{
+  std::wstring Directory = ADirectory;
+  try
   {
-    ToDir = L"\"" + DelimitStr(Directory) + L"\"";
+    // For changing directory, we do not make paths absolute, instead we
+    // delegate this to the server, hence we sychronize current working
+    // directory with the server and only then we ask for the change with
+    // relative path.
+    // But if synchronization fails, typically because current working directory
+    // no longer exists, we fall back to out own resolution, to give
+    // user chance to leave the non-existing directory.
+    EnsureLocation();
   }
-  else
+  catch (...)
   {
-    ToDir = DelimitStr(Directory);
+    if (FTerminal->GetActive())
+    {
+      Directory = AbsolutePath(Directory, false);
+    }
+    else
+    {
+      throw;
+    }
   }
-  ExecCommand(fsChangeDirectory, 0, ToDir.c_str());
+
+  // DoChangeDirectory(Directory);
+  FCurrentDirectory = AbsolutePath(Directory, false);
+
+  // make next ReadCurrentDirectory retrieve actual server-side current directory
+  // FCurrentDirectory = L"";
   FCachedDirectoryChange = L"";
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CachedChangeDirectory(const std::wstring Directory)
+void THTTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
   FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
+  /*
+  FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
+  if (FCurrentDirectory.empty())
+  {
+      FCurrentDirectory = L"/";
+  }
+  */
+}
+
+void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
+{
+    FileList->Clear();
+    // add parent directory
+    FileList->AddFile(new TRemoteParentDirectory(FTerminal));
+
+    FLastReadDirectoryProgress = 0;
+
+    TFileListHelper Helper(this, FileList, false);
+
+    // always specify path to list, do not attempt to 
+    // list "current" dir as:
+    // 1) List() lists again the last listed directory, not the current working directory
+    // 2) we handle this way the cached directory change
+    std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
+    // DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
+    std::wstring errorInfo;
+    GetList(Directory, errorInfo);
+
+    FLastDataSent = Now();
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::ReadDirectory(TRemoteFileList * FileList)
+void THTTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
+  DEBUG_PRINTF(L"begin");
   assert(FileList);
-  // emtying file list moved before command execution
-  FileList->Clear();
-
-  bool Again;
+  bool GotNoFilesForAll = false;
+  bool Repeat = false;
 
   do
   {
-    Again = false;
+    Repeat = false;
     try
     {
-      int Params = ecDefault | ecReadProgress |
-        FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
-      const wchar_t * Options =
-        ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : L"";
-      bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrentDirectory());
-      if (ListCurrentDirectory)
-      {
-        FTerminal->LogEvent(L"Listing current directory.");
-        ExecCommand(fsListCurrentDirectory,
-          0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, Params);
-      }
-      else
-      {
-        FTerminal->LogEvent(FORMAT(L"Listing directory \"%s\".",
-          FileList->GetDirectory().c_str()));
-        ExecCommand(fsListDirectory,
-          0, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options,
-            DelimitStr(FileList->GetDirectory().c_str()).c_str(),
-          Params);
-      }
+      FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
+      DoReadDirectory(FileList);
 
-      TRemoteFile * File = NULL;
-
-      // If output is not empty, we have succesfully got file listing,
-      // otherwise there was an error, in case it was "permission denied"
-      // we try to get at least parent directory (see "else" statement below)
-      if (FOutput->GetCount() > 0)
+      // We got no files with "-a", but again no files w/o "-a",
+      // so it was not "-a"'s problem, revert to auto and let it decide the next time
+      if (GotNoFilesForAll && (FileList->GetCount() == 0))
       {
-        // Copy LS command output, because eventual symlink analysis would
-        // modify FTerminal->Output
-        TStringList * OutputCopy = new TStringList();
+        assert(FListAll == asOff);
+        FListAll = asAuto;
+      }
+      else if (FListAll == asAuto)
+      {
+        // some servers take "-a" as a mask and return empty directory listing
+        // (note that it's actually never empty here, there's always at least parent directory,
+        // added explicitly by DoReadDirectory)
+        if ((FileList->GetCount() == 0) ||
+            ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
         {
-          BOOST_SCOPE_EXIT ( (&OutputCopy) )
-          {
-            delete OutputCopy;
-          } BOOST_SCOPE_EXIT_END
-          OutputCopy->Assign(FOutput);
-
-          // delete leading "total xxx" line
-          // On some hosts there is not "total" but "totalt". What's the reason??
-          // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
-          if (IsTotalListingLine(OutputCopy->GetString(0)))
-          {
-            OutputCopy->Delete(0);
-          }
-
-          for (size_t Index = 0; Index < OutputCopy->GetCount(); Index++)
-          {
-            File = CreateRemoteFile(OutputCopy->GetString(Index));
-            FileList->AddFile(File);
-          }
-        }
-      }
-      else
-      {
-        bool Empty = true;
-        if (ListCurrentDirectory)
-        {
-          // Empty file list -> probably "permision denied", we
-          // at least get link to parent directory ("..")
-          FTerminal->ReadFile(
-            UnixIncludeTrailingBackslash(FTerminal->FFiles->GetDirectory()) +
-              PARENTDIRECTORY, File);
-          Empty = (File == NULL || (wcscmp(File->GetFileName().c_str(), PARENTDIRECTORY) == 0));
-          if (!Empty)
-          {
-            assert(File->GetIsParentDirectory());
-            FileList->AddFile(File);
-          }
+          Repeat = true;
+          FListAll = asOff;
+          GotNoFilesForAll = true;
         }
         else
         {
-          Empty = true;
-        }
-
-        if (Empty)
-        {
-          throw ExtException(FMTLOAD(EMPTY_DIRECTORY, FileList->GetDirectory().c_str()));
+          // reading first directory has succeeded, always use "-a"
+          FListAll = asOn;
         }
       }
 
-      if (FLsFullTime == asAuto)
-      {
-          FTerminal->LogEvent(
-            FORMAT(L"Directory listing with %s succeed, next time all errors during "
-              L"directory listing will be displayed immediatelly.",
-              FullTimeOption));
-          FLsFullTime = asOn;
-      }
+      // use "-a" even for implicit directory reading by FZAPI?
+      // (e.g. before file transfer)
+      FDoListAll = (FListAll == asOn);
     }
-    catch (const std::exception & E)
+    catch (...)
     {
-      if (FTerminal->GetActive())
+      FDoListAll = false;
+      // reading the first directory has failed,
+      // further try without "-a" only as the server may not support it
+      if ((FListAll == asAuto) && FTerminal->GetActive())
       {
-        if (FLsFullTime == asAuto)
-        {
-          FTerminal->FLog->AddException(&E);
-          FLsFullTime = asOff;
-          Again = true;
-          FTerminal->LogEvent(
-            FORMAT(L"Directory listing with %s failed, try again regular listing.",
-            FullTimeOption));
-        }
-        else
-        {
-          throw;
-        }
+        FListAll = asOff;
+        Repeat = true;
       }
       else
       {
@@ -1020,22 +687,23 @@ void THTTPSFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
     }
   }
-  while (Again);
+  while (Repeat);
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
+void THTTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& File)
 {
   CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::ReadFile(const std::wstring FileName,
+void THTTPFileSystem::ReadFile(const std::wstring FileName,
   TRemoteFile *& File)
 {
   CustomReadFile(FileName, File, NULL);
 }
 //---------------------------------------------------------------------------
-TRemoteFile * THTTPSFileSystem::CreateRemoteFile(
+TRemoteFile * THTTPFileSystem::CreateRemoteFile(
   const std::wstring & ListingStr, TRemoteFile * LinkedByFile)
 {
   TRemoteFile * File = new TRemoteFile(LinkedByFile);
@@ -1055,153 +723,233 @@ TRemoteFile * THTTPSFileSystem::CreateRemoteFile(
   return File;
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CustomReadFile(const std::wstring FileName,
+void THTTPFileSystem::CustomReadFile(const std::wstring FileName,
   TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
+  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
   File = NULL;
-  int Params = ecDefault |
-    FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
-  // the auto-detection of --full-time support is not implemented for fsListFile,
-  // so we use it only if we already know that it is supported (asOn).
-  const wchar_t * Options = (FLsFullTime == asOn) ? FullTimeOption : L"";
-  ExecCommand(fsListFile,
-    Params, FTerminal->GetSessionData()->GetListingCommand().c_str(), Options, DelimitStr(FileName).c_str());
-  if (FOutput->GetCount())
+  bool isExist = false;
+  std::wstring errorInfo;
+  bool res = CheckExisting(FileName.c_str(), ItemDirectory, isExist, errorInfo);
+  if (res && isExist)
   {
-    int LineIndex = 0;
-    if (IsTotalListingLine(FOutput->GetString(LineIndex)) && FOutput->GetCount() > 1)
+    File = new TRemoteFile();
+    File->SetType(FILETYPE_DIRECTORY);
+  }
+  else
+  {
+    isExist = false;
+    errorInfo.clear();
+    bool res = CheckExisting(FileName.c_str(), ItemFile, isExist, errorInfo);
+    if (res && isExist)
     {
-      LineIndex++;
+      File = new TRemoteFile();
     }
-
-    File = CreateRemoteFile(FOutput->GetString(LineIndex), ALinkedByFile);
   }
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::DeleteFile(const std::wstring FileName,
+void THTTPFileSystem::DeleteFile(const std::wstring FileName,
   const TRemoteFile * File, int Params, TRmSessionAction & Action)
 {
   USEDPARAM(File);
   USEDPARAM(Params);
-  Action.Recursive();
-  assert(FLAGCLEAR(Params, dfNoRecursive) || (File && File->GetIsSymLink()));
-  ExecCommand(fsDeleteFile, 0, DelimitStr(FileName).c_str());
+  std::wstring FullFileName = File->GetFullFileName();
+  ItemType type = File->GetIsDirectory() ? ItemDirectory : ItemFile;
+  std::wstring errorInfo;
+  bool res = Delete(FullFileName.c_str(), type, errorInfo);
+  if (!res && !errorInfo.empty())
+  {
+    THROW_SKIP_FILE(errorInfo, NULL);
+  }
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::RenameFile(const std::wstring FileName,
+void THTTPFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ExecCommand(fsRenameFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
+  // ::Error(SNotImplemented, 1011);
+  // DEBUG_PRINTF(L"FileName = %s, NewName = %s", FileName.c_str(), NewName.c_str());
+  // DEBUG_PRINTF(L"FCurrentDirectory = %s", FCurrentDirectory.c_str());
+  std::wstring FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
+  std::wstring errorInfo;
+  ItemType type = ItemFile; // File->GetIsDirectory() ? ItemDirectory : ItemFile;
+  bool res = Rename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
+  if (!res)
+  {
+    ItemType type = ItemDirectory;
+    bool res = Rename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
+    if (!res && !errorInfo.empty())
+    {
+        THROW_SKIP_FILE(errorInfo, NULL);
+    }
+  }
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CopyFile(const std::wstring FileName,
+void THTTPFileSystem::CopyFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ExecCommand(fsCopyFile, 0, DelimitStr(FileName).c_str(), DelimitStr(NewName).c_str());
+  ::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CreateDirectory(const std::wstring DirName)
+void THTTPFileSystem::CreateDirectory(const std::wstring DirName)
 {
-  ExecCommand(fsCreateDirectory, 0, DelimitStr(DirName).c_str());
+  DEBUG_PRINTF(L"FCurrentDirectory = %s, DirName = %s", FCurrentDirectory.c_str(), DirName.c_str());
+  std::wstring errorInfo;
+  bool res = MakeDirectory(DirName.c_str(), errorInfo);
+  if (!res)
+  {
+      std::vector<std::wstring> dirnames;
+      std::wstring delim = L"/";
+      alg::split(dirnames, DirName, alg::is_any_of(delim), alg::token_compress_on);
+      std::wstring curdir;
+      std::wstring dir;
+      BOOST_FOREACH(dir, dirnames)
+      {
+          if (dir.empty())
+            continue;
+          curdir += L"/" + dir;
+          res = MakeDirectory(curdir.c_str(), errorInfo);
+      }
+      if (!res)
+      {
+        THROW_SKIP_FILE(errorInfo, NULL);
+      }
+  }
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CreateLink(const std::wstring FileName,
+void THTTPFileSystem::CreateLink(const std::wstring FileName,
   const std::wstring PointTo, bool Symbolic)
 {
-  ExecCommand(fsCreateLink, 0, 
-    Symbolic ? L"-s" : L"", DelimitStr(PointTo).c_str(), DelimitStr(FileName).c_str());
+  ::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::ChangeFileToken(const std::wstring & DelimitedName,
-  const TRemoteToken & Token, TFSCommand Cmd, const std::wstring & RecursiveStr)
-{
-  std::wstring Str;
-  if (Token.GetIDValid())
-  {
-    Str = IntToStr(Token.GetID());
-  }
-  else if (Token.GetNameValid())
-  {
-    Str = Token.GetName();
-  }
-
-  if (!Str.empty())
-  {
-    ExecCommand(Cmd, 0, RecursiveStr.c_str(), Str.c_str(), DelimitedName.c_str());
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::ChangeFileProperties(const std::wstring FileName,
+void THTTPFileSystem::ChangeFileProperties(const std::wstring FileName,
   const TRemoteFile * File, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
 {
+  ::Error(SNotImplemented, 1006);
   assert(Properties);
-  bool IsDirectory = File && File->GetIsDirectory();
-  bool Recursive = Properties->Recursive && IsDirectory;
-  std::wstring RecursiveStr = Recursive ? L"-R" : L"";
-
-  std::wstring DelimitedName = DelimitStr(FileName);
-  // change group before permissions as chgrp change permissions
-  if (Properties->Valid.Contains(vpGroup))
-  {
-    ChangeFileToken(DelimitedName, Properties->Group, fsChangeGroup, RecursiveStr);
-  }
-  if (Properties->Valid.Contains(vpOwner))
-  {
-    ChangeFileToken(DelimitedName, Properties->Owner, fsChangeOwner, RecursiveStr);
-  }
-  if (Properties->Valid.Contains(vpRights))
-  {
-    TRights Rights = Properties->Rights;
-
-    // if we don't set modes recursively, we may add X at once with other
-    // options. Otherwise we have to add X after recusive command
-    if (!Recursive && IsDirectory && Properties->AddXToDirectories)
-      Rights.AddExecute();
-
-    Action.Rights(Rights);
-    if (Recursive)
-    {
-      Action.Recursive();
-    }
-
-    if ((Rights.GetNumberSet() | Rights.GetNumberUnset()) != TRights::rfNo)
-    {
-      ExecCommand(fsChangeMode,
-        0, RecursiveStr.c_str(), Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
-    }
-
-    // if file is directory and we do recursive mode settings with
-    // add-x-to-directories option on, add those X
-    if (Recursive && IsDirectory && Properties->AddXToDirectories)
-    {
-      Rights.AddExecute();
-      ExecCommand(fsChangeMode,
-        0, L"", Rights.GetSimplestStr().c_str(), DelimitedName.c_str());
-    }
-  }
-  else
-  {
-    Action.Cancel();
-  }
-  assert(!Properties->Valid.Contains(vpLastAccess));
-  assert(!Properties->Valid.Contains(vpModification));
 }
 //---------------------------------------------------------------------------
-bool THTTPSFileSystem::LoadFilesProperties(TStrings * /*FileList*/ )
+bool THTTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/ )
 {
   assert(false);
   return false;
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
+void THTTPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
   calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CustomCommandOnFile(const std::wstring FileName,
+bool THTTPFileSystem::ConfirmOverwrite(std::wstring & FileName,
+  TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
+  const TOverwriteFileParams * FileParams, int Params, bool AutoResume)
+{
+  bool Result;
+  bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
+  // when resuming transfer after interrupted connection,
+  // do nothing (dummy resume) when the files has the same size.
+  // this is workaround for servers that strangely fails just after successful
+  // upload.
+  bool CanResume =
+    (FileParams != NULL) &&
+    (((FileParams->DestSize < FileParams->SourceSize)) ||
+     ((FileParams->DestSize == FileParams->SourceSize) && CanAutoResume));
+
+  int Answer;
+  if (CanAutoResume && CanResume)
+  {
+    Answer = qaRetry;
+  }
+  else
+  {
+    // retry = "resume"
+    // all = "yes to newer"
+    // ignore = "rename"
+    int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    if (CanResume)
+    {
+      Answers |= qaRetry;
+    }
+    TQueryButtonAlias Aliases[3];
+    Aliases[0].Button = qaRetry;
+    Aliases[0].Alias = LoadStr(RESUME_BUTTON);
+    Aliases[1].Button = qaAll;
+    Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
+    Aliases[2].Button = qaIgnore;
+    Aliases[2].Alias = LoadStr(RENAME_BUTTON);
+    TQueryParams QueryParams(qpNeverAskAgainCheck);
+    QueryParams.Aliases = Aliases;
+    QueryParams.AliasesCount = LENOF(Aliases);
+    SUSPEND_OPERATION
+    (
+      Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
+        Answers, &QueryParams,
+        OperationProgress->Side == osLocal ? osRemote : osLocal,
+        Params, OperationProgress);
+    )
+  }
+
+  Result = true;
+
+  switch (Answer)
+  {
+    // resume
+    case qaRetry:
+      OverwriteMode = omResume;
+      assert(FileParams != NULL);
+      assert(CanResume);
+      FFileTransferResumed = FileParams->DestSize;
+      break;
+
+    // rename
+    case qaIgnore:
+      if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
+            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, FileName))
+      {
+        OverwriteMode = omOverwrite;
+      }
+      else
+      {
+        if (!OperationProgress->Cancel)
+        {
+          OperationProgress->Cancel = csCancel;
+        }
+        FFileTransferAbort = ftaCancel;
+        Result = false;
+      }
+      break;
+
+    case qaYes:
+      OverwriteMode = omOverwrite;
+      break;
+
+    case qaCancel:
+      if (!OperationProgress->Cancel)
+      {
+        OperationProgress->Cancel = csCancel;
+      }
+      FFileTransferAbort = ftaCancel;
+      Result = false;
+      break;
+
+    case qaNo:
+      FFileTransferAbort = ftaSkip;
+      Result = false;
+      break;
+
+    default:
+      assert(false);
+      Result = false;
+      break;
+  }
+  return Result;
+}
+
+//---------------------------------------------------------------------------
+void THTTPFileSystem::CustomCommandOnFile(const std::wstring FileName,
     const TRemoteFile * File, std::wstring Command, int Params,
     const captureoutput_slot_type &OutputEvent)
 {
@@ -1224,17 +972,16 @@ void THTTPSFileSystem::CustomCommandOnFile(const std::wstring FileName,
       Data, FTerminal->GetCurrentDirectory(), FileName, L"").
       Complete(Command, true);
 
-    AnyCommand(Cmd, &OutputEvent);
+    // AnyCommand(Cmd, &OutputEvent);
   }
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError)
+void THTTPFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdError)
 {
   int ReturnCode;
   std::wstring Line = AddedLine;
   // DEBUG_PRINTF(L"Line = %s", Line.c_str());
   if (StdError ||
-      !RemoveLastLine(Line, ReturnCode) ||
       !Line.empty())
   {
     assert(!FOnCaptureOutput.empty());
@@ -1242,284 +989,54 @@ void THTTPSFileSystem::CaptureOutput(const std::wstring & AddedLine, bool StdErr
   }
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::AnyCommand(const std::wstring Command,
+void THTTPFileSystem::AnyCommand(const std::wstring Command,
   const captureoutput_slot_type *OutputEvent)
 {
-  // assert(FSecureShell->GetOnCaptureOutput().empty());
-  if (OutputEvent)
-  {
-    // FSecureShell->SetOnCaptureOutput(boost::bind(&THTTPSFileSystem::CaptureOutput, this, _1, _2));
-    FOnCaptureOutput.connect(*OutputEvent);
-  }
+    ::Error(SNotImplemented, 1008);
+}
 
-  {
-    BOOST_SCOPE_EXIT ( (&Self) )
-    {
-      Self->FOnCaptureOutput.disconnect_all_slots();
-      // Self->FSecureShell->GetOnCaptureOutput().disconnect_all_slots();
-    } BOOST_SCOPE_EXIT_END
-    ExecCommand(fsAnyCommand, 0, Command.c_str(),
-      ecDefault | ecIgnoreWarnings);
-  }
-}
 //---------------------------------------------------------------------------
-std::wstring THTTPSFileSystem::FileUrl(const std::wstring FileName)
+std::wstring THTTPFileSystem::FileUrl(const std::wstring FileName)
 {
-  return FTerminal->FileUrl(L"scp", FileName);
+  return FTerminal->FileUrl(L"http", FileName);
 }
 //---------------------------------------------------------------------------
-TStrings * THTTPSFileSystem::GetFixedPaths()
+TStrings * THTTPFileSystem::GetFixedPaths()
 {
   return NULL;
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::SpaceAvailable(const std::wstring Path,
+void THTTPFileSystem::SpaceAvailable(const std::wstring Path,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
-// transfer protocol
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::SCPResponse(bool * GotLastLine)
-{
-  // Taken from scp.c response() and modified
-
-  char Resp;
-  // FSecureShell->Receive(&Resp, 1);
-
-  switch (Resp)
-  {
-    case 0:     /* ok */
-      FTerminal->LogEvent(L"SCP remote side confirmation (0)");
-      return;
-
-    default:
-    case 1:     /* error */
-    case 2:     /* fatal error */
-      // pscp adds 'Resp' to 'Msg', why?
-      std::wstring MsgW = L""; // FSecureShell->ReceiveLine();
-      std::string Msg = ::W2MB(MsgW.c_str());
-      std::string Line = Resp + Msg;
-      std::wstring LineW = ::MB2W(Line.c_str());
-      if (IsLastLine(LineW))
-      {
-        if (GotLastLine != NULL)
-        {
-          *GotLastLine = true;
-        }
-
-        /* TODO 1 : Show stderror to user? */
-        // FSecureShell->ClearStdError();
-
-        try
-        {
-          ReadCommandOutput(coExpectNoOutput | coRaiseExcept | coOnlyReturnCode);
-        }
-        catch (...)
-        {
-          // when ReadCommandOutput() fails than remote SCP is terminated already
-          if (GotLastLine != NULL)
-          {
-            *GotLastLine = true;
-          }
-          throw;
-        }
-      }
-      else if (Resp == 1)
-      {
-        FTerminal->LogEvent(L"SCP remote side error (1):");
-      }
-      else
-      {
-        FTerminal->LogEvent(L"SCP remote side fatal error (2):");
-      }
-
-      if (Resp == 1)
-      {
-        // DEBUG_PRINTF(L"Msg = %s", MsgW.c_str());
-        THROW_FILE_SKIPPED(MsgW, NULL);
-      }
-      else
-      {
-        THROW_SCP_ERROR(LineW, NULL);
-      }
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::CopyToRemote(TStrings * FilesToCopy,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam,
+void THTTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
+  const std::wstring ATargetDir, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  // scp.c: source(), toremote()
-  assert(FilesToCopy && OperationProgress);
+  // ::Error(SNotImplemented, 1005);
+  assert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
-  Params &= ~(cpAppend | cpResume);
-  std::wstring Options = L"";
-  bool CheckExistence = UnixComparePaths(TargetDir, FTerminal->GetCurrentDirectory()) &&
-    (FTerminal->FFiles != NULL) && FTerminal->FFiles->GetLoaded();
-  bool CopyBatchStarted = false;
-  bool Failed = true;
-  bool GotLastLine = false;
-
-  std::wstring TargetDirFull = UnixIncludeTrailingBackslash(TargetDir);
-
-  // DEBUG_PRINTF(L"CopyParam->GetPreserveRights = %d", CopyParam->GetPreserveRights());
-  if (CopyParam->GetPreserveRights()) Options = L"-p";
-  if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
-
-  // DEBUG_PRINTF(L"TargetDir = %s, Options = %s", TargetDir.c_str(), Options.c_str());
-  SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    Options.c_str(), DelimitStr(UnixExcludeTrailingBackslash(TargetDir)).c_str()));
-  SkipFirstLine();
-
+  Params &= ~cpAppend;
+  std::wstring FileName, FileNameOnly;
+  std::wstring TargetDir = AbsolutePath(ATargetDir, false);
+  std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
+  int Index = 0;
+  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&GotLastLine) (&CopyBatchStarted)
-        (&Failed) )
+    bool Success = false;
+    FileName = FilesToCopy->GetString(Index);
+    FileNameOnly = ExtractFileName(FileName, false);
+
     {
-        // Tell remote side, that we're done.
-        if (Self->FTerminal->GetActive())
-        {
-          try
-          {
-            if (!GotLastLine)
-            {
-              if (CopyBatchStarted)
-              {
-                // What about case, remote side sends fatal error ???
-                // (Not sure, if it causes remote side to terminate scp)
-                // Self->FSecureShell->SendLine(L"E");
-                // Self->SCPResponse();
-              };
-              /* TODO 1 : Show stderror to user? */
-              // Self->FSecureShell->ClearStdError();
-
-              Self->ReadCommandOutput(coExpectNoOutput | coWaitForLastLine | coOnlyReturnCode |
-                (Failed ? 0 : coRaiseExcept));
-            }
-          }
-          catch (const std::exception &E)
-          {
-            // Only log error message (it should always succeed, but
-            // some pending error maybe in queque) }
-            Self->FTerminal->GetLog()->AddException(&E);
-          }
-        }
-    } BOOST_SCOPE_EXIT_END
-    try
-    {
-      SCPResponse(&GotLastLine);
-      // DEBUG_PRINTF(L"GotLastLine = %d", GotLastLine);
-
-      // This can happen only if SCP command is not executed and return code is 0
-      // It has never happened to me (return code is usually 127)
-      if (GotLastLine)
+      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
       {
-        throw std::exception("");
-      }
-    }
-    catch (const std::exception & E)
-    {
-      // DEBUG_PRINTF(L"E.what = %s", ::MB2W(E.what()).c_str());
-      if (GotLastLine && FTerminal->GetActive())
-      {
-        FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
-      }
-      else
-      {
-        throw;
-      }
-    }
-    CopyBatchStarted = true;
-
-    for (size_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; IFile++)
-    {
-      std::wstring FileName = FilesToCopy->GetString(IFile);
-      bool CanProceed;
-
-      std::wstring FileNameOnly =
-        CopyParam->ChangeFileName(ExtractFileName(FileName, false), osLocal, true);
-      // DEBUG_PRINTF(L"FileName = %s, CheckExistence = %d, FileNameOnly = %s", FileName.c_str(), CheckExistence, FileNameOnly.c_str());
-      if (CheckExistence)
-      {
-        // previously there was assertion on FTerminal->FFiles->Loaded, but it
-        // fails for scripting, if 'ls' is not issued before.
-        // formally we should call CheckRemoteFile here but as checking is for
-        // free here (almost) ...
-        TRemoteFile * File = FTerminal->FFiles->FindFile(FileNameOnly);
-        if (File != NULL)
-        {
-          int Answer;
-          if (File->GetIsDirectory())
-          {
-            std::wstring Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly.c_str());
-            TQueryParams QueryParams(qpNeverAskAgainCheck);
-            SUSPEND_OPERATION
-            (
-              Answer = FTerminal->ConfirmFileOverwrite(
-                FileNameOnly /*not used*/, NULL,
-                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-                &QueryParams, osRemote, Params, OperationProgress, Message);
-            );
-          }
-          else
-          {
-            __int64 MTime;
-            TOverwriteFileParams FileParams;
-            FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-              NULL, NULL, NULL, &MTime, NULL,
-              &FileParams.SourceSize);
-            // DEBUG_PRINTF(L"FileParams.SourceSize = %d", FileParams.SourceSize);
-            FileParams.SourceTimestamp = UnixToDateTime(MTime,
-              FTerminal->GetSessionData()->GetDSTMode());
-            FileParams.DestSize = File->GetSize();
-            FileParams.DestTimestamp = File->GetModification();
-
-            TQueryButtonAlias Aliases[1];
-            Aliases[0].Button = qaAll;
-            Aliases[0].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-            TQueryParams QueryParams(qpNeverAskAgainCheck);
-            QueryParams.Aliases = Aliases;
-            QueryParams.AliasesCount = LENOF(Aliases);
-            SUSPEND_OPERATION
-            (
-              Answer = FTerminal->ConfirmFileOverwrite(
-                FileNameOnly, &FileParams,
-                qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                &QueryParams, osRemote, Params, OperationProgress);
-            );
-          }
-
-          switch (Answer)
-          {
-            case qaYes:
-              CanProceed = true;
-              break;
-
-            case qaCancel:
-              if (!OperationProgress->Cancel) OperationProgress->Cancel = csCancel;
-            case qaNo:
-              CanProceed = false;
-              break;
-
-            default:
-              assert(false);
-              break;
-          }
-        }
-        else
-        {
-          CanProceed = true;
-        }
-      }
-      else
-      {
-        CanProceed = true;
-      }
-
-      if (CanProceed)
+        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+      } BOOST_SCOPE_EXIT_END
+      try
       {
         if (FTerminal->GetSessionData()->GetCacheDirectories())
         {
@@ -1527,62 +1044,75 @@ void THTTPSFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
           if (::DirectoryExists(::ExtractFilePath(FileName)))
           {
-            FTerminal->DirectoryModified(UnixIncludeTrailingBackslash(TargetDir) +
-              FileNameOnly, true);
+            FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
         }
-
-        try
-        {
-          // DEBUG_PRINTF(L"FileName = %s, TargetDirFull = %s", FileName.c_str(), TargetDirFull.c_str());
-          SCPSource(FileName, TargetDirFull,
-            CopyParam, Params, OperationProgress, 0);
-          OperationProgress->Finish(FileName, true, OnceDoneOperation);
-        }
-        catch (const EScpFileSkipped &E)
-        {
-          TQueryParams Params(qpAllowContinueOnError);
-          DEBUG_PRINTF(L"before FTerminal->QueryUserException");
-          SUSPEND_OPERATION (
-            if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
-              &E,
-              qaOK | qaAbort, &Params, qtError) == qaAbort)
-            {
-              OperationProgress->Cancel = csCancel;
-            }
-            OperationProgress->Finish(FileName, false, OnceDoneOperation);
-            if (!FTerminal->HandleException(&E)) throw;
-          );
-        }
-        catch (const EScpSkipFile &E)
-        {
-          DEBUG_PRINTF(L"before FTerminal->HandleException");
-          OperationProgress->Finish(FileName, false, OnceDoneOperation);
-          // If ESkipFile occurs, just log it and continue with next file
-          SUSPEND_OPERATION (
-            if (!FTerminal->HandleException(&E)) throw;
-          );
-        }
-        catch (...)
-        {
-          OperationProgress->Finish(FileName, false, OnceDoneOperation);
-          throw;
-        }
+        SourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
+          tfFirstLevel);
+        Success = true;
+        FLastDataSent = Now();
+      }
+      catch (const EScpSkipFile &E)
+      {
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
+        SUSPEND_OPERATION (
+          if (!FTerminal->HandleException(&E)) throw;
+        );
       }
     }
-    Failed = false;
+    Index++;
   }
 }
 
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::SCPSource(const std::wstring FileName,
+void THTTPFileSystem::SourceRobust(const std::wstring FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, int Level)
+  TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
-  std::wstring DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(FileName, false), osLocal, Level == 0);
-  // DEBUG_PRINTF(L"DestFileName = %s", DestFileName.c_str());
+  bool Retry = false;
+
+  TUploadSessionAction Action(FTerminal->GetLog());
+
+  do
+  {
+    Retry = false;
+    try
+    {
+      Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
+        Flags, Action);
+    }
+    catch (const std::exception & E)
+    {
+      Retry = true;
+      if (FTerminal->GetActive() ||
+          !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
+      {
+        FTerminal->RollbackAction(Action, OperationProgress, &E);
+        throw;
+      }
+    }
+
+    if (Retry)
+    {
+      OperationProgress->RollbackTransfer();
+      Action.Restart();
+      // prevent overwrite confirmations
+      // (should not be set for directories!)
+      Params |= cpNoConfirmation;
+      Flags |= tfAutoResume;
+    }
+  }
+  while (Retry);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::Source(const std::wstring FileName,
+  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
+  TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  TUploadSessionAction & Action)
+{
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+
+  Action.FileName(ExpandUNCFileName(FileName));
 
   OperationProgress->SetFile(FileName, false);
 
@@ -1592,259 +1122,88 @@ void THTTPSFileSystem::SCPSource(const std::wstring FileName,
     THROW_SKIP_FILE_NULL;
   }
 
-  HANDLE File;
-  int Attrs;
-  __int64 MTime, ATime;
   __int64 Size;
+  int Attrs;
 
-  FTerminal->OpenLocalFile(FileName, GENERIC_READ,
-    &Attrs, &File, NULL, &MTime, &ATime, &Size);
+  FTerminal->OpenLocalFile(FileName, GENERIC_READ, &Attrs,
+    NULL, NULL, NULL, NULL, &Size);
+
+  OperationProgress->SetFileInProgress();
 
   bool Dir = FLAGSET(Attrs, faDirectory);
-  TSafeHandleStream * Stream = new TSafeHandleStream(File);
+  if (Dir)
   {
-    BOOST_SCOPE_EXIT ( (&File) (&Stream) )
-    {
-      if (File != NULL)
-      {
-        ::CloseHandle(File);
-      }
-      delete Stream;
-    } BOOST_SCOPE_EXIT_END
-    OperationProgress->SetFileInProgress();
+    DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
+      Attrs, CopyParam, Params, OperationProgress, Flags);
+    Action.Cancel();
+  }
+  else
+  {
+    std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
+      osLocal, FLAGSET(Flags, tfFirstLevel));
 
-    if (Dir)
+    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
+
+    OperationProgress->SetLocalSize(Size);
+
+    // Suppose same data size to transfer as to read
+    // (not true with ASCII transfer)
+    OperationProgress->SetTransferSize(OperationProgress->LocalSize);
+    OperationProgress->TransferingFile = false;
+
+    // Will we use ASCII of BINARY file tranfer?
+    TFileMasks::TParams MaskParams;
+    MaskParams.Size = Size;
+    OperationProgress->SetAsciiTransfer(
+      CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
+    FTerminal->LogEvent(
+      std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+        L" transfer mode selected.");
+
+    ResetFileTransfer();
+
+    TFileTransferData UserData;
+
+    unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+
     {
-      SCPDirectorySource(FileName, TargetDir, CopyParam, Params, OperationProgress, Level);
+      // ignore file list
+      TFileListHelper Helper(this, NULL, true);
+
+      FFileTransferCPSLimit = OperationProgress->CPSLimit;
+      // not used for uploads anyway
+      FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+      // not used for uploads, but we get new name (if any) back in this field
+      UserData.FileName = DestFileName;
+      UserData.Params = Params;
+      UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+      UserData.CopyParam = CopyParam;
+      FileTransfer(FileName, FileName, DestFileName,
+        TargetDir, false, Size, TransferType, UserData, OperationProgress);
     }
-    else
+
+    std::wstring DestFullName = TargetDir + UserData.FileName;
+    // only now, we know the final destination
+    Action.Destination(DestFullName);
+
+    /* TODO: implement setting datetime
+    // we are not able to tell if setting timestamp succeeded,
+    // so we log it always (if supported)
+    if (FFileTransferPreserveTime && FMfmt)
     {
-      std::wstring AbsoluteFileName = FTerminal->AbsolutePath(DestFileName, false); // TargetDir + 
-      // DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
-      assert(File);
-
-      // File is regular file (not directory)
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
-
-      OperationProgress->SetLocalSize(Size);
-
-      // Suppose same data size to transfer as to read
-      // (not true with ASCII transfer)
-      OperationProgress->SetTransferSize(OperationProgress->LocalSize);
-      OperationProgress->TransferingFile = false;
-
-      // Will we use ASCII of BINARY file tranfer?
-      TFileMasks::TParams MaskParams;
-      MaskParams.Size = Size;
-      OperationProgress->SetAsciiTransfer(
-        CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
-      FTerminal->LogEvent(
-        std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
-          L" transfer mode selected.");
-
-      TUploadSessionAction Action(FTerminal->GetLog());
-      Action.FileName(ExpandUNCFileName(FileName));
-      Action.Destination(AbsoluteFileName);
-
-      TRights Rights = CopyParam->RemoteFileRights(Attrs);
-
-      try
+      // Inspired by SysUtils::FileAge
+      WIN32_FIND_DATA FindData;
+      HANDLE Handle = FindFirstFile(DestFullName.c_str(), &FindData);
+      if (Handle != INVALID_HANDLE_VALUE)
       {
-        // During ASCII transfer we will load whole file to this buffer
-        // than convert EOL and send it at once, because before converting EOL
-        // we can't know its size
-        TFileBuffer AsciiBuf;
-        bool ConvertToken = false;
-        do
-        {
-          // Buffer for one block of data
-          TFileBuffer BlockBuf;
-
-          // This is crucial, if it fails during file transfer, it's fatal error
-          FILE_OPERATION_LOOP_EX (!OperationProgress->TransferingFile,
-              FMTLOAD(READ_ERROR, FileName.c_str()),
-            BlockBuf.LoadStream(Stream, OperationProgress->LocalBlockSize(), true);
-          );
-
-          OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
-
-          // We do ASCII transfer: convert EOL of current block
-          // (we don't convert whole buffer, cause it would produce
-          // huge memory-transfers while inserting/deleting EOL characters)
-          // Than we add current block to file buffer
-          if (OperationProgress->AsciiTransfer)
-          {
-            BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
-              FTerminal->GetSessionData()->GetEOLType(), cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
-            BlockBuf.GetMemory()->Seek(0, soFromBeginning);
-            AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
-            // We don't need it any more
-            BlockBuf.GetMemory()->Clear();
-            // Calculate total size to sent (assume that ratio between
-            // size of source and size of EOL-transformed data would remain same)
-            // First check if file contains anything (div by zero!)
-            if (OperationProgress->LocallyUsed)
-            {
-              __int64 X = OperationProgress->LocalSize;
-              X *= AsciiBuf.GetSize();
-              X /= OperationProgress->LocallyUsed;
-              OperationProgress->ChangeTransferSize(X);
-            }
-              else
-            {
-              OperationProgress->ChangeTransferSize(0);
-            }
-          }
-
-          // We send file information on first pass during BINARY transfer
-          // and on last pass during ASCII transfer
-          // BINARY: We succeeded reading first buffer from file, hopefully
-          // we will be able to read whole, so we send file info to remote side
-          // This is done, because when reading fails we can't interrupt sending
-          // (don't know how to tell other side that it failed)
-          if (!OperationProgress->TransferingFile &&
-              (!OperationProgress->AsciiTransfer || OperationProgress->IsLocallyDone()))
-          {
-            std::wstring Buf;
-
-            if (CopyParam->GetPreserveTime())
-            {
-              Buf.resize(40, 0);
-              // Send last file access and modification time
-              swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
-                static_cast<unsigned long>(ATime));
-              // FSecureShell->SendLine(Buf.c_str());
-              // SCPResponse();
-            }
-
-            // Send file modes (rights), filesize and file name
-            Buf.clear();
-            Buf.resize(MAX_PATH * 2, 0);
-            // TODO: use boost::format
-            swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"C%s %ld %s",
-              Rights.GetOctal().c_str(),
-              (int)(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
-                OperationProgress->LocalSize),
-              DestFileName.c_str());
-            // FSecureShell->SendLine(Buf.c_str());
-            // SCPResponse();
-            // Indicate we started transfering file, we need to finish it
-            // If not, it's fatal error
-            OperationProgress->TransferingFile = true;
-
-            // If we're doing ASCII transfer, this is last pass
-            // so we send whole file
-            /* TODO : We can't send file above 32bit size in ASCII mode! */
-            if (OperationProgress->AsciiTransfer)
-            {
-              FTerminal->LogEvent(FORMAT(L"Sending ASCII data (%u bytes)",
-                AsciiBuf.GetSize()));
-              // Should be equal, just in case it's rounded (see above)
-              OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
-              while (!OperationProgress->IsTransferDone())
-              {
-                unsigned long BlockSize = OperationProgress->TransferBlockSize();
-                // FSecureShell->Send(
-                  // AsciiBuf.GetData() + (unsigned int)OperationProgress->TransferedSize,
-                  // BlockSize);
-                OperationProgress->AddTransfered(BlockSize);
-                if (OperationProgress->Cancel == csCancelTransfer)
-                {
-                  throw ExtException(FMTLOAD(USER_TERMINATED));
-                }
-              }
-            }
-          }
-
-          // At end of BINARY transfer pass, send current block
-          if (!OperationProgress->AsciiTransfer)
-          {
-            if (!OperationProgress->TransferedSize)
-            {
-              FTerminal->LogEvent(FORMAT(L"Sending BINARY data (first block, %u bytes)",
-                BlockBuf.GetSize()));
-            }
-            else if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
-            {
-              FTerminal->LogEvent(FORMAT(L"Sending BINARY data (%u bytes)",
-                BlockBuf.GetSize()));
-            }
-            // FSecureShell->Send(BlockBuf.GetData(), BlockBuf.GetSize());
-            OperationProgress->AddTransfered(BlockBuf.GetSize());
-          }
-
-          if ((OperationProgress->Cancel == csCancelTransfer) ||
-              (OperationProgress->Cancel == csCancel && !OperationProgress->TransferingFile))
-          {
-              throw ExtException(FMTLOAD(USER_TERMINATED));
-          }
-        }
-        while (!OperationProgress->IsLocallyDone() || !OperationProgress->IsTransferDone());
-
-        // FSecureShell->SendNull();
-        try
-        {
-          SCPResponse();
-          // If one of two following exceptions occurs, it means, that remote
-          // side already know, that file transfer finished, even if it failed
-          // so we don't have to throw EFatal
-        }
-        catch (const EScp &E)
-        {
-          // SCP protocol fatal error
-          OperationProgress->TransferingFile = false;
-          throw;
-        }
-        catch (const EScpFileSkipped &E)
-        {
-          // SCP protocol non-fatal error
-          OperationProgress->TransferingFile = false;
-          throw;
-        }
-
-        // We succeded transfering file, from now we can handle exceptions
-        // normally -> no fatal error
-        OperationProgress->TransferingFile = false;
-      }
-      catch (const std::exception &E)
-      {
-        // EScpFileSkipped is derived from EScpSkipFile,
-        // but is does not indicate file skipped by user here
-        if (dynamic_cast<const EScpFileSkipped *>(&E) != NULL)
-        {
-          Action.Rollback(&E);
-        }
-        else
-        {
-          FTerminal->RollbackAction(Action, OperationProgress, &E);
-        }
-
-        // Every exception during file transfer is fatal
-        if (OperationProgress->TransferingFile)
-        {
-          FTerminal->FatalError(&E, FMTLOAD(COPY_FATAL, FileName.c_str()));
-        }
-        else
-        {
-          throw;
-        }
-      }
-
-      // With SCP we are not able to distinguish reason for failure
-      // (upload itself, touch or chmod).
-      // So we always report error with upload action and
-      // log touch and chmod actions only if upload succeeds.
-      if (CopyParam->GetPreserveTime())
-      {
-        TTouchSessionAction(FTerminal->GetLog(), AbsoluteFileName,
-          UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode()));
-      }
-      if (CopyParam->GetPreserveRights())
-      {
-        TChmodSessionAction(FTerminal->GetLog(), AbsoluteFileName,
-          Rights);
+        TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
+          UnixToDateTime(
+            ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
+            dstmUnix));
+        FindClose(Handle);
       }
     }
+    */
   }
 
   /* TODO : Delete also read-only files. */
@@ -1863,685 +1222,1612 @@ void THTTPSFileSystem::SCPSource(const std::wstring FileName,
       THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
     )
   }
-
-  FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory finished.", FileName.c_str()));
 }
 //---------------------------------------------------------------------------
-void THTTPSFileSystem::SCPDirectorySource(const std::wstring DirectoryName,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, int Level)
+void THTTPFileSystem::DirectorySource(const std::wstring DirectoryName,
+  const std::wstring TargetDir, int Attrs, const TCopyParamType * CopyParam,
+  int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
-  int Attrs;
-
-  FTerminal->LogEvent(FORMAT(L"Entering directory \"%s\".", DirectoryName.c_str()));
+  std::wstring DestDirectoryName = CopyParam->ChangeFileName(
+    ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+    FLAGSET(Flags, tfFirstLevel));
+  std::wstring DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
   OperationProgress->SetFile(DirectoryName);
-  std::wstring DestFileName = CopyParam->ChangeFileName(
-    ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
-  // Get directory attributes
-  FILE_OPERATION_LOOP (FMTLOAD(CANT_GET_ATTRS, DirectoryName.c_str()),
-    Attrs = FileGetAttr(DirectoryName);
-    if (Attrs == -1) RaiseLastOSError();
-  )
+  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  WIN32_FIND_DATA SearchRec;
+  bool FindOK = false;
+  HANDLE findHandle = 0;
 
-  std::wstring TargetDirFull = UnixIncludeTrailingBackslash(TargetDir + DestFileName);
-
-  std::wstring Buf;
-
-  /* TODO 1: maybe send filetime */
-
-  // Send directory modes (rights), filesize and file name
-  Buf = FORMAT(L"D%s 0 %s",
-    CopyParam->RemoteFileRights(Attrs).GetOctal().c_str(), DestFileName.c_str());
-  // FSecureShell->SendLine(Buf);
-  SCPResponse();
-
-  {
-    BOOST_SCOPE_EXIT ( (&Self) (&DirectoryName) )
-    {
-      if (Self->FTerminal->GetActive())
-      {
-        // Tell remote side, that we're done.
-        Self->FTerminal->LogEvent(FORMAT(L"Leaving directory \"%s\".", DirectoryName.c_str()));
-        // Self->FSecureShell->SendLine(L"E");
-        // Self->SCPResponse();
-      }
-    } BOOST_SCOPE_EXIT_END
-    int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-    WIN32_FIND_DATA SearchRec;
-    memset(&SearchRec, 0, sizeof(SearchRec));
-    HANDLE findHandle = 0;
-    bool FindOK = false;
-    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    std::wstring path = IncludeTrailingBackslash(DirectoryName) + L"*.*";
+  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+    // FindOK = (bool)(FindFirst(DirectoryName + "*.*",
+      // FindAttrs, SearchRec) == 0);
+    std::wstring path = DirectoryName + L"*.*";
     findHandle = FindFirstFile(path.c_str(),
-        &SearchRec);
-      FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
-    );
+      &SearchRec);
+    FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+  );
 
-    {
-      BOOST_SCOPE_EXIT ( (&findHandle) )
-      {
-        FindClose(findHandle);
-      } BOOST_SCOPE_EXIT_END
-      while (FindOK && !OperationProgress->Cancel)
-      {
-        std::wstring FileName = IncludeTrailingBackslash(DirectoryName) + SearchRec.cFileName;
-        try
-        {
-          if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
-          {
-            SCPSource(FileName, TargetDirFull, CopyParam, Params, OperationProgress, Level + 1);
-          }
-        }
-        // Previously we catched EScpSkipFile, making error being displayed
-        // even when file was excluded by mask. Now the EScpSkipFile is special
-        // case without error message.
-        catch (const EScpFileSkipped &E)
-        {
-          TQueryParams Params(qpAllowContinueOnError);
-          DEBUG_PRINTF(L"before FTerminal->HandleException");
-          SUSPEND_OPERATION (
-            if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
-                &E,
-                qaOK | qaAbort, &Params, qtError) == qaAbort)
-            {
-              OperationProgress->Cancel = csCancel;
-            }
-            if (!FTerminal->HandleException(&E)) throw;
-          );
-        }
-        catch (const EScpSkipFile &E)
-        {
-          // If ESkipFile occurs, just log it and continue with next file
-          DEBUG_PRINTF(L"before FTerminal->HandleException");
-          SUSPEND_OPERATION (
-            if (!FTerminal->HandleException(&E)) throw;
-          );
-        }
-        FindOK = false;
-        FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-          FindOK = (FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
-        );
-      };
-    }
-
-    /* TODO : Delete also read-only directories. */
-    /* TODO : Show error message on failure. */
-    if (!OperationProgress->Cancel)
-    {
-      if (FLAGSET(Params, cpDelete))
-      {
-        RemoveDir(DirectoryName);
-      }
-      else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
-      {
-        FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-          THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
-        )
-      }
-    }
-  }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::CopyToLocal(TStrings * FilesToCopy,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation & OnceDoneOperation)
-{
-  bool CloseSCP = false;
-  Params &= ~(cpAppend | cpResume);
-  std::wstring Options = L"";
-  if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime()) Options = L"-p";
-  if (FTerminal->GetSessionData()->GetScp1Compatibility()) Options += L" -1";
-
-  FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory \"%s\"",
-      FilesToCopy->GetCount(), TargetDir.c_str()));
-  FTerminal->LogEvent(CopyParam->GetLogStr());
+  bool CreateDir = true;
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&CloseSCP) (&OperationProgress) )
+    BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
     {
-      // In case that copying doesn't cause fatal error (ie. connection is
-      // still active) but wasn't succesful (exception or user termination)
-      // we need to ensure, that SCP on remote side is closed
-      if (Self->FTerminal->GetActive() && (CloseSCP ||
-          (OperationProgress->Cancel == csCancel) ||
-          (OperationProgress->Cancel == csCancelTransfer)))
-      {
-        bool LastLineRead;
-
-        // If we get LastLine, it means that remote side 'scp' is already
-        // terminated, so we need not to terminate it. There is also
-        // possibility that remote side waits for confirmation, so it will hang.
-        // This should not happen (hope)
-        std::wstring Line = L""; // Self->FSecureShell->ReceiveLine();
-        LastLineRead = Self->IsLastLine(Line);
-        if (!LastLineRead)
-        {
-          Self->SCPSendError((OperationProgress->Cancel ? L"Terminated by user." : L"std::exception"), true);
-        }
-        // Just in case, remote side already sent some more data (it's probable)
-        // but we don't want to raise exception (user asked to terminate, it's not error)
-        int ECParams = coOnlyReturnCode;
-        if (!LastLineRead) ECParams |= coWaitForLastLine;
-        Self->ReadCommandOutput(ECParams);
-      }
+      ::FindClose(findHandle);
     } BOOST_SCOPE_EXIT_END
-    for (size_t IFile = 0; (IFile < FilesToCopy->GetCount()) &&
-      !OperationProgress->Cancel; IFile++)
+    while (FindOK && !OperationProgress->Cancel)
     {
-      std::wstring FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = (TRemoteFile *)FilesToCopy->GetObject(IFile);
-      assert(File);
-
+      std::wstring FileName = DirectoryName + SearchRec.cFileName;
       try
       {
-        bool Success = true; // Have to be set to true (see ::SCPSink)
-        SendCommand(FCommandSet->FullCommand(fsCopyToLocal,
-          Options.c_str(), DelimitStr(FileName).c_str()));
-        SkipFirstLine();
-
-        // Filename is used for error messaging and excluding files only
-        // Send in full path to allow path-based excluding
-        std::wstring FullFileName = UnixExcludeTrailingBackslash(File->GetFullFileName());
-        // DEBUG_PRINTF(L"FileName = '%s', FullFileName = '%s'", FileName.c_str(), FullFileName.c_str());
-        SCPSink(TargetDir, FullFileName, UnixExtractFilePath(FullFileName),
-          CopyParam, Success, OperationProgress, Params, 0);
-        // operation succeded (no exception), so it's ok that
-        // remote side closed SCP, but we continue with next file
-        if (OperationProgress->Cancel == csRemoteAbort)
+        if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
         {
-          OperationProgress->Cancel = csContinue;
+          SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
+            Flags & ~(tfFirstLevel | tfAutoResume));
+          // if any file got uploaded (i.e. there were any file in the
+          // directory and at least one was not skipped),
+          // do not try to create the directory,
+          // as it should be already created by FZAPI during upload
+          CreateDir = false;
         }
-
-        // Move operation -> delete file/directory afterwards
-        // but only if copying succeded
-        if ((Params & cpDelete) && Success && !OperationProgress->Cancel)
-        {
-          try
-          {
-            FTerminal->SetExceptionOnFail (true);
-            {
-              BOOST_SCOPE_EXIT ( (&Self) )
-              {
-                Self->FTerminal->SetExceptionOnFail(false);
-              } BOOST_SCOPE_EXIT_END
-              FILE_OPERATION_LOOP(FMTLOAD(DELETE_FILE_ERROR, FileName.c_str()),
-                // pass full file name in FileName, in case we are not moving
-                // from current directory
-                FTerminal->DeleteFile(FileName, File)
-              );
-            }
-          }
-          catch (const EFatal &E)
-          {
-            throw;
-          }
-          catch (...)
-          {
-            // If user selects skip (or abort), nothing special actualy occurs
-            // we just run DoFinished with Success = false, so file won't
-            // be deselected in panel (depends on assigned event handler)
-
-            // On csCancel we would later try to close remote SCP, but it
-            // is closed already
-            if (OperationProgress->Cancel == csCancel)
-            {
-              OperationProgress->Cancel = csRemoteAbort;
-            }
-            Success = false;
-          }
-        }
-
-        OperationProgress->Finish(FileName,
-          (!OperationProgress->Cancel && Success), OnceDoneOperation);
       }
-      catch (...)
+      catch (const EScpSkipFile &E)
       {
-        OperationProgress->Finish(FileName, false, OnceDoneOperation);
-        CloseSCP = (OperationProgress->Cancel != csRemoteAbort);
+        // If ESkipFile occurs, just log it and continue with next file
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
+        SUSPEND_OPERATION (
+          // here a message to user was displayed, which was not appropriate
+          // when user refused to overwrite the file in subdirectory.
+          // hopefuly it won't be missing in other situations.
+          if (!FTerminal->HandleException(&E)) throw;
+        );
+      }
+
+      FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+      );
+    };
+  }
+
+  if (CreateDir)
+  {
+    TRemoteProperties Properties;
+    if (CopyParam->GetPreserveRights())
+    {
+      Properties.Valid = TValidProperties() << vpRights;
+      Properties.Rights = CopyParam->RemoteFileRights(Attrs);
+    }
+
+    try
+    {
+      FTerminal->SetExceptionOnFail(true);
+      {
+          BOOST_SCOPE_EXIT ( (&Self) )
+          {
+            Self->FTerminal->SetExceptionOnFail(false);
+          } BOOST_SCOPE_EXIT_END
+        FTerminal->CreateDirectory(DestFullName, &Properties);
+      }
+    }
+    catch (...)
+    {
+      TRemoteFile * File = NULL;
+      // ignore non-fatal error when the directory already exists
+      std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
+        if (fn.empty())
+        {
+            fn = L"/";
+        }
+      bool Rethrow =
+        !FTerminal->GetActive() ||
+        !FTerminal->FileExists(fn, &File) ||
+        !File->GetIsDirectory();
+      delete File;
+      if (Rethrow)
+      {
         throw;
       }
     }
   }
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::SCPError(const std::wstring Message, bool Fatal)
-{
-  SCPSendError(Message, Fatal);
-  DEBUG_PRINTF(L"Message = %s", Message.c_str());
-  THROW_FILE_SKIPPED(Message, NULL);
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::SCPSendError(const std::wstring Message, bool Fatal)
-{
-  char ErrorLevel = (char)(Fatal ? 2 : 1);
-  FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
-    ((int)ErrorLevel)));
-  // FSecureShell->Send(&ErrorLevel, 1);
-  // We don't send exact error message, because some unspecified
-  // characters can terminate remote scp
-  // FSecureShell->SendLine(L"scp: error");
-}
-//---------------------------------------------------------------------------
-void THTTPSFileSystem::SCPSink(const std::wstring TargetDir,
-  const std::wstring FileName, const std::wstring SourceDir,
-  const TCopyParamType * CopyParam, bool & Success,
-  TFileOperationProgressType * OperationProgress, int Params,
-  int Level)
-{
-  struct
+
+  /* TODO : Delete also read-only directories. */
+  /* TODO : Show error message on failure. */
+  if (!OperationProgress->Cancel)
   {
-    int SetTime;
-    FILETIME AcTime;
-    FILETIME WrTime;
-    TRights RemoteRights;
-    int Attrs;
-    bool Exists;
-  } FileData;
-  TDateTime SourceTimestamp;
-
-  bool SkipConfirmed = false;
-  bool Initialized = (Level > 0);
-
-  FileData.SetTime = 0;
-
-  // FSecureShell->SendNull();
-
-  while (!OperationProgress->Cancel)
-  {
-    // See (switch ... case 'T':)
-    if (FileData.SetTime) FileData.SetTime--;
-
-    // In case of error occured before control record arrived.
-    // We can finally use full path here, as we get current path in FileName param
-    // (we used to set the file into OperationProgress->GetFileName(), but it collided
-    // with progress outputing, particularly for scripting)
-    std::wstring AbsoluteFileName = FileName;
-
-    try
+    if (FLAGSET(Params, cpDelete))
     {
-      // Receive control record
-      std::wstring Line = L""; // FSecureShell->ReceiveLine();
+      RemoveDir(DirectoryName);
+    }
+    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+    {
+      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+        THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
+      )
+    }
+  }
+}
 
-      if (Line.size() == 0) FTerminal->FatalError(NULL, LoadStr(SCP_EMPTY_LINE));
+//---------------------------------------------------------------------------
+void THTTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
+  const std::wstring TargetDir, const TCopyParamType * CopyParam,
+  int Params, TFileOperationProgressType * OperationProgress,
+  TOnceDoneOperation & OnceDoneOperation)
+{
+    Params &= ~cpAppend;
+    std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
-      if (IsLastLine(Line))
-      {
-        // Remote side finished copying, so remote SCP was closed
-        // and we don't need to terminate it manualy, see CopyToLocal()
-        OperationProgress->Cancel = csRemoteAbort;
-        /* TODO 1 : Show stderror to user? */
-        // FSecureShell->ClearStdError();
+    int Index = 0;
+    while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
+    {
+        std::wstring FileName = FilesToCopy->GetString(Index);
+        const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
+        bool Success = false;
+        FTerminal->SetExceptionOnFail(true);
+        {
+            BOOST_SCOPE_EXIT ( (&Self) (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+            {
+                OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+                Self->FTerminal->SetExceptionOnFail(false);
+            } BOOST_SCOPE_EXIT_END
+            try
+            {
+                SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
+                    OperationProgress, tfFirstLevel);
+                Success = true;
+                FLastDataSent = Now();
+            }
+            catch (const EScpSkipFile &E)
+            {
+                DEBUG_PRINTF(L"before FTerminal->HandleException");
+                SUSPEND_OPERATION (
+                    if (!FTerminal->HandleException(&E)) throw;
+                );
+            }
+        }
+        Index++;
+    }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::SinkRobust(const std::wstring FileName,
+    const TRemoteFile * File, const std::wstring TargetDir,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags)
+{
+    // the same in TSFTPFileSystem
+    bool Retry;
+
+    TDownloadSessionAction Action(FTerminal->GetLog());
+
+    do
+    {
+        Retry = false;
         try
         {
-          // coIgnoreWarnings should allow batch transfer to continue when
-          // download of one the files failes (user denies overwritting
-          // of target local file, no read permissions...)
-          ReadCommandOutput(coExpectNoOutput | coRaiseExcept |
-            coOnlyReturnCode | coIgnoreWarnings);
-          if (!Initialized)
-          {
-            throw std::exception("");
-          }
+            Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
+                Flags, Action);
         }
         catch (const std::exception & E)
         {
-          if (!Initialized && FTerminal->GetActive())
-          {
-            FTerminal->TerminalError(&E, LoadStr(SCP_INIT_ERROR));
-          }
-          else
-          {
-            throw;
-          }
-        }
-        return;
-      }
-      else
-      {
-        Initialized = true;
-
-        // First characted distinguish type of control record
-        char Ctrl = Line[0];
-        Line.erase(0, 1);
-        // DEBUG_PRINTF(L"Line ='%s', Ctrl = '%c'", Line.c_str(), Ctrl);
-
-        switch (Ctrl)
-        {
-          case 1:
-            // Error (already logged by ReceiveLine())
-            THROW_FILE_SKIPPED(FMTLOAD(REMOTE_ERROR, Line.c_str()), NULL);
-
-          case 2:
-            // Fatal error, terminate copying
-            FTerminal->TerminalError(Line);
-            return; // Unreachable
-
-          case 'E': // Exit
-            // FSecureShell->SendNull();
-            return;
-
-          case 'T':
-            unsigned long MTime, ATime;
-            if (swscanf(Line.c_str(), L"%ld %*d %ld %*d",  &MTime, &ATime) == 2)
+            Retry = true;
+            if (FTerminal->GetActive() ||
+                !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
             {
-              FileData.AcTime = DateTimeToFileTime(UnixToDateTime(ATime,
-                FTerminal->GetSessionData()->GetDSTMode()), FTerminal->GetSessionData()->GetDSTMode());
-              FileData.WrTime = DateTimeToFileTime(UnixToDateTime(MTime,
-                FTerminal->GetSessionData()->GetDSTMode()), FTerminal->GetSessionData()->GetDSTMode());
-              SourceTimestamp = UnixToDateTime(MTime,
-                FTerminal->GetSessionData()->GetDSTMode());
-              // FSecureShell->SendNull();
-              // File time is only valid until next pass
-              FileData.SetTime = 2;
-              continue;
-            }
-              else
-            {
-              SCPError(LoadStr(SCP_ILLEGAL_TIME_FORMAT), false);
-            }
-
-          case 'C':
-          case 'D':
-            break; // continue pass switch{}
-
-          default:
-            FTerminal->FatalError(NULL, FMTLOAD(SCP_INVALID_CONTROL_RECORD, Ctrl, Line.c_str()));
-        }
-
-        TFileMasks::TParams MaskParams;
-
-        // We reach this point only if control record was 'C' or 'D'
-        try
-        {
-          FileData.RemoteRights.SetOctal(CutToChar(Line, ' ', true));
-          // do not trim leading spaces of the filename
-          __int64 TSize = StrToInt64(::TrimRight(CutToChar(Line, ' ', false)));
-          // DEBUG_PRINTF(L"TSize = %u", TSize);
-          MaskParams.Size = TSize;
-          // Security fix: ensure the file ends up where we asked for it.
-          // (accept only filename, not path)
-          std::wstring OnlyFileName = UnixExtractFileName(Line);
-          // DEBUG_PRINTF(L"Line = '%s', OnlyFileName = '%s'", Line.c_str(), OnlyFileName.c_str());
-          if (Line != OnlyFileName)
-          {
-            FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", (Line)));
-          }
-
-          OperationProgress->SetFile(OnlyFileName);
-          AbsoluteFileName = SourceDir + OnlyFileName;
-          // DEBUG_PRINTF(L"AbsoluteFileName = '%s', OnlyFileName = '%s'", AbsoluteFileName.c_str(), OnlyFileName.c_str());
-          OperationProgress->SetTransferSize(TSize);
-        }
-        catch (const std::exception &E)
-        {
-          SUSPEND_OPERATION (
-            FTerminal->GetLog()->AddException(&E);
-          );
-          SCPError(LoadStr(SCP_ILLEGAL_FILE_DESCRIPTOR), false);
-        }
-
-        // last possibility to cancel transfer before it starts
-        if (OperationProgress->Cancel)
-        {
-          THROW_SKIP_FILE(LoadStr(USER_TERMINATED), NULL);
-        }
-
-        bool Dir = (Ctrl == 'D');
-        std::wstring SourceFullName = SourceDir + OperationProgress->FileName;
-        if (!CopyParam->AllowTransfer(SourceFullName, osRemote, Dir, MaskParams))
-        {
-          FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer",
-            AbsoluteFileName.c_str()));
-          SkipConfirmed = true;
-          SCPError(L"", false);
-        }
-
-        // DEBUG_PRINTF(L"TargetDir = %s", TargetDir.c_str());
-        // DEBUG_PRINTF(L"OperationProgress->FileName = %s", OperationProgress->FileName.c_str());
-        std::wstring DestFileName =
-          IncludeTrailingBackslash(TargetDir) +
-          CopyParam->ChangeFileName(OperationProgress->FileName, osRemote,
-            Level == 0);
-
-        // DEBUG_PRINTF(L"DestFileName = %s", DestFileName.c_str());
-        FileData.Attrs = FileGetAttr(DestFileName);
-        // If getting attrs failes, we suppose, that file/folder doesn't exists
-        FileData.Exists = (FileData.Attrs != -1);
-        if (Dir)
-        {
-          if (FileData.Exists && !(FileData.Attrs & faDirectory))
-          {
-            SCPError(FMTLOAD(NOT_DIRECTORY_ERROR, DestFileName.c_str()),
-                false);
-          }
-
-          if (!FileData.Exists)
-          {
-            FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFileName.c_str()),
-              if (!ForceDirectories(DestFileName)) RaiseLastOSError();
-            );
-            /* SCP: can we set the timestamp for directories ? */
-          }
-          std::wstring FullFileName = SourceDir + OperationProgress->FileName;
-          SCPSink(DestFileName, FullFileName, UnixIncludeTrailingBackslash(FullFileName),
-            CopyParam, Success, OperationProgress, Params, Level + 1);
-          continue;
-        }
-        else if (Ctrl == 'C')
-        {
-          TDownloadSessionAction Action(FTerminal->GetLog());
-          Action.FileName(AbsoluteFileName);
-
-          try
-          {
-            HANDLE File = 0;
-            TStream * FileStream = NULL;
-
-            /* TODO 1 : Turn off read-only attr */
-
-            {
-              BOOST_SCOPE_EXIT ( (&File) (&FileStream) )
-              {
-                if (File) CloseHandle(File);
-                if (FileStream) delete FileStream;
-              } BOOST_SCOPE_EXIT_END
-              try
-              {
-                if (FileExists(DestFileName))
-                {
-                  __int64 MTime;
-                  TOverwriteFileParams FileParams;
-                  FileParams.SourceSize = OperationProgress->TransferSize;
-                  FileParams.SourceTimestamp = SourceTimestamp;
-                  FTerminal->OpenLocalFile(DestFileName, GENERIC_READ,
-                    NULL, NULL, NULL, &MTime, NULL,
-                    &FileParams.DestSize);
-                  FileParams.DestTimestamp = UnixToDateTime(MTime,
-                    FTerminal->GetSessionData()->GetDSTMode());
-
-                  TQueryButtonAlias Aliases[1];
-                  Aliases[0].Button = qaAll;
-                  Aliases[0].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-                  TQueryParams QueryParams(qpNeverAskAgainCheck);
-                  QueryParams.Aliases = Aliases;
-                  QueryParams.AliasesCount = LENOF(Aliases);
-
-                  int Answer;
-                  SUSPEND_OPERATION (
-                    Answer = FTerminal->ConfirmFileOverwrite(
-                      OperationProgress->FileName, &FileParams,
-                      qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
-                      &QueryParams, osLocal, Params, OperationProgress);
-                  );
-
-                  switch (Answer)
-                  {
-                    case qaCancel:
-                      OperationProgress->Cancel = csCancel; // continue on next case
-                    case qaNo:
-                      SkipConfirmed = true;
-                      EXCEPTION;
-                  }
-                }
-
-                Action.Destination(DestFileName);
-
-                if (!FTerminal->CreateLocalFile(DestFileName, OperationProgress,
-                       &File, FLAGSET(Params, cpNoConfirmation)))
-                {
-                  SkipConfirmed = true;
-                  EXCEPTION;
-                }
-
-                FileStream = new TSafeHandleStream(File);
-              }
-              catch (const std::exception &E)
-              {
-                // In this step we can still cancel transfer, so we do it
-                SCPError(::MB2W(E.what()), false);
+                FTerminal->RollbackAction(Action, OperationProgress, &E);
                 throw;
-              }
-
-              // We succeded, so we confirm transfer to remote side
-              // FSecureShell->SendNull();
-              // From now we need to finish file transfer, if not it's fatal error
-              OperationProgress->TransferingFile = true;
-
-              // Suppose same data size to transfer as to write
-              // (not true with ASCII transfer)
-              OperationProgress->SetLocalSize(OperationProgress->TransferSize);
-
-              // Will we use ASCII of BINARY file tranfer?
-              OperationProgress->SetAsciiTransfer(
-                CopyParam->UseAsciiTransfer(SourceFullName, osRemote, MaskParams));
-              FTerminal->LogEvent(std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
-                L" transfer mode selected.");
-
-              try
-              {
-                // Buffer for one block of data
-                TFileBuffer BlockBuf;
-                bool ConvertToken = false;
-
-                do
-                {
-                  BlockBuf.SetSize(OperationProgress->TransferBlockSize());
-                  BlockBuf.SetPosition(0);
-
-                  // FSecureShell->Receive(BlockBuf.GetData(), BlockBuf.GetSize());
-                  OperationProgress->AddTransfered(BlockBuf.GetSize());
-
-                  if (OperationProgress->AsciiTransfer)
-                  {
-                    unsigned int PrevBlockSize = BlockBuf.GetSize();
-                    BlockBuf.Convert(FTerminal->GetSessionData()->GetEOLType(),
-                      FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
-                    OperationProgress->SetLocalSize(
-                      OperationProgress->LocalSize - PrevBlockSize + BlockBuf.GetSize());
-                  }
-
-                  // This is crucial, if it fails during file transfer, it's fatal error
-                  FILE_OPERATION_LOOP_EX (false, FMTLOAD(WRITE_ERROR, DestFileName.c_str()),
-                    BlockBuf.WriteToStream(FileStream, BlockBuf.GetSize());
-                  );
-
-                  OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
-
-                  if (OperationProgress->Cancel == csCancelTransfer)
-                  {
-                    throw ExtException(FMTLOAD(USER_TERMINATED));
-                  }
-                }
-                while (!OperationProgress->IsLocallyDone() || !
-                    OperationProgress->IsTransferDone());
-              }
-              catch (const std::exception &E)
-              {
-                // Every exception during file transfer is fatal
-                FTerminal->FatalError(&E,
-                  FMTLOAD(COPY_FATAL, OperationProgress->FileName.c_str()));
-              }
-
-              OperationProgress->TransferingFile = false;
-
-              try
-              {
-                SCPResponse();
-                // If one of following exception occurs, we still need
-                // to send confirmation to other side
-              }
-              catch (const EScp &E)
-              {
-                // FSecureShell->SendNull();
-                throw;
-              }
-              catch (const EScpFileSkipped &E)
-              {
-                // FSecureShell->SendNull();
-                throw;
-              }
-
-              // FSecureShell->SendNull();
-
-              if (FileData.SetTime && CopyParam->GetPreserveTime())
-              {
-                SetFileTime(File, NULL, &FileData.AcTime, &FileData.WrTime);
-              }
             }
-          }
-          catch (const std::exception & E)
-          {
-            if (SkipConfirmed)
-            {
-              Action.Cancel();
-            }
-            else
-            {
-              FTerminal->RollbackAction(Action, OperationProgress, &E);
-            }
-            throw;
-          }
-
-          if (FileData.Attrs == -1) FileData.Attrs = faArchive;
-          int NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
-          if ((NewAttrs & FileData.Attrs) != NewAttrs)
-          {
-            FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFileName.c_str()),
-              THROWOSIFFALSE(FileSetAttr(DestFileName, FileData.Attrs | NewAttrs) == 0);
-            );
-          }
         }
-      }
+
+        if (Retry)
+        {
+            OperationProgress->RollbackTransfer();
+            Action.Restart();
+            assert(File != NULL);
+            if (!File->GetIsDirectory())
+            {
+                // prevent overwrite confirmations
+                Params |= cpNoConfirmation;
+                Flags |= tfAutoResume;
+            }
+        }
     }
-    catch (const EScpFileSkipped &E)
+    while (Retry);
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::Sink(const std::wstring FileName,
+    const TRemoteFile * File, const std::wstring TargetDir,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TDownloadSessionAction & Action)
+{
+    std::wstring OnlyFileName = UnixExtractFileName(FileName);
+
+    Action.FileName(FileName);
+
+    TFileMasks::TParams MaskParams;
+    MaskParams.Size = File->GetSize();
+
+    if (!CopyParam->AllowTransfer(FileName, osRemote, File->GetIsDirectory(), MaskParams))
     {
-      if (!SkipConfirmed)
-      {
-        SUSPEND_OPERATION (
-          TQueryParams Params(qpAllowContinueOnError);
-          // DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
-          if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
-                &E, qaOK | qaAbort, &Params, qtError) == qaAbort)
-          {
-            OperationProgress->Cancel = csCancel;
-          }
-          FTerminal->FLog->AddException(&E);
-        );
-      }
-      // this was inside above condition, but then transfer was considered
-      // succesfull, even when for example user refused to overwrite file
-      Success = false;
+        FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+        THROW_SKIP_FILE_NULL;
+    }
+
+    assert(File);
+    FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+
+    OperationProgress->SetFile(OnlyFileName);
+
+    std::wstring DestFileName = CopyParam->ChangeFileName(OnlyFileName,
+        osRemote, FLAGSET(Flags, tfFirstLevel));
+    std::wstring DestFullName = TargetDir + DestFileName;
+
+    if (File->GetIsDirectory())
+    {
+        Action.Cancel();
+        if (!File->GetIsSymLink())
+        {
+            FILE_OPERATION_LOOP (FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()),
+                int Attrs = FileGetAttr(DestFullName);
+                if (FLAGCLEAR(Attrs, faDirectory))
+                {
+                    EXCEPTION;
+                }
+            );
+
+            FILE_OPERATION_LOOP (FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()),
+                if (!ForceDirectories(DestFullName))
+                {
+                    RaiseLastOSError();
+                }
+            );
+
+            TSinkFileParams SinkFileParams;
+            SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
+            SinkFileParams.CopyParam = CopyParam;
+            SinkFileParams.Params = Params;
+            SinkFileParams.OperationProgress = OperationProgress;
+            SinkFileParams.Skipped = false;
+            SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
+
+            FTerminal->ProcessDirectory(FileName, boost::bind(&THTTPFileSystem::SinkFile, this, _1, _2, _3), &SinkFileParams);
+
+            // Do not delete directory if some of its files were skip.
+            // Throw "skip file" for the directory to avoid attempt to deletion
+            // of any parent directory
+            if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
+            {
+                THROW_SKIP_FILE_NULL;
+            }
+        }
+        else
+        {
+            // file is symlink to directory, currently do nothing, but it should be
+            // reported to user
+        }
+    }
+    else
+    {
+        FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", FileName.c_str()));
+
+        // Will we use ASCII of BINARY file tranfer?
+        OperationProgress->SetAsciiTransfer(
+            CopyParam->UseAsciiTransfer(FileName, osRemote, MaskParams));
+        FTerminal->LogEvent(std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+            L" transfer mode selected.");
+
+        // Suppose same data size to transfer as to write
+        OperationProgress->SetTransferSize(File->GetSize());
+        OperationProgress->SetLocalSize(OperationProgress->TransferSize);
+
+        int Attrs;
+        FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
+            Attrs = FileGetAttr(DestFullName);
+            if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
+            {
+                EXCEPTION;
+            }
+            );
+
+        OperationProgress->TransferingFile = false; // not set with FTP protocol
+
+        ResetFileTransfer();
+
+        TFileTransferData UserData;
+
+        std::wstring FilePath = UnixExtractFilePath(FileName);
+        if (FilePath.empty())
+        {
+            FilePath = L"/";
+        }
+        unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+
+        {
+            // ignore file list
+            TFileListHelper Helper(this, NULL, true);
+
+            FFileTransferCPSLimit = OperationProgress->CPSLimit;
+            FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+            UserData.FileName = DestFileName;
+            UserData.Params = Params;
+            UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+            UserData.CopyParam = CopyParam;
+            FileTransfer(FileName, DestFullName, OnlyFileName,
+                FilePath, true, File->GetSize(), TransferType, UserData, OperationProgress);
+        }
+
+        // in case dest filename is changed from overwrite dialog
+        if (DestFileName != UserData.FileName)
+        {
+            DestFullName = TargetDir + UserData.FileName;
+            Attrs = FileGetAttr(DestFullName);
+        }
+
+        Action.Destination(ExpandUNCFileName(DestFullName));
+
+        if (Attrs == -1)
+        {
+            Attrs = faArchive;
+        }
+        int NewAttrs = CopyParam->LocalFileAttrs(*File->GetRights());
+        if ((NewAttrs & Attrs) != NewAttrs)
+        {
+            FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()),
+                THROWOSIFFALSE(FileSetAttr(DestFullName, Attrs | NewAttrs) == 0);
+            );
+        }
+    }
+
+    if (FLAGSET(Params, cpDelete))
+    {
+        // If file is directory, do not delete it recursively, because it should be
+        // empty already. If not, it should not be deleted (some files were
+        // skipped or some new files were copied to it, while we were downloading)
+        int Params = dfNoRecursive;
+        FTerminal->DeleteFile(FileName, File, &Params);
+    }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::SinkFile(std::wstring FileName,
+    const TRemoteFile * File, void * Param)
+{
+    TSinkFileParams * Params = (TSinkFileParams *)Param;
+    assert(Params->OperationProgress);
+    try
+    {
+        SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
+            Params->Params, Params->OperationProgress, Params->Flags);
     }
     catch (const EScpSkipFile &E)
     {
-      DEBUG_PRINTF(L"before FTerminal->HandleException");
-      SCPSendError(E.GetMessage(), false);
-      Success = false;
-      if (!FTerminal->HandleException(&E)) throw;
+        TFileOperationProgressType * OperationProgress = Params->OperationProgress;
+
+        Params->Skipped = true;
+        DEBUG_PRINTF(L"before FTerminal->HandleException");
+        SUSPEND_OPERATION (
+            if (!FTerminal->HandleException(&E))
+            {
+                throw;
+            }
+            );
+
+            if (OperationProgress->Cancel)
+            {
+                Abort();
+            }
+    }
+}
+//---------------------------------------------------------------------------
+// from FtpFileSystem
+//---------------------------------------------------------------------------
+const wchar_t * THTTPFileSystem::GetOption(int OptionID) const
+{
+  TSessionData * Data = FTerminal->GetSessionData();
+
+  switch (OptionID)
+  {
+    case OPTION_PROXYHOST:
+    case OPTION_FWHOST:
+      FOptionScratch = Data->GetProxyHost();
+      break;
+
+    case OPTION_PROXYUSER:
+    case OPTION_FWUSER:
+      FOptionScratch = Data->GetProxyUsername();
+      break;
+
+    case OPTION_PROXYPASS:
+    case OPTION_FWPASS:
+      FOptionScratch = Data->GetProxyPassword();
+      break;
+
+    case OPTION_ANONPWD:
+    case OPTION_TRANSFERIP:
+    case OPTION_TRANSFERIP6:
+      FOptionScratch = L"";
+      break;
+
+    default:
+      assert(false);
+      FOptionScratch = L"";
+  }
+
+  return FOptionScratch.c_str();
+}
+//---------------------------------------------------------------------------
+int THTTPFileSystem::GetOptionVal(int OptionID) const
+{
+  TSessionData * Data = FTerminal->GetSessionData();
+  int Result;
+
+  switch (OptionID)
+  {
+    case OPTION_PROXYTYPE:
+      switch (Data->GetProxyMethod())
+      {
+        case pmNone:
+          Result = PROXY_NONE;
+          break;
+
+        case pmSocks4:
+          Result = PROXY_SOCKS4;
+          break;
+
+        case pmSocks5:
+          Result = PROXY_SOCKS5;
+          break;
+
+        case pmHTTP:
+          Result = PROXY_HTTP;
+          break;
+
+        case pmTelnet:
+        case pmCmd:
+        default:
+          assert(false);
+          Result = 0; // PROXYTYPE_NOPROXY;
+          break;
+      }
+      break;
+
+    case OPTION_PROXYPORT:
+    case OPTION_FWPORT:
+      Result = Data->GetProxyPort();
+      break;
+
+    case OPTION_PROXYUSELOGON:
+      Result = !Data->GetProxyUsername().empty();
+      break;
+
+    case OPTION_LOGONTYPE:
+      Result = Data->GetFtpProxyLogonType();
+      break;
+
+    case OPTION_TIMEOUTLENGTH:
+      Result = Data->GetTimeout();
+      break;
+
+    case OPTION_DEBUGSHOWLISTING:
+      // Listing is logged on FZAPI level 5 (what is strangely LOG_APIERROR)
+      Result = (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1);
+      break;
+
+    case OPTION_PASV:
+      // should never get here t_server.nPasv being nonzero
+      assert(false);
+      Result = FALSE;
+      break;
+
+    case OPTION_PRESERVEDOWNLOADFILETIME:
+    case OPTION_MPEXT_PRESERVEUPLOADFILETIME:
+      Result = FFileTransferPreserveTime ? TRUE : FALSE;
+      break;
+
+    case OPTION_LIMITPORTRANGE:
+      Result = FALSE;
+      break;
+
+    case OPTION_PORTRANGELOW:
+    case OPTION_PORTRANGEHIGH:
+      // should never get here OPTION_LIMITPORTRANGE being zero
+      assert(false);
+      Result = 0;
+      break;
+
+    case OPTION_ENABLE_IPV6:
+      Result = ((Data->GetAddressFamily() == afIPv6) ? TRUE : FALSE);
+      break;
+
+    case OPTION_KEEPALIVE:
+      Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
+      break;
+
+    case OPTION_INTERVALLOW:
+    case OPTION_INTERVALHIGH:
+      Result = Data->GetFtpPingInterval();
+      break;
+
+    case OPTION_VMSALLREVISIONS:
+      Result = FALSE;
+      break;
+
+    case OPTION_SPEEDLIMIT_DOWNLOAD_TYPE:
+    case OPTION_SPEEDLIMIT_UPLOAD_TYPE:
+      Result = (FFileTransferCPSLimit == 0 ? 0 : 1);
+      break;
+
+    case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
+    case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
+      Result = (FFileTransferCPSLimit / 1024); // FZAPI expects KiB/s
+      break;
+
+    case OPTION_MPEXT_SHOWHIDDEN:
+      Result = (FDoListAll ? TRUE : FALSE);
+      break;
+
+    default:
+      assert(false);
+      Result = FALSE;
+      break;
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleListData(const wchar_t * Path,
+  const TListDataEntry * Entries, unsigned int Count)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else if (FIgnoreFileList)
+  {
+    // directory listing provided implicitly by FZAPI during certain operations is ignored
+    assert(FFileList == NULL);
+    return false;
+  }
+  else
+  {
+    assert(FFileList != NULL);
+    // this can actually fail in real life,
+    // when connected to server with case insensitive paths
+    assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
+    USEDPARAM(Path);
+
+    for (unsigned int Index = 0; Index < Count; Index++)
+    {
+      const TListDataEntry * Entry = &Entries[Index];
+      TRemoteFile * File = new TRemoteFile();
+      try
+      {
+        File->SetTerminal(FTerminal);
+
+        File->SetFileName(std::wstring(Entry->Name));
+        if (wcslen(Entry->Permissions) >= 10)
+        {
+          try
+          {
+            File->GetRights()->SetText(Entry->Permissions + 1);
+          }
+          catch (...)
+          {
+            // ignore permissions errors with FTP
+          }
+        }
+		// FIXME
+		std::wstring own = Entry->OwnerGroup;
+        const wchar_t * Space = wcschr(own.c_str(), ' ');
+        if (Space != NULL)
+        {
+          File->GetOwner().SetName(std::wstring(own.c_str(), Space - own.c_str()));
+          File->GetGroup().SetName(Space + 1);
+        }
+        else
+        {
+          File->GetOwner().SetName(Entry->OwnerGroup);
+        }
+
+        File->SetSize(Entry->Size);
+
+        if (Entry->Link)
+        {
+          File->SetType(FILETYPE_SYMLINK);
+        }
+        else if (Entry->Dir)
+        {
+          File->SetType(FILETYPE_DIRECTORY);
+        }
+        else
+        {
+          File->SetType('-');
+        }
+
+        // ModificationFmt must be set after Modification
+        if (Entry->HasDate)
+        {
+          // should be the same as ConvertRemoteTimestamp
+          TDateTime Modification =
+            EncodeDateVerbose((unsigned short)Entry->Year, (unsigned short)Entry->Month,
+              (unsigned short)Entry->Day);
+          if (Entry->HasTime)
+          {
+            File->SetModification(Modification +
+              EncodeTimeVerbose((unsigned short)Entry->Hour, (unsigned short)Entry->Minute, 0, 0));
+            // not exact as we got year as well, but it is most probably
+            // guessed by FZAPI anyway
+            File->SetModificationFmt(mfMDHM);
+          }
+          else
+          {
+            File->SetModification(Modification);
+            File->SetModificationFmt(mfMDY);
+          }
+        }
+        else
+        {
+          // With SCP we estimate date to be today, if we have at least time
+
+          File->SetModification(TDateTime(double(0)));
+          File->SetModificationFmt(mfNone);
+        }
+        File->SetLastAccess(File->GetModification());
+
+        File->SetLinkTo(Entry->LinkTarget);
+
+        File->Complete();
+      }
+      catch (const std::exception & E)
+      {
+        delete File;
+        std::wstring EntryData =
+          FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+            Entry->Name,
+            Entry->Permissions,
+            Entry->OwnerGroup,
+            IntToStr(Entry->Size).c_str(),
+             int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
+             Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
+        throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
+      }
+
+      FFileList->AddFile(File);
+    }
+    return true;
+  }
+}
+//---------------------------------------------------------------------------
+bool THTTPFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
+  __int64 Bytes, int /*Percent*/, int /*TimeElapsed*/, int /*TimeLeft*/, int /*TransferRate*/,
+  bool FileTransfer)
+{
+  if (!FActive)
+  {
+    return false;
+  }
+  else if (!Valid)
+  {
+  }
+  else if (FileTransfer)
+  {
+    FileTransferProgress(TransferSize, Bytes);
+  }
+  else
+  {
+    ReadDirectoryProgress(Bytes);
+  }
+  return true;
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+void THTTPFileSystem::ResetFileTransfer()
+{
+  FFileTransferAbort = ftaNone;
+  FFileTransferCancelled = false;
+  FFileTransferResumed = 0;
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
+{
+  // with FTP we do not know exactly how many entries we have received,
+  // instead we know number of bytes received only.
+  // so we report approximation based on average size of entry.
+  int Progress = int(Bytes / 80);
+  if (Progress - FLastReadDirectoryProgress >= 10)
+  {
+    bool Cancel = false;
+    FLastReadDirectoryProgress = Progress;
+    FTerminal->DoReadDirectoryProgress(Progress, Cancel);
+    if (Cancel)
+    {
+      FTerminal->DoReadDirectoryProgress(-2, Cancel);
+      // FFileZillaIntf->Cancel();
     }
   }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::DoFileTransferProgress(__int64 TransferSize,
+  __int64 Bytes)
+{
+  TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
+
+  OperationProgress->SetTransferSize(TransferSize);
+
+  if (FFileTransferResumed > 0)
+  {
+    OperationProgress->AddResumed(FFileTransferResumed);
+    FFileTransferResumed = 0;
+  }
+
+  __int64 Diff = Bytes - OperationProgress->TransferedSize;
+  assert(Diff >= 0);
+  if (Diff >= 0)
+  {
+    OperationProgress->AddTransfered(Diff);
+  }
+
+  if (OperationProgress->Cancel == csCancel)
+  {
+    FFileTransferCancelled = true;
+    FFileTransferAbort = ftaCancel;
+    // FFileZillaIntf->Cancel();
+  }
+
+  if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
+  {
+    FFileTransferCPSLimit = OperationProgress->CPSLimit;
+  }
+}
+//---------------------------------------------------------------------------
+void THTTPFileSystem::FileTransferProgress(__int64 TransferSize,
+  __int64 Bytes)
+{
+  TGuard Guard(FTransferStatusCriticalSection);
+
+  DoFileTransferProgress(TransferSize, Bytes);
+}
+
+//---------------------------------------------------------------------------
+void THTTPFileSystem::FileTransfer(const std::wstring & FileName,
+  const std::wstring & LocalFile, const std::wstring & RemoteFile,
+  const std::wstring & RemotePath, bool Get, __int64 Size, int Type,
+  TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
+{
+  std::wstring errorInfo;
+  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
+    DEBUG_PRINTF(L"RemoteFile = %s, FileName = %s", RemoteFile.c_str(), FileName.c_str());
+    if (Get)
+    {
+        bool res = GetFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+        if (!res)
+        {
+          FFileTransferAbort = ftaSkip;
+          // FFileTransferAbort = ftaCancel;
+          if (::FileExists(LocalFile))
+          {
+            ::DeleteFile(LocalFile);
+          }
+        }
+    }
+    else
+    {
+        bool res = PutFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+        if (!res)
+        {
+          FFileTransferAbort = ftaSkip;
+          // FFileTransferAbort = ftaCancel;
+        }
+    }
+  );
+
+  switch (FFileTransferAbort)
+  {
+    case ftaSkip:
+      THROW_SKIP_FILE(errorInfo, NULL);
+
+    case ftaCancel:
+      Abort();
+      break;
+  }
+
+  if (!FFileTransferCancelled)
+  {
+    // show completion of transfer
+    // call non-guarded variant to avoid deadlock with keepalives
+    // (we are not waiting for reply anymore so keepalives are free to proceed)
+    DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
+  }
+}
+
+// from WebDAV
+bool THTTPFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &response, std::wstring &errInfo)
+{
+    const std::string webDavPath = EscapeUTF8URL(dir);
+    // DEBUG_PRINTF(L"THTTPFileSystem::SendPropFindRequest: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+
+    response.clear();
+    errInfo.clear();
+
+    static const char *requestData =
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+        "<D:propfind xmlns:D=\"DAV:\">"
+        "<D:prop xmlns:Z=\"urn:schemas-microsoft-com:\">"
+        "<D:resourcetype/>"
+        "<D:getcontentlength/>"
+        "<D:creationdate/>"
+        "<D:getlastmodified/>"
+        "<Z:Win32LastAccessTime/>"
+        "<Z:Win32FileAttributes/>"
+        "</D:prop>"
+        "</D:propfind>";
+
+    static const size_t requestDataLen = strlen(requestData);
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    std::string resp;
+    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(resp, &m_ProgressPercent));
+
+    CSlistURL slist;
+    slist.Append("Depth: 1");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    char contentLength[64];
+    sprintf_s(contentLength, "Content-Length: %d", requestDataLen);
+    slist.Append(contentLength);
+    slist.Append("Connection: Keep-Alive");
+
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "PROPFIND"));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_MAXREDIRS, 5));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDS, requestData));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POSTFIELDSIZE, requestDataLen));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    // DEBUG_PRINTF(L"urlCode = %d", urlCode);
+    if (urlCode != CURLE_OK)
+    {
+        errInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    if (!CheckResponseCode(HTTP_STATUS_WEBDAV_MULTI_STATUS, errInfo))
+    {
+        // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
+        return false;
+    }
+    response = ::MB2W(resp.c_str());
+    if (response.empty())
+    {
+        errInfo = L"Server return empty response";
+        return false;
+    }
+
+    return true;
+}
+
+
+bool THTTPFileSystem::CheckResponseCode(const long expect, std::wstring &errInfo)
+{
+    long responseCode = 0;
+    if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            // DEBUG_PRINTF(L"errInfo = %s", errInfo.c_str());
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool THTTPFileSystem::CheckResponseCode(const long expect1, const long expect2, std::wstring &errInfo)
+{
+    long responseCode = 0;
+    if (curl_easy_getinfo(FCURLIntf->GetCURL(), CURLINFO_RESPONSE_CODE, &responseCode) == CURLE_OK)
+    {
+        if (responseCode != expect1 && responseCode != expect2)
+        {
+            errInfo = GetBadResponseInfo(responseCode);
+            return false;
+        }
+    }
+    return true;
+}
+
+
+std::wstring THTTPFileSystem::GetBadResponseInfo(const int code) const
+{
+    const wchar_t *descr = NULL;
+    switch (code)
+    {
+    case HTTP_STATUS_CONTINUE           :
+        descr = L"OK to continue with request";
+        break;
+    case HTTP_STATUS_SWITCH_PROTOCOLS   :
+        descr = L"Server has switched protocols in upgrade header";
+        break;
+    case HTTP_STATUS_OK                 :
+        descr = L"Request completed";
+        break;
+    case HTTP_STATUS_CREATED            :
+        descr = L"Object created, reason = new URI";
+        break;
+    case HTTP_STATUS_ACCEPTED           :
+        descr = L"Async completion (TBS)";
+        break;
+    case HTTP_STATUS_PARTIAL            :
+        descr = L"Partial completion";
+        break;
+    case HTTP_STATUS_NO_CONTENT         :
+        descr = L"No info to return";
+        break;
+    case HTTP_STATUS_RESET_CONTENT      :
+        descr = L"Request completed, but clear form";
+        break;
+    case HTTP_STATUS_PARTIAL_CONTENT    :
+        descr = L"Partial GET furfilled";
+        break;
+    case HTTP_STATUS_WEBDAV_MULTI_STATUS:
+        descr = L"WebDAV Multi-Status";
+        break;
+    case HTTP_STATUS_AMBIGUOUS          :
+        descr = L"Server couldn't decide what to return";
+        break;
+    case HTTP_STATUS_MOVED              :
+        descr = L"Object permanently moved";
+        break;
+    case HTTP_STATUS_REDIRECT           :
+        descr = L"Object temporarily moved";
+        break;
+    case HTTP_STATUS_REDIRECT_METHOD    :
+        descr = L"Redirection w/ new access method";
+        break;
+    case HTTP_STATUS_NOT_MODIFIED       :
+        descr = L"If-modified-since was not modified";
+        break;
+    case HTTP_STATUS_USE_PROXY          :
+        descr = L"Redirection to proxy, location header specifies proxy to use";
+        break;
+    case HTTP_STATUS_REDIRECT_KEEP_VERB :
+        descr = L"HTTP/1.1: keep same verb";
+        break;
+    case HTTP_STATUS_BAD_REQUEST        :
+        descr = L"Invalid syntax";
+        break;
+    case HTTP_STATUS_DENIED             :
+        descr = L"Unauthorized";
+        break;
+    case HTTP_STATUS_PAYMENT_REQ        :
+        descr = L"Payment required";
+        break;
+    case HTTP_STATUS_FORBIDDEN          :
+        descr = L"Request forbidden";
+        break;
+    case HTTP_STATUS_NOT_FOUND          :
+        descr = L"Object not found";
+        break;
+    case HTTP_STATUS_BAD_METHOD         :
+        descr = L"Method is not allowed";
+        break;
+    case HTTP_STATUS_NONE_ACCEPTABLE    :
+        descr = L"No response acceptable to client found";
+        break;
+    case HTTP_STATUS_PROXY_AUTH_REQ     :
+        descr = L"Proxy authentication required";
+        break;
+    case HTTP_STATUS_REQUEST_TIMEOUT    :
+        descr = L"Server timed out waiting for request";
+        break;
+    case HTTP_STATUS_CONFLICT           :
+        descr = L"User should resubmit with more info";
+        break;
+    case HTTP_STATUS_GONE               :
+        descr = L"The resource is no longer available";
+        break;
+    case HTTP_STATUS_LENGTH_REQUIRED    :
+        descr = L"The server refused to accept request w/o a length";
+        break;
+    case HTTP_STATUS_PRECOND_FAILED     :
+        descr = L"Precondition given in request failed";
+        break;
+    case HTTP_STATUS_REQUEST_TOO_LARGE  :
+        descr = L"Request entity was too large";
+        break;
+    case HTTP_STATUS_URI_TOO_LONG       :
+        descr = L"Request URI too long";
+        break;
+    case HTTP_STATUS_UNSUPPORTED_MEDIA  :
+        descr = L"Unsupported media type";
+        break;
+    case 416                            :
+        descr = L"Requested Range Not Satisfiable";
+        break;
+    case 417                            :
+        descr = L"Expectation Failed";
+        break;
+    case HTTP_STATUS_RETRY_WITH         :
+        descr = L"Retry after doing the appropriate action";
+        break;
+    case HTTP_STATUS_SERVER_ERROR       :
+        descr = L"Internal server error";
+        break;
+    case HTTP_STATUS_NOT_SUPPORTED      :
+        descr = L"Required not supported";
+        break;
+    case HTTP_STATUS_BAD_GATEWAY        :
+        descr = L"Error response received from gateway";
+        break;
+    case HTTP_STATUS_SERVICE_UNAVAIL    :
+        descr = L"Temporarily overloaded";
+        break;
+    case HTTP_STATUS_GATEWAY_TIMEOUT    :
+        descr = L"Timed out waiting for gateway";
+        break;
+    case HTTP_STATUS_VERSION_NOT_SUP    :
+        descr = L"HTTP version not supported";
+        break;
+    }
+
+    std::wstring errInfo = L"Incorrect response code: ";
+
+    errInfo += ::NumberToWString(code);
+
+    if (descr)
+    {
+        errInfo += L' ';
+        errInfo += descr;
+    }
+
+    return errInfo;
+}
+
+std::string THTTPFileSystem::GetNamespace(const TiXmlElement *element, const char *name, const char *defaultVal) const
+{
+    assert(element);
+    assert(name);
+    assert(defaultVal);
+
+    std::string ns = defaultVal;
+    const TiXmlAttribute *attr = element->FirstAttribute();
+    while (attr)
+    {
+        if (strncmp(attr->Name(), "xmlns:", 6) == 0 && strcmp(attr->Value(), name) == 0)
+        {
+            ns = attr->Name();
+            ns.erase(0, ns.find(':') + 1);
+            ns += ':';
+            break;
+        }
+        attr = attr->Next();
+    }
+    return ns;
+}
+
+
+FILETIME THTTPFileSystem::ParseDateTime(const char *dt) const
+{
+    assert(dt);
+
+    FILETIME ft;
+    ZeroMemory(&ft, sizeof(ft));
+    SYSTEMTIME st;
+    ZeroMemory(&st, sizeof(st));
+
+    if (WinHttpTimeToSystemTime(::MB2W(dt).c_str(), &st))
+    {
+        SystemTimeToFileTime(&st, &ft);
+    }
+    else if (strlen(dt) > 18)
+    {
+        //rfc 3339 date-time
+        st.wYear =   static_cast<WORD>(atoi(dt +  0));
+        st.wMonth =  static_cast<WORD>(atoi(dt +  5));
+        st.wDay =    static_cast<WORD>(atoi(dt +  8));
+        st.wHour =   static_cast<WORD>(atoi(dt + 11));
+        st.wMinute = static_cast<WORD>(atoi(dt + 14));
+        st.wSecond = static_cast<WORD>(atoi(dt + 17));
+        SystemTimeToFileTime(&st, &ft);
+    }
+
+    return ft;
+}
+
+
+std::string THTTPFileSystem::DecodeHex(const std::string &src) const
+{
+    const size_t cntLength = src.length();
+    std::string result;
+    result.reserve(cntLength);
+
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = src[i];
+        if (chkChar != L'%' || (i + 2 >= cntLength) || !IsHexadecimal(src[i + 1]) || !IsHexadecimal(src[i + 2]))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            const char ch1 = src[i + 1];
+            const char ch2 = src[i + 2];
+            const char encChar = (((ch1 & 0xf) + ((ch1 >= 'A') ? 9 : 0)) << 4) | ((ch2 & 0xf) + ((ch2 >= 'A') ? 9 : 0));
+            result += encChar;
+            i += 2;
+        }
+    }
+
+    return result;
+}
+
+
+std::string THTTPFileSystem::EscapeUTF8URL(const wchar_t *src) const
+{
+    assert(src && src[0] == L'/');
+
+    std::string plainText = ::W2MB(src, CP_UTF8);
+    const size_t cntLength = plainText.length();
+
+    std::string result;
+    result.reserve(cntLength);
+
+    static const char permitSymbols[] = "/;@&=+$,-_.?!~'()%{}^[]`";
+
+    for (size_t i = 0; i < cntLength; ++i)
+    {
+        const char chkChar = plainText[i];
+        if (*std::find(permitSymbols, permitSymbols + sizeof(permitSymbols), chkChar) ||
+                (chkChar >= 'a' && chkChar <= 'z') ||
+                (chkChar >= 'A' && chkChar <= 'Z') ||
+                (chkChar >= '0' && chkChar <= '9'))
+        {
+            result += chkChar;
+        }
+        else
+        {
+            char encChar[4];
+            sprintf_s(encChar, "%%%02X", static_cast<unsigned char>(chkChar));
+            result += encChar;
+        }
+    }
+    return result;
+}
+
+CURLcode THTTPFileSystem::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
+{
+    CURLcode urlCode = FCURLIntf->Prepare(webDavPath, handleTimeout);
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_HTTPAUTH, CURLAUTH_ANY));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_FOLLOWLOCATION, 1));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POST301, 1));
+
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYPEER, 0L));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_SSL_VERIFYHOST, 0L));
+    return urlCode;
+}
+
+bool THTTPFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
+{
+  assert(abortEvent);
+
+  TSessionData *Data = FTerminal->GetSessionData();
+  std::wstring HostName = Data->GetHostName();
+  std::wstring UserName = Data->GetUserName();
+  std::wstring Password = Data->GetPassword();
+  std::wstring Account = Data->GetFtpAccount();
+  std::wstring Path = Data->GetRemoteDirectory();
+
+    ProxySettings proxySettings;
+    // init proxySettings
+    proxySettings.proxyType = GetOptionVal(OPTION_PROXYTYPE);
+    proxySettings.proxyHost = GetOption(OPTION_PROXYHOST);
+    proxySettings.proxyPort = GetOptionVal(OPTION_PROXYPORT);
+    proxySettings.proxyLogin = GetOption(OPTION_PROXYUSER);
+    proxySettings.proxyPassword = GetOption(OPTION_PROXYPASS);
+
+  const wchar_t *url = HostName.c_str();
+    // DEBUG_PRINTF(L"WebDAV: connecting to %s", url);
+    //Initialize curl
+    FCURLIntf->Initialize(url, UserName.c_str(), Password.c_str(),
+        proxySettings);
+    FCURLIntf->SetAbortEvent(abortEvent);
+
+    //Check initial path existing
+    std::wstring path;
+    // std::wstring query;
+    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
+    bool dirExist = false;
+    // DEBUG_PRINTF(L"path = %s, query = %s", path.c_str(), query.c_str());
+    // if (!query.empty())
+    // {
+        // path += query;
+    // }
+    if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
+    {
+        FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", path.c_str()));
+        return false;
+    }
+    FCurrentDirectory = ::ExcludeTrailingBackslash(path);
+    return true;
+}
+
+bool THTTPFileSystem::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"THTTPFileSystem::CheckExisting: path = %s", path);
+    assert(type == ItemDirectory);
+
+    std::wstring responseDummy;
+    isExist = SendPropFindRequest(path, responseDummy, errorInfo);
+    // DEBUG_PRINTF(L"THTTPFileSystem::CheckExisting: path = %s, isExist = %d", path, isExist);
+    return true;
+}
+
+
+bool THTTPFileSystem::MakeDirectory(const wchar_t *path, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"MakeDirectory: begin: path = %s", path);
+    const std::string webDavPath = EscapeUTF8URL(path);
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MKCOL"));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_CREATED, errorInfo);
+    // DEBUG_PRINTF(L"MakeDirectory: end: errorInfo = %s", errorInfo.c_str());
+    return result;
+}
+
+bool THTTPFileSystem::GetList(const std::wstring &Directory, std::wstring &errorInfo)
+{
+    std::vector<TListDataEntry> Entries;
+
+    std::wstring response;
+    if (!SendPropFindRequest(Directory.c_str(), response, errorInfo))
+    {
+        return false;
+    }
+
+    // Erase slashes (to compare in xml parse)
+    std::wstring currentPath = ::UnixExcludeLeadingBackslash(::ExcludeTrailingBackslash(Directory));
+
+    const std::string decodedResp = DecodeHex(::W2MB(response.c_str()));
+
+#ifdef _DEBUG
+    // CNBFile::SaveFile(L"c:\\webdav_response_raw.xml", ::W2MB(response.c_str()).c_str());
+    // CNBFile::SaveFile(L"c:\\webdav_response_decoded.xml", decodedResp.c_str());
+#endif
+
+    //! WebDAV item description
+    struct WebDAVItem
+    {
+        WebDAVItem() : Attributes(0), Size(0)
+        {
+            LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
+        }
+        std::wstring Name;
+        DWORD Attributes;
+        FILETIME Created;
+        FILETIME Modified;
+        FILETIME LastAccess;
+        unsigned __int64 Size;
+    };
+    std::vector<WebDAVItem> wdavItems;
+
+    TiXmlDocument xmlDoc;
+    xmlDoc.Parse(decodedResp.c_str());
+    if (xmlDoc.Error())
+    {
+        errorInfo = L"Error parsing response xml:\n[";
+        errorInfo += ::NumberToWString(xmlDoc.ErrorId());
+        errorInfo += L"]: ";
+        errorInfo += ::MB2W(xmlDoc.ErrorDesc());
+        return false;
+    }
+
+    const TiXmlElement *xmlRoot = xmlDoc.RootElement();
+
+    //Determine global namespace
+    const std::string glDavNs = GetNamespace(xmlRoot, "DAV:", "D:");
+    const std::string glMsNs = GetNamespace(xmlRoot, "urn:schemas-microsoft-com:", "Z:");
+
+    const TiXmlNode *xmlRespNode = NULL;
+    while ((xmlRespNode = xmlRoot->IterateChildren((glDavNs + "response").c_str(), xmlRespNode)) != NULL)
+    {
+        WebDAVItem item;
+
+        const TiXmlElement *xmlRespElem = xmlRespNode->ToElement();
+        const std::string davNamespace = GetNamespace(xmlRespElem, "DAV:", glDavNs.c_str());
+        const std::string msNamespace = GetNamespace(xmlRespElem, "urn:schemas-microsoft-com:", glMsNs.c_str());
+        const TiXmlElement *xmlHref = xmlRespNode->FirstChildElement((glDavNs + "href").c_str());
+        if (!xmlHref || !xmlHref->GetText())
+        {
+            continue;
+        }
+
+        const std::wstring href = ::MB2W(xmlHref->GetText(), CP_UTF8);
+        std::wstring path;
+        ParseURL(href.c_str(), NULL, NULL, NULL, &path, NULL, NULL, NULL);
+        if (path.empty())
+        {
+            path = href;
+        }
+        path = ::UnixExcludeLeadingBackslash(::ExcludeTrailingBackslash(path));
+        // DEBUG_PRINTF(L"href = %s, path = %s, currentPath = %s", href.c_str(), path.c_str(), currentPath.c_str());
+
+        //Check for self-link (compare paths)
+        if (_wcsicmp(path.c_str(), currentPath.c_str()) == 0)
+        {
+            continue;
+        }
+
+        //name
+        item.Name = path;
+        const size_t nameDelim = item.Name.rfind(L'/'); //Save only name without full path
+        if (nameDelim != std::wstring::npos)
+        {
+            item.Name.erase(0, nameDelim + 1);
+        }
+
+        //Find correct 'propstat' node (with HTTP 200 OK status)
+        const TiXmlElement *xmlProps = NULL;
+        const TiXmlNode *xmlPropsNode = NULL;
+        while (xmlProps == NULL && (xmlPropsNode = xmlRespNode->IterateChildren((glDavNs + "propstat").c_str(), xmlPropsNode)) != NULL)
+        {
+            const TiXmlElement *xmlStatus = xmlPropsNode->FirstChildElement((glDavNs + "status").c_str());
+            if (xmlStatus && strstr(xmlStatus->GetText(), "200"))
+            {
+                xmlProps = xmlPropsNode->FirstChildElement((glDavNs + "prop").c_str());
+            }
+        }
+        if (xmlProps)
+        {
+            /************************************************************************/
+            /* WebDAV [D:] (DAV:)
+            /************************************************************************/
+            //attributes
+            const TiXmlElement *xmlResType = xmlProps->FirstChildElement((davNamespace + "resourcetype").c_str());
+            if (xmlResType && xmlResType->FirstChildElement((glDavNs + "collection").c_str()))
+            {
+                item.Attributes = FILE_ATTRIBUTE_DIRECTORY;
+            }
+
+            //size
+            const TiXmlElement *xmlSize = xmlProps->FirstChildElement((davNamespace + "getcontentlength").c_str());
+            if (xmlSize && xmlSize->GetText())
+            {
+                item.Size = _atoi64(xmlSize->GetText());
+            }
+
+            //creation datetime
+            const TiXmlElement *xmlCrDate = xmlProps->FirstChildElement((davNamespace + "creationdate").c_str());
+            if (xmlCrDate && xmlCrDate->GetText())
+            {
+                item.Created = ParseDateTime(xmlCrDate->GetText());
+            }
+
+            //last modified datetime
+            const TiXmlElement *xmlLmDate = xmlProps->FirstChildElement((davNamespace + "getlastmodified").c_str());
+            if (xmlLmDate && xmlLmDate->GetText())
+            {
+                item.Modified = ParseDateTime(xmlLmDate->GetText());
+            }
+
+            /************************************************************************/
+            /* Win32 [Z:] (urn:schemas-microsoft-com)
+            /************************************************************************/
+            //last access datetime
+            // TODO: process D:creationdate D:getlastmodified
+            const TiXmlElement *xmlLaDate = xmlProps->FirstChildElement((msNamespace + "Win32LastAccessTime").c_str());
+            if (xmlLaDate && xmlLaDate->GetText())
+            {
+                item.LastAccess = ParseDateTime(xmlLaDate->GetText());
+            }
+
+            //attributes
+            const TiXmlElement *xmlAttr = xmlProps->FirstChildElement((msNamespace + "Win32FileAttributes").c_str());
+            if (xmlAttr && xmlAttr->GetText())
+            {
+                DWORD attr = 0;
+                sscanf_s(xmlAttr->GetText(), "%x", &attr);
+                item.Attributes |= attr;
+            }
+        }
+        wdavItems.push_back(item);
+    }
+
+    unsigned int Count = static_cast<int>(wdavItems.size());
+    if (Count)
+    {
+        Entries.resize(Count);
+        for (int i = 0; i < Count; ++i)
+        {
+            TListDataEntry &Dest = Entries[i];
+            WebDAVItem &item = wdavItems[i];
+            Dest.Name = wdavItems[i].Name.c_str();
+            // DEBUG_PRINTF(L"Dest.Name = %s", Dest.Name);
+            Dest.Permissions = L"";
+            Dest.OwnerGroup = L"";
+            int dir = item.Attributes & FILE_ATTRIBUTE_DIRECTORY;
+            Dest.Size = dir == 0 ? item.Size : 0;
+            Dest.Dir = dir != 0;
+            Dest.Link = false;
+            FILETIME ft = item.Created;
+            SYSTEMTIME st;
+            ::FileTimeToSystemTime(&ft, &st);
+            TDateTime dt = ::SystemTimeToDateTime(st);
+            unsigned int Y, M, D;
+            unsigned int HH, MM, SS, MS;
+            dt.DecodeDate(Y, M, D);
+            dt.DecodeTime(HH, MM, SS, MS);
+            Dest.Year = Y;
+            Dest.Month = M;
+            Dest.Day = D;
+            Dest.Hour = HH;
+            Dest.Minute = MM;
+            Dest.HasTime = true;
+            Dest.HasDate = true;
+            Dest.LinkTarget = L"";
+        }
+    }
+    // DEBUG_PRINTF(L"Count = %d", Count);
+    TListDataEntry *pEntries = Entries.size() > 0 ? &Entries[0] : NULL;
+    HandleListData(Directory.c_str(), pEntries, Entries.size());
+    return true;
+}
+
+bool THTTPFileSystem::GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    assert(localPath && *localPath);
+
+    CNBFile outFile;
+    if (!outFile.OpenWrite(localPath))
+    {
+        errorInfo = FormatErrorDescription(outFile.LastError());
+        // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: errorInfo = %s", errorInfo.c_str());
+        return false;
+    }
+
+    const std::string webDavPath = EscapeUTF8URL(remotePath);
+    // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: webDavPath = %s", ::MB2W(webDavPath.c_str()).c_str());
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    // slist.Append("Content-Type: application/octet-stream");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, FCURLIntf->SetOutput(&outFile, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+
+    outFile.Close();
+    m_ProgressPercent = -1;
+
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: errorInfo = %s", errorInfo.c_str());
+        return false;
+    }
+
+    bool result = CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+    // DEBUG_PRINTF(L"THTTPFileSystem::GetFile: result = %d, errorInfo = %s", result, errorInfo.c_str());
+    return result;
+}
+
+
+bool THTTPFileSystem::PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 /*fileSize*/, std::wstring &errorInfo)
+{
+    // DEBUG_PRINTF(L"THTTPFileSystem::PutFile: remotePath = %s, localPath = %s", remotePath, localPath);
+    assert(localPath && *localPath);
+
+    CNBFile inFile;
+    if (!inFile.OpenRead(localPath))
+    {
+        errorInfo = FormatErrorDescription(inFile.LastError());
+        return false;
+    }
+
+    const std::string webDavPath = EscapeUTF8URL(remotePath);
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str(), false);
+    CSlistURL slist;
+    slist.Append("Expect:");    //Expect: 100-continue is not wanted
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, FCURLIntf->SetInput(&inFile, &m_ProgressPercent));
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+
+    inFile.Close();
+    m_ProgressPercent = -1;
+
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+}
+
+
+bool THTTPFileSystem::Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType /*type*/, std::wstring &errorInfo)
+{
+    const std::string srcWebDavPath = EscapeUTF8URL(srcPath);
+    const std::string dstWebDavPath = EscapeUTF8URL(dstPath);
+
+    CURLcode urlCode = CURLPrepare(srcWebDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Depth: infinity");
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    std::string dstParam = "Destination: ";
+    dstParam += FCURLIntf->GetTopURL();
+    dstParam += dstWebDavPath;
+    slist.Append(dstParam.c_str());
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "MOVE"));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_CREATED, HTTP_STATUS_NO_CONTENT, errorInfo);
+}
+
+bool THTTPFileSystem::Delete(const wchar_t *path, const ItemType /*type*/, std::wstring &errorInfo)
+{
+    const std::string webDavPath = EscapeUTF8URL(path);
+
+    CURLcode urlCode = CURLPrepare(webDavPath.c_str());
+    CSlistURL slist;
+    slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
+    slist.Append("Content-Length: 0");
+    slist.Append("Connection: Keep-Alive");
+    CHECK_CUCALL(urlCode, FCURLIntf->SetSlist(slist));
+    CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_CUSTOMREQUEST, "DELETE"));
+
+    CHECK_CUCALL(urlCode, FCURLIntf->Perform());
+    if (urlCode != CURLE_OK)
+    {
+        errorInfo = ::MB2W(curl_easy_strerror(urlCode));
+        return false;
+    }
+
+    return CheckResponseCode(HTTP_STATUS_OK, HTTP_STATUS_NO_CONTENT, errorInfo);
+}
+
+std::wstring THTTPFileSystem::FormatErrorDescription(const DWORD errCode, const wchar_t *info) const
+{
+    assert(errCode || info);
+
+    std::wstring errDescr;
+    if (info)
+    {
+        errDescr = info;
+    }
+    if (errCode)
+    {
+        if (!errDescr.empty())
+        {
+            errDescr += L'\n';
+        }
+        errDescr += GetSystemErrorMessage(errCode);
+    }
+    return errDescr;
 }
