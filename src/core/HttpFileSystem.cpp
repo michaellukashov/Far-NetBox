@@ -531,7 +531,7 @@ void THTTPFileSystem::ReadCurrentDirectory()
     {
         FCurrentDirectory = Path;
     }
-    else if (!errorInfo.empty())
+    else if (!errorInfo.empty() && !FCurrentDirectory.empty())
     {
         THROW_SKIP_FILE(errorInfo, NULL);
     }
