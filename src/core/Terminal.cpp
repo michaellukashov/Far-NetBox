@@ -19,7 +19,6 @@
 #include "FtpFileSystem.h"
 #endif
 #include "HttpFileSystem.h"
-#include "HttpsFileSystem.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
@@ -754,7 +753,7 @@ void TTerminal::Open()
             {
               FFSProtocol = cfsHTTPS;
               FFileSystem = new TWebDAVFileSystem(this);
-              ((TTWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
+              ((TWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
               FSecureShell = NULL;
               FFileSystem->Open();
               GetLog()->AddSeparator();
