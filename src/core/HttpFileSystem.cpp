@@ -531,6 +531,10 @@ void THTTPFileSystem::ReadCurrentDirectory()
     {
         FCurrentDirectory = Path;
     }
+    else if (!errorInfo.empty())
+    {
+        THROW_SKIP_FILE(errorInfo, NULL);
+    }
     // FCurrentDirectory = Path;
   }
   else
@@ -616,7 +620,8 @@ void THTTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     // 2) we handle this way the cached directory change
     std::wstring Directory = AbsolutePath(FileList->GetDirectory(), false);
     // DEBUG_PRINTF(L"Directory = %s", Directory.c_str());
-    GetList(Directory);
+    std::wstring errorInfo;
+    GetList(Directory, errorInfo);
 
     FLastDataSent = Now();
 }
@@ -752,8 +757,9 @@ void THTTPFileSystem::DeleteFile(const std::wstring FileName,
   ItemType type = File->GetIsDirectory() ? ItemDirectory : ItemFile;
   std::wstring errorInfo;
   bool res = Delete(FullFileName.c_str(), type, errorInfo);
-  if (!res)
+  if (!res && !errorInfo.empty())
   {
+    THROW_SKIP_FILE(errorInfo, NULL);
   }
 }
 //---------------------------------------------------------------------------
@@ -771,8 +777,9 @@ void THTTPFileSystem::RenameFile(const std::wstring FileName,
   {
     ItemType type = ItemDirectory;
     bool res = Rename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
-    if (!res)
+    if (!res && !errorInfo.empty())
     {
+        THROW_SKIP_FILE(errorInfo, NULL);
     }
   }
 }
