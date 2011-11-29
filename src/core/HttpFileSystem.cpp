@@ -392,10 +392,11 @@ bool THTTPFileSystem::IsCapable(int Capability) const
     case fcHardLink:
     case fcSymbolicLink:
     case fcResolveSymlink:
+      return false;
     case fcRename:
     case fcRemoteMove:
     case fcRemoteCopy:
-      return false;
+      return true;
 
     case fcTextMode:
       return FTerminal->GetSessionData()->GetEOLType() != FTerminal->GetConfiguration()->GetLocalEOLType();
