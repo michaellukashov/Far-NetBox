@@ -1029,7 +1029,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       Name = L"";
 
       size_t PSlash = Url.find_first_of(L"/");
-      if (PSlash == 0)
+      if (PSlash == std::wstring::npos)
       {
         PSlash = Url.size() + 1;
       }
@@ -1044,7 +1044,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       if (P > 0)
       {
         UserInfo = ConnectInfo.substr(0, P - 1);
-        HostInfo = ConnectInfo.substr(P, ConnectInfo.size() - P);
+        HostInfo = ConnectInfo.substr(P + 1, ConnectInfo.size() - P);
       }
       else
       {
