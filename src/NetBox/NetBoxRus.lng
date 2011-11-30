@@ -192,6 +192,7 @@
 "SCP/Shell"
 "SFTP"
 "FTP"
+"FTPS"
 "SSH"
 "Connection"
 "Tunnel"
