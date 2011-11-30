@@ -10,6 +10,7 @@ FILETYPE 0x2
         {
             VALUE "CompanyName", "Martin Prikryl\0"
             VALUE "FileDescription", "WinSCP: SFTP/FTP/SCP client for FAR\0"
+            VALUE "Comments", "based on : WinSCP: SFTP/FTP/SCP client for FAR\0"
             VALUE "FileVersion", "1.6.2.151\0"
             VALUE "InternalName", "winscpfar\0"
             VALUE "LegalCopyright", "(c) 2000-2009 Martin Prikryl\0"
