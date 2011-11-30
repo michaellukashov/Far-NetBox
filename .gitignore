@@ -12,6 +12,7 @@ libs/openssl/
 libs/libssh2/
 libs/libcurl/
 libs/boost/
+dlls/
 ipch/
 *.opensdf
 *.sdf
