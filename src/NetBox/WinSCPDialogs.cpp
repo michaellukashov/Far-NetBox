@@ -3351,10 +3351,12 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetProxyLocalCommand(ProxyLocalCommandEdit->GetText());
     SessionData->SetProxyLocalhost(ProxyLocalhostCheck->GetChecked());
 
-    if (ProxyDNSOnButton->GetChecked()) SessionData->SetProxyDNS(asOn);
-      else
-    if (ProxyDNSOffButton->GetChecked()) SessionData->SetProxyDNS(asOff);
-      else SessionData->SetProxyDNS(asAuto);
+    if (ProxyDNSOnButton->GetChecked())
+        SessionData->SetProxyDNS(asOn);
+    else if (ProxyDNSOffButton->GetChecked())
+        SessionData->SetProxyDNS(asOff);
+    else
+        SessionData->SetProxyDNS(asAuto);
 
     // Tunnel tab
     SessionData->SetTunnel(TunnelCheck->GetChecked());
