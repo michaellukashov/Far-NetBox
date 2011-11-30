@@ -350,5 +350,6 @@ BEGIN
   OPENSSL_URL, "http://www.openssl.org/"
 
   WINSCPFAR_VERSION, "1.6.2"
-  WINSCP_BASED_ON, "Based on WinSCP: SFTP/FTP/SCP client for FAR version %s Copyright (c) 2000-2009 Martin Prikryl"
+  WINSCPFAR_BASED_ON, "Based on WinSCP: SFTP/FTP/SCP client for FAR"
+  WINSCPFAR_BASED_VERSION, " version %s Copyright (c) 2000-2009 Martin Prikryl"
 END
