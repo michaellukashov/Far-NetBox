@@ -1077,7 +1077,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Comments = L"";
   }
-  std::wstring LegalCopyright = Configuration->GetFileInfoString(L"LegalCopyright");
+  std::wstring LegalCopyright; // = Configuration->GetFileInfoString(L"LegalCopyright");
 
   int Height = 16;
   #ifndef NO_FILEZILLA
@@ -1104,8 +1104,23 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  DEBUG_PRINTF(L"Configuration->GetVersion = %s", Configuration->GetVersion().c_str());
+  // DEBUG_PRINTF(L"Configuration->GetVersion = %s", Configuration->GetVersion().c_str());
   Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str()));
+  Text->SetCenterGroup(true);
+
+  Text = new TFarText(this);
+  Text->Move(0, 1);
+  Text->SetCaption(LoadStr(WINSCPFAR_BASED_ON));
+  Text->SetCenterGroup(true);
+
+  Text = new TFarText(this);
+  // Text->Move(0, 1);
+  Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION).c_str()));
+  Text->SetCenterGroup(true);
+
+  Text = new TFarText(this);
+  // Text->Move(0, 1);
+  Text->SetCaption(LoadStr(WINSCPFAR_BASED_COPYRIGHT));
   Text->SetCenterGroup(true);
 
   if (!ProductName.empty())
@@ -1128,7 +1143,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->SetCaption(Comments);
     Text->SetCenterGroup(true);
   }
-
+#if 0
   if (!LegalCopyright.empty())
   {
     Text = new TFarText(this);
@@ -1136,7 +1151,6 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->SetCaption(Configuration->GetFileInfoString(L"LegalCopyright"));
     Text->SetCenterGroup(true);
   }
-
   Text = new TFarText(this);
   if (LegalCopyright.empty())
   {
@@ -1161,8 +1175,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Button->SetOnClick(boost::bind(&TAboutDialog::UrlButtonClick, this, _1, _2));
   Button->SetTag(2);
   Button->SetCenterGroup(true);
-
   SetNextItemPosition(ipNewLine);
+#endif
 
   new TFarSeparator(this);
 
@@ -2733,23 +2747,31 @@ void TSessionDialog::TransferProtocolComboChange()
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
 
   LoadPing(FSessionData);
-  if (GetFSProtocol() == fsFTP)
+  // DEBUG_PRINTF(L"GetFSProtocol = %d, PortNumberEdit->GetAsInteger = %d", GetFSProtocol(), PortNumberEdit->GetAsInteger());
+  if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
   {
-    if (PortNumberEdit->GetAsInteger() == 22)
+    if (PortNumberEdit->GetAsInteger() == 21)
+    {
+      PortNumberEdit->SetAsInteger(22);
+    }
+  }
+  else if (GetFSProtocol() == fsFTP)
+  {
+    if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 990)
     {
       PortNumberEdit->SetAsInteger(21);
     }
   }
-  if (GetFSProtocol() == fsFTPS)
+  else if (GetFSProtocol() == fsFTPS)
   {
-    if (PortNumberEdit->GetAsInteger() == 21)
+    if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 80)
     {
       PortNumberEdit->SetAsInteger(990);
     }
   }
   else if (GetFSProtocol() == fsHTTP)
   {
-    if (PortNumberEdit->GetAsInteger() == 443)
+    if (PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
     {
       PortNumberEdit->SetAsInteger(80);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
@@ -2761,13 +2783,6 @@ void TSessionDialog::TransferProtocolComboChange()
     {
       PortNumberEdit->SetAsInteger(443);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
-    }
-  }
-  else
-  {
-    if (PortNumberEdit->GetAsInteger() == 21)
-    {
-      PortNumberEdit->SetAsInteger(22);
     }
   }
 }

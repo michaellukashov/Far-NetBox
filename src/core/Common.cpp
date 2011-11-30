@@ -2090,8 +2090,8 @@ bool IsExactly2008R2()
 //---------------------------------------------------------------------------
 std::wstring IntToStr(int value)
 {
-    std::wstring result = boost::lexical_cast<std::wstring>(value);
-    return result;
+    std::string result = boost::lexical_cast<std::string>(value);
+    return ::MB2W(result.c_str());
 }
 
 int StrToInt(const std::wstring value)

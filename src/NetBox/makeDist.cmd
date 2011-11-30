@@ -7,7 +7,7 @@
 ::
 
 
-@echo off
+@rem @echo off
 exit 0 /b
 
 set PLUGINNAME=NetBox
@@ -21,12 +21,12 @@ if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
 set PLUGINVER=%PLUGIN_VERSION_TXT%
 
 :: Package name
-set PKGNAME=Far%PLUGINNAME%_%PLUGINVER%_%FARVER%_%PLUGINARCH%.7z
+set PKGNAME=Far%PLUGINNAME%-%PLUGINVER%_%FARVER%_%PLUGINARCH%.7z
 if exist %PKGNAME% del %PKGNAME%
 
 :: Create temp directory
 set PKGDIR=%PLUGINNAME%
-if "%PLUGINARCH%" equ "src" set PKGDIR=%PKGDIR%_%PLUGINVER%
+if "%PLUGINARCH%" equ "src" set PKGDIR=%PKGDIR%-%PLUGINVER%
 if exist %PKGDIR% rmdir /S /Q %PKGDIR%
 
 :: Copy files
