@@ -381,4 +381,5 @@
 #define OPENSSL_VERSION         611
 #define OPENSSL_URL             612
 
-#define WINSCP_BASED_ON         613
+#define WINSCPFAR_VERSION       613
+#define WINSCP_BASED_ON         614
