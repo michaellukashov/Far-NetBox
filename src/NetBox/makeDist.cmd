@@ -21,7 +21,7 @@ if "%PLUGIN_VERSION_TXT%" equ "" echo Undefined version & exit 1
 set PLUGINVER=%PLUGIN_VERSION_TXT%
 
 :: Package name
-set PKGNAME=Far%PLUGINNAME%_%PLUGINVER%_%FARVER%_%PLUGINARCH%.7z
+set PKGNAME=Far%PLUGINNAME%-%PLUGINVER%_%FARVER%_%PLUGINARCH%.7z
 if exist %PKGNAME% del %PKGNAME%
 
 :: Create temp directory
