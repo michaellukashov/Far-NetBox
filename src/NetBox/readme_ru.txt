@@ -1,12 +1,10 @@
-Плагин "NetBox" для Far Manager 2.0
-***********************************
-
-FTP/FTPS/SFTP/WebDAV клиент для Far.
+NetBox: SFTP/FTP/FTPS/SCP/WebDAV клиент для Far Manager 2.0
+===============
 
 1. Общие сведения о плагине
-   Плагин реализует клиентскую часть протоколов FTP, FTPS, SFTP и WebDAV.
-   FTP и WebDAV базируется на библиотеке libcurl (http://curl.haxx.se).
-   SFTP реализован на базе библиотеки libssh2 (http://www.libssh2.org).
+   Плагин реализует клиентскую часть протоколов SFTP, FTP, SCP, FTPS и WebDAV.
+   SFTP, FTP, SCP, FTPS протоколы реализованы на основе плагина WinSCP (http://winscp.net/eng/download.php)
+   WebDAV базируется на библиотеке libcurl (http://curl.haxx.se).
    Парсер xml работает через библиотеку TinyXML
    (http://sourceforge.net/projects/tinyxml).
 
@@ -22,8 +20,8 @@ FTP/FTPS/SFTP/WebDAV клиент для Far.
             Port - номер порта
             Path - путь
 
-     b. (ftp|sftp|http|https)://[[User]:[Password]@]HostName[:Port][/Path]
-        где (ftp|sftp|http|https) - имя протокола
+     b. (sftp|ftp|scp|ftps|http|https)://[[User]:[Password]@]HostName[:Port][/Path]
+        где (sftp|ftp|scp|ftps|http|https) - имя протокола
             User - имя пользователя
             Password - пароль пользователя
             HostName - имя хоста
@@ -48,11 +46,5 @@ FTP/FTPS/SFTP/WebDAV клиент для Far.
 5. Установка:
    Распакуйте содержимое архива в каталог плагинов Far (...Far\Plugins).
 
-6. Хозяйке на заметку:
-   Данный плагин предоставляется "as is" ("как есть"). Автор не несет 
-   ответственности за последствия использования данного плагина.
-
-Артём Сеничев (artemsen@gmail.com)
-              http://code.google.com/p/farplugs
-Михаил Лукашов (michael.lukashov@gmail.com)
-               https://github.com/michaellukashov/Far-NetBox
+Данный плагин предоставляется "as is" ("как есть"). Автор не несет 
+ответственности за последствия использования данного плагина.

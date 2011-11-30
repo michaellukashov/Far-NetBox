@@ -1,4 +1,4 @@
-NetBox: FTP/FTPS/SFTP/WebDAV client for Far Manager 2.0
+NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for Far Manager 2.0
 ===============
 
 Installation:
