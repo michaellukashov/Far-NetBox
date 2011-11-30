@@ -239,16 +239,22 @@ void TWebDAVFileSystem::Open()
   bool PromptedForCredentials = false;
 
   std::wstring HostName = Data->GetHostName();
-    if (::LowerCase(HostName.substr(0, 7)) == L"http://")
-    {
-        HostName.erase(0, 7);
-    }
+  if (::LowerCase(HostName.substr(0, 7)) == L"http://")
+  {
+      HostName.erase(0, 7);
+  }
+  else if (LowerCase(HostName.substr(0, 8)) == L"https://")
+  {
+      HostName.erase(0, 8);
+  }
   int Port = Data->GetPortNumber();
+  std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    L"http" : L"https";
   std::wstring UserName = Data->GetUserName();
   std::wstring Password = Data->GetPassword();
   std::wstring Account = Data->GetFtpAccount();
   std::wstring Path = Data->GetRemoteDirectory();
-  std::wstring url = FORMAT(L"http://%s:%d%s", HostName.c_str(), Port, Path.c_str());
+  std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
   do
   {
     FSystem = L"";
@@ -1003,7 +1009,8 @@ void TWebDAVFileSystem::AnyCommand(const std::wstring Command,
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::FileUrl(const std::wstring FileName)
 {
-  return FTerminal->FileUrl(L"http", FileName);
+  return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    L"http" : L"https", FileName);
 }
 //---------------------------------------------------------------------------
 TStrings * TWebDAVFileSystem::GetFixedPaths()
