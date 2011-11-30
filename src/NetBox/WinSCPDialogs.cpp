@@ -308,10 +308,12 @@ bool TWinSCPPlugin::ConfigurationDialog()
     TFarRadioButton * AutoHotKeyButton = new TFarRadioButton(Dialog);
     AutoHotKeyButton->SetCaption(GetMsg(CONFIG_HOTKEY_AUTOASSIGN));
     AutoHotKeyButton->SetEnabledDependency(DisksMenuCheck);
+    AutoHotKeyButton->SetChecked(true);
 
     TFarRadioButton * ManualHotKeyButton = new TFarRadioButton(Dialog);
     ManualHotKeyButton->SetCaption(GetMsg(CONFIG_HOTKEY_MANUAL));
-    ManualHotKeyButton->SetEnabledDependency(DisksMenuCheck);
+    // ManualHotKeyButton->SetEnabledDependency(DisksMenuCheck);
+    ManualHotKeyButton->SetEnabled(false);
 
     TFarEdit * HotKeyEdit = new TFarEdit(Dialog);
     HotKeyEdit->SetWidth(1);
