@@ -1,6 +1,6 @@
 NetBox 2.0.0 ??.12.2011
 ---------------------
- * Плагин полностью переписан на основе кода WinSCP Plugin 1.6.2
+ * Плагин полностью переписан на основе кода WinSCP
    WinSCP: SFTP/FTP/SCP client for FAR version 1.6.2 Copyright (c) 2000-2009 Martin Prikryl
    Based on WinSCP version 4.1.9.0 Copyright (c) 2000-2009 Martin Prikryl
    SSH and SCP code based on PuTTY 0.61 Copyright (c) 1997-2011 Simon Tatham
