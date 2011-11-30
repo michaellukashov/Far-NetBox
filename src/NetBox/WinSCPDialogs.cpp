@@ -314,6 +314,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
     ManualHotKeyButton->SetCaption(GetMsg(CONFIG_HOTKEY_MANUAL));
     // ManualHotKeyButton->SetEnabledDependency(DisksMenuCheck);
     ManualHotKeyButton->SetEnabled(false);
+    AutoHotKeyButton->SetChecked(false);
 
     TFarEdit * HotKeyEdit = new TFarEdit(Dialog);
     HotKeyEdit->SetWidth(1);
