@@ -1109,7 +1109,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  // Text->Move(0, 1);
+  Text->Move(0, 1);
   Text->SetCaption(LoadStr(WINSCPFAR_BASED_ON));
   Text->SetCenterGroup(true);
 
@@ -1143,7 +1143,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->SetCaption(Comments);
     Text->SetCenterGroup(true);
   }
-
+#if 0
   if (!LegalCopyright.empty())
   {
     Text = new TFarText(this);
@@ -1151,13 +1151,11 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->SetCaption(Configuration->GetFileInfoString(L"LegalCopyright"));
     Text->SetCenterGroup(true);
   }
-
   Text = new TFarText(this);
   if (LegalCopyright.empty())
   {
     Text->Move(0, 1);
   }
-#if 0
   Text->SetCaption(GetMsg(ABOUT_URL));
   // FIXME Text->SetColor(static_cast<int>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
@@ -1177,8 +1175,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Button->SetOnClick(boost::bind(&TAboutDialog::UrlButtonClick, this, _1, _2));
   Button->SetTag(2);
   Button->SetCenterGroup(true);
-#endif
   SetNextItemPosition(ipNewLine);
+#endif
 
   new TFarSeparator(this);
 
