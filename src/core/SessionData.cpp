@@ -1429,7 +1429,7 @@ std::wstring TSessionData::GetSshProtStr()
 //---------------------------------------------------------------------
 bool TSessionData::GetUsesSsh()
 {
-  return (GetFSProtocol() < fsSFTP);
+  return (GetFSProtocol() < fsFTP);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(int Index, TCipher value)
