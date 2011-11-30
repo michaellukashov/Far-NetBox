@@ -2783,7 +2783,7 @@ void TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !HTTPSProtocol);
-  PrivateKeyEdit->SetEnabled(SshProtocol || HTTPSProtocol);
+  PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
   // Connection sheet
