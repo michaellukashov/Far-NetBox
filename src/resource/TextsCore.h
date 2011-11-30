@@ -365,6 +365,7 @@
 #define FTPS_IMPLICIT           511
 #define FTPS_EXPLICIT_SSL       512
 #define FTPS_EXPLICIT_TLS       513
+#define FTPS_UNSUPPORTED        514
 
 #define CORE_VARIABLE_STRINGS   600
 #define PUTTY_BASED_ON          601
