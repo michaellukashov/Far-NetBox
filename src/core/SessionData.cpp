@@ -1429,7 +1429,7 @@ std::wstring TSessionData::GetSshProtStr()
 //---------------------------------------------------------------------
 bool TSessionData::GetUsesSsh()
 {
-  return (GetFSProtocol() != fsFTP);
+  return (GetFSProtocol() < fsSFTP);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(int Index, TCipher value)
@@ -1747,6 +1747,9 @@ std::wstring TSessionData::GetSessionUrl()
 
       case fsFTP:
         Url = L"ftp://";
+        break;
+      case fsFTPS:
+        Url = L"ftps://";
         break;
       case fsHTTP:
         Url = L"http://";
