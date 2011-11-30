@@ -121,7 +121,7 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/core/ScpFileSystem.cpp
     ${PROJECT_ROOT}/src/core/FtpFileSystem.cpp
     ${PROJECT_ROOT}/src/core/SftpFileSystem.cpp
-    ${PROJECT_ROOT}/src/core/HttpFileSystem.cpp
+    ${PROJECT_ROOT}/src/core/WebDAVFileSystem.cpp
     ${PROJECT_ROOT}/src/core/PuttyIntf.cpp
     ${PROJECT_ROOT}/src/core/FileBuffer.cpp
     ${PROJECT_ROOT}/src/core/NamedObjs.cpp
