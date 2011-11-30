@@ -2916,7 +2916,7 @@ void TSessionDialog::UpdateControls()
   ProxyDNSOffButton->SetEnabled(ProxySettings);
 
   // Tunnel tab
-  TunnelTab->SetEnabled(InternalSshProtocol || InternalHTTPProtocol);
+  TunnelTab->SetEnabled(InternalSshProtocol);
 }
 //---------------------------------------------------------------------------
 bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
