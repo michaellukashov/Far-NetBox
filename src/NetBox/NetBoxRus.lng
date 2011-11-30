@@ -211,6 +211,7 @@
 "SCP"
 "SFTP"
 "FTP"
+"FTPS"
 "WebDAV - HTTP"
 "WebDAV - HTTPS"
 "Allow SCP &fallback"
