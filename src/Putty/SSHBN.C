@@ -34,7 +34,7 @@ typedef unsigned long long BignumDblInt;
     __asm__("div %2" : \
 	    "=d" (r), "=a" (q) : \
 	    "r" (w), "d" (hi), "a" (lo))
-#elif (defined _MSC_VER && defined _M_IX86) || defined(MPEXT)
+#elif (defined _MSC_VER && defined _M_IX86 && defined MPEXT)
 typedef unsigned __int32 BignumInt;
 typedef unsigned __int64 BignumDblInt;
 #define BIGNUM_INT_MASK  0xFFFFFFFFUL
@@ -53,7 +53,7 @@ typedef unsigned __int64 BignumDblInt;
     __asm mov r, edx; \
     __asm mov q, eax; \
 } while(0)
-#else
+#elif defined _MSC_VER && !defined _M_IX64
 #define DIVMOD_WORD(q, r, hi, lo, w) do { \
     __asm mov edx, hi \
     __asm mov eax, lo \
