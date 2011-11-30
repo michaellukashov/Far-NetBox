@@ -739,6 +739,20 @@ void TTerminal::Open()
               LogEvent(L"Using FTP protocol.");
               #endif
             }
+            if (GetSessionData()->GetFSProtocol() == fsFTPS)
+            {
+              #if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
+              LogEvent(L"FTPS protocol is not supported by this build.");
+              FatalError(NULL, LoadStr(FTPS_UNSUPPORTED));
+              #else
+              FFSProtocol = cfsFTPS;
+              FFileSystem = new TFTPFileSystem(this);
+              ((TFTPFileSystem*)FFileSystem)->Init();
+              FFileSystem->Open();
+              GetLog()->AddSeparator();
+              LogEvent(L"Using FTPS protocol.");
+              #endif
+            }
             else if (GetSessionData()->GetFSProtocol() == fsHTTP)
             {
               FFSProtocol = cfsHTTP;
