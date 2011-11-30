@@ -13,6 +13,8 @@
 #include "FarTexts.h"
 #include "FarDialog.h"
 #include "FarConfiguration.h"
+
+#include <ShellAPI.h>
 #include <PuttyTools.h>
 #include <GUITools.h>
 #include <CoreMain.h>
