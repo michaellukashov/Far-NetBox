@@ -1108,6 +1108,11 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str()));
   Text->SetCenterGroup(true);
 
+  Text = new TFarText(this);
+  Text->Move(0, 1);
+  Text->SetCaption(FMTLOAD(WINSCP_BASED_ON, LoadStr(WINSCPFAR_VERSION).c_str()));
+  Text->SetCenterGroup(true);
+
   if (!ProductName.empty())
   {
     Text = new TFarText(this);
