@@ -7,7 +7,7 @@
 ::
 
 
-@echo off
+@rem @echo off
 exit 0 /b
 
 set PLUGINNAME=NetBox
@@ -26,7 +26,7 @@ if exist %PKGNAME% del %PKGNAME%
 
 :: Create temp directory
 set PKGDIR=%PLUGINNAME%
-if "%PLUGINARCH%" equ "src" set PKGDIR=%PKGDIR%_%PLUGINVER%
+if "%PLUGINARCH%" equ "src" set PKGDIR=%PKGDIR%-%PLUGINVER%
 if exist %PKGDIR% rmdir /S /Q %PKGDIR%
 
 :: Copy files
