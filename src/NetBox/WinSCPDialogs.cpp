@@ -2747,24 +2747,31 @@ void TSessionDialog::TransferProtocolComboChange()
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
 
   LoadPing(FSessionData);
-  DEBUG_PRINTF(L"GetFSProtocol = %d, PortNumberEdit->GetAsInteger = %d", GetFSProtocol(), PortNumberEdit->GetAsInteger());
-  if (GetFSProtocol() == fsFTP)
+  // DEBUG_PRINTF(L"GetFSProtocol = %d, PortNumberEdit->GetAsInteger = %d", GetFSProtocol(), PortNumberEdit->GetAsInteger());
+  if (GetFSProtocol() == fsSFTPonly || GetFSProtocol() == fsSCPonly)
   {
-    if (PortNumberEdit->GetAsInteger() == 22)
+    if (PortNumberEdit->GetAsInteger() == 21)
+    {
+      PortNumberEdit->SetAsInteger(22);
+    }
+  }
+  else if (GetFSProtocol() == fsFTP)
+  {
+    if (PortNumberEdit->GetAsInteger() == 22 || PortNumberEdit->GetAsInteger() == 990)
     {
       PortNumberEdit->SetAsInteger(21);
     }
   }
-  if (GetFSProtocol() == fsFTPS)
+  else if (GetFSProtocol() == fsFTPS)
   {
-    if (PortNumberEdit->GetAsInteger() == 21)
+    if (PortNumberEdit->GetAsInteger() == 21 || PortNumberEdit->GetAsInteger() == 80)
     {
       PortNumberEdit->SetAsInteger(990);
     }
   }
   else if (GetFSProtocol() == fsHTTP)
   {
-    if (PortNumberEdit->GetAsInteger() == 443)
+    if (PortNumberEdit->GetAsInteger() == 990 || PortNumberEdit->GetAsInteger() == 443)
     {
       PortNumberEdit->SetAsInteger(80);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
@@ -2776,13 +2783,6 @@ void TSessionDialog::TransferProtocolComboChange()
     {
       PortNumberEdit->SetAsInteger(443);
       ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
-    }
-  }
-  else
-  {
-    if (PortNumberEdit->GetAsInteger() == 21)
-    {
-      PortNumberEdit->SetAsInteger(22);
     }
   }
 }
