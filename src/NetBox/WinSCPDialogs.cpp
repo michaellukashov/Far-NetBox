@@ -1077,9 +1077,9 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Comments = L"";
   }
-  std::wstring LegalCopyright = Configuration->GetFileInfoString(L"LegalCopyright");
+  std::wstring LegalCopyright; // = Configuration->GetFileInfoString(L"LegalCopyright");
 
-  int Height = 16 + 2;
+  int Height = 16;
   #ifndef NO_FILEZILLA
   Height += 2;
   #endif
@@ -1110,12 +1110,17 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   Text = new TFarText(this);
   // Text->Move(0, 1);
-  Text->SetCaption(LoadStr(WINSCP_BASED_ON);
+  Text->SetCaption(LoadStr(WINSCPFAR_BASED_ON));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
   // Text->Move(0, 1);
   Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION).c_str()));
+  Text->SetCenterGroup(true);
+
+  Text = new TFarText(this);
+  // Text->Move(0, 1);
+  Text->SetCaption(LoadStr(WINSCPFAR_BASED_COPYRIGHT));
   Text->SetCenterGroup(true);
 
   if (!ProductName.empty())
@@ -1152,6 +1157,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text->Move(0, 1);
   }
+#if 0
   Text->SetCaption(GetMsg(ABOUT_URL));
   // FIXME Text->SetColor(static_cast<int>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
@@ -1171,7 +1177,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Button->SetOnClick(boost::bind(&TAboutDialog::UrlButtonClick, this, _1, _2));
   Button->SetTag(2);
   Button->SetCenterGroup(true);
-
+#endif
   SetNextItemPosition(ipNewLine);
 
   new TFarSeparator(this);
