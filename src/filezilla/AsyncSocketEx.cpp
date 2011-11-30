@@ -76,6 +76,10 @@ to tim.kosse@gmx.de
 static char THIS_FILE[]=__FILE__;
 #endif
 
+#ifndef GWL_USERDATA
+#define GWL_USERDATA GWLP_USERDATA
+#endif
+
 #ifndef CCRITICALSECTIONWRAPPERINCLUDED
 class CCriticalSectionWrapper
 {
