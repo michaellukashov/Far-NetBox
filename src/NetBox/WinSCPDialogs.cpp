@@ -3310,6 +3310,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
       SessionData->SetPostLoginCommands(PostLoginCommands->GetText());
     }
+    // TODO: FTPS tab
+    if (GetFSProtocol() == fsFTPS)
+    {
+        SessionData->SetFtps(ftpsImplicit);
+    }
 
     // Connection tab
     SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
