@@ -18,6 +18,7 @@
 #ifndef NO_FILEZILLA
 #include "FtpFileSystem.h"
 #endif
+#include "WebDAVFileSystem.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
@@ -558,7 +559,7 @@ void TTerminal::Idle()
   {
     if (Configuration->GetActualLogProtocol() >= 1)
     {
-      LogEvent(L"Session upkeep");
+      // LogEvent(L"Session upkeep");
     }
 
     assert(FFileSystem != NULL);
@@ -737,6 +738,26 @@ void TTerminal::Open()
               GetLog()->AddSeparator();
               LogEvent(L"Using FTP protocol.");
               #endif
+            }
+            else if (GetSessionData()->GetFSProtocol() == fsHTTP)
+            {
+              FFSProtocol = cfsHTTP;
+              FFileSystem = new TWebDAVFileSystem(this);
+              ((TWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
+              FSecureShell = NULL;
+              FFileSystem->Open();
+              GetLog()->AddSeparator();
+              LogEvent(L"Using HTTP protocol.");
+            }
+            else if (GetSessionData()->GetFSProtocol() == fsHTTPS)
+            {
+              FFSProtocol = cfsHTTPS;
+              FFileSystem = new TWebDAVFileSystem(this);
+              ((TWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
+              FSecureShell = NULL;
+              FFileSystem->Open();
+              GetLog()->AddSeparator();
+              LogEvent(L"Using HTTPS protocol.");
             }
             else
             {

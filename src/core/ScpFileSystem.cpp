@@ -374,7 +374,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
     {
       BOOST_SCOPE_EXIT ( (&Self) )
       {
-        Self->FTerminal->SetExceptionOnFail (false);
+        Self->FTerminal->SetExceptionOnFail(false);
       } BOOST_SCOPE_EXIT_END
       try
       {
@@ -734,10 +734,10 @@ void TSCPFileSystem::DoStartup()
 {
   // SkipStartupMessage and DetectReturnVar must succeed,
   // otherwise session is to be closed.
-  FTerminal->SetExceptionOnFail (true);
+  FTerminal->SetExceptionOnFail(true);
   SkipStartupMessage();
   if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
-  FTerminal->SetExceptionOnFail (false);
+  FTerminal->SetExceptionOnFail(false);
 
   #define COND_OPER(OPER) if (FTerminal->GetSessionData()->Get##OPER()) OPER()
   COND_OPER(ClearAliases);
@@ -2102,7 +2102,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
         {
           try
           {
-            FTerminal->SetExceptionOnFail (true);
+            FTerminal->SetExceptionOnFail(true);
             {
               BOOST_SCOPE_EXIT ( (&Self) )
               {

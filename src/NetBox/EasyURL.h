@@ -53,15 +53,119 @@ private:
     curl_slist *m_SList;
 };
 
+class TCURLIntf
+{
+public:
+    virtual ~TCURLIntf()
+    {}
+    virtual void Init() = 0;
+
+  enum TLogLevel
+  {
+    LOG_STATUS = 0,
+    LOG_ERROR = 1,
+    LOG_COMMAND = 2,
+    LOG_REPLY = 3,
+    LOG_LIST = 4,
+    LOG_APIERROR = 5,
+    LOG_WARNING = 6,
+    LOG_INFO = 7,
+    LOG_DEBUG = 8
+  };
+    /**
+     * Initialize easy curl
+     * \param url URL to connect
+     * \param userName user name
+     * \param password password
+     * \return false if error
+     */
+    virtual bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
+        const struct ProxySettings &proxySettings) = 0;
+
+    /**
+     * Close curl
+     */
+    virtual bool Close() = 0;
+
+    /**
+     * Prepare easy curl state
+     * \param path reauested path
+     * \param handleTimeout true to handle timeout
+     * \return curl status
+     */
+    virtual CURLcode Prepare(const char *path, const bool handleTimeout = true) = 0;
+
+    /**
+     * Set slist
+     * \param slist slist object
+     * \return curl status
+     */
+    virtual CURLcode SetSlist(CSlistURL &slist) = 0;
+
+    /**
+     * Set output as std::string buffer
+     * \param out output std::string buffer
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    virtual CURLcode SetOutput(std::string &out, int *progress) = 0;
+
+    /**
+     * Set output as file
+     * \param out output file
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    virtual CURLcode SetOutput(CNBFile *out, int *progress) = 0;
+
+    /**
+     * Set input as file (upload operations)
+     * \param in input file
+     * \param progress pointer to variable to save progress percent of the current operation
+     * \return curl status
+     */
+    virtual CURLcode SetInput(CNBFile *in, int *progress) = 0;
+
+    /**
+     * Set abort event handle
+     * \param event abort event handle
+     */
+    virtual void SetAbortEvent(HANDLE event) = 0;
+
+    /**
+     * Perform request
+     * \return curl status
+     */
+    virtual CURLcode Perform() = 0;
+
+    /**
+     * Execute FTP command
+     * \param cmd command std::string
+     * \return curl status
+     */
+    virtual CURLcode ExecuteFtpCommand(const char *cmd) = 0;
+
+    /**
+     * Get top URL
+     * \return top URL
+     */
+    virtual const char *GetTopURL() const = 0;
+    // virtual operator CURL *() = 0;
+    virtual bool Aborted() const = 0;
+
+    virtual void SetDebugLevel(TLogLevel Level) = 0;
+    virtual CURL *GetCURL() = 0;
+};
 
 /**
  * CURL easy wrapper
  */
-class CEasyURL
+class CEasyURL : public TCURLIntf
 {
 public:
     explicit CEasyURL();
-    ~CEasyURL();
+    virtual void Init();
+    virtual ~CEasyURL();
 
     /**
      * Initialize easy curl
@@ -70,13 +174,13 @@ public:
      * \param password password
      * \return false if error
      */
-    bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
+    virtual bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
         const struct ProxySettings &proxySettings);
 
     /**
      * Close curl
      */
-    void Close();
+    virtual bool Close();
 
     /**
      * Prepare easy curl state
@@ -84,14 +188,14 @@ public:
      * \param handleTimeout true to handle timeout
      * \return curl status
      */
-    CURLcode Prepare(const char *path, const bool handleTimeout = true);
+    virtual CURLcode Prepare(const char *path, const bool handleTimeout = true);
 
     /**
      * Set slist
      * \param slist slist object
      * \return curl status
      */
-    CURLcode SetSlist(CSlistURL &slist);
+    virtual CURLcode SetSlist(CSlistURL &slist);
 
     /**
      * Set output as std::string buffer
@@ -99,7 +203,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetOutput(std::string &out, int *progress);
+    virtual CURLcode SetOutput(std::string &out, int *progress);
 
     /**
      * Set output as file
@@ -107,7 +211,7 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetOutput(CNBFile *out, int *progress);
+    virtual CURLcode SetOutput(CNBFile *out, int *progress);
 
     /**
      * Set input as file (upload operations)
@@ -115,34 +219,39 @@ public:
      * \param progress pointer to variable to save progress percent of the current operation
      * \return curl status
      */
-    CURLcode SetInput(CNBFile *in, int *progress);
+    virtual CURLcode SetInput(CNBFile *in, int *progress);
 
     /**
      * Set abort event handle
      * \param event abort event handle
      */
-    void SetAbortEvent(HANDLE event);
+    virtual void SetAbortEvent(HANDLE event);
 
     /**
      * Perform request
      * \return curl status
      */
-    CURLcode Perform();
+    virtual CURLcode Perform();
 
     /**
      * Execute FTP command
      * \param cmd command std::string
      * \return curl status
      */
-    CURLcode ExecuteFtpCommand(const char *cmd);
+    virtual CURLcode ExecuteFtpCommand(const char *cmd);
 
     /**
      * Get top URL
      * \return top URL
      */
-    inline const char *GetTopURL() const
+    virtual const char *GetTopURL() const
     {
         return m_TopURL.c_str();
+    }
+
+    virtual CURL *GetCURL()
+    {
+        return m_CURL;
     }
 
     operator CURL *()
@@ -150,10 +259,12 @@ public:
         return m_CURL;
     }
 
-    bool Aborted() const
+    virtual bool Aborted() const
     {
         return m_Progress.Aborted;
     }
+
+    virtual void SetDebugLevel(TLogLevel Level) { FDebugLevel = Level; }
 
 private:
     int DebugOutput(const char *data, size_t size);
@@ -226,5 +337,6 @@ private:
     HANDLE m_regex;
     RegExpMatch *m_match;
     int m_brackets;
+    TLogLevel FDebugLevel;
 };
 

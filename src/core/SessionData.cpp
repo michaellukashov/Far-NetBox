@@ -25,9 +25,11 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
-const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][11] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP" };
+const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
+const int HTTPPortNumber = 80;
+const int HTTPSPortNumber = 443;
 const int FtpsImplicitPortNumber = 990;
 //---------------------------------------------------------------------
 TDateTime SecToDateTime(int Sec)
@@ -954,6 +956,20 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     Url.erase(0, 5);
     ProtocolDefined = true;
   }
+  else if (LowerCase(Url.substr(0, 5)) == L"http:")
+  {
+    AFSProtocol = fsHTTP;
+    APortNumber = HTTPPortNumber;
+    Url.erase(0, 5);
+    ProtocolDefined = true;
+  }
+  else if (LowerCase(Url.substr(0, 6)) == L"https:")
+  {
+    AFSProtocol = fsHTTPS;
+    APortNumber = HTTPSPortNumber;
+    Url.erase(0, 6);
+    ProtocolDefined = true;
+  }
 
   if (ProtocolDefined && (Url.substr(0, 2) == L"//"))
   {
@@ -1641,13 +1657,41 @@ void TSessionData::SetRekeyTime(unsigned int value)
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetDefaultSessionName()
 {
-  if (!GetHostName().empty() && !GetUserName().empty())
+  std::wstring hostName = GetHostName();
+  std::wstring userName = GetUserName();
+  // DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
+  switch (GetFSProtocol())
   {
-    return FORMAT(L"%s@%s", GetUserName().c_str(), GetHostName().c_str());
+    case fsHTTP:
+    {
+        if (LowerCase(hostName.substr(0, 7)) == L"http://")
+        {
+            hostName.erase(0, 7);
+        }
+        hostName = ::ReplaceStrAll(hostName, L"/", L"_");
+        break;
+    }
+    case fsHTTPS:
+    {
+        if (LowerCase(hostName.substr(0, 8)) == L"https://")
+        {
+            hostName.erase(0, 8);
+        }
+        hostName = ::ReplaceStrAll(hostName, L"/", L"_");
+        break;
+    }
+    default:
+    {
+        break;
+    }
   }
-  else if (!GetHostName().empty())
+  if (!hostName.empty() && !userName.empty())
   {
-    return GetHostName();
+    return FORMAT(L"%s@%s", userName.c_str(), hostName.c_str());
+  }
+  else if (!hostName.empty())
+  {
+    return hostName;
   }
   else
   {
@@ -1658,15 +1702,18 @@ std::wstring TSessionData::GetDefaultSessionName()
 std::wstring TSessionData::GetSessionName()
 {
   // DEBUG_PRINTF(L"Name = %s", Name.c_str());
+  std::wstring Result;
   if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
       (Name != DefaultName))
   {
-    return Name;
+    Result = Name;
   }
   else
   {
-    return GetDefaultSessionName();
+    Result = GetDefaultSessionName();
   }
+  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
+  return Result;
 }
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetSessionUrl()
@@ -1696,6 +1743,12 @@ std::wstring TSessionData::GetSessionUrl()
 
       case fsFTP:
         Url = L"ftp://";
+        break;
+      case fsHTTP:
+        Url = L"http://";
+        break;
+      case fsHTTPS:
+        Url = L"https://";
         break;
     }
 

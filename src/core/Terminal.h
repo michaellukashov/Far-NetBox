@@ -149,7 +149,7 @@ typedef informationevent_signal_type::slot_type informationevent_slot_type;
 #define FILE_OPERATION_LOOP(MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_EX(true, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
-enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP };
+enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsHTTP, cfsHTTPS };
 //---------------------------------------------------------------------------
 const int cpDelete = 0x01;
 const int cpTemporary = 0x04;
@@ -193,6 +193,7 @@ friend class TRemoteFile;
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
 friend class TFTPFileSystem;
+friend class TWebDAVFileSystem;
 friend class TTunnelUI;
 friend class TCallbackGuard;
 

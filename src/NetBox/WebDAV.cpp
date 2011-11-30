@@ -43,6 +43,7 @@ PProtocol CSessionWebDAV::CreateClientInstance() const
 CWebDAV::CWebDAV(const CSession *session)
     : CProtocolBase(session)
 {
+    m_CURL.Init();
 }
 
 
@@ -169,12 +170,12 @@ bool CWebDAV::GetList(PluginPanelItem **items, int *itemsNum, std::wstring &erro
         {
             LastAccess.dwLowDateTime = LastAccess.dwHighDateTime = Created.dwLowDateTime = Created.dwHighDateTime = Modified.dwLowDateTime = Modified.dwHighDateTime = 0;
         }
-        std::wstring             Name;
-        DWORD               Attributes;
-        FILETIME            Created;
-        FILETIME            Modified;
-        FILETIME            LastAccess;
-        unsigned __int64    Size;
+        std::wstring Name;
+        DWORD Attributes;
+        FILETIME Created;
+        FILETIME Modified;
+        FILETIME LastAccess;
+        unsigned __int64 Size;
     };
     std::vector<WebDAVItem> wdavItems;
 

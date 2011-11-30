@@ -231,6 +231,7 @@
     <ClCompile Include="..\core\ScpFileSystem.cpp" />
     <ClCompile Include="..\core\FtpFileSystem.cpp" />
     <ClCompile Include="..\core\SftpFileSystem.cpp" />
+    <ClCompile Include="..\core\WebDAVFileSystem.cpp" />
     <ClCompile Include="..\core\PuttyIntf.cpp" />
     <ClCompile Include="..\core\Cryptography.cpp" />
     <ClCompile Include="..\core\FileBuffer.cpp" />

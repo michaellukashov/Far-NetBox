@@ -208,9 +208,9 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal):
   TCustomFileSystem(ATerminal),
   FFileZillaIntf(NULL),
-  FQueueCriticalSection(new TCriticalSection),
-  FTransferStatusCriticalSection(new TCriticalSection),
-  FQueue(new TMessageQueue),
+  FQueueCriticalSection(new TCriticalSection()),
+  FTransferStatusCriticalSection(new TCriticalSection()),
+  FQueue(new TMessageQueue()),
   FQueueEvent(CreateEvent(NULL, true, false, NULL)),
   FReply(0),
   FCommandReply(0),
@@ -595,7 +595,7 @@ void TFTPFileSystem::EnsureLocation()
     // It may not be because:
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
-    // makes FAPI change its current directory (and not restoring it back afterwards)
+    // makes FZAPI change its current directory (and not restoring it back afterwards)
     if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
     {
       FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
@@ -1827,7 +1827,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   bool GotNoFilesForAll = false;
-  bool Repeat;
+  bool Repeat = false;
 
   do
   {
@@ -3319,7 +3319,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (const std::exception & E)
+      catch (const std::exception &E)
       {
         delete File;
         std::wstring EntryData =

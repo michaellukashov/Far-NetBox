@@ -84,6 +84,7 @@ CFTP::CFTP(const CSession *session) :
     CProtocolBase(session),
     m_lastErrorCurlCode(CURLE_OK)
 {
+    m_CURL.Init();
 }
 
 

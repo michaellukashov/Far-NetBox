@@ -1532,6 +1532,7 @@ private:
   TFarEdit * PrivateKeyEdit;
   TFarComboBox * TransferProtocolCombo;
   TFarCheckBox * AllowScpFallbackCheck;
+  TFarText * HostNameLabel;
   TFarText * InsecureLabel;
   TFarCheckBox * UpdateDirectoriesCheck;
   TFarCheckBox * CacheDirectoriesCheck;
@@ -1657,7 +1658,7 @@ private:
 #define UTF_TRISTATE() \
   TRISTATE(UtfCombo, Utf, LOGIN_UTF);
 //---------------------------------------------------------------------------
-static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP };
+static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsHTTP, fsHTTPS };
 //---------------------------------------------------------------------------
 TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) :
   TTabbedDialog(AFarPlugin, tabCount),
@@ -1783,8 +1784,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetCaption(GetMsg(LOGIN_GROUP_SESSION));
   GroupTop = Separator->GetTop();
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_HOST_NAME));
+  HostNameLabel = new TFarText(this);
+  HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
   HostNameEdit = new TFarEdit(this);
   HostNameEdit->SetRight(CRect.Right - 12 - 2);
@@ -1844,6 +1845,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   #ifndef NO_FILEZILLA
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
   #endif
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
@@ -2689,6 +2692,35 @@ void TSessionDialog::Change()
   }
 }
 //---------------------------------------------------------------------------
+void AdjustRemoteDir(TFarEdit *HostNameEdit,
+    TFarEdit *RemoteDirectoryEdit,
+    TFarCheckBox *UpdateDirectoriesCheck)
+{
+    std::wstring hostName = HostNameEdit->GetText();
+    if (LowerCase(hostName.substr(0, 7)) == L"http://")
+    {
+        hostName.erase(0, 7);
+    }
+    else if (LowerCase(hostName.substr(0, 7)) == L"https://")
+    {
+        hostName.erase(0, 8);
+    }
+    std::wstring dir;
+    size_t P = hostName.find_first_of(L'/');
+    if (P != std::wstring::npos)
+    {
+        dir = hostName.substr(P, hostName.size() - P);
+        hostName.resize(hostName.size() - dir.size());
+    }
+    std::wstring remotedir = RemoteDirectoryEdit->GetText();
+    if (remotedir.empty() && !dir.empty())
+    {
+        // UpdateDirectoriesCheck->SetChecked(true);
+        RemoteDirectoryEdit->SetText(dir);
+        HostNameEdit->SetText(hostName);
+    }
+}
+//---------------------------------------------------------------------------
 void TSessionDialog::TransferProtocolComboChange()
 {
   // note that this modifies the session for good,
@@ -2705,6 +2737,22 @@ void TSessionDialog::TransferProtocolComboChange()
       PortNumberEdit->SetAsInteger(21);
     }
   }
+  else if (GetFSProtocol() == fsHTTP)
+  {
+    if (PortNumberEdit->GetAsInteger() == 443)
+    {
+      PortNumberEdit->SetAsInteger(80);
+      ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
+    }
+  }
+  else if (GetFSProtocol() == fsHTTPS)
+  {
+    if (PortNumberEdit->GetAsInteger() == 80)
+    {
+      PortNumberEdit->SetAsInteger(443);
+      ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
+    }
+  }
   else
   {
     if (PortNumberEdit->GetAsInteger() == 21)
@@ -2719,7 +2767,11 @@ void TSessionDialog::UpdateControls()
   TFSProtocol FSProtocol = GetFSProtocol();
   bool InternalSshProtocol =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
+  bool InternalHTTPProtocol =
+    (FSProtocol == fsHTTP) || (FSProtocol == fsHTTPS);
   bool SshProtocol = InternalSshProtocol;
+  bool HTTPProtocol = FSProtocol == fsHTTP;
+  bool HTTPSProtocol = FSProtocol == fsHTTPS;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   bool FtpProtocol = (FSProtocol == fsFTP);
@@ -2730,8 +2782,9 @@ void TSessionDialog::UpdateControls()
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItems()->GetSelected(), false) == fsSFTPonly));
-  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol);
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
+  HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
@@ -3148,6 +3201,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     else if (Action == saConnect)
     {
       Action = saEdit;
+    }
+
+    if ((GetFSProtocol() == fsHTTP) || (GetFSProtocol() == fsHTTPS))
+    {
+      ::AdjustRemoteDir(HostNameEdit, RemoteDirectoryEdit, UpdateDirectoriesCheck);
     }
 
     // save session data

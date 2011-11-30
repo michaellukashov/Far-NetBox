@@ -8,11 +8,11 @@
 #include "Classes.h"
 #include "Common.h"
 //---------------------------------------------------------------------------
-// #ifndef _DEBUG
-// #pragma comment(lib, "nafxcw.lib")
-// #else
-// #pragma comment(lib, "nafxcwd.lib")
-// #endif
+#ifndef _DEBUG
+#pragma comment(lib, "uafxcw.lib")
+#else
+#pragma comment(lib, "uafxcwd.lib")
+#endif
 //---------------------------------------------------------------------------
 void TFileZillaIntf::Initialize()
 {
