@@ -942,7 +942,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     wchar_t * PingTypes = L"-NC";
     TPingType PingType;
     int PingInterval;
-    if (Data->GetFSProtocol() == fsFTP)
+    if (Data->GetFSProtocol() == fsFTP || Data->GetFSProtocol() == fsFTPS)
     {
       PingType = Data->GetFtpPingType();
       PingInterval = Data->GetFtpPingInterval();
@@ -1017,7 +1017,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         BooleanToEngStr(Data->GetIgnoreLsWarnings()).c_str(),
         BooleanToEngStr(Data->GetScp1Compatibility()).c_str());
     }
-    if (Data->GetFSProtocol() == fsFTP)
+    if (Data->GetFSProtocol() == fsFTP || Data->GetFSProtocol() == fsFTPS)
     {
       std::wstring Ftps;
       switch (Data->GetFtps())

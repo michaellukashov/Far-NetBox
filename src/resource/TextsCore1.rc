@@ -333,6 +333,7 @@ BEGIN
   FTPS_IMPLICIT, "SSL/TLS Implicit encryption"
   FTPS_EXPLICIT_SSL, "SSL Explicit encryption"
   FTPS_EXPLICIT_TLS, "TLS Explicit encryption"
+  FTPS_UNSUPPORTED, "This version does not support FTPS protocol."
 
   CORE_VARIABLE_STRINGS, "CORE_VARIABLE"
   PUTTY_BASED_ON, "SSH and SCP code based on PuTTY %s"

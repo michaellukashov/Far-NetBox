@@ -25,7 +25,7 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipBlowfish, cip3DES, cipWarn, cipArcfour, cipDES };
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
-const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
+const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
@@ -1429,7 +1429,7 @@ std::wstring TSessionData::GetSshProtStr()
 //---------------------------------------------------------------------
 bool TSessionData::GetUsesSsh()
 {
-  return (GetFSProtocol() != fsFTP);
+  return (GetFSProtocol() < fsSFTP);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipher(int Index, TCipher value)
@@ -1747,6 +1747,9 @@ std::wstring TSessionData::GetSessionUrl()
 
       case fsFTP:
         Url = L"ftp://";
+        break;
+      case fsFTPS:
+        Url = L"ftps://";
         break;
       case fsHTTP:
         Url = L"http://";
