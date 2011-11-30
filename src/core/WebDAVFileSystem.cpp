@@ -26,7 +26,8 @@
 namespace alg = boost::algorithm;
 
 //---------------------------------------------------------------------------
-static const std::wstring CONST_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
+static const std::wstring CONST_HTTP_PROTOCOL_BASE_NAME = L"WebDAV - HTTP";
+static const std::wstring CONST_HTTPS_PROTOCOL_BASE_NAME = L"WebDAV - HTTPS";
 //---------------------------------------------------------------------------
 static std::wstring UnixExcludeLeadingBackslash(const std::wstring str)
 {
@@ -141,7 +142,9 @@ void TWebDAVFileSystem::Init(TSecureShell *SecureShell)
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FProcessingCommand = false;
 
-  FFileSystemInfo.ProtocolBaseName = CONST_PROTOCOL_BASE_NAME;
+  FFileSystemInfo.ProtocolBaseName = 
+    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+        CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   // capabilities of SCP protocol are fixed
   for (int Index = 0; Index < fcCount; Index++)
@@ -175,7 +178,9 @@ void TWebDAVFileSystem::Open()
   TSessionData *Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
-  FSessionInfo.ProtocolBaseName = CONST_PROTOCOL_BASE_NAME;
+  FSessionInfo.ProtocolBaseName = 
+    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+        CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
   FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
   FLastDataSent = Now();
