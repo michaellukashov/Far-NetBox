@@ -194,6 +194,7 @@ void TSessionData::Assign(TPersistent * Source)
     DUPL(PortNumber);
     DUPL(UserName);
     DUPL(Password);
+    // SetPassword(Source->GetPassword());
     DUPL(Passwordless);
     DUPL(PingInterval);
     DUPL(PingType);
@@ -1043,7 +1044,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
 
       if (P > 0)
       {
-        UserInfo = ConnectInfo.substr(0, P - 1);
+        UserInfo = ConnectInfo.substr(0, P);
         HostInfo = ConnectInfo.substr(P + 1, ConnectInfo.size() - P);
       }
       else
@@ -1086,7 +1087,10 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       SetPassword(DecodeUrlChars(UserInfo));
       SetPasswordless(GetPassword().empty() && PasswordSeparator);
 
-      ARemoteDirectory = Url.substr(PSlash, Url.size() - PSlash + 1);
+      if (PSlash < Url.size())
+      {
+          ARemoteDirectory = Url.substr(PSlash, Url.size() - PSlash + 1);      
+      }
     }
 
     if (!ARemoteDirectory.empty() && (ARemoteDirectory != L"/"))
