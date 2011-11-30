@@ -2040,8 +2040,8 @@ void TFarEdit::SetHistoryMask(int Index, std::wstring value)
 void TFarEdit::SetAsInteger(int value)
 {
     // DEBUG_PRINTF(L"GetText = %s, value = %d", GetText().c_str(), value);
-    int Int = ::StrToIntDef(::Trim(GetText()), 0);
-    if (!Int || (GetAsInteger() != value))
+    int Int = GetAsInteger();
+    if (!Int || (Int != value))
     {
         SetText(::IntToStr(value));
         DialogChange();
