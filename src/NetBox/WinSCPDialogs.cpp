@@ -1658,7 +1658,7 @@ private:
 #define UTF_TRISTATE() \
   TRISTATE(UtfCombo, Utf, LOGIN_UTF);
 //---------------------------------------------------------------------------
-static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsHTTP, fsHTTPS };
+static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsFTPS, fsHTTP, fsHTTPS };
 //---------------------------------------------------------------------------
 TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) :
   TTabbedDialog(AFarPlugin, tabCount),
@@ -1844,6 +1844,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
   #ifndef NO_FILEZILLA
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
+  #ifndef MPEXT_NO_SSLDLL
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTPS));
+  #endif
   #endif
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
@@ -2737,6 +2740,13 @@ void TSessionDialog::TransferProtocolComboChange()
       PortNumberEdit->SetAsInteger(21);
     }
   }
+  if (GetFSProtocol() == fsFTPS)
+  {
+    if (PortNumberEdit->GetAsInteger() == 21)
+    {
+      PortNumberEdit->SetAsInteger(990);
+    }
+  }
   else if (GetFSProtocol() == fsHTTP)
   {
     if (PortNumberEdit->GetAsInteger() == 443)
@@ -2774,7 +2784,8 @@ void TSessionDialog::UpdateControls()
   bool HTTPSProtocol = FSProtocol == fsHTTPS;
   bool SftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
-  bool FtpProtocol = (FSProtocol == fsFTP);
+  bool FtpProtocol = (FSProtocol == fsFTP || FSProtocol == fsFTPS);
+  bool FtpsProtocol = (FSProtocol == fsFTPS);
 
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
@@ -2831,16 +2842,16 @@ void TSessionDialog::UpdateControls()
     (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked());
   PreserveDirectoryChangesCheck->SetEnabled(
     CacheDirectoryChangesCheck->GetIsEnabled() && CacheDirectoryChangesCheck->GetChecked());
-  ResolveSymlinksCheck->SetEnabled((FSProtocol != fsFTP));
+  ResolveSymlinksCheck->SetEnabled(!FtpProtocol);
 
   // Environment tab
-  DSTModeUnixCheck->SetEnabled((FSProtocol != fsFTP));
+  DSTModeUnixCheck->SetEnabled(!FtpProtocol);
   UtfCombo->SetEnabled((FSProtocol != fsSCPonly));
-  TimeDifferenceEdit->SetEnabled(((FSProtocol == fsFTP) || (FSProtocol == fsSCPonly)));
+  TimeDifferenceEdit->SetEnabled((FtpProtocol || (FSProtocol == fsSCPonly)));
 
   // Recycle bin tab
   OverwrittenToRecycleBinCheck->SetEnabled((FSProtocol != fsSCPonly) &&
-    (FSProtocol != fsFTP));
+    !FtpProtocol);
   RecycleBinPathEdit->SetEnabled(
     (DeleteToRecycleBinCheck->GetIsEnabled() && DeleteToRecycleBinCheck->GetChecked()) ||
     (OverwrittenToRecycleBinCheck->GetIsEnabled() && OverwrittenToRecycleBinCheck->GetChecked()));
@@ -3422,7 +3433,7 @@ void TSessionDialog::LoadPing(TSessionData * SessionData)
   TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
     AllowScpFallbackCheck->GetChecked());
 
-  switch (FSProtocol == fsFTP ? SessionData->GetFtpPingType() : SessionData->GetPingType())
+  switch (FSProtocol == fsFTP || FSProtocol == fsFTPS ? SessionData->GetFtpPingType() : SessionData->GetPingType())
   {
     case ptNullPacket:
       PingNullPacketButton->SetChecked(true);
@@ -3437,7 +3448,8 @@ void TSessionDialog::LoadPing(TSessionData * SessionData)
       break;
   }
   PingIntervalSecEdit->SetAsInteger(
-    (GetFSProtocol() == fsFTP ? SessionData->GetFtpPingInterval() : SessionData->GetPingInterval()));
+    (GetFSProtocol() == fsFTP || GetFSProtocol() == fsFTPS ?
+        SessionData->GetFtpPingInterval() : SessionData->GetPingInterval()));
 }
 //---------------------------------------------------------------------
 void TSessionDialog::SavePing(TSessionData * SessionData)
@@ -3457,7 +3469,7 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
   }
   TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
     AllowScpFallbackCheck->GetChecked());
-  if (FSProtocol == fsFTP)
+  if (FSProtocol == fsFTP || FSProtocol == fsFTPS)
   {
     SessionData->SetFtpPingType(PingType);
     SessionData->SetFtpPingInterval(PingIntervalSecEdit->GetAsInteger());
