@@ -18,7 +18,7 @@
 #ifndef NO_FILEZILLA
 #include "FtpFileSystem.h"
 #endif
-#include "HttpFileSystem.h"
+#include "WebDAVFileSystem.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "CoreMain.h"

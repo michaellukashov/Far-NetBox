@@ -10,7 +10,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 
-#include "HttpFileSystem.h"
+#include "WebDAVFileSystem.h"
 
 #include "Terminal.h"
 #include "Common.h"
