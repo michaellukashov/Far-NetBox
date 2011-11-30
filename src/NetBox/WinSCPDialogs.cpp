@@ -1079,7 +1079,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   }
   std::wstring LegalCopyright = Configuration->GetFileInfoString(L"LegalCopyright");
 
-  int Height = 16;
+  int Height = 16 + 2;
   #ifndef NO_FILEZILLA
   Height += 2;
   #endif
@@ -1104,13 +1104,18 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  DEBUG_PRINTF(L"Configuration->GetVersion = %s", Configuration->GetVersion().c_str());
+  // DEBUG_PRINTF(L"Configuration->GetVersion = %s", Configuration->GetVersion().c_str());
   Text->SetCaption(FORMAT(GetMsg(ABOUT_VERSION).c_str(), Configuration->GetVersion().c_str()));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->Move(0, 1);
-  Text->SetCaption(FMTLOAD(WINSCP_BASED_ON, LoadStr(WINSCPFAR_VERSION).c_str()));
+  // Text->Move(0, 1);
+  Text->SetCaption(LoadStr(WINSCP_BASED_ON);
+  Text->SetCenterGroup(true);
+
+  Text = new TFarText(this);
+  // Text->Move(0, 1);
+  Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION).c_str()));
   Text->SetCenterGroup(true);
 
   if (!ProductName.empty())
