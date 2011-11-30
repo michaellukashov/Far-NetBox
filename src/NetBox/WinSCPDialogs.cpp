@@ -3335,6 +3335,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
         SessionData->SetFtps(ftpsImplicit);
     }
+    else
+    {
+        SessionData->SetFtps(ftpsNone);
+    }
 
     // Connection tab
     SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
