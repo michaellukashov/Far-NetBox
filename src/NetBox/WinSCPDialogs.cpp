@@ -2747,6 +2747,7 @@ void TSessionDialog::TransferProtocolComboChange()
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
 
   LoadPing(FSessionData);
+  DEBUG_PRINTF(L"GetFSProtocol = %d, PortNumberEdit->GetAsInteger = %d", GetFSProtocol(), PortNumberEdit->GetAsInteger());
   if (GetFSProtocol() == fsFTP)
   {
     if (PortNumberEdit->GetAsInteger() == 22)
