@@ -1843,8 +1843,8 @@ std::wstring LoadStrPart(int Ident, int Part)
 //---------------------------------------------------------------------------
 std::wstring DecodeUrlChars(std::wstring S)
 {
-  size_t i = 1;
-  while (i <= S.size())
+  size_t i = 0;
+  while (i < S.size())
   {
     switch (S[i])
     {
