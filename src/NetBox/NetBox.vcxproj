@@ -188,7 +188,6 @@
   <ItemGroup>
     <ClCompile Include="EasyURL.cpp" />
     <ClCompile Include="NetBox.cpp" />
-    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Logging.cpp" />
     <ClCompile Include=".\FarDialog.cpp" />
     <ClCompile Include=".\FarPlugin.cpp" />
@@ -275,20 +274,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EasyURL.h" />
-    <ClInclude Include="FTP.h" />
-    <ClInclude Include="Panel.h" />
-    <ClInclude Include="ProgressWindow.h" />
-    <ClInclude Include="Protocol.h" />
-    <ClInclude Include="ProtocolBase.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Session.h" />
-    <ClInclude Include="SessionEditor.h" />
-    <ClInclude Include="SessionManager.h" />
-    <ClInclude Include="Settings.h" />
-    <ClInclude Include="SFTP.h" />
-    <ClInclude Include="Logging.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Strings.h" />
     <ClInclude Include="..\..\libs\tinyXML\tinystr.h" />
     <ClInclude Include="..\..\libs\tinyXML\tinyxml.h" />
     <ClInclude Include="WebDAV.h" />

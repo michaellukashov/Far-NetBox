@@ -139,7 +139,6 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/windows/GUITools.cpp
     ${PROJECT_ROOT}/src/NetBox/stdafx.cpp
     ${PROJECT_ROOT}/src/NetBox/Logging.cpp
-    ${PROJECT_ROOT}/src/NetBox/Settings.cpp
     ${PROJECT_ROOT}/src/NetBox/EasyURL.cpp
     ${PROJECT_ROOT}/src/NetBox/FarUtil.cpp
     ${PROJECT_ROOT}/src/NetBox/FarPlugin.cpp
