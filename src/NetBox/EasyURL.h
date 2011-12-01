@@ -33,15 +33,6 @@ enum ProxyTypes
    PROXY_HTTP,
 };
 
-struct ProxySettings
-{
-    int proxyType;
-    std::wstring proxyHost;
-    unsigned long proxyPort;
-    std::wstring proxyLogin;
-    std::wstring proxyPassword;
-};
-
 class TSessionData;
 
 /**
@@ -97,8 +88,8 @@ public:
      * \param password password
      * \return false if error
      */
-    virtual bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
-        const struct ProxySettings &proxySettings) = 0;
+    virtual bool Initialize(const wchar_t *url, const wchar_t *userName,
+        const wchar_t *password) = 0;
 
     /**
      * Close curl
@@ -187,8 +178,8 @@ public:
      * \param password password
      * \return false if error
      */
-    virtual bool Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
-        const struct ProxySettings &proxySettings);
+    virtual bool Initialize(const wchar_t *url, const wchar_t *userName,
+    const wchar_t *password);
 
     /**
      * Close curl
@@ -341,7 +332,6 @@ private:
         HANDLE  AbortEvent;
     };
     Progress m_Progress;
-    struct ProxySettings m_proxySettings;
     HANDLE m_regex;
     RegExpMatch *m_match;
     int m_brackets;

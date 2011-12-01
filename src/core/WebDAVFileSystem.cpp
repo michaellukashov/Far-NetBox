@@ -304,20 +304,11 @@ void TWebDAVFileSystem::Open()
       }
     }
 
-    ProxySettings proxySettings;
-    // init proxySettings
-    proxySettings.proxyType = GetOptionVal(OPTION_PROXYTYPE);
-    proxySettings.proxyHost = GetOption(OPTION_PROXYHOST);
-    proxySettings.proxyPort = GetOptionVal(OPTION_PROXYPORT);
-    proxySettings.proxyLogin = GetOption(OPTION_PROXYUSER);
-    proxySettings.proxyPassword = GetOption(OPTION_PROXYPASS);
-
     DEBUG_PRINTF(L"url = %s", url.c_str());
     FActive = FCURLIntf->Initialize(
       url.c_str(),
 	  UserName.c_str(),
-      Password.c_str(),
-      proxySettings);
+      Password.c_str());
     assert(FActive);
     FCURLIntf->SetAbortEvent(FAbortEvent);
 
@@ -2432,19 +2423,10 @@ bool TWebDAVFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
   std::wstring Account = Data->GetFtpAccount();
   std::wstring Path = Data->GetRemoteDirectory();
 
-    ProxySettings proxySettings;
-    // init proxySettings
-    proxySettings.proxyType = GetOptionVal(OPTION_PROXYTYPE);
-    proxySettings.proxyHost = GetOption(OPTION_PROXYHOST);
-    proxySettings.proxyPort = GetOptionVal(OPTION_PROXYPORT);
-    proxySettings.proxyLogin = GetOption(OPTION_PROXYUSER);
-    proxySettings.proxyPassword = GetOption(OPTION_PROXYPASS);
-
   const wchar_t *url = HostName.c_str();
     // DEBUG_PRINTF(L"WebDAV: connecting to %s", url);
     //Initialize curl
-    FCURLIntf->Initialize(url, UserName.c_str(), Password.c_str(),
-        proxySettings);
+    FCURLIntf->Initialize(url, UserName.c_str(), Password.c_str());
     FCURLIntf->SetAbortEvent(abortEvent);
 
     //Check initial path existing

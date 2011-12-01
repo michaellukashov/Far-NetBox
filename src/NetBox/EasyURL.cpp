@@ -64,8 +64,8 @@ CEasyURL::~CEasyURL()
 }
 
 
-bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wchar_t *password,
-    const struct ProxySettings &proxySettings)
+bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
+    const wchar_t *password)
 {
     assert(m_CURL == NULL);
     assert(url && *url);
@@ -98,8 +98,6 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName, const wch
     {
         m_Password = ::W2MB(password);
     }
-    m_proxySettings = proxySettings;
-    // DEBUG_PRINTF(L"CEasyURL::Initialize: proxy type = %u, adress = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
     return true;
 }
 
@@ -154,7 +152,6 @@ CURLcode CEasyURL::Prepare(const char *path,
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_USERNAME, m_UserName.c_str()));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
     }
-    // DEBUG_PRINTF(L"CEasyURL::Prepare: proxy type = %u, host = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
     TProxyMethod ProxyMethod = Data->GetProxyMethod();
     if (ProxyMethod != pmNone)
     {
