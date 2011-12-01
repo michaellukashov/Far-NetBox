@@ -188,7 +188,6 @@
   <ItemGroup>
     <ClCompile Include="EasyURL.cpp" />
     <ClCompile Include="NetBox.cpp" />
-    <ClCompile Include="Logging.cpp" />
     <ClCompile Include=".\FarDialog.cpp" />
     <ClCompile Include=".\FarPlugin.cpp" />
     <ClCompile Include=".\FarUtil.cpp" />
