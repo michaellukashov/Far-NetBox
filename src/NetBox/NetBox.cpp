@@ -24,13 +24,7 @@
 #endif
 
 #include "stdafx.h"
-#include "SessionManager.h"
-#include "Panel.h"
-#include "WebDAV.h"
-#include "FTP.h"
-#include "SFTP.h"
-#include "FTPS.h"
-#include "SCP.h"
+#include "EasyURL.h"
 #include "Settings.h"
 #include "Logging.h"
 #include "resource.h"
@@ -234,12 +228,12 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
     {
         return INVALID_HANDLE_VALUE;
     }
+    /*
     PSession session = CSession::Load(fileName);
     if (!session.get())
     {
         return INVALID_HANDLE_VALUE;
     }
-    /*
     PProtocol proto = session->CreateClient();
     if (!proto.get())
     {

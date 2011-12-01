@@ -188,18 +188,8 @@
   <ItemGroup>
     <ClCompile Include="EasyURL.cpp" />
     <ClCompile Include="NetBox.cpp" />
-    <ClCompile Include="Panel.cpp" />
-    <ClCompile Include="ProgressWindow.cpp" />
-    <ClCompile Include="Session.cpp" />
-    <ClCompile Include="SessionEditor.cpp" />
-    <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="Settings.cpp" />
-    <ClCompile Include="FTP.cpp" />
-    <ClCompile Include="SFTP.cpp" />
-    <ClCompile Include="FTPS.cpp" />
-    <ClCompile Include="SCP.cpp" />
     <ClCompile Include="Logging.cpp" />
-    <ClCompile Include="WebDAV.cpp" />
     <ClCompile Include=".\FarDialog.cpp" />
     <ClCompile Include=".\FarPlugin.cpp" />
     <ClCompile Include=".\FarUtil.cpp" />

@@ -20,8 +20,6 @@
 #include "stdafx.h"
 
 #include "Settings.h"
-#include "Session.h"
-#include "SessionManager.h"
 #include "FarTexts.h"
 #include "Logging.h"
 #include "resource.h"
