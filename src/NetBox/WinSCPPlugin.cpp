@@ -61,7 +61,7 @@ bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
 //---------------------------------------------------------------------------
 int TWinSCPPlugin::GetMinFarVersion()
 {
-  return FAR170BETA5;
+  return FAR20; // FAR170BETA5;
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
