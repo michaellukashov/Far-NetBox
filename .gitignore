@@ -12,6 +12,7 @@ libs/openssl/
 libs/libssh2/
 libs/libcurl/
 libs/boost/
+dlls/
 ipch/
 *.opensdf
 *.sdf
@@ -28,4 +29,9 @@ ipch/
 *.7z
 *.orig
 tags
-NetBox/build
+src/NetBox/build
+src/NetBox/NetBox
+
+*.vsp
+*.psess
+*.i
