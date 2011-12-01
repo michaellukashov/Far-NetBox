@@ -151,7 +151,6 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/NetBox/Panel.cpp
     ${PROJECT_ROOT}/src/NetBox/WebDAV.cpp
     ${PROJECT_ROOT}/src/NetBox/Session.cpp
-    ${PROJECT_ROOT}/src/NetBox/NetBoxPlugin.cpp
     ${PROJECT_ROOT}/src/NetBox/ProgressWindow.cpp
     ${PROJECT_ROOT}/src/NetBox/FarUtil.cpp
     ${PROJECT_ROOT}/src/NetBox/FarPlugin.cpp

@@ -200,7 +200,6 @@
     <ClCompile Include="SCP.cpp" />
     <ClCompile Include="Logging.cpp" />
     <ClCompile Include="WebDAV.cpp" />
-    <ClCompile Include=".\NetBoxPlugin.cpp" />
     <ClCompile Include=".\FarDialog.cpp" />
     <ClCompile Include=".\FarPlugin.cpp" />
     <ClCompile Include=".\FarUtil.cpp" />
