@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<NetBox>
-	<Protocol>2</Protocol>
-	<URL>http://farmanager.com/svn/trunk</URL>
-	<UserName></UserName>
-	<Password crypt="1"></Password>
-	<PromptPsw>0</PromptPsw>
-</NetBox>
