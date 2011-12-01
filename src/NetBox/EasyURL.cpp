@@ -19,7 +19,6 @@
 
 #include "stdafx.h"
 #include "EasyURL.h"
-#include "Settings.h"
 #include "Logging.h"
 
 CEasyURL::CEasyURL() :

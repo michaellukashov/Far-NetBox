@@ -89,7 +89,7 @@ public:
 
     /**
      * Prepare easy curl state
-     * \param path reauested path
+     * \param path requested path
      * \param handleTimeout true to handle timeout
      * \return curl status
      */

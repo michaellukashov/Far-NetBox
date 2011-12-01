@@ -19,7 +19,6 @@
 #include "TextsCore.h"
 #include "SecureShell.h"
 #include "FileZillaIntf.h"
-#include "Settings.h"
 #include "FarUtil.h"
 #include "tinyXML\tinyxml.h"
 
