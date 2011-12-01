@@ -141,17 +141,6 @@ set ( COMMON_SOURCES
     ${PROJECT_ROOT}/src/NetBox/Logging.cpp
     ${PROJECT_ROOT}/src/NetBox/Settings.cpp
     ${PROJECT_ROOT}/src/NetBox/EasyURL.cpp
-    ${PROJECT_ROOT}/src/NetBox/Session.cpp
-    ${PROJECT_ROOT}/src/NetBox/SessionManager.cpp
-    ${PROJECT_ROOT}/src/NetBox/SessionEditor.cpp
-    ${PROJECT_ROOT}/src/NetBox/FTP.cpp
-    ${PROJECT_ROOT}/src/NetBox/SFTP.cpp
-    ${PROJECT_ROOT}/src/NetBox/FTPS.cpp
-    ${PROJECT_ROOT}/src/NetBox/SCP.cpp
-    ${PROJECT_ROOT}/src/NetBox/Panel.cpp
-    ${PROJECT_ROOT}/src/NetBox/WebDAV.cpp
-    ${PROJECT_ROOT}/src/NetBox/Session.cpp
-    ${PROJECT_ROOT}/src/NetBox/ProgressWindow.cpp
     ${PROJECT_ROOT}/src/NetBox/FarUtil.cpp
     ${PROJECT_ROOT}/src/NetBox/FarPlugin.cpp
     ${PROJECT_ROOT}/src/NetBox/FarDialog.cpp
