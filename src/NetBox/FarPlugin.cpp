@@ -1777,7 +1777,7 @@ int TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD *Rec)
     }
     return Result;
 }
-
+#ifdef NETBOX_DEBUG
 void TCustomFarPlugin::RunTests()
 {
     DEBUG_PRINTF(L"begin");
@@ -1792,7 +1792,7 @@ void TCustomFarPlugin::RunTests()
     }
     DEBUG_PRINTF(L"end");
 }
-
+#endif
 //---------------------------------------------------------------------------
 unsigned int TCustomFarFileSystem::FInstances = 0;
 //---------------------------------------------------------------------------
