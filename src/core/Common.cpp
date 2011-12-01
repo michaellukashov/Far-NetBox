@@ -2402,8 +2402,9 @@ bool FileExists(const std::wstring &fileName)
 
 bool RenameFile(const std::wstring &from, const std::wstring &to)
 {
-    ::Error(SNotImplemented, 40); 
-    return false;
+    // ::Error(SNotImplemented, 40); 
+    bool Result = ::MoveFile(from.c_str(), to.c_str());
+    return Result;
 }
 
 bool DirectoryExists(const std::wstring &filename)
