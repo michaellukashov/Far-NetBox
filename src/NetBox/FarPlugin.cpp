@@ -250,14 +250,7 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
     // DEBUG_PRINTF(L"begin");
     TCustomFarFileSystem *Result = NULL;
     PanelInfo Info;
-    if ((short int)FarVersion() >= (short int)FAR170BETA5)
-    {
-        FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
-    }
-    else
-    {
-        FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
-    }
+    FarControl(FCTL_GETPANELINFO, 0, (LONG_PTR)&Info, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 
     if (Info.Plugin)
     {
@@ -2135,19 +2128,13 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 {
     unsigned int PrevInstances = FInstances;
     InvalidateOpenPluginInfo();
-    // FarControl(Another ? FCTL_UPDATEANOTHERPANEL : FCTL_UPDATEPANEL,
-               // (void *)(!ClearSelection));
     FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, NULL, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
     return (FInstances >= PrevInstances);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-    // FarControl(Another ? FCTL_REDRAWANOTHERPANEL : FCTL_REDRAWPANEL, NULL);
-    if (Another)
-        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)0, PANEL_PASSIVE);
-    else
-        FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)0, PANEL_ACTIVE);
+    FPlugin->FarControl(FCTL_REDRAWPANEL, 0, (LONG_PTR)0, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 //---------------------------------------------------------------------------
 void TCustomFarFileSystem::ClosePlugin()
