@@ -22,7 +22,7 @@ void ShowExtendedException(const std::exception * E)
 }
 std::wstring AppNameString()
 {
-  return L"WinSCP";
+  return L"NetBox";
 }
 
 //---------------------------------------------------------------------------
@@ -42,7 +42,7 @@ void Busy(bool /*Start*/)
 //---------------------------------------------------------------------------
 std::wstring SshVersionString()
 {
-  return FORMAT(L"WinSCP-FAR-release-%s", Configuration->GetVersion().c_str());
+  return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
 }
 
 //---------------------------------------------------------------------------
