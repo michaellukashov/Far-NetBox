@@ -37,10 +37,6 @@
 #include "Common.h"
 
 //---------------------------------------------------------------------------
-
-std::vector<CPanel *> m_PanelInstances;   ///< Array of active panels instances
-
-//---------------------------------------------------------------------------
 extern TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
 
 //---------------------------------------------------------------------------
@@ -243,7 +239,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
     {
         return INVALID_HANDLE_VALUE;
     }
-
+    /*
     PProtocol proto = session->CreateClient();
     if (!proto.get())
     {
@@ -256,6 +252,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
         m_PanelInstances.push_back(panelInstance);
         return panelInstance;
     }
+    */
     return reinterpret_cast<HANDLE>(-2);
 }
 
