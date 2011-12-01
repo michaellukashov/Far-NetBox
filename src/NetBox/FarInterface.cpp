@@ -31,7 +31,7 @@ std::wstring GetRegistryKey()
 #ifndef NETBOX_DEBUG
   return L"Software\\Martin Prikryl\\WinSCP 2";
 #else
-  return L"Software\\Michael Lukashov\\TestNetBox";
+  return L"Software\\Michael Lukashov\\FarNetBox";
 #endif
 }
 //---------------------------------------------------------------------------
