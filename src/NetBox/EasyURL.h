@@ -25,6 +25,24 @@
 
 #define CHECK_CUCALL(code, fc) if (code == CURLE_OK) code = fc
 
+enum ProxyTypes
+{
+   PROXY_NONE = 0,
+   PROXY_SOCKS4,
+   PROXY_SOCKS5,
+   PROXY_HTTP,
+};
+
+struct ProxySettings
+{
+    int proxyType;
+    std::wstring proxyHost;
+    unsigned long proxyPort;
+    std::wstring proxyLogin;
+    std::wstring proxyPassword;
+};
+
+class TSessionData;
 
 /**
  * CURL slist wrapper
@@ -93,7 +111,9 @@ public:
      * \param handleTimeout true to handle timeout
      * \return curl status
      */
-    virtual CURLcode Prepare(const char *path, const bool handleTimeout = true) = 0;
+    virtual CURLcode Prepare(const char *path,
+        const TSessionData *Data,
+        int LogLevel, const bool handleTimeout = true) = 0;
 
     /**
      * Set slist
@@ -139,13 +159,6 @@ public:
     virtual CURLcode Perform() = 0;
 
     /**
-     * Execute FTP command
-     * \param cmd command std::string
-     * \return curl status
-     */
-    virtual CURLcode ExecuteFtpCommand(const char *cmd) = 0;
-
-    /**
      * Get top URL
      * \return top URL
      */
@@ -184,11 +197,13 @@ public:
 
     /**
      * Prepare easy curl state
-     * \param path reauested path
+     * \param path requested path
      * \param handleTimeout true to handle timeout
      * \return curl status
      */
-    virtual CURLcode Prepare(const char *path, const bool handleTimeout = true);
+    virtual CURLcode Prepare(const char *path,
+        const TSessionData *Data,
+        int LogLevel, const bool handleTimeout = true);
 
     /**
      * Set slist
@@ -232,13 +247,6 @@ public:
      * \return curl status
      */
     virtual CURLcode Perform();
-
-    /**
-     * Execute FTP command
-     * \param cmd command std::string
-     * \return curl status
-     */
-    virtual CURLcode ExecuteFtpCommand(const char *cmd);
 
     /**
      * Get top URL

@@ -2405,9 +2405,13 @@ std::string TWebDAVFileSystem::EscapeUTF8URL(const wchar_t *src) const
     return result;
 }
 
-CURLcode TWebDAVFileSystem::CURLPrepare(const char *webDavPath, const bool handleTimeout /*= true*/)
+CURLcode TWebDAVFileSystem::CURLPrepare(const char *webDavPath,
+    const bool handleTimeout /*= true*/)
 {
-    CURLcode urlCode = FCURLIntf->Prepare(webDavPath, handleTimeout);
+    CURLcode urlCode = FCURLIntf->Prepare(webDavPath,
+        FTerminal->GetSessionData(),
+        FTerminal->GetConfiguration()->GetActualLogProtocol(),
+        handleTimeout);
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_HTTPAUTH, CURLAUTH_ANY));
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_FOLLOWLOCATION, 1));
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POST301, 1));

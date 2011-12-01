@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include "EasyURL.h"
 #include "Logging.h"
+#include "SessionData.h"
 
 CEasyURL::CEasyURL() :
     m_CURL(NULL),
@@ -114,7 +115,9 @@ bool CEasyURL::Close()
 }
 
 
-CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/)
+CURLcode CEasyURL::Prepare(const char *path,
+    const TSessionData *Data, int LogLevel,
+    const bool handleTimeout /*= true*/)
 {
     assert(m_CURL);
     assert(!m_Prepared);
@@ -131,7 +134,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_URL, url.c_str()));
     if (handleTimeout)
     {
-        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_TIMEOUT, m_Settings.Timeout()));
+        CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_TIMEOUT, Data->GetTimeout()));
     }
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEFUNCTION, CEasyURL::InternalWriter));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_WRITEDATA, &m_Output));
@@ -139,7 +142,7 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSFUNCTION, CEasyURL::InternalProgress));
     CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROGRESSDATA, &m_Progress));
 
-    if (m_Settings.EnableLogging() && m_Settings.LoggingLevel() == LEVEL_DEBUG2)
+    if (LogLevel >= 1)
     {
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGFUNCTION, CEasyURL::InternalDebug));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_DEBUGDATA, this));
@@ -152,22 +155,23 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PASSWORD, m_Password.c_str()));
     }
     // DEBUG_PRINTF(L"CEasyURL::Prepare: proxy type = %u, host = %s", m_proxySettings.proxyType, m_proxySettings.proxyHost.c_str());
-    if (m_proxySettings.proxyType != PROXY_NONE)
+    TProxyMethod ProxyMethod = Data->GetProxyMethod();
+    if (ProxyMethod != pmNone)
     {
         int proxy_type = CURLPROXY_HTTP;
-        switch (m_proxySettings.proxyType)
+        switch (ProxyMethod)
         {
-            case PROXY_HTTP:
+            case pmHTTP:
             {
                 proxy_type = CURLPROXY_HTTP;
                 break;
             }
-            case PROXY_SOCKS4:
+            case pmSocks4:
             {
                 proxy_type = CURLPROXY_SOCKS4;
                 break;
             }
-            case PROXY_SOCKS5:
+            case pmSocks5:
             {
                 proxy_type = CURLPROXY_SOCKS5;
                 break;
@@ -175,8 +179,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
             default:
                 return CURLE_UNSUPPORTED_PROTOCOL;
         }
-        std::string proxy = ::W2MB(m_proxySettings.proxyHost.c_str());
-        unsigned long port = m_proxySettings.proxyPort;
+        std::string proxy = ::W2MB(Data->GetProxyHost().c_str());
+        unsigned long port = Data->GetProxyPort();
         if (port)
         {
             proxy += ":";
@@ -186,8 +190,8 @@ CURLcode CEasyURL::Prepare(const char *path, const bool handleTimeout /*= true*/
         // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
-        std::string login = ::W2MB(m_proxySettings.proxyLogin.c_str());
-        std::string password = ::W2MB(m_proxySettings.proxyPassword.c_str());
+        std::string login = ::W2MB(Data->GetProxyUsername().c_str());
+        std::string password = ::W2MB(Data->GetProxyPassword().c_str());
         if (!login.empty())
         {
             CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
@@ -276,33 +280,6 @@ CURLcode CEasyURL::Perform()
     m_Prepared = false;
     return curl_easy_perform(m_CURL);
 }
-
-
-CURLcode CEasyURL::ExecuteFtpCommand(const char *cmd)
-{
-    assert(cmd);
-    // DEBUG_PRINTF(L"ExecuteFtpCommand: cmd = %s", ::MB2W(cmd).c_str());
-
-    CSlistURL slist;
-    slist.Append(cmd);
-    CURLcode errCode = SetSlist(slist);
-
-    if (errCode == CURLE_OK)
-    {
-        errCode = Prepare(NULL);
-    }
-    if (errCode == CURLE_OK)
-    {
-        errCode = curl_easy_setopt(m_CURL, CURLOPT_QUOTE, slist);
-    }
-    if (errCode == CURLE_OK)
-    {
-        errCode = Perform();
-    }
-
-    return errCode;
-}
-
 
 size_t CEasyURL::InternalWriter(void *buffer, size_t size, size_t nmemb, void *userData)
 {

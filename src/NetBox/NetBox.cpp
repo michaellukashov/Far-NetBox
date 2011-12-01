@@ -25,7 +25,6 @@
 
 #include "stdafx.h"
 #include "EasyURL.h"
-#include "Settings.h"
 #include "Logging.h"
 #include "resource.h"
 #include "Common.h"
@@ -59,8 +58,6 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
     assert(FarPlugin);
     TFarPluginGuard Guard;
     CFarPlugin::Initialize(psi);
-
-    m_Settings.Load();
 
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
