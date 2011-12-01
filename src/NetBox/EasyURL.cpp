@@ -380,11 +380,11 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
         if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
         {
             // DEBUG_PRINTF(L"PASS ****");
-            Log2("PASS ****");
+            // Log2("PASS ****");
             return 0;
         }
     }
-    Log2(data);
+    // Log2(data);
     return 0;
 }
 
