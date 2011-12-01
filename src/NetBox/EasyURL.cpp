@@ -19,7 +19,6 @@
 
 #include "stdafx.h"
 #include "EasyURL.h"
-#include "Logging.h"
 #include "SessionData.h"
 
 CEasyURL::CEasyURL() :

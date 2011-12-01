@@ -25,7 +25,6 @@
 
 #include "stdafx.h"
 #include "EasyURL.h"
-#include "Logging.h"
 #include "resource.h"
 #include "Common.h"
 
