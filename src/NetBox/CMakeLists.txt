@@ -16,7 +16,7 @@ set ( CMAKE_LINK_FLAGS
 )
 
 # definitions
-add_definitions ( "-DNETBOX_DEBUG;NETBOX_EXPORTS" )
+add_definitions ( "-DNETBOX_DEBUG" )
 add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY" )
 add_definitions ( "-D_USRDLL;_AFXDLL;_AFXEXT;_DLL" )
 
