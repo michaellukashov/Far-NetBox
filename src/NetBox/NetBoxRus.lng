@@ -1,10 +1,10 @@
 ﻿.Language=Russian,Russian (Русский)
 
-"WinSCP"
-"WinSCP"
+"NetBox"
+"NetBox"
 
 "Session name"
-"WinSCP: Stored sessions"
+"NetBox: Stored sessions"
 
 "Connection terminated."
 "Initialisation..."
@@ -482,7 +482,7 @@
 "&Beep when queue empties or transfer requires attention"
 "Reuse &password of the main session"
 
-"WinSCP commands"
+"NetBox commands"
 "Display session log &file"
 "View/change file a&ttributes  Ctrl-A"
 "Create/edit &link             Alt-F6"
