@@ -316,55 +316,6 @@ std::string NumberToText(int number);
 
 std::wstring NumberToWString(unsigned long number);
 
-struct ProxySettings
-{
-    int proxyType;
-    std::wstring proxyHost;
-    unsigned long proxyPort;
-    std::wstring proxyLogin;
-    std::wstring proxyPassword;
-};
-
-struct ProxySettingsDialogParams
-{
-    FarDialogItem *proxyTypeTextItem;
-    FarDialogItem *proxyTypeComboBoxItem;
-    FarList proxyTypeList;
-    std::vector<FarListItem> proxyTypeListItems;
-    FarDialogItem *separatorItem;
-    FarDialogItem *proxyHostTextItem;
-    FarDialogItem *proxyHostItem;
-    FarDialogItem *proxyPortTextItem;
-    FarDialogItem *proxyPortItem;
-    FarDialogItem *proxyLoginTextItem;
-    FarDialogItem *proxyLoginItem;
-    FarDialogItem *proxyPasswordTextItem;
-    FarDialogItem *proxyPasswordItem;
-    std::wstring proxyPortStr;
-
-    int idProxyTypeText;
-    int idProxyTypeComboBox;
-    int idSeparatorItem;
-    int idProxyHostText;
-    int idProxyHost;
-    int idProxyPortText;
-    int idProxyPort;
-    int idProxyLoginText;
-    int idProxyLogin;
-    int idProxyPasswordText;
-    int idProxyPassword;
-};
-
-void InitProxySettingsDialog(CFarDialog &dlg, int &topPos,
-    ProxySettings &ps,
-    ProxySettingsDialogParams &params,
-    bool visible
-);
-
-void GetProxySettings(const CFarDialog &dlg, const struct ProxySettingsDialogParams &params,
-    struct ProxySettings &proxySettings);
-
-
 //---------------------------------------------------------------------------
 
 void CheckAbortEvent(HANDLE *AbortEvent);
