@@ -34,6 +34,7 @@ enum ProxyTypes
 };
 
 class TSessionData;
+class TTerminal;
 
 /**
  * CURL slist wrapper
@@ -167,7 +168,7 @@ public:
 class CEasyURL : public TCURLIntf
 {
 public:
-    explicit CEasyURL();
+    explicit CEasyURL(TTerminal *Terminal);
     virtual void Init();
     virtual ~CEasyURL();
 
@@ -283,6 +284,7 @@ private:
                  void *userp);
 
 private:
+    TTerminal * FTerminal;
     CURL *m_CURL; ///< CURL
     bool m_Prepared; ///< Preapre statement flag
 

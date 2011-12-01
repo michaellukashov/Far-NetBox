@@ -20,8 +20,10 @@
 #include "stdafx.h"
 #include "EasyURL.h"
 #include "SessionData.h"
+#include "Terminal.h"
 
-CEasyURL::CEasyURL() :
+CEasyURL::CEasyURL(TTerminal *Terminal) :
+    FTerminal(Terminal),
     m_CURL(NULL),
     m_Prepared(false),
     m_regex(INVALID_HANDLE_VALUE),
@@ -380,11 +382,11 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
         if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
         {
             // DEBUG_PRINTF(L"PASS ****");
-            // Log2("PASS ****");
+            FTerminal->GetLog()->Add(llOutput, L"PASS ****");
             return 0;
         }
     }
-    // Log2(data);
+    FTerminal->GetLog()->Add(llOutput, ::MB2W(data));
     return 0;
 }
 
