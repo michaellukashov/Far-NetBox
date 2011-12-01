@@ -30,6 +30,7 @@ ipch/
 *.orig
 tags
 src/NetBox/build
+src/NetBox/NetBox
 
 *.vsp
 *.psess
