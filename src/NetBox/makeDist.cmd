@@ -1,7 +1,3 @@
-:: NetBox plugin for FAR 2.0 (http://code.google.com/p/farplugs)
-:: Copyright (C) 2011 by Artem Senichev <artemsen@gmail.com>
-:: Copyright (C) 2011 by Michael Lukashov <michael.lukashov@gmail.com>
-
 ::
 :: This file is used to create a distribution package
 ::
