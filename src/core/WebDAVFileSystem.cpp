@@ -2412,42 +2412,6 @@ CURLcode TWebDAVFileSystem::CURLPrepare(const char *webDavPath,
     return urlCode;
 }
 
-bool TWebDAVFileSystem::Connect(HANDLE abortEvent, std::wstring &errorInfo)
-{
-  assert(abortEvent);
-
-  TSessionData *Data = FTerminal->GetSessionData();
-  std::wstring HostName = Data->GetHostName();
-  std::wstring UserName = Data->GetUserName();
-  std::wstring Password = Data->GetPassword();
-  std::wstring Account = Data->GetFtpAccount();
-  std::wstring Path = Data->GetRemoteDirectory();
-
-  const wchar_t *url = HostName.c_str();
-    // DEBUG_PRINTF(L"WebDAV: connecting to %s", url);
-    //Initialize curl
-    FCURLIntf->Initialize(url, UserName.c_str(), Password.c_str());
-    FCURLIntf->SetAbortEvent(abortEvent);
-
-    //Check initial path existing
-    std::wstring path;
-    // std::wstring query;
-    ParseURL(url, NULL, NULL, NULL, &path, NULL, NULL, NULL);
-    bool dirExist = false;
-    // DEBUG_PRINTF(L"path = %s, query = %s", path.c_str(), query.c_str());
-    // if (!query.empty())
-    // {
-        // path += query;
-    // }
-    if (!CheckExisting(path.c_str(), ItemDirectory, dirExist, errorInfo) || !dirExist)
-    {
-        FTerminal->LogEvent(FORMAT(L"WebDAV: path %s does not exist.", path.c_str()));
-        return false;
-    }
-    FCurrentDirectory = ::ExcludeTrailingBackslash(path);
-    return true;
-}
-
 bool TWebDAVFileSystem::CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo)
 {
     // DEBUG_PRINTF(L"TWebDAVFileSystem::CheckExisting: path = %s", path);

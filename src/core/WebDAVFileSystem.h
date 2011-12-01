@@ -198,8 +198,6 @@ private:
         ItemFile,
     };
 private:
-    //From IProtocol
-    virtual bool Connect(HANDLE abortEvent, std::wstring &errorInfo);
     virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
     virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
     virtual bool GetList(const std::wstring &Directory, std::wstring &errorInfo);
