@@ -590,7 +590,7 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode
     }
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, wchar_t *Name, int OpMode)
+int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpMode)
 {
     TCustomFarFileSystem *FileSystem = (TCustomFarFileSystem *)Plugin;
     try
@@ -2010,18 +2010,19 @@ int TCustomFarFileSystem::SetDirectory(const wchar_t *Dir, int OpMode)
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::MakeDirectory(wchar_t *Name, int OpMode)
+int TCustomFarFileSystem::MakeDirectory(const wchar_t **Name, int OpMode)
 {
     ResetCachedInfo();
-    std::wstring NameStr = Name;
+    std::wstring NameStr = *Name;
     int Result;
     {
-        BOOST_SCOPE_EXIT ( (NameStr) (Name) )
+        BOOST_SCOPE_EXIT ( (&NameStr) (Name) )
         {
             StrToFar(NameStr);
-            if (NameStr != Name)
+            if (NameStr != *Name)
             {
-                wcscpy_s(Name, NameStr.size(), NameStr.c_str());
+                // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
+                *Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
             }
         } BOOST_SCOPE_EXIT_END
         StrFromFar(NameStr);

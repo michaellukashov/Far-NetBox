@@ -141,7 +141,7 @@ int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
     DEBUG_PRINTF(L"begin, name = %s", *name);
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int result = FarPlugin->MakeDirectory(plugin, (wchar_t *)*name, opMode);
+    int result = FarPlugin->MakeDirectory(plugin, name, opMode);
     DEBUG_PRINTF(L"end, result = %d", result);
     return result;
 }

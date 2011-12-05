@@ -2187,6 +2187,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     if (SessionList())
     {
       FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
+      // DEBUG_PRINTF(L"FSessionsFolder = %s", FSessionsFolder.c_str());
       assert(FSessionsFolder[0] == L'/');
       FSessionsFolder.erase(0, 1);
       FNewSessionsFolder = L"";
