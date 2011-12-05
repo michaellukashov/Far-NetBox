@@ -229,7 +229,7 @@ BEGIN
   YES_STR, "Yes"
   NO_STR, "No"
   SESSION_INFO_TIP, "Host: %s\nUser name: %s\nPrivate key file: %s\nSSH Protocol version: %s\nTransfer protocol: %s"
-  VERSION, "Version %d.%d.%d (Build %d)"
+  VERSION, "Version %d.%d.%d"
   CLOSED_ON_COMPLETION, "Operation was successfully completed. Connection was closed."
   SFTP_PROTOCOL_NAME2, "SFTP-%d"
   FS_RENAME_NOT_SUPPORTED, "The version of SFTP protocol does not allow file renaming."

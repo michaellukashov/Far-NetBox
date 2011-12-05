@@ -664,8 +664,7 @@ std::wstring TConfiguration::GetVersionStr()
     return FMTLOAD(VERSION,
       HIWORD(Info.dwFileVersionMS),
       LOWORD(Info.dwFileVersionMS),
-      HIWORD(Info.dwFileVersionLS),
-      LOWORD(Info.dwFileVersionLS));
+      HIWORD(Info.dwFileVersionLS));
   }
   catch (const std::exception &E)
   {
