@@ -2051,7 +2051,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
     response.clear();
     errInfo.clear();
 
-    static const char *requestData =
+    const char *requestData =
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
         "<D:propfind xmlns:D=\"DAV:\">"
         "<D:prop xmlns:Z=\"urn:schemas-microsoft-com:\">"
@@ -2062,9 +2062,9 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
         "<Z:Win32LastAccessTime/>"
         "<Z:Win32FileAttributes/>"
         "</D:prop>"
-        "</D:propfind>";
+        "</D:propfind>\0\0\0";
 
-    static const size_t requestDataLen = strlen(requestData);
+    const size_t requestDataLen = strlen(requestData);
 
     CURLcode urlCode = CURLPrepare(webDavPath.c_str());
     std::string resp;
