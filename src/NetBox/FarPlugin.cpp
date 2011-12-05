@@ -2221,11 +2221,12 @@ TObjectList *TCustomFarFileSystem::CreatePanelItemList(
 {
     // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
     TObjectList *PanelItems = new TObjectList();
+    PanelItems->SetOwnsObjects(false);
     try
     {
         for (int Index = 0; Index < ItemsNumber; Index++)
         {
-            PanelItems->Add((TObject *)new TFarPanelItem(&PanelItem[Index]));
+            PanelItems->Add(new TFarPanelItem(&PanelItem[Index]));
         }
     }
     catch (...)
