@@ -3032,7 +3032,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
 {
-  GetTerminal()->Open();
+  Terminal->Open();
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
