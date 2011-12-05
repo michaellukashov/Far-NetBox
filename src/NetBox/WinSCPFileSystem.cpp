@@ -2386,8 +2386,8 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   const processsession_slot_type &ProcessSession, void * Param)
 {
-    processsession_signal_type sig;
-    sig.connect(ProcessSession);
+  processsession_signal_type sig;
+  sig.connect(ProcessSession);
   for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
   {
     TFarPanelItem * PanelItem = (TFarPanelItem *)PanelItems->GetItem(Index);
@@ -2415,11 +2415,12 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
         TSessionData *Data = StoredSessions->GetSession(Index);
         if (Data->Name.substr(0, Folder.size()) == Folder)
         {
-          sig(Data, Param);
           if (StoredSessions->GetSession(Index) != Data)
           {
             Index--;
           }
+          sig(Data, Param);
+          // DEBUG_PRINTF(L"Index = %d, StoredSessions->GetCount = %d", Index, StoredSessions->GetCount());
         }
         Index++;
       }
