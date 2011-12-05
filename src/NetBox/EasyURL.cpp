@@ -345,7 +345,7 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
     return CURLE_OK;
 }
 
-int CEasyURL::DebugOutput(const char *data, size_t size)
+int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
 {
     // PASS *****
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
@@ -363,11 +363,12 @@ int CEasyURL::DebugOutput(const char *data, size_t size)
         if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, reinterpret_cast<LONG_PTR>(&search)))
         {
             // DEBUG_PRINTF(L"PASS ****");
-            FTerminal->GetLog()->Add(llOutput, L"PASS ****");
+            FTerminal->GetLog()->Add(type, L"PASS ****");
             return 0;
         }
     }
-    FTerminal->GetLog()->Add(llOutput, ::MB2W(data));
+    DEBUG_PRINTF(L"::MB2W(data) = %s", ::MB2W(std::string(data, size).c_str()).c_str());
+    FTerminal->GetLog()->Add(type, ::MB2W(std::string(data, size).c_str()));
     return 0;
 }
 
@@ -379,6 +380,20 @@ int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
     assert(instance != NULL);
     (void)handle;
     (void)type;
-    return instance->DebugOutput(data, size);
-
+    TLogLineType llType = llOutput;
+    switch (type)
+    {
+        case CURLINFO_TEXT:
+        case CURLINFO_HEADER_IN:
+        case CURLINFO_DATA_IN:
+        case CURLINFO_SSL_DATA_IN:
+            llType = llInput;
+            break;
+        case CURLINFO_HEADER_OUT:
+        case CURLINFO_DATA_OUT:
+        case CURLINFO_SSL_DATA_OUT:
+            llType = llOutput;
+            break;
+    }
+    return instance->DebugOutput(llType, data, size);
 }
