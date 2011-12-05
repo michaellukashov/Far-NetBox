@@ -139,7 +139,7 @@ BEGIN
   SFTP_STATUS_DELETE_PENDING, "An operation was attempted on a file for which a delete operation is pending."
   SFTP_STATUS_FILE_CORRUPT, "The file is corrupt; an filesystem integrity check should be run."
   KEY_TYPE_UNKNOWN, "File '%s' does not exist or it does not contain private key in known format."
-  KEY_TYPE_UNSUPPORTED, "Private key file '%s' contains key in %s format. WinSCP supports only PuTTY format.\n \nYou can use PuTTYgen tool to convert your private key file."
+  KEY_TYPE_UNSUPPORTED, "Private key file '%s' contains key in %s format. NetBox supports only PuTTY format.\n \nYou can use PuTTYgen tool to convert your private key file."
   KEY_TYPE_DIFFERENT_SSH, "Private key file '%s' contains key in %s format. It does not follow your preferred SSH protocol version."
   SFTP_OVERWRITE_FILE_ERROR, "Cannot overwrite remote file '%s'.\n \nPress 'Delete' to delete the file and create new one instead of overwriting it."
   SFTP_OVERWRITE_DELETE_BUTTON, "&Delete"
