@@ -549,7 +549,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
 
   LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(),
-    Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
+    Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())).c_str());
 
   Name = ::Trim(Name);
 
