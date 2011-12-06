@@ -459,7 +459,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     { "SSH key passphrase", PASSPHRASE_TITLE },
     { "SSH TIS authentication", SERVER_PROMPT_TITLE },
     { "SSH CryptoCard authentication", SERVER_PROMPT_TITLE },
-    { "SSH server: %s", SERVER_PROMPT_TITLE2 },
+    { "SSH server: %", SERVER_PROMPT_TITLE2 },
     { "SSH server authentication", SERVER_PROMPT_TITLE },
     { "SSH password", PASSWORD_TITLE },
     { "New SSH password", NEW_PASSWORD_TITLE },
@@ -493,7 +493,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   else if (Index == 2) // TIS
   {
     static const TPuttyTranslation TISInstructionTranslation[] = {
-      { "Using TIS authentication.%s", TIS_INSTRUCTION },
+      { "Using TIS authentication.%", TIS_INSTRUCTION },
     };
     static const TPuttyTranslation TISPromptTranslation[] = {
       { "Response: ", PROMPT_PROMPT },
@@ -506,7 +506,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   else if (Index == 3) // CryptoCard
   {
     static const TPuttyTranslation CryptoCardInstructionTranslation[] = {
-      { "Using CryptoCard authentication.%s", CRYPTOCARD_INSTRUCTION },
+      { "Using CryptoCard authentication.%", CRYPTOCARD_INSTRUCTION },
     };
     static const TPuttyTranslation CryptoCardPromptTranslation[] = {
       { "Response: ", PROMPT_PROMPT },
@@ -519,7 +519,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   else if ((Index == 4) || (Index == 5))
   {
     static const TPuttyTranslation KeybInteractiveInstructionTranslation[] = {
-      { "Using keyboard-interactive authentication.%s", KEYBINTER_INSTRUCTION },
+      { "Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
     };
 
     InstructionTranslation = KeybInteractiveInstructionTranslation;
