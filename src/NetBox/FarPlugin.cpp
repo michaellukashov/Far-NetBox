@@ -1251,8 +1251,10 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
     const std::wstring Prompt, std::wstring &Text, unsigned long Flags,
     const std::wstring HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
 {
-    bool Repeat;
-    int Result;
+    bool Repeat = false;
+    int Result = 0;
+    farinputboxvalidate_signal_type sig;
+    sig.connect(*OnValidate);
     do
     {
         std::wstring DestText;
@@ -1279,8 +1281,6 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
             {
                 try
                 {
-                    farinputboxvalidate_signal_type sig;
-                    sig.connect(*OnValidate);
                     sig(Text);
                 }
                 catch (const std::exception &E)
