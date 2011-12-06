@@ -1055,7 +1055,7 @@ int TSecureShell::TranslatePuttyMessage(
           (strncmp(::W2MB(Message.c_str()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
         Message = FMTLOAD(Translation[Index].Translation,
-          ::TrimRight(Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen)).c_str());
+          ::TrimRight(Message.substr(PrefixLen, Message.size() - PrefixLen - SuffixLen)).c_str());
         // DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
