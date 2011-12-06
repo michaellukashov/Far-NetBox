@@ -552,7 +552,15 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())).c_str());
 
   Name = ::Trim(Name);
-
+  if (0)
+  {
+      DEBUG_PRINTF(L"InstructionTranslation = %x", InstructionTranslation);
+        static const TPuttyTranslation KeybInteractiveInstructionTranslation[] = {
+          { "Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
+        };
+      InstructionTranslation = KeybInteractiveInstructionTranslation;
+      Instructions = L"Using keyboard-interactive authentication.";
+  }
   if (InstructionTranslation != NULL)
   {
     TranslatePuttyMessage(InstructionTranslation, 1, Instructions);
