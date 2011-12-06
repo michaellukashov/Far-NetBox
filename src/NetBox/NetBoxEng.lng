@@ -313,7 +313,7 @@
 "On"
 "&Bypass authentication entirely (SSH-2)"
 " Authentication options "
-"Attempt authentication using &Pagent"
+"Attempt authentication using &Pageant"
 "Attempt &TIS or CryptoCard authentication (SSH-1)"
 "Attempt 'keyboard-&interactive' authentication (SSH-2)"
 "Respond with pass&word to the first prompt"
