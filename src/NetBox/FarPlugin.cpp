@@ -2061,6 +2061,7 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
             if (DestPathStr != *DestPath)
             {
                 // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
+                *DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
             }
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -2497,6 +2498,7 @@ TFarPanelItem::TFarPanelItem(PluginPanelItem *APanelItem):
 TFarPanelItem::~TFarPanelItem()
 {
     delete FPanelItem;
+    FPanelItem = NULL;
 }
 
 //---------------------------------------------------------------------------
