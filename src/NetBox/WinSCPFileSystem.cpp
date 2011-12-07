@@ -577,7 +577,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
   std::wstring Name = Data->Name;
   if (FPlugin->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
         GetMsg(Duplicate ? DUPLICATE_SESSION_PROMPT : RENAME_SESSION_PROMPT),
-        Name, 0) &&
+        Name, NULL) &&
       !Name.empty() && (Name != Data->Name))
   {
     TNamedObject * EData = StoredSessions->FindByName(Name);
