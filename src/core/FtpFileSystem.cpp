@@ -613,7 +613,10 @@ void TFTPFileSystem::AnyCommand(const std::wstring Command,
   EnsureLocation();
 
   assert(FOnCaptureOutput.empty());
-  FOnCaptureOutput.connect(*OutputEvent);
+  if (OutputEvent)
+  {
+    FOnCaptureOutput.connect(*OutputEvent);
+  }
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {

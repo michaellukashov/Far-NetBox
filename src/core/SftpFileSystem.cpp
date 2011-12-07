@@ -3541,7 +3541,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
     {
       TSFTPPacket Packet;
-      bool Next;
+      bool Next = false;
+      calculatedchecksum_signal_type sig;
+      if (OnCalculatedChecksum)
+      {
+          sig.connect(*OnCalculatedChecksum);
+      }
       do
       {
         bool Success = false;
@@ -3567,8 +3572,6 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
             Alg = Packet.GetStringW(!FUtfNever);
             Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
-            calculatedchecksum_signal_type sig;
-            sig.connect(*OnCalculatedChecksum);
             sig(File->GetFileName(), Alg, Checksum);
 
             Success = true;
