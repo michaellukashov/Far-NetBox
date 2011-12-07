@@ -1254,7 +1254,10 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
     bool Repeat = false;
     int Result = 0;
     farinputboxvalidate_signal_type sig;
-    sig.connect(*OnValidate);
+    if (OnValidate)
+    {
+      sig.connect(*OnValidate);
+    }
     do
     {
         std::wstring DestText;
