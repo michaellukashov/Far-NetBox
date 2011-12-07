@@ -489,6 +489,7 @@ void TTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration)
   FFiles = new TRemoteDirectory(this);
   FExceptionOnFail = 0;
   FInTransaction = 0;
+  FSuspendTransaction = false;
   FReadCurrentDirectoryPending = false;
   FReadDirectoryPending = false;
   FUsersGroupsLookedup = false;
@@ -2647,21 +2648,21 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
         size_t Index = 0;
         std::wstring FileName;
         bool Success;
+        processfile_signal_type sig;
+        sig.connect(ProcessFile);
         while ((Index < FileList->GetCount()) && (Progress->Cancel == csContinue))
         {
           FileName = FileList->GetString(Index);
           try
           {
             {
-              BOOST_SCOPE_EXIT ( (Progress) (FileName) (Success) (OnceDoneOperation) )
+              BOOST_SCOPE_EXIT ( (&Progress) (&FileName) (&Success) (&OnceDoneOperation) )
               {
                 Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
               Success = false;
               // if (!Ex)
               {
-                processfile_signal_type sig;
-                sig.connect(ProcessFile);
                 sig(FileName, (TRemoteFile *)FileList->GetObject(Index), Param);
               }
               /*

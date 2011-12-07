@@ -549,10 +549,18 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
 
   LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(),
-    Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())));
+    Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())).c_str());
 
   Name = ::Trim(Name);
-
+  if (0)
+  {
+      DEBUG_PRINTF(L"InstructionTranslation = %x", InstructionTranslation);
+        static const TPuttyTranslation KeybInteractiveInstructionTranslation[] = {
+          { "Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
+        };
+      InstructionTranslation = KeybInteractiveInstructionTranslation;
+      Instructions = L"Using keyboard-interactive authentication.";
+  }
   if (InstructionTranslation != NULL)
   {
     TranslatePuttyMessage(InstructionTranslation, 1, Instructions);
@@ -1055,7 +1063,7 @@ int TSecureShell::TranslatePuttyMessage(
           (strncmp(::W2MB(Message.c_str()).c_str() + Message.size() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
         Message = FMTLOAD(Translation[Index].Translation,
-          ::TrimRight(Message.substr(PrefixLen + 1, Message.size() - PrefixLen - SuffixLen)).c_str());
+          ::TrimRight(Message.substr(PrefixLen, Message.size() - PrefixLen - SuffixLen)).c_str());
         // DEBUG_PRINTF(L"Message = %s", Message.c_str());
         Result = int(Index);
         break;
