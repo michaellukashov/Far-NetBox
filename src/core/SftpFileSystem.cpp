@@ -3571,7 +3571,8 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
             OperationProgress->SetFile(File->GetFileName());
 
             Alg = Packet.GetStringW(!FUtfNever);
-            Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
+            // Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
+            Checksum = StrToHex(std::wstring(::MB2W(std::string(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength()).c_str())));
             sig(File->GetFileName(), Alg, Checksum);
 
             Success = true;
