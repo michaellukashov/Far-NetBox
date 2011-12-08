@@ -35,3 +35,6 @@ src/NetBox/NetBox
 *.vsp
 *.psess
 *.i
+*.exe
+*.res
+*.rbj
