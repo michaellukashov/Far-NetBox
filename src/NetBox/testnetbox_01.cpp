@@ -563,6 +563,7 @@ BOOST_FIXTURE_TEST_CASE(test24, base_fixture_t)
 BOOST_FIXTURE_TEST_CASE(test25, base_fixture_t)
 {
     GC_find_leak = 1;
+    int *i = (int *)malloc(sizeof(int));
     CHECK_LEAKS();
 }
 
