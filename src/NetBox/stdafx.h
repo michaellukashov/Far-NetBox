@@ -1,5 +1,7 @@
 #pragma once
 
+#include "leak_detector.h"
+
 //---------------------------------------------------------------------------
 #ifdef _AFXDLL
 #include "fzafx.h"

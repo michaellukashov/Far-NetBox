@@ -79,6 +79,7 @@ include_directories (
     ${PROJECT_ROOT}/libs/tinyXML
     ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include
     ${PROJECT_ROOT}/libs/zlib/src
+    ${PROJECT_ROOT}/libs/gc-7.2alpha6/include 
 )
 
 link_directories (
@@ -331,8 +332,17 @@ set_target_properties( testnetbox_01
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
+
+add_library (gcmt STATIC IMPORTED)
+set_property (TARGET gcmt
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/gc-7.2alpha6/Debug/gcmt-lib.lib)
+# add_library (gcmt SHARED IMPORTED)
+# set_property (TARGET gcmt
+    # PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/gc-7.2alpha6/Debug/gcmt-lib.lib)
+
 add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
     libputty
+    gcmt
 )
 
 target_link_libraries ( testnetbox_01 )
