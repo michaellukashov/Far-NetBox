@@ -1302,7 +1302,7 @@ void TSecureShell::FreeBackend()
 {
   if (FBackendHandle != NULL)
   {
-    FBackend->free(FBackendHandle);
+    FBackend->bfree(FBackendHandle);
     FBackendHandle = NULL;
   }
 }

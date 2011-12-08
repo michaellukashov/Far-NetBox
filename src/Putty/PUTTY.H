@@ -418,7 +418,7 @@ struct backend_tag {
 			 Config *cfg,
 			 char *host, int port, char **realhost, int nodelay,
 			 int keepalive);
-    void (*free) (void *handle);
+    void (*bfree) (void *handle);
     /* back->reconfig() passes in a replacement configuration. */
     void (*reconfig) (void *handle, Config *cfg);
     /* back->send() returns the current amount of buffered data. */
