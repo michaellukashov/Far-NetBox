@@ -347,7 +347,7 @@ add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
     gcmt
 )
 
-target_link_libraries ( testnetbox_01 )
+target_link_libraries ( testnetbox_01 gcmt )
 
 #-------------------------------------------------------
 # target testnetbox_02
