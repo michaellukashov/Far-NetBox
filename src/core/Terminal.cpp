@@ -3550,7 +3550,10 @@ void TTerminal::AnyCommand(const std::wstring Command,
     TOutputProxy(TCallSessionAction & Action, const captureoutput_slot_type *OutputEvent) :
       FAction(Action)
     {
-      FOutputEvent.connect(*OutputEvent);
+      if (OutputEvent)
+      {
+        FOutputEvent.connect(*OutputEvent);
+      }
     }
 
     void Output(const std::wstring & Str, bool StdError)
@@ -4616,7 +4619,10 @@ void TTerminal::FileFind(std::wstring FileName,
          File->GetIsDirectory(), &MaskParams))
     {
       filefound_signal_type sig;
-      sig.connect(*AParams->OnFileFound);
+      if (AParams->OnFileFound)
+      {
+        sig.connect(*AParams->OnFileFound);
+      }
       sig(this, FileName, File, AParams->Cancel);
     }
 
@@ -4630,7 +4636,10 @@ void TTerminal::FileFind(std::wstring FileName,
 void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
 {
   findingfile_signal_type sig;
-  sig.connect(*Params.OnFindingFile);
+  if (Params.OnFindingFile)
+  {
+    sig.connect(*Params.OnFindingFile);
+  }
   sig(this, Directory, Params.Cancel);
   if (!Params.Cancel)
   {
@@ -4638,7 +4647,10 @@ void TTerminal::DoFilesFind(std::wstring Directory, TFilesFindParams & Params)
     // ideally we should set the handler only around actually reading
     // of the directory listing, so we at least reset the handler in
     // FileFind
-    FOnFindingFile.connect(*Params.OnFindingFile);
+    if (Params.OnFindingFile)
+    {
+        FOnFindingFile.connect(*Params.OnFindingFile);
+    }
     {
       BOOST_SCOPE_EXIT ( (&Self) )
       {

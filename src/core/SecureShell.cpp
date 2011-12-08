@@ -662,7 +662,7 @@ void TSecureShell::CWrite(const char * Data, int Length)
   ResetSessionInfo();
 
   // We send only whole line at once, so we have to cache incoming data
-  FCWriteTemp += DeleteChar(std::wstring(::MB2W(Data), Length), '\r');
+  FCWriteTemp += DeleteChar(std::wstring(::MB2W(std::string(Data, Length).c_str())), '\r');
 
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
