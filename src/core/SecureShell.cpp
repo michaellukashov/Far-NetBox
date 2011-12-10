@@ -794,7 +794,7 @@ int TSecureShell::Receive(char * Buf, int Len)
     OutLen = Len;
 
     {
-        BOOST_SCOPE_EXIT ( (OutPtr) )
+        BOOST_SCOPE_EXIT ( (&OutPtr) )
         {
           OutPtr = NULL;
         } BOOST_SCOPE_EXIT_END
@@ -1563,7 +1563,7 @@ bool TSecureShell::EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
     // note that this returns all handles, not only the session-related handles
     HANDLE * Handles = handle_get_events(&HandleCount);
     {
-      BOOST_SCOPE_EXIT ( (Handles) )
+      BOOST_SCOPE_EXIT ( (&Handles) )
       {
         sfree(Handles);
       } BOOST_SCOPE_EXIT_END
