@@ -786,7 +786,7 @@ public:
       Dump = DumpLines->GetText();
     }
 
-    SetCapacity(512 * 1024); // 20480);
+    SetCapacity(20480);
     wchar_t Byte[3];
     memset(Byte, '\0', sizeof(Byte));
     size_t Index = 0;
