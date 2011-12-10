@@ -11,8 +11,8 @@
 
 //---------------------------------------------------------------------------
 #ifdef NETBOX_DEBUG
-static _CrtMemState s1, s2, s3;
-static HANDLE hLogFile;
+// static _CrtMemState s1, s2, s3;
+// static HANDLE hLogFile;
 #endif
 
 //---------------------------------------------------------------------------
@@ -43,12 +43,12 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
 {
     assert(FarPlugin);
 #ifdef NETBOX_DEBUG
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-    hLogFile = CreateFile(L"C:\\NetBoxDebug.txt", FILE_APPEND_DATA, // GENERIC_WRITE,
-      FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
-      FILE_ATTRIBUTE_NORMAL, NULL);
-    _CrtSetReportFile(_CRT_WARN, hLogFile);
+    // _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    // _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    // hLogFile = CreateFile(L"C:\\NetBoxDebug.txt", FILE_APPEND_DATA, // GENERIC_WRITE,
+      // FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+      // FILE_ATTRIBUTE_NORMAL, NULL);
+    // _CrtSetReportFile(_CRT_WARN, hLogFile);
 #endif
     TFarPluginGuard Guard;
     CFarPlugin::Initialize(psi);
@@ -87,7 +87,7 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
   // GC_find_leak = 1;
 #ifdef NETBOX_DEBUG
-  _CrtMemCheckpoint(&s1);
+  // _CrtMemCheckpoint(&s1);
 #endif
   assert(FarPlugin);
   TFarPluginGuard Guard;
@@ -100,11 +100,11 @@ void WINAPI ClosePluginW(HANDLE plugin)
     TFarPluginGuard Guard;
     FarPlugin->ClosePlugin(plugin);
 #ifdef NETBOX_DEBUG
-    _CrtMemCheckpoint(&s2);
-    if (_CrtMemDifference(&s3, &s1, &s2)) 
-        _CrtMemDumpStatistics(&s3);
-    _CrtDumpMemoryLeaks();
-    CloseHandle(hLogFile);
+    // _CrtMemCheckpoint(&s2);
+    // if (_CrtMemDifference(&s3, &s1, &s2)) 
+        // _CrtMemDumpStatistics(&s3);
+    // _CrtDumpMemoryLeaks();
+    // CloseHandle(hLogFile);
 #endif
     // GC_gcollect();
 }
