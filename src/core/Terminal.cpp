@@ -29,6 +29,11 @@
 #include <winsock2.h>
 #endif
 //---------------------------------------------------------------------------
+#ifdef NETBOX_DEBUG
+static _CrtMemState s1, s2, s3;
+static HANDLE hLogFile;
+#endif
+//---------------------------------------------------------------------------
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \
     int Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
@@ -4803,8 +4808,24 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
           LogEvent(CopyParam->GetLogStr());
         }
 
+#ifdef NETBOX_DEBUG
+        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+        _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+        hLogFile = CreateFile(L"C:\\CopyToRemote.txt", GENERIC_WRITE,
+          FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+          FILE_ATTRIBUTE_NORMAL, NULL);
+        _CrtSetReportFile(_CRT_WARN, hLogFile);
+        // _CrtMemCheckpoint(&s1);
+#endif
         FFileSystem->CopyToRemote(FilesToCopy, UnlockedTargetDir,
           CopyParam, Params, OperationProgress, OnceDoneOperation);
+#ifdef NETBOX_DEBUG
+        // _CrtMemCheckpoint(&s2);
+        // if (_CrtMemDifference(&s3, &s1, &s2)) 
+            // _CrtMemDumpStatistics(&s3);
+        _CrtDumpMemoryLeaks();
+        CloseHandle(hLogFile);
+#endif
       }
 
       if (OperationProgress->Cancel == csContinue)

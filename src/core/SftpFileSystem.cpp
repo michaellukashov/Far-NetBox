@@ -18,11 +18,6 @@
 
 #include <memory>
 //---------------------------------------------------------------------------
-#ifdef NETBOX_DEBUG
-static _CrtMemState s1, s2, s3;
-static HANDLE hLogFile;
-#endif
-//---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_EX(ALLOW_SKIP, MESSAGE, OPERATION) \
   FILE_OPERATION_LOOP_CUSTOM(Self->FTerminal, ALLOW_SKIP, MESSAGE, OPERATION)
 //---------------------------------------------------------------------------
@@ -3674,15 +3669,6 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   assert(FilesToCopy && OperationProgress);
-#ifdef NETBOX_DEBUG
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-    hLogFile = CreateFile(L"C:\\NetBoxDebugSftp.txt", FILE_APPEND_DATA, // GENERIC_WRITE,
-      FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
-      FILE_ATTRIBUTE_NORMAL, NULL);
-    _CrtSetReportFile(_CRT_WARN, hLogFile);
-    _CrtMemCheckpoint(&s1);
-#endif
 
   std::wstring FileName, FileNameOnly;
   std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
@@ -3732,13 +3718,6 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
     }
     Index++;
   }
-#ifdef NETBOX_DEBUG
-    _CrtMemCheckpoint(&s2);
-    if (_CrtMemDifference(&s3, &s1, &s2)) 
-        _CrtMemDumpStatistics(&s3);
-    _CrtDumpMemoryLeaks();
-    CloseHandle(hLogFile);
-#endif
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
