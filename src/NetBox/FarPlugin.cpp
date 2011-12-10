@@ -2650,14 +2650,10 @@ TObjectList *TFarPanelInfo::GetItems()
             // DEBUG_PRINTF(L"Index = %d", Index);
             // TODO: move to common function
             size_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-            // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
             PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
             memset(ppi, 0, size);
-            // size_t size2 =
             FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi);
-            // DEBUG_PRINTF(L"size2 = %d", size2);
             // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
-
             FItems->Add((TObject *)new TFarPanelItem(ppi));
         }
     }
