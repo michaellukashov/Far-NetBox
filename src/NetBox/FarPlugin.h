@@ -309,7 +309,7 @@ public:
     virtual int ProcessKey(HANDLE Plugin, int Key, unsigned int ControlState);
     virtual int ProcessEvent(HANDLE Plugin, int Event, void *Param);
     virtual int SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode);
-    virtual int MakeDirectory(HANDLE Plugin, wchar_t *Name, int OpMode);
+    virtual int MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpMode);
     virtual int DeleteFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
                                        int ItemsNumber, int OpMode);
     virtual int GetFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
@@ -460,7 +460,7 @@ public:
     int ProcessKey(int Key, unsigned int ControlState);
     int ProcessEvent(int Event, void *Param);
     int SetDirectory(const wchar_t *Dir, int OpMode);
-    int MakeDirectory(wchar_t *Name, int OpMode);
+    int MakeDirectory(const wchar_t **Name, int OpMode);
     int DeleteFiles(struct PluginPanelItem *PanelItem,
         int ItemsNumber, int OpMode);
     int GetFiles(struct PluginPanelItem *PanelItem,

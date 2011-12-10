@@ -590,7 +590,7 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode
     }
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, wchar_t *Name, int OpMode)
+int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpMode)
 {
     TCustomFarFileSystem *FileSystem = (TCustomFarFileSystem *)Plugin;
     try
@@ -1251,8 +1251,13 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
     const std::wstring Prompt, std::wstring &Text, unsigned long Flags,
     const std::wstring HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
 {
-    bool Repeat;
-    int Result;
+    bool Repeat = false;
+    int Result = 0;
+    farinputboxvalidate_signal_type sig;
+    if (OnValidate)
+    {
+      sig.connect(*OnValidate);
+    }
     do
     {
         std::wstring DestText;
@@ -1279,8 +1284,6 @@ bool TCustomFarPlugin::InputBox(const std::wstring Title,
             {
                 try
                 {
-                    farinputboxvalidate_signal_type sig;
-                    sig.connect(*OnValidate);
                     sig(Text);
                 }
                 catch (const std::exception &E)
@@ -2010,18 +2013,19 @@ int TCustomFarFileSystem::SetDirectory(const wchar_t *Dir, int OpMode)
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::MakeDirectory(wchar_t *Name, int OpMode)
+int TCustomFarFileSystem::MakeDirectory(const wchar_t **Name, int OpMode)
 {
     ResetCachedInfo();
-    std::wstring NameStr = Name;
+    std::wstring NameStr = *Name;
     int Result;
     {
-        BOOST_SCOPE_EXIT ( (NameStr) (Name) )
+        BOOST_SCOPE_EXIT ( (&NameStr) (Name) )
         {
             StrToFar(NameStr);
-            if (NameStr != Name)
+            if (NameStr != *Name)
             {
-                wcscpy_s(Name, NameStr.size(), NameStr.c_str());
+                // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
+                *Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
             }
         } BOOST_SCOPE_EXIT_END
         StrFromFar(NameStr);
@@ -2060,6 +2064,7 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
             if (DestPathStr != *DestPath)
             {
                 // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
+                *DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
             }
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -2221,11 +2226,12 @@ TObjectList *TCustomFarFileSystem::CreatePanelItemList(
 {
     // DEBUG_PRINTF(L"ItemsNumber = %d", ItemsNumber);
     TObjectList *PanelItems = new TObjectList();
+    PanelItems->SetOwnsObjects(false);
     try
     {
         for (int Index = 0; Index < ItemsNumber; Index++)
         {
-            PanelItems->Add((TObject *)new TFarPanelItem(&PanelItem[Index]));
+            PanelItems->Add(new TFarPanelItem(&PanelItem[Index]));
         }
     }
     catch (...)
@@ -2495,6 +2501,7 @@ TFarPanelItem::TFarPanelItem(PluginPanelItem *APanelItem):
 TFarPanelItem::~TFarPanelItem()
 {
     delete FPanelItem;
+    FPanelItem = NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -2636,23 +2643,20 @@ TObjectList *TFarPanelInfo::GetItems()
 {
     if (!FItems)
     {
+        delete FItems;
         FItems = new TObjectList();
-        // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
-        for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
-        {
-            // DEBUG_PRINTF(L"Index = %d", Index);
-            // TODO: move to common function
-            size_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
-            // DEBUG_PRINTF(L"size1 = %d, sizeof(PluginPanelItem) = %d", size, sizeof(PluginPanelItem));
-            PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
-            memset(ppi, 0, size);
-            // size_t size2 =
-            FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi);
-            // DEBUG_PRINTF(L"size2 = %d", size2);
-            // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
-
-            FItems->Add((TObject *)new TFarPanelItem(ppi));
-        }
+    }
+    // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
+    for (int Index = 0; Index < FPanelInfo->ItemsNumber; Index++)
+    {
+        // DEBUG_PRINTF(L"Index = %d", Index);
+        // TODO: move to common function
+        size_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
+        PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
+        memset(ppi, 0, size);
+        FOwner->FarControl(FCTL_GETPANELITEM, Index, (LONG_PTR)ppi);
+        // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
+        FItems->Add((TObject *)new TFarPanelItem(ppi));
     }
     return FItems;
 }
@@ -2697,11 +2701,12 @@ void TFarPanelInfo::ApplySelection()
 TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 {
     size_t Index = GetFocusedIndex();
-    // DEBUG_PRINTF(L"Index = %d, GetItems = %x, GetItems()->GetCount = %d", Index, GetItems(), GetItems()->GetCount());
-    if ((Index >= 0) && (GetItems()->GetCount() > 0))
+    TObjectList *Items = GetItems();
+    // DEBUG_PRINTF(L"Index = %d, Items = %x, Items->GetCount = %d", Index, Items, Items->GetCount());
+    if ((Index >= 0) && (Items->GetCount() > 0))
     {
-        assert(Index < GetItems()->GetCount());
-        return (TFarPanelItem *)GetItems()->GetItem(Index);
+        assert(Index < Items->GetCount());
+        return (TFarPanelItem *)Items->GetItem(Index);
     }
     else
     {
@@ -2711,9 +2716,11 @@ TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 //---------------------------------------------------------------------------
 void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
 {
-    int Index = GetItems()->IndexOf((TObject *)value);
+    TObjectList *Items = GetItems();
+    int Index = Items->IndexOf((TObject *)value);
     assert(Index >= 0);
     SetFocusedIndex(Index);
+    delete Items;
 }
 //---------------------------------------------------------------------------
 int TFarPanelInfo::GetFocusedIndex()

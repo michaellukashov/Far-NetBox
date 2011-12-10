@@ -46,7 +46,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
     {
       TStrings * BookmarkKeys = new TStringList();
       {
-        BOOST_SCOPE_EXIT ( (BookmarkKeys) )
+        BOOST_SCOPE_EXIT ( (&BookmarkKeys) )
         {
           delete BookmarkKeys;
         } BOOST_SCOPE_EXIT_END

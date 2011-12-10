@@ -7717,7 +7717,7 @@ static void do_ssh2_authconn(Ssh ssh, unsigned char *in, int inlen,
 		     * Additionally, if we'd just tried password
 		     * authentication, we should break out of this
 		     * whole loop so as to go back to the username
-		     * prompt (iff we're configured to allow
+		     * prompt (if we're configured to allow
 		     * username change attempts).
 		     */
 		    if (s->type == AUTH_TYPE_NONE) {

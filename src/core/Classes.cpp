@@ -78,7 +78,7 @@ void TList::SetCount(size_t NewCount)
   else
   {
     int sz = FList.size();
-    for (int I = sz - 1; I > (int)NewCount; I--)
+    for (int I = sz - 1; I >= (int)NewCount; I--)
       Delete(I);
   }
   // FCount := NewCount;
@@ -288,7 +288,7 @@ void TStrings::SetTextStr(const std::wstring Text)
 {
     TStrings *Self = this;
     Self->BeginUpdate();
-    BOOST_SCOPE_EXIT( (Self) )
+    BOOST_SCOPE_EXIT( (&Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -320,7 +320,7 @@ std::wstring TStrings::GetCommaText()
     FDelimiter = L',';
     FQuoteChar = L'"';
     TStrings *Self = this;
-    BOOST_SCOPE_EXIT( (Self) (LOldDelimiter) (LOldQuoteChar) )
+    BOOST_SCOPE_EXIT( (&Self) (&LOldDelimiter) (&LOldQuoteChar) )
     {
         Self->FDelimiter = LOldDelimiter;
         Self->FQuoteChar = LOldQuoteChar;
@@ -352,7 +352,7 @@ void TStrings::SetDelimitedText(const std::wstring Value)
 {
     TStrings *Self = this;
     Self->BeginUpdate();
-    BOOST_SCOPE_EXIT( (Self) )
+    BOOST_SCOPE_EXIT( (&Self) )
     {
         Self->EndUpdate();
     } BOOST_SCOPE_EXIT_END
@@ -1600,7 +1600,7 @@ bool TRegistry::DeleteKey(const std::wstring &Key)
   if (DeleteKey != 0)
   {
     TRegistry *Self = this;
-    BOOST_SCOPE_EXIT( (Self) (OldKey) (DeleteKey) )
+    BOOST_SCOPE_EXIT( (&Self) (&OldKey) (&DeleteKey) )
     {
         Self->SetCurrentKey(OldKey);
         RegCloseKey(DeleteKey);
@@ -1637,7 +1637,7 @@ bool TRegistry::KeyExists(const std::wstring Key)
   unsigned OldAccess = FAccess;
   {
     TRegistry *Self = this;
-    BOOST_SCOPE_EXIT( (Self) (OldAccess) )
+    BOOST_SCOPE_EXIT( (&Self) (&OldAccess) )
     {
         Self->FAccess = OldAccess;
     } BOOST_SCOPE_EXIT_END

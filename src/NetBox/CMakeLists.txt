@@ -6,7 +6,9 @@ string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 set ( CMAKE_CXX_FLAGS
     "-DWIN32;_WINDOWS /EHsc /MP2 -D_SCL_SECURE_NO_WARNINGS" )
-set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT" )
+set ( CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG;_MT
+    -DGC_NOT_DLL
+" )
 set ( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG;BOOST_DISABLE_ASSERTS" )
 
 set ( CMAKE_LINK_FLAGS
@@ -16,9 +18,11 @@ set ( CMAKE_LINK_FLAGS
 )
 
 # definitions
-add_definitions ( "-DNETBOX_DEBUG" )
-add_definitions ( "-DUSE_FASTFLOW;_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY" )
-add_definitions ( "-D_USRDLL;_AFXDLL;_AFXEXT;_DLL" )
+ADD_DEFINITIONS("-DNETBOX_DEBUG")
+ADD_DEFINITIONS("-DUSE_FASTFLOW
+                -D_FF_WIN_XP;CURL_STATICLIB;MPEXT;NO_SECURITY
+")
+ADD_DEFINITIONS("-D_USRDLL;_AFXDLL;_AFXEXT;_DLL")
 
 include ( ${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake )
 # message ( "system: ${CMAKE_SYSTEM_NAME}" )
@@ -79,6 +83,7 @@ include_directories (
     ${PROJECT_ROOT}/libs/tinyXML
     ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include
     ${PROJECT_ROOT}/libs/zlib/src
+    ${PROJECT_ROOT}/libs/gc-7.2alpha6/include 
 )
 
 link_directories (
@@ -250,6 +255,15 @@ set_target_properties( libputty
 
 #-------------------------------------------------------------------------------
 
+add_library (gcmt STATIC IMPORTED)
+set_property (TARGET gcmt
+    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/gc-7.2alpha6/Debug/gcmt-lib.lib)
+# add_library (gcmt SHARED IMPORTED)
+# set_property (TARGET gcmt
+    # PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/gc-7.2alpha6/Debug/gcmt-lib.lib)
+
+#-------------------------------------------------------------------------------
+
 set ( NETBOX_LIBRARIES
     mfc100ud.lib
     Atl.lib
@@ -280,6 +294,7 @@ set ( NETBOX_LIBRARIES
     odbc32.lib
     odbccp32.lib
     Version.lib
+    gcmt
 )
 
 add_library ( NetBox SHARED ${NETBOX_HEADERS} ${NETBOX_SOURCES} )
@@ -331,11 +346,13 @@ set_target_properties( testnetbox_01
     COMPILE_FLAGS "${CMAKE_CXX_FLAGS} -D_UNICODE;UNICODE /MTd"
     LINK_FLAGS "${CMAKE_LINK_FLAGS}"
 )
+
 add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
     libputty
+    gcmt
 )
 
-target_link_libraries ( testnetbox_01 )
+target_link_libraries ( testnetbox_01 gcmt )
 
 #-------------------------------------------------------
 # target testnetbox_02
