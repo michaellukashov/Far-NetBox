@@ -2700,11 +2700,12 @@ void TFarPanelInfo::ApplySelection()
 TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 {
     size_t Index = GetFocusedIndex();
-    // DEBUG_PRINTF(L"Index = %d, GetItems = %x, GetItems()->GetCount = %d", Index, GetItems(), GetItems()->GetCount());
-    if ((Index >= 0) && (GetItems()->GetCount() > 0))
+    TObjectList *Items = GetItems();
+    // DEBUG_PRINTF(L"Index = %d, Items = %x, Items->GetCount = %d", Index, Items, Items->GetCount());
+    if ((Index >= 0) && (Items->GetCount() > 0))
     {
-        assert(Index < GetItems()->GetCount());
-        return (TFarPanelItem *)GetItems()->GetItem(Index);
+        assert(Index < Items->GetCount());
+        return (TFarPanelItem *)Items->GetItem(Index);
     }
     else
     {
@@ -2714,9 +2715,11 @@ TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 //---------------------------------------------------------------------------
 void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
 {
-    int Index = GetItems()->IndexOf((TObject *)value);
+    TObjectList *Items = GetItems();
+    int Index = Items->IndexOf((TObject *)value);
     assert(Index >= 0);
     SetFocusedIndex(Index);
+    delete Items;
 }
 //---------------------------------------------------------------------------
 int TFarPanelInfo::GetFocusedIndex()
