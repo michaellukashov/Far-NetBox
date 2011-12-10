@@ -141,7 +141,7 @@ static int CmpName_Body(const wchar_t *pattern,const wchar_t *str, bool CmpNameS
 
                 match = 0;
 
-                while ((rangec = Upper(*pattern++)))
+                while ((rangec = Upper(*pattern++)) != 0)
                 {
                     if (rangec == L']')
                     {
