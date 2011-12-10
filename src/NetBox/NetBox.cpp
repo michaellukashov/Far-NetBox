@@ -11,8 +11,8 @@
 
 //---------------------------------------------------------------------------
 #ifdef NETBOX_DEBUG
-_CrtMemState s1, s2, s3;
-HANDLE hLogFile;
+static _CrtMemState s1, s2, s3;
+static HANDLE hLogFile;
 #endif
 
 //---------------------------------------------------------------------------
@@ -85,7 +85,7 @@ int WINAPI ConfigureW(int item)
 
 HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
-  GC_find_leak = 1;
+  // GC_find_leak = 1;
 #ifdef NETBOX_DEBUG
   _CrtMemCheckpoint(&s1);
 #endif
@@ -106,7 +106,7 @@ void WINAPI ClosePluginW(HANDLE plugin)
     _CrtDumpMemoryLeaks();
     CloseHandle(hLogFile);
 #endif
-    GC_gcollect();
+    // GC_gcollect();
 }
 
 void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
