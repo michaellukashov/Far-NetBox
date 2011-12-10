@@ -604,7 +604,7 @@ bool HasGSSAPI()
     memset(&cfg, 0, sizeof(cfg));
     ssh_gss_liblist * List = ssh_gss_setup(&cfg);
     {
-      BOOST_SCOPE_EXIT ( (List) )
+      BOOST_SCOPE_EXIT ( (&List) )
       {
         ssh_gss_cleanup(List);
       } BOOST_SCOPE_EXIT_END

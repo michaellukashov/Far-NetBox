@@ -1252,7 +1252,7 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
 				dir.date.hour = time.GetHour();
 				dir.date.minute = time.GetMinute();
 			}
-			else if (len = 5 && *fact=='u' && *(fact+1)=='p')
+			else if (len == 5 && *fact=='u' && *(fact+1)=='p')
 			{
 				char buffer[4] = {0};
 				memcpy(buffer, fact+2, len-2);

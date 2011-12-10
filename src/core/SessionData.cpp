@@ -906,7 +906,7 @@ void TSessionData::Remove()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2163,7 +2163,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   TStringList *SubKeys = new TStringList();
   TList * Loaded = new TList;
   {
-    BOOST_SCOPE_EXIT ( (SubKeys) (Loaded) )
+    BOOST_SCOPE_EXIT ( (&SubKeys) (&Loaded) )
     {
       delete SubKeys;
       delete Loaded;
@@ -2232,7 +2232,7 @@ void TStoredSessionList::Load(std::wstring aKey, bool UseDefaults)
   // DEBUG_PRINTF(L"aKey = %s", aKey.c_str());
   TRegistryStorage * Storage = new TRegistryStorage(aKey);
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2244,7 +2244,7 @@ void TStoredSessionList::Load()
 {
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2278,7 +2278,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   // DEBUG_PRINTF(L"begin");
   TSessionData * FactoryDefaults = new TSessionData(L"");
   {
-    BOOST_SCOPE_EXIT ( (FactoryDefaults) )
+    BOOST_SCOPE_EXIT ( (&FactoryDefaults) )
     {
       delete FactoryDefaults;
     } BOOST_SCOPE_EXIT_END
@@ -2302,7 +2302,7 @@ void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnl
   // DEBUG_PRINTF(L"begin")
   THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2341,7 +2341,7 @@ void TStoredSessionList::Export(const std::wstring FileName)
 {
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   {
-    BOOST_SCOPE_EXIT ( (Storage) )
+    BOOST_SCOPE_EXIT ( (&Storage) )
     {
       delete Storage;
     } BOOST_SCOPE_EXIT_END
@@ -2395,7 +2395,7 @@ void TStoredSessionList::Cleanup()
     if (Configuration->GetStorage() == stRegistry) Clear();
     TRegistryStorage * Storage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
     {
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -2465,7 +2465,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
   TRegistryStorage * TargetStorage = NULL;
   TStringList * KeyList = NULL;
   {
-    BOOST_SCOPE_EXIT ( (SourceStorage) (TargetStorage) (KeyList) )
+    BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) (&KeyList) )
     {
       delete SourceStorage;
       delete TargetStorage;

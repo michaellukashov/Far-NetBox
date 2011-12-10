@@ -904,7 +904,7 @@ void ProcessLocalDirectory(std::wstring DirName,
   HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
   if (h != INVALID_HANDLE_VALUE)
   {
-    BOOST_SCOPE_EXIT ( (h) )
+    BOOST_SCOPE_EXIT ( (&h) )
     {
         ::FindClose(h);
     } BOOST_SCOPE_EXIT_END

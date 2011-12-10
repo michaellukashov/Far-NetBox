@@ -29,6 +29,11 @@
 #include <winsock2.h>
 #endif
 //---------------------------------------------------------------------------
+#ifdef NETBOX_DEBUG
+// static _CrtMemState s1, s2, s3;
+// static HANDLE hLogFile;
+#endif
+//---------------------------------------------------------------------------
 #define COMMAND_ERROR_ARI(MESSAGE, REPEAT) \
   { \
     int Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
@@ -1004,9 +1009,9 @@ void TTerminal::Reopen(int Params)
   // however I'm not sure why we mind having excaption-on-fail enabled here
   int PrevExceptionOnFail = FExceptionOnFail;
   {
-    BOOST_SCOPE_EXIT ( (&Self) (PrevRemoteDirectory)
-        (OrigFSProtocol) (PrevAutoReadDirectory) (PrevReadCurrentDirectoryPending)
-        (PrevReadDirectoryPending) (PrevExceptionOnFail) )
+    BOOST_SCOPE_EXIT ( (&Self) (&PrevRemoteDirectory)
+        (&OrigFSProtocol) (&PrevAutoReadDirectory) (&PrevReadCurrentDirectoryPending)
+        (&PrevReadDirectoryPending) (&PrevExceptionOnFail) )
     {
         Self->GetSessionData()->SetRemoteDirectory(PrevRemoteDirectory);
         Self->GetSessionData()->SetFSProtocol(OrigFSProtocol);
@@ -1840,7 +1845,7 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   {
     ECommand * ECmd = new ECommand(Msg, E);
     {
-      BOOST_SCOPE_EXIT ( (ECmd) )
+      BOOST_SCOPE_EXIT ( (&ECmd) )
       {
         delete ECmd;
       } BOOST_SCOPE_EXIT_END
@@ -2328,7 +2333,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
     {
       TRemoteDirectory *Files = new TRemoteDirectory(this, FFiles);
       {
-        BOOST_SCOPE_EXIT ( (&Self) (Files) (Cancel) (ReloadOnly) )
+        BOOST_SCOPE_EXIT ( (&Self) (&Files) (&Cancel) (&ReloadOnly) )
         {
           Self->DoReadDirectoryProgress(-1, Cancel);
           Self->FReadingCurrentDirectory = false;
@@ -2494,7 +2499,7 @@ void TTerminal::ProcessDirectory(const std::wstring DirName,
   if (FileList)
   {
     {
-      BOOST_SCOPE_EXIT ( (FileList) )
+      BOOST_SCOPE_EXIT ( (&FileList) )
       {
         delete FileList;
       } BOOST_SCOPE_EXIT_END
@@ -2626,7 +2631,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
 
     FOperationProgress = Progress;
     {
-      BOOST_SCOPE_EXIT ( (&Self) (Progress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&Progress) )
       {
         Self->FOperationProgress = NULL;
         Progress->Stop();
@@ -2638,7 +2643,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
       }
 
       {
-          BOOST_SCOPE_EXIT ( (&Self) (Side) )
+          BOOST_SCOPE_EXIT ( (&Self) (&Side) )
           {
             if (Side == osRemote)
             {
@@ -3227,7 +3232,7 @@ bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
   bool Result;
   BeginTransaction();
   {
-    BOOST_SCOPE_EXIT ( (&Self) (FileList) )
+    BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
     {
         if (Self->GetActive())
         {
@@ -4016,7 +4021,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
   }
 
   {
-    BOOST_SCOPE_EXIT ( (Data) )
+    BOOST_SCOPE_EXIT ( (&Data) )
     {
       if (Data.LocalFileList != NULL)
       {
@@ -4047,7 +4052,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     if (Found)
     {
       {
-        BOOST_SCOPE_EXIT ( (findHandle) )
+        BOOST_SCOPE_EXIT ( (&findHandle) )
         {
           ::FindClose(findHandle);
         } BOOST_SCOPE_EXIT_END
@@ -4124,7 +4129,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
         {
           TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
           {
-            BOOST_SCOPE_EXIT ( (ChecklistItem) )
+            BOOST_SCOPE_EXIT ( (&ChecklistItem) )
             {
               delete ChecklistItem;
             } BOOST_SCOPE_EXIT_END
@@ -4203,7 +4208,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
   {
     TSynchronizeChecklist::TItem * ChecklistItem = new TSynchronizeChecklist::TItem();
     {
-      BOOST_SCOPE_EXIT ( (ChecklistItem) )
+      BOOST_SCOPE_EXIT ( (&ChecklistItem) )
       {
         delete ChecklistItem;
       }
@@ -4381,8 +4386,8 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
   BeginTransaction();
 
   {
-    BOOST_SCOPE_EXIT ( (&Self) (DownloadList) (DeleteRemoteList)
-      (UploadList) (DeleteLocalList) )
+    BOOST_SCOPE_EXIT ( (&Self) (&DownloadList) (&DeleteRemoteList)
+      (&UploadList) (&DeleteLocalList) )
     {
         delete DownloadList;
         delete DeleteRemoteList;
@@ -4803,8 +4808,24 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
           LogEvent(CopyParam->GetLogStr());
         }
 
+#ifdef NETBOX_DEBUG
+        // _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+        // _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+        // hLogFile = CreateFile(L"C:\\CopyToRemote.txt", GENERIC_WRITE,
+          // FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+          // FILE_ATTRIBUTE_NORMAL, NULL);
+        // _CrtSetReportFile(_CRT_WARN, hLogFile);
+        // _CrtMemCheckpoint(&s1);
+#endif
         FFileSystem->CopyToRemote(FilesToCopy, UnlockedTargetDir,
           CopyParam, Params, OperationProgress, OnceDoneOperation);
+#ifdef NETBOX_DEBUG
+        // _CrtMemCheckpoint(&s2);
+        // if (_CrtMemDifference(&s3, &s1, &s2)) 
+            // _CrtMemDumpStatistics(&s3);
+        // _CrtDumpMemoryLeaks();
+        // CloseHandle(hLogFile);
+#endif
       }
 
       if (OperationProgress->Cancel == csContinue)
@@ -4843,7 +4864,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
   bool OwnsFileList = (FilesToCopy == NULL);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  BOOST_SCOPE_EXIT( (OwnsFileList) (FilesToCopy) )
+  BOOST_SCOPE_EXIT( (&OwnsFileList) (&FilesToCopy) )
   {
     if (OwnsFileList) delete FilesToCopy;
   } BOOST_SCOPE_EXIT_END
@@ -4855,7 +4876,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
 
   BeginTransaction();
   {
-    BOOST_SCOPE_EXIT( (Self) )
+    BOOST_SCOPE_EXIT( (&Self) )
     {
         // If session is still active (no fatal error) we reload directory
         // by calling EndTransaction

@@ -56,7 +56,7 @@ void TConfiguration::Default()
   TRegistryStorage * AdminStorage;
   AdminStorage = new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE);
   {
-      BOOST_SCOPE_EXIT ( (AdminStorage) )
+      BOOST_SCOPE_EXIT ( (&AdminStorage) )
       {
         delete AdminStorage;
       } BOOST_SCOPE_EXIT_END
@@ -118,7 +118,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
-      BOOST_SCOPE_EXIT ( (Storage) ) \
+      BOOST_SCOPE_EXIT ( (&Storage) ) \
       { \
         Storage->CloseSubKey(); \
       } BOOST_SCOPE_EXIT_END \
@@ -162,7 +162,7 @@ void TConfiguration::Save(bool All, bool Explicit)
 
   THierarchicalStorage * AStorage = CreateScpStorage(false);
   {
-      BOOST_SCOPE_EXIT ( (AStorage) )
+      BOOST_SCOPE_EXIT ( (&AStorage) )
       {
         delete AStorage;
       } BOOST_SCOPE_EXIT_END
@@ -193,7 +193,7 @@ void TConfiguration::Export(const std::wstring FileName)
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   {
-      BOOST_SCOPE_EXIT ( (ExportStorage) (Storage) )
+      BOOST_SCOPE_EXIT ( (&ExportStorage) (&Storage) )
       {
         delete ExportStorage;
         delete Storage;
@@ -238,7 +238,7 @@ void TConfiguration::Load()
 
   THierarchicalStorage * Storage = CreateScpStorage(false);
   {
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -255,7 +255,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 {
   TStrings * Names = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (Names) )
+      BOOST_SCOPE_EXIT ( (&Names) )
       {
         delete Names;
       } BOOST_SCOPE_EXIT_END
@@ -329,7 +329,7 @@ void TConfiguration::LoadDirectoryChangesCache(const std::wstring SessionKey,
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
   {
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -348,7 +348,7 @@ void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
   {
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -377,7 +377,7 @@ bool TConfiguration::ShowBanner(const std::wstring SessionKey,
   bool Result;
   THierarchicalStorage * Storage = CreateScpStorage(false);
   {
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -397,7 +397,7 @@ void TConfiguration::NeverShowBanner(const std::wstring SessionKey,
 {
   THierarchicalStorage * Storage = CreateScpStorage(false);
   {
-      BOOST_SCOPE_EXIT ( (Storage) )
+      BOOST_SCOPE_EXIT ( (&Storage) )
       {
         delete Storage;
       } BOOST_SCOPE_EXIT_END
@@ -468,7 +468,7 @@ void TConfiguration::CleanupRegistry(std::wstring CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
   {
-      BOOST_SCOPE_EXIT ( (Registry) )
+      BOOST_SCOPE_EXIT ( (&Registry) )
       {
         delete Registry;
       } BOOST_SCOPE_EXIT_END
@@ -699,7 +699,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
   std::wstring Result;
   void * Info = GetFileApplicationInfo(FileName);
   {
-      BOOST_SCOPE_EXIT ( (&FileName) (Info) )
+      BOOST_SCOPE_EXIT ( (&FileName) (&Info) )
       {
         if (!FileName.empty())
         {
@@ -794,7 +794,7 @@ void TConfiguration::SetStorage(TStorage value)
     THierarchicalStorage * TargetStorage = NULL;
 
     {
-        BOOST_SCOPE_EXIT ( (SourceStorage) (TargetStorage) )
+        BOOST_SCOPE_EXIT ( (&SourceStorage) (&TargetStorage) )
         {
           delete SourceStorage;
           delete TargetStorage;
