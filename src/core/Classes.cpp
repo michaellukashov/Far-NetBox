@@ -78,7 +78,7 @@ void TList::SetCount(size_t NewCount)
   else
   {
     int sz = FList.size();
-    for (int I = sz - 1; I > (int)NewCount; I--)
+    for (int I = sz - 1; I >= (int)NewCount; I--)
       Delete(I);
   }
   // FCount := NewCount;
