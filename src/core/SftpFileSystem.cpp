@@ -786,7 +786,7 @@ public:
       Dump = DumpLines->GetText();
     }
 
-    SetCapacity(20480);
+    SetCapacity(1 * 1024 * 1024); // 20480);
     wchar_t Byte[3];
     memset(Byte, '\0', sizeof(Byte));
     size_t Index = 0;
@@ -1044,17 +1044,17 @@ public:
   {
     assert(FFileSystem->FTerminal->GetActive());
 
-    TSFTPQueuePacket * Request;
-    TSFTPPacket * Response;
+    TSFTPQueuePacket *Request;
+    TSFTPPacket *Response;
 
     while (FRequests->GetCount())
     {
       assert(FResponses->GetCount());
 
-      Request = reinterpret_cast<TSFTPQueuePacket*>(FRequests->GetItem(0));
+      Request = reinterpret_cast<TSFTPQueuePacket *>(FRequests->GetItem(0));
       assert(Request);
 
-      Response = reinterpret_cast<TSFTPPacket*>(FResponses->GetItem(0));
+      Response = reinterpret_cast<TSFTPPacket *>(FResponses->GetItem(0));
       assert(Response);
 
       try
@@ -1098,7 +1098,7 @@ public:
     TSFTPQueuePacket * Request = NULL;
     TSFTPPacket * Response = NULL;
     {
-      BOOST_SCOPE_EXIT ( (Request) (Response) )
+      BOOST_SCOPE_EXIT ( (&Request) (&Response) )
       {
         delete Request;
         delete Response;
@@ -1585,7 +1585,7 @@ public:
     void * Token;
     bool Result;
     {
-      BOOST_SCOPE_EXIT ( (&File) (Token) )
+      BOOST_SCOPE_EXIT ( (&File) (&Token) )
       {
         File = static_cast<TRemoteFile *>(Token);
       } BOOST_SCOPE_EXIT_END
@@ -2371,7 +2371,7 @@ int TSFTPFileSystem::ReceiveResponse(
   unsigned int MessageNumber = Packet->GetMessageNumber();
   TSFTPPacket * AResponse = (Response ? Response : new TSFTPPacket());
   {
-    BOOST_SCOPE_EXIT ( (Response) (AResponse) )
+    BOOST_SCOPE_EXIT ( (&Response) (&AResponse) )
     {
         if (!Response)
         {
@@ -3021,7 +3021,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
   TSFTPPacket Response;
   {
-    BOOST_SCOPE_EXIT ( (&Self) (&Packet) (Handle) )
+    BOOST_SCOPE_EXIT ( (&Self) (&Packet) (&Handle) )
     {
       if (Self->FTerminal->GetActive())
       {
@@ -3374,7 +3374,7 @@ void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
   ReadFile(RealFileName, File);
 
   {
-    BOOST_SCOPE_EXIT ( (File) )
+    BOOST_SCOPE_EXIT ( (&File) )
     {
         delete File;
     } BOOST_SCOPE_EXIT_END
@@ -3433,7 +3433,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
     static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this);
     {
-      BOOST_SCOPE_EXIT ( (&Self) (&Queue) (Progress) )
+      BOOST_SCOPE_EXIT ( (&Self) (&Queue) (&Progress) )
       {
         Queue.DisposeSafe();
         Self->FTerminal->FOperationProgress = NULL;
@@ -3499,8 +3499,8 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
           TStrings * SubFileList = new TStringList();
           bool Success = false;
           {
-            BOOST_SCOPE_EXIT ( (SubFiles) (SubFileList) (&FirstLevel)
-                (&File) (&Success) (&OnceDoneOperation) (OperationProgress) )
+            BOOST_SCOPE_EXIT ( (&SubFiles) (&SubFileList) (&FirstLevel)
+                (&File) (&Success) (&OnceDoneOperation) (&OperationProgress) )
             {
               delete SubFiles;
               delete SubFileList;
@@ -3541,7 +3541,12 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
     if (Queue.Init(CalculateFilesChecksumQueueLen, Alg, FileList))
     {
       TSFTPPacket Packet;
-      bool Next;
+      bool Next = false;
+      calculatedchecksum_signal_type sig;
+      if (OnCalculatedChecksum)
+      {
+          sig.connect(*OnCalculatedChecksum);
+      }
       do
       {
         bool Success = false;
@@ -3551,7 +3556,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
         {
           BOOST_SCOPE_EXIT ( (&FirstLevel) (&File)
-            (&Success) (&OnceDoneOperation) (OperationProgress) )
+            (&Success) (&OnceDoneOperation) (&OperationProgress) )
           {
             if (FirstLevel)
             {
@@ -3566,9 +3571,8 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
             OperationProgress->SetFile(File->GetFileName());
 
             Alg = Packet.GetStringW(!FUtfNever);
-            Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
-            calculatedchecksum_signal_type sig;
-            sig.connect(*OnCalculatedChecksum);
+            // Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
+            Checksum = StrToHex(std::wstring(::MB2W(std::string(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength()).c_str())));
             sig(File->GetFileName(), Alg, Checksum);
 
             Success = true;
@@ -3680,7 +3684,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 
     {
       BOOST_SCOPE_EXIT ( (&Self) (&FileName) (&Success) (&OnceDoneOperation)
-        (OperationProgress) )
+        (&OperationProgress) )
       {
         Self->FAvoidBusy = false;
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
@@ -3988,7 +3992,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
   bool Dir = FLAGSET(OpenParams.LocalFileAttrs, faDirectory);
 
   {
-    BOOST_SCOPE_EXIT ( (File) )
+    BOOST_SCOPE_EXIT ( (&File) )
     {
       if (File != NULL)
       {
@@ -4199,7 +4203,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
 
       {
         BOOST_SCOPE_EXIT ( (&Self) (&TransferFinished) (&OpenParams)
-            (&CloseRequest) (&DoResume) (&DestFileName) (OperationProgress) )
+            (&CloseRequest) (&DoResume) (&DestFileName) (&OperationProgress) )
         {
           if (Self->FTerminal->GetActive())
           {
@@ -4940,7 +4944,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
       BOOST_SCOPE_EXIT ( (&Self) (&LocalHandle) (&FileStream) (&DeleteLocalFile)
         (&ResumeAllowed) (&OverwriteMode) (&LocalFileName)
         (&DestFileName) (&RemoteHandle)
-        (OperationProgress) )
+        (&OperationProgress) )
       {
         if (LocalHandle) CloseHandle(LocalHandle);
         if (FileStream) delete FileStream;

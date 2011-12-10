@@ -577,7 +577,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
   std::wstring Name = Data->Name;
   if (FPlugin->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
         GetMsg(Duplicate ? DUPLICATE_SESSION_PROMPT : RENAME_SESSION_PROMPT),
-        Name, 0) &&
+        Name, NULL) &&
       !Name.empty() && (Name != Data->Name))
   {
     TNamedObject * EData = StoredSessions->FindByName(Name);
@@ -2187,6 +2187,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
     if (SessionList())
     {
       FSessionsFolder = AbsolutePath(L"/" + FSessionsFolder, Dir);
+      // DEBUG_PRINTF(L"FSessionsFolder = %s", FSessionsFolder.c_str());
       assert(FSessionsFolder[0] == L'/');
       FSessionsFolder.erase(0, 1);
       FNewSessionsFolder = L"";
@@ -2386,8 +2387,8 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*Param*/)
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   const processsession_slot_type &ProcessSession, void * Param)
 {
-    processsession_signal_type sig;
-    sig.connect(ProcessSession);
+  processsession_signal_type sig;
+  sig.connect(ProcessSession);
   for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
   {
     TFarPanelItem * PanelItem = (TFarPanelItem *)PanelItems->GetItem(Index);
@@ -2415,11 +2416,12 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
         TSessionData *Data = StoredSessions->GetSession(Index);
         if (Data->Name.substr(0, Folder.size()) == Folder)
         {
-          sig(Data, Param);
           if (StoredSessions->GetSession(Index) != Data)
           {
             Index--;
           }
+          sig(Data, Param);
+          // DEBUG_PRINTF(L"Index = %d, StoredSessions->GetCount = %d", Index, StoredSessions->GetCount());
         }
         Index++;
       }
@@ -3030,7 +3032,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
 {
-  GetTerminal()->Open();
+  Terminal->Open();
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)

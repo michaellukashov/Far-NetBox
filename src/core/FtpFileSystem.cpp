@@ -613,7 +613,10 @@ void TFTPFileSystem::AnyCommand(const std::wstring Command,
   EnsureLocation();
 
   assert(FOnCaptureOutput.empty());
-  FOnCaptureOutput.connect(*OutputEvent);
+  if (OutputEvent)
+  {
+    FOnCaptureOutput.connect(*OutputEvent);
+  }
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
@@ -3126,7 +3129,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     THierarchicalStorage * Storage =
       FTerminal->GetConfiguration()->CreateScpStorage(false);
     {
-        BOOST_SCOPE_EXIT ( (Storage) )
+        BOOST_SCOPE_EXIT ( (&Storage) )
         {
           delete Storage;
         } BOOST_SCOPE_EXIT_END
@@ -3198,7 +3201,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         THierarchicalStorage * Storage =
           FTerminal->GetConfiguration()->CreateScpStorage(false);
         {
-            BOOST_SCOPE_EXIT ( (Storage) )
+            BOOST_SCOPE_EXIT ( (&Storage) )
             {
               delete Storage;
             } BOOST_SCOPE_EXIT_END

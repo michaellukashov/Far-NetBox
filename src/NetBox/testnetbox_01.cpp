@@ -4,6 +4,9 @@
 // testnetbox_01 --run_test=testnetbox_01/test1 --log_level=all 2>&1 | tee res.txt
 //------------------------------------------------------------------------------
 
+#include "leak_detector.h"
+// extern int GC_find_leak;
+
 #include "stdafx.h"
 #include <time.h>
 #include <stdio.h>
@@ -555,6 +558,13 @@ BOOST_FIXTURE_TEST_CASE(test24, base_fixture_t)
     TDateTime now = Now();
     BOOST_TEST_MESSAGE("now = " << (double)now);
     BOOST_CHECK(now > 0.0);
+}
+
+BOOST_FIXTURE_TEST_CASE(test25, base_fixture_t)
+{
+    GC_find_leak = 1;
+    int *i = (int *)malloc(sizeof(int));
+    CHECK_LEAKS();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

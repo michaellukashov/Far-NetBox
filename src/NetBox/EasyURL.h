@@ -3,6 +3,7 @@
 #include "FarUtil.h"
 
 #include <curl/curl.h>
+#include "SessionInfo.h"
 
 #define CHECK_CUCALL(code, fc) if (code == CURLE_OK) code = fc
 
@@ -248,7 +249,7 @@ public:
     virtual void SetDebugLevel(TLogLevel Level) { FDebugLevel = Level; }
 
 private:
-    int DebugOutput(const char *data, size_t size);
+    int DebugOutput(TLogLineType type, const char *data, size_t size);
 
 private:
     //Internal reader callback (see libcurl docs)
