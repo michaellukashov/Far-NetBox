@@ -964,7 +964,7 @@ bool TInteractiveCustomCommand::PatternReplacement(int Index, const std::wstring
   if ((Pattern.size() >= 3) && (Pattern[1] == '?'))
   {
     std::wstring PromptStr;
-    int Pos = Pattern.substr(2, Pattern.size() - 2).find_first_of(L"?");
+    size_t Pos = Pattern.substr(2, Pattern.size() - 2).find_first_of(L"?");
     if (Pos != std::wstring::npos)
     {
       Replacement = Pattern.substr(2 + Pos, Pattern.size() - 3 - Pos);
