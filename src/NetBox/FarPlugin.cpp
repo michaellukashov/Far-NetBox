@@ -2720,7 +2720,7 @@ void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
     int Index = Items->IndexOf((TObject *)value);
     assert(Index >= 0);
     SetFocusedIndex(Index);
-    delete Items;
+    // delete Items;
 }
 //---------------------------------------------------------------------------
 int TFarPanelInfo::GetFocusedIndex()
