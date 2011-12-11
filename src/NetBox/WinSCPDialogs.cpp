@@ -1803,6 +1803,39 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetCaption(GetMsg(LOGIN_GROUP_SESSION));
   GroupTop = Separator->GetTop();
 
+  // Separator = new TFarSeparator(this);
+  // Separator->SetCaption(GetMsg(LOGIN_GROUP_PROTOCOL));
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_TRANSFER_PROTOCOL));
+
+  SetNextItemPosition(ipRight);
+
+  TransferProtocolCombo = new TFarComboBox(this);
+  TransferProtocolCombo->SetDropDownList(true);
+  TransferProtocolCombo->SetWidth(7);
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
+  #ifndef NO_FILEZILLA
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
+  #ifndef MPEXT_NO_SSLDLL
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTPS));
+  #endif
+  #endif
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
+
+  AllowScpFallbackCheck = new TFarCheckBox(this);
+  AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
+
+  InsecureLabel = new TFarText(this);
+  InsecureLabel->SetCaption(GetMsg(LOGIN_INSECURE));
+  InsecureLabel->MoveAt(AllowScpFallbackCheck->GetLeft(), AllowScpFallbackCheck->GetTop());
+
+  SetNextItemPosition(ipNewLine);
+
+  new TFarSeparator(this);
+
   HostNameLabel = new TFarText(this);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
 
@@ -1849,37 +1882,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text->SetEnabledFollow(PrivateKeyEdit);
 
   Separator = new TFarSeparator(this);
-  Separator->SetCaption(GetMsg(LOGIN_GROUP_PROTOCOL));
-
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_TRANSFER_PROTOCOL));
-
-  SetNextItemPosition(ipRight);
-
-  TransferProtocolCombo = new TFarComboBox(this);
-  TransferProtocolCombo->SetDropDownList(true);
-  TransferProtocolCombo->SetWidth(7);
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
-  #ifndef NO_FILEZILLA
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTP));
-  #ifndef MPEXT_NO_SSLDLL
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_FTPS));
-  #endif
-  #endif
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTP));
-  TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_HTTPS));
-
-  AllowScpFallbackCheck = new TFarCheckBox(this);
-  AllowScpFallbackCheck->SetCaption(GetMsg(LOGIN_ALLOW_SCP_FALLBACK));
-
-  InsecureLabel = new TFarText(this);
-  InsecureLabel->SetCaption(GetMsg(LOGIN_INSECURE));
-  InsecureLabel->MoveAt(AllowScpFallbackCheck->GetLeft(), AllowScpFallbackCheck->GetTop());
-
-  SetNextItemPosition(ipNewLine);
-
-  new TFarSeparator(this);
 
   Text = new TFarText(this);
   Text->SetTop(CRect.Bottom - 3);
