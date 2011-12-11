@@ -1081,10 +1081,10 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
     TStringList *MessageLines = NULL;
     wchar_t **Items = NULL;
     {
-        BOOST_SCOPE_EXIT ( (MessageLines) (Items) )
+        BOOST_SCOPE_EXIT ( (&MessageLines) (&Items) )
         {
             delete MessageLines;
-            delete Items;
+            delete[] Items;
         } BOOST_SCOPE_EXIT_END
         std::wstring FullMessage = Message;
         if (Params->MoreMessages != NULL)
