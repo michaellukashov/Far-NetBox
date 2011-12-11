@@ -733,7 +733,7 @@ int TFarDialog::ShowModal()
     TFarDialog *PrevTopDialog = GetFarPlugin()->FTopDialog;
     GetFarPlugin()->FTopDialog = this;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (PrevTopDialog) )
+        BOOST_SCOPE_EXIT ( (&Self) (&PrevTopDialog) )
         {
             Self->GetFarPlugin()->FTopDialog = PrevTopDialog;
         } BOOST_SCOPE_EXIT_END
