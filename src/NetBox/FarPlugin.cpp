@@ -354,7 +354,7 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
         TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
         {
-            BOOST_SCOPE_EXIT ( (&Self) (FileSystem) )
+            BOOST_SCOPE_EXIT ( (&Self) (&FileSystem) )
             {
                 Self->FOpenedPlugins->Remove(FileSystem);
             } BOOST_SCOPE_EXIT_END
@@ -789,7 +789,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
     TStrings *MessageLines = new TStringList();
     TStrings *MoreMessageLines = NULL;
     {
-        BOOST_SCOPE_EXIT ( (MessageLines) (MoreMessageLines) )
+        BOOST_SCOPE_EXIT ( (&MessageLines) (&MoreMessageLines) )
         {
             delete MessageLines;
             delete MoreMessageLines;
@@ -1061,7 +1061,7 @@ int TCustomFarPlugin::DialogMessage(unsigned int Flags,
     TFarMessageDialog *Dialog =
         new TFarMessageDialog(this, Params);
     {
-        BOOST_SCOPE_EXIT ( (Dialog) )
+        BOOST_SCOPE_EXIT ( (&Dialog) )
         {
             delete Dialog;
         } BOOST_SCOPE_EXIT_END
@@ -1081,10 +1081,10 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
     TStringList *MessageLines = NULL;
     wchar_t **Items = NULL;
     {
-        BOOST_SCOPE_EXIT ( (MessageLines) (Items) )
+        BOOST_SCOPE_EXIT ( (&MessageLines) (&Items) )
         {
             delete MessageLines;
-            delete Items;
+            delete[] Items;
         } BOOST_SCOPE_EXIT_END
         std::wstring FullMessage = Message;
         if (Params->MoreMessages != NULL)
@@ -1191,7 +1191,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
     int Result;
     FarMenuItemEx *MenuItems = new FarMenuItemEx[Items->GetCount()];
     {
-        BOOST_SCOPE_EXIT ( (MenuItems) )
+        BOOST_SCOPE_EXIT ( (&MenuItems) )
         {
             delete[] MenuItems;
         } BOOST_SCOPE_EXIT_END
@@ -1889,7 +1889,7 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
             TFarPanelModes *PanelModes = NULL;
             TFarKeyBarTitles *KeyBarTitles = NULL;
             {
-                BOOST_SCOPE_EXIT ( (PanelModes) (KeyBarTitles) )
+                BOOST_SCOPE_EXIT ( (&PanelModes) (&KeyBarTitles) )
                 {
                     delete PanelModes;
                     delete KeyBarTitles;
@@ -1927,7 +1927,7 @@ int TCustomFarFileSystem::GetFindData(
     TObjectList *PanelItems = new TObjectList();
     bool Result;
     {
-        BOOST_SCOPE_EXIT ( (PanelItems) )
+        BOOST_SCOPE_EXIT ( (&PanelItems) )
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -1983,7 +1983,7 @@ int TCustomFarFileSystem::ProcessHostFile(struct PluginPanelItem *PanelItem,
     TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     bool Result;
     {
-        BOOST_SCOPE_EXIT ( (PanelItems) )
+        BOOST_SCOPE_EXIT ( (&PanelItems) )
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -2019,7 +2019,7 @@ int TCustomFarFileSystem::MakeDirectory(const wchar_t **Name, int OpMode)
     std::wstring NameStr = *Name;
     int Result;
     {
-        BOOST_SCOPE_EXIT ( (&NameStr) (Name) )
+        BOOST_SCOPE_EXIT ( (&NameStr) (&Name) )
         {
             StrToFar(NameStr);
             if (NameStr != *Name)
@@ -2041,7 +2041,7 @@ int TCustomFarFileSystem::DeleteFiles(struct PluginPanelItem *PanelItem,
     TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     bool Result;
     {
-        BOOST_SCOPE_EXIT ( (PanelItems) )
+        BOOST_SCOPE_EXIT ( (&PanelItems) )
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -2058,7 +2058,7 @@ int TCustomFarFileSystem::GetFiles(struct PluginPanelItem *PanelItem,
     int Result;
     std::wstring DestPathStr = *DestPath;
     {
-        BOOST_SCOPE_EXIT ( (DestPathStr) (DestPath) (PanelItems) )
+        BOOST_SCOPE_EXIT ( (&DestPathStr) (&DestPath) (&PanelItems) )
         {
             StrToFar(DestPathStr);
             if (DestPathStr != *DestPath)
@@ -2082,7 +2082,7 @@ int TCustomFarFileSystem::PutFiles(struct PluginPanelItem *PanelItem,
     TObjectList *PanelItems = CreatePanelItemList(PanelItem, ItemsNumber);
     int Result;
     {
-        BOOST_SCOPE_EXIT ( (PanelItems) )
+        BOOST_SCOPE_EXIT ( (&PanelItems) )
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
@@ -2720,7 +2720,7 @@ void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
     int Index = Items->IndexOf((TObject *)value);
     assert(Index >= 0);
     SetFocusedIndex(Index);
-    delete Items;
+    // delete Items;
 }
 //---------------------------------------------------------------------------
 int TFarPanelInfo::GetFocusedIndex()

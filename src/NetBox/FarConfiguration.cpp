@@ -76,7 +76,7 @@ void TFarConfiguration::Saved()
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
-      BOOST_SCOPE_EXIT ( (Storage) ) \
+      BOOST_SCOPE_EXIT ( (&Storage) ) \
       { \
         Storage->CloseSubKey(); \
       } BOOST_SCOPE_EXIT_END \

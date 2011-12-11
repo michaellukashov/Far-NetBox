@@ -33,7 +33,7 @@ void TSessionPanelItem::SetPanelModes(TFarPanelModes * PanelModes)
   assert(FarPlugin);
   TStrings * ColumnTitles = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (ColumnTitles) )
+    BOOST_SCOPE_EXIT ( (&ColumnTitles) )
     {
       delete ColumnTitles;
     } BOOST_SCOPE_EXIT_END
@@ -172,7 +172,7 @@ void TRemoteFilePanelItem::SetPanelModes(TFarPanelModes * PanelModes)
   assert(FarPlugin);
   TStrings * ColumnTitles = new TStringList();
   {
-    BOOST_SCOPE_EXIT ( (ColumnTitles) )
+    BOOST_SCOPE_EXIT ( (&ColumnTitles) )
     {
       delete ColumnTitles;
     } BOOST_SCOPE_EXIT_END
@@ -508,7 +508,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     TSessionData * Data;
     TStringList * ChildPaths = new TStringList();
     {
-        BOOST_SCOPE_EXIT ( (ChildPaths) )
+        BOOST_SCOPE_EXIT ( (&ChildPaths) )
         {
           delete ChildPaths;
         } BOOST_SCOPE_EXIT_END
@@ -637,7 +637,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
   }
 
   {
-      BOOST_SCOPE_EXIT ( (Data) (NewData) (FillInConnect) )
+      BOOST_SCOPE_EXIT ( (&Data) (&NewData) (&FillInConnect) )
       {
         if (NewData || FillInConnect)
         {
@@ -1120,7 +1120,7 @@ void TWinSCPFileSystem::ApplyCommand()
   if (FileList != NULL)
   {
     {
-        BOOST_SCOPE_EXIT ( (FileList) )
+        BOOST_SCOPE_EXIT ( (&FileList) )
         {
             delete FileList;
         } BOOST_SCOPE_EXIT_END
@@ -1205,7 +1205,7 @@ void TWinSCPFileSystem::ApplyCommand()
           TStrings * LocalFileList = NULL;
           TStrings * RemoteFileList = NULL;
           {
-            BOOST_SCOPE_EXIT ( (RemoteFileList) (LocalFileList) )
+            BOOST_SCOPE_EXIT ( (&RemoteFileList) (&LocalFileList) )
             {
               delete RemoteFileList;
               delete LocalFileList;
@@ -1360,7 +1360,7 @@ void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
 {
   TSynchronizeChecklist * AChecklist = NULL;
   {
-      BOOST_SCOPE_EXIT ( (AChecklist) (&Checklist) )
+      BOOST_SCOPE_EXIT ( (&AChecklist) (&Checklist) )
       {
         if (Checklist == NULL)
         {
@@ -1738,7 +1738,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
       assert(!FPanelItems);
 
       {
-          BOOST_SCOPE_EXIT ( (FileList) )
+          BOOST_SCOPE_EXIT ( (&FileList) )
           {
             delete FileList;
           } BOOST_SCOPE_EXIT_END
@@ -1809,7 +1809,7 @@ void TWinSCPFileSystem::FileProperties()
     assert(!FPanelItems);
 
     {
-        BOOST_SCOPE_EXIT ( (FileList) )
+        BOOST_SCOPE_EXIT ( (&FileList) )
         {
           delete FileList;
         } BOOST_SCOPE_EXIT_END
@@ -1944,7 +1944,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   TStrings * FileList = CreateSelectedFileList(osRemote);
   TStrings * FileNames = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (FileList) (FileNames) )
+      BOOST_SCOPE_EXIT ( (&FileList) (&FileNames) )
       {
         delete FileList;
         delete FileNames;
@@ -2043,7 +2043,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 {
   TBookmarkList * BookmarkList = new TBookmarkList();
   {
-      BOOST_SCOPE_EXIT ( (BookmarkList) )
+      BOOST_SCOPE_EXIT ( (&BookmarkList) )
       {
         delete BookmarkList;
       } BOOST_SCOPE_EXIT_END
@@ -2625,7 +2625,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   TSessionData * ExportData = NULL;
   TSessionData * FactoryDefaults = new TSessionData(L"");
   {
-      BOOST_SCOPE_EXIT ( (FactoryDefaults) (Storage) (ExportData) )
+      BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&Storage) (&ExportData) )
       {
         delete FactoryDefaults;
         delete Storage;
@@ -2809,7 +2809,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       {
         THierarchicalStorage * Storage = NULL;
         {
-          BOOST_SCOPE_EXIT ( (Storage) )
+          BOOST_SCOPE_EXIT ( (&Storage) )
           {
             delete Storage;
           } BOOST_SCOPE_EXIT_END
@@ -3047,7 +3047,7 @@ void TWinSCPFileSystem::LogAuthentication(
   FAuthenticationLog->Add(Msg);
   TStringList * AuthenticationLogLines = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (AuthenticationLogLines) )
+      BOOST_SCOPE_EXIT ( (&AuthenticationLogLines) )
       {
         delete AuthenticationLogLines;
       } BOOST_SCOPE_EXIT_END
@@ -3697,7 +3697,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
   if (Info != NULL)
   {
     {
-        BOOST_SCOPE_EXIT ( (Info) )
+        BOOST_SCOPE_EXIT ( (&Info) )
         {
           delete Info;
         } BOOST_SCOPE_EXIT_END
@@ -3754,7 +3754,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
       if (Info != NULL)
       {
         {
-            BOOST_SCOPE_EXIT ( (Info) )
+            BOOST_SCOPE_EXIT ( (&Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3780,7 +3780,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
       if (Info != NULL)
       {
         {
-            BOOST_SCOPE_EXIT ( (Info) )
+            BOOST_SCOPE_EXIT ( (&Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3831,7 +3831,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
     if (Info != NULL)
     {
       {
-            BOOST_SCOPE_EXIT ( (Info) )
+            BOOST_SCOPE_EXIT ( (&Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3869,7 +3869,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
     if (Info != NULL)
     {
       {
-            BOOST_SCOPE_EXIT ( (Info) )
+            BOOST_SCOPE_EXIT ( (&Info) )
             {
               delete Info;
             } BOOST_SCOPE_EXIT_END
@@ -3938,7 +3938,7 @@ void TWinSCPFileSystem::MultipleEdit()
     if (FileList != NULL)
     {
       {
-            BOOST_SCOPE_EXIT ( (FileList) )
+            BOOST_SCOPE_EXIT ( (&FileList) )
             {
               delete FileList;
             } BOOST_SCOPE_EXIT_END
@@ -4025,7 +4025,7 @@ void TWinSCPFileSystem::MultipleEdit(std::wstring Directory,
     assert(!FNoProgressFinish);
     FNoProgressFinish = true;
     {
-        BOOST_SCOPE_EXIT ( (&Self) (FileList) )
+        BOOST_SCOPE_EXIT ( (&Self) (&FileList) )
         {
           Self->FNoProgressFinish = false;
           delete FileList;
@@ -4078,7 +4078,7 @@ void TWinSCPFileSystem::EditHistory()
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-    BOOST_SCOPE_EXIT ( (MenuItems) )
+    BOOST_SCOPE_EXIT ( (&MenuItems) )
     {
       delete MenuItems;
     } BOOST_SCOPE_EXIT_END
@@ -4106,7 +4106,7 @@ void TWinSCPFileSystem::EditHistory()
         UnixIncludeTrailingBackslash(FEditHistories[Result].Directory) + FEditHistories[Result].FileName;
       FTerminal->ReadFile(FullFileName, File);
       {
-            BOOST_SCOPE_EXIT ( (File) )
+            BOOST_SCOPE_EXIT ( (&File) )
             {
               delete File;
             } BOOST_SCOPE_EXIT_END

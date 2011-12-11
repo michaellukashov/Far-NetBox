@@ -109,7 +109,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
 
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-      BOOST_SCOPE_EXIT ( (MenuItems) )
+      BOOST_SCOPE_EXIT ( (&MenuItems) )
       {
         delete MenuItems;
       } BOOST_SCOPE_EXIT_END
@@ -332,7 +332,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   TFarMenuItems * MenuItems = new TFarMenuItems();
   {
-      BOOST_SCOPE_EXIT ( (MenuItems) )
+      BOOST_SCOPE_EXIT ( (&MenuItems) )
       {
         delete MenuItems;
       } BOOST_SCOPE_EXIT_END
@@ -571,7 +571,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
   int Result;
   TStrings * ButtonLabels = new TStringList();
   {
-      BOOST_SCOPE_EXIT ( (ButtonLabels) )
+      BOOST_SCOPE_EXIT ( (&ButtonLabels) )
       {
         delete ButtonLabels;
       } BOOST_SCOPE_EXIT_END
