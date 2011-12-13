@@ -2406,6 +2406,7 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring Path)
     FTerminal->LogEvent(FORMAT(L"Getting real path for '%s'",
       Path.c_str()));
 
+    // FUtfStrings = true;
     TSFTPPacket Packet(SSH_FXP_REALPATH);
     Packet.AddPathString(Path, FUtfStrings);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_NAME);
