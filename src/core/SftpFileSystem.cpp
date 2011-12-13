@@ -2421,7 +2421,7 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring Path)
 
     return RealDir;
   }
-  catch (const std::exception & E)
+  catch (const std::exception &E)
   {
     if (FTerminal->GetActive())
     {
