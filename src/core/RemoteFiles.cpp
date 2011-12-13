@@ -1047,7 +1047,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
-    DEBUG_PRINTF(L"FModification = %llu, GetFileName = %s", FModification, GetFileName().c_str());
+    DEBUG_PRINTF(L"FModification = %u, GetFileName = %s", FModification, GetFileName().c_str());
     if (double(FModification) == 0 && GetFileName().empty())
     {
       FSize = ASize;
