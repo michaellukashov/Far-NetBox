@@ -506,8 +506,8 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
     Params->Len += 50;
     Params->Buffer.resize(Params->Len);
   }
-  Params->Pos++;
   Params->Buffer[Params->Pos] = (wchar_t)Output;
+  Params->Pos++;
 }
 //---------------------------------------------------------------------------
 std::string DecodeUTF(const std::string UTF)
