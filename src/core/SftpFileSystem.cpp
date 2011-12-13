@@ -2415,7 +2415,7 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring Path)
       FTerminal->FatalError(NULL, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
     }
 
-    std::wstring RealDir = UnixExcludeTrailingBackslash(Packet.GetPathString(false));
+    std::wstring RealDir = UnixExcludeTrailingBackslash(Packet.GetPathString(FUtfStrings));
     // ignore rest of SSH_FXP_NAME packet
 
     FTerminal->LogEvent(FORMAT(L"Real path is '%s'", RealDir.c_str()));
@@ -3170,7 +3170,7 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   {
     FTerminal->FatalError(NULL, LoadStr(SFTP_NON_ONE_FXP_NAME_PACKET));
   }
-  SymlinkFile->SetLinkTo(ReadLinkPacket.GetPathString(false));
+  SymlinkFile->SetLinkTo(ReadLinkPacket.GetPathString(FUtfStrings));
 
   ReceiveResponse(&AttrsPacket, &AttrsPacket, SSH_FXP_ATTRS);
   // SymlinkFile->FileName was used instead SymlinkFile->LinkTo before, why?
