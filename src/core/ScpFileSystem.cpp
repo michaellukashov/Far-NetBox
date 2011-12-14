@@ -52,8 +52,8 @@ struct TCommandType
 
 // Only one character! See TSCPFileSystem::ReadCommandOutput()
 #define LastLineSeparator L":"
-#define LAST_LINE L"WinSCP: this is end-of-file"
-#define FIRST_LINE L"WinSCP: this is begin-of-file"
+#define LAST_LINE L"NetBox: this is end-of-file"
+#define FIRST_LINE L"NetBox: this is begin-of-file"
 extern const TCommandType DefaultCommandSet[];
 
 #define NationalVarCount 10
