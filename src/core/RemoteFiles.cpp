@@ -972,7 +972,7 @@ std::wstring TRemoteFile::GetRightsStr()
 //---------------------------------------------------------------------------
 void TRemoteFile::SetListingStr(std::wstring value)
 {
-  // DEBUG_PRINTF(L"begin, value = %s", value.c_str());
+  DEBUG_PRINTF(L"begin, value = %s", value.c_str());
   // Value stored in 'value' can be used for error message
   std::wstring Line = value;
   FIconIndex = -1;
@@ -982,7 +982,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
-    // DEBUG_PRINTF(L"Line = %s", Line.c_str());
+    DEBUG_PRINTF(L"Line = %s", Line.c_str());
 
     SetType(Line[0]);
     Line.erase(0, 1);
@@ -1221,7 +1221,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
   {
     throw ETerminal(::FmtLoadStr(LIST_LINE_ERROR, value.c_str()), &E);
   }
-  // DEBUG_PRINTF(L"end");
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::Complete()
