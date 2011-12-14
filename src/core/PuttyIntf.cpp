@@ -536,7 +536,7 @@ std::string DecodeUTF(const std::string UTF)
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams2
 {
-  std::wstring Buffer;
+  std::string Buffer;
   int Pos;
   int Len;
 };
@@ -553,11 +553,11 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
     Params->Len += 50;
     Params->Buffer.resize(Params->Len);
   }
-  Params->Buffer[Params->Pos] = (wchar_t)Output;
+  Params->Buffer[Params->Pos] = (unsigned char)Output;
   Params->Pos++;
 }
 //---------------------------------------------------------------------------
-std::string EncodeUTF(const std::string Source)
+std::string EncodeUTF(const std::wstring Source)
 {
   // std::wstring::c_bstr() returns NULL for empty strings
   // (as opposite to std::wstring::c_str() which returns "")
@@ -569,24 +569,24 @@ std::string EncodeUTF(const std::string Source)
   else
   {
     charset_state State;
-    char *Str;
+    wchar_t *Str;
     TUnicodeEmitParams2 Params;
-    std::wstring Result;
 
     State.s0 = 0;
-    Str = (char *)Source.c_str();
+    Str = (wchar_t *)Source.c_str();
     Params.Pos = 0;
     Params.Len = Source.size();
     Params.Buffer.resize(Params.Len);
 
     while (*Str)
     {
-      write_utf8(NULL, (wchar_t)*Str, &State, UnicodeEmit2, &Params);
+      write_utf8(NULL, *Str, &State, UnicodeEmit2, &Params);
       Str++;
     }
     Params.Buffer.resize(Params.Pos);
 
-    return ::W2MB(Params.Buffer.c_str());
+    // return ::W2MB(Params.Buffer.c_str());
+    return Params.Buffer;
   }
 }
 //---------------------------------------------------------------------------

@@ -321,7 +321,8 @@ public:
 
   inline void AddUtfString(const std::wstring Value)
   {
-    AddStringW(Value);
+    // AddStringW(Value);
+    AddStringA(EncodeUTF(Value));
   }
 
   inline void AddString(const std::wstring Value, bool Utf)
