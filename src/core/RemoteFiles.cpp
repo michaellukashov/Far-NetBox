@@ -983,6 +983,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
     // Do we need to do this (is ever TAB is LS output)?
     Line = ReplaceChar(Line, '\t', ' ');
     DEBUG_PRINTF(L"Line = %s", Line.c_str());
+    FTerminal->LogEvent(FORMAT(L"Line = %s", Line.c_str()));
 
     SetType(Line[0]);
     Line.erase(0, 1);
