@@ -1026,7 +1026,6 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     GETCOL;
     FOwner.SetName(Col);
-    
 
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
@@ -1054,7 +1053,8 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
       bool FullTime = false;
       bool DayMonthFormat = false;
-      unsigned int Day, Month, Year, Hour, Min, Sec, P;
+      unsigned int Day, Month, Year, Hour, Min, Sec;
+      size_t P = 0;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1147,7 +1147,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
-          if ((P = (unsigned int)Col.find(L':')) != std::wstring::npos)
+          if ((P = Col.find_first_of(L':')) != std::wstring::npos)
           {
             unsigned int CurrMonth, CurrDay;
             Hour = (unsigned int)StrToInt(Col.substr(0, P));
