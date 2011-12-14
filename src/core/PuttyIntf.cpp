@@ -489,7 +489,7 @@ std::wstring KeyTypeName(TKeyType KeyType)
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams
 {
-  std::string Buffer;
+  std::wstring Buffer;
   int Pos;
   int Len;
 };
@@ -531,12 +531,12 @@ std::string DecodeUTF(const std::string UTF)
   }
   Params.Buffer.resize(Params.Pos);
 
-  return Params.Buffer;
+  return ::W2MB(Params.Buffer.c_str());
 }
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams2
 {
-  std::string Buffer;
+  std::wstring Buffer;
   int Pos;
   int Len;
 };
@@ -553,7 +553,7 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
     Params->Len += 50;
     Params->Buffer.resize(Params->Len);
   }
-  Params->Buffer[Params->Pos] = (unsigned char)Output;
+  Params->Buffer[Params->Pos] = (wchar_t)Output;
   Params->Pos++;
 }
 //---------------------------------------------------------------------------
@@ -586,7 +586,7 @@ std::string EncodeUTF(const std::string Source)
     }
     Params.Buffer.resize(Params.Pos);
 
-    return Params.Buffer;
+    return ::W2MB(Params.Buffer.c_str());
   }
 }
 //---------------------------------------------------------------------------
