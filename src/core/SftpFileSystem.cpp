@@ -558,13 +558,6 @@ public:
   {
     std::string utf = GetStringA();
     std::string Result = DecodeUTF(utf);
-    // std::string Result = DecodeUTF((const char *)::MB2W(utf.c_str()).c_str());
-    DEBUG_PRINTF(L"utf.size = %d", utf.size());
-    DEBUG_PRINTF(L"Result.size = %d", Result.size());
-    // DEBUG_PRINTF(L"Result1 = %s", ::MB2W(utf.c_str()).c_str());
-    // DEBUG_PRINTF(L"Result2 = %s", (wchar_t *)utf.c_str());
-    // DEBUG_PRINTF(L"Result3 = %s", (wchar_t *)Result.c_str());
-    // DEBUG_PRINTF(L"Result4 = %s", std::wstring((wchar_t *)utf.c_str()).c_str());
     return Result;
   }
 
@@ -583,10 +576,8 @@ public:
   // now purposeless alias to GetString
   inline std::wstring GetPathString(bool Utf)
   {
-    // return ::MB2W(GetString(Utf).c_str());
     std::wstring result = ::MB2W(GetString(Utf).c_str());
-    // std::wstring result = GetStringW(Utf);
-    DEBUG_PRINTF(L"Utf = %d, result = %s", Utf, result.c_str());
+    // DEBUG_PRINTF(L"Utf = %d, result = %s", Utf, result.c_str());
     return result;
   }
 
