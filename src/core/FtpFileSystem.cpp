@@ -2550,7 +2550,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
             {
               delete E;
             } BOOST_SCOPE_EXIT_END
-          FTerminal->FatalError(E, L"");
+          FTerminal->FatalError(E, Error);
         }
       }
       else
