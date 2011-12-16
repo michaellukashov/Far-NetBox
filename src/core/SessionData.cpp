@@ -132,7 +132,7 @@ void TSessionData::Default()
   SetScp1Compatibility(false);
   SetTimeDifference(TDateTime(0));
   SetSCPLsFullTime(asAuto);
-  SetNotUtf(asAuto);
+  SetNotUtf(asOff);
   SetFtpListAll(asAuto);
 
   // SFTP

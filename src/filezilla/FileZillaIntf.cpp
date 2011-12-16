@@ -158,7 +158,7 @@ bool TFileZillaIntf::Close()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TFileZillaIntf::CustomCommand(const char * Command)
+bool TFileZillaIntf::CustomCommand(const wchar_t * Command)
 {
   ASSERT(FFileZillaApi != NULL);
   return Check(FFileZillaApi->CustomCommand(Command), "customcommand");

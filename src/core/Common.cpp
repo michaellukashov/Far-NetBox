@@ -749,7 +749,7 @@ std::wstring DisplayableStr(const std::wstring Str)
   if (Displayable)
   {
     Result = L"\"";
-    for (size_t Index = 1; Index < Str.size(); Index++)
+    for (size_t Index = 0; Index < Str.size(); Index++)
     {
       switch (Str[Index])
       {
@@ -807,7 +807,7 @@ std::wstring CharToHex(char Ch, bool UpperCase)
 std::wstring StrToHex(const std::wstring Str, bool UpperCase, char Separator)
 {
   std::wstring Result;
-  for (size_t i = 1; i < Str.size(); i++)
+  for (size_t i = 0; i < Str.size(); i++)
   {
     Result += CharToHex(Str[i], UpperCase);
     if ((Separator != L'\0') && (i < Str.size()))
