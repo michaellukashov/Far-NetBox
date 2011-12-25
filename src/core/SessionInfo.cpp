@@ -774,7 +774,7 @@ void TSessionLog::OpenLogFile()
     std::wstring NewFileName = StripPathQuotes(ExpandEnvironmentVariables(FCurrentLogFileName));
     SYSTEMTIME t;
     ::GetLocalTime(&t);
-    for (size_t Index = 1; Index < NewFileName.size(); Index++)
+    for (size_t Index = 0; Index < NewFileName.size(); Index++)
     {
       if ((NewFileName[Index] == '&') && (Index < NewFileName.size() - 1))
       {

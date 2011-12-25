@@ -489,7 +489,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::ShowExtendedException(const std::exception * E)
 {
-  if (strlen(E->what()) > 0)
+  // if (strlen(E->what()) > 0)
   {
     if (::InheritsFrom<std::exception, std::exception>(E))
     {

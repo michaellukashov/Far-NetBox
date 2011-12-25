@@ -321,7 +321,8 @@ public:
 
   inline void AddUtfString(const std::wstring Value)
   {
-    AddStringW(Value);
+    // AddStringW(Value);
+    AddStringA(EncodeUTF(Value));
   }
 
   inline void AddString(const std::wstring Value, bool Utf)
@@ -556,8 +557,8 @@ public:
 
   inline std::string GetUtfString()
   {
-    std::string Result = DecodeUTF(GetStringA());
-    // DEBUG_PRINTF(L"Result = %s", ::MB2W(Result.c_str()).c_str());
+    std::string utf = GetStringA();
+    std::string Result = DecodeUTF(utf);
     return Result;
   }
 
@@ -576,7 +577,9 @@ public:
   // now purposeless alias to GetString
   inline std::wstring GetPathString(bool Utf)
   {
-    return ::MB2W(GetString(Utf).c_str());
+    std::wstring result = ::MB2W(GetString(Utf).c_str());
+    // DEBUG_PRINTF(L"Utf = %d, result = %s", Utf, result.c_str());
+    return result;
   }
 
   void GetFile(TRemoteFile * File, int Version, TDSTMode DSTMode, bool Utf, bool SignedTS, bool Complete)

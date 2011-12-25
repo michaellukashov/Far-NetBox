@@ -622,7 +622,7 @@ void TFTPFileSystem::AnyCommand(const std::wstring Command,
     {
       Self->FOnCaptureOutput.disconnect_all_slots();
     } BOOST_SCOPE_EXIT_END
-    FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
+    FFileZillaIntf->CustomCommand(Command.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -642,7 +642,7 @@ void TFTPFileSystem::AnnounceFileListOperation()
 void TFTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
 {
   std::wstring Command = FORMAT(L"CWD %s", Directory.c_str());
-  FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
+  FFileZillaIntf->CustomCommand(Command.c_str());
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
@@ -1676,7 +1676,7 @@ void TFTPFileSystem::DoStartup()
       std::wstring Command = PostLoginCommands->GetString(Index);
       if (!Command.empty())
       {
-        FFileZillaIntf->CustomCommand(::W2MB(Command.c_str()).c_str());
+        FFileZillaIntf->CustomCommand(Command.c_str());
 
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
       }
@@ -1751,7 +1751,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
   if (FCurrentDirectory.empty())
   {
-    FFileZillaIntf->CustomCommand("PWD");
+    FFileZillaIntf->CustomCommand(L"PWD");
 
     unsigned int Code = 0;
     TStrings * Response = NULL;
@@ -2550,7 +2550,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
             {
               delete E;
             } BOOST_SCOPE_EXIT_END
-          FTerminal->FatalError(E, L"");
+          FTerminal->FatalError(E, Error);
         }
       }
       else

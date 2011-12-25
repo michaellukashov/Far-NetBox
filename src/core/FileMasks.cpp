@@ -312,7 +312,7 @@ bool IsFileNameMask(const std::wstring Mask)
 //---------------------------------------------------------------------------
 std::wstring DelimitFileNameMask(std::wstring Mask)
 {
-  for (size_t i = 1; i <= Mask.size(); i++)
+  for (size_t i = 0; i <= Mask.size(); i++)
   {
     if (wcschr(L"\\*?", Mask[i]) != NULL)
     {

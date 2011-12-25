@@ -972,6 +972,7 @@ std::wstring TRemoteFile::GetRightsStr()
 //---------------------------------------------------------------------------
 void TRemoteFile::SetListingStr(std::wstring value)
 {
+  // DEBUG_PRINTF(L"begin, value = %s", value.c_str());
   // Value stored in 'value' can be used for error message
   std::wstring Line = value;
   FIconIndex = -1;
@@ -1025,7 +1026,6 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     GETCOL;
     FOwner.SetName(Col);
-    
 
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
@@ -1046,13 +1046,15 @@ void TRemoteFile::SetListingStr(std::wstring value)
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
+    // DEBUG_PRINTF(L"FModification = %.02f, GetFileName = %s", FModification, GetFileName().c_str());
     if (double(FModification) == 0 && GetFileName().empty())
     {
       FSize = ASize;
 
       bool FullTime = false;
       bool DayMonthFormat = false;
-      unsigned int Day, Month, Year, Hour, Min, Sec, P;
+      unsigned int Day, Month, Year, Hour, Min, Sec;
+      size_t P = 0;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1145,7 +1147,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
-          if ((P = (unsigned int)Col.find(L':')) != std::wstring::npos)
+          if ((P = Col.find_first_of(L':')) != std::wstring::npos)
           {
             unsigned int CurrMonth, CurrDay;
             Hour = (unsigned int)StrToInt(Col.substr(0, P));
@@ -1190,7 +1192,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
       // separating space is already deleted, other spaces are treated as part of name
 
       {
-        size_t P = -1;
+        size_t P = std::wstring::npos;
 
         FLinkTo = L"";
         if (GetIsSymLink())
@@ -1208,8 +1210,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
         }
         FFileName = UnixExtractFileName(::Trim(Line));
-        // DEBUG_PRINTF(L"FFileName = '%s'", FFileName.c_str());
-        // DEBUG_PRINTF(L"Line = '%s'", Line.c_str());
+        // DEBUG_PRINTF(L"Line = %s, FFileName = '%s'", Line.c_str(), FFileName.c_str());
       }
     }
 
@@ -1220,6 +1221,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
   {
     throw ETerminal(::FmtLoadStr(LIST_LINE_ERROR, value.c_str()), &E);
   }
+  // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TRemoteFile::Complete()

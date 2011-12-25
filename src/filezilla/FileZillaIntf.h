@@ -151,7 +151,7 @@ public:
   bool List();
   bool List(const char * Path);
 
-  bool CustomCommand(const char * Command);
+  bool CustomCommand(const wchar_t * Command);
 
   bool MakeDir(const char* Path);
   bool Chmod(int Value, const char* FileName, const char* Path);
