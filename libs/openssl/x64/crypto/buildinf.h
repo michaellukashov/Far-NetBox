@@ -3,11 +3,17 @@
    * for Unix builds, crypto/Makefile.ssl generates functional definitions;
    * Windows builds (and other mk1mf builds) compile cversion.c with
    * -DMK1MF_BUILD and use definitions added to this file by util/mk1mf.pl. */
-  #error "Windows builds (PLATFORM=VC-WIN64A) use mk1mf.pl-created Makefiles"
+  #error "Windows builds (PLATFORM=BC-32) use mk1mf.pl-created Makefiles"
 #endif
-#ifdef MK1MF_PLATFORM_VC_WIN64A
+#ifdef MK1MF_PLATFORM_VC_WIN32
   /* auto-generated/updated by util/mk1mf.pl for crypto/cversion.c */
-  #define CFLAGS "cl  /MD /Ox -DOPENSSL_THREADS  -DDSO_WIN32 -W3 -Gs0 -Gy -nologo -DOPENSSL_SYSNAME_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -DUNICODE -D_UNICODE -D_CRT_SECURE_NO_DEPRECATE -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DWHIRLPOOL_ASM -DOPENSSL_USE_APPLINK -I. -DOPENSSL_NO_RC5 -DOPENSSL_NO_MD2 -DOPENSSL_NO_KRB5 -DOPENSSL_NO_JPAKE -DOPENSSL_NO_STATIC_ENGINE    "
-  #define PLATFORM "VC-WIN64A"
-  #define DATE "Sat Mar  5 12:36:01 2011"
+  #define CFLAGS "cl  /MD /Ox /O2 /Ob2 -DOPENSSL_THREADS  -DDSO_WIN32  -DOPENSSL_USE_APPLINK -I. -DOPENSSL_NO_RC5 -DOPENSSL_NO_MD2 -DOPENSSL_NO_KRB5 -DOPENSSL_NO_JPAKE -DOPENSSL_NO_STATIC_ENGINE    "
+  #define PLATFORM "VC-WIN32"
+  #define DATE "Wed Sep  7 07:56:24 2011"
+#endif
+#ifdef MK1MF_PLATFORM_BC_NT
+  /* auto-generated/updated by util/mk1mf.pl for crypto/cversion.c */
+  #define CFLAGS "bcc32 -DWIN32_LEAN_AND_MEAN -q -w-ccc -w-rch -w-pia -w-aus -w-par -w-inl  -c -tWC -tWM -DOPENSSL_SYSNAME_WIN32 -DL_ENDIAN -DDSO_WIN32 -D_stricmp=stricmp -D_strnicmp=strnicmp -O2 -ff -fp -DBN_ASM -DMD5_ASM -DSHA1_ASM -DRMD160_ASM -DOPENSSL_NO_RC5 -DOPENSSL_NO_MD2 -DOPENSSL_NO_KRB5 -DOPENSSL_NO_JPAKE -DOPENSSL_NO_DYNAMIC_ENGINE    "
+  #define PLATFORM "BC-NT"
+  #define DATE "Wed Sep  7 07:56:24 2011"
 #endif

@@ -35,9 +35,6 @@
 #ifndef OPENSSL_THREADS
 # define OPENSSL_THREADS
 #endif
-#ifndef OPENSSL_NO_ASM
-# define OPENSSL_NO_ASM
-#endif
 
 /* The OPENSSL_NO_* macros are also defined as NO_* if the application
    asks for it.  This is a transient feature that is provided for those
@@ -156,7 +153,7 @@
 /* the following is tweaked from a config script, that is why it is a
  * protected undef/define */
 #ifndef DES_PTR
-#undef DES_PTR
+#define DES_PTR
 #endif
 
 /* This helps C compiler generate the correct code for multiple functional
@@ -222,3 +219,11 @@ YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
 
 #endif /* DES_DEFAULT_OPTIONS */
 #endif /* HEADER_DES_LOCL_H */
+ 
+#ifndef _timeb 
+#define _timeb timeb 
+#endif 
+ 
+#ifndef _ftime 
+#define _ftime ftime 
+#endif 
