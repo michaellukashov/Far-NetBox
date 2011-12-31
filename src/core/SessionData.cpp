@@ -1014,7 +1014,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       }
       ARemoteDirectory = Url.substr(P + 1, Url.size() - P);
 
-      if (StoredSessions->IsHidden(Data))
+      if (Data->GetHidden())
       {
         // DEBUG_PRINTF(L"StoredSessions->IsHidden(Data) = %d", StoredSessions->IsHidden(Data));
         Data->Remove();
@@ -1703,19 +1703,28 @@ std::wstring TSessionData::GetDefaultSessionName()
   }
 }
 //---------------------------------------------------------------------
+bool TSessionData::HasSessionName()
+{
+  return (!Name.empty() && (Name != DefaultName));
+}
+//---------------------------------------------------------------------
 std::wstring TSessionData::GetSessionName()
 {
   // DEBUG_PRINTF(L"Name = %s", Name.c_str());
   std::wstring Result;
-  if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
-      (Name != DefaultName))
+  if (HasSessionName())
   {
     Result = Name;
+    if (GetHidden())
+    {
+      Result = Result.substr(TNamedObjectList::HiddenPrefix.size(), Result.size() - TNamedObjectList::HiddenPrefix.size());
+    }
   }
   else
   {
     Result = GetDefaultSessionName();
   }
+  return Result;
   // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
@@ -1724,8 +1733,7 @@ std::wstring TSessionData::GetSessionUrl()
 {
   std::wstring Url;
   // DEBUG_PRINTF(L"Name = %s", Name.c_str());
-  if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
-      (Name != DefaultName))
+  if (HasSessionName())
   {
     Url = Name;
   }
@@ -2135,11 +2143,18 @@ std::wstring TSessionData::GetInfoTip()
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetLocalName()
 {
-  std::wstring Result = Name;
-  int P = ::LastDelimiter(Result, L"/");
-  if (P > 0)
+  if (HasSessionName())
   {
-    Result.erase(1, P);
+    Result = Name;
+    size_t P = Result.LastDelimiter(L"/");
+    if (P != std::wstring::npos)
+    {
+      Result.erase(0, P);
+    }
+  }
+  else
+  {
+    Result = GetDefaultSessionName();
   }
   return Result;
 }

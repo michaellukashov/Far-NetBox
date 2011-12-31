@@ -987,14 +987,25 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch (const std::exception & E)
+  catch (const std::exception &E)
   {
     // do not show error messages, if task was canceled anyway
     // (for example if transfer is cancelled during reconnection attempts)
-    if (!FCancel &&
-        (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, NULL, qtError) == qaCancel))
+    // if (!FCancel &&
+        // (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, NULL, qtError) == qaCancel))
+    // {
+      // FCancel = true;
+    // }
+    std::wstring Message;
+    if (ExceptionMessage(&E, Message))
     {
-      FCancel = true;
+      // do not show error messages, if task was canceled anyway
+      // (for example if transfer is cancelled during reconnection attempts)
+      if (!FCancel &&
+          (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, NULL, qtError) == qaCancel))
+      {
+        FCancel = true;
+      }
     }
   }
 

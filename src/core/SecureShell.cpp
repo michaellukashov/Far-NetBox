@@ -229,6 +229,7 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
   // new after 0.53b
   cfg->sshbug_pksessid2 = Data->GetBug(sbPKSessID2);
   cfg->sshbug_maxpkt2 = Data->GetBug(sbMaxPkt2);
+  cfg->sshbug_ignore2 = asAuto;
   // #pragma option pop
 
   if (!Data->GetTunnelPortFwd().empty())
@@ -301,10 +302,8 @@ void TSecureShell::StoreToConfig(TSessionData * Data, Config * cfg, bool Simple)
     }
   }
 
-#ifdef MPEXT
   cfg->connect_timeout = Data->GetTimeout() * 1000;
   // cfg->sndbuf = Data->GetSshSendBuf();
-#endif
 
   // permanent settings
   cfg->nopty = TRUE;
@@ -914,7 +913,7 @@ int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
     {
       Self->FWaiting--;
     } BOOST_SCOPE_EXIT_END
-    TQueryParams Params(qpFatalAbort | qpAllowContinueOnError);
+    TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.Timer = 500;
     Params.TimerEvent = PoolEvent;
     Params.TimerMessage = FMTLOAD(TIMEOUT_STILL_WAITING2, FSessionData->GetTimeout());
