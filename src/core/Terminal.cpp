@@ -922,7 +922,7 @@ void TTerminal::OpenTunnel()
   {
     FTunnelData = new TSessionData(L"");
     FTunnelData->Assign(StoredSessions->GetDefaultSettings());
-    FTunnelData->Name = FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str());
+    FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName().c_str()));
     FTunnelData->SetTunnel(false);
     FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
     FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());

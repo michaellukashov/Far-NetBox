@@ -12,10 +12,11 @@ int NamedObjectSortProc(void * Item1, void * Item2)
     else
   if (!HasPrefix1 && HasPrefix2) return 1;
     else
-  return ::AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
+  return ::AnsiCompareStr(((TNamedObject *)Item1)->GetName(), ((TNamedObject *)Item2)->GetName());
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(std::wstring AName)
+TNamedObject::TNamedObject(std::wstring AName) :
+    TPersistent()
 {
   SetName(AName);
 }
@@ -31,25 +32,26 @@ int TNamedObject::CompareName(std::wstring aName,
 {
   // DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
   if (CaseSensitive)
-    return ::AnsiCompare(Name, aName);
+    return ::AnsiCompare(GetName(), aName);
   else
-    return ::AnsiCompareIC(Name, aName);
+    return ::AnsiCompareIC(GetName(), aName);
 }
 //---------------------------------------------------------------------------
 void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 {
   // This object can't be item of list, it would create infinite loop
   if (List && (List->IndexOf(this) == -1))
-    while (List->FindByName(Name))
+    while (List->FindByName(GetName()))
     {
       size_t N = 0, P = 0;
       // If name already contains number parenthesis remove it (and remember it)
+      std::wstring Name = GetName();
       if ((Name[Name.size() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) != std::wstring::npos))
         try
         {
           N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
           Name.erase(P, Name.size() - P + 1);
-          Name = ::TrimRight(Name);
+          SetName(::TrimRight(Name));
         }
         catch (const std::exception &E)
         {

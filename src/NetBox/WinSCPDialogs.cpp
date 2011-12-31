@@ -1444,7 +1444,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   TStrings * Results, bool StoredCredentialsTried)
 {
   bool Result;
-  TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->Name,
+  TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
     Kind, Name, Instructions, Prompts, StoredCredentialsTried);
   {
       BOOST_SCOPE_EXIT ( (&Dialog) )

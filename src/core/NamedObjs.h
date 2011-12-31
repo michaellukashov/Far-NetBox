@@ -9,14 +9,14 @@ class TNamedObjectList;
 class TNamedObject : public TPersistent
 {
 public:
+  TNamedObject(std::wstring aName);
   // __property AnsiString Name = { read = FName, write = SetName };
   // __property bool Hidden = { read = FHidden };
   bool GetHidden() { return FHidden; }
   std::wstring GetName() { return FName; }
-  void SetName(std::wstring value) { FName = value; }
+  void SetName(std::wstring value);
   TNamedObject(): TPersistent() {};
   int CompareName(std::wstring aName, bool CaseSensitive = false);
-  TNamedObject(std::wstring aName) : TPersistent(), FName(aName) {}
   void MakeUniqueIn(TNamedObjectList * List);
 private:
   std::wstring FName;
