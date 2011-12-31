@@ -6,8 +6,8 @@
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2)
 {
-  bool HasPrefix1 = TNamedObjectList::IsHidden((TNamedObject *)Item1);
-  bool HasPrefix2 = TNamedObjectList::IsHidden((TNamedObject *)Item2);
+  bool HasPrefix1 = ((TNamedObject *)Item1)->GetHidden();
+  bool HasPrefix2 = ((TNamedObject *)Item2)->GetHidden();
   if (HasPrefix1 && !HasPrefix2) return -1;
     else
   if (!HasPrefix1 && HasPrefix2) return 1;
@@ -15,6 +15,17 @@ int NamedObjectSortProc(void * Item1, void * Item2)
   return ::AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
 }
 //--- TNamedObject ----------------------------------------------------------
+TNamedObject::TNamedObject(std::wstring AName)
+{
+  SetName(AName);
+}
+//---------------------------------------------------------------------------
+void TNamedObject::SetName(std::wstring value)
+{
+  FHidden = (value.substr(0, TNamedObjectList::HiddenPrefix.size()) == TNamedObjectList::HiddenPrefix);
+  FName = value;
+}
+
 int TNamedObject::CompareName(std::wstring aName,
   bool CaseSensitive)
 {
@@ -50,11 +61,6 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 //--- TNamedObjectList ------------------------------------------------------
 const std::wstring TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
-bool TNamedObjectList::IsHidden(TNamedObject * Object)
-{
-  return (Object->Name.substr(0, HiddenPrefix.size()) == HiddenPrefix);
-}
-//---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList() :
   TObjectList(),
   FHiddenCount(0),
@@ -72,7 +78,7 @@ TNamedObject * TNamedObjectList::AtObject(int Index)
 void TNamedObjectList::Recount()
 {
   size_t i = 0;
-  while ((i < TObjectList::GetCount()) && IsHidden((TNamedObject *)GetItem(i))) i++;
+  while ((i < TObjectList::GetCount()) && ((TNamedObject *)GetItem(i))->GetHidden()) i++;
   FHiddenCount = i;
 }
 //---------------------------------------------------------------------------
