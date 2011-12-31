@@ -1369,6 +1369,7 @@ void TFTPFileSystem::Source(const std::wstring FileName,
   bool Dir = FLAGSET(Attrs, faDirectory);
   if (Dir)
   {
+    Action.Cancel();
     DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
       Attrs, CopyParam, Params, OperationProgress, Flags);
     Action.Cancel();
@@ -1870,12 +1871,14 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // (e.g. before file transfer)
       FDoListAll = (FListAll == asOn);
     }
-    catch (...)
+    catch (const ExtException &E)
     {
       FDoListAll = false;
       // reading the first directory has failed,
       // further try without "-a" only as the server may not support it
-      if ((FListAll == asAuto) && FTerminal->GetActive())
+      if ((FListAll == asAuto) &&
+          (FTerminal->GetActive() ||
+           FTerminal->QueryReopen(&E, ropNoReadDirectory, NULL)))
       {
         FListAll = asOff;
         Repeat = true;
@@ -2793,6 +2796,11 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 
     case TFileZillaIntf::LOG_INFO:
       Status = ExtractStatusMessage(Status);
+      LogType = llMessage;
+      break;
+
+    case TFileZillaIntf::LOG_DEBUG:
+      // used for directory listing only
       LogType = llMessage;
       break;
 
