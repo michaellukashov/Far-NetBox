@@ -1038,7 +1038,7 @@ void TFTPFileSystem::SinkRobust(const std::wstring FileName,
       Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (const std::exception & E)
+    catch (std::exception &E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1317,7 +1317,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
       Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (const std::exception & E)
+    catch (std::exception &E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1871,7 +1871,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       // (e.g. before file transfer)
       FDoListAll = (FListAll == asOn);
     }
-    catch (const ExtException &E)
+    catch (ExtException &E)
     {
       FDoListAll = false;
       // reading the first directory has failed,

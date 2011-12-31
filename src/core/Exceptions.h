@@ -73,7 +73,7 @@ public:
   explicit EFatal(std::wstring Msg, const std::exception *E);
   // __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
   bool GetReopenQueried() { return FReopenQueried; }
-  bool SetReopenQueried(bool value) { FReopenQueried = value; }
+  void SetReopenQueried(bool value) { FReopenQueried = value; }
 
 private:
   bool FReopenQueried;

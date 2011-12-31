@@ -334,7 +334,7 @@ protected:
     const TRemoteFile * File, void * Param);
   void RecycleFile(std::wstring FileName, const TRemoteFile * File);
   void DoStartup();
-  virtual bool DoQueryReopen(const std::exception * E);
+  virtual bool DoQueryReopen(std::exception * E);
   virtual void FatalError(const std::exception * E, std::wstring Msg);
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
@@ -470,8 +470,8 @@ public:
     TFileOperationProgressType * OperationProgress, const std::wstring Message,
     bool AllowSkip, std::wstring SpecialRetry = L"");
   TUsableCopyParamAttrs UsableCopyParamAttrs(int Params);
-  bool QueryReopen(const std::exception * E, int Params,
-    TFileOperationProgressType * OperationProgress);
+  bool QueryReopen(std::exception *E, int Params,
+    TFileOperationProgressType *OperationProgress);
   std::wstring PeekCurrentDirectory();
 
   const TSessionInfo & GetSessionInfo();

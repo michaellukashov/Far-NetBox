@@ -1084,7 +1084,7 @@ void TWebDAVFileSystem::SourceRobust(const std::wstring FileName,
       Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (const std::exception & E)
+    catch (std::exception &E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -1410,7 +1410,7 @@ void TWebDAVFileSystem::SinkRobust(const std::wstring FileName,
             Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
                 Flags, Action);
         }
-        catch (const std::exception & E)
+        catch (std::exception &E)
         {
             Retry = true;
             if (FTerminal->GetActive() ||

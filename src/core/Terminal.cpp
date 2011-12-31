@@ -1332,23 +1332,38 @@ void TTerminal::TerminalError(const std::exception * E, std::wstring Msg)
   throw ETerminal(Msg, E);
 }
 //---------------------------------------------------------------------------
-bool TTerminal::DoQueryReopen(const std::exception * E)
+bool TTerminal::DoQueryReopen(std::exception *E)
 {
+  bool Result = false;
+  EFatal *Fatal = dynamic_cast<EFatal *>(E);
+  assert(Fatal != NULL);
+  if ((Fatal != NULL) && Fatal->GetReopenQueried())
+  {
+    Result = false;
+  }
+  else
+  {
+    LogEvent(L"Connection was lost, asking what to do.");
 
-  LogEvent(L"Connection was lost, asking what to do.");
+    TQueryParams Params(qpAllowContinueOnError);
+    Params.Timeout = Configuration->GetSessionReopenAuto();
+    Params.TimeoutAnswer = qaRetry;
+    TQueryButtonAlias Aliases[1];
+    Aliases[0].Button = qaRetry;
+    Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
+    Params.Aliases = Aliases;
+    Params.AliasesCount = LENOF(Aliases);
+    Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
 
-  TQueryParams Params(qpAllowContinueOnError);
-  Params.Timeout = Configuration->GetSessionReopenAuto();
-  Params.TimeoutAnswer = qaRetry;
-  TQueryButtonAlias Aliases[1];
-  Aliases[0].Button = qaRetry;
-  Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
-  Params.Aliases = Aliases;
-  Params.AliasesCount = LENOF(Aliases);
-  return (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
+    if (Fatal != NULL)
+    {
+      Fatal->SetReopenQueried(true);
+    }
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::QueryReopen(const std::exception * E, int Params,
+bool TTerminal::QueryReopen(std::exception *E, int Params,
   TFileOperationProgressType * OperationProgress)
 {
   TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -1364,7 +1379,7 @@ bool TTerminal::QueryReopen(const std::exception * E, int Params,
       {
         Reopen(Params);
       }
-      catch (const std::exception & E)
+      catch (std::exception &E)
       {
         if (!GetActive())
         {

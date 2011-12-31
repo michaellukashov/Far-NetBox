@@ -871,7 +871,7 @@ public:
   virtual ~TBackgroundTerminal()
   {}
 protected:
-  virtual bool DoQueryReopen(const std::exception * E);
+  virtual bool DoQueryReopen(std::exception * E);
 
 private:
   TTerminalItem * FItem;
@@ -890,7 +890,7 @@ void TBackgroundTerminal::Init(TSessionData *SessionData, TConfiguration *Config
 }
 
 //---------------------------------------------------------------------------
-bool TBackgroundTerminal::DoQueryReopen(const std::exception * /*E*/)
+bool TBackgroundTerminal::DoQueryReopen(std::exception * /*E*/)
 {
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
