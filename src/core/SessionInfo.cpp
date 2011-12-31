@@ -6,6 +6,10 @@
 #include <boost/bind.hpp>
 
 #include <stdio.h>
+#include <lmcons.h>
+#define SECURITY_WIN32
+#include <sspi.h>
+#include <secext.h>
 
 #include "Common.h"
 #include "SessionInfo.h"
@@ -922,6 +926,19 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       } BOOST_SCOPE_EXIT_END
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
+
+    typedef BOOL (WINAPI *TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPSTR lpNameBuffer, PULONG nSize);
+    HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
+    TGetUserNameEx GetUserNameEx =
+      (Secur32 != NULL) ? (TGetUserNameEx)GetProcAddress(Secur32, "GetUserNameEx") : NULL;
+    char UserName[UNLEN + 1];
+    unsigned long UserNameSize = LENOF(UserName);
+    if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, UserName, &UserNameSize))
+    {
+      // wcscpy(UserName, L"<Failed to retrieve username>");
+      strcpy(UserName, "<Failed to retrieve username>");
+    }
+    ADF(L"Local account: %s", ::MB2W(UserName).c_str());
     ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
     AddSeparator();
     ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());

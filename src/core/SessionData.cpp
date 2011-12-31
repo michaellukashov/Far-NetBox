@@ -132,7 +132,7 @@ void TSessionData::Default()
   SetScp1Compatibility(false);
   SetTimeDifference(TDateTime(0));
   SetSCPLsFullTime(asAuto);
-  SetNotUtf(asOff);
+  SetNotUtf(asAuto);
   SetFtpListAll(asAuto);
 
   // SFTP
@@ -992,8 +992,8 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     for (size_t Index = 0; Index < StoredSessions->GetCount() + StoredSessions->GetHiddenCount(); Index++)
     {
       TSessionData * AData = (TSessionData *)StoredSessions->GetItem(Index);
-      if (AnsiSameText(AData->Name, DecodedUrl) ||
-          AnsiSameText(AData->Name + L"/", DecodedUrl.substr(0, AData->Name.size() + 1)))
+      if (AnsiSameText(AData->GetName(), DecodedUrl) ||
+          AnsiSameText(AData->GetName() + L"/", DecodedUrl.substr(0, AData->GetName().size() + 1)))
       {
         Data = AData;
         break;
@@ -1007,14 +1007,14 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
       DefaultsOnly = false;
       Assign(Data);
       size_t P = 1;
-      while (!AnsiSameText(DecodeUrlChars(Url.substr(0, P)), Data->Name))
+      while (!AnsiSameText(DecodeUrlChars(Url.substr(0, P)), Data->GetName()))
       {
         P++;
         assert(P < Url.size());
       }
       ARemoteDirectory = Url.substr(P + 1, Url.size() - P);
 
-      if (StoredSessions->IsHidden(Data))
+      if (Data->GetHidden())
       {
         // DEBUG_PRINTF(L"StoredSessions->IsHidden(Data) = %d", StoredSessions->IsHidden(Data));
         Data->Remove();
@@ -1027,7 +1027,7 @@ bool TSessionData::ParseUrl(std::wstring Url, TOptions * Options,
     else
     {
       Assign(StoredSessions->GetDefaultSettings());
-      Name = L"";
+      SetName(L"");
 
       size_t PSlash = Url.find_first_of(L"/");
       if (PSlash == std::wstring::npos)
@@ -1246,13 +1246,13 @@ std::wstring TSessionData::GetSessionKey()
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetInternalStorageKey()
 {
-  if (Name.empty())
+  if (GetName().empty())
   {
     return GetSessionKey();
   }
   else
   {
-    return Name;
+    return GetName();
   }
 }
 //---------------------------------------------------------------------
@@ -1703,19 +1703,28 @@ std::wstring TSessionData::GetDefaultSessionName()
   }
 }
 //---------------------------------------------------------------------
+bool TSessionData::HasSessionName()
+{
+  return (!GetName().empty() && (GetName() != DefaultName));
+}
+//---------------------------------------------------------------------
 std::wstring TSessionData::GetSessionName()
 {
-  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
+  // DEBUG_PRINTF(L"Name = %s", GetName().c_str());
   std::wstring Result;
-  if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
-      (Name != DefaultName))
+  if (HasSessionName())
   {
-    Result = Name;
+    Result = GetName();
+    if (GetHidden())
+    {
+      Result = Result.substr(TNamedObjectList::HiddenPrefix.size(), Result.size() - TNamedObjectList::HiddenPrefix.size());
+    }
   }
   else
   {
     Result = GetDefaultSessionName();
   }
+  return Result;
   // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
@@ -1723,11 +1732,10 @@ std::wstring TSessionData::GetSessionName()
 std::wstring TSessionData::GetSessionUrl()
 {
   std::wstring Url;
-  // DEBUG_PRINTF(L"Name = %s", Name.c_str());
-  if (!Name.empty() && !TNamedObjectList::IsHidden(this) &&
-      (Name != DefaultName))
+  // DEBUG_PRINTF(L"Name = %s", GetName().c_str());
+  if (HasSessionName())
   {
-    Url = Name;
+    Url = GetName();
   }
   else
   {
@@ -2135,11 +2143,19 @@ std::wstring TSessionData::GetInfoTip()
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetLocalName()
 {
-  std::wstring Result = Name;
-  int P = ::LastDelimiter(Result, L"/");
-  if (P > 0)
+  std::wstring Result;
+  if (HasSessionName())
   {
-    Result.erase(1, P);
+    Result = GetName();
+    size_t P = ::LastDelimiter(Result, L"/");
+    if (P != std::wstring::npos)
+    {
+      Result.erase(0, P);
+    }
+  }
+  else
+  {
+    Result = GetDefaultSessionName();
   }
   return Result;
 }
@@ -2186,7 +2202,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       }
       if (ValidName)
       {
-        if (SessionName == FDefaultSettings->Name)
+        if (SessionName == FDefaultSettings->GetName())
           SessionData = FDefaultSettings;
         else
           SessionData = (TSessionData*)FindByName(SessionName);
@@ -2384,7 +2400,7 @@ void TStoredSessionList::SelectSessionsToImport
   {
     GetSession(Index)->SetSelected(
       (!SSHOnly || (GetSession(Index)->GetProtocol() == ptSSH)) &&
-      !Dest->FindByName(GetSession(Index)->Name));
+      !Dest->FindByName(GetSession(Index)->GetName()));
   }
 }
 //---------------------------------------------------------------------
@@ -2425,7 +2441,7 @@ TSessionData *TStoredSessionList::NewSession(
   {
     DuplicateSession = new TSessionData(L"");
     DuplicateSession->Assign(Session);
-    DuplicateSession->Name = SessionName;
+    DuplicateSession->SetName(SessionName);
     // make sure, that new stored session is saved to registry
     DuplicateSession->SetModified(true);
     Add(DuplicateSession);
@@ -2434,7 +2450,7 @@ TSessionData *TStoredSessionList::NewSession(
   else
   {
     DuplicateSession->Assign(Session);
-    DuplicateSession->Name = SessionName;
+    DuplicateSession->SetName(SessionName);
     DuplicateSession->SetModified(true);
   }
   // list was saved here before to default storage, but it would not allow
@@ -2448,7 +2464,7 @@ void TStoredSessionList::SetDefaultSettings(TSessionData * value)
   if (FDefaultSettings != value)
   {
     FDefaultSettings->Assign(value);
-    FDefaultSettings->Name = DefaultName;
+    FDefaultSettings->SetName(DefaultName);
     if (!FReadOnly)
     {
       // only modified, explicit

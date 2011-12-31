@@ -65,7 +65,7 @@ void TSessionPanelItem::GetData(
   unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
   std::wstring & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
 {
-  FileName = UnixExtractFileName(FSessionData->Name);
+  FileName = UnixExtractFileName(FSessionData->GetName());
   UserData = FSessionData;
 }
 //---------------------------------------------------------------------------
@@ -517,10 +517,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
       for (size_t Index = 0; Index < StoredSessions->GetCount(); Index++)
       {
         Data = StoredSessions->GetSession(Index);
-        if (Data->Name.substr(0, Folder.size()) == Folder)
+        if (Data->GetName().substr(0, Folder.size()) == Folder)
         {
-          std::wstring Name = Data->Name.substr(
-            Folder.size(), Data->Name.size() - Folder.size());
+          std::wstring Name = Data->GetName().substr(
+            Folder.size(), Data->GetName().size() - Folder.size());
           int Slash = Name.find_first_of(L'/');
           if (Slash != std::wstring::npos)
           {
@@ -574,11 +574,11 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
   bool Duplicate)
 {
   assert(Data);
-  std::wstring Name = Data->Name;
+  std::wstring Name = Data->GetName();
   if (FPlugin->InputBox(GetMsg(Duplicate ? DUPLICATE_SESSION_TITLE : RENAME_SESSION_TITLE),
         GetMsg(Duplicate ? DUPLICATE_SESSION_PROMPT : RENAME_SESSION_PROMPT),
         Name, NULL) &&
-      !Name.empty() && (Name != Data->Name))
+      !Name.empty() && (Name != Data->GetName()))
   {
     TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != NULL) && (EData != Data))
@@ -647,7 +647,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
     if (FillInConnect)
     {
       Data->Assign(OrigData);
-      Data->Name = L"";
+      Data->SetName(L"");
     }
 
     TSessionActionEnum Action;
@@ -681,9 +681,9 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
           }
           else if (FillInConnect)
           {
-            std::wstring OrigName = OrigData->Name;
+            std::wstring OrigName = OrigData->GetName();
             OrigData->Assign(Data);
-            OrigData->Name = OrigName;
+            OrigData->SetName(OrigName);
           }
 
           // modified only, explicit
@@ -1891,7 +1891,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
     std::wstring Name;
     if (SessionData != NULL)
     {
-      Name = SessionData->Name;
+      Name = SessionData->GetName();
     }
     else
     {
@@ -2414,7 +2414,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       while (Index < StoredSessions->GetCount())
       {
         TSessionData *Data = StoredSessions->GetSession(Index);
-        if (Data->Name.substr(0, Folder.size()) == Folder)
+        if (Data->GetName().substr(0, Folder.size()) == Folder)
         {
           if (StoredSessions->GetSession(Index) != Data)
           {
@@ -2631,11 +2631,11 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
         delete Storage;
         delete ExportData;
       } BOOST_SCOPE_EXIT_END
-    ExportData = new TSessionData(Data->Name);
+    ExportData = new TSessionData(Data->GetName());
     ExportData->Assign(Data);
     ExportData->SetModified(true);
     Storage = new TIniFileStorage(IncludeTrailingBackslash(Param.DestPath) +
-      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->Name) + L".ini");
+      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->GetName()) + L".ini");
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       ExportData->Save(Storage, false, FactoryDefaults);
@@ -2949,13 +2949,13 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
 void TWinSCPFileSystem::SaveSession()
 {
   // DEBUG_PRINTF(L"FTerminal->GetSessionData()->Name = %s", FTerminal->GetSessionData()->Name.c_str());
-  if (!FTerminal->GetSessionData()->Name.empty())
+  if (!FTerminal->GetSessionData()->GetName().empty())
   {
     // DEBUG_PRINTF(L"FTerminal->GetCurrentDirectory = %s", FTerminal->GetCurrentDirectory().c_str());
     FTerminal->GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
     TSessionData * Data;
-    Data = (TSessionData *)StoredSessions->FindByName(FTerminal->GetSessionData()->Name);
+    Data = (TSessionData *)StoredSessions->FindByName(FTerminal->GetSessionData()->GetName());
     if (Data)
     {
       bool Changed = false;

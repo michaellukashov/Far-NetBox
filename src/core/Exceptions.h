@@ -70,7 +70,13 @@ class EFatal : public ExtException
   typedef ExtException parent;
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(std::wstring Msg, const std::exception *E) : parent(Msg, E) {}
+  explicit EFatal(std::wstring Msg, const std::exception *E);
+  // __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
+  bool GetReopenQueried() { return FReopenQueried; }
+  void SetReopenQueried(bool value) { FReopenQueried = value; }
+
+private:
+  bool FReopenQueried;
 };
 //---------------------------------------------------------------------------
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \

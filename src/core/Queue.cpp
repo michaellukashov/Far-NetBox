@@ -871,7 +871,7 @@ public:
   virtual ~TBackgroundTerminal()
   {}
 protected:
-  virtual bool DoQueryReopen(const std::exception * E);
+  virtual bool DoQueryReopen(std::exception * E);
 
 private:
   TTerminalItem * FItem;
@@ -890,7 +890,7 @@ void TBackgroundTerminal::Init(TSessionData *SessionData, TConfiguration *Config
 }
 
 //---------------------------------------------------------------------------
-bool TBackgroundTerminal::DoQueryReopen(const std::exception * /*E*/)
+bool TBackgroundTerminal::DoQueryReopen(std::exception * /*E*/)
 {
   bool Result;
   if (FItem->FTerminated || FItem->FCancel)
@@ -987,14 +987,25 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch (const std::exception & E)
+  catch (const std::exception &E)
   {
     // do not show error messages, if task was canceled anyway
     // (for example if transfer is cancelled during reconnection attempts)
-    if (!FCancel &&
-        (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, NULL, qtError) == qaCancel))
+    // if (!FCancel &&
+        // (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, NULL, qtError) == qaCancel))
+    // {
+      // FCancel = true;
+    // }
+    std::wstring Message;
+    if (ExceptionMessage(&E, Message))
     {
-      FCancel = true;
+      // do not show error messages, if task was canceled anyway
+      // (for example if transfer is cancelled during reconnection attempts)
+      if (!FCancel &&
+          (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, NULL, qtError) == qaCancel))
+      {
+        FCancel = true;
+      }
     }
   }
 

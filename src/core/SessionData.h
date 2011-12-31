@@ -257,6 +257,7 @@ public:
   TPingType GetPingType() const { return FPingType; }
   // __property std::wstring SessionName  = { read=GetSessionName };
   std::wstring GetSessionName();
+  bool HasSessionName();
   // __property std::wstring DefaultSessionName  = { read=GetDefaultSessionName };
   std::wstring GetDefaultSessionName();
   // __property std::wstring SessionUrl  = { read=GetSessionUrl };

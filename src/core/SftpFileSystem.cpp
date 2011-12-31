@@ -3098,33 +3098,46 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 
     if (Total == 0)
     {
-      // Empty file list -> probably "permision denied", we
-      // at least get link to parent directory ("..")
-      try
+      bool Failure = false;
+      // no point reading parent of root directory,
+      // moreover CompleteFTP terminates session upon attempt to do so
+      if (::IsUnixRootPath(FileList->GetDirectory()))
       {
-        FTerminal->SetExceptionOnFail(true);
-        {
-          BOOST_SCOPE_EXIT ( (&Self) )
-          {
-            Self->FTerminal->SetExceptionOnFail(false);
-          } BOOST_SCOPE_EXIT_END
-          File = NULL;
-          FTerminal->ReadFile(
-            UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
-        }
+        File = NULL;
       }
-      catch (const std::exception &E)
+      else
       {
-        if (::InheritsFrom<std::exception, EFatal>(&E))
-            throw;
-        else
-          File = NULL;
-        throw;
+        // Empty file list -> probably "permision denied", we
+        // at least get link to parent directory ("..")
+          try
+          {
+            FTerminal->SetExceptionOnFail(true);
+            {
+              BOOST_SCOPE_EXIT ( (&Self) )
+              {
+                Self->FTerminal->SetExceptionOnFail(false);
+              } BOOST_SCOPE_EXIT_END
+              File = NULL;
+              FTerminal->ReadFile(
+                UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
+            }
+          }
+          catch (const std::exception &E)
+          {
+            if (::InheritsFrom<std::exception, EFatal>(&E))
+            {
+                throw;
+            }
+            else
+            {
+              File = NULL;
+              Failure = true;
+            }
+          }
       }
 
       // on some systems even getting ".." fails, we create dummy ".." instead
-      bool Failure = (File == NULL);
-      if (Failure)
+      if (File == NULL)
       {
         File = new TRemoteParentDirectory(FTerminal);
       }
@@ -3936,7 +3949,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
       SFTPSource(FileName, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (const std::exception & E)
+    catch (std::exception &E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||
@@ -4006,9 +4019,9 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
 
     if (Dir)
     {
+      Action.Cancel();
       SFTPDirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
         OpenParams.LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
-      Action.Cancel();
     }
     else
     {
@@ -4806,7 +4819,7 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
       SFTPSink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action, ChildError);
     }
-    catch (const std::exception & E)
+    catch (std::exception &E)
     {
       Retry = true;
       if (FTerminal->GetActive() ||

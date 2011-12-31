@@ -6,39 +6,52 @@
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2)
 {
-  bool HasPrefix1 = TNamedObjectList::IsHidden((TNamedObject *)Item1);
-  bool HasPrefix2 = TNamedObjectList::IsHidden((TNamedObject *)Item2);
+  bool HasPrefix1 = ((TNamedObject *)Item1)->GetHidden();
+  bool HasPrefix2 = ((TNamedObject *)Item2)->GetHidden();
   if (HasPrefix1 && !HasPrefix2) return -1;
     else
   if (!HasPrefix1 && HasPrefix2) return 1;
     else
-  return ::AnsiCompareStr(((TNamedObject *)Item1)->Name, ((TNamedObject *)Item2)->Name);
+  return ::AnsiCompareStr(((TNamedObject *)Item1)->GetName(), ((TNamedObject *)Item2)->GetName());
 }
 //--- TNamedObject ----------------------------------------------------------
+TNamedObject::TNamedObject(std::wstring AName) :
+    TPersistent()
+{
+  SetName(AName);
+}
+//---------------------------------------------------------------------------
+void TNamedObject::SetName(std::wstring value)
+{
+  FHidden = (value.substr(0, TNamedObjectList::HiddenPrefix.size()) == TNamedObjectList::HiddenPrefix);
+  FName = value;
+}
+
 int TNamedObject::CompareName(std::wstring aName,
   bool CaseSensitive)
 {
   // DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
   if (CaseSensitive)
-    return ::AnsiCompare(Name, aName);
+    return ::AnsiCompare(GetName(), aName);
   else
-    return ::AnsiCompareIC(Name, aName);
+    return ::AnsiCompareIC(GetName(), aName);
 }
 //---------------------------------------------------------------------------
 void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 {
   // This object can't be item of list, it would create infinite loop
   if (List && (List->IndexOf(this) == -1))
-    while (List->FindByName(Name))
+    while (List->FindByName(GetName()))
     {
       size_t N = 0, P = 0;
       // If name already contains number parenthesis remove it (and remember it)
+      std::wstring Name = GetName();
       if ((Name[Name.size() - 1] == L')') && ((P = ::LastDelimiter(Name, L"(")) != std::wstring::npos))
         try
         {
           N = StrToInt(Name.substr(P + 1, Name.size() - P - 1));
           Name.erase(P, Name.size() - P + 1);
-          Name = ::TrimRight(Name);
+          SetName(::TrimRight(Name));
         }
         catch (const std::exception &E)
         {
@@ -49,11 +62,6 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 }
 //--- TNamedObjectList ------------------------------------------------------
 const std::wstring TNamedObjectList::HiddenPrefix = L"_!_";
-//---------------------------------------------------------------------------
-bool TNamedObjectList::IsHidden(TNamedObject * Object)
-{
-  return (Object->Name.substr(0, HiddenPrefix.size()) == HiddenPrefix);
-}
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList() :
   TObjectList(),
@@ -72,7 +80,7 @@ TNamedObject * TNamedObjectList::AtObject(int Index)
 void TNamedObjectList::Recount()
 {
   size_t i = 0;
-  while ((i < TObjectList::GetCount()) && IsHidden((TNamedObject *)GetItem(i))) i++;
+  while ((i < TObjectList::GetCount()) && ((TNamedObject *)GetItem(i))->GetHidden()) i++;
   FHiddenCount = i;
 }
 //---------------------------------------------------------------------------

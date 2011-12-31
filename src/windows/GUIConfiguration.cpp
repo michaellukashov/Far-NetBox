@@ -586,7 +586,7 @@ void TGUIConfiguration::Default()
   FSessionReopenAutoIdle = 5000;
 
   FNewDirectoryProperties.Default();
-  FNewDirectoryProperties.Rights = TRights::rfDefault;
+  FNewDirectoryProperties.Rights = TRights::rfDefault | TRights::rfExec;
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
