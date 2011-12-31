@@ -127,6 +127,12 @@ void hmacmd5_do_hmac(void *handle, unsigned char const *blk, int len,
 
 #ifdef MPEXT
 // Resolve ambiguity with OpenSSL
+// #define SHA_Init putty_SHA_Init
+// #define SHA_Final putty_SHA_Final
+// #define SHA256_Init putty_SHA256_Init
+// #define SHA256_Final putty_SHA256_Final
+// #define SHA512_Init putty_SHA512_Init
+// #define SHA512_Final putty_SHA512_Final
 #endif
 
 typedef struct {

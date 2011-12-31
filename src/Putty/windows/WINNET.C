@@ -907,11 +907,12 @@ static DWORD try_connect(Actual_Socket sock
     }
 
 #ifdef MPEXT
-    if (sndbuf > 0)
     {
-	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
+	int bufsize = 262144;
+	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &bufsize, sizeof(bufsize));
     }
 #endif
+
     /*
      * Bind to local address.
      */
