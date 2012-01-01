@@ -567,7 +567,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
         Storage->CloseSubKey();
       }
     }
-    catch(...)
+    catch (...)
     {
       // ignore errors (like read-only INI file)
     }
@@ -1227,7 +1227,7 @@ std::wstring TSessionData::DecryptPassword(const std::wstring & Password, std::w
   {
     Result = Configuration->DecryptPassword(Password, Key);
   }
-  catch(EAbort &)
+  catch (EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
