@@ -90,7 +90,7 @@ inline void TSecureShell::UpdateSessionInfo()
     FSshVersion = get_ssh_version(FBackendHandle);
     FSessionInfo.ProtocolBaseName = L"SSH";
     FSessionInfo.ProtocolName =
-      FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName, get_ssh_version(FBackendHandle));
+      FORMAT(L"%s-%d", FSessionInfo.ProtocolBaseName.c_str(), get_ssh_version(FBackendHandle));
     FSessionInfo.SecurityProtocolName = FSessionInfo.ProtocolName;
 
     FSessionInfo.CSCompression =

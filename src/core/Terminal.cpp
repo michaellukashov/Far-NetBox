@@ -2906,7 +2906,7 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
   {
     COMMAND_ERROR_ARI
     (
-      FMTLOAD(CUSTOM_COMMAND_ERROR, Command, FileName.c_str()),
+      FMTLOAD(CUSTOM_COMMAND_ERROR, Command.c_str(), FileName.c_str()),
       DoCustomCommandOnFile(FileName, File, Command, Params, OutputEvent)
     );
   }

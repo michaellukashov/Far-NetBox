@@ -7152,7 +7152,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
     else if ((KeyCode == KEY_SPACE) || (KeyCode == KEY_INS) ||
              (KeyCode == KEY_ADD) || (KeyCode == KEY_SUBTRACT))
     {
-      size_t Index = ListBox->GetItems()->GetSelected();
+      int Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
       {
         if (ListBox->GetItems()->GetChecked(Index) && (KeyCode != KEY_ADD))
@@ -8217,7 +8217,7 @@ bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
   }
 
   Line = FORMAT(L"%1s %1s  %-*.*s %s",
-    (Operation, Direction.c_str(), PathMaxLen, PathMaxLen, Values[0], Values[1]));
+    (Operation.c_str(), Direction.c_str(), PathMaxLen, PathMaxLen, Values[0].c_str(), Values[1].c_str()));
 
   return true;
 }

@@ -338,7 +338,7 @@ std::wstring SysErrorMessage(int ErrorCode)
       FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
       (LPTSTR)Buffer,
       sizeof(Buffer), NULL);
-    while ((Len > 0) && ((Buffer[Len - 1] >= 0) && 
+    while ((Len > 0) && ((Buffer[Len - 1] != 0) && 
       (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
       Len--;
     // SetString(Result, Buffer, Len);

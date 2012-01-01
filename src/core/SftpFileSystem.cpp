@@ -261,7 +261,7 @@ public:
     SetCapacity (0);
     FType = AType;
     AddByte(FType);
-    if ((FType != 1) && (FType != SSH_FXP_INIT))
+    if ((FType != (unsigned char)-1) && (FType != SSH_FXP_INIT))
     {
       AssignNumber();
       AddCardinal(FMessageNumber);
@@ -4315,7 +4315,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
         // originally this was before CLOSE (last catch (...) statement),
         // on VShell it failed
         FILE_OPERATION_LOOP(FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            UnixExtractFileName(OpenParams.RemoteFileName.c_str()), DestFileName.c_str()),
+            UnixExtractFileName(OpenParams.RemoteFileName.c_str()).c_str(), DestFileName.c_str()),
           RenameFile(OpenParams.RemoteFileName, DestFileName);
         );
       }

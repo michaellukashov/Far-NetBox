@@ -67,7 +67,7 @@ CServerPath::CServerPath(CString path)
 		m_nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
 	else if (path.GetLength() >= 3 && _istalpha(path[0]) && path[1] == ':' && (path[2] == '\\' || path[2] == '/'))
 		m_nServerType |= FZ_SERVERTYPE_SUB_FTP_WINDOWS;
-	else if (path[0] == FTP_MVS_DOUBLE_QUOTA && path[path.GetLength() - 1] == FTP_MVS_DOUBLE_QUOTA)
+	else if ((TCHAR)path[0] == FTP_MVS_DOUBLE_QUOTA && (TCHAR)path[path.GetLength() - 1] == FTP_MVS_DOUBLE_QUOTA)
 		m_nServerType |= FZ_SERVERTYPE_SUB_FTP_MVS;
 	else if (path.GetLength() > 2 && path[0] == '\'' && path.Right(1) == _T("'") && path.Find('/') == -1 && path.Find('\\') == -1)
 		m_nServerType |= FZ_SERVERTYPE_SUB_FTP_MVS;

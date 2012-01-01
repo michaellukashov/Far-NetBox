@@ -714,8 +714,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int Params, ...)
   va_end(args);
   if (Params & ecRaiseExcept)
   {
-    size_t MinL = FCommandSet->GetMinLines(Cmd);
-    size_t MaxL = FCommandSet->GetMaxLines(Cmd);
+    int MinL = FCommandSet->GetMinLines(Cmd);
+    int MaxL = FCommandSet->GetMaxLines(Cmd);
     if (((MinL >= 0) && (MinL > FOutput->GetCount())) ||
         ((MaxL >= 0) && (MaxL > FOutput->GetCount())))
     {
@@ -2308,7 +2308,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
           // DEBUG_PRINTF(L"Line = '%s', OnlyFileName = '%s'", Line.c_str(), OnlyFileName.c_str());
           if (Line != OnlyFileName)
           {
-            FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", (Line)));
+            FTerminal->LogEvent(FORMAT(L"Warning: Remote host set a compound pathname '%s'", Line.c_str()));
           }
 
           OperationProgress->SetFile(OnlyFileName);

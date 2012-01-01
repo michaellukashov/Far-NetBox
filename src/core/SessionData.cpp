@@ -2505,7 +2505,7 @@ void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
         Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
-          HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName()));
+          HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostName().c_str()));
           std::wstring KeyName;
           for (size_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); KeyIndex++)
           {
