@@ -33,7 +33,7 @@ if "%PLUGINARCH%" equ "src"    (
     mkdir %PKGDIR%\tinyXML
     copy ..\..\libs\tinyXML %PKGDIR%\tinyXML > NUL
 ) else (
-    copy ..\..\libs\openssl\%PLUGINARCH%\out32dll\*.dll %PKGDIR% > NUL
+    copy ..\..\libs\openssl\%PLUGINARCH%\*.dll %PKGDIR% > NUL
     copy ..\..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
     copy ..\..\dlls\%PLUGINARCH%\*.dll %PKGDIR% > NUL
     call .\makeCopyCommon.cmd %~d0%~p0 ..\..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
