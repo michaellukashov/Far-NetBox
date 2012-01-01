@@ -16,7 +16,7 @@ FILETYPE 0x2
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "NetBox.dll\0"
             VALUE "ProductName", "WinSCP\0"
-            VALUE "ProductVersion", "4.1.9.0\0"
+            VALUE "ProductVersion", "4.3.6\0"
             VALUE "ReleaseType", "stable\0"
             VALUE "WWW", "https://github.com/michaellukashov/Far-NetBox\0"
         }
