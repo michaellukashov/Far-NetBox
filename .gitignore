@@ -38,6 +38,8 @@ src/NetBox/NetBox
 *.exe
 *.res
 *.rbj
+*.idb
+*.aps
 
 libs/gc-7.2alpha6/ALL_BUILD.vcxproj
 libs/gc-7.2alpha6/cmake_install.cmake

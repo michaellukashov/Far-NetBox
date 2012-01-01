@@ -107,10 +107,6 @@ set ( NETBOX_ALL_HEADERS
 )
 
 set ( COMMON_SOURCES
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
     ${PROJECT_ROOT}/src/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/src/core/Terminal.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
@@ -255,6 +251,20 @@ set_target_properties( libputty
 
 #-------------------------------------------------------------------------------
 
+add_library (libtinyxml STATIC
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
+    ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
+)
+
+set_target_properties( libtinyxml
+    PROPERTIES
+    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS"
+)
+
+#-------------------------------------------------------------------------------
+
 add_library (gcmt STATIC IMPORTED)
 set_property (TARGET gcmt
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/gc-7.2alpha6/Debug/gcmt-lib.lib)
@@ -274,6 +284,7 @@ set ( NETBOX_LIBRARIES
     msvcmrtd.lib
     msvcurtd.lib
     libputty
+    libtinyxml
     libcurl
     libeay32
     ssleay32
@@ -320,6 +331,7 @@ target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
 
 add_dependencies ( NetBox
     libputty
+    libtinyxml
     #zlib libssh2 libcurl
 )
 
@@ -349,6 +361,7 @@ set_target_properties( testnetbox_01
 
 add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
     libputty
+    libtinyxml
     gcmt
 )
 
@@ -372,6 +385,7 @@ set_target_properties( testnetbox_02
 )
 add_dependencies ( testnetbox_02
     libputty
+    libtinyxml
 )
 
 target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )
