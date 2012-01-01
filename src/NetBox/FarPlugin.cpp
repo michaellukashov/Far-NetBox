@@ -1120,7 +1120,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         for (size_t Index = 0; Index < MessageLines->GetCount(); Index++)
         {
             std::wstring S = MessageLines->GetString(Index);
-            MessageLines->PutString(Index, StrToFar(S));
+            MessageLines->PutString(Index, std::wstring(StrToFar(S)));
             Items[Index] = (wchar_t *)MessageLines->GetString(Index).c_str();
         }
 

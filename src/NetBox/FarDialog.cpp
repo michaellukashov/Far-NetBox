@@ -2169,7 +2169,7 @@ void TFarList::UpdateItem(int Index)
     GetDialogItem()->SendMessage(DM_LISTUPDATE, (int)&ListUpdate);
 }
 //---------------------------------------------------------------------------
-void TFarList::Put(int Index, const std::wstring S)
+void TFarList::Put(int Index, const std::wstring &S)
 {
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {

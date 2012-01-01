@@ -545,7 +545,7 @@ protected:
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
-    virtual void Put(int Index, const std::wstring S);
+    virtual void Put(int Index, const std::wstring &S);
     void SetCurPos(int Position, int TopIndex);
     void UpdateItem(int Index);
 
