@@ -28,7 +28,7 @@ public:
   TStrings *GetMoreMessages() const { return FMoreMessages; }
   std::wstring GetHelpKeyword() const { return FHelpKeyword; }
   const std::wstring GetMessage() const { return FMessage; }
-  void SetMessage(const std::wstring value) { FMessage = value; }
+  void SetMessage(const std::wstring &value) { FMessage = value; }
 protected:
   void AddMoreMessages(const std::exception *E);
 
