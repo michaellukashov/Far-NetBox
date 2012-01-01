@@ -233,7 +233,7 @@ BOOL CServerPath::SetPath(CString &newpath, BOOL bIsFile /*=FALSE*/)
 		}
 		if (newpath.GetLength() >= 3 && _istalpha(newpath[0]) && newpath[1] == ':' && (newpath[2] == '\\' || newpath[2] == '/'))
 			m_nServerType |= FZ_SERVERTYPE_SUB_FTP_WINDOWS;
-		else if (path[0] == FTP_MVS_DOUBLE_QUOTA && path[path.GetLength() - 1] == FTP_MVS_DOUBLE_QUOTA)
+		else if ((TCHAR)path[0] == FTP_MVS_DOUBLE_QUOTA && (TCHAR)path[path.GetLength() - 1] == FTP_MVS_DOUBLE_QUOTA)
 			m_nServerType |= FZ_SERVERTYPE_SUB_FTP_MVS;
 		else if (path.GetLength() >= 2 && path[0] != '/' && path.Right(1) == _T("."))
 			m_nServerType |= FZ_SERVERTYPE_SUB_FTP_UNKNOWN;

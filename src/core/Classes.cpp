@@ -95,7 +95,7 @@ void *TList::GetItem(size_t Index) const
 }
 void TList::SetItem(size_t Index, void *Item)
 {
-    if ((Index < 0) || (Index > FList.size()))
+    if (Index >= FList.size())
     {
       ::Error(SListIndexError, Index);
     }
@@ -128,7 +128,7 @@ void TList::Move(size_t CurIndex, size_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if ((NewIndex < 0) || (NewIndex >= FList.size()))
+    if (NewIndex >= FList.size())
     {
       ::Error(SListIndexError, NewIndex);
     }
@@ -141,7 +141,7 @@ void TList::Move(size_t CurIndex, size_t NewIndex)
 }
 void TList::Delete(size_t Index)
 {
-    if ((Index < 0) || (Index >= FList.size()))
+    if (Index >= FList.size())
     {
       ::Error(SListIndexError, Index);
     }
@@ -154,7 +154,7 @@ void TList::Delete(size_t Index)
 }
 void TList::Insert(size_t Index, void *Item)
 {
-    if ((Index < 0) || (Index > FList.size()))
+    if (Index >= FList.size())
     {
       ::Error(SListIndexError, Index);
     }
@@ -757,7 +757,7 @@ void TStringList::PutString(int Index, std::wstring S)
 }
 void TStringList::Delete(size_t Index)
 {
-  if ((Index < 0) || (Index >= FList.size()))
+  if (Index >= FList.size())
   {
     ::Error(SListIndexError, Index);
   }
@@ -802,7 +802,7 @@ void TStringList::InsertItem(int Index, const std::wstring S, TObject *AObject)
 std::wstring TStringList::GetString(size_t Index) const
 {
     // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-    if ((Index < 0) || (Index >= FList.size()))
+    if (Index >= FList.size())
     {
         ::Error(SListIndexError, Index);
     }
@@ -1642,7 +1642,7 @@ bool TRegistry::KeyExists(const std::wstring Key)
         Self->FAccess = OldAccess;
     } BOOST_SCOPE_EXIT_END
 
-    FAccess = STANDARD_RIGHTS_READ || KEY_QUERY_VALUE || KEY_ENUMERATE_SUB_KEYS;
+    FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
     HKEY TempKey = GetKey(Key);
     if (TempKey != 0) RegCloseKey(TempKey);
     Result = TempKey != 0;

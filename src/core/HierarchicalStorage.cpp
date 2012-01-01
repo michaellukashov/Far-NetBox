@@ -211,8 +211,8 @@ void THierarchicalStorage::ReadValues(TStrings* Strings,
     {
       if (MaintainKeys)
       {
-        Strings->Add(FORMAT(L"%s=%s", (Names->GetString(Index),
-          ReadString(Names->GetString(Index), L""))));
+        Strings->Add(FORMAT(L"%s=%s", Names->GetString(Index).c_str(),
+          ReadString(Names->GetString(Index), L"").c_str()));
       }
       else
       {
@@ -663,6 +663,7 @@ TIniFileStorage::~TIniFileStorage()
           }
           catch (const std::exception & E)
           {
+            DEBUG_PRINTF(FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()));
             throw ExtException(FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()), &E);
           }
         }

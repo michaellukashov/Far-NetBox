@@ -1695,7 +1695,7 @@ bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
   FileList.resize(FileList.size() + 2);
   FileList[FileList.size() - 1] = '\0';
   Data.pFrom = FileList.c_str();
-  Data.pTo = L"";
+  Data.pTo = NULL;
   Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
     FOF_NOERRORUI | FOF_SILENT;
   if (ToRecycleBin)
