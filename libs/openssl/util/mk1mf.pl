@@ -317,6 +317,7 @@ $_=<IN>;
 for (;;)
 	{
 	chop;
+	s/\r$//; #remove carriage return too!
 
 	($key,$val)=/^([^=]+)=(.*)/;
 	if ($key eq "RELATIVE_DIRECTORY")
