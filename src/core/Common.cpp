@@ -111,21 +111,23 @@ const char EngShortMonthNames[12][4] =
   {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 //---------------------------------------------------------------------------
-std::wstring ReplaceChar(std::wstring Str, wchar_t A, wchar_t B)
+std::wstring ReplaceChar(const std::wstring &Str, wchar_t A, wchar_t B)
 {
-  for (size_t Index = 0; Index < Str.size(); Index++)
-    if (Str[Index] == A) Str[Index] = B;
-  return Str;
+  std::wstring str = Str;
+  for (size_t Index = 0; Index < str.size(); Index++)
+    if (str[Index] == A) str[Index] = B;
+  return str;
 }
 //---------------------------------------------------------------------------
-std::wstring DeleteChar(std::wstring Str, wchar_t C)
+std::wstring DeleteChar(const std::wstring &Str, wchar_t C)
 {
-  size_t P;
-  while ((P = Str.find_first_of(C, 0)) != std::wstring::npos)
+  size_t P = 0;
+  std::wstring str = Str;
+  while ((P = str.find_first_of(C, 0)) != std::wstring::npos)
   {
-    Str.erase(P, 1);
+    str.erase(P, 1);
   }
-  return Str;
+  return str;
 }
 //---------------------------------------------------------------------------
 void PackStr(std::wstring &Str)
@@ -134,14 +136,15 @@ void PackStr(std::wstring &Str)
   Str = Str.c_str();
 }
 //---------------------------------------------------------------------------
-std::wstring MakeValidFileName(std::wstring FileName)
+std::wstring MakeValidFileName(const std::wstring &FileName)
 {
   std::wstring IllegalChars = L":;,=+<>|\"[] \\/?*";
+  std::wstring str = FileName;
   for (size_t Index = 0; Index < IllegalChars.size(); Index++)
   {
-    FileName = ReplaceChar(FileName, IllegalChars[Index], L'-');
+    str = ReplaceChar(str, IllegalChars[Index], L'-');
   }
-  return FileName;
+  return str;
 }
 //---------------------------------------------------------------------------
 std::wstring RootKeyToStr(HKEY RootKey)
@@ -222,7 +225,7 @@ std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring CopyToChars(const std::wstring &Str, size_t &From, std::wstring Chars,
+std::wstring CopyToChars(const std::wstring &Str, size_t &From, const std::wstring &Chars,
     bool Trim, char *Delimiter)
 {
   size_t P;
@@ -266,20 +269,21 @@ std::wstring CopyToChars(const std::wstring &Str, size_t &From, std::wstring Cha
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring DelimitStr(std::wstring Str, std::wstring Chars)
+std::wstring DelimitStr(const std::wstring &Str, const std::wstring &Chars)
 {
-  for (size_t i = 0; i < Str.size(); i++)
+  std::wstring str = Str;
+  for (size_t i = 0; i < str.size(); i++)
   {
-    if (::IsDelimiter(Str, Chars, i))
+    if (::IsDelimiter(str, Chars, i))
     {
-      Str.insert(i, L"\\");
+      str.insert(i, L"\\");
       i++;
     }
   }
-  return Str;
+  return str;
 }
 //---------------------------------------------------------------------------
-std::wstring ShellDelimitStr(std::wstring Str, char Quote)
+std::wstring ShellDelimitStr(const std::wstring &Str, char Quote)
 {
   std::wstring Chars = L"$\\";
   if (Quote == '"')
@@ -315,7 +319,7 @@ std::wstring ExceptionLogString(const std::exception *E)
   }
 }
 //---------------------------------------------------------------------------
-bool IsNumber(const std::wstring Str)
+bool IsNumber(const std::wstring &Str)
 {
   return _wtoi(Str.c_str()) != 0;
 }
@@ -369,7 +373,7 @@ std::wstring GetShellFolderPath(int CSIdl)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring StripPathQuotes(const std::wstring Path)
+std::wstring StripPathQuotes(const std::wstring &Path)
 {
   if ((Path.size() >= 2) &&
       (Path[0] == L'\"') && (Path[Path.size() - 1] == L'\"'))
@@ -382,17 +386,17 @@ std::wstring StripPathQuotes(const std::wstring Path)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring AddPathQuotes(std::wstring Path)
+std::wstring AddPathQuotes(const std::wstring &Path)
 {
-  Path = StripPathQuotes(Path);
-  if (Path.find_first_of(L" ") != std::wstring::npos)
+  std::wstring str = StripPathQuotes(Path);
+  if (str.find_first_of(L" ") != std::wstring::npos)
   {
-    Path = L"\"" + Path + L"\"";
+    str = L"\"" + str + L"\"";
   }
-  return Path;
+  return str;
 }
 
-std::wstring ReplaceStrAll(std::wstring Str, std::wstring What, std::wstring ByWhat)
+std::wstring ReplaceStrAll(const std::wstring &Str, const std::wstring &What, const std::wstring &ByWhat)
 {
     std::wstring result = Str;
     size_t pos = result.find(What);
@@ -405,41 +409,41 @@ std::wstring ReplaceStrAll(std::wstring Str, std::wstring What, std::wstring ByW
 }
 
 //---------------------------------------------------------------------------
-void SplitCommand(std::wstring Command, std::wstring &Program,
-  std::wstring & Params, std::wstring & Dir)
+void SplitCommand(const std::wstring &Command, std::wstring &Program,
+  std::wstring &Params, std::wstring &Dir)
 {
-  Command = ::Trim(Command);
+  std::wstring cmd = ::Trim(Command);
   Params = L"";
   Dir = L"";
-  if (!Command.empty() && (Command[0] == L'\"'))
+  if (!cmd.empty() && (cmd[0] == L'\"'))
   {
-    Command.erase(0, 1);
-    int P = Command.find_first_of(L'"');
-    if (P)
+    cmd.erase(0, 1);
+    size_t P = cmd.find_first_of(L'"');
+    if (P != std::wstring::npos)
     {
-      Program = ::Trim(Command.substr(0, P));
-      Params = ::Trim(Command.substr(P + 1, Command.size() - P));
+      Program = ::Trim(cmd.substr(0, P));
+      Params = ::Trim(cmd.substr(P + 1, Command.size() - P));
     }
     else
     {
-      throw ExtException(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + Command).c_str()));
+      throw ExtException(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + cmd).c_str()));
     }
   }
   else
   {
-    int P = Command.find_first_of(L" ");
-    if (P)
+    size_t P = cmd.find_first_of(L" ");
+    if (P != std::wstring::npos)
     {
-      Program = ::Trim(Command.substr(0, P));
-      Params = ::Trim(Command.substr(P + 1, Command.size() - P));
+      Program = ::Trim(cmd.substr(0, P));
+      Params = ::Trim(cmd.substr(P + 1, cmd.size() - P));
     }
     else
     {
-      Program = Command;
+      Program = cmd;
     }
   }
-  int B = Program.find_last_of(L"\\");
-  if (B)
+  size_t B = Program.find_last_of(L"\\");
+  if (B != std::wstring::npos)
   {
     Dir = ::Trim(Program.substr(0, B));
   }
@@ -453,7 +457,7 @@ void SplitCommand(std::wstring Command, std::wstring &Program,
   }
 }
 //---------------------------------------------------------------------------
-std::wstring ExtractProgram(std::wstring Command)
+std::wstring ExtractProgram(const std::wstring &Command)
 {
   std::wstring Program;
   std::wstring Params;
@@ -464,13 +468,13 @@ std::wstring ExtractProgram(std::wstring Command)
   return Program;
 }
 //---------------------------------------------------------------------------
-std::wstring FormatCommand(std::wstring Program, std::wstring Params)
+std::wstring FormatCommand(const std::wstring &Program, const std::wstring &Params)
 {
-  Program = ::Trim(Program);
-  Params = ::Trim(Params);
-  if (!Params.empty()) Params = L" " + Params;
-  if (Program.find_first_of(L" ")) Program = L"\"" + Program + L"\"";
-  return Program + Params;
+  std::wstring program = ::Trim(Program);
+  std::wstring params = ::Trim(Params);
+  if (!params.empty()) params = L" " + params;
+  if (program.find_first_of(L" ") != std::wstring::npos) program = L"\"" + program + L"\"";
+  return program + params;
 }
 //---------------------------------------------------------------------------
 const wchar_t ShellCommandFileNamePattern[] = L"!.!";
@@ -489,23 +493,24 @@ void ReformatFileNameCommand(std::wstring & Command)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring ExpandFileNameCommand(const std::wstring Command,
-  const std::wstring FileName)
+std::wstring ExpandFileNameCommand(const std::wstring &Command,
+  const std::wstring &FileName)
 {
   return ReplaceStrAll(Command, ShellCommandFileNamePattern,
     AddPathQuotes(FileName));
 }
 //---------------------------------------------------------------------------
-std::wstring EscapePuttyCommandParam(std::wstring Param)
+std::wstring EscapePuttyCommandParam(const std::wstring &Param)
 {
   bool Space = false;
+  std::wstring str = Param;
 
-  for (size_t i = 0; i < Param.size(); i++)
+  for (size_t i = 0; i < str.size(); i++)
   {
-    switch (Param[i])
+    switch (str[i])
     {
       case L'"':
-        Param.insert(i, L"\\");
+        str.insert(i, L"\\");
         i++;
         break;
 
@@ -515,15 +520,15 @@ std::wstring EscapePuttyCommandParam(std::wstring Param)
 
       case L'\\':
         size_t i2 = i;
-        while ((i2 < Param.size()) && (Param[i2] == L'\\'))
+        while ((i2 < str.size()) && (str[i2] == L'\\'))
         {
           i2++;
         }
-        if ((i2 < Param.size()) && (Param[i2] == L'"'))
+        if ((i2 < str.size()) && (str[i2] == L'"'))
         {
-          while (Param[i] == L'\\')
+          while (str[i] == L'\\')
           {
-            Param.insert(i, L"\\");
+            str.insert(i, L"\\");
             i += 2;
           }
           i--;
@@ -534,10 +539,10 @@ std::wstring EscapePuttyCommandParam(std::wstring Param)
 
   if (Space)
   {
-    Param = L"\"" + Param + L'"';
+    str = L"\"" + str + L'"';
   }
 
-  return Param;
+  return str;
 }
 //---------------------------------------------------------------------------
 std::wstring ExpandEnvironmentVariables(const std::wstring & Str)
@@ -618,7 +623,7 @@ std::wstring ChangeFileExtension(const std::wstring &path, const std::wstring &e
   
 //---------------------------------------------------------------------------
 
-std::wstring ExcludeTrailingBackslash(const std::wstring str)
+std::wstring ExcludeTrailingBackslash(const std::wstring &str)
 {
     std::wstring result = str;
     if ((str.size() > 0) && ((str[str.size() - 1] == L'/') ||
@@ -629,7 +634,7 @@ std::wstring ExcludeTrailingBackslash(const std::wstring str)
     return result;
 }
 
-std::wstring IncludeTrailingBackslash(const std::wstring str)
+std::wstring IncludeTrailingBackslash(const std::wstring &str)
 {
     std::wstring result = str;
     if ((str.size() == 0) || ((str[str.size() - 1] != L'/') &&
@@ -640,7 +645,7 @@ std::wstring IncludeTrailingBackslash(const std::wstring str)
     return result;
 }
 
-std::wstring ExtractFileDir(const std::wstring str)
+std::wstring ExtractFileDir(const std::wstring &str)
 {
     std::wstring result;
     int Pos = ::LastDelimiter(str, L"/\\");
@@ -657,7 +662,7 @@ std::wstring ExtractFileDir(const std::wstring str)
     return result;
 }
 
-std::wstring ExtractFilePath(const std::wstring str)
+std::wstring ExtractFilePath(const std::wstring &str)
 {
     std::wstring result = ::ExtractFileDir(str);
     // DEBUG_PRINTF(L"str = %s, result = %s", str.c_str(), result.c_str());
@@ -706,15 +711,16 @@ bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2)
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2)) == 1;
 }
 //---------------------------------------------------------------------------
-bool IsReservedName(std::wstring FileName)
+bool IsReservedName(const std::wstring &FileName)
 {
-  int P = FileName.find_first_of(L".");
-  int Len = (P > 0) ? P - 1 : FileName.size();
+  std::wstring str = FileName;
+  int P = str.find_first_of(L".");
+  int Len = (P > 0) ? P - 1 : str.size();
   if ((Len == 3) || (Len == 4))
   {
     if (P > 0)
     {
-      FileName.resize(P - 1);
+      str.resize(P - 1);
     }
     static std::wstring Reserved[] = {
       L"CON", L"PRN", L"AUX", L"NUL",
@@ -722,7 +728,7 @@ bool IsReservedName(std::wstring FileName)
       L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
     for (int Index = 0; Index < LENOF(Reserved); Index++)
     {
-      if (AnsiSameText(FileName, Reserved[Index]))
+      if (AnsiSameText(str, Reserved[Index]))
       {
         return true;
       }
@@ -731,7 +737,7 @@ bool IsReservedName(std::wstring FileName)
   return false;
 }
 //---------------------------------------------------------------------------
-std::wstring DisplayableStr(const std::wstring Str)
+std::wstring DisplayableStr(const std::wstring &Str)
 {
   bool Displayable = true;
   size_t Index = 0;
@@ -804,7 +810,7 @@ std::wstring CharToHex(char Ch, bool UpperCase)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring StrToHex(const std::wstring Str, bool UpperCase, char Separator)
+std::wstring StrToHex(const std::wstring &Str, bool UpperCase, char Separator)
 {
   std::wstring Result;
   for (size_t i = 0; i < Str.size(); i++)
@@ -818,7 +824,7 @@ std::wstring StrToHex(const std::wstring Str, bool UpperCase, char Separator)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring HexToStr(const std::wstring Hex)
+std::wstring HexToStr(const std::wstring &Hex)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   std::wstring Result;
@@ -844,7 +850,7 @@ std::wstring HexToStr(const std::wstring Hex)
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int HexToInt(const std::wstring Hex, int MinChars)
+unsigned int HexToInt(const std::wstring &Hex, int MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
@@ -876,12 +882,12 @@ std::wstring IntToHex(unsigned int Int, int MinChars)
 }
 
 //---------------------------------------------------------------------------
-char HexToChar(const std::wstring Hex, int MinChars)
+char HexToChar(const std::wstring &Hex, int MinChars)
 {
   return (char)HexToInt(Hex, MinChars);
 }
 //---------------------------------------------------------------------------
-bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
+bool FileSearchRec(const std::wstring &FileName, WIN32_FIND_DATA &Rec)
 {
     HANDLE hFind = FindFirstFileW(FileName.c_str(), &Rec);
     bool Result = (hFind != INVALID_HANDLE_VALUE);
@@ -889,7 +895,7 @@ bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
     return Result;
 }
 //---------------------------------------------------------------------------
-void ProcessLocalDirectory(std::wstring DirName,
+void ProcessLocalDirectory(const std::wstring &DirName,
   const processlocalfile_slot_type &CallBackFunc, void * Param,
   int FindAttrs)
 {
@@ -899,8 +905,8 @@ void ProcessLocalDirectory(std::wstring DirName,
   }
   WIN32_FIND_DATA SearchRec;
 
-  DirName = IncludeTrailingBackslash(DirName);
-  std::wstring FileName = DirName + L"*.*";
+  std::wstring dirName = IncludeTrailingBackslash(DirName);
+  std::wstring FileName = dirName + L"*.*";
   HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
   if (h != INVALID_HANDLE_VALUE)
   {
@@ -916,7 +922,7 @@ void ProcessLocalDirectory(std::wstring DirName,
       {
         if ((SearchRec.dwFileAttributes & FindAttrs) != 0)
         {
-            sig(DirName + SearchRec.cFileName, SearchRec, Param);
+            sig(dirName + SearchRec.cFileName, SearchRec, Param);
         }
       }
     } while (::FindNextFile(h, &SearchRec));
@@ -927,7 +933,7 @@ class EConvertError : public ExtException
 {
     typedef ExtException parent;
 public:
-    EConvertError(std::wstring Msg) :
+    EConvertError(const std::wstring &Msg) :
         parent(Msg, NULL)
     {}
 };
@@ -1031,7 +1037,7 @@ TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Se
   return TDateTime();
 }
 
-TDateTime StrToDateTime(std::wstring Value)
+TDateTime StrToDateTime(const std::wstring &Value)
 {
     ::Error(SNotImplemented, 145);
   return TDateTime();
@@ -1041,7 +1047,7 @@ TDateTime StrToDateTime(std::wstring Value)
 // DayOfWeek returns the day of the week of the given date. The result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-unsigned int DayOfWeek(const TDateTime DateTime)
+unsigned int DayOfWeek(const TDateTime &DateTime)
 {
   return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
@@ -1296,7 +1302,7 @@ __int64 Round(double Number)
 #define TIME_WIN_TO_POSIX(ft, t) ((t) = (__int64) \
     ((*(LONGLONG*)&(ft)) / (LONGLONG) 10000000 - (LONGLONG) 11644473600))
 //---------------------------------------------------------------------------
-static __int64 DateTimeToUnix(const TDateTime DateTime)
+static __int64 DateTimeToUnix(const TDateTime &DateTime)
 {
   TDateTimeParams *Params = GetDateTimeParams();
   double value = double(DateTime - Params->UnixEpoch) * 86400;
@@ -1305,7 +1311,7 @@ static __int64 DateTimeToUnix(const TDateTime DateTime)
   return (__int64)intpart + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
-FILETIME DateTimeToFileTime(const TDateTime DateTime,
+FILETIME DateTimeToFileTime(const TDateTime &DateTime,
   TDSTMode /*DSTMode*/)
 {
   FILETIME Result;
@@ -1420,7 +1426,7 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
+TDateTime AdjustDateTimeFromUnix(TDateTime &DateTime, TDSTMode DSTMode)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
@@ -1462,7 +1468,7 @@ TDateTime AdjustDateTimeFromUnix(TDateTime DateTime, TDSTMode DSTMode)
   return DateTime;
 }
 //---------------------------------------------------------------------------
-std::wstring FixedLenDateTimeFormat(const std::wstring & Format)
+std::wstring FixedLenDateTimeFormat(const std::wstring &Format)
 {
   std::wstring Result = Format;
   bool AsIs = false;
@@ -1684,7 +1690,7 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
 }
 
 //---------------------------------------------------------------------------
-bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
+bool RecursiveDeleteFile(const std::wstring &FileName, bool ToRecycleBin)
 {
   SHFILEOPSTRUCT Data;
 
@@ -1841,32 +1847,33 @@ std::wstring LoadStrPart(int Ident, int Part)
 }
 
 //---------------------------------------------------------------------------
-std::wstring DecodeUrlChars(std::wstring S)
+std::wstring DecodeUrlChars(const std::wstring &S)
 {
   size_t i = 0;
-  while (i < S.size())
+  std::wstring str = S;
+  while (i < str.size())
   {
-    switch (S[i])
+    switch (str[i])
     {
       case L'+':
-        S[i] = L' ';
+        str[i] = L' ';
         break;
 
       case L'%':
         if (i <= S.size() - 2)
         {
-          std::wstring C = HexToStr(S.substr(i + 1, 2));
+          std::wstring C = HexToStr(str.substr(i + 1, 2));
           if (C.size() == 1)
           {
-            S[i] = C[1];
-            S.erase(i + 1, 2);
+            str[i] = C[1];
+            str.erase(i + 1, 2);
           }
         }
         break;
     }
     i++;
   }
-  return S;
+  return str;
 }
 //---------------------------------------------------------------------------
 std::wstring DoEncodeUrl(std::wstring S, std::wstring Chars)
@@ -1886,7 +1893,7 @@ std::wstring DoEncodeUrl(std::wstring S, std::wstring Chars)
   return S;
 }
 //---------------------------------------------------------------------------
-std::wstring EncodeUrlChars(std::wstring S, std::wstring Ignore)
+std::wstring EncodeUrlChars(const std::wstring &S, const std::wstring &Ignore)
 {
   std::wstring Chars;
   if (Ignore.find_first_of(L' ') == std::wstring::npos)
@@ -1921,7 +1928,7 @@ std::wstring NonUrlChars()
   return S;
 }
 //---------------------------------------------------------------------------
-std::wstring EncodeUrlString(std::wstring S)
+std::wstring EncodeUrlString(const std::wstring &S)
 {
   return DoEncodeUrl(S, NonUrlChars());
 }
@@ -2094,7 +2101,7 @@ std::wstring IntToStr(int value)
     return ::MB2W(result.c_str());
 }
 
-int StrToInt(const std::wstring value)
+int StrToInt(const std::wstring &value)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
@@ -2103,7 +2110,7 @@ int StrToInt(const std::wstring value)
         return 0;
 }
 
-__int64 ToInt(const std::wstring value)
+__int64 ToInt(const std::wstring &value)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
@@ -2112,7 +2119,7 @@ __int64 ToInt(const std::wstring value)
         return 0;
 }
 
-int StrToIntDef(const std::wstring value, int defval)
+int StrToIntDef(const std::wstring &value, int defval)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
@@ -2121,12 +2128,12 @@ int StrToIntDef(const std::wstring value, int defval)
         return defval;
 }
 
-__int64 StrToInt64(const std::wstring value)
+__int64 StrToInt64(const std::wstring &value)
 {
     return ToInt(value);
 }
 
-__int64 StrToInt64Def(const std::wstring value, __int64 defval)
+__int64 StrToInt64Def(const std::wstring &value, __int64 defval)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
@@ -2135,7 +2142,7 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval)
         return defval;
 }
 
-bool TryStrToInt(const std::wstring value, __int64 &Value)
+bool TryStrToInt(const std::wstring &value, __int64 &Value)
 {
     bool result = false;
     try
@@ -2150,7 +2157,7 @@ bool TryStrToInt(const std::wstring value, __int64 &Value)
     return result;
 }
 
-bool TryStrToInt(const std::wstring value, int &Value)
+bool TryStrToInt(const std::wstring &value, int &Value)
 {
     bool result = false;
     try
@@ -2167,13 +2174,13 @@ bool TryStrToInt(const std::wstring value, int &Value)
 
 //---------------------------------------------------------------------------
 
-std::wstring Trim(const std::wstring str)
+std::wstring Trim(const std::wstring &str)
 {
     std::wstring result = TrimRight(TrimLeft(str));
     return result;
 }
 
-std::wstring TrimLeft(const std::wstring str)
+std::wstring TrimLeft(const std::wstring &str)
 {
     std::wstring result = str;
     while (result.size() > 0 && result[0] == ' ')
@@ -2183,7 +2190,7 @@ std::wstring TrimLeft(const std::wstring str)
     return result;
 }
 
-std::wstring TrimRight(const std::wstring str)
+std::wstring TrimRight(const std::wstring &str)
 {
     std::wstring result = str;
     while (result.size() > 0 && 
@@ -2194,7 +2201,7 @@ std::wstring TrimRight(const std::wstring str)
     return result;
 }
 
-std::wstring UpperCase(const std::wstring str)
+std::wstring UpperCase(const std::wstring &str)
 {
     std::wstring result;
     result.resize(str.size());
@@ -2202,7 +2209,7 @@ std::wstring UpperCase(const std::wstring str)
     return result;
 }
 
-std::wstring LowerCase(const std::wstring str)
+std::wstring LowerCase(const std::wstring &str)
 {
     std::wstring result;
     result.resize(str.size());
@@ -2224,31 +2231,31 @@ wchar_t LowCase(const wchar_t c)
 
 //---------------------------------------------------------------------------
 
-std::wstring AnsiReplaceStr(const std::wstring str, const std::wstring from, const std::wstring to)
+std::wstring AnsiReplaceStr(const std::wstring &str, const std::wstring &from, const std::wstring &to)
 {
     std::wstring result = str;
     alg::replace_all(result, from, to);
     return result;
 }
 
-size_t AnsiPos(const std::wstring str, wchar_t c)
+size_t AnsiPos(const std::wstring &str, wchar_t c)
 {
     size_t result = str.find_first_of(c);
     return result;
 }
 
-size_t Pos(const std::wstring str, const std::wstring substr)
+size_t Pos(const std::wstring &str, const std::wstring &substr)
 {
     size_t result = str.find(substr);
     return result;
 }
 
-std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
+std::wstring StringReplace(const std::wstring &str, const std::wstring &from, const std::wstring &to)
 {
     return AnsiReplaceStr(str, from, to);
 }
 
-bool IsDelimiter(const std::wstring str, const std::wstring delim, size_t index)
+bool IsDelimiter(const std::wstring &str, const std::wstring &delim, size_t index)
 {
     wchar_t c = str[index];
     for (size_t i = 0; i < delim.size(); i++)
@@ -2261,7 +2268,7 @@ bool IsDelimiter(const std::wstring str, const std::wstring delim, size_t index)
     return false;
 }
 
-size_t LastDelimiter(const std::wstring str, const std::wstring delim)
+size_t LastDelimiter(const std::wstring &str, const std::wstring &delim)
 {
     for (int i = (int)str.size() - 1; i >= 0; i--)
     {
@@ -2275,43 +2282,43 @@ size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 
 //---------------------------------------------------------------------------
 
-int CompareText(const std::wstring str1, const std::wstring str2)
+int CompareText(const std::wstring &str1, const std::wstring &str2)
 {
     return StringCmp(str1.c_str(), str2.c_str());
 }
 
-int AnsiCompare(const std::wstring str1, const std::wstring str2)
+int AnsiCompare(const std::wstring &str1, const std::wstring &str2)
 {
     return StringCmp(str1.c_str(), str2.c_str());
 }
 
 // Case-sensitive compare
-int AnsiCompareStr(const std::wstring str1, const std::wstring str2)
+int AnsiCompareStr(const std::wstring &str1, const std::wstring &str2)
 {
     return StringCmp(str1.c_str(), str2.c_str());
 }
 
-bool AnsiSameText(const std::wstring str1, const std::wstring str2)
+bool AnsiSameText(const std::wstring &str1, const std::wstring &str2)
 {
     return StringCmp(str1.c_str(), str2.c_str()) == 0;
 }
 
-bool SameText(const std::wstring str1, const std::wstring str2)
+bool SameText(const std::wstring &str1, const std::wstring &str2)
 {
     return AnsiSameText(str1, str2) == 0;
 }
 
-int AnsiCompareText(const std::wstring str1, const std::wstring str2)
+int AnsiCompareText(const std::wstring &str1, const std::wstring &str2)
 {
     return StringCmpI(str1.c_str(), str2.c_str());
 }
 
-int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
+int AnsiCompareIC(const std::wstring &str1, const std::wstring &str2)
 {
     return AnsiCompareText(str1, str2);
 }
 
-bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
+bool AnsiContainsText(const std::wstring &str1, const std::wstring &str2)
 {
     // FIXME
     ::Error(SNotImplemented, 76);
@@ -2330,14 +2337,14 @@ void RaiseLastOSError()
 }
 
 //---------------------------------------------------------------------------
-double StrToFloat(std::wstring Value)
+double StrToFloat(const std::wstring &Value)
 {
     // FIXME
     ::Error(SNotImplemented, 77);
-    return 0;
+    return 0.0;
 }
 
-std::wstring FormatFloat(std::wstring Format, double value)
+std::wstring FormatFloat(const std::wstring &Format, double value)
 {
     // DEBUG_PRINTF(L"Format = %s", Format.c_str());
     // #,##0 "B"
@@ -2414,7 +2421,7 @@ bool DirectoryExists(const std::wstring &filename)
     return false;
 }
 
-std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList)
+std::wstring FileSearch(const std::wstring &FileName, const std::wstring &DirectoryList)
 {
   // DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
   size_t i;
@@ -2466,18 +2473,18 @@ int FileSetAttr(const std::wstring &filename, int attrs)
     return res;
 }
 
-bool CreateDir(const std::wstring Dir)
+bool CreateDir(const std::wstring &Dir)
 {
   // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
   return ::CreateDirectory(Dir.c_str(), NULL) != 0;
 }
 
-bool RemoveDir(const std::wstring Dir)
+bool RemoveDir(const std::wstring &Dir)
 {
   return ::RemoveDirectory(Dir.c_str()) != 0;
 }
 
-bool ForceDirectories(const std::wstring Dir)
+bool ForceDirectories(const std::wstring &Dir)
 {
   // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
   bool Result = true;
@@ -2500,7 +2507,7 @@ bool ForceDirectories(const std::wstring Dir)
   return Result;
 }
 
-bool DeleteFile(const std::wstring File)
+bool DeleteFile(const std::wstring &File)
 {
     // DEBUG_PRINTF(L"File = %s, FileExists(File) = %d", File.c_str(), ::FileExists(File));
     ::DeleteFile(File.c_str());
@@ -2584,9 +2591,9 @@ std::wstring FmtLoadStr(int id, ...)
     return result;
 }
 //---------------------------------------------------------------------------
-std::wstring WrapText(const std::wstring Line, int MaxCol)
+std::wstring WrapText(const std::wstring &Line, int MaxCol)
 {
-    std::wstring Result;
+    std::wstring Result = Line;
     /*
   Col := 1;
   Pos := 1;
@@ -2739,13 +2746,13 @@ wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
     return result;
 }
 
-std::wstring ChangeFileExt(std::wstring FileName, std::wstring ext)
+std::wstring ChangeFileExt(const std::wstring &FileName, const std::wstring &ext)
 {
     std::wstring result = ::ChangeFileExtension(FileName, ext, L'.');
     return result;
 }
 
-std::wstring ExtractFileExt(std::wstring FileName)
+std::wstring ExtractFileExt(const std::wstring &FileName)
 {
     std::wstring Result = ExtractFileExtension(FileName, L'.');
     return Result;
@@ -2763,21 +2770,21 @@ std::wstring get_full_path_name(const std::wstring &path)
   return std::wstring(buf.c_str(), size);
 }
 
-std::wstring ExpandFileName(const std::wstring FileName)
+std::wstring ExpandFileName(const std::wstring &FileName)
 {
   std::wstring Result;
   Result = get_full_path_name(FileName);
   return Result;
 }
 
-std::wstring GetUniversalName(std::wstring FileName)
+std::wstring GetUniversalName(std::wstring &FileName)
 {
     // ::Error(SNotImplemented, 35);
     std::wstring Result = FileName;
     return Result;
 }
 
-std::wstring ExpandUNCFileName(std::wstring FileName)
+std::wstring ExpandUNCFileName(const std::wstring &FileName)
 {
     std::wstring Result = ExpandFileName(FileName);
     if ((Result.size() >= 3) && (Result[1] == L':') && (::UpCase(Result[0]) >= 'A')
