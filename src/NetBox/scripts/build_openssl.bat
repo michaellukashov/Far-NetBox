@@ -1,7 +1,7 @@
 @rem @echo off
 @rem @set PATH=
 
-@rem
+@rem 
 rm -rf out32dll
 rm -rf tmp32dll
 rm -rf inc32
@@ -18,6 +18,7 @@ ms\do_win64a 2>&1 | tee -a res.txt
 nmake -f ms\ntdll.mak 2>&1 | tee -a res.txt
 mkdir x64
 cp out32dll/ssleay32.lib out32dll/ssleay32.dll out32dll/libeay32.lib out32dll/libeay32.dll x64
+cp -R inc32 x64
 goto end
 
 :x86
@@ -29,6 +30,7 @@ ms\do_nasm 2>&1 | tee -a res.txt
 nmake -f ms\ntdll.mak 2>&1 | tee -a res.txt
 mkdir x86
 cp out32dll/ssleay32.lib out32dll/ssleay32.dll out32dll/libeay32.lib out32dll/libeay32.dll x86
+cp -R inc32 x86
 goto end
 
 :end
