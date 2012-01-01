@@ -489,7 +489,7 @@ agent_list_identities(LIBSSH2_AGENT *agent)
 
     /* Create a request to list identities */
     if (transctx->state == agent_NB_state_init) {
-      unsigned char c = SSH2_AGENTC_REQUEST_IDENTITIES;
+      static unsigned char c = SSH2_AGENTC_REQUEST_IDENTITIES;
       transctx->request = &c;
       transctx->request_len = 1;
       transctx->state = agent_NB_state_request_created;
