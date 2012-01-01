@@ -280,7 +280,7 @@ void TKeepaliveThread::Execute()
   while (!IsFinished())
   {
     static long MillisecondsPerDay = 24 * 60 * 60 * 1000;
-    if ((WaitForSingleObject(FEvent, double(FInterval) * MillisecondsPerDay) != WAIT_FAILED) &&
+    if ((WaitForSingleObject(FEvent, (DWORD)(double(FInterval) * MillisecondsPerDay)) != WAIT_FAILED) &&
         !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
