@@ -2642,7 +2642,7 @@ long TFarLister::ItemProc(int Msg, long Param)
     {
         bool AScrollBar = GetScrollBar();
         size_t ScrollBarPos = 0;
-        if (GetItems()->GetCount() - GetHeight() > 0)
+        if (GetItems()->GetCount() > GetHeight())
         {
             ScrollBarPos = (int)(float(GetHeight() - 3) * (float(FTopIndex) / (GetItems()->GetCount() - GetHeight()))) + 1;
         }
