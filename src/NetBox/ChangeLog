@@ -1,3 +1,6 @@
+NetBox 2.0.4 ??.??.2012
+  * Update WinSCP sources to version 4.3.6, released 29.12.2011 (http://winscp.net/download/winscp436source.zip)
+
 NetBox 2.0.3 26.12.2011
 ---------------------
   * Bugfix: Ошибка подключения по протоколу SCP, воспроизводилось для 64-битной версии плагина
