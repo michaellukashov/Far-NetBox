@@ -81,7 +81,7 @@ include_directories (
     ${PROJECT_ROOT}/libs/libcurl/include
     ${PROJECT_ROOT}/libs/libssh2/include
     ${PROJECT_ROOT}/libs/tinyXML
-    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include
+    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/inc32
     ${PROJECT_ROOT}/libs/zlib/src
     ${PROJECT_ROOT}/libs/gc-7.2alpha6/include 
 )
@@ -193,10 +193,10 @@ set_property (TARGET libcurl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/Temp/NetBox/${CMAKE_BUILD_TYPE}/${PLATFORM}/libcurl/libcurl.lib)
 add_library (libeay32 SHARED IMPORTED)
 set_property (TARGET libeay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/out32dll/libeay32.lib )
+    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
 add_library (ssleay32 SHARED IMPORTED)
 set_property (TARGET ssleay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/out32dll/ssleay32.lib )
+    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/ssleay32.lib )
 
 #-------------------------------------------------------------------------------
 
