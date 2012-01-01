@@ -2703,7 +2703,7 @@ TFarPanelItem *TFarPanelInfo::GetFocusedItem()
     size_t Index = GetFocusedIndex();
     TObjectList *Items = GetItems();
     // DEBUG_PRINTF(L"Index = %d, Items = %x, Items->GetCount = %d", Index, Items, Items->GetCount());
-    if ((Index >= 0) && (Items->GetCount() > 0))
+    if (Items->GetCount() > 0)
     {
         assert(Index < Items->GetCount());
         return (TFarPanelItem *)Items->GetItem(Index);

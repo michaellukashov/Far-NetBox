@@ -291,7 +291,7 @@ TFarDialogItem *TFarDialog::GetItem(size_t Index)
     TFarDialogItem *DialogItem;
     if (GetItemCount())
     {
-        assert(Index >= 0 && Index < FItems->GetCount());
+        assert(Index < FItems->GetCount());
         DialogItem = dynamic_cast<TFarDialogItem *>((*GetItems())[Index]);
         assert(DialogItem);
     }
@@ -1860,7 +1860,7 @@ bool TFarButton::HotKey(char HotKey)
     size_t P = GetCaption().find_first_of(L"&");
     bool Result =
         GetVisible() && GetEnabled() &&
-        (P >= 0) && (P < GetCaption().size()) &&
+        (P != std::wstring::npos) && (P < GetCaption().size()) &&
         (GetCaption()[P + 1] == HotKey);
     if (Result)
     {

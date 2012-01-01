@@ -162,7 +162,7 @@ std::wstring TCopyParamType::GetInfoStr(std::wstring Separator, int Options) con
       !(GetExcludeFileMask() == Defaults.GetExcludeFileMask()))
   {
     ADD(FORMAT(LoadStr(GetNegativeExclude() ? COPY_INFO_INCLUDE_MASK : COPY_INFO_EXCLUDE_MASK).c_str(),
-      (GetExcludeFileMask().GetMasks())),
+      GetExcludeFileMask().GetMasks().c_str()),
       cpaNoExcludeMask);
   }
 

@@ -774,7 +774,7 @@ void TCustomCommand::GetToken(
       Len = PatternLen(Index, PatternCmd);
     }
 
-    if (Len < 0)
+    if ((int)Len < 0)
     {
       throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
