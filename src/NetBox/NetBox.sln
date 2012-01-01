@@ -11,7 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl", "..\..\libs\libcu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libputty", "..\..\libs\Putty\libputty.vcxproj", "{456AD982-730D-46F8-8BE2-0E00D7433741}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtinyxml", "..\..\libs\tinyXML\tinyxml.vcxproj", "{593A4FB1-1787-4192-BF73-9C43BF8FC142}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtinyxml", "..\..\libs\tinyXML\libtinyxml.vcxproj", "{593A4FB1-1787-4192-BF73-9C43BF8FC142}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
