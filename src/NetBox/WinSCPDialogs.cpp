@@ -6867,26 +6867,21 @@ std::wstring TSynchronizeChecklistDialog::FormatSize(
   __int64 Size, int Column)
 {
   size_t Width = FWidths[Column];
-  std::wstring Result = FormatFloat(L"#,##0", Size);
+  std::wstring Result = FORMAT(L"%lu", Size);
 
   if (Result.size() > Width)
   {
-    Result = FormatFloat(L"0", Size);
-
+    Result = FORMAT(L"%.2f 'K'", Size / 1024.0);
     if (Result.size() > Width)
     {
-      Result = FormatFloat(L"0 'K'", Size / 1024);
+      Result = FORMAT(L"%.2f 'M'", Size / (1024.0 * 1024));
       if (Result.size() > Width)
       {
-        Result = FormatFloat(L"0 'M'", Size / (1024*1024));
+        Result = FORMAT(L"%.2f 'G'", Size / (1024.0 * 1024 * 1024));
         if (Result.size() > Width)
         {
-          Result = FormatFloat(L"0 'G'", Size / (1024*1024*1024));
-          if (Result.size() > Width)
-          {
-            // back to default
-            Result = FormatFloat(L"#,##0", Size);
-          }
+          // back to default
+          Result = FORMAT(L"%lu", Size);
         }
       }
     }
