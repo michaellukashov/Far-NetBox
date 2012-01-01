@@ -99,7 +99,7 @@ protected:
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
   void SinkFile(std::wstring FileName, const TRemoteFile * File, void * Param);
-  void SourceRobust(const std::wstring FileName,
+  void SourceRobust(const std::wstring &FileName,
     const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
   void Source(const std::wstring FileName,

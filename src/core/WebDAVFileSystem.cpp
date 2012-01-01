@@ -1068,7 +1068,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
 }
 
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::SourceRobust(const std::wstring FileName,
+void TWebDAVFileSystem::SourceRobust(const std::wstring &FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {

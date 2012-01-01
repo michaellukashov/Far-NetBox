@@ -1300,7 +1300,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SourceRobust(const std::wstring FileName,
+void TFTPFileSystem::SourceRobust(const std::wstring &FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
@@ -1341,7 +1341,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring FileName,
   while (Retry);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::Source(const std::wstring FileName,
+void TFTPFileSystem::Source(const std::wstring &FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TUploadSessionAction & Action)
