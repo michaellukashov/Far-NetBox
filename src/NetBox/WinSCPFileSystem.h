@@ -64,7 +64,7 @@ typedef boost::signal2<void, int, TSynchronizeOptions &> getsynchronizeoptions_s
 typedef getsynchronizeoptions_signal_type::slot_type getsynchronizeoptions_slot_type;
 // typedef void (TObject::*TGetSpaceAvailable)
   // (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
-typedef boost::signal3<void, const std::wstring, TSpaceAvailable &, bool &> getspaceavailable_signal_type;
+typedef boost::signal3<void, const std::wstring &, TSpaceAvailable &, bool &> getspaceavailable_signal_type;
 typedef getspaceavailable_signal_type::slot_type getspaceavailable_slot_type;
 struct TMultipleEdit
 {
@@ -108,7 +108,7 @@ protected:
     std::wstring & ShortcutData);
   virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode);
   virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
-  virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
+  virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
   virtual int MakeDirectoryEx(std::wstring & Name, int OpMode);
   virtual bool DeleteFilesEx(TObjectList * PanelItems, int OpMode);
   virtual int GetFilesEx(TObjectList * PanelItems, bool Move,
@@ -296,7 +296,7 @@ private:
   void TerminalInformation(TTerminal * Terminal,
     const std::wstring & Str, bool Status, bool Active);
   void TerminalQueryUser(TObject * Sender,
-    const std::wstring Query, TStrings * MoreMessages, int Answers,
+    const std::wstring &Query, TStrings * MoreMessages, int Answers,
     const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, std::wstring Name, std::wstring Instructions,
@@ -307,7 +307,7 @@ private:
     int Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
     const std::exception * E, void * Arg);
-  void TerminalDeleteLocalFile(const std::wstring FileName, bool Alternative);
+  void TerminalDeleteLocalFile(const std::wstring &FileName, bool Alternative);
   void OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void OperationFinished(TFileOperation Operation,
@@ -328,7 +328,7 @@ private:
   void QueueListUpdate(TTerminalQueue * Queue);
   void QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
   void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
-  void GetSpaceAvailable(const std::wstring Path,
+  void GetSpaceAvailable(const std::wstring &Path,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
 };

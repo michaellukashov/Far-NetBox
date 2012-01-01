@@ -2123,11 +2123,7 @@ int StrToIntDef(const std::wstring value, int defval)
 
 __int64 StrToInt64(const std::wstring value)
 {
-    __int64 Value = 0;
-    if (TryStrToInt(value, Value))
-        return Value;
-    else
-        return 0;
+    return ToInt(value);
 }
 
 __int64 StrToInt64Def(const std::wstring value, __int64 defval)
@@ -2249,9 +2245,7 @@ size_t Pos(const std::wstring str, const std::wstring substr)
 
 std::wstring StringReplace(const std::wstring str, const std::wstring from, const std::wstring to)
 {
-    std::wstring result = str;
-    alg::replace_all(result, from, to);
-    return result;
+    return AnsiReplaceStr(str, from, to);
 }
 
 bool IsDelimiter(const std::wstring str, const std::wstring delim, size_t index)
@@ -2304,7 +2298,7 @@ bool AnsiSameText(const std::wstring str1, const std::wstring str2)
 
 bool SameText(const std::wstring str1, const std::wstring str2)
 {
-    return StringCmp(str1.c_str(), str2.c_str()) == 0;
+    return AnsiSameText(str1, str2) == 0;
 }
 
 int AnsiCompareText(const std::wstring str1, const std::wstring str2)
@@ -2314,7 +2308,7 @@ int AnsiCompareText(const std::wstring str1, const std::wstring str2)
 
 int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 {
-    return StringCmpI(str1.c_str(), str2.c_str());
+    return AnsiCompareText(str1, str2);
 }
 
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)

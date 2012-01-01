@@ -905,7 +905,7 @@ bool TRemoteFile::GetBrokenLink()
 void TRemoteFile::ShiftTime(const TDateTime & Difference)
 {
   double D = double(Difference.operator double());
-  if ((D != 0) && (FModificationFmt != mfMDY))
+  if ((abs(D) > 0.000001) && (FModificationFmt != mfMDY))
   {
     assert(int(FModification) != 0);
     FModification = double(FModification) + D;
@@ -1047,7 +1047,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     // do not read modification time and filename if it is already set
     // DEBUG_PRINTF(L"FModification = %.02f, GetFileName = %s", FModification, GetFileName().c_str());
-    if (double(FModification) == 0 && GetFileName().empty())
+    if ((fabs(double(FModification)) < 0.000001) && GetFileName().empty())
     {
       FSize = ASize;
 
@@ -1184,7 +1184,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
 
-      if (double(FLastAccess) == 0)
+      if (fabs(double(FLastAccess)) < 0.000001)
       {
         FLastAccess = FModification;
       }

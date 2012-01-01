@@ -44,7 +44,7 @@ class TCallbackGuard;
 // typedef void (TObject::*TQueryUserEvent)
   // (TObject * Sender, const std::wstring Query, TStrings * MoreMessages, int Answers,
    // const TQueryParams * Params, int & Answer, TQueryType QueryType, void * Arg);
-typedef boost::signal8<void, TObject *, const std::wstring, TStrings *, int,
+typedef boost::signal8<void, TObject *, const std::wstring &, TStrings *, int,
    const TQueryParams *, int &, TQueryType, void *> queryuser_signal_type;
 typedef queryuser_signal_type::slot_type queryuser_slot_type;
 // typedef void (TObject::*TPromptUserEvent)
@@ -90,7 +90,7 @@ typedef boost::signal4<void, const std::wstring, const std::wstring,
 typedef synchronizedirectory_signal_type::slot_type synchronizedirectory_slot_type;
 // typedef void (TObject::*TDeleteLocalFileEvent)(
   // const std::wstring FileName, bool Alternative);
-typedef boost::signal2<void, const std::wstring, bool> deletelocalfile_signal_type;
+typedef boost::signal2<void, const std::wstring &, bool> deletelocalfile_signal_type;
 typedef deletelocalfile_signal_type::slot_type deletelocalfile_slot_type;
 // typedef int (TObject::*TDirectoryModifiedEvent)
   // (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);

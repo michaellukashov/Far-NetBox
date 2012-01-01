@@ -437,7 +437,7 @@ public:
     }
     bool operator == (const TDateTime &rhs)
     {
-        return abs(FValue - rhs.FValue) < 0.000001;
+        return fabs(FValue - rhs.FValue) < 0.000001;
     }
     bool operator != (const TDateTime &rhs)
     {

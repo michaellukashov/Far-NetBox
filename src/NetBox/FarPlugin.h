@@ -482,7 +482,7 @@ protected:
     virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
-    virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
+    virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
     virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
     virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
     virtual int GetFilesEx(TObjectList *PanelItems, bool Move,

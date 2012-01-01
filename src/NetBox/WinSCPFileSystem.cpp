@@ -1977,7 +1977,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::GetSpaceAvailable(const std::wstring Path,
+void TWinSCPFileSystem::GetSpaceAvailable(const std::wstring &Path,
   TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
@@ -2147,7 +2147,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
+bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
 {
   // DEBUG_PRINTF(L"begin, Dir = %s", Dir.c_str());
   if (!SessionList() && !Connected())
@@ -3171,7 +3171,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::TerminalDeleteLocalFile(const std::wstring FileName,
+void TWinSCPFileSystem::TerminalDeleteLocalFile(const std::wstring &FileName,
   bool Alternative)
 {
   if (!RecursiveDeleteFile(FileName,
@@ -3202,7 +3202,7 @@ int TWinSCPFileSystem::MoreMessageDialog(std::wstring Str,
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const std::wstring Query, TStrings * MoreMessages, int Answers,
+  const std::wstring &Query, TStrings * MoreMessages, int Answers,
   const TQueryParams * Params, int & Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams AParams;
@@ -4087,7 +4087,7 @@ void TWinSCPFileSystem::EditHistory()
     {
       MenuItems->Add(MinimizeName(UnixIncludeTrailingBackslash((*i).Directory) + (*i).FileName,
         FPlugin->MaxMenuItemLength(), true));
-      i++;
+      ++i;
     }
 
     MenuItems->Add(L"");

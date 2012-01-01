@@ -426,10 +426,9 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
   // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
-  bool Result = CanCreate;
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
   std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + MungeSubKey(SubKey, Path));
-  Result = FRegistry->OpenKey(K, CanCreate);
+  bool Result = FRegistry->OpenKey(K, CanCreate);
   if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
   // DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
   return Result;
@@ -663,7 +662,7 @@ TIniFileStorage::~TIniFileStorage()
           }
           catch (const std::exception & E)
           {
-            DEBUG_PRINTF(FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()));
+            // DEBUG_PRINTF(FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()).c_str());
             throw ExtException(FMTLOAD(CREATE_FILE_ERROR, GetStorage().c_str()), &E);
           }
         }
