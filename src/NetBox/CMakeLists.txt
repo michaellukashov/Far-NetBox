@@ -71,13 +71,13 @@ include_directories (
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
     ${PROJECT_ROOT}/src/Common
-    ${PROJECT_ROOT}/src/Putty
-    ${PROJECT_ROOT}/src/Putty/windows
-    ${PROJECT_ROOT}/src/Putty/charset
     ${PROJECT_ROOT}/src/filezilla
     ${PROJECT_ROOT}/src/filezilla/misc
     ${PROJECT_ROOT}/libs
     ${PROJECT_ROOT}/libs/boost
+    ${PROJECT_ROOT}/libs/Putty
+    ${PROJECT_ROOT}/libs/Putty/windows
+    ${PROJECT_ROOT}/libs/Putty/charset
     ${PROJECT_ROOT}/libs/libcurl/include
     ${PROJECT_ROOT}/libs/libssh2/include
     ${PROJECT_ROOT}/libs/tinyXML
@@ -201,47 +201,47 @@ set_property (TARGET ssleay32
 #-------------------------------------------------------------------------------
 
 add_library (libputty STATIC
-    ${PROJECT_ROOT}/src/Putty/CPROXY.C
-    ${PROJECT_ROOT}/src/Putty/INT64.C
-    ${PROJECT_ROOT}/src/Putty/LOGGING.C
-    ${PROJECT_ROOT}/src/Putty/MISC.C
-    ${PROJECT_ROOT}/src/Putty/PGSSAPI.C
-    ${PROJECT_ROOT}/src/Putty/PORTFWD_.C
-    ${PROJECT_ROOT}/src/Putty/PROXY.C
-    ${PROJECT_ROOT}/src/Putty/SSH_.C
-    ${PROJECT_ROOT}/src/Putty/SSHAES_.C
-    ${PROJECT_ROOT}/src/Putty/SSHARCF.C
-    ${PROJECT_ROOT}/src/Putty/SSHBLOWF.C
-    ${PROJECT_ROOT}/src/Putty/SSHBN.C
-    ${PROJECT_ROOT}/src/Putty/SSHCRC.C
-    ${PROJECT_ROOT}/src/Putty/SSHCRCDA.C
-    ${PROJECT_ROOT}/src/Putty/SSHDES.C
-    ${PROJECT_ROOT}/src/Putty/SSHDH.C
-    ${PROJECT_ROOT}/src/Putty/SSHDSS.C
-    ${PROJECT_ROOT}/src/Putty/SSHGSSC.C
-    ${PROJECT_ROOT}/src/Putty/SSHMD5.C
-    ${PROJECT_ROOT}/src/Putty/SSHPUBK.C
-    ${PROJECT_ROOT}/src/Putty/SSHRAND.C
-    ${PROJECT_ROOT}/src/Putty/SSHRSA.C
-    ${PROJECT_ROOT}/src/Putty/SSHSH256.C
-    ${PROJECT_ROOT}/src/Putty/SSHSH512.C
-    ${PROJECT_ROOT}/src/Putty/SSHSHA_.C
-    ${PROJECT_ROOT}/src/Putty/SSHZLIB.C
-    ${PROJECT_ROOT}/src/Putty/TREE234.C
-    ${PROJECT_ROOT}/src/Putty/CHARSET/UTF8.C
-    ${PROJECT_ROOT}/src/Putty/WILDCARD.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINGSS.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINHANDL.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINMISC.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNET.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNOISE.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNOJMP.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINPGNTC.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINPROXY.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINSTORE_.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINTIME.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/strftime.c
-    ${PROJECT_ROOT}/src/Putty/X11FWD.C
+    ${PROJECT_ROOT}/libs/Putty/CPROXY.C
+    ${PROJECT_ROOT}/libs/Putty/INT64.C
+    ${PROJECT_ROOT}/libs/Putty/LOGGING.C
+    ${PROJECT_ROOT}/libs/Putty/MISC.C
+    ${PROJECT_ROOT}/libs/Putty/PGSSAPI.C
+    ${PROJECT_ROOT}/libs/Putty/PORTFWD_.C
+    ${PROJECT_ROOT}/libs/Putty/PROXY.C
+    ${PROJECT_ROOT}/libs/Putty/SSH_.C
+    ${PROJECT_ROOT}/libs/Putty/SSHAES_.C
+    ${PROJECT_ROOT}/libs/Putty/SSHARCF.C
+    ${PROJECT_ROOT}/libs/Putty/SSHBLOWF.C
+    ${PROJECT_ROOT}/libs/Putty/SSHBN.C
+    ${PROJECT_ROOT}/libs/Putty/SSHCRC.C
+    ${PROJECT_ROOT}/libs/Putty/SSHCRCDA.C
+    ${PROJECT_ROOT}/libs/Putty/SSHDES.C
+    ${PROJECT_ROOT}/libs/Putty/SSHDH.C
+    ${PROJECT_ROOT}/libs/Putty/SSHDSS.C
+    ${PROJECT_ROOT}/libs/Putty/SSHGSSC.C
+    ${PROJECT_ROOT}/libs/Putty/SSHMD5.C
+    ${PROJECT_ROOT}/libs/Putty/SSHPUBK.C
+    ${PROJECT_ROOT}/libs/Putty/SSHRAND.C
+    ${PROJECT_ROOT}/libs/Putty/SSHRSA.C
+    ${PROJECT_ROOT}/libs/Putty/SSHSH256.C
+    ${PROJECT_ROOT}/libs/Putty/SSHSH512.C
+    ${PROJECT_ROOT}/libs/Putty/SSHSHA_.C
+    ${PROJECT_ROOT}/libs/Putty/SSHZLIB.C
+    ${PROJECT_ROOT}/libs/Putty/TREE234.C
+    ${PROJECT_ROOT}/libs/Putty/CHARSET/UTF8.C
+    ${PROJECT_ROOT}/libs/Putty/WILDCARD.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINGSS.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINHANDL.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINMISC.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINNET.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINNOISE.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINNOJMP.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINPGNTC.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINPROXY.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINSTORE_.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINTIME.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/strftime.c
+    ${PROJECT_ROOT}/libs/Putty/X11FWD.C
 )
 
 set_target_properties( libputty
