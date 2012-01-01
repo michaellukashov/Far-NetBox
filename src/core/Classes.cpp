@@ -284,7 +284,7 @@ const std::wstring sLineBreak = L"\n";
 static const int MemoryDelta = 0x2000;
 //---------------------------------------------------------------------------
 
-void TStrings::SetTextStr(const std::wstring Text)
+void TStrings::SetTextStr(const std::wstring &Text)
 {
     TStrings *Self = this;
     Self->BeginUpdate();
@@ -348,7 +348,7 @@ std::wstring TStrings::GetDelimitedText() const
     }
     return Result;
 }
-void TStrings::SetDelimitedText(const std::wstring Value)
+void TStrings::SetDelimitedText(const std::wstring &Value)
 {
     TStrings *Self = this;
     Self->BeginUpdate();
@@ -442,11 +442,11 @@ std::wstring TStrings::GetTextStr()
     }
     return Result;
 }
-void TStrings::SetText(const std::wstring Text)
+void TStrings::SetText(const std::wstring &Text)
 {
     SetTextStr(Text);
 }
-void TStrings::SetCommaText(std::wstring Value)
+void TStrings::SetCommaText(const std::wstring &Value)
 {
     SetDelimiter(L',');
     SetQuoteChar(L'"');
@@ -479,7 +479,7 @@ int TStrings::AddObject(std::wstring S, TObject *AObject)
     PutObject(Result, AObject);
     return Result;
 }
-void TStrings::InsertObject(int Index, std::wstring Key, TObject *AObject)
+void TStrings::InsertObject(int Index, const std::wstring &Key, TObject *AObject)
 {
     Insert(Index, Key);
     PutObject(Index, AObject);
@@ -504,7 +504,7 @@ void TStrings::PutObject(int Index, TObject *AObject)
     (void)Index;
     (void)AObject;
 }
-void TStrings::PutString(int Index, std::wstring S)
+void TStrings::PutString(int Index, const std::wstring &S)
 {
     TObject *TempObject = GetObject(Index);
     Delete(Index);
@@ -532,7 +532,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
     }
   }
 }
-int TStrings::IndexOf(const std::wstring S)
+int TStrings::IndexOf(const std::wstring &S)
 {
   // DEBUG_PRINTF(L"begin");
   for (size_t Result = 0; Result < GetCount(); Result++)
@@ -574,7 +574,7 @@ std::wstring TStrings::ExtractName(const std::wstring &S)
     Result.resize(0);
    return Result;
 }
-const std::wstring TStrings::GetValue(const std::wstring Name)
+const std::wstring TStrings::GetValue(const std::wstring &Name)
 {
   std::wstring Result;
   size_t I = IndexOfName(Name);
@@ -584,7 +584,7 @@ const std::wstring TStrings::GetValue(const std::wstring Name)
   }
   return Result;
 }
-void TStrings::SetValue(const std::wstring Name, const std::wstring Value)
+void TStrings::SetValue(const std::wstring &Name, const std::wstring &Value)
 {
   size_t I = IndexOfName(Name);
   if (!Value.empty())
@@ -683,7 +683,7 @@ int TStringList::AddObject(std::wstring S, TObject *AObject)
   InsertItem(Result, S, AObject);
   return Result;
 }
-bool TStringList::Find(const std::wstring S, int &Index)
+bool TStringList::Find(const std::wstring &S, int &Index)
 {
   bool Result = false;
   int L = 0;
@@ -712,7 +712,7 @@ bool TStringList::Find(const std::wstring S, int &Index)
   Index = L;
   return Result;
 }
-int TStringList::IndexOf(const std::wstring S)
+int TStringList::IndexOf(const std::wstring &S)
 {
   // DEBUG_PRINTF(L"begin");
   int Result = -1;
@@ -730,7 +730,7 @@ int TStringList::IndexOf(const std::wstring S)
   // DEBUG_PRINTF(L"end");
   return Result;
 }
-void TStringList::PutString(int Index, std::wstring S)
+void TStringList::PutString(int Index, const std::wstring &S)
 {
     if (GetSorted())
     {
@@ -773,7 +773,7 @@ TObject *TStringList::GetObject(int Index)
     }
     return FList[Index].FObject;
 }
-void TStringList::InsertObject(int Index, std::wstring Key, TObject *AObject)
+void TStringList::InsertObject(int Index, const std::wstring &Key, TObject *AObject)
 {
     if (GetSorted())
     {
@@ -785,7 +785,7 @@ void TStringList::InsertObject(int Index, std::wstring Key, TObject *AObject)
     }
     InsertItem(Index, Key, AObject);
 }
-void TStringList::InsertItem(int Index, const std::wstring S, TObject *AObject)
+void TStringList::InsertItem(int Index, const std::wstring &S, TObject *AObject)
 {
     if ((Index < 0) || ((size_t)Index > GetCount()))
     {
@@ -874,7 +874,7 @@ void TStringList::Changed()
     if (GetUpdateCount() == 0)
         FOnChange(this);
 }
-void TStringList::Insert(int Index, const std::wstring S)
+void TStringList::Insert(int Index, const std::wstring &S)
 {
   if ((Index < 0) || ((size_t)Index > FList.size()))
   {
@@ -1177,7 +1177,7 @@ std::wstring TSHFileInfo::GetFileType(std::wstring strFileName)
 class EStreamError : public ExtException
 {
 public:
-    EStreamError(const std::wstring Msg) :
+    EStreamError(const std::wstring &Msg) :
         ExtException(Msg)
     {}
 };
@@ -1340,7 +1340,7 @@ void TMemoryStream::SaveToStream(TStream *Stream)
     if (FSize != 0) Stream->WriteBuffer(FMemory, FSize);
 }
 
-void TMemoryStream::SaveToFile(const std::wstring FileName)
+void TMemoryStream::SaveToFile(const std::wstring &FileName)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
@@ -1630,7 +1630,7 @@ bool TRegistry::DeleteValue(const std::wstring &Name)
   return Result;
 }
 
-bool TRegistry::KeyExists(const std::wstring Key)
+bool TRegistry::KeyExists(const std::wstring &Key)
 {
   bool Result = false;
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
@@ -1651,7 +1651,7 @@ bool TRegistry::KeyExists(const std::wstring Key)
   return Result;
 }
 
-bool TRegistry::ValueExists(const std::wstring Name)
+bool TRegistry::ValueExists(const std::wstring &Name)
 {
   TRegDataInfo Info;
   bool Result = GetDataInfo(Name, Info);
@@ -1681,7 +1681,7 @@ TRegDataType TRegistry::GetDataType(const std::wstring &ValueName)
   return Result;
 }
 
-int TRegistry::GetDataSize(const std::wstring ValueName)
+int TRegistry::GetDataSize(const std::wstring &ValueName)
 {
   int Result = 0;
   TRegDataInfo Info;
@@ -1696,19 +1696,19 @@ int TRegistry::GetDataSize(const std::wstring ValueName)
   return Result;
 }
 
-bool TRegistry::Readbool(const std::wstring Name)
+bool TRegistry::Readbool(const std::wstring &Name)
 {
   bool Result = Readint(Name) != 0;
   return Result;
 }
 
-TDateTime TRegistry::ReadDateTime(const std::wstring Name)
+TDateTime TRegistry::ReadDateTime(const std::wstring &Name)
 {
   TDateTime Result = TDateTime(ReadFloat(Name));
   return Result;
 }
 
-double TRegistry::ReadFloat(const std::wstring Name)
+double TRegistry::ReadFloat(const std::wstring &Name)
 {
   double Result = 0.0;
   TRegDataType RegData;
@@ -1720,7 +1720,7 @@ double TRegistry::ReadFloat(const std::wstring Name)
   return Result;
 }
 
-int TRegistry::Readint(const std::wstring Name)
+int TRegistry::Readint(const std::wstring &Name)
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
@@ -1734,14 +1734,14 @@ int TRegistry::Readint(const std::wstring Name)
   return Result;
 }
 
-__int64 TRegistry::ReadInt64(const std::wstring Name)
+__int64 TRegistry::ReadInt64(const std::wstring &Name)
 {
   __int64 Result = 0;
   ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
 
-std::wstring TRegistry::ReadString(const std::wstring Name)
+std::wstring TRegistry::ReadString(const std::wstring &Name)
 {
   std::wstring Result = L"";
   TRegDataType RegData = rdUnknown;
@@ -1763,13 +1763,13 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
   return Result;
 }
 
-std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
+std::wstring TRegistry::ReadStringRaw(const std::wstring &Name)
 {
   std::wstring Result = ReadString(Name);
   return Result;
 }
 
-int TRegistry::ReadBinaryData(const std::wstring Name,
+int TRegistry::ReadBinaryData(const std::wstring &Name,
   void *Buffer, int BufSize)
 {
   int Result = 0;
@@ -1813,40 +1813,40 @@ void TRegistry::PutData(const std::wstring &Name, const void *Buffer,
     throw std::exception("RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
 }
 
-void TRegistry::Writebool(const std::wstring Name, bool Value)
+void TRegistry::Writebool(const std::wstring &Name, bool Value)
 {
     Writeint(Name, Value);
 }
-void TRegistry::WriteDateTime(const std::wstring Name, TDateTime Value)
+void TRegistry::WriteDateTime(const std::wstring &Name, TDateTime &Value)
 {
     double Val = Value.operator double();
     PutData(Name, &Val, sizeof(double), rdBinary);
 }
-void TRegistry::WriteFloat(const std::wstring Name, double Value)
+void TRegistry::WriteFloat(const std::wstring &Name, double Value)
 {
     PutData(Name, &Value, sizeof(double), rdBinary);
 }
-void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
+void TRegistry::WriteString(const std::wstring &Name, const std::wstring &Value)
 {
     // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
     PutData(Name, (void *)Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
-void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
+void TRegistry::WriteStringRaw(const std::wstring &Name, const std::wstring &Value)
 {
     PutData(Name, Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
-void TRegistry::Writeint(const std::wstring Name, int Value)
+void TRegistry::Writeint(const std::wstring &Name, int Value)
 {
     DWORD Val = Value;
     PutData(Name, &Val, sizeof(DWORD), rdInteger);
     // WriteInt64(Name, Value);
 }
 
-void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
+void TRegistry::WriteInt64(const std::wstring &Name, __int64 Value)
 {
     WriteBinaryData(Name, &Value, sizeof(Value));
 }
-void TRegistry::WriteBinaryData(const std::wstring Name,
+void TRegistry::WriteBinaryData(const std::wstring &Name,
   const void *Buffer, int BufSize)
 {
     PutData(Name, Buffer, BufSize, rdBinary);
@@ -1909,24 +1909,24 @@ bool TMemIniFile::SectionExists(std::wstring Section) { return false; }
 bool TMemIniFile::ValueExists(std::wstring Section, std::wstring Name) { return false; }
 bool TMemIniFile::DeleteKey(std::wstring Section, std::wstring Name)
 { return false; }
-bool TMemIniFile::Readbool(const std::wstring Section, const std::wstring Name, const bool Default)
+bool TMemIniFile::Readbool(const std::wstring Section, const std::wstring &Name, const bool Default)
 { return false; }
-int TMemIniFile::Readint(const std::wstring Section, const std::wstring Name, int Default)
+int TMemIniFile::Readint(const std::wstring Section, const std::wstring &Name, int Default)
 { return 0; }
-std::wstring TMemIniFile::ReadString(const std::wstring Section, const std::wstring Name, const std::wstring Default)
+std::wstring TMemIniFile::ReadString(const std::wstring Section, const std::wstring &Name, const std::wstring Default)
 { return L""; }
 
-void TMemIniFile::Writebool(const std::wstring Section, const std::wstring Name, bool Value)
+void TMemIniFile::Writebool(const std::wstring Section, const std::wstring &Name, bool Value)
 {}
-void TMemIniFile::WriteDateTime(const std::wstring Section, const std::wstring Name, TDateTime Value)
+void TMemIniFile::WriteDateTime(const std::wstring Section, const std::wstring &Name, TDateTime Value)
 {}
-void TMemIniFile::WriteFloat(const std::wstring Section, const std::wstring Name, double Value)
+void TMemIniFile::WriteFloat(const std::wstring Section, const std::wstring &Name, double Value)
 {}
-void TMemIniFile::WriteString(const std::wstring Section, const std::wstring Name, const std::wstring Value)
+void TMemIniFile::WriteString(const std::wstring Section, const std::wstring &Name, const std::wstring Value)
 {}
-void TMemIniFile::WriteStringRaw(const std::wstring Section, const std::wstring Name, const std::wstring Value)
+void TMemIniFile::WriteStringRaw(const std::wstring Section, const std::wstring &Name, const std::wstring Value)
 {}
-void TMemIniFile::Writeint(const std::wstring Section, const std::wstring Name, int Value)
+void TMemIniFile::Writeint(const std::wstring Section, const std::wstring &Name, int Value)
 {}
 //---------------------------------------------------------------------------
 TShortCut::TShortCut()
