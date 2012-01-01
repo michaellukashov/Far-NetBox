@@ -3620,11 +3620,13 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						LONG low = 0;
 						LONG high = 0;
 						if (nOffset >= GetLength64(*m_pDataFile))
+                        {
 							if (SetFilePointer((HANDLE)m_pDataFile->m_hFile, 0, &high, FILE_END)==0xFFFFFFFF && GetLastError()!=NO_ERROR)
 							{
 								ShowStatus(IDS_ERRORMSG_SETFILEPOINTER, 1);
 								nReplyError = FZ_REPLY_ERROR;
 							}
+                        }
 						else
 						{
 							low=static_cast<LONG>(nOffset&0xFFFFFFFF);
@@ -4410,9 +4412,6 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 							dir.direntry[i].bUnsure = TRUE;
 							if (!((CFileTransferData *)m_Operation.pData)->transferfile.get)
 								dir.direntry[i].size = -1;
-						}
-						else if (nSuccessful & FZ_REPLY_ERROR)
-						{
 							if (!GetLength64(((CFileTransferData *)m_Operation.pData)->transferfile.localfile, dir.direntry[i].size))
 								dir.direntry[i].size = -1;
 						}
@@ -5653,7 +5652,6 @@ int CFtpControlSocket::OnLayerCallback(std::list<t_callbackMsg>& callbacks)
 						delete pData;
 						delete [] iter->str;
 						ResetOperation(FZ_REPLY_ERROR);
-						delete [] iter->str;
 						continue;
 					}
 					break;
