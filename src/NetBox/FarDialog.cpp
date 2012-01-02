@@ -125,7 +125,7 @@ void TFarDialog::SetBounds(const TRect &value)
                 COORD Coord;
                 Coord.X = static_cast<short int>(GetSize().x);
                 Coord.Y = static_cast<short int>(GetSize().y);
-                SendMessage(DM_RESIZEDIALOG, 0, (int)&Coord);
+                SendMessage(DM_RESIZEDIALOG, 0, reinterpret_cast<int>(&Coord));
                 Coord.X = static_cast<short int>(FBounds.Left);
                 Coord.Y = static_cast<short int>(FBounds.Top);
                 SendMessage(DM_MOVEDIALOG, true, reinterpret_cast<int>(&Coord));

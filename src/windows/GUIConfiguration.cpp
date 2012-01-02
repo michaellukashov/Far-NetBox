@@ -793,7 +793,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     else
     {
       LocaleName = AdditionaLanguagePrefix +
-        wchar_t(ALocale & ~AdditionaLanguageMask);
+        static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
     Module = ChangeFileExt(Module, std::wstring(L".") + LocaleName);
@@ -817,7 +817,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw ExtException(FMTLOAD(LOCALE_LOAD_ERROR, int(ALocale)));
+    throw ExtException(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
   else
   {

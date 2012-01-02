@@ -75,9 +75,9 @@ std::wstring DecryptPassword(std::wstring Password, std::wstring Key, int /* Alg
   }
   else Length = PWALG_SIMPLE_FLAG;
   // DEBUG_PRINTF(L"Length = %d", Length);
-  Password2.erase(0, ((int)SimpleDecryptNextChar(Password2))*2);
+  Password2.erase(0, (static_cast<int>(SimpleDecryptNextChar(Password2))*2));
   for (Index = 0; Index < Length; Index++)
-    Result += (char)SimpleDecryptNextChar(Password2);
+    Result += static_cast<char>(SimpleDecryptNextChar(Password2));
   if (Flag == PWALG_SIMPLE_FLAG)
   {
     if (Result.substr(0, Key.size()) != Key2) Result = "";

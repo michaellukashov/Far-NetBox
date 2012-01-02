@@ -317,7 +317,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf((TObject *)TerminalItem);
+      int Index = FTerminals->IndexOf(static_cast<TObject *>(TerminalItem));
       assert(Index >= 0);
 
       if (Index < FFreeTerminals)
@@ -333,7 +333,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
         FTemporaryTerminals--;
       }
 
-      FTerminals->Extract((TObject *)TerminalItem);
+      FTerminals->Extract(static_cast<TObject *>(TerminalItem));
 
       delete TerminalItem;
     }
@@ -351,7 +351,7 @@ bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf((TObject *)TerminalItem);
+      int Index = FTerminals->IndexOf(static_cast<TObject *>(TerminalItem));
       assert(Index >= 0);
       assert(Index >= FFreeTerminals);
 
@@ -378,7 +378,7 @@ void TTerminalQueue::AddItem(TQueueItem * Item)
   {
     TGuard Guard(FItemsSection);
 
-    FItems->Add((TObject *)Item);
+    FItems->Add(static_cast<TObject *>(Item));
     Item->FQueue = this;
   }
 
@@ -394,11 +394,11 @@ void TTerminalQueue::RetryItem(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->Remove((TObject *)Item);
+      int Index = FItems->Remove(static_cast<TObject *>(Item));
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
-      FItems->Add((TObject *)Item);
+      FItems->Add(static_cast<TObject *>(Item));
     }
 
     DoListUpdate();
@@ -418,8 +418,8 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item)
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
-      size_t Index = FItems->Remove((TObject *)Item);
-      assert(Index < (size_t)FItemsInProcess);
+      size_t Index = FItems->Remove(static_cast<TObject *>(Item));
+      assert(Index < static_cast<size_t>(FItemsInProcess));
       USEDPARAM(Index);
       FItemsInProcess--;
       delete Item;
@@ -508,7 +508,7 @@ bool TTerminalQueue::ItemGetData(TQueueItem * Item,
   {
     TGuard Guard(FItemsSection);
 
-    Result = (FItems->IndexOf((TObject *)Item) >= 0);
+    Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0);
     if (Result)
     {
       Item->GetData(Proxy);
@@ -529,7 +529,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
     {
       TGuard Guard(FItemsSection);
 
-      Result = (FItems->IndexOf((TObject *)Item) >= 0) &&
+      Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0) &&
         TQueueItem::IsUserActionStatus(Item->GetStatus());
       if (Result)
       {
@@ -555,8 +555,8 @@ bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf((TObject *)Item);
-      int IndexDest = FItems->IndexOf((TObject *)BeforeItem);
+      int Index = FItems->IndexOf(static_cast<TObject *>(Item));
+      int IndexDest = FItems->IndexOf(static_cast<TObject *>(BeforeItem));
       Result = (Index >= 0) && (IndexDest >= 0) &&
         (Item->GetStatus() == TQueueItem::qsPending) &&
         (BeforeItem->GetStatus() == TQueueItem::qsPending);
@@ -585,7 +585,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf((TObject *)Item);
+      int Index = FItems->IndexOf(static_cast<TObject *>(Item));
       Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
         // prevent double-initiation when "execute" is clicked twice too fast
         (Index >= FItemsInProcess);
@@ -596,7 +596,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
           FItems->Move(Index, FItemsInProcess);
         }
 
-        if ((FTransfersLimit > 0) && (FTerminals->GetCount() >= (size_t)FTransfersLimit))
+        if ((FTransfersLimit > 0) && (FTerminals->GetCount() >= static_cast<size_t>(FTransfersLimit)))
         {
           FTemporaryTerminals++;
         }
@@ -624,7 +624,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf((TObject *)Item);
+      int Index = FItems->IndexOf(static_cast<TObject *>(Item));
       Result = (Index >= 0);
       if (Result)
       {
@@ -661,7 +661,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
     {
       TGuard Guard(FItemsSection);
 
-      Result = (FItems->IndexOf((TObject *)Item) >= 0) &&
+      Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0) &&
         ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
          (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
       if (Result)
@@ -694,7 +694,7 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit)
   {
     TGuard Guard(FItemsSection);
 
-    Result = (FItems->IndexOf((TObject *)Item) >= 0);
+    Result = (FItems->IndexOf(static_cast<TObject *>(Item)) >= 0);
     if (Result)
     {
       Item->SetCPSLimit(CPSLimit);
@@ -742,18 +742,18 @@ void TTerminalQueue::ProcessEvent()
     TerminalItem = NULL;
     Item = NULL;
 
-    if (FItems->GetCount() > (size_t)FItemsInProcess)
+    if (FItems->GetCount() > static_cast<size_t>(FItemsInProcess))
     {
       TGuard Guard(FItemsSection);
 
       if ((FFreeTerminals == 0) &&
           ((FTransfersLimit <= 0) ||
-           (FTerminals->GetCount() < (size_t)(FTransfersLimit + FTemporaryTerminals))))
+           (FTerminals->GetCount() < static_cast<size_t>(FTransfersLimit + FTemporaryTerminals))))
       {
         FOverallTerminals++;
         TerminalItem = new TTerminalItem(this, FOverallTerminals);
         TerminalItem->Init();
-        FTerminals->Add((TObject *)TerminalItem);
+        FTerminals->Add(static_cast<TObject *>(TerminalItem));
       }
       else if (FFreeTerminals > 0)
       {
@@ -1246,6 +1246,7 @@ void TTerminalItem::OperationProgress(
         Self->FItem->SetStatus(PrevStatus);
         ProgressData.Resume();
       } BOOST_SCOPE_EXIT_END
+      assert(FItem != NULL);
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
@@ -1264,7 +1265,6 @@ void TTerminalItem::OperationProgress(
     }
   }
 
-  assert(FItem != NULL);
   FItem->SetProgress(ProgressData);
 }
 //---------------------------------------------------------------------------
@@ -1455,7 +1455,7 @@ bool TQueueItemProxy::Move(bool Sooner)
   }
   else
   {
-    if (I < (int)FQueueStatus->GetCount() - 1)
+    if (I < static_cast<int>(FQueueStatus->GetCount() - 1))
     {
       Result = FQueueStatus->GetItem(I + 1)->Move(this);
     }
@@ -1507,7 +1507,7 @@ bool TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
 int TQueueItemProxy::GetIndex()
 {
   assert(FQueueStatus != NULL);
-  int Index = FQueueStatus->FList->IndexOf((TObject *)this);
+  int Index = FQueueStatus->FList->IndexOf(static_cast<TObject *>(static_cast<void *>(this)));
   assert(Index >= 0);
   return Index;
 }
@@ -1542,7 +1542,7 @@ int TTerminalQueueStatus::GetActiveCount()
   {
     FActiveCount = 0;
 
-    while ((FActiveCount < (int)FList->GetCount()) &&
+    while ((FActiveCount < static_cast<int>(FList->GetCount())) &&
       (GetItem(FActiveCount)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
@@ -1552,16 +1552,16 @@ int TTerminalQueueStatus::GetActiveCount()
   return FActiveCount;
 }
 //---------------------------------------------------------------------------
-void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
+void TTerminalQueueStatus::Add(TQueueItemProxy *ItemProxy)
 {
   ItemProxy->FQueueStatus = this;
-  FList->Add((TObject *)ItemProxy);
+  FList->Add(static_cast<TObject *>(static_cast<void *>(ItemProxy)));
   ResetStats();
 }
 //---------------------------------------------------------------------------
 void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
 {
-  FList->Extract((TObject *)ItemProxy);
+  FList->Extract(static_cast<TObject *>(static_cast<void *>(ItemProxy)));
   ItemProxy->FQueueStatus = NULL;
   ResetStats();
 }

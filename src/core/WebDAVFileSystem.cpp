@@ -148,7 +148,7 @@ void TWebDAVFileSystem::Init(TSecureShell *SecureShell)
   // capabilities of SCP protocol are fixed
   for (int Index = 0; Index < fcCount; Index++)
   {
-    FFileSystemInfo.IsCapable[Index] = IsCapable((TFSCapability)Index);
+    FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
   }
 }
 //---------------------------------------------------------------------------
@@ -1447,6 +1447,7 @@ void TWebDAVFileSystem::Sink(const std::wstring &FileName,
 
     Action.FileName(FileName);
 
+    assert(File);
     TFileMasks::TParams MaskParams;
     MaskParams.Size = File->GetSize();
 
@@ -1456,7 +1457,6 @@ void TWebDAVFileSystem::Sink(const std::wstring &FileName,
         THROW_SKIP_FILE_NULL;
     }
 
-    assert(File);
     FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
     OperationProgress->SetFile(OnlyFileName);
@@ -1594,7 +1594,7 @@ void TWebDAVFileSystem::Sink(const std::wstring &FileName,
 void TWebDAVFileSystem::SinkFile(std::wstring FileName,
     const TRemoteFile * File, void * Param)
 {
-    TSinkFileParams * Params = (TSinkFileParams *)Param;
+    TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
     assert(Params->OperationProgress);
     try
     {
@@ -1851,12 +1851,12 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         {
           // should be the same as ConvertRemoteTimestamp
           TDateTime Modification =
-            EncodeDateVerbose((unsigned short)Entry->Year, (unsigned short)Entry->Month,
-              (unsigned short)Entry->Day);
+            EncodeDateVerbose(static_cast<unsigned short>(Entry->Year), static_cast<unsigned short>(Entry->Month),
+              static_cast<unsigned short>(Entry->Day));
           if (Entry->HasTime)
           {
             File->SetModification(Modification +
-              EncodeTimeVerbose((unsigned short)Entry->Hour, (unsigned short)Entry->Minute, 0, 0));
+              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour), static_cast<unsigned short>(Entry->Minute), 0, 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway
             File->SetModificationFmt(mfMDHM);
@@ -1871,7 +1871,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
         {
           // With SCP we estimate date to be today, if we have at least time
 
-          File->SetModification(TDateTime(double(0)));
+          File->SetModification(TDateTime(0.0));
           File->SetModificationFmt(mfNone);
         }
         File->SetLastAccess(File->GetModification());
@@ -1935,7 +1935,7 @@ void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  int Progress = int(Bytes / 80);
+  int Progress = static_cast<int>(Bytes / 80);
   if (Progress - FLastReadDirectoryProgress >= 10)
   {
     bool Cancel = false;

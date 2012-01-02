@@ -26,7 +26,7 @@ bool FindFile(std::wstring & Path)
       // DEBUG_PRINTF(L"Len = %d", Len);
       std::wstring Paths;
       Paths.resize(Len - 1);
-      GetEnvironmentVariable(L"PATH", (LPWSTR)Paths.c_str(), Len);
+      GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), Len);
       // DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
 
       std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
@@ -137,8 +137,8 @@ void OpenSessionInPutty(const std::wstring &PuttyPath,
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring &Path, const std::wstring &Params)
 {
-  return ((int)::ShellExecute(NULL, L"open", (wchar_t *)Path.data(),
-    (wchar_t *)Params.data(), NULL, SW_SHOWNORMAL) > 32);
+  return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t *>(Path.data()),
+    const_cast<wchar_t *>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
 bool ExecuteShell(const std::wstring &Path, const std::wstring &Params,
@@ -150,9 +150,9 @@ bool ExecuteShell(const std::wstring &Path, const std::wstring &Params,
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = (HWND)::GetModuleHandle(0);
-  ExecuteInfo.lpFile = (wchar_t *)Path.data();
-  ExecuteInfo.lpParameters = (wchar_t *)Params.data();
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
   Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
@@ -262,20 +262,20 @@ std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
 {
   std::wstring Result;
 
-  if (!UseOrders || (Bytes < __int64(100*1024)))
+  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT(L"%.0f B", (double)Bytes);
+    Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
   }
-  else if (Bytes < __int64(100*1024*1024))
+  else if (Bytes < static_cast<__int64>(100*1024*1024))
   {
     // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
-    Result = FORMAT(L"%.0f KiB", (double)Bytes / 1024.0);
+    Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
   }
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT(L"%.0f MiB", (double)Bytes / (1024*1024.0));
+    Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
   }
   return Result;
 }
@@ -346,9 +346,9 @@ bool DeleteDirectory(const std::wstring &DirName)
 std::wstring FormatDateTimeSpan(const std::wstring &TimeFormat, TDateTime DateTime)
 {
   std::wstring Result;
-  if (int(DateTime) > 0)
+  if (static_cast<int>(DateTime) > 0)
   {
-    Result = IntToStr(int(DateTime)) + L", ";
+    Result = IntToStr(static_cast<int>(DateTime)) + L", ";
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs

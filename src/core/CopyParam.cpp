@@ -241,7 +241,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool value)
   }
 }
 //---------------------------------------------------------------------------
-wchar_t * TCopyParamType::ReplaceChar(std::wstring & FileName, wchar_t * InvalidChar) const
+wchar_t *TCopyParamType::ReplaceChar(std::wstring &FileName, wchar_t *InvalidChar) const
 {
   if (0)
   {
@@ -393,7 +393,7 @@ std::wstring TCopyParamType::Untokenize(std::wstring FileName)
     else
     {
       // wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.substr(Index + 1, 2), -1));
-      wchar_t Ch = (wchar_t)HexToInt(Result.substr(Index + 1, 2), -1);
+      wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.substr(Index + 1, 2), -1));
       if (Ch == '\0')
       {
         Result = FileName;

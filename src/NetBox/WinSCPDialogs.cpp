@@ -1217,7 +1217,7 @@ void TAboutDialog::UrlTextClick(TFarDialogItem * /*Item*/,
   MOUSE_EVENT_RECORD * /*Event*/)
 {
   std::wstring Address = GetMsg(ABOUT_URL);
-  ShellExecute(NULL, L"open", (wchar_t *)Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
+  ShellExecute(NULL, L"open", const_cast<wchar_t *>(Address.c_str()), NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
@@ -1227,7 +1227,7 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
     case 1: Address = GetMsg(ABOUT_URL) + L"eng/docs/far"; break;
     case 2: Address = GetMsg(ABOUT_URL) + L"forum/"; break;
   }
-  ShellExecute(NULL, L"open", (wchar_t *)Address.c_str(), NULL, NULL, SW_SHOWNORMAL);
+  ShellExecute(NULL, L"open", const_cast<wchar_t *>(Address.c_str()), NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1341,7 +1341,7 @@ void TPasswordDialog::GenerateLabel(std::wstring Caption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < (int)Caption.size())
+  if (GetSize().x - 10 < static_cast<int>(Caption.size()))
   {
     Caption.resize(GetSize().x - 10 - 4);
     Caption += L" ...";
@@ -1365,7 +1365,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
-  if (S.x < (int)Instructions.size())
+  if (S.x < static_cast<int>(Instructions.size()))
   {
     S.x = Instructions.size();
   }
@@ -1376,7 +1376,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
   {
-    if (S.x < (int)Prompts->GetString(Index).size())
+    if (S.x < static_cast<int>(Prompts->GetString(Index).size()))
     {
       S.x = Prompts->GetString(Index).size();
     }
@@ -2841,7 +2841,7 @@ void TSessionDialog::UpdateControls()
   SshTab->SetEnabled(SshProtocol);
   CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetSelected() != 0);
   CipherDownButton->SetEnabled(
-    CipherListBox->GetItems()->GetSelected() < (int)CipherListBox->GetItems()->GetCount() - 1);
+    CipherListBox->GetItems()->GetSelected() < static_cast<int>(CipherListBox->GetItems()->GetCount() - 1));
 
   // Authentication tab
   AuthenticatonTab->SetEnabled(SshProtocol);
@@ -2883,7 +2883,7 @@ void TSessionDialog::UpdateControls()
     (BugRekey2Combo->GetItems()->GetSelected() != 2));
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
   KexDownButton->SetEnabled(
-    (KexListBox->GetItems()->GetSelected() < (int)KexListBox->GetItems()->GetCount() - 1));
+    (KexListBox->GetItems()->GetSelected() < static_cast<int>(KexListBox->GetItems()->GetCount() - 1)));
 
   // Bugs tab
   BugsTab->SetEnabled(SshProtocol);
@@ -2906,7 +2906,7 @@ void TSessionDialog::UpdateControls()
   ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
   TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
-  if (ProxyMethodCombo->GetItems()->GetSelected() >= (int)OtherProxyMethodCombo->GetItems()->GetCount())
+  if (ProxyMethodCombo->GetItems()->GetSelected() >= static_cast<int>(OtherProxyMethodCombo->GetItems()->GetCount()))
   {
     OtherProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -3054,7 +3054,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   ListingCommandEdit->SetText(SessionData->GetListingCommand());
   SCPLsFullTimeAutoCheck->SetChecked((SessionData->GetSCPLsFullTime() != asOff));
   int TimeDifferenceMin = DateTimeToTimeStamp(SessionData->GetTimeDifference()).Time / 60000;
-  if (double(SessionData->GetTimeDifference()) < 0)
+  if (static_cast<double>(SessionData->GetTimeDifference()) < 0)
   {
     TimeDifferenceMin = -TimeDifferenceMin;
   }
@@ -3118,7 +3118,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // Proxy tab
   SshProxyMethodCombo->GetItems()->SetSelected(SessionData->GetProxyMethod());
-  if (SessionData->GetProxyMethod() >= (int)FtpProxyMethodCombo->GetItems()->GetCount())
+  if (SessionData->GetProxyMethod() >= static_cast<int>(FtpProxyMethodCombo->GetItems()->GetCount()))
   {
     FtpProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -3179,9 +3179,9 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     assert(CIPHER_NAME_WARN+CIPHER_COUNT-1 == CIPHER_NAME_ARCFOUR);
     for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
     {
-      TObject *Obj = (TObject*)SessionData->GetCipher(Index);
+      TObject *Obj = static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetCipher(Index)));
       CipherListBox->GetItems()->AddObject(
-        GetMsg(CIPHER_NAME_WARN + int(SessionData->GetCipher(Index))),
+        GetMsg(CIPHER_NAME_WARN + static_cast<int>(SessionData->GetCipher(Index))),
         Obj);
     }
   }
@@ -3203,8 +3203,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     for (size_t Index = 0; Index < KEX_COUNT; Index++)
     {
       KexListBox->GetItems()->AddObject(
-        GetMsg(KEX_NAME_WARN + int(SessionData->GetKex(Index))),
-        (TObject*)SessionData->GetKex(Index));
+        GetMsg(KEX_NAME_WARN + static_cast<int>(SessionData->GetKex(Index))),
+        static_cast<TObject *>(reinterpret_cast<void *>(SessionData->GetKex(Index))));
     }
   }
 
@@ -3299,15 +3299,15 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetListingCommand(ListingCommandEdit->GetText());
     SessionData->SetSCPLsFullTime(SCPLsFullTimeAutoCheck->GetChecked() ? asAuto : asOff);
     SessionData->SetTimeDifference(TDateTime(
-      (double(TimeDifferenceEdit->GetAsInteger()) / 24) +
-      (double(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
+      (static_cast<double>(TimeDifferenceEdit->GetAsInteger()) / 24) +
+      (static_cast<double>(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
 
     // SFTP tab
     #define TRISTATE(COMBO, PROP, MSG) \
-      SessionData->Set##PROP(sb##PROP, (TAutoSwitch)(2 - COMBO->GetItems()->GetSelected()));
+      SessionData->Set##PROP(sb##PROP, static_cast<TAutoSwitch>(2 - COMBO->GetItems()->GetSelected()));
     // SFTP_BUGS();
-    SessionData->SetSFTPBug(sbSymlink, (TAutoSwitch)(2 - SFTPBugSymlinkCombo->GetItems()->GetSelected()));
-    SessionData->SetSFTPBug(sbSignedTS, (TAutoSwitch)(2 - SFTPBugSignedTSCombo->GetItems()->GetSelected()));
+    SessionData->SetSFTPBug(sbSymlink, static_cast<TAutoSwitch>(2 - SFTPBugSymlinkCombo->GetItems()->GetSelected()));
+    SessionData->SetSFTPBug(sbSignedTS, static_cast<TAutoSwitch>(2 - SFTPBugSignedTSCombo->GetItems()->GetSelected()));
 
     SessionData->SetSftpServer(
         (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
@@ -3373,7 +3373,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     }
 
     // Proxy tab
-    SessionData->SetProxyMethod((TProxyMethod)SshProxyMethodCombo->GetItems()->GetSelected());
+    SessionData->SetProxyMethod(static_cast<TProxyMethod>(SshProxyMethodCombo->GetItems()->GetSelected()));
     SessionData->SetProxyHost(ProxyHostEdit->GetText());
     SessionData->SetProxyPort(ProxyPortEdit->GetAsInteger());
     SessionData->SetProxyUsername(ProxyUsernameEdit->GetText());
@@ -3421,8 +3421,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
     {
-      TObject *Obj = (TObject *)CipherListBox->GetItems()->GetObject(Index);
-      SessionData->SetCipher(Index, (TCipher)(int)Obj);
+      TObject *Obj = static_cast<TObject *>(CipherListBox->GetItems()->GetObject(Index));
+      SessionData->SetCipher(Index, static_cast<TCipher>(reinterpret_cast<int>(Obj)));
     }
 
     // KEX tab
@@ -3448,14 +3448,14 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // Bugs tab
     // BUGS();
     #undef TRISTATE
-    SessionData->SetBug(sbIgnore1, (TAutoSwitch)(2 - BugIgnore1Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbPlainPW1, (TAutoSwitch)(2 - BugPlainPW1Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbRSA1, (TAutoSwitch)(2 - BugRSA1Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbHMAC2, (TAutoSwitch)(2 - BugHMAC2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbDeriveKey2, (TAutoSwitch)(2 - BugDeriveKey2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbRSAPad2, (TAutoSwitch)(2 - BugRSAPad2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbPKSessID2, (TAutoSwitch)(2 - BugPKSessID2Combo->GetItems()->GetSelected()));
-    SessionData->SetBug(sbRekey2, (TAutoSwitch)(2 - BugRekey2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbIgnore1, static_cast<TAutoSwitch>(2 - BugIgnore1Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbPlainPW1, static_cast<TAutoSwitch>(2 - BugPlainPW1Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbRSA1, static_cast<TAutoSwitch>(2 - BugRSA1Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbHMAC2, static_cast<TAutoSwitch>(2 - BugHMAC2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbDeriveKey2, static_cast<TAutoSwitch>(2 - BugDeriveKey2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbRSAPad2, static_cast<TAutoSwitch>(2 - BugRSAPad2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbPKSessID2, static_cast<TAutoSwitch>(2 - BugPKSessID2Combo->GetItems()->GetSelected()));
+    SessionData->SetBug(sbRekey2, static_cast<TAutoSwitch>(2 - BugRekey2Combo->GetItems()->GetSelected()));
   }
 
   return Result;
@@ -3872,7 +3872,7 @@ void TRightsContainer::RightsButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
   TRights R = GetRights();
-  R.SetNumber((unsigned short)Sender->GetTag());
+  R.SetNumber(static_cast<unsigned short>(Sender->GetTag()));
   SetRights(R);
 }
 //---------------------------------------------------------------------------
@@ -4096,7 +4096,6 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
       UsedGroupList->SetDuplicates(dupIgnore);
       UsedGroupList->SetSorted(true);
     }
-    DEBUG_PRINTF(L"UserList->GetCount = %d", UserList->GetCount());
     if ((UserList == NULL) || (UserList->GetCount() == 0))
     {
       UsedUserList = new TStringList();
@@ -5441,7 +5440,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   SpaceAvailablePathEdit = new TFarEdit(this);
   SpaceAvailablePathEdit->SetRight(
-    - ((int)GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11));
+    - (static_cast<int>(GetMsg(SPACE_AVAILABLE_CHECK_SPACE).size() + 11)));
 
   Button = new TFarButton(this);
   Button->SetCaption(GetMsg(SPACE_AVAILABLE_CHECK_SPACE));
@@ -5634,7 +5633,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * Control,
   if (List != NULL)
   {
     std::wstring S = GetMsg(Label);
-    if (List->MaxLen < (int)S.size())
+    if (List->MaxLen < static_cast<int>(S.size()))
     {
       List->MaxLen = S.size();
     }
@@ -5939,7 +5938,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       {
         BookmarkItems->SetItemFocused(FirstItemFocused);
       }
-      else if (ItemFocused < (int)BookmarkItems->GetCount())
+      else if (ItemFocused < static_cast<int>(BookmarkItems->GetCount()))
       {
         BookmarkItems->SetItemFocused(ItemFocused);
       }
@@ -5978,7 +5977,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         }
         else if (BreakCode == 2)
         {
-          FarControl(FCTL_INSERTCMDLINE, 0, (LONG_PTR)BookmarkPaths->GetString(ItemFocused).c_str());
+          FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(BookmarkPaths->GetString(ItemFocused).c_str()));
         }
         else if (BreakCode == 3 || BreakCode == 4)
         {
@@ -6829,7 +6828,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = static_cast<float>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      FWidths[Index] = (int)floor(W);
+      FWidths[Index] = static_cast<int>(floor(W));
       Temp[Index] = W - FWidths[Index];
     }
     else
@@ -6942,7 +6941,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     }
   }
 
-  int Action = int(ChecklistItem->Action) - 1;
+  int Action = static_cast<int>(ChecklistItem->Action) - 1;
   assert(Action < LENOF(FActions));
   AddColumn(Line, FActions[Action], 4);
 
@@ -7965,7 +7964,7 @@ void TQueueDialog::UpdateControls()
     (QueueItem->GetIndex() > FStatus->GetActiveCount()));
   MoveDownButton->SetEnabled((QueueItem != NULL) &&
     (QueueItem->GetStatus() == TQueueItem::qsPending) &&
-    (QueueItem->GetIndex() < (int)FStatus->GetCount() - 1));
+    (QueueItem->GetIndex() < static_cast<int>(FStatus->GetCount() - 1)));
 }
 //---------------------------------------------------------------------------
 void TQueueDialog::Idle()

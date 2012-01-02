@@ -689,9 +689,10 @@ void TFTPFileSystem::CachedChangeDirectory(const std::wstring &Directory)
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ChangeFileProperties(const std::wstring &AFileName,
-  const TRemoteFile * File, const TRemoteProperties * Properties,
-  TChmodSessionAction & Action)
+  const TRemoteFile *File, const TRemoteProperties *Properties,
+  TChmodSessionAction &Action)
 {
+  assert(Properties);
   assert(!Properties->Valid.Contains(vpGroup));
   assert(!Properties->Valid.Contains(vpOwner));
   assert(!Properties->Valid.Contains(vpLastAccess));
@@ -699,8 +700,6 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring &AFileName,
 
   if (Properties->Valid.Contains(vpRights))
   {
-    assert(Properties);
-
     TRemoteFile * OwnedFile = NULL;
 
     {
@@ -1075,6 +1074,7 @@ void TFTPFileSystem::Sink(const std::wstring &FileName,
 
   Action.FileName(FileName);
 
+  assert(File);
   TFileMasks::TParams MaskParams;
   MaskParams.Size = File->GetSize();
 
@@ -1084,7 +1084,6 @@ void TFTPFileSystem::Sink(const std::wstring &FileName,
     THROW_SKIP_FILE_NULL;
   }
 
-  assert(File);
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
   OperationProgress->SetFile(OnlyFileName);
@@ -3031,11 +3030,11 @@ std::wstring FormatValidityTime(const TFtpsCertificateData::TValidityTime & Vali
 {
   return FormatDateTime(L"ddddd tt",
     EncodeDateVerbose(
-      (unsigned short)ValidityTime.Year, (unsigned short)ValidityTime.Month,
-      (unsigned short)ValidityTime.Day) +
+      static_cast<unsigned short>(ValidityTime.Year), static_cast<unsigned short>(ValidityTime.Month),
+      static_cast<unsigned short>(ValidityTime.Day)) +
     EncodeTimeVerbose(
-      (unsigned short)ValidityTime.Hour, (unsigned short)ValidityTime.Min,
-      (unsigned short)ValidityTime.Sec, 0));
+      static_cast<unsigned short>(ValidityTime.Hour), static_cast<unsigned short>(ValidityTime.Min),
+      static_cast<unsigned short>(ValidityTime.Sec), 0));
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
@@ -3048,7 +3047,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   else
   {
     FSessionInfo.CertificateFingerprint =
-      StrToHex(std::wstring((const wchar_t*)Data.Hash, Data.HashLen), false, ':');
+      StrToHex(std::wstring(reinterpret_cast<const wchar_t *>(Data.Hash), Data.HashLen), false, ':');
 
     int VerificationResultStr;
     switch (Data.VerificationResult)
@@ -3302,12 +3301,12 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         {
           // should be the same as ConvertRemoteTimestamp
           TDateTime Modification =
-            EncodeDateVerbose((unsigned short)Entry->Year, (unsigned short)Entry->Month,
-              (unsigned short)Entry->Day);
+            EncodeDateVerbose(static_cast<unsigned short>(Entry->Year), static_cast<unsigned short>(Entry->Month),
+              static_cast<unsigned short>(Entry->Day));
           if (Entry->HasTime)
           {
             File->SetModification(Modification +
-              EncodeTimeVerbose((unsigned short)Entry->Hour, (unsigned short)Entry->Minute, 0, 0));
+              EncodeTimeVerbose((unsigned short)Entry->Hour, static_cast<unsigned short>(Entry->Minute), 0, 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway
             File->SetModificationFmt(mfMDHM);
@@ -3322,7 +3321,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         {
           // With SCP we estimate date to be today, if we have at least time
 
-          File->SetModification(TDateTime(double(0)));
+          File->SetModification(TDateTime(0.0));
           File->SetModificationFmt(mfNone);
         }
         File->SetLastAccess(File->GetModification());
@@ -3383,7 +3382,7 @@ bool TFTPFileSystem::HandleReply(int Command, unsigned int Reply)
   {
     if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", int(Reply), Command));
+      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
     }
 
     // reply with Command 0 is not associated with current operation

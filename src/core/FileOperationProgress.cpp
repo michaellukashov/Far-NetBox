@@ -433,7 +433,7 @@ TDateTime TFileOperationProgressType::TimeExpected()
 {
   unsigned int CurCps = CPS();
   if (CurCps)
-    return TDateTime(static_cast<double>(((double)(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
+    return TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
   else
       return TDateTime(0);
 }

@@ -21,8 +21,8 @@
 std::wstring MungeStr(const std::wstring &Str)
 {
   std::string Result2;
-  Result2.resize(Str.size() * 3 + 1);
-  putty_mungestr(::W2MB(Str.c_str()).c_str(), (char *)Result2.c_str());
+  Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
+  putty_mungestr(::W2MB(Str.c_str()).c_str(), const_cast<char *>(Result2.c_str()));
   std::wstring Result = ::MB2W(Result2.c_str());
   PackStr(Result);
   // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
@@ -32,8 +32,8 @@ std::wstring MungeStr(const std::wstring &Str)
 std::wstring UnMungeStr(const std::wstring &Str)
 {
   std::string Result2;
-  Result2.resize(Str.size() * 3 + 1);
-  putty_unmungestr((char *)::W2MB(Str.c_str()).c_str(), (char *)Result2.c_str(), Result2.size());
+  Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
+  putty_unmungestr(const_cast<char *>(::W2MB(Str.c_str()).c_str()), const_cast<char *>(Result2.c_str()), Result2.size());
   std::wstring Result = ::MB2W(Result2.c_str());
   PackStr(Result);
   return Result;
@@ -277,9 +277,8 @@ std::wstring THierarchicalStorage::ReadString(const std::wstring &Name, const st
 std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring &Name)
 {
   int Size = BinaryDataSize(Name);
-  std::wstring Value;
-  Value.resize(Size);
-  ReadBinaryData(Name, (void *)Value.c_str(), Size);
+  std::wstring Value(Size, 0);
+  ReadBinaryData(Name, const_cast<wchar_t *>(Value.c_str()), Size);
   return Value;
 }
 //---------------------------------------------------------------------------
@@ -713,7 +712,7 @@ bool TIniFileStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, boo
       if (Sections->GetCount())
       {
         Result = Sections->Find(NewKey, Index);
-        if (!Result && Index < (int)Sections->GetCount() &&
+        if (!Result && Index < static_cast<int>(Sections->GetCount()) &&
             Sections->GetString(Index).substr(0, NewKey.size()+1) == NewKey + L"\\")
         {
           Result = true;

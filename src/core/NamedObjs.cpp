@@ -6,13 +6,13 @@
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2)
 {
-  bool HasPrefix1 = ((TNamedObject *)Item1)->GetHidden();
-  bool HasPrefix2 = ((TNamedObject *)Item2)->GetHidden();
+  bool HasPrefix1 = (static_cast<TNamedObject *>(Item1))->GetHidden();
+  bool HasPrefix2 = (static_cast<TNamedObject *>(Item2))->GetHidden();
   if (HasPrefix1 && !HasPrefix2) return -1;
     else
   if (!HasPrefix1 && HasPrefix2) return 1;
     else
-  return ::AnsiCompareStr(((TNamedObject *)Item1)->GetName(), ((TNamedObject *)Item2)->GetName());
+  return ::AnsiCompareStr((static_cast<TNamedObject *>(Item1))->GetName(), (static_cast<TNamedObject *>(Item2))->GetName());
 }
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(std::wstring AName) :
@@ -74,13 +74,13 @@ TNamedObjectList::TNamedObjectList() :
 TNamedObject * TNamedObjectList::AtObject(int Index)
 {
     // DEBUG_PRINTF(L"Index = %d, Count = %d, GetHiddenCount = %d", Index, GetCount(), GetHiddenCount());
-  return (TNamedObject *)GetItem(Index+GetHiddenCount());
+  return static_cast<TNamedObject *>(GetItem(Index+GetHiddenCount()));
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()
 {
   size_t i = 0;
-  while ((i < TObjectList::GetCount()) && ((TNamedObject *)GetItem(i))->GetHidden()) i++;
+  while ((i < TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(i)))->GetHidden()) i++;
   FHiddenCount = i;
 }
 //---------------------------------------------------------------------------
@@ -100,8 +100,8 @@ TNamedObject * TNamedObjectList::FindByName(std::wstring Name,
   bool CaseSensitive)
 {
   for (size_t Index = 0; Index < TObjectList::GetCount(); Index++)
-    if (!((TNamedObject *)GetItem(Index))->CompareName(Name, CaseSensitive))
-      return (TNamedObject *)GetItem(Index);
+    if (!(static_cast<TNamedObject *>(GetItem(Index)))->CompareName(Name, CaseSensitive))
+      return static_cast<TNamedObject *>(GetItem(Index));
   return NULL;
 }
 //---------------------------------------------------------------------------

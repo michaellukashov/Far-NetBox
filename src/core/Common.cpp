@@ -867,7 +867,7 @@ unsigned int HexToInt(const std::wstring &Hex, int MinChars)
       break;
     }
 
-    Result = (Result * 16) + ((int)A - 1);
+    Result = (Result * 16) + (static_cast<int>(A) - 1);
 
     I++;
   }
@@ -1057,14 +1057,14 @@ struct TDateTimeParams
 {
   TDateTime UnixEpoch;
   double BaseDifference;
-  long BaseDifferenceSec;
   double CurrentDaylightDifference;
-  long CurrentDaylightDifferenceSec;
   double CurrentDifference;
-  long CurrentDifferenceSec;
   double StandardDifference;
-  long StandardDifferenceSec;
   double DaylightDifference;
+  long BaseDifferenceSec;
+  long CurrentDaylightDifferenceSec;
+  long CurrentDifferenceSec;
+  long StandardDifferenceSec;
   long DaylightDifferenceSec;
   SYSTEMTIME StandardDate;
   SYSTEMTIME DaylightDate;

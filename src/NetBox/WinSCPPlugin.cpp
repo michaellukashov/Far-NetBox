@@ -270,7 +270,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
         std::wstring Directory;
-        std::wstring Name = (wchar_t *)Item;
+        std::wstring Name = reinterpret_cast<wchar_t *>(Item);
         if (OpenFrom == OPEN_SHORTCUT)
         {
           size_t P = Name.find(L"\1");
@@ -368,6 +368,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
     int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
+    assert(FileSystem);
     MenuItems->SetDisabled(MLog, !FSVisible || !FileSystem->IsLogging());
     MenuItems->SetDisabled(MClearCaches, !FSVisible || FileSystem->AreCachesEmpty());
     MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttyPath()))));
@@ -382,22 +383,18 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     {
       if (Result == MLog)
       {
-        assert(FileSystem);
         FileSystem->ShowLog();
       }
       else if (Result == MAttributes)
       {
-        assert(FileSystem);
         FileSystem->FileProperties();
       }
       else if (Result == MLink)
       {
-        assert(FileSystem);
         FileSystem->CreateLink();
       }
       else if (Result == MApplyCommand)
       {
-        assert(FileSystem);
         FileSystem->ApplyCommand();
       }
       else if (Result == MFullSynchronize)

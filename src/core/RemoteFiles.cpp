@@ -342,7 +342,7 @@ TDateTime ReduceDateTimePrecision(TDateTime DateTime,
 {
   if (Precision == mfNone)
   {
-    DateTime = double(0);
+    DateTime = 0.0;
   }
   else if (Precision != mfFull)
   {
@@ -420,7 +420,7 @@ int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
 
   int Icon = -1;
   SHFILEINFO ssfi;
-  if (SHGetFileInfo((LPCTSTR)std::wstring(FileName).c_str(), 
+  if (SHGetFileInfo(static_cast<LPCTSTR>(std::wstring(FileName).c_str()),
         Attrs, &ssfi, sizeof(SHFILEINFO),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
@@ -568,7 +568,7 @@ std::wstring TRemoteToken::GetDisplayText() const
 //---------------------------------------------------------------------------
 std::wstring TRemoteToken::GetLogText() const
 {
-  return FORMAT(L"\"%s\" [%d]", FName.c_str(), int(FID));
+  return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -874,7 +874,7 @@ void TRemoteFile::SetType(char AType)
   FType = AType;
   // Allow even non-standard file types (e.g. 'S')
   // if (!std::wstring("-DL").find_first_of((char)toupper(FType))) Abort();
-  FIsSymLink = ((char)toupper(FType) == FILETYPE_SYMLINK);
+  FIsSymLink = (static_cast<char>(toupper(FType)) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::GetLinkedFile()
@@ -904,13 +904,13 @@ bool TRemoteFile::GetBrokenLink()
 //---------------------------------------------------------------------------
 void TRemoteFile::ShiftTime(const TDateTime & Difference)
 {
-  double D = double(Difference.operator double());
+  double D = static_cast<double>(Difference.operator double());
   if ((abs(D) > 0.000001) && (FModificationFmt != mfMDY))
   {
-    assert(int(FModification) != 0);
-    FModification = double(FModification) + D;
-    assert(int(FLastAccess) != 0);
-    FLastAccess = double(FLastAccess) + D;
+    assert(static_cast<int>(FModification) != 0);
+    FModification = static_cast<double>(FModification) + D;
+    assert(static_cast<int>(FLastAccess) != 0);
+    FLastAccess = static_cast<double>(FLastAccess) + D;
   }
 }
 //---------------------------------------------------------------------------
@@ -1047,7 +1047,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
     // do not read modification time and filename if it is already set
     // DEBUG_PRINTF(L"FModification = %.02f, GetFileName = %s", FModification, GetFileName().c_str());
-    if ((fabs(double(FModification)) < 0.000001) && GetFileName().empty())
+    if ((fabs(static_cast<double>(FModification)) < 0.000001) && GetFileName().empty())
     {
       FSize = ASize;
 
@@ -1058,7 +1058,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
 
       GETCOL;
       // format dd mmm or mmm dd ?
-      Day = (unsigned int)StrToIntDef(Col, 0);
+      Day = static_cast<unsigned int>(StrToIntDef(Col, 0));
       if (Day > 0)
       {
         DayMonthFormat = true;
@@ -1073,13 +1073,13 @@ void TRemoteFile::SetListingStr(std::wstring value)
       // for --full-time format
       if ((Month == 0) && (Col.size() == 10) && (Col[4] == '-') && (Col[7] == '-'))
       {
-        Year = (unsigned int)ToInt(Col.substr(0, 4));
-        Month = (unsigned int)ToInt(Col.substr(5, 2));
-        Day = (unsigned int)ToInt(Col.substr(8, 2));
+        Year = static_cast<unsigned int>(ToInt(Col.substr(0, 4)));
+        Month = static_cast<unsigned int>(ToInt(Col.substr(5, 2)));
+        Day = static_cast<unsigned int>(ToInt(Col.substr(8, 2)));
         GETCOL;
-        Hour = (unsigned int)ToInt(Col.substr(0, 2)); // 9, 2));
-        Min = (unsigned int)ToInt(Col.substr(3, 2));
-        Sec = (unsigned int)ToInt(Col.substr(6, 2));
+        Hour = static_cast<unsigned int>(ToInt(Col.substr(0, 2))); // 9, 2));
+        Min = static_cast<unsigned int>(ToInt(Col.substr(3, 2)));
+        Sec = static_cast<unsigned int>(ToInt(Col.substr(6, 2)));
         FModificationFmt = mfFull;
         // skip TZ (TODO)
         // do not trim leading space of filename
@@ -1184,7 +1184,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           GetTerminal()->GetSessionData()->GetDSTMode());
       }
 
-      if (fabs(double(FLastAccess)) < 0.000001)
+      if (fabs(static_cast<double>(FLastAccess)) < 0.000001)
       {
         FLastAccess = FModification;
       }
@@ -1356,7 +1356,7 @@ void TRemoteFile::SetTerminal(TTerminal * value)
 //---------------------------------------------------------------------------
 TRemoteDirectoryFile::TRemoteDirectoryFile() : TRemoteFile()
 {
-  SetModification(TDateTime(double(0)));
+  SetModification(TDateTime(0.0));
   SetModificationFmt(mfNone);
   SetLastAccess(GetModification());
   SetType('D');
@@ -1413,7 +1413,7 @@ std::wstring TRemoteFileList::GetFullDirectory()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFileList::GetFile(int Index)
 {
-  return (TRemoteFile *)GetItem(Index);
+  return static_cast<TRemoteFile *>(GetItem(Index));
 }
 //---------------------------------------------------------------------------
 bool TRemoteFileList::GetIsRoot()

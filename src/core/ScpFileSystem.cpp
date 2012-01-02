@@ -204,7 +204,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
 void TCommandSet::SetCommand(TFSCommand Cmd, std::wstring value)
 {
   CHECK_CMD;
-  wcscpy((wchar_t *)CommandSet[Cmd].Command, value.substr(0, MaxCommandLen - 1).c_str());
+  wcscpy(const_cast<wchar_t *>(CommandSet[Cmd].Command), value.substr(0, MaxCommandLen - 1).c_str());
 }
 //---------------------------------------------------------------------------
 std::wstring TCommandSet::GetCommand(TFSCommand Cmd)
@@ -304,7 +304,7 @@ TStrings * TCommandSet::CreateCommandList()
   TStrings * CommandList = new TStringList();
   for (int Index = 0; Index < ShellCommandCount; Index++)
   {
-    std::wstring Cmd = GetCommand((TFSCommand)Index);
+    std::wstring Cmd = GetCommand(static_cast<TFSCommand>(Index));
     if (!Cmd.empty())
     {
       Cmd = ExtractCommand(Cmd);
@@ -334,7 +334,7 @@ void TSCPFileSystem::Init(TSecureShell *SecureShell)
   // capabilities of SCP protocol are fixed
   for (int Index = 0; Index < fcCount; Index++)
   {
-    FFileSystemInfo.IsCapable[Index] = IsCapable((TFSCapability)Index);
+    FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
   }
 }
 //---------------------------------------------------------------------------
@@ -1751,7 +1751,7 @@ void TSCPFileSystem::SCPSource(const std::wstring &FileName,
             {
               Buf.resize(40, 0);
               // Send last file access and modification time
-              swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
+              swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.size(), L"T%lu 0 %lu 0", static_cast<unsigned long>(MTime),
                 static_cast<unsigned long>(ATime));
               FSecureShell->SendLine(Buf.c_str());
               SCPResponse();
@@ -1761,9 +1761,9 @@ void TSCPFileSystem::SCPSource(const std::wstring &FileName,
             Buf.clear();
             Buf.resize(MAX_PATH * 2, 0);
             // TODO: use boost::format
-            swprintf_s((wchar_t *)Buf.c_str(), Buf.size(), L"C%s %ld %s",
+            swprintf_s(const_cast<wchar_t *>(Buf.c_str()), Buf.size(), L"C%s %ld %s",
               Rights.GetOctal().c_str(),
-              (int)(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
+              static_cast<int>(OperationProgress->AsciiTransfer ? AsciiBuf.GetSize() :
                 OperationProgress->LocalSize),
               DestFileName.c_str());
             FSecureShell->SendLine(Buf.c_str());
@@ -1785,7 +1785,7 @@ void TSCPFileSystem::SCPSource(const std::wstring &FileName,
               {
                 unsigned long BlockSize = OperationProgress->TransferBlockSize();
                 FSecureShell->Send(
-                  AsciiBuf.GetData() + (unsigned int)OperationProgress->TransferedSize,
+                  AsciiBuf.GetData() + static_cast<unsigned int>(OperationProgress->TransferedSize),
                   BlockSize);
                 OperationProgress->AddTransfered(BlockSize);
                 if (OperationProgress->Cancel == csCancelTransfer)
@@ -2157,9 +2157,9 @@ void TSCPFileSystem::SCPError(const std::wstring &Message, bool Fatal)
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSendError(const std::wstring &Message, bool Fatal)
 {
-  char ErrorLevel = (char)(Fatal ? 2 : 1);
+  char ErrorLevel = static_cast<char>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT(L"Sending SCP error (%d) to remote side:",
-    ((int)ErrorLevel)));
+    static_cast<int>(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
   // characters can terminate remote scp

@@ -787,7 +787,7 @@ void TStringList::InsertObject(int Index, const std::wstring &Key, TObject *AObj
 }
 void TStringList::InsertItem(int Index, const std::wstring &S, TObject *AObject)
 {
-    if ((Index < 0) || ((size_t)Index > GetCount()))
+    if ((Index < 0) || (static_cast<size_t>(Index) > GetCount()))
     {
         ::Error(SListIndexError, Index);
     }

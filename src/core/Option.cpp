@@ -101,7 +101,7 @@ bool TOptions::FindSwitch(const std::wstring &Switch,
   ParamsStart = 0;
   int Index = 0;
   bool Found = false;
-  while ((Index < int(FOptions.size())) && !Found)
+  while ((Index < static_cast<int>(FOptions.size())) && !Found)
   {
     std::wstring S;
     if (FOptions[Index].Type == otParam)
@@ -124,7 +124,7 @@ bool TOptions::FindSwitch(const std::wstring &Switch,
   if (Found)
   {
     ParamsStart++;
-    while ((Index + ParamsCount < int(FOptions.size())) &&
+    while ((Index + ParamsCount < static_cast<int>(FOptions.size())) &&
            (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;

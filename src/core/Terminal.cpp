@@ -149,14 +149,14 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 {
   for (size_t Index = 0; Index < FList->GetCount(); Index++)
   {
-    delete reinterpret_cast<TItem *>(FList->GetItem(Index));
+    delete reinterpret_cast<TItem *>(static_cast<void *>(FList->GetItem(Index)));
   }
   delete FList;
 }
 //---------------------------------------------------------------------------
 void TSynchronizeChecklist::Add(TItem * Item)
 {
-  FList->Add((TObject *)Item);
+  FList->Add(reinterpret_cast<TObject *>(static_cast<void *>(Item)));
 }
 //---------------------------------------------------------------------------
 int TSynchronizeChecklist::Compare(void * AItem1, void * AItem2)
@@ -739,7 +739,7 @@ void TTerminal::Open()
               #else
               FFSProtocol = cfsFTP;
               FFileSystem = new TFTPFileSystem(this);
-              ((TFTPFileSystem*)FFileSystem)->Init();
+              (static_cast<TFTPFileSystem *>(FFileSystem))->Init();
               FFileSystem->Open();
               GetLog()->AddSeparator();
               LogEvent(L"Using FTP protocol.");
@@ -753,7 +753,7 @@ void TTerminal::Open()
               #else
               FFSProtocol = cfsFTPS;
               FFileSystem = new TFTPFileSystem(this);
-              ((TFTPFileSystem*)FFileSystem)->Init();
+              (static_cast<TFTPFileSystem *>(FFileSystem))->Init();
               FFileSystem->Open();
               GetLog()->AddSeparator();
               LogEvent(L"Using FTPS protocol.");
@@ -763,7 +763,7 @@ void TTerminal::Open()
             {
               FFSProtocol = cfsHTTP;
               FFileSystem = new TWebDAVFileSystem(this);
-              ((TWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
+              (static_cast<TWebDAVFileSystem *>(FFileSystem))->Init(FSecureShell);
               FSecureShell = NULL;
               FFileSystem->Open();
               GetLog()->AddSeparator();
@@ -773,7 +773,7 @@ void TTerminal::Open()
             {
               FFSProtocol = cfsHTTPS;
               FFileSystem = new TWebDAVFileSystem(this);
-              ((TWebDAVFileSystem*)FFileSystem)->Init(FSecureShell);
+              (static_cast<TWebDAVFileSystem *>(FFileSystem))->Init(FSecureShell);
               FSecureShell = NULL;
               FFileSystem->Open();
               GetLog()->AddSeparator();
@@ -817,7 +817,7 @@ void TTerminal::Open()
                 {
                   FFSProtocol = cfsSCP;
                   FFileSystem = new TSCPFileSystem(this);
-                  ((TSCPFileSystem *)FFileSystem)->Init(FSecureShell);
+                  (static_cast<TSCPFileSystem *>(FFileSystem))->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SCP protocol.");
                 }
@@ -825,7 +825,7 @@ void TTerminal::Open()
                 {
                   FFSProtocol = cfsSFTP;
                   FFileSystem = new TSFTPFileSystem(this);
-                  ((TSFTPFileSystem *)FFileSystem)->Init(FSecureShell);
+                  (static_cast<TSFTPFileSystem *>(FFileSystem))->Init(FSecureShell);
                   FSecureShell = NULL; // ownership passed
                   LogEvent(L"Using SFTP protocol.");
                 }
@@ -1061,8 +1061,8 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   TStringList Prompts;
   TStringList Results;
   {
-    Prompts.AddObject(Prompt, (TObject *)Echo);
-    Results.AddObject(Result, (TObject *)MaxLen);
+    Prompts.AddObject(Prompt, reinterpret_cast<TObject *>(Echo));
+    Results.AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
 
     AResult = PromptUser(Data, Kind, Name, Instructions, &Prompts, &Results);
 
@@ -1271,7 +1271,7 @@ void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
   bool ChangesDirectory = false;
   bool ModifiesFiles = false;
 
-  switch ((TFSCommand)Cmd) {
+  switch (static_cast<TFSCommand>(Cmd)) {
     case fsChangeDirectory:
     case fsHomeDirectory:
       ChangesDirectory = true;
@@ -1385,7 +1385,7 @@ bool TTerminal::QueryReopen(std::exception *E, int Params,
         {
           Result =
             ((Configuration->GetSessionReopenTimeout() == 0) ||
-             (int(double(Now() - Start) * 24*60*60*1000) < Configuration->GetSessionReopenTimeout())) &&
+             (static_cast<int>(static_cast<double>(Now() - Start) * 24*60*60*1000) < Configuration->GetSessionReopenTimeout())) &&
             DoQueryReopen(&E);
         }
         else
@@ -1793,7 +1793,7 @@ void TTerminal::SetExceptionOnFail(bool value)
 //---------------------------------------------------------------------------
 bool TTerminal::GetExceptionOnFail() const
 {
-  return (bool)(FExceptionOnFail > 0);
+  return static_cast<bool>(FExceptionOnFail > 0);
 }
 //---------------------------------------------------------------------------
 void TTerminal::FatalError(const std::exception * E, const std::wstring &Msg)
@@ -2790,7 +2790,7 @@ void TTerminal::DeleteFile(std::wstring FileName,
     if (GetOperationProgress()->Cancel != csContinue) Abort();
     GetOperationProgress()->SetFile(FileName);
   }
-  int Params = (AParams != NULL) ? *((int*)AParams) : 0;
+  int Params = (AParams != NULL) ? *(static_cast<int *>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative));
@@ -2848,7 +2848,7 @@ void TTerminal::DeleteLocalFile(std::wstring FileName,
   }
   else
   {
-    GetOnDeleteLocalFile()(FileName, FLAGSET(*((int*)Params), dfAlternative));
+    GetOnDeleteLocalFile()(FileName, FLAGSET(*(static_cast<int *>(Params)), dfAlternative));
   }
 }
 //---------------------------------------------------------------------------
@@ -2860,7 +2860,7 @@ bool TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
 void TTerminal::CustomCommandOnFile(std::wstring FileName,
   const TRemoteFile * File, void * AParams)
 {
-  TCustomCommandParams * Params = ((TCustomCommandParams *)AParams);
+  TCustomCommandParams * Params = (static_cast<TCustomCommandParams *>(AParams));
   if (FileName.empty() && File)
   {
     FileName = File->GetFileName();
@@ -2953,7 +2953,7 @@ void TTerminal::CustomCommandOnFiles(std::wstring Command,
 void TTerminal::ChangeFileProperties(std::wstring FileName,
   const TRemoteFile * File, /*const TRemoteProperties*/ void * Properties)
 {
-  TRemoteProperties * RProperties = (TRemoteProperties *)Properties;
+  TRemoteProperties * RProperties = static_cast<TRemoteProperties *>(Properties);
   assert(RProperties && !RProperties->Valid.Empty());
 
   if (FileName.empty() && File)
@@ -3020,10 +3020,11 @@ void TTerminal::DoChangeFileProperties(const std::wstring &FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::ChangeFilesProperties(TStrings * FileList,
-  const TRemoteProperties * Properties)
+  const TRemoteProperties *Properties)
 {
   AnnounceFileListOperation();
-  ProcessFiles(FileList, foSetProperties, boost::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3), (void *)Properties);
+  ProcessFiles(FileList, foSetProperties, boost::bind(&TTerminal::ChangeFileProperties, this, _1, _2, _3),
+      const_cast<void *>(static_cast<const void *>(Properties)));
 }
 //---------------------------------------------------------------------------
 bool TTerminal::LoadFilesProperties(TStrings * FileList)
@@ -3528,7 +3529,7 @@ TTerminal * TTerminal::GetCommandSession()
     try
     {
       FCommandSession = new TSecondaryTerminal(this);
-      ((TSecondaryTerminal *)FCommandSession)->Init(GetSessionData(), Configuration, L"Shell");
+      (static_cast<TSecondaryTerminal *>(FCommandSession))->Init(GetSessionData(), Configuration, L"Shell");
 
       FCommandSession->SetAutoReadDirectory(false);
 
@@ -4446,14 +4447,14 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
                 DownloadList->AddObject(
                   UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
-                  (TObject *)(ChecklistItem));
+                  static_cast<TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
                 break;
 
               case TSynchronizeChecklist::saUploadUpdate:
                 UploadList->AddObject(
                   IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName,
-                  (TObject *)(ChecklistItem));
+                  static_cast<TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
                 break;
 
               default:
@@ -4978,10 +4979,10 @@ void TSecondaryTerminal::Init(TSessionData *SessionData, TConfiguration *Configu
     const std::wstring &Name)
 {
   TTerminal::Init(SessionData, Configuration);
+  assert(FMainTerminal != NULL);
   GetLog()->SetParent(FMainTerminal->GetLog());
   GetLog()->SetName(Name);
   GetSessionData()->NonPersistant();
-  assert(FMainTerminal != NULL);
   if (!FMainTerminal->GetUserName().empty())
   {
     GetSessionData()->SetUserName(FMainTerminal->GetUserName());
