@@ -951,16 +951,16 @@ int TStringList::CompareStrings(const std::wstring &S1, const std::wstring &S2)
 
 //---------------------------------------------------------------------------
 /**
- * Encoding multibyte to wide std::string
- * \param src source std::string
- * \param cp code page
- * \return wide std::string
+ * @brief Encoding multibyte to wide std::string
+ * @param src source char *
+ * @param cp code page
+ * @return std::wstring
  */
 std::wstring MB2W(const char *src, const UINT cp)
 {
     // assert(src);
-    if (!src)
-        return L"";
+    if (!src || !*src)
+        return std::wstring(L"");
 
     std::wstring wide;
     const int reqLength = MultiByteToWideChar(cp, 0, src, -1, NULL, 0);
@@ -974,14 +974,16 @@ std::wstring MB2W(const char *src, const UINT cp)
 }
 
 /**
- * Encoding wide to multibyte std::string
- * \param src source std::string
- * \param cp code page
- * \return multibyte std::string
+ * @brief Encoding wide to multibyte std::string
+ * @param src std::wstring
+ * @param cp code page
+ * @return multibyte std::string
  */
 std::string W2MB(const wchar_t *src, const UINT cp)
 {
-    assert(src);
+    // assert(src);
+    if (!src || !*src)
+        return std::string("");
 
     std::string mb;
     const int reqLength = WideCharToMultiByte(cp, 0, src, -1, 0, 0, NULL, NULL);
