@@ -2271,7 +2271,7 @@ bool IsDelimiter(const std::wstring &str, const std::wstring &delim, size_t inde
     return false;
 }
 
-size_t LastDelimiter(const std::wstring &str, const std::wstring &delim)
+int LastDelimiter(const std::wstring &str, const std::wstring &delim)
 {
     if (str.size())
     {
@@ -2283,7 +2283,7 @@ size_t LastDelimiter(const std::wstring &str, const std::wstring &delim)
         }
       }
     }
-    return std::wstring::npos;
+    return 0;
 }
 
 //---------------------------------------------------------------------------
