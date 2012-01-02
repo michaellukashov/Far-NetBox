@@ -289,7 +289,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
 					//Listen socket created
 					m_nProxyOpState++;
 					unsigned long ip;
-					int port;
+					int port = 0;
 					memcpy(&ip,&m_pRecvBuffer[4],4);
 					if (!ip)
 					{ //No IP return, use the IP of the proxy server
