@@ -3007,9 +3007,9 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
 		::MB2W(Contact.CommonName).c_str()).c_str(),
 			::MB2W(Contact.Mail).c_str()).c_str());
 
-  if ((strlen(Contact.Country) > 0) ||
-      (strlen(Contact.StateProvince) > 0) ||
-      (strlen(Contact.Town) > 0))
+  if ((Contact.Country && *Contact.Country) ||
+      (Contact.StateProvince && *Contact.StateProvince) ||
+      (Contact.Town && *Contact.Town))
   {
     Result +=
       FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
@@ -3019,7 +3019,7 @@ std::wstring FormatContact(const TFtpsCertificateData::TContact & Contact)
 			::MB2W(Contact.Town).c_str()).c_str());
   }
 
-  if (strlen(Contact.Other) > 0)
+  if (Contact.Other && *Contact.Other)
   {
     Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
   }

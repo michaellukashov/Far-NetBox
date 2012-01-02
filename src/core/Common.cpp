@@ -1174,10 +1174,10 @@ static bool IsDateInDST(const TDateTime & DateTime)
 {
   struct TDSTCache
   {
-    bool Filled;
-    unsigned short Year;
     TDateTime StandardDate;
     TDateTime DaylightDate;
+    unsigned short Year;
+    bool Filled;
     bool SummerDST;
   };
   static TDSTCache DSTCache[10];
