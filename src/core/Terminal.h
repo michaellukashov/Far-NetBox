@@ -308,7 +308,7 @@ protected:
   void DoCalculateDirectorySize(const std::wstring &FileName,
     const TRemoteFile * File, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(const std::wstring &FileName,
-    const WIN32_FIND_DATA Rec, /*__int64*/ void * Size);
+    const WIN32_FIND_DATA &Rec, /*__int64*/ void * Size);
   void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam = NULL);
   TBatchOverwrite EffectiveBatchOverwrite(
@@ -464,7 +464,7 @@ public:
   bool DirectoryFileList(const std::wstring &Path,
     TRemoteFileList *& FileList, bool CanLoad);
   void MakeLocalFileList(const std::wstring &FileName,
-    const WIN32_FIND_DATA Rec, void * Param);
+    const WIN32_FIND_DATA &Rec, void * Param);
   std::wstring FileUrl(const std::wstring &FileName);
   bool FileOperationLoopQuery(const std::exception & E,
     TFileOperationProgressType * OperationProgress, const std::wstring &Message,

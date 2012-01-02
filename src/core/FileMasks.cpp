@@ -391,7 +391,7 @@ void TFileMasks::Clear(TMasks & Masks)
   {
     ReleaseMaskMask((*I).FileNameMask);
     ReleaseMaskMask((*I).DirectoryMask);
-    I++;
+    ++I;
   }
   Masks.clear();
 }
@@ -455,7 +455,7 @@ bool TFileMasks::MatchesMasks(const std::wstring &FileName, bool Directory,
       }
     }
 
-    I++;
+    ++I;
   }
 
   return Result;

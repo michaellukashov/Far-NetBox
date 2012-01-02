@@ -306,7 +306,7 @@ public:
     Add(Data, ALength);
   }
 
-  void AddStringA(const std::string ValueA)
+  void AddStringA(const std::string &ValueA)
   {
     // std::string ValueA = ::W2MB(Value.c_str());
     AddCardinal(ValueA.size());
@@ -1307,7 +1307,7 @@ public:
   virtual ~TSFTPDownloadQueue()
   {}
 
-  bool Init(int QueueLen, const std::string AHandle, __int64 ATransfered,
+  bool Init(int QueueLen, const std::string &AHandle, __int64 ATransfered,
     TFileOperationProgressType * AOperationProgress)
   {
     FHandle = AHandle;
@@ -1382,7 +1382,7 @@ public:
 
   bool Init(const std::wstring &AFileName,
     HANDLE AFile, TFileOperationProgressType *AOperationProgress,
-    const std::string AHandle, __int64 ATransfered)
+    const std::string &AHandle, __int64 ATransfered)
   {
     FFileName = AFileName;
     FStream = new TSafeHandleStream((HANDLE)AFile);
@@ -3979,9 +3979,9 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring &FileName,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
-  const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags,
-  TUploadSessionAction & Action, bool & ChildError)
+  const std::wstring &TargetDir, const TCopyParamType *CopyParam, int Params,
+  TFileOperationProgressType *OperationProgress, unsigned int Flags,
+  TUploadSessionAction &Action, bool &ChildError)
 {
   FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
@@ -3997,6 +3997,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
 
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
+  TOverwriteFileParams FileParams;
 
   HANDLE File = 0;
   __int64 MTime = 0, ATime = 0;
@@ -4063,7 +4064,6 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
         IsCapable(fcRename);
       OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
-      TOverwriteFileParams FileParams;
       FileParams.SourceSize = OperationProgress->LocalSize;
       FileParams.SourceTimestamp = UnixToDateTime(MTime,
         FTerminal->GetSessionData()->GetDSTMode());
@@ -4612,7 +4612,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
   return 0;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPCloseRemote(const std::string Handle,
+void TSFTPFileSystem::SFTPCloseRemote(const std::string &Handle,
   const std::wstring &FileName, TFileOperationProgressType * OperationProgress,
   bool TransferFinished, bool Request, TSFTPPacket * Packet)
 {

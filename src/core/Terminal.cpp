@@ -2667,7 +2667,6 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           } BOOST_SCOPE_EXIT_END
         size_t Index = 0;
         std::wstring FileName;
-        bool Success;
         processfile_signal_type sig;
         sig.connect(ProcessFile);
         while ((Index < FileList->GetCount()) && (Progress->Cancel == csContinue))
@@ -2675,12 +2674,12 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
           FileName = FileList->GetString(Index);
           try
           {
+            bool Success = false;
             {
               BOOST_SCOPE_EXIT ( (&Progress) (&FileName) (&Success) (&OnceDoneOperation) )
               {
                 Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
-              Success = false;
               sig(FileName, (TRemoteFile *)FileList->GetObject(Index), Param);
               Success = true;
             }
@@ -3864,7 +3863,7 @@ std::wstring TTerminal::FileUrl(const std::wstring &FileName)
 }
 //---------------------------------------------------------------------------
 void TTerminal::MakeLocalFileList(const std::wstring &FileName,
-  const WIN32_FIND_DATA Rec, void * Param)
+  const WIN32_FIND_DATA &Rec, void * Param)
 {
   TMakeLocalFileListParams & Params = *static_cast<TMakeLocalFileListParams*>(Param);
 
@@ -3881,7 +3880,7 @@ void TTerminal::MakeLocalFileList(const std::wstring &FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CalculateLocalFileSize(const std::wstring &FileName,
-  const WIN32_FIND_DATA Rec, /*TCalculateSizeParams*/ void * Params)
+  const WIN32_FIND_DATA &Rec, /*TCalculateSizeParams*/ void * Params)
 {
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams*>(Params);
 
@@ -4229,7 +4228,6 @@ void TTerminal::SynchronizeCollectFile(const std::wstring &FileName,
       }
       BOOST_SCOPE_EXIT_END
       ChecklistItem->IsDirectory = File->GetIsDirectory();
-      ChecklistItem->ImageIndex = File->GetIconIndex();
       ChecklistItem->ImageIndex = File->GetIconIndex();
 
       ChecklistItem->Remote.FileName = File->GetFileName();

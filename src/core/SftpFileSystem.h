@@ -158,7 +158,7 @@ protected:
   std::string SFTPOpenRemoteFile(const std::wstring & FileName,
     unsigned int OpenType, __int64 Size = -1);
   int SFTPOpenRemote(void * AOpenParams, void * Param2);
-  void SFTPCloseRemote(const std::string Handle,
+  void SFTPCloseRemote(const std::string &Handle,
     const std::wstring &FileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPDirectorySource(const std::wstring &DirectoryName,

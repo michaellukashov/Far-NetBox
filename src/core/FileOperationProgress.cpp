@@ -80,7 +80,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int ACount, bool ATemp,
-  const std::wstring ADirectory, unsigned long ACPSLimit)
+  const std::wstring &ADirectory, unsigned long ACPSLimit)
 {
   Clear();
   Operation = AOperation;
