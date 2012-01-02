@@ -295,16 +295,16 @@ private:
     //! Input reader description
     struct InputReader
     {
+      unsigned __int64 Current;
+      unsigned __int64 Total;
+      CNBFile  *File;
+      int    *Progress;
+      HANDLE AbortEvent;
         enum InputReaderType
         {
             None,
             TypeFile
         } Type;
-        CNBFile  *File;
-        int    *Progress;
-        unsigned __int64 Current;
-        unsigned __int64 Total;
-        HANDLE AbortEvent;
     };
     InputReader m_Input;
 
@@ -312,8 +312,8 @@ private:
     struct Progress
     {
         int *ProgressPtr;
-        bool Aborted;
         HANDLE  AbortEvent;
+        bool Aborted;
     };
     Progress m_Progress;
     HANDLE m_regex;
