@@ -154,13 +154,13 @@ void TList::Delete(size_t Index)
 }
 void TList::Insert(size_t Index, void *Item)
 {
-    if (Index >= FList.size())
+    if (Index > FList.size())
     {
       ::Error(SListIndexError, Index);
     }
     // if (FCount == FCapacity)
       // Grow();
-    if (Index < FList.size())
+    if (Index <= FList.size())
     {
         FList.insert(FList.begin() + Index, Item);
     }
