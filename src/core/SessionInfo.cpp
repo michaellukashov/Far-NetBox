@@ -187,7 +187,7 @@ public:
   {
     assert(FErrorMessages == NULL);
     FErrorMessages = new TStringList();
-    if (strlen(E->what()) != 0)
+    if (E->what() && *E->what())
     {
       FErrorMessages->Add(::MB2W(E->what()));
     }
