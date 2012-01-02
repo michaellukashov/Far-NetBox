@@ -28,8 +28,8 @@ void TFileZillaIntf::SetResourceModule(void * ResourceHandle)
 {
   // set afx resource handles, taken from AfxWinInit (mfc/appinit.cpp)
   AFX_MODULE_STATE * ModuleState = AfxGetModuleState();
-  ModuleState->m_hCurrentInstanceHandle = (HINSTANCE)ResourceHandle;
-  ModuleState->m_hCurrentResourceHandle = (HINSTANCE)ResourceHandle;
+  ModuleState->m_hCurrentInstanceHandle = static_cast<HINSTANCE>(ResourceHandle);
+  ModuleState->m_hCurrentResourceHandle = static_cast<HINSTANCE>(ResourceHandle);
 }
 //---------------------------------------------------------------------------
 TFileZillaIntf::TFileZillaIntf() :
@@ -259,14 +259,14 @@ bool TFileZillaIntf::PostMessage(WPARAM wParam, LPARAM lParam)
 void CopyContact(TFtpsCertificateData::TContact & Dest,
   const t_SslCertData::t_Contact& Source)
 {
-  Dest.Organization = (const char *)Source.Organization;
-  Dest.Unit = (const char *)Source.Unit;
-  Dest.CommonName = (const char *)Source.CommonName;
-  Dest.Mail = (const char *)Source.Mail;
-  Dest.Country = (const char *)Source.Country;
-  Dest.StateProvince = (const char *)Source.StateProvince;
-  Dest.Town = (const char *)Source.Town;
-  Dest.Other = (const char *)Source.Other;
+  Dest.Organization = reinterpret_cast<const char *>(Source.Organization);
+  Dest.Unit = reinterpret_cast<const char *>(Source.Unit);
+  Dest.CommonName = reinterpret_cast<const char *>(Source.CommonName);
+  Dest.Mail = reinterpret_cast<const char *>(Source.Mail);
+  Dest.Country = reinterpret_cast<const char *>(Source.Country);
+  Dest.StateProvince = reinterpret_cast<const char *>(Source.StateProvince);
+  Dest.Town = reinterpret_cast<const char *>(Source.Town);
+  Dest.Other = reinterpret_cast<const char *>(Source.Other);
 }
 //---------------------------------------------------------------------------
 void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
@@ -292,7 +292,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
     case FZ_MSG_STATUS:
       {
         ASSERT(FZ_MSG_PARAM(wParam) == 0);
-        t_ffam_statusmessage * Status = (t_ffam_statusmessage *)lParam;
+        t_ffam_statusmessage * Status = reinterpret_cast<t_ffam_statusmessage *>(lParam);
         ASSERT(Status->post);
         Result = HandleStatus(::W2MB(Status->status.GetBuffer(Status->status.GetLength())).c_str(), Status->type);
         delete Status;
@@ -305,7 +305,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       {
         int RequestResult;
         char FileName1[MAX_PATH];
-        COverwriteRequestData * Data = (COverwriteRequestData *)lParam;
+        COverwriteRequestData * Data = reinterpret_cast<COverwriteRequestData *>(lParam);
         try
         {
           ASSERT(Data != NULL);
@@ -339,7 +339,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
       else if (FZ_MSG_PARAM(wParam) == FZ_ASYNCREQUEST_VERIFYCERT)
       {
         int RequestResult;
-        CVerifyCertRequestData * AData = (CVerifyCertRequestData *)lParam;
+        CVerifyCertRequestData * AData = reinterpret_cast<CVerifyCertRequestData *>(lParam);
         try
         {
           ASSERT(AData != NULL);
@@ -379,7 +379,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
     case FZ_MSG_LISTDATA:
       {
         ASSERT(FZ_MSG_PARAM(wParam) == 0);
-        t_directory * Directory = (t_directory *)lParam;
+        t_directory * Directory = reinterpret_cast<t_directory *>(lParam);
         CString Path = Directory->path.GetPath();
         std::vector<TListDataEntry> Entries(Directory->num);
 

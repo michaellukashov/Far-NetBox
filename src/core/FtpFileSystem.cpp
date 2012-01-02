@@ -101,10 +101,10 @@ bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   bool HasTime1, bool HasTime2, void * UserData, int & RequestResult)
 {
   return FFileSystem->HandleAsynchRequestOverwrite(
-    (wchar_t *)::MB2W(FileName1).c_str(), FileName1Len,
-	(wchar_t *)::MB2W(FileName2).c_str(),
-	(wchar_t *)::MB2W(Path1).c_str(),
-	(wchar_t *)::MB2W(Path2).c_str(), Size1, Size2, Time1, Time2,
+    const_cast<wchar_t *>(::MB2W(FileName1).c_str()), FileName1Len,
+	const_cast<wchar_t *>(::MB2W(FileName2).c_str()),
+	const_cast<wchar_t *>(::MB2W(Path1).c_str()),
+	const_cast<wchar_t *>(::MB2W(Path2).c_str()), Size1, Size2, Time1, Time2,
     HasTime1, HasTime2, UserData, RequestResult);
 }
 //---------------------------------------------------------------------------
@@ -380,7 +380,7 @@ void TFTPFileSystem::Open()
       break;
   }
   int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
-  int TimeZoneOffset = int(Round(double(Data->GetTimeDifference()) * 24 * 60));
+  int TimeZoneOffset = static_cast<int>((Round(static_cast<double>(Data->GetTimeDifference()) * 24 * 60)));
   int UTF8 = 0;
   switch (Data->GetNotUtf())
   {
@@ -521,7 +521,7 @@ void TFTPFileSystem::Idle()
 
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
-        (double(Now() - FLastDataSent) > double(FTerminal->GetSessionData()->GetFtpPingIntervalDT()) * 4))
+        (static_cast<double>(Now() - FLastDataSent) > static_cast<double>(FTerminal->GetSessionData()->GetFtpPingIntervalDT()) * 4))
     {
       FLastDataSent = Now();
 
@@ -721,7 +721,7 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring &AFileName,
         try
         {
           FTerminal->ProcessDirectory(AFileName, boost::bind(&TTerminal::ChangeFileProperties, FTerminal, _1, _2, _3),
-            (void*)Properties);
+            static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
         }
         catch (...)
         {
@@ -736,7 +736,7 @@ void TFTPFileSystem::ChangeFileProperties(const std::wstring &AFileName,
         Rights = *File->GetRights();
       }
       Rights |= Properties->Rights.GetNumberSet();
-      Rights &= (unsigned short)~Properties->Rights.GetNumberUnset();
+      Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
       if ((File != NULL) && File->GetIsDirectory() && Properties->AddXToDirectories)
       {
         Rights.AddExecute();
@@ -890,7 +890,7 @@ void TFTPFileSystem::ReadDirectoryProgress(__int64 Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  int Progress = int(Bytes / 80);
+  int Progress = static_cast<int>(Bytes / 80);
   if (Progress - FLastReadDirectoryProgress >= 10)
   {
     bool Cancel = false;
@@ -1222,7 +1222,7 @@ void TFTPFileSystem::Sink(const std::wstring &FileName,
 void TFTPFileSystem::SinkFile(std::wstring FileName,
   const TRemoteFile * File, void * Param)
 {
-  TSinkFileParams * Params = (TSinkFileParams *)Param;
+  TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
   assert(Params->OperationProgress);
   try
   {
@@ -2029,7 +2029,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
     for (int Index = 0; Index < fcCount; Index++)
     {
-      FFileSystemInfo.IsCapable[Index] = IsCapable((TFSCapability)Index);
+      FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
     }
 
     FFileSystemInfoValid = true;
@@ -2449,7 +2449,7 @@ void TFTPFileSystem::GotReply(unsigned int Reply, unsigned int Flags,
            TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
            TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", int(Reply)).c_str()));
+      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", static_cast<int>(Reply)).c_str()));
     }
     else
     {
@@ -2729,7 +2729,7 @@ std::wstring TFTPFileSystem::ExtractStatusMessage(std::wstring Status)
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 {
-  TLogLineType LogType = (TLogLineType)-1;
+  TLogLineType LogType = static_cast<TLogLineType>(-1);
   std::wstring Status(AStatus);
   // DEBUG_PRINTF(L"Status = %s", Status.c_str());
   // DEBUG_PRINTF(L"Type = %d", Type);
@@ -2809,7 +2809,7 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
       break;
   }
 
-  if (FTerminal->GetLog()->GetLogging() && (LogType != (TLogLineType)-1))
+  if (FTerminal->GetLog()->GetLogging() && (LogType != static_cast<TLogLineType>(-1)))
   {
     FTerminal->GetLog()->Add(LogType, Status);
   }
@@ -2889,7 +2889,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   }
   else
   {
-    TFileTransferData &UserData = *((TFileTransferData *)AUserData);
+    TFileTransferData &UserData = *(static_cast<TFileTransferData *>(AUserData));
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt

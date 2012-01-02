@@ -66,7 +66,7 @@ size_t TList::GetCount() const
 void TList::SetCount(size_t NewCount)
 {
     // FList.resize(value);
-  if ((int)NewCount < 0) //  or (NewCount > MaxListSize) then
+  if (static_cast<int>(NewCount) < 0) //  or (NewCount > MaxListSize) then
     ::Error(SListCountError, NewCount);
   // if (NewCount > FCapacity)
     // SetCapacity(NewCount);
@@ -78,7 +78,7 @@ void TList::SetCount(size_t NewCount)
   else
   {
     int sz = FList.size();
-    for (int I = sz - 1; I >= (int)NewCount; I--)
+    for (int I = sz - 1; I >= static_cast<int>(NewCount); I--)
       Delete(I);
   }
   // FCount := NewCount;
@@ -173,8 +173,8 @@ int TList::IndexOf(void *value) const
     while ((Result < FList.size()) && (FList[Result] != value))
       Result++;
     if (Result == FList.size())
-      Result = (size_t)-1;
-    return (int)Result;
+      Result = static_cast<size_t>(-1);
+    return static_cast<int>(Result);
 }
 void TList::Clear()
 {
@@ -210,11 +210,11 @@ TObjectList::~TObjectList()
 
 TObject *TObjectList::operator [](size_t Index) const
 {
-    return (TObject *)parent::operator[](Index);
+    return static_cast<TObject *>(parent::operator[](Index));
 }
 TObject *TObjectList::GetItem(size_t Index) const
 {
-    return (TObject *)parent::GetItem(Index);
+    return static_cast<TObject *>(parent::GetItem(Index));
 }
 void TObjectList::SetItem(size_t Index, TObject *Value)
 {
@@ -274,7 +274,7 @@ void TObjectList::Notify(void *Ptr, int Action)
     if (Action == lnDeleted)
     {
       // ((TObject *)Ptr)->Free();
-      delete (TObject *)Ptr;
+      delete static_cast<TObject *>(Ptr);
     }
   }
   parent::Notify(Ptr, Action);
@@ -305,7 +305,7 @@ void TStrings::SetTextStr(const std::wstring &Text)
         }
         std::wstring S;
         S.resize(P - Start);
-        memcpy((wchar_t *)S.c_str(), Start, (P - Start) * sizeof(wchar_t));
+        memcpy(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
         Add(S);
         if (*P == 0x0D) P++;
         if (*P == 0x0A) P++;
@@ -387,9 +387,9 @@ void TStrings::Assign(TPersistent *Source)
         } BOOST_SCOPE_EXIT_END
       Clear();
       // FDefined = TStrings(Source).FDefined;
-      FQuoteChar = ((TStrings *)Source)->FQuoteChar;
-      FDelimiter = ((TStrings *)Source)->FDelimiter;
-      AddStrings((TStrings *)(Source));
+      FQuoteChar = static_cast<TStrings *>(Source)->FQuoteChar;
+      FDelimiter = static_cast<TStrings *>(Source)->FDelimiter;
+      AddStrings(static_cast<TStrings *>(Source));
     }
     return;
   }
@@ -422,7 +422,7 @@ std::wstring TStrings::GetTextStr()
         Size += GetString(I).size() + LB.size();
     }
     Result.resize(Size);
-    P = (wchar_t *)Result.c_str();
+    P = const_cast<wchar_t *>(Result.c_str());
     for (I = 0; I < Count; I++)
     {
       S = GetString(I);
@@ -547,18 +547,18 @@ int TStrings::IndexOf(const std::wstring &S)
 }
 int TStrings::IndexOfName(const std::wstring &Name)
 {
-  size_t Result = (size_t)-1;
+  size_t Result = static_cast<size_t>(-1);
   for (Result = 0; Result < GetCount(); Result++)
   {
     std::wstring S = GetString(Result);
     size_t P = ::AnsiPos(S, L'=');
     if ((P != std::wstring::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
     {
-        return (int)Result;
+        return static_cast<int>(Result);
     }
   }
-  Result = (size_t)-1;
-  return (int)Result;
+  Result = static_cast<size_t>(-1);
+  return static_cast<int>(Result);
 }
 const std::wstring TStrings::GetName(int Index)
 {
@@ -580,7 +580,7 @@ const std::wstring TStrings::GetValue(const std::wstring &Name)
   size_t I = IndexOfName(Name);
   if (I != std::wstring::npos)
   {
-    Result = GetString(I).substr(Name.size() + 1, (size_t)-1);
+    Result = GetString(I).substr(Name.size() + 1, static_cast<size_t>(-1));
   }
   return Result;
 }
@@ -736,13 +736,13 @@ void TStringList::PutString(int Index, const std::wstring &S)
     {
       ::Error(SSortedListError, 0);
     }
-    if ((Index < 0) || ((size_t)Index > FList.size()))
+    if ((Index < 0) || (static_cast<size_t>(Index) > FList.size()))
     {
       ::Error(SListIndexError, Index);
     }
     Changing();
     // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
-    if ((size_t)Index < FList.size())
+    if (static_cast<size_t>(Index) < FList.size())
     {
       TStringItem item;
       item.FString = S;
@@ -767,7 +767,7 @@ void TStringList::Delete(size_t Index)
 }
 TObject *TStringList::GetObject(int Index)
 {
-    if ((Index < 0) || ((size_t)Index >= FList.size()))
+    if ((Index < 0) || (static_cast<size_t>(Index) >= FList.size()))
     {
         ::Error(SListIndexError, Index);
     }
@@ -779,7 +779,7 @@ void TStringList::InsertObject(int Index, const std::wstring &Key, TObject *AObj
     {
         ::Error(SSortedListError, 0);
     }
-    if ((Index < 0) || ((size_t)Index > GetCount()))
+    if ((Index < 0) || (static_cast<size_t>(Index) > GetCount()))
     {
         ::Error(SListIndexError, Index);
     }
@@ -846,7 +846,7 @@ void TStringList::LoadFromFile(const std::wstring &FileName)
 
 void TStringList::PutObject(int Index, TObject *AObject)
 {
-    if ((Index < 0) || ((size_t)Index >= FList.size()))
+    if ((Index < 0) || (static_cast<size_t>(Index) >= FList.size()))
     {
       ::Error(SListIndexError, Index);
     }
@@ -876,7 +876,7 @@ void TStringList::Changed()
 }
 void TStringList::Insert(int Index, const std::wstring &S)
 {
-  if ((Index < 0) || ((size_t)Index > FList.size()))
+  if ((Index < 0) || (static_cast<size_t>(Index) > FList.size()))
   {
     ::Error(SListIndexError, Index);
   }
@@ -1043,7 +1043,7 @@ HIMAGELIST  TSHFileInfo::GetSystemImageListHandle( BOOL bSmallIcon )
     if (bSmallIcon)
     {
         hSystemImageList = (HIMAGELIST)SHGetFileInfo( 
-            (LPCTSTR)std::wstring(L"c:\\").c_str(), 
+            reinterpret_cast<LPCTSTR>(std::wstring(L"c:\\").c_str()),
              0, 
              &ssfi, 
              sizeof(SHFILEINFO), 
@@ -1051,12 +1051,12 @@ HIMAGELIST  TSHFileInfo::GetSystemImageListHandle( BOOL bSmallIcon )
     }
     else
     {
-        hSystemImageList = (HIMAGELIST)SHGetFileInfo( 
-            (LPCTSTR)std::wstring(L"c:\\").c_str(), 
+        hSystemImageList = reinterpret_cast<HIMAGELIST>(SHGetFileInfo(
+            reinterpret_cast<LPCTSTR>(std::wstring(L"c:\\").c_str()),
              0, 
              &ssfi, 
              sizeof(SHFILEINFO), 
-             SHGFI_SYSICONINDEX | SHGFI_LARGEICON); 
+             SHGFI_SYSICONINDEX | SHGFI_LARGEICON)); 
     }
     return hSystemImageList;
 }
@@ -1069,7 +1069,7 @@ int TSHFileInfo::GetFileIconIndex( std::wstring strFileName , BOOL bSmallIcon )
     if (bSmallIcon)
     {
         SHGetFileInfo(
-           (LPCTSTR)strFileName.c_str(), 
+           static_cast<LPCTSTR>(strFileName.c_str()),
            FILE_ATTRIBUTE_NORMAL,
            &sfi, 
            sizeof(SHFILEINFO), 
@@ -1078,7 +1078,7 @@ int TSHFileInfo::GetFileIconIndex( std::wstring strFileName , BOOL bSmallIcon )
     else
     {
         SHGetFileInfo(
-           (LPCTSTR)strFileName.c_str(), 
+           static_cast<LPCTSTR>(strFileName.c_str()),
            FILE_ATTRIBUTE_NORMAL,
            &sfi, 
            sizeof(SHFILEINFO), 
@@ -1095,7 +1095,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon )
     if (bSmallIcon)
     {
          SHGetFileInfo(
-             (LPCTSTR)L"Doesn't matter", 
+             static_cast<LPCTSTR>(L"Doesn't matter"), 
              FILE_ATTRIBUTE_DIRECTORY,
              &sfi, 
              sizeof(SHFILEINFO), 
@@ -1104,7 +1104,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon )
     else
     {
          SHGetFileInfo(
-             (LPCTSTR)L"Doesn't matter", 
+             static_cast<LPCTSTR>(L"Doesn't matter"),
              FILE_ATTRIBUTE_DIRECTORY,
              &sfi, 
              sizeof(SHFILEINFO), 
@@ -1118,7 +1118,7 @@ HICON TSHFileInfo::GetFileIconHandle(std::wstring strFileName, BOOL bSmallIcon)
     if (bSmallIcon)
     {
         SHGetFileInfo(
-           (LPCTSTR)strFileName.c_str(), 
+           static_cast<LPCTSTR>(strFileName.c_str()),
            FILE_ATTRIBUTE_NORMAL,
            &sfi, 
            sizeof(SHFILEINFO), 
@@ -1127,7 +1127,7 @@ HICON TSHFileInfo::GetFileIconHandle(std::wstring strFileName, BOOL bSmallIcon)
     else
     {
         SHGetFileInfo(
-           (LPCTSTR)strFileName.c_str(), 
+           static_cast<LPCTSTR>(strFileName.c_str()),
            FILE_ATTRIBUTE_NORMAL,
            &sfi, 
            sizeof(SHFILEINFO), 
@@ -1142,7 +1142,7 @@ HICON TSHFileInfo::GetFolderIconHandle(BOOL bSmallIcon )
     if (bSmallIcon)
     {
          SHGetFileInfo(
-         (LPCTSTR)"Doesn't matter", 
+         reinterpret_cast<LPCTSTR>("Doesn't matter"), 
          FILE_ATTRIBUTE_DIRECTORY,
          &sfi, 
          sizeof(SHFILEINFO), 
@@ -1150,12 +1150,12 @@ HICON TSHFileInfo::GetFolderIconHandle(BOOL bSmallIcon )
     }
     else
     {
-         SHGetFileInfo(
-         (LPCTSTR)"Does not matter", 
-         FILE_ATTRIBUTE_DIRECTORY,
-         &sfi, 
-         sizeof(SHFILEINFO), 
-         SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
+        SHGetFileInfo(
+            reinterpret_cast<LPCTSTR>("Does not matter"),
+            FILE_ATTRIBUTE_DIRECTORY,
+            &sfi, 
+            sizeof(SHFILEINFO), 
+            SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
     }
     return sfi.hIcon;
 }
@@ -1165,7 +1165,7 @@ std::wstring TSHFileInfo::GetFileType(std::wstring strFileName)
 	SHFILEINFO    sfi;
 	
 	SHGetFileInfo(
-     (LPCTSTR)strFileName.c_str(), 
+     reinterpret_cast<LPCTSTR>(strFileName.c_str()),
      FILE_ATTRIBUTE_NORMAL,
      &sfi, 
      sizeof(SHFILEINFO), 
@@ -1303,7 +1303,7 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
     if (Result > 0)
     {
       if (Result > Count) Result = Count;
-      memmove(Buffer, (char *)FMemory + FPosition, (int)Result);
+      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<int>(Result));
       FPosition += Result;
       return Result;
     }
@@ -1387,9 +1387,9 @@ void *TMemoryStream::Realloc(__int64 &NewCapacity)
     else
     {
       if (FCapacity == 0)
-        Result = malloc((int)NewCapacity);
+        Result = malloc(static_cast<int>(NewCapacity));
       else
-        Result = realloc(FMemory, (int)NewCapacity);
+        Result = realloc(FMemory, static_cast<int>(NewCapacity));
       if (Result == NULL)
         throw EStreamError(FMTLOAD(SMemoryStreamError));
     }
@@ -1417,7 +1417,8 @@ __int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
           SetCapacity(Pos);
         FSize = Pos;
       }
-      memmove((char *)FMemory + FPosition, (char *)Buffer, (int)Count);
+      memmove(static_cast<char *>(FMemory) + FPosition,
+        Buffer, static_cast<int>(Count));
       FPosition = Pos;
       Result = Count;
     }
@@ -1616,7 +1617,7 @@ bool TRegistry::DeleteKey(const std::wstring &Key)
       for (int I = Info.NumSubKeys - 1; I >= 0; I--)
       {
         DWORD Len = Info.MaxSubKeyLen + 1;
-        if (RegEnumKeyEx(DeleteKey, (DWORD)I, &KeyName[0], &Len,
+        if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(I), &KeyName[0], &Len,
             NULL, NULL, NULL, NULL) == ERROR_SUCCESS)
           this->DeleteKey(KeyName);
       }
@@ -1751,7 +1752,7 @@ std::wstring TRegistry::ReadString(const std::wstring &Name)
   if (Len > 0)
   {
     Result.resize(Len);
-    GetData(Name, (void *)Result.c_str(), Len, RegData);
+    GetData(Name, static_cast<void *>(const_cast<wchar_t *>(Result.c_str())), Len, RegData);
     if ((RegData == rdString) || (RegData == rdExpandString))
     {
       PackStr(Result);
@@ -1831,11 +1832,11 @@ void TRegistry::WriteFloat(const std::wstring &Name, double Value)
 void TRegistry::WriteString(const std::wstring &Name, const std::wstring &Value)
 {
     // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
-    PutData(Name, (void *)Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
+    PutData(Name, static_cast<void *>(const_cast<wchar_t *>(Value.c_str())), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::WriteStringRaw(const std::wstring &Name, const std::wstring &Value)
 {
-    PutData(Name, Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
+    PutData(Name, Value.c_str(), static_cast<int>(Value.size() * sizeof(wchar_t)) + 1, rdString);
 }
 void TRegistry::Writeint(const std::wstring &Name, int Value)
 {

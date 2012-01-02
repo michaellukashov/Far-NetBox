@@ -44,7 +44,7 @@ std::wstring SshVersionString()
 //---------------------------------------------------------------------------
 DWORD WINAPI threadstartroutine(void *Parameter)
 {
-    TSimpleThread *SimpleThread = (TSimpleThread *)Parameter;
+    TSimpleThread *SimpleThread = static_cast<TSimpleThread *>(Parameter);
     return TSimpleThread::ThreadProc(SimpleThread);
 }
 //---------------------------------------------------------------------------
@@ -52,13 +52,13 @@ int BeginThread(void *SecurityAttributes, DWORD StackSize,
   void *Parameter, DWORD CreationFlags,
   DWORD &ThreadId)
 {
-  HANDLE Result = ::CreateThread((LPSECURITY_ATTRIBUTES)SecurityAttributes,
+  HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
     StackSize,
-    (LPTHREAD_START_ROUTINE)&threadstartroutine,
+    static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
     Parameter,
     CreationFlags, &ThreadId);
   // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
-  return (int)Result;
+  return reinterpret_cast<int>(Result);
 }
 
 void EndThread(int ExitCode)

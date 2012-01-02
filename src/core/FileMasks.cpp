@@ -757,14 +757,14 @@ TCustomCommand::TCustomCommand()
 }
 //---------------------------------------------------------------------------
 void TCustomCommand::GetToken(
-  const std::wstring &Command, size_t Index, size_t &Len, char & PatternCmd)
+  const std::wstring &Command, size_t Index, size_t &Len, char &PatternCmd)
 {
   assert(Index < Command.size());
   const wchar_t *Ptr = Command.c_str() + Index - 1;
 
   if (Ptr[0] == L'!')
   {
-    PatternCmd = (char)Ptr[1];
+    PatternCmd = static_cast<char>(Ptr[1]);
     if (PatternCmd == L'!')
     {
       Len = 2;
@@ -774,7 +774,7 @@ void TCustomCommand::GetToken(
       Len = PatternLen(Index, PatternCmd);
     }
 
-    if ((int)Len < 0)
+    if (static_cast<int>(Len) < 0)
     {
       throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
@@ -845,7 +845,7 @@ std::wstring TCustomCommand::Complete(const std::wstring & Command,
           ::IsDelimiter(Command, Quotes, Index + Len) &&
           (Command[Index - 1] == Command[Index + Len]))
       {
-        Quote = (char)Command[Index - 1];
+        Quote = static_cast<char>(Command[Index - 1]);
       }
       std::wstring Pattern = Command.substr(Index, Len);
       std::wstring Replacement;

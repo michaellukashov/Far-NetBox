@@ -365,9 +365,9 @@ void TConfiguration::SaveDirectoryChangesCache(const std::wstring &SessionKey,
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::BannerHash(const std::wstring & Banner)
 {
-  std::wstring Result;
-  Result.resize(16);
-  md5checksum((const char *)Banner.c_str(), Banner.size(), (unsigned char*)Result.c_str());
+  std::wstring Result(16, 0);
+  md5checksum(static_cast<const char *>(static_cast<const void *>(Banner.c_str())), Banner.size() * sizeof(wchar_t),
+    reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Result.c_str())));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -565,8 +565,8 @@ std::wstring TConfiguration::GetOSVersionStr()
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = ::Trim(FORMAT(L"%d.%d.%d %s", int(OSVersionInfo.dwMajorVersion),
-      int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber),
+    Result = ::Trim(FORMAT(L"%u.%u.%u %s", OSVersionInfo.dwMajorVersion,
+      OSVersionInfo.dwMinorVersion, OSVersionInfo.dwBuildNumber,
       OSVersionInfo.szCSDVersion));
   }
   return Result;
@@ -956,7 +956,7 @@ void TConfiguration::SetLogWindowComplete(bool value)
 //---------------------------------------------------------------------
 bool TConfiguration::GetLogWindowComplete()
 {
-  return (bool)(GetLogWindowLines() == 0);
+  return static_cast<bool>(GetLogWindowLines() == 0);
 }
 //---------------------------------------------------------------------
 std::wstring TConfiguration::GetDefaultLogFileName()

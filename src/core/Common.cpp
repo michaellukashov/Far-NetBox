@@ -243,7 +243,7 @@ std::wstring CopyToChars(const std::wstring &Str, size_t &From, const std::wstri
   {
     if (Delimiter != NULL)
     {
-      *Delimiter = (char)Str[P];
+      *Delimiter = static_cast<char>(Str[P]);
     }
     Result = Str.substr(From, P - From);
     From = P + 1;
@@ -328,7 +328,7 @@ std::wstring SystemTemporaryDirectory()
 {
   std::wstring TempDir;
   TempDir.resize(MAX_PATH);
-  TempDir.resize(GetTempPath(MAX_PATH, (wchar_t *)TempDir.c_str()));
+  TempDir.resize(GetTempPath(MAX_PATH, const_cast<wchar_t *>(TempDir.c_str())));
   return TempDir;
 }
 
@@ -340,7 +340,7 @@ std::wstring SysErrorMessage(int ErrorCode)
     wchar_t Buffer[255];
     int Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
       FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
-      (LPTSTR)Buffer,
+      static_cast<LPTSTR>(Buffer),
       sizeof(Buffer), NULL);
     while ((Len > 0) && ((Buffer[Len - 1] != 0) && 
       (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
@@ -358,8 +358,8 @@ std::wstring GetShellFolderPath(int CSIdl)
   if (Shell32Lib != NULL)
   {
     typedef HRESULT (__stdcall *PFNSHGETFOLDERPATH)(HWND, int, HANDLE, DWORD, LPTSTR);
-    PFNSHGETFOLDERPATH SHGetFolderPath = (PFNSHGETFOLDERPATH)
-      GetProcAddress(Shell32Lib, "SHGetFolderPathA");
+    PFNSHGETFOLDERPATH SHGetFolderPath = reinterpret_cast<PFNSHGETFOLDERPATH>(
+      GetProcAddress(Shell32Lib, "SHGetFolderPathA"));
     if (SHGetFolderPath != NULL)
     {
       wchar_t Path[2 * MAX_PATH + 10] = L"\0";
@@ -552,13 +552,13 @@ std::wstring ExpandEnvironmentVariables(const std::wstring & Str)
 
   Buf.resize(Size);
   // Buf.Unique(); //FIXME
-  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), (wchar_t *)Buf.c_str(), Size);
+  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Size);
 
   if (Len > Size)
   {
     Buf.resize(Len);
     // Buf.Unique();
-    ExpandEnvironmentStrings(Str.c_str(), (wchar_t *)Buf.c_str(), Len);
+    ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Len);
   }
 
   PackStr(Buf);
@@ -648,10 +648,10 @@ std::wstring IncludeTrailingBackslash(const std::wstring &str)
 std::wstring ExtractFileDir(const std::wstring &str)
 {
     std::wstring result;
-    int Pos = ::LastDelimiter(str, L"/\\");
+    size_t Pos = ::LastDelimiter(str, L"/\\");
     // DEBUG_PRINTF(L"Pos = %d", Pos);
     // it used to return Path when no slash was found
-    if (Pos > 0)
+    if (Pos != std::wstring::npos)
     {
       result = str.substr(0, Pos + 1);
     }
@@ -714,7 +714,7 @@ bool ComparePaths(const std::wstring & Path1, const std::wstring & Path2)
 bool IsReservedName(const std::wstring &FileName)
 {
   std::wstring str = FileName;
-  int P = str.find_first_of(L".");
+  size_t P = str.find_first_of(L".");
   int Len = (P > 0) ? P - 1 : str.size();
   if ((Len == 3) || (Len == 4))
   {
@@ -805,8 +805,8 @@ std::wstring CharToHex(char Ch, bool UpperCase)
   const char * Digits = (UpperCase ? UpperDigits : LowerDigits);
   std::wstring Result;
   Result.resize(2);
-  Result[0] = Digits[((unsigned char)Ch & 0xF0) >> 4];
-  Result[1] = Digits[ (unsigned char)Ch & 0x0F];
+  Result[0] = Digits[(static_cast<unsigned char>(Ch) & 0xF0) >> 4];
+  Result[1] = Digits[static_cast<unsigned char>(Ch) & 0x0F];
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -834,9 +834,9 @@ std::wstring HexToStr(const std::wstring &Hex)
   {
     for (size_t i = 0; i < Hex.size(); i += 2)
     {
-      P1 = Digits.find_first_of((char)toupper(Hex[i]));
-      P2 = Digits.find_first_of((char)toupper(Hex[i + 1]));
-      if (P1 == std::wstring::npos || P2 == std::wstring::npos)
+      P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
+      P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
+      if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
       {
         Result = L"";
         break;
@@ -857,17 +857,17 @@ unsigned int HexToInt(const std::wstring &Hex, int MinChars)
   size_t I = 0;
   while (I < Hex.size())
   {
-    size_t A = Digits.find_first_of((wchar_t)toupper(Hex[I]));
+    size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)
     {
-      if ((MinChars < 0) || (I <= (size_t)MinChars))
+      if ((MinChars < 0) || (I <= static_cast<size_t>(MinChars)))
       {
         Result = 0;
       }
       break;
     }
 
-    Result = (Result * 16) + (A - 1);
+    Result = (Result * 16) + ((int)A - 1);
 
     I++;
   }
@@ -884,7 +884,7 @@ std::wstring IntToHex(unsigned int Int, int MinChars)
 //---------------------------------------------------------------------------
 char HexToChar(const std::wstring &Hex, int MinChars)
 {
-  return (char)HexToInt(Hex, MinChars);
+  return static_cast<char>(HexToInt(Hex, MinChars));
 }
 //---------------------------------------------------------------------------
 bool FileSearchRec(const std::wstring &FileName, WIN32_FIND_DATA &Rec)
@@ -995,7 +995,7 @@ TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int 
   }
   catch (const EConvertError &E)
   {
-    throw EConvertError(FORMAT(L"%s [%d-%d-%d]", E.GetMessage().c_str(), int(Year), int(Month), int(Day)));
+    throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.GetMessage().c_str(), Year, Month, Day));
   }
   return TDateTime();
 }
@@ -1006,7 +1006,7 @@ bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsign
   // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
   {
-    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / (double)MSecsPerDay;
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / static_cast<double>(MSecsPerDay);
     // DEBUG_PRINTF(L"Time = %f", Time);
     Result = true;
   }
@@ -1032,7 +1032,7 @@ TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Se
   }
   catch (EConvertError & E)
   {
-    throw EConvertError(FORMAT(L"%s [%d:%d:%d.%d]", E.GetMessage().c_str(), int(Hour), int(Min), int(Sec), int(MSec)));
+    throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.GetMessage().c_str(), Hour, Min, Sec, MSec));
   }
   return TDateTime();
 }
@@ -1107,23 +1107,23 @@ static TDateTimeParams * GetDateTimeParams()
       DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
 
       DateTimeParams.BaseDifferenceSec = TZI.Bias;
-      DateTimeParams.BaseDifference = double(TZI.Bias) / 1440;
+      DateTimeParams.BaseDifference = static_cast<double>(TZI.Bias) / 1440;
       DateTimeParams.BaseDifferenceSec *= 60;
 
       DateTimeParams.CurrentDifferenceSec = TZI.Bias +
         DateTimeParams.CurrentDaylightDifferenceSec;
       DateTimeParams.CurrentDifference =
-        double(DateTimeParams.CurrentDifferenceSec) / 1440;
+        static_cast<double>(DateTimeParams.CurrentDifferenceSec) / 1440;
       DateTimeParams.CurrentDifferenceSec *= 60;
 
       DateTimeParams.CurrentDaylightDifference =
-        double(DateTimeParams.CurrentDaylightDifferenceSec) / 1440;
+        static_cast<double>(DateTimeParams.CurrentDaylightDifferenceSec) / 1440;
       DateTimeParams.CurrentDaylightDifferenceSec *= 60;
 
       DateTimeParams.DaylightDifferenceSec = TZI.DaylightBias * 60;
-      DateTimeParams.DaylightDifference = double(TZI.DaylightBias) / 1440;
+      DateTimeParams.DaylightDifference = static_cast<double>(TZI.DaylightBias) / 1440;
       DateTimeParams.StandardDifferenceSec = TZI.StandardBias * 60;
-      DateTimeParams.StandardDifference = double(TZI.StandardBias) / 1440;
+      DateTimeParams.StandardDifference = static_cast<double>(TZI.StandardBias) / 1440;
 
       DateTimeParams.StandardDate = TZI.StandardDate;
       DateTimeParams.DaylightDate = TZI.DaylightDate;
@@ -1228,7 +1228,7 @@ static bool IsDateInDST(const TDateTime & DateTime)
         TGuard Guard(&Section);
         if (DSTCacheCount < LENOF(DSTCache))
         {
-          NewCache.Year = (unsigned short)Year;
+          NewCache.Year = static_cast<unsigned short>(Year);
           DSTCache[DSTCacheCount] = NewCache;
           DSTCache[DSTCacheCount].Filled = true;
           DSTCacheCount++;
@@ -1294,7 +1294,7 @@ __int64 Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
-  return ((Number - Floor) > (Ceil - Number)) ? (__int64)Ceil : (__int64)Floor;
+  return ((Number - Floor) > (Ceil - Number)) ? static_cast<__int64>(Ceil) : static_cast<__int64>(Floor);
 }
 //---------------------------------------------------------------------------
 #define TIME_POSIX_TO_WIN(t, ft) (*(LONGLONG*)&(ft) = \
@@ -1305,10 +1305,10 @@ __int64 Round(double Number)
 static __int64 DateTimeToUnix(const TDateTime &DateTime)
 {
   TDateTimeParams *Params = GetDateTimeParams();
-  double value = double(DateTime - Params->UnixEpoch) * 86400;
+  double value = static_cast<double>(DateTime - Params->UnixEpoch) * 86400;
   double intpart;
   modf(value, &intpart);
-  return (__int64)intpart + Params->CurrentDifferenceSec;
+  return static_cast<__int64>(intpart) + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
 FILETIME DateTimeToFileTime(const TDateTime &DateTime,
@@ -1825,7 +1825,7 @@ std::wstring LoadStr(int Ident, unsigned int MaxLength)
     assert(hInstance != 0);
 
     Result.resize(MaxLength > 0 ? MaxLength : 255);
-    int Length = ::LoadString(hInstance, Ident, (LPWSTR)Result.c_str(), Result.size());
+    int Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.size());
     Result.resize(Length);
 
     return Result;
@@ -2048,7 +2048,7 @@ bool IsExactly2008R2()
   // typedef unsigned long *PDWORD;
   typedef BOOL (WINAPI *TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
-      (TGetProductInfo)GetProcAddress(Kernel32, "GetProductInfoA");
+      reinterpret_cast<TGetProductInfo>(GetProcAddress(Kernel32, "GetProductInfoA"));
   if (GetProductInfo != NULL)
   {
     DWORD Type;
@@ -2270,12 +2270,15 @@ bool IsDelimiter(const std::wstring &str, const std::wstring &delim, size_t inde
 
 size_t LastDelimiter(const std::wstring &str, const std::wstring &delim)
 {
-    for (int i = (int)str.size() - 1; i >= 0; i--)
+    if (str.size())
     {
+      for (size_t i = str.size() - 1; i >= 0; i--)
+      {
         if (::IsDelimiter(str, delim, i))
         {
-            return i;
+          return i;
         }
+      }
     }
     return std::wstring::npos;
 }
@@ -2361,8 +2364,8 @@ TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
     TTimeStamp result = {0, 0};
     double fractpart, intpart;
     fractpart = modf(DateTime, &intpart);
-    result.Time = (int)(fractpart * MSecsPerDay);
-    result.Date = (int)(intpart + DateDelta);
+    result.Time = static_cast<int>(fractpart * MSecsPerDay);
+    result.Date = static_cast<int>(intpart + DateDelta);
     // DEBUG_PRINTF(L"DateTime = %f, time = %u, Date = %u", DateTime, result.Time, result.Date);
     return result;
 }
@@ -2374,7 +2377,7 @@ __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
   __int64 Result = -1;
   // DEBUG_PRINTF(L"Handle = %d, Count = %d", Handle, Count);
   DWORD res = 0;
-  if (::ReadFile(Handle, (LPVOID)Buffer, (DWORD)Count, &res, NULL))
+  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &res, NULL))
     Result = res;
   else
     Result = -1;
@@ -2556,7 +2559,7 @@ std::wstring FmtLoadStr(int id, ...)
     HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
     // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     format.resize(255);
-    int Length = ::LoadString(hInstance, id, (LPWSTR)format.c_str(), format.size());
+    int Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), format.size());
     format.resize(Length);
     // DEBUG_PRINTF(L"format = %s", format.c_str());
     if (!Length)
@@ -2761,11 +2764,12 @@ std::wstring ExtractFileExt(const std::wstring &FileName)
 std::wstring get_full_path_name(const std::wstring &path)
 {
   std::wstring buf(MAX_PATH, 0);
-  DWORD size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), (LPWSTR)buf.c_str(), NULL);
+  DWORD size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1),
+    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
   if (size > buf.size())
   {
     buf.resize(size);
-    size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), (LPWSTR)buf.c_str(), NULL);
+    size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
   }
   return std::wstring(buf.c_str(), size);
 }

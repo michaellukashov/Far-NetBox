@@ -546,7 +546,7 @@ public:
     std::wstring * FileName = NULL, bool * ProtocolDefined = NULL);
   virtual ~TStoredSessionList();
   // __property TSessionData * Sessions[int Index]  = { read=AtSession };
-  TSessionData *GetSession(int Index) { return (TSessionData*)AtObject(Index); }
+  TSessionData *GetSession(int Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
   void SetDefaultSettings(TSessionData * value);

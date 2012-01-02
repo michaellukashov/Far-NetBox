@@ -771,7 +771,7 @@ inline wchar_t *StrToFar(const std::wstring &S)
     // ::Error(SNotImplemented, 24);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
-    return (wchar_t *)S.c_str();
+    return const_cast<wchar_t *>(S.c_str());
 }
 
 //---------------------------------------------------------------------------
@@ -781,6 +781,6 @@ inline wchar_t *StrToFar(const wchar_t *S)
     // ::Error(SNotImplemented, 25);
     // S.Unique();
     // CharToOem(S, S);
-    return (wchar_t *)S;
+    return const_cast<wchar_t *>(S);
 }
 //---------------------------------------------------------------------------

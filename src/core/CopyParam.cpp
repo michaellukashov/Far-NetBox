@@ -168,7 +168,7 @@ std::wstring TCopyParamType::GetInfoStr(std::wstring Separator, int Options) con
 
   if (GetCPSLimit() > 0)
   {
-    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT, int(GetCPSLimit() / 1024)).c_str(), cpaExcludeMaskOnly);
+    ADD(FMTLOAD(COPY_INFO_CPS_LIMIT, static_cast<int>(GetCPSLimit() / 1024)).c_str(), cpaExcludeMaskOnly);
     ADD(L"", cpaExcludeMaskOnly);
   }
 
@@ -254,7 +254,7 @@ wchar_t * TCopyParamType::ReplaceChar(std::wstring & FileName, wchar_t * Invalid
         {
           FileName.insert(Index + 1, CharToHex(FileName[Index]));
           FileName[Index] = TokenPrefix;
-          InvalidChar = (wchar_t *)FileName.c_str() + Index + 2;
+          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 2);
         }
         else
         {
@@ -277,7 +277,7 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
     bool ATokenReplacement = (GetInvalidCharsReplacement() == TokenReplacement);
     const wchar_t * Chars =
       (ATokenReplacement ? FTokenizibleChars : GetLocalInvalidChars()).c_str();
-    wchar_t * InvalidChar = (wchar_t *)FileName.c_str();
+    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
       int Pos = (InvalidChar - FileName.c_str() + 1);
@@ -301,7 +301,7 @@ std::wstring TCopyParamType::ValidLocalFileName(std::wstring FileName) const
         ((FileName[FileName.size() - 1] == ' ') ||
          (FileName[FileName.size() - 1] == '.')))
     {
-      ReplaceChar(FileName, (wchar_t *)FileName.c_str() + FileName.size() - 1);
+      ReplaceChar(FileName, const_cast<wchar_t *>(FileName.c_str() + FileName.size() - 1));
     }
 
     if (IsReservedName(FileName))
@@ -321,7 +321,7 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
 {
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
-    wchar_t * InvalidChar = (wchar_t *)FileName.c_str();
+    wchar_t * InvalidChar = const_cast<wchar_t *>(FileName.c_str());
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
       size_t Index = InvalidChar - FileName.c_str() + 1;
@@ -340,14 +340,14 @@ std::wstring TCopyParamType::RestoreChars(std::wstring FileName) const
         {
           FileName[Index] = Char;
           FileName.erase(Index + 1, 2);
-          InvalidChar = (wchar_t *)FileName.c_str() + Index;
+          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index);
         }
         else if ((Hex == L"00") &&
                  ((Index == FileName.size() - 2) || (FileName[Index + 3] == '.')) &&
                  IsReservedName(FileName.substr(0, Index - 1) + FileName.substr(Index + 3, FileName.size() - Index - 3 + 1)))
         {
           FileName.erase(Index, 3);
-          InvalidChar = (wchar_t *)FileName.c_str() + Index - 1;
+          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index - 1);
         }
         else
         {
@@ -392,6 +392,7 @@ std::wstring TCopyParamType::Untokenize(std::wstring FileName)
     }
     else
     {
+      // wchar_t Ch = static_cast<wchar_t>(HexToInt(Result.substr(Index + 1, 2), -1));
       wchar_t Ch = (wchar_t)HexToInt(Result.substr(Index + 1, 2), -1);
       if (Ch == '\0')
       {
@@ -537,17 +538,17 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
 {
   SetAddXToDirectories(Storage->Readbool(L"AddXToDirectories", GetAddXToDirectories()));
   GetAsciiFileMask().SetMasks(Storage->ReadString(L"Masks", GetAsciiFileMask().GetMasks()));
-  SetFileNameCase((TFileNameCase)Storage->Readint(L"FileNameCase", GetFileNameCase()));
+  SetFileNameCase(static_cast<TFileNameCase>(Storage->Readint(L"FileNameCase", GetFileNameCase())));
   SetPreserveReadOnly(Storage->Readbool(L"PreserveReadOnly", GetPreserveReadOnly()));
   SetPreserveTime(Storage->Readbool(L"PreserveTime", GetPreserveTime()));
   SetPreserveRights(Storage->Readbool(L"PreserveRights", GetPreserveRights()));
   SetIgnorePermErrors(Storage->Readbool(L"IgnorePermErrors", GetIgnorePermErrors()));
   FRights.SetText(Storage->ReadString(L"Text", GetRights().GetText()));
-  SetTransferMode((TTransferMode)Storage->Readint(L"TransferMode", GetTransferMode()));
-  SetResumeSupport((TResumeSupport)Storage->Readint(L"ResumeSupport", GetResumeSupport()));
+  SetTransferMode(static_cast<TTransferMode>(Storage->Readint(L"TransferMode", GetTransferMode())));
+  SetResumeSupport(static_cast<TResumeSupport>(Storage->Readint(L"ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64(L"ResumeThreshold", GetResumeThreshold()));
-  SetInvalidCharsReplacement((char)Storage->Readint(L"ReplaceInvalidChars",
-    (unsigned char)GetInvalidCharsReplacement()));
+  SetInvalidCharsReplacement(static_cast<char>(Storage->Readint(L"ReplaceInvalidChars",
+    static_cast<unsigned char>(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString(L"LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->Readbool(L"CalculateSize", GetCalculateSize()));
   GetExcludeFileMask().SetMasks(Storage->ReadString(L"ExcludeFileMask", GetExcludeFileMask().GetMasks()));
@@ -570,7 +571,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage) const
   Storage->Writeint(L"TransferMode", GetTransferMode());
   Storage->Writeint(L"ResumeSupport", GetResumeSupport());
   Storage->WriteInt64(L"ResumeThreshold", GetResumeThreshold());
-  Storage->Writeint(L"ReplaceInvalidChars", (unsigned char)GetInvalidCharsReplacement());
+  Storage->Writeint(L"ReplaceInvalidChars", static_cast<unsigned char>(GetInvalidCharsReplacement()));
   Storage->WriteString(L"LocalInvalidChars", GetLocalInvalidChars());
   Storage->Writebool(L"CalculateSize", GetCalculateSize());
   Storage->WriteString(L"ExcludeFileMask", GetExcludeFileMask().GetMasks());
