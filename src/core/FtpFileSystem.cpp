@@ -948,7 +948,7 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
 void TFTPFileSystem::FileTransfer(const std::wstring &FileName,
   const std::wstring &LocalFile, const std::wstring &RemoteFile,
   const std::wstring &RemotePath, bool Get, __int64 Size, int Type,
-  TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
+  TFileTransferData &UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
     FFileZillaIntf->FileTransfer(
@@ -2878,7 +2878,7 @@ TDateTime TFTPFileSystem::ConvertRemoteTimestamp(time_t Time, bool HasTime)
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
-  wchar_t * FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
+  wchar_t *FileName1, size_t FileName1Len, const wchar_t * /*FileName2*/,
   const wchar_t * /*Path1*/, const wchar_t * /*Path2*/,
   __int64 Size1, __int64 Size2, time_t Time1, time_t Time2,
   bool HasTime1, bool HasTime2, void * AUserData, int & RequestResult)
@@ -2889,7 +2889,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   }
   else
   {
-    TFileTransferData & UserData = *((TFileTransferData *)AUserData);
+    TFileTransferData &UserData = *((TFileTransferData *)AUserData);
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
@@ -2899,7 +2899,8 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     {
       TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
       std::wstring FileName = FileName1;
-      assert(UserData.FileName == FileName);
+      // DEBUG_PRINTF(L"UserData.FileName = %s, FileName = %s", UserData.FileName.c_str(), FileName.c_str())
+      assert(!wcscmp(UserData.FileName.c_str(), FileName.c_str()));
       TOverwriteMode OverwriteMode = omOverwrite;
       TOverwriteFileParams FileParams;
       bool NoFileParams =
