@@ -2257,12 +2257,15 @@ std::wstring StringReplace(const std::wstring &str, const std::wstring &from, co
 
 bool IsDelimiter(const std::wstring &str, const std::wstring &delim, size_t index)
 {
-    wchar_t c = str[index];
-    for (size_t i = 0; i < delim.size(); i++)
+    if (index < str.size())
     {
-        if (delim[i] == c)
+        wchar_t c = str[index];
+        for (size_t i = 0; i < delim.size(); i++)
         {
-            return true;
+            if (delim[i] == c)
+            {
+                return true;
+            }
         }
     }
     return false;
@@ -2272,7 +2275,7 @@ size_t LastDelimiter(const std::wstring &str, const std::wstring &delim)
 {
     if (str.size())
     {
-      for (size_t i = str.size() - 1; i >= 0; i--)
+      for (int i = static_cast<int>(str.size() - 1); i >= 0; i--)
       {
         if (::IsDelimiter(str, delim, i))
         {
