@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 int random(int range)
 {
-    return (double)rand() / ((double)RAND_MAX / (double)range);
+    return (int)((double)rand() / ((double)RAND_MAX / (double)range));
 }
 
 //---------------------------------------------------------------------------
