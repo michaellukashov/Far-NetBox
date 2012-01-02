@@ -178,8 +178,8 @@ public:
   void ConfigureTunnel(int PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
-  static void ValidatePath(const std::wstring Path);
-  static void ValidateName(const std::wstring Name);
+  static void ValidatePath(const std::wstring &Path);
+  static void ValidateName(const std::wstring &Name);
 
   // __property std::wstring HostName  = { read=FHostName, write=SetHostName };
   std::wstring GetHostName() const { return FHostName; }
@@ -531,7 +531,7 @@ public:
   void Load();
   void Save(bool All, bool Explicit);
   void Saved();
-  void Export(const std::wstring FileName);
+  void Export(const std::wstring &FileName);
   void Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false);
   void Save(THierarchicalStorage * Storage, bool All = false);
@@ -551,8 +551,8 @@ public:
   TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
   void SetDefaultSettings(TSessionData * value);
 
-  static void ImportHostKeys(const std::wstring TargetKey,
-    const std::wstring SourceKey, TStoredSessionList * Sessions,
+  static void ImportHostKeys(const std::wstring &TargetKey,
+    const std::wstring &SourceKey, TStoredSessionList * Sessions,
     bool OnlySelected);
 
 private:

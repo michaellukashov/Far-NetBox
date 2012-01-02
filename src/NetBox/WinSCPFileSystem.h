@@ -154,12 +154,12 @@ protected:
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing();
   bool PropertiesDialog(TStrings * FileList,
-    const std::wstring Directory, 
+    const std::wstring &Directory, 
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     TRemoteProperties * Properties, int AllowedChanges);
-  bool ExecuteCommand(const std::wstring Command);
-  void TerminalCaptureLog(const std::wstring & AddedLine, bool StdError);
+  bool ExecuteCommand(const std::wstring &Command);
+  void TerminalCaptureLog(const std::wstring &AddedLine, bool StdError);
   bool CopyDialog(bool ToRemote, bool Move, TStrings * FileList,
     std::wstring & TargetDirectory, 
     TGUICopyParamType * Params,
@@ -179,7 +179,7 @@ protected:
     const TUsableCopyParamAttrs & CopyParamAttrs);
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, int Params,
-    const std::wstring LocalDirectory, const std::wstring RemoteDirectory);
+    const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory);
   bool RemoteTransferDialog(TStrings * FileList, std::wstring & Target,
     std::wstring & FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile * File, std::wstring & NewName);
@@ -188,7 +188,7 @@ protected:
   bool PasswordDialog(TSessionData * SessionData,
     TPromptKind Kind, std::wstring Name, std::wstring Instructions, TStrings * Prompts,
     TStrings * Results, bool StoredCredentialsTried);
-  bool BannerDialog(std::wstring SessionName, const std::wstring & Banner,
+  bool BannerDialog(std::wstring SessionName, const std::wstring &Banner,
     bool & NeverShowAgain, int Options);
   bool CreateDirectoryDialog(std::wstring & Directory,
     TRemoteProperties * Properties, bool & SaveSettings);
@@ -197,18 +197,18 @@ protected:
     const TCopyParamType * CopyParams, const synchronizestartstop_slot_type &OnStartStop,
     bool & SaveSettings, int Options, int CopyParamAttrs,
     const getsynchronizeoptions_slot_type &OnGetOptions);
-  void DoSynchronize(TSynchronizeController * Sender,
-    const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
-    const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
-    TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
+  void DoSynchronize(TSynchronizeController *Sender,
+    const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory,
+    const TCopyParamType &CopyParam, const TSynchronizeParamType &Params,
+    TSynchronizeChecklist **Checklist, TSynchronizeOptions *Options, bool Full);
   void DoSynchronizeInvalid(TSynchronizeController * Sender,
-    const std::wstring Directory, const std::wstring ErrorStr);
+    const std::wstring &Directory, const std::wstring &ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
     int & MaxDirectories);
-  void Synchronize(const std::wstring LocalDirectory,
-    const std::wstring RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-    const TCopyParamType & CopyParam, int Params, TSynchronizeChecklist ** Checklist,
-    TSynchronizeOptions * Options);
+  void Synchronize(const std::wstring &LocalDirectory,
+    const std::wstring &RemoteDirectory, TTerminal::TSynchronizeMode Mode,
+    const TCopyParamType &CopyParam, int Params, TSynchronizeChecklist **Checklist,
+    TSynchronizeOptions *Options);
   bool SynchronizeAllowSelectedOnly();
   void GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
   void RequireCapability(int Capability);
@@ -294,7 +294,7 @@ private:
   void TerminalReadDirectoryProgress(TObject * Sender, int Progress,
     bool & Cancel);
   void TerminalInformation(TTerminal * Terminal,
-    const std::wstring & Str, bool Status, bool Active);
+    const std::wstring &Str, bool Status, bool Active);
   void TerminalQueryUser(TObject * Sender,
     const std::wstring &Query, TStrings * MoreMessages, int Answers,
     const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg);
@@ -303,7 +303,7 @@ private:
     TStrings * Prompts, TStrings * Results, bool & Result,
     void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
-    std::wstring SessionName, const std::wstring & Banner, bool & NeverShowAgain,
+    std::wstring SessionName, const std::wstring &Banner, bool & NeverShowAgain,
     int Options);
   void TerminalShowExtendedException(TTerminal * Terminal,
     const std::exception * E, void * Arg);
@@ -311,7 +311,7 @@ private:
   void OperationProgress(
     TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
   void OperationFinished(TFileOperation Operation,
-    TOperationSide Side, bool DragDrop, const std::wstring & FileName, bool Success,
+    TOperationSide Side, bool DragDrop, const std::wstring &FileName, bool Success,
     TOnceDoneOperation &DisconnectWhenComplete); // ??? bool & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TObjectList * PanelItems,
@@ -322,9 +322,9 @@ private:
   TStrings * CreateFocusedFileList(TOperationSide Side,
     TFarPanelInfo * PanelInfo = NULL);
   void CustomCommandGetParamValue(
-    const std::wstring AName, std::wstring & Value);
-  void TerminalSynchronizeDirectory(const std::wstring LocalDirectory,
-    const std::wstring RemoteDirectory, bool & Continue, bool Collect);
+    const std::wstring &AName, std::wstring &Value);
+  void TerminalSynchronizeDirectory(const std::wstring &LocalDirectory,
+    const std::wstring &RemoteDirectory, bool & Continue, bool Collect);
   void QueueListUpdate(TTerminalQueue * Queue);
   void QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
   void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);

@@ -227,7 +227,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
 }
 //---------------------------------------------------------------------------
 void TFarInteractiveCustomCommand::Prompt(int /*Index*/,
-  const std::wstring & Prompt, std::wstring & Value)
+  const std::wstring &Prompt, std::wstring & Value)
 {
   std::wstring APrompt = Prompt;
   if (APrompt.empty())
@@ -754,7 +754,7 @@ bool TWinSCPFileSystem::ProcessEventEx(int Event, void * Param)
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalCaptureLog(
-  const std::wstring & AddedLine, bool /*StdError*/)
+  const std::wstring &AddedLine, bool /*StdError*/)
 {
   if (FOutputLog)
   {
@@ -822,7 +822,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::ExecuteCommand(const std::wstring Command)
+bool TWinSCPFileSystem::ExecuteCommand(const std::wstring &Command)
 {
   if (FTerminal->AllowedAnyCommand(Command) &&
       EnsureCommandSessionFallback(fcAnyCommand))
@@ -1353,9 +1353,9 @@ void TWinSCPFileSystem::ApplyCommand()
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::Synchronize(const std::wstring LocalDirectory,
-  const std::wstring RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-  const TCopyParamType & CopyParam, int Params, TSynchronizeChecklist ** Checklist,
+void TWinSCPFileSystem::Synchronize(const std::wstring &LocalDirectory,
+  const std::wstring &RemoteDirectory, TTerminal::TSynchronizeMode Mode,
+  const TCopyParamType &CopyParam, int Params, TSynchronizeChecklist ** Checklist,
   TSynchronizeOptions * Options)
 {
   TSynchronizeChecklist * AChecklist = NULL;
@@ -1526,8 +1526,8 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalSynchronizeDirectory(
-  const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
-  bool & Continue, bool Collect)
+  const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory,
+  bool &Continue, bool Collect)
 {
   static unsigned long LastTicks;
   unsigned long Ticks = GetTickCount();
@@ -1627,10 +1627,10 @@ void TWinSCPFileSystem::Synchronize()
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::DoSynchronize(
-  TSynchronizeController * /*Sender*/, const std::wstring LocalDirectory,
-  const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,
-  const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
-  TSynchronizeOptions * Options, bool Full)
+  TSynchronizeController * /*Sender*/, const std::wstring &LocalDirectory,
+  const std::wstring &RemoteDirectory, const TCopyParamType &CopyParam,
+  const TSynchronizeParamType &Params, TSynchronizeChecklist **Checklist,
+  TSynchronizeOptions *Options, bool Full)
 {
   try
   {
@@ -1652,7 +1652,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch (const std::exception & E)
+  catch (const std::exception &E)
   {
     DEBUG_PRINTF(L"before HandleException");
     HandleException(&E);
@@ -1661,8 +1661,8 @@ void TWinSCPFileSystem::DoSynchronize(
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::DoSynchronizeInvalid(
-  TSynchronizeController * /*Sender*/, const std::wstring Directory,
-  const std::wstring ErrorStr)
+  TSynchronizeController * /*Sender*/, const std::wstring &Directory,
+  const std::wstring &ErrorStr)
 {
   std::wstring Message;
   if (!Directory.empty())
@@ -1708,7 +1708,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::CustomCommandGetParamValue(
-  const std::wstring AName, std::wstring & Value)
+  const std::wstring &AName, std::wstring &Value)
 {
   std::wstring Name = AName;
   if (Name.empty())
@@ -3256,7 +3256,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::TerminalDisplayBanner(
   TTerminal * /*Terminal*/, std::wstring SessionName,
-  const std::wstring & Banner, bool & NeverShowAgain, int Options)
+  const std::wstring &Banner, bool & NeverShowAgain, int Options)
 {
   BannerDialog(SessionName, Banner, NeverShowAgain, Options);
 }

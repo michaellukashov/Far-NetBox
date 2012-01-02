@@ -481,14 +481,14 @@ void TRmSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TMvSessionAction::TMvSessionAction(TSessionLog * Log,
-    const std::wstring & FileName, const std::wstring & ADestination) :
+    const std::wstring &FileName, const std::wstring & ADestination) :
   TFileLocationSessionAction(Log, laMv, FileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TSessionLog * Log,
-    const std::wstring & Command, const std::wstring & Destination) :
+    const std::wstring &Command, const std::wstring & Destination) :
   TSessionAction(Log, laCall)
 {
   if (FRecord != NULL)
@@ -507,7 +507,7 @@ void TCallSessionAction::AddOutput(const std::wstring & Output, bool StdError)
 }
 //---------------------------------------------------------------------------
 TLsSessionAction::TLsSessionAction(TSessionLog * Log,
-    const std::wstring & Destination) :
+    const std::wstring &Destination) :
   TSessionAction(Log, laLs)
 {
   if (FRecord != NULL)

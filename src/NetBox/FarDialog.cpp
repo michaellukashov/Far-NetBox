@@ -1164,7 +1164,7 @@ unsigned int TFarDialogItem::GetFlags()
     return GetDialogItem()->Flags;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetDataInternal(const std::wstring value)
+void TFarDialogItem::SetDataInternal(const std::wstring &value)
 {
     // DEBUG_PRINTF(L"value = %s", value.c_str());
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
@@ -1185,7 +1185,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring value)
     DialogChange();
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetData(const std::wstring value)
+void TFarDialogItem::SetData(const std::wstring &value)
 {
     if (GetData() != value)
     {
@@ -1193,7 +1193,7 @@ void TFarDialogItem::SetData(const std::wstring value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::UpdateData(const std::wstring value)
+void TFarDialogItem::UpdateData(const std::wstring &value)
 {
     std::wstring FarData = value.c_str();
     if (!GetOem())
@@ -1734,7 +1734,7 @@ TFarButton::TFarButton(TFarDialog *ADialog) :
     FBrackets = brNormal;
 }
 //---------------------------------------------------------------------------
-void TFarButton::SetDataInternal(const std::wstring value)
+void TFarButton::SetDataInternal(const std::wstring &value)
 {
     std::wstring AValue;
     switch (FBrackets)
@@ -1910,7 +1910,7 @@ bool TFarCheckBox::GetIsEmpty()
     return GetChecked() != BSTATE_CHECKED;
 }
 //---------------------------------------------------------------------------
-void TFarCheckBox::SetData(const std::wstring value)
+void TFarCheckBox::SetData(const std::wstring &value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -1954,7 +1954,7 @@ bool TFarRadioButton::GetIsEmpty()
     return !GetChecked();
 }
 //---------------------------------------------------------------------------
-void TFarRadioButton::SetData(const std::wstring value)
+void TFarRadioButton::SetData(const std::wstring &value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -2105,7 +2105,7 @@ TFarText::TFarText(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-void TFarText::SetData(const std::wstring value)
+void TFarText::SetData(const std::wstring &value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)

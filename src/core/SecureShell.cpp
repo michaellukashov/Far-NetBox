@@ -443,12 +443,12 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::PromptUser(bool /*ToServer*/,
-  std::wstring AName, bool /*NameRequired*/,
-  std::wstring Instructions, bool InstructionsRequired,
+  const std::wstring &AName, bool /*NameRequired*/,
+  const std::wstring &Instructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
 {
   // there can be zero prompts!
-
+  std::wstring instructions = Instructions;
   assert(Results->GetCount() == Prompts->GetCount());
 
   TPromptKind PromptKind;
@@ -548,7 +548,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   }
 
   LogEvent(FORMAT(L"Prompt (%d, %s, %s, %s)", PromptKind, AName.c_str(),
-    Instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())).c_str());
+    instructions.c_str(), (Prompts->GetCount() > 0 ? Prompts->GetString(0).c_str() : std::wstring(L"<no prompt>").c_str())).c_str());
 
   Name = ::Trim(Name);
   if (0)
@@ -558,16 +558,16 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
           { "Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
         };
       InstructionTranslation = KeybInteractiveInstructionTranslation;
-      Instructions = L"Using keyboard-interactive authentication.";
+      instructions = L"Using keyboard-interactive authentication.";
   }
   if (InstructionTranslation != NULL)
   {
-    TranslatePuttyMessage(InstructionTranslation, 1, Instructions);
+    TranslatePuttyMessage(InstructionTranslation, 1, instructions);
   }
 
   // some servers add leading blank line to make the prompt look prettier
   // on terminal console
-  Instructions = ::Trim(Instructions);
+  instructions = ::Trim(instructions);
 
   for (size_t Index = 0; Index < Prompts->GetCount(); Index++)
   {
@@ -607,7 +607,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
       Results->PutString(0, FSessionData->GetPassword());
       FStoredPasswordTriedForKI = true;
     }
-    else if (Instructions.empty() && !InstructionsRequired && (Prompts->GetCount() == 0))
+    else if (instructions.empty() && !InstructionsRequired && (Prompts->GetCount() == 0))
     {
       LogEvent(L"Ignoring empty SSH server authentication request");
       Result = true;
@@ -630,7 +630,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   if (!Result)
   {
     Result = FUI->PromptUser(FSessionData,
-      PromptKind, Name, Instructions, Prompts, Results);
+      PromptKind, Name, instructions, Prompts, Results);
 
     if (Result)
     {
@@ -1034,7 +1034,7 @@ void TSecureShell::SendLine(std::wstring Line)
 }
 //---------------------------------------------------------------------------
 int TSecureShell::TranslatePuttyMessage(
-  const TPuttyTranslation * Translation, size_t Count, std::wstring & Message)
+  const TPuttyTranslation * Translation, size_t Count, std::wstring &Message)
 {
   int Result = -1;
   for (unsigned int Index = 0; Index < Count; Index++)
@@ -1072,7 +1072,7 @@ int TSecureShell::TranslatePuttyMessage(
   return Result;
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TranslateAuthenticationMessage(std::wstring & Message)
+int TSecureShell::TranslateAuthenticationMessage(std::wstring &Message)
 {
   static const TPuttyTranslation Translation[] = {
     { "Using username \"%\".", AUTH_TRANSL_USERNAME },
@@ -1091,15 +1091,15 @@ int TSecureShell::TranslateAuthenticationMessage(std::wstring & Message)
   return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AddStdError(std::wstring Str)
+void TSecureShell::AddStdError(const std::wstring &Str)
 {
   FStdError += Str;
 
   size_t P;
-  Str = DeleteChar(Str, '\r');
+  std::wstring str = DeleteChar(Str, '\r');
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
-  FStdErrorTemp += Str;
+  FStdErrorTemp += str;
   std::wstring Line;
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.find_first_of(L"\n")) != std::wstring::npos)
@@ -1124,7 +1124,7 @@ void TSecureShell::AddStdErrorLine(const std::wstring &Str)
   }
 }
 //---------------------------------------------------------------------------
-const std::wstring & TSecureShell::GetStdError()
+const std::wstring TSecureShell::GetStdError()
 {
   return FStdError;
 }
@@ -1155,7 +1155,7 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
   FLog->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-int TSecureShell::TranslateErrorMessage(std::wstring & Message)
+int TSecureShell::TranslateErrorMessage(std::wstring &Message)
 {
   static const TPuttyTranslation Translation[] = {
     { "Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR },
@@ -1167,19 +1167,20 @@ int TSecureShell::TranslateErrorMessage(std::wstring & Message)
   return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PuttyFatalError(std::wstring Error)
+void TSecureShell::PuttyFatalError(const std::wstring &Error)
 {
-  TranslateErrorMessage(Error);
+  std::wstring error = Error;
+  TranslateErrorMessage(error);
 
-  FatalError(Error);
+  FatalError(error);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FatalError(std::wstring Error)
+void TSecureShell::FatalError(const std::wstring &Error)
 {
   FUI->FatalError(NULL, Error);
 }
 //---------------------------------------------------------------------------
-void inline TSecureShell::LogEvent(const std::wstring & Str)
+void inline TSecureShell::LogEvent(const std::wstring &Str)
 {
   if (FLog->GetLogging())
   {
@@ -1762,17 +1763,19 @@ struct TClipboardHandler
   }
 };
 //---------------------------------------------------------------------------
-void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
-  const std::wstring KeyType, std::wstring KeyStr, const std::wstring Fingerprint)
+void TSecureShell::VerifyHostKey(const std::wstring &Host, int Port,
+  const std::wstring &KeyType, const std::wstring &KeyStr, const std::wstring &Fingerprint)
 {
   GotHostKey();
 
   wchar_t Delimiter = L';';
   assert(KeyStr.find_first_of(Delimiter) == std::wstring::npos);
 
+  std::wstring host = Host;
+  std::wstring keyStr = KeyStr;
   if (FSessionData->GetTunnel())
   {
-    Host = FSessionData->GetOrigHostName();
+    host = FSessionData->GetOrigHostName();
     Port = FSessionData->GetOrigPortNumber();
   }
 
@@ -1795,10 +1798,10 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   {
     std::string StoredKeys2(10240, 0);
 #ifdef MPEXT
-    if (retrieve_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
+    if (retrieve_host_key(::W2MB(host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
           (char *)StoredKeys2.c_str(), StoredKeys2.size()) == 0)
 #else
-    if (verify_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
+    if (verify_host_key(::W2MB(host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
           (char *)StoredKeys2.c_str()))
 #endif
     // if (0)
@@ -1808,7 +1811,7 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       while (!Result && !Buf.empty())
       {
         std::wstring StoredKey = ::CutToChar(Buf, Delimiter, false);
-        if (StoredKey == KeyStr)
+        if (StoredKey == keyStr)
         {
           Result = true;
         }
@@ -1867,11 +1870,11 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
       switch (R) {
         case qaOK:
           assert(!Unknown);
-          KeyStr = StoredKeys + Delimiter + KeyStr;
+          keyStr = StoredKeys + Delimiter + keyStr;
           // fall thru
         case qaYes:
-          store_host_key(::W2MB(Host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
-          (char *)::W2MB(KeyStr.c_str()).c_str());
+          store_host_key(::W2MB(host.c_str()).c_str(), Port, ::W2MB(KeyType.c_str()).c_str(),
+          (char *)::W2MB(keyStr.c_str()).c_str());
           break;
 
         case qaCancel:
@@ -1881,8 +1884,8 @@ void TSecureShell::VerifyHostKey(std::wstring Host, int Port,
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AskAlg(const std::wstring AlgType,
-  const std::wstring AlgName)
+void TSecureShell::AskAlg(const std::wstring &AlgType,
+  const std::wstring &AlgName)
 {
   std::wstring Msg;
   if (AlgType == L"key-exchange algorithm")

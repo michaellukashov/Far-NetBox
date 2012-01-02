@@ -94,10 +94,10 @@ bool IsAuthenticationPrompt(TPromptKind Kind);
 // typedef void ( *TFileFoundEvent)
   // (TTerminal * Terminal, const std::wstring FileName, const TRemoteFile * File,
    // bool & Cancel);
-typedef boost::signal4<void, TTerminal *, const std::wstring, const TRemoteFile *, bool &> filefound_signal_type;
+typedef boost::signal4<void, TTerminal *, const std::wstring &, const TRemoteFile *, bool &> filefound_signal_type;
 typedef filefound_signal_type::slot_type filefound_slot_type;
 // typedef void ( *TFindingFileEvent)
   // (TTerminal * Terminal, const std::wstring Directory, bool & Cancel);
-typedef boost::signal3<void, TTerminal *, const std::wstring, bool &> findingfile_signal_type;
+typedef boost::signal3<void, TTerminal *, const std::wstring &, bool &> findingfile_signal_type;
 typedef findingfile_signal_type::slot_type findingfile_slot_type;
 //---------------------------------------------------------------------------

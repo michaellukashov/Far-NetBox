@@ -1458,7 +1458,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::BannerDialog(std::wstring SessionName,
-  const std::wstring & Banner, bool & NeverShowAgain, int Options)
+  const std::wstring &Banner, bool & NeverShowAgain, int Options)
 {
   bool Result;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
@@ -4035,7 +4035,7 @@ class TPropertiesDialog : public TFarDialog
 {
 public:
   TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
-    const std::wstring Directory,
+    const std::wstring &Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     int AllowedChanges);
@@ -4060,7 +4060,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const std::wstring Directory,
+  TStrings * FileList, const std::wstring &Directory,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   // TStrings * GroupList, TStrings * UserList,
   int AAllowedChanges) :
@@ -4343,7 +4343,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
-  const std::wstring Directory,
+  const std::wstring &Directory,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   // TStrings * GroupList, TStrings * UserList,
   TRemoteProperties * Properties, int AllowedChanges)
@@ -6628,7 +6628,7 @@ class TSynchronizeChecklistDialog : public TWinSCPDialog
 public:
   TSynchronizeChecklistDialog(
     TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode Mode, int Params,
-    const std::wstring LocalDirectory, const std::wstring RemoteDirectory);
+    const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory);
 
   bool Execute(TSynchronizeChecklist * Checklist);
 
@@ -6670,7 +6670,7 @@ private:
 //---------------------------------------------------------------------------
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, int /*Params*/,
-  const std::wstring LocalDirectory, const std::wstring RemoteDirectory) :
+  const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory) :
   TWinSCPDialog(AFarPlugin),
   FChecklist(NULL),
   FLocalDirectory(LocalDirectory),
@@ -7224,7 +7224,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklist * Checklist, TTerminal::TSynchronizeMode Mode, int Params,
-  const std::wstring LocalDirectory, const std::wstring RemoteDirectory)
+  const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory)
 {
   bool Result;
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
@@ -7263,7 +7263,7 @@ protected:
   TSynchronizeParamType GetParams();
   void DoAbort(TObject * Sender, bool Close);
   void DoLog(TSynchronizeController * Controller,
-    TSynchronizeLogEntry Entry, const std::wstring Message);
+    TSynchronizeLogEntry Entry, const std::wstring &Message);
   void DoSynchronizeThreads(TObject * Sender, const threadmethod_slot_type &slot);
   virtual long DialogProc(int Msg, int Param1, long Param2);
   virtual bool CloseQuery();
@@ -7553,7 +7553,7 @@ void TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Close)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, const std::wstring /*Message*/)
+  TSynchronizeLogEntry /*Entry*/, const std::wstring & /*Message*/)
 {
   // void
 }
@@ -8027,7 +8027,7 @@ void TQueueDialog::RefreshQueue()
     size_t Index = TopIndex;
 
     int ILine = 0;
-    while ((Index - ILine > 0) &&
+    while ((Index > ILine) &&
            (QueueListBox->GetItems()->GetObject(Index) ==
               QueueListBox->GetItems()->GetObject(Index - ILine - 1)))
     {

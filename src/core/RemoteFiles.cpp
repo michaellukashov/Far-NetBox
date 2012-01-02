@@ -15,7 +15,7 @@
 
 /* TODO 1 : Path class instead of std::wstring (handle relativity...) */
 //---------------------------------------------------------------------------
-std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
+std::wstring UnixIncludeTrailingBackslash(const std::wstring &Path)
 {
   if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size() - 1))
   {
@@ -28,7 +28,7 @@ std::wstring UnixIncludeTrailingBackslash(const std::wstring Path)
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
-std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
+std::wstring UnixExcludeTrailingBackslash(const std::wstring &Path)
 {
   if ((Path.size() > 1) && ::IsDelimiter(Path, L"/", Path.size() - 1))
   {
@@ -40,7 +40,7 @@ std::wstring UnixExcludeTrailingBackslash(const std::wstring Path)
   }
 }
 //---------------------------------------------------------------------------
-bool UnixComparePaths(const std::wstring Path1, const std::wstring Path2)
+bool UnixComparePaths(const std::wstring &Path1, const std::wstring &Path2)
 {
   return (UnixIncludeTrailingBackslash(Path1) == UnixIncludeTrailingBackslash(Path2));
 }
@@ -52,7 +52,7 @@ bool UnixIsChildPath(std::wstring Parent, std::wstring Child)
   return (Child.substr(0, Parent.size()) == Parent);
 }
 //---------------------------------------------------------------------------
-std::wstring UnixExtractFileDir(const std::wstring Path)
+std::wstring UnixExtractFileDir(const std::wstring &Path)
 {
   int Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
@@ -67,7 +67,7 @@ std::wstring UnixExtractFileDir(const std::wstring Path)
 }
 //---------------------------------------------------------------------------
 // must return trailing backslash
-std::wstring UnixExtractFilePath(const std::wstring Path)
+std::wstring UnixExtractFilePath(const std::wstring &Path)
 {
   size_t Pos = ::LastDelimiter(Path, L"/");
   // it used to return Path when no slash was found
@@ -75,7 +75,7 @@ std::wstring UnixExtractFilePath(const std::wstring Path)
   return UnixIncludeTrailingBackslash(Result);
 }
 //---------------------------------------------------------------------------
-std::wstring UnixExtractFileName(const std::wstring Path)
+std::wstring UnixExtractFileName(const std::wstring &Path)
 {
   size_t Pos = ::LastDelimiter(Path, L"/");
   std::wstring Result;
@@ -90,7 +90,7 @@ std::wstring UnixExtractFileName(const std::wstring Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring UnixExtractFileExt(const std::wstring Path)
+std::wstring UnixExtractFileExt(const std::wstring &Path)
 {
   std::wstring FileName = UnixExtractFileName(Path);
   int Pos = ::LastDelimiter(FileName, L".");
@@ -163,12 +163,12 @@ bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsUnixRootPath(const std::wstring Path)
+bool IsUnixRootPath(const std::wstring &Path)
 {
   return Path.empty() || (Path == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool IsUnixHiddenFile(const std::wstring FileName)
+bool IsUnixHiddenFile(const std::wstring &FileName)
 {
   return (FileName != ROOTDIRECTORY) && (FileName != PARENTDIRECTORY) &&
     !FileName.empty() && (FileName[0] == '.');
@@ -205,12 +205,12 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring FromUnixPath(const std::wstring Path)
+std::wstring FromUnixPath(const std::wstring &Path)
 {
   return ::StringReplace(Path, L"/", L"\\");
 }
 //---------------------------------------------------------------------------
-std::wstring ToUnixPath(const std::wstring Path)
+std::wstring ToUnixPath(const std::wstring &Path)
 {
   return ::StringReplace(Path, L"\\", L"/");
 }
@@ -256,7 +256,7 @@ static void CutFirstDirectory(std::wstring & S, bool Unix)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring MinimizeName(const std::wstring FileName, size_t MaxLen, bool Unix)
+std::wstring MinimizeName(const std::wstring &FileName, size_t MaxLen, bool Unix)
 {
   std::wstring Drive, Dir, Name, Result;
   std::wstring Sep = Unix ? L"/" : L"\\";
@@ -1611,7 +1611,7 @@ bool TRemoteDirectoryCache::GetIsEmpty() const
   return (const_cast<TRemoteDirectoryCache*>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::HasFileList(const std::wstring Directory)
+bool TRemoteDirectoryCache::HasFileList(const std::wstring &Directory)
 {
   TGuard Guard(FSection);
 
@@ -1619,7 +1619,7 @@ bool TRemoteDirectoryCache::HasFileList(const std::wstring Directory)
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
+bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring &Directory,
   TDateTime Timestamp)
 {
   TGuard Guard(FSection);
@@ -1636,7 +1636,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
   return (Index >= 0);
 }
 //---------------------------------------------------------------------------
-bool TRemoteDirectoryCache::GetFileList(const std::wstring Directory,
+bool TRemoteDirectoryCache::GetFileList(const std::wstring &Directory,
   TRemoteFileList * FileList)
 {
   TGuard Guard(FSection);
@@ -1720,7 +1720,7 @@ bool TRemoteDirectoryChangesCache::GetIsEmpty() const
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::SetValue(const std::wstring & Name,
-  const std::wstring & Value)
+  const std::wstring &Value)
 {
   int Index = IndexOfName(Name.c_str());
   if (Index > 0)
@@ -1738,8 +1738,8 @@ std::wstring TRemoteDirectoryChangesCache::GetValue(const std::wstring & Name)
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::AddDirectoryChange(
-  const std::wstring SourceDir, const std::wstring Change,
-  const std::wstring TargetDir)
+  const std::wstring &SourceDir, const std::wstring &Change,
+  const std::wstring &TargetDir)
 {
   assert(!TargetDir.empty());
   SetValue(TargetDir, L"//");
@@ -1788,7 +1788,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
-  const std::wstring SourceDir, const std::wstring Change, std::wstring & TargetDir)
+  const std::wstring &SourceDir, const std::wstring &Change, std::wstring & TargetDir)
 {
   // DEBUG_PRINTF(L"begin, SourceDir = %s, Change = %s", SourceDir.c_str(), Change.c_str());
   std::wstring Key;
@@ -1857,7 +1857,7 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Deserialize(const std::wstring Data)
+void TRemoteDirectoryChangesCache::Deserialize(const std::wstring &Data)
 {
   // DEBUG_PRINTF(L"Data = %s", Data.c_str());
   if (Data.empty())
@@ -1871,7 +1871,7 @@ void TRemoteDirectoryChangesCache::Deserialize(const std::wstring Data)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
-  const std::wstring SourceDir, const std::wstring Change, std::wstring & Key)
+  const std::wstring &SourceDir, const std::wstring &Change, std::wstring & Key)
 {
   bool Result = !Change.empty();
   if (Result)

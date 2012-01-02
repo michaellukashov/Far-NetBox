@@ -153,7 +153,7 @@ protected:
   void TerminalFinished(TTerminalItem *TerminalItem);
   bool TerminalFree(TTerminalItem *TerminalItem);
 
-  void DoQueryUser(TObject *Sender, const std::wstring Query,
+  void DoQueryUser(TObject *Sender, const std::wstring &Query,
     TStrings *MoreMessages, int Answers, const TQueryParams *Params, int & Answer,
     TQueryType Type, void *Arg);
   void DoPromptUser(TTerminal *Terminal, TPromptKind Kind,

@@ -321,22 +321,22 @@ public:
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
 
-    static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
-    int Message(unsigned int Flags, const std::wstring Title,
-        const std::wstring Message, TStrings *Buttons = NULL,
+    static wchar_t *DuplicateStr(const std::wstring &Str, bool AllowEmpty = false);
+    int Message(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Message, TStrings *Buttons = NULL,
         TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
     int MaxMenuItemLength();
-    int Menu(unsigned int Flags, std::wstring Title,
-        std::wstring Bottom, TStrings *Items, const int *BreakKeys,
+    int Menu(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Bottom, TStrings *Items, const int *BreakKeys,
         int &BreakCode);
-    int Menu(unsigned int Flags, const std::wstring Title,
-                        const std::wstring Bottom, TStrings *Items);
-    int Menu(unsigned int Flags, const std::wstring Title,
-        const std::wstring Bottom, const FarMenuItem *Items, int Count,
+    int Menu(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Bottom, TStrings *Items);
+    int Menu(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Bottom, const FarMenuItem *Items, int Count,
         const int *BreakKeys, int &BreakCode);
-    bool InputBox(std::wstring Title, std::wstring Prompt,
-        std::wstring &Text, unsigned long Flags, std::wstring HistoryName = L"",
+    bool InputBox(const std::wstring &Title, const std::wstring &Prompt,
+        std::wstring &Text, unsigned long Flags, const std::wstring &HistoryName = L"",
         int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
     std::wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
@@ -363,9 +363,9 @@ public:
     int InputRecordToKey(const INPUT_RECORD *Rec);
     TFarEditorInfo *EditorInfo();
 
-    void ShowConsoleTitle(const std::wstring Title);
+    void ShowConsoleTitle(const std::wstring &Title);
     void ClearConsoleTitle();
-    void UpdateConsoleTitle(const std::wstring Title);
+    void UpdateConsoleTitle(const std::wstring &Title);
     void UpdateConsoleTitleProgress(short Progress);
     void ShowTerminalScreen();
     void SaveTerminalScreen();
@@ -417,10 +417,10 @@ protected:
     void ResetCachedInfo();
     int MaxLength(TStrings *Strings);
     int FarMessage(unsigned int Flags,
-        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
         TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
         TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
@@ -527,11 +527,11 @@ class TFarPanelModes : public TObject
 {
     friend class TCustomFarFileSystem;
 public:
-    void SetPanelMode(int Mode, const std::wstring ColumnTypes = L"",
-        const std::wstring ColumnWidths = L"", TStrings *ColumnTitles = NULL,
+    void SetPanelMode(int Mode, const std::wstring &ColumnTypes = L"",
+        const std::wstring &ColumnWidths = L"", TStrings *ColumnTitles = NULL,
         bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-        bool CaseConversion = true, const std::wstring StatusColumnTypes = L"",
-        const std::wstring StatusColumnWidths = L"");
+        bool CaseConversion = true, const std::wstring &StatusColumnTypes = L"",
+        const std::wstring &StatusColumnWidths = L"");
 
 private:
     PanelMode FPanelModes[PANEL_MODES_COUNT];
@@ -542,7 +542,7 @@ private:
 
     void FillOpenPluginInfo(struct OpenPluginInfo *Info);
     static void ClearPanelMode(PanelMode &Mode);
-    static int CommaCount(const std::wstring ColumnTypes);
+    static int CommaCount(const std::wstring &ColumnTypes);
 };
 //---------------------------------------------------------------------------
 class TFarKeyBarTitles : public TObject
@@ -553,7 +553,7 @@ public:
     void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
         int FunctionKeyStart, int FunctionKeyEnd = 0);
     void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int FunctionKey,
-        const std::wstring Title);
+        const std::wstring &Title);
 
 private:
     KeyBarTitles FKeyBarTitles;
@@ -616,7 +616,7 @@ private:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-    explicit THintPanelItem(const std::wstring AHint);
+    explicit THintPanelItem(const std::wstring &AHint);
     virtual ~THintPanelItem()
     {}
 
@@ -653,7 +653,7 @@ public:
     std::wstring GetCurrentDirectory();
 
     void ApplySelection();
-    TFarPanelItem *FindFileName(const std::wstring FileName);
+    TFarPanelItem *FindFileName(const std::wstring &FileName);
     TFarPanelItem *FindUserData(void *UserData);
 
 private:

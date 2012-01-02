@@ -107,7 +107,7 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void TerminalQueryUser(TObject * Sender,
-    const std::wstring Query, TStrings * MoreMessages, int Answers,
+    const std::wstring &Query, TStrings * MoreMessages, int Answers,
     const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions,
@@ -802,7 +802,7 @@ void TTerminalQueue::DoEvent(TQueueEvent Event)
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoQueryUser(TObject * Sender,
-  const std::wstring Query, TStrings * MoreMessages, int Answers,
+  const std::wstring &Query, TStrings * MoreMessages, int Answers,
   const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg)
 {
   if (!GetOnQueryUser().empty())
@@ -867,7 +867,7 @@ public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal,
     TTerminalItem * Item);
   virtual void Init(TSessionData *SessionData, TConfiguration *Configuration,
-    const std::wstring & Name);
+    const std::wstring &Name);
   virtual ~TBackgroundTerminal()
   {}
 protected:
@@ -1139,7 +1139,7 @@ void TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const std::wstring Query, TStrings * MoreMessages, int Answers,
+  const std::wstring &Query, TStrings * MoreMessages, int Answers,
   const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key cofirmation

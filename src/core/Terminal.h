@@ -42,7 +42,7 @@ class TTunnelUI;
 class TCallbackGuard;
 //---------------------------------------------------------------------------
 // typedef void (TObject::*TQueryUserEvent)
-  // (TObject * Sender, const std::wstring Query, TStrings * MoreMessages, int Answers,
+  // (TObject * Sender, const std::wstring &Query, TStrings * MoreMessages, int Answers,
    // const TQueryParams * Params, int & Answer, TQueryType QueryType, void * Arg);
 typedef boost::signal8<void, TObject *, const std::wstring &, TStrings *, int,
    const TQueryParams *, int &, TQueryType, void *> queryuser_signal_type;
@@ -71,30 +71,30 @@ typedef readdirectory_signal_type::slot_type readdirectory_slot_type;
 typedef boost::signal3<void, TObject*, int, bool &> readdirectoryprogress_signal_type;
 typedef readdirectoryprogress_signal_type::slot_type readdirectoryprogress_slot_type;
 // typedef void (TObject::*TProcessFileEvent)
-  // (const std::wstring FileName, const TRemoteFile * File, void * Param);
-typedef boost::signal3<void, const std::wstring, const TRemoteFile *, void *> processfile_signal_type;
+  // (const std::wstring &FileName, const TRemoteFile * File, void * Param);
+typedef boost::signal3<void, const std::wstring &, const TRemoteFile *, void *> processfile_signal_type;
 typedef processfile_signal_type::slot_type processfile_slot_type;
 // typedef void (TObject::*TProcessFileEventEx)
-  // (const std::wstring FileName, const TRemoteFile * File, void * Param, int Index);
-typedef boost::signal4<void, const std::wstring, const TRemoteFile *, void *, int> processfileex_signal_type;
+  // (const std::wstring &FileName, const TRemoteFile * File, void * Param, int Index);
+typedef boost::signal4<void, const std::wstring &, const TRemoteFile *, void *, int> processfileex_signal_type;
 typedef processfileex_signal_type::slot_type processfileex_slot_type;
 // typedef int (TObject::*TFileOperationEvent)
   // (void * Param1, void * Param2);
 typedef boost::signal2<int, void *, void *> fileoperation_signal_type;
 typedef fileoperation_signal_type::slot_type fileoperation_slot_type;
 // typedef void (TObject::*TSynchronizeDirectory)
-  // (const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
+  // (const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory,
    // bool & Continue, bool Collect);
-typedef boost::signal4<void, const std::wstring, const std::wstring,
+typedef boost::signal4<void, const std::wstring &, const std::wstring &,
    bool &, bool> synchronizedirectory_signal_type;
 typedef synchronizedirectory_signal_type::slot_type synchronizedirectory_slot_type;
 // typedef void (TObject::*TDeleteLocalFileEvent)(
-  // const std::wstring FileName, bool Alternative);
+  // const std::wstring &FileName, bool Alternative);
 typedef boost::signal2<void, const std::wstring &, bool> deletelocalfile_signal_type;
 typedef deletelocalfile_signal_type::slot_type deletelocalfile_slot_type;
 // typedef int (TObject::*TDirectoryModifiedEvent)
-  // (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);
-typedef boost::signal3<int, TTerminal *, const std::wstring, bool> directorymodified_signal_type;
+  // (TTerminal * Terminal, const std::wstring &Directory, bool SubDirs);
+typedef boost::signal3<int, TTerminal *, const std::wstring &, bool> directorymodified_signal_type;
 typedef directorymodified_signal_type::slot_type directorymodified_slot_type;
 // typedef void (TObject::*TInformationEvent)
   // (TTerminal * Terminal, const std::wstring & Str, bool Status, bool Active);
@@ -251,10 +251,10 @@ private:
   findingfile_signal_type FOnFindingFile;
   TTerminal *Self;
 
-  void CommandError(const std::exception * E, const std::wstring Msg);
-  int CommandError(const std::exception * E, const std::wstring Msg, int Answers);
+  void CommandError(const std::exception * E, const std::wstring &Msg);
+  int CommandError(const std::exception * E, const std::wstring &Msg, int Answers);
   void ReactOnCommand(int /*TFSCommand*/ Cmd);
-  void ClearCachedFileList(const std::wstring Path, bool SubDirs);
+  void ClearCachedFileList(const std::wstring &Path, bool SubDirs);
   void AddCachedFileList(TRemoteFileList * FileList);
   inline bool InTransaction();
 
@@ -267,67 +267,67 @@ protected:
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(int Progress, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
-  void DoCreateDirectory(const std::wstring DirName);
-  void DoDeleteFile(const std::wstring FileName, const TRemoteFile * File,
+  void DoCreateDirectory(const std::wstring &DirName);
+  void DoDeleteFile(const std::wstring &FileName, const TRemoteFile * File,
     int Params);
   void DoCustomCommandOnFile(std::wstring FileName,
     const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
-  void DoRenameFile(const std::wstring FileName,
-    const std::wstring NewName, bool Move);
-  void DoCopyFile(const std::wstring FileName, const std::wstring NewName);
-  void DoChangeFileProperties(const std::wstring FileName,
+  void DoRenameFile(const std::wstring &FileName,
+    const std::wstring &NewName, bool Move);
+  void DoCopyFile(const std::wstring &FileName, const std::wstring &NewName);
+  void DoChangeFileProperties(const std::wstring &FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties);
   void DoChangeDirectory();
-  void EnsureNonExistence(const std::wstring FileName);
+  void EnsureNonExistence(const std::wstring &FileName);
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * File,
-    const std::wstring FileName, bool ClearDirectoryChange = false);
+    const std::wstring &FileName, bool ClearDirectoryChange = false);
   int FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
-    const std::wstring Message, void * Param1 = NULL, void * Param2 = NULL);
+    const std::wstring &Message, void * Param1 = NULL, void * Param2 = NULL);
   bool ProcessFiles(TStrings * FileList, TFileOperation Operation,
     const processfile_slot_type &ProcessFile, void * Param = NULL, TOperationSide Side = osRemote);
-  void ProcessDirectory(const std::wstring DirName,
+  void ProcessDirectory(const std::wstring &DirName,
     const processfile_slot_type &CallBackFunc, void * Param = NULL, bool UseCache = false,
     bool IgnoreErrors = false);
   void AnnounceFileListOperation();
   std::wstring TranslateLockedPath(std::wstring Path, bool Lock);
   void ReadDirectory(TRemoteFileList * FileList);
   void CustomReadDirectory(TRemoteFileList * FileList);
-  void DoCreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
-  bool CreateLocalFile(const std::wstring FileName,
+  void DoCreateLink(const std::wstring &FileName, const std::wstring &PointTo, bool Symbolic);
+  bool CreateLocalFile(const std::wstring &FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
-  void OpenLocalFile(const std::wstring FileName, int Access,
+  void OpenLocalFile(const std::wstring &FileName, int Access,
     int * Attrs, HANDLE * Handle, __int64 * ACTime, __int64 * MTime,
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(std::wstring FileName, const TCopyParamType * CopyParam);
   bool HandleException(const std::exception * E);
   void CalculateFileSize(std::wstring FileName,
     const TRemoteFile * File, /*TCalculateSizeParams*/ void * Size);
-  void DoCalculateDirectorySize(const std::wstring FileName,
+  void DoCalculateDirectorySize(const std::wstring &FileName,
     const TRemoteFile * File, TCalculateSizeParams * Params);
-  void CalculateLocalFileSize(const std::wstring FileName,
+  void CalculateLocalFileSize(const std::wstring &FileName,
     const WIN32_FIND_DATA Rec, /*__int64*/ void * Size);
   void CalculateLocalFilesSize(TStrings * FileList, __int64 & Size,
     const TCopyParamType * CopyParam = NULL);
   TBatchOverwrite EffectiveBatchOverwrite(
     int Params, TFileOperationProgressType * OperationProgress, bool Special);
   bool CheckRemoteFile(int Params, TFileOperationProgressType * OperationProgress);
-  int ConfirmFileOverwrite(const std::wstring FileName,
+  int ConfirmFileOverwrite(const std::wstring &FileName,
     const TOverwriteFileParams * FileParams, int Answers, const TQueryParams * QueryParams,
     TOperationSide Side, int Params, TFileOperationProgressType * OperationProgress,
     std::wstring Message = L"");
-  void DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
-    const std::wstring RemoteDirectory, TSynchronizeMode Mode,
+  void DoSynchronizeCollectDirectory(const std::wstring &LocalDirectory,
+    const std::wstring &RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
     const synchronizedirectory_slot_type &OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int Level, TSynchronizeChecklist * Checklist);
-  void SynchronizeCollectFile(const std::wstring FileName,
+  void SynchronizeCollectFile(const std::wstring &FileName,
     const TRemoteFile * File, /*TSynchronizeData*/ void * Param);
-  void SynchronizeRemoteTimestamp(const std::wstring FileName,
+  void SynchronizeRemoteTimestamp(const std::wstring &FileName,
     const TRemoteFile * File, void * Param);
-  void SynchronizeLocalTimestamp(const std::wstring FileName,
+  void SynchronizeLocalTimestamp(const std::wstring &FileName,
     const TRemoteFile * File, void * Param);
   void DoSynchronizeProgress(const TSynchronizeData & Data, bool Collect);
   void DeleteLocalFile(std::wstring FileName,
@@ -335,7 +335,7 @@ protected:
   void RecycleFile(std::wstring FileName, const TRemoteFile * File);
   void DoStartup();
   virtual bool DoQueryReopen(std::exception * E);
-  virtual void FatalError(const std::exception * E, std::wstring Msg);
+  virtual void FatalError(const std::exception *E, const std::wstring &Msg);
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions, TStrings * Prompts,
@@ -343,41 +343,41 @@ protected:
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(const std::wstring & Str, bool Status, bool Active = true);
-  std::wstring FileUrl(const std::wstring Protocol, const std::wstring FileName);
-  bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    std::wstring Name, std::wstring Instructions, std::wstring Prompt, bool Echo,
-    int MaxLen, std::wstring & Result);
-  void FileFind(std::wstring FileName, const TRemoteFile * File, void * Param);
-  void DoFilesFind(std::wstring Directory, TFilesFindParams & Params);
-  bool DoCreateLocalFile(const std::wstring FileName,
+  std::wstring FileUrl(const std::wstring &Protocol, const std::wstring &FileName);
+  bool PromptUser(TSessionData *Data, TPromptKind Kind,
+    const std::wstring &Name, const std::wstring &Instructions, const std::wstring &Prompt, bool Echo,
+    int MaxLen, std::wstring &Result);
+  void FileFind(const std::wstring &FileName, const TRemoteFile * File, void * Param);
+  void DoFilesFind(const std::wstring &Directory, TFilesFindParams & Params);
+  bool DoCreateLocalFile(const std::wstring &FileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
 
   virtual void Information(const std::wstring & Str, bool Status);
-  virtual int QueryUser(const std::wstring Query,
+  virtual int QueryUser(const std::wstring &Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
-  virtual int QueryUserException(const std::wstring Query,
+  virtual int QueryUserException(const std::wstring &Query,
     const std::exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
-  virtual int QueryUserException(const std::wstring Query,
+  virtual int QueryUserException(const std::wstring &Query,
     const ExtException * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    std::wstring Name, std::wstring Instructions, TStrings * Prompts, TStrings * Results);
+    const std::wstring &Name, const std::wstring &Instructions, TStrings *Prompts, TStrings * Results);
   virtual void DisplayBanner(const std::wstring & Banner);
   virtual void Closed();
   virtual void HandleExtendedException(const std::exception * E);
   bool IsListenerFree(unsigned int PortNumber);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-    const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    const std::wstring &FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, const std::exception * E = NULL);
-  void DoAnyCommand(const std::wstring Command, const captureoutput_slot_type &OutputEvent,
+  void DoAnyCommand(const std::wstring &Command, const captureoutput_slot_type &OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(std::wstring Directory, bool UseCache);
-  std::wstring EncryptPassword(const std::wstring & Password);
-  std::wstring DecryptPassword(const std::wstring & Password);
+  std::wstring EncryptPassword(const std::wstring &Password);
+  std::wstring DecryptPassword(const std::wstring &Password);
 
   // __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
   TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
@@ -389,31 +389,31 @@ public:
   void Open();
   void Close();
   void Reopen(int Params);
-  virtual void DirectoryModified(const std::wstring Path, bool SubDirs);
+  virtual void DirectoryModified(const std::wstring &Path, bool SubDirs);
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
   void ShowExtendedException(const std::exception * E);
   void Idle();
   void RecryptPasswords();
-  bool AllowedAnyCommand(const std::wstring Command);
-  void AnyCommand(const std::wstring Command,
+  bool AllowedAnyCommand(const std::wstring &Command);
+  void AnyCommand(const std::wstring &Command,
     const captureoutput_slot_type *OutputEvent);
-  void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const std::wstring Message = L"");
+  void CloseOnCompletion(TOnceDoneOperation Operation = odoDisconnect, const std::wstring &Message = L"");
   std::wstring AbsolutePath(std::wstring Path, bool Local);
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
   TRemoteFileList * ReadDirectoryListing(std::wstring Directory, const TFileMasks & Mask);
   TRemoteFileList * CustomReadDirectoryListing(std::wstring Directory, bool UseCache);
-  void ReadFile(const std::wstring FileName, TRemoteFile *& File);
-  bool FileExists(const std::wstring FileName, TRemoteFile ** File = NULL);
+  void ReadFile(const std::wstring &FileName, TRemoteFile *& File);
+  bool FileExists(const std::wstring &FileName, TRemoteFile ** File = NULL);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& File);
   bool CopyToLocal(TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params);
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params);
   bool CopyToRemote(TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params);
-  void CreateDirectory(const std::wstring DirName,
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params);
+  void CreateDirectory(const std::wstring &DirName,
     const TRemoteProperties * Properties = NULL);
-  void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
+  void CreateLink(const std::wstring &FileName, const std::wstring &PointTo, bool Symbolic);
   void DeleteFile(std::wstring FileName,
     const TRemoteFile * File = NULL, void * Params = NULL);
   bool DeleteFiles(TStrings * FilesToDelete, int Params = 0);
@@ -423,7 +423,7 @@ public:
     const TRemoteFile * File, void * AParams);
   void CustomCommandOnFiles(std::wstring Command, int Params,
     TStrings * Files, const captureoutput_slot_type &OutputEvent);
-  void ChangeDirectory(const std::wstring Directory);
+  void ChangeDirectory(const std::wstring &Directory);
   void EndTransaction();
   void HomeDirectory();
   void ChangeFileProperties(std::wstring FileName,
@@ -435,39 +435,39 @@ public:
   void TerminalError(const std::exception * E, std::wstring Msg);
   void ReloadDirectory();
   void RefreshDirectory();
-  void RenameFile(const std::wstring FileName, const std::wstring NewName);
-  void RenameFile(const TRemoteFile * File, const std::wstring NewName, bool CheckExistence);
-  void MoveFile(const std::wstring FileName, const TRemoteFile * File,
+  void RenameFile(const std::wstring &FileName, const std::wstring &NewName);
+  void RenameFile(const TRemoteFile * File, const std::wstring &NewName, bool CheckExistence);
+  void MoveFile(const std::wstring &FileName, const TRemoteFile * File,
     /*const TMoveFileParams*/ void * Param);
-  bool MoveFiles(TStrings * FileList, const std::wstring Target,
-    const std::wstring FileMask);
-  void CopyFile(const std::wstring FileName, const TRemoteFile * File,
+  bool MoveFiles(TStrings * FileList, const std::wstring &Target,
+    const std::wstring &FileMask);
+  void CopyFile(const std::wstring &FileName, const TRemoteFile * File,
     /*const TMoveFileParams*/ void * Param);
-  bool CopyFiles(TStrings * FileList, const std::wstring Target,
-    const std::wstring FileMask);
+  bool CopyFiles(TStrings * FileList, const std::wstring &Target,
+    const std::wstring &FileMask);
   void CalculateFilesSize(TStrings * FileList, __int64 & Size,
     int Params, const TCopyParamType * CopyParam = NULL, TCalculateSizeStats * Stats = NULL);
   void CalculateFilesChecksum(const std::wstring & Alg, TStrings * FileList,
     TStrings * Checksums, calculatedchecksum_slot_type *OnCalculatedChecksum);
   void ClearCaches();
-  TSynchronizeChecklist * SynchronizeCollect(const std::wstring LocalDirectory,
-    const std::wstring RemoteDirectory, TSynchronizeMode Mode,
+  TSynchronizeChecklist * SynchronizeCollect(const std::wstring &LocalDirectory,
+    const std::wstring &RemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int Params,
     const synchronizedirectory_slot_type &OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void SynchronizeApply(TSynchronizeChecklist * Checklist,
-    const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
+    const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory,
     const TCopyParamType * CopyParam, int Params,
     const synchronizedirectory_slot_type &OnSynchronizeDirectory);
   void FilesFind(std::wstring Directory, const TFileMasks & FileMask,
     const filefound_slot_type *OnFileFound, const findingfile_slot_type *OnFindingFile);
-  void SpaceAvailable(const std::wstring Path, TSpaceAvailable & ASpaceAvailable);
-  bool DirectoryFileList(const std::wstring Path,
+  void SpaceAvailable(const std::wstring &Path, TSpaceAvailable & ASpaceAvailable);
+  bool DirectoryFileList(const std::wstring &Path,
     TRemoteFileList *& FileList, bool CanLoad);
-  void MakeLocalFileList(const std::wstring FileName,
+  void MakeLocalFileList(const std::wstring &FileName,
     const WIN32_FIND_DATA Rec, void * Param);
-  std::wstring FileUrl(const std::wstring FileName);
+  std::wstring FileUrl(const std::wstring &FileName);
   bool FileOperationLoopQuery(const std::exception & E,
-    TFileOperationProgressType * OperationProgress, const std::wstring Message,
+    TFileOperationProgressType * OperationProgress, const std::wstring &Message,
     bool AllowSkip, std::wstring SpecialRetry = L"");
   TUsableCopyParamAttrs UsableCopyParamAttrs(int Params);
   bool QueryReopen(std::exception *E, int Params,
@@ -478,9 +478,9 @@ public:
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void inline LogEvent(const std::wstring & Str);
 
-  static bool IsAbsolutePath(const std::wstring Path);
+  static bool IsAbsolutePath(const std::wstring &Path);
   static std::wstring ExpandFileName(std::wstring Path,
-    const std::wstring BasePath);
+    const std::wstring &BasePath);
 
   // __property TSessionData * SessionData = { read = FSessionData };
   TSessionData * GetSessionData() { return FSessionData; }
@@ -575,7 +575,7 @@ public:
 
 protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList);
-  virtual void DirectoryModified(const std::wstring Path,
+  virtual void DirectoryModified(const std::wstring &Path,
     bool SubDirs);
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions, TStrings * Prompts, TStrings * Results);
@@ -706,7 +706,7 @@ public:
     bool Checked;
     TRemoteFile * RemoteFile;
 
-    const std::wstring& GetFileName() const;
+    const std::wstring GetFileName() const;
 
     ~TItem();
 

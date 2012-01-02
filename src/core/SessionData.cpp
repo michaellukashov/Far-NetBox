@@ -1197,12 +1197,12 @@ void TSessionData::ExpandEnvironmentVariables()
   SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
 }
 //---------------------------------------------------------------------
-void TSessionData::ValidatePath(const std::wstring Path)
+void TSessionData::ValidatePath(const std::wstring &Path)
 {
   // noop
 }
 //---------------------------------------------------------------------
-void TSessionData::ValidateName(const std::wstring Name)
+void TSessionData::ValidateName(const std::wstring &Name)
 {
   if (::LastDelimiter(Name, L"/") != std::wstring::npos)
   {
@@ -2353,7 +2353,7 @@ void TStoredSessionList::Saved()
   }
 }
 //---------------------------------------------------------------------
-void TStoredSessionList::Export(const std::wstring FileName)
+void TStoredSessionList::Export(const std::wstring &FileName)
 {
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   {
@@ -2473,8 +2473,8 @@ void TStoredSessionList::SetDefaultSettings(TSessionData * value)
   }
 }
 //---------------------------------------------------------------------------
-void TStoredSessionList::ImportHostKeys(const std::wstring TargetKey,
-  const std::wstring SourceKey, TStoredSessionList * Sessions,
+void TStoredSessionList::ImportHostKeys(const std::wstring &TargetKey,
+  const std::wstring &SourceKey, TStoredSessionList * Sessions,
   bool OnlySelected)
 {
   TRegistryStorage * SourceStorage = NULL;

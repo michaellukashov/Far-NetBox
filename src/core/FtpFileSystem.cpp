@@ -605,7 +605,7 @@ void TFTPFileSystem::EnsureLocation()
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::AnyCommand(const std::wstring Command,
+void TFTPFileSystem::AnyCommand(const std::wstring &Command,
   const captureoutput_slot_type *OutputEvent)
 {
   // end-user has right to expect that client current directory is really
@@ -639,7 +639,7 @@ void TFTPFileSystem::AnnounceFileListOperation()
   ResetCaches();
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
+void TFTPFileSystem::DoChangeDirectory(const std::wstring &Directory)
 {
   std::wstring Command = FORMAT(L"CWD %s", Directory.c_str());
   FFileZillaIntf->CustomCommand(Command.c_str());
@@ -647,7 +647,7 @@ void TFTPFileSystem::DoChangeDirectory(const std::wstring & Directory)
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
+void TFTPFileSystem::ChangeDirectory(const std::wstring &ADirectory)
 {
   std::wstring Directory = ADirectory;
   try
@@ -679,7 +679,7 @@ void TFTPFileSystem::ChangeDirectory(const std::wstring ADirectory)
   FCurrentDirectory = L"";
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
+void TFTPFileSystem::CachedChangeDirectory(const std::wstring &Directory)
 {
   FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
     if (FCurrentDirectory.empty())
@@ -688,7 +688,7 @@ void TFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
     }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::ChangeFileProperties(const std::wstring AFileName,
+void TFTPFileSystem::ChangeFileProperties(const std::wstring &AFileName,
   const TRemoteFile * File, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
 {
@@ -945,9 +945,9 @@ void TFTPFileSystem::FileTransferProgress(__int64 TransferSize,
   DoFileTransferProgress(TransferSize, Bytes);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::FileTransfer(const std::wstring & FileName,
-  const std::wstring & LocalFile, const std::wstring & RemoteFile,
-  const std::wstring & RemotePath, bool Get, __int64 Size, int Type,
+void TFTPFileSystem::FileTransfer(const std::wstring &FileName,
+  const std::wstring &LocalFile, const std::wstring &RemoteFile,
+  const std::wstring &RemotePath, bool Get, __int64 Size, int Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
@@ -982,7 +982,7 @@ void TFTPFileSystem::FileTransfer(const std::wstring & FileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam,
+  const std::wstring &TargetDir, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -1020,8 +1020,8 @@ void TFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SinkRobust(const std::wstring FileName,
-  const TRemoteFile * File, const std::wstring TargetDir,
+void TFTPFileSystem::SinkRobust(const std::wstring &FileName,
+  const TRemoteFile * File, const std::wstring &TargetDir,
   const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
@@ -1065,8 +1065,8 @@ void TFTPFileSystem::SinkRobust(const std::wstring FileName,
   while (Retry);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::Sink(const std::wstring FileName,
-  const TRemoteFile * File, const std::wstring TargetDir,
+void TFTPFileSystem::Sink(const std::wstring &FileName,
+  const TRemoteFile * File, const std::wstring &TargetDir,
   const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TDownloadSessionAction & Action)
@@ -1250,7 +1250,7 @@ void TFTPFileSystem::SinkFile(std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
-  const std::wstring ATargetDir, const TCopyParamType * CopyParam,
+  const std::wstring &ATargetDir, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -1301,7 +1301,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::SourceRobust(const std::wstring &FileName,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
+  const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
   // the same in TSFTPFileSystem
@@ -1342,7 +1342,7 @@ void TFTPFileSystem::SourceRobust(const std::wstring &FileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Source(const std::wstring &FileName,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
+  const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TUploadSessionAction & Action)
 {
@@ -1459,8 +1459,8 @@ void TFTPFileSystem::Source(const std::wstring &FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
-  const std::wstring TargetDir, int Attrs, const TCopyParamType * CopyParam,
+void TFTPFileSystem::DirectorySource(const std::wstring &DirectoryName,
+  const std::wstring &TargetDir, int Attrs, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
   std::wstring DestDirectoryName = CopyParam->ChangeFileName(
@@ -1583,7 +1583,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CreateDirectory(const std::wstring ADirName)
+void TFTPFileSystem::CreateDirectory(const std::wstring &ADirName)
 {
   std::wstring DirName = AbsolutePath(ADirName, false);
 
@@ -1597,13 +1597,13 @@ void TFTPFileSystem::CreateDirectory(const std::wstring ADirName)
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CreateLink(const std::wstring /*FileName*/,
-  const std::wstring /*PointTo*/, bool /*Symbolic*/)
+void TFTPFileSystem::CreateLink(const std::wstring &/*FileName*/,
+  const std::wstring &/*PointTo*/, bool /*Symbolic*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
+void TFTPFileSystem::DeleteFile(const std::wstring &AFileName,
   const TRemoteFile * File, int Params, TRmSessionAction & Action)
 {
   std::wstring FileName = AbsolutePath(AFileName, false);
@@ -1654,7 +1654,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring AFileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
+void TFTPFileSystem::CustomCommandOnFile(const std::wstring &/*FileName*/,
   const TRemoteFile * /*File*/, std::wstring /*Command*/, int /*Params*/,
   const captureoutput_slot_type &/*OutputEvent*/)
 {
@@ -1892,7 +1892,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   while (Repeat);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::ReadFile(const std::wstring FileName,
+void TFTPFileSystem::ReadFile(const std::wstring &FileName,
   TRemoteFile *& File)
 {
   std::wstring Path = UnixExtractFilePath(FileName);
@@ -1954,8 +1954,8 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::RenameFile(const std::wstring AFileName,
-  const std::wstring ANewName)
+void TFTPFileSystem::RenameFile(const std::wstring &AFileName,
+  const std::wstring &ANewName)
 {
   std::wstring FileName = AbsolutePath(AFileName, false);
   std::wstring NewName = AbsolutePath(ANewName, false);
@@ -1978,13 +1978,13 @@ void TFTPFileSystem::RenameFile(const std::wstring AFileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::CopyFile(const std::wstring FileName,
-  const std::wstring NewName)
+void TFTPFileSystem::CopyFile(const std::wstring &FileName,
+  const std::wstring &NewName)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
-std::wstring TFTPFileSystem::FileUrl(const std::wstring FileName)
+std::wstring TFTPFileSystem::FileUrl(const std::wstring &FileName)
 {
   return FTerminal->FileUrl(L"ftp", FileName);
 }
@@ -1994,7 +1994,7 @@ TStrings * TFTPFileSystem::GetFixedPaths()
   return NULL;
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SpaceAvailable(const std::wstring /*Path*/,
+void TFTPFileSystem::SpaceAvailable(const std::wstring & /*Path*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   assert(false);
