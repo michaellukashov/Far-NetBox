@@ -157,7 +157,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
           wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
           FPluginInfo.NAME = StringArray; \
           FPluginInfo.NAME ## Number = NAME.GetCount(); \
-          for (size_t Index = 0; Index < NAME.GetCount(); Index++) \
+          for (size_t Index = 0; Index < static_cast<int>(NAME.GetCount()); Index++) \
           { \
             StringArray[Index] = StrToFar(DuplicateStr(NAME.GetString(Index))); \
           } \
@@ -946,7 +946,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             assert(MoreMessagesSeparator != NULL);
             MoreMessagesSeparator->SetPosition(
                 MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
-            S.y += MoreMessagesLister->GetHeight() + 1;
+            S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
         }
         // DEBUG_PRINTF(L"S.x = %d, S.y = %d", S.x, S.y);
         SetSize(S);
@@ -1121,13 +1121,13 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         for (size_t Index = 0; Index < MessageLines->GetCount(); Index++)
         {
             std::wstring S = MessageLines->GetString(Index);
-            MessageLines->PutString(Index, std::wstring(StrToFar(S)));
+            MessageLines->PutString(static_cast<int>(Index), std::wstring(StrToFar(S)));
             Items[Index] = const_cast<wchar_t *>(MessageLines->GetString(Index).c_str());
         }
 
         TFarEnvGuard Guard;
         Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
-            Flags | FMSG_LEFTALIGN, NULL, Items, MessageLines->GetCount(),
+            Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->GetCount()),
             Buttons->GetCount());
     }
 
@@ -1202,7 +1202,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
         int Count = 0;
         for (size_t i = 0; i < Items->GetCount(); i++)
         {
-            int Flags = int(Items->GetObject(i));
+            int Flags = reinterpret_cast<int>(Items->GetObject(i));
             if (FLAGCLEAR(Flags, MIF_HIDDEN))
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
@@ -1212,7 +1212,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
                     assert(Selected < 0);
-                    Selected = i;
+                    Selected = static_cast<int>(i);
                 }
                 std::wstring Str = StrToFar(Text);
                 // DEBUG_PRINTF(L"MenuItems[%d].Text = %s", Count, MenuItems[Count].Text);
@@ -1228,7 +1228,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
 
         if (ResultItem >= 0)
         {
-            Result = MenuItems[ResultItem].UserData;
+            Result = static_cast<int>(MenuItems[ResultItem].UserData);
             if (Selected >= 0)
             {
                 Items->PutObject(Selected, (TObject *)(int(Items->GetObject(Selected)) & ~MIF_SELECTED));
@@ -1318,7 +1318,7 @@ void TCustomFarPlugin::FlushText()
 void TCustomFarPlugin::WriteConsole(std::wstring Str)
 {
     unsigned long Written;
-    ::WriteConsole(FConsoleOutput, StrToFar(Str.c_str()), Str.size(), &Written, NULL);
+    ::WriteConsole(FConsoleOutput, StrToFar(Str.c_str()), static_cast<DWORD>(Str.size()), &Written, NULL);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::FarCopyToClipboard(std::wstring Str)
@@ -1517,7 +1517,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
 {
     assert(FSavedTitles->GetCount() > 0);
     std::wstring Title = FSavedTitles->GetString(FSavedTitles->GetCount()-1);
-    TObject *Object = (TObject *)FSavedTitles->GetObject(FSavedTitles->GetCount()-1);
+    TObject *Object = static_cast<TObject *>(FSavedTitles->GetObject(FSavedTitles->GetCount()-1));
     TConsoleTitleParam Param = *reinterpret_cast<TConsoleTitleParam *>(&Object);
     if (Param.Own)
     {

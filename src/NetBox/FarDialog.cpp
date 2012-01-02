@@ -250,7 +250,7 @@ void TFarDialog::SetSize(const TPoint &value)
 //---------------------------------------------------------------------------
 void TFarDialog::SetWidth(const int &value)
 {
-    SetSize(TPoint(value, GetHeight()));
+    SetSize(TPoint(value, static_cast<int>(GetHeight())));
 }
 //---------------------------------------------------------------------------
 int TFarDialog::GetWidth() const
@@ -260,7 +260,7 @@ int TFarDialog::GetWidth() const
 //---------------------------------------------------------------------------
 void TFarDialog::SetHeight(const size_t &value)
 {
-    SetSize(TPoint(GetWidth(), value));
+    SetSize(TPoint(static_cast<int>(GetWidth()), static_cast<int>(value)));
 }
 //---------------------------------------------------------------------------
 size_t TFarDialog::GetHeight() const
@@ -379,7 +379,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
     if (Msg == DN_INITDIALOG)
     {
         assert(Dialogs.find(Handle) == Dialogs.end());
-        Dialogs[Handle] = Param2;
+        Dialogs[Handle] = static_cast<long>(Param2);
         Dialog = reinterpret_cast<TFarDialog *>(Param2);
         Dialog->FHandle = Handle;
     }
@@ -400,7 +400,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 
     if (Dialog != NULL)
     {
-        Result = Dialog->DialogProc(Msg, Param1, Param2);
+        Result = Dialog->DialogProc(Msg, Param1, static_cast<long>(Param2));
     }
 
     if ((Msg == DN_CLOSE) && Result)
@@ -2225,7 +2225,7 @@ void TFarList::Changed()
                 FListItems->Items = NULL;
             }
             delete[] Items;
-            FListItems->ItemsNumber = GetCount();
+            FListItems->ItemsNumber = static_cast<int>(GetCount());
         }
         for (size_t i = 0; i < GetCount(); i++)
         {
