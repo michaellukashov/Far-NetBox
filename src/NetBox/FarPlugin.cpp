@@ -2908,17 +2908,20 @@ std::wstring TFarEditorInfo::GetFileName()
 //---------------------------------------------------------------------------
 TFarEnvGuard::TFarEnvGuard()
 {
-    assert(AreFileApisANSI());
     assert(FarPlugin != NULL);
+    /*
+    assert(AreFileApisANSI());
     if (!FarPlugin->GetANSIApis())
     {
         SetFileApisToOEM();
     }
+    */
 }
 //---------------------------------------------------------------------------
 TFarEnvGuard::~TFarEnvGuard()
 {
     assert(FarPlugin != NULL);
+    /*
     if (!FarPlugin->GetANSIApis())
     {
         assert(!AreFileApisANSI());
@@ -2928,6 +2931,7 @@ TFarEnvGuard::~TFarEnvGuard()
     {
         assert(AreFileApisANSI());
     }
+    */
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2937,6 +2941,7 @@ TFarPluginEnvGuard::TFarPluginEnvGuard()
 
     // keep the assertion, but be robust, in case we are called from incorrectly
     // programmed plugin (e.g. EMenu)
+    /*
     FANSIApis = AreFileApisANSI() > 0;
     assert(FANSIApis == FarPlugin->GetANSIApis());
 
@@ -2944,17 +2949,20 @@ TFarPluginEnvGuard::TFarPluginEnvGuard()
     {
         SetFileApisToANSI();
     }
+    */
 }
 //---------------------------------------------------------------------------
 TFarPluginEnvGuard::~TFarPluginEnvGuard()
 {
     assert(FarPlugin != NULL);
+    /*
     assert(AreFileApisANSI());
 
     if (!FANSIApis)
     {
         SetFileApisToOEM();
     }
+    */
 }
 //---------------------------------------------------------------------------
 void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
