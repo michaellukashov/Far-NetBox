@@ -1643,6 +1643,7 @@ private:
   TFarRadioButton * IPv4Button;
   TFarRadioButton * IPv6Button;
   TFarCheckBox * FtpPasvModeCheck;
+  TFarCheckBox * FtpAllowEmptyPasswordCheck;
   TSessionDialog *Self;
 
   void LoadPing(TSessionData * SessionData);
@@ -2157,6 +2158,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator = new TFarSeparator(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(LOGIN_FTP_GROUP));
+
+  FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
+  FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
+
+  Separator = new TFarSeparator(this);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_FTP_POST_LOGIN_COMMANDS));
@@ -2821,6 +2827,7 @@ void TSessionDialog::UpdateControls()
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
+  FtpAllowEmptyPasswordCheck->SetEnabled(FtpProtocol);
   if (FtpProtocol && (FtpProxyMethodCombo->GetItems()->GetSelected() != pmNone) && !FtpPasvModeCheck->GetChecked())
   {
     FtpPasvModeCheck->SetChecked(true);
@@ -3081,6 +3088,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   SFTPMaxVersionCombo->GetItems()->SetSelected(SessionData->GetSFTPMaxVersion());
 
   // FTP tab
+  FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   TStrings * PostLoginCommands = new TStringList();
   {
         BOOST_SCOPE_EXIT ( (&PostLoginCommands) )
@@ -3315,6 +3323,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItems()->GetSelected());
 
     // FTP tab
+    SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
     TStrings * PostLoginCommands = new TStringList;
     {
         BOOST_SCOPE_EXIT ( (&PostLoginCommands) )

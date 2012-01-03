@@ -159,6 +159,7 @@ void TSessionData::Default()
 
   // FTP
   SetFtpPasvMode(true);
+  SetFtpAllowEmptyPassword(false);
   SetFtpForcePasvIp(false);
   SetFtpAccount(L"");
   SetFtpPingInterval(30);
@@ -298,6 +299,7 @@ void TSessionData::Assign(TPersistent * Source)
     DUPL(TunnelPortFwd);
 
     DUPL(FtpPasvMode);
+    DUPL(FtpAllowEmptyPassword);
     DUPL(FtpForcePasvIp);
     DUPL(FtpAccount);
     DUPL(FtpPingInterval);
@@ -533,6 +535,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
 
     // Ftp prefix
     SetFtpPasvMode(Storage->Readbool(L"FtpPasvMode", GetFtpPasvMode()));
+    SetFtpAllowEmptyPassword(Storage->Readbool(L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword()));
     SetFtpForcePasvIp(Storage->Readbool(L"FtpForcePasvIp", GetFtpForcePasvIp()));
     SetFtpAccount(Storage->ReadString(L"FtpAccount", GetFtpAccount()));
     SetFtpPingInterval(Storage->Readint(L"FtpPingInterval", GetFtpPingInterval()));
@@ -792,6 +795,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       WRITE_DATA_EX(int, L"TunnelLocalPortNumber", GetTunnelLocalPortNumber(), );
 
       WRITE_DATA_EX(bool, L"FtpPasvMode", GetFtpPasvMode(), );
+      WRITE_DATA_EX(bool, L"FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
       WRITE_DATA_EX(bool, L"FtpForcePasvIp", GetFtpForcePasvIp(), );
       WRITE_DATA_EX(String, L"FtpAccount", GetFtpAccount(), );
       WRITE_DATA_EX(int, L"FtpPingInterval", GetFtpPingInterval(), );
@@ -1009,13 +1013,13 @@ bool TSessionData::ParseUrl(const std::wstring &Url, TOptions *Options,
     {
       DefaultsOnly = false;
       Assign(Data);
-      size_t P = 1;
+      size_t P = 0;
       while (!AnsiSameText(DecodeUrlChars(url.substr(0, P)), Data->GetName()))
       {
-        P++;
         assert(P < url.size());
+        P++;
       }
-      ARemoteDirectory = url.substr(P + 1, url.size() - P);
+      ARemoteDirectory = url.substr(P, url.size() - P);
 
       if (Data->GetHidden())
       {
@@ -1143,6 +1147,10 @@ bool TSessionData::ParseUrl(const std::wstring &Url, TOptions *Options,
     if (Options->FindSwitch(L"passive", Value))
     {
       SetFtpPasvMode((StrToIntDef(Value, 1) != 0));
+    }
+    if (Options->FindSwitch(L"allowemptypassword", Value))
+    {
+      SetFtpAllowEmptyPassword((StrToIntDef(Value, 0) != 0));
     }
     if (Options->FindSwitch(L"implicit", Value))
     {
@@ -2095,6 +2103,11 @@ void TSessionData::SetTunnelPortFwd(const std::wstring &value)
 void TSessionData::SetFtpPasvMode(bool value)
 {
   SET_SESSION_PROPERTY(FtpPasvMode);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetFtpAllowEmptyPassword(bool value)
+{
+  SET_SESSION_PROPERTY(FtpAllowEmptyPassword);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetFtpForcePasvIp(bool value)

@@ -355,6 +355,7 @@
 "&Windows"
 " Connection "
 "&Passive mode"
+"&Allow empty password"
 " Protocol options "
 "Post login &commands:"
 
