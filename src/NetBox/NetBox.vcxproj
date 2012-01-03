@@ -71,6 +71,7 @@
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -281,7 +282,7 @@
     <ProjectReference Include="..\..\libs\libssh2\libssh2.vcxproj">
       <Project>{a7d3d5f5-261e-475f-bf66-9d4bd6f67f19}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\libs\tinyXML\tinyxml.vcxproj">
+    <ProjectReference Include="..\..\libs\tinyXML\libtinyxml.vcxproj">
       <Project>{593a4fb1-1787-4192-bf73-9c43bf8fc142}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\libs\zlib\zlib.vcxproj">
