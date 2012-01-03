@@ -652,7 +652,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
         if (!Message.empty()) Message += L"\n";
         Message += FOutput->GetText();
       }
-      while (!Message.empty() && (::LastDelimiter(Message, L"\n\r") == Message.size()))
+      while (!Message.empty() && (::LastDelimiter(Message, L"\n\r") == Message.size() - 1))
       {
         Message.resize(Message.size() - 1);
       }

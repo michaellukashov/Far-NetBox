@@ -1045,7 +1045,7 @@ bool TSessionData::ParseUrl(const std::wstring &Url, TOptions *Options,
       std::wstring UserInfo;
       std::wstring HostInfo;
 
-      if (P > 0)
+      if (P != std::wstring::npos)
       {
         UserInfo = ConnectInfo.substr(0, P);
         HostInfo = ConnectInfo.substr(P + 1, ConnectInfo.size() - P);
@@ -1273,10 +1273,10 @@ void TSessionData::SetHostName(const std::wstring &value)
     std::wstring XPassword = GetPassword();
 
     size_t P = ::LastDelimiter(val, L"@");
-    if (P > 0)
+    if (P != std::wstring::npos)
     {
-      SetUserName(val.substr(0, P - 1));
-      val = val.substr(P, val.size() - P);
+      SetUserName(val.substr(0, P));
+      val = val.substr(P + 1, val.size() - P);
     }
     FHostName = val;
     Modify();
@@ -2019,11 +2019,11 @@ void TSessionData::SetTunnelHostName(const std::wstring &val)
     // HostName is key for password encryption
     const std::wstring &XTunnelPassword = GetTunnelPassword();
 
-    int P = ::LastDelimiter(value, L"@");
-    if (P > 0)
+    size_t P = ::LastDelimiter(value, L"@");
+    if (P != std::wstring::npos)
     {
-      SetTunnelUserName(value.substr(0, P - 1));
-      value = value.substr(P, value.size() - P);
+      SetTunnelUserName(value.substr(0, P));
+      value = value.substr(P + 1, value.size() - P);
     }
     FTunnelHostName = value;
     Modify();

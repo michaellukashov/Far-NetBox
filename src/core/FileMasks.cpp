@@ -272,16 +272,17 @@ std::wstring MaskFileName(std::wstring FileName, const std::wstring &Mask)
     size_t P = ::LastDelimiter(Mask, L".");
     if (P != std::wstring::npos)
     {
-      int P2 = ::LastDelimiter(FileName, L".");
+      size_t P2 = ::LastDelimiter(FileName, L".");
       // DEBUG_PRINTF(L"P2 = %d", P2);
       // only dot at beginning of file name is not considered as
       // name/ext separator
-      std::wstring FileExt = P2 > 0 ?
+      bool hasFileExt = (P2 != std::wstring::npos) && (P2 > 0);
+      std::wstring FileExt = hasFileExt ?
         FileName.substr(P2, FileName.size() - P2) : std::wstring();
       // DEBUG_PRINTF(L"FileExt = %s", FileExt.c_str());
       FileExt = MaskFilePart(FileExt, Mask.substr(P + 1, Mask.size() - P), Masked);
       // DEBUG_PRINTF(L"FileExt = %s", FileExt.c_str());
-      if (P2 > 0)
+      if (hasFileExt)
       {
         FileName.resize(P2);
       }
@@ -693,7 +694,7 @@ void TFileMasks::SetStr(const std::wstring &Str, bool SingleMask)
           {
             size_t D = ::LastDelimiter(PartStr, L"\\/");
 
-            Mask.DirectoryOnly = (D != std::wstring::npos) && (D == PartStr.size());
+            Mask.DirectoryOnly = (D != std::wstring::npos) && (D == PartStr.size() - 1);
 
             if (Mask.DirectoryOnly)
             {

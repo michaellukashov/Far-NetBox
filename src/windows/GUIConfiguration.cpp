@@ -626,7 +626,7 @@ void TGUIConfiguration::DefaultLocalized()
 std::wstring TGUIConfiguration::PropertyToKey(const std::wstring &Property)
 {
   // no longer useful
-  int P = ::LastDelimiter(Property, L".>");
+  size_t P = ::LastDelimiter(Property, L".>");
   return Property.substr(P + 1, Property.size() - P);
 }
 //---------------------------------------------------------------------------
