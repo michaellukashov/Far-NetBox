@@ -1013,13 +1013,13 @@ bool TSessionData::ParseUrl(const std::wstring &Url, TOptions *Options,
     {
       DefaultsOnly = false;
       Assign(Data);
-      size_t P = 1;
+      size_t P = 0;
       while (!AnsiSameText(DecodeUrlChars(url.substr(0, P)), Data->GetName()))
       {
-        P++;
         assert(P < url.size());
+        P++;
       }
-      ARemoteDirectory = url.substr(P + 1, url.size() - P);
+      ARemoteDirectory = url.substr(P, url.size() - P);
 
       if (Data->GetHidden())
       {
