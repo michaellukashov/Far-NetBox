@@ -1233,6 +1233,7 @@ void TTerminalItem::OperationProgress(
 {
   if (FPause && !FTerminated && !FCancel)
   {
+    assert(FItem != NULL);
     TQueueItem::TStatus PrevStatus = FItem->GetStatus();
     assert(PrevStatus == TQueueItem::qsProcessing);
     // must be set before TFileOperationProgressType::Suspend(), because
@@ -1246,7 +1247,6 @@ void TTerminalItem::OperationProgress(
         Self->FItem->SetStatus(PrevStatus);
         ProgressData.Resume();
       } BOOST_SCOPE_EXIT_END
-      assert(FItem != NULL);
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
