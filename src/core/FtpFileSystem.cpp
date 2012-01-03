@@ -433,7 +433,8 @@ void TFTPFileSystem::Open()
 
     // ask for password if it was not specified in advance,
     // on retry ask always
-    if ((Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
+    // DEBUG_PRINTF(L"GetPasswordless = %d, GetFtpAllowEmptyPassword = %d", Data->GetPasswordless(), Data->GetFtpAllowEmptyPassword());
+    if ((Data->GetPassword().empty() && !Data->GetPasswordless() && !Data->GetFtpAllowEmptyPassword()) || FPasswordFailed)
     {
       FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
 
@@ -452,6 +453,7 @@ void TFTPFileSystem::Open()
       }
     }
 
+    // DEBUG_PRINTF(L"Password = %s", Password.c_str());
     FActive = FFileZillaIntf->Connect(
       ::W2MB(HostName.c_str()).c_str(), Data->GetPortNumber(),
 	  ::W2MB(UserName.c_str()).c_str(),
