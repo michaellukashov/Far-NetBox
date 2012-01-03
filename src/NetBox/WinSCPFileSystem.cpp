@@ -66,18 +66,19 @@ void TSessionPanelItem::GetData(
   std::wstring & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
 {
   FileName = UnixExtractFileName(FSessionData->GetName());
+  // DEBUG_PRINTF(L"FileName = %s, GetName = %s", FileName.c_str(), FSessionData->GetName().c_str());
   UserData = FSessionData;
 }
 //---------------------------------------------------------------------------
-TSessionFolderPanelItem::TSessionFolderPanelItem(std::wstring Folder):
+TSessionFolderPanelItem::TSessionFolderPanelItem(const std::wstring &Folder):
   TCustomFarPanelItem(),
   FFolder(Folder)
 {
 }
 //---------------------------------------------------------------------------
 void TSessionFolderPanelItem::GetData(
-  unsigned long & /*Flags*/, std::wstring & FileName, __int64 & /*Size*/,
-  unsigned long & FileAttributes,
+  unsigned long & /*Flags*/, std::wstring &FileName, __int64 & /*Size*/,
+  unsigned long &FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
   std::wstring & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)

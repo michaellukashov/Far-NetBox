@@ -356,17 +356,17 @@ protected:
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
-  TSessionFolderPanelItem(std::wstring Folder);
+  TSessionFolderPanelItem(const std::wstring &Folder);
 
 protected:
   std::wstring FFolder;
 
   virtual void GetData(
-    unsigned long & Flags, std::wstring & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
-    TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, std::wstring & Description,
-    std::wstring & Owner, void *& UserData, int & CustomColumnNumber);
+    unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+    unsigned long &FileAttributes,
+    TDateTime &LastWriteTime, TDateTime & LastAccess,
+    unsigned long &NumberOfLinks, std::wstring &Description,
+    std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
 class TRemoteFilePanelItem : public TCustomFarPanelItem
