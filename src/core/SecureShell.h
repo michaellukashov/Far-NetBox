@@ -34,6 +34,7 @@ private:
   TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
+  const unsigned int * FMinPacketSize;
   const unsigned int * FMaxPacketSize;
   Config * FConfig;
   notify_signal_type FOnReceive;
@@ -123,6 +124,7 @@ public:
 
   const TSessionInfo & GetSessionInfo();
   bool SshFallbackCmd() const;
+  unsigned long MinPacketSize();
   unsigned long MaxPacketSize();
   void ClearStdError();
   bool GetStoredCredentialsTried();

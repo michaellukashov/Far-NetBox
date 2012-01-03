@@ -115,6 +115,7 @@ private:
   int FSFTPUploadQueue;
   int FSFTPListingQueue;
   int FSFTPMaxVersion;
+  unsigned long FSFTPMinPacketSize;
   unsigned long FSFTPMaxPacketSize;
   TDSTMode FDSTMode;
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT];
@@ -365,6 +366,7 @@ public:
   // __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   int GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
   // __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
+  unsigned long GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
   unsigned long GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
   void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
@@ -499,6 +501,7 @@ public:
   void SetCustomParam2(const std::wstring &value);
   void SetResolveSymlinks(bool value);
   void SetSFTPMaxVersion(int value);
+  void SetSFTPMinPacketSize(unsigned long value);
   void SetSFTPMaxPacketSize(unsigned long value);
   void SetSCPLsFullTime(TAutoSwitch value);
   void SetFtpListAll(TAutoSwitch value);

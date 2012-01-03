@@ -783,6 +783,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       #undef WRITE_SFTP_BUG
 
       WRITE_DATA_EX(int, L"SFTPMaxVersion", GetSFTPMaxVersion(), );
+      WRITE_DATA_EX(int, L"SFTPMinPacketSize", GetSFTPMinPacketSize(), );
       WRITE_DATA_EX(int, L"SFTPMaxPacketSize", GetSFTPMaxPacketSize(), );
 
       WRITE_DATA_EX(int, L"Color", GetColor(), );
@@ -1980,6 +1981,11 @@ void TSessionData::SetSFTPListingQueue(int value)
 void TSessionData::SetSFTPMaxVersion(int value)
 {
   SET_SESSION_PROPERTY(SFTPMaxVersion);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetSFTPMinPacketSize(unsigned long value)
+{
+  SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetSFTPMaxPacketSize(unsigned long value)

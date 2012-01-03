@@ -1637,6 +1637,8 @@ private:
   TFarListBox * KexListBox;
   TFarButton * KexUpButton;
   TFarButton * KexDownButton;
+  TFarEdit * SFTPMinPacketSizeEdit;
+  TFarEdit * SFTPMaxPacketSizeEdit;
   TFarEdit * RekeyTimeEdit;
   TFarEdit * RekeyDataEdit;
   TFarRadioButton * IPAutoButton;
@@ -2148,6 +2150,36 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTP_BUGS();
 
   new TFarSeparator(this);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_SFTP_MIN_PACKET_SIZE));
+  SetNextItemPosition(ipRight);
+
+  SFTPMinPacketSizeEdit = new TFarEdit(this);
+  SFTPMinPacketSizeEdit->SetFixed(true);
+  SFTPMinPacketSizeEdit->SetMask(L"####");
+  SFTPMinPacketSizeEdit->SetWidth(6);
+  // RekeyTimeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
+
+  SetNextItemPosition(ipNewLine);
+  SFTPMaxPacketSizeEdit = new TFarText(this);
+  SFTPMaxPacketSizeEdit->SetCaption(GetMsg(LOGIN_SFTP_MAX_PACKET_SIZE));
+  // Text->SetEnabledDependencyNegative(SshProt1onlyButton);
+  SetNextItemPosition(ipRight);
+
+  RekeyTimeEdit = new TFarEdit(this);
+  RekeyTimeEdit->SetFixed(true);
+  RekeyTimeEdit->SetMask(L"####");
+  RekeyTimeEdit->SetWidth(6);
+  // RekeyTimeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
+
+  // SetNextItemPosition(ipRight);
+
+  // RekeyTimeEdit = new TFarEdit(this);
+  // RekeyTimeEdit->SetFixed(true);
+  // RekeyTimeEdit->SetMask(L"####");
+  // RekeyTimeEdit->SetWidth(6);
+  // RekeyTimeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   // FTP tab
 

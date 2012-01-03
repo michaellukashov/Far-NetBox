@@ -1946,8 +1946,10 @@ unsigned long TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
   TFileOperationProgressType * OperationProgress, unsigned long MaxPacketSize)
 {
   const unsigned long MinPacketSize = 4096;
+  
   // size + message number + type
   const unsigned long SFTPPacketOverhead = 4 + 4 + 1;
+  unsigned long AMinPacketSize = FSecureShell->MinPacketSize();
   unsigned long AMaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (AMaxPacketSize > 0);
   unsigned long Result = OperationProgress->CPS();
@@ -1996,7 +1998,7 @@ unsigned long TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
   }
 
   Result = OperationProgress->AdjustToCPSLimit(Result);
-
+  DEBUG_PRINTF(L"MinPacketSize = %u, MaxPacketSize = %u, Result1 = %u", MinPacketSize, MaxPacketSize, Result);
   return Result;
 }
 //---------------------------------------------------------------------------
