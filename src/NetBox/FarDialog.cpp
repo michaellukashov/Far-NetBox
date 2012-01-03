@@ -656,7 +656,7 @@ bool TFarDialog::HotKey(unsigned long Key)
     if ((KEY_ALTA <= Key) && (Key <= KEY_ALTZ))
     {
         Result = true;
-        HotKey = static_cast<char>('a' + char(Key - KEY_ALTA));
+        HotKey = static_cast<char>('a' + static_cast<char>(Key - KEY_ALTA));
     }
 
     if (Result)

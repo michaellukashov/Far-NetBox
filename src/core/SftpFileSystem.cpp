@@ -971,7 +971,7 @@ private:
     FCapacity = 0;
     FLength = 0;
     FPosition = 0;
-    FMessageNumber = (unsigned int)SFTPNoMessageNumber;
+    FMessageNumber = static_cast<unsigned int>(SFTPNoMessageNumber);
     FType = static_cast<unsigned char>(-1);
     FReservedBy = NULL;
     Self = this;

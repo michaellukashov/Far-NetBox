@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 int random(int range)
 {
-    return (int)((double)rand() / ((double)RAND_MAX / (double)range));
+    return static_cast<int>(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / range));
 }
 
 //---------------------------------------------------------------------------
@@ -43,18 +43,18 @@ std::wstring EncryptPassword(std::wstring Password, std::wstring Key, int /* Alg
   // if (!RandSeed) Randomize();
   std::string Password2 = ::W2MB((Key + Password).c_str());
   Shift = (Password2.size() < PWALG_SIMPLE_MAXLEN) ?
-    (unsigned char)random(PWALG_SIMPLE_MAXLEN - Password2.size()) : 0;
+    static_cast<unsigned char>(random(PWALG_SIMPLE_MAXLEN - Password2.size())) : 0;
   // DEBUG_PRINTF(L"Shift = %d", Shift);
-  Result += SimpleEncryptChar((char)PWALG_SIMPLE_FLAG); // Flag
-  Result += SimpleEncryptChar((char)PWALG_SIMPLE_INTERNAL); // Dummy
-  Result += SimpleEncryptChar((char)Password2.size());
-  Result += SimpleEncryptChar((char)Shift);
+  Result += SimpleEncryptChar(static_cast<char>(PWALG_SIMPLE_FLAG)); // Flag
+  Result += SimpleEncryptChar(static_cast<char>(PWALG_SIMPLE_INTERNAL)); // Dummy
+  Result += SimpleEncryptChar(static_cast<char>(Password2.size()));
+  Result += SimpleEncryptChar(static_cast<char>(Shift));
   for (Index = 0; Index < Shift; Index++)
-    Result += SimpleEncryptChar((unsigned char)random(256));
+    Result += SimpleEncryptChar(static_cast<unsigned char>(random(256)));
   for (Index = 0; Index < Password2.size(); Index++)
     Result += SimpleEncryptChar(Password2.c_str()[Index]);
   while (Result.size() < PWALG_SIMPLE_MAXLEN * 2)
-    Result += SimpleEncryptChar((unsigned char)random(256));
+    Result += SimpleEncryptChar(static_cast<unsigned char>(random(256)));
   return ::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------

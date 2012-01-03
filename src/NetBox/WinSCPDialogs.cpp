@@ -6827,7 +6827,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
   {
     if (Ratio[Index] >= 0)
     {
-      double W = static_cast<float>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
+      double W = static_cast<double>(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
       FWidths[Index] = static_cast<int>(floor(W));
       Temp[Index] = W - FWidths[Index];
     }

@@ -3306,7 +3306,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           if (Entry->HasTime)
           {
             File->SetModification(Modification +
-              EncodeTimeVerbose((unsigned short)Entry->Hour, static_cast<unsigned short>(Entry->Minute), 0, 0));
+              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour), static_cast<unsigned short>(Entry->Minute), 0, 0));
             // not exact as we got year as well, but it is most probably
             // guessed by FZAPI anyway
             File->SetModificationFmt(mfMDHM);

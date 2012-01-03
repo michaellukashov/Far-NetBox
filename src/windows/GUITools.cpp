@@ -171,9 +171,9 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring &Path,
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = (HWND)::GetModuleHandle(0);
-  ExecuteInfo.lpFile = (wchar_t *)Path.data();
-  ExecuteInfo.lpParameters = (wchar_t *)Params.data();
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
   Result = (ShellExecuteEx(&ExecuteInfo) != 0);

@@ -2845,7 +2845,7 @@ bool CFtpListResult::ParseSize(const char* str, int len, __int64 &size) const
 		break;
 	case 't':
 	case 'T':
-		size *= (__int64)1 << 40;
+		size *= static_cast<__int64>(1) << 40;
 		break;
 	default:
 		return false;
