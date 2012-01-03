@@ -2271,11 +2271,11 @@ bool IsDelimiter(const std::wstring &str, const std::wstring &delim, size_t inde
     return false;
 }
 
-int LastDelimiter(const std::wstring &str, const std::wstring &delim)
+size_t LastDelimiter(const std::wstring &str, const std::wstring &delim)
 {
     if (str.size())
     {
-      for (int i = static_cast<int>(str.size() - 1); i >= 0; i--)
+      for (size_t i = str.size() - 1; i != std::wstring::npos; --i)
       {
         if (::IsDelimiter(str, delim, i))
         {
@@ -2283,7 +2283,7 @@ int LastDelimiter(const std::wstring &str, const std::wstring &delim)
         }
       }
     }
-    return 0;
+    return std::wstring::npos;
 }
 
 //---------------------------------------------------------------------------
