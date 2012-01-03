@@ -138,6 +138,7 @@ private:
   std::wstring FTunnelPortFwd;
   bool FFtpPasvMode;
   bool FFtpForcePasvIp;
+  bool FFtpAllowEmptyPassword;
   std::wstring FFtpAccount;
   int FFtpPingInterval;
   TPingType FFtpPingType;
@@ -413,6 +414,8 @@ public:
   void SetTunnelPortFwd(const std::wstring &value);
   // __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
   bool GetFtpPasvMode() const { return FFtpPasvMode; }
+  bool GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
+  void SetFtpAllowEmptyPassword(bool value);
   // __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
   bool GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   // __property std::wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
