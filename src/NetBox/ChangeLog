@@ -1,4 +1,5 @@
-NetBox 2.0.4 ??.??.2012
+NetBox 2.0.4 04.01.2012
+---------------------
   * SFTP: Add session options "Min packet size", "Max packet size"
   * FTP: Add session option "Allow empty password"
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=87981#p87238)
@@ -7,7 +8,7 @@ NetBox 2.0.4 ??.??.2012
     go to "FTP" tab;
     check "Allow empty password" option
   * Fix a number of x64-related issues
-  * Update WinSCP sources to version 4.3.6, released 29.12.2011 (http://winscp.net/download/winscp436source.zip)
+  * Update WinSCP sources to version 4.3.6
   * Update openssl sources to version 1.0.0e
   * Update tinyxml sources to version 2.6.2
 
