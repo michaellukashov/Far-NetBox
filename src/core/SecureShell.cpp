@@ -80,6 +80,7 @@ void TSecureShell::ResetConnection()
 void TSecureShell::ResetSessionInfo()
 {
   FSessionInfoValid = false;
+  FMinPacketSize = NULL;
   FMaxPacketSize = NULL;
 }
 //---------------------------------------------------------------------------
@@ -1672,6 +1673,29 @@ void TSecureShell::KeepAlive()
   {
     // defer next keepalive attempt
     FLastDataSent = Now();
+  }
+}
+//---------------------------------------------------------------------------
+static unsigned int minPacketSize = 0;
+
+unsigned long TSecureShell::MinPacketSize()
+{
+  if (!FSessionInfoValid)
+  {
+    UpdateSessionInfo();
+  }
+
+  if (FSshVersion == 1)
+  {
+    return 0;
+  }
+  else
+  {
+    if (FMinPacketSize == NULL)
+    {
+      FMinPacketSize = &minPacketSize;
+    }
+    return *FMinPacketSize;
   }
 }
 //---------------------------------------------------------------------------

@@ -141,6 +141,7 @@ void TSessionData::Default()
   SetSFTPUploadQueue(4);
   SetSFTPListingQueue(2);
   SetSFTPMaxVersion(5);
+  SetSFTPMinPacketSize(0);
   SetSFTPMaxPacketSize(0);
 
   for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
@@ -278,6 +279,7 @@ void TSessionData::Assign(TPersistent * Source)
     DUPL(SFTPUploadQueue);
     DUPL(SFTPListingQueue);
     DUPL(SFTPMaxVersion);
+    DUPL(SFTPMinPacketSize);
     DUPL(SFTPMaxPacketSize);
 
     for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
@@ -506,6 +508,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     #undef READ_SFTP_BUG
 
     SetSFTPMaxVersion(Storage->Readint(L"SFTPMaxVersion", GetSFTPMaxVersion()));
+    SetSFTPMinPacketSize(Storage->Readint(L"SFTPMinPacketSize", GetSFTPMinPacketSize()));
     SetSFTPMaxPacketSize(Storage->Readint(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize()));
 
     SetColor(Storage->Readint(L"Color", GetColor()));
@@ -783,6 +786,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
       #undef WRITE_SFTP_BUG
 
       WRITE_DATA_EX(int, L"SFTPMaxVersion", GetSFTPMaxVersion(), );
+      WRITE_DATA_EX(int, L"SFTPMinPacketSize", GetSFTPMinPacketSize(), );
       WRITE_DATA_EX(int, L"SFTPMaxPacketSize", GetSFTPMaxPacketSize(), );
 
       WRITE_DATA_EX(int, L"Color", GetColor(), );
@@ -1649,7 +1653,7 @@ void TSessionData::SetPingIntervalDT(TDateTime value)
   SetPingInterval((static_cast<int>(hour))*60*60 + (static_cast<int>(min))*60 + sec);
 }
 //---------------------------------------------------------------------------
-TDateTime TSessionData::GetPingIntervalDT()
+TDateTime TSessionData::GetPingIntervalDT() const
 {
   return SecToDateTime(GetPingInterval());
 }
@@ -1980,6 +1984,11 @@ void TSessionData::SetSFTPListingQueue(int value)
 void TSessionData::SetSFTPMaxVersion(int value)
 {
   SET_SESSION_PROPERTY(SFTPMaxVersion);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetSFTPMinPacketSize(unsigned long value)
+{
+  SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetSFTPMaxPacketSize(unsigned long value)

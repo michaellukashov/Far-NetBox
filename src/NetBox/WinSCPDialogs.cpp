@@ -1637,6 +1637,8 @@ private:
   TFarListBox * KexListBox;
   TFarButton * KexUpButton;
   TFarButton * KexDownButton;
+  TFarEdit * SFTPMinPacketSizeEdit;
+  TFarEdit * SFTPMaxPacketSizeEdit;
   TFarEdit * RekeyTimeEdit;
   TFarEdit * RekeyDataEdit;
   TFarRadioButton * IPAutoButton;
@@ -2148,6 +2150,28 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTP_BUGS();
 
   new TFarSeparator(this);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_SFTP_MIN_PACKET_SIZE));
+  SetNextItemPosition(ipRight);
+
+  SFTPMinPacketSizeEdit = new TFarEdit(this);
+  SFTPMinPacketSizeEdit->SetFixed(true);
+  SFTPMinPacketSizeEdit->SetMask(L"99999999");
+  SFTPMinPacketSizeEdit->SetWidth(8);
+  // SFTPMinPacketSizeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
+
+  SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_SFTP_MAX_PACKET_SIZE));
+  SetNextItemPosition(ipRight);
+
+  SFTPMaxPacketSizeEdit = new TFarEdit(this);
+  SFTPMaxPacketSizeEdit->SetFixed(true);
+  SFTPMaxPacketSizeEdit->SetMask(L"99999999");
+  SFTPMaxPacketSizeEdit->SetWidth(8);
+  // SFTPMaxPacketSizeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   // FTP tab
 
@@ -3086,6 +3110,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SftpServerEdit->SetText(SessionData->GetSftpServer());
   }
   SFTPMaxVersionCombo->GetItems()->SetSelected(SessionData->GetSFTPMaxVersion());
+  SFTPMinPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMinPacketSize());
+  SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
 
   // FTP tab
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
@@ -3321,6 +3347,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
         (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
         std::wstring() : SftpServerEdit->GetText());
     SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItems()->GetSelected());
+    SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
+    SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
 
     // FTP tab
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
