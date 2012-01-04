@@ -183,13 +183,15 @@ protected:
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
-  inline unsigned long TransferBlockSize(unsigned long Overhead,
-    TFileOperationProgressType * OperationProgress, unsigned long MaxPacketSize = 0);
-  inline unsigned long UploadBlockSize(const std::string & Handle,
-    TFileOperationProgressType * OperationProgress);
-  inline unsigned long DownloadBlockSize(
-    TFileOperationProgressType * OperationProgress);
-  inline int PacketLength(char * LenBuf, int ExpectedType);
+  unsigned long TransferBlockSize(unsigned long Overhead,
+    TFileOperationProgressType *OperationProgress,
+    unsigned long MinPacketSize = 0,
+    unsigned long MaxPacketSize = 0);
+  unsigned long UploadBlockSize(const std::string &Handle,
+    TFileOperationProgressType *OperationProgress);
+  unsigned long DownloadBlockSize(
+    TFileOperationProgressType *OperationProgress);
+  int PacketLength(char *LenBuf, int ExpectedType);
 };
 //---------------------------------------------------------------------------
 #endif // SftpFileSystemH

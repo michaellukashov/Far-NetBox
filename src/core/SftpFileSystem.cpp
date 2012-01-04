@@ -1943,9 +1943,11 @@ inline void TSFTPFileSystem::BusyEnd()
 }
 //---------------------------------------------------------------------------
 unsigned long TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
-  TFileOperationProgressType * OperationProgress, unsigned long MaxPacketSize)
+  TFileOperationProgressType *OperationProgress,
+  unsigned long MinPacketSize,
+  unsigned long MaxPacketSize)
 {
-  const unsigned long MinPacketSize = 4096;
+  const unsigned long minPacketSize = 4096;
   
   // size + message number + type
   const unsigned long SFTPPacketOverhead = 4 + 4 + 1;
@@ -1973,9 +1975,9 @@ unsigned long TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
     Result = OperationProgress->StaticBlockSize();
   }
 
-  if (Result < MinPacketSize)
+  if (Result < minPacketSize)
   {
-    Result = MinPacketSize;
+    Result = minPacketSize;
   }
 
   if (MaxPacketSizeValid)
@@ -1997,13 +1999,15 @@ unsigned long TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
     }
   }
 
+  DEBUG_PRINTF(L"Result1 = %u", Result);
   Result = OperationProgress->AdjustToCPSLimit(Result);
-  DEBUG_PRINTF(L"MinPacketSize = %u, MaxPacketSize = %u, Result1 = %u", MinPacketSize, MaxPacketSize, Result);
+  DEBUG_PRINTF(L"minPacketSize = %u, MaxPacketSize = %u, Result = %u", minPacketSize, MaxPacketSize, Result);
+  DEBUG_PRINTF(L"Result2 = %u", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned long TSFTPFileSystem::UploadBlockSize(const std::string & Handle,
-  TFileOperationProgressType * OperationProgress)
+unsigned long TSFTPFileSystem::UploadBlockSize(const std::string &Handle,
+  TFileOperationProgressType *OperationProgress)
 {
   // handle length + offset + data size
   const unsigned long UploadPacketOverhead =
