@@ -141,6 +141,7 @@ void TSessionData::Default()
   SetSFTPUploadQueue(4);
   SetSFTPListingQueue(2);
   SetSFTPMaxVersion(5);
+  SetSFTPMinPacketSize(0);
   SetSFTPMaxPacketSize(0);
 
   for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
@@ -278,6 +279,7 @@ void TSessionData::Assign(TPersistent * Source)
     DUPL(SFTPUploadQueue);
     DUPL(SFTPListingQueue);
     DUPL(SFTPMaxVersion);
+    DUPL(SFTPMinPacketSize);
     DUPL(SFTPMaxPacketSize);
 
     for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
@@ -506,6 +508,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     #undef READ_SFTP_BUG
 
     SetSFTPMaxVersion(Storage->Readint(L"SFTPMaxVersion", GetSFTPMaxVersion()));
+    SetSFTPMinPacketSize(Storage->Readint(L"SFTPMinPacketSize", GetSFTPMinPacketSize()));
     SetSFTPMaxPacketSize(Storage->Readint(L"SFTPMaxPacketSize", GetSFTPMaxPacketSize()));
 
     SetColor(Storage->Readint(L"Color", GetColor()));

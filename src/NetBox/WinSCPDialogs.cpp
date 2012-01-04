@@ -2157,29 +2157,21 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SFTPMinPacketSizeEdit = new TFarEdit(this);
   SFTPMinPacketSizeEdit->SetFixed(true);
-  SFTPMinPacketSizeEdit->SetMask(L"####");
-  SFTPMinPacketSizeEdit->SetWidth(6);
-  // RekeyTimeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
+  SFTPMinPacketSizeEdit->SetMask(L"99999999");
+  SFTPMinPacketSizeEdit->SetWidth(8);
+  // SFTPMinPacketSizeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipNewLine);
-  SFTPMaxPacketSizeEdit = new TFarText(this);
-  SFTPMaxPacketSizeEdit->SetCaption(GetMsg(LOGIN_SFTP_MAX_PACKET_SIZE));
-  // Text->SetEnabledDependencyNegative(SshProt1onlyButton);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_SFTP_MAX_PACKET_SIZE));
   SetNextItemPosition(ipRight);
 
-  RekeyTimeEdit = new TFarEdit(this);
-  RekeyTimeEdit->SetFixed(true);
-  RekeyTimeEdit->SetMask(L"####");
-  RekeyTimeEdit->SetWidth(6);
-  // RekeyTimeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
-
-  // SetNextItemPosition(ipRight);
-
-  // RekeyTimeEdit = new TFarEdit(this);
-  // RekeyTimeEdit->SetFixed(true);
-  // RekeyTimeEdit->SetMask(L"####");
-  // RekeyTimeEdit->SetWidth(6);
-  // RekeyTimeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
+  SFTPMaxPacketSizeEdit = new TFarEdit(this);
+  SFTPMaxPacketSizeEdit->SetFixed(true);
+  SFTPMaxPacketSizeEdit->SetMask(L"99999999");
+  SFTPMaxPacketSizeEdit->SetWidth(8);
+  // SFTPMaxPacketSizeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   // FTP tab
 
@@ -3118,6 +3110,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SftpServerEdit->SetText(SessionData->GetSftpServer());
   }
   SFTPMaxVersionCombo->GetItems()->SetSelected(SessionData->GetSFTPMaxVersion());
+  SFTPMinPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMinPacketSize());
+  SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
 
   // FTP tab
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
@@ -3353,6 +3347,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
         (SftpServerEdit->GetText() == SftpServerEdit->GetItems()->GetString(0)) ?
         std::wstring() : SftpServerEdit->GetText());
     SessionData->SetSFTPMaxVersion(SFTPMaxVersionCombo->GetItems()->GetSelected());
+    SessionData->SetSFTPMinPacketSize(SFTPMinPacketSizeEdit->GetAsInteger());
+    SessionData->SetSFTPMaxPacketSize(SFTPMaxPacketSizeEdit->GetAsInteger());
 
     // FTP tab
     SessionData->SetFtpAllowEmptyPassword(FtpAllowEmptyPasswordCheck->GetChecked());
