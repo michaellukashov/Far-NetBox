@@ -260,7 +260,7 @@ add_library (libtinyxml STATIC
 
 set_target_properties( libtinyxml
     PROPERTIES
-    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS"
+    COMPILE_FLAGS "-DSECURITY_WIN32;_WINDOWS"
 )
 
 #-------------------------------------------------------------------------------
