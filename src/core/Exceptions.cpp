@@ -207,3 +207,16 @@ EOSExtException::EOSExtException(std::wstring Msg) :
 {
 }
 */
+
+//---------------------------------------------------------------------------
+EFatal::EFatal(std::wstring Msg, const std::exception *E) :
+  parent(Msg, E),
+  FReopenQueried(false)
+{
+  const EFatal *F = dynamic_cast<const EFatal *>(E);
+  if (F != NULL)
+  {
+    FReopenQueried = F->FReopenQueried;
+  }
+}
+//---------------------------------------------------------------------------

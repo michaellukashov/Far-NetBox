@@ -501,7 +501,7 @@ DWORD CMainThread::ResumeThread()
 
 DWORD WINAPI CMainThread::ThreadProc(LPVOID lpParameter)
 {
-	return ((CMainThread *)lpParameter)->Run();
+	return (static_cast<CMainThread *>(lpParameter))->Run();
 }
 
 DWORD CMainThread::Run()

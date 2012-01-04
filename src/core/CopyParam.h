@@ -57,8 +57,8 @@ private:
 
 public:
   static const wchar_t TokenPrefix = L'%';
-  static const wchar_t NoReplacement = wchar_t(false);
-  static const wchar_t TokenReplacement = wchar_t(true);
+  static const wchar_t NoReplacement = static_cast<wchar_t>(false);
+  static const wchar_t TokenReplacement = static_cast<wchar_t>(true);
 
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);

@@ -94,7 +94,7 @@ private:
   TCopyParamRuleData FData;
 
   inline bool Match(const std::wstring & Mask,
-    const std::wstring & Value, bool Path, bool Local = true) const;
+    const std::wstring &Value, bool Path, bool Local = true) const;
 };
 //---------------------------------------------------------------------------
 class TCopyParamList
@@ -108,21 +108,21 @@ public:
   void Load(THierarchicalStorage * Storage, int Count);
   void Save(THierarchicalStorage * Storage) const;
 
-  static void ValidateName(const std::wstring Name);
+  static void ValidateName(const std::wstring &Name);
 
   void operator=(const TCopyParamList & rhl);
   bool operator==(const TCopyParamList & rhl) const;
 
   void Clear();
-  void Add(const std::wstring Name,
+  void Add(const std::wstring &Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Insert(int Index, const std::wstring Name,
+  void Insert(int Index, const std::wstring &Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Change(int Index, const std::wstring Name,
+  void Change(int Index, const std::wstring &Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
   void Move(int CurIndex, int NewIndex);
   void Delete(int Index);
-  int IndexOfName(const std::wstring Name) const;
+  int IndexOfName(const std::wstring &Name) const;
 
   // __property int Count = { read = GetCount };
   int GetCount() const;
@@ -201,7 +201,7 @@ protected:
   LCID InternalLocale();
   void FreeResourceModule(HANDLE Instance);
   virtual bool GetRememberPassword();
-  static std::wstring PropertyToKey(const std::wstring Property);
+  static std::wstring PropertyToKey(const std::wstring &Property);
   virtual void DefaultLocalized();
   virtual void Saved();
 

@@ -120,7 +120,7 @@ public:
   void SetTotalSize(__int64 ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, int ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, int ACount, bool ATemp, const std::wstring ADirectory,
+    TOperationSide ASide, int ACount, bool ATemp, const std::wstring &ADirectory,
     unsigned long ACPSLimit);
   void Stop();
   void Suspend();
@@ -144,12 +144,18 @@ public:
   TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress)
   {
     FOperationProgress = OperationProgress;
-    FOperationProgress->Suspend();
+    if (FOperationProgress != NULL)
+    {
+        FOperationProgress->Suspend();
+    }
   }
 
   ~TSuspendFileOperationProgress()
   {
-    FOperationProgress->Resume();
+    if (FOperationProgress != NULL)
+    {
+      FOperationProgress->Resume();
+    }
   }
 
 private:

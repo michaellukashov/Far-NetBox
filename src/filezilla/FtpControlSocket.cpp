@@ -694,13 +694,13 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
 				// support UTF8 and the login data contains non-ascii characters.
 				bool asciiOnly = true;
 				for (int i = 0; i < m_CurrentServer.user.GetLength(); i++)
-					if (m_CurrentServer.user.GetAt(i) > 127)
+					if ((unsigned char)m_CurrentServer.user.GetAt(i) > 127)
 						asciiOnly = false;
 				for (int i = 0; i < m_CurrentServer.pass.GetLength(); i++)
-					if (m_CurrentServer.pass.GetAt(i) > 127)
+					if ((unsigned char)m_CurrentServer.pass.GetAt(i) > 127)
 						asciiOnly = false;
 				for (int i = 0; i < m_CurrentServer.account.GetLength(); i++)
-					if (m_CurrentServer.account.GetAt(i) > 127)
+					if ((unsigned char)m_CurrentServer.account.GetAt(i) > 127)
 						asciiOnly = false;
 				if (!asciiOnly)
 				{
@@ -1117,7 +1117,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
 			int Len = FormatMessage(
 				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
 				NULL, nErrorCode, 0, Buffer, sizeof(Buffer), NULL);
-			while ((Len > 0) && ((Buffer[Len - 1] >= 0) && (Buffer[Len - 1] <= 32)))
+			while ((Len > 0) && ((Buffer[Len - 1] != 0) && (Buffer[Len - 1] <= 32)))
 			{
 				--Len;
 			}
@@ -1721,7 +1721,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 				{
 					temp = temp.Mid(3);
 					pData->port = atol( T2CA(temp.Left(temp.GetLength() - 1) ) );
-					if (pData->port < 0 || pData->port > 65535)
+					if ((int)pData->port < 0 || pData->port > 65535)
 					{
 						LogMessage(__FILE__, __LINE__, this, FZ_LOG_WARNING, _T("Port %u not valid"), pData->port);
 						error = TRUE;
@@ -2831,7 +2831,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 				m_Operation.nOpState=FILETRANSFER_PWD2;
 			break;
 		case FILETRANSFER_PWD2:
-			if (code != 2 && code != 2)
+			if (code != 2 && code != 3)
 				nReplyError = FZ_REPLY_ERROR;
 			else
 			{
@@ -3620,11 +3620,13 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 						LONG low = 0;
 						LONG high = 0;
 						if (nOffset >= GetLength64(*m_pDataFile))
+                        {
 							if (SetFilePointer((HANDLE)m_pDataFile->m_hFile, 0, &high, FILE_END)==0xFFFFFFFF && GetLastError()!=NO_ERROR)
 							{
 								ShowStatus(IDS_ERRORMSG_SETFILEPOINTER, 1);
 								nReplyError = FZ_REPLY_ERROR;
 							}
+                        }
 						else
 						{
 							low=static_cast<LONG>(nOffset&0xFFFFFFFF);
@@ -4410,9 +4412,6 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 							dir.direntry[i].bUnsure = TRUE;
 							if (!((CFileTransferData *)m_Operation.pData)->transferfile.get)
 								dir.direntry[i].size = -1;
-						}
-						else if (nSuccessful & FZ_REPLY_ERROR)
-						{
 							if (!GetLength64(((CFileTransferData *)m_Operation.pData)->transferfile.localfile, dir.direntry[i].size))
 								dir.direntry[i].size = -1;
 						}
@@ -5653,7 +5652,6 @@ int CFtpControlSocket::OnLayerCallback(std::list<t_callbackMsg>& callbacks)
 						delete pData;
 						delete [] iter->str;
 						ResetOperation(FZ_REPLY_ERROR);
-						delete [] iter->str;
 						continue;
 					}
 					break;

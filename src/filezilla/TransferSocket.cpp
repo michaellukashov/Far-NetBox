@@ -493,7 +493,7 @@ void CTransferSocket::OnConnect(int nErrorCode)
 	if (nErrorCode)
 	{
 		TCHAR buffer[1000];
-		memset(buffer,0,1000);
+		memset(buffer, 0, sizeof(buffer));
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, nErrorCode, 0, buffer, 999, 0);
 		CString str;
 		str.Format(IDS_ERRORMSG_CANTOPENTRANSFERCHANNEL,buffer);

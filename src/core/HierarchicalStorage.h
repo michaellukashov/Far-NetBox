@@ -14,48 +14,48 @@ enum TStorageAccessMode { smRead, smReadWrite };
 class THierarchicalStorage
 {
 public:
-  THierarchicalStorage(const std::wstring AStorage);
+  THierarchicalStorage(const std::wstring &AStorage);
   virtual ~THierarchicalStorage();
   bool OpenRootKey(bool CanCreate);
-  virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
+  virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
-  virtual bool DeleteSubKey(const std::wstring SubKey) = 0;
+  virtual bool DeleteSubKey(const std::wstring &SubKey) = 0;
   virtual void GetSubKeyNames(TStrings* Strings) = 0;
   virtual void GetValueNames(TStrings* Strings) = 0;
   bool HasSubKeys();
-  bool HasSubKey(const std::wstring SubKey);
-  virtual bool KeyExists(const std::wstring SubKey) = 0;
-  virtual bool ValueExists(const std::wstring Value) = 0;
-  virtual void RecursiveDeleteSubKey(const std::wstring Key);
+  bool HasSubKey(const std::wstring &SubKey);
+  virtual bool KeyExists(const std::wstring &SubKey) = 0;
+  virtual bool ValueExists(const std::wstring &Value) = 0;
+  virtual void RecursiveDeleteSubKey(const std::wstring &Key);
   virtual void ClearSubKeys();
   virtual void ReadValues(TStrings* Strings, bool MaintainKeys = false);
   virtual void WriteValues(TStrings* Strings, bool MaintainKeys = false);
   virtual void ClearValues();
-  virtual bool DeleteValue(const std::wstring Name) = 0;
+  virtual bool DeleteValue(const std::wstring &Name) = 0;
 
-  virtual int BinaryDataSize(const std::wstring Name) = 0;
+  virtual int BinaryDataSize(const std::wstring &Name) = 0;
 
-  virtual bool Readbool(const std::wstring Name, bool Default) = 0;
-  virtual int Readint(const std::wstring Name, int Default) = 0;
-  virtual __int64 ReadInt64(const std::wstring Name, __int64 Default) = 0;
-  virtual TDateTime ReadDateTime(const std::wstring Name, TDateTime Default) = 0;
-  virtual double ReadFloat(const std::wstring Name, double Default) = 0;
-  virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default) = 0;
-  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, int Size) = 0;
+  virtual bool Readbool(const std::wstring &Name, bool Default) = 0;
+  virtual int Readint(const std::wstring &Name, int Default) = 0;
+  virtual __int64 ReadInt64(const std::wstring &Name, __int64 Default) = 0;
+  virtual TDateTime ReadDateTime(const std::wstring &Name, TDateTime Default) = 0;
+  virtual double ReadFloat(const std::wstring &Name, double Default) = 0;
+  virtual std::wstring ReadStringRaw(const std::wstring &Name, const std::wstring &Default) = 0;
+  virtual int ReadBinaryData(const std::wstring &Name, void * Buffer, int Size) = 0;
 
-  virtual std::wstring ReadString(std::wstring Name, std::wstring Default);
-  std::wstring ReadBinaryData(const std::wstring Name);
+  virtual std::wstring ReadString(const std::wstring &Name, const std::wstring &Default);
+  std::wstring ReadBinaryData(const std::wstring &Name);
 
-  virtual void Writebool(const std::wstring Name, bool Value) = 0;
-  virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value) = 0;
-  virtual void Writeint(const std::wstring Name, int Value) = 0;
-  virtual void WriteInt64(const std::wstring Name, __int64 Value) = 0;
-  virtual void WriteDateTime(const std::wstring Name, TDateTime Value) = 0;
-  virtual void WriteFloat(const std::wstring Name, double Value) = 0;
-  virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, int Size) = 0;
+  virtual void Writebool(const std::wstring &Name, bool Value) = 0;
+  virtual void WriteStringRaw(const std::wstring &Name, const std::wstring &Value) = 0;
+  virtual void Writeint(const std::wstring &Name, int Value) = 0;
+  virtual void WriteInt64(const std::wstring &Name, __int64 Value) = 0;
+  virtual void WriteDateTime(const std::wstring &Name, TDateTime Value) = 0;
+  virtual void WriteFloat(const std::wstring &Name, double Value) = 0;
+  virtual void WriteBinaryData(const std::wstring &Name, const void * Buffer, int Size) = 0;
 
-  virtual void WriteString(const std::wstring Name, const std::wstring Value);
-  void WriteBinaryData(const std::wstring Name, const std::wstring Value);
+  virtual void WriteString(const std::wstring &Name, const std::wstring &Value);
+  void WriteBinaryData(const std::wstring &Name, const std::wstring &Value);
 
   // __property std::wstring Storage  = { read=FStorage };
   std::wstring GetStorage() { return FStorage; }
@@ -89,37 +89,37 @@ protected:
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
-  TRegistryStorage(const std::wstring AStorage, HKEY ARootKey);
-  TRegistryStorage(const std::wstring AStorage);
+  TRegistryStorage(const std::wstring &AStorage, HKEY ARootKey);
+  TRegistryStorage(const std::wstring &AStorage);
   virtual ~TRegistryStorage();
 
   bool Copy(TRegistryStorage * Storage);
 
-  virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
+  virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
-  virtual bool DeleteSubKey(const std::wstring SubKey);
-  virtual bool DeleteValue(const std::wstring Name);
+  virtual bool DeleteSubKey(const std::wstring &SubKey);
+  virtual bool DeleteValue(const std::wstring &Name);
   virtual void GetSubKeyNames(TStrings* Strings);
-  virtual bool KeyExists(const std::wstring SubKey);
-  virtual bool ValueExists(const std::wstring Value);
+  virtual bool KeyExists(const std::wstring &SubKey);
+  virtual bool ValueExists(const std::wstring &Value);
 
-  virtual int BinaryDataSize(const std::wstring Name);
+  virtual int BinaryDataSize(const std::wstring &Name);
 
-  virtual bool Readbool(const std::wstring Name, bool Default);
-  virtual int Readint(const std::wstring Name, int Default);
-  virtual __int64 ReadInt64(const std::wstring Name, __int64 Default);
-  virtual TDateTime ReadDateTime(const std::wstring Name, TDateTime Default);
-  virtual double ReadFloat(const std::wstring Name, double Default);
-  virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, int Size);
+  virtual bool Readbool(const std::wstring &Name, bool Default);
+  virtual int Readint(const std::wstring &Name, int Default);
+  virtual __int64 ReadInt64(const std::wstring &Name, __int64 Default);
+  virtual TDateTime ReadDateTime(const std::wstring &Name, TDateTime Default);
+  virtual double ReadFloat(const std::wstring &Name, double Default);
+  virtual std::wstring ReadStringRaw(const std::wstring &Name, const std::wstring &Default);
+  virtual int ReadBinaryData(const std::wstring &Name, void * Buffer, int Size);
 
-  virtual void Writebool(const std::wstring Name, bool Value);
-  virtual void Writeint(const std::wstring Name, int Value);
-  virtual void WriteInt64(const std::wstring Name, __int64 Value);
-  virtual void WriteDateTime(const std::wstring Name, TDateTime Value);
-  virtual void WriteFloat(const std::wstring Name, double Value);
-  virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-  virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, int Size);
+  virtual void Writebool(const std::wstring &Name, bool Value);
+  virtual void Writeint(const std::wstring &Name, int Value);
+  virtual void WriteInt64(const std::wstring &Name, __int64 Value);
+  virtual void WriteDateTime(const std::wstring &Name, TDateTime Value);
+  virtual void WriteFloat(const std::wstring &Name, double Value);
+  virtual void WriteStringRaw(const std::wstring &Name, const std::wstring &Value);
+  virtual void WriteBinaryData(const std::wstring &Name, const void * Buffer, int Size);
 
   virtual void GetValueNames(TStrings* Strings);
 
@@ -141,33 +141,33 @@ private:
 class TIniFileStorage : public THierarchicalStorage
 {
 public:
-  TIniFileStorage(const std::wstring FileName);
+  TIniFileStorage(const std::wstring &FileName);
   virtual ~TIniFileStorage();
 
-  virtual bool OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path = false);
-  virtual bool DeleteSubKey(const std::wstring SubKey);
-  virtual bool DeleteValue(const std::wstring Name);
+  virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
+  virtual bool DeleteSubKey(const std::wstring &SubKey);
+  virtual bool DeleteValue(const std::wstring &Name);
   virtual void GetSubKeyNames(TStrings* Strings);
-  virtual bool KeyExists(const std::wstring SubKey);
-  virtual bool ValueExists(const std::wstring Value);
+  virtual bool KeyExists(const std::wstring &SubKey);
+  virtual bool ValueExists(const std::wstring &Value);
 
-  virtual int BinaryDataSize(const std::wstring Name);
+  virtual int BinaryDataSize(const std::wstring &Name);
 
-  virtual bool Readbool(const std::wstring Name, bool Default);
-  virtual int Readint(const std::wstring Name, int Default);
-  virtual __int64 ReadInt64(const std::wstring Name, __int64 Default);
-  virtual TDateTime ReadDateTime(const std::wstring Name, TDateTime Default);
-  virtual double ReadFloat(const std::wstring Name, double Default);
-  virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, int Size);
+  virtual bool Readbool(const std::wstring &Name, bool Default);
+  virtual int Readint(const std::wstring &Name, int Default);
+  virtual __int64 ReadInt64(const std::wstring &Name, __int64 Default);
+  virtual TDateTime ReadDateTime(const std::wstring &Name, TDateTime Default);
+  virtual double ReadFloat(const std::wstring &Name, double Default);
+  virtual std::wstring ReadStringRaw(const std::wstring &Name, const std::wstring &Default);
+  virtual int ReadBinaryData(const std::wstring &Name, void * Buffer, int Size);
 
-  virtual void Writebool(const std::wstring Name, bool Value);
-  virtual void Writeint(const std::wstring Name, int Value);
-  virtual void WriteInt64(const std::wstring Name, __int64 Value);
-  virtual void WriteDateTime(const std::wstring Name, TDateTime Value);
-  virtual void WriteFloat(const std::wstring Name, double Value);
-  virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-  virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, int Size);
+  virtual void Writebool(const std::wstring &Name, bool Value);
+  virtual void Writeint(const std::wstring &Name, int Value);
+  virtual void WriteInt64(const std::wstring &Name, __int64 Value);
+  virtual void WriteDateTime(const std::wstring &Name, TDateTime Value);
+  virtual void WriteFloat(const std::wstring &Name, double Value);
+  virtual void WriteStringRaw(const std::wstring &Name, const std::wstring &Value);
+  virtual void WriteBinaryData(const std::wstring &Name, const void * Buffer, int Size);
 
   virtual void GetValueNames(TStrings* Strings);
 
@@ -182,6 +182,6 @@ protected:
   virtual std::wstring GetSource();
 };
 //---------------------------------------------------------------------------
-std::wstring PuttyMungeStr(const std::wstring Str);
+std::wstring PuttyMungeStr(const std::wstring &Str);
 //---------------------------------------------------------------------------
 #endif

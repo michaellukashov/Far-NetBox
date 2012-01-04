@@ -26,7 +26,7 @@ bool FindFile(std::wstring & Path)
       // DEBUG_PRINTF(L"Len = %d", Len);
       std::wstring Paths;
       Paths.resize(Len - 1);
-      GetEnvironmentVariable(L"PATH", (LPWSTR)Paths.c_str(), Len);
+      GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), Len);
       // DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
 
       std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);
@@ -46,7 +46,7 @@ bool FileExistsEx(std::wstring Path)
   return FindFile(Path);
 }
 //---------------------------------------------------------------------------
-void OpenSessionInPutty(const std::wstring PuttyPath,
+void OpenSessionInPutty(const std::wstring &PuttyPath,
   TSessionData * SessionData, std::wstring Password)
 {
   std::wstring Program, Params, Dir;
@@ -135,13 +135,13 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
   }
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const std::wstring Path, const std::wstring Params)
+bool ExecuteShell(const std::wstring &Path, const std::wstring &Params)
 {
-  return ((int)::ShellExecute(NULL, L"open", (wchar_t *)Path.data(),
-    (wchar_t *)Params.data(), NULL, SW_SHOWNORMAL) > 32);
+  return ((int)::ShellExecute(NULL, L"open", const_cast<wchar_t *>(Path.data()),
+    const_cast<wchar_t *>(Params.data()), NULL, SW_SHOWNORMAL) > 32);
 }
 //---------------------------------------------------------------------------
-bool ExecuteShell(const std::wstring Path, const std::wstring Params,
+bool ExecuteShell(const std::wstring &Path, const std::wstring &Params,
   HANDLE & Handle)
 {
   // DEBUG_PRINTF(L"Path = %s, Params = %s", Path.c_str(), Params.c_str());
@@ -150,9 +150,9 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = (HWND)::GetModuleHandle(0);
-  ExecuteInfo.lpFile = (wchar_t *)Path.data();
-  ExecuteInfo.lpParameters = (wchar_t *)Params.data();
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
   Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
@@ -163,17 +163,17 @@ bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
-  const std::wstring Params, const processmessages_signal_type &ProcessMessages)
+bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring &Path,
+  const std::wstring &Params, const processmessages_signal_type &ProcessMessages)
 {
   bool Result = false;
   _SHELLEXECUTEINFOW ExecuteInfo;
   memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
   ExecuteInfo.cbSize = sizeof(ExecuteInfo);
   ExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-  ExecuteInfo.hwnd = (HWND)::GetModuleHandle(0);
-  ExecuteInfo.lpFile = (wchar_t *)Path.data();
-  ExecuteInfo.lpParameters = (wchar_t *)Params.data();
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(0));
+  ExecuteInfo.lpFile = const_cast<wchar_t *>(Path.data());
+  ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
   ExecuteInfo.nShow = SW_SHOW;
 
   Result = (ShellExecuteEx(&ExecuteInfo) != 0);
@@ -201,7 +201,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Path,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring Command,
+bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring &Command,
   const processmessages_signal_type &ProcessMessages)
 {
   std::wstring Program, Params, Dir;
@@ -222,8 +222,8 @@ bool SpecialFolderLocation(int PathID, std::wstring & Path)
   return false;
 }
 //---------------------------------------------------------------------------
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-  const std::wstring MultiItemsFormat, int Count, const std::wstring FirstItem)
+std::wstring ItemsFormatString(const std::wstring &SingleItemFormat,
+  const std::wstring &MultiItemsFormat, int Count, const std::wstring &FirstItem)
 {
   std::wstring Result;
   if (Count == 1)
@@ -237,15 +237,15 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-  const std::wstring MultiItemsFormat, TStrings * Items)
+std::wstring ItemsFormatString(const std::wstring &SingleItemFormat,
+  const std::wstring &MultiItemsFormat, TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : std::wstring()));
 }
 //---------------------------------------------------------------------------
-std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
-  const std::wstring MultiFilesFormat, TStrings * Files, bool Remote)
+std::wstring FileNameFormatString(const std::wstring &SingleFileFormat,
+  const std::wstring &MultiFilesFormat, TStrings * Files, bool Remote)
 {
   assert(Files != NULL);
   std::wstring Item;
@@ -262,25 +262,25 @@ std::wstring FormatBytes(__int64 Bytes, bool UseOrders)
 {
   std::wstring Result;
 
-  if (!UseOrders || (Bytes < __int64(100*1024)))
+  if (!UseOrders || (Bytes < static_cast<__int64>(100*1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT(L"%.0f B", (double)Bytes);
+    Result = FORMAT(L"%.0f B", static_cast<double>(Bytes));
   }
-  else if (Bytes < __int64(100*1024*1024))
+  else if (Bytes < static_cast<__int64>(100*1024*1024))
   {
     // Result = FormatFloat(L"#,##0 \"KiB\"", Bytes / 1024);
-    Result = FORMAT(L"%.0f KiB", (double)Bytes / 1024.0);
+    Result = FORMAT(L"%.0f KiB", static_cast<double>(Bytes / 1024.0));
   }
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT(L"%.0f MiB", (double)Bytes / (1024*1024.0));
+    Result = FORMAT(L"%.0f MiB", static_cast<double>(Bytes / (1024*1024.0)));
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity,
+std::wstring UniqTempDir(const std::wstring &BaseDir, const std::wstring &Identity,
   bool Mask)
 {
   std::wstring TempDir;
@@ -302,7 +302,7 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
   return TempDir;
 }
 //---------------------------------------------------------------------------
-bool DeleteDirectory(const std::wstring DirName)
+bool DeleteDirectory(const std::wstring &DirName)
 {
   bool retval = true;
   WIN32_FIND_DATA sr;
@@ -343,12 +343,12 @@ bool DeleteDirectory(const std::wstring DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, TDateTime DateTime)
+std::wstring FormatDateTimeSpan(const std::wstring &TimeFormat, TDateTime DateTime)
 {
   std::wstring Result;
-  if (int(DateTime) > 0)
+  if (static_cast<int>(DateTime) > 0)
   {
-    Result = IntToStr(int(DateTime)) + L", ";
+    Result = IntToStr(static_cast<int>(DateTime)) + L", ";
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs
@@ -365,14 +365,14 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-    const std::wstring & Path) :
+  const std::wstring &Path) :
   TFileCustomCommand(Data, Path)
 {
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const std::wstring & Path, const std::wstring & FileName,
-  const std::wstring & LocalFileName, const std::wstring & FileList) :
+  const std::wstring &Path, const std::wstring &FileName,
+  const std::wstring &LocalFileName, const std::wstring &FileList) :
   TFileCustomCommand(Data, Path, FileName, FileList)
 {
   FLocalFileName = LocalFileName;
@@ -393,7 +393,7 @@ int TLocalCustomCommand::PatternLen(int Index, char PatternCmd)
 }
 //---------------------------------------------------------------------------
 bool TLocalCustomCommand::PatternReplacement(int Index,
-  const std::wstring & Pattern, std::wstring & Replacement, bool & Delimit)
+  const std::wstring &Pattern, std::wstring &Replacement, bool &Delimit)
 {
   bool Result;
   if (Pattern == L"!^!")

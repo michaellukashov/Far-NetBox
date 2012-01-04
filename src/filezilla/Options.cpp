@@ -13,7 +13,7 @@ CString COptions::GetInstanceOption(CApiLog * Instance, int OptionID)
   ASSERT(Instance);
   ASSERT(dynamic_cast<TFileZillaIntern *>(Instance) != NULL);
 
-  TFileZillaIntern * Intern = (TFileZillaIntern *)Instance;
+  TFileZillaIntern * Intern = static_cast<TFileZillaIntern *>(Instance);
 
   const TFileZillaIntf * Intf = Intern->GetOwner();
   ASSERT(Intf != NULL);
@@ -35,7 +35,7 @@ int COptions::GetInstanceOptionVal(CApiLog * Instance, int OptionID)
   ASSERT(Instance);
   ASSERT(dynamic_cast<TFileZillaIntern *>(Instance) != NULL);
 
-  TFileZillaIntern * Intern = (TFileZillaIntern *)Instance;
+  TFileZillaIntern * Intern = static_cast<TFileZillaIntern *>(Instance);
 
   const TFileZillaIntf * Intf = Intern->GetOwner();
   ASSERT(Intf != NULL);

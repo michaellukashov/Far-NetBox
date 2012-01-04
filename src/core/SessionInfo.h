@@ -62,18 +62,18 @@ public:
   virtual ~TSessionUI()
   {}
   virtual void Information(const std::wstring & Str, bool Status) = 0;
-  virtual int QueryUser(const std::wstring Query,
+  virtual int QueryUser(const std::wstring &Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual int QueryUserException(const std::wstring Query,
-    const std::exception * E, int Answers, const TQueryParams * Params,
+  virtual int QueryUserException(const std::wstring &Query,
+    const std::exception *E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    std::wstring Name, std::wstring Instructions, TStrings * Prompts,
+  virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
+    const std::wstring &Name, const std::wstring &Instructions, TStrings *Prompts,
     TStrings * Results) = 0;
-  virtual void DisplayBanner(const std::wstring & Banner) = 0;
-  virtual void FatalError(const std::exception * E, std::wstring Msg) = 0;
-  virtual void HandleExtendedException(const std::exception * E) = 0;
+  virtual void DisplayBanner(const std::wstring &Banner) = 0;
+  virtual void FatalError(const std::exception * E, const std::wstring &Msg) = 0;
+  virtual void HandleExtendedException(const std::exception *E) = 0;
   virtual void Closed() = 0;
 };
 //---------------------------------------------------------------------------
@@ -178,14 +178,14 @@ class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
   TMvSessionAction(TSessionLog * Log, const std::wstring & FileName,
-    const std::wstring & Destination);
+    const std::wstring &Destination);
 };
 //---------------------------------------------------------------------------
 class TCallSessionAction : public TSessionAction
 {
 public:
   TCallSessionAction(TSessionLog * Log, const std::wstring & Command,
-    const std::wstring & Destination);
+    const std::wstring &Destination);
 
   void AddOutput(const std::wstring & Output, bool StdError);
 };

@@ -72,12 +72,12 @@ protected:
 
   virtual std::wstring ModuleFileName();
 
-  std::wstring GetFileFileInfoString(const std::wstring Key,
-    const std::wstring FileName);
-  void * GetFileApplicationInfo(const std::wstring FileName);
-  std::wstring GetFileProductVersion(const std::wstring FileName);
-  std::wstring GetFileProductName(const std::wstring FileName);
-  std::wstring GetFileCompanyName(const std::wstring FileName);
+  std::wstring GetFileFileInfoString(const std::wstring &Key,
+    const std::wstring &FileName);
+  void * GetFileApplicationInfo(const std::wstring &FileName);
+  std::wstring GetFileProductVersion(const std::wstring &FileName);
+  std::wstring GetFileProductName(const std::wstring &FileName);
+  std::wstring GetFileCompanyName(const std::wstring &FileName);
 
   // __property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
   bool GetPermanentLogging() { return FPermanentLogging; }
@@ -95,21 +95,21 @@ public:
   virtual void Default();
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
-  void Export(const std::wstring FileName);
+  void Export(const std::wstring &FileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
   void CleanupRandomSeedFile();
   void BeginUpdate();
   void EndUpdate();
-  void LoadDirectoryChangesCache(const std::wstring SessionKey,
+  void LoadDirectoryChangesCache(const std::wstring &SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void SaveDirectoryChangesCache(const std::wstring SessionKey,
+  void SaveDirectoryChangesCache(const std::wstring &SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  bool ShowBanner(const std::wstring SessionKey, const std::wstring & Banner);
-  void NeverShowBanner(const std::wstring SessionKey, const std::wstring & Banner);
+  bool ShowBanner(const std::wstring &SessionKey, const std::wstring & Banner);
+  void NeverShowBanner(const std::wstring &SessionKey, const std::wstring & Banner);
   virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
-  void TemporaryLogging(const std::wstring ALogFileName);
+  void TemporaryLogging(const std::wstring &ALogFileName);
   virtual std::wstring EncryptPassword(std::wstring Password, std::wstring Key);
   virtual std::wstring DecryptPassword(std::wstring Password, std::wstring Key);
   virtual std::wstring StronglyRecryptPassword(std::wstring Password, std::wstring Key);
@@ -151,7 +151,7 @@ public:
   // __property std::wstring CompanyName = { read=GetCompanyName };
   std::wstring GetCompanyName();
   // __property std::wstring FileInfoString[std::wstring Key] = { read = GetFileInfoString };
-  std::wstring GetFileInfoString(const std::wstring Key);
+  std::wstring GetFileInfoString(const std::wstring &Key);
   // __property std::wstring OSVersionStr = { read = GetOSVersionStr };
   std::wstring GetOSVersionStr();
   // __property bool Logging  = { read=FLogging, write=SetLogging };

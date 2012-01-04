@@ -71,17 +71,17 @@ include_directories (
     ${PROJECT_ROOT}/src/windows
     ${PROJECT_ROOT}/src/resource
     ${PROJECT_ROOT}/src/Common
-    ${PROJECT_ROOT}/src/Putty
-    ${PROJECT_ROOT}/src/Putty/windows
-    ${PROJECT_ROOT}/src/Putty/charset
     ${PROJECT_ROOT}/src/filezilla
     ${PROJECT_ROOT}/src/filezilla/misc
     ${PROJECT_ROOT}/libs
     ${PROJECT_ROOT}/libs/boost
+    ${PROJECT_ROOT}/libs/Putty
+    ${PROJECT_ROOT}/libs/Putty/windows
+    ${PROJECT_ROOT}/libs/Putty/charset
     ${PROJECT_ROOT}/libs/libcurl/include
     ${PROJECT_ROOT}/libs/libssh2/include
     ${PROJECT_ROOT}/libs/tinyXML
-    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/include
+    ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/inc32
     ${PROJECT_ROOT}/libs/zlib/src
     ${PROJECT_ROOT}/libs/gc-7.2alpha6/include 
 )
@@ -107,10 +107,6 @@ set ( NETBOX_ALL_HEADERS
 )
 
 set ( COMMON_SOURCES
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
-    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
     ${PROJECT_ROOT}/src/core/RemoteFiles.cpp
     ${PROJECT_ROOT}/src/core/Terminal.cpp
     ${PROJECT_ROOT}/src/core/Exceptions.cpp
@@ -197,60 +193,74 @@ set_property (TARGET libcurl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/Temp/NetBox/${CMAKE_BUILD_TYPE}/${PLATFORM}/libcurl/libcurl.lib)
 add_library (libeay32 SHARED IMPORTED)
 set_property (TARGET libeay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/out32dll/libeay32.lib )
+    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/libeay32.lib )
 add_library (ssleay32 SHARED IMPORTED)
 set_property (TARGET ssleay32
-    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/out32dll/ssleay32.lib )
+    PROPERTY IMPORTED_IMPLIB ${PROJECT_ROOT}/libs/openssl/${PLATFORM}/ssleay32.lib )
 
 #-------------------------------------------------------------------------------
 
 add_library (libputty STATIC
-    ${PROJECT_ROOT}/src/Putty/CPROXY.C
-    ${PROJECT_ROOT}/src/Putty/INT64.C
-    ${PROJECT_ROOT}/src/Putty/LOGGING.C
-    ${PROJECT_ROOT}/src/Putty/MISC.C
-    ${PROJECT_ROOT}/src/Putty/PGSSAPI.C
-    ${PROJECT_ROOT}/src/Putty/PORTFWD_.C
-    ${PROJECT_ROOT}/src/Putty/PROXY.C
-    ${PROJECT_ROOT}/src/Putty/SSH_.C
-    ${PROJECT_ROOT}/src/Putty/SSHAES_.C
-    ${PROJECT_ROOT}/src/Putty/SSHARCF.C
-    ${PROJECT_ROOT}/src/Putty/SSHBLOWF.C
-    ${PROJECT_ROOT}/src/Putty/SSHBN.C
-    ${PROJECT_ROOT}/src/Putty/SSHCRC.C
-    ${PROJECT_ROOT}/src/Putty/SSHCRCDA.C
-    ${PROJECT_ROOT}/src/Putty/SSHDES.C
-    ${PROJECT_ROOT}/src/Putty/SSHDH.C
-    ${PROJECT_ROOT}/src/Putty/SSHDSS.C
-    ${PROJECT_ROOT}/src/Putty/SSHGSSC.C
-    ${PROJECT_ROOT}/src/Putty/SSHMD5.C
-    ${PROJECT_ROOT}/src/Putty/SSHPUBK.C
-    ${PROJECT_ROOT}/src/Putty/SSHRAND.C
-    ${PROJECT_ROOT}/src/Putty/SSHRSA.C
-    ${PROJECT_ROOT}/src/Putty/SSHSH256.C
-    ${PROJECT_ROOT}/src/Putty/SSHSH512.C
-    ${PROJECT_ROOT}/src/Putty/SSHSHA_.C
-    ${PROJECT_ROOT}/src/Putty/SSHZLIB.C
-    ${PROJECT_ROOT}/src/Putty/TREE234.C
-    ${PROJECT_ROOT}/src/Putty/CHARSET/UTF8.C
-    ${PROJECT_ROOT}/src/Putty/WILDCARD.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINGSS.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINHANDL.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINMISC.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNET.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNOISE.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINNOJMP.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINPGNTC.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINPROXY.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINSTORE_.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/WINTIME.C
-    ${PROJECT_ROOT}/src/Putty/WINDOWS/strftime.c
-    ${PROJECT_ROOT}/src/Putty/X11FWD.C
+    ${PROJECT_ROOT}/libs/Putty/CPROXY.C
+    ${PROJECT_ROOT}/libs/Putty/INT64.C
+    ${PROJECT_ROOT}/libs/Putty/LOGGING.C
+    ${PROJECT_ROOT}/libs/Putty/MISC.C
+    ${PROJECT_ROOT}/libs/Putty/PGSSAPI.C
+    ${PROJECT_ROOT}/libs/Putty/PORTFWD_.C
+    ${PROJECT_ROOT}/libs/Putty/PROXY.C
+    ${PROJECT_ROOT}/libs/Putty/SSH_.C
+    ${PROJECT_ROOT}/libs/Putty/SSHAES_.C
+    ${PROJECT_ROOT}/libs/Putty/SSHARCF.C
+    ${PROJECT_ROOT}/libs/Putty/SSHBLOWF.C
+    ${PROJECT_ROOT}/libs/Putty/SSHBN.C
+    ${PROJECT_ROOT}/libs/Putty/SSHCRC.C
+    ${PROJECT_ROOT}/libs/Putty/SSHCRCDA.C
+    ${PROJECT_ROOT}/libs/Putty/SSHDES.C
+    ${PROJECT_ROOT}/libs/Putty/SSHDH.C
+    ${PROJECT_ROOT}/libs/Putty/SSHDSS.C
+    ${PROJECT_ROOT}/libs/Putty/SSHGSSC.C
+    ${PROJECT_ROOT}/libs/Putty/SSHMD5.C
+    ${PROJECT_ROOT}/libs/Putty/SSHPUBK.C
+    ${PROJECT_ROOT}/libs/Putty/SSHRAND.C
+    ${PROJECT_ROOT}/libs/Putty/SSHRSA.C
+    ${PROJECT_ROOT}/libs/Putty/SSHSH256.C
+    ${PROJECT_ROOT}/libs/Putty/SSHSH512.C
+    ${PROJECT_ROOT}/libs/Putty/SSHSHA_.C
+    ${PROJECT_ROOT}/libs/Putty/SSHZLIB.C
+    ${PROJECT_ROOT}/libs/Putty/TREE234.C
+    ${PROJECT_ROOT}/libs/Putty/CHARSET/UTF8.C
+    ${PROJECT_ROOT}/libs/Putty/WILDCARD.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINGSS.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINHANDL.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINMISC.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINNET.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINNOISE.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINNOJMP.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINPGNTC.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINPROXY.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINSTORE_.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/WINTIME.C
+    ${PROJECT_ROOT}/libs/Putty/WINDOWS/strftime.c
+    ${PROJECT_ROOT}/libs/Putty/X11FWD.C
 )
 
 set_target_properties( libputty
     PROPERTIES
     COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS;NET_SETUP_DIAGNOSTICS"
+)
+
+#-------------------------------------------------------------------------------
+
+add_library (libtinyxml STATIC
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxml.cpp
+    ${PROJECT_ROOT}/libs/tinyXML/tinystr.cpp
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlerror.cpp
+    ${PROJECT_ROOT}/libs/tinyXML/tinyxmlparser.cpp
+)
+
+set_target_properties( libtinyxml
+    PROPERTIES
+    COMPILE_FLAGS "/TC -D_CRTIMP= -DLibrary;SECURITY_WIN32;_WINDOWS"
 )
 
 #-------------------------------------------------------------------------------
@@ -274,6 +284,7 @@ set ( NETBOX_LIBRARIES
     msvcmrtd.lib
     msvcurtd.lib
     libputty
+    libtinyxml
     libcurl
     libeay32
     ssleay32
@@ -320,6 +331,7 @@ target_link_libraries ( NetBox ${NETBOX_LIBRARIES} )
 
 add_dependencies ( NetBox
     libputty
+    libtinyxml
     #zlib libssh2 libcurl
 )
 
@@ -349,6 +361,7 @@ set_target_properties( testnetbox_01
 
 add_dependencies ( testnetbox_01 ${NETBOX_LIBRARIES}
     libputty
+    libtinyxml
     gcmt
 )
 
@@ -372,6 +385,7 @@ set_target_properties( testnetbox_02
 )
 add_dependencies ( testnetbox_02
     libputty
+    libtinyxml
 )
 
 target_link_libraries ( testnetbox_02 ${NETBOX_LIBRARIES} )

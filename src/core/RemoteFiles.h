@@ -310,9 +310,9 @@ class TRemoteDirectoryCache : private TStringList
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
-  bool HasFileList(const std::wstring Directory);
-  bool HasNewerFileList(const std::wstring Directory, TDateTime Timestamp);
-  bool GetFileList(const std::wstring Directory,
+  bool HasFileList(const std::wstring &Directory);
+  bool HasNewerFileList(const std::wstring &Directory, TDateTime Timestamp);
+  bool GetFileList(const std::wstring &Directory,
     TRemoteFileList * FileList);
   void AddFileList(TRemoteFileList * FileList);
   void ClearFileList(std::wstring Directory, bool SubDirs);
@@ -335,23 +335,23 @@ public:
   virtual ~TRemoteDirectoryChangesCache()
   {}
 
-  void AddDirectoryChange(const std::wstring SourceDir,
-    const std::wstring Change, const std::wstring TargetDir);
+  void AddDirectoryChange(const std::wstring &SourceDir,
+    const std::wstring &Change, const std::wstring &TargetDir);
   void ClearDirectoryChange(std::wstring SourceDir);
   void ClearDirectoryChangeTarget(std::wstring TargetDir);
-  bool GetDirectoryChange(const std::wstring SourceDir,
-    const std::wstring Change, std::wstring & TargetDir);
+  bool GetDirectoryChange(const std::wstring &SourceDir,
+    const std::wstring &Change, std::wstring & TargetDir);
   void Clear();
 
   void Serialize(std::wstring & Data);
-  void Deserialize(const std::wstring Data);
+  void Deserialize(const std::wstring &Data);
 
   // __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const;
 
 private:
-  static bool DirectoryChangeKey(const std::wstring SourceDir,
-    const std::wstring Change, std::wstring & Key);
+  static bool DirectoryChangeKey(const std::wstring &SourceDir,
+    const std::wstring &Change, std::wstring & Key);
   void SetValue(const std::wstring & Name, const std::wstring & Value);
   std::wstring GetValue(const std::wstring & Name);
 
@@ -521,23 +521,23 @@ public:
     const TRemoteProperties & OriginalProperties, TRemoteProperties NewProperties);
 };
 //---------------------------------------------------------------------------
-std::wstring UnixIncludeTrailingBackslash(const std::wstring Path);
-std::wstring UnixExcludeTrailingBackslash(const std::wstring Path);
-std::wstring UnixExtractFileDir(const std::wstring Path);
-std::wstring UnixExtractFilePath(const std::wstring Path);
-std::wstring UnixExtractFileName(const std::wstring Path);
-std::wstring UnixExtractFileExt(const std::wstring Path);
-bool UnixComparePaths(const std::wstring Path1, const std::wstring Path2);
+std::wstring UnixIncludeTrailingBackslash(const std::wstring &Path);
+std::wstring UnixExcludeTrailingBackslash(const std::wstring &Path);
+std::wstring UnixExtractFileDir(const std::wstring &Path);
+std::wstring UnixExtractFilePath(const std::wstring &Path);
+std::wstring UnixExtractFileName(const std::wstring &Path);
+std::wstring UnixExtractFileExt(const std::wstring &Path);
+bool UnixComparePaths(const std::wstring &Path1, const std::wstring &Path2);
 bool UnixIsChildPath(std::wstring Parent, std::wstring Child);
 bool ExtractCommonPath(TStrings * Files, std::wstring & Path);
 bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path);
 std::wstring ExtractFileName(const std::wstring & Path, bool Unix);
-bool IsUnixRootPath(const std::wstring Path);
-bool IsUnixHiddenFile(const std::wstring Path);
+bool IsUnixRootPath(const std::wstring &Path);
+bool IsUnixHiddenFile(const std::wstring &Path);
 std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path);
-std::wstring FromUnixPath(const std::wstring Path);
-std::wstring ToUnixPath(const std::wstring Path);
-std::wstring MinimizeName(const std::wstring FileName, size_t MaxLen, bool Unix);
+std::wstring FromUnixPath(const std::wstring &Path);
+std::wstring ToUnixPath(const std::wstring &Path);
+std::wstring MinimizeName(const std::wstring &FileName, size_t MaxLen, bool Unix);
 std::wstring MakeFileList(TStrings * FileList);
 TDateTime ReduceDateTimePrecision(TDateTime DateTime,
   TModificationFmt Precision);

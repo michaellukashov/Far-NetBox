@@ -6,6 +6,10 @@
 #include <boost/bind.hpp>
 
 #include <stdio.h>
+#include <lmcons.h>
+#define SECURITY_WIN32
+#include <sspi.h>
+#include <secext.h>
 
 #include "Common.h"
 #include "SessionInfo.h"
@@ -183,7 +187,7 @@ public:
   {
     assert(FErrorMessages == NULL);
     FErrorMessages = new TStringList();
-    if (strlen(E->what()) != 0)
+    if (E->what() && *E->what())
     {
       FErrorMessages->Add(::MB2W(E->what()));
     }
@@ -477,14 +481,14 @@ void TRmSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TMvSessionAction::TMvSessionAction(TSessionLog * Log,
-    const std::wstring & FileName, const std::wstring & ADestination) :
+    const std::wstring &FileName, const std::wstring & ADestination) :
   TFileLocationSessionAction(Log, laMv, FileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TSessionLog * Log,
-    const std::wstring & Command, const std::wstring & Destination) :
+    const std::wstring &Command, const std::wstring & Destination) :
   TSessionAction(Log, laCall)
 {
   if (FRecord != NULL)
@@ -503,7 +507,7 @@ void TCallSessionAction::AddOutput(const std::wstring & Output, bool StdError)
 }
 //---------------------------------------------------------------------------
 TLsSessionAction::TLsSessionAction(TSessionLog * Log,
-    const std::wstring & Destination) :
+    const std::wstring &Destination) :
   TSessionAction(Log, laLs)
 {
   if (FRecord != NULL)
@@ -585,8 +589,8 @@ std::wstring TSessionLog::GetLine(int Index)
 //---------------------------------------------------------------------------
 TLogLineType TSessionLog::GetType(int Index)
 {
-   void *ptr = GetObject(Index - FTopIndex);
-  return (TLogLineType)(int)ptr;
+  void *ptr = GetObject(Index - FTopIndex);
+  return static_cast<TLogLineType>(reinterpret_cast<int>(ptr));
 }
 //---------------------------------------------------------------------------
 void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring & Line)
@@ -603,7 +607,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
     FTopIndex = 0;
   }
 
-  TStringList::AddObject(Line, (TObject*)Type);
+  TStringList::AddObject(Line, static_cast<TObject *>(reinterpret_cast<void *>(Type)));
 
   FLoggedLines++;
 
@@ -623,14 +627,14 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
         // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
         std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
             t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
-        fputc(LogLineMarks[Type], (FILE *)FFile);
+        fputc(LogLineMarks[Type], static_cast<FILE *>(FFile));
         // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
-        fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Timestamp.c_str()).c_str());
+        fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(::W2MB(Timestamp.c_str()).c_str()));
       }
       // use fwrite instead of fprintf to make sure that even
       // non-ascii data (unicode) gets in.
-      fprintf_s((FILE *)FFile, "%s", (char *)::W2MB(Line.c_str()).c_str());
-      fputc('\n', (FILE *)FFile);
+      fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(::W2MB(Line.c_str()).c_str()));
+      fputc('\n', static_cast<FILE *>(FFile));
     }
   }
   // DEBUG_PRINTF(L"end");
@@ -756,7 +760,7 @@ void TSessionLog::CloseLogFile()
 {
   if (FFile != NULL)
   {
-    fclose((FILE *)FFile);
+    fclose(static_cast<FILE *>(FFile));
     FFile = NULL;
   }
   FCurrentLogFileName = L"";
@@ -825,7 +829,7 @@ void TSessionLog::OpenLogFile()
       FConfiguration->GetLogFileAppend() && !FLoggingActions ? "a" : "w", SH_DENYWR);
     if (FFile)
     {
-      setvbuf((FILE *)FFile, NULL, _IONBF, BUFSIZ);
+      setvbuf(static_cast<FILE *>(FFile), NULL, _IONBF, BUFSIZ);
       FCurrentFileName = NewFileName;
     }
     else
@@ -874,7 +878,7 @@ void TSessionLog::DeleteUnnecessary()
     }
     else
     {
-      while (!FConfiguration->GetLogWindowComplete() && ((int)GetCount() > FConfiguration->GetLogWindowLines()))
+      while (!FConfiguration->GetLogWindowComplete() && (static_cast<int>(GetCount()) > FConfiguration->GetLogWindowLines()))
       {
         Delete(0);
         FTopIndex++;
@@ -922,6 +926,19 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       } BOOST_SCOPE_EXIT_END
       ADF(L"Configuration: %s", Storage->GetSource().c_str());
     }
+
+    typedef BOOL (WINAPI *TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPSTR lpNameBuffer, PULONG nSize);
+    HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
+    TGetUserNameEx GetUserNameEx =
+      (Secur32 != NULL) ? reinterpret_cast<TGetUserNameEx>(GetProcAddress(Secur32, "GetUserNameEx")) : NULL;
+    char UserName[UNLEN + 1];
+    unsigned long UserNameSize = LENOF(UserName);
+    if ((GetUserNameEx == NULL) || !GetUserNameEx(NameSamCompatible, UserName, &UserNameSize))
+    {
+      // wcscpy(UserName, L"<Failed to retrieve username>");
+      strcpy(UserName, "<Failed to retrieve username>");
+    }
+    ADF(L"Local account: %s", ::MB2W(UserName).c_str());
     ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
     AddSeparator();
     ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
@@ -992,14 +1009,14 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       wchar_t const * BugFlags = L"A+-";
       for (int Index = 0; Index < BUG_COUNT; Index++)
       {
-        Bugs += BugFlags[Data->GetBug((TSshBug)Index)];
+        Bugs += BugFlags[Data->GetBug(static_cast<TSshBug>(Index))];
         Bugs += Index<BUG_COUNT-1? L"," : L"";
       }
       ADF(L"SSH Bugs: %s", Bugs.c_str());
       Bugs = L"";
       for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
       {
-        Bugs += BugFlags[Data->GetSFTPBug((TSftpBug)Index)];
+        Bugs += BugFlags[Data->GetSFTPBug(static_cast<TSftpBug>(Index))];
         Bugs += Index<SFTP_BUG_COUNT-1 ? L"," : L"";
       }
       ADF(L"SFTP Bugs: %s", Bugs.c_str());
@@ -1051,7 +1068,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"Cache directory changes: %s, Permanent: %s",
       BooleanToEngStr(Data->GetCacheDirectoryChanges()).c_str(),
        BooleanToEngStr(Data->GetPreserveDirectoryChanges()).c_str());
-    ADF(L"DST mode: %d", int(Data->GetDSTMode()));
+    ADF(L"DST mode: %d", static_cast<int>(Data->GetDSTMode()));
 
     AddSeparator();
 
@@ -1085,7 +1102,7 @@ void TSessionLog::Clear()
 //---------------------------------------------------------------------------
 void TSessionLog::AddPendingAction(TSessionActionRecord * Action)
 {
-  FPendingActions->Add((TObject *)Action);
+  FPendingActions->Add(static_cast<TObject *>(static_cast<void *>(Action)));
 }
 //---------------------------------------------------------------------------
 void TSessionLog::RecordPendingActions()

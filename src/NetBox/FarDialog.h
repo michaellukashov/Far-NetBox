@@ -281,7 +281,7 @@ protected:
     bool GetCenterGroup() { return GetFlag(DIF_CENTERGROUP); }
     void SetCenterGroup(bool value) { SetFlag(DIF_CENTERGROUP, value); }
     virtual std::wstring GetData();
-    virtual void SetData(const std::wstring value);
+    virtual void SetData(const std::wstring &value);
     int GetType();
     void SetType(int value);
     int GetSelected();
@@ -314,8 +314,8 @@ protected:
     void Redraw();
     virtual bool HotKey(char HotKey);
 
-    virtual void SetDataInternal(const std::wstring value);
-    void UpdateData(const std::wstring value);
+    virtual void SetDataInternal(const std::wstring &value);
+    void UpdateData(const std::wstring &value);
     void UpdateSelected(int value);
 
     bool GetFlag(int Index);
@@ -384,7 +384,7 @@ public:
     virtual void SetOnClick(const button_click_slot_type &value) { FOnClick.connect(value); }
 
 protected:
-    virtual void SetDataInternal(const std::wstring value);
+    virtual void SetDataInternal(const std::wstring &value);
     virtual std::wstring GetData();
     virtual long ItemProc(int Msg, long Param);
     virtual bool HotKey(char HotKey);
@@ -420,7 +420,7 @@ protected:
     farallowchange_signal_type FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const std::wstring value);
+    virtual void SetData(const std::wstring &value);
 };
 //---------------------------------------------------------------------------
 class TFarRadioButton : public TFarDialogItem
@@ -439,7 +439,7 @@ protected:
     farallowchange_signal_type FOnAllowChange;
     virtual long ItemProc(int Msg, long Param);
     virtual bool GetIsEmpty();
-    virtual void SetData(const std::wstring value);
+    virtual void SetData(const std::wstring &value);
 };
 //---------------------------------------------------------------------------
 class TFarEdit : public TFarDialogItem
@@ -507,7 +507,7 @@ public:
     void SetColor(bool value) { TFarDialogItem::SetColor(0, value); }
 
 protected:
-    virtual void SetData(const std::wstring value);
+    virtual void SetData(const std::wstring &value);
 };
 //---------------------------------------------------------------------------
 class TFarListBox;
@@ -545,7 +545,7 @@ protected:
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
-    virtual void Put(int Index, const std::wstring S);
+    virtual void Put(int Index, const std::wstring &S);
     void SetCurPos(int Position, int TopIndex);
     void UpdateItem(int Index);
 
