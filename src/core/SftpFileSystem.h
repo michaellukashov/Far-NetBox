@@ -192,6 +192,9 @@ protected:
   unsigned long DownloadBlockSize(
     TFileOperationProgressType *OperationProgress);
   int PacketLength(char *LenBuf, int ExpectedType);
+
+private:
+  const TSessionData *GetSessionData() const;
 };
 //---------------------------------------------------------------------------
 #endif // SftpFileSystemH

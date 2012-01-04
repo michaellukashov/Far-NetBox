@@ -252,7 +252,7 @@ public:
   bool GetClearAliases() const { return FClearAliases; }
   // __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
   void SetPingIntervalDT(TDateTime value);
-  TDateTime GetPingIntervalDT();
+  TDateTime GetPingIntervalDT() const;
   // __property TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
   TDateTime GetTimeDifference() const { return FTimeDifference; }
   // __property TPingType PingType = { read = FPingType, write = SetPingType };

@@ -1653,7 +1653,7 @@ void TSessionData::SetPingIntervalDT(TDateTime value)
   SetPingInterval((static_cast<int>(hour))*60*60 + (static_cast<int>(min))*60 + sec);
 }
 //---------------------------------------------------------------------------
-TDateTime TSessionData::GetPingIntervalDT()
+TDateTime TSessionData::GetPingIntervalDT() const
 {
   return SecToDateTime(GetPingInterval());
 }

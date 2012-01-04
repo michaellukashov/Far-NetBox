@@ -1741,9 +1741,14 @@ bool TSFTPFileSystem::GetActive()
   return FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TSFTPFileSystem::GetSessionInfo()
+const TSessionInfo &TSFTPFileSystem::GetSessionInfo()
 {
   return FSecureShell->GetSessionInfo();
+}
+//---------------------------------------------------------------------------
+const TSessionData *TSFTPFileSystem::GetSessionData() const
+{
+    return FTerminal->GetSessionData();
 }
 //---------------------------------------------------------------------------
 const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
@@ -1815,10 +1820,10 @@ std::wstring TSFTPFileSystem::GetUserName()
 void TSFTPFileSystem::Idle()
 {
   // Keep session alive
-  if ((FTerminal->GetSessionData()->GetPingType() != ptOff) &&
-      (Now() - FSecureShell->GetLastDataSent() > FTerminal->GetSessionData()->GetPingIntervalDT()))
+  if ((GetSessionData()->GetPingType() != ptOff) &&
+      ((Now() - FSecureShell->GetLastDataSent()) > GetSessionData()->GetPingIntervalDT()))
   {
-    if ((FTerminal->GetSessionData()->GetPingType() == ptDummyCommand) &&
+    if ((GetSessionData()->GetPingType() == ptDummyCommand) &&
         FSecureShell->GetReady())
     {
       TSFTPPacket Packet(SSH_FXP_REALPATH);
@@ -1947,7 +1952,8 @@ unsigned long TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
   unsigned long MinPacketSize,
   unsigned long MaxPacketSize)
 {
-  const unsigned long minPacketSize = 4096;
+  // DEBUG_PRINTF(L"MinPacketSize = %d, MaxPacketSize = %d", MinPacketSize, MaxPacketSize);
+  const unsigned long minPacketSize = MinPacketSize ? MinPacketSize : 4096;
   
   // size + message number + type
   const unsigned long SFTPPacketOverhead = 4 + 4 + 1;
@@ -1999,10 +2005,10 @@ unsigned long TSFTPFileSystem::TransferBlockSize(unsigned long Overhead,
     }
   }
 
-  DEBUG_PRINTF(L"Result1 = %u", Result);
+  // DEBUG_PRINTF(L"Result1 = %u", Result);
   Result = OperationProgress->AdjustToCPSLimit(Result);
-  DEBUG_PRINTF(L"minPacketSize = %u, MaxPacketSize = %u, Result = %u", minPacketSize, MaxPacketSize, Result);
-  DEBUG_PRINTF(L"Result2 = %u", Result);
+  // DEBUG_PRINTF(L"minPacketSize = %u, MaxPacketSize = %u", minPacketSize, MaxPacketSize);
+  // DEBUG_PRINTF(L"Result2 = %u", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2012,13 +2018,17 @@ unsigned long TSFTPFileSystem::UploadBlockSize(const std::string &Handle,
   // handle length + offset + data size
   const unsigned long UploadPacketOverhead =
     sizeof(unsigned long) + sizeof(__int64) + sizeof(unsigned long);
-  return TransferBlockSize(UploadPacketOverhead + Handle.size(), OperationProgress);
+  return TransferBlockSize(UploadPacketOverhead + Handle.size(), OperationProgress,
+    GetSessionData()->GetSFTPMinPacketSize(),
+    GetSessionData()->GetSFTPMaxPacketSize());
 }
 //---------------------------------------------------------------------------
 unsigned long TSFTPFileSystem::DownloadBlockSize(
   TFileOperationProgressType * OperationProgress)
 {
-  unsigned long Result = TransferBlockSize(sizeof(unsigned long), OperationProgress);
+  unsigned long Result = TransferBlockSize(sizeof(unsigned long), OperationProgress,
+    GetSessionData()->GetSFTPMinPacketSize(),
+    GetSessionData()->GetSFTPMaxPacketSize());
   if (FSupport->Loaded && (FSupport->MaxReadSize > 0) &&
       (Result > FSupport->MaxReadSize))
   {
@@ -2565,7 +2575,7 @@ std::wstring TSFTPFileSystem::GetHomeDirectory()
 void TSFTPFileSystem::LoadFile(TRemoteFile * File, TSFTPPacket * Packet,
   bool Complete)
 {
-  Packet->GetFile(File, FVersion, FTerminal->GetSessionData()->GetDSTMode(),
+  Packet->GetFile(File, FVersion, GetSessionData()->GetDSTMode(),
     FUtfStrings, FSignedTS, Complete);
 }
 //---------------------------------------------------------------------------
@@ -2605,7 +2615,7 @@ void TSFTPFileSystem::DoStartup()
   FVersion = -1;
   FFileSystemInfoValid = false;
   TSFTPPacket Packet(SSH_FXP_INIT);
-  int MaxVersion = FTerminal->GetSessionData()->GetSFTPMaxVersion();
+  int MaxVersion = GetSessionData()->GetSFTPMaxVersion();
   if (MaxVersion > SFTPMaxVersion)
   {
     MaxVersion = SFTPMaxVersion;
@@ -2806,8 +2816,8 @@ void TSFTPFileSystem::DoStartup()
   if (FVersion < 4)
   {
     // currently enable the bug for all servers (really known on OpenSSH)
-    FSignedTS = (FTerminal->GetSessionData()->GetSFTPBug(sbSignedTS) == asOn) ||
-      (FTerminal->GetSessionData()->GetSFTPBug(sbSignedTS) == asAuto);
+    FSignedTS = (GetSessionData()->GetSFTPBug(sbSignedTS) == asOn) ||
+      (GetSessionData()->GetSFTPBug(sbSignedTS) == asAuto);
     if (FSignedTS)
     {
       FTerminal->LogEvent(L"We believe the server has signed timestamps bug");
@@ -2821,10 +2831,10 @@ void TSFTPFileSystem::DoStartup()
   // use UTF when forced or ...
   // when "auto" and version is at least 4 and the server is not know not to use UTF
   FUtfNever = ((::Pos(GetSessionInfo().SshImplementation, L"Foxit-WAC-Server")) == 0) ||
-    (FTerminal->GetSessionData()->GetNotUtf() == asOn);
+    (GetSessionData()->GetNotUtf() == asOn);
   FUtfStrings =
-    (FTerminal->GetSessionData()->GetNotUtf() == asOff) ||
-    ((FTerminal->GetSessionData()->GetNotUtf() == asAuto) &&
+    (GetSessionData()->GetNotUtf() == asOff) ||
+    ((GetSessionData()->GetNotUtf() == asAuto) &&
       (FVersion >= 4) && !FUtfNever);
 
   if (FUtfStrings)
@@ -2845,7 +2855,7 @@ void TSFTPFileSystem::DoStartup()
     (::Pos(GetSessionInfo().SshImplementation, L"OpenSSH") == 0) ||
     (::Pos(GetSessionInfo().SshImplementation, L"Sun_SSH") == 0);
 
-  FMaxPacketSize = FTerminal->GetSessionData()->GetSFTPMaxPacketSize();
+  FMaxPacketSize = GetSessionData()->GetSFTPMaxPacketSize();
   if (FMaxPacketSize == 0)
   {
     if (FOpenSSH && (FVersion == 3) && !FSupport->Loaded)
@@ -2874,7 +2884,7 @@ char * TSFTPFileSystem::GetEOL() const
   }
   else
   {
-    return EOLToStr(FTerminal->GetSessionData()->GetEOLType());
+    return EOLToStr(GetSessionData()->GetEOLType());
   }
 }
 //---------------------------------------------------------------------------
@@ -3367,8 +3377,8 @@ void TSFTPFileSystem::CreateLink(const std::wstring &FileName,
   assert(FVersion >= 3); // symlinks are supported with SFTP version 3 and later
   TSFTPPacket Packet(SSH_FXP_SYMLINK);
 
-  bool Buggy = (FTerminal->GetSessionData()->GetSFTPBug(sbSymlink) == asOn) ||
-    ((FTerminal->GetSessionData()->GetSFTPBug(sbSymlink) == asAuto) && FOpenSSH);
+  bool Buggy = (GetSessionData()->GetSFTPBug(sbSymlink) == asOn) ||
+    ((GetSessionData()->GetSFTPBug(sbSymlink) == asAuto) && FOpenSSH);
 
   if (!Buggy)
   {
@@ -3713,7 +3723,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
       } BOOST_SCOPE_EXIT_END
       try
       {
-        if (FTerminal->GetSessionData()->GetCacheDirectories())
+        if (GetSessionData()->GetCacheDirectories())
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
@@ -4072,7 +4082,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
 
       FileParams.SourceSize = OperationProgress->LocalSize;
       FileParams.SourceTimestamp = UnixToDateTime(MTime,
-        FTerminal->GetSessionData()->GetDSTMode());
+        GetSessionData()->GetDSTMode());
 
       if (ResumeAllowed)
       {
@@ -4308,7 +4318,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
           FILE_OPERATION_LOOP(FMTLOAD(DELETE_ON_RESUME_ERROR,
               UnixExtractFileName(DestFullName).c_str(), DestFullName.c_str()),
 
-            if (FTerminal->GetSessionData()->GetOverwrittenToRecycleBin())
+            if (GetSessionData()->GetOverwrittenToRecycleBin())
             {
               FTerminal->RecycleFile(DestFullName, NULL);
             }
@@ -4333,7 +4343,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
         if (CopyParam->GetPreserveTime())
         {
           TouchAction.reset(new TTouchSessionAction(FTerminal->GetLog(), DestFullName,
-            UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode())));
+            UnixToDateTime(MTime, GetSessionData()->GetDSTMode())));
         }
         std::auto_ptr<TChmodSessionAction> ChmodAction;
         // do record chmod only if it was explicitly requested,
@@ -4477,7 +4487,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
       // when we want to preserve overwritten files, we need to find out that
       // they exist first... even if overwrite confirmation is disabled.
       // but not when we already know we are not going to overwrite (but e.g. to append)
-      if ((ConfirmOverwriting || FTerminal->GetSessionData()->GetOverwrittenToRecycleBin()) &&
+      if ((ConfirmOverwriting || GetSessionData()->GetOverwrittenToRecycleBin()) &&
           (OpenParams->OverwriteMode == omOverwrite))
       {
         OpenType |= SSH_FXF_EXCL;
@@ -4554,11 +4564,11 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         }
         else
         {
-          assert(FTerminal->GetSessionData()->GetOverwrittenToRecycleBin());
+          assert(GetSessionData()->GetOverwrittenToRecycleBin());
         }
 
         if ((OpenParams->OverwriteMode == omOverwrite) &&
-            FTerminal->GetSessionData()->GetOverwrittenToRecycleBin())
+            GetSessionData()->GetOverwrittenToRecycleBin())
         {
           FTerminal->RecycleFile(OpenParams->RemoteFileName, NULL);
         }
@@ -5040,7 +5050,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
             FileParams.SourceSize = OperationProgress->TransferSize;
             FileParams.SourceTimestamp = File->GetModification();
             FileParams.DestTimestamp = UnixToDateTime(MTime,
-              FTerminal->GetSessionData()->GetDSTMode());
+              GetSessionData()->GetDSTMode());
             FileParams.DestSize = DestFileSize;
             std::wstring PrevDestFileName = DestFileName;
             SFTPConfirmOverwrite(DestFileName, Params, OperationProgress, OverwriteMode, &FileParams);
@@ -5150,10 +5160,10 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
           TSFTPPacket DataPacket;
 
           int QueueLen = static_cast<int>(File->GetSize() / DownloadBlockSize(OperationProgress)) + 1;
-          if ((QueueLen > FTerminal->GetSessionData()->GetSFTPDownloadQueue()) ||
+          if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
               (QueueLen < 0))
           {
-            QueueLen = FTerminal->GetSessionData()->GetSFTPDownloadQueue();
+            QueueLen = GetSessionData()->GetSFTPDownloadQueue();
           }
           if (QueueLen < 1)
           {
@@ -5303,9 +5313,9 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
           }
 
           FILETIME AcTime = DateTimeToFileTime(AFile->GetLastAccess(),
-            FTerminal->GetSessionData()->GetDSTMode());
+            GetSessionData()->GetDSTMode());
           FILETIME WrTime = DateTimeToFileTime(AFile->GetModification(),
-            FTerminal->GetSessionData()->GetDSTMode());
+            GetSessionData()->GetDSTMode());
           SetFileTime(LocalHandle, NULL, &AcTime, &WrTime);
         }
       }
