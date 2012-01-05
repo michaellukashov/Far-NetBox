@@ -526,8 +526,27 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TGUIConfiguration::TGUIConfiguration(): TConfiguration()
+TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
+  FLocales(NULL),
+  FContinueOnError(false),
+  FConfirmCommandSession(false),
+  FPuttyPassword(false),
+  FTelnetForFtpInPutty(false),
+  FSynchronizeParams(0),
+  FSynchronizeOptions(0),
+  FSynchronizeModeAuto(0),
+  FSynchronizeMode(0),
+  FMaxWatchDirectories(0),
+  FQueueAutoPopup(false),
+  FQueueRememberPassword(false),
+  FQueueTransfersLimit(0),
+  FBeepOnFinish(false),
+  FSynchronizeBrowsing(false),
+  FCopyParamList(NULL),
+  FCopyParamListDefaults(false),
+  FKeepUpToDateChangeDelay(0),
+  FSessionReopenAutoIdle(0),
+  FLocale(0)
 {
   FLocale = 0;
   FLocales = new TStringList();

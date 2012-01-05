@@ -18,7 +18,31 @@
 #include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
+  FDontSave(false),
+  FChanged(false),
+  FUpdating(0),
   FApplicationInfo(NULL),
+  FLogging(false),
+  FPermanentLogging(false),
+  FLogWindowLines(0),
+  FLogFileAppend(false),
+  FLogProtocol(0),
+  FActualLogProtocol(0),
+  FLogActions(false),
+  FPermanentLogActions(false),
+  FConfirmOverwriting(false),
+  FConfirmResume(false),
+  FAutoReadDirectoryAfterOp(false),
+  FSessionReopenAuto(0),
+  FSessionReopenBackground(0),
+  FSessionReopenTimeout(0),
+  FTunnelLocalPortNumberLow(0),
+  FTunnelLocalPortNumberHigh(0),
+  FCacheDirectoryChangesMaxSize(0),
+  FShowFtpWelcomeMessage(false),
+  FDisablePasswordStoring(false),
+  FForceBanners(false),
+  FDisableAcceptingHostKeys(false),
   FCriticalSection(NULL)
 {
   FCriticalSection = new TCriticalSection();
