@@ -42,7 +42,7 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
 {
   FInitialized = false;
   Self = this;
-  CreateMutex(NULL, false, L"WinSCPFar");
+  CreateMutex(NULL, false, L"NetBoxFar");
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()

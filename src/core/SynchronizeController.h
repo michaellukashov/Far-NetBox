@@ -71,7 +71,7 @@ enum TSynchronizeOperation { soUpload, soDelete };
 class TSynchronizeController
 {
 public:
-  TSynchronizeController(const synchronize_slot_type &AOnSynchronize,
+  explicit TSynchronizeController(const synchronize_slot_type &AOnSynchronize,
     const synchronizeinvalid_slot_type &AOnSynchronizeInvalid,
     const synchronizetoomanydirectories_slot_type &AOnTooManyDirectories);
   ~TSynchronizeController();
