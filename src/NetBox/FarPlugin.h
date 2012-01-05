@@ -25,6 +25,7 @@
 #include "Classes.h"
 #pragma warning(pop)
 #include "Common.h"
+#include "guid.hpp"
 
 class CFarPlugin
 {
@@ -57,7 +58,8 @@ public:
         std::wstring content(title);
         content += L'\n';
         content += text;
-        return GetPSI()->Message(GetPSI()->ModuleNumber, FMSG_ALLINONE | flags, NULL, reinterpret_cast<const wchar_t* const *>(content.c_str()), 0, 0);
+        return GetPSI()->Message(&MainGuid, &MainGuid, FMSG_ALLINONE | flags, NULL,
+            reinterpret_cast<const wchar_t* const *>(content.c_str()), 0, 0);
     }
 
     /**
@@ -67,7 +69,7 @@ public:
      */
     static const wchar_t *GetString(const int id)
     {
-        return GetPSI()->GetMsg(GetPSI()->ModuleNumber, id);
+        return GetPSI()->GetMsg(&MainGuid, id);
     }
 
     /**
@@ -136,27 +138,30 @@ public:
         else if (openFrom == OPEN_PLUGINSMENU)
         {
             PanelInfo pi;
-            if (!GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELINFO, sizeof(pi), reinterpret_cast<LONG_PTR>(&pi)))
+            if (!GetPSI()->PanelControl(PANEL_ACTIVE, FCTL_GETPANELINFO, sizeof(pi), &pi))
             {
                 return false;
             }
 
-            const size_t ppiBufferLength = GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, static_cast<LONG_PTR>(NULL));
+            const size_t ppiBufferLength = GetPSI()->PanelControl(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, static_cast<LONG_PTR>(NULL));
             if (ppiBufferLength == 0)
             {
                 return false;
             }
             std::vector<unsigned char> ppiBuffer(ppiBufferLength);
             PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
-            if (!GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
+            FarGetPluginPanelItem gppi;
+            gppi.Item = ppi;
+            gppi.Size = ppiBufferLength;
+            if (!GetPSI()->PanelControl(PANEL_ACTIVE, FCTL_GETCURRENTPANELITEM, 0, reinterpret_cast<void *>(&gppi)))
             {
                 return false;
             }
-            const int fileNameLen = GetPSI()->FSF->ConvertPath(CPM_FULL, ppi->FindData.lpwszFileName, NULL, 0);
+            const int fileNameLen = GetPSI()->FSF->ConvertPath(CPM_FULL, ppi->FileName, NULL, 0);
             if (fileNameLen)
             {
                 fileName.resize(fileNameLen);
-                GetPSI()->FSF->ConvertPath(CPM_FULL, ppi->FindData.lpwszFileName, &fileName[0], fileNameLen);
+                GetPSI()->FSF->ConvertPath(CPM_FULL, ppi->FileName, &fileName[0], fileNameLen);
                 fileName.erase(fileName.length() - 1);  //last NULL
             }
         }
@@ -165,7 +170,7 @@ public:
             ViewerInfo vi;
             ZeroMemory(&vi, sizeof(vi));
             vi.StructSize = sizeof(vi);
-            GetPSI()->ViewerControl(VCTL_GETINFO, &vi);
+            GetPSI()->ViewerControl(vi.ViewerID, VCTL_GETINFO, 0, NULL);
             if (vi.FileName)
             {
                 fileName = vi.FileName;
@@ -173,11 +178,14 @@ public:
         }
         else if (openFrom == OPEN_EDITOR)
         {
-            const int buffLen = GetPSI()->EditorControl(ECTL_GETFILENAME, NULL);
+            EditorInfo ei;
+            ZeroMemory(&ei, sizeof(ei));
+            // ei.StructSize = sizeof(ei);
+            const int buffLen = GetPSI()->EditorControl(ei.EditorID, ECTL_GETFILENAME, 0, NULL);
             if (buffLen)
             {
                 fileName.resize(buffLen + 1, 0);
-                GetPSI()->EditorControl(ECTL_GETFILENAME, &fileName[0]);
+                GetPSI()->EditorControl(ei.EditorID, ECTL_GETFILENAME, 0, &fileName[0]);
             }
         }
 
@@ -191,9 +199,9 @@ public:
      * \param param command parameter
      * \return call retcode
      */
-    static INT_PTR AdvControl(const int command, void *param = NULL)
+    static INT_PTR AdvControl(const ADVANCED_CONTROL_COMMANDS command, void *param = NULL)
     {
-        return GetPSI()->AdvControl(GetPSI()->ModuleNumber, command, param);
+        return GetPSI()->AdvControl(&MainGuid, command, 0, param);
     }
 
     /**
@@ -245,15 +253,6 @@ enum THandlesFunction { hfProcessKey, hfProcessHostFile, hfProcessEvent };
 typedef boost::signal1<void, std::wstring &> farinputboxvalidate_signal_type;
 typedef farinputboxvalidate_signal_type::slot_type farinputboxvalidate_slot_type;
 //---------------------------------------------------------------------------
-enum
-{
-    FAR170BETA4 = MAKEFARVERSION(1, 70, 1282),
-    FAR170BETA5 = MAKEFARVERSION(1, 70, 1634),
-    FAR170ALPHA6 = MAKEFARVERSION(1, 70, 1812),
-    FAR170 = MAKEFARVERSION(1, 70, 2087),
-    FAR20 = MAKEFARVERSION(2, 0, 1666),
-};
-//---------------------------------------------------------------------------
 const size_t StartupInfoMinSize = 132; // 372;
 const size_t StandardFunctionsMinSize = 228;
 //---------------------------------------------------------------------------
@@ -299,7 +298,7 @@ public:
     virtual int Configure(int Item);
     virtual void *OpenPlugin(int OpenFrom, int Item);
     virtual void ClosePlugin(void *Plugin);
-    virtual void GetOpenPluginInfo(HANDLE Plugin, struct OpenPluginInfo *Info);
+    virtual void GetOpenPanelInfo(HANDLE Plugin, struct OpenPanelInfo *Info);
     virtual int GetFindData(HANDLE Plugin,
                                        struct PluginPanelItem **PanelItem, int *ItemsNumber, int OpMode);
     virtual void FreeFindData(HANDLE Plugin, struct PluginPanelItem *PanelItem,
@@ -422,7 +421,7 @@ protected:
     int DialogMessage(unsigned int Flags,
         const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
         TFarMessageParams *Params);
-    void InvalidateOpenPluginInfo();
+    void InvalidateOpenPanelInfo();
 
     TCriticalSection *GetCriticalSection() const { return FCriticalSection; }
 
@@ -451,7 +450,7 @@ public:
     virtual void Init();
     virtual ~TCustomFarFileSystem();
 
-    void GetOpenPluginInfo(struct OpenPluginInfo *Info);
+    void GetOpenPanelInfo(struct OpenPanelInfo *Info);
     int GetFindData(struct PluginPanelItem **PanelItem,
         int *ItemsNumber, int OpMode);
     void FreeFindData(struct PluginPanelItem *PanelItem, int ItemsNumber);
@@ -473,7 +472,7 @@ protected:
     TCustomFarPlugin *FPlugin;
     bool FClosed;
 
-    virtual void GetOpenPluginInfoEx(long unsigned &Flags,
+    virtual void GetOpenPanelInfoEx(long unsigned &Flags,
         std::wstring &HostFile, std::wstring &CurDir, std::wstring &Format,
         std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
         int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
@@ -508,15 +507,15 @@ protected:
 
 protected:
     TCriticalSection *FCriticalSection;
-    void InvalidateOpenPluginInfo();
+    void InvalidateOpenPanelInfo();
 
 private:
-    OpenPluginInfo FOpenPluginInfo;
-    bool FOpenPluginInfoValid;
+    OpenPanelInfo FOpenPanelInfo;
+    bool FOpenPanelInfoValid;
     TFarPanelInfo *FPanelInfo[2];
     static unsigned int FInstances;
 
-    void ClearOpenPluginInfo(OpenPluginInfo &Info);
+    void ClearOpenPanelInfo(OpenPanelInfo &Info);
     TObjectList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
         int ItemsNumber);
     TFarPanelInfo *GetPanelInfo(int Another);
@@ -540,7 +539,7 @@ private:
     TFarPanelModes();
     virtual ~TFarPanelModes();
 
-    void FillOpenPluginInfo(struct OpenPluginInfo *Info);
+    void FillOpenPanelInfo(struct OpenPanelInfo *Info);
     static void ClearPanelMode(PanelMode &Mode);
     static int CommaCount(const std::wstring &ColumnTypes);
 };
@@ -562,7 +561,7 @@ private:
     TFarKeyBarTitles();
     virtual ~TFarKeyBarTitles();
 
-    void FillOpenPluginInfo(struct OpenPluginInfo *Info);
+    void FillOpenPanelInfo(struct OpenPanelInfo *Info);
     static void ClearKeyBarTitles(KeyBarTitles &Titles);
 };
 //---------------------------------------------------------------------------
