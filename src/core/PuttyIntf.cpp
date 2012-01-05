@@ -39,8 +39,8 @@ void PuttyInitialize()
   strcpy_s(sshver, sizeof(sshver), vs.c_str());
   std::wstring AppName = AppNameString();
   assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
-  std::string appname = ::W2MB(AppName.c_str());
-  strcpy_s(appname_, sizeof(appname_), appname.c_str());
+  std::string _appname = ::W2MB(AppName.c_str());
+  strcpy_s(appname_, sizeof(appname_), _appname.c_str());
 }
 //---------------------------------------------------------------------------
 void PuttyFinalize()

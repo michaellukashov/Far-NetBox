@@ -3505,8 +3505,8 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
-  TStrings * FileList, TStrings * Checksums,
+void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring &Alg,
+  TStrings *FileList, TStrings *Checksums,
   calculatedchecksum_slot_type *OnCalculatedChecksum,
   TFileOperationProgressType *OperationProgress, bool FirstLevel)
 {
@@ -3517,7 +3517,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
   {
     for (size_t Index = 0; Index < FileList->GetCount(); Index++)
     {
-      TRemoteFile * File = (TRemoteFile *)FileList->GetObject(Index);
+      TRemoteFile *File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
       assert(File != NULL);
       if (File->GetIsDirectory() && !File->GetIsSymLink() &&
           !File->GetIsParentDirectory() && !File->GetIsThisDirectory())
@@ -3545,9 +3545,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
               
             OperationProgress->SetFile(File->GetFileName());
 
-            for (size_t Index = 0; Index < SubFiles->GetCount(); Index++)
+            for (size_t index = 0; index < SubFiles->GetCount(); index++)
             {
-              TRemoteFile * SubFile = SubFiles->GetFile(Index);
+              TRemoteFile * SubFile = SubFiles->GetFile(index);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 
@@ -3582,7 +3582,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
       do
       {
         bool Success = false;
-        std::wstring Alg;
+        std::wstring alg;
         std::wstring Checksum;
         TRemoteFile * File = NULL;
 
@@ -3602,14 +3602,14 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring & Alg,
 
             OperationProgress->SetFile(File->GetFileName());
 
-            Alg = Packet.GetStringW(!FUtfNever);
+            alg = Packet.GetStringW(!FUtfNever);
             // Checksum = StrToHex(std::wstring(::MB2W(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength())));
             Checksum = StrToHex(std::wstring(::MB2W(std::string(Packet.GetNextData(Packet.GetRemainingLength()), Packet.GetRemainingLength()).c_str())));
-            sig(File->GetFileName(), Alg, Checksum);
+            sig(File->GetFileName(), alg, Checksum);
 
             Success = true;
           }
-          catch (const std::exception & E)
+          catch (const std::exception &E)
           {
             FTerminal->CommandError(&E, FMTLOAD(CHECKSUM_ERROR,
               File != NULL ? File->GetFullFileName().c_str() : L""));
@@ -3809,11 +3809,11 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring & FileName,
     }
     else
     {
-      TQueryParams Params(0, HELP_APPEND_OR_RESUME);
+      TQueryParams params(0, HELP_APPEND_OR_RESUME);
       SUSPEND_OPERATION
       (
         Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME).c_str(), FileName.c_str()),
-          NULL, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
+          NULL, qaYes | qaNo | qaNoToAll | qaCancel, &params);
       );
 
       switch (Answer)
@@ -4091,14 +4091,14 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
         if (FLAGCLEAR(Flags, tfNewDirectory))
         {
           FTerminal->LogEvent(L"Checking existence of file.");
-          TRemoteFile * File = NULL;
-          DestFileExists = RemoteFileExists(DestFullName, &File);
+          TRemoteFile * file = NULL;
+          DestFileExists = RemoteFileExists(DestFullName, &file);
           if (DestFileExists)
           {
-            OpenParams.DestFileSize = File->GetSize();
+            OpenParams.DestFileSize = file->GetSize();
             FileParams.DestSize = OpenParams.DestFileSize;
-            FileParams.DestTimestamp = File->GetModification();
-            DestRights = *File->GetRights();
+            FileParams.DestTimestamp = file->GetModification();
+            DestRights = *file->GetRights();
             // if destination file is symlink, never do resumable transfer,
             // as it would delete the symlink.
             // also bit of heuristics to detect symlink on SFTP-3 and older
@@ -4106,28 +4106,28 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
             // if file has all permissions and is small, then it is likely symlink.
             // also it is not likely that such a small file (if it is not symlink)
             // gets overwritten by large file (that would trigger resumable transfer).
-            if (File->GetIsSymLink() ||
+            if (file->GetIsSymLink() ||
                 ((FVersion < 4) &&
-                 ((*File->GetRights() & static_cast<unsigned short>(TRights::rfAll)) ==
+                 ((*file->GetRights() & static_cast<unsigned short>(TRights::rfAll)) ==
                     static_cast<unsigned short>(TRights::rfAll)) &&
-                 (File->GetSize() < 100)))
+                 (file->GetSize() < 100)))
             {
               ResumeAllowed = false;
               OperationProgress->SetResumeStatus(rsDisabled);
             }
 
-            delete File;
-            File = NULL;
+            delete file;
+            file = NULL;
           }
 
           if (ResumeAllowed)
           {
             FTerminal->LogEvent(L"Checking existence of partially transfered file.");
-            if (RemoteFileExists(DestPartinalFullName, &File))
+            if (RemoteFileExists(DestPartinalFullName, &file))
             {
-              ResumeOffset = File->GetSize();
-              delete File;
-              File = NULL;
+              ResumeOffset = file->GetSize();
+              delete file;
+              file = NULL;
 
               bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->LocalSize);
               if (FLAGCLEAR(Params, cpNoConfirmation) &&
@@ -5362,8 +5362,8 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
-    int Params = dfNoRecursive;
-    FTerminal->DeleteFile(FileName, File, &Params);
+    int params = dfNoRecursive;
+    FTerminal->DeleteFile(FileName, File, &params);
     ChildError = false;
   }
 }

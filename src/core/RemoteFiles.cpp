@@ -1054,7 +1054,6 @@ void TRemoteFile::SetListingStr(std::wstring value)
       bool FullTime = false;
       bool DayMonthFormat = false;
       unsigned int Day, Month, Year, Hour, Min, Sec;
-      size_t P = 0;
 
       GETCOL;
       // format dd mmm or mmm dd ?
@@ -1147,6 +1146,7 @@ void TRemoteFile::SetListingStr(std::wstring value)
           }
           // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
           // Check if we got time (contains :) or year
+          size_t P = 0;
           if ((P = Col.find_first_of(L':')) != std::wstring::npos)
           {
             unsigned int CurrMonth, CurrDay;
@@ -2061,7 +2061,7 @@ void TRights::SetAllowUndef(bool value)
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetText(const std::wstring & value)
+void TRights::SetText(const std::wstring &value)
 {
   if (value != GetText())
   {
@@ -2090,18 +2090,18 @@ void TRights::SetText(const std::wstring & value)
       {
         // do nothing
       }
-      else if (val[i] == CombinedSymbols[i - 1])
+      else if (val[i] == CombinedSymbols[i])
       {
         FSet |= static_cast<unsigned short>(Flag | ExtendedFlag);
       }
-      else if (val[i] == ExtendedSymbols[i - 1])
+      else if (val[i] == ExtendedSymbols[i])
       {
         FSet |= static_cast<unsigned short>(ExtendedFlag);
         FUnset |= static_cast<unsigned short>(Flag);
       }
       else
       {
-        if (val[i] != BasicSymbols[i - 1])
+        if (val[i] != BasicSymbols[i])
         {
           KeepText = true;
         }

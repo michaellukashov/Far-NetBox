@@ -22,7 +22,7 @@ struct VS_VERSION_INFO_STRUCT32
 //---------------------------------------------------------------------------
 unsigned int VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, unsigned int DataSize, void * Data)
 {
-  unsigned int Len;
+  unsigned int Len = 0;
 
   bool NeedFree = false;
   HMODULE Module = GetModuleHandle(FileName);
@@ -232,7 +232,7 @@ TTranslation GetTranslation(void * FileInfo, unsigned i)
 std::wstring GetLanguage(unsigned int Language)
 {
   UINT Len;
-  wchar_t P[256];
+  wchar_t P[512];
 
   Len = VerLanguageName(Language, P, sizeof(P));
   if (Len > sizeof(P))

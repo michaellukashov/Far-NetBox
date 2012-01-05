@@ -672,7 +672,7 @@ std::wstring ExtractFilePath(const std::wstring &str)
 std::wstring GetCurrentDir()
 {
     std::wstring result;
-    wchar_t path[MAX_PATH + 1];
+    wchar_t path[MAX_PATH * sizeof(wchar_t) + 1];
     if (FarPlugin)
     {
         FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(sizeof(path), path);
@@ -2719,7 +2719,7 @@ void AppendPathDelimiterA(std::string &str)
 
 std::wstring ExpandEnvVars(const std::wstring& str)
 {
-    wchar_t buf[MAX_PATH];
+    wchar_t buf[MAX_PATH * sizeof(wchar_t)];
     unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
     std::wstring result = std::wstring(buf, size - 1);
     // DEBUG_PRINTF(L"result = %s", result.c_str());

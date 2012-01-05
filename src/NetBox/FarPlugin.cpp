@@ -1202,13 +1202,13 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
         int Count = 0;
         for (size_t i = 0; i < Items->GetCount(); i++)
         {
-            int Flags = reinterpret_cast<int>(Items->GetObject(i));
+            int flags = reinterpret_cast<int>(Items->GetObject(i));
             if (FLAGCLEAR(Flags, MIF_HIDDEN))
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
                 std::wstring Text = Items->GetString(i).c_str();
                 // DEBUG_PRINTF(L"Text = %s", Text.c_str());
-                MenuItems[Count].Flags = Flags;
+                MenuItems[Count].Flags = flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
                     assert(Selected < 0);
@@ -1366,7 +1366,7 @@ TPoint TCustomFarPlugin::TerminalInfo(TPoint *Size, TPoint *Cursor)
 //---------------------------------------------------------------------------
 HWND TCustomFarPlugin::GetConsoleWindow()
 {
-    wchar_t Title[512];
+    wchar_t Title[1024];
     GetConsoleTitle(Title, sizeof(Title) - 1);
     // DEBUG_PRINTF(L"Title = %s", Title);
     StrFromFar(Title);
@@ -1493,7 +1493,7 @@ struct TConsoleTitleParam
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::ShowConsoleTitle(const std::wstring &Title)
 {
-    wchar_t SaveTitle[512];
+    wchar_t SaveTitle[1024];
     GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
     StrFromFar(SaveTitle);
     TConsoleTitleParam Param;
@@ -1659,7 +1659,6 @@ DWORD TCustomFarPlugin::FarControl(int Command, int Param1, LONG_PTR Param2, HAN
     {
     case FCTL_CLOSEPLUGIN:
     case FCTL_SETPANELDIR:
-    // case FCTL_SETANOTHERPANELDIR:
     case FCTL_SETCMDLINE:
     case FCTL_INSERTCMDLINE:
         break;

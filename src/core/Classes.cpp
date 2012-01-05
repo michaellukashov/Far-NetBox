@@ -1142,7 +1142,7 @@ HICON TSHFileInfo::GetFolderIconHandle(BOOL bSmallIcon )
     if (bSmallIcon)
     {
          SHGetFileInfo(
-         reinterpret_cast<LPCTSTR>("Doesn't matter"), 
+         reinterpret_cast<LPCTSTR>(L"Doesn't matter"), 
          FILE_ATTRIBUTE_DIRECTORY,
          &sfi, 
          sizeof(SHFILEINFO), 
@@ -1151,7 +1151,7 @@ HICON TSHFileInfo::GetFolderIconHandle(BOOL bSmallIcon )
     else
     {
         SHGetFileInfo(
-            reinterpret_cast<LPCTSTR>("Does not matter"),
+            reinterpret_cast<LPCTSTR>(L"Does not matter"),
             FILE_ATTRIBUTE_DIRECTORY,
             &sfi, 
             sizeof(SHFILEINFO), 

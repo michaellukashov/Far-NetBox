@@ -785,9 +785,9 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     Module = ModuleFileName();
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
-      wchar_t LocaleStr[4];
-      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, LocaleStr, sizeof(LocaleStr));
-      LocaleName = LocaleStr;
+      LOCALESIGNATURE LocSig;
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(wchar_t));
+      LocaleName = *(LPWSTR)&LocSig;
       assert(!LocaleName.empty());
     }
     else

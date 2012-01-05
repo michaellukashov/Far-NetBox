@@ -664,8 +664,7 @@ void TSCPFileSystem::ReadCommandOutput(int Params, const std::wstring *Cmd)
       {
         FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, GetReturnCode()));
       }
-        else
-      if (!(Params & coOnlyReturnCode) &&
+      else if (!(Params & coOnlyReturnCode) &&
           ((!Message.empty() && ((FOutput->GetCount() == 0) || !(Params & coIgnoreWarnings))) ||
            WrongReturnCode))
       {
@@ -1581,12 +1580,12 @@ void TSCPFileSystem::CopyToRemote(TStrings * FilesToCopy,
         }
         catch (const EScpFileSkipped &E)
         {
-          TQueryParams Params(qpAllowContinueOnError);
+          TQueryParams params(qpAllowContinueOnError);
           DEBUG_PRINTF(L"before FTerminal->QueryUserException");
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
               &E,
-              qaOK | qaAbort, &Params, qtError) == qaAbort)
+              qaOK | qaAbort, &params, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
@@ -1980,12 +1979,12 @@ void TSCPFileSystem::SCPDirectorySource(const std::wstring &DirectoryName,
         // case without error message.
         catch (const EScpFileSkipped &E)
         {
-          TQueryParams Params(qpAllowContinueOnError);
+          TQueryParams params(qpAllowContinueOnError);
           DEBUG_PRINTF(L"before FTerminal->HandleException");
           SUSPEND_OPERATION (
             if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName.c_str()),
                 &E,
-                qaOK | qaAbort, &Params, qtError) == qaAbort)
+                qaOK | qaAbort, &params, qtError) == qaAbort)
             {
               OperationProgress->Cancel = csCancel;
             }
@@ -2073,7 +2072,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * FilesToCopy,
       !OperationProgress->Cancel; IFile++)
     {
       std::wstring FileName = FilesToCopy->GetString(IFile);
-      TRemoteFile * File = (TRemoteFile *)FilesToCopy->GetObject(IFile);
+      TRemoteFile *File = (TRemoteFile *)FilesToCopy->GetObject(IFile);
       assert(File);
 
       try
@@ -2562,10 +2561,10 @@ void TSCPFileSystem::SCPSink(const std::wstring &TargetDir,
       if (!SkipConfirmed)
       {
         SUSPEND_OPERATION (
-          TQueryParams Params(qpAllowContinueOnError);
+          TQueryParams params(qpAllowContinueOnError);
           // DEBUG_PRINTF(L"AbsoluteFileName = %s", AbsoluteFileName.c_str());
           if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, AbsoluteFileName.c_str()),
-                &E, qaOK | qaAbort, &Params, qtError) == qaAbort)
+                &E, qaOK | qaAbort, &params, qtError) == qaAbort)
           {
             OperationProgress->Cancel = csCancel;
           }

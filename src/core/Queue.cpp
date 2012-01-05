@@ -259,9 +259,9 @@ void TSignalThread::Terminate()
 // TTerminalQueue
 //---------------------------------------------------------------------------
 TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
-  TConfiguration * Configuration) :
+  TConfiguration *configuration) :
   FTerminal(Terminal), FTransfersLimit(2),
-  FConfiguration(Configuration), FSessionData(NULL), FItems(NULL),
+  FConfiguration(configuration), FSessionData(NULL), FItems(NULL),
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
@@ -883,10 +883,10 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal,
   FItem(Item)
 {
 }
-void TBackgroundTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration,
+void TBackgroundTerminal::Init(TSessionData *SessionData, TConfiguration *configuration,
     const std::wstring &Name)
 {
-    TSecondaryTerminal::Init(SessionData, Configuration, Name);
+    TSecondaryTerminal::Init(SessionData, configuration, Name);
 }
 
 //---------------------------------------------------------------------------

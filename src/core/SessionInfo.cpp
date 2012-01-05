@@ -837,7 +837,7 @@ void TSessionLog::OpenLogFile()
       throw ExtException(FMTLOAD(LOG_OPENERROR, NewFileName.c_str()));
     }
   }
-  catch (const std::exception & E)
+  catch (const std::exception &E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName = L"";
@@ -847,7 +847,7 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(FMTLOAD(LOG_GEN_ERROR), &E);
     }
-    catch (const std::exception & E)
+    catch (const std::exception &E)
     {
       AddException(&E);
       FUI->HandleExtendedException(&E);

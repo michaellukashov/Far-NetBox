@@ -59,7 +59,7 @@ void OpenSessionInPutty(const std::wstring &PuttyPath,
     TSessionData * ExportData = NULL;
     TRegistryStorage * SourceStorage = NULL;
     {
-        BOOST_SCOPE_EXIT ( (Storage) (ExportData) (SourceStorage) )
+        BOOST_SCOPE_EXIT ( (&Storage) (&ExportData) (&SourceStorage) )
         {
           delete Storage;
           delete ExportData;
@@ -212,7 +212,7 @@ bool ExecuteShellAndWait(HINSTANCE Handle, const std::wstring &Command,
 bool SpecialFolderLocation(int PathID, std::wstring & Path)
 {
   LPITEMIDLIST Pidl;
-  wchar_t Buf[256];
+  wchar_t Buf[260];
   if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
       SHGetPathFromIDList(Pidl, Buf))
   {

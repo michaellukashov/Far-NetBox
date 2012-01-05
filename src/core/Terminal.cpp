@@ -4975,10 +4975,11 @@ TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) :
   FMasterTunnelPasswordTried(false)
 {
 }
-void TSecondaryTerminal::Init(TSessionData *SessionData, TConfiguration *Configuration,
+
+void TSecondaryTerminal::Init(TSessionData *SessionData, TConfiguration *configuration,
     const std::wstring &Name)
 {
-  TTerminal::Init(SessionData, Configuration);
+  TTerminal::Init(SessionData, configuration);
   assert(FMainTerminal != NULL);
   GetLog()->SetParent(FMainTerminal->GetLog());
   GetLog()->SetName(Name);

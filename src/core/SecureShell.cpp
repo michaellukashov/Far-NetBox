@@ -1831,10 +1831,10 @@ void TSecureShell::VerifyHostKey(const std::wstring &Host, int Port,
     // if (0)
     {
       StoredKeys = ::MB2W(StoredKeys2.c_str()); // PackStr(StoredKeys);
-      std::wstring Buf = StoredKeys;
-      while (!Result && !Buf.empty())
+      std::wstring buf = StoredKeys;
+      while (!Result && !buf.empty())
       {
-        std::wstring StoredKey = ::CutToChar(Buf, Delimiter, false);
+        std::wstring StoredKey = ::CutToChar(buf, Delimiter, false);
         if (StoredKey == keyStr)
         {
           Result = true;
