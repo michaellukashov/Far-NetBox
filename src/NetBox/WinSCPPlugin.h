@@ -42,12 +42,12 @@ public:
 
 protected:
   virtual bool HandlesFunction(THandlesFunction Function);
-  virtual void GetPluginInfoEx(long unsigned & Flags, TStrings * DiskMenuStrings,
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * OpenPluginEx(int OpenFrom, int Item);
   virtual bool ConfigureEx(int Item);
-  virtual int ProcessEditorEventEx(int Event, void * Param);
+  virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info);
   virtual int ProcessEditorInputEx(const INPUT_RECORD * Rec);
   virtual void OldFar();
   bool CopyParamDialog(std::wstring Caption, TCopyParamType & CopyParam,

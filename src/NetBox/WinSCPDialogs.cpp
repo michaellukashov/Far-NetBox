@@ -1656,7 +1656,7 @@ private:
   bool VerifyKey(std::wstring FileName, bool TypeOnly);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
-  void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, long NewState, bool & Allow);
+  void AuthGSSAPICheckAllowChange(TFarDialogItem * Sender, void *NewState, bool & Allow);
   void UnixEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
@@ -3703,7 +3703,7 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 }
 //---------------------------------------------------------------------------
 void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
-  long NewState, bool & Allow)
+  void *NewState, bool & Allow)
 {
   if ((NewState == BSTATE_CHECKED) && !Configuration->GetGSSAPIInstalled())
   {

@@ -80,7 +80,7 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
+void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
@@ -102,7 +102,7 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
+bool TWinSCPPlugin::ConfigureEx(const struct ConfigureInfo * /*Item*/)
 {
   // DEBUG_PRINTF(L"begin");
   bool Change = false;
@@ -209,7 +209,7 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
   return Change;
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::ProcessEditorEventEx(int Event, void * Param)
+int TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
@@ -310,7 +310,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
         FileSystem->Connect(Session);
         if (!Directory.empty())
         {
-          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+          FileSystem->SetDirectoryEx(Info);
         }
       }
       else
@@ -434,7 +434,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       }
       else if (Result == MConfigure)
       {
-        ConfigureEx(0);
+        ConfigureEx(NULL);
       }
       else if (Result == MAbout)
       {

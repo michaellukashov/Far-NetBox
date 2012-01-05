@@ -122,10 +122,10 @@ protected:
 
     void Add(TFarDialogItem *Item);
     void Add(TFarDialogContainer *Container);
-    long SendMessage(int Msg, int Param1, int Param2);
-    virtual long DialogProc(int Msg, int Param1, long Param2);
-    virtual long FailDialogProc(int Msg, int Param1, long Param2);
-    long DefaultDialogProc(int Msg, int Param1, long Param2);
+    INT_PTR SendMessage(int Msg, int Param1, void *Param2);
+    virtual long DialogProc(int Msg, int Param1, void *Param2);
+    virtual long FailDialogProc(int Msg, int Param1, void *Param2);
+    long DefaultDialogProc(int Msg, int Param1, void *Param2);
     virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
     virtual bool Key(TFarDialogItem *Item, long KeyCode);
     virtual void Change();
@@ -143,7 +143,7 @@ protected:
     bool ChangesLocked();
     TFarDialogItem *ItemAt(int X, int Y);
 
-    static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
+    static INT_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, void *Param2);
 
 private:
     TCustomFarPlugin *FFarPlugin;
@@ -268,13 +268,13 @@ public:
     void SetItem(size_t value) { FItem = value; }
 
 protected:
-    int FDefaultType;
+    FARDIALOGITEMTYPES FDefaultType;
     int FGroup;
     int FTag;
     notify_signal_type FOnExit;
     mouse_click_signal_type FOnMouseClick;
 
-    explicit TFarDialogItem(TFarDialog *ADialog, int AType);
+    explicit TFarDialogItem(TFarDialog *ADialog, FARDIALOGITEMTYPES AType);
     virtual ~TFarDialogItem();
 
     FarDialogItem *GetDialogItem();
@@ -283,7 +283,7 @@ protected:
     virtual std::wstring GetData();
     virtual void SetData(const std::wstring &value);
     int GetType();
-    void SetType(int value);
+    void SetType(FARDIALOGITEMTYPES value);
     int GetSelected();
     void SetSelected(int value);
     TFarDialogContainer *GetContainer() { return FContainer; }
@@ -295,16 +295,16 @@ protected:
 
     virtual void Detach();
     void DialogResized();
-    long SendMessage(int Msg, int Param);
-    long SendDialogMessage(int Msg, int Param1, int Param2);
-    virtual long ItemProc(int Msg, long Param);
-    long DefaultItemProc(int Msg, int Param);
-    long DefaultDialogProc(int Msg, int Param1, int Param2);
-    virtual long FailItemProc(int Msg, long Param);
+    long SendMessage(int Msg, void *Param);
+    long SendDialogMessage(int Msg, int Param1, void *Param2);
+    virtual long ItemProc(int Msg, void *Param);
+    long DefaultItemProc(int Msg, void *Param);
+    long DefaultDialogProc(int Msg, int Param1, void *Param2);
+    virtual long FailItemProc(int Msg, void *Param);
     virtual void Change();
     void DialogChange();
-    void SetAlterType(int Index, bool value);
-    bool GetAlterType(int Index);
+    void SetAlterType(FARDIALOGITEMTYPES Index, bool value);
+    bool GetAlterType(FARDIALOGITEMTYPES Index);
     virtual void UpdateBounds();
     virtual void ResetBounds();
     virtual void Init();
@@ -388,7 +388,7 @@ public:
 protected:
     virtual void SetDataInternal(const std::wstring &value);
     virtual std::wstring GetData();
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual bool HotKey(char HotKey);
 
 private:
@@ -399,7 +399,7 @@ private:
 //---------------------------------------------------------------------------
 // typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
         // long NewState, bool &AllowChange);
-typedef boost::signal3<void, TFarDialogItem *, long, bool &> farallowchange_signal_type;
+typedef boost::signal3<void, TFarDialogItem *, void *, bool &> farallowchange_signal_type;
 typedef farallowchange_signal_type::slot_type farallowchange_slot_type;
 //---------------------------------------------------------------------------
 class TFarCheckBox : public TFarDialogItem
@@ -420,7 +420,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring &value);
 };
@@ -439,7 +439,7 @@ public:
 
 protected:
     farallowchange_signal_type FOnAllowChange;
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual bool GetIsEmpty();
     virtual void SetData(const std::wstring &value);
 };
@@ -470,7 +470,7 @@ public:
     void SetReadOnly(bool value) { SetFlag(DIF_READONLY, value); }
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual void Detach();
 
 private:
@@ -543,7 +543,7 @@ public:
 
 protected:
     virtual void Changed();
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
@@ -591,7 +591,7 @@ public:
     void SetAutoSelect(TFarListBoxAutoSelect value);
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual void Init();
     virtual bool CloseQuery();
 
@@ -626,7 +626,7 @@ public:
     void SetDropDownList(bool value) { SetFlag(DIF_DROPDOWNLIST, value); }
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual void Init();
 
 private:
@@ -647,7 +647,7 @@ public:
     bool GetScrollBar();
 
 protected:
-    virtual long ItemProc(int Msg, long Param);
+    virtual long ItemProc(int Msg, void *Param);
     virtual void DoFocus();
 
 private:

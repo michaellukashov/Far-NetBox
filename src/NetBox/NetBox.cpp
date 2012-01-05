@@ -59,7 +59,7 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
     FarPlugin->SetStartupInfo(psi);
 }
 
-void WINAPI ExitFARW()
+void WINAPI ExitFARW(const struct ExitInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
@@ -76,11 +76,11 @@ void WINAPI GetPluginInfoW(PluginInfo *pi)
     FarPlugin->GetPluginInfo(pi);
 }
 
-int WINAPI ConfigureW(int item)
+int WINAPI ConfigureW(const struct ConfigureInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->Configure(item);
+    return FarPlugin->Configure(Info);
 }
 
 HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
@@ -94,6 +94,7 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
   return FarPlugin->OpenPlugin(openFrom, item);
 }
 
+// TODO: void WINAPI ClosePanelW(const struct ClosePanelInfo *Info);
 void WINAPI ClosePluginW(HANDLE plugin)
 {
     assert(FarPlugin);
@@ -109,33 +110,32 @@ void WINAPI ClosePluginW(HANDLE plugin)
     // GC_gcollect();
 }
 
-void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
+void WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    FarPlugin->GetOpenPluginInfo(plugin, pluginInfo);
+    FarPlugin->GetOpenPanelInfo(Info);
 }
 
-int WINAPI GetFindDataW(HANDLE plugin, PluginPanelItem **panelItem, int *itemsNumber, int opMode)
+int WINAPI GetFindDataW(struct GetFindDataInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->GetFindData(plugin, panelItem, itemsNumber, opMode);
+    return FarPlugin->GetFindData(Info);
 }
 
-void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber)
+void WINAPI FreeFindDataW(const struct FreeFindDataInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    FarPlugin->FreeFindData(plugin, panelItem, itemsNumber);
+    FarPlugin->FreeFindData(Info);
 }
 
-int WINAPI ProcessHostFileW(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
+int WINAPI ProcessHostFileW(const struct ProcessHostFileInfo *Info)
 {
   assert(FarPlugin);
   TFarPluginGuard Guard;
-  return FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode);
+  return FarPlugin->ProcessHostFile(Info);
 }
 
 int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
@@ -145,6 +145,9 @@ int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
     return FarPlugin->ProcessKey(plugin, key, controlState);
 }
 
+// TODO: int WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info);
+// TODO: int WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info);
+
 int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
 {
     assert(FarPlugin);
@@ -152,66 +155,66 @@ int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
     return FarPlugin->ProcessEvent(Plugin, Event, Param);
 }
 
-int WINAPI SetDirectoryW(HANDLE plugin, const wchar_t *dir, int opMode)
+int WINAPI SetDirectoryW(const struct SetDirectoryInfo *Info)
 {
-    DEBUG_PRINTF(L"begin, dir = %s", dir);
+    DEBUG_PRINTF(L"begin, dir = %s", Info->Dir);
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int result = FarPlugin->SetDirectory(plugin, dir, opMode);
+    int result = FarPlugin->SetDirectory(Info);
     DEBUG_PRINTF(L"end, result = %d", result);
     return result;
 }
 
-int WINAPI MakeDirectoryW(HANDLE plugin, const wchar_t **name, int opMode)
+int WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info)
 {
-    DEBUG_PRINTF(L"begin, name = %s", *name);
+    DEBUG_PRINTF(L"begin, name = %s", Info->Name);
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int result = FarPlugin->MakeDirectory(plugin, name, opMode);
+    int result = FarPlugin->MakeDirectory(Info);
     DEBUG_PRINTF(L"end, result = %d", result);
     return result;
 }
 
-int WINAPI DeleteFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int opMode)
+int WINAPI DeleteFilesW(const struct DeleteFilesInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->DeleteFiles(plugin, panelItem, itemsNumber, opMode);
+    return FarPlugin->DeleteFiles(Info);
 }
 
-int WINAPI GetFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
-    int move, const wchar_t **destPath, int opMode)
+int WINAPI GetFilesW(struct GetFilesInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->GetFiles(plugin, panelItem, itemsNumber,
-        move, destPath, opMode);
+    return FarPlugin->GetFiles(Info);
 }
 
-int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber, int move, const wchar_t *srcPath, int opMode)
+int WINAPI PutFilesW(const struct PutFilesInfo *Info)
 {
-    DEBUG_PRINTF(L"begin, srcPath = %s", srcPath);
+    DEBUG_PRINTF(L"begin, srcPath = %s", Info->SrcPath);
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    int result = FarPlugin->PutFiles(plugin, panelItem, itemsNumber,
-        move, opMode);
+    int result = FarPlugin->PutFiles(Info);
     DEBUG_PRINTF(L"end, result = %d", result);
     return result;
 }
 
-int WINAPI ProcessEditorEventW(int Event, void * Param)
+int WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessEditorEvent(Event, Param);
+    return FarPlugin->ProcessEditorEvent(Info);
 }
 
-int WINAPI ProcessEditorInputW(const INPUT_RECORD *Rec)
+int WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessEditorInput(Rec);
+    return FarPlugin->ProcessEditorInput(Info);
 }
+
+// TODO: HANDLE WINAPI OpenW(const struct OpenInfo *Info);
+// TODO: int WINAPI AnalyseW(const struct AnalyseInfo *Info)
 
 HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *fileHeader, int fileHeaderSize, int /*opMode*/)
 {

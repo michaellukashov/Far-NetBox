@@ -436,7 +436,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
 {
   if (!SessionList())
   {
-    Flags = OPIF_USEFILTER | OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING |
+    Flags = !OPIF_DISABLEFILTER | !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING |
       OPIF_SHOWPRESERVECASE | OPIF_COMPAREFATTIME;
 
     // When slash is added to the end of path, windows style paths
@@ -461,7 +461,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
   {
     CurDir = FSessionsFolder;
     Format = L"winscp";
-    Flags = OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
+    Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
     PanelTitle = FORMAT(L" %s ", GetMsg(NB_STORED_SESSION_TITLE).c_str());
 
     TSessionPanelItem::SetPanelModes(PanelModes);
@@ -2149,7 +2149,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
+bool TWinSCPFileSystem::SetDirectoryEx(const struct SetDirectoryInfo *Info)
 {
   // DEBUG_PRINTF(L"begin, Dir = %s", Dir.c_str());
   if (!SessionList() && !Connected())
@@ -2174,7 +2174,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
           {
             Self->FSavedFindFolder = L"";
           } BOOST_SCOPE_EXIT_END
-        Result = SetDirectoryEx(FSavedFindFolder, OpMode);
+        Result = SetDirectoryEx(Info);
       }
       return Result;
     }
@@ -2308,7 +2308,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::MakeDirectoryEx(std::wstring & Name, int OpMode)
+int TWinSCPFileSystem::MakeDirectoryEx(struct MakeDirectoryInfo *Info)
 {
   if (Connected())
   {
@@ -2432,7 +2432,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
+bool TWinSCPFileSystem::DeleteFilesEx(const struct DeleteFilesInfo *Info)
 {
   if (Connected())
   {
@@ -2461,7 +2461,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, int OpMode)
       if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
         (MoreMessageDialog(Query, NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
       {
-        FTerminal->DeleteFiles(FFileList);
+        FTerminal->DeleteFiles(Info);
       }
     }
     return true;

@@ -295,28 +295,22 @@ public:
     virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
     virtual void ExitFAR();
     virtual void GetPluginInfo(struct PluginInfo *Info);
-    virtual int Configure(int Item);
+    virtual int Configure(const struct ConfigureInfo *Info);
     virtual void *OpenPlugin(int OpenFrom, int Item);
     virtual void ClosePlugin(void *Plugin);
-    virtual void GetOpenPanelInfo(HANDLE Plugin, struct OpenPanelInfo *Info);
-    virtual int GetFindData(HANDLE Plugin,
-                                       struct PluginPanelItem **PanelItem, int *ItemsNumber, int OpMode);
-    virtual void FreeFindData(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-                                         int ItemsNumber);
-    virtual int ProcessHostFile(HANDLE Plugin,
-                                           struct PluginPanelItem *PanelItem, int ItemsNumber, int OpMode);
+    virtual void GetOpenPanelInfo(struct OpenPanelInfo *Info);
+    virtual int GetFindData(struct GetFindDataInfo *Info);
+    virtual void FreeFindData(const struct FreeFindDataInfo *Info);
+    virtual int ProcessHostFile(const struct ProcessHostFileInfo *Info);
     virtual int ProcessKey(HANDLE Plugin, int Key, unsigned int ControlState);
     virtual int ProcessEvent(HANDLE Plugin, int Event, void *Param);
-    virtual int SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode);
-    virtual int MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpMode);
-    virtual int DeleteFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-                                       int ItemsNumber, int OpMode);
-    virtual int GetFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-                                    int ItemsNumber, int Move, const wchar_t **DestPath, int OpMode);
-    virtual int PutFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-                                    int ItemsNumber, int Move, int OpMode);
-    virtual int ProcessEditorEvent(int Event, void *Param);
-    virtual int ProcessEditorInput(const INPUT_RECORD *Rec);
+    virtual int SetDirectory(const struct SetDirectoryInfo *Info);
+    virtual int MakeDirectory(struct MakeDirectoryInfo *Info);
+    virtual int DeleteFiles(const struct DeleteFilesInfo *Info);
+    virtual int GetFiles(struct GetFilesInfo *Info);
+    virtual int PutFiles(const struct PutFilesInfo *Info);
+    virtual int ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
+    virtual int ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
 
@@ -327,13 +321,13 @@ public:
     int MaxMessageLines();
     int MaxMenuItemLength();
     int Menu(unsigned int Flags, const std::wstring &Title,
-        const std::wstring &Bottom, TStrings *Items, const int *BreakKeys,
+        const std::wstring &Bottom, TStrings *Items, const FarKey *BreakKeys,
         int &BreakCode);
     int Menu(unsigned int Flags, const std::wstring &Title,
         const std::wstring &Bottom, TStrings *Items);
     int Menu(unsigned int Flags, const std::wstring &Title,
         const std::wstring &Bottom, const FarMenuItem *Items, int Count,
-        const int *BreakKeys, int &BreakCode);
+        const FarKey *BreakKeys, int &BreakCode);
     bool InputBox(const std::wstring &Title, const std::wstring &Prompt,
         std::wstring &Text, unsigned long Flags, const std::wstring &HistoryName = L"",
         int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
@@ -346,10 +340,9 @@ public:
     bool Editor(std::wstring FileName, unsigned int Flags,
         std::wstring Title = L"");
 
-    int FarAdvControl(int Command, void *Param = NULL);
-    int FarAdvControl(int Command, int Param);
-    DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
-    int FarEditorControl(int Command, void *Param);
+    int FarAdvControl(FILE_CONTROL_COMMANDS Command, void *Param = NULL);
+    DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+    int FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void *Param);
     unsigned int FarSystemSettings();
     void Text(int X, int Y, int Color, std::wstring Str);
     void FlushText();
@@ -402,12 +395,12 @@ protected:
     TCustomFarPlugin *Self;
 
     virtual bool HandlesFunction(THandlesFunction Function);
-    virtual void GetPluginInfoEx(long unsigned &Flags,
+    virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags,
         TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
         TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
-    virtual bool ConfigureEx(int Item) = 0;
-    virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
+    virtual bool ConfigureEx(const struct ConfigureInfo *Info) = 0;
+    virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
     virtual void HandleFileSystemException(TCustomFarFileSystem *FileSystem,
         const std::exception *E, int OpMode = 0);
@@ -451,38 +444,34 @@ public:
     virtual ~TCustomFarFileSystem();
 
     void GetOpenPanelInfo(struct OpenPanelInfo *Info);
-    int GetFindData(struct PluginPanelItem **PanelItem,
-        int *ItemsNumber, int OpMode);
-    void FreeFindData(struct PluginPanelItem *PanelItem, int ItemsNumber);
+    int GetFindData(struct GetFindDataInfo *Info);
+    void FreeFindData(const struct FreeFindDataInfo *Info);
     int ProcessHostFile(struct PluginPanelItem *PanelItem,
         int ItemsNumber, int OpMode);
     int ProcessKey(int Key, unsigned int ControlState);
     int ProcessEvent(int Event, void *Param);
-    int SetDirectory(const wchar_t *Dir, int OpMode);
-    int MakeDirectory(const wchar_t **Name, int OpMode);
-    int DeleteFiles(struct PluginPanelItem *PanelItem,
-        int ItemsNumber, int OpMode);
-    int GetFiles(struct PluginPanelItem *PanelItem,
-        int ItemsNumber, int Move, const wchar_t **DestPath, int OpMode);
-    int PutFiles(struct PluginPanelItem *PanelItem,
-        int ItemsNumber, int Move, int OpMode);
+    int SetDirectory(const struct SetDirectoryInfo *Info);
+    int MakeDirectory(struct MakeDirectoryInfo *Info);
+    int DeleteFiles(const struct DeleteFilesInfo *Info);
+    int GetFiles(struct GetFilesInfo *Info);
+    int PutFiles(const struct PutFilesInfo *Info);
     virtual void Close();
 
 protected:
     TCustomFarPlugin *FPlugin;
     bool FClosed;
 
-    virtual void GetOpenPanelInfoEx(long unsigned &Flags,
+    virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
         std::wstring &HostFile, std::wstring &CurDir, std::wstring &Format,
         std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
         int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
         std::wstring &ShortcutData) = 0;
-    virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) = 0;
-    virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
+    virtual bool GetFindDataEx(struct GetFindDataInfo *Info) = 0;
+    virtual bool ProcessHostFileEx(const struct ProcessHostFileInfo *Info);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
-    virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
-    virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
+    virtual bool SetDirectoryEx(const struct SetDirectoryInfo *Info);
+    virtual int MakeDirectoryEx(struct MakeDirectoryInfo *Info);
     virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
     virtual int GetFilesEx(TObjectList *PanelItems, bool Move,
         std::wstring &DestPath, int OpMode);

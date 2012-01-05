@@ -28,7 +28,7 @@ public:
         CryptographyFinalize();
     }
 protected:
-    virtual void GetPluginInfoEx(long unsigned &Flags,
+    virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags,
         TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
         TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
     {
@@ -39,12 +39,12 @@ protected:
         DEBUG_PRINTF(L"call");
         return NULL;
     }
-    virtual bool ConfigureEx(int Item)
+    virtual bool ConfigureEx(const struct ConfigureInfo *Info)
     {
         DEBUG_PRINTF(L"call");
         return false;
     }
-    virtual int ProcessEditorEventEx(int Event, void *Param)
+    virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
     {
         DEBUG_PRINTF(L"call");
         return -1;
