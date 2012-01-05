@@ -5256,7 +5256,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(STRING_LINK_POINT_TO));
 
   PointToEdit = new TFarEdit(this);
-  PointToEdit->SetHistory(LINK_POINT_TO_HISTORY);
+  PointToEdit->SetHistory(STRING_LINK_POINT_TO_HISTORY);
 
   new TFarSeparator(this);
 
