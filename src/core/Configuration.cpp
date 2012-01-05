@@ -51,9 +51,8 @@ TConfiguration::TConfiguration() :
   FDontSave = false;
   FApplicationInfo = NULL;
 
-  wchar_t Buf[20];
   std::wstring RandomSeedPath;
-  if (GetEnvironmentVariable(L"APPDATA", Buf, sizeof(Buf)) > 0)
+  if (GetEnvironmentVariable(L"APPDATA", NULL, 0) > 0)
   {
     RandomSeedPath = L"%APPDATA%";
   }
