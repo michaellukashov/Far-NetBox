@@ -59,9 +59,9 @@ bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function)
   return (Function == hfProcessKey || Function == hfProcessEvent);
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::GetMinFarVersion()
+VersionInfo TWinSCPPlugin::GetMinFarVersion()
 {
-  return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_BUILD); // FARMANAGERVERSION;
+  return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
 }
 //---------------------------------------------------------------------------
 void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
@@ -102,7 +102,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::ConfigureEx(const struct ConfigureInfo * /*Item*/)
+bool TWinSCPPlugin::ConfigureEx(int Item /*Item*/)
 {
   // DEBUG_PRINTF(L"begin");
   bool Change = false;
@@ -212,14 +212,14 @@ bool TWinSCPPlugin::ConfigureEx(const struct ConfigureInfo * /*Item*/)
 int TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
-  if ((Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
+  if ((Info->Event != EE_REDRAW) || FarConfiguration->GetEditorUploadOnSave() ||
       FarConfiguration->GetEditorMultiple())
   {
     TWinSCPFileSystem * FileSystem;
     for (size_t Index = 0; Index < FOpenedPlugins->GetCount(); Index++)
     {
       FileSystem = dynamic_cast<TWinSCPFileSystem *>(FOpenedPlugins->GetItem(Index));
-      FileSystem->ProcessEditorEvent(Event, Param);
+      FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
 
@@ -262,7 +262,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       FileSystem = new TWinSCPFileSystem(this);
       FileSystem->Init(NULL);
 
-      if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
+      if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
+          OpenFrom == OPEN_PLUGINSMENU ||
           OpenFrom == OPEN_FINDLIST)
       {
         // nothing
@@ -310,7 +311,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
         FileSystem->Connect(Session);
         if (!Directory.empty())
         {
-          FileSystem->SetDirectoryEx(Info);
+          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
         }
       }
       else

@@ -101,19 +101,19 @@ protected:
   bool Connect(TSessionData * Data);
   void SaveSession();
 
-  virtual void GetOpenPluginInfoEx(long unsigned & Flags,
-    std::wstring & HostFile, std::wstring & CurDir, std::wstring & Format,
-    std::wstring & PanelTitle, TFarPanelModes * PanelModes, int & StartPanelMode,
-    int & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
-    std::wstring & ShortcutData);
+  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
+    std::wstring &HostFile, std::wstring &CurDir, std::wstring &Format,
+    std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
+    OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
+    std::wstring &ShortcutData);
   virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode);
   virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
   virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
-  virtual int MakeDirectoryEx(struct MakeDirectoryInfo *Info);
-  virtual bool DeleteFilesEx(const struct DeleteFilesInfo *Info);
+  virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
+  virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
   virtual int GetFilesEx(TObjectList * PanelItems, bool Move,
     std::wstring & DestPath, int OpMode);
-  virtual int PutFilesEx(TObjectList * PanelItems, bool Move, int OpMode);
+  virtual int PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode);
   virtual bool ProcessEventEx(int Event, void * Param);
 
   void ProcessEditorEvent(int Event, void * Param);
@@ -346,11 +346,11 @@ protected:
   TSessionData * FSessionData;
 
   virtual void GetData(
-    unsigned long & Flags, std::wstring & FileName, __int64 & Size,
-    unsigned long & FileAttributes,
-    TDateTime & LastWriteTime, TDateTime & LastAccess,
-    unsigned long & NumberOfLinks, std::wstring & Description,
-    std::wstring & Owner, void *& UserData, int & CustomColumnNumber);
+    unsigned __int64 &Flags, std::wstring &FileName, __int64 &Size,
+    unsigned long &FileAttributes,
+    TDateTime &LastWriteTime, TDateTime &LastAccess,
+    unsigned long &NumberOfLinks, std::wstring &Description,
+    std::wstring &Owner, void *& UserData, size_t &CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
 class TSessionFolderPanelItem : public TCustomFarPanelItem
@@ -362,11 +362,11 @@ protected:
   std::wstring FFolder;
 
   virtual void GetData(
-    unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+    unsigned __int64 &Flags, std::wstring &FileName, __int64 &Size,
     unsigned long &FileAttributes,
     TDateTime &LastWriteTime, TDateTime & LastAccess,
     unsigned long &NumberOfLinks, std::wstring &Description,
-    std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
+    std::wstring &Owner, void *& UserData, size_t &CustomColumnNumber);
 };
 //---------------------------------------------------------------------------
 class TRemoteFilePanelItem : public TCustomFarPanelItem
@@ -380,11 +380,11 @@ protected:
   TRemoteFile * FRemoteFile;
 
   virtual void GetData(
-    unsigned long & Flags, std::wstring & FileName, __int64 & Size,
+    unsigned __int64 &Flags, std::wstring & FileName, __int64 & Size,
     unsigned long & FileAttributes,
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     unsigned long & NumberOfLinks, std::wstring & Description,
-    std::wstring & Owner, void *& UserData, int & CustomColumnNumber);
+    std::wstring & Owner, void *& UserData, size_t &CustomColumnNumber);
   virtual std::wstring GetCustomColumnData(int Column);
   static void TranslateColumnTypes(std::wstring & ColumnTypes,
     TStrings * ColumnTitles);

@@ -6,9 +6,9 @@ EXPORTS
    FreeFindDataW
    GetFilesW
    GetFindDataW
-   GetMinFarVersionW
-   GetOpenPluginInfoW
+   GetGlobalInfoW
    GetPluginInfoW
+   GetOpenPanelInfoW
    MakeDirectoryW
    OpenFilePluginW
    OpenPluginW

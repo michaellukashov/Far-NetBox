@@ -91,9 +91,9 @@ bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/)
     return false;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::GetMinFarVersion()
+VersionInfo TCustomFarPlugin::GetMinFarVersion()
 {
-    return 0;
+    return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
 }
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
@@ -295,7 +295,7 @@ int TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
             OldFar();
         }
 
-        int Result = ConfigureEx(Info);
+        int Result = ConfigureEx(0);
 
         InvalidateOpenPanelInfo();
 
@@ -481,7 +481,7 @@ int TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
 
             {
                 TGuard Guard(FileSystem->GetCriticalSection());
-                return FileSystem->ProcessHostFile(Info->PanelItem, Info->ItemsNumber, Info->OpMode);
+                return FileSystem->ProcessHostFile(Info);
             }
         }
         else
@@ -1745,9 +1745,9 @@ int TCustomFarPlugin::FarVersion()
     return FFarVersion;
 }
 //---------------------------------------------------------------------------
-std::wstring TCustomFarPlugin::FormatFarVersion(int Version)
+std::wstring TCustomFarPlugin::FormatFarVersion(VersionInfo &Info)
 {
-    return FORMAT(L"%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
+    return FORMAT(L"%d.%d.%d", Info.Major, Info.Minor, Info.Build);
 }
 //---------------------------------------------------------------------------
 std::wstring TCustomFarPlugin::TemporaryDir()
@@ -1928,23 +1928,23 @@ int TCustomFarFileSystem::GetFindData(struct GetFindDataInfo *Info)
     // DEBUG_PRINTF(L"begin");
     ResetCachedInfo();
     TObjectList *PanelItems = new TObjectList();
-    bool Result;
+    bool Result = false;
     {
         BOOST_SCOPE_EXIT ( (&PanelItems) )
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
-        Result = !FClosed && GetFindDataEx(Info);
+        Result = !FClosed && GetFindDataEx(PanelItems, Info->OpMode);
         // DEBUG_PRINTF(L"Result = %d, PanelItems->GetCount = %d", Result, PanelItems->GetCount());
         if (Result && PanelItems->GetCount())
         {
             Info->PanelItem = new PluginPanelItem[PanelItems->GetCount()];
-            memset(*Info->PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
+            memset(Info->PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
             Info->ItemsNumber = PanelItems->GetCount();
             for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
             {
                 static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
-                    &((*Info->PanelItem)[Index]));
+                    &(Info->PanelItem[Index]));
             }
         }
         else
@@ -1988,7 +1988,7 @@ int TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo *Info
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
-        Result = ProcessHostFileEx(Info);
+        Result = ProcessHostFileEx(PanelItems, Info->OpMode);
     }
     return Result;
 }
@@ -2009,7 +2009,7 @@ int TCustomFarFileSystem::SetDirectory(const struct SetDirectoryInfo *Info)
 {
     ResetCachedInfo();
     InvalidateOpenPanelInfo();
-    int Result = SetDirectoryEx(Info);
+    int Result = SetDirectoryEx(Info->Dir, Info->OpMode);
     InvalidateOpenPanelInfo();
     return Result;
 }
@@ -2017,20 +2017,22 @@ int TCustomFarFileSystem::SetDirectory(const struct SetDirectoryInfo *Info)
 int TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo *Info)
 {
     ResetCachedInfo();
-    std::wstring NameStr = *Info->Name;
-    int Result;
+    std::wstring NameStr = Info->Name;
+    int Result = 0;
     {
+        /*
         BOOST_SCOPE_EXIT ( (&NameStr) (&Info) )
         {
             StrToFar(NameStr);
-            if (NameStr != *Info->Name)
+            if (0 != wcscmp(NameStr.c_str(), Info->Name))
             {
                 // wcscpy_s(*Name, NameStr.size(), NameStr.c_str());
                 *Info->Name = TCustomFarPlugin::DuplicateStr(NameStr, true);
             }
         } BOOST_SCOPE_EXIT_END
         StrFromFar(NameStr);
-        Result = MakeDirectoryEx(Info);
+        */
+        Result = MakeDirectoryEx(NameStr, Info->OpMode);
     }
     return Result;
 }
@@ -2045,7 +2047,7 @@ int TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo *Info)
         {
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
-        Result = DeleteFilesEx(Info);
+        Result = DeleteFilesEx(PanelItems, Info->OpMode);
     }
     return Result;
 }
@@ -2055,16 +2057,18 @@ int TCustomFarFileSystem::GetFiles(struct GetFilesInfo *Info)
     ResetCachedInfo();
     TObjectList *PanelItems = CreatePanelItemList(Info->PanelItem, Info->ItemsNumber);
     int Result;
-    std::wstring DestPathStr = *Info->DestPath;
+    std::wstring DestPathStr = Info->DestPath;
     {
         BOOST_SCOPE_EXIT ( (&DestPathStr) (&Info) (&PanelItems) )
         {
+            /*
             StrToFar(DestPathStr);
-            if (DestPathStr != *Info->DestPath)
+            if (DestPathStr != Info->DestPath)
             {
                 // wcscpy_s(*DestPath, DestPathStr.size(), DestPathStr.c_str());
                 *Info->DestPath = TCustomFarPlugin::DuplicateStr(DestPathStr, true);
             }
+            */
             delete PanelItems;
         } BOOST_SCOPE_EXIT_END
         StrFromFar(DestPathStr);
@@ -2122,7 +2126,7 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
     return FPanelInfo[Another];
 }
 //---------------------------------------------------------------------------
-DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, void *Param2)
+DWORD TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2)
 {
     return FPlugin->FarControl(Command, Param1, Param2, this);
 }
@@ -2143,7 +2147,7 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 void TCustomFarFileSystem::ClosePlugin()
 {
     FClosed = true;
-    FarControl(FCTL_CLOSEPLUGIN, 0, reinterpret_cast<void *>(L"C:\\"));
+    FarControl(FCTL_CLOSEPANEL, 0, reinterpret_cast<void *>(L"C:\\"));
     // FAR WORKAROUND
     // Calling UpdatePanel() is necessary, otherwise plugin remains in panel,
     // but it causes FAR to fail
@@ -2177,7 +2181,7 @@ bool TCustomFarFileSystem::IsRight()
     return !IsLeft();
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessHostFileEx(const struct ProcessHostFileInfo * /* Info */)
+bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /* PanelItems */, int /* OpMode */)
 {
     return false;
 }
@@ -2192,17 +2196,17 @@ bool TCustomFarFileSystem::ProcessEventEx(int /*Event*/, void * /*Param*/)
     return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::SetDirectoryEx(const struct SetDirectoryInfo * /* Info */)
+bool TCustomFarFileSystem::SetDirectoryEx(const std::wstring & /* Dir */, int /* OpMode */)
 {
     return false;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::MakeDirectoryEx(struct MakeDirectoryInfo * /* Info */)
+int TCustomFarFileSystem::MakeDirectoryEx(std::wstring & /* Name */, int /* OpMode */)
 {
     return -1;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::DeleteFilesEx(const struct DeleteFilesInfo * /* Info */)
+bool TCustomFarFileSystem::DeleteFilesEx(TObjectList * /*PanelItems */, int /* OpMode */)
 {
     return false;
 }
@@ -2213,7 +2217,7 @@ int TCustomFarFileSystem::GetFilesEx(TObjectList * /*PanelItems*/, bool /*Move*/
     return 0;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::PutFilesEx(const struct PutFilesInfo * /* Info */)
+int TCustomFarFileSystem::PutFilesEx(TObjectList * /* PanelItems */, bool /* Move */, int /* OpMode */)
 {
     return 0;
 }
@@ -2286,10 +2290,10 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring &ColumnTypes,
     {
         FPanelModes[Mode].ColumnTitles = NULL;
     }
-    FPanelModes[Mode].FullScreen = FullScreen;
-    FPanelModes[Mode].DetailedStatus = DetailedStatus;
-    FPanelModes[Mode].AlignExtensions = AlignExtensions;
-    FPanelModes[Mode].CaseConversion = CaseConversion;
+    FPanelModes[Mode].Flags |= PMFLAGS_FULLSCREEN;
+    FPanelModes[Mode].Flags |= PMFLAGS_DETAILEDSTATUS;
+    FPanelModes[Mode].Flags |= PMFLAGS_ALIGNEXTENSIONS;
+    FPanelModes[Mode].Flags |= PMFLAGS_CASECONVERSION;
 
     FPanelModes[Mode].StatusColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnTypes));
     FPanelModes[Mode].StatusColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnWidths));
@@ -2344,6 +2348,9 @@ int TFarPanelModes::CommaCount(const std::wstring &ColumnTypes)
 TFarKeyBarTitles::TFarKeyBarTitles()
 {
     memset(&FKeyBarTitles, 0, sizeof(FKeyBarTitles));
+    FKeyBarTitles.CountLabels = 7 * 12;
+    FKeyBarTitles.Labels = new KeyBarLabel[7 * 12];
+    memset(FKeyBarTitles.Labels, 0, 7 * 12 * sizeof(KeyBarLabel));
     FReferenced = false;
 }
 //---------------------------------------------------------------------------
@@ -2380,53 +2387,30 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
         int FunctionKey, const std::wstring &Title)
 {
-    assert(FunctionKey >= 1 && FunctionKey <= LENOF(FKeyBarTitles.Titles));
-    wchar_t **Titles = NULL;
-    switch (ShiftStatus)
+    assert(FunctionKey >= 1 && FunctionKey <= 12); // FKeyBarTitles.CountLabels);
+    int shift = static_cast<int>(ShiftStatus);
+    assert(shift >= 0 && shift < 7);
+    KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
+    if (Labels[FunctionKey-1].Key.VirtualKeyCode)
     {
-    case fsNone:
-        Titles = FKeyBarTitles.Titles;
-        break;
-    case fsCtrl:
-        Titles = FKeyBarTitles.CtrlTitles;
-        break;
-    case fsAlt:
-        Titles = FKeyBarTitles.AltTitles;
-        break;
-    case fsShift:
-        Titles = FKeyBarTitles.ShiftTitles;
-        break;
-    case fsCtrlShift:
-        Titles = FKeyBarTitles.CtrlShiftTitles;
-        break;
-    case fsAltShift:
-        Titles = FKeyBarTitles.AltShiftTitles;
-        break;
-    case fsCtrlAlt:
-        Titles = FKeyBarTitles.CtrlAltTitles;
-        break;
-    default:
-        assert(false);
+        delete[] Labels[FunctionKey-1].Text;
+        delete[] Labels[FunctionKey-1].LongText;
     }
-    if (Titles[FunctionKey-1])
-    {
-        delete[] Titles[FunctionKey-1];
-    }
-    Titles[FunctionKey-1] = StrToFar(TCustomFarPlugin::DuplicateStr(Title, true));
+    // TODO: Titles[FunctionKey-1].Key = ??
+    Labels[FunctionKey-1].Text = StrToFar(TCustomFarPlugin::DuplicateStr(Title, true));
+    Labels[FunctionKey-1].LongText = NULL;
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles &Titles)
 {
-    for (int Index = 0; Index < LENOF(Titles.Titles); Index++)
+    for (int Index = 0; Index < Titles.CountLabels; Index++)
     {
-        delete[] Titles.Titles[Index];
-        delete[] Titles.CtrlTitles[Index];
-        delete[] Titles.AltTitles[Index];
-        delete[] Titles.ShiftTitles[Index];
-        delete[] Titles.CtrlShiftTitles[Index];
-        delete[] Titles.AltShiftTitles[Index];
-        delete[] Titles.CtrlAltTitles[Index];
+        delete[] Titles.Labels[Index].Text;
+        delete[] Titles.Labels[Index].LongText;
     }
+    delete[] Titles.Labels;
+    Titles.Labels = NULL;
+    Titles.CountLabels = 0;
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::FillOpenPanelInfo(struct OpenPanelInfo *Info)
@@ -2458,22 +2442,22 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
     std::wstring Owner;
 
     void *UserData = reinterpret_cast<void *>(PanelItem->UserData);
-    GetData(PanelItem->Flags, FileName, Size, PanelItem->FindData.dwFileAttributes,
+    GetData(PanelItem->Flags, FileName, Size, PanelItem->FileAttributes,
             LastWriteTime, LastAccess, PanelItem->NumberOfLinks, Description, Owner,
             static_cast<void *>(UserData), PanelItem->CustomColumnNumber);
     PanelItem->UserData = reinterpret_cast<DWORD_PTR>(UserData);
     // DEBUG_PRINTF(L"LastWriteTime = %f, LastAccess = %f", LastWriteTime, LastAccess);
     FILETIME FileTime = DateTimeToFileTime(LastWriteTime, dstmWin);
     FILETIME FileTimeA = DateTimeToFileTime(LastAccess, dstmWin);
-    PanelItem->FindData.ftCreationTime = FileTime;
-    PanelItem->FindData.ftLastAccessTime = FileTimeA;
-    PanelItem->FindData.ftLastWriteTime = FileTime;
-    PanelItem->FindData.nFileSize = Size;
+    PanelItem->CreationTime = FileTime;
+    PanelItem->LastAccessTime = FileTimeA;
+    PanelItem->LastWriteTime = FileTime;
+    PanelItem->FileSize = Size;
     // PanelItem->PackSize = (long int)Size;
 
     // ASCOPY(PanelItem->FindData.lpwszFileName, FileName);
     // StrToFar(PanelItem->FindData.lpwszFileName);
-    PanelItem->FindData.lpwszFileName = StrToFar(TCustomFarPlugin::DuplicateStr(FileName));
+    PanelItem->FileName = StrToFar(TCustomFarPlugin::DuplicateStr(FileName));
     // DEBUG_PRINTF(L"PanelItem->FindData.lpwszFileName = %s", PanelItem->FindData.lpwszFileName);
     PanelItem->Description = StrToFar(TCustomFarPlugin::DuplicateStr(Description));
     PanelItem->Owner = StrToFar(TCustomFarPlugin::DuplicateStr(Owner));
@@ -2503,11 +2487,11 @@ TFarPanelItem::~TFarPanelItem()
 
 //---------------------------------------------------------------------------
 void TFarPanelItem::GetData(
-    unsigned long & /*Flags*/, std::wstring & /*FileName*/, __int64 & /*Size*/,
+    unsigned __int64 & /*Flags*/, std::wstring & /*FileName*/, __int64 & /*Size*/,
     unsigned long & /*FileAttributes*/,
     TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
     unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
-    std::wstring & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
+    std::wstring & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
     assert(false);
 }
@@ -2525,7 +2509,7 @@ unsigned long TFarPanelItem::GetFlags()
 //---------------------------------------------------------------------------
 std::wstring TFarPanelItem::GetFileName()
 {
-    std::wstring Result = FPanelItem->FindData.lpwszFileName;
+    std::wstring Result = FPanelItem->FileName;
     return StrFromFar(Result);
 }
 //---------------------------------------------------------------------------
@@ -2553,7 +2537,7 @@ void TFarPanelItem::SetSelected(bool value)
 //---------------------------------------------------------------------------
 unsigned long TFarPanelItem::GetFileAttributes()
 {
-    return FPanelItem->FindData.dwFileAttributes;
+    return FPanelItem->FileAttributes;
 }
 //---------------------------------------------------------------------------
 bool TFarPanelItem::GetIsParentDirectory()
@@ -2574,11 +2558,11 @@ THintPanelItem::THintPanelItem(const std::wstring &AHint) :
 }
 //---------------------------------------------------------------------------
 void THintPanelItem::GetData(
-    unsigned long & /*Flags*/, std::wstring &FileName, __int64 & /*Size*/,
+    unsigned __int64 & /*Flags*/, std::wstring &FileName, __int64 & /*Size*/,
     unsigned long & /*FileAttributes*/,
     TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
     unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
-    std::wstring & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
+    std::wstring & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
     FileName = FHint;
 }
@@ -2651,7 +2635,7 @@ TObjectList *TFarPanelInfo::GetItems()
         PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
         memset(ppi, 0, size);
         FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<void *>(ppi));
-        // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FindData.lpwszFileName);
+        // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
         FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
     }
     return FItems;
@@ -2764,7 +2748,7 @@ TFarPanelType TFarPanelInfo::GetType()
 //---------------------------------------------------------------------------
 bool TFarPanelInfo::GetIsPlugin()
 {
-    return (FPanelInfo->Plugin != 0);
+    return (FPanelInfo->PluginHandle != 0);
 }
 //---------------------------------------------------------------------------
 std::wstring TFarPanelInfo::GetCurrentDirectory()

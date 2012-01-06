@@ -186,14 +186,14 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin * value)
 //---------------------------------------------------------------------------
 void TFarConfiguration::CacheFarSettings()
 {
-  FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
+  FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS, 0);
 }
 //---------------------------------------------------------------------------
 int TFarConfiguration::FarConfirmations()
 {
   if (GetCurrentThreadId() == GetPlugin()->GetFarThread())
   {
-    return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
+    return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS, 0);
   }
   else
   {

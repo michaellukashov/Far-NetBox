@@ -30,7 +30,7 @@ friend TWinSCPFileSystem;
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
-  virtual int GetMinFarVersion();
+  virtual VersionInfo GetMinFarVersion();
 
   virtual void HandleException(const std::exception * E, int OpMode = 0);
   int MoreMessageDialog(std::wstring Str, TStrings * MoreMessages,

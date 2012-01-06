@@ -3703,9 +3703,9 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 }
 //---------------------------------------------------------------------------
 void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
-  void *NewState, bool & Allow)
+  void *NewState, bool &Allow)
 {
-  if ((NewState == BSTATE_CHECKED) && !Configuration->GetGSSAPIInstalled())
+  if ((reinterpret_cast<int>(NewState) == BSTATE_CHECKED) && !Configuration->GetGSSAPIInstalled())
   {
     Allow = false;
     TWinSCPPlugin* WinSCPPlugin = dynamic_cast<TWinSCPPlugin*>(FarPlugin);
@@ -5256,7 +5256,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(STRING_LINK_POINT_TO));
 
   PointToEdit = new TFarEdit(this);
-  PointToEdit->SetHistory(STRING_LINK_POINT_TO_HISTORY);
+  PointToEdit->SetHistory(LINK_POINT_TO_HISTORY);
 
   new TFarSeparator(this);
 
@@ -5989,8 +5989,14 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       Repeat = false;
       std::wstring Caption = GetMsg(Add ? OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
         OPEN_DIRECTORY_BROWSE_CAPTION);
-      const int BreakKeys[] = { VK_DELETE, VK_F8, VK_RETURN + (PKF_CONTROL << 16),
-        'C' + (PKF_CONTROL << 16), VK_INSERT + (PKF_CONTROL << 16), 0 };
+      const FarKey BreakKeys[] = {
+        { VK_DELETE, 0 },
+        { VK_F8, 0},
+        { VK_RETURN + (KEY_CTRL << 16), 0},
+        { 'C' + (KEY_CTRL << 16), 0},
+        { VK_INSERT + (KEY_CTRL << 16), 0},
+        { 0 }
+      };
 
       ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
         Caption, GetMsg(OPEN_DIRECTORY_HELP), BookmarkItems, BreakKeys, BreakCode);
@@ -6014,7 +6020,8 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         }
         else if (BreakCode == 2)
         {
-          FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(BookmarkPaths->GetString(ItemFocused).c_str()));
+          FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<void *>(
+            const_cast<wchar_t *>(BookmarkPaths->GetString(ItemFocused).c_str())));
         }
         else if (BreakCode == 3 || BreakCode == 4)
         {
@@ -6226,7 +6233,7 @@ public:
 protected:
   virtual bool CloseQuery();
   virtual void Change();
-  virtual long DialogProc(int Msg, int Param1, long Param2);
+  virtual long DialogProc(int Msg, int Param1, void *Param2);
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
@@ -6565,7 +6572,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 //---------------------------------------------------------------------------
-long TFullSynchronizeDialog::DialogProc(int Msg, int Param1, long Param2)
+long TFullSynchronizeDialog::DialogProc(int Msg, int Param1, void *Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -6669,7 +6676,7 @@ public:
   bool Execute(TSynchronizeChecklist * Checklist);
 
 protected:
-  virtual long DialogProc(int Msg, int Param1, long Param2);
+  virtual long DialogProc(int Msg, int Param1, void *Param2);
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
@@ -7101,7 +7108,7 @@ void TSynchronizeChecklistDialog::UpdateControls()
   UncheckAllButton->SetEnabled((FChecked > 0));
 }
 //---------------------------------------------------------------------------
-long TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, long Param2)
+long TSynchronizeChecklistDialog::DialogProc(int Msg, int Param1, void *Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7301,7 +7308,7 @@ protected:
   void DoLog(TSynchronizeController * Controller,
     TSynchronizeLogEntry Entry, const std::wstring &Message);
   void DoSynchronizeThreads(TObject * Sender, const threadmethod_slot_type &slot);
-  virtual long DialogProc(int Msg, int Param1, long Param2);
+  virtual long DialogProc(int Msg, int Param1, void *Param2);
   virtual bool CloseQuery();
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
   TCopyParamType GetCopyParams();
@@ -7556,7 +7563,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
   }
 }
 //---------------------------------------------------------------------------
-long TSynchronizeDialog::DialogProc(int Msg, int Param1, long Param2)
+long TSynchronizeDialog::DialogProc(int Msg, int Param1, void *Param2)
 {
   if (FAbort)
   {

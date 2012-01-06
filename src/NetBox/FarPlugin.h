@@ -25,7 +25,7 @@
 #include "Classes.h"
 #pragma warning(pop)
 #include "Common.h"
-#include "guid.hpp"
+#include "guid.h"
 
 class CFarPlugin
 {
@@ -291,19 +291,38 @@ class TCustomFarPlugin : public TObject
 public:
     explicit TCustomFarPlugin(HINSTANCE HInst);
     virtual ~TCustomFarPlugin();
-    virtual int GetMinFarVersion();
+    virtual VersionInfo GetMinFarVersion();
     virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
     virtual void ExitFAR();
     virtual void GetPluginInfo(struct PluginInfo *Info);
     virtual int Configure(const struct ConfigureInfo *Info);
     virtual void *OpenPlugin(int OpenFrom, int Item);
     virtual void ClosePlugin(void *Plugin);
+    // virtual void GetOpenPanelInfo(HANDLE Plugin, struct OpenPanelInfo *Info);
+    // virtual int GetFindData(HANDLE Plugin,
+        // struct PluginPanelItem **PanelItem, int *ItemsNumber, int OpMode);
+    // virtual void FreeFindData(HANDLE Plugin, struct PluginPanelItem *PanelItem,
+        // int ItemsNumber);
+    // virtual int ProcessHostFile(HANDLE Plugin,
+        // struct PluginPanelItem *PanelItem, int ItemsNumber, int OpMode);
     virtual void GetOpenPanelInfo(struct OpenPanelInfo *Info);
     virtual int GetFindData(struct GetFindDataInfo *Info);
     virtual void FreeFindData(const struct FreeFindDataInfo *Info);
     virtual int ProcessHostFile(const struct ProcessHostFileInfo *Info);
+
     virtual int ProcessKey(HANDLE Plugin, int Key, unsigned int ControlState);
     virtual int ProcessEvent(HANDLE Plugin, int Event, void *Param);
+
+    // virtual int SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode);
+    // virtual int MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpMode);
+    // virtual int DeleteFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
+        // int ItemsNumber, int OpMode);
+    // virtual int GetFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
+        // int ItemsNumber, int Move, const wchar_t **DestPath, int OpMode);
+    // virtual int PutFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
+        // int ItemsNumber, int Move, int OpMode);
+    // virtual int ProcessEditorEvent(int Event, void *Param);
+    // virtual int ProcessEditorInput(const INPUT_RECORD *Rec);
     virtual int SetDirectory(const struct SetDirectoryInfo *Info);
     virtual int MakeDirectory(struct MakeDirectoryInfo *Info);
     virtual int DeleteFiles(const struct DeleteFilesInfo *Info);
@@ -350,7 +369,7 @@ public:
     void FarCopyToClipboard(std::wstring Str);
     void FarCopyToClipboard(TStrings *Strings);
     int FarVersion();
-    std::wstring FormatFarVersion(int Version);
+    std::wstring FormatFarVersion(VersionInfo &Info);
     std::wstring TemporaryDir();
     int InputRecordToKey(const INPUT_RECORD *Rec);
     TFarEditorInfo *EditorInfo();
@@ -399,7 +418,7 @@ protected:
         TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
         TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
-    virtual bool ConfigureEx(const struct ConfigureInfo *Info) = 0;
+    virtual bool ConfigureEx(int Item) = 0;
     virtual int ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
     virtual void HandleFileSystemException(TCustomFarFileSystem *FileSystem,
@@ -465,19 +484,19 @@ protected:
         std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
         OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
         std::wstring &ShortcutData) = 0;
-    virtual bool GetFindDataEx(struct GetFindDataInfo *Info) = 0;
-    virtual bool ProcessHostFileEx(const struct ProcessHostFileInfo *Info);
+    virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) = 0;
+    virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
-    virtual bool SetDirectoryEx(const struct SetDirectoryInfo *Info);
-    virtual int MakeDirectoryEx(struct MakeDirectoryInfo *Info);
-    virtual bool DeleteFilesEx(const struct DeleteFilesInfo *Info);
+    virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
+    virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
+    virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
     virtual int GetFilesEx(TObjectList *PanelItems, bool Move,
         std::wstring &DestPath, int OpMode);
     virtual int PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
-    DWORD FarControl(int Command, int Param1, void *Param2);
+    DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2);
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePlugin();
@@ -562,11 +581,11 @@ protected:
     virtual ~TCustomFarPanelItem()
     {}
     virtual void GetData(
-        unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+        unsigned __int64 &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         TDateTime &LastWriteTime, TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
-        std::wstring &Owner, void *& UserData, int &CustomColumnNumber) = 0;
+        std::wstring &Owner, void *& UserData, size_t &CustomColumnNumber) = 0;
     virtual std::wstring GetCustomColumnData(int Column);
 
     void FillPanelItem(struct PluginPanelItem *PanelItem);
@@ -590,11 +609,11 @@ protected:
     PluginPanelItem *FPanelItem;
 
     virtual void GetData(
-        unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+        unsigned __int64 &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         TDateTime &LastWriteTime, TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
-        std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
+        std::wstring &Owner, void *& UserData, size_t &CustomColumnNumber);
     virtual std::wstring GetCustomColumnData(int Column);
 
 private:
@@ -609,11 +628,11 @@ public:
 
 protected:
     virtual void GetData(
-        unsigned long &Flags, std::wstring &FileName, __int64 &Size,
+        unsigned __int64 &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
         TDateTime &LastWriteTime, TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
-        std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
+        std::wstring &Owner, void *& UserData, size_t &CustomColumnNumber);
 
 private:
     std::wstring FHint;

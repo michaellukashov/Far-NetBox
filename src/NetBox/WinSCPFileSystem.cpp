@@ -19,7 +19,8 @@
 #include "ScpFileSystem.h"
 #include <Bookmarks.h>
 #include <GUITools.h>
-// FAR WORKAROUND
+#include "guid.h"
+
 //---------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
   TCustomFarPanelItem()
@@ -59,11 +60,11 @@ void TSessionPanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
 }
 //---------------------------------------------------------------------------
 void TSessionPanelItem::GetData(
-  unsigned long & /*Flags*/, std::wstring & FileName, __int64 & /*Size*/,
+  unsigned __int64 & /*Flags*/, std::wstring & FileName, __int64 & /*Size*/,
   unsigned long & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
-  std::wstring & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
+  std::wstring & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
 {
   FileName = UnixExtractFileName(FSessionData->GetName());
   // DEBUG_PRINTF(L"FileName = %s, GetName = %s", FileName.c_str(), FSessionData->GetName().c_str());
@@ -77,11 +78,11 @@ TSessionFolderPanelItem::TSessionFolderPanelItem(const std::wstring &Folder):
 }
 //---------------------------------------------------------------------------
 void TSessionFolderPanelItem::GetData(
-  unsigned long & /*Flags*/, std::wstring &FileName, __int64 & /*Size*/,
+  unsigned __int64 & /*Flags*/, std::wstring &FileName, __int64 & /*Size*/,
   unsigned long &FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
-  std::wstring & /*Owner*/, void *& /*UserData*/, int & /*CustomColumnNumber*/)
+  std::wstring & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
 {
   FileName = FFolder;
   FileAttributes = FILE_ATTRIBUTE_DIRECTORY;
@@ -95,11 +96,11 @@ TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile * ARemoteFile):
 }
 //---------------------------------------------------------------------------
 void TRemoteFilePanelItem::GetData(
-  unsigned long & /*Flags*/, std::wstring & FileName, __int64 & Size,
+  unsigned __int64 & /*Flags*/, std::wstring & FileName, __int64 & Size,
   unsigned long & FileAttributes,
   TDateTime & LastWriteTime, TDateTime & LastAccess,
   unsigned long & /*NumberOfLinks*/, std::wstring & /*Description*/,
-  std::wstring & Owner, void *& UserData, int & CustomColumnNumber)
+  std::wstring & Owner, void *& UserData, size_t & CustomColumnNumber)
 {
   FileName = FRemoteFile->GetFileName();
   Size = FRemoteFile->GetSize();
@@ -428,10 +429,10 @@ void TWinSCPFileSystem::Close()
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::GetOpenPluginInfoEx(long unsigned & Flags,
+void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
   std::wstring & /*HostFile*/, std::wstring & CurDir, std::wstring & Format,
   std::wstring & PanelTitle, TFarPanelModes * PanelModes, int & /*StartPanelMode*/,
-  int & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
+  OPENPANELINFO_SORTMODES & /*StartSortMode*/, bool & /*StartSortOrder*/, TFarKeyBarTitles * KeyBarTitles,
   std::wstring & ShortcutData)
 {
   if (!SessionList())
@@ -844,7 +845,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring &Command)
             Self->RedrawPanel(true);
           }
         } BOOST_SCOPE_EXIT_END
-      FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<LONG_PTR>(L""));
+      FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<void *>(L""));
       FPlugin->ShowConsoleTitle(Command);
       {
           BOOST_SCOPE_EXIT ( (&Self) )
@@ -871,8 +872,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
 
   TFarPanelItem * Focused = GetPanelInfo()->GetFocusedItem();
 
-  if ((Key == 'W') && (ControlState & PKF_SHIFT) &&
-        (ControlState & PKF_ALT))
+  if ((Key == 'W') && (ControlState & KEY_SHIFT) &&
+        (ControlState & KEY_ALT))
   {
     WinSCPPlugin()->CommandsMenu(true);
     Handled = true;
@@ -891,13 +892,13 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
       Data = static_cast<TSessionData *>(Focused->GetUserData());
     }
 
-    if ((Key == 'F') && FLAGSET(ControlState, PKF_CONTROL))
+    if ((Key == 'F') && FLAGSET(ControlState, KEY_CTRL))
     {
       InsertSessionNameOnCommandLine();
       Handled = true;
     }
 
-    if ((Key == VK_RETURN) && FLAGSET(ControlState, PKF_CONTROL))
+    if ((Key == VK_RETURN) && FLAGSET(ControlState, KEY_CTRL))
     {
       InsertSessionNameOnCommandLine();
       Handled = true;
@@ -920,14 +921,14 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
       Handled = true;
     }
 
-    if (Key == VK_F4 && (ControlState & PKF_SHIFT))
+    if (Key == VK_F4 && (ControlState & KEY_SHIFT))
     {
       EditConnectSession(NULL, true);
       Handled = true;
     }
 
     if (((Key == VK_F5) || (Key == VK_F6)) &&
-        (ControlState & PKF_SHIFT))
+        (ControlState & KEY_SHIFT))
     {
       if (Data != NULL)
       {
@@ -938,78 +939,78 @@ bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
   }
   else if (Connected())
   {
-    if ((Key == 'F') && (ControlState & PKF_CONTROL))
+    if ((Key == 'F') && (ControlState & KEY_CTRL))
     {
       InsertFileNameOnCommandLine(true);
       Handled = true;
     }
 
-    if ((Key == VK_RETURN) && FLAGSET(ControlState, PKF_CONTROL))
+    if ((Key == VK_RETURN) && FLAGSET(ControlState, KEY_CTRL))
     {
       InsertFileNameOnCommandLine(false);
       Handled = true;
     }
 
-    if ((Key == 'R') && (ControlState & PKF_CONTROL))
+    if ((Key == 'R') && (ControlState & KEY_CTRL))
     {
       FReloadDirectory = true;
     }
 
-    if ((Key == 'A') && (ControlState & PKF_CONTROL))
+    if ((Key == 'A') && (ControlState & KEY_CTRL))
     {
       FileProperties();
       Handled = true;
     }
 
-    if ((Key == 'G') && (ControlState & PKF_CONTROL))
+    if ((Key == 'G') && (ControlState & KEY_CTRL))
     {
       ApplyCommand();
       Handled = true;
     }
 
-    if ((Key == 'Q') && (ControlState & PKF_SHIFT) &&
-          (ControlState & PKF_ALT))
+    if ((Key == 'Q') && (ControlState & KEY_SHIFT) &&
+          (ControlState & KEY_ALT))
     {
       QueueShow(false);
       Handled = true;
     }
 
-    if ((Key == 'B') && (ControlState & PKF_CONTROL) &&
-          (ControlState & PKF_ALT))
+    if ((Key == 'B') && (ControlState & KEY_CTRL) &&
+          (ControlState & KEY_ALT))
     {
       ToggleSynchronizeBrowsing();
       Handled = true;
     }
 
     if ((Key == VK_INSERT) &&
-        (FLAGSET(ControlState, PKF_ALT | PKF_SHIFT) || FLAGSET(ControlState, PKF_CONTROL | PKF_ALT)))
+        (FLAGSET(ControlState, KEY_ALT | KEY_SHIFT) || FLAGSET(ControlState, KEY_CTRL | KEY_ALT)))
     {
       CopyFullFileNamesToClipboard();
       Handled = true;
     }
 
-    if ((Key == VK_F6) && ((ControlState & (PKF_ALT | PKF_SHIFT)) == PKF_ALT))
+    if ((Key == VK_F6) && ((ControlState & (KEY_ALT | KEY_SHIFT)) == KEY_ALT))
     {
       CreateLink();
       Handled = true;
     }
 
     if (Focused && ((Key == VK_F5) || (Key == VK_F6)) &&
-        ((ControlState & (PKF_ALT | PKF_SHIFT)) == PKF_SHIFT))
+        ((ControlState & (KEY_ALT | KEY_SHIFT)) == KEY_SHIFT))
     {
       TransferFiles((Key == VK_F6));
       Handled = true;
     }
 
     if (Focused && (Key == VK_F6) &&
-        ((ControlState & (PKF_ALT | PKF_SHIFT)) == (PKF_SHIFT | PKF_ALT)))
+        ((ControlState & (KEY_ALT | KEY_SHIFT)) == (KEY_SHIFT | KEY_ALT)))
     {
       RenameFile();
       Handled = true;
     }
 
-    if ((Key == VK_F12) && (ControlState & PKF_SHIFT) &&
-        (ControlState & PKF_ALT))
+    if ((Key == VK_F12) && (ControlState & KEY_SHIFT) &&
+        (ControlState & KEY_ALT))
     {
       OpenDirectory(false);
       Handled = true;
@@ -1879,7 +1880,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(std::wstring Token, bool Separa
       Token += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(Token.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<void *>(const_cast<wchar_t *>(Token.c_str())));
   }
 }
 //---------------------------------------------------------------------------
@@ -2121,8 +2122,14 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   std::wstring OldPath = AnotherPanel->GetCurrentDirectory();
   // IncludeTrailingBackslash to expand C: to C:\.
-  if (!FarControl(reinterpret_cast<int>(INVALID_HANDLE_VALUE), FCTL_SETPANELDIR, 
-        reinterpret_cast<LONG_PTR>(IncludeTrailingBackslash(NewPath).c_str())))
+  FarPanelDirectory fpd;
+  memset(&fpd, 0, sizeof(fpd));
+  fpd.StructSize = sizeof(fpd);
+  fpd.Name = IncludeTrailingBackslash(NewPath).c_str();
+  fpd.PluginId = MainGuid;
+  fpd.File = fpd.Name; // ??
+  if (!FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd))
+        // reinterpret_cast<void *>(IncludeTrailingBackslash(NewPath).c_str())))
   {
     Result = false;
   }
@@ -2136,7 +2143,14 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
       // If FCTL_SETANOTHERPANELDIR above fails, Far default current
       // directory to initial (?) one. So move this back to
       // previous directory.
-      FarControl(reinterpret_cast<int>(INVALID_HANDLE_VALUE), FCTL_SETPANELDIR, reinterpret_cast<LONG_PTR>(OldPath.c_str()));
+      // FarControl(reinterpret_cast<FILE_CONTROL_COMMANDS>(INVALID_HANDLE_VALUE), FCTL_SETPANELDIR, reinterpret_cast<void *>(OldPath.c_str()));
+      FarPanelDirectory fpd;
+      memset(&fpd, 0, sizeof(fpd));
+      fpd.StructSize = sizeof(fpd);
+      fpd.Name = OldPath.c_str();
+      fpd.PluginId = MainGuid;
+      fpd.File = fpd.Name; // ??
+      FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd);
       Result = false;
     }
     else
@@ -2149,7 +2163,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::SetDirectoryEx(const struct SetDirectoryInfo *Info)
+bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
 {
   // DEBUG_PRINTF(L"begin, Dir = %s", Dir.c_str());
   if (!SessionList() && !Connected())
@@ -2174,7 +2188,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const struct SetDirectoryInfo *Info)
           {
             Self->FSavedFindFolder = L"";
           } BOOST_SCOPE_EXIT_END
-        Result = SetDirectoryEx(Info);
+        Result = SetDirectoryEx(Dir, OpMode);
       }
       return Result;
     }
@@ -2308,7 +2322,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const struct SetDirectoryInfo *Info)
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::MakeDirectoryEx(struct MakeDirectoryInfo *Info)
+int TWinSCPFileSystem::MakeDirectoryEx(std::wstring &Name, int OpMode)
 {
   if (Connected())
   {
@@ -2432,7 +2446,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
   }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::DeleteFilesEx(const struct DeleteFilesInfo *Info)
+bool TWinSCPFileSystem::DeleteFilesEx(TObjectList *PanelItems, int OpMode)
 {
   if (Connected())
   {
@@ -2461,7 +2475,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(const struct DeleteFilesInfo *Info)
       if ((OpMode & OPM_SILENT) || !FarConfiguration->GetConfirmDeleting() ||
         (MoreMessageDialog(Query, NULL, qtConfirmation, qaOK | qaCancel) == qaOK))
       {
-        FTerminal->DeleteFiles(Info);
+        FTerminal->DeleteFiles(FFileList);
       }
     }
     return true;
@@ -3816,7 +3830,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int Event, void * /*Param*/)
                 EditorSetParameter Parameter;
                 memset(&Parameter, 0, sizeof(Parameter));
                 Parameter.Type = ESPT_LOCKMODE;
-                Parameter.Param.iParam = TRUE;
+                Parameter.iParam = TRUE;
                 FPlugin->FarEditorControl(ECTL_SETPARAM, &Parameter);
               }
             }
@@ -4054,12 +4068,12 @@ void TWinSCPFileSystem::MultipleEdit(std::wstring Directory,
   {
     assert(i != FMultipleEdits.end());
 
-    int WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT);
+    int WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
     WindowInfo Window;
     Window.Pos = 0;
     while (Window.Pos < WindowCount)
     {
-      if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
+      if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
             AnsiSameText(Window.Name, i->second.LocalFileName))
@@ -4099,7 +4113,7 @@ void TWinSCPFileSystem::EditHistory()
     MenuItems->Add(L"");
     MenuItems->SetItemFocused(MenuItems->GetCount() - 1);
 
-    const int BreakKeys[] = { VK_F4, 0 };
+    const FarKey BreakKeys[] = { { VK_F4, 0 }, { 0 } };
 
     int BreakCode;
     int Result = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,

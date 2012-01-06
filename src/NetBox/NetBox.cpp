@@ -32,11 +32,15 @@ public:
 extern "C"
 {
 
-int WINAPI GetMinFarVersionW()
+void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
 {
-    assert(FarPlugin);
-    TFarPluginGuard Guard;
-    return FarPlugin->GetMinFarVersion();
+    Info->StructSize = sizeof(*Info);
+    Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
+    Info->Version = MAKEFARVERSION(2, 0, 4, 0, VS_RELEASE);
+    Info->Guid = MainGuid;
+    Info->Title = L"";
+    Info->Description = L"";
+    Info->Author = L"";
 }
 
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
