@@ -1815,13 +1815,15 @@ void TFarButton::SetDefault(bool value)
     if (GetDefault() != value)
     {
         assert(!GetDialog()->GetHandle());
+        FarDialogItem *item = GetDialogItem();
+        assert(item);
         if (value)
         {
-            GetDialogItem()->Flags = (GetDialogItem()->Flags | DIF_DEFAULTBUTTON);
+            item->Flags = (item->Flags | DIF_DEFAULTBUTTON);
         }
         else
         {
-            GetDialogItem()->Flags = (GetDialogItem()->Flags & ~DIF_DEFAULTBUTTON);
+            item->Flags = (item->Flags & ~DIF_DEFAULTBUTTON);
         }
         if (value)
         {
@@ -1841,7 +1843,9 @@ void TFarButton::SetDefault(bool value)
 //---------------------------------------------------------------------------
 bool TFarButton::GetDefault()
 {
-    return GetDialogItem()->Flags & DIF_DEFAULTBUTTON;
+    FarDialogItem *item = GetDialogItem();
+    assert(item);
+    return (item->Flags & DIF_DEFAULTBUTTON) != 0;
 }
 //---------------------------------------------------------------------------
 void TFarButton::SetBrackets(TFarButtonBrackets value)
@@ -2028,19 +2032,21 @@ void TFarEdit::SetHistoryMask(int Index, const std::wstring &value)
     if (GetHistoryMask(Index) != value)
     {
         assert(!GetDialog()->GetHandle());
-        assert(&GetDialogItem()->Mask == &GetDialogItem()->History);
+        FarDialogItem *item = GetDialogItem();
+        DEBUG_PRINTF(L"item->Mask = %s, item->History = %s", item->Mask, item->History);
+        assert(item->Mask == item->History);
 
-        delete[] GetDialogItem()->Mask;
+        delete[] item->Mask;
         if (value.empty())
         {
-            GetDialogItem()->Mask = NULL;
+            item->Mask = NULL;
         }
         else
         {
-            GetDialogItem()->Mask = TCustomFarPlugin::DuplicateStr(value);
+            item->Mask = TCustomFarPlugin::DuplicateStr(value);
             if (!GetOem())
             {
-                StrToFar(const_cast<wchar_t *>(GetDialogItem()->Mask));
+                StrToFar(const_cast<wchar_t *>(item->Mask));
             }
         }
         bool PrevHistory = !GetHistory().empty();
