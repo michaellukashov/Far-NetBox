@@ -340,7 +340,7 @@ public:
     bool Editor(std::wstring FileName, unsigned int Flags,
         std::wstring Title = L"");
 
-    int FarAdvControl(FILE_CONTROL_COMMANDS Command, void *Param = NULL);
+    int FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
     DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void *Param);
     unsigned int FarSystemSettings();
@@ -446,8 +446,7 @@ public:
     void GetOpenPanelInfo(struct OpenPanelInfo *Info);
     int GetFindData(struct GetFindDataInfo *Info);
     void FreeFindData(const struct FreeFindDataInfo *Info);
-    int ProcessHostFile(struct PluginPanelItem *PanelItem,
-        int ItemsNumber, int OpMode);
+    int ProcessHostFile(const struct ProcessHostFileInfo *Info);
     int ProcessKey(int Key, unsigned int ControlState);
     int ProcessEvent(int Event, void *Param);
     int SetDirectory(const struct SetDirectoryInfo *Info);
@@ -464,7 +463,7 @@ protected:
     virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
         std::wstring &HostFile, std::wstring &CurDir, std::wstring &Format,
         std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
-        int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
+        OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
         std::wstring &ShortcutData) = 0;
     virtual bool GetFindDataEx(struct GetFindDataInfo *Info) = 0;
     virtual bool ProcessHostFileEx(const struct ProcessHostFileInfo *Info);
@@ -472,13 +471,13 @@ protected:
     virtual bool ProcessEventEx(int Event, void *Param);
     virtual bool SetDirectoryEx(const struct SetDirectoryInfo *Info);
     virtual int MakeDirectoryEx(struct MakeDirectoryInfo *Info);
-    virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
+    virtual bool DeleteFilesEx(const struct DeleteFilesInfo *Info);
     virtual int GetFilesEx(TObjectList *PanelItems, bool Move,
         std::wstring &DestPath, int OpMode);
     virtual int PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
-    DWORD FarControl(int Command, int Param1, LONG_PTR Param2);
+    DWORD FarControl(int Command, int Param1, void *Param2);
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePlugin();
