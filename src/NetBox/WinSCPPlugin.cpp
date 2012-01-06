@@ -84,21 +84,24 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
   TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
-  Flags = PF_FULLCMDLINE;
+  Flags = PF_PRELOAD | PF_FULLCMDLINE;
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      (TObject *)FarConfiguration->GetDisksMenuHotKey());
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
   }
   if (FarConfiguration->GetPluginsMenu())
   {
-    PluginMenuStrings->Add(GetMsg(PLUGIN_NAME));
+    PluginMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
   }
   if (FarConfiguration->GetPluginsMenuCommands())
   {
-    PluginMenuStrings->Add(GetMsg(MENU_COMMANDS));
+    PluginMenuStrings->AddObject(GetMsg(MENU_COMMANDS),
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
   }
-  PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
+  PluginConfigStrings->AddObject(GetMsg(PLUGIN_NAME),
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------

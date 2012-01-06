@@ -140,7 +140,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
     try
     {
         ResetCachedInfo();
-        Info->StructSize = sizeof(PluginInfo);
+
         TStringList DiskMenu;
         TStringList PluginMenu;
         TStringList PluginConfig;
@@ -154,13 +154,15 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
 #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
         { \
-          wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
-          FPluginInfo.NAME.Guids = NULL; \
+          wchar_t **StringArray = new wchar_t *[NAME.GetCount()]; \
+          GUID *Guids = new GUID[NAME.GetCount()]; \
+          FPluginInfo.NAME.Guids = Guids; \
           FPluginInfo.NAME.Strings = StringArray; \
           FPluginInfo.NAME.Count = NAME.GetCount(); \
           for (size_t Index = 0; Index < static_cast<int>(NAME.GetCount()); Index++) \
           { \
             StringArray[Index] = StrToFar(DuplicateStr(NAME.GetString(Index))); \
+            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObject(Index)); \
           } \
         }
 
@@ -215,6 +217,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
         delete[] Info.NAME.Strings[Index]; \
       } \
       delete[] Info.NAME.Strings; \
+      delete[] Info.NAME.Guids; \
       Info.NAME.Strings = NULL;
 
         FREESTRINGARRAY(DiskMenu);
