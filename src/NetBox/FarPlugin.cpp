@@ -293,10 +293,12 @@ int TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
     try
     {
         ResetCachedInfo();
+        /*
         if (IsOldFar())
         {
             OldFar();
         }
+        */
 
         int Result = ConfigureEx(0);
 
