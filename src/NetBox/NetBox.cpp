@@ -36,11 +36,12 @@ void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
 {
     Info->StructSize = sizeof(*Info);
     Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
+    // TODO: read from .rc
     Info->Version = MAKEFARVERSION(2, 0, 4, 0, VS_RELEASE);
     Info->Guid = MainGuid;
-    Info->Title = L"";
-    Info->Description = L"";
-    Info->Author = L"";
+    Info->Title = PLUGIN_NAME;
+    Info->Description = PLUGIN_DESCR;
+    Info->Author = PLUGIN_AUTHOR;
 }
 
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
