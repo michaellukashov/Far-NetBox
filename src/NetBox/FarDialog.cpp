@@ -1251,7 +1251,7 @@ bool TFarDialogItem::GetAlterType(FARDIALOGITEMTYPES Index)
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetFlag(FARDIALOGITEMFLAGS Index)
 {
-    bool Result = (GetFlags() & (Index & 0xFFFFFF00UL)) != 0;
+    bool Result = (GetFlags() & (Index & 0xFFFFFFFFFFFFFF00ULL)) != 0;
     if (Index & 0x000000FFUL)
     {
         Result = !Result;
@@ -1270,7 +1270,7 @@ void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool value)
         }
 
         FARDIALOGITEMFLAGS F = GetFlags();
-        FARDIALOGITEMFLAGS Flag = Index; // & 0xFFFFFF00UL;
+        FARDIALOGITEMFLAGS Flag = Index & 0xFFFFFFFFFFFFFF00ULL;
         bool ToHandle = true;
 
         switch (Flag)
