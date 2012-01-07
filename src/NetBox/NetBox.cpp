@@ -98,17 +98,6 @@ int WINAPI ConfigureW(const struct ConfigureInfo *Info)
     return FarPlugin->Configure(Info);
 }
 
-HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
-{
-  // GC_find_leak = 1;
-#ifdef NETBOX_DEBUG
-  // _CrtMemCheckpoint(&s1);
-#endif
-  assert(FarPlugin);
-  TFarPluginGuard Guard;
-  return FarPlugin->OpenPlugin(openFrom, item);
-}
-
 void WINAPI ClosePanelW(const struct ClosePanelInfo *Info)
 {
     if (Info->StructSize != sizeof(ClosePanelInfo))
@@ -297,18 +286,13 @@ HANDLE WINAPI OpenW(const struct OpenInfo *Info)
 {
     if (Info->StructSize != sizeof(OpenInfo))
         return INVALID_HANDLE_VALUE;
-    // DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
-    if (Info->OpenFrom == OPEN_ANALYSE)
-    {
-    }
-    else if (Info->OpenFrom != OPEN_COMMANDLINE)
-    {
-    }
-
-    // Command line processing
-
-    // DEBUG_PRINTF(L"NetBox: end");
-    return INVALID_HANDLE_VALUE;
+    assert(FarPlugin);
+    DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d, GUID = %s", Info->OpenFrom, Info->Guid);
+    assert(FarPlugin);
+    TFarPluginGuard Guard;
+    HANDLE handle = FarPlugin->OpenPlugin(Info->OpenFrom, Info->Data);
+    DEBUG_PRINTF(L"NetBox: end, handle = %u", handle);
+    return handle;
 }
 
 //---------------------------------------------------------------------------

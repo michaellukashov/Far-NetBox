@@ -12,7 +12,6 @@ EXPORTS
    MakeDirectoryW
    AnalyseW
    OpenW
-   OpenPluginW
    ProcessKeyW
    ProcessEventW
    ProcessHostFileW
