@@ -288,9 +288,8 @@ HANDLE WINAPI OpenW(const struct OpenInfo *Info)
         return INVALID_HANDLE_VALUE;
     assert(FarPlugin);
     DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d, GUID = %s", Info->OpenFrom, Info->Guid);
-    assert(FarPlugin);
     TFarPluginGuard Guard;
-    HANDLE handle = FarPlugin->OpenPlugin(Info->OpenFrom, Info->Data);
+    HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info->OpenFrom, Info->Data));
     DEBUG_PRINTF(L"NetBox: end, handle = %u", handle);
     return handle;
 }

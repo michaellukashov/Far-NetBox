@@ -296,7 +296,7 @@ public:
     virtual void ExitFAR();
     virtual void GetPluginInfo(struct PluginInfo *Info);
     virtual int Configure(const struct ConfigureInfo *Info);
-    virtual void *OpenPlugin(int OpenFrom, int Item);
+    virtual void *OpenPlugin(int OpenFrom, INT_PTR Data);
     virtual void ClosePanel(void *Plugin);
     // virtual void GetOpenPanelInfo(HANDLE Plugin, struct OpenPanelInfo *Info);
     // virtual int GetFindData(HANDLE Plugin,

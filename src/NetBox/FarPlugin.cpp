@@ -314,25 +314,27 @@ int TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
     }
 }
 //---------------------------------------------------------------------------
-void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
+void *TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Data)
 {
     try
     {
         ResetCachedInfo();
+        /*
         if (IsOldFar())
         {
             OldFar();
         }
+        */
 
         std::wstring Buf;
         if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
         {
-            Buf = reinterpret_cast<wchar_t *>(Item);
+            Buf = reinterpret_cast<wchar_t *>(Data);
             StrFromFar(Buf);
-            Item = reinterpret_cast<int>(Buf.c_str());
+            Data = reinterpret_cast<INT_PTR>(Buf.c_str());
         }
 
-        TCustomFarFileSystem *Result = OpenPluginEx(OpenFrom, Item);
+        TCustomFarFileSystem *Result = OpenPluginEx(OpenFrom, Data);
 
         if (Result)
         {
@@ -340,7 +342,7 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
         }
         else
         {
-            Result = (TCustomFarFileSystem *)INVALID_HANDLE_VALUE;
+            Result = static_cast<TCustomFarFileSystem *>(INVALID_HANDLE_VALUE);
         }
 
         return Result;
@@ -349,7 +351,7 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
     {
         DEBUG_PRINTF(L"before HandleException");
         HandleException(&E);
-        return INVALID_HANDLE_VALUE;
+        return static_cast<void *>(INVALID_HANDLE_VALUE);
     }
 }
 //---------------------------------------------------------------------------
