@@ -99,12 +99,11 @@ HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
   return FarPlugin->OpenPlugin(openFrom, item);
 }
 
-// TODO: void WINAPI ClosePanelW(const struct ClosePanelInfo *Info);
-void WINAPI ClosePluginW(HANDLE plugin)
+void WINAPI ClosePanelW(const struct ClosePanelInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    FarPlugin->ClosePlugin(plugin);
+    FarPlugin->ClosePanel(Info->hPanel);
 #ifdef NETBOX_DEBUG
     // _CrtMemCheckpoint(&s2);
     // if (_CrtMemDifference(&s3, &s1, &s2)) 
@@ -218,37 +217,34 @@ int WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info)
     return FarPlugin->ProcessEditorInput(Info);
 }
 
-// TODO: HANDLE WINAPI OpenW(const struct OpenInfo *Info);
-// TODO: int WINAPI AnalyseW(const struct AnalyseInfo *Info)
-
-HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *fileHeader, int fileHeaderSize, int /*opMode*/)
+int WINAPI AnalyseW(const struct AnalyseInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    if (!fileName)
+    if (!Info->FileName)
     {
-        return INVALID_HANDLE_VALUE;
+        return FALSE;
     }
 
-    const size_t fileNameLen = wcslen(fileName);
-    if (fileNameLen < 8 || _wcsicmp(fileName + fileNameLen - 7, L".netbox") != 0)
+    const size_t fileNameLen = wcslen(Info->FileName);
+    if (fileNameLen < 8 || _wcsicmp(Info->FileName + fileNameLen - 7, L".netbox") != 0)
     {
-        return INVALID_HANDLE_VALUE;
+        return FALSE;
     }
-    if (fileHeaderSize > 4 && strncmp(reinterpret_cast<const char *>(fileHeader), "<?xml", 5) != 0)
+    if (Info->BufferSize > 4 && strncmp(reinterpret_cast<const char *>(Info->Buffer), "<?xml", 5) != 0)
     {
-        return INVALID_HANDLE_VALUE;
+        return FALSE;
     }
     /*
     PSession session = CSession::Load(fileName);
     if (!session.get())
     {
-        return INVALID_HANDLE_VALUE;
+        return FALSE;
     }
     PProtocol proto = session->CreateClient();
     if (!proto.get())
     {
-        return reinterpret_cast<HANDLE>(-2);
+        return FALSE;
     }
     CPanel *panelInstance = new CPanel(false);
     if (panelInstance->OpenConnection(proto.get()))
@@ -258,7 +254,23 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
         return panelInstance;
     }
     */
-    return reinterpret_cast<HANDLE>(-2);
+    return FALSE;
+}
+
+HANDLE WINAPI OpenW(const struct OpenInfo *Info)
+{
+    // DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
+    if (Info->OpenFrom == OPEN_ANALYSE)
+    {
+    }
+    else if (Info->OpenFrom != OPEN_COMMANDLINE)
+    {
+    }
+
+    //Command line processing
+
+    // DEBUG_PRINTF(L"NetBox: end");
+    return INVALID_HANDLE_VALUE;
 }
 
 //---------------------------------------------------------------------------

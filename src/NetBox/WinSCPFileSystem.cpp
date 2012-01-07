@@ -370,7 +370,7 @@ void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
   {
     if (!FClosed)
     {
-      ClosePlugin();
+      ClosePanel();
     }
     GetTerminal()->ShowExtendedException(E);
   }
@@ -2235,7 +2235,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
         }
         else if ((Dir == PARENTDIRECTORY) && (FTerminal->GetCurrentDirectory() == ROOTDIRECTORY))
         {
-          ClosePlugin();
+          ClosePanel();
         }
         else
         {

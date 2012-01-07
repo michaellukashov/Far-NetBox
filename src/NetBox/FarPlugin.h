@@ -297,7 +297,7 @@ public:
     virtual void GetPluginInfo(struct PluginInfo *Info);
     virtual int Configure(const struct ConfigureInfo *Info);
     virtual void *OpenPlugin(int OpenFrom, int Item);
-    virtual void ClosePlugin(void *Plugin);
+    virtual void ClosePanel(void *Plugin);
     // virtual void GetOpenPanelInfo(HANDLE Plugin, struct OpenPanelInfo *Info);
     // virtual int GetFindData(HANDLE Plugin,
         // struct PluginPanelItem **PanelItem, int *ItemsNumber, int OpMode);
@@ -499,7 +499,7 @@ protected:
     DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2);
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
-    void ClosePlugin();
+    void ClosePanel();
     std::wstring GetMsg(int MsgId);
     TCustomFarFileSystem *GetOppositeFileSystem();
     bool IsActiveFileSystem();

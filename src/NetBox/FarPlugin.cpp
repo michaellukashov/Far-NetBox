@@ -353,7 +353,7 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
     }
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::ClosePlugin(void *Plugin)
+void TCustomFarPlugin::ClosePanel(void *Plugin)
 {
     try
     {
@@ -1886,7 +1886,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo *Info)
         // FAR WORKAROUND
         // if plugin is closed from ProcessEvent(FE_IDLE), is does not close,
         // so we close it here on the very next opportunity
-        ClosePlugin();
+        ClosePanel();
     }
     else
     {
@@ -2149,7 +2149,7 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
     FPlugin->FarControl(FCTL_REDRAWPANEL, 0, NULL, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 //---------------------------------------------------------------------------
-void TCustomFarFileSystem::ClosePlugin()
+void TCustomFarFileSystem::ClosePanel()
 {
     FClosed = true;
     FarControl(FCTL_CLOSEPANEL, 0, reinterpret_cast<void *>(L"C:\\"));

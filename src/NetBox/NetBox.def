@@ -1,5 +1,5 @@
 EXPORTS 
-   ClosePluginW
+   ClosePanelW
    ConfigureW
    DeleteFilesW
    ExitFARW
@@ -10,7 +10,8 @@ EXPORTS
    GetPluginInfoW
    GetOpenPanelInfoW
    MakeDirectoryW
-   OpenFilePluginW
+   AnalyseW
+   OpenW
    OpenPluginW
    ProcessKeyW
    ProcessEventW
