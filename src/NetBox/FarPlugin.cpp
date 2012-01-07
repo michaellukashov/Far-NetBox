@@ -417,7 +417,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
@@ -438,7 +438,7 @@ int TCustomFarPlugin::GetFindData(struct GetFindDataInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
@@ -460,7 +460,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
@@ -483,7 +483,7 @@ int TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
         ResetCachedInfo();
         if (HandlesFunction(hfProcessHostFile))
         {
-            assert(!FOldFar);
+            // assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
             {
@@ -513,7 +513,7 @@ int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
         ResetCachedInfo();
         if (HandlesFunction(hfProcessKey))
         {
-            assert(!FOldFar);
+            // assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
             {
@@ -544,7 +544,7 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
         ResetCachedInfo();
         if (HandlesFunction(hfProcessEvent))
         {
-            assert(!FOldFar);
+            // assert(!FOldFar);
             assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
             std::wstring Buf;
@@ -579,7 +579,7 @@ int TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
@@ -601,7 +601,7 @@ int TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
@@ -623,7 +623,7 @@ int TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
@@ -645,7 +645,7 @@ int TCustomFarPlugin::GetFiles(struct GetFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
@@ -668,7 +668,7 @@ int TCustomFarPlugin::PutFiles(const struct PutFilesInfo *Info)
     try
     {
         ResetCachedInfo();
-        assert(!FOldFar);
+        // assert(!FOldFar);
         assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
 
         {
