@@ -194,7 +194,7 @@ void TFarDialog::SetHelpTopic(const std::wstring &value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetFlags(const unsigned int &value)
+void TFarDialog::SetFlags(const FARDIALOGITEMFLAGS value)
 {
     if (GetFlags() != value)
     {
@@ -1139,7 +1139,7 @@ void TFarDialogItem::SetColor(int Index, char value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetFlags(unsigned int value)
+void TFarDialogItem::SetFlags(FARDIALOGITEMFLAGS value)
 {
     if (GetFlags() != value)
     {
@@ -1148,7 +1148,7 @@ void TFarDialogItem::SetFlags(unsigned int value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::UpdateFlags(unsigned int value)
+void TFarDialogItem::UpdateFlags(FARDIALOGITEMFLAGS value)
 {
     if (GetFlags() != value)
     {
@@ -1163,7 +1163,7 @@ TRect TFarDialogItem::GetActualBounds()
                  GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
-unsigned int TFarDialogItem::GetFlags()
+FARDIALOGITEMFLAGS TFarDialogItem::GetFlags()
 {
     return GetDialogItem()->Flags;
 }
@@ -1249,17 +1249,18 @@ bool TFarDialogItem::GetAlterType(FARDIALOGITEMTYPES Index)
     return (GetType() == Index);
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetFlag(int Index)
+bool TFarDialogItem::GetFlag(FARDIALOGITEMFLAGS Index)
 {
     bool Result = (GetFlags() & (Index & 0xFFFFFF00UL)) != 0;
     if (Index & 0x000000FFUL)
     {
         Result = !Result;
     }
+    // bool Result = (GetFlags() & Index) != 0;
     return Result;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetFlag(int Index, bool value)
+void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool value)
 {
     if (GetFlag(Index) != value)
     {
@@ -1268,8 +1269,8 @@ void TFarDialogItem::SetFlag(int Index, bool value)
             value = !value;
         }
 
-        unsigned long F = GetFlags();
-        unsigned long Flag = Index & 0xFFFFFF00UL;
+        FARDIALOGITEMFLAGS F = GetFlags();
+        FARDIALOGITEMFLAGS Flag = Index; // & 0xFFFFFF00UL;
         bool ToHandle = true;
 
         switch (Flag)
@@ -2419,12 +2420,12 @@ int TFarList::GetSelected()
     return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int TFarList::GetFlags(int Index)
+FARDIALOGITEMFLAGS TFarList::GetFlags(int Index)
 {
     return FListItems->Items[Index].Flags;
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlags(int Index, unsigned int value)
+void TFarList::SetFlags(int Index, FARDIALOGITEMFLAGS value)
 {
     if (FListItems->Items[Index].Flags != value)
     {
@@ -2436,12 +2437,12 @@ void TFarList::SetFlags(int Index, unsigned int value)
     }
 }
 //---------------------------------------------------------------------------
-bool TFarList::GetFlag(int Index, int Flag)
+bool TFarList::GetFlag(int Index, FARDIALOGITEMFLAGS Flag)
 {
-    return FLAGSET(GetFlags(Index), static_cast<unsigned int>(Flag));
+    return FLAGSET(GetFlags(Index), Flag);
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlag(int Index, int Flag, bool value)
+void TFarList::SetFlag(int Index, FARDIALOGITEMFLAGS Flag, bool value)
 {
     SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(value, Flag));
 }

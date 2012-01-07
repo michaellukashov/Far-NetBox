@@ -76,8 +76,8 @@ public:
     TRect GetClientRect() const;
     std::wstring GetHelpTopic() const { return FHelpTopic; }
     void SetHelpTopic(const std::wstring &value);
-    unsigned int GetFlags() const { return FFlags; }
-    void SetFlags(const unsigned int &value);
+    FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
+    void SetFlags(const FARDIALOGITEMFLAGS value);
     bool GetCentered() const;
     void SetCentered(const bool &value);
     TPoint GetSize() const;
@@ -148,7 +148,7 @@ protected:
 private:
     TCustomFarPlugin *FFarPlugin;
     TRect FBounds;
-    unsigned int FFlags;
+    FARDIALOGITEMFLAGS FFlags;
     std::wstring FHelpTopic;
     bool FVisible;
     TObjectList *FItems;
@@ -230,8 +230,8 @@ public:
     void SetWidth(int value);
     size_t GetHeight();
     void SetHeight(int value);
-    unsigned int GetFlags();
-    void SetFlags(unsigned int value);
+    FARDIALOGITEMFLAGS GetFlags();
+    void SetFlags(FARDIALOGITEMFLAGS value);
     bool GetEnabled() { return FEnabled; }
     void SetEnabled(bool value);
     bool GetIsEnabled() { return FIsEnabled; }
@@ -320,8 +320,8 @@ protected:
     void UpdateData(const std::wstring &value);
     void UpdateSelected(int value);
 
-    bool GetFlag(int Index);
-    void SetFlag(int Index, bool value);
+    bool GetFlag(FARDIALOGITEMFLAGS Index);
+    void SetFlag(FARDIALOGITEMFLAGS Index, bool value);
 
     virtual void DoFocus();
     virtual void DoExit();
@@ -343,7 +343,7 @@ private:
     unsigned long FColorMask;
     bool FOem;
 
-    void UpdateFlags(unsigned int value);
+    void UpdateFlags(FARDIALOGITEMFLAGS value);
     void SetCoordinate(int Index, int value);
     int GetCoordinate(int Index);
     TFarDialogItem *GetPrevItem();
@@ -534,8 +534,8 @@ public:
     void SetTopIndex(int value);
     int GetMaxLength();
     int GetVisibleCount();
-    unsigned int GetFlags(int Index);
-    void SetFlags(int Index, unsigned int value);
+    FARDIALOGITEMFLAGS GetFlags(int Index);
+    void SetFlags(int Index, FARDIALOGITEMFLAGS value);
     bool GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
     void SetDisabled(int Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
     bool GetChecked(int Index) { return GetFlag(Index, LIF_CHECKED); }
@@ -562,8 +562,8 @@ private:
     TFarList *Self;
 
     inline int GetSelectedInt(bool Init);
-    bool GetFlag(int Index, int Flag);
-    void SetFlag(int Index, int Flag, bool value);
+    bool GetFlag(int Index, FARDIALOGITEMFLAGS Flag);
+    void SetFlag(int Index, FARDIALOGITEMFLAGS Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };
