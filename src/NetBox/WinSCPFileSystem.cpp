@@ -865,7 +865,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const std::wstring &Command)
   return true;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::ProcessKeyEx(int Key, unsigned int ControlState)
+bool TWinSCPFileSystem::ProcessKeyEx(WORD Key, DWORD ControlState)
 {
   bool Handled = false;
   // DEBUG_PRINTF(L"begin, Key = %u, ControlState = %u", Key, ControlState);

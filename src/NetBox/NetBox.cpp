@@ -151,11 +151,11 @@ int WINAPI ProcessHostFileW(const struct ProcessHostFileInfo *Info)
     return FarPlugin->ProcessHostFile(Info);
 }
 
-int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
+int WINAPI ProcessPanelInputW(const struct ProcessPanelInputInfo *Info)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    return FarPlugin->ProcessKey(plugin, key, controlState);
+    return FarPlugin->ProcessPanelInput(Info);
 }
 
 // TODO: int WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info);

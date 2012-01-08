@@ -310,7 +310,7 @@ public:
     virtual void FreeFindData(const struct FreeFindDataInfo *Info);
     virtual int ProcessHostFile(const struct ProcessHostFileInfo *Info);
 
-    virtual int ProcessKey(HANDLE Plugin, int Key, unsigned int ControlState);
+    virtual int ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
     virtual int ProcessEvent(HANDLE Plugin, int Event, void *Param);
 
     // virtual int SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode);
@@ -466,7 +466,7 @@ public:
     int GetFindData(struct GetFindDataInfo *Info);
     void FreeFindData(const struct FreeFindDataInfo *Info);
     int ProcessHostFile(const struct ProcessHostFileInfo *Info);
-    int ProcessKey(int Key, unsigned int ControlState);
+    int ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
     int ProcessEvent(int Event, void *Param);
     int SetDirectory(const struct SetDirectoryInfo *Info);
     int MakeDirectory(struct MakeDirectoryInfo *Info);
@@ -486,7 +486,7 @@ protected:
         std::wstring &ShortcutData) = 0;
     virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) = 0;
     virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
-    virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
+    virtual bool ProcessKeyEx(WORD Key, DWORD ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
     virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
     virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);

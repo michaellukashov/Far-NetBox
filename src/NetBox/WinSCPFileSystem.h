@@ -107,7 +107,7 @@ protected:
     OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     std::wstring &ShortcutData);
   virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode);
-  virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
+  virtual bool ProcessKeyEx(WORD Key, DWORD ControlState);
   virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
   virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
   virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);

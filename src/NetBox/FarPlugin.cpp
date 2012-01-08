@@ -396,7 +396,7 @@ void TCustomFarPlugin::HandleFileSystemException(
 {
     // This method is called as last-resort exception handler before
     // leaving plugin API. Especially for API fuctions that must update
-    // panel contents on themselves (like ProcessKey), the instance of filesystem
+    // panel contents on themselves (like ProcessPanelInput), the instance of filesystem
     // may not exists anymore.
     // Check against object pointer is stupid, but no other idea so far.
     if (FOpenedPlugins->IndexOf(FileSystem) >= 0)
@@ -504,10 +504,9 @@ int TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Info)
     }
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
-        unsigned int ControlState)
+int TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
 {
-    TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
+    TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Info->hPanel);
     try
     {
         ResetCachedInfo();
@@ -518,7 +517,7 @@ int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
 
             {
                 TGuard Guard(FileSystem->GetCriticalSection());
-                return FileSystem->ProcessKey(Key, ControlState);
+                return FileSystem->ProcessPanelInput(Info);
             }
         }
         else
@@ -2000,10 +1999,16 @@ int TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo *Info
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarFileSystem::ProcessKey(int Key, unsigned int ControlState)
+int TCustomFarFileSystem::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
 {
     ResetCachedInfo();
-    return ProcessKeyEx(Key, ControlState);
+    if (Info->Rec.EventType == KEY_EVENT)
+    {
+        const KEY_EVENT_RECORD &Event = Info->Rec.Event.KeyEvent;
+        return ProcessKeyEx(Event.wVirtualKeyCode,
+            Event.dwControlKeyState);
+   }
+   return FALSE;
 }
 //---------------------------------------------------------------------------
 int TCustomFarFileSystem::ProcessEvent(int Event, void *Param)
@@ -2193,7 +2198,7 @@ bool TCustomFarFileSystem::ProcessHostFileEx(TObjectList * /* PanelItems */, int
     return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::ProcessKeyEx(int /*Key*/, unsigned int /*ControlState*/)
+bool TCustomFarFileSystem::ProcessKeyEx(WORD /*Key*/, DWORD /*ControlState*/)
 {
     return false;
 }
