@@ -2645,7 +2645,6 @@ TObjectList *TFarPanelInfo::GetItems()
 {
     if (!FItems)
     {
-        delete FItems;
         FItems = new TObjectList();
     }
     // DEBUG_PRINTF(L"FPanelInfo->ItemsNumber = %d", FPanelInfo->ItemsNumber);
