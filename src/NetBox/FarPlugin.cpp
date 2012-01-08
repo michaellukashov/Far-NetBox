@@ -2646,7 +2646,10 @@ TObjectList *TFarPanelInfo::GetItems()
         size_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, NULL);
         PluginPanelItem *ppi = (PluginPanelItem *)malloc(size);
         memset(ppi, 0, size);
-        FOwner->FarControl(FCTL_GETPANELITEM, Index, reinterpret_cast<void *>(ppi));
+        FarGetPluginPanelItem gppi;
+        gppi.Item = ppi;
+        gppi.Size = size;
+        FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
         // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
         FItems->Add(static_cast<TObject *>(new TFarPanelItem(ppi)));
     }
