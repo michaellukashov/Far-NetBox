@@ -298,13 +298,6 @@ public:
     virtual int Configure(const struct ConfigureInfo *Info);
     virtual void *OpenPlugin(const struct OpenInfo *Info);
     virtual void ClosePanel(void *Plugin);
-    // virtual void GetOpenPanelInfo(HANDLE Plugin, struct OpenPanelInfo *Info);
-    // virtual int GetFindData(HANDLE Plugin,
-        // struct PluginPanelItem **PanelItem, int *ItemsNumber, int OpMode);
-    // virtual void FreeFindData(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-        // int ItemsNumber);
-    // virtual int ProcessHostFile(HANDLE Plugin,
-        // struct PluginPanelItem *PanelItem, int ItemsNumber, int OpMode);
     virtual void GetOpenPanelInfo(struct OpenPanelInfo *Info);
     virtual int GetFindData(struct GetFindDataInfo *Info);
     virtual void FreeFindData(const struct FreeFindDataInfo *Info);
@@ -313,16 +306,6 @@ public:
     virtual int ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
     virtual int ProcessEvent(HANDLE Plugin, int Event, void *Param);
 
-    // virtual int SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode);
-    // virtual int MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpMode);
-    // virtual int DeleteFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-        // int ItemsNumber, int OpMode);
-    // virtual int GetFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-        // int ItemsNumber, int Move, const wchar_t **DestPath, int OpMode);
-    // virtual int PutFiles(HANDLE Plugin, struct PluginPanelItem *PanelItem,
-        // int ItemsNumber, int Move, int OpMode);
-    // virtual int ProcessEditorEvent(int Event, void *Param);
-    // virtual int ProcessEditorInput(const INPUT_RECORD *Rec);
     virtual int SetDirectory(const struct SetDirectoryInfo *Info);
     virtual int MakeDirectory(struct MakeDirectoryInfo *Info);
     virtual int DeleteFiles(const struct DeleteFilesInfo *Info);
