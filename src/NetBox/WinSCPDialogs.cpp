@@ -231,8 +231,8 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
 bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 {
   bool Result = false;
-  if (KeyCode == VK_NEXT | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16) ||
-      KeyCode == VK_PRIOR | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16))
+  if (KeyCode == (VK_NEXT | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16)) ||
+      KeyCode == (VK_PRIOR | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16)))
   {
     int NewTab = FTab;
     do
