@@ -2126,7 +2126,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
   fpd.StructSize = sizeof(fpd);
   fpd.Name = IncludeTrailingBackslash(NewPath).c_str();
   fpd.PluginId = MainGuid;
-  fpd.File = fpd.Name; // ??
+  fpd.File = NULL;
   if (!FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd))
   {
     Result = false;
@@ -2147,7 +2147,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
       fpd.StructSize = sizeof(fpd);
       fpd.Name = OldPath.c_str();
       fpd.PluginId = MainGuid;
-      fpd.File = fpd.Name; // ??
+      fpd.File = NULL;
       FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd);
       Result = false;
     }
