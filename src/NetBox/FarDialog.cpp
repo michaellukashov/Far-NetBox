@@ -1502,12 +1502,12 @@ int TFarDialogItem::GetSelected()
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetFocused()
 {
-    return GetDialogItem()->Focus;
+    return GetFlag(DIF_FOCUS);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::SetFocused(bool value)
 {
-    GetDialogItem()->Focus = value;
+    SetFlag(DIF_FOCUS, value);
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetChecked()
