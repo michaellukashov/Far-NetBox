@@ -293,13 +293,6 @@ int TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
     try
     {
         ResetCachedInfo();
-        /*
-        if (IsOldFar())
-        {
-            OldFar();
-        }
-        */
-
         int Result = ConfigureEx(0);
 
         InvalidateOpenPanelInfo();
@@ -319,21 +312,6 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
     try
     {
         ResetCachedInfo();
-        /*
-        if (IsOldFar())
-        {
-            OldFar();
-        }
-        */
-        /*
-        std::wstring Buf;
-        if ((Info->OpenFrom == OPEN_SHORTCUT) || (Info->OpenFrom == OPEN_COMMANDLINE))
-        {
-            Buf = reinterpret_cast<wchar_t *>(Info->Data);
-            StrFromFar(Buf);
-            Data = reinterpret_cast<INT_PTR>(Buf.c_str());
-        }
-        */
         int Item = 0;
         if (*Info->Guid == MenuCommandsGuid)
             Item = 1;
