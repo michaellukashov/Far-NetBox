@@ -67,7 +67,7 @@ def transform_template_file(template_file_name, file_name,
 def transform_template_files(version_major, version_minor, patch, build, git_revision):
     template_files = ['resource.h.template']
     for template_file_name in template_files :
-        file_name = template_file_name[0:-len('.template')] + '.tmp'
+        file_name = template_file_name[0:-len('.template')] # + '.tmp'
         transform_template_file(template_file_name, file_name,
             version_major, version_minor, patch, build, git_revision)
     return
