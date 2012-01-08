@@ -1494,14 +1494,24 @@ int TFarDialogItem::GetSelected()
     return GetDialogItem()->Selected;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetChecked(bool value)
+bool TFarDialogItem::GetFocused()
 {
-    SetSelected(value ? BSTATE_CHECKED : BSTATE_UNCHECKED);
+    return GetDialogItem()->Focus;
+}
+//---------------------------------------------------------------------------
+void TFarDialogItem::SetFocused(bool value)
+{
+    GetDialogItem()->Focus = value;
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::GetChecked()
 {
     return GetSelected() == BSTATE_CHECKED;
+}
+//---------------------------------------------------------------------------
+void TFarDialogItem::SetChecked(bool value)
+{
+    SetSelected(value ? BSTATE_CHECKED : BSTATE_UNCHECKED);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Move(int DeltaX, int DeltaY)
@@ -1591,12 +1601,12 @@ bool TFarDialogItem::CanFocus()
 //---------------------------------------------------------------------------
 bool TFarDialogItem::Focused()
 {
-    return GetDialogItem()->Focus != 0;
+    return GetFocused();
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::UpdateFocused(bool value)
 {
-    GetDialogItem()->Focus = value;
+    SetFocused(value);
     assert(GetDialog());
     GetDialog()->SetItemFocused(value ? this : NULL);
 }
@@ -1999,7 +2009,7 @@ std::wstring TFarEdit::GetHistoryMask(int Index)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TFarEdit::SetHistoryMask(int Index, std::wstring value)
+void TFarEdit::SetHistoryMask(int Index, const std::wstring &value)
 {
     if (GetHistoryMask(Index) != value)
     {
