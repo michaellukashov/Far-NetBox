@@ -547,6 +547,7 @@ private:
     virtual ~TFarPanelModes();
 
     void FillOpenPanelInfo(struct OpenPanelInfo *Info);
+    void SetFlag(PANELMODE_FLAGS &Flags, bool value, PANELMODE_FLAGS Flag);
     static void ClearPanelMode(PanelMode &Mode);
     static int CommaCount(const std::wstring &ColumnTypes);
 };

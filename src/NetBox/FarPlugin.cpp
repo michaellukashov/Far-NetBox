@@ -1916,6 +1916,10 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo *Info)
                 FOpenPanelInfo.CurDir = StrToFar(TCustomFarPlugin::DuplicateStr(CurDir));
                 FOpenPanelInfo.Format = StrToFar(TCustomFarPlugin::DuplicateStr(Format));
                 FOpenPanelInfo.PanelTitle = StrToFar(TCustomFarPlugin::DuplicateStr(PanelTitle));
+                FOpenPanelInfo.StartPanelMode=L'4';
+                // Info->StartSortMode = SM_NAME;
+                // Info->StartSortOrder = 0;
+
                 PanelModes->FillOpenPanelInfo(&FOpenPanelInfo);
                 FOpenPanelInfo.StartSortOrder = StartSortOrder;
                 KeyBarTitles->FillOpenPanelInfo(&FOpenPanelInfo);
@@ -2302,13 +2306,25 @@ void TFarPanelModes::SetPanelMode(int Mode, const std::wstring &ColumnTypes,
     {
         FPanelModes[Mode].ColumnTitles = NULL;
     }
-    FPanelModes[Mode].Flags |= PMFLAGS_FULLSCREEN;
-    FPanelModes[Mode].Flags |= PMFLAGS_DETAILEDSTATUS;
-    FPanelModes[Mode].Flags |= PMFLAGS_ALIGNEXTENSIONS;
-    FPanelModes[Mode].Flags |= PMFLAGS_CASECONVERSION;
+    SetFlag(FPanelModes[Mode].Flags, FullScreen, PMFLAGS_FULLSCREEN);
+    SetFlag(FPanelModes[Mode].Flags, DetailedStatus, PMFLAGS_DETAILEDSTATUS);
+    SetFlag(FPanelModes[Mode].Flags, AlignExtensions, PMFLAGS_ALIGNEXTENSIONS);
+    SetFlag(FPanelModes[Mode].Flags, CaseConversion, PMFLAGS_CASECONVERSION);
 
     FPanelModes[Mode].StatusColumnTypes = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnTypes));
     FPanelModes[Mode].StatusColumnWidths = StrToFar(TCustomFarPlugin::DuplicateStr(StatusColumnWidths));
+}
+//---------------------------------------------------------------------------
+void TFarPanelModes::SetFlag(PANELMODE_FLAGS &Flags, bool value, PANELMODE_FLAGS Flag)
+{
+    if (value)
+    {
+        Flags |= Flag;
+    }
+    else
+    {
+        Flags &= ~Flag;
+    }
 }
 //---------------------------------------------------------------------------
 void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
