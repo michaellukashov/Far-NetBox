@@ -2458,8 +2458,6 @@ TFarListBox::TFarListBox(TFarDialog *ADialog) :
     FList = new TFarList(this);
     GetDialogItem()->ListItems = FList->GetListItems();
     FAutoSelect = asOnlyFocus;
-    // FAR WORKAROUND
-    FDenyClose = false;
 }
 //---------------------------------------------------------------------------
 TFarListBox::~TFarListBox()
@@ -2483,13 +2481,6 @@ long TFarListBox::ItemProc(int Msg, long Param)
     else
     {
         Result = TFarDialogItem::ItemProc(Msg, Param);
-    }
-
-    // FAR WORKAROUND
-    if ((Msg == DN_MOUSECLICK) && (GetDialog()->GetItemCount() > 0) &&
-            (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) < static_cast<short int>(FAR170ALPHA6)))
-    {
-        FDenyClose = true;
     }
 
     return Result;
@@ -2531,17 +2522,7 @@ void TFarListBox::SetList(TFarList *value)
 //---------------------------------------------------------------------------
 bool TFarListBox::CloseQuery()
 {
-    // FAR WORKAROUND
-    if (FDenyClose)
-    {
-        assert(static_cast<short int>(FarPlugin->FarVersion()) < static_cast<short int>(FAR170ALPHA6));
-        FDenyClose = false;
-        return false;
-    }
-    else
-    {
-        return true;
-    }
+    return true;
 }
 //---------------------------------------------------------------------------
 TFarComboBox::TFarComboBox(TFarDialog *ADialog) :

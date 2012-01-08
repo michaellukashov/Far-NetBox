@@ -598,7 +598,6 @@ protected:
 private:
     TFarList *FList;
     TFarListBoxAutoSelect FAutoSelect;
-    bool FDenyClose;
 
     void UpdateMouseReaction();
 };
