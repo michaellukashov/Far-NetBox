@@ -24,7 +24,6 @@
 #include <Terminal.h>
 #include <Bookmarks.h>
 #include <Queue.h>
-#include <farkeys.hpp>
 #include <farcolor.hpp>
 // FAR WORKAROUND
 //---------------------------------------------------------------------------

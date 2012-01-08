@@ -11,7 +11,6 @@
 #include "FarDialog.h"
 #include "FarTexts.h"
 #include "FarConfiguration.h"
-#include "farkeys.hpp"
 #include "Common.h"
 #include "Exceptions.h"
 #include "SessionData.h"

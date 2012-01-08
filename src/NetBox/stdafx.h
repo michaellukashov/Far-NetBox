@@ -37,6 +37,5 @@
 
 #pragma warning(push, 1)
 #include <plugin.hpp>
-#include <farkeys.hpp>
 #include <farcolor.hpp>
 #pragma warning(pop)
