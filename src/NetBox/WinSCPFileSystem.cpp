@@ -2141,7 +2141,6 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
       // If FCTL_SETANOTHERPANELDIR above fails, Far default current
       // directory to initial (?) one. So move this back to
       // previous directory.
-      // FarControl(reinterpret_cast<FILE_CONTROL_COMMANDS>(INVALID_HANDLE_VALUE), FCTL_SETPANELDIR, reinterpret_cast<void *>(OldPath.c_str()));
       FarPanelDirectory fpd;
       memset(&fpd, 0, sizeof(fpd));
       fpd.StructSize = sizeof(fpd);
