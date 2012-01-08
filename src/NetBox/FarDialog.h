@@ -112,7 +112,7 @@ public:
     void Redraw();
     void LockChanges();
     void UnlockChanges();
-    int GetSystemColor(unsigned int Index);
+    FarColor GetSystemColor(PaletteColors colorId);
     bool HotKey(unsigned long Key);
 
     TCustomFarPlugin *GetFarPlugin() { return FFarPlugin; }

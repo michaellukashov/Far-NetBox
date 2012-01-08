@@ -840,9 +840,14 @@ INT_PTR TFarDialog::SendMessage(int Msg, int Param1, void *Param2)
     return GetFarPlugin()->FStartupInfo.SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetSystemColor(unsigned int Index)
+FarColor TFarDialog::GetSystemColor(PaletteColors colorId)
 {
-    return static_cast<int>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, Index));
+    FarColor color = {0};
+    if (GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, colorId, &color))
+    {
+        // TODO: throw error
+    }
+    return color;
 }
 //---------------------------------------------------------------------------
 void TFarDialog::Redraw()
@@ -2648,7 +2653,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
             ScrollBarPos = static_cast<int>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
         }
         int DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
-        int Color = GetDialog()->GetSystemColor(
+        FarColor Color = GetDialog()->GetSystemColor(
             FLAGSET(GetDialog()->GetFlags(), FDLG_WARNING) ? COL_WARNDIALOGLISTTEXT : COL_DIALOGLISTTEXT);
         std::wstring Buf;
         for (size_t Row = 0; Row < GetHeight(); Row++)
@@ -2684,11 +2689,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
                     Buf += '\xB0';
                 }
             }
-            FarColor color = {};
-            color.Flags = FCF_FG_4BIT | FCF_BG_4BIT;
-            color.ForegroundColor = Color; // LIGHTGRAY;
-            color.BackgroundColor = 0;
-            Text(0, Row, color, Buf, true);
+            Text(0, Row, Color, Buf, true);
         }
     }
     else if (Msg == DN_CONTROLINPUT)
