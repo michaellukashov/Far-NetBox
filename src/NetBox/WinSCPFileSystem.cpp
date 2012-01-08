@@ -2128,7 +2128,6 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
   fpd.PluginId = MainGuid;
   fpd.File = fpd.Name; // ??
   if (!FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd))
-        // reinterpret_cast<void *>(IncludeTrailingBackslash(NewPath).c_str())))
   {
     Result = false;
   }
