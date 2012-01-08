@@ -5242,10 +5242,10 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   SetSize(TPoint(76, 12));
   TRect CRect = GetClientRect();
 
-  SetCaption(GetMsg(Edit ? LINK_EDIT_CAPTION : LINK_ADD_CAPTION));
+  SetCaption(GetMsg(Edit ? STRING_LINK_EDIT_CAPTION : STRING_LINK_ADD_CAPTION));
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LINK_FILE));
+  Text->SetCaption(GetMsg(STRING_LINK_FILE));
   Text->SetEnabled(!Edit);
 
   FileNameEdit = new TFarEdit(this);
@@ -5253,7 +5253,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   FileNameEdit->SetHistory(LINK_FILENAME_HISTORY);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LINK_POINT_TO));
+  Text->SetCaption(GetMsg(STRING_LINK_POINT_TO));
 
   PointToEdit = new TFarEdit(this);
   PointToEdit->SetHistory(LINK_POINT_TO_HISTORY);
@@ -5261,7 +5261,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   new TFarSeparator(this);
 
   SymbolicCheck = new TFarCheckBox(this);
-  SymbolicCheck->SetCaption(GetMsg(LINK_SYMLINK));
+  SymbolicCheck->SetCaption(GetMsg(STRING_LINK_SYMLINK));
   SymbolicCheck->SetEnabled(AllowSymbolic && !Edit);
 
   Separator = new TFarSeparator(this);
