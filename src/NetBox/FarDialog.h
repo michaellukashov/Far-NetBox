@@ -113,7 +113,7 @@ public:
     void LockChanges();
     void UnlockChanges();
     FarColor GetSystemColor(PaletteColors colorId);
-    bool HotKey(unsigned long Key);
+    bool HotKey(WORD Key, DWORD ControlState);
 
     TCustomFarPlugin *GetFarPlugin() { return FFarPlugin; }
 

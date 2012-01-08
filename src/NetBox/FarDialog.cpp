@@ -476,7 +476,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
             // DN_BTNCLICK on default button. This fixes the scenario.
             // (first check if focused dialog item is not another button)
             if (!Result && (Msg == DN_CONTROLINPUT) &&
-                    (reinterpret_cast<long>(Param2) == KEY_ENTER) &&
+                    (reinterpret_cast<long>(Param2) == VK_RETURN) &&
                     ((Param1 < 0) ||
                      ((Param1 >= 0) && (dynamic_cast<TFarButton *>(GetItem(Param1)) == NULL))) &&
                     GetDefaultButton()->GetEnabled() &&
@@ -648,14 +648,15 @@ bool TFarDialog::Key(TFarDialogItem *Item, long KeyCode)
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TFarDialog::HotKey(unsigned long Key)
+bool TFarDialog::HotKey(WORD Key, DWORD ControlState)
 {
     bool Result = false;
     char HotKey = 0;
-    if ((KEY_ALTA <= Key) && (Key <= KEY_ALTZ))
+    if (((RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED) & ControlState) &&
+        ('A' <= Key) && (Key <= 'Z'))
     {
         Result = true;
-        HotKey = static_cast<char>('a' + static_cast<char>(Key - KEY_ALTA));
+        HotKey = static_cast<char>('a' + static_cast<char>(Key - 'A'));
     }
 
     if (Result)
@@ -2482,13 +2483,14 @@ TFarListBox::~TFarListBox()
 long TFarListBox::ItemProc(int Msg, void *Param)
 {
     bool Result;
-    // FAR WORKAROUND
-    // Since 1.70 final, hotkeys do not work when list box has focus.
-    if ((Msg == DN_KEY) && 
-        // (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) >= static_cast<short int>(FAR170)) &&
-        GetDialog()->HotKey(Param))
+    if (Msg == DN_CONTROLINPUT)
     {
-        Result = true;
+        const INPUT_RECORD *Rec = static_cast<const INPUT_RECORD *>(Param);
+        const KEY_EVENT_RECORD &Event = Rec->Event.KeyEvent;
+        if (GetDialog()->HotKey(Event.wVirtualKeyCode, Event.dwControlKeyState))
+        {
+            Result = true;
+        }
     }
     else if (FList->ItemProc(Msg, Param))
     {
@@ -2698,7 +2700,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
 
         size_t NewTopIndex = GetTopIndex();
         int param = reinterpret_cast<int>(Param);
-        if ((param == KEY_UP) || (param == KEY_LEFT))
+        if ((param == VK_UP) || (param == VK_LEFT))
         {
             if (NewTopIndex > 0)
             {
@@ -2706,11 +2708,14 @@ long TFarLister::ItemProc(int Msg, void *Param)
             }
             else
             {
-                long ShiftTab = KEY_SHIFTTAB;
-                SendDialogMessage(DN_CONTROLINPUT, 1, reinterpret_cast<void *>(&ShiftTab));
+                INPUT_RECORD Rec = {0};
+                Rec.EventType = KEY_EVENT;
+                Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
+                Rec.Event.KeyEvent.dwControlKeyState = SHIFT_PRESSED;
+                SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
             }
         }
-        else if ((param == KEY_DOWN) || (param == KEY_RIGHT))
+        else if ((param == VK_DOWN) || (param == VK_RIGHT))
         {
             if (NewTopIndex < GetItems()->GetCount() - GetHeight())
             {
@@ -2718,11 +2723,14 @@ long TFarLister::ItemProc(int Msg, void *Param)
             }
             else
             {
-                long Tab = KEY_TAB;
-                SendDialogMessage(DN_CONTROLINPUT, 1, reinterpret_cast<void *>(&Tab));
+                INPUT_RECORD Rec = {0};
+                Rec.EventType = KEY_EVENT;
+                Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
+                Rec.Event.KeyEvent.dwControlKeyState = 0;
+                SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
             }
         }
-        else if (param == KEY_PGUP)
+        else if (param == VK_PRIOR) // TODO: check
         {
             if (NewTopIndex > GetHeight() - 1)
             {
@@ -2733,7 +2741,7 @@ long TFarLister::ItemProc(int Msg, void *Param)
                 NewTopIndex = 0;
             }
         }
-        else if (param == KEY_PGDN)
+        else if (param == VK_NEXT)
         {
             if (NewTopIndex < GetItems()->GetCount() - GetHeight() - GetHeight() + 1)
             {
@@ -2744,11 +2752,11 @@ long TFarLister::ItemProc(int Msg, void *Param)
                 NewTopIndex = GetItems()->GetCount() - GetHeight();
             }
         }
-        else if (param == KEY_HOME)
+        else if (param == VK_HOME)
         {
             NewTopIndex = 0;
         }
-        else if (param == KEY_END)
+        else if (param == VK_END)
         {
             NewTopIndex = GetItems()->GetCount() - GetHeight();
         }
