@@ -1816,16 +1816,7 @@ void TFarButton::SetDefault(bool value)
     if (GetDefault() != value)
     {
         assert(!GetDialog()->GetHandle());
-        FarDialogItem *item = GetDialogItem();
-        assert(item);
-        if (value)
-        {
-            item->Flags = (item->Flags | DIF_DEFAULTBUTTON);
-        }
-        else
-        {
-            item->Flags = (item->Flags & ~DIF_DEFAULTBUTTON);
-        }
+        SetFlag(DIF_DEFAULTBUTTON, value);
         if (value)
         {
             if (GetDialog()->GetDefaultButton() && (GetDialog()->GetDefaultButton() != this))
