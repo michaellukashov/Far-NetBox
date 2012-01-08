@@ -12,8 +12,7 @@ EXPORTS
    MakeDirectoryW
    AnalyseW
    OpenW
-   ProcessKeyW
-   ProcessEventW
+   ProcessPanelInputW
    ProcessHostFileW
    ProcessEditorEventW
    ProcessEditorInputW
