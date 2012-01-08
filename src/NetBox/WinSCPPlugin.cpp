@@ -368,12 +368,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
     int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
-    assert(FileSystem);
-    MenuItems->SetDisabled(MLog, !FSVisible || !FileSystem->IsLogging());
-    MenuItems->SetDisabled(MClearCaches, !FSVisible || FileSystem->AreCachesEmpty());
+    MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
+    MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
     MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttyPath()))));
-    MenuItems->SetDisabled(MEditHistory, !FSConnected || FileSystem->IsEditHistoryEmpty());
-    MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && FileSystem->IsSynchronizedBrowsing());
+    MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
+    MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
     MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
     MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
@@ -381,19 +380,19 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
     if (Result >= 0)
     {
-      if (Result == MLog)
+      if ((Result == MLog) && FileSystem)
       {
         FileSystem->ShowLog();
       }
-      else if (Result == MAttributes)
+      else if ((Result == MAttributes) && FileSystem)
       {
         FileSystem->FileProperties();
       }
-      else if (Result == MLink)
+      else if ((Result == MLink) && FileSystem)
       {
         FileSystem->CreateLink();
       }
-      else if (Result == MApplyCommand)
+      else if ((Result == MApplyCommand) && FileSystem)
       {
         FileSystem->ApplyCommand();
       }
@@ -421,17 +420,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
           AnotherFileSystem->Synchronize();
         }
       }
-      else if (Result == MQueue)
+      else if ((Result == MQueue) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->QueueShow(false);
       }
-      else if (Result == MAddBookmark || Result == MOpenDirectory)
+      else if ((Result == MAddBookmark || Result == MOpenDirectory) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->OpenDirectory(Result == MAddBookmark);
       }
-      else if (Result == MHomeDirectory)
+      else if (Result == MHomeDirectory && FileSystem)
       {
         FileSystem->HomeDirectory();
       }
@@ -443,14 +440,12 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       {
         AboutDialog();
       }
-      else if (Result == MPutty)
+      else if ((Result == MPutty) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->OpenSessionInPutty();
       }
-      else if (Result == MEditHistory)
+      else if ((Result == MEditHistory) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->EditHistory();
       }
       else if (Result == MPageant || Result == MPuttygen)
@@ -461,19 +456,16 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         SplitCommand(Path, Program, Params, Dir);
         ExecuteShell(Program, Params);
       }
-      else if (Result == MClearCaches)
+      else if ((Result == MClearCaches) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->ClearCaches();
       }
-      else if (Result == MSynchronizeBrowsing)
+      else if ((Result == MSynchronizeBrowsing) && FileSystem)
       {
-        assert(FileSystem != NULL);
         FileSystem->ToggleSynchronizeBrowsing();
       }
-      else if (Result == MInformation)
+      else if ((Result == MInformation) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->ShowInformation();
       }
       else
