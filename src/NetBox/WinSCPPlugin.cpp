@@ -88,7 +88,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(PLUGIN_NAME),
-      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&DisksMenuGuid)));
   }
   if (FarConfiguration->GetPluginsMenu())
   {
@@ -98,10 +98,10 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   if (FarConfiguration->GetPluginsMenuCommands())
   {
     PluginMenuStrings->AddObject(GetMsg(MENU_COMMANDS),
-      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuCommandsGuid)));
   }
   PluginConfigStrings->AddObject(GetMsg(PLUGIN_NAME),
-      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
