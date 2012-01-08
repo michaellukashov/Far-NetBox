@@ -652,7 +652,7 @@ bool TFarDialog::HotKey(WORD Key, DWORD ControlState)
 {
     bool Result = false;
     char HotKey = 0;
-    if (((RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED) & ControlState) &&
+    if ((LEFT_ALT_PRESSED & ControlState) &&
         ('A' <= Key) && (Key <= 'Z'))
     {
         Result = true;

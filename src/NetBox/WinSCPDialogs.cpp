@@ -231,8 +231,8 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
 bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 {
   bool Result = false;
-  if (KeyCode == (VK_NEXT | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16)) ||
-      KeyCode == (VK_PRIOR | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16)))
+  if (KeyCode == (VK_NEXT | (LEFT_CTRL_PRESSED << 16)) ||
+      KeyCode == (VK_PRIOR | (LEFT_CTRL_PRESSED << 16)))
   {
     int NewTab = FTab;
     do
@@ -5992,9 +5992,9 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       const FarKey BreakKeys[] = {
         { VK_DELETE, 0 },
         { VK_F8, 0},
-        { VK_RETURN + ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16), 0},
-        { 'C' + ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16), 0},
-        { VK_INSERT + ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16), 0},
+        { VK_RETURN + (LEFT_CTRL_PRESSED << 16), 0},
+        { 'C' + (LEFT_CTRL_PRESSED << 16), 0},
+        { VK_INSERT + (LEFT_CTRL_PRESSED << 16), 0},
         { 0 }
       };
 
@@ -7217,7 +7217,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == (VK_LEFT | ((RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED) << 16)))
+    else if (KeyCode == (VK_LEFT | (LEFT_ALT_PRESSED << 16)))
     {
       if (FScroll > 0)
       {
@@ -7946,7 +7946,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == (VK_UP | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16)))
+    else if (KeyCode == (VK_UP | (LEFT_CTRL_PRESSED << 16)))
     {
       if (MoveUpButton->GetEnabled())
       {
@@ -7954,7 +7954,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == (VK_DOWN | ((RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED) << 16)))
+    else if (KeyCode == (VK_DOWN | (LEFT_CTRL_PRESSED << 16)))
     {
       if (MoveDownButton->GetEnabled())
       {
