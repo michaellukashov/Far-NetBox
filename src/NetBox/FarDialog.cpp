@@ -2034,7 +2034,6 @@ void TFarEdit::SetHistoryMask(int Index, const std::wstring &value)
     {
         assert(!GetDialog()->GetHandle());
         FarDialogItem *item = GetDialogItem();
-        DEBUG_PRINTF(L"item->Mask = %s, item->History = %s", item->Mask, item->History);
         // assert(item->Mask == item->History);
 
         delete[] item->Mask;
