@@ -312,7 +312,7 @@ protected:
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
     TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-    void Text(int X, int Y, int Color, std::wstring Str, bool Oem = false);
+    void Text(int X, int Y, int Color, const std::wstring &Str, bool Oem = false);
     void Redraw();
     virtual bool HotKey(char HotKey);
 

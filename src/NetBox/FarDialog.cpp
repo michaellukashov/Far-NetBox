@@ -1688,7 +1688,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
     return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<long>(Event));
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::Text(int X, int Y, int Color, std::wstring Str, bool AOem)
+void TFarDialogItem::Text(int X, int Y, int Color, const std::wstring &Str, bool AOem)
 {
     if (!AOem && !GetOem())
     {
