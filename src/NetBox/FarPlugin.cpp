@@ -2397,6 +2397,8 @@ void TFarKeyBarTitles::ClearFileKeyBarTitles()
     ClearKeyBarTitle(fsAlt, 3, 7);
     ClearKeyBarTitle(fsShift, 1, 8);
     ClearKeyBarTitle(fsCtrlShift, 3, 4);
+    // ClearKeyBarTitle(fsAltShift, 3, 4);
+    // ClearKeyBarTitle(fsCtrlAlt, 3, 4);
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
@@ -2413,9 +2415,9 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
-        int FunctionKey, const std::wstring &Title)
+    int FunctionKey, const std::wstring &Title)
 {
-    assert(FunctionKey >= 1 && FunctionKey <= 12); // FKeyBarTitles.CountLabels);
+    assert(FunctionKey >= 1 && FunctionKey <= 12);
     int shift = static_cast<int>(ShiftStatus);
     assert(shift >= 0 && shift < 7);
     KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
@@ -2424,8 +2426,19 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
         delete[] Labels[FunctionKey-1].Text;
         delete[] Labels[FunctionKey-1].LongText;
     }
-    // TODO: Titles[FunctionKey-1].Key = ??
-    Labels[FunctionKey-1].Text = StrToFar(TCustomFarPlugin::DuplicateStr(Title, true));
+    static WORD FKeys[] =
+    {
+        0, // fsNone,
+        LEFT_CTRL_PRESSED, // fsCtrl
+        LEFT_ALT_PRESSED, // fsAlt
+        SHIFT_PRESSED, // fsShift,
+        LEFT_CTRL_PRESSED | SHIFT_PRESSED, // fsCtrlShift,
+        LEFT_ALT_PRESSED | SHIFT_PRESSED, // fsAltShift,
+        LEFT_CTRL_PRESSED | LEFT_ALT_PRESSED, // fsCtrlAlt
+    };
+    Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + FunctionKey - 1;
+    Labels[FunctionKey - 1].Key.ControlKeyState = FKeys[shift];
+    Labels[FunctionKey - 1].Text = StrToFar(TCustomFarPlugin::DuplicateStr(Title, true));
     Labels[FunctionKey-1].LongText = NULL;
 }
 //---------------------------------------------------------------------------
