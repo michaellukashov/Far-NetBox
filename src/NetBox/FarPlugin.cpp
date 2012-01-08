@@ -314,7 +314,7 @@ int TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
     }
 }
 //---------------------------------------------------------------------------
-void *TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Data)
+void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
 {
     try
     {
@@ -325,16 +325,17 @@ void *TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Data)
             OldFar();
         }
         */
-
+        /*
         std::wstring Buf;
-        if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
+        if ((Info->OpenFrom == OPEN_SHORTCUT) || (Info->OpenFrom == OPEN_COMMANDLINE))
         {
-            Buf = reinterpret_cast<wchar_t *>(Data);
+            Buf = reinterpret_cast<wchar_t *>(Info->Data);
             StrFromFar(Buf);
             Data = reinterpret_cast<INT_PTR>(Buf.c_str());
         }
+        */
 
-        TCustomFarFileSystem *Result = OpenPluginEx(OpenFrom, Data);
+        TCustomFarFileSystem *Result = OpenPluginEx(Info->OpenFrom, Info->Data);
 
         if (Result)
         {
