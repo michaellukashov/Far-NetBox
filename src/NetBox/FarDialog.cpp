@@ -2703,121 +2703,126 @@ long TFarLister::ItemProc(int Msg, void *Param)
     else if (Msg == DN_CONTROLINPUT)
     {
         Result = true;
+        INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param);
+        if (Rec->EventType == KEY_EVENT)
+        {
+            KEY_EVENT_RECORD *KeyEvent = &Rec->Event.KeyEvent;
 
-        size_t NewTopIndex = GetTopIndex();
-        int param = reinterpret_cast<int>(Param);
-        if ((param == VK_UP) || (param == VK_LEFT))
-        {
-            if (NewTopIndex > 0)
-            {
-                NewTopIndex--;
-            }
-            else
-            {
-                INPUT_RECORD Rec = {0};
-                Rec.EventType = KEY_EVENT;
-                Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
-                Rec.Event.KeyEvent.dwControlKeyState = SHIFT_PRESSED;
-                SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
-            }
-        }
-        else if ((param == VK_DOWN) || (param == VK_RIGHT))
-        {
-            if (NewTopIndex < GetItems()->GetCount() - GetHeight())
-            {
-                NewTopIndex++;
-            }
-            else
-            {
-                INPUT_RECORD Rec = {0};
-                Rec.EventType = KEY_EVENT;
-                Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
-                Rec.Event.KeyEvent.dwControlKeyState = 0;
-                SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
-            }
-        }
-        else if (param == VK_PRIOR) // TODO: check
-        {
-            if (NewTopIndex > GetHeight() - 1)
-            {
-                NewTopIndex -= GetHeight() - 1;
-            }
-            else
-            {
-                NewTopIndex = 0;
-            }
-        }
-        else if (param == VK_NEXT)
-        {
-            if (NewTopIndex < GetItems()->GetCount() - GetHeight() - GetHeight() + 1)
-            {
-                NewTopIndex += GetHeight() - 1;
-            }
-            else
-            {
-                NewTopIndex = GetItems()->GetCount() - GetHeight();
-            }
-        }
-        else if (param == VK_HOME)
-        {
-            NewTopIndex = 0;
-        }
-        else if (param == VK_END)
-        {
-            NewTopIndex = GetItems()->GetCount() - GetHeight();
-        }
-        else
-        {
-            Result = TFarDialogItem::ItemProc(Msg, Param);
-        }
-
-        SetTopIndex(NewTopIndex);
-    }
-    else if (Msg == DN_CONTROLINPUT)
-    {
-        if (!Focused() && CanFocus())
-        {
-            SetFocus();
-        }
-
-        MOUSE_EVENT_RECORD *Event = reinterpret_cast<MOUSE_EVENT_RECORD *>(Param);
-        TPoint P = MouseClientPosition(Event);
-
-        if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK) &&
-                (P.x < GetWidth() - 1))
-        {
-            Result = TFarDialogItem::ItemProc(Msg, Param);
-        }
-        else
-        {
             size_t NewTopIndex = GetTopIndex();
-
-            if (((P.x == static_cast<int>(GetWidth()) - 1) && (P.y == 0)) ||
-                    ((P.x < static_cast<int>(GetWidth() - 1)) && (P.y < static_cast<int>(GetHeight() / 2))))
+            WORD param = KeyEvent->wVirtualKeyCode;
+            if ((param == VK_UP) || (param == VK_LEFT))
             {
                 if (NewTopIndex > 0)
                 {
                     NewTopIndex--;
                 }
+                else
+                {
+                    INPUT_RECORD Rec = {0};
+                    Rec.EventType = KEY_EVENT;
+                    Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
+                    Rec.Event.KeyEvent.dwControlKeyState = SHIFT_PRESSED;
+                    SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
+                }
             }
-            else if (((P.x == GetWidth() - 1) && (P.y == static_cast<int>(GetHeight() - 1))) ||
-                     ((P.x < GetWidth() - 1) && (P.y >= static_cast<int>(GetHeight() / 2))))
+            else if ((param == VK_DOWN) || (param == VK_RIGHT))
             {
                 if (NewTopIndex < GetItems()->GetCount() - GetHeight())
                 {
                     NewTopIndex++;
                 }
+                else
+                {
+                    INPUT_RECORD Rec = {0};
+                    Rec.EventType = KEY_EVENT;
+                    Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
+                    Rec.Event.KeyEvent.dwControlKeyState = 0;
+                    SendDialogMessage(DN_CONTROLINPUT, 1, static_cast<void *>(&Rec));
+                }
+            }
+            else if (param == VK_PRIOR) // TODO: check
+            {
+                if (NewTopIndex > GetHeight() - 1)
+                {
+                    NewTopIndex -= GetHeight() - 1;
+                }
+                else
+                {
+                    NewTopIndex = 0;
+                }
+            }
+            else if (param == VK_NEXT)
+            {
+                if (NewTopIndex < GetItems()->GetCount() - GetHeight() - GetHeight() + 1)
+                {
+                    NewTopIndex += GetHeight() - 1;
+                }
+                else
+                {
+                    NewTopIndex = GetItems()->GetCount() - GetHeight();
+                }
+            }
+            else if (param == VK_HOME)
+            {
+                NewTopIndex = 0;
+            }
+            else if (param == VK_END)
+            {
+                NewTopIndex = GetItems()->GetCount() - GetHeight();
             }
             else
             {
-                assert(P.x == GetWidth() - 1);
-                assert((P.y > 0) && (P.y < static_cast<int>(GetHeight() - 1)));
-                NewTopIndex = static_cast<size_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
+                Result = TFarDialogItem::ItemProc(Msg, Param);
             }
 
-            Result = true;
-
             SetTopIndex(NewTopIndex);
+        }
+        else if (Rec->EventType == MOUSE_EVENT)
+        {
+            if (!Focused() && CanFocus())
+            {
+                SetFocus();
+            }
+
+            MOUSE_EVENT_RECORD *Event = &Rec->Event.MouseEvent;
+            TPoint P = MouseClientPosition(Event);
+
+            if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK) &&
+                    (P.x < GetWidth() - 1))
+            {
+                Result = TFarDialogItem::ItemProc(Msg, Param);
+            }
+            else
+            {
+                size_t NewTopIndex = GetTopIndex();
+
+                if (((P.x == static_cast<int>(GetWidth()) - 1) && (P.y == 0)) ||
+                        ((P.x < static_cast<int>(GetWidth() - 1)) && (P.y < static_cast<int>(GetHeight() / 2))))
+                {
+                    if (NewTopIndex > 0)
+                    {
+                        NewTopIndex--;
+                    }
+                }
+                else if (((P.x == GetWidth() - 1) && (P.y == static_cast<int>(GetHeight() - 1))) ||
+                         ((P.x < GetWidth() - 1) && (P.y >= static_cast<int>(GetHeight() / 2))))
+                {
+                    if (NewTopIndex < GetItems()->GetCount() - GetHeight())
+                    {
+                        NewTopIndex++;
+                    }
+                }
+                else
+                {
+                    assert(P.x == GetWidth() - 1);
+                    assert((P.y > 0) && (P.y < static_cast<int>(GetHeight() - 1)));
+                    NewTopIndex = static_cast<size_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
+                }
+
+                Result = true;
+
+                SetTopIndex(NewTopIndex);
+            }
         }
     }
     else
