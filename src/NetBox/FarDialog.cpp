@@ -1835,9 +1835,7 @@ void TFarButton::SetDefault(bool value)
 //---------------------------------------------------------------------------
 bool TFarButton::GetDefault()
 {
-    FarDialogItem *item = GetDialogItem();
-    assert(item);
-    return (item->Flags & DIF_DEFAULTBUTTON) != 0;
+    return GetFlag(DIF_DEFAULTBUTTON);
 }
 //---------------------------------------------------------------------------
 void TFarButton::SetBrackets(TFarButtonBrackets value)
