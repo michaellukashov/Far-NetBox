@@ -334,8 +334,10 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
             Data = reinterpret_cast<INT_PTR>(Buf.c_str());
         }
         */
-
-        TCustomFarFileSystem *Result = OpenPluginEx(Info->OpenFrom, Info->Data);
+        int Item = 0;
+        if (*Info->Guid == MenuCommandsGuid)
+            Item = 1;
+        TCustomFarFileSystem *Result = OpenPluginEx(Info->OpenFrom, Item);
 
         if (Result)
         {
