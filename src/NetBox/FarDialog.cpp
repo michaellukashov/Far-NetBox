@@ -631,8 +631,10 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
 
     if (!Handled)
     {
-        // TODO: Event --> INPUT_RECORD
-        Result = DefaultDialogProc(DN_INPUT, 0, static_cast<void *>(Event));
+        INPUT_RECORD Rec = {0};
+        Rec.EventType = MOUSE_EVENT;
+        memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
+        Result = DefaultDialogProc(DN_INPUT, 0, static_cast<void *>(&Rec));
     }
 
     return Result;
@@ -1383,8 +1385,8 @@ long TFarDialogItem::ItemProc(int Msg, void *Param)
     }
     else if (Msg == DN_CONTROLINPUT)
     {
-        // TODO: INPUT_RECORD
-        MOUSE_EVENT_RECORD *Event = reinterpret_cast<MOUSE_EVENT_RECORD *>(Param);
+        INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param);
+        MOUSE_EVENT_RECORD *Event = &Rec->Event.MouseEvent;
         if (FLAGCLEAR(Event->dwEventFlags, MOUSE_MOVED))
         {
             Result = MouseClick(Event);
@@ -1691,15 +1693,19 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
     {
         FOnMouseClick(this, Event);
     }
-    // TODO: INPUT_RECORD
-    return DefaultItemProc(DN_CONTROLINPUT, static_cast<void *>(Event));
+    INPUT_RECORD Rec = {0};
+    Rec.EventType = MOUSE_EVENT;
+    memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
+    return DefaultItemProc(DN_CONTROLINPUT, static_cast<void *>(&Rec));
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
         MOUSE_EVENT_RECORD *Event)
 {
-    // TODO: INPUT_RECORD
-    return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(Event));
+    INPUT_RECORD Rec = {0};
+    Rec.EventType = MOUSE_EVENT;
+    memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
+    return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec));
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Text(int X, int Y, const FarColor &Color, const std::wstring &Str, bool AOem)
