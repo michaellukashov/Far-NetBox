@@ -2470,7 +2470,9 @@ long TFarListBox::ItemProc(int Msg, long Param)
     bool Result;
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
-    if ((Msg == DN_KEY) && (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) >= static_cast<short int>(FAR170)) && GetDialog()->HotKey(Param))
+    if ((Msg == DN_KEY) && 
+        // (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) >= static_cast<short int>(FAR170)) &&
+        GetDialog()->HotKey(Param))
     {
         Result = true;
     }
