@@ -2477,7 +2477,6 @@ TFarListBox::~TFarListBox()
 long TFarListBox::ItemProc(int Msg, void *Param)
 {
     bool Result;
-    /*
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
     if ((Msg == DN_KEY) && 
@@ -2486,7 +2485,7 @@ long TFarListBox::ItemProc(int Msg, void *Param)
     {
         Result = true;
     }
-    else */if (FList->ItemProc(Msg, Param))
+    else if (FList->ItemProc(Msg, Param))
     {
         Result = true;
     }
