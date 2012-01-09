@@ -64,6 +64,12 @@ void TFarConfiguration::Default()
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
+THierarchicalStorage * TFarConfiguration::CreateStorage()
+{
+  // DEBUG_PRINTF(L"GetStorage = %d", GetStorage());
+  return TGUIConfiguration::CreateStorage();
+}
+//---------------------------------------------------------------------------
 void TFarConfiguration::Saved()
 {
   TGUIConfiguration::Saved();

@@ -98,6 +98,7 @@ public:
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
   virtual void Default();
+  virtual THierarchicalStorage * CreateStorage();
   void CacheFarSettings();
 
 protected:
