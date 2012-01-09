@@ -114,7 +114,20 @@ def get_revision():
     return git_revision
 
 def get_build_number():
+    """ read build number from version.h """
     build_number = "0"
+    build_re = re.compile(r'^\#define PLUGIN_VERSION_BUILD\s+(\d+).*$')
+    try :
+        f = open('version.h')
+        for line in f.readlines():
+            context = build_re.match(line)
+            if context:
+                build_number = context.groups(1)[0]
+                build_number = str(int(build_number) + 1)
+                # print('build_number = %s' % build_number)
+                break
+    except Exception :
+        pass
     return build_number
 
 def main():
