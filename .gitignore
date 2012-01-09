@@ -57,5 +57,3 @@ libs/gc-7.2alpha6/tests/CMakeFiles/
 libs/gc-7.2alpha6/tests/gctest.vcxproj
 libs/gc-7.2alpha6/Win32/
 libs/gc-7.2alpha6/ZERO_CHECK.vcxproj
-
-src/NetBox/version.h
