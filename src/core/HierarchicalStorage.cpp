@@ -345,6 +345,7 @@ TRegistryStorage::TRegistryStorage(const std::wstring &AStorage, HKEY ARootKey) 
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
+  // DEBUG_PRINTF(L"AStorage = %s", AStorage.c_str());
   Init();
   FRegistry->SetRootKey(ARootKey);
 }
@@ -429,7 +430,7 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool TRegistryStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
 {
-  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+  // DEBUG_PRINTF(L"Storage = %s, CurrentSubKey = %s, SubKey = %s", GetStorage().c_str(), GetCurrentSubKey().c_str(), SubKey.c_str());
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
   std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + MungeSubKey(SubKey, Path));
   bool Result = FRegistry->OpenKey(K, CanCreate);
@@ -581,7 +582,7 @@ void TRegistryStorage::WriteStringRaw(const std::wstring &Name, const std::wstri
 //---------------------------------------------------------------------------
 void TRegistryStorage::Writeint(const std::wstring &Name, int Value)
 {
-  // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
+  // DEBUG_PRINTF(L"Name = %s, Value = %d", Name.c_str(), Value);
   WRITE_REGISTRY(Writeint);
   // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
 }
