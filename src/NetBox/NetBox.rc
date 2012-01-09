@@ -10,7 +10,7 @@ FILETYPE 0x2
         {
             VALUE "CompanyName", "Michael Lukashov\0"
             VALUE "FileDescription", "NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for FAR\0"
-            VALUE "FileVersion", "2.0.5.a542401\0"
+            VALUE "FileVersion", "2.0.5.52e6b3a\0"
             VALUE "InternalName", "netboxfar\0"
             VALUE "LegalCopyright", "(c) 2011 Michael Lukashov\0"
             VALUE "LegalTrademarks", "\0"
