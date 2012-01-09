@@ -42,12 +42,12 @@ def write_header(version_major, version_minor, patch, build, git_revision):
 
 def transform_template_file(template_file_name, file_name,
     major_version, minor_version, patch, build, git_revision):
-    #print 'transform_template_file: major_version = %s' % major_version
+    # print 'transform_template_file: major_version = %s' % major_version
     # print '%s: %s.%s.%s.%s' % (rc_file, major_version, minor_version, patch, git_revision)
     contents = []
     f = open(template_file_name)
     for line in f.readlines():
-        #print 'line = %s' % line.rstrip()
+        # print 'line = %s' % line.rstrip()
         s = line.replace('${file.ver.major}', major_version)
         s = s.replace('${file.ver.minor}', minor_version)
         s = s.replace('${file.ver.patch}', patch)
@@ -87,14 +87,14 @@ def get_git_revision():
     git_re2 = re.compile(r'^(\w+)$')
     try:
         status, output = getstatusoutput('git describe --always')
-        #print ('output = %s' % output)
-        #print (status, file=sys.stdout)
-        #print (output, file=sys.stdout)
+        # print('output = %s' % output)
+        # print(status)
+        # print(output)
         context = git_re.match(output)
-        #print (context, file=sys.stdout)
+        # print(context)
         if context:
             git_revision = context.groups(1)[0]
-            #print (git_revision, file=sys.stdout)
+            # print(git_revision)
             git_revision = git_revision
         else:
             context = git_re2.match(output)
@@ -103,7 +103,7 @@ def get_git_revision():
                 git_revision = git_revision
     except Exception, info:
         git_revision = ''
-        print (info) #, file = sys.stderr)
+        print(info)
         pass
     return git_revision
 
