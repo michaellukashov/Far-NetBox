@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------
 class TRegistry;
 //---------------------------------------------------------------------------
-enum TStorage { stDetect, stRegistry, stIniFile };
+enum TStorage { stRegistry, stIniFile };
 enum TStorageAccessMode { smRead, smReadWrite };
 //---------------------------------------------------------------------------
 class THierarchicalStorage

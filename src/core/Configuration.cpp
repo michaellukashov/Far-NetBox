@@ -47,7 +47,7 @@ TConfiguration::TConfiguration() :
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
-  FStorage = stDetect;
+  FStorage = stRegistry;
   FDontSave = false;
   FApplicationInfo = NULL;
 
@@ -850,10 +850,12 @@ void TConfiguration::Saved()
 //---------------------------------------------------------------------------
 TStorage TConfiguration::GetStorage()
 {
+  /*
   if (FStorage == stDetect)
   {
     FStorage = FileExists(GetIniFileStorageName()) ? stIniFile : stRegistry;
   }
+  */
   return FStorage;
 }
 //---------------------------------------------------------------------------
