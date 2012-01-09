@@ -124,7 +124,7 @@ TConfiguration::~TConfiguration()
   delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
+THierarchicalStorage * TConfiguration::CreateStorage()
 {
   if (GetStorage() == stRegistry)
   {
@@ -184,7 +184,7 @@ void TConfiguration::Save(bool All, bool Explicit)
 {
   if (FDontSave) return;
 
-  THierarchicalStorage * AStorage = CreateScpStorage(false);
+  THierarchicalStorage * AStorage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&AStorage) )
       {
@@ -227,7 +227,7 @@ void TConfiguration::Export(const std::wstring &FileName)
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
 
-    Storage = CreateScpStorage(false);
+    Storage = CreateStorage();
     Storage->SetAccessMode(smRead);
 
     CopyData(Storage, ExportStorage);
@@ -261,7 +261,7 @@ void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
 
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -352,7 +352,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 void TConfiguration::LoadDirectoryChangesCache(const std::wstring &SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -371,7 +371,7 @@ void TConfiguration::LoadDirectoryChangesCache(const std::wstring &SessionKey,
 void TConfiguration::SaveDirectoryChangesCache(const std::wstring &SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -400,7 +400,7 @@ bool TConfiguration::ShowBanner(const std::wstring &SessionKey,
   const std::wstring &Banner)
 {
   bool Result;
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -420,7 +420,7 @@ bool TConfiguration::ShowBanner(const std::wstring &SessionKey,
 void TConfiguration::NeverShowBanner(const std::wstring &SessionKey,
   const std::wstring &Banner)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -824,12 +824,12 @@ void TConfiguration::SetStorage(TStorage value)
           delete SourceStorage;
           delete TargetStorage;
         } BOOST_SCOPE_EXIT_END
-      SourceStorage = CreateScpStorage(false);
+      SourceStorage = CreateStorage();
       SourceStorage->SetAccessMode(smRead);
 
       FStorage = value;
 
-      TargetStorage = CreateScpStorage(false);
+      TargetStorage = CreateStorage();
       TargetStorage->SetAccessMode(smReadWrite);
       TargetStorage->SetExplicit(true);
 

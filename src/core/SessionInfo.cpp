@@ -918,7 +918,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), boost::bind(&TSessionLog::DoAddToSelf, this, _1, _2));
     AddSeparator();
     ADF(L"NetBox %s (OS %s)", FConfiguration->GetVersionStr().c_str(), FConfiguration->GetOSVersionStr().c_str());
-    THierarchicalStorage * Storage = FConfiguration->CreateScpStorage(false);
+    THierarchicalStorage * Storage = FConfiguration->CreateStorage();
     {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {

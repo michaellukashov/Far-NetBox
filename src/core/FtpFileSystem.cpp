@@ -3137,7 +3137,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     RequestResult = 0;
 
     THierarchicalStorage * Storage =
-      FTerminal->GetConfiguration()->CreateScpStorage(false);
+      FTerminal->GetConfiguration()->CreateStorage();
     {
         BOOST_SCOPE_EXIT ( (&Storage) )
         {
@@ -3209,7 +3209,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (RequestResult == 2)
       {
         THierarchicalStorage * Storage =
-          FTerminal->GetConfiguration()->CreateScpStorage(false);
+          FTerminal->GetConfiguration()->CreateStorage();
         {
             BOOST_SCOPE_EXIT ( (&Storage) )
             {

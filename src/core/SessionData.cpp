@@ -914,7 +914,7 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------
 void TSessionData::Remove()
 {
-  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  THierarchicalStorage * Storage = Configuration->CreateStorage();
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
     {
@@ -2292,7 +2292,7 @@ void TStoredSessionList::Load(const std::wstring &aKey, bool UseDefaults)
 //---------------------------------------------------------------------
 void TStoredSessionList::Load()
 {
-  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  THierarchicalStorage * Storage = Configuration->CreateStorage();
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
     {
@@ -2350,7 +2350,7 @@ void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 void TStoredSessionList::DoSave(bool All, bool Explicit, bool RecryptPasswordOnly)
 {
   // DEBUG_PRINTF(L"begin")
-  THierarchicalStorage * Storage = Configuration->CreateScpStorage(true);
+  THierarchicalStorage * Storage = Configuration->CreateStorage();
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
     {

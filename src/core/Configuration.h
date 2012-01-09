@@ -108,7 +108,7 @@ public:
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   bool ShowBanner(const std::wstring &SessionKey, const std::wstring & Banner);
   void NeverShowBanner(const std::wstring &SessionKey, const std::wstring & Banner);
-  virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
+  virtual THierarchicalStorage * CreateStorage();
   void TemporaryLogging(const std::wstring &ALogFileName);
   virtual std::wstring EncryptPassword(std::wstring Password, std::wstring Key);
   virtual std::wstring DecryptPassword(std::wstring Password, std::wstring Key);
