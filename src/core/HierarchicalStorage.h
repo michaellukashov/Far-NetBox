@@ -137,5 +137,6 @@ private:
 };
 //---------------------------------------------------------------------------
 std::wstring PuttyMungeStr(const std::wstring &Str);
+std::wstring PuttyUnMungeStr(const std::wstring &Str);
 //---------------------------------------------------------------------------
 #endif
