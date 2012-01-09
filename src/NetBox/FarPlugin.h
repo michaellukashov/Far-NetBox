@@ -377,6 +377,7 @@ public:
     bool GetANSIApis() const { return FANSIApis; };
     unsigned int GetFarThread() const { return FFarThread; };
     FarStandardFunctions GetFarStandardFunctions() { return FFarStandardFunctions; }
+    const struct PluginStartupInfo *GetStartupInfo() const { return &FStartupInfo; }
 protected:
     PluginStartupInfo FStartupInfo;
     FarStandardFunctions FFarStandardFunctions;
