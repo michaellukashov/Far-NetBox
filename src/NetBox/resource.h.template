@@ -1,8 +1,8 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,0,5,0
-#define PLUGIN_VERSION_TXT "2.0.5"
-#define PLUGIN_VERSION_WTXT L"2.0.5"
+#define PLUGIN_VERSION_NUM ${file.ver.major},${file.ver.minor},${file.ver.patch},${file.ver.build}
+#define PLUGIN_VERSION_TXT "${file.ver.major}.${file.ver.minor}.${file.ver.patch}"
+#define PLUGIN_VERSION_WTXT L"${file.ver.major}.${file.ver.minor}.${file.ver.patch}"
 
 #define WINSCP_PLUGIN_VERSION_WTXT L"1.6.2.151"
 #define WINSCP_VERSION_WTXT L"4.3.6"
