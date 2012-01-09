@@ -1898,40 +1898,6 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo &Value)
 }
 
 //---------------------------------------------------------------------------
-TMemIniFile::TMemIniFile(const std::wstring &AFileName)
-{}
-void TMemIniFile::GetStrings(TStrings *Strings)
-{}
-void TMemIniFile::ReadSections(TStrings *Strings)
-{}
-void TMemIniFile::ReadSection(std::wstring Section, TStrings *Strings)
-{}
-void TMemIniFile::EraseSection(std::wstring Section)
-{}
-bool TMemIniFile::SectionExists(std::wstring Section) { return false; }
-bool TMemIniFile::ValueExists(std::wstring Section, std::wstring Name) { return false; }
-bool TMemIniFile::DeleteKey(std::wstring Section, std::wstring Name)
-{ return false; }
-bool TMemIniFile::Readbool(const std::wstring &Section, const std::wstring &Name, const bool Default)
-{ return false; }
-int TMemIniFile::Readint(const std::wstring &Section, const std::wstring &Name, int Default)
-{ return 0; }
-std::wstring TMemIniFile::ReadString(const std::wstring &Section, const std::wstring &Name, const std::wstring &Default)
-{ return L""; }
-
-void TMemIniFile::Writebool(const std::wstring &Section, const std::wstring &Name, bool Value)
-{}
-void TMemIniFile::WriteDateTime(const std::wstring &Section, const std::wstring &Name, TDateTime Value)
-{}
-void TMemIniFile::WriteFloat(const std::wstring &Section, const std::wstring &Name, double Value)
-{}
-void TMemIniFile::WriteString(const std::wstring &Section, const std::wstring &Name, const std::wstring &Value)
-{}
-void TMemIniFile::WriteStringRaw(const std::wstring &Section, const std::wstring &Name, const std::wstring &Value)
-{}
-void TMemIniFile::Writeint(const std::wstring &Section, const std::wstring &Name, int Value)
-{}
-//---------------------------------------------------------------------------
 TShortCut::TShortCut()
 {
 }
