@@ -8,6 +8,7 @@
 #include "EasyURL.h"
 #include "resource.h"
 #include "Common.h"
+#include "version.h"
 
 //---------------------------------------------------------------------------
 #ifdef NETBOX_DEBUG
@@ -38,8 +39,7 @@ void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
         return;
     Info->StructSize = sizeof(*Info);
     Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
-    // TODO: read from .rc
-    Info->Version = MAKEFARVERSION(2, 0, 4, 0, VS_RELEASE);
+    Info->Version = MAKEFARVERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, PLUGIN_VERSION_BUILD, VS_RELEASE);
     Info->Guid = MainGuid;
     Info->Title = PLUGIN_NAME;
     Info->Description = PLUGIN_DESCR;
