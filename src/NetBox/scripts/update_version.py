@@ -42,9 +42,9 @@ def write_header(version_major, version_minor, patch, build, git_revision):
 ###############################################################################
 
 def transform_template_file(template_file_name, file_name,
-    major_version, minor_version, patch, build, revision):
-    #print 'write_rc_file:: major_version = %s' % major_version
-    # print '%s: %s.%s.%s.%s' % (rc_file, major_version, minor_version, patch, revision)
+    major_version, minor_version, patch, build, git_revision):
+    #print 'transform_template_file: major_version = %s' % major_version
+    # print '%s: %s.%s.%s.%s' % (rc_file, major_version, minor_version, patch, git_revision)
     contents = []
     f = open(template_file_name)
     for line in f.readlines():
@@ -53,7 +53,8 @@ def transform_template_file(template_file_name, file_name,
         s = s.replace('${file.ver.minor}', minor_version)
         s = s.replace('${file.ver.patch}', patch)
         s = s.replace('${file.ver.build}', build)
-        s = s.replace('${file.ver.revision}', revision)
+        # s = s.replace('${file.ver.revision}', revision)
+        s = s.replace('${file.ver.gitrevision}', git_revision)
         contents.append(s)
     f.close()
 
@@ -65,7 +66,7 @@ def transform_template_file(template_file_name, file_name,
     #--transform_template_file
 
 def transform_template_files(version_major, version_minor, patch, build, git_revision):
-    template_files = ['resource.h.template']
+    template_files = ['resource.h.template', 'NetBox.rc.template']
     for template_file_name in template_files :
         file_name = template_file_name[0:-len('.template')] # + '.tmp'
         transform_template_file(template_file_name, file_name,
