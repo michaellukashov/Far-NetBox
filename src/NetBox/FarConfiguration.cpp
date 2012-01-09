@@ -7,6 +7,7 @@
 #include "Common.h"
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
+#include "Far3Storage.h"
 #include "FarPlugin.h"
 //---------------------------------------------------------------------------
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
@@ -67,6 +68,10 @@ void TFarConfiguration::Default()
 THierarchicalStorage * TFarConfiguration::CreateStorage()
 {
   // DEBUG_PRINTF(L"GetStorage = %d", GetStorage());
+  if (GetStorage() == stFar3Storage)
+  {
+    return new TFar3Storage(L"");
+  }
   return TGUIConfiguration::CreateStorage();
 }
 //---------------------------------------------------------------------------
