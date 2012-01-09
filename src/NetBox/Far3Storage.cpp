@@ -18,19 +18,24 @@
   else return Default;
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
+
 //---------------------------------------------------------------------------
-TFar3Storage::TFar3Storage(const std::wstring &AStorage) :
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
-{
-  Init();
-};
-//---------------------------------------------------------------------------
+/*
 TFar3Storage::TFar3Storage(const std::wstring &AStorage, HKEY ARootKey) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   Init();
   FRegistry->SetRootKey(ARootKey);
 }
+*/
+//---------------------------------------------------------------------------
+TFar3Storage::TFar3Storage(const std::wstring &AStorage,
+  const GUID &guid, FARAPISETTINGSCONTROL SettingsControl) :
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FPluginSettings(guid, SettingsControl)
+{
+  Init();
+};
 //---------------------------------------------------------------------------
 void TFar3Storage::Init()
 {

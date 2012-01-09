@@ -2,13 +2,15 @@
 
 #include "Classes.h"
 #include "HierarchicalStorage.h"
+#include "PluginSettings.hpp"
 
 //---------------------------------------------------------------------------
 class TFar3Storage : public THierarchicalStorage
 {
 public:
-  TFar3Storage(const std::wstring &AStorage, HKEY ARootKey);
-  TFar3Storage(const std::wstring &AStorage);
+  // TFar3Storage(const std::wstring &AStorage, HKEY ARootKey);
+  TFar3Storage(const std::wstring &AStorage,
+    const GUID &guid, FARAPISETTINGSCONTROL SettingsControl);
   virtual ~TFar3Storage();
 
   bool Copy(TFar3Storage * Storage);
@@ -51,6 +53,7 @@ protected:
 private:
   TRegistry * FRegistry;
   int FFailed;
+  PluginSettings FPluginSettings;
 
   void Init();
 };
