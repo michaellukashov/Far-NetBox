@@ -2621,6 +2621,7 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 {
+  ::Error(SNotImplemented, 3001);
   TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
   THierarchicalStorage * Storage = NULL;
@@ -2796,6 +2797,7 @@ int TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMod
 bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   int OpMode)
 {
+  ::Error(SNotImplemented, 3000);
   bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(IMPORT_SESSIONS_PROMPT), NULL,
       qtConfirmation, qaOK | qaCancel) == qaOK);

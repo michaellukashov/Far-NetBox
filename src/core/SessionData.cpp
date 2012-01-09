@@ -2389,6 +2389,7 @@ void TStoredSessionList::Saved()
 //---------------------------------------------------------------------
 void TStoredSessionList::Export(const std::wstring &FileName)
 {
+  ::Error(SNotImplemented, 3003);
   /*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   {

@@ -132,6 +132,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
   }
   else
   {
+    ::Error(SNotImplemented, 3005);
     return NULL; // new TIniFileStorage(GetIniFileStorageName());
   }
 }
@@ -213,6 +214,7 @@ void TConfiguration::Save(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void TConfiguration::Export(const std::wstring &FileName)
 {
+  ::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   {
