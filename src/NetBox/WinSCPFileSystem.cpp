@@ -2636,12 +2636,14 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
     ExportData = new TSessionData(Data->GetName());
     ExportData->Assign(Data);
     ExportData->SetModified(true);
+    /*
     Storage = new TIniFileStorage(IncludeTrailingBackslash(Param.DestPath) +
       GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->GetName()) + L".ini");
     if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
       ExportData->Save(Storage, false, FactoryDefaults);
     }
+    */
   }
 }
 //---------------------------------------------------------------------------
@@ -2815,7 +2817,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
           {
             delete Storage;
           } BOOST_SCOPE_EXIT_END
-          Storage = new TIniFileStorage(::IncludeTrailingBackslash(GetCurrentDir()) + FileName);
+          Storage = NULL; // new TIniFileStorage(::IncludeTrailingBackslash(GetCurrentDir()) + FileName);
           if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
               Storage->HasSubKeys())
           {

@@ -2389,6 +2389,7 @@ void TStoredSessionList::Saved()
 //---------------------------------------------------------------------
 void TStoredSessionList::Export(const std::wstring &FileName)
 {
+  /*
   THierarchicalStorage * Storage = new TIniFileStorage(FileName);
   {
     BOOST_SCOPE_EXIT ( (&Storage) )
@@ -2401,6 +2402,7 @@ void TStoredSessionList::Export(const std::wstring &FileName)
       Save(Storage, true);
     }
   }
+  */
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::SelectAll(bool Select)

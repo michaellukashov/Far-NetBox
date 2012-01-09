@@ -132,7 +132,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
   }
   else
   {
-    return new TIniFileStorage(GetIniFileStorageName());
+    return NULL; // new TIniFileStorage(GetIniFileStorageName());
   }
 }
 //---------------------------------------------------------------------------
@@ -221,7 +221,7 @@ void TConfiguration::Export(const std::wstring &FileName)
         delete ExportStorage;
         delete Storage;
       } BOOST_SCOPE_EXIT_END
-    ExportStorage = new TIniFileStorage(FileName);
+    ExportStorage = NULL; // new TIniFileStorage(FileName);
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
 
