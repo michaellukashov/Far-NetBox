@@ -49,8 +49,8 @@ TWinSCPPlugin::~TWinSCPPlugin()
 {
   if (FInitialized)
   {
-    FarConfiguration->SetPlugin(NULL);
     CoreFinalize();
+    FarConfiguration->SetPlugin(NULL);
   }
 }
 //---------------------------------------------------------------------------
