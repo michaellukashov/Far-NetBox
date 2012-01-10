@@ -8,8 +8,7 @@
 class TFar3Storage : public THierarchicalStorage
 {
 public:
-  // TFar3Storage(const std::wstring &AStorage, HKEY ARootKey);
-  TFar3Storage(const std::wstring &AStorage,
+  explicit TFar3Storage(const std::wstring &AStorage,
     const GUID &guid, FARAPISETTINGSCONTROL SettingsControl);
   virtual ~TFar3Storage();
 
@@ -51,8 +50,12 @@ protected:
   void SetFailed(int value) { FFailed = value; }
 
 private:
-  TRegistry * FRegistry;
+  std::wstring GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
+
+private:
+  int FRoot;
   int FFailed;
+  std::wstring FSubKey;
   PluginSettings FPluginSettings;
 
   void Init();
