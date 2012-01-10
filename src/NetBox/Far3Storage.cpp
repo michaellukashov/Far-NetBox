@@ -34,6 +34,7 @@ TFar3Storage::TFar3Storage(const std::wstring &AStorage,
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FPluginSettings(guid, SettingsControl)
 {
+  // DEBUG_PRINTF(L"AStorage = %s", AStorage.c_str());
   Init();
 };
 //---------------------------------------------------------------------------
