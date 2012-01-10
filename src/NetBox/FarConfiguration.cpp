@@ -70,8 +70,8 @@ THierarchicalStorage * TFarConfiguration::CreateStorage()
   // DEBUG_PRINTF(L"GetStorage = %d", GetStorage());
   // if (GetStorage() == stFar3Storage)
   {
-    assert(FPlugin);
-    return new TFar3Storage(GetRegistryStorageKey(), MainGuid, FPlugin->GetStartupInfo()->SettingsControl);
+    assert(FFarPlugin);
+    return new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl);
   }
   return TGUIConfiguration::CreateStorage();
 }
