@@ -108,6 +108,7 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
   // std::wstring LastElem = SubKey.substr(::LastDelimiter(ELEM, L".>") + 1, ELEM.size() - ::LastDelimiter(ELEM, L".>"))
   // std::wstring LastElem = SubKey;
   int OldRoot = FRoot;
+  int root = 0;
   if (Path)
   {
     std::wstring subKey = SubKey;
@@ -124,21 +125,31 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
   {
       if (CanCreate)
       {
-        FRoot = FPluginSettings.CreateSubKey(FRoot, SubKey.c_str());
+        root = FPluginSettings.CreateSubKey(FRoot, SubKey.c_str());
       }
       else
       {
-        FRoot = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
+        root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
+        /*
+        if (root == 0)
+        {
+          if (FPluginSettings.ValueExists(FRoot, SubKey.c_str()))
+          {
+            root = FRoot;
+          }
+        }
+        */
       }
   }
-  DEBUG_PRINTF(L"FRoot = %d", FRoot);
-  bool Result = FRoot != 0;
+  DEBUG_PRINTF(L"root = %d", root);
+  bool Result = root != 0;
   if (Result)
   {
     Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
     if (Result)
     {
         FSubKeyIds.push_back(OldRoot);
+        FRoot = root;
     }
     // FSubKey = SubKey;
   }
@@ -233,20 +244,19 @@ bool TFar3Storage::KeyExists(const std::wstring &SubKey)
 //---------------------------------------------------------------------------
 bool TFar3Storage::ValueExists(const std::wstring &Value)
 {
-  ::Error(SNotImplemented, 3012);
   DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
-  // TODO: use SettingsControl
+  // ::Error(SNotImplemented, 3012);
   // bool Result = FRegistry->ValueExists(Value);
-  bool Result = false;
+  // std::wstring value = L"ProxyPaswordEnc";
+  bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
 int TFar3Storage::BinaryDataSize(const std::wstring &Name)
 {
-  ::Error(SNotImplemented, 3013);
-  // TODO: use SettingsControl
+  // ::Error(SNotImplemented, 3013);
   // int Result = FRegistry->GetDataSize(Name);
-  int Result = 0;
+  int Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------

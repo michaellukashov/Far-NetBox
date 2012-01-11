@@ -119,6 +119,25 @@ public:
 		item.Data.Data=Value;
 		return SettingsControl(handle,SCTL_SET,0,&item)!=FALSE;
 	}
+
+    bool GetSubKeyNames(FarSettingsEnum &settings)
+    {
+          return SettingsControl(handle, SCTL_ENUM, 0, &settings) != FALSE;
+    }
+    bool ValueExists(int Root, const wchar_t *Name)
+    {
+      FarSettingsItem item = {Root, Name, FST_DATA};
+      return SettingsControl(handle, SCTL_GET, 0, &item) != FALSE;
+    }
+    int BinaryDataSize(int Root, const wchar_t *Name)
+    {
+      FarSettingsItem item = {Root, Name, FST_DATA};
+      if (SettingsControl(handle, SCTL_GET, 0, &item) != FALSE)
+      {
+         return item.Data.Size;
+      }
+      return 0;
+    }
 };
 
 #endif
