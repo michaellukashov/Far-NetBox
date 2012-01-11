@@ -15,7 +15,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   // DEBUG_PRINTF(L"begin");
   Self = this;
   FFarConfirmations = -1;
-  FPlugin = APlugin;
+  FFarPlugin = APlugin;
   FBookmarks = new TBookmarks();
   Default();
   // DEBUG_PRINTF(L"end");
@@ -180,7 +180,7 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin * value)
   if (GetPlugin() != value)
   {
     assert(!GetPlugin() || !value);
-    FPlugin = value;
+    FFarPlugin = value;
   }
 }
 //---------------------------------------------------------------------------

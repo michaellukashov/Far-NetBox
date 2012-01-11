@@ -14,8 +14,8 @@ public:
   TFarConfiguration(TCustomFarPlugin * APlugin);
   virtual ~TFarConfiguration();
 
-  // __property TCustomFarPlugin * Plugin = { read = FPlugin, write = SetPlugin };
-  TCustomFarPlugin * GetPlugin() { return FPlugin; }
+  // __property TCustomFarPlugin * Plugin = { read = FFarPlugin, write = SetPlugin };
+  TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
   void SetPlugin(TCustomFarPlugin * value);
   // __property bool ConfirmOverwritingOverride = { read = FConfirmOverwritingOverride, write = FConfirmOverwritingOverride };
   bool GetConfirmOverwritingOverride() { return FConfirmOverwritingOverride; }
@@ -112,7 +112,7 @@ protected:
   virtual void Saved();
 
 private:
-  TCustomFarPlugin * FPlugin;
+  TCustomFarPlugin *FFarPlugin;
   int FFarConfirmations;
   bool FConfirmOverwritingOverride;
   bool FConfirmSynchronizedBrowsing;
