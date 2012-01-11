@@ -151,7 +151,6 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
         FSubKeyIds.push_back(OldRoot);
         FRoot = root;
     }
-    // FSubKey = SubKey;
   }
   DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;

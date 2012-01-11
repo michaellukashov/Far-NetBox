@@ -57,7 +57,6 @@ private:
 private:
   int FRoot;
   int FFailed;
-  // std::wstring FSubKey;
   PluginSettings FPluginSettings;
   std::vector<int> FSubKeyIds;
 
