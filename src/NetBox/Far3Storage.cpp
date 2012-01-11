@@ -48,7 +48,7 @@ void TFar3Storage::SetAccessMode(TStorageAccessMode value)
 //---------------------------------------------------------------------------
 bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
 {
-  DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
+  // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
   int OldRoot = FRoot;
   int root = 0;
   if (Path)
@@ -74,7 +74,7 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
         root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
       }
   }
-  DEBUG_PRINTF(L"root = %d", root);
+  // DEBUG_PRINTF(L"root = %d", root);
   bool Result = root != 0;
   if (Result)
   {
@@ -85,13 +85,13 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
         FRoot = root;
     }
   }
-  DEBUG_PRINTF(L"end, Result = %d", Result);
+  // DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::CloseSubKey()
 {
-  DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   assert(FKeyHistory->GetCount() == FSubKeyIds.size());
   THierarchicalStorage::CloseSubKey();
   if (FKeyHistory->GetCount() && FSubKeyIds.size())
@@ -103,7 +103,7 @@ void TFar3Storage::CloseSubKey()
   {
     FRoot = 0;
   }
-  DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::DeleteSubKey(const std::wstring &SubKey)
@@ -124,28 +124,28 @@ bool TFar3Storage::DeleteSubKey(const std::wstring &SubKey)
 //---------------------------------------------------------------------------
 void TFar3Storage::GetSubKeyNames(TStrings* Strings)
 {
-  DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   FarSettingsEnum settings = {0};
   settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(settings))
   {
       for (size_t Index = 0; Index < settings.Count; Index++)
       {
-        DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
+        // DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
         if (settings.Items[Index].Type == FST_SUBKEY)
         {
             Strings->PutString(Index, PuttyUnMungeStr(settings.Items[Index].Name));
         }
       }
   }
-  DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::GetValueNames(TStrings* Strings)
 {
   ::Error(SNotImplemented, 3010);
-  DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::DeleteValue(const std::wstring &Name)
@@ -156,16 +156,16 @@ bool TFar3Storage::DeleteValue(const std::wstring &Name)
 bool TFar3Storage::KeyExists(const std::wstring &SubKey)
 {
   ::Error(SNotImplemented, 3011);
-  DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
+  // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   std::wstring K = PuttyMungeStr(SubKey);
   bool Result = true; // FPluginSettings.KeyExists(K);
-  DEBUG_PRINTF(L"end, FRoot = %d, K = %s, Result = %d", FRoot, K.c_str(), Result);
+  // DEBUG_PRINTF(L"end, FRoot = %d, K = %s, Result = %d", FRoot, K.c_str(), Result);
   return Result;
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::ValueExists(const std::wstring &Value)
 {
-  DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
+  // DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
   bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;
 }
@@ -231,7 +231,7 @@ int TFar3Storage::ReadBinaryData(const std::wstring &Name,
 //---------------------------------------------------------------------------
 void TFar3Storage::Writebool(const std::wstring &Name, bool Value)
 {
-  DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
+  // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
@@ -264,13 +264,13 @@ void TFar3Storage::WriteStringRaw(const std::wstring &Name, const std::wstring &
 //---------------------------------------------------------------------------
 void TFar3Storage::Writeint(const std::wstring &Name, int Value)
 {
-  DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
+  // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteInt64(const std::wstring &Name, __int64 Value)
 {
-  DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
+  // DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
