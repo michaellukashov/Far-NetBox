@@ -324,10 +324,10 @@ bool TCopyParamList::CompareItem(int Index,
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-  for (int i = 0; i < GetCount(); i++)
+  for (int i = GetCount() - 1; i >= 0; i--)
   {
-    delete GetCopyParam(i);
-    delete GetRule(i);
+    FCopyParams->Delete(i);
+    FRules->Delete(i);
   }
   FCopyParams->Clear();
   FRules->Clear();
