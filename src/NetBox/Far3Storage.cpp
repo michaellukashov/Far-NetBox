@@ -51,7 +51,7 @@ int TFar3Storage::OpenSubKeyInternal(int Root, const std::wstring &SubKey, bool 
     int root = 0;
     if (CanCreate)
     {
-      DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+      // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
       root = FPluginSettings.CreateSubKey(Root, SubKey.c_str());
     }
     else
@@ -71,6 +71,7 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
     std::wstring subKey = SubKey;
     assert(subKey.empty() || (subKey[subKey.size() - 1] != '\\'));
     bool Result = true;
+    // CutToChar(subKey, L'\\', false);
     while (!subKey.empty())
     {
       root = OpenSubKeyInternal(root, CutToChar(subKey, L'\\', false), CanCreate, Path);
@@ -101,6 +102,8 @@ void TFar3Storage::CloseSubKey()
   {
     FRoot = FSubKeyIds.back();
     FSubKeyIds.pop_back();
+    // OpenSubKey(GetCurrentSubKey(), true);
+    DEBUG_PRINTF(L"GetCurrentSubKey = %s", GetCurrentSubKey().c_str());
   }
   else
   {
@@ -146,8 +149,8 @@ void TFar3Storage::GetSubKeyNames(TStrings* Strings)
 //---------------------------------------------------------------------------
 void TFar3Storage::GetValueNames(TStrings* Strings)
 {
-  ::Error(SNotImplemented, 3010);
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
+  ::Error(SNotImplemented, 3010);
   // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
