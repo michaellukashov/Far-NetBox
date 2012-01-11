@@ -44,6 +44,7 @@ TFar3Storage::~TFar3Storage()
 //---------------------------------------------------------------------------
 bool TFar3Storage::Copy(TFar3Storage * Storage)
 {
+  ::Error(SNotImplemented, 3014);
   bool Result = true;
   /*
   TRegistry * Registry = Storage->FRegistry;
@@ -205,6 +206,7 @@ void TFar3Storage::GetSubKeyNames(TStrings* Strings)
 //---------------------------------------------------------------------------
 void TFar3Storage::GetValueNames(TStrings* Strings)
 {
+  ::Error(SNotImplemented, 3010);
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   // TODO: use SettingsControl
   // FRegistry->GetValueNames(Strings);
@@ -219,6 +221,7 @@ bool TFar3Storage::DeleteValue(const std::wstring &Name)
 //---------------------------------------------------------------------------
 bool TFar3Storage::KeyExists(const std::wstring &SubKey)
 {
+  ::Error(SNotImplemented, 3011);
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   // TODO: use SettingsControl
   std::wstring K = PuttyMungeStr(SubKey);
@@ -230,6 +233,7 @@ bool TFar3Storage::KeyExists(const std::wstring &SubKey)
 //---------------------------------------------------------------------------
 bool TFar3Storage::ValueExists(const std::wstring &Value)
 {
+  ::Error(SNotImplemented, 3012);
   DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
   // TODO: use SettingsControl
   // bool Result = FRegistry->ValueExists(Value);
@@ -239,6 +243,7 @@ bool TFar3Storage::ValueExists(const std::wstring &Value)
 //---------------------------------------------------------------------------
 int TFar3Storage::BinaryDataSize(const std::wstring &Name)
 {
+  ::Error(SNotImplemented, 3013);
   // TODO: use SettingsControl
   // int Result = FRegistry->GetDataSize(Name);
   int Result = 0;
