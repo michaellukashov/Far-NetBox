@@ -183,10 +183,6 @@ bool TFar3Storage::DeleteSubKey(const std::wstring &SubKey)
 void TFar3Storage::GetSubKeyNames(TStrings* Strings)
 {
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  // TODO: use SettingsControl
-    // FarSettingsCreate settings={sizeof(FarSettingsCreate),guid,handle};
-    // if (SettingsControl(INVALID_HANDLE_VALUE,SCTL_CREATE,0,&settings))
-        // handle = settings.Handle;
   /*
   FRegistry->GetKeyNames(Strings);
   for (size_t Index = 0; Index < Strings->GetCount(); Index++)
@@ -194,6 +190,16 @@ void TFar3Storage::GetSubKeyNames(TStrings* Strings)
     Strings->PutString(Index, PuttyUnMungeStr(Strings->GetString(Index)));
   }
   */
+  FarSettingsEnum settings = {0};
+  settings.Root = FRoot;
+  if (FPluginSettings.GetSubKeyNames(settings))
+  {
+      for (size_t Index = 0; Index < settings.Count; Index++)
+      {
+        Strings->PutString(Index, PuttyUnMungeStr(settings.Items[Index].Name));
+        DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
+      }
+  }
   DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
