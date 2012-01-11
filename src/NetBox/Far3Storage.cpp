@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include <vector>
-
 #include "boostdefines.hpp"
 #include <boost/scope_exit.hpp>
 
@@ -51,7 +49,6 @@ void TFar3Storage::SetAccessMode(TStorageAccessMode value)
 bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
 {
   DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
-  // DEBUG_PRINTF(L"MungeSubKey(SubKey, Path) = %s", MungeSubKey(SubKey, Path).c_str());
   int OldRoot = FRoot;
   int root = 0;
   if (Path)
@@ -75,15 +72,6 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
       else
       {
         root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
-        /*
-        if (root == 0)
-        {
-          if (FPluginSettings.ValueExists(FRoot, SubKey.c_str()))
-          {
-            root = FRoot;
-          }
-        }
-        */
       }
   }
   DEBUG_PRINTF(L"root = %d", root);
@@ -104,10 +92,8 @@ bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool P
 void TFar3Storage::CloseSubKey()
 {
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  DEBUG_PRINTF(L"GetFullCurrentSubKey1 = %s", GetFullCurrentSubKey().c_str());
   assert(FKeyHistory->GetCount() == FSubKeyIds.size());
   THierarchicalStorage::CloseSubKey();
-  DEBUG_PRINTF(L"GetFullCurrentSubKey2 = %s", GetFullCurrentSubKey().c_str());
   if (FKeyHistory->GetCount() && FSubKeyIds.size())
   {
     FRoot = FSubKeyIds.back();
@@ -159,7 +145,6 @@ void TFar3Storage::GetValueNames(TStrings* Strings)
 {
   ::Error(SNotImplemented, 3010);
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  // TODO: use SettingsControl
   DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
@@ -172,7 +157,6 @@ bool TFar3Storage::KeyExists(const std::wstring &SubKey)
 {
   ::Error(SNotImplemented, 3011);
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  // TODO: use SettingsControl
   std::wstring K = PuttyMungeStr(SubKey);
   bool Result = true; // FPluginSettings.KeyExists(K);
   DEBUG_PRINTF(L"end, FRoot = %d, K = %s, Result = %d", FRoot, K.c_str(), Result);
@@ -182,28 +166,23 @@ bool TFar3Storage::KeyExists(const std::wstring &SubKey)
 bool TFar3Storage::ValueExists(const std::wstring &Value)
 {
   DEBUG_PRINTF(L"begin, FRoot = %d, Value = %s", FRoot, Value.c_str());
-  // ::Error(SNotImplemented, 3012);
-  // std::wstring value = L"ProxyPaswordEnc";
   bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
 int TFar3Storage::BinaryDataSize(const std::wstring &Name)
 {
-  // ::Error(SNotImplemented, 3013);
   int Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
   return Result;
 }
 //---------------------------------------------------------------------------
 bool TFar3Storage::Readbool(const std::wstring &Name, bool Default)
 {
-  // READ_REGISTRY(Readbool);
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
 TDateTime TFar3Storage::ReadDateTime(const std::wstring &Name, TDateTime Default)
 {
-  // READ_REGISTRY(ReadDateTime);
   TDateTime Result;
   double val = 0.0;
   void *value = reinterpret_cast<void *>(&val);
@@ -217,7 +196,6 @@ TDateTime TFar3Storage::ReadDateTime(const std::wstring &Name, TDateTime Default
 //---------------------------------------------------------------------------
 double TFar3Storage::ReadFloat(const std::wstring &Name, double Default)
 {
-  // READ_REGISTRY(ReadFloat);
   double Result = 0.0;
   double val = 0.0;
   void *value = reinterpret_cast<void *>(&val);
@@ -231,7 +209,6 @@ double TFar3Storage::ReadFloat(const std::wstring &Name, double Default)
 //---------------------------------------------------------------------------
 int TFar3Storage::Readint(const std::wstring &Name, int Default)
 {
-  // READ_REGISTRY(Readint);
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
@@ -242,7 +219,6 @@ __int64 TFar3Storage::ReadInt64(const std::wstring &Name, __int64 Default)
 //---------------------------------------------------------------------------
 std::wstring TFar3Storage::ReadStringRaw(const std::wstring &Name, const std::wstring &Default)
 {
-  // READ_REGISTRY(ReadString);
   std::wstring Result = FPluginSettings.Get(FRoot, Name.c_str(), Default.c_str());
   return Result;
 }
@@ -256,13 +232,11 @@ int TFar3Storage::ReadBinaryData(const std::wstring &Name,
 void TFar3Storage::Writebool(const std::wstring &Name, bool Value)
 {
   DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
-  // WRITE_REGISTRY(Writebool);
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteDateTime(const std::wstring &Name, TDateTime Value)
 {
-  // WRITE_REGISTRY(WriteDateTime);
   double val = Value.operator double();
   void *value = reinterpret_cast<void *>(&val);
   size_t sz = sizeof(val);
@@ -274,7 +248,6 @@ void TFar3Storage::WriteDateTime(const std::wstring &Name, TDateTime Value)
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteFloat(const std::wstring &Name, double Value)
 {
-  // WRITE_REGISTRY(WriteFloat);
   double val = Value.operator double();
   void *value = reinterpret_cast<void *>(&val);
   size_t sz = sizeof(val);
@@ -286,17 +259,13 @@ void TFar3Storage::WriteFloat(const std::wstring &Name, double Value)
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteStringRaw(const std::wstring &Name, const std::wstring &Value)
 {
-  // WRITE_REGISTRY(WriteString);
   FPluginSettings.Set(FRoot, Name.c_str(), Value.c_str());
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::Writeint(const std::wstring &Name, int Value)
 {
   DEBUG_PRINTF(L"begin, FRoot = %d, Name = %s", FRoot, Name.c_str());
-  // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
-  // WRITE_REGISTRY(Writeint);
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
-  // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::WriteInt64(const std::wstring &Name, __int64 Value)
