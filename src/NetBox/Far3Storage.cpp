@@ -100,20 +100,48 @@ void TFar3Storage::SetAccessMode(TStorageAccessMode value)
 bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
 {
   DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
+  // DEBUG_PRINTF(L"MungeSubKey(SubKey, Path) = %s", MungeSubKey(SubKey, Path).c_str());
   // if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
   // std::wstring K = ExcludeTrailingBackslash(GetFullCurrentSubKey() + MungeSubKey(SubKey, Path));
   // bool Result = FRegistry->OpenKey(K, CanCreate);
   // std::wstring LastElem = SubKey.substr(::LastDelimiter(ELEM, L".>") + 1, ELEM.size() - ::LastDelimiter(ELEM, L".>"))
   // std::wstring LastElem = SubKey;
-  FRoot = FPluginSettings.OpenSubKey(FRoot, FSubKey.c_str());
+  int OldRoot = FRoot;
+  if (Path)
+  {
+    std::wstring subKey = SubKey;
+    assert(subKey.empty() || (subKey[subKey.size() - 1] != '\\'));
+    bool Result = true;
+    while (!subKey.empty())
+    {
+      Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
+      // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
+    }
+    return Result;
+  }
+  else
+  {
+      if (CanCreate)
+      {
+        FRoot = FPluginSettings.CreateSubKey(FRoot, SubKey.c_str());
+      }
+      else
+      {
+        FRoot = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
+      }
+  }
   DEBUG_PRINTF(L"FRoot = %d", FRoot);
   bool Result = FRoot != 0;
   if (Result)
   {
     Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
-    FSubKey = SubKey;
+    if (Result)
+    {
+        FSubKeyIds.push_back(OldRoot);
+    }
+    // FSubKey = SubKey;
   }
-  DEBUG_PRINTF(L"K = %s, Result = %d", K.c_str(), Result);
+  DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -121,11 +149,20 @@ void TFar3Storage::CloseSubKey()
 {
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   // FRegistry->CloseKey();
+  DEBUG_PRINTF(L"GetFullCurrentSubKey1 = %s", GetFullCurrentSubKey().c_str());
+  assert(FKeyHistory->GetCount() == FSubKeyIds.size());
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->GetCount())
+  DEBUG_PRINTF(L"GetFullCurrentSubKey2 = %s", GetFullCurrentSubKey().c_str());
+  if (FKeyHistory->GetCount() && FSubKeyIds.size())
   {
     // FRegistry->OpenKey(GetFullCurrentSubKey(), true);
-    FRoot = FPluginSettings.OpenSubKey(FRoot, FSubKey.c_str()); // GetFullCurrentSubKey().c_str());
+    // FRoot = FPluginSettings.OpenSubKey(FRoot, GetFullCurrentSubKey().c_str());
+    FRoot = FSubKeyIds.back();
+    FSubKeyIds.pop_back();
+  }
+  else
+  {
+    FRoot = 0;
   }
   DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
@@ -147,6 +184,9 @@ void TFar3Storage::GetSubKeyNames(TStrings* Strings)
 {
   DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   // TODO: use SettingsControl
+    // FarSettingsCreate settings={sizeof(FarSettingsCreate),guid,handle};
+    // if (SettingsControl(INVALID_HANDLE_VALUE,SCTL_CREATE,0,&settings))
+        // handle = settings.Handle;
   /*
   FRegistry->GetKeyNames(Strings);
   for (size_t Index = 0; Index < Strings->GetCount(); Index++)

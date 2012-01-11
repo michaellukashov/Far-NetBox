@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Classes.h"
 #include "HierarchicalStorage.h"
 #include "PluginSettings.hpp"
@@ -55,8 +57,9 @@ private:
 private:
   int FRoot;
   int FFailed;
-  std::wstring FSubKey;
+  // std::wstring FSubKey;
   PluginSettings FPluginSettings;
+  std::vector<int> FSubKeyIds;
 
   void Init();
 };
