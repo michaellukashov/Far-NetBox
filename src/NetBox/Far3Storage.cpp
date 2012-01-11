@@ -189,7 +189,12 @@ bool TFar3Storage::DeleteSubKey(const std::wstring &SubKey)
   }
   // K += PuttyMungeStr(SubKey);
   // return FRegistry->DeleteKey(K);
-  return FPluginSettings.DeleteValue(FRoot, SubKey.c_str());
+  int root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
+  if (root != 0)
+  {
+    return FPluginSettings.DeleteSubKey(root);
+  }
+  return false;
 }
 //---------------------------------------------------------------------------
 void TFar3Storage::GetSubKeyNames(TStrings* Strings)
@@ -208,8 +213,11 @@ void TFar3Storage::GetSubKeyNames(TStrings* Strings)
   {
       for (size_t Index = 0; Index < settings.Count; Index++)
       {
-        Strings->PutString(Index, PuttyUnMungeStr(settings.Items[Index].Name));
         DEBUG_PRINTF(L"settings.Items[%d].Type = %d", Index, settings.Items[Index].Type);
+        if (settings.Items[Index].Type == FST_SUBKEY)
+        {
+            Strings->PutString(Index, PuttyUnMungeStr(settings.Items[Index].Name));
+        }
       }
   }
   DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
