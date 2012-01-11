@@ -534,7 +534,6 @@ void TConfiguration::CleanupRandomSeedFile()
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupIniFile()
 {
-  ::Error(SNotImplemented, 3007);
   try
   {
     if (FileExists(GetIniFileStorageName()))
@@ -544,10 +543,12 @@ void TConfiguration::CleanupIniFile()
         RaiseLastOSError();
       }
     }
-    // if (GetStorage() == stIniFile)
+#if 0
+    if (GetStorage() == stIniFile)
     {
       FDontSave = true;
     }
+#endif
   }
   catch (const std::exception &E)
   {
