@@ -372,7 +372,7 @@ void TWebDAVFileSystem::Idle()
   return;
 }
 //---------------------------------------------------------------------------
-std::wstring TWebDAVFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
+std::wstring TWebDAVFileSystem::AbsolutePath(const std::wstring &Path, bool /*Local*/)
 {
   return ::AbsolutePath(GetCurrentDirectory(), Path);
 }
@@ -419,14 +419,15 @@ bool TWebDAVFileSystem::IsCapable(int Capability) const
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TWebDAVFileSystem::DelimitStr(std::wstring Str)
+std::wstring TWebDAVFileSystem::DelimitStr(const std::wstring &Str)
 {
-  if (!Str.empty())
+  std::wstring str = Str;
+  if (!str.empty())
   {
-    Str = ::DelimitStr(Str, L"\\`$\"");
-    if (Str[0] == L'-') Str = L"./" + Str;
+    str = ::DelimitStr(str, L"\\`$\"");
+    if (str[0] == L'-') str = L"./" + str;
   }
-  return Str;
+  return str;
 }
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::ActualCurrentDirectory()
@@ -952,7 +953,7 @@ bool TWebDAVFileSystem::ConfirmOverwrite(std::wstring & FileName,
 
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CustomCommandOnFile(const std::wstring &FileName,
-    const TRemoteFile * File, std::wstring Command, int Params,
+    const TRemoteFile * File, const std::wstring &Command, int Params,
     const captureoutput_slot_type &OutputEvent)
 {
   assert(File);
@@ -1591,7 +1592,7 @@ void TWebDAVFileSystem::Sink(const std::wstring &FileName,
     }
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::SinkFile(std::wstring FileName,
+void TWebDAVFileSystem::SinkFile(const std::wstring &FileName,
     const TRemoteFile * File, void * Param)
 {
     TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);

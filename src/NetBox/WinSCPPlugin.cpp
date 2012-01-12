@@ -556,11 +556,12 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
+int TWinSCPPlugin::MoreMessageDialog(const std::wstring &Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
   int Result;
+  std::wstring str = Str;
   TStrings * ButtonLabels = new TStringList();
   {
       BOOST_SCOPE_EXIT ( (&ButtonLabels) )
@@ -603,7 +604,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
         }
         if (!Params->TimerMessage.empty())
         {
-          Str = Params->TimerMessage;
+          str = Params->TimerMessage;
         }
       }
     }
@@ -700,7 +701,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
     farmessageclick_slot_type slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
     FarParams.ClickEvent = &slot;
 
-    std::wstring DialogStr = Str;
+    std::wstring DialogStr = str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))
     {
       FarParams.MoreMessages = MoreMessages;

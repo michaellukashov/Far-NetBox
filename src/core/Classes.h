@@ -275,7 +275,7 @@ public:
     }
     virtual ~TStrings()
     {}
-    size_t Add(std::wstring S);
+    size_t Add(const std::wstring &S);
     virtual size_t GetCount() const = 0;
     virtual void Delete(size_t Index) = 0;
     virtual std::wstring GetString(size_t Index) const = 0;
@@ -288,7 +288,7 @@ public:
     virtual void EndUpdate();
     virtual void SetUpdateState(bool Updating);
     virtual TObject *GetObject(int Index);
-    int AddObject(std::wstring S, TObject *AObject);
+    int AddObject(const std::wstring &S, TObject *AObject);
     virtual void InsertObject(int Index, const std::wstring &Key, TObject *AObject);
     bool Equals(TStrings *value);
     virtual void Clear() = 0;
@@ -349,8 +349,8 @@ public:
     virtual void Assign(TPersistent *Source);
     virtual size_t GetCount() const;
     virtual void Clear();
-    size_t Add(std::wstring S);
-    int AddObject(std::wstring S, TObject *AObject);
+    size_t Add(const std::wstring &S);
+    int AddObject(const std::wstring &S, TObject *AObject);
     virtual bool Find(const std::wstring &S, int &Index);
     int IndexOf(const std::wstring &S);
     virtual void PutString(int Index, const std::wstring &S);
@@ -473,11 +473,11 @@ public:
     int GetDirIconIndex(BOOL bSmallIcon);
 
     //get a handle to the icon
-    HICON GetFileIconHandle(std::wstring strFileName, BOOL bSmallIcon);
+    HICON GetFileIconHandle(const std::wstring &strFileName, BOOL bSmallIcon);
     HICON GetFolderIconHandle(BOOL bSmallIcon );
 
     //get file type
-    std::wstring GetFileType(std::wstring strFileName);
+    std::wstring GetFileType(const std::wstring &strFileName);
 };
 
 class EAbort : public std::exception

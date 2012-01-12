@@ -11,7 +11,7 @@
 #include "Common.h"
 
 //---------------------------------------------------------------------------
-std::wstring StripHotKey(std::wstring Text)
+std::wstring StripHotKey(const std::wstring &Text)
 {
     std::wstring Result = Text;
     size_t Len = Result.size();

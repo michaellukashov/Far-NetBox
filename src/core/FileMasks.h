@@ -9,7 +9,7 @@
 class EFileMasksException : public std::exception
 {
 public:
-  EFileMasksException(std::wstring Message, int ErrorStart, int ErrorLen);
+  EFileMasksException(const std::wstring &Message, int ErrorStart, int ErrorLen);
   int ErrorStart;
   int ErrorLen;
 };
@@ -106,9 +106,9 @@ private:
   void ThrowError(int Start, int End);
 };
 //---------------------------------------------------------------------------
-std::wstring MaskFileName(std::wstring FileName, const std::wstring &Mask);
+std::wstring MaskFileName(const std::wstring &FileName, const std::wstring &Mask);
 bool IsFileNameMask(const std::wstring &Mask);
-std::wstring DelimitFileNameMask(std::wstring Mask);
+std::wstring DelimitFileNameMask(const std::wstring &Mask);
 //---------------------------------------------------------------------------
 typedef void (TObject::*TCustomCommandPatternEvent)
   (int Index, const std::wstring &Pattern, void * Arg, std::wstring & Replacement,

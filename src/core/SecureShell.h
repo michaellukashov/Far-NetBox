@@ -115,11 +115,11 @@ public:
   bool Peek(char *& Buf, int Len);
   std::wstring ReceiveLine();
   void Send(const char * Buf, int Len);
-  void SendStr(std::wstring Str);
+  void SendStr(const std::wstring &Str);
   void SendSpecial(int Code);
   void Idle(unsigned int MSec = 0);
   void SendEOF();
-  void SendLine(std::wstring Line);
+  void SendLine(const std::wstring &Line);
   void SendNull();
 
   const TSessionInfo & GetSessionInfo();

@@ -75,7 +75,7 @@ int StartThread(void *SecurityAttributes, unsigned StackSize,
     CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
-void CopyToClipboard(std::wstring Text)
+void CopyToClipboard(const std::wstring &Text)
 {
   assert(FarPlugin != NULL);
   FarPlugin->FarCopyToClipboard(Text);

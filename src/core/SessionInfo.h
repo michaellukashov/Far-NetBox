@@ -245,7 +245,7 @@ public:
   std::wstring GetSessionName();
   // __property std::wstring Name = { read = FName, write = FName };
   std::wstring GetName() { return FName; }
-  void SetName(std::wstring value) { FName = value; }
+  void SetName(const std::wstring &value) { FName = value; }
   // __property Count;
 
 protected:
@@ -277,9 +277,9 @@ private:
   void StateChange();
   void OpenLogFile();
   std::wstring GetLogFileName();
-  void DoAdd(TLogLineType Type, std::wstring Line,
+  void DoAdd(TLogLineType Type, const std::wstring &Line,
     const doaddlog_slot_type &func);
-  void DoAddToParent(TLogLineType aType, const std::wstring & aLine);
+  void DoAddToParent(TLogLineType aType, const std::wstring &aLine);
   void DoAddToSelf(TLogLineType aType, const std::wstring &aLine);
   void DoAddStartupInfo(TSessionData * Data);
 };

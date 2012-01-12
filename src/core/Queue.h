@@ -157,7 +157,7 @@ protected:
     TStrings *MoreMessages, int Answers, const TQueryParams *Params, int & Answer,
     TQueryType Type, void *Arg);
   void DoPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    std::wstring Name, std::wstring Instructions, TStrings *Prompts,
+    const std::wstring &Name, const std::wstring &Instructions, TStrings *Prompts,
     TStrings *Results, bool & Result, void *Arg);
   void DoShowExtendedException(TTerminal *Terminal,
     const std::exception *E, void *Arg);

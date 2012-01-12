@@ -472,7 +472,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(std::wstring FileName)
+TKeyType KeyType(const std::wstring &FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);

@@ -812,7 +812,7 @@ void TTerminalQueue::DoQueryUser(TObject * Sender,
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, std::wstring Name, std::wstring Instructions,
+  TPromptKind Kind, const std::wstring &Name, const std::wstring &Instructions,
   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg)
 {
   if (!GetOnPromptUser().empty())

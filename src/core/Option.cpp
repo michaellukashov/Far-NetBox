@@ -11,7 +11,7 @@ TOptions::TOptions()
   FParamCount = 0;
 }
 //---------------------------------------------------------------------------
-void TOptions::Add(std::wstring Value)
+void TOptions::Add(const std::wstring &Value)
 {
   if (!FNoMoreSwitches &&
       (Value.size() == 2) &&

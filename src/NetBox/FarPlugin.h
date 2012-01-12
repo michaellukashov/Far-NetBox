@@ -337,19 +337,19 @@ public:
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
     bool CheckForEsc();
-    bool Viewer(std::wstring FileName, unsigned int Flags,
+    bool Viewer(const std::wstring &FileName, unsigned int Flags,
         std::wstring Title = L"");
-    bool Editor(std::wstring FileName, unsigned int Flags,
+    bool Editor(const std::wstring &FileName, unsigned int Flags,
         std::wstring Title = L"");
 
     int FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int Param1, void *Param2 = NULL);
     DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(EDITOR_CONTROL_COMMANDS Command, void *Param);
     unsigned int FarSystemSettings();
-    void Text(int X, int Y, int Color, std::wstring Str);
+    void Text(int X, int Y, int Color, const std::wstring &Str);
     void FlushText();
-    void WriteConsole(std::wstring Str);
-    void FarCopyToClipboard(std::wstring Str);
+    void WriteConsole(const std::wstring &Str);
+    void FarCopyToClipboard(const std::wstring &Str);
     void FarCopyToClipboard(TStrings *Strings);
     int FarVersion();
     std::wstring FormatFarVersion(VersionInfo &Info);
@@ -665,7 +665,7 @@ public:
     virtual ~TFarMenuItems()
     {}
     void AddSeparator(bool Visible = true);
-    virtual int Add(std::wstring Text, bool Visible = true);
+    virtual int Add(const std::wstring &Text, bool Visible = true);
 
     virtual void Clear();
     virtual void Delete(int Index);
@@ -719,7 +719,7 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth);
+void FarWrapText(const std::wstring &Text, TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------

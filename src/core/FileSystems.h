@@ -39,7 +39,7 @@ public:
   virtual void Close() = 0;
   virtual bool GetActive() = 0;
   virtual void Idle() = 0;
-  virtual std::wstring AbsolutePath(std::wstring Path, bool Local) = 0;
+  virtual std::wstring AbsolutePath(const std::wstring &Path, bool Local) = 0;
   virtual void AnyCommand(const std::wstring &Command,
     const captureoutput_slot_type *OutputEvent) = 0;
   virtual void ChangeDirectory(const std::wstring &Directory) = 0;
@@ -66,7 +66,7 @@ public:
     const TRemoteFile * File, int Params,
     TRmSessionAction & Action) = 0;
   virtual void CustomCommandOnFile(const std::wstring &FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent) = 0;
+    const TRemoteFile * File, const std::wstring &Command, int Params, const captureoutput_slot_type &OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual bool IsCapable(int Capability) const = 0;

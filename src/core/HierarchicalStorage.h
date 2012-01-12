@@ -81,7 +81,7 @@ protected:
   std::wstring GetCurrentSubKeyMunged();
   static std::wstring IncludeTrailingBackslash(const std::wstring & S);
   static std::wstring ExcludeTrailingBackslash(const std::wstring & S);
-  std::wstring MungeSubKey(std::wstring Key, bool Path);
+  std::wstring MungeSubKey(const std::wstring &Key, bool Path);
 };
 //---------------------------------------------------------------------------
 class TRegistryStorage : public THierarchicalStorage

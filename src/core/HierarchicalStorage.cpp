@@ -112,26 +112,27 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(L"", CanCreate);
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::MungeSubKey(std::wstring Key, bool Path)
+std::wstring THierarchicalStorage::MungeSubKey(const std::wstring &Key, bool Path)
 {
   std::wstring Result;
   // DEBUG_PRINTF(L"Key = %s, Path = %d", Key.c_str(), Path);
+  std::wstring key = Key;
   if (Path)
   {
-    assert(Key.empty() || (Key[Key.size() - 1] != '\\'));
-    while (!Key.empty())
+    assert(key.empty() || (key[key.size() - 1] != '\\'));
+    while (!key.empty())
     {
       if (!Result.empty())
       {
         Result += '\\';
       }
-      Result += MungeStr(CutToChar(Key, L'\\', false));
-      // DEBUG_PRINTF(L"Key = %s, Result = %s", Key.c_str(), Result.c_str());
+      Result += MungeStr(CutToChar(key, L'\\', false));
+      // DEBUG_PRINTF(L"key = %s, Result = %s", key.c_str(), Result.c_str());
     }
   }
   else
   {
-    Result = MungeStr(Key);
+    Result = MungeStr(key);
   }
   // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;

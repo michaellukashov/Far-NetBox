@@ -1876,21 +1876,22 @@ std::wstring DecodeUrlChars(const std::wstring &S)
   return str;
 }
 //---------------------------------------------------------------------------
-std::wstring DoEncodeUrl(std::wstring S, std::wstring Chars)
+std::wstring DoEncodeUrl(const std::wstring &S, const std::wstring &Chars)
 {
   size_t i = 0;
-  while (i < S.size())
+  std::wstring s = S;
+  while (i < s.size())
   {
-    if (Chars.find_first_of(S[i]) != std::wstring::npos)
+    if (Chars.find_first_of(s[i]) != std::wstring::npos)
     {
-      std::wstring H = CharToHex(S[i]);
-      S.insert(i + 1, H);
-      S[i] = L'%';
+      std::wstring H = CharToHex(s[i]);
+      s.insert(i + 1, H);
+      s[i] = L'%';
       i += H.size();
     }
     i++;
   }
-  return S;
+  return s;
 }
 //---------------------------------------------------------------------------
 std::wstring EncodeUrlChars(const std::wstring &S, const std::wstring &Ignore)

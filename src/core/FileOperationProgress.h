@@ -98,12 +98,12 @@ public:
   void AddResumed(__int64 ASize);
   void Clear();
   unsigned int CPS();
-  void Finish(std::wstring FileName, bool Success,
+  void Finish(const std::wstring &FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   unsigned long LocalBlockSize();
   bool IsLocallyDone();
   bool IsTransferDone();
-  void SetFile(std::wstring AFileName, bool AFileInProgress = true);
+  void SetFile(const std::wstring &AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   int OperationProgress();
   unsigned long TransferBlockSize();

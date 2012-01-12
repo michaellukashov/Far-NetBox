@@ -30,7 +30,7 @@ public:
   virtual void Close();
   virtual bool GetActive();
   virtual void Idle();
-  virtual std::wstring AbsolutePath(std::wstring Path, bool Local);
+  virtual std::wstring AbsolutePath(const std::wstring &Path, bool Local);
   virtual void AnyCommand(const std::wstring &Command,
     const captureoutput_slot_type *OutputEvent);
   virtual void ChangeDirectory(const std::wstring &Directory);
@@ -56,7 +56,7 @@ public:
   virtual void DeleteFile(const std::wstring &FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
   virtual void CustomCommandOnFile(const std::wstring &FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
+    const TRemoteFile * File, const std::wstring &Command, int Params, const captureoutput_slot_type &OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(int Capability) const;
@@ -109,7 +109,7 @@ protected:
     std::wstring Error = L"", unsigned int * Code = NULL,
     TStrings ** Response = NULL);
   void ResetReply();
-  void HandleReplyStatus(std::wstring Response);
+  void HandleReplyStatus(const std::wstring &Response);
   void DoWaitForReply(unsigned int& ReplyToAwait, bool WantLastCode);
   bool KeepWaitingForReply(unsigned int& ReplyToAwait, bool WantLastCode);
   inline bool NoFinalLastCode();
@@ -144,7 +144,7 @@ protected:
     const TRemoteFile * File, const std::wstring &TargetDir,
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void SinkFile(std::wstring FileName, const TRemoteFile * File, void * Param);
+  void SinkFile(const std::wstring &FileName, const TRemoteFile * File, void * Param);
   void SourceRobust(const std::wstring &FileName,
     const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
@@ -174,7 +174,7 @@ protected:
   void SetLastCode(int Code);
 
   static bool Unquote(std::wstring & Str);
-  static std::wstring ExtractStatusMessage(std::wstring Status);
+  static std::wstring ExtractStatusMessage(std::wstring &Status);
 
 private:
   enum TCommand

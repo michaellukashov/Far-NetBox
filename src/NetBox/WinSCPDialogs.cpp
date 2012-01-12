@@ -129,7 +129,7 @@ public:
   void SetTab(int value) { FTab = value; }
   // __property std::wstring GetTabName() = { read = FTabName, write = SetTabName };
   std::wstring GetTabName() { return FTabName; }
-  void SetTabName(std::wstring value);
+  void SetTabName(const std::wstring &value);
 
 private:
   std::wstring FTabName;
@@ -261,8 +261,9 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   SetOnClick(boost::bind(&TTabbedDialog::TabButtonClick, Dialog, _1, _2));
 }
 //---------------------------------------------------------------------------
-void TTabButton::SetTabName(std::wstring value)
+void TTabButton::SetTabName(const std::wstring &Value)
 {
+  std::wstring value = Value;
   if (FTabName != value)
   {
     std::wstring C;
@@ -1061,7 +1062,7 @@ private:
   void UrlTextClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 };
 //---------------------------------------------------------------------------
-std::wstring ReplaceCopyright(std::wstring S)
+std::wstring ReplaceCopyright(const std::wstring &S)
 {
   return ::StringReplace(S, L"©", L"(c)");
 }
@@ -1263,7 +1264,7 @@ private:
   TFarCheckBox * SavePasswordCheck;
 
   void ShowPromptClick(TFarButton * Sender, bool & Close);
-  void GenerateLabel(std::wstring Caption, bool & Truncated);
+  void GenerateLabel(const std::wstring &Caption, bool & Truncated);
   TFarEdit * GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
     std::wstring Instructions, TStrings * Prompts, bool & Truncated);
@@ -1330,25 +1331,26 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 //---------------------------------------------------------------------------
-void TPasswordDialog::GenerateLabel(std::wstring Caption,
+void TPasswordDialog::GenerateLabel(const std::wstring &Caption,
   bool & Truncated)
 {
+  std::wstring caption = Caption;
   TFarText * Result = new TFarText(this);
 
   if (!FPrompt.empty())
   {
     FPrompt += L"\n\n";
   }
-  FPrompt += Caption;
+  FPrompt += caption;
 
-  if (GetSize().x - 10 < static_cast<int>(Caption.size()))
+  if (GetSize().x - 10 < static_cast<int>(caption.size()))
   {
-    Caption.resize(GetSize().x - 10 - 4);
-    Caption += L" ...";
+    caption.resize(GetSize().x - 10 - 4);
+    caption += L" ...";
     Truncated = true;
   }
 
-  Result->SetCaption(Caption);
+  Result->SetCaption(caption);
 }
 //---------------------------------------------------------------------------
 TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
@@ -1440,7 +1442,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
-  TPromptKind Kind, std::wstring Name, std::wstring Instructions, TStrings * Prompts,
+  TPromptKind Kind, const std::wstring &Name, const std::wstring &Instructions, TStrings * Prompts,
   TStrings * Results, bool StoredCredentialsTried)
 {
   bool Result;
@@ -1457,7 +1459,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::BannerDialog(std::wstring SessionName,
+bool TWinSCPFileSystem::BannerDialog(const std::wstring &SessionName,
   const std::wstring &Banner, bool & NeverShowAgain, int Options)
 {
   bool Result;
@@ -5170,7 +5172,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::CopyParamDialog(std::wstring Caption,
+bool TWinSCPPlugin::CopyParamDialog(const std::wstring &Caption,
   TCopyParamType & CopyParam, int CopyParamAttrs)
 {
   bool Result;

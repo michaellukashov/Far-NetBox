@@ -39,7 +39,7 @@ public:
   void SetPluginsMenuCommands(bool value) { FPluginsMenuCommands = value; }
   // __property std::wstring CommandPrefixes = { read = FCommandPrefixes, write = FCommandPrefixes };
   std::wstring GetCommandPrefixes() { return FCommandPrefixes; }
-  void SetCommandPrefixes(std::wstring value) { FCommandPrefixes = value; }
+  void SetCommandPrefixes(const std::wstring &value) { FCommandPrefixes = value; }
   // __property bool HostNameInTitle = { read = FHostNameInTitle, write = FHostNameInTitle };
   bool GetHostNameInTitle() { return FHostNameInTitle; }
   void SetHostNameInTitle(bool value) { FHostNameInTitle = value; }
@@ -52,16 +52,16 @@ public:
   void SetFullScreenDetailed(bool value) { FFullScreenDetailed = value; }
   // __property std::wstring ColumnTypesDetailed = { read = FColumnTypesDetailed, write = FColumnTypesDetailed };
   std::wstring GetColumnTypesDetailed() { return FColumnTypesDetailed; }
-  void SetColumnTypesDetailed(std::wstring value) { FColumnTypesDetailed = value; }
+  void SetColumnTypesDetailed(const std::wstring &value) { FColumnTypesDetailed = value; }
   // __property std::wstring ColumnWidthsDetailed = { read = FColumnWidthsDetailed, write = FColumnWidthsDetailed };
   std::wstring GetColumnWidthsDetailed() { return FColumnWidthsDetailed; }
-  void SetColumnWidthsDetailed(std::wstring value) { FColumnWidthsDetailed = value; }
+  void SetColumnWidthsDetailed(const std::wstring &value) { FColumnWidthsDetailed = value; }
   // __property std::wstring StatusColumnTypesDetailed = { read = FStatusColumnTypesDetailed, write = FStatusColumnTypesDetailed };
   std::wstring GetStatusColumnTypesDetailed() { return FStatusColumnTypesDetailed; }
-  void SetStatusColumnTypesDetailed(std::wstring value) { FStatusColumnTypesDetailed = value; }
+  void SetStatusColumnTypesDetailed(const std::wstring &value) { FStatusColumnTypesDetailed = value; }
   // __property std::wstring StatusColumnWidthsDetailed = { read = FStatusColumnWidthsDetailed, write = FStatusColumnWidthsDetailed };
   std::wstring GetStatusColumnWidthsDetailed() { return FStatusColumnWidthsDetailed; }
-  void SetStatusColumnWidthsDetailed(std::wstring value) { FStatusColumnWidthsDetailed = value; }
+  void SetStatusColumnWidthsDetailed(const std::wstring &value) { FStatusColumnWidthsDetailed = value; }
   // __property bool EditorDownloadDefaultMode = { read = FEditorDownloadDefaultMode, write = FEditorDownloadDefaultMode };
   bool GetEditorDownloadDefaultMode() { return FEditorDownloadDefaultMode; }
   void SetEditorDownloadDefaultMode(bool value) { FEditorDownloadDefaultMode = value; }
@@ -80,20 +80,20 @@ public:
 
   // __property std::wstring ApplyCommandCommand = { read = FApplyCommandCommand, write = FApplyCommandCommand };
   std::wstring GetApplyCommandCommand() { return FApplyCommandCommand; }
-  void SetApplyCommandCommand(std::wstring value) { FApplyCommandCommand = value; }
+  void SetApplyCommandCommand(const std::wstring &value) { FApplyCommandCommand = value; }
   // __property int ApplyCommandParams = { read = FApplyCommandParams, write = FApplyCommandParams };
   int GetApplyCommandParams() { return FApplyCommandParams; }
   void SetApplyCommandParams(int value) { FApplyCommandParams = value; }
 
   // __property std::wstring PageantPath = { read = FPageantPath, write = FPageantPath };
   std::wstring GetPageantPath() const { return FPageantPath; }
-  void SetPageantPath(std::wstring value) { FPageantPath = value; }
+  void SetPageantPath(const std::wstring &value) { FPageantPath = value; }
   // __property std::wstring PuttygenPath = { read = FPuttygenPath, write = FPuttygenPath };
   std::wstring GetPuttygenPath() const { return FPuttygenPath; }
-  void SetPuttygenPath(std::wstring value) { FPuttygenPath = value; }
+  void SetPuttygenPath(const std::wstring &value) { FPuttygenPath = value; }
   // __property TBookmarkList * Bookmarks[wstring Key] = { read = GetBookmarks, write = SetBookmarks };
-  TBookmarkList * GetBookmark(std::wstring Key);
-  void SetBookmark(std::wstring Key, TBookmarkList * value);
+  TBookmarkList * GetBookmark(const std::wstring &Key);
+  void SetBookmark(const std::wstring &Key, TBookmarkList * value);
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);

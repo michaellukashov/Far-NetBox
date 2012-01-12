@@ -258,7 +258,7 @@ bool AnsiContainsText(const std::wstring &str1, const std::wstring &str2);
 class EOSError : public std::exception
 {
 public:
-    EOSError(std::wstring msg, DWORD code) : std::exception(::W2MB(msg.c_str()).c_str()),
+    EOSError(const std::wstring &msg, DWORD code) : std::exception(::W2MB(msg.c_str()).c_str()),
         ErrorCode(code)
     {
     }
