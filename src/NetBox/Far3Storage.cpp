@@ -46,44 +46,47 @@ void TFar3Storage::SetAccessMode(TStorageAccessMode value)
   THierarchicalStorage::SetAccessMode(value);
 }
 //---------------------------------------------------------------------------
+int TFar3Storage::OpenSubKeyInternal(int Root, const std::wstring &SubKey, bool CanCreate, bool Path)
+{
+    int root = 0;
+    if (CanCreate)
+    {
+      DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
+      root = FPluginSettings.CreateSubKey(Root, SubKey.c_str());
+    }
+    else
+    {
+      root = FPluginSettings.OpenSubKey(Root, SubKey.c_str());
+    }
+    return root;
+}
+//---------------------------------------------------------------------------
 bool TFar3Storage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
 {
   // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
   int OldRoot = FRoot;
-  int root = 0;
-  if (Path)
+  int root = FRoot;
+  bool Result = false;
   {
     std::wstring subKey = SubKey;
     assert(subKey.empty() || (subKey[subKey.size() - 1] != '\\'));
     bool Result = true;
     while (!subKey.empty())
     {
-      Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
+      root = OpenSubKeyInternal(root, CutToChar(subKey, L'\\', false), CanCreate, Path);
+      Result &= root != 0;
       // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
     }
-    return Result;
-  }
-  else
-  {
-      if (CanCreate)
-      {
-        root = FPluginSettings.CreateSubKey(FRoot, SubKey.c_str());
-      }
-      else
-      {
-        root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
-      }
-  }
-  // DEBUG_PRINTF(L"root = %d", root);
-  bool Result = root != 0;
-  if (Result)
-  {
-    Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
     if (Result)
     {
-        FSubKeyIds.push_back(OldRoot);
-        FRoot = root;
+      Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
+      if (Result)
+      {
+          FSubKeyIds.push_back(OldRoot);
+          FRoot = root;
+      }
     }
+    return Result;
   }
   // DEBUG_PRINTF(L"end, Result = %d", Result);
   return Result;

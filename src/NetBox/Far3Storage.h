@@ -53,6 +53,7 @@ protected:
 
 private:
   std::wstring GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
+  int OpenSubKeyInternal(int Root, const std::wstring &SubKey, bool CanCreate, bool Path);
 
 private:
   int FRoot;
