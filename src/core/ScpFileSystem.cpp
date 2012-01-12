@@ -78,7 +78,7 @@ public:
   TStrings * CreateCommandList();
   std::wstring FullCommand(TFSCommand Cmd, ...);
   std::wstring FullCommand(TFSCommand Cmd, va_list args);
-  static std::wstring ExtractCommand(std::wstring Command);
+  static std::wstring ExtractCommand(const std::wstring &Command);
   // __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
   int GetMaxLines(TFSCommand Cmd);
   // __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
@@ -91,7 +91,7 @@ public:
   bool GetOneLineCommand(TFSCommand Cmd);
   // __property std::wstring Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
   std::wstring GetCommand(TFSCommand Cmd);
-  void SetCommand(TFSCommand Cmd, std::wstring value);
+  void SetCommand(TFSCommand Cmd, const std::wstring &value);
   // __property std::wstring FirstLine = { read = GetFirstLine };
   std::wstring GetFirstLine();
   // __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
@@ -103,7 +103,7 @@ public:
   void SetSessionData(TSessionData * value) { FSessionData = value; }
   // __property std::wstring ReturnVar  = { read=GetReturnVar, write=FReturnVar };
   std::wstring GetReturnVar();
-  void SetReturnVar(std::wstring value) { FReturnVar = value; }
+  void SetReturnVar(const std::wstring &value) { FReturnVar = value; }
 };
 //===========================================================================
 const wchar_t NationalVars[NationalVarCount][15] =
@@ -201,7 +201,7 @@ bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/)
   return true; //CommandSet[Cmd].OneLineCommand;
 }
 //---------------------------------------------------------------------------
-void TCommandSet::SetCommand(TFSCommand Cmd, std::wstring value)
+void TCommandSet::SetCommand(TFSCommand Cmd, const std::wstring &value)
 {
   CHECK_CMD;
   wcscpy(const_cast<wchar_t *>(CommandSet[Cmd].Command), value.substr(0, MaxCommandLen - 1).c_str());
@@ -289,14 +289,15 @@ std::wstring TCommandSet::GetReturnVar()
       return std::wstring(L"$") + GetSessionData()->GetReturnVar();
 }
 //---------------------------------------------------------------------------
-std::wstring TCommandSet::ExtractCommand(std::wstring Command)
+std::wstring TCommandSet::ExtractCommand(const std::wstring &Command)
 {
-  size_t P = Command.find_first_of(L" ");
+  std::wstring command = Command;
+  size_t P = command.find_first_of(L" ");
   if (P != std::wstring::npos)
   {
-    Command.resize(P);
+    command.resize(P);
   }
-  return Command;
+  return command;
 }
 //---------------------------------------------------------------------------
 TStrings * TCommandSet::CreateCommandList()
@@ -448,7 +449,7 @@ void TSCPFileSystem::Idle()
   FSecureShell->Idle();
 }
 //---------------------------------------------------------------------------
-std::wstring TSCPFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
+std::wstring TSCPFileSystem::AbsolutePath(const std::wstring &Path, bool /*Local*/)
 {
   return ::AbsolutePath(GetCurrentDirectory(), Path);
 }
@@ -494,14 +495,15 @@ bool TSCPFileSystem::IsCapable(int Capability) const
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TSCPFileSystem::DelimitStr(std::wstring Str)
+std::wstring TSCPFileSystem::DelimitStr(const std::wstring &Str)
 {
-  if (!Str.empty())
+  std::wstring str = Str;
+  if (!str.empty())
   {
-    Str = ::DelimitStr(Str, L"\\`$\"");
-    if (Str[0] == L'-') Str = L"./" + Str;
+    str = ::DelimitStr(str, L"\\`$\"");
+    if (str[0] == L'-') str = L"./" + str;
   }
-  return Str;
+  return str;
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::EnsureLocation()
@@ -554,7 +556,7 @@ bool TSCPFileSystem::IsTotalListingLine(const std::wstring &Line)
   return !::AnsiCompareIC(Line.substr(0, 5), L"total");
 }
 //---------------------------------------------------------------------------
-bool TSCPFileSystem::RemoveLastLine(std::wstring & Line,
+bool TSCPFileSystem::RemoveLastLine(std::wstring &Line,
     int & ReturnCode, std::wstring LastLine)
 {
   bool IsLastLine = false;
@@ -837,7 +839,7 @@ void TSCPFileSystem::DetectReturnVar()
   }
 }
 //---------------------------------------------------------------------------
-void TSCPFileSystem::ClearAlias(std::wstring Alias)
+void TSCPFileSystem::ClearAlias(const std::wstring &Alias)
 {
   if (!Alias.empty())
   {
@@ -1241,7 +1243,7 @@ void TSCPFileSystem::CalculateFilesChecksum(const std::wstring & /*Alg*/,
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CustomCommandOnFile(const std::wstring &FileName,
-    const TRemoteFile * File, std::wstring Command, int Params,
+    const TRemoteFile * File, const std::wstring &Command, int Params,
     const captureoutput_slot_type &OutputEvent)
 {
   assert(File);

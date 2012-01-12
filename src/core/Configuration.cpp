@@ -489,7 +489,7 @@ void TConfiguration::CleanupConfiguration()
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::CleanupRegistry(std::wstring CleanupSubKey)
+void TConfiguration::CleanupRegistry(const std::wstring &CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
   {
@@ -556,7 +556,7 @@ void TConfiguration::CleanupIniFile()
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::EncryptPassword(std::wstring Password, std::wstring Key)
+std::wstring TConfiguration::EncryptPassword(const std::wstring &Password, const std::wstring &Key)
 {
   if (Password.empty())
   {
@@ -568,7 +568,7 @@ std::wstring TConfiguration::EncryptPassword(std::wstring Password, std::wstring
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::DecryptPassword(std::wstring Password, std::wstring Key)
+std::wstring TConfiguration::DecryptPassword(const std::wstring &Password, const std::wstring &Key)
 {
   if (Password.empty())
   {
@@ -580,7 +580,7 @@ std::wstring TConfiguration::DecryptPassword(std::wstring Password, std::wstring
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::StronglyRecryptPassword(std::wstring Password, std::wstring /*Key*/)
+std::wstring TConfiguration::StronglyRecryptPassword(const std::wstring &Password, const std::wstring & /*Key*/)
 {
   return Password;
 }
@@ -672,14 +672,15 @@ std::wstring TConfiguration::GetProductVersion()
   return GetFileProductVersion(L"");
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::TrimVersion(std::wstring Version)
+std::wstring TConfiguration::TrimVersion(const std::wstring &Version)
 {
-  while ((Version.find_first_of(L".") != ::LastDelimiter(Version, L".")) &&
-    (Version.substr(Version.size() - 1, 2) == L".0"))
+  std::wstring version = Version;
+  while ((version.find_first_of(L".") != ::LastDelimiter(version, L".")) &&
+    (version.substr(version.size() - 1, 2) == L".0"))
   {
-    Version.resize(Version.size() - 2);
+    version.resize(version.size() - 2);
   }
-  return Version;
+  return version;
 }
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetVersionStr()
@@ -765,7 +766,7 @@ std::wstring TConfiguration::GetRegistryStorageKey()
   return ::GetRegistryKey();
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetIniFileStorageName(std::wstring value)
+void TConfiguration::SetIniFileStorageName(const std::wstring &value)
 {
   ::Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
@@ -862,7 +863,7 @@ TStorage TConfiguration::GetStorage()
   return FStorage;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetRandomSeedFile(std::wstring value)
+void TConfiguration::SetRandomSeedFile(const std::wstring &value)
 {
   if (GetRandomSeedFile() != value)
   {
@@ -891,7 +892,7 @@ std::wstring TConfiguration::GetRandomSeedFileName()
   return StripPathQuotes(::Trim(ExpandEnvironmentVariables(FRandomSeedFile)));
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetPuttyRegistryStorageKey(std::wstring value)
+void TConfiguration::SetPuttyRegistryStorageKey(const std::wstring &value)
 {
   SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
 }
@@ -920,7 +921,7 @@ void TConfiguration::SetLogging(bool value)
   }
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogFileName(std::wstring value)
+void TConfiguration::SetLogFileName(const std::wstring &value)
 {
   if (GetLogFileName() != value)
   {

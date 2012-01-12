@@ -19,7 +19,7 @@ std::wstring GetRegistryKey();
 void Busy(bool Start);
 std::wstring AppNameString();
 std::wstring SshVersionString();
-void CopyToClipboard(std::wstring Text);
+void CopyToClipboard(const std::wstring &Text);
 int StartThread(void * SecurityAttributes, unsigned StackSize,
   void *Parameter, unsigned CreationFlags,
   DWORD &ThreadId);

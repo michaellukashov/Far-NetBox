@@ -239,7 +239,7 @@ public:
     Parameter(L"command", Command);
   }
 
-  void AddOutput(std::wstring Output, bool StdError)
+  void AddOutput(const std::wstring &Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
     int Index = FNames->IndexOf(Name);
@@ -640,10 +640,11 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
+void TSessionLog::DoAdd(TLogLineType Type, const std::wstring &Line,
   const doaddlog_slot_type &func)
 {
   std::wstring Prefix;
+  std::wstring line = Line;
 
   if ((Type != llAction) && !GetName().empty())
   {
@@ -651,13 +652,13 @@ void TSessionLog::DoAdd(TLogLineType Type, std::wstring Line,
   }
   doaddlog_signal_type sig;
   sig.connect(func);
-  while (!Line.empty())
+  while (!line.empty())
   {
-    sig(Type, Prefix + CutToChar(Line, '\n', false));
+    sig(Type, Prefix + CutToChar(line, '\n', false));
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::Add(TLogLineType Type, const std::wstring & Line)
+void TSessionLog::Add(TLogLineType Type, const std::wstring &Line)
 {
   assert(FConfiguration);
   if (GetLogging() && (FConfiguration->GetLogActions() == (Type == llAction)))

@@ -1303,7 +1303,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring &Title,
     return (Result != 0);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::Text(int X, int Y, int Color, std::wstring Str)
+void TCustomFarPlugin::Text(int X, int Y, int Color, const std::wstring &Str)
 {
     TFarEnvGuard Guard;
     FStartupInfo.Text(X, Y, Color, StrToFar(Str.c_str()));
@@ -1315,13 +1315,13 @@ void TCustomFarPlugin::FlushText()
     FStartupInfo.Text(0, 0, 0, NULL);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::WriteConsole(std::wstring Str)
+void TCustomFarPlugin::WriteConsole(const std::wstring &Str)
 {
     unsigned long Written;
     ::WriteConsole(FConsoleOutput, StrToFar(Str.c_str()), static_cast<DWORD>(Str.size()), &Written, NULL);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::FarCopyToClipboard(std::wstring Str)
+void TCustomFarPlugin::FarCopyToClipboard(const std::wstring &Str)
 {
     TFarEnvGuard Guard;
     FFarStandardFunctions.CopyToClipboard(StrToFar(Str.c_str()));
@@ -1616,7 +1616,7 @@ bool TCustomFarPlugin::CheckForEsc()
     return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::Viewer(std::wstring FileName,
+bool TCustomFarPlugin::Viewer(const std::wstring &FileName,
         unsigned int Flags, std::wstring Title)
 {
     TFarEnvGuard Guard;
@@ -1627,7 +1627,7 @@ bool TCustomFarPlugin::Viewer(std::wstring FileName,
     return Result > 0;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::Editor(std::wstring FileName,
+bool TCustomFarPlugin::Editor(const std::wstring &FileName,
         unsigned int Flags, std::wstring Title)
 {
     TFarEnvGuard Guard;
@@ -2818,7 +2818,7 @@ void TFarMenuItems::PutObject(int Index, TObject *AObject)
     }
 }
 //---------------------------------------------------------------------------
-int TFarMenuItems::Add(std::wstring Text, bool Visible)
+int TFarMenuItems::Add(const std::wstring &Text, bool Visible)
 {
     int Result = TStringList::Add(Text);
     if (!Visible)
@@ -2963,7 +2963,7 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
     */
 }
 //---------------------------------------------------------------------------
-void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth)
+void FarWrapText(const std::wstring &Text, TStrings *Result, int MaxWidth)
 {
     int TabSize = 8;
     TStringList Lines;

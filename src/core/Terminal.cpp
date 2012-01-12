@@ -623,24 +623,24 @@ bool TTerminal::IsAbsolutePath(const std::wstring &Path)
   return !Path.empty() && Path[0] == '/';
 }
 //---------------------------------------------------------------------------
-std::wstring TTerminal::ExpandFileName(std::wstring Path,
+std::wstring TTerminal::ExpandFileName(const std::wstring &Path,
   const std::wstring &BasePath)
 {
-  Path = UnixExcludeTrailingBackslash(Path);
-  if (!IsAbsolutePath(Path) && !BasePath.empty())
+  std::wstring path = UnixExcludeTrailingBackslash(Path);
+  if (!IsAbsolutePath(path) && !BasePath.empty())
   {
     // TODO: Handle more complicated cases like "../../xxx"
-    if (Path == L"..")
+    if (path == L"..")
     {
-      Path = UnixExcludeTrailingBackslash(UnixExtractFilePath(
+      path = UnixExcludeTrailingBackslash(UnixExtractFilePath(
         UnixExcludeTrailingBackslash(BasePath)));
     }
     else
     {
-      Path = UnixIncludeTrailingBackslash(BasePath) + Path;
+      path = UnixIncludeTrailingBackslash(BasePath) + path;
     }
   }
-  return Path;
+  return path;
 }
 //---------------------------------------------------------------------------
 bool TTerminal::GetActive()
@@ -1055,7 +1055,7 @@ void TTerminal::Reopen(int Params)
 }
 //---------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const std::wstring &Name, const std::wstring &Instructions, const std::wstring &Prompt, bool Echo, int MaxLen, std::wstring & Result)
+  const std::wstring &Name, const std::wstring &Instructions, const std::wstring &Prompt, bool Echo, int MaxLen, std::wstring &Result)
 {
   bool AResult;
   TStringList Prompts;
@@ -1082,7 +1082,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 }
 //---------------------------------------------------------------------------
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
-  std::wstring Name, std::wstring Instructions, TStrings * Prompts, TStrings * Results)
+  const std::wstring &Name, const std::wstring &Instructions, TStrings * Prompts, TStrings * Results)
 {
   bool AResult = false;
 
@@ -1261,7 +1261,7 @@ bool TTerminal::GetIsCapable(TFSCapability Capability) const
   return FFileSystem->IsCapable(Capability);
 }
 //---------------------------------------------------------------------------
-std::wstring TTerminal::AbsolutePath(std::wstring Path, bool Local)
+std::wstring TTerminal::AbsolutePath(const std::wstring &Path, bool Local)
 {
   return FFileSystem->AbsolutePath(Path, Local);
 }
@@ -1322,12 +1322,12 @@ void TTerminal::ReactOnCommand(int /*TFSCommand*/ Cmd)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::TerminalError(std::wstring Msg)
+void TTerminal::TerminalError(const std::wstring &Msg)
 {
   TerminalError(NULL, Msg);
 }
 //---------------------------------------------------------------------------
-void TTerminal::TerminalError(const std::exception * E, std::wstring Msg)
+void TTerminal::TerminalError(const std::exception * E, const std::wstring &Msg)
 {
   throw ETerminal(Msg, E);
 }
@@ -1494,24 +1494,25 @@ int TTerminal::FileOperationLoop(const fileoperation_slot_type &CallBackFunc,
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TTerminal::TranslateLockedPath(std::wstring Path, bool Lock)
+std::wstring TTerminal::TranslateLockedPath(const std::wstring &Path, bool Lock)
 {
-  if (!GetSessionData()->GetLockInHome() || Path.empty() || (Path[0] != '/'))
-    return Path;
+  std::wstring path = Path;
+  if (!GetSessionData()->GetLockInHome() || path.empty() || (path[0] != '/'))
+    return path;
 
   if (Lock)
   {
-    if (Path.substr(0, FLockDirectory.size()) == FLockDirectory)
+    if (path.substr(0, FLockDirectory.size()) == FLockDirectory)
     {
-      Path.erase(0, FLockDirectory.size());
-      if (Path.empty()) Path = L"/";
+      path.erase(0, FLockDirectory.size());
+      if (path.empty()) path = L"/";
     }
   }
   else
   {
-    Path = UnixExcludeTrailingBackslash(FLockDirectory + Path);
+    path = UnixExcludeTrailingBackslash(FLockDirectory + path);
   }
-  return Path;
+  return path;
 }
 //---------------------------------------------------------------------------
 void TTerminal::ClearCaches()
@@ -1598,10 +1599,10 @@ bool TTerminal::DirectoryFileList(const std::wstring &Path,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TTerminal::SetCurrentDirectory(std::wstring value)
+void TTerminal::SetCurrentDirectory(const std::wstring &Value)
 {
   assert(FFileSystem);
-  value = TranslateLockedPath(value, false);
+  std::wstring value = TranslateLockedPath(Value, false);
   if (value != FFileSystem->GetCurrentDirectory())
   {
     ChangeDirectory(value);
@@ -2385,7 +2386,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * FileList)
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const TFileMasks & Mask)
+TRemoteFileList * TTerminal::ReadDirectoryListing(const std::wstring &Directory, const TFileMasks & Mask)
 {
   TLsSessionAction Action(GetLog(), AbsolutePath(Directory, true));
   TRemoteFileList * FileList = NULL;
@@ -2423,7 +2424,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(std::wstring Directory, const 
   return FileList;
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::CustomReadDirectoryListing(std::wstring Directory, bool UseCache)
+TRemoteFileList * TTerminal::CustomReadDirectoryListing(const std::wstring &Directory, bool UseCache)
 {
   TRemoteFileList * FileList = NULL;
   try
@@ -2441,7 +2442,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(std::wstring Directory, 
   return FileList;
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::DoReadDirectoryListing(std::wstring Directory, bool UseCache)
+TRemoteFileList * TTerminal::DoReadDirectoryListing(const std::wstring &Directory, bool UseCache)
 {
   TRemoteFileList * FileList = new TRemoteFileList();
   try
@@ -2746,7 +2747,7 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(int Params)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::IsRecycledFile(std::wstring FileName)
+bool TTerminal::IsRecycledFile(const std::wstring &FileName)
 {
   std::wstring Path = UnixExtractFilePath(FileName);
   if (Path.empty())
@@ -2756,53 +2757,55 @@ bool TTerminal::IsRecycledFile(std::wstring FileName)
   return UnixComparePaths(Path, GetSessionData()->GetRecycleBinPath());
 }
 //---------------------------------------------------------------------------
-void TTerminal::RecycleFile(std::wstring FileName,
+void TTerminal::RecycleFile(const std::wstring &FileName,
   const TRemoteFile * File)
 {
-  if (FileName.empty())
+  std::wstring fileName = FileName;
+  if (fileName.empty())
   {
     assert(File != NULL);
-    FileName = File->GetFileName();
+    fileName = File->GetFileName();
   }
 
-  if (!IsRecycledFile(FileName))
+  if (!IsRecycledFile(fileName))
   {
     LogEvent(FORMAT(L"Moving file \"%s\" to remote recycle bin '%s'.",
-      FileName.c_str(), GetSessionData()->GetRecycleBinPath().c_str()));
+      fileName.c_str(), GetSessionData()->GetRecycleBinPath().c_str()));
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
     Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
 
-    MoveFile(FileName, File, &Params);
+    MoveFile(fileName, File, &Params);
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::DeleteFile(std::wstring FileName,
+void TTerminal::DeleteFile(const std::wstring &FileName,
   const TRemoteFile * File, void * AParams)
 {
-  if (FileName.empty() && File)
+  std::wstring fileName = FileName;
+  if (fileName.empty() && File)
   {
-    FileName = File->GetFileName();
+    fileName = File->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
     if (GetOperationProgress()->Cancel != csContinue) Abort();
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(fileName);
   }
   int Params = (AParams != NULL) ? *(static_cast<int *>(AParams)) : 0;
   bool Recycle =
     FLAGCLEAR(Params, dfForceDelete) &&
     (GetSessionData()->GetDeleteToRecycleBin() != FLAGSET(Params, dfAlternative));
-  if (Recycle && !IsRecycledFile(FileName))
+  if (Recycle && !IsRecycledFile(fileName))
   {
-    RecycleFile(FileName, File);
+    RecycleFile(fileName, File);
   }
   else
   {
-    LogEvent(FORMAT(L"Deleting file \"%s\".", FileName.c_str()));
-    if (File) FileModified(File, FileName, true);
-    DoDeleteFile(FileName, File, Params);
+    LogEvent(FORMAT(L"Deleting file \"%s\".", fileName.c_str()));
+    if (File) FileModified(File, fileName, true);
+    DoDeleteFile(fileName, File, Params);
     ReactOnCommand(fsDeleteFile);
   }
 }
@@ -2836,7 +2839,7 @@ bool TTerminal::DeleteFiles(TStrings * FilesToDelete, int Params)
   return ProcessFiles(FilesToDelete, foDelete, boost::bind(&TTerminal::DeleteFile, this, _1, _2, _3), &Params);
 }
 //---------------------------------------------------------------------------
-void TTerminal::DeleteLocalFile(std::wstring FileName,
+void TTerminal::DeleteLocalFile(const std::wstring &FileName,
   const TRemoteFile * /*File*/, void * Params)
 {
   if (!GetOnDeleteLocalFile().empty())
@@ -2857,29 +2860,30 @@ bool TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
   return ProcessFiles(FileList, foDelete, boost::bind(&TTerminal::DeleteLocalFile, this, _1, _2, _3), &Params, osLocal);
 }
 //---------------------------------------------------------------------------
-void TTerminal::CustomCommandOnFile(std::wstring FileName,
+void TTerminal::CustomCommandOnFile(const std::wstring &FileName,
   const TRemoteFile * File, void * AParams)
 {
   TCustomCommandParams * Params = (static_cast<TCustomCommandParams *>(AParams));
-  if (FileName.empty() && File)
+  std::wstring fileName = FileName;
+  if (fileName.empty() && File)
   {
-    FileName = File->GetFileName();
+    fileName = File->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCustomCommand)
   {
     if (GetOperationProgress()->Cancel != csContinue) Abort();
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(fileName);
   }
   LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
-    Params->Command.c_str(), Params->Params, FileName.c_str()));
-  if (File) FileModified(File, FileName);
-  DoCustomCommandOnFile(FileName, File, Params->Command, Params->Params,
+    Params->Command.c_str(), Params->Params, fileName.c_str()));
+  if (File) FileModified(File, fileName);
+  DoCustomCommandOnFile(fileName, File, Params->Command, Params->Params,
     Params->OutputEvent);
   ReactOnCommand(fsAnyCommand);
 }
 //---------------------------------------------------------------------------
-void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
-  const TRemoteFile * File, std::wstring Command, int Params,
+void TTerminal::DoCustomCommandOnFile(const std::wstring &FileName,
+  const TRemoteFile * File, const std::wstring &Command, int Params,
   const captureoutput_slot_type &OutputEvent)
 {
   try
@@ -2911,7 +2915,7 @@ void TTerminal::DoCustomCommandOnFile(std::wstring FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::CustomCommandOnFiles(std::wstring Command,
+void TTerminal::CustomCommandOnFiles(const std::wstring &Command,
   int Params, TStrings * Files, const captureoutput_slot_type &OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
@@ -2950,25 +2954,26 @@ void TTerminal::CustomCommandOnFiles(std::wstring Command,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::ChangeFileProperties(std::wstring FileName,
+void TTerminal::ChangeFileProperties(const std::wstring &FileName,
   const TRemoteFile * File, /*const TRemoteProperties*/ void * Properties)
 {
   TRemoteProperties * RProperties = static_cast<TRemoteProperties *>(Properties);
   assert(RProperties && !RProperties->Valid.Empty());
+  std::wstring fileName = FileName;
 
-  if (FileName.empty() && File)
+  if (fileName.empty() && File)
   {
-    FileName = File->GetFileName();
+    fileName = File->GetFileName();
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foSetProperties)
   {
     if (GetOperationProgress()->Cancel != csContinue) Abort();
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(fileName);
   }
   if (GetLog()->GetLogging())
   {
     LogEvent(FORMAT(L"Changing properties of \"%s\" (%s)",
-      FileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
+      fileName.c_str(), BooleanToEngStr(RProperties->Recursive).c_str()));
     if (RProperties->Valid.Contains(vpRights))
     {
       LogEvent(FORMAT(L" - mode: \"%s\"", RProperties->Rights.GetModeStr().c_str()));
@@ -2994,8 +2999,8 @@ void TTerminal::ChangeFileProperties(std::wstring FileName,
            UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
     }
   }
-  FileModified(File, FileName);
-  DoChangeFileProperties(FileName, File, RProperties);
+  FileModified(File, fileName);
+  DoChangeFileProperties(fileName, File, RProperties);
   ReactOnCommand(fsChangeProperties);
 }
 //---------------------------------------------------------------------------
@@ -3041,16 +3046,17 @@ bool TTerminal::LoadFilesProperties(TStrings * FileList)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TTerminal::CalculateFileSize(std::wstring FileName,
+void TTerminal::CalculateFileSize(const std::wstring &FileName,
   const TRemoteFile * File, /*TCalculateSizeParams*/ void * Param)
 {
   assert(Param);
   assert(File);
   TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams*>(Param);
+  std::wstring fileName = FileName;
 
-  if (FileName.empty())
+  if (fileName.empty())
   {
-    FileName = File->GetFileName();
+    fileName = File->GetFileName();
   }
 
   bool AllowTransfer = (AParams->CopyParam == NULL);
@@ -3070,7 +3076,7 @@ void TTerminal::CalculateFileSize(std::wstring FileName,
     {
       if (!File->GetIsSymLink())
       {
-        LogEvent(FORMAT(L"Getting size of directory \"%s\"", FileName.c_str()));
+        LogEvent(FORMAT(L"Getting size of directory \"%s\"", fileName.c_str()));
         // pass in full path so we get it back in file list for AllowTransfer() exclusion
         DoCalculateDirectorySize(File->GetFullFileName(), File, AParams);
       }
@@ -3103,7 +3109,7 @@ void TTerminal::CalculateFileSize(std::wstring FileName,
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
     if (GetOperationProgress()->Cancel != csContinue) Abort();
-    GetOperationProgress()->SetFile(FileName);
+    GetOperationProgress()->SetFile(fileName);
   }
 }
 //---------------------------------------------------------------------------
@@ -3822,7 +3828,7 @@ void TTerminal::OpenLocalFile(const std::wstring &FileName,
   // DEBUG_PRINTF(L"end: Attrs = %d, Handle = %d", Attrs, Handle);
 }
 //---------------------------------------------------------------------------
-bool TTerminal::AllowLocalFileTransfer(std::wstring FileName,
+bool TTerminal::AllowLocalFileTransfer(const std::wstring &FileName,
   const TCopyParamType * CopyParam)
 {
   bool Result = true;
@@ -4681,7 +4687,7 @@ void TTerminal::DoFilesFind(const std::wstring &Directory, TFilesFindParams & Pa
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::FilesFind(std::wstring Directory, const TFileMasks & FileMask,
+void TTerminal::FilesFind(const std::wstring &Directory, const TFileMasks & FileMask,
   const filefound_slot_type *OnFileFound, const findingfile_slot_type *OnFindingFile)
 {
   TFilesFindParams Params;
@@ -5004,7 +5010,7 @@ void TSecondaryTerminal::DirectoryModified(const std::wstring &Path,
 }
 //---------------------------------------------------------------------------
 bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
-  TPromptKind Kind, std::wstring Name, std::wstring Instructions, TStrings * Prompts,
+  TPromptKind Kind, const std::wstring &Name, const std::wstring &Instructions, TStrings * Prompts,
   TStrings * Results)
 {
   bool AResult = false;

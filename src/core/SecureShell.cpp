@@ -1021,13 +1021,13 @@ void TSecureShell::SendNull()
   Send("", 1);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendStr(std::wstring Str)
+void TSecureShell::SendStr(const std::wstring &Str)
 {
   CheckConnection();
   Send(::W2MB(Str.c_str()).c_str(), Str.size());
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendLine(std::wstring Line)
+void TSecureShell::SendLine(const std::wstring &Line)
 {
   SendStr(Line);
   Send("\n", 1);

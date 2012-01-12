@@ -206,7 +206,7 @@ bool TMask::GetMatches(const std::wstring &Str)
 
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
-    std::wstring Message, int AErrorStart, int AErrorLen) :
+    const std::wstring &Message, int AErrorStart, int AErrorLen) :
   std::exception(::W2MB(Message.c_str()).c_str())
 {
   ErrorStart = AErrorStart;
@@ -263,45 +263,46 @@ std::wstring MaskFilePart(const std::wstring &Part, const std::wstring &Mask, bo
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring MaskFileName(std::wstring FileName, const std::wstring &Mask)
+std::wstring MaskFileName(const std::wstring &FileName, const std::wstring &Mask)
 {
   // DEBUG_PRINTF(L"FileName = %s, Mask = %s", FileName.c_str(), Mask.c_str());
+  std::wstring fileName = FileName;
   if (!Mask.empty() && (Mask != L"*") && (Mask != L"*.*"))
   {
     bool Masked = false;
     size_t P = ::LastDelimiter(Mask, L".");
     if (P != std::wstring::npos)
     {
-      size_t P2 = ::LastDelimiter(FileName, L".");
+      size_t P2 = ::LastDelimiter(fileName, L".");
       // DEBUG_PRINTF(L"P2 = %d", P2);
       // only dot at beginning of file name is not considered as
       // name/ext separator
       bool hasFileExt = (P2 != std::wstring::npos) && (P2 > 0);
       std::wstring FileExt = hasFileExt ?
-        FileName.substr(P2, FileName.size() - P2) : std::wstring();
+        fileName.substr(P2, fileName.size() - P2) : std::wstring();
       // DEBUG_PRINTF(L"FileExt = %s", FileExt.c_str());
       FileExt = MaskFilePart(FileExt, Mask.substr(P + 1, Mask.size() - P), Masked);
       // DEBUG_PRINTF(L"FileExt = %s", FileExt.c_str());
       if (hasFileExt)
       {
-        FileName.resize(P2);
+        fileName.resize(P2);
       }
-      // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
-      FileName = MaskFilePart(FileName, Mask.substr(0, P), Masked);
-      // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+      // DEBUG_PRINTF(L"fileName = %s", fileName.c_str());
+      fileName = MaskFilePart(fileName, Mask.substr(0, P), Masked);
+      // DEBUG_PRINTF(L"fileName = %s", fileName.c_str());
       if (!FileExt.empty())
       {
-        FileName += L"." + FileExt;
+        fileName += L"." + FileExt;
       }
-      // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+      // DEBUG_PRINTF(L"fileName = %s", fileName.c_str());
     }
     else
     {
-      FileName = MaskFilePart(FileName, Mask, Masked);
+      fileName = MaskFilePart(fileName, Mask, Masked);
     }
   }
-  // DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
-  return FileName;
+  // DEBUG_PRINTF(L"fileName = %s", fileName.c_str());
+  return fileName;
 }
 //---------------------------------------------------------------------------
 bool IsFileNameMask(const std::wstring &Mask)
@@ -311,17 +312,18 @@ bool IsFileNameMask(const std::wstring &Mask)
   return Masked;
 }
 //---------------------------------------------------------------------------
-std::wstring DelimitFileNameMask(std::wstring Mask)
+std::wstring DelimitFileNameMask(const std::wstring &Mask)
 {
-  for (size_t i = 0; i <= Mask.size(); i++)
+  std::wstring mask = Mask;
+  for (size_t i = 0; i <= mask.size(); i++)
   {
-    if (wcschr(L"\\*?", Mask[i]) != NULL)
+    if (wcschr(L"\\*?", mask[i]) != NULL)
     {
-      Mask.insert(i, L"\\");
+      mask.insert(i, L"\\");
       i++;
     }
   }
-  return Mask;
+  return mask;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

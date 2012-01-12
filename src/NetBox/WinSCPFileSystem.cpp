@@ -126,7 +126,7 @@ std::wstring TRemoteFilePanelItem::GetCustomColumnData(int Column)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteFilePanelItem::TranslateColumnTypes(std::wstring & ColumnTypes,
+void TRemoteFilePanelItem::TranslateColumnTypes(std::wstring &ColumnTypes,
   TStrings * ColumnTitles)
 {
   std::wstring AColumnTypes = ColumnTypes;
@@ -768,7 +768,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, std::wstring Message)
+void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, const std::wstring &Message)
 {
   if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
@@ -1865,21 +1865,22 @@ void TWinSCPFileSystem::FileProperties()
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::InsertTokenOnCommandLine(std::wstring Token, bool Separate)
+void TWinSCPFileSystem::InsertTokenOnCommandLine(const std::wstring &Token, bool Separate)
 {
-  if (!Token.empty())
+  std::wstring token = Token;
+  if (!token.empty())
   {
-    if (Token.find_first_of(L" ") != std::wstring::npos)
+    if (token.find_first_of(L" ") != std::wstring::npos)
     {
-      Token = FORMAT(L"\"%s\"", Token.c_str());
+      token = FORMAT(L"\"%s\"", token.c_str());
     }
 
     if (Separate)
     {
-      Token += L" ";
+      token += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(Token.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, reinterpret_cast<LONG_PTR>(token.c_str()));
   }
 }
 //---------------------------------------------------------------------------
@@ -2115,7 +2116,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
   }
 }
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::SynchronizeBrowsing(std::wstring NewPath)
+bool TWinSCPFileSystem::SynchronizeBrowsing(const std::wstring &NewPath)
 {
   bool Result;
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
@@ -2308,7 +2309,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::MakeDirectoryEx(std::wstring & Name, int OpMode)
+int TWinSCPFileSystem::MakeDirectoryEx(std::wstring &Name, int OpMode)
 {
   if (Connected())
   {
@@ -3047,7 +3048,7 @@ void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
 }
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::LogAuthentication(
-  TTerminal * Terminal, std::wstring Msg)
+  TTerminal * Terminal, const std::wstring &Msg)
 {
   assert(FAuthenticationLog != NULL);
   FAuthenticationLog->Add(Msg);
@@ -3187,7 +3188,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const std::wstring &FileName,
   }
 }
 //---------------------------------------------------------------------------
-int TWinSCPFileSystem::MoreMessageDialog(std::wstring Str,
+int TWinSCPFileSystem::MoreMessageDialog(const std::wstring &Str,
   TStrings * MoreMessages, TQueryType Type, int Answers, const TMessageParams * Params)
 {
   TMessageParams AParams;
@@ -3670,8 +3671,8 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::UploadFromEditor(bool NoReload, std::wstring FileName,
-  std::wstring DestPath)
+void TWinSCPFileSystem::UploadFromEditor(bool NoReload, const std::wstring &FileName,
+  const std::wstring &DestPath)
 {
   assert(FFileList == NULL);
   FFileList = new TStringList();
@@ -3958,8 +3959,8 @@ void TWinSCPFileSystem::MultipleEdit()
   }
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::MultipleEdit(std::wstring Directory,
-  std::wstring FileName, TRemoteFile * File)
+void TWinSCPFileSystem::MultipleEdit(const std::wstring &Directory,
+  const std::wstring &FileName, TRemoteFile * File)
 {
   TEditHistory EditHistory;
   EditHistory.Directory = Directory;

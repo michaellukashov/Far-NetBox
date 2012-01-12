@@ -32,7 +32,7 @@ protected:
   std::wstring FSwitchMarks;
   std::wstring FSwitchValueDelimiters;
 
-  void Add(std::wstring Option);
+  void Add(const std::wstring &Option);
 
   bool FindSwitch(const std::wstring &Switch,
     std::wstring & Value, int & ParamsStart, int & ParamsCount);

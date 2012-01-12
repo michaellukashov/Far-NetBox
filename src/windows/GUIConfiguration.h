@@ -80,7 +80,7 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
 
-  std::wstring GetInfoStr(std::wstring Separator) const;
+  std::wstring GetInfoStr(const std::wstring &Separator) const;
 
   bool operator ==(const TCopyParamRule & rhp) const;
 
@@ -251,12 +251,12 @@ public:
   TStrings * GetLocales();
   // __property std::wstring PuttyPath = { read = FPuttyPath, write = FPuttyPath };
   std::wstring GetPuttyPath() { return FPuttyPath; }
-  void SetPuttyPath(std::wstring value) { FPuttyPath = value; }
+  void SetPuttyPath(const std::wstring &value) { FPuttyPath = value; }
   // __property std::wstring DefaultPuttyPath = { read = FDefaultPuttyPath };
   std::wstring GetDefaultPuttyPath() { return FDefaultPuttyPath; }
   // __property std::wstring PSftpPath = { read = FPSftpPath, write = FPSftpPath };
   std::wstring GetPSftpPath() { return FPSftpPath; }
-  void SetPSftpPath(std::wstring value) { FPSftpPath = value; }
+  void SetPSftpPath(const std::wstring &value) { FPSftpPath = value; }
   // __property bool PuttyPassword = { read = FPuttyPassword, write = FPuttyPassword };
   bool GetPuttyPassword() { return FPuttyPassword; }
   void SetPuttyPassword(bool value) { FPuttyPassword = value; }
@@ -286,14 +286,14 @@ public:
   void SetCopyParamList(const TCopyParamList * value);
   // __property std::wstring CopyParamCurrent = { read = FCopyParamCurrent, write = SetCopyParamCurrent };
   std::wstring GetCopyParamCurrent() { return FCopyParamCurrent; }
-  void SetCopyParamCurrent(std::wstring value);
+  void SetCopyParamCurrent(const std::wstring &value);
   // __property int CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
   int GetCopyParamIndex();
   void SetCopyParamIndex(int value);
   // __property TGUICopyParamType CurrentCopyParam = { read = GetCurrentCopyParam };
   TGUICopyParamType GetCurrentCopyParam();
   // __property TGUICopyParamType CopyParamPreset[std::wstring Name] = { read = GetCopyParamPreset };
-  TGUICopyParamType GetCopyParamPreset(std::wstring Name);
+  TGUICopyParamType GetCopyParamPreset(const std::wstring &Name);
   // __property TRemoteProperties NewDirectoryProperties = { read = FNewDirectoryProperties, write = SetNewDirectoryProperties };
   TRemoteProperties GetNewDirectoryProperties() { return FNewDirectoryProperties; }
   void SetNewDirectoryProperties(const TRemoteProperties & value);
@@ -302,7 +302,7 @@ public:
   void SetKeepUpToDateChangeDelay(int value) { FKeepUpToDateChangeDelay = value; }
   // __property std::wstring ChecksumAlg = { read = FChecksumAlg, write = FChecksumAlg };
   std::wstring GetChecksumAlg() { return FChecksumAlg; }
-  void SetChecksumAlg(std::wstring value) { FChecksumAlg = value; }
+  void SetChecksumAlg(const std::wstring &value) { FChecksumAlg = value; }
   // __property int SessionReopenAutoIdle = { read = FSessionReopenAutoIdle, write = FSessionReopenAutoIdle };
   int GetSessionReopenAutoIdle() { return FSessionReopenAutoIdle; }
   void SetSessionReopenAutoIdle(int value) { FSessionReopenAutoIdle = value; }

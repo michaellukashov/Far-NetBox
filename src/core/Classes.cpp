@@ -396,7 +396,7 @@ void TStrings::Assign(TPersistent *Source)
   TPersistent::Assign(Source);
 }
 
-size_t TStrings::Add(std::wstring S)
+size_t TStrings::Add(const std::wstring &S)
 {
     int Result = GetCount();
     Insert(Result, S);
@@ -473,7 +473,7 @@ TObject *TStrings::GetObject(int Index)
     (void)Index;
     return NULL;
 }
-int TStrings::AddObject(std::wstring S, TObject *AObject)
+int TStrings::AddObject(const std::wstring &S, TObject *AObject)
 {
     int Result = Add(S);
     PutObject(Result, AObject);
@@ -653,11 +653,11 @@ void TStringList::Clear()
     // SetCount(0);
     // SetCapacity(0);
 }
-size_t TStringList::Add(std::wstring S)
+size_t TStringList::Add(const std::wstring &S)
 {
     return AddObject(S, NULL);
 }
-int TStringList::AddObject(std::wstring S, TObject *AObject)
+int TStringList::AddObject(const std::wstring &S, TObject *AObject)
 {
   // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
   int Result = 0;
@@ -1112,7 +1112,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon )
     }
     return sfi.iIcon;
 }
-HICON TSHFileInfo::GetFileIconHandle(std::wstring strFileName, BOOL bSmallIcon)
+HICON TSHFileInfo::GetFileIconHandle(const std::wstring &strFileName, BOOL bSmallIcon)
 {
     SHFILEINFO    sfi;
     if (bSmallIcon)
@@ -1160,7 +1160,7 @@ HICON TSHFileInfo::GetFolderIconHandle(BOOL bSmallIcon )
     return sfi.hIcon;
 }
 
-std::wstring TSHFileInfo::GetFileType(std::wstring strFileName)
+std::wstring TSHFileInfo::GetFileType(const std::wstring &strFileName)
 {
 	SHFILEINFO    sfi;
 	

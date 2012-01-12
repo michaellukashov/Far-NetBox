@@ -180,7 +180,7 @@ void TFileOperationProgressType::DoProgress()
   }
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::Finish(std::wstring FileName,
+void TFileOperationProgressType::Finish(const std::wstring &FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
@@ -191,7 +191,7 @@ void TFileOperationProgressType::Finish(std::wstring FileName,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetFile(std::wstring AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(const std::wstring &AFileName, bool AFileInProgress)
 {
   FileName = AFileName;
   FileInProgress = AFileInProgress;

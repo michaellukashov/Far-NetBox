@@ -562,7 +562,7 @@ void TFTPFileSystem::Discard()
   FActive = false;
 }
 //---------------------------------------------------------------------------
-std::wstring TFTPFileSystem::AbsolutePath(std::wstring Path, bool /*Local*/)
+std::wstring TFTPFileSystem::AbsolutePath(const std::wstring &Path, bool /*Local*/)
 {
   // TODO: improve (handle .. etc.)
   if (TTerminal::IsAbsolutePath(Path))
@@ -1220,7 +1220,7 @@ void TFTPFileSystem::Sink(const std::wstring &FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::SinkFile(std::wstring FileName,
+void TFTPFileSystem::SinkFile(const std::wstring &FileName,
   const TRemoteFile * File, void * Param)
 {
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
@@ -1656,7 +1656,7 @@ void TFTPFileSystem::DeleteFile(const std::wstring &AFileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CustomCommandOnFile(const std::wstring &/*FileName*/,
-  const TRemoteFile * /*File*/, std::wstring /*Command*/, int /*Params*/,
+  const TRemoteFile * /*File*/, const std::wstring & /*Command*/, int /*Params*/,
   const captureoutput_slot_type &/*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
@@ -2582,7 +2582,7 @@ void TFTPFileSystem::SetLastCode(int Code)
   FLastCodeClass = (Code / 100);
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
+void TFTPFileSystem::HandleReplyStatus(const std::wstring &Response)
 {
   int Code = 0;
   // DEBUG_PRINTF(L"Response = %s", Response.c_str());
@@ -2708,7 +2708,7 @@ void TFTPFileSystem::HandleReplyStatus(std::wstring Response)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TFTPFileSystem::ExtractStatusMessage(std::wstring Status)
+std::wstring TFTPFileSystem::ExtractStatusMessage(std::wstring &Status)
 {
   // CApiLog::LogMessage
   // (note that the formatting may not be present when LogMessageRaw is used)
@@ -2986,7 +2986,7 @@ struct TClipboardHandler
   }
 };
 //---------------------------------------------------------------------------
-std::wstring FormatContactList(std::wstring Entry1, std::wstring Entry2)
+std::wstring FormatContactList(const std::wstring &Entry1, const std::wstring &Entry2)
 {
   if (!Entry1.empty() && !Entry2.empty())
   {

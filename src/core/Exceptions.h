@@ -15,12 +15,12 @@ class ExtException : public std::exception
 {
   typedef std::exception parent;
 public:
-  explicit ExtException(std::wstring Msg);
+  explicit ExtException(const std::wstring &Msg);
   explicit ExtException(const std::exception *E);
   // "copy the std::exception", just append message to the end
-  explicit ExtException(std::wstring Msg, const std::exception *E);
-  // explicit ExtException(std::wstring Msg, std::wstring MoreMessages, std::wstring HelpKeyword = L"");
-  explicit ExtException(std::wstring Msg, TStrings *MoreMessages, bool Own);
+  explicit ExtException(const std::wstring &Msg, const std::exception *E);
+  // explicit ExtException(const std::wstring &Msg, const std::wstring &MoreMessages, const std::wstring &HelpKeyword = L"");
+  explicit ExtException(const std::wstring &Msg, TStrings *MoreMessages, bool Own);
   explicit ExtException(const ExtException &) throw();
   ExtException &operator =(const ExtException &) throw();
   virtual ~ExtException(void) throw();
@@ -43,7 +43,7 @@ private:
   { \
     typedef BASE parent; \
   public: \
-    explicit NAME(std::wstring Msg, const std::exception *E) : parent(Msg, E) {} \
+    explicit NAME(const std::wstring &Msg, const std::exception *E) : parent(Msg, E) {} \
     virtual ~NAME(void) throw() {} \
   };
 
@@ -61,7 +61,7 @@ class EOSExtException : public ExtException
   typedef ExtException parent;
 public:
   EOSExtException();
-  EOSExtException(std::wstring Msg);
+  EOSExtException(const std::wstring &Msg);
 };
 */
 //---------------------------------------------------------------------------
@@ -70,7 +70,7 @@ class EFatal : public ExtException
   typedef ExtException parent;
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(std::wstring Msg, const std::exception *E);
+  explicit EFatal(const std::wstring &Msg, const std::exception *E);
   // __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
   bool GetReopenQueried() { return FReopenQueried; }
   void SetReopenQueried(bool value) { FReopenQueried = value; }
@@ -84,7 +84,7 @@ private:
   { \
     typedef BASE parent; \
   public: \
-    explicit NAME(std::wstring Msg, const std::exception *E) : parent(Msg, E) {} \
+    explicit NAME(const std::wstring &Msg, const std::exception *E) : parent(Msg, E) {} \
   };
 //---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
@@ -95,7 +95,7 @@ class ESshTerminate : public EFatal
 {
   typedef EFatal parent;
 public:
-  explicit ESshTerminate(std::wstring Msg, const std::exception *E, TOnceDoneOperation AOperation) :
+  explicit ESshTerminate(const std::wstring &Msg, const std::exception *E, TOnceDoneOperation AOperation) :
     parent(Msg, E),
     Operation(AOperation)
   {}

@@ -209,7 +209,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.empty();
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamRule::GetInfoStr(std::wstring Separator) const
+std::wstring TCopyParamRule::GetInfoStr(const std::wstring &Separator) const
 {
   std::wstring Result;
   #define ADD(FMT, ELEM) \
@@ -1129,7 +1129,7 @@ void TGUIConfiguration::SetCopyParamIndex(int value)
   SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamCurrent(std::wstring value)
+void TGUIConfiguration::SetCopyParamCurrent(const std::wstring &value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1139,7 +1139,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(std::wstring Name)
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring &Name)
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.empty())

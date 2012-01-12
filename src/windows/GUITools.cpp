@@ -15,7 +15,7 @@
 #include <SessionData.h>
 #include <Exceptions.h>
 //---------------------------------------------------------------------------
-bool FindFile(std::wstring & Path)
+bool FindFile(std::wstring &Path)
 {
   bool Result = FileExists(Path);
   if (!Result)
@@ -41,17 +41,18 @@ bool FindFile(std::wstring & Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool FileExistsEx(std::wstring Path)
+bool FileExistsEx(std::wstring &Path)
 {
   return FindFile(Path);
 }
 //---------------------------------------------------------------------------
 void OpenSessionInPutty(const std::wstring &PuttyPath,
-  TSessionData * SessionData, std::wstring Password)
+  TSessionData * SessionData, const std::wstring &Password)
 {
   std::wstring Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);
   Program = ExpandEnvironmentVariables(Program);
+  std::wstring password = Password;
   if (FindFile(Program))
   {
     std::wstring SessionName;
@@ -99,7 +100,7 @@ void OpenSessionInPutty(const std::wstring &PuttyPath,
               ExportData->SetProtocol(ptTelnet);
               ExportData->SetPortNumber(23);
               // PuTTY  does not allow -pw for telnet
-              Password = L"";
+              password = L"";
             }
             else
             {
@@ -118,9 +119,9 @@ void OpenSessionInPutty(const std::wstring &PuttyPath,
     {
       Params += L" ";
     }
-    if (!Password.empty())
+    if (!password.empty())
     {
-      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(Password).c_str());
+      Params += FORMAT(L"-pw %s ", EscapePuttyCommandParam(password).c_str());
     }
     Params += FORMAT(L"-load %s", EscapePuttyCommandParam(SessionName).c_str());
 
@@ -409,7 +410,7 @@ bool TLocalCustomCommand::PatternReplacement(int Index,
 }
 //---------------------------------------------------------------------------
 void TLocalCustomCommand::DelimitReplacement(
-  std::wstring & /*Replacement*/, char /*Quote*/)
+  const std::wstring & /*Replacement*/, char /*Quote*/)
 {
   // never delimit local commands
 }

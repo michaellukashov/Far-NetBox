@@ -45,11 +45,11 @@ bool UnixComparePaths(const std::wstring &Path1, const std::wstring &Path2)
   return (UnixIncludeTrailingBackslash(Path1) == UnixIncludeTrailingBackslash(Path2));
 }
 //---------------------------------------------------------------------------
-bool UnixIsChildPath(std::wstring Parent, std::wstring Child)
+bool UnixIsChildPath(const std::wstring &Parent, const std::wstring &Child)
 {
-  Parent = UnixIncludeTrailingBackslash(Parent);
-  Child = UnixIncludeTrailingBackslash(Child);
-  return (Child.substr(0, Parent.size()) == Parent);
+  std::wstring parent = UnixIncludeTrailingBackslash(Parent);
+  std::wstring child = UnixIncludeTrailingBackslash(Child);
+  return (child.substr(0, parent.size()) == parent);
 }
 //---------------------------------------------------------------------------
 std::wstring UnixExtractFileDir(const std::wstring &Path)
@@ -396,39 +396,39 @@ std::wstring UserModificationStr(TDateTime DateTime,
   }
 }
 //---------------------------------------------------------------------------
-int FakeFileImageIndex(std::wstring FileName, unsigned long Attrs,
+int FakeFileImageIndex(const std::wstring &FileName, unsigned long Attrs,
   std::wstring *TypeName)
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
-
+  std::wstring fileName = FileName;
   TSHFileInfo SHFileInfo;
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
-  if ((FileName == L"..") ||
-      ((FileName.size() == 2) && (FileName[2] == ':') &&
-       (tolower(FileName[1]) >= 'a') && (tolower(FileName[1]) <= 'z')) ||
-      IsReservedName(FileName))
+  if ((fileName == L"..") ||
+      ((fileName.size() == 2) && (fileName[2] == ':') &&
+       (tolower(fileName[1]) >= 'a') && (tolower(fileName[1]) <= 'z')) ||
+      IsReservedName(fileName))
   {
-    FileName = L"dumb";
+    fileName = L"dumb";
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
-  if (AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT))
+  if (AnsiSameText(UnixExtractFileExt(fileName), PARTIAL_EXT))
   {
     static const size_t PartialExtLen = sizeof(PARTIAL_EXT) - 1;
-    FileName.resize(FileName.size() - PartialExtLen);
+    fileName.resize(fileName.size() - PartialExtLen);
   }
 
   int Icon = -1;
   SHFILEINFO ssfi;
-  if (SHGetFileInfo(static_cast<LPCTSTR>(std::wstring(FileName).c_str()),
+  if (SHGetFileInfo(static_cast<LPCTSTR>(std::wstring(fileName).c_str()),
         Attrs, &ssfi, sizeof(SHFILEINFO),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
     if (TypeName != NULL)
     {
-      *TypeName = SHFileInfo.GetFileType(FileName);
+      *TypeName = SHFileInfo.GetFileType(fileName);
     }
-    Icon = SHFileInfo.GetFileIconIndex(FileName, true);
+    Icon = SHFileInfo.GetFileIconIndex(fileName, true);
   }
   else
   {
@@ -970,7 +970,7 @@ std::wstring TRemoteFile::GetRightsStr()
   return FRights->GetUnknown() ? std::wstring() : FRights->GetText();
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetListingStr(std::wstring value)
+void TRemoteFile::SetListingStr(const std::wstring &value)
 {
   // DEBUG_PRINTF(L"begin, value = %s", value.c_str());
   // Value stored in 'value' can be used for error message
@@ -1401,7 +1401,7 @@ void TRemoteFileList::Clear()
   TObjectList::Clear();
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::SetDirectory(std::wstring value)
+void TRemoteFileList::SetDirectory(const std::wstring &value)
 {
   FDirectory = UnixExcludeTrailingBackslash(value);
 }
@@ -1475,7 +1475,7 @@ void TRemoteDirectory::Clear()
   TRemoteFileList::Clear();
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::SetDirectory(std::wstring value)
+void TRemoteDirectory::SetDirectory(const std::wstring &value)
 {
   TRemoteFileList::SetDirectory(value);
   //Load();
@@ -1667,27 +1667,28 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryCache::ClearFileList(std::wstring Directory, bool SubDirs)
+void TRemoteDirectoryCache::ClearFileList(const std::wstring &Directory, bool SubDirs)
 {
   TGuard Guard(FSection);
   DoClearFileList(Directory, SubDirs);
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryCache::DoClearFileList(std::wstring Directory, bool SubDirs)
+void TRemoteDirectoryCache::DoClearFileList(const std::wstring &Directory, bool SubDirs)
 {
-  Directory = UnixExcludeTrailingBackslash(Directory);
-  int Index = IndexOf(Directory.c_str());
+  std::wstring directory = Directory;
+  directory = UnixExcludeTrailingBackslash(directory);
+  int Index = IndexOf(directory.c_str());
   if (Index >= 0)
   {
     Delete(Index);
   }
   if (SubDirs)
   {
-    Directory = UnixIncludeTrailingBackslash(Directory);
+    directory = UnixIncludeTrailingBackslash(directory);
     Index = GetCount()-1;
     while (Index >= 0)
     {
-      if (GetString(Index).substr(0, Directory.size()) == Directory)
+      if (GetString(Index).substr(0, directory.size()) == directory)
       {
         Delete(Index);
       }
@@ -1754,7 +1755,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
-  std::wstring SourceDir)
+  const std::wstring &SourceDir)
 {
   for (size_t Index = 0; Index < GetCount(); Index++)
   {
@@ -1767,7 +1768,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
-  std::wstring TargetDir)
+  const std::wstring &TargetDir)
 {
   std::wstring Key;
   // hack to clear at least local sym-link change in case symlink is deleted
@@ -2183,7 +2184,7 @@ std::wstring TRights::GetText() const
   }
 }
 //---------------------------------------------------------------------------
-void TRights::SetOctal(std::wstring value)
+void TRights::SetOctal(const std::wstring &value)
 {
   std::string AValue(::W2MB(value.c_str()));
   if (AValue.size() == 3)

@@ -3,7 +3,7 @@
 #define PuttyToolsH
 //---------------------------------------------------------------------------
 enum TKeyType { ktUnopenable, ktUnknown, ktSSH1, ktSSH2, ktOpenSSH, ktSSHCom };
-TKeyType KeyType(std::wstring FileName);
+TKeyType KeyType(const std::wstring &FileName);
 std::wstring KeyTypeName(TKeyType KeyType);
 //---------------------------------------------------------------------------
 std::string DecodeUTF(const std::string &UTF);

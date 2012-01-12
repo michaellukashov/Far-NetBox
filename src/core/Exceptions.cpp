@@ -53,7 +53,7 @@ ExtException::ExtException(const std::exception *E) :
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(std::wstring Msg) :
+ExtException::ExtException(const std::wstring &Msg) :
   parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
@@ -78,7 +78,7 @@ ExtException::ExtException(std::wstring Msg) :
 }
 
 //---------------------------------------------------------------------------
-ExtException::ExtException(std::wstring Msg, const std::exception *E) :
+ExtException::ExtException(const std::wstring &Msg, const std::exception *E) :
   parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
 {
@@ -104,7 +104,7 @@ ExtException::ExtException(std::wstring Msg, const std::exception *E) :
   DEBUG_PRINTF(L"FMessage = %s", FMessage.c_str());
 }
 //---------------------------------------------------------------------------
-ExtException::ExtException(std::wstring Msg, TStrings *MoreMessages,
+ExtException::ExtException(const std::wstring &Msg, TStrings *MoreMessages,
   bool Own) :
   parent(::W2MB(Msg.c_str()).c_str()),
   FMoreMessages(NULL)
@@ -202,14 +202,14 @@ std::wstring LastSysErrorMessage()
 }
 //---------------------------------------------------------------------------
 /*
-EOSExtException::EOSExtException(std::wstring Msg) :
+EOSExtException::EOSExtException(const std::wstring &Msg) :
   parent(Msg, LastSysErrorMessage())
 {
 }
 */
 
 //---------------------------------------------------------------------------
-EFatal::EFatal(std::wstring Msg, const std::exception *E) :
+EFatal::EFatal(const std::wstring &Msg, const std::exception *E) :
   parent(Msg, E),
   FReopenQueried(false)
 {
