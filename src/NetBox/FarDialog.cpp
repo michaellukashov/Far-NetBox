@@ -2459,14 +2459,15 @@ long TFarList::ItemProc(int Msg, void *Param)
     assert(GetDialogItem() != NULL);
     if (Msg == DN_LISTCHANGE)
     {
-        if ((Param < 0) || ((Param == 0) && (GetCount() == 0)))
+        long param = reinterpret_cast<long>(Param);
+        if ((param < 0) || ((param == 0) && (GetCount() == 0)))
         {
             GetDialogItem()->UpdateData(L"");
         }
         else
         {
-            assert(Param >= 0 && reinterpret_cast<int>(Param) < static_cast<int>(GetCount()));
-            GetDialogItem()->UpdateData(GetString(reinterpret_cast<int>(Param)));
+            assert(param >= 0 && param < static_cast<long>(GetCount()));
+            GetDialogItem()->UpdateData(GetString(param));
         }
     }
     return false;
