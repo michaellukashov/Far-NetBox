@@ -1,6 +1,8 @@
 NetBox 2.0.5 ??.01.2012
 ---------------------
   * Ported to Far 3.0.2350
+  * Added command "Import sessions" (F11 --> NetBox Commands --> Import Sessions)
+  * SSL core upgraded to OpenSSL 1.0.0f
 
 NetBox 2.0.4 04.01.2012
 ---------------------

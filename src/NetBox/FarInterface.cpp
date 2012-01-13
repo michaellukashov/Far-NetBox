@@ -28,7 +28,8 @@ std::wstring AppNameString()
 //---------------------------------------------------------------------------
 std::wstring GetRegistryKey()
 {
-  return L"Software\\Michael Lukashov\\FarNetBox";
+  // return L"Software\\Michael Lukashov\\FarNetBox";
+  return L"Software\\Far2\\Plugins\\NetBox 2";
 }
 //---------------------------------------------------------------------------
 void Busy(bool /*Start*/)

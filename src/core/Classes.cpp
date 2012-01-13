@@ -1832,7 +1832,7 @@ void TRegistry::WriteFloat(const std::wstring &Name, double Value)
 void TRegistry::WriteString(const std::wstring &Name, const std::wstring &Value)
 {
     // DEBUG_PRINTF(L"Value = %s, Value.size = %d", Value.c_str(), Value.size());
-    PutData(Name, static_cast<void *>(const_cast<wchar_t *>(Value.c_str())), Value.size() * sizeof(wchar_t) + 1, rdString);
+    PutData(Name, static_cast<const void *>(Value.c_str()), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::WriteStringRaw(const std::wstring &Name, const std::wstring &Value)
 {

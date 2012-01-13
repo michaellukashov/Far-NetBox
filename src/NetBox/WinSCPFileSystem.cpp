@@ -460,7 +460,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
   else
   {
     CurDir = FSessionsFolder;
-    Format = L"winscp";
+    Format = L"netbox";
     Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
     PanelTitle = FORMAT(L" %s ", GetMsg(NB_STORED_SESSION_TITLE).c_str());
 

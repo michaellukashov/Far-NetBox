@@ -1,5 +1,4 @@
 @rem @echo off
-@rem @set PATH=
 
 @rem 
 rm -rf out32dll

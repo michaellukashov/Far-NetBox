@@ -490,6 +490,7 @@
 "View/change file a&ttributes  Ctrl-A"
 "Create/edit &link             Alt-F6"
 "&Configure"
+"&Import sessions"
 "Server and protocol &information"
 "Open in &Putty"
 "PuTTY&gen: key generator"
@@ -661,7 +662,11 @@
 "Creating folder"
 
 "Edit history"
+
+"Imported %d sessions"
+
 //NetBox strings
+
 "NetBox"
 
 "OK"
