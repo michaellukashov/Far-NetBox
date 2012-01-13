@@ -294,6 +294,7 @@ public:
     virtual ~TCustomFarPlugin();
     virtual int GetMinFarVersion();
     virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
+    virtual struct PluginStartupInfo *GetStartupInfo() { return &FStartupInfo; }
     virtual void ExitFAR();
     virtual void GetPluginInfo(struct PluginInfo *Info);
     virtual int Configure(int Item);
