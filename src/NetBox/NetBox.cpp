@@ -51,7 +51,6 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
     // _CrtSetReportFile(_CRT_WARN, hLogFile);
 #endif
     TFarPluginGuard Guard;
-    CFarPlugin::Initialize(psi);
 
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
