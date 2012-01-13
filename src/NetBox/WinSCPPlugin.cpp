@@ -111,7 +111,7 @@ bool TWinSCPPlugin::ImportSessions(const std::wstring &RegistryStorageKey,
     // DEBUG_PRINTF(L"begin");
     imported = 0;
     THierarchicalStorage *ImportStorage = new TRegistryStorage(RegistryStorageKey);
-    THierarchicalStorage *ExportStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
+    THierarchicalStorage *ExportStorage = Configuration->CreateStorage();
     ExportStorage->SetAccessMode(smReadWrite);
     TSessionData *FactoryDefaults = new TSessionData(L"");
     BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&ImportStorage) (&ExportStorage) )
