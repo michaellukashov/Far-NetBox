@@ -1,6 +1,6 @@
 1 VERSIONINFO
-FILEVERSION 2,0,5,1
-PRODUCTVERSION 2,0,5,1
+FILEVERSION 2,0,5,2
+PRODUCTVERSION 2,0,5,2
 FILEOS 0x4
 FILETYPE 0x2
 {
@@ -10,9 +10,9 @@ FILETYPE 0x2
         {
             VALUE "CompanyName", "Michael Lukashov\0"
             VALUE "FileDescription", "NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for FAR\0"
-            VALUE "FileVersion", "2.0.5.a542401\0"
+            VALUE "FileVersion", "2.0.5.d23fb5e\0"
             VALUE "InternalName", "netboxfar\0"
-            VALUE "LegalCopyright", "(c) 2011 Michael Lukashov\0"
+            VALUE "LegalCopyright", "(c) 2011, 2012 Michael Lukashov\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "NetBox.dll\0"
             VALUE "ProductName", "WinSCP\0"
