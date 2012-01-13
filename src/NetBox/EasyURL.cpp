@@ -22,11 +22,11 @@ void CEasyURL::Init()
     m_Progress.ProgressPtr = NULL;
     m_Progress.Aborted = false;
     // init regex
-    if (CFarPlugin::GetPSI()->RegExpControl(0, RECTL_CREATE, 0, reinterpret_cast<void *>(&m_regex)))
+    if (FarPlugin->GetStartupInfo()->RegExpControl(0, RECTL_CREATE, 0, reinterpret_cast<void *>(&m_regex)))
     {
-        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_COMPILE, 0, reinterpret_cast<void *>(L"/PASS(.*)/")))
+        if (FarPlugin->GetStartupInfo()->RegExpControl(m_regex, RECTL_COMPILE, 0, reinterpret_cast<void *>(L"/PASS(.*)/")))
         {
-            m_brackets = CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_BRACKETSCOUNT, 0, NULL);
+            m_brackets = FarPlugin->GetStartupInfo()->RegExpControl(m_regex, RECTL_BRACKETSCOUNT, 0, NULL);
             if (m_brackets == 2)
             {
                 m_match = reinterpret_cast<RegExpMatch *>(malloc(m_brackets * sizeof(RegExpMatch)));
@@ -41,7 +41,7 @@ CEasyURL::~CEasyURL()
     free(m_match);
     if (m_regex != INVALID_HANDLE_VALUE)
     {
-        CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_FREE, 0, NULL);
+        FarPlugin->GetStartupInfo()->RegExpControl(m_regex, RECTL_FREE, 0, NULL);
     }
 }
 
@@ -360,7 +360,7 @@ int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
             m_brackets,
             0
         };
-        if (CFarPlugin::GetPSI()->RegExpControl(m_regex, RECTL_SEARCHEX, 0, reinterpret_cast<void *>(&search)))
+        if (FarPlugin->GetStartupInfo()->RegExpControl(m_regex, RECTL_SEARCHEX, 0, reinterpret_cast<void *>(&search)))
         {
             // DEBUG_PRINTF(L"PASS ****");
             FTerminal->GetLog()->Add(type, L"PASS ****");

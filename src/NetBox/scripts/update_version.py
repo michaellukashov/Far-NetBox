@@ -18,10 +18,8 @@ version_h = \
 #define PLUGIN_VERSION_MINOR         %(version_minor)s
 #define PLUGIN_VERSION_PATCH         %(patch)s
 #define PLUGIN_VERSION_BUILD         %(build)s
-#define PLUGIN_VERSION_GIT_REVISION  %(git_revision)s
 
 static const std::wstring CONST_VERSION_STR(L"%(version_major)s.%(version_minor)s.%(patch)s");
-static const std::wstring CONST_GIT_REVISION_STR(L"%(git_revision)s");
 static const std::wstring CONST_COMPILATION_TIME(L"%(compile_time)s");
 
 """

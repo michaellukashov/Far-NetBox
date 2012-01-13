@@ -9,7 +9,8 @@
 set PLUGINNAME=NetBox
 set PLUGINARCH=%1
 if "%PLUGINARCH%" equ "" set PLUGINARCH=src
-set FARVER=Far3
+set FARVER=%2
+if "%FARVER%" equ "" set FARVER=Far3
 
 :: Get plugin version from resource
 for /F "tokens=2,3 skip=2" %%i in (resource.h) do set %%i=%%~j
