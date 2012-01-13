@@ -9,7 +9,7 @@
 set PLUGINNAME=NetBox
 set PLUGINARCH=%1
 if "%PLUGINARCH%" equ "" set PLUGINARCH=src
-set FARVER=Far2
+set FARVER=Far3
 
 :: Get plugin version from resource
 for /F "tokens=2,3 skip=2" %%i in (resource.h) do set %%i=%%~j
@@ -33,10 +33,10 @@ if "%PLUGINARCH%" equ "src"    (
     mkdir %PKGDIR%\tinyXML
     copy ..\..\libs\tinyXML %PKGDIR%\tinyXML > NUL
 ) else (
-    copy ..\..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
+    copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\*.dll %PKGDIR% > NUL
     copy ..\..\dlls\%PLUGINARCH%\*.dll %PKGDIR% > NUL
     copy ..\..\libs\openssl\%PLUGINARCH%\*.dll %PKGDIR% > NUL
-    call .\makeCopyCommon.cmd %~d0%~p0 ..\..\Far2_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
+    call .\makeCopyCommon.cmd %~d0%~p0 ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME% > NUL
 )
 :: Make archive
 call "C:\Program Files\7-Zip\7z.exe" a -t7z -r %PKGNAME% %PKGDIR%/* > NUL
