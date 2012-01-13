@@ -2622,30 +2622,29 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 {
-  ::Error(SNotImplemented, 3001);
+  // ::Error(SNotImplemented, 3001);
   TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
-  THierarchicalStorage * Storage = NULL;
-  TSessionData * ExportData = NULL;
-  TSessionData * FactoryDefaults = new TSessionData(L"");
+  THierarchicalStorage *ExportStorage = NULL;
+  TSessionData *ExportData = NULL;
+  TSessionData *FactoryDefaults = new TSessionData(L"");
   {
-      BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&Storage) (&ExportData) )
+      BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&ExportStorage) (&ExportData) )
       {
         delete FactoryDefaults;
-        delete Storage;
+        delete ExportStorage;
         delete ExportData;
       } BOOST_SCOPE_EXIT_END
     ExportData = new TSessionData(Data->GetName());
     ExportData->Assign(Data);
     ExportData->SetModified(true);
-    /*
-    Storage = new TIniFileStorage(IncludeTrailingBackslash(Param.DestPath) +
-      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->GetName()) + L".ini");
-    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
+    ExportStorage = new TXmlStorage(IncludeTrailingBackslash(Param.DestPath) +
+      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->GetName()) + L".netbox");
+    ExportStorage->SetAccessMode(smReadWrite);
+    if (ExportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
-      ExportData->Save(Storage, false, FactoryDefaults);
+      ExportData->Save(ExportStorage, false, FactoryDefaults);
     }
-    */
   }
 }
 //---------------------------------------------------------------------------
