@@ -407,6 +407,7 @@ protected:
         TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
         TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
+    virtual bool ImportSessions() = 0;
     virtual bool ConfigureEx(int Item) = 0;
     virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;

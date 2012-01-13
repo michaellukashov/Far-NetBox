@@ -46,6 +46,7 @@ protected:
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes);
   virtual TCustomFarFileSystem * OpenPluginEx(int OpenFrom, int Item);
+  virtual bool ImportSessions();
   virtual bool ConfigureEx(int Item);
   virtual int ProcessEditorEventEx(int Event, void * Param);
   virtual int ProcessEditorInputEx(const INPUT_RECORD * Rec);
@@ -65,6 +66,9 @@ protected:
   bool ConfirmationsConfigurationDialog();
   bool IntegrationConfigurationDialog();
   void AboutDialog();
+
+private:
+  bool ImportSessions(const std::wstring &RegistryStorageKey, int &imported);
 
 private:
   bool FInitialized;
