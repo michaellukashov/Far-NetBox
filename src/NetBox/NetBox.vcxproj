@@ -197,6 +197,7 @@
     <ClCompile Include=".\WinSCPPlugin.cpp" />
     <ClCompile Include=".\FarConfiguration.cpp" />
     <ClCompile Include=".\FarInterface.cpp" />
+    <ClCompile Include=".\XmlStorage.cpp" />
     <ClCompile Include="..\core\Common.cpp" />
     <ClCompile Include="..\core\Classes.cpp" />
     <ClCompile Include="..\core\RemoteFiles.cpp" />

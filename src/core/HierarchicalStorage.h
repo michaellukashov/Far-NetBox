@@ -12,7 +12,7 @@ enum TStorageAccessMode { smRead, smReadWrite };
 class THierarchicalStorage
 {
 public:
-  THierarchicalStorage(const std::wstring &AStorage);
+  explicit THierarchicalStorage(const std::wstring &AStorage);
   virtual ~THierarchicalStorage();
   bool OpenRootKey(bool CanCreate);
   virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
@@ -87,8 +87,8 @@ protected:
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
-  TRegistryStorage(const std::wstring &AStorage, HKEY ARootKey);
-  TRegistryStorage(const std::wstring &AStorage);
+  explicit TRegistryStorage(const std::wstring &AStorage, HKEY ARootKey);
+  explicit TRegistryStorage(const std::wstring &AStorage);
   virtual ~TRegistryStorage();
 
   bool Copy(TRegistryStorage * Storage);
@@ -136,58 +136,7 @@ private:
   void Init();
 };
 //---------------------------------------------------------------------------
-class TXmlStorage : public THierarchicalStorage
-{
-public:
-  TXmlStorage(const std::wstring &AStorage, HKEY ARootKey);
-  TXmlStorage(const std::wstring &AStorage);
-  virtual ~TXmlStorage();
-
-  bool Copy(TXmlStorage * Storage);
-
-  virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
-  virtual void CloseSubKey();
-  virtual bool DeleteSubKey(const std::wstring &SubKey);
-  virtual bool DeleteValue(const std::wstring &Name);
-  virtual void GetSubKeyNames(TStrings* Strings);
-  virtual bool KeyExists(const std::wstring &SubKey);
-  virtual bool ValueExists(const std::wstring &Value);
-
-  virtual int BinaryDataSize(const std::wstring &Name);
-
-  virtual bool Readbool(const std::wstring &Name, bool Default);
-  virtual int Readint(const std::wstring &Name, int Default);
-  virtual __int64 ReadInt64(const std::wstring &Name, __int64 Default);
-  virtual TDateTime ReadDateTime(const std::wstring &Name, TDateTime Default);
-  virtual double ReadFloat(const std::wstring &Name, double Default);
-  virtual std::wstring ReadStringRaw(const std::wstring &Name, const std::wstring &Default);
-  virtual int ReadBinaryData(const std::wstring &Name, void * Buffer, int Size);
-
-  virtual void Writebool(const std::wstring &Name, bool Value);
-  virtual void Writeint(const std::wstring &Name, int Value);
-  virtual void WriteInt64(const std::wstring &Name, __int64 Value);
-  virtual void WriteDateTime(const std::wstring &Name, TDateTime Value);
-  virtual void WriteFloat(const std::wstring &Name, double Value);
-  virtual void WriteStringRaw(const std::wstring &Name, const std::wstring &Value);
-  virtual void WriteBinaryData(const std::wstring &Name, const void * Buffer, int Size);
-
-  virtual void GetValueNames(TStrings* Strings);
-
-  virtual void SetAccessMode(TStorageAccessMode value);
-protected:
-  virtual std::wstring GetSource();
-
-  // __property int Failed  = { read=GetFailed, write=FFailed };
-  int GetFailed();
-  void SetFailed(int value) { FFailed = value; }
-
-private:
-  TRegistry * FRegistry;
-  int FFailed;
-
-  void Init();
-};
-//---------------------------------------------------------------------------
 std::wstring PuttyMungeStr(const std::wstring &Str);
+std::wstring PuttyUnMungeStr(const std::wstring &Str);
 //---------------------------------------------------------------------------
 #endif

@@ -15,10 +15,11 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "SessionData.h"
-#include <CoreMain.h>
+#include "CoreMain.h"
 #include "ScpFileSystem.h"
-#include <Bookmarks.h>
-#include <GUITools.h>
+#include "Bookmarks.h"
+#include "GUITools.h"
+#include "XmlStorage.h"
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
