@@ -347,14 +347,14 @@ int TXmlStorage::BinaryDataSize(const std::wstring &Name)
 //---------------------------------------------------------------------------
 bool TXmlStorage::Readbool(const std::wstring &Name, bool Default)
 {
-    std::wstring res = ReadString(Name, ::BooleanToEngStr(Default));
+    std::wstring res = ReadString(Name, L"");
     if (res.empty())
     {
         return Default;
     }
     else
     {
-        return AnsiCompareIC(res, ::BooleanToEngStr(true));
+        return AnsiCompareIC(res, ::BooleanToEngStr(true)) == 0;
     }
 }
 //---------------------------------------------------------------------------
