@@ -51,12 +51,17 @@ protected:
   void SetFailed(int value) { FFailed = value; }
 
 private:
+  std::wstring GetSubKeyText(const std::wstring &Name);
   TiXmlElement *FindElement(const std::wstring &Value);
   std::string ToStdString(const std::wstring &String) { return ::W2MB(String.c_str()); }
   std::wstring ToStdWString(const std::string &String) { return ::MB2W(String.c_str()); }
   void RemoveIfExists(const std::wstring &Name);
   void AddNewElement(const std::wstring &Name, const std::wstring &Value);
-  bool SaveXml();
+  TiXmlElement *FindChildElement(const std::string &subKey);
+  std::wstring GetValue(TiXmlElement *Element);
+
+  bool LoadXml();
+  bool WriteXml();
 
 private:
   TiXmlDocument *FXmlDoc;
