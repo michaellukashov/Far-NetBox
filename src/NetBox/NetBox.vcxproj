@@ -157,7 +157,7 @@
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;libcmt.lib;msvcrt.lib;Atl.lib%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x86 Far2</Command>
+      <Command>makeDist.cmd x86 Far3</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -183,7 +183,7 @@
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmt.lib;mfc100u.lib;Atl.lib;comctl32.lib;mfcs100u.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x64 Far2</Command>
+      <Command>makeDist.cmd x64 Far3</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
