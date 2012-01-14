@@ -1,4 +1,4 @@
-NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for Far Manager 2.0
+NetBox: SFTP/FTP/FTPS/SCP/WebDAV client for Far Manager 2.0/3.0
 ==============
 
     WinSCP: SFTP/FTP/SCP client for FAR version 1.6.2 Copyright (c) 2000-2009 Martin Prikryl  
@@ -86,5 +86,6 @@ consequences of use of this software.
 LINKS
 ========================
 
-* Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
+* Project main page: [https://github.com/michaellukashov/Far-NetBox/](https://github.com/michaellukashov/Far-NetBox/)
 * Download page: [https://github.com/michaellukashov/Far-NetBox/downloads/](https://github.com/michaellukashov/Far-NetBox/downloads/)
+* Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
