@@ -44,6 +44,11 @@ std::wstring PuttyMungeStr(const std::wstring &Str)
   return MungeStr(Str);
 }
 //---------------------------------------------------------------------------
+std::wstring PuttyUnMungeStr(const std::wstring &Str)
+{
+  return UnMungeStr(Str);
+}
+//---------------------------------------------------------------------------
 std::wstring MungeIniName(const std::wstring &Str)
 {
   int P = Str.find_first_of(L"=");

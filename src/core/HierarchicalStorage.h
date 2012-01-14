@@ -6,14 +6,16 @@
 //---------------------------------------------------------------------------
 class TRegistry;
 //---------------------------------------------------------------------------
-enum TStorage { stRegistry, };
+enum TStorage { stRegistry, stXmlFile };
 enum TStorageAccessMode { smRead, smReadWrite };
 //---------------------------------------------------------------------------
 class THierarchicalStorage
 {
 public:
-  THierarchicalStorage(const std::wstring &AStorage);
+  explicit THierarchicalStorage(const std::wstring &AStorage);
   virtual ~THierarchicalStorage();
+
+  virtual void Init() {}
   bool OpenRootKey(bool CanCreate);
   virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
@@ -87,8 +89,8 @@ protected:
 class TRegistryStorage : public THierarchicalStorage
 {
 public:
-  TRegistryStorage(const std::wstring &AStorage, HKEY ARootKey);
-  TRegistryStorage(const std::wstring &AStorage);
+  explicit TRegistryStorage(const std::wstring &AStorage, HKEY ARootKey);
+  explicit TRegistryStorage(const std::wstring &AStorage);
   virtual ~TRegistryStorage();
 
   bool Copy(TRegistryStorage * Storage);
@@ -137,5 +139,6 @@ private:
 };
 //---------------------------------------------------------------------------
 std::wstring PuttyMungeStr(const std::wstring &Str);
+std::wstring PuttyUnMungeStr(const std::wstring &Str);
 //---------------------------------------------------------------------------
 #endif

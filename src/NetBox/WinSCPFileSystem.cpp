@@ -15,10 +15,11 @@
 #include "Common.h"
 #include "Exceptions.h"
 #include "SessionData.h"
-#include <CoreMain.h>
+#include "CoreMain.h"
 #include "ScpFileSystem.h"
-#include <Bookmarks.h>
-#include <GUITools.h>
+#include "Bookmarks.h"
+#include "GUITools.h"
+#include "XmlStorage.h"
 // FAR WORKAROUND
 //---------------------------------------------------------------------------
 TSessionPanelItem::TSessionPanelItem(TSessionData * ASessionData):
@@ -2622,30 +2623,31 @@ int TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 {
-  ::Error(SNotImplemented, 3001);
+  // ::Error(SNotImplemented, 3001);
   TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
-  THierarchicalStorage * Storage = NULL;
-  TSessionData * ExportData = NULL;
-  TSessionData * FactoryDefaults = new TSessionData(L"");
+  THierarchicalStorage *ExportStorage = NULL;
+  TSessionData *ExportData = NULL;
+  TSessionData *FactoryDefaults = new TSessionData(L"");
   {
-      BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&Storage) (&ExportData) )
+      BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&ExportStorage) (&ExportData) )
       {
         delete FactoryDefaults;
-        delete Storage;
+        delete ExportStorage;
         delete ExportData;
       } BOOST_SCOPE_EXIT_END
     ExportData = new TSessionData(Data->GetName());
     ExportData->Assign(Data);
     ExportData->SetModified(true);
-    /*
-    Storage = new TIniFileStorage(IncludeTrailingBackslash(Param.DestPath) +
-      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->GetName()) + L".ini");
-    if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
+    std::wstring XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
+      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->GetName()) + L".netbox";
+    ExportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
+    ExportStorage->Init();
+    ExportStorage->SetAccessMode(smReadWrite);
+    if (ExportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), true))
     {
-      ExportData->Save(Storage, false, FactoryDefaults);
+      ExportData->Save(ExportStorage, false, FactoryDefaults);
     }
-    */
   }
 }
 //---------------------------------------------------------------------------
@@ -2798,7 +2800,7 @@ int TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMod
 bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   int OpMode)
 {
-  ::Error(SNotImplemented, 3000);
+  // ::Error(SNotImplemented, 3000);
   bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(IMPORT_SESSIONS_PROMPT), NULL,
       qtConfirmation, qaOK | qaCancel) == qaOK);
@@ -2814,18 +2816,21 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
       {
-        THierarchicalStorage * Storage = NULL;
+        THierarchicalStorage *ImportStorage = NULL;
         {
-          BOOST_SCOPE_EXIT ( (&Storage) )
+          BOOST_SCOPE_EXIT ( (&ImportStorage) )
           {
-            delete Storage;
+            delete ImportStorage;
           } BOOST_SCOPE_EXIT_END
-          Storage = NULL; // new TIniFileStorage(::IncludeTrailingBackslash(GetCurrentDir()) + FileName);
-          if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
-              Storage->HasSubKeys())
+          std::wstring XmlFileName = ::IncludeTrailingBackslash(GetCurrentDir()) + FileName;
+          ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
+          ImportStorage->Init();
+          ImportStorage->SetAccessMode(smRead);
+          if (ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
+              ImportStorage->HasSubKeys())
           {
             AnyData = true;
-            StoredSessions->Load(Storage, true);
+            StoredSessions->Load(ImportStorage, true);
             // modified only, explicit
             StoredSessions->Save(false, true);
           }
