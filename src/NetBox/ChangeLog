@@ -1,6 +1,7 @@
 NetBox 2.0.5 ??.01.2012
 ---------------------
   * Ported to Far 3.0.2350
+  * Implemented import/export session from/to .xml file
   * Added command "Import sessions" (F11 --> NetBox Commands --> Import Sessions)
   * SSL core upgraded to OpenSSL 1.0.0f
 

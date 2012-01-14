@@ -33,7 +33,7 @@ std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 inline int __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
-    int len = 0;
+    size_t len = 0;
 #ifdef NETBOX_DEBUG
     va_list args;
     va_start(args, format);
@@ -50,7 +50,7 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
 inline int __cdecl debug_printf2(const char *format, ...)
 {
     (void)format;
-    int len = 0;
+    size_t len = 0;
 #ifdef NETBOX_DEBUG
     va_list args;
     va_start(args, format);

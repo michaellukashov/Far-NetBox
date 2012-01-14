@@ -2101,7 +2101,13 @@ std::wstring IntToStr(int value)
     std::string result = boost::lexical_cast<std::string>(value);
     return ::MB2W(result.c_str());
 }
-
+//---------------------------------------------------------------------------
+std::wstring Int64ToStr(__int64 value)
+{
+    std::string result = boost::lexical_cast<std::string>(value);
+    return ::MB2W(result.c_str());
+}
+//---------------------------------------------------------------------------
 int StrToInt(const std::wstring &value)
 {
     __int64 Value = 0;
@@ -2346,11 +2352,23 @@ void RaiseLastOSError()
 //---------------------------------------------------------------------------
 double StrToFloat(const std::wstring &Value)
 {
-    // FIXME
-    ::Error(SNotImplemented, 77);
-    return 0.0;
+    return StrToFloatDef(Value, 0.0);
 }
-
+//---------------------------------------------------------------------------
+double StrToFloatDef(const std::wstring &Value, double defval)
+{
+    double result = 0.0;
+    try
+    {
+        result = boost::lexical_cast<double>(::W2MB(Value.c_str()));
+    }
+    catch (const boost::bad_lexical_cast &)
+    {
+        result = defval;
+    }
+    return result;
+}
+//---------------------------------------------------------------------------
 std::wstring FormatFloat(const std::wstring &Format, double value)
 {
     // DEBUG_PRINTF(L"Format = %s", Format.c_str());
