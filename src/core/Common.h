@@ -269,6 +269,7 @@ void RaiseLastOSError();
 
 //---------------------------------------------------------------------------
 std::wstring IntToStr(int value);
+std::wstring Int64ToStr(__int64 value);
 int StrToInt(const std::wstring &value);
 __int64 ToInt(const std::wstring &value);
 int StrToIntDef(const std::wstring &value, int defval);
@@ -279,6 +280,7 @@ bool TryStrToInt(const std::wstring &value, __int64 &Value);
 
 //---------------------------------------------------------------------------
 double StrToFloat(const std::wstring &Value);
+double StrToFloatDef(const std::wstring &Value, double defval);
 std::wstring FormatFloat(const std::wstring &Format, double value);
 //---------------------------------------------------------------------------
 TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
