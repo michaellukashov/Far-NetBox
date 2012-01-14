@@ -8,10 +8,10 @@
 class TXmlStorage : public THierarchicalStorage
 {
 public:
-  explicit TXmlStorage(const std::wstring &AStorage, HKEY ARootKey);
-  explicit TXmlStorage(const std::wstring &AStorage);
+  explicit TXmlStorage(const std::wstring &AStorage, const std::wstring &StoredSessionsSubKey);
   virtual ~TXmlStorage();
 
+  virtual void Init();
   bool Copy(TXmlStorage * Storage);
 
   virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
@@ -62,7 +62,7 @@ private:
   TiXmlDocument *FXmlDoc;
   std::vector<TiXmlElement *> FSubElements;
   TiXmlElement *FCurrentElement;
+  std::wstring FStoredSessionsSubKey;
   int FFailed;
-
-  void Init();
+  bool FStoredSessionsOpened;
 };

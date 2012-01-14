@@ -7,38 +7,34 @@
 #include <boost/scope_exit.hpp>
 
 #include "Common.h"
-#include "Exceptions.h"
-#include "PuttyIntf.h"
 #include "XmlStorage.h"
 #include "TextsCore.h"
 #include "FarUtil.h"
-#include "version.h"
 //---------------------------------------------------------------------------
 static const char *CONST_XML_VERSION = "2.0";
 static const char *CONST_ROOT_NODE = "NetBox";
+static const char *CONST_SESSION_NODE = "Session";
+static const char *CONST_VERSION_ATTR = "version";
+static const char *CONST_NAME_ATTR = "name";
 //---------------------------------------------------------------------------
-#define READ_REGISTRY(Method) \
-  if (FRegistry->ValueExists(Name)) \
-  try { return FRegistry->Method(Name); } catch(...) { FFailed++; return Default; } \
-  else return Default;
-#define WRITE_REGISTRY(Method) \
-  try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
-
-//===========================================================================
-TXmlStorage::TXmlStorage(const std::wstring &AStorage) :
-  THierarchicalStorage(ExcludeTrailingBackslash(AStorage)),
-  FXmlDoc(NULL),
-  FCurrentElement(NULL)
+TXmlStorage::TXmlStorage(const std::wstring &AStorage,
+    const std::wstring &StoredSessionsSubKey) :
+    THierarchicalStorage(ExcludeTrailingBackslash(AStorage)),
+    FXmlDoc(NULL),
+    FCurrentElement(NULL),
+    FStoredSessionsSubKey(StoredSessionsSubKey),
+    FFailed(0),
+    FStoredSessionsOpened(false)
 {
-  Init();
 };
 //---------------------------------------------------------------------------
 void TXmlStorage::Init()
 {
-    FFailed = 0;
+    THierarchicalStorage::Init();
     FXmlDoc = new TiXmlDocument();
-    FXmlDoc->LinkEndChild(new TiXmlDeclaration(CONST_XML_VERSION, "UTF-8", ""));
+    FXmlDoc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
     FCurrentElement = new TiXmlElement(CONST_ROOT_NODE);
+    FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION);
     FXmlDoc->LinkEndChild(FCurrentElement);
 }
 //---------------------------------------------------------------------------
@@ -66,46 +62,7 @@ bool TXmlStorage::SaveXml()
 bool TXmlStorage::Copy(TXmlStorage * Storage)
 {
   ::Error(SNotImplemented, 3020);
-  bool Result = true;
-  /*
-  TRegistry * Registry = Storage->FRegistry;
-  TStrings * Names = new TStringList();
-  {
-    BOOST_SCOPE_EXIT ( (&Names) )
-    {
-      delete Names;
-    } BOOST_SCOPE_EXIT_END
-    Registry->GetValueNames(Names);
-    std::vector<unsigned char> Buffer(1024, 0);
-    size_t Index = 0;
-    while ((Index < Names->GetCount()) && Result)
-    {
-      std::wstring Name = PuttyMungeStr(Names->GetString(Index));
-      unsigned long Size = Buffer.size();
-      unsigned long Type;
-      int RegResult;
-      do
-      {
-        RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), NULL,
-          &Type, &Buffer[0], &Size);
-        if (RegResult == ERROR_MORE_DATA)
-        {
-          Buffer.resize(Size);
-        }
-      } while (RegResult == ERROR_MORE_DATA);
-
-      Result = (RegResult == ERROR_SUCCESS);
-      if (Result)
-      {
-        RegResult = RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), NULL, Type,
-          &Buffer[0], Size);
-        Result = (RegResult == ERROR_SUCCESS);
-      }
-
-      ++Index;
-    }
-  }
-  */
+  bool Result = false;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -117,31 +74,10 @@ std::wstring TXmlStorage::GetSource()
 void TXmlStorage::SetAccessMode(TStorageAccessMode value)
 {
   THierarchicalStorage::SetAccessMode(value);
-  if (FXmlDoc)
-  {
-    switch (GetAccessMode()) {
-      case smRead:
-        // FRegistry->SetAccess(KEY_READ);
-        break;
-
-      case smReadWrite:
-      default:
-        // FRegistry->SetAccess(KEY_READ | KEY_WRITE);
-        break;
-    }
-  }
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
 {
-  /*
-  // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
-  // if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
-  std::wstring K = ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + MungeSubKey(SubKey, Path));
-  bool Result = false; // FRegistry->OpenKey(K, CanCreate);
-  if (Result) Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
-  return Result;
-  */
   // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
   TiXmlElement *OldCurrentElement = FCurrentElement;
   TiXmlElement *Element = NULL;
@@ -161,16 +97,21 @@ bool TXmlStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Pa
   {
       if (CanCreate)
       {
-        // root = FPluginSettings.CreateSubKey(FRoot, SubKey.c_str());
-        std::string str = ToStdString(SubKey);
-        Element = new TiXmlElement(str);
-        // xmlNode->LinkEndChild(new TiXmlText(str));
+        std::string subKey = ToStdString(SubKey);
+        if (FStoredSessionsOpened)
+        {
+            Element = new TiXmlElement(CONST_SESSION_NODE);
+            Element->SetAttribute(CONST_NAME_ATTR, subKey);
+        }
+        else
+        {
+            Element = new TiXmlElement(subKey);
+        }
         FCurrentElement->LinkEndChild(Element);
       }
       else
       {
-        // root = FPluginSettings.OpenSubKey(FRoot, SubKey.c_str());
-        Element = NULL; // new TiXmlElement(ToStdString(SubKey));
+        Element = NULL;
       }
   }
   bool Result = Element != NULL;
@@ -181,6 +122,7 @@ bool TXmlStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Pa
     {
         FSubElements.push_back(OldCurrentElement);
         FCurrentElement = Element;
+        FStoredSessionsOpened = (SubKey == FStoredSessionsSubKey);
     }
   }
   // DEBUG_PRINTF(L"end, Result = %d", Result);
@@ -189,7 +131,6 @@ bool TXmlStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Pa
 //---------------------------------------------------------------------------
 void TXmlStorage::CloseSubKey()
 {
-  // FRegistry->CloseKey();
   THierarchicalStorage::CloseSubKey();
   if (FKeyHistory->GetCount() && FSubElements.size())
   {
@@ -228,7 +169,6 @@ void TXmlStorage::GetValueNames(TStrings* Strings)
 //---------------------------------------------------------------------------
 bool TXmlStorage::DeleteValue(const std::wstring &Name)
 {
-  // ::Error(SNotImplemented, 3023);
   bool result = false;
   TiXmlElement *Element = FindElement(Name);
   if (Element != NULL)
@@ -236,7 +176,7 @@ bool TXmlStorage::DeleteValue(const std::wstring &Name)
     FCurrentElement->RemoveChild(Element);
     result = true;
   }
-  return result; // FRegistry->DeleteValue(Name);
+  return result;
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::KeyExists(const std::wstring &SubKey)
@@ -329,19 +269,6 @@ int TXmlStorage::Readint(const std::wstring &Name, int Default)
 __int64 TXmlStorage::ReadInt64(const std::wstring &Name, __int64 Default)
 {
   __int64 Result = Default;
-  /*
-  if (FRegistry->ValueExists(Name))
-  {
-    try
-    {
-      FRegistry->ReadBinaryData(Name, &Result, sizeof(Result));
-    }
-    catch(...)
-    {
-      FFailed++;
-    }
-  }
-  */
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -356,24 +283,6 @@ int TXmlStorage::ReadBinaryData(const std::wstring &Name,
 {
   ::Error(SNotImplemented, 3028);
   int Result = 0;
-  /*
-  if (FRegistry->ValueExists(Name))
-  {
-    try
-    {
-      Result = FRegistry->ReadBinaryData(Name, Buffer, Size);
-    }
-    catch(...)
-    {
-      Result = 0;
-      FFailed++;
-    }
-  }
-  else
-  {
-    Result = 0;
-  }
-  */
   return Result;
 }
 //---------------------------------------------------------------------------
