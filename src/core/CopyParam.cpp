@@ -243,7 +243,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool value)
 //---------------------------------------------------------------------------
 wchar_t *TCopyParamType::ReplaceChar(std::wstring &FileName, wchar_t *InvalidChar) const
 {
-    int Index = InvalidChar - FileName.c_str();
+    size_t Index = InvalidChar - FileName.c_str();
     DEBUG_PRINTF(L"FileName = %s, InvalidChar = %s", FileName.c_str(), InvalidChar);
     if (GetInvalidCharsReplacement() == TokenReplacement)
     {
@@ -270,7 +270,7 @@ std::wstring TCopyParamType::ValidLocalFileName(const std::wstring &FileName) co
     wchar_t * InvalidChar = const_cast<wchar_t *>(fileName.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
-      int Pos = (InvalidChar - fileName.c_str());
+      size_t Pos = (InvalidChar - fileName.c_str());
       char Char;
       if ((GetInvalidCharsReplacement() == TokenReplacement) &&
           (*InvalidChar == TokenPrefix) &&
@@ -296,10 +296,10 @@ std::wstring TCopyParamType::ValidLocalFileName(const std::wstring &FileName) co
 
     if (IsReservedName(fileName))
     {
-      int P = fileName.find_first_of(L".");
-      if (P == 0)
+      size_t P = fileName.find_first_of(L".");
+      if (P == std::wstring::npos)
       {
-        P = fileName.size() + 1;
+        P = fileName.size();
       }
       fileName.insert(P, L"%00");
     }
