@@ -2797,7 +2797,7 @@ int TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, int OpMod
 bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   int OpMode)
 {
-  ::Error(SNotImplemented, 3000);
+  // ::Error(SNotImplemented, 3000);
   bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(IMPORT_SESSIONS_PROMPT), NULL,
       qtConfirmation, qaOK | qaCancel) == qaOK);
@@ -2813,18 +2813,21 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
       {
-        THierarchicalStorage * Storage = NULL;
+        THierarchicalStorage *ImportStorage = NULL;
         {
-          BOOST_SCOPE_EXIT ( (&Storage) )
+          BOOST_SCOPE_EXIT ( (&ImportStorage) )
           {
-            delete Storage;
+            delete ImportStorage;
           } BOOST_SCOPE_EXIT_END
-          Storage = NULL; // new TIniFileStorage(::IncludeTrailingBackslash(GetCurrentDir()) + FileName);
-          if (Storage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
-              Storage->HasSubKeys())
+          std::wstring XmlFileName = ::IncludeTrailingBackslash(GetCurrentDir()) + FileName;
+          ImportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
+          ImportStorage->Init();
+          ImportStorage->SetAccessMode(smRead);
+          if (ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), false) &&
+              ImportStorage->HasSubKeys())
           {
             AnyData = true;
-            StoredSessions->Load(Storage, true);
+            StoredSessions->Load(ImportStorage, true);
             // modified only, explicit
             StoredSessions->Save(false, true);
           }
