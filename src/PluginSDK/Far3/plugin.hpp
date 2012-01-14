@@ -5,7 +5,7 @@
 /*
   plugin.hpp
 
-  Plugin API for Far Manager 3.0 build 2350
+  Plugin API for Far Manager 3.0 build 2379
 */
 
 /*
@@ -43,7 +43,7 @@ other possible license with no implications from the above license on them.
 #define FARMANAGERVERSION_MAJOR 3
 #define FARMANAGERVERSION_MINOR 0
 #define FARMANAGERVERSION_REVISION 0
-#define FARMANAGERVERSION_BUILD 2350
+#define FARMANAGERVERSION_BUILD 2379
 #define FARMANAGERVERSION_STAGE VS_RELEASE
 
 #ifndef RC_INVOKED
@@ -1050,6 +1050,7 @@ enum FAR_MACRO_CONTROL_COMMANDS
 	MCTL_GETAREA           = 6,
 	MCTL_ADDMACRO          = 7,
 	MCTL_DELMACRO          = 8,
+	MCTL_GETLASTERROR      = 9,
 };
 
 typedef unsigned __int64 FARKEYMACROFLAGS;
@@ -1085,6 +1086,7 @@ enum FARMACROAREA
 	MACROAREA_SHELLAUTOCOMPLETION        =  15,
 	MACROAREA_DIALOGAUTOCOMPLETION       =  16,
 
+	MACROAREA_COMMON                     = 255,
 };
 
 enum FARMACROSTATE
@@ -1132,19 +1134,6 @@ struct MacroSendMacroText
 	const wchar_t *SequenceText;
 };
 
-struct MacroCheckMacroText
-{
-	union
-	{
-		struct MacroSendMacroText Text;
-		struct MacroParseResult   Result;
-	}
-#ifndef __cplusplus
-	Check
-#endif
-	;
-};
-
 typedef unsigned __int64 FARADDKEYMACROFLAGS;
 static const FARADDKEYMACROFLAGS
 	AKMFLAGS_NONE                = 0;
@@ -1155,6 +1144,7 @@ struct MacroAddMacro
 {
 	size_t StructSize;
 	void* Id;
+	enum FARMACROAREA Area;
 	FARKEYMACROFLAGS Flags;
 	INPUT_RECORD AKey;
 	const wchar_t *SequenceText;
@@ -1237,7 +1227,7 @@ struct WindowInfo
 struct WindowType
 {
 	size_t StructSize;
-	int Type;
+	enum WINDOWINFO_TYPE Type;
 };
 
 enum PROGRESSTATE
