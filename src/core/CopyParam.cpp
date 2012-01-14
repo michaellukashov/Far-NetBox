@@ -243,31 +243,20 @@ void TCopyParamType::SetReplaceInvalidChars(bool value)
 //---------------------------------------------------------------------------
 wchar_t *TCopyParamType::ReplaceChar(std::wstring &FileName, wchar_t *InvalidChar) const
 {
-  if (0)
-  {
-      int Index = InvalidChar - FileName.c_str();
-      DEBUG_PRINTF(L"FileName = %s, InvalidChar = %s", FileName.c_str(), InvalidChar);
-      // ::Error(SNotImplemented, 205); 
-      if (false) // FIXME FileName.GetByteType(Index) == mbSingleByte)
-      {
-        if (GetInvalidCharsReplacement() == TokenReplacement)
-        {
-          FileName.insert(Index + 1, CharToHex(FileName[Index]));
-          FileName[Index] = TokenPrefix;
-          InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 2);
-        }
-        else
-        {
-          FileName[Index] = GetInvalidCharsReplacement();
-          InvalidChar++;
-        }
-      }
-      else
-      {
-        InvalidChar++;
-      }
-  }
-  return InvalidChar;
+    int Index = InvalidChar - FileName.c_str();
+    DEBUG_PRINTF(L"FileName = %s, InvalidChar = %s", FileName.c_str(), InvalidChar);
+    if (GetInvalidCharsReplacement() == TokenReplacement)
+    {
+      FileName.insert(Index + 1, CharToHex(FileName[Index]));
+      FileName[Index] = TokenPrefix;
+      InvalidChar = const_cast<wchar_t *>(FileName.c_str() + Index + 3);
+    }
+    else
+    {
+      FileName[Index] = GetInvalidCharsReplacement();
+      InvalidChar++;
+    }
+    return InvalidChar;
 }
 //---------------------------------------------------------------------------
 std::wstring TCopyParamType::ValidLocalFileName(const std::wstring &FileName) const
@@ -276,12 +265,12 @@ std::wstring TCopyParamType::ValidLocalFileName(const std::wstring &FileName) co
   if (GetInvalidCharsReplacement() != NoReplacement)
   {
     bool ATokenReplacement = (GetInvalidCharsReplacement() == TokenReplacement);
-    const wchar_t * Chars =
-      (ATokenReplacement ? FTokenizibleChars : GetLocalInvalidChars()).c_str();
+    std::wstring chars = ATokenReplacement ? FTokenizibleChars : GetLocalInvalidChars();
+    const wchar_t *Chars = chars.c_str();
     wchar_t * InvalidChar = const_cast<wchar_t *>(fileName.c_str());
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != NULL)
     {
-      int Pos = (InvalidChar - fileName.c_str() + 1);
+      int Pos = (InvalidChar - fileName.c_str());
       char Char;
       if ((GetInvalidCharsReplacement() == TokenReplacement) &&
           (*InvalidChar == TokenPrefix) &&
