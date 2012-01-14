@@ -14,6 +14,8 @@ class THierarchicalStorage
 public:
   explicit THierarchicalStorage(const std::wstring &AStorage);
   virtual ~THierarchicalStorage();
+
+  virtual void Init() {}
   bool OpenRootKey(bool CanCreate);
   virtual bool OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
