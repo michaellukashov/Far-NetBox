@@ -265,20 +265,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
-  FLastIdle = Now();
-  FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
-
-  assert(Terminal != NULL);
-  FSessionData = new TSessionData(L"");
-  FSessionData->Assign(Terminal->GetSessionData());
-
-  FItems = new TList();
-  FTerminals = new TList();
-
-  FItemsSection = new TCriticalSection();
-  Self = this;
-
-  Start();
 }
 //---------------------------------------------------------------------------
 TTerminalQueue::~TTerminalQueue()
@@ -308,6 +294,26 @@ TTerminalQueue::~TTerminalQueue()
 
   delete FItemsSection;
   delete FSessionData;
+}
+//---------------------------------------------------------------------------
+void TTerminalQueue::Init()
+{
+    TSignalThread::Init();
+
+    FLastIdle = Now();
+    FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
+
+    assert(FTerminal != NULL);
+    FSessionData = new TSessionData(L"");
+    FSessionData->Assign(FTerminal->GetSessionData());
+
+    FItems = new TList();
+    FTerminals = new TList();
+
+    FItemsSection = new TCriticalSection();
+    Self = this;
+
+    Start();
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)

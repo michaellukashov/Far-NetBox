@@ -82,6 +82,7 @@ public:
   explicit TTerminalQueue(TTerminal *Terminal, TConfiguration *Configuration);
   virtual ~TTerminalQueue();
 
+  virtual void Init();
   void AddItem(TQueueItem *Item);
   TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *Current);
   void Idle();
