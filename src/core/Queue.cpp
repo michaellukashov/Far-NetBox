@@ -1298,7 +1298,8 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 TQueueItem::TQueueItem() :
   FStatus(qsPending), FTerminalItem(NULL), FSection(NULL), FProgressData(NULL),
   FQueue(NULL), FInfo(NULL), FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit(-1)
+  FCPSLimit(-1),
+  FOwnsProgressData(true)
 {
   FSection = new TCriticalSection();
   FInfo = new TInfo();
@@ -1350,11 +1351,12 @@ void TQueueItem::SetProgress(
     TGuard Guard(FSection);
 
     assert(FProgressData != NULL);
-    if (FProgressData != &ProgressData)
+    if ((FProgressData != &ProgressData) && FOwnsProgressData)
     {
       delete FProgressData;
-      FProgressData = &ProgressData;
     }
+    FProgressData = &ProgressData;
+    FOwnsProgressData = false;
     FProgressData->Reset();
 
     if (FCPSLimit >= 0)
@@ -1374,6 +1376,7 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
   if (FProgressData != NULL)
   {
     Proxy->FProgressData = FProgressData;
+    Proxy->FOwnsProgressData = false;
   }
   else
   {
@@ -1392,6 +1395,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
+      if (Self->FOwnsProgressData)
       {
         TGuard Guard(Self->FSection);
         delete Self->FProgressData;
@@ -1418,7 +1422,8 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   TQueueItem * QueueItem) :
   FQueue(Queue), FQueueItem(QueueItem), FProgressData(NULL),
   FQueueStatus(NULL), FInfo(NULL),
-  FProcessingUserAction(false), FUserData(NULL)
+  FProcessingUserAction(false), FUserData(NULL),
+  FOwnsProgressData(true)
 {
   FProgressData = new TFileOperationProgressType();
   FInfo = new TQueueItem::TInfo();
@@ -1429,8 +1434,11 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
 //---------------------------------------------------------------------------
 TQueueItemProxy::~TQueueItemProxy()
 {
-  delete FProgressData;
-  delete FInfo;
+    if (FOwnsProgressData)
+    {
+        delete FProgressData;
+    }
+    delete FInfo;
 }
 //---------------------------------------------------------------------------
 TFileOperationProgressType *TQueueItemProxy::GetProgressData()

@@ -204,6 +204,7 @@ protected:
   HANDLE FCompleteEvent;
   long FCPSLimit;
   TQueueItem *Self;
+  bool FOwnsProgressData;
 
   explicit TQueueItem();
   virtual ~TQueueItem();
@@ -257,6 +258,7 @@ private:
   TQueueItem::TInfo *FInfo;
   bool FProcessingUserAction;
   void *FUserData;
+  bool FOwnsProgressData;
   TQueueItemProxy *Self;
 
   explicit TQueueItemProxy(TTerminalQueue *Queue, TQueueItem *QueueItem);
