@@ -11,7 +11,7 @@
 class TSimpleThread : public TObject
 {
 public:
-  TSimpleThread();
+  explicit TSimpleThread();
   virtual ~TSimpleThread();
   virtual void Init();
   virtual void Start();
@@ -44,7 +44,7 @@ protected:
   HANDLE FEvent;
   bool FTerminated;
 
-  TSignalThread();
+  explicit TSignalThread();
   virtual ~TSignalThread();
 
   bool WaitForEvent();
@@ -79,7 +79,7 @@ friend class TQueueItem;
 friend class TQueueItemProxy;
 
 public:
-  TTerminalQueue(TTerminal *Terminal, TConfiguration *Configuration);
+  explicit TTerminalQueue(TTerminal *Terminal, TConfiguration *Configuration);
   virtual ~TTerminalQueue();
 
   void AddItem(TQueueItem *Item);
@@ -204,7 +204,7 @@ protected:
   long FCPSLimit;
   TQueueItem *Self;
 
-  TQueueItem();
+  explicit TQueueItem();
   virtual ~TQueueItem();
 
   void SetStatus(TStatus Status);
@@ -258,7 +258,7 @@ private:
   void *FUserData;
   TQueueItemProxy *Self;
 
-  TQueueItemProxy(TTerminalQueue *Queue, TQueueItem *QueueItem);
+  explicit TQueueItemProxy(TTerminalQueue *Queue, TQueueItem *QueueItem);
   virtual ~TQueueItemProxy();
 };
 //---------------------------------------------------------------------------
@@ -336,7 +336,7 @@ protected:
 class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
-  TDownloadQueueItem(TTerminal *Terminal,
+  explicit TDownloadQueueItem(TTerminal *Terminal,
     TStrings *FilesToCopy, const std::wstring &TargetDir,
     const TCopyParamType *CopyParam, int Params);
   virtual ~TDownloadQueueItem()
