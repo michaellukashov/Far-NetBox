@@ -81,7 +81,7 @@ friend class TQueueItem;
 friend class TBackgroundTerminal;
 
 public:
-  TTerminalItem(TTerminalQueue * Queue, int Index);
+  explicit TTerminalItem(TTerminalQueue * Queue, int Index);
   ~TTerminalItem();
 
   void Process(TQueueItem * Item);
