@@ -1350,8 +1350,11 @@ void TQueueItem::SetProgress(
     TGuard Guard(FSection);
 
     assert(FProgressData != NULL);
-    delete FProgressData;
-    FProgressData = &ProgressData;
+    if (FProgressData != &ProgressData)
+    {
+      delete FProgressData;
+      FProgressData = &ProgressData;
+    }
     FProgressData->Reset();
 
     if (FCPSLimit >= 0)
@@ -1398,7 +1401,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
     {
       assert(FProgressData == NULL);
       TGuard Guard(FSection);
-      FProgressData = new TFileOperationProgressType;
+      FProgressData = new TFileOperationProgressType();
     }
     DoExecute(TerminalItem->FTerminal);
   }
@@ -1417,7 +1420,7 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   FQueueStatus(NULL), FInfo(NULL),
   FProcessingUserAction(false), FUserData(NULL)
 {
-  FProgressData = new TFileOperationProgressType;
+  FProgressData = new TFileOperationProgressType();
   FInfo = new TQueueItem::TInfo();
   Self = this;
 
