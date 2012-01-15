@@ -81,9 +81,10 @@ friend class TQueueItem;
 friend class TBackgroundTerminal;
 
 public:
-  TTerminalItem(TTerminalQueue * Queue, int Index);
-  ~TTerminalItem();
+  explicit TTerminalItem(TTerminalQueue * Queue, int Index);
+  virtual ~TTerminalItem();
 
+  virtual void Init();
   void Process(TQueueItem * Item);
   bool ProcessUserAction(void * Arg);
   void Cancel();
@@ -99,6 +100,7 @@ protected:
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
+  int FIndex;
   TTerminalItem *Self;
 
   virtual void ProcessEvent();
@@ -146,8 +148,8 @@ int TSimpleThread::ThreadProc(void * Thread)
 TSimpleThread::TSimpleThread() :
   TObject(),
   FThread(NULL), FFinished(true)
-  // FThreadSlot(boost::bind(&TSimpleThread::ThreadProc, _1))
 {
+    // DEBUG_PRINTF(L"begin");
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()
@@ -265,20 +267,6 @@ TTerminalQueue::TTerminalQueue(TTerminal * Terminal,
   FTerminals(NULL), FItemsSection(NULL), FFreeTerminals(0),
   FItemsInProcess(0), FTemporaryTerminals(0), FOverallTerminals(0)
 {
-  FLastIdle = Now();
-  FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
-
-  assert(Terminal != NULL);
-  FSessionData = new TSessionData(L"");
-  FSessionData->Assign(Terminal->GetSessionData());
-
-  FItems = new TList();
-  FTerminals = new TList();
-
-  FItemsSection = new TCriticalSection();
-  Self = this;
-
-  Start();
 }
 //---------------------------------------------------------------------------
 TTerminalQueue::~TTerminalQueue()
@@ -308,6 +296,26 @@ TTerminalQueue::~TTerminalQueue()
 
   delete FItemsSection;
   delete FSessionData;
+}
+//---------------------------------------------------------------------------
+void TTerminalQueue::Init()
+{
+    TSignalThread::Init();
+
+    FLastIdle = Now();
+    FIdleInterval = EncodeTimeVerbose(0, 0, 2, 0);
+
+    assert(FTerminal != NULL);
+    FSessionData = new TSessionData(L"");
+    FSessionData->Assign(FTerminal->GetSessionData());
+
+    FItems = new TList();
+    FTerminals = new TList();
+
+    FItemsSection = new TCriticalSection();
+    Self = this;
+
+    Start();
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
@@ -910,13 +918,28 @@ bool TBackgroundTerminal::DoQueryReopen(std::exception * /*E*/)
 //---------------------------------------------------------------------------
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   TSignalThread(), FQueue(Queue), FTerminal(NULL), FItem(NULL),
-  FCriticalSection(NULL), FUserAction(NULL)
+  FCriticalSection(NULL), FUserAction(NULL), FIndex(Index)
 {
+}
+//---------------------------------------------------------------------------
+TTerminalItem::~TTerminalItem()
+{
+  Close();
+
+  assert(FItem == NULL);
+  delete FTerminal;
+  delete FCriticalSection;
+}
+//---------------------------------------------------------------------------
+void TTerminalItem::Init()
+{
+  TSignalThread::Init();
+
   FCriticalSection = new TCriticalSection();
   Self = this;
 
   FTerminal = new TBackgroundTerminal(FQueue->FTerminal, this);
-  FTerminal->Init(Queue->FSessionData, FQueue->FConfiguration, FORMAT(L"Background %d", Index));
+  FTerminal->Init(FQueue->FSessionData, FQueue->FConfiguration, FORMAT(L"Background %d", FIndex));
   try
   {
     FTerminal->SetUseBusyCursor(false);
@@ -933,15 +956,6 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   }
 
   Start();
-}
-//---------------------------------------------------------------------------
-TTerminalItem::~TTerminalItem()
-{
-  Close();
-
-  assert(FItem == NULL);
-  delete FTerminal;
-  delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::Process(TQueueItem * Item)
@@ -1284,7 +1298,8 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus)
 TQueueItem::TQueueItem() :
   FStatus(qsPending), FTerminalItem(NULL), FSection(NULL), FProgressData(NULL),
   FQueue(NULL), FInfo(NULL), FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit(-1)
+  FCPSLimit(-1),
+  FOwnsProgressData(true)
 {
   FSection = new TCriticalSection();
   FInfo = new TInfo();
@@ -1336,8 +1351,12 @@ void TQueueItem::SetProgress(
     TGuard Guard(FSection);
 
     assert(FProgressData != NULL);
-    delete FProgressData;
+    if ((FProgressData != &ProgressData) && FOwnsProgressData)
+    {
+      delete FProgressData;
+    }
     FProgressData = &ProgressData;
+    FOwnsProgressData = false;
     FProgressData->Reset();
 
     if (FCPSLimit >= 0)
@@ -1357,6 +1376,7 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy)
   if (FProgressData != NULL)
   {
     Proxy->FProgressData = FProgressData;
+    Proxy->FOwnsProgressData = false;
   }
   else
   {
@@ -1375,6 +1395,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
   {
     BOOST_SCOPE_EXIT ( (&Self) )
     {
+      if (Self->FOwnsProgressData)
       {
         TGuard Guard(Self->FSection);
         delete Self->FProgressData;
@@ -1384,7 +1405,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
     {
       assert(FProgressData == NULL);
       TGuard Guard(FSection);
-      FProgressData = new TFileOperationProgressType;
+      FProgressData = new TFileOperationProgressType();
     }
     DoExecute(TerminalItem->FTerminal);
   }
@@ -1401,9 +1422,10 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
   TQueueItem * QueueItem) :
   FQueue(Queue), FQueueItem(QueueItem), FProgressData(NULL),
   FQueueStatus(NULL), FInfo(NULL),
-  FProcessingUserAction(false), FUserData(NULL)
+  FProcessingUserAction(false), FUserData(NULL),
+  FOwnsProgressData(true)
 {
-  FProgressData = new TFileOperationProgressType;
+  FProgressData = new TFileOperationProgressType();
   FInfo = new TQueueItem::TInfo();
   Self = this;
 
@@ -1412,8 +1434,11 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
 //---------------------------------------------------------------------------
 TQueueItemProxy::~TQueueItemProxy()
 {
-  delete FProgressData;
-  delete FInfo;
+    if (FOwnsProgressData)
+    {
+        delete FProgressData;
+    }
+    delete FInfo;
 }
 //---------------------------------------------------------------------------
 TFileOperationProgressType *TQueueItemProxy::GetProgressData()

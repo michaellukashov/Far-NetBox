@@ -183,12 +183,15 @@ void TFileOperationProgressType::DoProgress()
 void TFileOperationProgressType::Finish(const std::wstring &FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
-  assert(InProgress);
-   FOnFinished(Operation, Side, Temp, FileName,
-    // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
-    Success && (Cancel == csContinue), OnceDoneOperation);
-  FFilesFinished++;
-  DoProgress();
+   assert(InProgress);
+   if (!FOnFinished.empty())
+   {
+     FOnFinished(Operation, Side, Temp, FileName,
+      // TODO : There wasn't 'Success' condition, was it by mistake or by purpose?
+      Success && (Cancel == csContinue), OnceDoneOperation);
+   }
+   FFilesFinished++;
+   DoProgress();
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::SetFile(const std::wstring &AFileName, bool AFileInProgress)
