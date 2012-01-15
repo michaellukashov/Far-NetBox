@@ -82,8 +82,9 @@ friend class TBackgroundTerminal;
 
 public:
   explicit TTerminalItem(TTerminalQueue * Queue, int Index);
-  ~TTerminalItem();
+  virtual ~TTerminalItem();
 
+  virtual void Init();
   void Process(TQueueItem * Item);
   bool ProcessUserAction(void * Arg);
   void Cancel();
@@ -99,6 +100,7 @@ protected:
   TUserAction * FUserAction;
   bool FCancel;
   bool FPause;
+  int FIndex;
   TTerminalItem *Self;
 
   virtual void ProcessEvent();
@@ -146,8 +148,8 @@ int TSimpleThread::ThreadProc(void * Thread)
 TSimpleThread::TSimpleThread() :
   TObject(),
   FThread(NULL), FFinished(true)
-  // FThreadSlot(boost::bind(&TSimpleThread::ThreadProc, _1))
 {
+    // DEBUG_PRINTF(L"begin");
 }
 //---------------------------------------------------------------------------
 TSimpleThread::~TSimpleThread()
@@ -916,13 +918,28 @@ bool TBackgroundTerminal::DoQueryReopen(std::exception * /*E*/)
 //---------------------------------------------------------------------------
 TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   TSignalThread(), FQueue(Queue), FTerminal(NULL), FItem(NULL),
-  FCriticalSection(NULL), FUserAction(NULL)
+  FCriticalSection(NULL), FUserAction(NULL), FIndex(Index)
 {
+}
+//---------------------------------------------------------------------------
+TTerminalItem::~TTerminalItem()
+{
+  Close();
+
+  assert(FItem == NULL);
+  delete FTerminal;
+  delete FCriticalSection;
+}
+//---------------------------------------------------------------------------
+void TTerminalItem::Init()
+{
+  TSignalThread::Init();
+
   FCriticalSection = new TCriticalSection();
   Self = this;
 
   FTerminal = new TBackgroundTerminal(FQueue->FTerminal, this);
-  FTerminal->Init(Queue->FSessionData, FQueue->FConfiguration, FORMAT(L"Background %d", Index));
+  FTerminal->Init(FQueue->FSessionData, FQueue->FConfiguration, FORMAT(L"Background %d", FIndex));
   try
   {
     FTerminal->SetUseBusyCursor(false);
@@ -939,15 +956,6 @@ TTerminalItem::TTerminalItem(TTerminalQueue * Queue, int Index) :
   }
 
   Start();
-}
-//---------------------------------------------------------------------------
-TTerminalItem::~TTerminalItem()
-{
-  Close();
-
-  assert(FItem == NULL);
-  delete FTerminal;
-  delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::Process(TQueueItem * Item)
