@@ -2123,8 +2123,11 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const std::wstring &NewPath)
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   std::wstring OldPath = AnotherPanel->GetCurrentDirectory();
   // IncludeTrailingBackslash to expand C: to C:\.
-  if (!FarControl(reinterpret_cast<int>(INVALID_HANDLE_VALUE), FCTL_SETPANELDIR, 
-        reinterpret_cast<LONG_PTR>(IncludeTrailingBackslash(NewPath).c_str())))
+  std::wstring LocalPath = IncludeTrailingBackslash(NewPath);
+  if (!FarControl(FCTL_SETPANELDIR,
+        0,
+        reinterpret_cast<LONG_PTR>(LocalPath.c_str()),
+        reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
   }
@@ -2138,7 +2141,10 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const std::wstring &NewPath)
       // If FCTL_SETANOTHERPANELDIR above fails, Far default current
       // directory to initial (?) one. So move this back to
       // previous directory.
-      FarControl(reinterpret_cast<int>(INVALID_HANDLE_VALUE), FCTL_SETPANELDIR, reinterpret_cast<LONG_PTR>(OldPath.c_str()));
+      FarControl(FCTL_SETPANELDIR,
+        0,
+        reinterpret_cast<LONG_PTR>(OldPath.c_str()),
+        reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }
     else
