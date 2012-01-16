@@ -507,7 +507,9 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
     Result = true;
     assert(StoredSessions);
     StoredSessions->Load();
-    std::wstring Folder = UnixIncludeTrailingBackslash(FSessionsFolder);
+    std::wstring Folder = FSessionsFolder;
+    if (!FSessionsFolder.empty())
+      Folder = UnixIncludeTrailingBackslash(FSessionsFolder);
     TSessionData * Data;
     TStringList * ChildPaths = new TStringList();
     {
