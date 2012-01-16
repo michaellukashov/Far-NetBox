@@ -2249,7 +2249,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
             if (RemotePath.substr(0, FullPrevPath.size()) == FullPrevPath)
             {
               ALocalPath = IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
-                FromUnixPath(RemotePath.substr(FullPrevPath.size() + 1,
+                FromUnixPath(RemotePath.substr(FullPrevPath.size(),
                   RemotePath.size() - FullPrevPath.size()));
             }
             else if (FullPrevPath.substr(0, RemotePath.size()) == RemotePath)
