@@ -282,7 +282,7 @@ protected:
 
     void ResetCachedInfo();
     DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2);
-    DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin);
+    DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2, HANDLE Plugin);
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePanel();
