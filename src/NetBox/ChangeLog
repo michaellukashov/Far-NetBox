@@ -1,5 +1,6 @@
 NetBox 2.0.6 ??.01.2012
 ---------------------
+  * Bugfix: option "Synchronize browsing" did not work properly
   * Bugfix: Copy: option "Transfer on background" did not work properly
 
 NetBox 2.0.5 14.01.2012
