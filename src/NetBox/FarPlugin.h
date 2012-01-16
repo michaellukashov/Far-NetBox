@@ -176,7 +176,7 @@ public:
     HINSTANCE GetHandle() const { return FHandle; };
     bool GetANSIApis() const { return FANSIApis; };
     unsigned int GetFarThread() const { return FFarThread; };
-    FarStandardFunctions GetFarStandardFunctions() { return FFarStandardFunctions; }
+    FarStandardFunctions &GetFarStandardFunctions() { return FFarStandardFunctions; }
     const struct PluginStartupInfo *GetStartupInfo() const { return &FStartupInfo; }
 protected:
     PluginStartupInfo FStartupInfo;
@@ -282,6 +282,7 @@ protected:
 
     void ResetCachedInfo();
     DWORD FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2);
+    DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin);
     bool UpdatePanel(bool ClearSelection = false, bool Another = false);
     void RedrawPanel(bool Another = false);
     void ClosePanel();
@@ -429,7 +430,7 @@ enum TFarPanelType { ptFile, ptTree, ptQuickView, ptInfo };
 class TFarPanelInfo : public TObject
 {
 public:
-    TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
+    explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
     virtual ~TFarPanelInfo();
 
     TObjectList *GetItems();

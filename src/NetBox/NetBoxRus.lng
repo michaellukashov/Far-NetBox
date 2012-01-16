@@ -490,7 +490,7 @@
 "View/change file a&ttributes  Ctrl-A"
 "Create/edit &link             Alt-F6"
 "&Configure"
-"&Import sessions"
+"&Import old sessions"
 "Server and protocol &information"
 "Open in &Putty"
 "PuTTY&gen: key generator"

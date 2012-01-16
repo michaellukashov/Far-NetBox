@@ -2123,13 +2123,14 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const std::wstring &NewPath)
   TFarPanelInfo * AnotherPanel = GetAnotherPanelInfo();
   std::wstring OldPath = AnotherPanel->GetCurrentDirectory();
   // IncludeTrailingBackslash to expand C: to C:\.
+  std::wstring LocalPath = IncludeTrailingBackslash(NewPath);
   FarPanelDirectory fpd;
   memset(&fpd, 0, sizeof(fpd));
   fpd.StructSize = sizeof(fpd);
-  fpd.Name = IncludeTrailingBackslash(NewPath).c_str();
+  fpd.Name = IncludeTrailingBackslash(LocalPath).c_str();
   fpd.PluginId = MainGuid;
   fpd.File = NULL;
-  if (!FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd))
+  if (!FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd), reinterpret_cast<HANDLE>(PANEL_PASSIVE))
   {
     Result = false;
   }
@@ -2149,7 +2150,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const std::wstring &NewPath)
       fpd.Name = OldPath.c_str();
       fpd.PluginId = MainGuid;
       fpd.File = NULL;
-      FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd);
+      FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }
     else
@@ -2260,7 +2261,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring &Dir, int OpMode)
             if (RemotePath.substr(0, FullPrevPath.size()) == FullPrevPath)
             {
               ALocalPath = IncludeTrailingBackslash(AnotherPanel->GetCurrentDirectory()) +
-                FromUnixPath(RemotePath.substr(FullPrevPath.size() + 1,
+                FromUnixPath(RemotePath.substr(FullPrevPath.size(),
                   RemotePath.size() - FullPrevPath.size()));
             }
             else if (FullPrevPath.substr(0, RemotePath.size()) == RemotePath)

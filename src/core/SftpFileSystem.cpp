@@ -4049,7 +4049,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
       std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
         osLocal, FLAGSET(Flags, tfFirstLevel));
       std::wstring DestFullName = LocalCanonify(TargetDir + DestFileName);
-      std::wstring DestPartinalFullName;
+      std::wstring DestPartialFullName;
       bool ResumeAllowed;
       bool ResumeTransfer = false;
       bool DestFileExists = false;
@@ -4087,7 +4087,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
 
       if (ResumeAllowed)
       {
-        DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
+        DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
 
         if (FLAGCLEAR(Flags, tfNewDirectory))
         {
@@ -4124,7 +4124,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
           if (ResumeAllowed)
           {
             FTerminal->LogEvent(L"Checking existence of partially transfered file.");
-            if (RemoteFileExists(DestPartinalFullName, &file))
+            if (RemoteFileExists(DestPartialFullName, &file))
             {
               ResumeOffset = file->GetSize();
               delete file;
@@ -4144,7 +4144,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
 
               if (!ResumeTransfer)
               {
-                DoDeleteFile(DestPartinalFullName, SSH_FXP_REMOVE);
+                DoDeleteFile(DestPartialFullName, SSH_FXP_REMOVE);
               }
               else
               {
@@ -4163,7 +4163,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
                 {
                   // update paths in case user changes the file name
                   DestFullName = LocalCanonify(TargetDir + DestFileName);
-                  DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
+                  DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
                   FTerminal->LogEvent(L"Checking existence of new file.");
                   DestFileExists = RemoteFileExists(DestFullName, NULL);
                 }
@@ -4176,7 +4176,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
       // will the transfer be resumable?
       bool DoResume = (ResumeAllowed && (OpenParams.OverwriteMode == omOverwrite));
 
-      std::wstring RemoteFileName = DoResume ? DestPartinalFullName : DestFullName;
+      std::wstring RemoteFileName = DoResume ? DestPartialFullName : DestFullName;
       OpenParams.RemoteFileName = RemoteFileName;
       OpenParams.Resume = DoResume;
       OpenParams.Resuming = ResumeTransfer;
@@ -4938,7 +4938,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
   {
     FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", FileName.c_str()));
 
-    std::wstring DestPartinalFullName;
+    std::wstring DestPartialFullName;
     bool ResumeAllowed;
     bool ResumeTransfer = false;
     __int64 ResumeOffset;
@@ -5000,13 +5000,13 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
       } BOOST_SCOPE_EXIT_END
       if (ResumeAllowed)
       {
-        DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
-        LocalFileName = DestPartinalFullName;
+        DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
+        LocalFileName = DestPartialFullName;
 
         FTerminal->LogEvent(L"Checking existence of partially transfered file.");
-        if (FileExists(DestPartinalFullName))
+        if (FileExists(DestPartialFullName))
         {
-          FTerminal->OpenLocalFile(DestPartinalFullName, GENERIC_WRITE,
+          FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
             NULL, &LocalHandle, NULL, NULL, NULL, &ResumeOffset);
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->TransferSize);
@@ -5024,8 +5024,8 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
           {
             CloseHandle(LocalHandle);
             LocalHandle = NULL;
-            FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
-              THROWOSIFFALSE(::DeleteFile(DestPartinalFullName));
+            FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
+              THROWOSIFFALSE(::DeleteFile(DestPartialFullName));
             )
           }
           else
@@ -5058,16 +5058,16 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
             if (PrevDestFileName != DestFileName)
             {
               DestFullName = TargetDir + DestFileName;
-              DestPartinalFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
+              DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
               if (ResumeAllowed)
               {
-                if (FileExists(DestPartinalFullName))
+                if (FileExists(DestPartialFullName))
                 {
-                  FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartinalFullName.c_str()),
-                    THROWOSIFFALSE(::DeleteFile(DestPartinalFullName));
+                  FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestPartialFullName.c_str()),
+                    THROWOSIFFALSE(::DeleteFile(DestPartialFullName));
                   )
                 }
-                LocalFileName = DestPartinalFullName;
+                LocalFileName = DestPartialFullName;
               }
               else
               {
@@ -5327,13 +5327,13 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
       if (ResumeAllowed)
       {
         FILE_OPERATION_LOOP(FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-            ExtractFileName(DestPartinalFullName, true).c_str(), DestFileName.c_str()),
+            ExtractFileName(DestPartialFullName, true).c_str(), DestFileName.c_str()),
 
           if (FileExists(DestFullName))
           {
             THROWOSIFFALSE(::DeleteFile(DestFullName));
           }
-          if (!::RenameFile(DestPartinalFullName, DestFullName))
+          if (!::RenameFile(DestPartialFullName, DestFullName))
           {
             RaiseLastOSError();
           }

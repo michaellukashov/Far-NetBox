@@ -3,6 +3,8 @@
 #define FileOperationProgressH
 //---------------------------------------------------------------------------
 
+#include <vector>
+
 #include "boostdefines.hpp"
 #include <boost/signals/signal2.hpp>
 #include <boost/signals/signal6.hpp>
@@ -10,7 +12,6 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-#include <vector>
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
@@ -88,8 +89,8 @@ public:
 
   bool Suspended;
 
-  TFileOperationProgressType();
-  TFileOperationProgressType(
+  explicit TFileOperationProgressType();
+  explicit TFileOperationProgressType(
     const fileoperationprogress_slot_type &AOnProgress,
     const fileoperationfinished_slot_type &AOnFinished);
   ~TFileOperationProgressType();
