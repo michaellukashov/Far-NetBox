@@ -2774,7 +2774,14 @@ bool TFarPanelInfo::GetIsPlugin()
 //---------------------------------------------------------------------------
 std::wstring TFarPanelInfo::GetCurrentDirectory()
 {
-    std::wstring Result = L""; //FIXME FPanelInfo->CurDir;
+    std::wstring Result = L"";
+    size_t Size = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(0, NULL);
+    if (Size)
+    {
+        Result.resize(Size);
+        FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Size,
+            const_cast<wchar_t *>(Result.c_str()));
+    }
     return StrFromFar(Result);
 }
 //---------------------------------------------------------------------------
