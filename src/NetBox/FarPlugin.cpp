@@ -2132,6 +2132,11 @@ DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2)
     return FPlugin->FarControl(Command, Param1, Param2, this);
 }
 //---------------------------------------------------------------------------
+DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
+{
+    return FPlugin->FarControl(Command, Param1, Param2, Plugin);
+}
+//---------------------------------------------------------------------------
 bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 {
     unsigned int PrevInstances = FInstances;
