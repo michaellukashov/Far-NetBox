@@ -186,7 +186,7 @@ public:
     HINSTANCE GetHandle() const { return FHandle; };
     bool GetANSIApis() const { return FANSIApis; };
     unsigned int GetFarThread() const { return FFarThread; };
-    FarStandardFunctions GetFarStandardFunctions() { return FFarStandardFunctions; }
+    FarStandardFunctions &GetFarStandardFunctions() { return FFarStandardFunctions; }
 protected:
     PluginStartupInfo FStartupInfo;
     FarStandardFunctions FFarStandardFunctions;
@@ -442,7 +442,7 @@ enum TFarPanelType { ptFile, ptTree, ptQuickView, ptInfo };
 class TFarPanelInfo : public TObject
 {
 public:
-    TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
+    explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
     virtual ~TFarPanelInfo();
 
     TObjectList *GetItems();
