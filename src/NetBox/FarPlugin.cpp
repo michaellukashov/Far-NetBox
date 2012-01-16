@@ -2111,7 +2111,8 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
     // DEBUG_PRINTF(L"Another = %d", Another);
     if (FPanelInfo[Another] == NULL)
     {
-        ::PanelInfo *Info = new ::PanelInfo;
+        PanelInfo *Info = new PanelInfo;
+        // Info->StructSize = sizeof(PanelInfo);
         bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(Info),
             Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
         // DEBUG_PRINTF(L"res = %d", res);
@@ -2775,6 +2776,7 @@ bool TFarPanelInfo::GetIsPlugin()
 std::wstring TFarPanelInfo::GetCurrentDirectory()
 {
     std::wstring Result = L"";
+    /*
     size_t Size = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(0, NULL);
     if (Size)
     {
@@ -2782,7 +2784,21 @@ std::wstring TFarPanelInfo::GetCurrentDirectory()
         FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Size,
             const_cast<wchar_t *>(Result.c_str()));
     }
-    return StrFromFar(Result);
+    */
+    // FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+    size_t Size = FarPlugin->FarControl(FCTL_GETPANELDIR,
+        0,
+        NULL,
+        FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+    if (Size)
+    {
+        Result.resize(Size);
+        FarPlugin->FarControl(FCTL_GETPANELDIR,
+            Size,
+            reinterpret_cast<LONG_PTR>(Result.c_str()),
+            FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+    }
+    return StrFromFar(Result.c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
