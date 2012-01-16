@@ -18,13 +18,13 @@ public:
   virtual void Close();
   virtual bool GetActive();
   virtual void Idle();
-  virtual std::wstring AbsolutePath(std::wstring Path, bool Local);
-  virtual void AnyCommand(const std::wstring Command,
+  virtual std::wstring AbsolutePath(const std::wstring &Path, bool Local);
+  virtual void AnyCommand(const std::wstring &Command,
     const captureoutput_slot_type *OutputEvent);
-  virtual void ChangeDirectory(const std::wstring Directory);
-  virtual void CachedChangeDirectory(const std::wstring Directory);
+  virtual void ChangeDirectory(const std::wstring &Directory);
+  virtual void CachedChangeDirectory(const std::wstring &Directory);
   virtual void AnnounceFileListOperation();
-  virtual void ChangeFileProperties(const std::wstring FileName,
+  virtual void ChangeFileProperties(const std::wstring &FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * FileList);
@@ -32,36 +32,36 @@ public:
     TStrings * FileList, TStrings * Checksums,
     calculatedchecksum_slot_type *OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam,
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam,
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CreateDirectory(const std::wstring DirName);
-  virtual void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
-  virtual void DeleteFile(const std::wstring FileName,
+  virtual void CreateDirectory(const std::wstring &DirName);
+  virtual void CreateLink(const std::wstring &FileName, const std::wstring &PointTo, bool Symbolic);
+  virtual void DeleteFile(const std::wstring &FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
-  virtual void CustomCommandOnFile(const std::wstring FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
+  virtual void CustomCommandOnFile(const std::wstring &FileName,
+    const TRemoteFile * File, const std::wstring &Command, int Params, const captureoutput_slot_type &OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(int Capability) const;
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
-  virtual void ReadFile(const std::wstring FileName,
+  virtual void ReadFile(const std::wstring &FileName,
     TRemoteFile *& File);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
-  virtual void RenameFile(const std::wstring FileName,
-    const std::wstring NewName);
-  virtual void CopyFile(const std::wstring FileName,
-    const std::wstring NewName);
-  virtual std::wstring FileUrl(const std::wstring FileName);
+  virtual void RenameFile(const std::wstring &FileName,
+    const std::wstring &NewName);
+  virtual void CopyFile(const std::wstring &FileName,
+    const std::wstring &NewName);
+  virtual std::wstring FileUrl(const std::wstring &FileName);
   virtual TStrings * GetFixedPaths();
-  virtual void SpaceAvailable(const std::wstring Path,
+  virtual void SpaceAvailable(const std::wstring &Path,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo();
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
@@ -91,32 +91,32 @@ private:
   TSCPFileSystem *Self;
 
   void ClearAliases();
-  void ClearAlias(std::wstring Alias);
-  void CustomReadFile(const std::wstring FileName,
+  void ClearAlias(const std::wstring &Alias);
+  void CustomReadFile(const std::wstring &FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  static std::wstring DelimitStr(std::wstring Str);
+  static std::wstring DelimitStr(const std::wstring &Str);
   void DetectReturnVar();
   bool IsLastLine(std::wstring & Line);
-  static bool IsTotalListingLine(const std::wstring Line);
+  static bool IsTotalListingLine(const std::wstring &Line);
   void EnsureLocation();
   void ExecCommand(const std::wstring & Cmd, int Params,
-    const std::wstring & CmdString);
+    const std::wstring &CmdString);
   void ExecCommand(TFSCommand Cmd, int Params = -1, ...);
-  void ReadCommandOutput(int Params, const std::wstring * Cmd = NULL);
+  void ReadCommandOutput(int Params, const std::wstring *Cmd = NULL);
   void SCPResponse(bool * GotLastLine = NULL);
-  void SCPDirectorySource(const std::wstring DirectoryName,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
+  void SCPDirectorySource(const std::wstring &DirectoryName,
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, int Level);
-  void SCPError(const std::wstring Message, bool Fatal);
-  void SCPSendError(const std::wstring Message, bool Fatal);
-  void SCPSink(const std::wstring TargetDir,
-    const std::wstring FileName, const std::wstring SourceDir,
+  void SCPError(const std::wstring &Message, bool Fatal);
+  void SCPSendError(const std::wstring &Message, bool Fatal);
+  void SCPSink(const std::wstring &TargetDir,
+    const std::wstring &FileName, const std::wstring &SourceDir,
     const TCopyParamType * CopyParam, bool & Success,
     TFileOperationProgressType * OperationProgress, int Params, int Level);
-  void SCPSource(const std::wstring FileName,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
+  void SCPSource(const std::wstring &FileName,
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, int Level);
-  void SendCommand(const std::wstring Cmd);
+  void SendCommand(const std::wstring &Cmd);
   void SkipFirstLine();
   void SkipStartupMessage();
   void UnsetNationalVars();
@@ -126,7 +126,7 @@ private:
   void ChangeFileToken(const std::wstring & DelimitedName,
     const TRemoteToken & Token, TFSCommand Cmd, const std::wstring & RecursiveStr);
 
-  static bool RemoveLastLine(std::wstring & Line,
+  static bool RemoveLastLine(std::wstring &Line,
     int & ReturnCode, std::wstring LastLine = L"");
 private:
   TSCPFileSystem(const TSCPFileSystem &);

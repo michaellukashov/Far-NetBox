@@ -81,7 +81,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
   ModifyAll(false);
 }
 //---------------------------------------------------------------------------
-void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring Key,
+void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring &Key,
   int Index, TBookmarkList * BookmarkList)
 {
   TStrings * Names = new TStringList();
@@ -239,7 +239,7 @@ void TBookmarks::ModifyAll(bool Modify)
   }
 }
 //---------------------------------------------------------------------------
-TBookmarkList * TBookmarks::GetBookmark(std::wstring Index)
+TBookmarkList * TBookmarks::GetBookmark(const std::wstring &Index)
 {
   int I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
@@ -252,7 +252,7 @@ TBookmarkList * TBookmarks::GetBookmark(std::wstring Index)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmarks::SetBookmark(std::wstring Index, TBookmarkList * value)
+void TBookmarks::SetBookmark(const std::wstring &Index, TBookmarkList *value)
 {
   int I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
@@ -406,7 +406,7 @@ int TBookmarkList::IndexOf(TBookmark * Bookmark)
 //---------------------------------------------------------------------------
 void TBookmarkList::KeyChanged(int Index)
 {
-  assert(Index < (int)GetCount());
+  assert(Index < static_cast<int>(GetCount()));
   TBookmark * Bookmark = reinterpret_cast<TBookmark *>(FBookmarks->GetObject(Index));
   assert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
@@ -416,7 +416,7 @@ void TBookmarkList::KeyChanged(int Index)
   FBookmarks->PutString(Index, Bookmark->GetKey());
 }
 //---------------------------------------------------------------------------
-TBookmark * TBookmarkList::FindByName(const std::wstring Node, const std::wstring Name)
+TBookmark * TBookmarkList::FindByName(const std::wstring &Node, const std::wstring &Name)
 {
   int I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
   TBookmark * Bookmark = I >= 0 ? reinterpret_cast<TBookmark *>(FBookmarks->GetObject(I)) : NULL;
@@ -448,12 +448,12 @@ TBookmark * TBookmarkList::GetBookmark(int Index)
   return Bookmark;
 }
 //---------------------------------------------------------------------------
-bool TBookmarkList::GetNodeOpened(std::wstring Index)
+bool TBookmarkList::GetNodeOpened(const std::wstring &Index)
 {
   return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::SetNodeOpened(std::wstring Index, bool value)
+void TBookmarkList::SetNodeOpened(const std::wstring &Index, bool value)
 {
   int I = FOpenedNodes->IndexOf(Index.c_str());
   if ((I >= 0) != value)
@@ -506,7 +506,7 @@ void TBookmark::Assign(TPersistent * Source)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetName(const std::wstring value)
+void TBookmark::SetName(const std::wstring &value)
 {
   if (GetName() != value)
   {
@@ -525,7 +525,7 @@ void TBookmark::SetName(const std::wstring value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetLocal(const std::wstring value)
+void TBookmark::SetLocal(const std::wstring &value)
 {
   if (GetLocal() != value)
   {
@@ -534,7 +534,7 @@ void TBookmark::SetLocal(const std::wstring value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetRemote(const std::wstring value)
+void TBookmark::SetRemote(const std::wstring &value)
 {
   if (GetRemote() != value)
   {
@@ -543,7 +543,7 @@ void TBookmark::SetRemote(const std::wstring value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetNode(const std::wstring value)
+void TBookmark::SetNode(const std::wstring &value)
 {
   if (GetNode() != value)
   {
@@ -574,7 +574,7 @@ void TBookmark::Modify(int OldIndex)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TBookmark::BookmarkKey(const std::wstring Node, const std::wstring Name)
+std::wstring TBookmark::BookmarkKey(const std::wstring &Node, const std::wstring &Name)
 {
   return FORMAT(L"%s\1%s", Node.c_str(), Name.c_str());
 }

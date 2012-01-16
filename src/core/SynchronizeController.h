@@ -30,7 +30,7 @@ typedef synchronizethreads_signal_type::slot_type synchronizethreads_slot_type;
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange };
 // typedef void (TObject::* TSynchronizeLog)
   // (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const std::wstring Message);
-typedef boost::signal3<void, TSynchronizeController *, TSynchronizeLogEntry, const std::wstring> synchronizelog_signal_type;
+typedef boost::signal3<void, TSynchronizeController *, TSynchronizeLogEntry, const std::wstring &> synchronizelog_signal_type;
 typedef synchronizelog_signal_type::slot_type synchronizelog_slot_type;
 // typedef void (TObject::* TSynchronizeStartStopEvent)
   // (TObject * Sender, bool Start, const TSynchronizeParamType & Params,
@@ -47,14 +47,14 @@ typedef synchronizestartstop_signal_type::slot_type synchronizestartstop_slot_ty
    // const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,
    // const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
    // TSynchronizeOptions * Options, bool Full);
-typedef boost::signal8<void, TSynchronizeController *, const std::wstring,
-   const std::wstring, const TCopyParamType &,
+typedef boost::signal8<void, TSynchronizeController *, const std::wstring &,
+   const std::wstring &, const TCopyParamType &,
    const TSynchronizeParamType &, TSynchronizeChecklist **,
    TSynchronizeOptions *, bool> synchronize_signal_type;
 typedef synchronize_signal_type::slot_type synchronize_slot_type;
 // typedef void (TObject::* TSynchronizeInvalidEvent)
   // (TSynchronizeController * Sender, const std::wstring Directory, const std::wstring ErrorStr);
-typedef boost::signal3<void, TSynchronizeController *, const std::wstring, const std::wstring> synchronizeinvalid_signal_type;
+typedef boost::signal3<void, TSynchronizeController *, const std::wstring &, const std::wstring &> synchronizeinvalid_signal_type;
 typedef synchronizeinvalid_signal_type::slot_type synchronizeinvalid_slot_type;
 // typedef void (TObject::* TSynchronizeTooManyDirectories)
   // (TSynchronizeController * Sender, int & MaxDirectories);
@@ -71,7 +71,7 @@ enum TSynchronizeOperation { soUpload, soDelete };
 class TSynchronizeController
 {
 public:
-  TSynchronizeController(const synchronize_slot_type &AOnSynchronize,
+  explicit TSynchronizeController(const synchronize_slot_type &AOnSynchronize,
     const synchronizeinvalid_slot_type &AOnSynchronizeInvalid,
     const synchronizetoomanydirectories_slot_type &AOnTooManyDirectories);
   ~TSynchronizeController();
@@ -81,7 +81,7 @@ public:
     TSynchronizeOptions * Options,
     const synchronizeabort_slot_type &OnAbort, const synchronizethreads_slot_type &OnSynchronizeThreads,
     const synchronizelog_slot_type &OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, const std::wstring FileName);
+  void LogOperation(TSynchronizeOperation Operation, const std::wstring &FileName);
 
 private:
   synchronize_signal_type FOnSynchronize;
@@ -95,13 +95,13 @@ private:
   synchronizelog_signal_type FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject * Sender, const std::wstring Directory,
-    bool & SubdirsChanged);
+  void SynchronizeChange(TObject * Sender, const std::wstring &Directory,
+    bool &SubdirsChanged);
   void SynchronizeAbort(bool Close);
-  void SynchronizeLog(TSynchronizeLogEntry Entry, const std::wstring Message);
-  void SynchronizeInvalid(TObject * Sender, const std::wstring Directory,
-    const std::wstring ErrorStr);
-  void SynchronizeFilter(TObject * Sender, const std::wstring DirectoryName,
+  void SynchronizeLog(TSynchronizeLogEntry Entry, const std::wstring &Message);
+  void SynchronizeInvalid(TObject * Sender, const std::wstring &Directory,
+    const std::wstring &ErrorStr);
+  void SynchronizeFilter(TObject * Sender, const std::wstring &DirectoryName,
     bool & Add);
   void SynchronizeTooManyDirectories(TObject * Sender, int & MaxDirectories);
   void SynchronizeDirectoriesChange(TObject * Sender, int Directories);

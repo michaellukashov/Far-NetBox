@@ -71,6 +71,7 @@
     <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\Temp\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -93,7 +94,7 @@
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;_AFXDLL;_AFXEXT;_DLL;NETBOX_DEBUG;MPEXT;NO_STRICT;GC_NOT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\gc-7.2alpha6\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\gc-7.2alpha6\include;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -104,8 +105,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\libs\gc-7.2alpha6\Debug;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc100ud.lib;Atl.lib;uafxcwd.lib;comctl32.lib;msvcrtd.lib;msvcprtd.lib;msvcmrtd.lib;msvcurtd.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;gcmt-lib.lib%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x86;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\libs\gc-7.2alpha6\Debug;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc100ud.lib;Atl.lib;uafxcwd.lib;comctl32.lib;msvcrtd.lib;msvcprtd.lib;msvcmrtd.lib;msvcurtd.lib;libeay32.lib;ssleay32.lib;libputty.lib;libtinyxml.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;gcmt-lib.lib;libtinyxml.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
@@ -117,15 +118,15 @@
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;_DEBUG;_WINDOWS;_USRDLL;_AFXDLL;_DLL;NETBOX_DEBUG;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc100ud.lib;Atl.lib;uafxcwd.lib;comctl32.lib;msvcrtd.lib;msvcprtd.lib;msvcmrtd.lib;msvcurtd.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x64;..\..\libs\boost\stage\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc100ud.lib;Atl.lib;uafxcwd.lib;comctl32.lib;msvcrtd.lib;msvcprtd.lib;msvcmrtd.lib;msvcurtd.lib;libeay32.lib;ssleay32.lib;libputty.lib;libtinyxml.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>uafxcwd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;msvcrtd.lib;msvcurtd.lib;msvcprtd.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmtd.lib;mfc100ud.lib;Atl.lib;comctl32.lib;mfcs100ud.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <AdditionalOptions>/verbose:lib %(AdditionalOptions)</AdditionalOptions>
@@ -141,7 +142,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;WIN32;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;_AFXDLL;_AFXEXT;_DLL;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x86\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -150,13 +151,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x86\out32dll;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc100u.lib;Atl.lib;uafxcw.lib;comctl32.lib;msvcrt.lib;msvcprt.lib;msvcmrt.lib;msvcurt.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x86;..\..\libs\boost\stage;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x86\libtinyxml;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc100u.lib;Atl.lib;uafxcw.lib;comctl32.lib;msvcrt.lib;msvcprt.lib;msvcmrt.lib;msvcurt.lib;libeay32.lib;ssleay32.lib;libputty.lib;libtinyxml.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;libcmt.lib;msvcrt.lib;Atl.lib%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x86</Command>
+      <Command>makeDist.cmd x86 Far2</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +168,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;_WIN64;CURL_STATICLIB;NDEBUG;_WINDOWS;_USRDLL;_AFXDLL;_AFXEXT;_DLL;MPEXT;NO_STRICT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\Putty;..\Putty\windows;..\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\core;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\libssh2\include;..\..\libs\libcurl\include;..\..\libs\openssl\x64\inc32;..\..\libs\boost;..\filezilla;..\filezilla\misc;..\..\libs\tinyXML;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -176,13 +177,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\libs\openssl\x64\out32dll;..\..\libs\boost\stage\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mfc100u.lib;Atl.lib;uafxcw.lib;comctl32.lib;msvcrt.lib;msvcprt.lib;msvcmrt.lib;msvcurt.lib;libeay32.lib;ssleay32.lib;libputty.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\libs\openssl\x64;..\..\libs\boost\stage\x64;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libputty;..\..\Temp\$(SolutionName)\$(Configuration)\x64\libtinyxml;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mfc100u.lib;Atl.lib;uafxcw.lib;comctl32.lib;msvcrt.lib;msvcprt.lib;msvcmrt.lib;msvcurt.lib;libeay32.lib;ssleay32.lib;libputty.lib;libtinyxml.lib;Ws2_32.lib;winhttp.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>NetBox.def</ModuleDefinitionFile>
       <IgnoreSpecificDefaultLibraries>uafxcw.lib;mfc100u.lib;Atl.lib;comctl32.lib;msvcrt.lib;msvcurt.lib;msvcprt.lib;libc.lib;libcmt.lib;msvcrt.lib;libcmt.lib;mfc100u.lib;Atl.lib;comctl32.lib;mfcs100u.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>makeDist.cmd x64</Command>
+      <Command>makeDist.cmd x64 Far2</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -196,6 +197,7 @@
     <ClCompile Include=".\WinSCPPlugin.cpp" />
     <ClCompile Include=".\FarConfiguration.cpp" />
     <ClCompile Include=".\FarInterface.cpp" />
+    <ClCompile Include=".\XmlStorage.cpp" />
     <ClCompile Include="..\core\Common.cpp" />
     <ClCompile Include="..\core\Classes.cpp" />
     <ClCompile Include="..\core\RemoteFiles.cpp" />
@@ -256,10 +258,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\libs\tinyXML\tinystr.cpp" />
-    <ClCompile Include="..\..\libs\tinyXML\tinyxml.cpp" />
-    <ClCompile Include="..\..\libs\tinyXML\tinyxmlerror.cpp" />
-    <ClCompile Include="..\..\libs\tinyXML\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NetBox.def" />
@@ -275,8 +273,6 @@
     <ClInclude Include="EasyURL.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="..\..\libs\tinyXML\tinystr.h" />
-    <ClInclude Include="..\..\libs\tinyXML\tinyxml.h" />
     <ClInclude Include="WebDAV.h" />
   </ItemGroup>
   <ItemGroup>
@@ -286,10 +282,13 @@
     <ProjectReference Include="..\..\libs\libssh2\libssh2.vcxproj">
       <Project>{a7d3d5f5-261e-475f-bf66-9d4bd6f67f19}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\libs\tinyXML\libtinyxml.vcxproj">
+      <Project>{593a4fb1-1787-4192-bf73-9c43bf8fc142}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\libs\zlib\zlib.vcxproj">
       <Project>{e9f6071a-d2bc-471e-8899-5f49b024aa04}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Putty\libputty.vcxproj">
+    <ProjectReference Include="..\..\libs\Putty\libputty.vcxproj">
       <Project>{456AD982-730D-46F8-8BE2-0E00D7433741}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -40,9 +40,11 @@ std::wstring GetSystemErrorMessage(const DWORD errCode)
             FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE, GetModuleHandle(L"Winhttp.dll"), errCode, 0, errInfoBuff, sizeof(errInfoBuff) / sizeof(wchar_t), NULL);
         }
     //Remove '\r\n' from the end
-    while (*errInfoBuff && errInfoBuff[wcslen(errInfoBuff) - 1] == L'\n' || errInfoBuff[wcslen(errInfoBuff) - 1] == L'\r')
+    wchar_t *c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;
+    while (*errInfoBuff && (*c == L'\n') || (*c == L'\r'))
     {
-        errInfoBuff[wcslen(errInfoBuff) - 1] = 0;
+        *c = 0;
+        c = *errInfoBuff ? &errInfoBuff[wcslen(errInfoBuff) - 1] : NULL;
     }
 
     if (*errInfoBuff)

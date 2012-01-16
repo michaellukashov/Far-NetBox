@@ -29,7 +29,7 @@ public:
   TMemoryStream *GetMemory() { return FMemory; }
   void SetMemory(TMemoryStream * value);
   // __property char * Data = { read=GetData };
-  char *GetData() const { return (char *)FMemory->GetMemory(); }
+  char *GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
   // __property int Size = { read=FSize, write=SetSize };
   __int64 GetSize() { return FSize; }
   void SetSize(__int64 value);

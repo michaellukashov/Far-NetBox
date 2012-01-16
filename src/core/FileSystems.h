@@ -39,55 +39,55 @@ public:
   virtual void Close() = 0;
   virtual bool GetActive() = 0;
   virtual void Idle() = 0;
-  virtual std::wstring AbsolutePath(std::wstring Path, bool Local) = 0;
-  virtual void AnyCommand(const std::wstring Command,
+  virtual std::wstring AbsolutePath(const std::wstring &Path, bool Local) = 0;
+  virtual void AnyCommand(const std::wstring &Command,
     const captureoutput_slot_type *OutputEvent) = 0;
-  virtual void ChangeDirectory(const std::wstring Directory) = 0;
-  virtual void CachedChangeDirectory(const std::wstring Directory) = 0;
+  virtual void ChangeDirectory(const std::wstring &Directory) = 0;
+  virtual void CachedChangeDirectory(const std::wstring &Directory) = 0;
   virtual void AnnounceFileListOperation() = 0;
-  virtual void ChangeFileProperties(const std::wstring FileName,
+  virtual void ChangeFileProperties(const std::wstring &FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
   virtual bool LoadFilesProperties(TStrings * FileList) = 0;
-  virtual void CalculateFilesChecksum(const std::wstring & Alg,
-    TStrings * FileList, TStrings * Checksums,
+  virtual void CalculateFilesChecksum(const std::wstring &Alg,
+    TStrings *FileList, TStrings *Checksums,
     calculatedchecksum_slot_type *OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam,
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void CopyToRemote(TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam,
+    const std::wstring &TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void CreateDirectory(const std::wstring DirName) = 0;
-  virtual void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic) = 0;
-  virtual void DeleteFile(const std::wstring FileName,
+  virtual void CreateDirectory(const std::wstring &DirName) = 0;
+  virtual void CreateLink(const std::wstring &FileName, const std::wstring &PointTo, bool Symbolic) = 0;
+  virtual void DeleteFile(const std::wstring &FileName,
     const TRemoteFile * File, int Params,
     TRmSessionAction & Action) = 0;
-  virtual void CustomCommandOnFile(const std::wstring FileName,
-    const TRemoteFile * File, std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent) = 0;
+  virtual void CustomCommandOnFile(const std::wstring &FileName,
+    const TRemoteFile * File, const std::wstring &Command, int Params, const captureoutput_slot_type &OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual bool IsCapable(int Capability) const = 0;
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
   virtual void ReadDirectory(TRemoteFileList * FileList) = 0;
-  virtual void ReadFile(const std::wstring FileName,
+  virtual void ReadFile(const std::wstring &FileName,
     TRemoteFile *& File) = 0;
-  virtual void ReadSymlink(TRemoteFile * SymLinkFile,
+  virtual void ReadSymlink(TRemoteFile *SymLinkFile,
     TRemoteFile *& File) = 0;
-  virtual void RenameFile(const std::wstring FileName,
-    const std::wstring NewName) = 0;
-  virtual void CopyFile(const std::wstring FileName,
-    const std::wstring NewName) = 0;
-  virtual std::wstring FileUrl(const std::wstring FileName) = 0;
+  virtual void RenameFile(const std::wstring &FileName,
+    const std::wstring &NewName) = 0;
+  virtual void CopyFile(const std::wstring &FileName,
+    const std::wstring &NewName) = 0;
+  virtual std::wstring FileUrl(const std::wstring &FileName) = 0;
   virtual TStrings * GetFixedPaths() = 0;
-  virtual void SpaceAvailable(const std::wstring Path,
+  virtual void SpaceAvailable(const std::wstring &Path,
     TSpaceAvailable & ASpaceAvailable) = 0;
-  virtual const TSessionInfo & GetSessionInfo() = 0;
-  virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
-  virtual bool TemporaryTransferFile(const std::wstring & FileName) = 0;
+  virtual const TSessionInfo &GetSessionInfo() = 0;
+  virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) = 0;
+  virtual bool TemporaryTransferFile(const std::wstring &FileName) = 0;
   virtual bool GetStoredCredentialsTried() = 0;
   virtual std::wstring GetUserName() = 0;
 
@@ -100,7 +100,7 @@ protected:
   TCustomFileSystem(TTerminal * ATerminal);
 
   static void FindCustomCommandPattern(
-    const std::wstring & Command, int Index, int & Len, char & PatternCmd);
+    const std::wstring &Command, int Index, int &Len, char &PatternCmd);
 };
 //---------------------------------------------------------------------------
 #endif

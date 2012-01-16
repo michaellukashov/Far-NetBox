@@ -19,7 +19,7 @@ const int ccCopyResults = ccUser << 2;
 const int ccSet = 0x80000000;
 //---------------------------------------------------------------------------
 static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
-static const std::wstring AdditionaLanguagePrefix(L"XX");
+static const std::wstring &AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
@@ -153,7 +153,7 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 #undef C
 //---------------------------------------------------------------------------
 bool TCopyParamRule::Match(const std::wstring & Mask,
-  const std::wstring & Value, bool Path, bool Local) const
+  const std::wstring &Value, bool Path, bool Local) const
 {
   bool Result;
   if (Mask.empty())
@@ -209,7 +209,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.empty();
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamRule::GetInfoStr(std::wstring Separator) const
+std::wstring TCopyParamRule::GetInfoStr(const std::wstring &Separator) const
 {
   std::wstring Result;
   #define ADD(FMT, ELEM) \
@@ -263,7 +263,7 @@ void TCopyParamList::Modify()
   FModified = true;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::ValidateName(const std::wstring Name)
+void TCopyParamList::ValidateName(const std::wstring &Name)
 {
   if (::LastDelimiter(Name, FInvalidChars) != std::wstring::npos)
   {
@@ -307,7 +307,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::IndexOfName(const std::wstring Name) const
+int TCopyParamList::IndexOfName(const std::wstring &Name) const
 {
   return FNames->IndexOf(Name.c_str());
 }
@@ -324,23 +324,23 @@ bool TCopyParamList::CompareItem(int Index,
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-  for (int i = 0; i < GetCount(); i++)
+  for (int i = GetCount() - 1; i >= 0; i--)
   {
-    delete GetCopyParam(i);
-    delete GetRule(i);
+    FCopyParams->Delete(i);
+    FRules->Delete(i);
   }
   FCopyParams->Clear();
   FRules->Clear();
   FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Add(const std::wstring Name,
+void TCopyParamList::Add(const std::wstring &Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Insert(int Index, const std::wstring Name,
+void TCopyParamList::Insert(int Index, const std::wstring &Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   // DEBUG_PRINTF(L"begin");
@@ -353,7 +353,7 @@ void TCopyParamList::Insert(int Index, const std::wstring Name,
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Change(int Index, const std::wstring Name,
+void TCopyParamList::Change(int Index, const std::wstring &Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -526,8 +526,27 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TGUIConfiguration::TGUIConfiguration(): TConfiguration()
+TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
+  FLocales(NULL),
+  FContinueOnError(false),
+  FConfirmCommandSession(false),
+  FPuttyPassword(false),
+  FTelnetForFtpInPutty(false),
+  FSynchronizeParams(0),
+  FSynchronizeOptions(0),
+  FSynchronizeModeAuto(0),
+  FSynchronizeMode(0),
+  FMaxWatchDirectories(0),
+  FQueueAutoPopup(false),
+  FQueueRememberPassword(false),
+  FQueueTransfersLimit(0),
+  FBeepOnFinish(false),
+  FSynchronizeBrowsing(false),
+  FCopyParamList(NULL),
+  FCopyParamListDefaults(false),
+  FKeepUpToDateChangeDelay(0),
+  FSessionReopenAutoIdle(0),
+  FLocale(0)
 {
   FLocale = 0;
   FLocales = new TStringList();
@@ -586,7 +605,7 @@ void TGUIConfiguration::Default()
   FSessionReopenAutoIdle = 5000;
 
   FNewDirectoryProperties.Default();
-  FNewDirectoryProperties.Rights = TRights::rfDefault;
+  FNewDirectoryProperties.Rights = TRights::rfDefault | TRights::rfExec;
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
@@ -623,10 +642,10 @@ void TGUIConfiguration::DefaultLocalized()
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
+std::wstring TGUIConfiguration::PropertyToKey(const std::wstring &Property)
 {
   // no longer useful
-  int P = ::LastDelimiter(Property, L".>");
+  size_t P = ::LastDelimiter(Property, L".>");
   return Property.substr(P + 1, Property.size() - P);
 }
 //---------------------------------------------------------------------------
@@ -785,15 +804,15 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     Module = ModuleFileName();
     if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
     {
-      wchar_t LocaleStr[4];
-      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, LocaleStr, sizeof(LocaleStr));
-      LocaleName = LocaleStr;
+      LOCALESIGNATURE LocSig;
+      GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, (LPWSTR)&LocSig, sizeof(LocSig) / sizeof(wchar_t));
+      LocaleName = *(LPWSTR)&LocSig;
       assert(!LocaleName.empty());
     }
     else
     {
       LocaleName = AdditionaLanguagePrefix +
-        wchar_t(ALocale & ~AdditionaLanguageMask);
+        static_cast<wchar_t>(ALocale & ~AdditionaLanguageMask);
     }
 
     Module = ChangeFileExt(Module, std::wstring(L".") + LocaleName);
@@ -817,7 +836,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw ExtException(FMTLOAD(LOCALE_LOAD_ERROR, int(ALocale)));
+    throw ExtException(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
   }
   else
   {
@@ -1110,7 +1129,7 @@ void TGUIConfiguration::SetCopyParamIndex(int value)
   SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamCurrent(std::wstring value)
+void TGUIConfiguration::SetCopyParamCurrent(const std::wstring &value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1120,7 +1139,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(std::wstring Name)
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring &Name)
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.empty())

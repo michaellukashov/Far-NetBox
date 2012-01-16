@@ -80,7 +80,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int ACount, bool ATemp,
-  const std::wstring ADirectory, unsigned long ACPSLimit)
+  const std::wstring &ADirectory, unsigned long ACPSLimit)
 {
   Clear();
   Operation = AOperation;
@@ -144,15 +144,17 @@ int TFileOperationProgressType::OperationProgress()
 int TFileOperationProgressType::TransferProgress()
 {
   int Result;
-  if (TransferSize) Result = (int)((TransferedSize * 100)/TransferSize);
-    else Result = 0;
+  if (TransferSize)
+    Result = static_cast<int>((TransferedSize * 100) / TransferSize);
+  else
+    Result = 0;
   return Result;
 }
 //---------------------------------------------------------------------------
 int TFileOperationProgressType::TotalTransferProgress()
 {
   assert(TotalSizeSet);
-  int Result = TotalSize > 0 ? (int)(((TotalTransfered + TotalSkipped) * 100)/TotalSize) : 0;
+  int Result = TotalSize > 0 ? static_cast<int>(((TotalTransfered + TotalSkipped) * 100) / TotalSize) : 0;
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
@@ -178,7 +180,7 @@ void TFileOperationProgressType::DoProgress()
   }
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::Finish(std::wstring FileName,
+void TFileOperationProgressType::Finish(const std::wstring &FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   assert(InProgress);
@@ -189,7 +191,7 @@ void TFileOperationProgressType::Finish(std::wstring FileName,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetFile(std::wstring AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(const std::wstring &AFileName, bool AFileInProgress)
 {
   FileName = AFileName;
   FileInProgress = AFileInProgress;
@@ -269,7 +271,7 @@ unsigned long TFileOperationProgressType::AdjustToCPSLimit(
 unsigned long TFileOperationProgressType::LocalBlockSize()
 {
   unsigned long Result = TRANSFER_BUF_SIZE;
-  if (LocallyUsed + Result > LocalSize) Result = (unsigned long)(LocalSize - LocallyUsed);
+  if (LocallyUsed + Result > LocalSize) Result = static_cast<unsigned long>(LocalSize - LocallyUsed);
   Result = AdjustToCPSLimit(Result);
   return Result;
 }
@@ -360,7 +362,7 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
 unsigned long TFileOperationProgressType::TransferBlockSize()
 {
   unsigned long Result = TRANSFER_BUF_SIZE;
-  if (TransferedSize + Result > TransferSize) Result = (unsigned long)(TransferSize - TransferedSize);
+  if (TransferedSize + Result > TransferSize) Result = static_cast<unsigned long>(TransferSize - TransferedSize);
   Result = AdjustToCPSLimit(Result);
   return Result;
 }
@@ -421,7 +423,7 @@ unsigned int TFileOperationProgressType::CPS()
     else
     {
       __int64 Transferred = (TotalTransfered - FTotalTransferredThen.front());
-      Result = (unsigned int)(Transferred * 1000 / TimeSpan);
+      Result = static_cast<unsigned int>(Transferred * 1000 / TimeSpan);
     }
   }
   return Result;
@@ -430,8 +432,10 @@ unsigned int TFileOperationProgressType::CPS()
 TDateTime TFileOperationProgressType::TimeExpected()
 {
   unsigned int CurCps = CPS();
-  if (CurCps) return TDateTime((double)(((double)(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
-    else return TDateTime(0);
+  if (CurCps)
+    return TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
+  else
+      return TDateTime(0);
 }
 //---------------------------------------------------------------------------
 TDateTime TFileOperationProgressType::TotalTimeExpected()
@@ -441,7 +445,7 @@ TDateTime TFileOperationProgressType::TotalTimeExpected()
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
   {
-    return TDateTime((double)((double)(TotalSize - TotalSkipped) / CurCps) /
+    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
       (24 * 60 * 60));
   }
   else
@@ -457,7 +461,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft()
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))
   {
-    return TDateTime((double)((double)(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
+    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
       (24 * 60 * 60));
   }
   else

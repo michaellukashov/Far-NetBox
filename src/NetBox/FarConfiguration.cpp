@@ -15,7 +15,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   // DEBUG_PRINTF(L"begin");
   Self = this;
   FFarConfirmations = -1;
-  FPlugin = APlugin;
+  FFarPlugin = APlugin;
   FBookmarks = new TBookmarks();
   Default();
   // DEBUG_PRINTF(L"end");
@@ -39,7 +39,7 @@ void TFarConfiguration::Default()
   SetDisksMenuHotKey(0);
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
-  SetCommandPrefixes(L"winscp,scp,sftp,ftps,http,https");
+  SetCommandPrefixes(L"netbox,scp,sftp,ftps,http,https");
   SetHostNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
@@ -64,6 +64,12 @@ void TFarConfiguration::Default()
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
+THierarchicalStorage * TFarConfiguration::CreateStorage()
+{
+  // DEBUG_PRINTF(L"GetStorage = %d", GetStorage());
+  return TGUIConfiguration::CreateStorage();
+}
+//---------------------------------------------------------------------------
 void TFarConfiguration::Saved()
 {
   TGUIConfiguration::Saved();
@@ -72,7 +78,7 @@ void TFarConfiguration::Saved()
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #define LASTELEM(ELEM) \
-  ELEM.substr(LastDelimiter(ELEM, L".>")+1, ELEM.size() - LastDelimiter(ELEM, L".>"))
+  ELEM.substr(::LastDelimiter(ELEM, L".>") + 1, ELEM.size() - ::LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
@@ -174,7 +180,7 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin * value)
   if (GetPlugin() != value)
   {
     assert(!GetPlugin() || !value);
-    FPlugin = value;
+    FFarPlugin = value;
   }
 }
 //---------------------------------------------------------------------------
@@ -237,14 +243,14 @@ std::wstring TFarConfiguration::ModuleFileName()
   return GetPlugin()->GetModuleName();
 }
 //---------------------------------------------------------------------------
-void TFarConfiguration::SetBookmark(std::wstring Key,
+void TFarConfiguration::SetBookmark(const std::wstring &Key,
   TBookmarkList * value)
 {
   FBookmarks->SetBookmark(Key, value);
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * TFarConfiguration::GetBookmark(std::wstring Key)
+TBookmarkList * TFarConfiguration::GetBookmark(const std::wstring &Key)
 {
   return FBookmarks->GetBookmark(Key);
 }

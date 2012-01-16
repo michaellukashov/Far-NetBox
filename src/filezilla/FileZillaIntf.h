@@ -14,9 +14,8 @@ struct TListDataEntry
   const wchar_t *Name;
   const wchar_t *Permissions;
   const wchar_t *OwnerGroup;
+  const wchar_t *LinkTarget;
   __int64 Size;
-  bool Dir;
-  bool Link;
   int Year;
   int Month;
   int Day;
@@ -24,7 +23,8 @@ struct TListDataEntry
   int Minute;
   bool HasTime;
   bool HasDate;
-  const wchar_t *LinkTarget;
+  bool Dir;
+  bool Link;
 };
 //---------------------------------------------------------------------------
 struct TFtpsCertificateData

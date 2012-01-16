@@ -39,8 +39,8 @@ void PuttyInitialize()
   strcpy_s(sshver, sizeof(sshver), vs.c_str());
   std::wstring AppName = AppNameString();
   assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
-  std::string appname = ::W2MB(AppName.c_str());
-  strcpy_s(appname_, sizeof(appname_), appname.c_str());
+  std::string _appname = ::W2MB(AppName.c_str());
+  strcpy_s(appname_, sizeof(appname_), _appname.c_str());
 }
 //---------------------------------------------------------------------------
 void PuttyFinalize()
@@ -71,7 +71,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   {
     // If it is not SSH/PFwd plug, then it must be Proxy plug.
     // Get SSH/PFwd plug which it wraps.
-    Proxy_Socket ProxySocket = ((Proxy_Plug)plug)->proxy_socket;
+    Proxy_Socket ProxySocket = (reinterpret_cast<Proxy_Plug>(plug))->proxy_socket;
     plug = ProxySocket->plug;
   }
 
@@ -79,7 +79,7 @@ extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
   // DEBUG_PRINTF(L"pfwd = %d", pfwd);
   if (pfwd)
   {
-    plug = (Plug)get_pfwd_backend(plug);
+    plug = static_cast<Plug>(get_pfwd_backend(plug));
   }
 
   frontend = get_ssh_frontend(plug);
@@ -104,12 +104,12 @@ int from_backend(void * frontend, int is_stderr, const char * data, int datalen)
   if (is_stderr >= 0)
   {
     assert((is_stderr == 0) || (is_stderr == 1));
-    ((TSecureShell *)frontend)->FromBackend((is_stderr == 1), data, datalen);
+    (static_cast<TSecureShell *>(frontend))->FromBackend((is_stderr == 1), data, datalen);
   }
   else
   {
     assert(is_stderr == -1);
-    ((TSecureShell *)frontend)->CWrite(data, datalen);
+    (static_cast<TSecureShell *>(frontend))->CWrite(data, datalen);
   }
   return 0;
 }
@@ -131,17 +131,17 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   TStringList Prompts;
   TStringList Results;
   {
-    for (int Index = 0; Index < int(p->n_prompts); Index++)
+    for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
-      Prompts.AddObject(::MB2W(Prompt->prompt), (TObject *)Prompt->echo);
-      Results.AddObject(L"", (TObject *)Prompt->result_len);
+      Prompts.AddObject(::MB2W(Prompt->prompt), reinterpret_cast<TObject *>(Prompt->echo));
+      Results.AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
     }
 
     if (SecureShell->PromptUser(p->to_server, ::MB2W(p->name), p->name_reqd,
           ::MB2W(p->instruction), p->instr_reqd, &Prompts, &Results))
     {
-      for (int Index = 0; Index < int(p->n_prompts); Index++)
+      for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
         std::string Str = ::W2MB(Results.GetString(Index).c_str());
@@ -173,7 +173,7 @@ void logevent(void * frontend, const char * string)
   // Frontend maybe NULL here
   if (frontend != NULL)
   {
-    ((TSecureShell *)frontend)->PuttyLogEvent(::MB2W(string));
+    (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(::MB2W(string));
   }
 }
 //---------------------------------------------------------------------------
@@ -187,7 +187,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_end(Param);
 
   assert(frontend != NULL);
-  ((TSecureShell *)frontend)->PuttyFatalError(::MB2W(Buf));
+  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(::MB2W(Buf));
 }
 //---------------------------------------------------------------------------
 int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
@@ -195,7 +195,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
   void * /*ctx*/)
 {
   assert(frontend != NULL);
-  ((TSecureShell *)frontend)->VerifyHostKey(::MB2W(host), port, ::MB2W(keytype), ::MB2W(keystr), ::MB2W(fingerprint));
+  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(::MB2W(host), port, ::MB2W(keytype), ::MB2W(keystr), ::MB2W(fingerprint));
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
@@ -205,7 +205,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   assert(frontend != NULL);
-  ((TSecureShell *)frontend)->AskAlg(::MB2W(algtype), ::MB2W(algname));
+  (static_cast<TSecureShell *>(frontend))->AskAlg(::MB2W(algtype), ::MB2W(algname));
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
@@ -220,7 +220,7 @@ void display_banner(void * frontend, const char * banner, int size)
 {
   assert(frontend);
   std::wstring Banner(::MB2W(std::string(banner, size).c_str()).c_str());
-  ((TSecureShell *)frontend)->DisplayBanner(Banner);
+  (static_cast<TSecureShell *>(frontend))->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
 static void SSHFatalError(const char * Format, va_list Param)
@@ -368,7 +368,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
     // we expect this to be called only from verify_host_key() or store_host_key()
     assert(RegKey == L"SshHostKeys");
 
-    THierarchicalStorage * Storage = Configuration->CreateScpStorage(false);
+    THierarchicalStorage * Storage = Configuration->CreateStorage();
     Storage->SetAccessMode((CanCreate ? smReadWrite : smRead));
     if (Storage->OpenSubKey(RegKey, CanCreate))
     {
@@ -472,13 +472,13 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(std::wstring FileName)
+TKeyType KeyType(const std::wstring &FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
   Filename KeyFile;
   ASCOPY(KeyFile.path, ::W2MB(FileName.c_str()));
-  return (TKeyType)key_type(&KeyFile);
+  return static_cast<TKeyType>(key_type(&KeyFile));
 }
 //---------------------------------------------------------------------------
 std::wstring KeyTypeName(TKeyType KeyType)
@@ -500,17 +500,17 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
   {
     throw ExtException(LoadStr(DECODE_UTF_ERROR));
   }
-  TUnicodeEmitParams * Params = (TUnicodeEmitParams *)AParams;
+  TUnicodeEmitParams * Params = static_cast<TUnicodeEmitParams *>(AParams);
   if (Params->Pos >= Params->Len)
   {
     Params->Len += 50;
     Params->Buffer.resize(Params->Len);
   }
-  Params->Buffer[Params->Pos] = (wchar_t)Output;
+  Params->Buffer[Params->Pos] = static_cast<wchar_t>(Output);
   Params->Pos++;
 }
 //---------------------------------------------------------------------------
-std::string DecodeUTF(const std::string UTF)
+std::string DecodeUTF(const std::string &UTF)
 {
   // DEBUG_PRINTF(L"UTF = %s", ::MB2W(UTF.c_str()).c_str());
   charset_state State;
@@ -519,14 +519,14 @@ std::string DecodeUTF(const std::string UTF)
   std::wstring Result;
 
   State.s0 = 0;
-  Str = (char *)UTF.c_str();
+  Str = const_cast<char *>(UTF.c_str());
   Params.Pos = 0;
   Params.Len = UTF.size();
   Params.Buffer.resize(Params.Len);
 
   while (*Str)
   {
-    read_utf8(NULL, (unsigned char)*Str, &State, UnicodeEmit, &Params);
+    read_utf8(NULL, static_cast<unsigned char>(*Str), &State, UnicodeEmit, &Params);
     Str++;
   }
   Params.Buffer.resize(Params.Pos);
@@ -547,17 +547,17 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
   {
     throw ExtException(LoadStr(DECODE_UTF_ERROR));
   }
-  TUnicodeEmitParams2 * Params = (TUnicodeEmitParams2 *)AParams;
+  TUnicodeEmitParams2 *Params = static_cast<TUnicodeEmitParams2 *>(AParams);
   if (Params->Pos >= Params->Len)
   {
     Params->Len += 50;
     Params->Buffer.resize(Params->Len);
   }
-  Params->Buffer[Params->Pos] = (unsigned char)Output;
+  Params->Buffer[Params->Pos] = static_cast<unsigned char>(Output);
   Params->Pos++;
 }
 //---------------------------------------------------------------------------
-std::string EncodeUTF(const std::wstring Source)
+std::string EncodeUTF(const std::wstring &Source)
 {
   // std::wstring::c_bstr() returns NULL for empty strings
   // (as opposite to std::wstring::c_str() which returns "")
@@ -573,7 +573,7 @@ std::string EncodeUTF(const std::wstring Source)
     TUnicodeEmitParams2 Params;
 
     State.s0 = 0;
-    Str = (wchar_t *)Source.c_str();
+    Str = const_cast<wchar_t *>(Source.c_str());
     Params.Pos = 0;
     Params.Len = Source.size();
     Params.Buffer.resize(Params.Len);
@@ -590,7 +590,7 @@ std::string EncodeUTF(const std::wstring Source)
   }
 }
 //---------------------------------------------------------------------------
-__int64 ParseSize(std::wstring SizeStr)
+__int64 ParseSize(const std::wstring &SizeStr)
 {
   return parse_blocksize(::W2MB(SizeStr.c_str()).c_str());
 }

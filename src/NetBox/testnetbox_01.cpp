@@ -509,9 +509,11 @@ BOOST_FIXTURE_TEST_CASE(test22, base_fixture_t)
         delete FileStream; FileStream = NULL;
         delete BlockBuf; BlockBuf = NULL;
         ::CloseHandle(File);
+        BOOST_TEST_MESSAGE("FileName1 = " << ::W2MB(FileName.c_str()));
         BOOST_REQUIRE(::FileExists(FileName));
     }
     {
+        BOOST_TEST_MESSAGE("FileName2 = " << ::W2MB(FileName.c_str()));
         WIN32_FIND_DATA Rec;
         BOOST_CHECK(FileSearchRec(FileName, Rec));
     }
@@ -562,9 +564,11 @@ BOOST_FIXTURE_TEST_CASE(test24, base_fixture_t)
 
 BOOST_FIXTURE_TEST_CASE(test25, base_fixture_t)
 {
+#if 0
     GC_find_leak = 1;
     int *i = (int *)malloc(sizeof(int));
     CHECK_LEAKS();
+#endif
 }
 
 BOOST_AUTO_TEST_SUITE_END()

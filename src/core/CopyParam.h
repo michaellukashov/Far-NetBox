@@ -51,14 +51,14 @@ private:
   bool FClearArchive;
   unsigned long FCPSLimit;
 
-  static std::wstring Untokenize(std::wstring FileName);
+  static std::wstring Untokenize(const std::wstring &FileName);
   wchar_t * ReplaceChar(std::wstring & FileName, wchar_t * InvalidChar) const;
-  std::wstring RestoreChars(std::wstring FileName) const;
+  std::wstring RestoreChars(const std::wstring &FileName) const;
 
 public:
   static const wchar_t TokenPrefix = L'%';
-  static const wchar_t NoReplacement = wchar_t(false);
-  static const wchar_t TokenReplacement = wchar_t(true);
+  static const wchar_t NoReplacement = static_cast<wchar_t>(false);
+  static const wchar_t TokenReplacement = static_cast<wchar_t>(true);
 
   TCopyParamType();
   TCopyParamType(const TCopyParamType & Source);
@@ -66,22 +66,22 @@ public:
   TCopyParamType & operator =(const TCopyParamType & rhp);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
-  std::wstring ChangeFileName(std::wstring FileName,
+  std::wstring ChangeFileName(const std::wstring &FileName,
     TOperationSide Side, bool FirstLevel) const;
   int LocalFileAttrs(const TRights & Rights) const;
   TRights RemoteFileRights(int Attrs) const;
-  bool UseAsciiTransfer(std::wstring FileName, TOperationSide Side,
+  bool UseAsciiTransfer(const std::wstring &FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool AllowResume(__int64 Size) const;
-  std::wstring ValidLocalFileName(std::wstring FileName) const;
-  std::wstring ValidLocalPath(std::wstring Path) const;
+  std::wstring ValidLocalFileName(const std::wstring &FileName) const;
+  std::wstring ValidLocalPath(const std::wstring &Path) const;
   bool AllowAnyTransfer() const;
-  bool AllowTransfer(std::wstring FileName, TOperationSide Side,
+  bool AllowTransfer(const std::wstring &FileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams & Params) const;
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
-  std::wstring GetInfoStr(std::wstring Separator, int Attrs) const;
+  std::wstring GetInfoStr(const std::wstring &Separator, int Attrs) const;
 
   bool operator==(const TCopyParamType & rhp) const;
 
@@ -128,13 +128,13 @@ public:
   void SetReplaceInvalidChars(bool value);
   // __property std::wstring LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
   std::wstring GetLocalInvalidChars() const { return FLocalInvalidChars; }
-  void SetLocalInvalidChars(std::wstring value);
+  void SetLocalInvalidChars(const std::wstring &value);
   // __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool value) { FCalculateSize = value; }
   // __property std::wstring FileMask = { read = FFileMask, write = FFileMask };
   std::wstring GetFileMask() const { return FFileMask; }
-  void SetFileMask(std::wstring value) { FFileMask = value; }
+  void SetFileMask(const std::wstring &value) { FFileMask = value; }
   // __property TFileMasks ExcludeFileMask = { read = FExcludeFileMask, write = FExcludeFileMask };
   TFileMasks GetExcludeFileMask() const { return FExcludeFileMask; }
   void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }

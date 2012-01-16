@@ -333,6 +333,8 @@
 " Detection of known bugs in SFTP servers "
 "&Reverses order of symlink command arguments:    "
 "&Misinterprets file timestamps prior to 1970:    "
+"M&in packet size:"
+"M&ax packet size:"
 " Key exchange algorithm options "
 "Algorithm selection &policy:"
 " Options controlling key re-exchange "
@@ -355,6 +357,7 @@
 "&Windows"
 " Connection "
 "&Passive mode"
+"&Allow empty password"
 " Protocol options "
 "Post login &commands:"
 
@@ -487,6 +490,7 @@
 "View/change file a&ttributes  Ctrl-A"
 "Create/edit &link             Alt-F6"
 "&Configure"
+"&Import sessions"
 "Server and protocol &information"
 "Open in &Putty"
 "PuTTY&gen: key generator"
@@ -658,7 +662,11 @@
 "Creating folder"
 
 "Edit history"
+
+"Imported %d sessions"
+
 //NetBox strings
+
 "NetBox"
 
 "OK"

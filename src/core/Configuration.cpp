@@ -18,18 +18,41 @@
 #include "WinSCPSecurity.h"
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration() :
+  FDontSave(false),
+  FChanged(false),
+  FUpdating(0),
   FApplicationInfo(NULL),
+  FLogging(false),
+  FPermanentLogging(false),
+  FLogWindowLines(0),
+  FLogFileAppend(false),
+  FLogProtocol(0),
+  FActualLogProtocol(0),
+  FLogActions(false),
+  FPermanentLogActions(false),
+  FConfirmOverwriting(false),
+  FConfirmResume(false),
+  FAutoReadDirectoryAfterOp(false),
+  FSessionReopenAuto(0),
+  FSessionReopenBackground(0),
+  FSessionReopenTimeout(0),
+  FTunnelLocalPortNumberLow(0),
+  FTunnelLocalPortNumberHigh(0),
+  FCacheDirectoryChangesMaxSize(0),
+  FShowFtpWelcomeMessage(false),
+  FDisablePasswordStoring(false),
+  FForceBanners(false),
+  FDisableAcceptingHostKeys(false),
   FCriticalSection(NULL)
 {
   FCriticalSection = new TCriticalSection();
   FUpdating = 0;
-  FStorage = stDetect;
+  FStorage = stRegistry;
   FDontSave = false;
   FApplicationInfo = NULL;
 
-  wchar_t Buf[10];
   std::wstring RandomSeedPath;
-  if (GetEnvironmentVariable(L"APPDATA", Buf, sizeof(Buf)) > 0)
+  if (GetEnvironmentVariable(L"APPDATA", NULL, 0) > 0)
   {
     RandomSeedPath = L"%APPDATA%";
   }
@@ -101,7 +124,7 @@ TConfiguration::~TConfiguration()
   delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
+THierarchicalStorage * TConfiguration::CreateStorage()
 {
   if (GetStorage() == stRegistry)
   {
@@ -109,12 +132,13 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool /*SessionList*/)
   }
   else
   {
-    return new TIniFileStorage(GetIniFileStorageName());
+    ::Error(SNotImplemented, 3005);
+    return NULL; // new TIniFileStorage(GetIniFileStorageName());
   }
 }
 //---------------------------------------------------------------------------
 #define LASTELEM(ELEM) \
-  ELEM.substr(::LastDelimiter(ELEM, L".>")+1, ELEM.size() - LastDelimiter(ELEM, L".>"))
+  ELEM.substr(::LastDelimiter(ELEM, L".>") + 1, ELEM.size() - ::LastDelimiter(ELEM, L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
   { \
@@ -160,7 +184,7 @@ void TConfiguration::Save(bool All, bool Explicit)
 {
   if (FDontSave) return;
 
-  THierarchicalStorage * AStorage = CreateScpStorage(false);
+  THierarchicalStorage * AStorage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&AStorage) )
       {
@@ -188,8 +212,9 @@ void TConfiguration::Save(bool All, bool Explicit)
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::Export(const std::wstring FileName)
+void TConfiguration::Export(const std::wstring &FileName)
 {
+  ::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   {
@@ -198,11 +223,11 @@ void TConfiguration::Export(const std::wstring FileName)
         delete ExportStorage;
         delete Storage;
       } BOOST_SCOPE_EXIT_END
-    ExportStorage = new TIniFileStorage(FileName);
+    ExportStorage = NULL; // new TIniFileStorage(FileName);
     ExportStorage->SetAccessMode(smReadWrite);
     ExportStorage->SetExplicit(true);
 
-    Storage = CreateScpStorage(false);
+    Storage = CreateStorage();
     Storage->SetAccessMode(smRead);
 
     CopyData(Storage, ExportStorage);
@@ -236,7 +261,7 @@ void TConfiguration::Load()
 {
   TGuard Guard(FCriticalSection);
 
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -324,10 +349,10 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::LoadDirectoryChangesCache(const std::wstring SessionKey,
+void TConfiguration::LoadDirectoryChangesCache(const std::wstring &SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -343,10 +368,10 @@ void TConfiguration::LoadDirectoryChangesCache(const std::wstring SessionKey,
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
+void TConfiguration::SaveDirectoryChangesCache(const std::wstring &SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -365,17 +390,17 @@ void TConfiguration::SaveDirectoryChangesCache(const std::wstring SessionKey,
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::BannerHash(const std::wstring & Banner)
 {
-  std::wstring Result;
-  Result.resize(16);
-  md5checksum((const char *)Banner.c_str(), Banner.size(), (unsigned char*)Result.c_str());
+  std::wstring Result(16, 0);
+  md5checksum(static_cast<const char *>(static_cast<const void *>(Banner.c_str())), Banner.size() * sizeof(wchar_t),
+    reinterpret_cast<unsigned char *>(const_cast<wchar_t *>(Result.c_str())));
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::ShowBanner(const std::wstring SessionKey,
-  const std::wstring & Banner)
+bool TConfiguration::ShowBanner(const std::wstring &SessionKey,
+  const std::wstring &Banner)
 {
   bool Result;
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -392,10 +417,10 @@ bool TConfiguration::ShowBanner(const std::wstring SessionKey,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::NeverShowBanner(const std::wstring SessionKey,
-  const std::wstring & Banner)
+void TConfiguration::NeverShowBanner(const std::wstring &SessionKey,
+  const std::wstring &Banner)
 {
-  THierarchicalStorage * Storage = CreateScpStorage(false);
+  THierarchicalStorage * Storage = CreateStorage();
   {
       BOOST_SCOPE_EXIT ( (&Storage) )
       {
@@ -464,7 +489,7 @@ void TConfiguration::CleanupConfiguration()
   }
 }
 //---------------------------------------------------------------------------
-void TConfiguration::CleanupRegistry(std::wstring CleanupSubKey)
+void TConfiguration::CleanupRegistry(const std::wstring &CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(GetRegistryStorageKey());
   {
@@ -518,10 +543,12 @@ void TConfiguration::CleanupIniFile()
         RaiseLastOSError();
       }
     }
+#if 0
     if (GetStorage() == stIniFile)
     {
       FDontSave = true;
     }
+#endif
   }
   catch (const std::exception &E)
   {
@@ -529,7 +556,7 @@ void TConfiguration::CleanupIniFile()
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::EncryptPassword(std::wstring Password, std::wstring Key)
+std::wstring TConfiguration::EncryptPassword(const std::wstring &Password, const std::wstring &Key)
 {
   if (Password.empty())
   {
@@ -541,7 +568,7 @@ std::wstring TConfiguration::EncryptPassword(std::wstring Password, std::wstring
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::DecryptPassword(std::wstring Password, std::wstring Key)
+std::wstring TConfiguration::DecryptPassword(const std::wstring &Password, const std::wstring &Key)
 {
   if (Password.empty())
   {
@@ -553,7 +580,7 @@ std::wstring TConfiguration::DecryptPassword(std::wstring Password, std::wstring
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::StronglyRecryptPassword(std::wstring Password, std::wstring /*Key*/)
+std::wstring TConfiguration::StronglyRecryptPassword(const std::wstring &Password, const std::wstring & /*Key*/)
 {
   return Password;
 }
@@ -565,8 +592,8 @@ std::wstring TConfiguration::GetOSVersionStr()
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (GetVersionEx(&OSVersionInfo) != 0)
   {
-    Result = ::Trim(FORMAT(L"%d.%d.%d %s", int(OSVersionInfo.dwMajorVersion),
-      int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber),
+    Result = ::Trim(FORMAT(L"%u.%u.%u %s", OSVersionInfo.dwMajorVersion,
+      OSVersionInfo.dwMinorVersion, OSVersionInfo.dwBuildNumber,
       OSVersionInfo.szCSDVersion));
   }
   return Result;
@@ -592,7 +619,7 @@ std::wstring TConfiguration::ModuleFileName()
   return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------
-void * TConfiguration::GetFileApplicationInfo(const std::wstring FileName)
+void * TConfiguration::GetFileApplicationInfo(const std::wstring &FileName)
 {
   void * Result;
   if (FileName.empty())
@@ -615,12 +642,12 @@ void * TConfiguration::GetApplicationInfo()
   return GetFileApplicationInfo(L"");
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileProductName(const std::wstring FileName)
+std::wstring TConfiguration::GetFileProductName(const std::wstring &FileName)
 {
   return GetFileFileInfoString(L"ProductName", FileName);
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileCompanyName(const std::wstring FileName)
+std::wstring TConfiguration::GetFileCompanyName(const std::wstring &FileName)
 {
   return GetFileFileInfoString(L"CompanyName", FileName);
 }
@@ -635,7 +662,7 @@ std::wstring TConfiguration::GetCompanyName()
   return GetFileCompanyName(L"");
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileProductVersion(const std::wstring FileName)
+std::wstring TConfiguration::GetFileProductVersion(const std::wstring &FileName)
 {
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
 }
@@ -645,14 +672,15 @@ std::wstring TConfiguration::GetProductVersion()
   return GetFileProductVersion(L"");
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::TrimVersion(std::wstring Version)
+std::wstring TConfiguration::TrimVersion(const std::wstring &Version)
 {
-  while ((Version.find_first_of(L".") != ::LastDelimiter(Version, L".")) &&
-    (Version.substr(Version.size() - 1, 2) == L".0"))
+  std::wstring version = Version;
+  while ((version.find_first_of(L".") != ::LastDelimiter(version, L".")) &&
+    (version.substr(version.size() - 1, 2) == L".0"))
   {
-    Version.resize(Version.size() - 2);
+    version.resize(version.size() - 2);
   }
-  return Version;
+  return version;
 }
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetVersionStr()
@@ -691,8 +719,8 @@ std::wstring TConfiguration::GetVersion()
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
-  const std::wstring FileName)
+std::wstring TConfiguration::GetFileFileInfoString(const std::wstring &Key,
+  const std::wstring &FileName)
 {
   TGuard Guard(FCriticalSection);
 
@@ -728,7 +756,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TConfiguration::GetFileInfoString(const std::wstring Key)
+std::wstring TConfiguration::GetFileInfoString(const std::wstring &Key)
 {
   return GetFileFileInfoString(Key, L"");
 }
@@ -738,10 +766,11 @@ std::wstring TConfiguration::GetRegistryStorageKey()
   return ::GetRegistryKey();
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetIniFileStorageName(std::wstring value)
+void TConfiguration::SetIniFileStorageName(const std::wstring &value)
 {
+  ::Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
-  FStorage = stIniFile;
+  // FStorage = stIniFile;
 }
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::GetIniFileStorageName()
@@ -799,12 +828,12 @@ void TConfiguration::SetStorage(TStorage value)
           delete SourceStorage;
           delete TargetStorage;
         } BOOST_SCOPE_EXIT_END
-      SourceStorage = CreateScpStorage(false);
+      SourceStorage = CreateStorage();
       SourceStorage->SetAccessMode(smRead);
 
       FStorage = value;
 
-      TargetStorage = CreateScpStorage(false);
+      TargetStorage = CreateStorage();
       TargetStorage->SetAccessMode(smReadWrite);
       TargetStorage->SetExplicit(true);
 
@@ -825,14 +854,16 @@ void TConfiguration::Saved()
 //---------------------------------------------------------------------------
 TStorage TConfiguration::GetStorage()
 {
+  /*
   if (FStorage == stDetect)
   {
     FStorage = FileExists(GetIniFileStorageName()) ? stIniFile : stRegistry;
   }
+  */
   return FStorage;
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetRandomSeedFile(std::wstring value)
+void TConfiguration::SetRandomSeedFile(const std::wstring &value)
 {
   if (GetRandomSeedFile() != value)
   {
@@ -861,7 +892,7 @@ std::wstring TConfiguration::GetRandomSeedFileName()
   return StripPathQuotes(::Trim(ExpandEnvironmentVariables(FRandomSeedFile)));
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetPuttyRegistryStorageKey(std::wstring value)
+void TConfiguration::SetPuttyRegistryStorageKey(const std::wstring &value)
 {
   SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
 }
@@ -871,7 +902,7 @@ TEOLType TConfiguration::GetLocalEOLType()
   return eolCRLF;
 }
 //---------------------------------------------------------------------
-void TConfiguration::TemporaryLogging(const std::wstring ALogFileName)
+void TConfiguration::TemporaryLogging(const std::wstring &ALogFileName)
 {
   FLogging = true;
   FLogFileName = ALogFileName;
@@ -890,7 +921,7 @@ void TConfiguration::SetLogging(bool value)
   }
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogFileName(std::wstring value)
+void TConfiguration::SetLogFileName(const std::wstring &value)
 {
   if (GetLogFileName() != value)
   {
@@ -956,7 +987,7 @@ void TConfiguration::SetLogWindowComplete(bool value)
 //---------------------------------------------------------------------
 bool TConfiguration::GetLogWindowComplete()
 {
-  return (bool)(GetLogWindowLines() == 0);
+  return static_cast<bool>(GetLogWindowLines() == 0);
 }
 //---------------------------------------------------------------------
 std::wstring TConfiguration::GetDefaultLogFileName()

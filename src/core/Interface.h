@@ -19,7 +19,7 @@ std::wstring GetRegistryKey();
 void Busy(bool Start);
 std::wstring AppNameString();
 std::wstring SshVersionString();
-void CopyToClipboard(std::wstring Text);
+void CopyToClipboard(const std::wstring &Text);
 int StartThread(void * SecurityAttributes, unsigned StackSize,
   void *Parameter, unsigned CreationFlags,
   DWORD &ThreadId);
@@ -42,6 +42,7 @@ const unsigned int qaNeverAskAgain = 0x00010000;
 const int qpFatalAbort =           0x01;
 const int qpNeverAskAgainCheck =   0x02;
 const int qpAllowContinueOnError = 0x04;
+const int qpIgnoreAbort =          0x08;
 
 struct TQueryButtonAlias
 {
@@ -93,10 +94,10 @@ bool IsAuthenticationPrompt(TPromptKind Kind);
 // typedef void ( *TFileFoundEvent)
   // (TTerminal * Terminal, const std::wstring FileName, const TRemoteFile * File,
    // bool & Cancel);
-typedef boost::signal4<void, TTerminal *, const std::wstring, const TRemoteFile *, bool &> filefound_signal_type;
+typedef boost::signal4<void, TTerminal *, const std::wstring &, const TRemoteFile *, bool &> filefound_signal_type;
 typedef filefound_signal_type::slot_type filefound_slot_type;
 // typedef void ( *TFindingFileEvent)
   // (TTerminal * Terminal, const std::wstring Directory, bool & Cancel);
-typedef boost::signal3<void, TTerminal *, const std::wstring, bool &> findingfile_signal_type;
+typedef boost::signal3<void, TTerminal *, const std::wstring &, bool &> findingfile_signal_type;
 typedef findingfile_signal_type::slot_type findingfile_slot_type;
 //---------------------------------------------------------------------------

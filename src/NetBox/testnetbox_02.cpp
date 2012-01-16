@@ -138,7 +138,7 @@ public:
             OnChangeNotifyEventTriggered = true;
         }
     }
-    void Change(std::wstring str)
+    void Change(const std::wstring &str)
     {
         Changed();
     }

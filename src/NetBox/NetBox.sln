@@ -9,7 +9,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\..\libs\zlib\zli
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl", "..\..\libs\libcurl\lib\libcurl.vcxproj", "{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libputty", "..\Putty\libputty.vcxproj", "{456AD982-730D-46F8-8BE2-0E00D7433741}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libputty", "..\..\libs\Putty\libputty.vcxproj", "{456AD982-730D-46F8-8BE2-0E00D7433741}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtinyxml", "..\..\libs\tinyXML\libtinyxml.vcxproj", "{593A4FB1-1787-4192-BF73-9C43BF8FC142}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,14 @@ Global
 		{456AD982-730D-46F8-8BE2-0E00D7433741}.Release|Win32.Build.0 = Release|Win32
 		{456AD982-730D-46F8-8BE2-0E00D7433741}.Release|x64.ActiveCfg = Release|x64
 		{456AD982-730D-46F8-8BE2-0E00D7433741}.Release|x64.Build.0 = Release|x64
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Debug|Win32.ActiveCfg = Debug|Win32
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Debug|Win32.Build.0 = Debug|Win32
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Debug|x64.ActiveCfg = Debug|x64
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Debug|x64.Build.0 = Debug|x64
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Release|Win32.ActiveCfg = Release|Win32
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Release|Win32.Build.0 = Release|Win32
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Release|x64.ActiveCfg = Release|x64
+		{593A4FB1-1787-4192-BF73-9C43BF8FC142}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

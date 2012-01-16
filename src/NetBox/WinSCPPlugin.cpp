@@ -42,7 +42,7 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
 {
   FInitialized = false;
   Self = this;
-  CreateMutex(NULL, false, L"WinSCPFar");
+  CreateMutex(NULL, false, L"NetBoxFar");
 }
 //---------------------------------------------------------------------------
 TWinSCPPlugin::~TWinSCPPlugin()
@@ -100,6 +100,100 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   }
   PluginConfigStrings->Add(GetMsg(PLUGIN_NAME));
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
+}
+//---------------------------------------------------------------------------
+bool TWinSCPPlugin::ImportSessions(const std::wstring &RegistryStorageKey,
+    int &imported)
+{
+    // DEBUG_PRINTF(L"begin");
+    imported = 0;
+    THierarchicalStorage *ImportStorage = new TRegistryStorage(RegistryStorageKey);
+    THierarchicalStorage *ExportStorage = new TRegistryStorage(Configuration->GetRegistryStorageKey());
+    ExportStorage->SetAccessMode(smReadWrite);
+    TSessionData *FactoryDefaults = new TSessionData(L"");
+    BOOST_SCOPE_EXIT ( (&FactoryDefaults) (&ImportStorage) (&ExportStorage) )
+    {
+        delete FactoryDefaults;
+        delete ImportStorage;
+        delete ExportStorage;
+    } BOOST_SCOPE_EXIT_END
+
+    int failed = 0;
+    if (ImportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), /* CanCreate */ false) &&
+        ExportStorage->OpenSubKey(Configuration->GetStoredSessionsSubKey(), /* CanCreate */ true)
+       )
+    {
+        TStrings* SubKeyNames = new TStringList();
+        BOOST_SCOPE_EXIT ( (&SubKeyNames) )
+        {
+            delete SubKeyNames;
+        } BOOST_SCOPE_EXIT_END
+        ImportStorage->GetSubKeyNames(SubKeyNames);
+        // DEBUG_PRINTF(L"SubKeyNames->GetCount = %d", SubKeyNames->GetCount());
+        for (int i = 0; i < SubKeyNames->GetCount(); i++)
+        {
+            // DEBUG_PRINTF(L"SubKeyNames->GetString(%d) = %s", i, SubKeyNames->GetString(i).c_str());
+            TSessionData *ExportData = new TSessionData(SubKeyNames->GetString(i));
+            BOOST_SCOPE_EXIT ( (&ExportData) )
+            {
+                delete ExportData;
+            } BOOST_SCOPE_EXIT_END
+            if (!ExportData->HasSessionName())
+                continue;
+            ExportData->Load(ImportStorage);
+            ExportData->SetModified(true);
+            try
+            {
+                ExportData->Save(ExportStorage, /* PuttyExport = */ false, FactoryDefaults);
+                imported++;
+            }
+            catch (const std::exception &E)
+            {
+                failed++;
+            }
+        }
+    }
+
+    // DEBUG_PRINTF(L"end, imported = %d, failed = %d", imported, failed);
+    return true;
+}
+//---------------------------------------------------------------------------
+bool TWinSCPPlugin::ImportSessions()
+{
+    // DEBUG_PRINTF(L"begin");
+    const std::wstring SessionsKeys[] = 
+    {
+        L"Software\\Martin Prikryl\\WinSCP 2", // WinSCP 1.6.2 sessions
+        L"Software\\Michael Lukashov\\FarNetBox", // NetBox 2.0.0 sessions
+        L"",
+    };
+    int all_imported = 0;
+    for (int i = 0; !SessionsKeys[i].empty(); i++)
+    {
+        std::wstring RegistryStorageKey = SessionsKeys[i];
+        // DEBUG_PRINTF(L"RegistryStorageKey = %s", RegistryStorageKey.c_str());
+        try
+        {
+          int imported = 0;
+          ImportSessions(RegistryStorageKey, imported);
+          all_imported += imported;
+        }
+        catch (const std::exception &E)
+        {
+            ShowExtendedException(&E);
+        }
+    }
+    MoreMessageDialog(FORMAT(GetMsg(IMPORTED_SESSIONS_INFO).c_str(), all_imported),
+        /* MoreMessages */ NULL, qtInformation, qaOK);
+    TWinSCPFileSystem * PanelSystem = NULL;
+    PanelSystem = dynamic_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+    if (PanelSystem && PanelSystem->SessionList())
+    {
+        // PanelSystem->RedrawPanel(/* Another */ false);
+        PanelSystem->UpdatePanel(/* ClearSelection */ true, /* Another */ false);
+    }
+    // DEBUG_PRINTF(L"end, all_imported = %d", all_imported);
+    return false;
 }
 //---------------------------------------------------------------------------
 bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
@@ -270,7 +364,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
       else if (OpenFrom == OPEN_SHORTCUT || OpenFrom == OPEN_COMMANDLINE)
       {
         std::wstring Directory;
-        std::wstring Name = (wchar_t *)Item;
+        std::wstring Name = reinterpret_cast<wchar_t *>(Item);
         if (OpenFrom == OPEN_SHORTCUT)
         {
           size_t P = Name.find(L"\1");
@@ -365,14 +459,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     int MPageant = MenuItems->Add(GetMsg(MENU_COMMANDS_PAGEANT), FromFileSystem);
     int MPuttygen = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTYGEN), FromFileSystem);
     MenuItems->AddSeparator(FromFileSystem);
+    int MImportSessions = MenuItems->Add(GetMsg(MENU_COMMANDS_IMPORT_SESSIONS));
     int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
     int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
-    MenuItems->SetDisabled(MLog, !FSVisible || !FileSystem->IsLogging());
-    MenuItems->SetDisabled(MClearCaches, !FSVisible || FileSystem->AreCachesEmpty());
+    MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
+    MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
     MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttyPath()))));
-    MenuItems->SetDisabled(MEditHistory, !FSConnected || FileSystem->IsEditHistoryEmpty());
-    MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && FileSystem->IsSynchronizedBrowsing());
+    MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
+    MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
     MenuItems->SetDisabled(MPageant, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPageantPath()))));
     MenuItems->SetDisabled(MPuttygen, !FileExistsEx(ExpandEnvironmentVariables(ExtractProgram(FarConfiguration->GetPuttygenPath()))));
 
@@ -380,24 +475,20 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
     if (Result >= 0)
     {
-      if (Result == MLog)
+      if ((Result == MLog) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->ShowLog();
       }
-      else if (Result == MAttributes)
+      else if ((Result == MAttributes) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->FileProperties();
       }
-      else if (Result == MLink)
+      else if ((Result == MLink) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->CreateLink();
       }
-      else if (Result == MApplyCommand)
+      else if ((Result == MApplyCommand) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->ApplyCommand();
       }
       else if (Result == MFullSynchronize)
@@ -424,19 +515,21 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
           AnotherFileSystem->Synchronize();
         }
       }
-      else if (Result == MQueue)
+      else if ((Result == MQueue) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->QueueShow(false);
       }
-      else if (Result == MAddBookmark || Result == MOpenDirectory)
+      else if ((Result == MAddBookmark || Result == MOpenDirectory) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->OpenDirectory(Result == MAddBookmark);
       }
-      else if (Result == MHomeDirectory)
+      else if (Result == MHomeDirectory && FileSystem)
       {
         FileSystem->HomeDirectory();
+      }
+      else if (Result == MImportSessions)
+      {
+        ImportSessions();
       }
       else if (Result == MConfigure)
       {
@@ -446,14 +539,12 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       {
         AboutDialog();
       }
-      else if (Result == MPutty)
+      else if ((Result == MPutty) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->OpenSessionInPutty();
       }
-      else if (Result == MEditHistory)
+      else if ((Result == MEditHistory) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->EditHistory();
       }
       else if (Result == MPageant || Result == MPuttygen)
@@ -464,19 +555,16 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
         SplitCommand(Path, Program, Params, Dir);
         ExecuteShell(Program, Params);
       }
-      else if (Result == MClearCaches)
+      else if ((Result == MClearCaches) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->ClearCaches();
       }
-      else if (Result == MSynchronizeBrowsing)
+      else if ((Result == MSynchronizeBrowsing) && FileSystem)
       {
-        assert(FileSystem != NULL);
         FileSystem->ToggleSynchronizeBrowsing();
       }
-      else if (Result == MInformation)
+      else if ((Result == MInformation) && FileSystem)
       {
-        assert(FileSystem);
         FileSystem->ShowInformation();
       }
       else
@@ -564,11 +652,12 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
+int TWinSCPPlugin::MoreMessageDialog(const std::wstring &Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
   int Result;
+  std::wstring str = Str;
   TStrings * ButtonLabels = new TStringList();
   {
       BOOST_SCOPE_EXIT ( (&ButtonLabels) )
@@ -611,7 +700,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
         }
         if (!Params->TimerMessage.empty())
         {
-          Str = Params->TimerMessage;
+          str = Params->TimerMessage;
         }
       }
     }
@@ -708,7 +797,7 @@ int TWinSCPPlugin::MoreMessageDialog(std::wstring Str,
     farmessageclick_slot_type slot = boost::bind(&TWinSCPPlugin::MessageClick, this, _1, _2, _3);
     FarParams.ClickEvent = &slot;
 
-    std::wstring DialogStr = Str;
+    std::wstring DialogStr = str;
     if (MoreMessages && (MoreMessages->GetCount() > 0))
     {
       FarParams.MoreMessages = MoreMessages;

@@ -26,203 +26,6 @@
 #pragma warning(pop)
 #include "Common.h"
 
-class CFarPlugin
-{
-public:
-    /**
-     * Initialize plugin
-     * \param psi plugin startup info pointer
-     */
-    static void Initialize(const PluginStartupInfo *psi)
-    {
-        assert(psi);
-
-        PluginStartupInfo *psiStatic = AccessPSI(psi);
-        static FarStandardFunctions fsfStatic = *psi->FSF;
-        psiStatic->FSF = &fsfStatic;
-    }
-
-    /**
-     * Far message box
-     * \param title message title
-     * \param text message text
-     * \param flags message box flags
-     * \return message box exit status
-     */
-    static int MessageBox(const wchar_t *title, const wchar_t *text, const int flags)
-    {
-        assert(title);
-        assert(text);
-
-        std::wstring content(title);
-        content += L'\n';
-        content += text;
-        return GetPSI()->Message(GetPSI()->ModuleNumber, FMSG_ALLINONE | flags, NULL, reinterpret_cast<const wchar_t* const *>(content.c_str()), 0, 0);
-    }
-
-    /**
-     * Get Far plugin string resource
-     * \param id string resource Id
-     * \return string
-     */
-    static const wchar_t *GetString(const int id)
-    {
-        return GetPSI()->GetMsg(GetPSI()->ModuleNumber, id);
-    }
-
-    /**
-     * Get Far plugin formatted string
-     * \param id string resource Id
-     * \param ... additional params
-     * \return formatted string
-     */
-    static std::wstring GetFormattedString(const int id, ...)
-    {
-        const wchar_t *errFmt = GetString(id);
-        assert(errFmt);
-        va_list args;
-        va_start(args, id);
-        const int len = _vscwprintf(errFmt, args) + 1 /* last NULL */;
-        if (len == 1)
-        {
-            return std::wstring();
-        }
-        std::wstring ret(len, 0);
-        vswprintf_s(&ret[0], ret.size(), errFmt, args);
-        ret.erase(ret.length() - 1);        ///Trim last NULL
-        return ret;
-    }
-
-    /**
-     * Get plugin library path
-     * \return plugin library path
-     */
-    static const wchar_t *GetPluginPath()
-    {
-        static std::wstring pluginDir;
-        if (pluginDir.empty())
-        {
-            pluginDir = GetPSI()->ModuleName;
-            pluginDir.resize(pluginDir.find_last_of(L'\\') + 1);
-        }
-        return pluginDir.c_str();
-    }
-
-    /**
-     * Get processing file name
-     * \param openFrom open from type (see Far help)
-     * \param item item pointer (see Far help)
-     * \param fileName processing file name
-     * \return false if error
-     */
-    static bool GetProcessingFileName(int openFrom, INT_PTR item, std::wstring &fileName)
-    {
-        fileName.clear();
-
-        //Determine file name
-        if (openFrom == OPEN_COMMANDLINE)
-        {
-            wchar_t *cmdString = reinterpret_cast<wchar_t *>(item);
-            GetPSI()->FSF->Unquote(cmdString);
-            GetPSI()->FSF->Trim(cmdString);
-            const int fileNameLen = GetPSI()->FSF->ConvertPath(CPM_FULL, cmdString, NULL, 0);
-            if (fileNameLen)
-            {
-                fileName.resize(fileNameLen);
-                GetPSI()->FSF->ConvertPath(CPM_FULL, cmdString, &fileName[0], fileNameLen);
-                fileName.erase(fileName.length() - 1);  //last NULL
-            }
-        }
-        else if (openFrom == OPEN_PLUGINSMENU)
-        {
-            PanelInfo pi;
-            if (!GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELINFO, sizeof(pi), reinterpret_cast<LONG_PTR>(&pi)))
-            {
-                return false;
-            }
-
-            const size_t ppiBufferLength = GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, static_cast<LONG_PTR>(NULL));
-            if (ppiBufferLength == 0)
-            {
-                return false;
-            }
-            std::vector<unsigned char> ppiBuffer(ppiBufferLength);
-            PluginPanelItem *ppi = reinterpret_cast<PluginPanelItem *>(&ppiBuffer.front());
-            if (!GetPSI()->Control(PANEL_ACTIVE, FCTL_GETPANELITEM, pi.CurrentItem, reinterpret_cast<LONG_PTR>(ppi)))
-            {
-                return false;
-            }
-            const int fileNameLen = GetPSI()->FSF->ConvertPath(CPM_FULL, ppi->FindData.lpwszFileName, NULL, 0);
-            if (fileNameLen)
-            {
-                fileName.resize(fileNameLen);
-                GetPSI()->FSF->ConvertPath(CPM_FULL, ppi->FindData.lpwszFileName, &fileName[0], fileNameLen);
-                fileName.erase(fileName.length() - 1);  //last NULL
-            }
-        }
-        else if (openFrom == OPEN_VIEWER)
-        {
-            ViewerInfo vi;
-            ZeroMemory(&vi, sizeof(vi));
-            vi.StructSize = sizeof(vi);
-            GetPSI()->ViewerControl(VCTL_GETINFO, &vi);
-            if (vi.FileName)
-            {
-                fileName = vi.FileName;
-            }
-        }
-        else if (openFrom == OPEN_EDITOR)
-        {
-            const int buffLen = GetPSI()->EditorControl(ECTL_GETFILENAME, NULL);
-            if (buffLen)
-            {
-                fileName.resize(buffLen + 1, 0);
-                GetPSI()->EditorControl(ECTL_GETFILENAME, &fileName[0]);
-            }
-        }
-
-        return !fileName.empty();
-    }
-
-public:
-    /**
-     * Call AdvControl function
-     * \param command control command
-     * \param param command parameter
-     * \return call retcode
-     */
-    static INT_PTR AdvControl(const int command, void *param = NULL)
-    {
-        return GetPSI()->AdvControl(GetPSI()->ModuleNumber, command, param);
-    }
-
-    /**
-     * Get plugin startup info pointer
-     * \return plugin startup info pointer
-     */
-    static PluginStartupInfo *GetPSI()
-    {
-        assert(AccessPSI(NULL));
-        return AccessPSI(NULL);
-    }
-
-private:
-    /**
-     * Access to internal static plugin startup info
-     * \param psi new plugin startup info (NULL to save privious)
-     * \return plugin startup info pointer
-     */
-    static PluginStartupInfo *AccessPSI(const PluginStartupInfo *psi)
-    {
-        static PluginStartupInfo psiStatic;
-        if (psi)
-        {
-            psiStatic = *psi;
-        }
-        return &psiStatic;
-    }
-};
-
 //---------------------------------------------------------------------------
 class TCustomFarFileSystem;
 class TFarPanelModes;
@@ -294,6 +97,7 @@ public:
     virtual ~TCustomFarPlugin();
     virtual int GetMinFarVersion();
     virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
+    virtual struct PluginStartupInfo *GetStartupInfo() { return &FStartupInfo; }
     virtual void ExitFAR();
     virtual void GetPluginInfo(struct PluginInfo *Info);
     virtual int Configure(int Item);
@@ -321,30 +125,30 @@ public:
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
 
-    static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
-    int Message(unsigned int Flags, const std::wstring Title,
-        const std::wstring Message, TStrings *Buttons = NULL,
+    static wchar_t *DuplicateStr(const std::wstring &Str, bool AllowEmpty = false);
+    int Message(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Message, TStrings *Buttons = NULL,
         TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
     int MaxMenuItemLength();
-    int Menu(unsigned int Flags, std::wstring Title,
-        std::wstring Bottom, TStrings *Items, const int *BreakKeys,
+    int Menu(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Bottom, TStrings *Items, const int *BreakKeys,
         int &BreakCode);
-    int Menu(unsigned int Flags, const std::wstring Title,
-                        const std::wstring Bottom, TStrings *Items);
-    int Menu(unsigned int Flags, const std::wstring Title,
-        const std::wstring Bottom, const FarMenuItem *Items, int Count,
+    int Menu(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Bottom, TStrings *Items);
+    int Menu(unsigned int Flags, const std::wstring &Title,
+        const std::wstring &Bottom, const FarMenuItem *Items, int Count,
         const int *BreakKeys, int &BreakCode);
-    bool InputBox(std::wstring Title, std::wstring Prompt,
-        std::wstring &Text, unsigned long Flags, std::wstring HistoryName = L"",
+    bool InputBox(const std::wstring &Title, const std::wstring &Prompt,
+        std::wstring &Text, unsigned long Flags, const std::wstring &HistoryName = L"",
         int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
     std::wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
     bool CheckForEsc();
-    bool Viewer(std::wstring FileName, unsigned int Flags,
+    bool Viewer(const std::wstring &FileName, unsigned int Flags,
         std::wstring Title = L"");
-    bool Editor(std::wstring FileName, unsigned int Flags,
+    bool Editor(const std::wstring &FileName, unsigned int Flags,
         std::wstring Title = L"");
 
     int FarAdvControl(int Command, void *Param = NULL);
@@ -352,10 +156,10 @@ public:
     DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(int Command, void *Param);
     unsigned int FarSystemSettings();
-    void Text(int X, int Y, int Color, std::wstring Str);
+    void Text(int X, int Y, int Color, const std::wstring &Str);
     void FlushText();
-    void WriteConsole(std::wstring Str);
-    void FarCopyToClipboard(std::wstring Str);
+    void WriteConsole(const std::wstring &Str);
+    void FarCopyToClipboard(const std::wstring &Str);
     void FarCopyToClipboard(TStrings *Strings);
     int FarVersion();
     std::wstring FormatFarVersion(int Version);
@@ -363,9 +167,9 @@ public:
     int InputRecordToKey(const INPUT_RECORD *Rec);
     TFarEditorInfo *EditorInfo();
 
-    void ShowConsoleTitle(const std::wstring Title);
+    void ShowConsoleTitle(const std::wstring &Title);
     void ClearConsoleTitle();
-    void UpdateConsoleTitle(const std::wstring Title);
+    void UpdateConsoleTitle(const std::wstring &Title);
     void UpdateConsoleTitleProgress(short Progress);
     void ShowTerminalScreen();
     void SaveTerminalScreen();
@@ -407,6 +211,7 @@ protected:
         TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
         TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
+    virtual bool ImportSessions() = 0;
     virtual bool ConfigureEx(int Item) = 0;
     virtual int ProcessEditorEventEx(int Event, void *Param) = 0;
     virtual int ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
@@ -417,10 +222,10 @@ protected:
     void ResetCachedInfo();
     int MaxLength(TStrings *Strings);
     int FarMessage(unsigned int Flags,
-        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
         TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
         TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
@@ -482,7 +287,7 @@ protected:
     virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
-    virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
+    virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
     virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
     virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
     virtual int GetFilesEx(TObjectList *PanelItems, bool Move,
@@ -527,11 +332,11 @@ class TFarPanelModes : public TObject
 {
     friend class TCustomFarFileSystem;
 public:
-    void SetPanelMode(int Mode, const std::wstring ColumnTypes = L"",
-        const std::wstring ColumnWidths = L"", TStrings *ColumnTitles = NULL,
+    void SetPanelMode(int Mode, const std::wstring &ColumnTypes = L"",
+        const std::wstring &ColumnWidths = L"", TStrings *ColumnTitles = NULL,
         bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-        bool CaseConversion = true, const std::wstring StatusColumnTypes = L"",
-        const std::wstring StatusColumnWidths = L"");
+        bool CaseConversion = true, const std::wstring &StatusColumnTypes = L"",
+        const std::wstring &StatusColumnWidths = L"");
 
 private:
     PanelMode FPanelModes[PANEL_MODES_COUNT];
@@ -542,7 +347,7 @@ private:
 
     void FillOpenPluginInfo(struct OpenPluginInfo *Info);
     static void ClearPanelMode(PanelMode &Mode);
-    static int CommaCount(const std::wstring ColumnTypes);
+    static int CommaCount(const std::wstring &ColumnTypes);
 };
 //---------------------------------------------------------------------------
 class TFarKeyBarTitles : public TObject
@@ -553,7 +358,7 @@ public:
     void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
         int FunctionKeyStart, int FunctionKeyEnd = 0);
     void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int FunctionKey,
-        const std::wstring Title);
+        const std::wstring &Title);
 
 private:
     KeyBarTitles FKeyBarTitles;
@@ -616,7 +421,7 @@ private:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-    explicit THintPanelItem(const std::wstring AHint);
+    explicit THintPanelItem(const std::wstring &AHint);
     virtual ~THintPanelItem()
     {}
 
@@ -653,7 +458,7 @@ public:
     std::wstring GetCurrentDirectory();
 
     void ApplySelection();
-    TFarPanelItem *FindFileName(const std::wstring FileName);
+    TFarPanelItem *FindFileName(const std::wstring &FileName);
     TFarPanelItem *FindUserData(void *UserData);
 
 private:
@@ -674,7 +479,7 @@ public:
     virtual ~TFarMenuItems()
     {}
     void AddSeparator(bool Visible = true);
-    virtual int Add(std::wstring Text, bool Visible = true);
+    virtual int Add(const std::wstring &Text, bool Visible = true);
 
     virtual void Clear();
     virtual void Delete(int Index);
@@ -728,7 +533,7 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(std::wstring Text, TStrings *Result, int MaxWidth);
+void FarWrapText(const std::wstring &Text, TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
@@ -771,7 +576,7 @@ inline wchar_t *StrToFar(const std::wstring &S)
     // ::Error(SNotImplemented, 24);
     // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
-    return (wchar_t *)S.c_str();
+    return const_cast<wchar_t *>(S.c_str());
 }
 
 //---------------------------------------------------------------------------
@@ -781,6 +586,6 @@ inline wchar_t *StrToFar(const wchar_t *S)
     // ::Error(SNotImplemented, 25);
     // S.Unique();
     // CharToOem(S, S);
-    return (wchar_t *)S;
+    return const_cast<wchar_t *>(S);
 }
 //---------------------------------------------------------------------------

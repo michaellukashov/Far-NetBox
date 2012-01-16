@@ -664,7 +664,7 @@ void CFtpListResult::SendToMessageLog(HWND hWnd, UINT nMsg)
 		t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
 		pStatus->post = TRUE;
 		pStatus->status = _T("<Empty directory listing>");
-		pStatus->type = 5;
+		pStatus->type = FZ_LOG_DEBUG;
 		PostMessage(hWnd, nMsg, FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus);
 	}
 	while (line)
@@ -676,7 +676,7 @@ void CFtpListResult::SendToMessageLog(HWND hWnd, UINT nMsg)
 		t_ffam_statusmessage *pStatus = new t_ffam_statusmessage;
 		pStatus->post = TRUE;
 		pStatus->status = status;
-		pStatus->type = 5;
+		pStatus->type = FZ_LOG_DEBUG;
 		if (!PostMessage(hWnd, nMsg, FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
 			delete pStatus;
 	
@@ -2845,7 +2845,7 @@ bool CFtpListResult::ParseSize(const char* str, int len, __int64 &size) const
 		break;
 	case 't':
 	case 'T':
-		size *= (__int64)1 << 40;
+		size *= static_cast<__int64>(1) << 40;
 		break;
 	default:
 		return false;

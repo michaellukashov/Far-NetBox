@@ -54,7 +54,7 @@ private:
   bool FForceBanners;
   bool FDisableAcceptingHostKeys;
 
-  std::wstring TrimVersion(std::wstring Version);
+  std::wstring TrimVersion(const std::wstring &Version);
   void UpdateActualLogProtocol();
 
 protected:
@@ -67,24 +67,24 @@ protected:
   virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
   virtual void LoadAdmin(THierarchicalStorage * Storage);
   virtual void Saved();
-  void CleanupRegistry(std::wstring CleanupSubKey);
+  void CleanupRegistry(const std::wstring &CleanupSubKey);
   std::wstring BannerHash(const std::wstring & Banner);
 
   virtual std::wstring ModuleFileName();
 
-  std::wstring GetFileFileInfoString(const std::wstring Key,
-    const std::wstring FileName);
-  void * GetFileApplicationInfo(const std::wstring FileName);
-  std::wstring GetFileProductVersion(const std::wstring FileName);
-  std::wstring GetFileProductName(const std::wstring FileName);
-  std::wstring GetFileCompanyName(const std::wstring FileName);
+  std::wstring GetFileFileInfoString(const std::wstring &Key,
+    const std::wstring &FileName);
+  void * GetFileApplicationInfo(const std::wstring &FileName);
+  std::wstring GetFileProductVersion(const std::wstring &FileName);
+  std::wstring GetFileProductName(const std::wstring &FileName);
+  std::wstring GetFileCompanyName(const std::wstring &FileName);
 
   // __property bool PermanentLogging  = { read=FPermanentLogging, write=SetLogging };
   bool GetPermanentLogging() { return FPermanentLogging; }
   void SetPermanentLogging(bool value) { FPermanentLogging = value; }
     // __property std::wstring PermanentLogFileName  = { read=FPermanentLogFileName, write=SetLogFileName };
   std::wstring GetPermanentLogFileName() { return FPermanentLogFileName; }
-  void SetPermanentLogFileName(std::wstring value) { FPermanentLogFileName = value; }
+  void SetPermanentLogFileName(const std::wstring &value) { FPermanentLogFileName = value; }
   // __property bool PermanentLogActions  = { read=FPermanentLogActions, write=SetLogActions };
   bool GetPermanentLogActions() { return FPermanentLogActions; }
   void SetPermanentLogActions(bool value) { FPermanentLogActions = value; }
@@ -95,24 +95,24 @@ public:
   virtual void Default();
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
-  void Export(const std::wstring FileName);
+  void Export(const std::wstring &FileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
   void CleanupRandomSeedFile();
   void BeginUpdate();
   void EndUpdate();
-  void LoadDirectoryChangesCache(const std::wstring SessionKey,
+  void LoadDirectoryChangesCache(const std::wstring &SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void SaveDirectoryChangesCache(const std::wstring SessionKey,
+  void SaveDirectoryChangesCache(const std::wstring &SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  bool ShowBanner(const std::wstring SessionKey, const std::wstring & Banner);
-  void NeverShowBanner(const std::wstring SessionKey, const std::wstring & Banner);
-  virtual THierarchicalStorage * CreateScpStorage(bool SessionList);
-  void TemporaryLogging(const std::wstring ALogFileName);
-  virtual std::wstring EncryptPassword(std::wstring Password, std::wstring Key);
-  virtual std::wstring DecryptPassword(std::wstring Password, std::wstring Key);
-  virtual std::wstring StronglyRecryptPassword(std::wstring Password, std::wstring Key);
+  bool ShowBanner(const std::wstring &SessionKey, const std::wstring & Banner);
+  void NeverShowBanner(const std::wstring &SessionKey, const std::wstring & Banner);
+  virtual THierarchicalStorage * CreateStorage();
+  void TemporaryLogging(const std::wstring &ALogFileName);
+  virtual std::wstring EncryptPassword(const std::wstring &Password, const std::wstring &Key);
+  virtual std::wstring DecryptPassword(const std::wstring &Password, const std::wstring &Key);
+  virtual std::wstring StronglyRecryptPassword(const std::wstring &Password, const std::wstring &Key);
 
   // __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   VS_FIXEDFILEINFO GetFixedApplicationInfo();
@@ -122,12 +122,12 @@ public:
   std::wstring GetStoredSessionsSubKey();
   // __property std::wstring PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
   std::wstring GetPuttyRegistryStorageKey() { return FPuttyRegistryStorageKey; }
-  void SetPuttyRegistryStorageKey(std::wstring value);
+  void SetPuttyRegistryStorageKey(const std::wstring &value);
   // __property std::wstring PuttySessionsKey  = { read=GetPuttySessionsKey };
   std::wstring GetPuttySessionsKey();
   // __property std::wstring RandomSeedFile  = { read=FRandomSeedFile, write=SetRandomSeedFile };
   std::wstring GetRandomSeedFile() { return FRandomSeedFile; }
-  void SetRandomSeedFile(std::wstring value);
+  void SetRandomSeedFile(const std::wstring &value);
   // __property std::wstring RandomSeedFileName  = { read=GetRandomSeedFileName };
   std::wstring GetRandomSeedFileName();
   // __property std::wstring SshHostKeysSubKey  = { read=GetSshHostKeysSubKey };
@@ -151,7 +151,7 @@ public:
   // __property std::wstring CompanyName = { read=GetCompanyName };
   std::wstring GetCompanyName();
   // __property std::wstring FileInfoString[std::wstring Key] = { read = GetFileInfoString };
-  std::wstring GetFileInfoString(const std::wstring Key);
+  std::wstring GetFileInfoString(const std::wstring &Key);
   // __property std::wstring OSVersionStr = { read = GetOSVersionStr };
   std::wstring GetOSVersionStr();
   // __property bool Logging  = { read=FLogging, write=SetLogging };
@@ -159,7 +159,7 @@ public:
   void SetLogging(bool value);
   // __property std::wstring LogFileName  = { read=FLogFileName, write=SetLogFileName };
   std::wstring GetLogFileName() { return FLogFileName; }
-  void SetLogFileName(std::wstring value);
+  void SetLogFileName(const std::wstring &value);
   // __property bool LogToFile  = { read=GetLogToFile, write=SetLogToFile };
   bool GetLogToFile();
   void SetLogToFile(bool value);
@@ -229,7 +229,7 @@ public:
   std::wstring GetRegistryStorageKey();
   // __property std::wstring IniFileStorageName  = { read=GetIniFileStorageName, write=SetIniFileStorageName };
   std::wstring GetIniFileStorageName();
-  void SetIniFileStorageName(std::wstring value);
+  void SetIniFileStorageName(const std::wstring &value);
   // __property std::wstring DefaultKeyFile = { read = GetDefaultKeyFile };
   virtual std::wstring GetDefaultKeyFile();
 
