@@ -598,7 +598,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
     else
     {
       TSessionData * NData = StoredSessions->NewSession(Name, Data);
-      FSessionsFolder = UnixExcludeTrailingBackslash(UnixExtractFilePath(Name));
+      FSessionsFolder = ExcludeTrailingBackslash(UnixExtractFilePath(Name));
 
       // change of letter case during duplication degrades the operation to rename
       if (!Duplicate || (Data == NData))
@@ -671,6 +671,8 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
         {
           if (NewData)
           {
+            // std::wstring Name =
+            //    IncludeTrailingBackslash(FSessionsFolder) + Data->GetSessionName();
             std::wstring Name;
             if (!FSessionsFolder.empty())
                Name = UnixIncludeTrailingBackslash(FSessionsFolder);
@@ -687,7 +689,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
               else
               {
                 SelectSession = StoredSessions->NewSession(Name, Data);
-                FSessionsFolder = UnixExcludeTrailingBackslash(UnixExtractFilePath(Name));
+                FSessionsFolder = ExcludeTrailingBackslash(UnixExtractFilePath(Name));
               }
             }
           }
