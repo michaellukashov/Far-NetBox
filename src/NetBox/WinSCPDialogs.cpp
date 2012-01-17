@@ -33,7 +33,7 @@ enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 class TWinSCPDialog : public TFarDialog
 {
 public:
-  TWinSCPDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TWinSCPDialog(TCustomFarPlugin * AFarPlugin);
 
   void AddStandardButtons(int Shift = 0, bool ButtonsOnly = false);
 
@@ -102,7 +102,7 @@ class TTabbedDialog : public TWinSCPDialog
 friend class TTabButton;
 
 public:
-  TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
+  explicit TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
   // __property int Tab = { read = FTab };
   int GetTab() { return FTab; }
 
@@ -123,7 +123,7 @@ private:
 class TTabButton : public TFarButton
 {
 public:
-  TTabButton(TTabbedDialog * Dialog);
+  explicit TTabButton(TTabbedDialog * Dialog);
 
   // __property int Tab = { read = FTab, write = FTab };
   int GetTab() { return FTab; }
@@ -135,7 +135,6 @@ public:
 private:
   std::wstring FTabName;
   int FTab;
-
 };
 //---------------------------------------------------------------------------
 TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
@@ -798,7 +797,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 class TTransferEditorConfigurationDialog : public TWinSCPDialog
 {
 public:
-  TTransferEditorConfigurationDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TTransferEditorConfigurationDialog(TCustomFarPlugin * AFarPlugin);
 
   bool Execute();
 
@@ -1055,7 +1054,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 class TAboutDialog : public TFarDialog
 {
 public:
-  TAboutDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TAboutDialog(TCustomFarPlugin * AFarPlugin);
 
 private:
   void UrlButtonClick(TFarButton * Sender, bool & Close);
@@ -1251,7 +1250,7 @@ void TWinSCPPlugin::AboutDialog()
 class TPasswordDialog : public TFarDialog
 {
 public:
-  TPasswordDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     std::wstring SessionName, TPromptKind Kind, std::wstring Name,
     std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried);
 
@@ -1524,7 +1523,7 @@ public:
   enum TSessionTab { tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
     tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabCount };
 
-  TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
+  explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
 
   bool Execute(TSessionData * Data, TSessionActionEnum & Action);
 
@@ -3829,7 +3828,7 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
 class TRightsContainer : public TFarDialogContainer
 {
 public:
-  TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
+  explicit TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
     bool ShowButtons, bool ShowSpecials,
     TFarDialogItem * EnabledDependency);
   // __property bool AddXToDirectories = { read = GetAddXToDirectories, write = SetAddXToDirectories };
@@ -4151,7 +4150,7 @@ void TRightsContainer::SetAllowUndef(bool value)
 class TPropertiesDialog : public TFarDialog
 {
 public:
-  TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
+  explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
     const std::wstring &Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
@@ -4481,7 +4480,7 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
 class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
-  TCopyParamsContainer(TFarDialog * ADialog,
+  explicit TCopyParamsContainer(TFarDialog * ADialog,
     int Options, int CopyParamAttrs);
 
   // __property TCopyParamType Params = { read = GetParams, write = SetParams };
@@ -4970,7 +4969,7 @@ int TCopyParamsContainer::GetHeight()
 class TCopyDialog : TFarDialog
 {
 public:
-  TCopyDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
     bool ToRemote, bool Move, TStrings * FileList, int Options, int CopyParamAttrs);
 
   bool Execute(std::wstring & TargetDirectory, TGUICopyParamType * Params);
@@ -5296,7 +5295,7 @@ bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
 class TLinkDialog : TFarDialog
 {
 public:
-  TLinkDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TLinkDialog(TCustomFarPlugin * AFarPlugin,
     bool Edit, bool AllowSymbolic);
 
   bool Execute(std::wstring & FileName, std::wstring & PointTo,
@@ -5417,7 +5416,7 @@ class TFileSystemInfoDialog : TTabbedDialog
 public:
   enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
 
-  TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
     const getspaceavailable_slot_type &OnGetSpaceAvailable);
 
   void Execute(const TSessionInfo & SessionInfo,
