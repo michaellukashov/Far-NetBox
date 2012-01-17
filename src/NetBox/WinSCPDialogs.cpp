@@ -1548,6 +1548,7 @@ private:
   TFarButton * ConnectButton;
   TFarEdit * HostNameEdit;
   TFarEdit * PortNumberEdit;
+  TFarComboBox *LoginTypeCombo;
   TFarEdit * UserNameEdit;
   TFarEdit * PasswordEdit;
   TFarEdit * PrivateKeyEdit;
@@ -1858,6 +1859,19 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PortNumberEdit = new TFarEdit(this);
   PortNumberEdit->SetFixed(true);
   PortNumberEdit->SetMask(L"99999");
+
+  SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_LOGIN_TYPE));
+
+  SetNextItemPosition(ipRight);
+
+  LoginTypeCombo = new TFarComboBox(this);
+  LoginTypeCombo->SetDropDownList(true);
+  LoginTypeCombo->SetWidth(12);
+  LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_ANONYMOUS));
+  LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_NORMAL));
 
   SetNextItemPosition(ipNewLine);
 
