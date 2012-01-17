@@ -178,7 +178,7 @@ bool IsUnixHiddenFile(const std::wstring &FileName)
     !FileName.empty() && (FileName[0] == '.');
 }
 //---------------------------------------------------------------------------
-std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
+std::wstring AbsolutePath(const std::wstring &Base, const std::wstring &Path)
 {
   std::wstring Result;
   if (Path.empty())
@@ -193,7 +193,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
   {
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
-    int P;
+    size_t P = 0;
     while ((P = Result.find(L"/../")) != std::wstring::npos)
     {
       size_t P2 = ::LastDelimiter(Result.substr(0, P-1), L"/");
