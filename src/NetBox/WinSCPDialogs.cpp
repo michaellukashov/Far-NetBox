@@ -895,7 +895,7 @@ void TTransferEditorConfigurationDialog::Change()
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
-      UpdateControls();
+        UpdateControls();
     }
   }
 }
@@ -1653,6 +1653,7 @@ private:
 
   void LoadPing(TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
+  int LoginTypeToIndex(TLoginType LoginType);
   int FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
   TFSProtocol IndexToFSProtocol(int Index, bool AllowScpFallback);
   TFSProtocol GetFSProtocol();
@@ -2775,7 +2776,7 @@ void TSessionDialog::Change()
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
-      UpdateControls();
+        UpdateControls();
     }
   }
 }
@@ -2884,6 +2885,7 @@ void TSessionDialog::UpdateControls()
   bool FtpProtocol = ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS));
   bool FtpsProtocol = (FSProtocol == fsFTPS);
   bool LoginAnonymous = (GetLoginType() == ltAnonymous);
+
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
   // Basic tab
@@ -2893,11 +2895,7 @@ void TSessionDialog::UpdateControls()
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
-  if (LoginAnonymous)
-  {
-    UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
-    PasswordEdit->SetText(L"");
-  }
+
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
 
@@ -3042,6 +3040,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   FSessionData = SessionData;
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
+  FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
 
   HideTabs();
   SelectTab(tabSession);
@@ -3052,18 +3051,19 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   HostNameEdit->SetText(SessionData->GetHostName());
   PortNumberEdit->SetAsInteger(SessionData->GetPortNumber());
 
-  if (1) // SessionData->GetEOLType() == eolLF)
-  {
-    LoginTypeCombo->GetItems()->SetSelected(0);
-  }
-  else
-  {
-    // LoginTypeCombo->GetItems()->SetSelected(1);
-  }
+  LoginTypeCombo->GetItems()->SetSelected(
+    LoginTypeToIndex(SessionData->GetLoginType()));
 
   UserNameEdit->SetText(SessionData->GetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
+
+  if ((GetLoginType() == ltAnonymous)) // &&
+    // (SessionData->GetUserName() == CONST_LOGIN_ANONYMOUS))
+  {
+    UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
+    PasswordEdit->SetText(L"");
+  }
 
   bool AllowScpFallback;
   TransferProtocolCombo->GetItems()->SetSelected(
@@ -3611,6 +3611,11 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
      SessionData->SetPingType(PingType);
      SessionData->SetPingInterval(PingIntervalSecEdit->GetAsInteger());
     }
+}
+//---------------------------------------------------------------------------
+int TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
+{
+    return static_cast<int>(LoginType);
 }
 //---------------------------------------------------------------------------
 int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,

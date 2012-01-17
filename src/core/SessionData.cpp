@@ -8,7 +8,6 @@
 
 #include "Common.h"
 #include "Exceptions.h"
-// #include "FileBuffer.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "PuttyIntf.h"
@@ -50,6 +49,7 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
+  SetLoginType(ltAnonymous);
   SetUserName(L"");
   SetPassword(L"");
   SetPasswordless(false);
@@ -119,8 +119,6 @@ void TSessionData::Default()
   SetRecycleBinPath(L"/tmp");
   SetColor(0);
   SetPostLoginCommands(L"");
-
-  SetLoginType(GetUserName() == CONST_LOGIN_ANONYMOUS ? ltAnonymous : ltNormal);
 
   // SCP
   SetReturnVar(L"");
@@ -1357,6 +1355,7 @@ void TSessionData::SetUserName(const std::wstring &value)
   {
     memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.size() * sizeof(wchar_t));
   }
+  SetLoginType(GetUserName() == CONST_LOGIN_ANONYMOUS ? ltAnonymous : ltNormal);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetPassword(const std::wstring &val)
