@@ -2111,7 +2111,8 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
     // DEBUG_PRINTF(L"Another = %d", Another);
     if (FPanelInfo[Another] == NULL)
     {
-        ::PanelInfo *Info = new ::PanelInfo;
+        PanelInfo *Info = new PanelInfo;
+        // Info->StructSize = sizeof(PanelInfo);
         bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(Info),
             Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
         // DEBUG_PRINTF(L"res = %d", res);
@@ -2129,6 +2130,11 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
 DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2)
 {
     return FPlugin->FarControl(Command, Param1, Param2, this);
+}
+//---------------------------------------------------------------------------
+DWORD TCustomFarFileSystem::FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin)
+{
+    return FPlugin->FarControl(Command, Param1, Param2, Plugin);
 }
 //---------------------------------------------------------------------------
 bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
@@ -2774,8 +2780,30 @@ bool TFarPanelInfo::GetIsPlugin()
 //---------------------------------------------------------------------------
 std::wstring TFarPanelInfo::GetCurrentDirectory()
 {
-    std::wstring Result = L""; //FIXME FPanelInfo->CurDir;
-    return StrFromFar(Result);
+    std::wstring Result = L"";
+    /*
+    size_t Size = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(0, NULL);
+    if (Size)
+    {
+        Result.resize(Size);
+        FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(Size,
+            const_cast<wchar_t *>(Result.c_str()));
+    }
+    */
+    // FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(&Info), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+    size_t Size = FarPlugin->FarControl(FCTL_GETPANELDIR,
+        0,
+        NULL,
+        FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+    if (Size)
+    {
+        Result.resize(Size);
+        FarPlugin->FarControl(FCTL_GETPANELDIR,
+            Size,
+            reinterpret_cast<LONG_PTR>(Result.c_str()),
+            FOwner != NULL ? PANEL_ACTIVE : PANEL_PASSIVE);
+    }
+    return StrFromFar(Result.c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

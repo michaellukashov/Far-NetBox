@@ -17,14 +17,18 @@
 //---------------------------------------------------------------------------
 std::wstring UnixIncludeTrailingBackslash(const std::wstring &Path)
 {
-  if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size() - 1))
+  if (!Path.empty())
   {
-    return Path + L"/";
+    if (!::IsDelimiter(Path, L"/", Path.size() - 1))
+    {
+      return Path + L"/";
+    }
+    else
+    {
+      return Path;
+    }
   }
-  else
-  {
-    return Path;
-  }
+  return L"/";
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
