@@ -303,7 +303,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   Self = this;
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::Init(TSecureShell * SecureShell)
+void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 {
   TCustomFarFileSystem::Init();
   FReloadDirectory = false;
@@ -531,7 +531,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         {
           std::wstring Name = Data->GetName().substr(
             Folder.size(), Data->GetName().size() - Folder.size());
-          int Slash = Name.find_first_of(L'/');
+          size_t Slash = Name.find_first_of(L'/');
           if (Slash != std::wstring::npos)
           {
             Name.resize(Slash);
@@ -3099,7 +3099,7 @@ void TWinSCPFileSystem::LogAuthentication(
 
     Message += ::StringOfChar(L'\n', Height - Count);
 
-    FPlugin->Message(0, GetTerminal()->GetSessionData()->GetSessionName(), Message);
+    FPlugin->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -3273,7 +3273,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   }
   else
   {
-    Result = PasswordDialog(GetTerminal()->GetSessionData(), Kind, Name, Instructions,
+    Result = PasswordDialog(Terminal->GetSessionData(), Kind, Name, Instructions,
       Prompts, Results, GetTerminal()->GetStoredCredentialsTried());
   }
 }
