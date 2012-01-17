@@ -671,8 +671,10 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
         {
           if (NewData)
           {
-            std::wstring Name =
-              UnixIncludeTrailingBackslash(FSessionsFolder) + Data->GetSessionName();
+            std::wstring Name;
+            if (!FSessionsFolder.empty())
+               Name = UnixIncludeTrailingBackslash(FSessionsFolder);
+            Name += Data->GetSessionName();
             // DEBUG_PRINTF(L"Name = %s", Name.c_str());
             if (FPlugin->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
                   GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
