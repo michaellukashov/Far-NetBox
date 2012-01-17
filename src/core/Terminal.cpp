@@ -203,9 +203,9 @@ class TTunnelThread : public TSimpleThread
 {
 public:
   explicit TTunnelThread(TSecureShell * SecureShell);
-  virtual void Init();
   virtual ~TTunnelThread();
 
+  virtual void Init();
   virtual void Terminate();
 
 protected:

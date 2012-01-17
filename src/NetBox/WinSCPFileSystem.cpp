@@ -249,9 +249,10 @@ void TFarInteractiveCustomCommand::Prompt(int /*Index*/,
 class TKeepaliveThread : public TSimpleThread
 {
 public:
-  TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
+  explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
   virtual ~TKeepaliveThread()
   {}
+  virtual void Init();
   virtual void Execute();
   virtual void Terminate();
 
@@ -263,12 +264,16 @@ private:
 //---------------------------------------------------------------------------
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   TDateTime Interval) :
-  TSimpleThread()
+  TSimpleThread(),
+  FFileSystem(FileSystem),
+  FInterval(Interval)
 {
+}
+//---------------------------------------------------------------------------
+void TKeepaliveThread::Init()
+{
+  TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
-
-  FFileSystem = FileSystem;
-  FInterval = Interval;
   Start();
 }
 //---------------------------------------------------------------------------
