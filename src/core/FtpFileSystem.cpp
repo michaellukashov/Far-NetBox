@@ -434,7 +434,8 @@ void TFTPFileSystem::Open()
     // ask for password if it was not specified in advance,
     // on retry ask always
     // DEBUG_PRINTF(L"GetPasswordless = %d, GetFtpAllowEmptyPassword = %d", Data->GetPasswordless(), Data->GetFtpAllowEmptyPassword());
-    if ((Data->GetPassword().empty() && !Data->GetPasswordless() && !Data->GetFtpAllowEmptyPassword()) || FPasswordFailed)
+    if ((Data->GetPassword().empty() && !Data->GetPasswordless() &&
+        !(Data->GetLoginType() == ltAnonymous) && !Data->GetFtpAllowEmptyPassword()) || FPasswordFailed)
     {
       FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
 

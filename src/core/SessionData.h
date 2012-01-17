@@ -18,6 +18,7 @@ enum TProtocol { ptRaw, ptTelnet, ptRLogin, ptSSH };
 #define PROTOCOL_COUNT (ptSSH+1)
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
 enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsFTPS = 6, fsHTTP = 7, fsHTTPS = 8 };
+enum TLoginType { ltAnonymous = 0, ltNormal = 1 };
 #define FSPROTOCOL_COUNT (fsHTTPS+1)
 enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd };
 enum TSshProt { ssh1only, ssh1, ssh2, ssh2only };
@@ -140,6 +141,7 @@ private:
   bool FFtpPasvMode;
   bool FFtpForcePasvIp;
   bool FFtpAllowEmptyPassword;
+  TLoginType FLoginType;
   std::wstring FFtpAccount;
   int FFtpPingInterval;
   TPingType FFtpPingType;
@@ -187,6 +189,8 @@ public:
   std::wstring GetHostName() const { return FHostName; }
   // __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
   int GetPortNumber() const { return FPortNumber; }
+  TLoginType GetLoginType() const { return FLoginType; }
+  void SetLoginType(TLoginType value);
   // __property std::wstring UserName  = { read=FUserName, write=SetUserName };
   std::wstring GetUserName() const { return FUserName; }
   // __property std::wstring Password  = { read=GetPassword, write=SetPassword };
