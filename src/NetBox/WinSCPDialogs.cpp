@@ -1536,6 +1536,7 @@ private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
   int FTransferProtocolIndex;
+  int FLoginTypeIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -1656,6 +1657,8 @@ private:
   int FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
   TFSProtocol IndexToFSProtocol(int Index, bool AllowScpFallback);
   TFSProtocol GetFSProtocol();
+  TLoginType IndexToLoginType(int Index);
+  TLoginType GetLoginType();
   bool VerifyKey(std::wstring FileName, bool TypeOnly);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
@@ -1664,6 +1667,7 @@ private:
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
   void TransferProtocolComboChange();
+  void LoginTypeComboChange();
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -2761,6 +2765,10 @@ void TSessionDialog::Change()
     {
       TransferProtocolComboChange();
     }
+    if (FLoginTypeIndex != LoginTypeCombo->GetItems()->GetSelected())
+    {
+      LoginTypeComboChange();
+    }
 
     LockChanges();
     {
@@ -2851,6 +2859,17 @@ void TSessionDialog::TransferProtocolComboChange()
   }
 }
 //---------------------------------------------------------------------------
+void TSessionDialog::LoginTypeComboChange()
+{
+  FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
+  if (GetLoginType() == ltAnonymous)
+  {
+  }
+  else if (GetLoginType() == ltNormal)
+  {
+  }
+}
+//---------------------------------------------------------------------------
 void TSessionDialog::UpdateControls()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
@@ -2865,7 +2884,7 @@ void TSessionDialog::UpdateControls()
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   bool FtpProtocol = ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS));
   bool FtpsProtocol = (FSProtocol == fsFTPS);
-
+  bool LoginAnonymous = (GetLoginType() == ltAnonymous);
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
   // Basic tab
@@ -2875,6 +2894,13 @@ void TSessionDialog::UpdateControls()
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
+  if (LoginAnonymous)
+  {
+    UserNameEdit->SetText(L"anonymous");
+    PasswordEdit->SetText(L"");
+  }
+  UserNameEdit->SetEnabled(!LoginAnonymous);
+  PasswordEdit->SetEnabled(!LoginAnonymous);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
@@ -3618,6 +3644,11 @@ TFSProtocol TSessionDialog::GetFSProtocol()
     AllowScpFallbackCheck->GetChecked());
 }
 //---------------------------------------------------------------------------
+TLoginType TSessionDialog::GetLoginType()
+{
+  return IndexToLoginType(LoginTypeCombo->GetItems()->GetSelected());
+}
+//---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
 {
   bool InBounds = (Index >= 0) && (Index < LENOF(FSOrder));
@@ -3630,6 +3661,18 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
     {
       Result = fsSFTP;
     }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TLoginType TSessionDialog::IndexToLoginType(int Index)
+{
+  bool InBounds = (Index >= 0) && (Index <= ltNormal);
+  assert(InBounds);
+  TLoginType Result = ltAnonymous;
+  if (InBounds)
+  {
+    Result = TLoginType(Index);
   }
   return Result;
 }
