@@ -42,6 +42,7 @@ extern const wchar_t ProxyMethodList[][10];
 extern const TCipher DefaultCipherList[CIPHER_COUNT];
 extern const TKex DefaultKexList[KEX_COUNT];
 extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15];
+extern const std::wstring CONST_LOGIN_ANONYMOUS;
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------

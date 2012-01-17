@@ -26,6 +26,7 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
+const const std::wstring CONST_LOGIN_ANONYMOUS = L"anonymous";
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
@@ -119,7 +120,7 @@ void TSessionData::Default()
   SetColor(0);
   SetPostLoginCommands(L"");
 
-  SetLoginType(ltAnonymous);
+  SetLoginType(GetUserName() == CONST_LOGIN_ANONYMOUS ? ltAnonymous : ltNormal);
 
   // SCP
   SetReturnVar(L"");
@@ -332,10 +333,10 @@ void TSessionData::Load(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(GetInternalStorageKey(), false))
   {
     SetPortNumber(Storage->Readint(L"PortNumber", GetPortNumber()));
-    SetLoginType(static_cast<TLoginType>(Storage->Readint(L"LoginType", GetLoginType())));
     SetUserName(Storage->ReadString(L"UserName", GetUserName()));
     // must be loaded after UserName, because HostName may be in format user@host
     SetHostName(Storage->ReadString(L"HostName", GetHostName()));
+    SetLoginType(static_cast<TLoginType>(Storage->Readint(L"LoginType", GetLoginType())));
 
     if (!Configuration->GetDisablePasswordStoring())
     {

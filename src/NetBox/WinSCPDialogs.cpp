@@ -2896,7 +2896,7 @@ void TSessionDialog::UpdateControls()
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
   if (LoginAnonymous)
   {
-    UserNameEdit->SetText(L"anonymous");
+    UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
     PasswordEdit->SetText(L"");
   }
   UserNameEdit->SetEnabled(!LoginAnonymous);
