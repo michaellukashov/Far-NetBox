@@ -189,6 +189,8 @@ public:
   std::wstring GetHostName() const { return FHostName; }
   // __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
   int GetPortNumber() const { return FPortNumber; }
+  TLoginType GetLoginType() const { return FLoginType; }
+  void SetLoginType(TLoginType value);
   // __property std::wstring UserName  = { read=FUserName, write=SetUserName };
   std::wstring GetUserName() const { return FUserName; }
   // __property std::wstring Password  = { read=GetPassword, write=SetPassword };
@@ -420,8 +422,6 @@ public:
   bool GetFtpPasvMode() const { return FFtpPasvMode; }
   bool GetFtpAllowEmptyPassword() const { return FFtpAllowEmptyPassword; }
   void SetFtpAllowEmptyPassword(bool value);
-  bool GetLoginType() const { return FLoginType; }
-  void SetLoginType(TLoginType value);
   // __property bool FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
   bool GetFtpForcePasvIp() const { return FFtpForcePasvIp; }
   // __property std::wstring FtpAccount = { read = FFtpAccount, write = SetFtpAccount };

@@ -332,7 +332,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(GetInternalStorageKey(), false))
   {
     SetPortNumber(Storage->Readint(L"PortNumber", GetPortNumber()));
-    SetLoginType(Storage->Readint(L"LoginType", GetLoginType()));
+    SetLoginType(static_cast<TLoginType>(Storage->Readint(L"LoginType", GetLoginType())));
     SetUserName(Storage->ReadString(L"UserName", GetUserName()));
     // must be loaded after UserName, because HostName may be in format user@host
     SetHostName(Storage->ReadString(L"HostName", GetHostName()));
@@ -1339,6 +1339,11 @@ void TSessionData::SetIgnoreLsWarnings(bool value)
 void TSessionData::SetUnsetNationalVars(bool value)
 {
   SET_SESSION_PROPERTY(UnsetNationalVars);
+}
+//---------------------------------------------------------------------
+void TSessionData::SetLoginType(TLoginType value)
+{
+  SET_SESSION_PROPERTY(LoginType);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetUserName(const std::wstring &value)
