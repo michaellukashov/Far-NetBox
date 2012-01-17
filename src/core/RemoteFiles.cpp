@@ -714,7 +714,7 @@ const TRemoteToken * TRemoteTokenList::GetToken(int Index) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   TPersistent()
 {
   FLinkedFile = NULL;
@@ -737,8 +737,7 @@ TRemoteFile::~TRemoteFile()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
-  TRemoteFile * Result;
-  Result = new TRemoteFile();
+  TRemoteFile * Result = new TRemoteFile();
   try
   {
     if (FLinkedFile)
@@ -746,7 +745,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FLinkedFile = FLinkedFile->Duplicate(true);
       Result->FLinkedFile->FLinkedByFile = Result;
     }
-    *Result->GetRights() = *FRights;
+    Result->SetRights(FRights);
     #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
     COPY_FP(Terminal);
     COPY_FP(Owner);
@@ -1930,6 +1929,7 @@ TRights::TRights(const TRights & Source)
 //---------------------------------------------------------------------------
 void TRights::Assign(const TRights * Source)
 {
+  assert(Source);
   FAllowUndef = Source->GetAllowUndef();
   // DEBUG_PRINTF(L"FSet = %o, Source->FSet = %o", FSet, Source->FSet);
   FSet = Source->FSet;
