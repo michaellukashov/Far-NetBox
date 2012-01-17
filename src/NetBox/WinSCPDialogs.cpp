@@ -1869,28 +1869,33 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   LoginTypeCombo = new TFarComboBox(this);
   LoginTypeCombo->SetDropDownList(true);
-  LoginTypeCombo->SetWidth(12);
   LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_ANONYMOUS));
   LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_NORMAL));
+  LoginTypeCombo->SetWidth(LoginTypeCombo->GetWidth() / 2 - 1);
 
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_USER_NAME));
 
+  SetNextItemPosition(ipRight);
+
   UserNameEdit = new TFarEdit(this);
   UserNameEdit->SetWidth(UserNameEdit->GetWidth() / 2 - 1);
 
-  SetNextItemPosition(ipRight);
+  // SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_PASSWORD));
-  Text->Move(0, -1);
+  // Text->Move(0, -1);
 
-  SetNextItemPosition(ipBelow);
+  // SetNextItemPosition(ipBelow);
+  SetNextItemPosition(ipRight);
 
   PasswordEdit = new TFarEdit(this);
   PasswordEdit->SetPassword(true);
+  PasswordEdit->SetWidth(PasswordEdit->GetWidth() / 2 - 1);
 
   SetNextItemPosition(ipNewLine);
 
@@ -3015,6 +3020,16 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // Basic tab
   HostNameEdit->SetText(SessionData->GetHostName());
   PortNumberEdit->SetAsInteger(SessionData->GetPortNumber());
+
+  if (1) // SessionData->GetEOLType() == eolLF)
+  {
+    LoginTypeCombo->GetItems()->SetSelected(0);
+  }
+  else
+  {
+    // LoginTypeCombo->GetItems()->SetSelected(1);
+  }
+
   UserNameEdit->SetText(SessionData->GetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
