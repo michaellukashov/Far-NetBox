@@ -28,7 +28,8 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 //---------------------------------------------------------------------------
-class TCopyParamType {
+class TCopyParamType
+{
 private:
   TFileMasks FAsciiFileMask;
   TFileNameCase FFileNameCase;
@@ -98,8 +99,8 @@ public:
   bool GetPreserveTime() const { return FPreserveTime; }
   void SetPreserveTime(bool value) { FPreserveTime = value; }
   // __property TRights Rights = { read = FRights, write = FRights };
-  TRights GetRights() const { return FRights; }
-  void SetRights(TRights value) { FRights = value; }
+  const TRights &GetRights() const { return FRights; }
+  void SetRights(const TRights &value) { FRights.Assign(&value); }
   // __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
   TTransferMode GetTransferMode() const { return FTransferMode; }
   void SetTransferMode(TTransferMode value) { FTransferMode = value; }
