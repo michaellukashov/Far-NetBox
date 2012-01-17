@@ -1,5 +1,6 @@
 NetBox 2.0.6 ??.01.2012
 ---------------------
+  * Session properties: Add new option "Login type"
   * Bugfix: AppVerifier reported error: "Critical section is already initialized".
   * Bugfix: FTP: error while trying to remove directory from root directory
   * Bugfix: option "Synchronize browsing" did not work properly
