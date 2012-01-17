@@ -1819,7 +1819,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TransferProtocolCombo = new TFarComboBox(this);
   TransferProtocolCombo->SetDropDownList(true);
-  TransferProtocolCombo->SetWidth(7);
+  TransferProtocolCombo->SetWidth(10);
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
   #ifndef NO_FILEZILLA
@@ -1864,6 +1864,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_LOGIN_TYPE));
+  Text->SetWidth(20);
 
   SetNextItemPosition(ipRight);
 
@@ -1871,23 +1872,27 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   LoginTypeCombo->SetDropDownList(true);
   LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_ANONYMOUS));
   LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_NORMAL));
-  LoginTypeCombo->SetWidth(LoginTypeCombo->GetWidth() / 2 - 1);
+  LoginTypeCombo->SetWidth(20);
+  LoginTypeCombo->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_USER_NAME));
+  Text->SetWidth(20);
 
   SetNextItemPosition(ipRight);
 
   UserNameEdit = new TFarEdit(this);
-  UserNameEdit->SetWidth(UserNameEdit->GetWidth() / 2 - 1);
+  UserNameEdit->SetWidth(20);
+  UserNameEdit->SetRight(CRect.Right - 12 - 2);
 
   // SetNextItemPosition(ipRight);
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_PASSWORD));
+  Text->SetWidth(20);
   // Text->Move(0, -1);
 
   // SetNextItemPosition(ipBelow);
@@ -1895,7 +1900,8 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   PasswordEdit = new TFarEdit(this);
   PasswordEdit->SetPassword(true);
-  PasswordEdit->SetWidth(PasswordEdit->GetWidth() / 2 - 1);
+  PasswordEdit->SetWidth(20);
+  PasswordEdit->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipNewLine);
 
