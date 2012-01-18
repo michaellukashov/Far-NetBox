@@ -190,13 +190,13 @@ public:
   std::wstring GetHostName() const { return FHostName; }
   // __property int PortNumber  = { read=FPortNumber, write=SetPortNumber };
   int GetPortNumber() const { return FPortNumber; }
-  TLoginType GetLoginType() const { return FLoginType; }
+  TLoginType GetLoginType() const;
   void SetLoginType(TLoginType value);
   // __property std::wstring UserName  = { read=FUserName, write=SetUserName };
   std::wstring GetUserName() const { return FUserName; }
   // __property std::wstring Password  = { read=GetPassword, write=SetPassword };
   void SetPassword(const std::wstring &value);
-  std::wstring GetPassword();
+  std::wstring GetPassword() const;
   // __property bool Passwordless = { read=FPasswordless, write=SetPasswordless };
   bool GetPasswordless() const { return FPasswordless; }
   // __property int PingInterval  = { read=FPingInterval, write=SetPingInterval };

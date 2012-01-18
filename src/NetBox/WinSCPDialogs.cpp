@@ -2898,6 +2898,11 @@ void TSessionDialog::UpdateControls()
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
+  if (LoginAnonymous)
+  {
+    // UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
+    // PasswordEdit->SetText(L"");
+  }
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
@@ -3058,11 +3063,15 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
 
-  if ((GetLoginType() == ltAnonymous)) // &&
-    // (SessionData->GetUserName() == CONST_LOGIN_ANONYMOUS))
+  if ((GetLoginType() == ltAnonymous))
   {
+    LoginTypeCombo->GetItems()->SetSelected(0);
     UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
     PasswordEdit->SetText(L"");
+  }
+  else
+  {
+    LoginTypeCombo->GetItems()->SetSelected(1);
   }
 
   bool AllowScpFallback;
@@ -3344,6 +3353,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetPortNumber(PortNumberEdit->GetAsInteger());
     SessionData->SetUserName(UserNameEdit->GetText());
     SessionData->SetPassword(PasswordEdit->GetText());
+    SessionData->SetLoginType(GetLoginType());
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
 
     SessionData->SetFSProtocol(GetFSProtocol());
@@ -3357,12 +3367,16 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetResolveSymlinks(ResolveSymlinksCheck->GetChecked());
 
     // Environment tab
-    if (DSTModeUnixCheck->GetChecked()) SessionData->SetDSTMode(dstmUnix);
-      else
-    if (DSTModeKeepCheck->GetChecked()) SessionData->SetDSTMode(dstmKeep);
-      else SessionData->SetDSTMode(dstmWin);
-    if (EOLTypeCombo->GetItems()->GetSelected() == 0) SessionData->SetEOLType(eolLF);
-      else SessionData->SetEOLType(eolCRLF);
+    if (DSTModeUnixCheck->GetChecked())
+        SessionData->SetDSTMode(dstmUnix);
+    else if (DSTModeKeepCheck->GetChecked())
+        SessionData->SetDSTMode(dstmKeep);
+    else
+        SessionData->SetDSTMode(dstmWin);
+    if (EOLTypeCombo->GetItems()->GetSelected() == 0)
+        SessionData->SetEOLType(eolLF);
+    else
+        SessionData->SetEOLType(eolCRLF);
     switch (UtfCombo->GetItems()->GetSelected())
     {
       case 1:
