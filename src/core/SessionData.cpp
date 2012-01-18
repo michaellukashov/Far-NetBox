@@ -8,7 +8,6 @@
 
 #include "Common.h"
 #include "Exceptions.h"
-// #include "FileBuffer.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "PuttyIntf.h"
@@ -26,6 +25,7 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
+const const std::wstring CONST_LOGIN_ANONYMOUS = L"anonymous";
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
@@ -49,6 +49,7 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
+  SetLoginType(ltAnonymous);
   SetUserName(L"");
   SetPassword(L"");
   SetPasswordless(false);
@@ -194,6 +195,7 @@ void TSessionData::Assign(TPersistent * Source)
     DUPL(HostName);
     // DEBUG_PRINTF(L"HostName = %s, Source->HostName = %s", GetHostName().c_str(), ((TSessionData *)Source)->GetHostName().c_str());
     DUPL(PortNumber);
+    DUPL(LoginType);
     DUPL(UserName);
     DUPL(Password);
     // SetPassword(Source->GetPassword());
@@ -332,6 +334,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
     SetUserName(Storage->ReadString(L"UserName", GetUserName()));
     // must be loaded after UserName, because HostName may be in format user@host
     SetHostName(Storage->ReadString(L"HostName", GetHostName()));
+    SetLoginType(static_cast<TLoginType>(Storage->Readint(L"LoginType", GetLoginType())));
 
     if (!Configuration->GetDisablePasswordStoring())
     {
@@ -666,6 +669,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     }
     else
     {
+      WRITE_DATA_EX(int, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(String, L"UserName", GetUserName(), );
       WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
       WRITE_DATA_EX(int, L"FSProtocol", GetFSProtocol(), );
@@ -1336,6 +1340,11 @@ void TSessionData::SetUnsetNationalVars(bool value)
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 //---------------------------------------------------------------------
+void TSessionData::SetLoginType(TLoginType value)
+{
+  SET_SESSION_PROPERTY(LoginType);
+}
+//---------------------------------------------------------------------
 void TSessionData::SetUserName(const std::wstring &value)
 {
   // UserName is key for password encryption
@@ -1346,6 +1355,7 @@ void TSessionData::SetUserName(const std::wstring &value)
   {
     memset(const_cast<wchar_t *>(XPassword.c_str()), 0, XPassword.size() * sizeof(wchar_t));
   }
+  SetLoginType(GetUserName() == CONST_LOGIN_ANONYMOUS ? ltAnonymous : ltNormal);
 }
 //---------------------------------------------------------------------
 void TSessionData::SetPassword(const std::wstring &val)

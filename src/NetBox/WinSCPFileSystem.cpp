@@ -249,9 +249,10 @@ void TFarInteractiveCustomCommand::Prompt(int /*Index*/,
 class TKeepaliveThread : public TSimpleThread
 {
 public:
-  TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
+  explicit TKeepaliveThread(TWinSCPFileSystem * FileSystem, TDateTime Interval);
   virtual ~TKeepaliveThread()
   {}
+  virtual void Init();
   virtual void Execute();
   virtual void Terminate();
 
@@ -263,12 +264,16 @@ private:
 //---------------------------------------------------------------------------
 TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem * FileSystem,
   TDateTime Interval) :
-  TSimpleThread()
+  TSimpleThread(),
+  FFileSystem(FileSystem),
+  FInterval(Interval)
 {
+}
+//---------------------------------------------------------------------------
+void TKeepaliveThread::Init()
+{
+  TSimpleThread::Init();
   FEvent = CreateEvent(NULL, false, false, NULL);
-
-  FFileSystem = FileSystem;
-  FInterval = Interval;
   Start();
 }
 //---------------------------------------------------------------------------
@@ -298,7 +303,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) :
   Self = this;
 }
 //---------------------------------------------------------------------------
-void TWinSCPFileSystem::Init(TSecureShell * SecureShell)
+void TWinSCPFileSystem::Init(TSecureShell * /* SecureShell */)
 {
   TCustomFarFileSystem::Init();
   FReloadDirectory = false;
@@ -526,7 +531,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, int OpMode)
         {
           std::wstring Name = Data->GetName().substr(
             Folder.size(), Data->GetName().size() - Folder.size());
-          int Slash = Name.find_first_of(L'/');
+          size_t Slash = Name.find_first_of(L'/');
           if (Slash != std::wstring::npos)
           {
             Name.resize(Slash);
@@ -593,7 +598,7 @@ void TWinSCPFileSystem::DuplicateRenameSession(TSessionData * Data,
     else
     {
       TSessionData * NData = StoredSessions->NewSession(Name, Data);
-      FSessionsFolder = UnixExcludeTrailingBackslash(UnixExtractFilePath(Name));
+      FSessionsFolder = ExcludeTrailingBackslash(UnixExtractFilePath(Name));
 
       // change of letter case during duplication degrades the operation to rename
       if (!Duplicate || (Data == NData))
@@ -666,8 +671,12 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
         {
           if (NewData)
           {
-            std::wstring Name =
-              UnixIncludeTrailingBackslash(FSessionsFolder) + Data->GetSessionName();
+            // std::wstring Name =
+            //    IncludeTrailingBackslash(FSessionsFolder) + Data->GetSessionName();
+            std::wstring Name;
+            if (!FSessionsFolder.empty())
+               Name = UnixIncludeTrailingBackslash(FSessionsFolder);
+            Name += Data->GetSessionName();
             // DEBUG_PRINTF(L"Name = %s", Name.c_str());
             if (FPlugin->InputBox(GetMsg(NEW_SESSION_NAME_TITLE),
                   GetMsg(NEW_SESSION_NAME_PROMPT), Name, 0) &&
@@ -680,7 +689,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
               else
               {
                 SelectSession = StoredSessions->NewSession(Name, Data);
-                FSessionsFolder = UnixExcludeTrailingBackslash(UnixExtractFilePath(Name));
+                FSessionsFolder = ExcludeTrailingBackslash(UnixExtractFilePath(Name));
               }
             }
           }
@@ -3094,7 +3103,7 @@ void TWinSCPFileSystem::LogAuthentication(
 
     Message += ::StringOfChar(L'\n', Height - Count);
 
-    FPlugin->Message(0, GetTerminal()->GetSessionData()->GetSessionName(), Message);
+    FPlugin->Message(0, Terminal->GetSessionData()->GetSessionName(), Message);
   }
 }
 //---------------------------------------------------------------------------
@@ -3268,7 +3277,7 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
   }
   else
   {
-    Result = PasswordDialog(GetTerminal()->GetSessionData(), Kind, Name, Instructions,
+    Result = PasswordDialog(Terminal->GetSessionData(), Kind, Name, Instructions,
       Prompts, Results, GetTerminal()->GetStoredCredentialsTried());
   }
 }

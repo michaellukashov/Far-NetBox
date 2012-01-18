@@ -347,15 +347,16 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
 
 int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
 {
+    std::string str(data, size);
+    // DEBUG_PRINTF(L"data = %s", ::MB2W(str.c_str()).c_str());
+    std::wstring strw = ::MB2W(str.c_str());
     // PASS *****
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {
-        // DEBUG_PRINTF(L"data = %s", ::MB2W(data).c_str());
-        std::wstring dataw = ::MB2W(data);
         RegExpSearch search = {
-            dataw.c_str(),
+            strw.c_str(),
             0,
-            dataw.size(),
+            strw.size(),
             m_match,
             m_brackets,
             0
@@ -367,8 +368,8 @@ int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
             return 0;
         }
     }
-    DEBUG_PRINTF(L"::MB2W(data) = %s", ::MB2W(std::string(data, size).c_str()).c_str());
-    FTerminal->GetLog()->Add(type, ::MB2W(std::string(data, size).c_str()));
+    // DEBUG_PRINTF(L"str = %s", ::MB2W(str.c_str()).c_str());
+    FTerminal->GetLog()->Add(type, strw);
     return 0;
 }
 

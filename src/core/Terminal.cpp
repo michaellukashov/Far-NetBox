@@ -203,9 +203,9 @@ class TTunnelThread : public TSimpleThread
 {
 public:
   explicit TTunnelThread(TSecureShell * SecureShell);
-  virtual void Init();
   virtual ~TTunnelThread();
 
+  virtual void Init();
   virtual void Terminate();
 
 protected:
@@ -2681,7 +2681,8 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
               {
                 Progress->Finish(FileName, Success, OnceDoneOperation);
               } BOOST_SCOPE_EXIT_END
-              sig(FileName, (TRemoteFile *)FileList->GetObject(Index), Param);
+              const TRemoteFile *RemoteFile = static_cast<const TRemoteFile *>(FileList->GetObject(Index));
+              sig(FileName, RemoteFile, Param);
               Success = true;
             }
           }

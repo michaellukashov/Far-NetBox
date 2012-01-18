@@ -465,7 +465,7 @@ public:
       if (Properties->Valid.Contains(vpRights))
       {
         Valid |= valRights;
-        TRights Rights = BaseRights;
+        TRights Rights(BaseRights);
         Rights |= Properties->Rights.GetNumberSet();
         Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
         if (IsDirectory && Properties->AddXToDirectories)

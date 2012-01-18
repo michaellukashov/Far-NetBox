@@ -206,10 +206,6 @@ TSignalThread::TSignalThread() :
   TSimpleThread(),
   FTerminated(true), FEvent(NULL)
 {
-  FEvent = CreateEvent(NULL, false, false, NULL);
-  assert(FEvent != NULL);
-
-  ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
 }
 //---------------------------------------------------------------------------
 TSignalThread::~TSignalThread()
@@ -222,6 +218,15 @@ TSignalThread::~TSignalThread()
   {
     CloseHandle(FEvent);
   }
+}
+//---------------------------------------------------------------------------
+void TSignalThread::Init()
+{
+  TSimpleThread::Init();
+  FEvent = CreateEvent(NULL, false, false, NULL);
+  assert(FEvent != NULL);
+
+  ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
 }
 //---------------------------------------------------------------------------
 void TSignalThread::Start()
