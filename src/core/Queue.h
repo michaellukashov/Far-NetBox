@@ -36,6 +36,7 @@ private:
 class TSignalThread : public TSimpleThread
 {
 public:
+  virtual void Init();
   virtual void Start();
   virtual void Terminate();
   void TriggerEvent();

@@ -390,10 +390,10 @@ public:
   static TFlag RightToFlag(TRight Right);
 
   TRights();
-  TRights(const TRights & Source);
-  TRights(unsigned short Number);
+  TRights(const TRights &Source);
+  explicit TRights(unsigned short Number);
 
-  void Assign(const TRights * Source);
+  void Assign(const TRights *Source);
   void AddExecute();
   void AllUndef();
 

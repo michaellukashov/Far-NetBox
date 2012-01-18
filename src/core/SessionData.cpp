@@ -8,7 +8,6 @@
 
 #include "Common.h"
 #include "Exceptions.h"
-// #include "FileBuffer.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "PuttyIntf.h"
@@ -26,6 +25,7 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
+const std::wstring CONST_LOGIN_ANONYMOUS = L"anonymous";
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
@@ -49,8 +49,9 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(L"");
+  SetUserName(CONST_LOGIN_ANONYMOUS);
   SetPassword(L"");
+  SetLoginType(ltAnonymous);
   SetPasswordless(false);
   SetPingInterval(30);
   // when changing default, update load/save logic
@@ -194,6 +195,7 @@ void TSessionData::Assign(TPersistent * Source)
     DUPL(HostName);
     // DEBUG_PRINTF(L"HostName = %s, Source->HostName = %s", GetHostName().c_str(), ((TSessionData *)Source)->GetHostName().c_str());
     DUPL(PortNumber);
+    DUPL(LoginType);
     DUPL(UserName);
     DUPL(Password);
     // SetPassword(Source->GetPassword());
@@ -345,6 +347,7 @@ void TSessionData::Load(THierarchicalStorage * Storage)
         FPassword = Storage->ReadString(L"Password", FPassword);
       }
     }
+    SetLoginType(static_cast<TLoginType>(Storage->Readint(L"LoginType", GetLoginType())));
     SetPasswordless(Storage->Readbool(L"Passwordless", GetPasswordless()));
     // Putty uses PingIntervalSecs
     int PingIntervalSecs = Storage->Readint(L"PingIntervalSecs", -1);
@@ -666,7 +669,9 @@ void TSessionData::Save(THierarchicalStorage * Storage,
     }
     else
     {
+      WRITE_DATA_EX(int, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(String, L"UserName", GetUserName(), );
+      WRITE_DATA_EX(int, L"LoginType", GetLoginType(), );
       WRITE_DATA_EX(String, L"PublicKeyFile", GetPublicKeyFile(), );
       WRITE_DATA_EX(int, L"FSProtocol", GetFSProtocol(), );
       WRITE_DATA_EX(String, L"LocalDirectory", GetLocalDirectory(), );
@@ -1336,6 +1341,22 @@ void TSessionData::SetUnsetNationalVars(bool value)
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 //---------------------------------------------------------------------
+TLoginType TSessionData::GetLoginType() const
+{
+    return (GetUserName() == CONST_LOGIN_ANONYMOUS) && GetPassword().empty() ?
+        ltAnonymous : ltNormal;
+}
+//---------------------------------------------------------------------
+void TSessionData::SetLoginType(TLoginType value)
+{
+  SET_SESSION_PROPERTY(LoginType);
+  if (GetLoginType() == ltAnonymous)
+  {
+    SetPassword(L"");
+    SetUserName(CONST_LOGIN_ANONYMOUS);
+  }
+}
+//---------------------------------------------------------------------
 void TSessionData::SetUserName(const std::wstring &value)
 {
   // UserName is key for password encryption
@@ -1358,7 +1379,7 @@ void TSessionData::SetPassword(const std::wstring &val)
   SET_SESSION_PROPERTY(Password);
 }
 //---------------------------------------------------------------------
-std::wstring TSessionData::GetPassword()
+std::wstring TSessionData::GetPassword() const
 {
   return DecryptPassword(FPassword, GetUserName() + GetHostName());
 }

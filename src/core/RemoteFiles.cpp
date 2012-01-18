@@ -17,14 +17,18 @@
 //---------------------------------------------------------------------------
 std::wstring UnixIncludeTrailingBackslash(const std::wstring &Path)
 {
-  if (!Path.empty() && !::IsDelimiter(Path, L"/", Path.size() - 1))
+  if (!Path.empty())
   {
-    return Path + L"/";
+    if (!::IsDelimiter(Path, L"/", Path.size() - 1))
+    {
+      return Path + L"/";
+    }
+    else
+    {
+      return Path;
+    }
   }
-  else
-  {
-    return Path;
-  }
+  return L"/";
 }
 //---------------------------------------------------------------------------
 // Keeps "/" for root path
@@ -174,7 +178,7 @@ bool IsUnixHiddenFile(const std::wstring &FileName)
     !FileName.empty() && (FileName[0] == '.');
 }
 //---------------------------------------------------------------------------
-std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
+std::wstring AbsolutePath(const std::wstring &Base, const std::wstring &Path)
 {
   std::wstring Result;
   if (Path.empty())
@@ -189,7 +193,7 @@ std::wstring AbsolutePath(const std::wstring & Base, const std::wstring & Path)
   {
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
-    int P;
+    size_t P = 0;
     while ((P = Result.find(L"/../")) != std::wstring::npos)
     {
       size_t P2 = ::LastDelimiter(Result.substr(0, P-1), L"/");
@@ -710,7 +714,7 @@ const TRemoteToken * TRemoteTokenList::GetToken(int Index) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile):
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
   TPersistent()
 {
   FLinkedFile = NULL;
@@ -733,8 +737,7 @@ TRemoteFile::~TRemoteFile()
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
-  TRemoteFile * Result;
-  Result = new TRemoteFile();
+  TRemoteFile * Result = new TRemoteFile();
   try
   {
     if (FLinkedFile)
@@ -742,7 +745,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FLinkedFile = FLinkedFile->Duplicate(true);
       Result->FLinkedFile->FLinkedByFile = Result;
     }
-    *Result->GetRights() = *FRights;
+    Result->SetRights(FRights);
     #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
     COPY_FP(Terminal);
     COPY_FP(Owner);
@@ -1926,6 +1929,7 @@ TRights::TRights(const TRights & Source)
 //---------------------------------------------------------------------------
 void TRights::Assign(const TRights * Source)
 {
+  assert(Source);
   FAllowUndef = Source->GetAllowUndef();
   // DEBUG_PRINTF(L"FSet = %o, Source->FSet = %o", FSet, Source->FSet);
   FSet = Source->FSet;
