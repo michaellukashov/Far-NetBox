@@ -25,7 +25,7 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
 const TKex DefaultKexList[KEX_COUNT] =
   { kexDHGEx, kexDHGroup14, kexDHGroup1, kexRSA, kexWarn };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][15] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"FTPS", L"WebDAV - HTTP", L"WebDAV - HTTPS" };
-const const std::wstring CONST_LOGIN_ANONYMOUS = L"anonymous";
+const std::wstring CONST_LOGIN_ANONYMOUS = L"anonymous";
 const int SshPortNumber = 22;
 const int FtpPortNumber = 21;
 const int HTTPPortNumber = 80;
