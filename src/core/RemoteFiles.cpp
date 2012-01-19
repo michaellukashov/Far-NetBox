@@ -715,7 +715,21 @@ const TRemoteToken * TRemoteTokenList::GetToken(int Index) const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
-  TPersistent()
+  TPersistent(),
+  FDirectory(NULL),
+  FSize(0),
+  FINodeBlocks(0),
+  FIconIndex(0),
+  FIsSymLink(false),
+  FLinkedFile(NULL),
+  FLinkedByFile(NULL),
+  FRights(NULL),
+  FTerminal(NULL),
+  FType(0),
+  FSelected(false),
+  FCyclicLink(false),
+  FIsHidden(0),
+  Self(NULL)
 {
   FLinkedFile = NULL;
   FRights = new TRights();
@@ -1374,10 +1388,11 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal)
   SetTerminal(ATerminal);
 }
 //=== TRemoteFileList ------------------------------------------------------
-TRemoteFileList::TRemoteFileList():
+TRemoteFileList::TRemoteFileList() :
   TObjectList()
 {
-  FTimestamp = Now();
+    FTimestamp = Now();
+    SetOwnsObjects(false);
 }
 //---------------------------------------------------------------------------
 void TRemoteFileList::AddFile(TRemoteFile * File)
@@ -1466,12 +1481,12 @@ void TRemoteDirectory::Clear()
 {
   if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
-    delete FThisDirectory;
+    // delete FThisDirectory;
     FThisDirectory = NULL;
   }
   if (GetParentDirectory() && !GetIncludeParentDirectory())
   {
-    delete FParentDirectory;
+    // delete FParentDirectory;
     FParentDirectory = NULL;
   }
 
@@ -1575,7 +1590,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
   }
 }
 //===========================================================================
-TRemoteDirectoryCache::TRemoteDirectoryCache(): TStringList()
+TRemoteDirectoryCache::TRemoteDirectoryCache() : TStringList()
 {
   FSection = new TCriticalSection();
   Self = this;
@@ -1588,6 +1603,7 @@ TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
   Clear();
   delete FSection;
+  FSection = NULL;
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Clear()
@@ -1708,8 +1724,8 @@ void TRemoteDirectoryCache::Delete(int Index)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int MaxSize) :
-  TStringList(),
-  FMaxSize(MaxSize)
+    TStringList(),
+    FMaxSize(MaxSize)
 {
 }
 //---------------------------------------------------------------------------

@@ -88,7 +88,7 @@ private:
 class TRemoteFile : public TPersistent
 {
 private:
-  TRemoteFileList * FDirectory;
+  TRemoteFileList *FDirectory;
   TRemoteToken FOwner;
   TModificationFmt FModificationFmt;
   __int64 FSize;
@@ -118,7 +118,7 @@ protected:
   void FindLinkedFile();
 
 public:
-  TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
+  explicit TRemoteFile(TRemoteFile * ALinkedByFile = NULL);
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
@@ -219,7 +219,7 @@ public:
 class TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  TRemoteParentDirectory(TTerminal * Terminal);
+  explicit TRemoteParentDirectory(TTerminal * Terminal);
   virtual ~TRemoteParentDirectory()
   {}
 };
@@ -277,7 +277,7 @@ private:
 protected:
   virtual void Clear();
 public:
-  TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
+  explicit TRemoteDirectory(TTerminal * aTerminal, TRemoteDirectory * Template = NULL);
   virtual ~TRemoteDirectory()
   {
     Clear();
@@ -331,7 +331,7 @@ private:
 class TRemoteDirectoryChangesCache : private TStringList
 {
 public:
-  TRemoteDirectoryChangesCache(int MaxSize);
+  explicit TRemoteDirectoryChangesCache(int MaxSize);
   virtual ~TRemoteDirectoryChangesCache()
   {}
 
