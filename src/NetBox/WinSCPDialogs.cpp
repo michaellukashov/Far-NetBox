@@ -1251,27 +1251,27 @@ class TPasswordDialog : public TFarDialog
 {
 public:
   explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-    std::wstring SessionName, TPromptKind Kind, std::wstring Name,
-    std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried);
+    const std::wstring &SessionName, TPromptKind Kind, const std::wstring &Name,
+    const std::wstring &Instructions, TStrings * Prompts, bool StoredCredentialsTried);
 
   bool Execute(TStrings * Results);
 
 private:
-  TSessionData * FSessionData;
+  TSessionData *FSessionData;
   std::wstring FPrompt;
-  TList * FEdits;
-  TFarCheckBox * SavePasswordCheck;
+  TList *FEdits;
+  TFarCheckBox *SavePasswordCheck;
 
-  void ShowPromptClick(TFarButton * Sender, bool & Close);
-  void GenerateLabel(const std::wstring &Caption, bool & Truncated);
-  TFarEdit * GenerateEdit(bool Echo);
+  void ShowPromptClick(TFarButton *Sender, bool &Close);
+  void GenerateLabel(const std::wstring &Caption, bool &Truncated);
+  TFarEdit *GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
-    std::wstring Instructions, TStrings * Prompts, bool & Truncated);
+    std::wstring Instructions, TStrings * Prompts, bool &Truncated);
 };
 //---------------------------------------------------------------------------
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-  std::wstring SessionName, TPromptKind Kind, std::wstring Name,
-  std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
+  const std::wstring &SessionName, TPromptKind Kind, const std::wstring &Name,
+  const std::wstring &Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
   TFarDialog(AFarPlugin),
   FSessionData(NULL),
   FEdits(NULL),
