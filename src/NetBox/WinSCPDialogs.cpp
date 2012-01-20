@@ -1135,7 +1135,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->Move(0, 1);
     Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
       ProductName.c_str(),
-      LoadStr(WINSCPFAR_VERSION).c_str()));
+      LoadStr(WINSCP_VERSION).c_str()));
     Text->SetCenterGroup(true);
   }
 
