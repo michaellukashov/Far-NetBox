@@ -960,7 +960,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timer > 0)
     {
-        unsigned int SinceLastTimer = static_cast<int>(static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000;
+        unsigned int SinceLastTimer = static_cast<int>((static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000);
         if (SinceLastTimer >= FParams->Timeout)
         {
             assert(FParams->TimerEvent != NULL);
@@ -981,7 +981,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timeout > 0)
     {
-        unsigned int Running = static_cast<int>(static_cast<double>(Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000;
+        unsigned int Running = static_cast<int>((static_cast<double>(Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000);
         if (Running >= FParams->Timeout)
         {
             assert(FTimeoutButton != NULL);
