@@ -4207,7 +4207,6 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 		break;
 	case FILETRANSFER_RETRSTOR:
 		pData->transferdata.nTransferStart=pData->transferdata.transfersize-pData->transferdata.transferleft;
-		m_pTransferSocket->m_transferdata=pData->transferdata;
 		// send RETR/STOR command to server
 		if (!m_pTransferSocket)
 		{
@@ -4215,6 +4214,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			ResetOperation(FZ_REPLY_ERROR);
 			return;
 		}
+		m_pTransferSocket->m_transferdata=pData->transferdata;
 		if ((pData->transferfile.get || !pData->transferdata.bResume) && !pData->bPasv)
 			m_pTransferSocket->SetActive();
 		CString filename;
