@@ -88,30 +88,12 @@ void Error(int ErrorID, int data);
 class TObject
 {
 public:
-    TObject() :
-        FDestroyed(false)
+    TObject()
     {}
     virtual ~TObject()
-    {
-        Free();
-    }
-
+    {}
     virtual void Change()
     {}
-    void Free()
-    {
-        if (this && !FDestroyed)
-        {
-            Destroy();
-        }
-    }
-    virtual void Destroy()
-    {
-        FDestroyed = true;
-    }
-
-private:
-    bool FDestroyed;
 };
 
 //---------------------------------------------------------------------------
@@ -275,37 +257,37 @@ public:
     }
     virtual ~TStrings()
     {}
-    size_t Add(const std::wstring &S);
+    size_t Add(const std::wstring S);
     virtual size_t GetCount() const = 0;
     virtual void Delete(size_t Index) = 0;
     virtual std::wstring GetString(size_t Index) const = 0;
     virtual std::wstring GetText();
     virtual std::wstring GetTextStr();
-    virtual void SetText(const std::wstring &Text);
-    virtual void SetTextStr(const std::wstring &Text);
-    void SetCommaText(const std::wstring &Value);
+    virtual void SetText(const std::wstring Text);
+    virtual void SetTextStr(const std::wstring Text);
+    void SetCommaText(const std::wstring Value);
     virtual void BeginUpdate();
     virtual void EndUpdate();
     virtual void SetUpdateState(bool Updating);
     virtual TObject *GetObject(int Index);
-    int AddObject(const std::wstring &S, TObject *AObject);
-    virtual void InsertObject(int Index, const std::wstring &Key, TObject *AObject);
+    int AddObject(const std::wstring S, TObject *AObject);
+    virtual void InsertObject(int Index, const std::wstring Key, TObject *AObject);
     bool Equals(TStrings *value);
     virtual void Clear() = 0;
     virtual void PutObject(int Index, TObject *AObject);
-    virtual void PutString(int Index, const std::wstring &S);
+    virtual void PutString(int Index, const std::wstring S);
     void SetDuplicates(TDuplicatesEnum value);
     void Move(int CurIndex, int NewIndex);
-    int IndexOf(const std::wstring &S);
-    virtual int IndexOfName(const std::wstring &Name);
+    int IndexOf(const std::wstring S);
+    virtual int IndexOfName(const std::wstring Name);
     const std::wstring GetName(int Index);
-    std::wstring ExtractName(const std::wstring &S);
-    const std::wstring GetValue(const std::wstring &Name);
-    void SetValue(const std::wstring &Name, const std::wstring &Value);
+    std::wstring ExtractName(const std::wstring S);
+    const std::wstring GetValue(const std::wstring Name);
+    void SetValue(const std::wstring Name, const std::wstring Value);
     std::wstring GetCommaText();
     void AddStrings(TStrings *Strings);
-    void Append(const std::wstring &value);
-    virtual void Insert(int Index, const std::wstring &AString) = 0;
+    void Append(const std::wstring value);
+    virtual void Insert(int Index, const std::wstring AString) = 0;
     void SaveToStream(TStream *Stream);
     wchar_t GetDelimiter() const { return FDelimiter; }
     void SetDelimiter(wchar_t value)
@@ -318,8 +300,8 @@ public:
         FQuoteChar = value;
     }
     std::wstring GetDelimitedText() const;
-    void SetDelimitedText(const std::wstring &Value);
-    virtual int CompareStrings(const std::wstring &S1, const std::wstring &S2);
+    void SetDelimitedText(const std::wstring Value);
+    virtual int CompareStrings(const std::wstring S1, const std::wstring S2);
     int GetUpdateCount() const { return FUpdateCount; }
     void Assign(TPersistent *Source);
 protected:
@@ -349,15 +331,15 @@ public:
     virtual void Assign(TPersistent *Source);
     virtual size_t GetCount() const;
     virtual void Clear();
-    size_t Add(const std::wstring &S);
-    int AddObject(const std::wstring &S, TObject *AObject);
-    virtual bool Find(const std::wstring &S, int &Index);
-    int IndexOf(const std::wstring &S);
-    virtual void PutString(int Index, const std::wstring &S);
+    size_t Add(const std::wstring S);
+    int AddObject(const std::wstring S, TObject *AObject);
+    virtual bool Find(const std::wstring S, int &Index);
+    int IndexOf(const std::wstring S);
+    virtual void PutString(int Index, const std::wstring S);
     virtual void Delete(size_t Index);
     virtual TObject *GetObject(int Index);
-    virtual void InsertObject(int Index, const std::wstring &Key, TObject *AObject);
-    void InsertItem(int Index, const std::wstring &S, TObject *AObject);
+    virtual void InsertObject(int Index, const std::wstring Key, TObject *AObject);
+    void InsertItem(int Index, const std::wstring S, TObject *AObject);
     virtual std::wstring GetString(size_t Index) const;
     bool GetCaseSensitive() const;
     void SetCaseSensitive(bool value);
@@ -367,7 +349,7 @@ public:
     virtual void CustomSort(TStringListSortCompare CompareFunc);
     void QuickSort(int L, int R, TStringListSortCompare SCompare);
 
-    void LoadFromFile(const std::wstring &FileName);
+    void LoadFromFile(const std::wstring FileName);
     const notify_signal_type &GetOnChange() const { return FOnChange; }
     void SetOnChange(const notify_slot_type &onChange)
     {
@@ -383,8 +365,8 @@ public:
     virtual void SetUpdateState(bool Updating);
     virtual void Changing();
     virtual void Changed();
-    virtual void Insert(int Index, const std::wstring &S);
-    virtual int CompareStrings(const std::wstring &S1, const std::wstring &S2);
+    virtual void Insert(int Index, const std::wstring S);
+    virtual int CompareStrings(const std::wstring S1, const std::wstring S2);
 private:
     void ExchangeItems(int Index1, int Index2);
 private:
@@ -473,11 +455,11 @@ public:
     int GetDirIconIndex(BOOL bSmallIcon);
 
     //get a handle to the icon
-    HICON GetFileIconHandle(const std::wstring &strFileName, BOOL bSmallIcon);
+    HICON GetFileIconHandle(const std::wstring strFileName, BOOL bSmallIcon);
     HICON GetFolderIconHandle(BOOL bSmallIcon );
 
     //get file type
-    std::wstring GetFileType(const std::wstring &strFileName);
+    std::wstring GetFileType(const std::wstring strFileName);
 };
 
 class EAbort : public std::exception
@@ -583,11 +565,11 @@ public:
     virtual __int64 Seek(__int64 Offset, __int64 Origin);
     virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
     void SaveToStream(TStream *Stream);
-    void SaveToFile(const std::wstring &FileName);
+    void SaveToFile(const std::wstring FileName);
 
     void Clear();
     void LoadFromStream(TStream *Stream);
-    void LoadFromFile(const std::wstring &FileName);
+    void LoadFromFile(const std::wstring FileName);
     virtual void SetSize(const __int64 NewSize);
     virtual __int64 Write(const void *Buffer, __int64 Count);
 
@@ -645,42 +627,42 @@ public:
     HKEY GetCurrentKey() const;
     HKEY GetRootKey() const;
     void CloseKey();
-    bool OpenKey(const std::wstring &key, bool CanCreate);
-    bool DeleteKey(const std::wstring &key);
-    bool DeleteValue(const std::wstring &value);
-    bool KeyExists(const std::wstring &SubKey);
-    bool ValueExists(const std::wstring &Value);
-    bool GetDataInfo(const std::wstring &ValueName, TRegDataInfo &Value);
-    TRegDataType GetDataType(const std::wstring &ValueName);
-    int GetDataSize(const std::wstring &Name);
-    bool Readbool(const std::wstring &Name);
-    TDateTime ReadDateTime(const std::wstring &Name);
-    double ReadFloat(const std::wstring &Name);
-    int Readint(const std::wstring &Name);
-    __int64 ReadInt64(const std::wstring &Name);
-    std::wstring ReadString(const std::wstring &Name);
-    std::wstring ReadStringRaw(const std::wstring &Name);
-    int ReadBinaryData(const std::wstring &Name,
+    bool OpenKey(const std::wstring key, bool CanCreate);
+    bool DeleteKey(const std::wstring key);
+    bool DeleteValue(const std::wstring value);
+    bool KeyExists(const std::wstring SubKey);
+    bool ValueExists(const std::wstring Value);
+    bool GetDataInfo(const std::wstring ValueName, TRegDataInfo &Value);
+    TRegDataType GetDataType(const std::wstring ValueName);
+    int GetDataSize(const std::wstring Name);
+    bool Readbool(const std::wstring Name);
+    TDateTime ReadDateTime(const std::wstring Name);
+    double ReadFloat(const std::wstring Name);
+    int Readint(const std::wstring Name);
+    __int64 ReadInt64(const std::wstring Name);
+    std::wstring ReadString(const std::wstring Name);
+    std::wstring ReadStringRaw(const std::wstring Name);
+    int ReadBinaryData(const std::wstring Name,
       void * Buffer, int Size);
 
-  void Writebool(const std::wstring &Name, bool Value);
-  void WriteDateTime(const std::wstring &Name, TDateTime &Value);
-  void WriteFloat(const std::wstring &Name, double Value);
-  void WriteString(const std::wstring &Name, const std::wstring &Value);
-  void WriteStringRaw(const std::wstring &Name, const std::wstring &Value);
-  void Writeint(const std::wstring &Name, int Value);
-  void WriteInt64(const std::wstring &Name, __int64 Value);
-  void WriteBinaryData(const std::wstring &Name,
+  void Writebool(const std::wstring Name, bool Value);
+  void WriteDateTime(const std::wstring Name, TDateTime &Value);
+  void WriteFloat(const std::wstring Name, double Value);
+  void WriteString(const std::wstring Name, const std::wstring Value);
+  void WriteStringRaw(const std::wstring Name, const std::wstring Value);
+  void Writeint(const std::wstring Name, int Value);
+  void WriteInt64(const std::wstring Name, __int64 Value);
+  void WriteBinaryData(const std::wstring Name,
       const void * Buffer, int Size);
 private:
-    void ChangeKey(HKEY Value, const std::wstring &Path);
+    void ChangeKey(HKEY Value, const std::wstring Path);
     HKEY GetBaseKey(bool Relative);
-    HKEY GetKey(const std::wstring &Key);
+    HKEY GetKey(const std::wstring Key);
     void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
     bool GetKeyInfo(TRegKeyInfo &Value);
-    int GetData(const std::wstring &Name, void *Buffer,
+    int GetData(const std::wstring Name, void *Buffer,
       DWORD BufSize, TRegDataType &RegData);
-    void PutData(const std::wstring &Name, const void *Buffer,
+    void PutData(const std::wstring Name, const void *Buffer,
       int BufSize, TRegDataType RegData);
 private:
     HKEY FCurrentKey;

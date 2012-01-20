@@ -237,7 +237,7 @@ public:
     memcpy(GetData(), Source, Len);
   }
 
-  TSFTPPacket(const std::wstring & Source)
+  TSFTPPacket(const std::wstring Source)
   {
     Init();
     FLength = Source.size();
@@ -313,19 +313,19 @@ public:
     Add(ValueA.c_str(), ValueA.size());
   }
 
-  void AddStringW(const std::wstring &ValueW)
+  void AddStringW(const std::wstring ValueW)
   {
     std::string ValueA = ::W2MB(ValueW.c_str());
     AddStringA(ValueA);
   }
 
-  inline void AddUtfString(const std::wstring &Value)
+  inline void AddUtfString(const std::wstring Value)
   {
     // AddStringW(Value);
     AddStringA(EncodeUTF(Value));
   }
 
-  inline void AddString(const std::wstring &Value, bool Utf)
+  inline void AddString(const std::wstring Value, bool Utf)
   {
     if (Utf)
     {
@@ -338,7 +338,7 @@ public:
   }
 
   // now purposeless alias to AddString
-  inline void AddPathString(const std::wstring &Value, bool Utf)
+  inline void AddPathString(const std::wstring Value, bool Utf)
   {
     AddString(Value, Utf);
   }
@@ -465,7 +465,7 @@ public:
       if (Properties->Valid.Contains(vpRights))
       {
         Valid |= valRights;
-        TRights Rights = BaseRights;
+        TRights Rights(BaseRights);
         Rights |= Properties->Rights.GetNumberSet();
         Rights &= static_cast<unsigned short>(~Properties->Rights.GetNumberUnset());
         if (IsDirectory && Properties->AddXToDirectories)
@@ -776,7 +776,7 @@ public:
     }
   }
 
-  void LoadFromFile(const std::wstring &FileName)
+  void LoadFromFile(const std::wstring FileName)
   {
     TStringList *DumpLines = new TStringList();
     std::wstring Dump;
@@ -1380,7 +1380,7 @@ public:
     delete FStream;
   }
 
-  bool Init(const std::wstring &AFileName,
+  bool Init(const std::wstring AFileName,
     HANDLE AFile, TFileOperationProgressType *AOperationProgress,
     const std::string &AHandle, __int64 ATransfered)
   {
@@ -1575,7 +1575,7 @@ public:
   virtual ~TSFTPCalculateFilesChecksumQueue()
   {}
 
-  bool Init(int QueueLen, const std::wstring & Alg, TStrings * FileList)
+  bool Init(int QueueLen, const std::wstring Alg, TStrings * FileList)
   {
     FAlg = Alg;
     FFileList = FileList;
@@ -1802,7 +1802,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool TSFTPFileSystem::TemporaryTransferFile(const std::wstring & FileName)
+bool TSFTPFileSystem::TemporaryTransferFile(const std::wstring FileName)
 {
   return AnsiSameText(UnixExtractFileExt(FileName), PARTIAL_EXT);
 }
@@ -1922,7 +1922,7 @@ bool TSFTPFileSystem::IsCapable(int Capability) const
   }
 }
 //---------------------------------------------------------------------------
-bool TSFTPFileSystem::SupportsExtension(const std::wstring & Extension) const
+bool TSFTPFileSystem::SupportsExtension(const std::wstring Extension) const
 {
   return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) >= 0);
 }
@@ -2418,7 +2418,7 @@ int TSFTPFileSystem::SendPacketAndReceiveResponse(
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TSFTPFileSystem::RealPath(const std::wstring &Path)
+std::wstring TSFTPFileSystem::RealPath(const std::wstring Path)
 {
   try
   {
@@ -2453,8 +2453,8 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring &Path)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TSFTPFileSystem::RealPath(const std::wstring &Path,
-  const std::wstring &BaseDir)
+std::wstring TSFTPFileSystem::RealPath(const std::wstring Path,
+  const std::wstring BaseDir)
 {
   std::wstring APath;
 
@@ -2479,7 +2479,7 @@ std::wstring TSFTPFileSystem::RealPath(const std::wstring &Path,
   return RealPath(APath);
 }
 //---------------------------------------------------------------------------
-std::wstring TSFTPFileSystem::LocalCanonify(const std::wstring & Path)
+std::wstring TSFTPFileSystem::LocalCanonify(const std::wstring Path)
 {
   // TODO: improve (handle .. etc.)
   if (TTerminal::IsAbsolutePath(Path) ||
@@ -2493,7 +2493,7 @@ std::wstring TSFTPFileSystem::LocalCanonify(const std::wstring & Path)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TSFTPFileSystem::Canonify(const std::wstring &Path)
+std::wstring TSFTPFileSystem::Canonify(const std::wstring Path)
 {
   // inspired by canonify() from PSFTP.C
   std::wstring path = Path;
@@ -2552,7 +2552,7 @@ std::wstring TSFTPFileSystem::Canonify(const std::wstring &Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TSFTPFileSystem::AbsolutePath(const std::wstring &Path, bool Local)
+std::wstring TSFTPFileSystem::AbsolutePath(const std::wstring Path, bool Local)
 {
   if (Local)
   {
@@ -2581,7 +2581,7 @@ void TSFTPFileSystem::LoadFile(TRemoteFile * File, TSFTPPacket * Packet,
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
-  TRemoteFile * ALinkedByFile, const std::wstring &FileName,
+  TRemoteFile * ALinkedByFile, const std::wstring FileName,
   TRemoteFileList * TempFileList, bool Complete)
 {
   TRemoteFile * File = new TRemoteFile(ALinkedByFile);
@@ -2958,7 +2958,7 @@ void TSFTPFileSystem::HomeDirectory()
   ChangeDirectory(GetHomeDirectory());
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::TryOpenDirectory(const std::wstring &Directory)
+void TSFTPFileSystem::TryOpenDirectory(const std::wstring Directory)
 {
   FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", Directory.c_str()));
   TRemoteFile * File;
@@ -2987,7 +2987,7 @@ void TSFTPFileSystem::AnnounceFileListOperation()
 {
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ChangeDirectory(const std::wstring &Directory)
+void TSFTPFileSystem::ChangeDirectory(const std::wstring Directory)
 {
   std::wstring Path, Current;
 
@@ -3002,7 +3002,7 @@ void TSFTPFileSystem::ChangeDirectory(const std::wstring &Directory)
   FDirectoryToChangeTo = Path;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CachedChangeDirectory(const std::wstring &Directory)
+void TSFTPFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
   FDirectoryToChangeTo = UnixExcludeTrailingBackslash(Directory);
 }
@@ -3210,13 +3210,13 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ReadFile(const std::wstring &FileName,
+void TSFTPFileSystem::ReadFile(const std::wstring FileName,
   TRemoteFile *& File)
 {
   CustomReadFile(FileName, File, SSH_FXP_LSTAT);
 }
 //---------------------------------------------------------------------------
-bool TSFTPFileSystem::RemoteFileExists(const std::wstring &FullPath,
+bool TSFTPFileSystem::RemoteFileExists(const std::wstring FullPath,
   TRemoteFile ** File)
 {
   bool Result;
@@ -3251,7 +3251,7 @@ bool TSFTPFileSystem::RemoteFileExists(const std::wstring &FullPath,
 void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
   TSFTPPacket * Response,
   // const std::string RemoteHandle,
-  const std::wstring &FileName,
+  const std::wstring FileName,
   unsigned long Flags)
 {
   if ((Packet->GetType() == SSH_FXP_STAT) || (Packet->GetType() == SSH_FXP_LSTAT))
@@ -3273,7 +3273,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket * Packet,
   ReserveResponse(Packet, Response);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CustomReadFile(const std::wstring &FileName,
+void TSFTPFileSystem::CustomReadFile(const std::wstring FileName,
   TRemoteFile *& File, char Type, TRemoteFile * ALinkedByFile,
   int AllowStatus)
 {
@@ -3295,7 +3295,7 @@ void TSFTPFileSystem::CustomReadFile(const std::wstring &FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DoDeleteFile(const std::wstring &FileName, char Type)
+void TSFTPFileSystem::DoDeleteFile(const std::wstring FileName, char Type)
 {
   TSFTPPacket Packet(Type);
   std::wstring RealFileName = LocalCanonify(FileName);
@@ -3303,7 +3303,7 @@ void TSFTPFileSystem::DoDeleteFile(const std::wstring &FileName, char Type)
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DeleteFile(const std::wstring &FileName,
+void TSFTPFileSystem::DeleteFile(const std::wstring FileName,
   const TRemoteFile * File, int Params, TRmSessionAction & Action)
 {
   char Type;
@@ -3331,8 +3331,8 @@ void TSFTPFileSystem::DeleteFile(const std::wstring &FileName,
   DoDeleteFile(FileName, Type);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::RenameFile(const std::wstring &FileName,
-  const std::wstring &NewName)
+void TSFTPFileSystem::RenameFile(const std::wstring FileName,
+  const std::wstring NewName)
 {
   TSFTPPacket Packet(SSH_FXP_RENAME);
   std::wstring RealName = LocalCanonify(FileName);
@@ -3355,13 +3355,13 @@ void TSFTPFileSystem::RenameFile(const std::wstring &FileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CopyFile(const std::wstring &/*FileName*/,
-  const std::wstring & /*NewName*/)
+void TSFTPFileSystem::CopyFile(const std::wstring /*FileName*/,
+  const std::wstring /*NewName*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CreateDirectory(const std::wstring &DirName)
+void TSFTPFileSystem::CreateDirectory(const std::wstring DirName)
 {
   TSFTPPacket Packet(SSH_FXP_MKDIR);
   std::wstring CanonifiedName = Canonify(DirName);
@@ -3370,8 +3370,8 @@ void TSFTPFileSystem::CreateDirectory(const std::wstring &DirName)
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CreateLink(const std::wstring &FileName,
-  const std::wstring &PointTo, bool Symbolic)
+void TSFTPFileSystem::CreateLink(const std::wstring FileName,
+  const std::wstring PointTo, bool Symbolic)
 {
   USEDPARAM(Symbolic);
   assert(Symbolic); // only symlinks are supported by SFTP
@@ -3395,7 +3395,7 @@ void TSFTPFileSystem::CreateLink(const std::wstring &FileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ChangeFileProperties(const std::wstring &FileName,
+void TSFTPFileSystem::ChangeFileProperties(const std::wstring FileName,
   const TRemoteFile * /*File*/, const TRemoteProperties * AProperties,
   TChmodSessionAction & Action)
 {
@@ -3506,7 +3506,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * FileList)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring &Alg,
+void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring Alg,
   TStrings *FileList, TStrings *Checksums,
   calculatedchecksum_slot_type *OnCalculatedChecksum,
   TFileOperationProgressType *OperationProgress, bool FirstLevel)
@@ -3635,7 +3635,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(const std::wstring &Alg,
   // queue is discarded here
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
+void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring Alg,
   TStrings * FileList, TStrings * Checksums,
   calculatedchecksum_slot_type *OnCalculatedChecksum)
 {
@@ -3657,20 +3657,20 @@ void TSFTPFileSystem::CalculateFilesChecksum(const std::wstring & Alg,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CustomCommandOnFile(const std::wstring &/*FileName*/,
-    const TRemoteFile * /*File*/, const std::wstring & /*Command*/, int /*Params*/,
+void TSFTPFileSystem::CustomCommandOnFile(const std::wstring /*FileName*/,
+    const TRemoteFile * /*File*/, const std::wstring /*Command*/, int /*Params*/,
     const captureoutput_slot_type & /*OutputEvent*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::AnyCommand(const std::wstring &/*Command*/,
+void TSFTPFileSystem::AnyCommand(const std::wstring /*Command*/,
   const captureoutput_slot_type * /*OutputEvent*/)
 {
   assert(false);
 }
 //---------------------------------------------------------------------------
-std::wstring TSFTPFileSystem::FileUrl(const std::wstring &FileName)
+std::wstring TSFTPFileSystem::FileUrl(const std::wstring FileName)
 {
   return FTerminal->FileUrl(L"sftp", FileName);
 }
@@ -3680,7 +3680,7 @@ TStrings * TSFTPFileSystem::GetFixedPaths()
   return FFixedPaths;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SpaceAvailable(const std::wstring &Path,
+void TSFTPFileSystem::SpaceAvailable(const std::wstring Path,
   TSpaceAvailable & ASpaceAvailable)
 {
   TSFTPPacket Packet(SSH_FXP_EXTENDED);
@@ -3697,7 +3697,7 @@ void TSFTPFileSystem::SpaceAvailable(const std::wstring &Path,
 // transfer protocol
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CopyToRemote(TStrings * FilesToCopy,
-  const std::wstring &TargetDir, const TCopyParamType * CopyParam,
+  const std::wstring TargetDir, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -3879,7 +3879,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
   }
 }
 //---------------------------------------------------------------------------
-bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring &DestFileName,
+bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
   bool PartialBiggerThanSource, TFileOperationProgressType * OperationProgress)
 {
   bool ResumeTransfer = false;
@@ -3947,8 +3947,8 @@ bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring &DestFileName,
   return ResumeTransfer;
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSourceRobust(const std::wstring &FileName,
-  const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
+void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
+  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
   // DEBUG_PRINTF(L"FileName = %s, TargetDir = %s", FileName.c_str(), TargetDir.c_str());
@@ -3995,8 +3995,8 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring &FileName,
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
-  const std::wstring &TargetDir, const TCopyParamType *CopyParam, int Params,
+void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
+  const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
   TFileOperationProgressType *OperationProgress, unsigned int Flags,
   TUploadSessionAction &Action, bool &ChildError)
 {
@@ -4414,7 +4414,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring &FileName,
 }
 //---------------------------------------------------------------------------
 std::string TSFTPFileSystem::SFTPOpenRemoteFile(
-  const std::wstring &FileName, unsigned int OpenType, __int64 Size)
+  const std::wstring FileName, unsigned int OpenType, __int64 Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN);
 
@@ -4631,7 +4631,7 @@ int TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPCloseRemote(const std::string &Handle,
-  const std::wstring &FileName, TFileOperationProgressType * OperationProgress,
+  const std::wstring FileName, TFileOperationProgressType * OperationProgress,
   bool TransferFinished, bool Request, TSFTPPacket * Packet)
 {
   // Moving this out of SFTPSource() fixed external exception 0xC0000029 error
@@ -4664,8 +4664,8 @@ void TSFTPFileSystem::SFTPCloseRemote(const std::string &Handle,
   );
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPDirectorySource(const std::wstring &DirectoryName,
-  const std::wstring &TargetDir, int Attrs, const TCopyParamType * CopyParam,
+void TSFTPFileSystem::SFTPDirectorySource(const std::wstring DirectoryName,
+  const std::wstring TargetDir, int Attrs, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
   std::wstring DestDirectoryName = CopyParam->ChangeFileName(
@@ -4768,7 +4768,7 @@ void TSFTPFileSystem::SFTPDirectorySource(const std::wstring &DirectoryName,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
-  const std::wstring &TargetDir, const TCopyParamType * CopyParam,
+  const std::wstring TargetDir, const TCopyParamType * CopyParam,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -4818,8 +4818,8 @@ void TSFTPFileSystem::CopyToLocal(TStrings * FilesToCopy,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSinkRobust(const std::wstring &FileName,
-  const TRemoteFile * File, const std::wstring &TargetDir,
+void TSFTPFileSystem::SFTPSinkRobust(const std::wstring FileName,
+  const TRemoteFile * File, const std::wstring TargetDir,
   const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
@@ -4866,8 +4866,8 @@ void TSFTPFileSystem::SFTPSinkRobust(const std::wstring &FileName,
   while (Retry);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
-  const TRemoteFile * File, const std::wstring &TargetDir,
+void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
+  const TRemoteFile * File, const std::wstring TargetDir,
   const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   TDownloadSessionAction & Action, bool & ChildError)
@@ -5369,7 +5369,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring &FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::SFTPSinkFile(const std::wstring &FileName,
+void TSFTPFileSystem::SFTPSinkFile(const std::wstring FileName,
   const TRemoteFile * File, void * Param)
 {
   TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);

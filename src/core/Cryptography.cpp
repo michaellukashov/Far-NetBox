@@ -378,7 +378,7 @@ static std::wstring AES256Salt()
   return Result;
 }
 //---------------------------------------------------------------------------
-void AES256EncyptWithMAC(const std::wstring &Input, const std::wstring &Password,
+void AES256EncyptWithMAC(const std::wstring Input, const std::wstring Password,
   std::wstring Salt, std::wstring & Output, std::wstring Mac)
 {
   fcrypt_ctx aes;
@@ -396,7 +396,7 @@ void AES256EncyptWithMAC(const std::wstring &Input, const std::wstring &Password
   fcrypt_end((unsigned char *)(Mac.c_str()), &aes);
 }
 //---------------------------------------------------------------------------
-void AES256EncyptWithMAC(const std::wstring &Input, std::wstring &Password,
+void AES256EncyptWithMAC(const std::wstring Input, std::wstring &Password,
   std::wstring & Output)
 {
   std::wstring Salt;
@@ -406,7 +406,7 @@ void AES256EncyptWithMAC(const std::wstring &Input, std::wstring &Password,
   Output = Salt + Encrypted + Mac;
 }
 //---------------------------------------------------------------------------
-bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Password,
+bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
   std::wstring Salt, std::wstring & Output, std::wstring Mac)
 {
   fcrypt_ctx aes;
@@ -423,7 +423,7 @@ bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Passwor
   return (Mac2 == Mac);
 }
 //---------------------------------------------------------------------------
-bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Password,
+bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
   std::wstring & Output)
 {
   bool Result =
@@ -442,7 +442,7 @@ bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Passwor
   return Result;
 }
 //---------------------------------------------------------------------------
-void AES256CreateVerifier(const std::wstring &Input, std::wstring & Verifier)
+void AES256CreateVerifier(const std::wstring Input, std::wstring & Verifier)
 {
   std::wstring Salt = AES256Salt();
   std::wstring Dummy = AES256Salt();
@@ -454,7 +454,7 @@ void AES256CreateVerifier(const std::wstring &Input, std::wstring & Verifier)
   Verifier = Salt + Dummy + Mac;
 }
 //---------------------------------------------------------------------------
-bool AES256Verify(const std::wstring &Input, const std::wstring &Verifier)
+bool AES256Verify(const std::wstring Input, const std::wstring Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   std::wstring Salt = Verifier.substr(0, SaltLength);
@@ -588,7 +588,7 @@ size_t PasswordMaxLength()
   return 128;
 }
 //---------------------------------------------------------------------------
-int IsValidPassword(const std::wstring &Password)
+int IsValidPassword(const std::wstring Password)
 {
   if (Password.empty() || (Password.size() > PasswordMaxLength()))
   {

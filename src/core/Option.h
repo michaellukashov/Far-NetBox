@@ -11,14 +11,14 @@ class TOptions
 public:
   TOptions();
 
-  bool FindSwitch(const std::wstring &Switch);
-  bool FindSwitch(const std::wstring &Switch, std::wstring & Value);
-  bool FindSwitch(const std::wstring &Switch, int & ParamsStart,
+  bool FindSwitch(const std::wstring Switch);
+  bool FindSwitch(const std::wstring Switch, std::wstring & Value);
+  bool FindSwitch(const std::wstring Switch, int & ParamsStart,
     int & ParamsCount);
-  bool FindSwitch(const std::wstring &Switch, TStrings * Params,
+  bool FindSwitch(const std::wstring Switch, TStrings * Params,
     int ParamsMax = -1);
   void ParamsProcessed(int Position, int Count);
-  std::wstring SwitchValue(const std::wstring &Switch, const std::wstring &Default = L"");
+  std::wstring SwitchValue(const std::wstring Switch, const std::wstring Default = L"");
   bool UnusedSwitch(std::wstring & Switch);
 
   // __property int ParamCount = { read = FParamCount };
@@ -32,9 +32,9 @@ protected:
   std::wstring FSwitchMarks;
   std::wstring FSwitchValueDelimiters;
 
-  void Add(const std::wstring &Option);
+  void Add(const std::wstring Option);
 
-  bool FindSwitch(const std::wstring &Switch,
+  bool FindSwitch(const std::wstring Switch,
     std::wstring & Value, int & ParamsStart, int & ParamsCount);
 
 private:

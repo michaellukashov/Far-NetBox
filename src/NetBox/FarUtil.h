@@ -304,7 +304,7 @@ void ParseURL(const wchar_t *url, std::wstring *scheme, std::wstring *hostName, 
  */
 FILETIME UnixTimeToFileTime(const time_t t);
 
-unsigned long TextToNumber(const std::wstring &text);
+unsigned long TextToNumber(const std::wstring text);
 
 /**
  * Convert int to std::string

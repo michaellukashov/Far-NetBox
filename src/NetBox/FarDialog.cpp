@@ -11,7 +11,7 @@
 #include "Common.h"
 
 //---------------------------------------------------------------------------
-std::wstring StripHotKey(const std::wstring &Text)
+std::wstring StripHotKey(const std::wstring Text)
 {
     std::wstring Result = Text;
     size_t Len = Result.size();
@@ -185,7 +185,7 @@ TPoint TFarDialog::GetMaxSize()
     return P;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHelpTopic(const std::wstring &value)
+void TFarDialog::SetHelpTopic(const std::wstring value)
 {
     if (FHelpTopic != value)
     {
@@ -268,7 +268,7 @@ size_t TFarDialog::GetHeight() const
     return GetSize().y;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetCaption(const std::wstring &value)
+void TFarDialog::SetCaption(const std::wstring value)
 {
     if (GetCaption() != value)
     {
@@ -585,7 +585,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, void *Param2)
 long TFarDialog::DefaultDialogProc(int Msg, int Param1, void *Param2)
 {
     TFarEnvGuard Guard;
-    return GetFarPlugin()->FStartupInfo.DefDlgProc(GetHandle(), Msg, Param1, reinterpret_cast<void *>(Param2));
+    return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 long TFarDialog::FailDialogProc(int Msg, int Param1, void *Param2)
@@ -747,7 +747,7 @@ int TFarDialog::ShowModal()
         {
             TFarEnvGuard Guard;
             TRect Bounds = GetBounds();
-            HANDLE dlg = GetFarPlugin()->FStartupInfo.DialogInit(
+            HANDLE dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
                 &MainGuid, &MainGuid,
                 Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
                 StrToFar(AHelpTopic), 
@@ -757,7 +757,7 @@ int TFarDialog::ShowModal()
                 GetFlags(),
                 DialogProcGeneral,
                 reinterpret_cast<void *>(this));
-            BResult = GetFarPlugin()->FStartupInfo.DialogRun(dlg);
+           BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(dlg);
         }
 
         if (BResult >= 0)
@@ -840,7 +840,7 @@ INT_PTR TFarDialog::SendMessage(int Msg, int Param1, void *Param2)
 {
     assert(GetHandle());
     TFarEnvGuard Guard;
-    return GetFarPlugin()->FStartupInfo.SendDlgMessage(GetHandle(), Msg, Param1, Param2);
+    return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 FarColor TFarDialog::GetSystemColor(PaletteColors colorId)
@@ -1176,7 +1176,7 @@ FARDIALOGITEMFLAGS TFarDialogItem::GetFlags()
     return GetDialogItem()->Flags;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetDataInternal(const std::wstring &value)
+void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
     // DEBUG_PRINTF(L"value = %s", value.c_str());
     // DEBUG_PRINTF(L"GetDialogItem()->Data = %s", GetDialogItem()->Data);
@@ -1197,7 +1197,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring &value)
     DialogChange();
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetData(const std::wstring &value)
+void TFarDialogItem::SetData(const std::wstring value)
 {
     if (GetData() != value)
     {
@@ -1205,7 +1205,7 @@ void TFarDialogItem::SetData(const std::wstring &value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::UpdateData(const std::wstring &value)
+void TFarDialogItem::UpdateData(const std::wstring value)
 {
     std::wstring FarData = value.c_str();
     if (!GetOem())
@@ -1422,13 +1422,13 @@ void TFarDialogItem::DoExit()
 long TFarDialogItem::DefaultItemProc(int Msg, void *Param)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->FStartupInfo.DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
 long TFarDialogItem::DefaultDialogProc(int Msg, int Param1, void *Param2)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->FStartupInfo.DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
@@ -1708,14 +1708,14 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
     return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec));
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::Text(int X, int Y, const FarColor &Color, const std::wstring &Str, bool AOem)
+void TFarDialogItem::Text(int X, int Y, const FarColor &Color, const std::wstring Str, bool AOem)
 {
     if (!AOem && !GetOem())
     {
         StrToFar(Str);
     }
     TFarEnvGuard Guard;
-    GetDialog()->GetFarPlugin()->FStartupInfo.Text(
+    GetDialog()->GetFarPlugin()->GetStartupInfo()->Text(
         GetDialog()->GetBounds().Left + GetLeft() + X, GetDialog()->GetBounds().Top + GetTop() + Y,
         &Color, Str.c_str());
 }
@@ -1764,7 +1764,7 @@ TFarButton::TFarButton(TFarDialog *ADialog) :
     FBrackets = brNormal;
 }
 //---------------------------------------------------------------------------
-void TFarButton::SetDataInternal(const std::wstring &value)
+void TFarButton::SetDataInternal(const std::wstring value)
 {
     std::wstring AValue;
     switch (FBrackets)
@@ -1940,7 +1940,7 @@ bool TFarCheckBox::GetIsEmpty()
     return GetChecked() != BSTATE_CHECKED;
 }
 //---------------------------------------------------------------------------
-void TFarCheckBox::SetData(const std::wstring &value)
+void TFarCheckBox::SetData(const std::wstring value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -1984,7 +1984,7 @@ bool TFarRadioButton::GetIsEmpty()
     return !GetChecked();
 }
 //---------------------------------------------------------------------------
-void TFarRadioButton::SetData(const std::wstring &value)
+void TFarRadioButton::SetData(const std::wstring value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -2029,7 +2029,7 @@ std::wstring TFarEdit::GetHistoryMask(int Index)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TFarEdit::SetHistoryMask(int Index, const std::wstring &value)
+void TFarEdit::SetHistoryMask(int Index, const std::wstring value)
 {
     if (GetHistoryMask(Index) != value)
     {
@@ -2136,7 +2136,7 @@ TFarText::TFarText(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-void TFarText::SetData(const std::wstring &value)
+void TFarText::SetData(const std::wstring value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -2200,7 +2200,7 @@ void TFarList::UpdateItem(int Index)
     GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
 }
 //---------------------------------------------------------------------------
-void TFarList::Put(int Index, const std::wstring &S)
+void TFarList::Put(int Index, const std::wstring S)
 {
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {

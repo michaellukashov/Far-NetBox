@@ -233,7 +233,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info)
     Info.StructSize = sizeof(Info);
 }
 //---------------------------------------------------------------------------
-wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring &Str, bool AllowEmpty)
+wchar_t *TCustomFarPlugin::DuplicateStr(const std::wstring Str, bool AllowEmpty)
 {
     if (Str.empty() && !AllowEmpty)
     {
@@ -729,7 +729,7 @@ public:
         TFarMessageParams *Params);
 
     void Init(unsigned int AFlags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons);
+        const std::wstring Title, const std::wstring Message, TStrings *Buttons);
     int Execute(bool &ACheckBox);
 
 protected:
@@ -761,7 +761,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin,
 }
 //---------------------------------------------------------------------------
 void TFarMessageDialog::Init(unsigned int AFlags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons)
+    const std::wstring Title, const std::wstring Message, TStrings *Buttons)
 {
     assert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
     assert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
@@ -826,7 +826,6 @@ void TFarMessageDialog::Init(unsigned int AFlags,
         int ButtonLines = 1;
         TFarButton *Button = NULL;
         FTimeoutButton = NULL;
-        // DEBUG_PRINTF(L"Buttons->GetCount = %d", Buttons->GetCount());
         for (size_t Index = 0; Index < Buttons->GetCount(); Index++)
         {
             TFarButton *PrevButton = Button;
@@ -835,21 +834,14 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             Button->SetBrackets(brNone);
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
-            // DEBUG_PRINTF(L"Caption = '%s'", Caption.c_str());
             if ((FParams->Timeout > 0) &&
                 (FParams->TimeoutButton == static_cast<unsigned int>(Index)))
             {
                 FTimeoutButtonCaption = Caption;
                 Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
-                std::wstring Buffer(512, 0);
-                GetFarPlugin()->GetFarStandardFunctions().sprintf(const_cast<wchar_t *>(Buffer.c_str()), FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
-                Button->SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
-            else
-            {
-                Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
-            }
+            Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
             Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
             Button->SetBottom(Button->GetTop());
             Button->SetResult(Index + 1);
@@ -940,7 +932,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timer > 0)
     {
-        unsigned int SinceLastTimer = static_cast<int>(static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000;
+        unsigned int SinceLastTimer = static_cast<int>((static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000);
         if (SinceLastTimer >= FParams->Timeout)
         {
             assert(FParams->TimerEvent != NULL);
@@ -961,7 +953,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timeout > 0)
     {
-        unsigned int Running = static_cast<int>(static_cast<double>(Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000;
+        unsigned int Running = static_cast<int>((static_cast<double>(Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000);
         if (Running >= FParams->Timeout)
         {
             assert(FTimeoutButton != NULL);
@@ -972,7 +964,6 @@ void TFarMessageDialog::Idle()
             std::wstring Caption =
                 FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
                     FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000)).c_str()).c_str();
-            // DEBUG_PRINTF(L"FTimeoutButton->GetCaption = %s", FTimeoutButton->GetCaption().c_str());
             size_t sz = FTimeoutButton->GetCaption().size() > Caption.size() ? FTimeoutButton->GetCaption().size() - Caption.size() : 0;
             Caption += ::StringOfChar(L' ', sz);
             FTimeoutButton->SetCaption(Caption);
@@ -1035,8 +1026,8 @@ void TFarMessageDialog::ButtonClick(TFarButton *Sender, bool &Close)
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::DialogMessage(unsigned int Flags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
-        TFarMessageParams *Params)
+    const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+    TFarMessageParams *Params)
 {
     int Result;
     TFarMessageDialog *Dialog =
@@ -1053,7 +1044,7 @@ int TCustomFarPlugin::DialogMessage(unsigned int Flags,
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::FarMessage(unsigned int Flags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
+        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
         TFarMessageParams *Params)
 {
     assert(Params != NULL);
@@ -1115,11 +1106,10 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::Message(unsigned int Flags,
-    const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
+    const std::wstring Title, const std::wstring Message, TStrings *Buttons,
     TFarMessageParams *Params, bool Oem)
 {
     // DEBUG_PRINTF(L"Message = %s", Message.c_str());
-    // throw ExtException(Message);
     // when message is shown while some "custom" output is on screen,
     // make the output actually background of FAR screen
     if (FTerminalScreenShowing)
@@ -1128,7 +1118,6 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     }
 
     int Result;
-    // DEBUG_PRINTF(L"Buttons = %x, Params = %x, Title = %s", Buttons, Params, Title.c_str());
     if (Buttons != NULL)
     {
         TFarMessageParams DefaultParams;
@@ -1152,8 +1141,8 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
-        const std::wstring &Bottom, const FarMenuItem *Items, int Count,
+int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
+        const std::wstring Bottom, const FarMenuItem *Items, int Count,
         const FarKey *BreakKeys, int &BreakCode)
 {
     assert(Items);
@@ -1173,8 +1162,8 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
         Count);
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
-        const std::wstring &Bottom, TStrings *Items, const FarKey *BreakKeys,
+int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
+        const std::wstring Bottom, TStrings *Items, const FarKey *BreakKeys,
         int &BreakCode)
 {
     assert(Items && Items->GetCount());
@@ -1194,7 +1183,6 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
                 std::wstring Text = Items->GetString(i).c_str();
-                // DEBUG_PRINTF(L"Text = %s", Text.c_str());
                 MenuItems[Count].Flags = flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
@@ -1202,11 +1190,9 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
                     Selected = static_cast<int>(i);
                 }
                 std::wstring Str = StrToFar(Text);
-                // DEBUG_PRINTF(L"MenuItems[%d].Text = %s", Count, MenuItems[Count].Text);
                 MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
                 MenuItems[Count].UserData = i;
                 Count++;
-                // DEBUG_PRINTF(L"Count = %d", Count);
             }
         }
 
@@ -1230,16 +1216,16 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
     return Result;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
-    const std::wstring &Bottom, TStrings *Items)
+int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
+    const std::wstring Bottom, TStrings *Items)
 {
     int BreakCode;
     return Menu(Flags, Title, Bottom, Items, NULL, BreakCode);
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::InputBox(const std::wstring &Title,
-    const std::wstring &Prompt, std::wstring &Text, unsigned long Flags,
-    const std::wstring &HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
+bool TCustomFarPlugin::InputBox(const std::wstring Title,
+    const std::wstring Prompt, std::wstring &Text, unsigned long Flags,
+    const std::wstring HistoryName, int MaxLen, farinputboxvalidate_slot_type *OnValidate)
 {
     bool Repeat = false;
     int Result = 0;
@@ -1292,7 +1278,7 @@ bool TCustomFarPlugin::InputBox(const std::wstring &Title,
     return (Result != 0);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::Text(int X, int Y, int Color, const std::wstring &Str)
+void TCustomFarPlugin::Text(int X, int Y, int Color, const std::wstring Str)
 {
     TFarEnvGuard Guard;
     FarColor color = {};
@@ -1308,13 +1294,13 @@ void TCustomFarPlugin::FlushText()
     FStartupInfo.Text(0, 0, 0, NULL);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::WriteConsole(const std::wstring &Str)
+void TCustomFarPlugin::WriteConsole(const std::wstring Str)
 {
     unsigned long Written;
     ::WriteConsole(FConsoleOutput, StrToFar(Str.c_str()), static_cast<DWORD>(Str.size()), &Written, NULL);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::FarCopyToClipboard(const std::wstring &Str)
+void TCustomFarPlugin::FarCopyToClipboard(const std::wstring Str)
 {
     TFarEnvGuard Guard;
     FFarStandardFunctions.CopyToClipboard(StrToFar(Str.c_str()));
@@ -1361,7 +1347,6 @@ HWND TCustomFarPlugin::GetConsoleWindow()
 {
     wchar_t Title[1024];
     GetConsoleTitle(Title, sizeof(Title) - 1);
-    // DEBUG_PRINTF(L"Title = %s", Title);
     StrFromFar(Title);
     HWND Result = FindWindow(NULL, Title);
     return Result;
@@ -1484,7 +1469,7 @@ struct TConsoleTitleParam
     short Own;
 };
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::ShowConsoleTitle(const std::wstring &Title)
+void TCustomFarPlugin::ShowConsoleTitle(const std::wstring Title)
 {
     wchar_t SaveTitle[1024];
     GetConsoleTitle(SaveTitle, sizeof(SaveTitle));
@@ -1527,7 +1512,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
     FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
 }
 //---------------------------------------------------------------------------
-void TCustomFarPlugin::UpdateConsoleTitle(const std::wstring &Title)
+void TCustomFarPlugin::UpdateConsoleTitle(const std::wstring Title)
 {
     assert(!FCurrentTitle.empty());
     FCurrentTitle = Title;
@@ -1609,7 +1594,7 @@ bool TCustomFarPlugin::CheckForEsc()
     return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::Viewer(const std::wstring &FileName,
+bool TCustomFarPlugin::Viewer(const std::wstring FileName,
         unsigned int Flags, std::wstring Title)
 {
     TFarEnvGuard Guard;
@@ -1620,7 +1605,7 @@ bool TCustomFarPlugin::Viewer(const std::wstring &FileName,
     return Result > 0;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarPlugin::Editor(const std::wstring &FileName,
+bool TCustomFarPlugin::Editor(const std::wstring FileName,
         unsigned int Flags, std::wstring Title)
 {
     TFarEnvGuard Guard;
@@ -2112,7 +2097,6 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
         Info->StructSize = sizeof(PanelInfo);
         bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(Info),
             Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
-        // DEBUG_PRINTF(L"res = %d", res);
         if (!res)
         {
             memset(Info, 0, sizeof(*Info));
@@ -2199,7 +2183,7 @@ bool TCustomFarFileSystem::ProcessEventEx(int /*Event*/, void * /*Param*/)
     return false;
 }
 //---------------------------------------------------------------------------
-bool TCustomFarFileSystem::SetDirectoryEx(const std::wstring & /* Dir */, int /* OpMode */)
+bool TCustomFarFileSystem::SetDirectoryEx(const std::wstring /* Dir */, int /* OpMode */)
 {
     return false;
 }
@@ -2263,11 +2247,11 @@ TFarPanelModes::~TFarPanelModes()
     }
 }
 //---------------------------------------------------------------------------
-void TFarPanelModes::SetPanelMode(int Mode, const std::wstring &ColumnTypes,
-        const std::wstring &ColumnWidths, TStrings *ColumnTitles,
+void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
+        const std::wstring ColumnWidths, TStrings *ColumnTitles,
         bool FullScreen, bool DetailedStatus, bool AlignExtensions,
-        bool CaseConversion, const std::wstring &StatusColumnTypes,
-        const std::wstring &StatusColumnWidths)
+        bool CaseConversion, const std::wstring StatusColumnTypes,
+        const std::wstring StatusColumnWidths)
 {
     size_t ColumnTypesCount = !ColumnTypes.empty() ? CommaCount(ColumnTypes) + 1 : 0;
     assert(Mode >= 0 && Mode < LENOF(FPanelModes));
@@ -2347,7 +2331,7 @@ void TFarPanelModes::FillOpenPanelInfo(struct OpenPanelInfo *Info)
     FReferenced = true;
 }
 //---------------------------------------------------------------------------
-int TFarPanelModes::CommaCount(const std::wstring &ColumnTypes)
+int TFarPanelModes::CommaCount(const std::wstring ColumnTypes)
 {
     int Count = 0;
     for (size_t Index = 0; Index < ColumnTypes.size(); Index++)
@@ -2402,7 +2386,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 }
 //---------------------------------------------------------------------------
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
-    int FunctionKey, const std::wstring &Title)
+    int FunctionKey, const std::wstring Title)
 {
     assert(FunctionKey >= 1 && FunctionKey <= 12);
     int shift = static_cast<int>(ShiftStatus);
@@ -2579,7 +2563,7 @@ bool TFarPanelItem::GetIsFile()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-THintPanelItem::THintPanelItem(const std::wstring &AHint) :
+THintPanelItem::THintPanelItem(const std::wstring AHint) :
     TCustomFarPanelItem()
 {
     FHint = AHint;
@@ -2672,7 +2656,7 @@ TObjectList *TFarPanelInfo::GetItems()
     return FItems;
 }
 //---------------------------------------------------------------------------
-TFarPanelItem *TFarPanelInfo::FindFileName(const std::wstring &FileName)
+TFarPanelItem *TFarPanelInfo::FindFileName(const std::wstring FileName)
 {
     TObjectList *AItems = GetItems();
     TFarPanelItem *PanelItem;
@@ -2853,7 +2837,7 @@ void TFarMenuItems::PutObject(int Index, TObject *AObject)
     }
 }
 //---------------------------------------------------------------------------
-int TFarMenuItems::Add(const std::wstring &Text, bool Visible)
+int TFarMenuItems::Add(const std::wstring Text, bool Visible)
 {
     int Result = TStringList::Add(Text);
     if (!Visible)
@@ -2998,7 +2982,7 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
     */
 }
 //---------------------------------------------------------------------------
-void FarWrapText(const std::wstring &Text, TStrings *Result, int MaxWidth)
+void FarWrapText(const std::wstring Text, TStrings *Result, int MaxWidth)
 {
     int TabSize = 8;
     TStringList Lines;

@@ -28,7 +28,8 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 //---------------------------------------------------------------------------
-class TCopyParamType {
+class TCopyParamType
+{
 private:
   TFileMasks FAsciiFileMask;
   TFileNameCase FFileNameCase;
@@ -51,9 +52,9 @@ private:
   bool FClearArchive;
   unsigned long FCPSLimit;
 
-  static std::wstring Untokenize(const std::wstring &FileName);
+  static std::wstring Untokenize(const std::wstring FileName);
   wchar_t * ReplaceChar(std::wstring & FileName, wchar_t * InvalidChar) const;
-  std::wstring RestoreChars(const std::wstring &FileName) const;
+  std::wstring RestoreChars(const std::wstring FileName) const;
 
 public:
   static const wchar_t TokenPrefix = L'%';
@@ -66,22 +67,22 @@ public:
   TCopyParamType & operator =(const TCopyParamType & rhp);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
-  std::wstring ChangeFileName(const std::wstring &FileName,
+  std::wstring ChangeFileName(const std::wstring FileName,
     TOperationSide Side, bool FirstLevel) const;
   int LocalFileAttrs(const TRights & Rights) const;
   TRights RemoteFileRights(int Attrs) const;
-  bool UseAsciiTransfer(const std::wstring &FileName, TOperationSide Side,
+  bool UseAsciiTransfer(const std::wstring FileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
   bool AllowResume(__int64 Size) const;
-  std::wstring ValidLocalFileName(const std::wstring &FileName) const;
-  std::wstring ValidLocalPath(const std::wstring &Path) const;
+  std::wstring ValidLocalFileName(const std::wstring FileName) const;
+  std::wstring ValidLocalPath(const std::wstring Path) const;
   bool AllowAnyTransfer() const;
-  bool AllowTransfer(const std::wstring &FileName, TOperationSide Side,
+  bool AllowTransfer(const std::wstring FileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams & Params) const;
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
-  std::wstring GetInfoStr(const std::wstring &Separator, int Attrs) const;
+  std::wstring GetInfoStr(const std::wstring Separator, int Attrs) const;
 
   bool operator==(const TCopyParamType & rhp) const;
 
@@ -98,8 +99,8 @@ public:
   bool GetPreserveTime() const { return FPreserveTime; }
   void SetPreserveTime(bool value) { FPreserveTime = value; }
   // __property TRights Rights = { read = FRights, write = FRights };
-  TRights GetRights() const { return FRights; }
-  void SetRights(TRights value) { FRights = value; }
+  const TRights &GetRights() const { return FRights; }
+  void SetRights(const TRights &value) { FRights.Assign(&value); }
   // __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
   TTransferMode GetTransferMode() const { return FTransferMode; }
   void SetTransferMode(TTransferMode value) { FTransferMode = value; }
@@ -128,13 +129,13 @@ public:
   void SetReplaceInvalidChars(bool value);
   // __property std::wstring LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
   std::wstring GetLocalInvalidChars() const { return FLocalInvalidChars; }
-  void SetLocalInvalidChars(const std::wstring &value);
+  void SetLocalInvalidChars(const std::wstring value);
   // __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool value) { FCalculateSize = value; }
   // __property std::wstring FileMask = { read = FFileMask, write = FFileMask };
   std::wstring GetFileMask() const { return FFileMask; }
-  void SetFileMask(const std::wstring &value) { FFileMask = value; }
+  void SetFileMask(const std::wstring value) { FFileMask = value; }
   // __property TFileMasks ExcludeFileMask = { read = FExcludeFileMask, write = FExcludeFileMask };
   TFileMasks GetExcludeFileMask() const { return FExcludeFileMask; }
   void SetExcludeFileMask(TFileMasks value) { FExcludeFileMask = value; }
@@ -149,7 +150,7 @@ public:
   void SetCPSLimit(unsigned long value) { FCPSLimit = value; }
 };
 //---------------------------------------------------------------------------
-unsigned long GetSpeedLimit(const std::wstring & Text);
+unsigned long GetSpeedLimit(const std::wstring Text);
 std::wstring SetSpeedLimit(unsigned long Limit);
 //---------------------------------------------------------------------------
 #endif

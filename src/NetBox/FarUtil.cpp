@@ -155,7 +155,7 @@ FILETIME UnixTimeToFileTime(const time_t t)
     return ft;
 }
 
-unsigned long TextToNumber(const std::wstring &text)
+unsigned long TextToNumber(const std::wstring text)
 {
     return static_cast<unsigned long>(_wtoi(text.c_str()));
 }

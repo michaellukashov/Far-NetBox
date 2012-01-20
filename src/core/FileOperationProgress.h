@@ -27,9 +27,9 @@ typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_
 
 // typedef void (TObject::*TFileOperationFinished)
   // (TFileOperation Operation, TOperationSide Side, bool Temp,
-    // const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    // const std::wstring FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 typedef boost::signal6<void, TFileOperation, TOperationSide, bool,
-    const std::wstring &, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
+    const std::wstring, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
 typedef fileoperationfinished_signal_type::slot_type fileoperationfinished_slot_type;
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
@@ -99,12 +99,12 @@ public:
   void AddResumed(__int64 ASize);
   void Clear();
   unsigned int CPS();
-  void Finish(const std::wstring &FileName, bool Success,
+  void Finish(const std::wstring FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   unsigned long LocalBlockSize();
   bool IsLocallyDone();
   bool IsTransferDone();
-  void SetFile(const std::wstring &AFileName, bool AFileInProgress = true);
+  void SetFile(const std::wstring AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   int OperationProgress();
   unsigned long TransferBlockSize();
@@ -121,7 +121,7 @@ public:
   void SetTotalSize(__int64 ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, int ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, int ACount, bool ATemp, const std::wstring &ADirectory,
+    TOperationSide ASide, int ACount, bool ATemp, const std::wstring ADirectory,
     unsigned long ACPSLimit);
   void Stop();
   void Suspend();

@@ -405,7 +405,7 @@ void TSecureShell::Init()
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PuttyLogEvent(const std::wstring & Str)
+void TSecureShell::PuttyLogEvent(const std::wstring Str)
 {
   // DEBUG_PRINTF(L"Str = %s", Str.c_str());
   #define SERVER_VERSION_MSG L"Server version: "
@@ -444,8 +444,8 @@ void TSecureShell::PuttyLogEvent(const std::wstring & Str)
 }
 //---------------------------------------------------------------------------
 bool TSecureShell::PromptUser(bool /*ToServer*/,
-  const std::wstring &AName, bool /*NameRequired*/,
-  const std::wstring &Instructions, bool InstructionsRequired,
+  const std::wstring AName, bool /*NameRequired*/,
+  const std::wstring Instructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
 {
   // there can be zero prompts!
@@ -1021,13 +1021,13 @@ void TSecureShell::SendNull()
   Send("", 1);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendStr(const std::wstring &Str)
+void TSecureShell::SendStr(const std::wstring Str)
 {
   CheckConnection();
   Send(::W2MB(Str.c_str()).c_str(), Str.size());
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendLine(const std::wstring &Line)
+void TSecureShell::SendLine(const std::wstring Line)
 {
   SendStr(Line);
   Send("\n", 1);
@@ -1092,7 +1092,7 @@ int TSecureShell::TranslateAuthenticationMessage(std::wstring &Message)
   return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AddStdError(const std::wstring &Str)
+void TSecureShell::AddStdError(const std::wstring Str)
 {
   FStdError += Str;
 
@@ -1112,7 +1112,7 @@ void TSecureShell::AddStdError(const std::wstring &Str)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AddStdErrorLine(const std::wstring &Str)
+void TSecureShell::AddStdErrorLine(const std::wstring Str)
 {
   if (FAuthenticating)
   {
@@ -1147,7 +1147,7 @@ void TSecureShell::ClearStdError()
 }
 //---------------------------------------------------------------------------
 void TSecureShell::CaptureOutput(TLogLineType Type,
-  const std::wstring &Line)
+  const std::wstring Line)
 {
   if (!FOnCaptureOutput.empty())
   {
@@ -1168,7 +1168,7 @@ int TSecureShell::TranslateErrorMessage(std::wstring &Message)
   return TranslatePuttyMessage(Translation, LENOF(Translation), Message);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PuttyFatalError(const std::wstring &Error)
+void TSecureShell::PuttyFatalError(const std::wstring Error)
 {
   std::wstring error = Error;
   TranslateErrorMessage(error);
@@ -1176,12 +1176,12 @@ void TSecureShell::PuttyFatalError(const std::wstring &Error)
   FatalError(error);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FatalError(const std::wstring &Error)
+void TSecureShell::FatalError(const std::wstring Error)
 {
   FUI->FatalError(NULL, Error);
 }
 //---------------------------------------------------------------------------
-void inline TSecureShell::LogEvent(const std::wstring &Str)
+void inline TSecureShell::LogEvent(const std::wstring Str)
 {
   if (FLog->GetLogging())
   {
@@ -1787,8 +1787,8 @@ struct TClipboardHandler
   }
 };
 //---------------------------------------------------------------------------
-void TSecureShell::VerifyHostKey(const std::wstring &Host, int Port,
-  const std::wstring &KeyType, const std::wstring &KeyStr, const std::wstring &Fingerprint)
+void TSecureShell::VerifyHostKey(const std::wstring Host, int Port,
+  const std::wstring KeyType, const std::wstring KeyStr, const std::wstring Fingerprint)
 {
   GotHostKey();
 
@@ -1908,8 +1908,8 @@ void TSecureShell::VerifyHostKey(const std::wstring &Host, int Port,
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::AskAlg(const std::wstring &AlgType,
-  const std::wstring &AlgName)
+void TSecureShell::AskAlg(const std::wstring AlgType,
+  const std::wstring AlgName)
 {
   std::wstring Msg;
   if (AlgType == L"key-exchange algorithm")
@@ -1945,7 +1945,7 @@ void TSecureShell::AskAlg(const std::wstring &AlgType,
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DisplayBanner(const std::wstring & Banner)
+void TSecureShell::DisplayBanner(const std::wstring Banner)
 {
   FUI->DisplayBanner(Banner);
 }

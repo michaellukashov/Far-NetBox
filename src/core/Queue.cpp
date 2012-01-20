@@ -109,7 +109,7 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus);
 
   void TerminalQueryUser(TObject * Sender,
-    const std::wstring &Query, TStrings * MoreMessages, int Answers,
+    const std::wstring Query, TStrings * MoreMessages, int Answers,
     const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     std::wstring Name, std::wstring Instructions,
@@ -117,7 +117,7 @@ protected:
   void TerminalShowExtendedException(TTerminal * Terminal,
     const std::exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, const std::wstring & FileName, bool Success,
+    bool Temp, const std::wstring FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType &ProgressData,
     TCancelStatus &Cancel);
@@ -206,10 +206,6 @@ TSignalThread::TSignalThread() :
   TSimpleThread(),
   FTerminated(true), FEvent(NULL)
 {
-  FEvent = CreateEvent(NULL, false, false, NULL);
-  assert(FEvent != NULL);
-
-  ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
 }
 //---------------------------------------------------------------------------
 TSignalThread::~TSignalThread()
@@ -222,6 +218,15 @@ TSignalThread::~TSignalThread()
   {
     CloseHandle(FEvent);
   }
+}
+//---------------------------------------------------------------------------
+void TSignalThread::Init()
+{
+  TSimpleThread::Init();
+  FEvent = CreateEvent(NULL, false, false, NULL);
+  assert(FEvent != NULL);
+
+  ::SetThreadPriority(FThread, THREAD_PRIORITY_BELOW_NORMAL);
 }
 //---------------------------------------------------------------------------
 void TSignalThread::Start()
@@ -810,7 +815,7 @@ void TTerminalQueue::DoEvent(TQueueEvent Event)
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoQueryUser(TObject * Sender,
-  const std::wstring &Query, TStrings * MoreMessages, int Answers,
+  const std::wstring Query, TStrings * MoreMessages, int Answers,
   const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg)
 {
   if (!GetOnQueryUser().empty())
@@ -820,7 +825,7 @@ void TTerminalQueue::DoQueryUser(TObject * Sender,
 }
 //---------------------------------------------------------------------------
 void TTerminalQueue::DoPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, const std::wstring &Name, const std::wstring &Instructions,
+  TPromptKind Kind, const std::wstring Name, const std::wstring Instructions,
   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg)
 {
   if (!GetOnPromptUser().empty())
@@ -875,7 +880,7 @@ public:
   explicit TBackgroundTerminal(TTerminal * MainTerminal,
     TTerminalItem * Item);
   virtual void Init(TSessionData *SessionData, TConfiguration *Configuration,
-    const std::wstring &Name);
+    const std::wstring Name);
   virtual ~TBackgroundTerminal()
   {}
 protected:
@@ -892,7 +897,7 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal,
 {
 }
 void TBackgroundTerminal::Init(TSessionData *SessionData, TConfiguration *configuration,
-    const std::wstring &Name)
+    const std::wstring Name)
 {
     TSecondaryTerminal::Init(SessionData, configuration, Name);
 }
@@ -1153,7 +1158,7 @@ void TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  const std::wstring &Query, TStrings * MoreMessages, int Answers,
+  const std::wstring Query, TStrings * MoreMessages, int Answers,
   const TQueryParams * Params, int & Answer, TQueryType Type, void * Arg)
 {
   // so far query without queue item can occur only for key cofirmation
@@ -1236,7 +1241,7 @@ void TTerminalItem::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
-  TOperationSide /*Side*/, bool /*Temp*/, const std::wstring & /*FileName*/,
+  TOperationSide /*Side*/, bool /*Temp*/, const std::wstring /*FileName*/,
   bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
   // nothing
@@ -1639,7 +1644,7 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 // TTransferQueueItem
 //---------------------------------------------------------------------------
 TTransferQueueItem::TTransferQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const std::wstring & TargetDir,
+  TStrings * FilesToCopy, const std::wstring TargetDir,
   const TCopyParamType * CopyParam, int Params, TOperationSide Side) :
   TLocatedQueueItem(Terminal), FFilesToCopy(NULL), FCopyParam(NULL)
 {
@@ -1676,7 +1681,7 @@ TTransferQueueItem::~TTransferQueueItem()
 // TUploadQueueItem
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const std::wstring & TargetDir,
+  TStrings * FilesToCopy, const std::wstring TargetDir,
   const TCopyParamType * CopyParam, int Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osLocal)
 {
@@ -1728,7 +1733,7 @@ void TUploadQueueItem::DoExecute(TTerminal * Terminal)
 // TDownloadQueueItem
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
-  TStrings * FilesToCopy, const std::wstring & TargetDir,
+  TStrings * FilesToCopy, const std::wstring TargetDir,
   const TCopyParamType * CopyParam, int Params) :
   TTransferQueueItem(Terminal, FilesToCopy, TargetDir, CopyParam, Params, osRemote)
 {

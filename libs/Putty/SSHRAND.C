@@ -218,9 +218,6 @@ static void random_timer(void *ctx, long now)
 void random_ref(void)
 {
     if (!random_active) {
-#ifdef MPEXT
-        InitializeCriticalSection(&noise_section);
-#endif
 	memset(&pool, 0, sizeof(pool));    /* just to start with */
 
 	noise_get_heavy(random_add_heavynoise_bitbybit);

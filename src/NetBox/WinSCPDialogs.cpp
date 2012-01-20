@@ -32,7 +32,7 @@ enum TButtonResult { brCancel = -1, brOK = 1, brConnect };
 class TWinSCPDialog : public TFarDialog
 {
 public:
-  TWinSCPDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TWinSCPDialog(TCustomFarPlugin * AFarPlugin);
 
   void AddStandardButtons(int Shift = 0, bool ButtonsOnly = false);
 
@@ -101,7 +101,7 @@ class TTabbedDialog : public TWinSCPDialog
 friend class TTabButton;
 
 public:
-  TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
+  explicit TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount);
   // __property int Tab = { read = FTab };
   int GetTab() { return FTab; }
 
@@ -122,19 +122,18 @@ private:
 class TTabButton : public TFarButton
 {
 public:
-  TTabButton(TTabbedDialog * Dialog);
+  explicit TTabButton(TTabbedDialog * Dialog);
 
   // __property int Tab = { read = FTab, write = FTab };
   int GetTab() { return FTab; }
   void SetTab(int value) { FTab = value; }
   // __property std::wstring GetTabName() = { read = FTabName, write = SetTabName };
   std::wstring GetTabName() { return FTabName; }
-  void SetTabName(const std::wstring &value);
+  void SetTabName(const std::wstring value);
 
 private:
   std::wstring FTabName;
   int FTab;
-
 };
 //---------------------------------------------------------------------------
 TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int TabCount) :
@@ -261,7 +260,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   SetOnClick(boost::bind(&TTabbedDialog::TabButtonClick, Dialog, _1, _2));
 }
 //---------------------------------------------------------------------------
-void TTabButton::SetTabName(const std::wstring &Value)
+void TTabButton::SetTabName(const std::wstring Value)
 {
   std::wstring value = Value;
   if (FTabName != value)
@@ -798,7 +797,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 class TTransferEditorConfigurationDialog : public TWinSCPDialog
 {
 public:
-  TTransferEditorConfigurationDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TTransferEditorConfigurationDialog(TCustomFarPlugin * AFarPlugin);
 
   bool Execute();
 
@@ -896,7 +895,7 @@ void TTransferEditorConfigurationDialog::Change()
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
-      UpdateControls();
+        UpdateControls();
     }
   }
 }
@@ -1055,14 +1054,14 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 class TAboutDialog : public TFarDialog
 {
 public:
-  TAboutDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TAboutDialog(TCustomFarPlugin * AFarPlugin);
 
 private:
   void UrlButtonClick(TFarButton * Sender, bool & Close);
   void UrlTextClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 };
 //---------------------------------------------------------------------------
-std::wstring ReplaceCopyright(const std::wstring &S)
+std::wstring ReplaceCopyright(const std::wstring S)
 {
   return ::StringReplace(S, L"©", L"(c)");
 }
@@ -1073,7 +1072,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarText * Text;
   TFarButton * Button;
 
-  std::wstring ProductName = Configuration->GetFileInfoString(L"ProductName");
+  // std::wstring ProductName = Configuration->GetFileInfoString(L"ProductName");
+  std::wstring ProductName = LoadStr(WINSCPFAR_NAME);
   std::wstring Comments;
   try
   {
@@ -1135,7 +1135,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->Move(0, 1);
     Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
       ProductName.c_str(),
-      Configuration->GetProductVersion().c_str()));
+      LoadStr(WINSCP_VERSION).c_str()));
     Text->SetCenterGroup(true);
   }
 
@@ -1251,28 +1251,28 @@ void TWinSCPPlugin::AboutDialog()
 class TPasswordDialog : public TFarDialog
 {
 public:
-  TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-    std::wstring SessionName, TPromptKind Kind, std::wstring Name,
-    std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried);
+  explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
+    const std::wstring SessionName, TPromptKind Kind, const std::wstring Name,
+    const std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried);
 
   bool Execute(TStrings * Results);
 
 private:
-  TSessionData * FSessionData;
+  TSessionData *FSessionData;
   std::wstring FPrompt;
-  TList * FEdits;
-  TFarCheckBox * SavePasswordCheck;
+  TList *FEdits;
+  TFarCheckBox *SavePasswordCheck;
 
-  void ShowPromptClick(TFarButton * Sender, bool & Close);
-  void GenerateLabel(const std::wstring &Caption, bool & Truncated);
-  TFarEdit * GenerateEdit(bool Echo);
+  void ShowPromptClick(TFarButton *Sender, bool &Close);
+  void GenerateLabel(const std::wstring Caption, bool &Truncated);
+  TFarEdit *GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
-    std::wstring Instructions, TStrings * Prompts, bool & Truncated);
+    std::wstring Instructions, TStrings * Prompts, bool &Truncated);
 };
 //---------------------------------------------------------------------------
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-  std::wstring SessionName, TPromptKind Kind, std::wstring Name,
-  std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
+  const std::wstring SessionName, TPromptKind Kind, const std::wstring Name,
+  const std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
   TFarDialog(AFarPlugin),
   FSessionData(NULL),
   FEdits(NULL),
@@ -1331,7 +1331,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 //---------------------------------------------------------------------------
-void TPasswordDialog::GenerateLabel(const std::wstring &Caption,
+void TPasswordDialog::GenerateLabel(const std::wstring Caption,
   bool & Truncated)
 {
   std::wstring caption = Caption;
@@ -1427,7 +1427,8 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (size_t Index = 0; Index < FEdits->GetCount(); Index++)
     {
-      Results->PutString(Index, reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText());
+        std::wstring Text = reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText();
+        Results->PutString(Index, Text);
     }
 
     if ((SavePasswordCheck != NULL) && SavePasswordCheck->GetChecked())
@@ -1442,10 +1443,10 @@ bool TPasswordDialog::Execute(TStrings * Results)
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
-  TPromptKind Kind, const std::wstring &Name, const std::wstring &Instructions, TStrings * Prompts,
+  TPromptKind Kind, const std::wstring Name, const std::wstring Instructions, TStrings * Prompts,
   TStrings * Results, bool StoredCredentialsTried)
 {
-  bool Result;
+  bool Result = false;
   TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
     Kind, Name, Instructions, Prompts, StoredCredentialsTried);
   {
@@ -1459,8 +1460,8 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::BannerDialog(const std::wstring &SessionName,
-  const std::wstring &Banner, bool & NeverShowAgain, int Options)
+bool TWinSCPFileSystem::BannerDialog(const std::wstring SessionName,
+  const std::wstring Banner, bool & NeverShowAgain, int Options)
 {
   bool Result;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
@@ -1524,7 +1525,7 @@ public:
   enum TSessionTab { tabSession = 1, tabEnvironment, tabDirectories, tabSFTP, tabSCP, tabFTP,
     tabConnection, tabTunnel, tabProxy, tabSsh, tabKex, tabAuthentication, tabBugs, tabCount };
 
-  TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
+  explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action);
 
   bool Execute(TSessionData * Data, TSessionActionEnum & Action);
 
@@ -1536,6 +1537,7 @@ private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
   int FTransferProtocolIndex;
+  int FLoginTypeIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -1548,6 +1550,7 @@ private:
   TFarButton * ConnectButton;
   TFarEdit * HostNameEdit;
   TFarEdit * PortNumberEdit;
+  TFarComboBox *LoginTypeCombo;
   TFarEdit * UserNameEdit;
   TFarEdit * PasswordEdit;
   TFarEdit * PrivateKeyEdit;
@@ -1652,9 +1655,12 @@ private:
 
   void LoadPing(TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
+  int LoginTypeToIndex(TLoginType LoginType);
   int FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
   TFSProtocol IndexToFSProtocol(int Index, bool AllowScpFallback);
   TFSProtocol GetFSProtocol();
+  TLoginType IndexToLoginType(int Index);
+  TLoginType GetLoginType();
   bool VerifyKey(std::wstring FileName, bool TypeOnly);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
   void KexButtonClick(TFarButton * Sender, bool & Close);
@@ -1663,6 +1669,7 @@ private:
   void WindowsEnvironmentButtonClick(TFarButton * Sender, bool & Close);
   void UpdateControls();
   void TransferProtocolComboChange();
+  void LoginTypeComboChange();
 };
 //---------------------------------------------------------------------------
 #define BUG(BUGID, MSG, PREFIX) \
@@ -1818,7 +1825,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TransferProtocolCombo = new TFarComboBox(this);
   TransferProtocolCombo->SetDropDownList(true);
-  TransferProtocolCombo->SetWidth(7);
+  TransferProtocolCombo->SetWidth(10);
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SFTP));
   TransferProtocolCombo->GetItems()->Add(GetMsg(LOGIN_SCP));
   #ifndef NO_FILEZILLA
@@ -1862,21 +1869,45 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   Text = new TFarText(this);
-  Text->SetCaption(GetMsg(LOGIN_USER_NAME));
-
-  UserNameEdit = new TFarEdit(this);
-  UserNameEdit->SetWidth(UserNameEdit->GetWidth() / 2 - 1);
+  Text->SetCaption(GetMsg(LOGIN_LOGIN_TYPE));
+  Text->SetWidth(20);
 
   SetNextItemPosition(ipRight);
 
+  LoginTypeCombo = new TFarComboBox(this);
+  LoginTypeCombo->SetDropDownList(true);
+  LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_ANONYMOUS));
+  LoginTypeCombo->GetItems()->Add(GetMsg(LOGIN_LOGIN_TYPE_NORMAL));
+  LoginTypeCombo->SetWidth(20);
+  LoginTypeCombo->SetRight(CRect.Right - 12 - 2);
+
+  SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(this);
+  Text->SetCaption(GetMsg(LOGIN_USER_NAME));
+  Text->SetWidth(20);
+
+  SetNextItemPosition(ipRight);
+
+  UserNameEdit = new TFarEdit(this);
+  UserNameEdit->SetWidth(20);
+  UserNameEdit->SetRight(CRect.Right - 12 - 2);
+
+  // SetNextItemPosition(ipRight);
+  SetNextItemPosition(ipNewLine);
+
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(LOGIN_PASSWORD));
-  Text->Move(0, -1);
+  Text->SetWidth(20);
+  // Text->Move(0, -1);
 
-  SetNextItemPosition(ipBelow);
+  // SetNextItemPosition(ipBelow);
+  SetNextItemPosition(ipRight);
 
   PasswordEdit = new TFarEdit(this);
   PasswordEdit->SetPassword(true);
+  PasswordEdit->SetWidth(20);
+  PasswordEdit->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2736,6 +2767,10 @@ void TSessionDialog::Change()
     {
       TransferProtocolComboChange();
     }
+    if (FLoginTypeIndex != LoginTypeCombo->GetItems()->GetSelected())
+    {
+      LoginTypeComboChange();
+    }
 
     LockChanges();
     {
@@ -2743,7 +2778,7 @@ void TSessionDialog::Change()
         {
           Self->UnlockChanges();
         } BOOST_SCOPE_EXIT_END
-      UpdateControls();
+        UpdateControls();
     }
   }
 }
@@ -2826,6 +2861,17 @@ void TSessionDialog::TransferProtocolComboChange()
   }
 }
 //---------------------------------------------------------------------------
+void TSessionDialog::LoginTypeComboChange()
+{
+  FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
+  if (GetLoginType() == ltAnonymous)
+  {
+  }
+  else if (GetLoginType() == ltNormal)
+  {
+  }
+}
+//---------------------------------------------------------------------------
 void TSessionDialog::UpdateControls()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
@@ -2840,6 +2886,7 @@ void TSessionDialog::UpdateControls()
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   bool FtpProtocol = ((FSProtocol == fsFTP) || (FSProtocol == fsFTPS));
   bool FtpsProtocol = (FSProtocol == fsFTPS);
+  bool LoginAnonymous = (GetLoginType() == ltAnonymous);
 
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
@@ -2850,6 +2897,14 @@ void TSessionDialog::UpdateControls()
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !SshProtocol && !FtpsProtocol && !HTTPSProtocol);
   PrivateKeyEdit->SetEnabled(SshProtocol);
   HostNameLabel->SetCaption(GetMsg(LOGIN_HOST_NAME));
+
+  UserNameEdit->SetEnabled(!LoginAnonymous);
+  PasswordEdit->SetEnabled(!LoginAnonymous);
+  if (LoginAnonymous)
+  {
+    // UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
+    // PasswordEdit->SetText(L"");
+  }
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
@@ -2992,6 +3047,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   FSessionData = SessionData;
   FTransferProtocolIndex = TransferProtocolCombo->GetItems()->GetSelected();
+  FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
 
   HideTabs();
   SelectTab(tabSession);
@@ -3001,9 +3057,24 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // Basic tab
   HostNameEdit->SetText(SessionData->GetHostName());
   PortNumberEdit->SetAsInteger(SessionData->GetPortNumber());
+
+  LoginTypeCombo->GetItems()->SetSelected(
+    LoginTypeToIndex(SessionData->GetLoginType()));
+
   UserNameEdit->SetText(SessionData->GetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
+
+  if ((GetLoginType() == ltAnonymous))
+  {
+    LoginTypeCombo->GetItems()->SetSelected(0);
+    UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
+    PasswordEdit->SetText(L"");
+  }
+  else
+  {
+    LoginTypeCombo->GetItems()->SetSelected(1);
+  }
 
   bool AllowScpFallback;
   TransferProtocolCombo->GetItems()->SetSelected(
@@ -3284,6 +3355,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetPortNumber(PortNumberEdit->GetAsInteger());
     SessionData->SetUserName(UserNameEdit->GetText());
     SessionData->SetPassword(PasswordEdit->GetText());
+    SessionData->SetLoginType(GetLoginType());
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
 
     SessionData->SetFSProtocol(GetFSProtocol());
@@ -3297,12 +3369,16 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetResolveSymlinks(ResolveSymlinksCheck->GetChecked());
 
     // Environment tab
-    if (DSTModeUnixCheck->GetChecked()) SessionData->SetDSTMode(dstmUnix);
-      else
-    if (DSTModeKeepCheck->GetChecked()) SessionData->SetDSTMode(dstmKeep);
-      else SessionData->SetDSTMode(dstmWin);
-    if (EOLTypeCombo->GetItems()->GetSelected() == 0) SessionData->SetEOLType(eolLF);
-      else SessionData->SetEOLType(eolCRLF);
+    if (DSTModeUnixCheck->GetChecked())
+        SessionData->SetDSTMode(dstmUnix);
+    else if (DSTModeKeepCheck->GetChecked())
+        SessionData->SetDSTMode(dstmKeep);
+    else
+        SessionData->SetDSTMode(dstmWin);
+    if (EOLTypeCombo->GetItems()->GetSelected() == 0)
+        SessionData->SetEOLType(eolLF);
+    else
+        SessionData->SetEOLType(eolCRLF);
     switch (UtfCombo->GetItems()->GetSelected())
     {
       case 1:
@@ -3553,6 +3629,11 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
     }
 }
 //---------------------------------------------------------------------------
+int TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
+{
+    return static_cast<int>(LoginType);
+}
+//---------------------------------------------------------------------------
 int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
   bool & AllowScpFallback)
 {
@@ -3583,6 +3664,11 @@ TFSProtocol TSessionDialog::GetFSProtocol()
     AllowScpFallbackCheck->GetChecked());
 }
 //---------------------------------------------------------------------------
+TLoginType TSessionDialog::GetLoginType()
+{
+  return IndexToLoginType(LoginTypeCombo->GetItems()->GetSelected());
+}
+//---------------------------------------------------------------------------
 TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
 {
   bool InBounds = (Index >= 0) && (Index < LENOF(FSOrder));
@@ -3595,6 +3681,18 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
     {
       Result = fsSFTP;
     }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TLoginType TSessionDialog::IndexToLoginType(int Index)
+{
+  bool InBounds = (Index >= 0) && (Index <= ltNormal);
+  assert(InBounds);
+  TLoginType Result = ltAnonymous;
+  if (InBounds)
+  {
+    Result = TLoginType(Index);
   }
   return Result;
 }
@@ -3751,7 +3849,7 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
 class TRightsContainer : public TFarDialogContainer
 {
 public:
-  TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
+  explicit TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
     bool ShowButtons, bool ShowSpecials,
     TFarDialogItem * EnabledDependency);
   // __property bool AddXToDirectories = { read = GetAddXToDirectories, write = SetAddXToDirectories };
@@ -4073,8 +4171,8 @@ void TRightsContainer::SetAllowUndef(bool value)
 class TPropertiesDialog : public TFarDialog
 {
 public:
-  TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
-    const std::wstring &Directory,
+  explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
+    const std::wstring Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     int AllowedChanges);
@@ -4099,7 +4197,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const std::wstring &Directory,
+  TStrings * FileList, const std::wstring Directory,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   // TStrings * GroupList, TStrings * UserList,
   int AAllowedChanges) :
@@ -4381,7 +4479,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
-  const std::wstring &Directory,
+  const std::wstring Directory,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   // TStrings * GroupList, TStrings * UserList,
   TRemoteProperties * Properties, int AllowedChanges)
@@ -4403,7 +4501,7 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
 class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
-  TCopyParamsContainer(TFarDialog * ADialog,
+  explicit TCopyParamsContainer(TFarDialog * ADialog,
     int Options, int CopyParamAttrs);
 
   // __property TCopyParamType Params = { read = GetParams, write = SetParams };
@@ -4892,7 +4990,7 @@ int TCopyParamsContainer::GetHeight()
 class TCopyDialog : TFarDialog
 {
 public:
-  TCopyDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
     bool ToRemote, bool Move, TStrings * FileList, int Options, int CopyParamAttrs);
 
   bool Execute(std::wstring & TargetDirectory, TGUICopyParamType * Params);
@@ -5172,7 +5270,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::CopyParamDialog(const std::wstring &Caption,
+bool TWinSCPPlugin::CopyParamDialog(const std::wstring Caption,
   TCopyParamType & CopyParam, int CopyParamAttrs)
 {
   bool Result;
@@ -5218,7 +5316,7 @@ bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
 class TLinkDialog : TFarDialog
 {
 public:
-  TLinkDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TLinkDialog(TCustomFarPlugin * AFarPlugin,
     bool Edit, bool AllowSymbolic);
 
   bool Execute(std::wstring & FileName, std::wstring & PointTo,
@@ -5339,7 +5437,7 @@ class TFileSystemInfoDialog : TTabbedDialog
 public:
   enum { tabProtocol = 1, tabCapabilities, tabSpaceAvailable, tabCount };
 
-  TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
+  explicit TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
     const getspaceavailable_slot_type &OnGetSpaceAvailable);
 
   void Execute(const TSessionInfo & SessionInfo,
@@ -6673,7 +6771,7 @@ class TSynchronizeChecklistDialog : public TWinSCPDialog
 public:
   TSynchronizeChecklistDialog(
     TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode Mode, int Params,
-    const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory);
+    const std::wstring LocalDirectory, const std::wstring RemoteDirectory);
 
   bool Execute(TSynchronizeChecklist * Checklist);
 
@@ -6715,7 +6813,7 @@ private:
 //---------------------------------------------------------------------------
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, int /*Params*/,
-  const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory) :
+  const std::wstring LocalDirectory, const std::wstring RemoteDirectory) :
   TWinSCPDialog(AFarPlugin),
   FChecklist(NULL),
   FLocalDirectory(LocalDirectory),
@@ -7270,7 +7368,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklist * Checklist, TTerminal::TSynchronizeMode Mode, int Params,
-  const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory)
+  const std::wstring LocalDirectory, const std::wstring RemoteDirectory)
 {
   bool Result;
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
@@ -7309,7 +7407,7 @@ protected:
   TSynchronizeParamType GetParams();
   void DoAbort(TObject * Sender, bool Close);
   void DoLog(TSynchronizeController * Controller,
-    TSynchronizeLogEntry Entry, const std::wstring &Message);
+    TSynchronizeLogEntry Entry, const std::wstring Message);
   void DoSynchronizeThreads(TObject * Sender, const threadmethod_slot_type &slot);
   virtual long DialogProc(int Msg, int Param1, void *Param2);
   virtual bool CloseQuery();
@@ -7599,7 +7697,7 @@ void TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Close)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, const std::wstring & /*Message*/)
+  TSynchronizeLogEntry /*Entry*/, const std::wstring /*Message*/)
 {
   // void
 }
