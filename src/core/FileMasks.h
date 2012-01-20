@@ -120,6 +120,9 @@ friend class TInteractiveCustomCommand;
 
 public:
   TCustomCommand();
+  virtual ~TCustomCommand()
+  {
+  }
 
   std::wstring Complete(const std::wstring Command, bool LastPass);
   virtual void Validate(const std::wstring Command);
