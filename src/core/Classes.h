@@ -88,30 +88,12 @@ void Error(int ErrorID, int data);
 class TObject
 {
 public:
-    TObject() :
-        FDestroyed(false)
+    TObject()
     {}
     virtual ~TObject()
-    {
-        Free();
-    }
-
+    {}
     virtual void Change()
     {}
-    void Free()
-    {
-        if (this && !FDestroyed)
-        {
-            Destroy();
-        }
-    }
-    virtual void Destroy()
-    {
-        FDestroyed = true;
-    }
-
-private:
-    bool FDestroyed;
 };
 
 //---------------------------------------------------------------------------
