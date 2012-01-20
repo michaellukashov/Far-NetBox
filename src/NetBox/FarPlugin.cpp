@@ -781,7 +781,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin,
 }
 //---------------------------------------------------------------------------
 void TFarMessageDialog::Init(unsigned int AFlags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons)
+    const std::wstring &Title, const std::wstring &Message, TStrings *Buttons)
 {
     assert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
     assert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
@@ -846,7 +846,6 @@ void TFarMessageDialog::Init(unsigned int AFlags,
         int ButtonLines = 1;
         TFarButton *Button = NULL;
         FTimeoutButton = NULL;
-        // DEBUG_PRINTF(L"Buttons->GetCount = %d", Buttons->GetCount());
         for (size_t Index = 0; Index < Buttons->GetCount(); Index++)
         {
             TFarButton *PrevButton = Button;
@@ -855,21 +854,14 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             Button->SetBrackets(brNone);
             Button->SetOnClick(boost::bind(&TFarMessageDialog::ButtonClick, this, _1, _2));
             std::wstring Caption = Buttons->GetString(Index);
-            // DEBUG_PRINTF(L"Caption = '%s'", Caption.c_str());
             if ((FParams->Timeout > 0) &&
                 (FParams->TimeoutButton == static_cast<unsigned int>(Index)))
             {
                 FTimeoutButtonCaption = Caption;
                 Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
-                std::wstring Buffer(512, 0);
-                GetFarPlugin()->GetFarStandardFunctions().sprintf(const_cast<wchar_t *>(Buffer.c_str()), FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
-                Button->SetCaption(Buffer.c_str());
                 FTimeoutButton = Button;
             }
-            else
-            {
-                Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
-            }
+            Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
             Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
             Button->SetBottom(Button->GetTop());
             Button->SetResult(Index + 1);
@@ -960,7 +952,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timer > 0)
     {
-        unsigned int SinceLastTimer = static_cast<int>(static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000;
+        unsigned int SinceLastTimer = static_cast<int>((static_cast<double>(Now()) - static_cast<double>(FLastTimerTime)) * 24*60*60*1000);
         if (SinceLastTimer >= FParams->Timeout)
         {
             assert(FParams->TimerEvent != NULL);
@@ -981,7 +973,7 @@ void TFarMessageDialog::Idle()
 
     if (FParams->Timeout > 0)
     {
-        unsigned int Running = static_cast<int>(static_cast<double>(Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000;
+        unsigned int Running = static_cast<int>((static_cast<double>(Now()) - static_cast<double>(FStartTime)) * 24*60*60*1000);
         if (Running >= FParams->Timeout)
         {
             assert(FTimeoutButton != NULL);
@@ -992,7 +984,6 @@ void TFarMessageDialog::Idle()
             std::wstring Caption =
                 FORMAT(L" %s ", FORMAT(FParams->TimeoutStr.c_str(),
                     FTimeoutButtonCaption.c_str(), int((FParams->Timeout - Running) / 1000)).c_str()).c_str();
-            // DEBUG_PRINTF(L"FTimeoutButton->GetCaption = %s", FTimeoutButton->GetCaption().c_str());
             size_t sz = FTimeoutButton->GetCaption().size() > Caption.size() ? FTimeoutButton->GetCaption().size() - Caption.size() : 0;
             Caption += ::StringOfChar(L' ', sz);
             FTimeoutButton->SetCaption(Caption);
@@ -1055,8 +1046,8 @@ void TFarMessageDialog::ButtonClick(TFarButton *Sender, bool &Close)
 }
 //---------------------------------------------------------------------------
 int TCustomFarPlugin::DialogMessage(unsigned int Flags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
-        TFarMessageParams *Params)
+    const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
+    TFarMessageParams *Params)
 {
     int Result;
     TFarMessageDialog *Dialog =
@@ -1139,7 +1130,6 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     TFarMessageParams *Params, bool Oem)
 {
     // DEBUG_PRINTF(L"Message = %s", Message.c_str());
-    // throw ExtException(Message);
     // when message is shown while some "custom" output is on screen,
     // make the output actually background of FAR screen
     if (FTerminalScreenShowing)
@@ -1148,7 +1138,6 @@ int TCustomFarPlugin::Message(unsigned int Flags,
     }
 
     int Result;
-    // DEBUG_PRINTF(L"Buttons = %x, Params = %x, Title = %s", Buttons, Params, Title.c_str());
     if (Buttons != NULL)
     {
         TFarMessageParams DefaultParams;
@@ -1207,7 +1196,6 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
             {
                 memset(&MenuItems[Count], 0, sizeof(MenuItems[Count]));
                 std::wstring Text = Items->GetString(i).c_str();
-                // DEBUG_PRINTF(L"Text = %s", Text.c_str());
                 MenuItems[Count].Flags = flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
@@ -1215,11 +1203,9 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring &Title,
                     Selected = static_cast<int>(i);
                 }
                 std::wstring Str = StrToFar(Text);
-                // DEBUG_PRINTF(L"MenuItems[%d].Text = %s", Count, MenuItems[Count].Text);
                 MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
                 MenuItems[Count].UserData = i;
                 Count++;
-                // DEBUG_PRINTF(L"Count = %d", Count);
             }
         }
 
@@ -1368,7 +1354,6 @@ HWND TCustomFarPlugin::GetConsoleWindow()
 {
     wchar_t Title[1024];
     GetConsoleTitle(Title, sizeof(Title) - 1);
-    // DEBUG_PRINTF(L"Title = %s", Title);
     StrFromFar(Title);
     HWND Result = FindWindow(NULL, Title);
     return Result;
@@ -2115,7 +2100,6 @@ TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
         // Info->StructSize = sizeof(PanelInfo);
         bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<LONG_PTR>(Info),
             Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
-        // DEBUG_PRINTF(L"res = %d", res);
         if (!res)
         {
             memset(Info, 0, sizeof(*Info));
