@@ -1,4 +1,4 @@
-NetBox 2.0.6 ??.01.2012
+NetBox 2.0.6 21.01.2012
 ---------------------
   * Bugfix: FTPS: Far crashes when attempting to connect to FTPS server
   * Session properties: Add new option "Login type: Anonymous/Normal"
