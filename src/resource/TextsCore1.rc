@@ -349,6 +349,7 @@ BEGIN
   OPENSSL_VERSION, "1.0.0f"
   OPENSSL_URL, "http://www.openssl.org/"
 
+  WINSCPFAR_NAME, "WinSCP"
   WINSCPFAR_VERSION, "1.6.2"
   WINSCPFAR_BASED_ON, "Based on WinSCP: SFTP/FTP/SCP client for FAR"
   WINSCPFAR_BASED_VERSION, " Version %s"

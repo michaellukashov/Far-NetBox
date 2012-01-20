@@ -1072,7 +1072,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarText * Text;
   TFarButton * Button;
 
-  std::wstring ProductName = Configuration->GetFileInfoString(L"ProductName");
+  // std::wstring ProductName = Configuration->GetFileInfoString(L"ProductName");
+  std::wstring ProductName = LoadStr(WINSCPFAR_NAME);
   std::wstring Comments;
   try
   {
@@ -1134,7 +1135,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->Move(0, 1);
     Text->SetCaption(FORMAT(GetMsg(ABOUT_PRODUCT_VERSION).c_str(),
       ProductName.c_str(),
-      Configuration->GetProductVersion().c_str()));
+      LoadStr(WINSCPFAR_VERSION).c_str()));
     Text->SetCenterGroup(true);
   }
 
