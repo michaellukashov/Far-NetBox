@@ -587,7 +587,7 @@ long TFarDialog::DialogProc(int Msg, int Param1, long Param2)
 long TFarDialog::DefaultDialogProc(int Msg, int Param1, long Param2)
 {
     TFarEnvGuard Guard;
-    return GetFarPlugin()->FStartupInfo.DefDlgProc(GetHandle(), Msg, Param1, Param2);
+    return GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 long TFarDialog::FailDialogProc(int Msg, int Param1, long Param2)
@@ -745,12 +745,12 @@ int TFarDialog::ShowModal()
         {
             TFarEnvGuard Guard;
             TRect Bounds = GetBounds();
-            HANDLE dlg = GetFarPlugin()->FStartupInfo.DialogInit(
-                GetFarPlugin()->FStartupInfo.ModuleNumber,
+            HANDLE dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
+                GetFarPlugin()->GetStartupInfo()->ModuleNumber,
                 Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
                 StrToFar(AHelpTopic), FDialogItems, GetItemCount(), 0, GetFlags(),
                 DialogProcGeneral, reinterpret_cast<LONG_PTR>(this));
-            BResult = GetFarPlugin()->FStartupInfo.DialogRun(dlg);
+            BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(dlg);
         }
 
         if (BResult >= 0)
@@ -833,7 +833,7 @@ long TFarDialog::SendMessage(int Msg, int Param1, int Param2)
 {
     assert(GetHandle());
     TFarEnvGuard Guard;
-    return GetFarPlugin()->FStartupInfo.SendDlgMessage(GetHandle(), Msg, Param1, Param2);
+    return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 int TFarDialog::GetSystemColor(unsigned int Index)
@@ -1408,13 +1408,13 @@ void TFarDialogItem::DoExit()
 long TFarDialogItem::DefaultItemProc(int Msg, int Param)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->FStartupInfo.DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
 long TFarDialogItem::DefaultDialogProc(int Msg, int Param1, int Param2)
 {
     TFarEnvGuard Guard;
-    return GetDialog()->GetFarPlugin()->FStartupInfo.DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
+    return GetDialog()->GetFarPlugin()->GetStartupInfo()->DefDlgProc(GetDialog()->GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
 void TFarDialogItem::Change()
@@ -1695,7 +1695,7 @@ void TFarDialogItem::Text(int X, int Y, int Color, const std::wstring Str, bool 
         StrToFar(Str);
     }
     TFarEnvGuard Guard;
-    GetDialog()->GetFarPlugin()->FStartupInfo.Text(
+    GetDialog()->GetFarPlugin()->GetStartupInfo()->Text(
         GetDialog()->GetBounds().Left + GetLeft() + X, GetDialog()->GetBounds().Top + GetTop() + Y,
         Color, Str.c_str());
 }
