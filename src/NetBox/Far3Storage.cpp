@@ -103,7 +103,7 @@ void TFar3Storage::CloseSubKey()
     FRoot = FSubKeyIds.back();
     FSubKeyIds.pop_back();
     // OpenSubKey(GetCurrentSubKey(), true);
-    DEBUG_PRINTF(L"GetCurrentSubKey = %s", GetCurrentSubKey().c_str());
+    // DEBUG_PRINTF(L"GetCurrentSubKey = %s", GetCurrentSubKey().c_str());
   }
   else
   {
