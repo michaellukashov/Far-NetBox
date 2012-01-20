@@ -44,19 +44,19 @@ class TCallbackGuard;
 // typedef void (TObject::*TQueryUserEvent)
   // (TObject * Sender, const std::wstring Query, TStrings * MoreMessages, int Answers,
    // const TQueryParams * Params, int & Answer, TQueryType QueryType, void * Arg);
-typedef boost::signal8<void, TObject *, const std::wstring , TStrings *, int,
+typedef boost::signal8<void, TObject *, const std::wstring, TStrings *, int,
    const TQueryParams *, int &, TQueryType, void *> queryuser_signal_type;
 typedef queryuser_signal_type::slot_type queryuser_slot_type;
 // typedef void (TObject::*TPromptUserEvent)
   // (TTerminal * Terminal, TPromptKind Kind, std::wstring Name, std::wstring Instructions,
    // TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
-typedef boost::signal8<void, TTerminal *, TPromptKind, const std::wstring , std::wstring,
+typedef boost::signal8<void, TTerminal *, TPromptKind, const std::wstring, std::wstring,
    TStrings *, TStrings *, bool &, void *> promptuser_signal_type;
 typedef promptuser_signal_type::slot_type promptuser_slot_type;
 // typedef void (TObject::*TDisplayBannerEvent)
   // (TTerminal * Terminal, std::wstring SessionName, const std::wstring Banner,
    // bool & NeverShowAgain, int Options);
-typedef boost::signal5<void, TTerminal *, const std::wstring , const std::wstring ,
+typedef boost::signal5<void, TTerminal *, const std::wstring, const std::wstring,
    bool &, int> displaybanner_signal_type;
 typedef displaybanner_signal_type::slot_type displaybanner_slot_type;
 // typedef void (TObject::*TExtendedExceptionEvent)
@@ -72,11 +72,11 @@ typedef boost::signal3<void, TObject*, int, bool &> readdirectoryprogress_signal
 typedef readdirectoryprogress_signal_type::slot_type readdirectoryprogress_slot_type;
 // typedef void (TObject::*TProcessFileEvent)
   // (const std::wstring FileName, const TRemoteFile * File, void * Param);
-typedef boost::signal3<void, const std::wstring , const TRemoteFile *, void *> processfile_signal_type;
+typedef boost::signal3<void, const std::wstring, const TRemoteFile *, void *> processfile_signal_type;
 typedef processfile_signal_type::slot_type processfile_slot_type;
 // typedef void (TObject::*TProcessFileEventEx)
   // (const std::wstring FileName, const TRemoteFile * File, void * Param, int Index);
-typedef boost::signal4<void, const std::wstring , const TRemoteFile *, void *, int> processfileex_signal_type;
+typedef boost::signal4<void, const std::wstring, const TRemoteFile *, void *, int> processfileex_signal_type;
 typedef processfileex_signal_type::slot_type processfileex_slot_type;
 // typedef int (TObject::*TFileOperationEvent)
   // (void * Param1, void * Param2);
@@ -85,20 +85,20 @@ typedef fileoperation_signal_type::slot_type fileoperation_slot_type;
 // typedef void (TObject::*TSynchronizeDirectory)
   // (const std::wstring LocalDirectory, const std::wstring RemoteDirectory,
    // bool & Continue, bool Collect);
-typedef boost::signal4<void, const std::wstring , const std::wstring ,
+typedef boost::signal4<void, const std::wstring, const std::wstring,
    bool &, bool> synchronizedirectory_signal_type;
 typedef synchronizedirectory_signal_type::slot_type synchronizedirectory_slot_type;
 // typedef void (TObject::*TDeleteLocalFileEvent)(
   // const std::wstring FileName, bool Alternative);
-typedef boost::signal2<void, const std::wstring , bool> deletelocalfile_signal_type;
+typedef boost::signal2<void, const std::wstring, bool> deletelocalfile_signal_type;
 typedef deletelocalfile_signal_type::slot_type deletelocalfile_slot_type;
 // typedef int (TObject::*TDirectoryModifiedEvent)
   // (TTerminal * Terminal, const std::wstring Directory, bool SubDirs);
-typedef boost::signal3<int, TTerminal *, const std::wstring , bool> directorymodified_signal_type;
+typedef boost::signal3<int, TTerminal *, const std::wstring, bool> directorymodified_signal_type;
 typedef directorymodified_signal_type::slot_type directorymodified_slot_type;
 // typedef void (TObject::*TInformationEvent)
   // (TTerminal * Terminal, const std::wstring Str, bool Status, bool Active);
-typedef boost::signal4<void, TTerminal *, const std::wstring , bool, bool> informationevent_signal_type;
+typedef boost::signal4<void, TTerminal *, const std::wstring, bool, bool> informationevent_signal_type;
 typedef informationevent_signal_type::slot_type informationevent_slot_type;
 //---------------------------------------------------------------------------
 #define SUSPEND_OPERATION(Command)                            \

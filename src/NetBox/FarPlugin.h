@@ -540,7 +540,6 @@ extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(wchar_t *S)
 {
-    // ::Error(SNotImplemented, 20);
     // OemToChar(S, S);
     return std::wstring(S);
 }
@@ -553,29 +552,14 @@ inline std::wstring StrFromFar(const wchar_t *S)
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(std::wstring &S)
 {
-    // FIXME
-    // ::Error(SNotImplemented, 22);
     // OemToChar(S.c_str(), S.c_str());
     return std::wstring(S);
     // return L"";
 }
 //---------------------------------------------------------------------------
-/*
-inline std::wstring StrToFar(wchar_t *S)
-{
-    // FIXME
-    // ::Error(SNotImplemented, 23);
-    // CharToOem(S, S);
-    return std::wstring(S);
-}
-*/
-//---------------------------------------------------------------------------
 
-inline wchar_t *StrToFar(const std::wstring S)
+inline wchar_t *StrToFar(const std::wstring &S)
 {
-    // FIXME
-    // ::Error(SNotImplemented, 24);
-    // S.Unique();
     // CharToOem(S.c_str(), S.c_str());
     return const_cast<wchar_t *>(S.c_str());
 }
@@ -583,8 +567,6 @@ inline wchar_t *StrToFar(const std::wstring S)
 //---------------------------------------------------------------------------
 inline wchar_t *StrToFar(const wchar_t *S)
 {
-    // FIXME
-    // ::Error(SNotImplemented, 25);
     // S.Unique();
     // CharToOem(S, S);
     return const_cast<wchar_t *>(S);

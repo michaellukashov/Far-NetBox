@@ -29,7 +29,7 @@ typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_
   // (TFileOperation Operation, TOperationSide Side, bool Temp,
     // const std::wstring FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 typedef boost::signal6<void, TFileOperation, TOperationSide, bool,
-    const std::wstring , bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
+    const std::wstring, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
 typedef fileoperationfinished_signal_type::slot_type fileoperationfinished_slot_type;
 //---------------------------------------------------------------------------
 class TFileOperationProgressType

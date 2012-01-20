@@ -64,7 +64,7 @@ typedef boost::signal2<void, int, TSynchronizeOptions &> getsynchronizeoptions_s
 typedef getsynchronizeoptions_signal_type::slot_type getsynchronizeoptions_slot_type;
 // typedef void (TObject::*TGetSpaceAvailable)
   // (const std::wstring Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
-typedef boost::signal3<void, const std::wstring , TSpaceAvailable &, bool &> getspaceavailable_signal_type;
+typedef boost::signal3<void, const std::wstring, TSpaceAvailable &, bool &> getspaceavailable_signal_type;
 typedef getspaceavailable_signal_type::slot_type getspaceavailable_slot_type;
 struct TMultipleEdit
 {

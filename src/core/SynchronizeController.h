@@ -47,14 +47,14 @@ typedef synchronizestartstop_signal_type::slot_type synchronizestartstop_slot_ty
    // const std::wstring RemoteDirectory, const TCopyParamType & CopyParam,
    // const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
    // TSynchronizeOptions * Options, bool Full);
-typedef boost::signal8<void, TSynchronizeController *, const std::wstring ,
-   const std::wstring , const TCopyParamType &,
+typedef boost::signal8<void, TSynchronizeController *, const std::wstring,
+   const std::wstring, const TCopyParamType &,
    const TSynchronizeParamType &, TSynchronizeChecklist **,
    TSynchronizeOptions *, bool> synchronize_signal_type;
 typedef synchronize_signal_type::slot_type synchronize_slot_type;
 // typedef void (TObject::* TSynchronizeInvalidEvent)
   // (TSynchronizeController * Sender, const std::wstring Directory, const std::wstring ErrorStr);
-typedef boost::signal3<void, TSynchronizeController *, const std::wstring , const std::wstring > synchronizeinvalid_signal_type;
+typedef boost::signal3<void, TSynchronizeController *, const std::wstring, const std::wstring > synchronizeinvalid_signal_type;
 typedef synchronizeinvalid_signal_type::slot_type synchronizeinvalid_slot_type;
 // typedef void (TObject::* TSynchronizeTooManyDirectories)
   // (TSynchronizeController * Sender, int & MaxDirectories);
