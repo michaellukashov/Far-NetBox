@@ -207,9 +207,9 @@ class TSessionLog : protected TStringList
 friend class TSessionAction;
 friend class TSessionActionRecord;
 public:
-  TSessionLog(TSessionUI* UI, TSessionData * SessionData,
+  explicit TSessionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration * Configuration);
-  ~TSessionLog();
+  virtual ~TSessionLog();
   virtual void Add(TLogLineType Type, const std::wstring Line);
   void AddStartupInfo();
   void AddException(const std::exception * E);
