@@ -1427,7 +1427,8 @@ bool TPasswordDialog::Execute(TStrings * Results)
   {
     for (size_t Index = 0; Index < FEdits->GetCount(); Index++)
     {
-      Results->PutString(Index, reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText());
+        std::wstring Text = reinterpret_cast<TFarEdit *>(FEdits->GetItem(Index))->GetText();
+        Results->PutString(Index, Text);
     }
 
     if ((SavePasswordCheck != NULL) && SavePasswordCheck->GetChecked())
@@ -1445,7 +1446,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   TPromptKind Kind, const std::wstring &Name, const std::wstring &Instructions, TStrings * Prompts,
   TStrings * Results, bool StoredCredentialsTried)
 {
-  bool Result;
+  bool Result = false;
   TPasswordDialog * Dialog = new TPasswordDialog(FPlugin, SessionData->GetName(),
     Kind, Name, Instructions, Prompts, StoredCredentialsTried);
   {
