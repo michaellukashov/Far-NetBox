@@ -106,7 +106,7 @@ void TSynchronizeController::StartStop(TObject * Sender,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, const std::wstring &Directory, bool & SubdirsChanged)
+  TObject * /*Sender*/, const std::wstring Directory, bool & SubdirsChanged)
 {
   try
   {
@@ -192,7 +192,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const std::wstring &FileName)
+  const std::wstring FileName)
 {
   TSynchronizeLogEntry Entry;
   std::wstring Message;
@@ -216,7 +216,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-  const std::wstring &Message)
+  const std::wstring Message)
 {
   if (!FSynchronizeLog.empty())
   {
@@ -225,7 +225,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const std::wstring &DirectoryName, bool & Add)
+  const std::wstring DirectoryName, bool & Add)
 {
   if ((FOptions != NULL) && (FOptions->Filter != NULL))
   {
@@ -241,7 +241,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 }
 //---------------------------------------------------------------------------
 void TSynchronizeController::SynchronizeInvalid(
-  TObject * /*Sender*/, const std::wstring &Directory, const std::wstring &ErrorStr)
+  TObject * /*Sender*/, const std::wstring Directory, const std::wstring ErrorStr)
 {
   if (!FOnSynchronizeInvalid.empty())
   {

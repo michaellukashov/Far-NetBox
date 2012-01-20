@@ -11,7 +11,7 @@
 #include "Common.h"
 
 //---------------------------------------------------------------------------
-std::wstring StripHotKey(const std::wstring &Text)
+std::wstring StripHotKey(const std::wstring Text)
 {
     std::wstring Result = Text;
     size_t Len = Result.size();
@@ -185,7 +185,7 @@ TPoint TFarDialog::GetMaxSize()
     return P;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetHelpTopic(const std::wstring &value)
+void TFarDialog::SetHelpTopic(const std::wstring value)
 {
     if (FHelpTopic != value)
     {
@@ -268,7 +268,7 @@ size_t TFarDialog::GetHeight() const
     return GetSize().y;
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetCaption(const std::wstring &value)
+void TFarDialog::SetCaption(const std::wstring value)
 {
     if (GetCaption() != value)
     {
@@ -1164,7 +1164,7 @@ unsigned int TFarDialogItem::GetFlags()
     return GetDialogItem()->Flags;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetDataInternal(const std::wstring &value)
+void TFarDialogItem::SetDataInternal(const std::wstring value)
 {
     // DEBUG_PRINTF(L"value = %s", value.c_str());
     // DEBUG_PRINTF(L"GetDialogItem()->PtrData = %s", GetDialogItem()->PtrData);
@@ -1185,7 +1185,7 @@ void TFarDialogItem::SetDataInternal(const std::wstring &value)
     DialogChange();
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetData(const std::wstring &value)
+void TFarDialogItem::SetData(const std::wstring value)
 {
     if (GetData() != value)
     {
@@ -1193,7 +1193,7 @@ void TFarDialogItem::SetData(const std::wstring &value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::UpdateData(const std::wstring &value)
+void TFarDialogItem::UpdateData(const std::wstring value)
 {
     std::wstring FarData = value.c_str();
     if (!GetOem())
@@ -1688,7 +1688,7 @@ bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
     return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<long>(Event));
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::Text(int X, int Y, int Color, const std::wstring &Str, bool AOem)
+void TFarDialogItem::Text(int X, int Y, int Color, const std::wstring Str, bool AOem)
 {
     if (!AOem && !GetOem())
     {
@@ -1744,7 +1744,7 @@ TFarButton::TFarButton(TFarDialog *ADialog) :
     FBrackets = brNormal;
 }
 //---------------------------------------------------------------------------
-void TFarButton::SetDataInternal(const std::wstring &value)
+void TFarButton::SetDataInternal(const std::wstring value)
 {
     std::wstring AValue;
     switch (FBrackets)
@@ -1920,7 +1920,7 @@ bool TFarCheckBox::GetIsEmpty()
     return GetChecked() != BSTATE_CHECKED;
 }
 //---------------------------------------------------------------------------
-void TFarCheckBox::SetData(const std::wstring &value)
+void TFarCheckBox::SetData(const std::wstring value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -1964,7 +1964,7 @@ bool TFarRadioButton::GetIsEmpty()
     return !GetChecked();
 }
 //---------------------------------------------------------------------------
-void TFarRadioButton::SetData(const std::wstring &value)
+void TFarRadioButton::SetData(const std::wstring value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -2009,7 +2009,7 @@ std::wstring TFarEdit::GetHistoryMask(int Index)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TFarEdit::SetHistoryMask(int Index, const std::wstring &value)
+void TFarEdit::SetHistoryMask(int Index, const std::wstring value)
 {
     if (GetHistoryMask(Index) != value)
     {
@@ -2115,7 +2115,7 @@ TFarText::TFarText(TFarDialog *ADialog) :
 {
 }
 //---------------------------------------------------------------------------
-void TFarText::SetData(const std::wstring &value)
+void TFarText::SetData(const std::wstring value)
 {
     TFarDialogItem::SetData(value);
     if (GetLeft() >= 0 || GetRight() >= 0)
@@ -2179,7 +2179,7 @@ void TFarList::UpdateItem(int Index)
     GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<int>(&ListUpdate));
 }
 //---------------------------------------------------------------------------
-void TFarList::Put(int Index, const std::wstring &S)
+void TFarList::Put(int Index, const std::wstring S)
 {
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {

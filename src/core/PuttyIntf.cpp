@@ -472,7 +472,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(const std::wstring &FileName)
+TKeyType KeyType(const std::wstring FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -557,7 +557,7 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
   Params->Pos++;
 }
 //---------------------------------------------------------------------------
-std::string EncodeUTF(const std::wstring &Source)
+std::string EncodeUTF(const std::wstring Source)
 {
   // std::wstring::c_bstr() returns NULL for empty strings
   // (as opposite to std::wstring::c_str() which returns "")
@@ -590,7 +590,7 @@ std::string EncodeUTF(const std::wstring &Source)
   }
 }
 //---------------------------------------------------------------------------
-__int64 ParseSize(const std::wstring &SizeStr)
+__int64 ParseSize(const std::wstring SizeStr)
 {
   return parse_blocksize(::W2MB(SizeStr.c_str()).c_str());
 }

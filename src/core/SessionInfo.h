@@ -61,18 +61,18 @@ public:
   {}
   virtual ~TSessionUI()
   {}
-  virtual void Information(const std::wstring & Str, bool Status) = 0;
-  virtual int QueryUser(const std::wstring &Query,
+  virtual void Information(const std::wstring Str, bool Status) = 0;
+  virtual int QueryUser(const std::wstring Query,
     TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual int QueryUserException(const std::wstring &Query,
+  virtual int QueryUserException(const std::wstring Query,
     const std::exception *E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
-    const std::wstring &Name, const std::wstring &Instructions, TStrings *Prompts,
+    const std::wstring Name, const std::wstring Instructions, TStrings *Prompts,
     TStrings * Results) = 0;
-  virtual void DisplayBanner(const std::wstring &Banner) = 0;
-  virtual void FatalError(const std::exception * E, const std::wstring &Msg) = 0;
+  virtual void DisplayBanner(const std::wstring Banner) = 0;
+  virtual void FatalError(const std::exception * E, const std::wstring Msg) = 0;
   virtual void HandleExtendedException(const std::exception *E) = 0;
   virtual void Closed() = 0;
 };
@@ -82,12 +82,12 @@ enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAct
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
 //---------------------------------------------------------------------------
 // typedef void (TObject::*TCaptureOutputEvent)(
-  // const std::wstring & Str, bool StdError);
-typedef boost::signal2<void, const std::wstring &, bool> captureoutput_signal_type;
+  // const std::wstring Str, bool StdError);
+typedef boost::signal2<void, const std::wstring , bool> captureoutput_signal_type;
 typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
 // typedef void (TObject::*TCalculatedChecksumEvent)(
-  // const std::wstring & FileName, const std::wstring & Alg, const std::wstring & Hash);
-typedef boost::signal3<void, const std::wstring &, const std::wstring &, const std::wstring &> calculatedchecksum_signal_type;
+  // const std::wstring FileName, const std::wstring Alg, const std::wstring Hash);
+typedef boost::signal3<void, const std::wstring , const std::wstring , const std::wstring > calculatedchecksum_signal_type;
 typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
 //---------------------------------------------------------------------------
 class TCriticalSection;
@@ -114,18 +114,18 @@ class TFileSessionAction : public TSessionAction
 {
 public:
   TFileSessionAction(TSessionLog * Log, TLogAction Action);
-  TFileSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring & FileName);
+  TFileSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring FileName);
 
-  void FileName(const std::wstring & FileName);
+  void FileName(const std::wstring FileName);
 };
 //---------------------------------------------------------------------------
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
   TFileLocationSessionAction(TSessionLog * Log, TLogAction Action);
-  TFileLocationSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring & FileName);
+  TFileLocationSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring FileName);
 
-  void Destination(const std::wstring & Destination);
+  void Destination(const std::wstring Destination);
 };
 //---------------------------------------------------------------------------
 class TUploadSessionAction : public TFileLocationSessionAction
@@ -145,8 +145,8 @@ class TRights;
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
-  TChmodSessionAction(TSessionLog * Log, const std::wstring & FileName);
-  TChmodSessionAction(TSessionLog * Log, const std::wstring & FileName,
+  TChmodSessionAction(TSessionLog * Log, const std::wstring FileName);
+  TChmodSessionAction(TSessionLog * Log, const std::wstring FileName,
     const TRights & Rights);
 
   void Rights(const TRights & Rights);
@@ -156,20 +156,20 @@ public:
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
-  TTouchSessionAction(TSessionLog * Log, const std::wstring & FileName,
+  TTouchSessionAction(TSessionLog * Log, const std::wstring FileName,
     const TDateTime & Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
-  TMkdirSessionAction(TSessionLog * Log, const std::wstring & FileName);
+  TMkdirSessionAction(TSessionLog * Log, const std::wstring FileName);
 };
 //---------------------------------------------------------------------------
 class TRmSessionAction : public TFileSessionAction
 {
 public:
-  TRmSessionAction(TSessionLog * Log, const std::wstring & FileName);
+  TRmSessionAction(TSessionLog * Log, const std::wstring FileName);
 
   void Recursive();
 };
@@ -177,29 +177,29 @@ public:
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-  TMvSessionAction(TSessionLog * Log, const std::wstring & FileName,
-    const std::wstring &Destination);
+  TMvSessionAction(TSessionLog * Log, const std::wstring FileName,
+    const std::wstring Destination);
 };
 //---------------------------------------------------------------------------
 class TCallSessionAction : public TSessionAction
 {
 public:
-  TCallSessionAction(TSessionLog * Log, const std::wstring & Command,
-    const std::wstring &Destination);
+  TCallSessionAction(TSessionLog * Log, const std::wstring Command,
+    const std::wstring Destination);
 
-  void AddOutput(const std::wstring & Output, bool StdError);
+  void AddOutput(const std::wstring Output, bool StdError);
 };
 //---------------------------------------------------------------------------
 class TLsSessionAction : public TSessionAction
 {
 public:
-  TLsSessionAction(TSessionLog * Log, const std::wstring & Destination);
+  TLsSessionAction(TSessionLog * Log, const std::wstring Destination);
 
   void FileList(TRemoteFileList * FileList);
 };
 //---------------------------------------------------------------------------
-// typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring & Line);
-typedef boost::signal2<void, TLogLineType, const std::wstring &> doaddlog_signal_type;
+// typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring Line);
+typedef boost::signal2<void, TLogLineType, const std::wstring > doaddlog_signal_type;
 typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
 class TSessionLog : protected TStringList
@@ -210,7 +210,7 @@ public:
   TSessionLog(TSessionUI* UI, TSessionData * SessionData,
     TConfiguration * Configuration);
   ~TSessionLog();
-  virtual void Add(TLogLineType Type, const std::wstring & Line);
+  virtual void Add(TLogLineType Type, const std::wstring Line);
   void AddStartupInfo();
   void AddException(const std::exception * E);
   void AddSeparator();
@@ -245,7 +245,7 @@ public:
   std::wstring GetSessionName();
   // __property std::wstring Name = { read = FName, write = FName };
   std::wstring GetName() { return FName; }
-  void SetName(const std::wstring &value) { FName = value; }
+  void SetName(const std::wstring value) { FName = value; }
   // __property Count;
 
 protected:
@@ -277,10 +277,10 @@ private:
   void StateChange();
   void OpenLogFile();
   std::wstring GetLogFileName();
-  void DoAdd(TLogLineType Type, const std::wstring &Line,
+  void DoAdd(TLogLineType Type, const std::wstring Line,
     const doaddlog_slot_type &func);
-  void DoAddToParent(TLogLineType aType, const std::wstring &aLine);
-  void DoAddToSelf(TLogLineType aType, const std::wstring &aLine);
+  void DoAddToParent(TLogLineType aType, const std::wstring aLine);
+  void DoAddToSelf(TLogLineType aType, const std::wstring aLine);
   void DoAddStartupInfo(TSessionData * Data);
 };
 //---------------------------------------------------------------------------

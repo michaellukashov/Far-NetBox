@@ -19,7 +19,7 @@ const int ccCopyResults = ccUser << 2;
 const int ccSet = 0x80000000;
 //---------------------------------------------------------------------------
 static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
-static const std::wstring &AdditionaLanguagePrefix(L"XX");
+static const std::wstring AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
@@ -152,8 +152,8 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-bool TCopyParamRule::Match(const std::wstring & Mask,
-  const std::wstring &Value, bool Path, bool Local) const
+bool TCopyParamRule::Match(const std::wstring Mask,
+  const std::wstring Value, bool Path, bool Local) const
 {
   bool Result;
   if (Mask.empty())
@@ -209,7 +209,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.empty();
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamRule::GetInfoStr(const std::wstring &Separator) const
+std::wstring TCopyParamRule::GetInfoStr(const std::wstring Separator) const
 {
   std::wstring Result;
   #define ADD(FMT, ELEM) \
@@ -263,7 +263,7 @@ void TCopyParamList::Modify()
   FModified = true;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::ValidateName(const std::wstring &Name)
+void TCopyParamList::ValidateName(const std::wstring Name)
 {
   if (::LastDelimiter(Name, FInvalidChars) != std::wstring::npos)
   {
@@ -307,7 +307,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::IndexOfName(const std::wstring &Name) const
+int TCopyParamList::IndexOfName(const std::wstring Name) const
 {
   return FNames->IndexOf(Name.c_str());
 }
@@ -334,13 +334,13 @@ void TCopyParamList::Clear()
   FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Add(const std::wstring &Name,
+void TCopyParamList::Add(const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Insert(int Index, const std::wstring &Name,
+void TCopyParamList::Insert(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   // DEBUG_PRINTF(L"begin");
@@ -353,7 +353,7 @@ void TCopyParamList::Insert(int Index, const std::wstring &Name,
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Change(int Index, const std::wstring &Name,
+void TCopyParamList::Change(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -642,7 +642,7 @@ void TGUIConfiguration::DefaultLocalized()
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-std::wstring TGUIConfiguration::PropertyToKey(const std::wstring &Property)
+std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 {
   // no longer useful
   size_t P = ::LastDelimiter(Property, L".>");
@@ -1129,7 +1129,7 @@ void TGUIConfiguration::SetCopyParamIndex(int value)
   SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamCurrent(const std::wstring &value)
+void TGUIConfiguration::SetCopyParamCurrent(const std::wstring value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1139,7 +1139,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring &Name)
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.empty())

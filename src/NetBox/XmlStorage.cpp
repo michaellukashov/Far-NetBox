@@ -17,8 +17,8 @@ static const char *CONST_SESSION_NODE = "Session";
 static const char *CONST_VERSION_ATTR = "version";
 static const char *CONST_NAME_ATTR = "name";
 //---------------------------------------------------------------------------
-TXmlStorage::TXmlStorage(const std::wstring &AStorage,
-    const std::wstring &StoredSessionsSubKey) :
+TXmlStorage::TXmlStorage(const std::wstring AStorage,
+    const std::wstring StoredSessionsSubKey) :
     THierarchicalStorage(ExcludeTrailingBackslash(AStorage)),
     FXmlDoc(NULL),
     FCurrentElement(NULL),
@@ -133,7 +133,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode value)
   }
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
+bool TXmlStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
   // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
   TiXmlElement *OldCurrentElement = FCurrentElement;
@@ -200,7 +200,7 @@ void TXmlStorage::CloseSubKey()
   }
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::DeleteSubKey(const std::wstring &SubKey)
+bool TXmlStorage::DeleteSubKey(const std::wstring SubKey)
 {
     bool result = false;
     TiXmlElement *Element = FindElement(SubKey);
@@ -228,7 +228,7 @@ void TXmlStorage::GetValueNames(TStrings* Strings)
   // FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::DeleteValue(const std::wstring &Name)
+bool TXmlStorage::DeleteValue(const std::wstring Name)
 {
   bool result = false;
   TiXmlElement *Element = FindElement(Name);
@@ -240,7 +240,7 @@ bool TXmlStorage::DeleteValue(const std::wstring &Name)
   return result;
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::KeyExists(const std::wstring &SubKey)
+bool TXmlStorage::KeyExists(const std::wstring SubKey)
 {
   ::Error(SNotImplemented, 3024);
   std::wstring K = PuttyMungeStr(SubKey);
@@ -248,7 +248,7 @@ bool TXmlStorage::KeyExists(const std::wstring &SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::RemoveIfExists(const std::wstring &Name)
+void TXmlStorage::RemoveIfExists(const std::wstring Name)
 {
     TiXmlElement *Element = FindElement(Name);
     if (Element != NULL)
@@ -257,7 +257,7 @@ void TXmlStorage::RemoveIfExists(const std::wstring &Name)
     }
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::AddNewElement(const std::wstring &Name, const std::wstring &Value)
+void TXmlStorage::AddNewElement(const std::wstring Name, const std::wstring Value)
 {
     std::string name = ToStdString(Name);
     std::string value = ToStdString(Value);
@@ -266,7 +266,7 @@ void TXmlStorage::AddNewElement(const std::wstring &Name, const std::wstring &Va
     FCurrentElement->LinkEndChild(Element);
 }
 //---------------------------------------------------------------------------
-std::wstring TXmlStorage::GetSubKeyText(const std::wstring &Name)
+std::wstring TXmlStorage::GetSubKeyText(const std::wstring Name)
 {
     TiXmlElement *Element = FindElement(Name);
     if (!Element)
@@ -276,7 +276,7 @@ std::wstring TXmlStorage::GetSubKeyText(const std::wstring &Name)
     return ToStdWString(Element->GetText());
 }
 //---------------------------------------------------------------------------
-TiXmlElement *TXmlStorage::FindElement(const std::wstring &Name)
+TiXmlElement *TXmlStorage::FindElement(const std::wstring Name)
 {
   for (const TiXmlElement *Element = FCurrentElement->FirstChildElement();
     Element != NULL; Element = Element->NextSiblingElement())
@@ -325,7 +325,7 @@ std::wstring TXmlStorage::GetValue(TiXmlElement *Element)
     return result;
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::ValueExists(const std::wstring &Value)
+bool TXmlStorage::ValueExists(const std::wstring Value)
 {
     // ::Error(SNotImplemented, 3025);
     bool result = false;
@@ -338,14 +338,14 @@ bool TXmlStorage::ValueExists(const std::wstring &Value)
     return result;
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::BinaryDataSize(const std::wstring &Name)
+int TXmlStorage::BinaryDataSize(const std::wstring Name)
 {
   ::Error(SNotImplemented, 3026);
   int Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::Readbool(const std::wstring &Name, bool Default)
+bool TXmlStorage::Readbool(const std::wstring Name, bool Default)
 {
     std::wstring res = ReadString(Name, L"");
     if (res.empty())
@@ -358,34 +358,34 @@ bool TXmlStorage::Readbool(const std::wstring &Name, bool Default)
     }
 }
 //---------------------------------------------------------------------------
-TDateTime TXmlStorage::ReadDateTime(const std::wstring &Name, TDateTime Default)
+TDateTime TXmlStorage::ReadDateTime(const std::wstring Name, TDateTime Default)
 {
   double res = ReadFloat(Name, Default.operator double());
   return TDateTime(res);
 }
 //---------------------------------------------------------------------------
-double TXmlStorage::ReadFloat(const std::wstring &Name, double Default)
+double TXmlStorage::ReadFloat(const std::wstring Name, double Default)
 {
     return StrToFloatDef(GetSubKeyText(Name), Default);
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::Readint(const std::wstring &Name, int Default)
+int TXmlStorage::Readint(const std::wstring Name, int Default)
 {
     return StrToIntDef(GetSubKeyText(Name), Default);
 }
 //---------------------------------------------------------------------------
-__int64 TXmlStorage::ReadInt64(const std::wstring &Name, __int64 Default)
+__int64 TXmlStorage::ReadInt64(const std::wstring Name, __int64 Default)
 {
     return StrToInt64Def(GetSubKeyText(Name), Default);
 }
 //---------------------------------------------------------------------------
-std::wstring TXmlStorage::ReadStringRaw(const std::wstring &Name, const std::wstring &Default)
+std::wstring TXmlStorage::ReadStringRaw(const std::wstring Name, const std::wstring Default)
 {
     std::wstring result = GetSubKeyText(Name);
     return result.empty() ? Default : result;
 }
 //---------------------------------------------------------------------------
-int TXmlStorage::ReadBinaryData(const std::wstring &Name,
+int TXmlStorage::ReadBinaryData(const std::wstring Name,
   void * Buffer, int Size)
 {
   ::Error(SNotImplemented, 3028);
@@ -393,41 +393,41 @@ int TXmlStorage::ReadBinaryData(const std::wstring &Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::Writebool(const std::wstring &Name, bool Value)
+void TXmlStorage::Writebool(const std::wstring Name, bool Value)
 {
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteDateTime(const std::wstring &Name, TDateTime Value)
+void TXmlStorage::WriteDateTime(const std::wstring Name, TDateTime Value)
 {
   WriteFloat(Name, Value);
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteFloat(const std::wstring &Name, double Value)
+void TXmlStorage::WriteFloat(const std::wstring Name, double Value)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, FORMAT(L"%.5f", Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteStringRaw(const std::wstring &Name, const std::wstring &Value)
+void TXmlStorage::WriteStringRaw(const std::wstring Name, const std::wstring Value)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, Value);
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::Writeint(const std::wstring &Name, int Value)
+void TXmlStorage::Writeint(const std::wstring Name, int Value)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, ::IntToStr(Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteInt64(const std::wstring &Name, __int64 Value)
+void TXmlStorage::WriteInt64(const std::wstring Name, __int64 Value)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, ::Int64ToStr(Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteBinaryData(const std::wstring &Name,
+void TXmlStorage::WriteBinaryData(const std::wstring Name,
   const void * Buffer, int Size)
 {
     RemoveIfExists(Name);

@@ -130,7 +130,7 @@ public:
   void SetTab(int value) { FTab = value; }
   // __property std::wstring GetTabName() = { read = FTabName, write = SetTabName };
   std::wstring GetTabName() { return FTabName; }
-  void SetTabName(const std::wstring &value);
+  void SetTabName(const std::wstring value);
 
 private:
   std::wstring FTabName;
@@ -260,7 +260,7 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   SetOnClick(boost::bind(&TTabbedDialog::TabButtonClick, Dialog, _1, _2));
 }
 //---------------------------------------------------------------------------
-void TTabButton::SetTabName(const std::wstring &Value)
+void TTabButton::SetTabName(const std::wstring Value)
 {
   std::wstring value = Value;
   if (FTabName != value)
@@ -1061,7 +1061,7 @@ private:
   void UrlTextClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 };
 //---------------------------------------------------------------------------
-std::wstring ReplaceCopyright(const std::wstring &S)
+std::wstring ReplaceCopyright(const std::wstring S)
 {
   return ::StringReplace(S, L"©", L"(c)");
 }
@@ -1252,8 +1252,8 @@ class TPasswordDialog : public TFarDialog
 {
 public:
   explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-    const std::wstring &SessionName, TPromptKind Kind, const std::wstring &Name,
-    const std::wstring &Instructions, TStrings * Prompts, bool StoredCredentialsTried);
+    const std::wstring SessionName, TPromptKind Kind, const std::wstring Name,
+    const std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried);
 
   bool Execute(TStrings * Results);
 
@@ -1264,15 +1264,15 @@ private:
   TFarCheckBox *SavePasswordCheck;
 
   void ShowPromptClick(TFarButton *Sender, bool &Close);
-  void GenerateLabel(const std::wstring &Caption, bool &Truncated);
+  void GenerateLabel(const std::wstring Caption, bool &Truncated);
   TFarEdit *GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
     std::wstring Instructions, TStrings * Prompts, bool &Truncated);
 };
 //---------------------------------------------------------------------------
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
-  const std::wstring &SessionName, TPromptKind Kind, const std::wstring &Name,
-  const std::wstring &Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
+  const std::wstring SessionName, TPromptKind Kind, const std::wstring Name,
+  const std::wstring Instructions, TStrings * Prompts, bool StoredCredentialsTried) :
   TFarDialog(AFarPlugin),
   FSessionData(NULL),
   FEdits(NULL),
@@ -1331,7 +1331,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCenterGroup(true);
 }
 //---------------------------------------------------------------------------
-void TPasswordDialog::GenerateLabel(const std::wstring &Caption,
+void TPasswordDialog::GenerateLabel(const std::wstring Caption,
   bool & Truncated)
 {
   std::wstring caption = Caption;
@@ -1443,7 +1443,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
 }
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
-  TPromptKind Kind, const std::wstring &Name, const std::wstring &Instructions, TStrings * Prompts,
+  TPromptKind Kind, const std::wstring Name, const std::wstring Instructions, TStrings * Prompts,
   TStrings * Results, bool StoredCredentialsTried)
 {
   bool Result = false;
@@ -1460,8 +1460,8 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool TWinSCPFileSystem::BannerDialog(const std::wstring &SessionName,
-  const std::wstring &Banner, bool & NeverShowAgain, int Options)
+bool TWinSCPFileSystem::BannerDialog(const std::wstring SessionName,
+  const std::wstring Banner, bool & NeverShowAgain, int Options)
 {
   bool Result;
   TWinSCPDialog * Dialog = new TWinSCPDialog(FPlugin);
@@ -4172,7 +4172,7 @@ class TPropertiesDialog : public TFarDialog
 {
 public:
   explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * FileList,
-    const std::wstring &Directory,
+    const std::wstring Directory,
     // TStrings * GroupList, TStrings * UserList,
     const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     int AllowedChanges);
@@ -4197,7 +4197,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
-  TStrings * FileList, const std::wstring &Directory,
+  TStrings * FileList, const std::wstring Directory,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   // TStrings * GroupList, TStrings * UserList,
   int AAllowedChanges) :
@@ -4479,7 +4479,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
 
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::PropertiesDialog(TStrings * FileList,
-  const std::wstring &Directory,
+  const std::wstring Directory,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   // TStrings * GroupList, TStrings * UserList,
   TRemoteProperties * Properties, int AllowedChanges)
@@ -5270,7 +5270,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::CopyParamDialog(const std::wstring &Caption,
+bool TWinSCPPlugin::CopyParamDialog(const std::wstring Caption,
   TCopyParamType & CopyParam, int CopyParamAttrs)
 {
   bool Result;
@@ -6764,7 +6764,7 @@ class TSynchronizeChecklistDialog : public TWinSCPDialog
 public:
   TSynchronizeChecklistDialog(
     TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode Mode, int Params,
-    const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory);
+    const std::wstring LocalDirectory, const std::wstring RemoteDirectory);
 
   bool Execute(TSynchronizeChecklist * Checklist);
 
@@ -6806,7 +6806,7 @@ private:
 //---------------------------------------------------------------------------
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, int /*Params*/,
-  const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory) :
+  const std::wstring LocalDirectory, const std::wstring RemoteDirectory) :
   TWinSCPDialog(AFarPlugin),
   FChecklist(NULL),
   FLocalDirectory(LocalDirectory),
@@ -7360,7 +7360,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
 //---------------------------------------------------------------------------
 bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklist * Checklist, TTerminal::TSynchronizeMode Mode, int Params,
-  const std::wstring &LocalDirectory, const std::wstring &RemoteDirectory)
+  const std::wstring LocalDirectory, const std::wstring RemoteDirectory)
 {
   bool Result;
   TSynchronizeChecklistDialog * Dialog = new TSynchronizeChecklistDialog(
@@ -7399,7 +7399,7 @@ protected:
   TSynchronizeParamType GetParams();
   void DoAbort(TObject * Sender, bool Close);
   void DoLog(TSynchronizeController * Controller,
-    TSynchronizeLogEntry Entry, const std::wstring &Message);
+    TSynchronizeLogEntry Entry, const std::wstring Message);
   void DoSynchronizeThreads(TObject * Sender, const threadmethod_slot_type &slot);
   virtual long DialogProc(int Msg, int Param1, long Param2);
   virtual bool CloseQuery();
@@ -7689,7 +7689,7 @@ void TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Close)
 }
 //---------------------------------------------------------------------------
 void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, const std::wstring & /*Message*/)
+  TSynchronizeLogEntry /*Entry*/, const std::wstring /*Message*/)
 {
   // void
 }

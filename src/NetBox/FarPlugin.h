@@ -125,30 +125,30 @@ public:
 
     virtual void HandleException(const std::exception *E, int OpMode = 0);
 
-    static wchar_t *DuplicateStr(const std::wstring &Str, bool AllowEmpty = false);
-    int Message(unsigned int Flags, const std::wstring &Title,
-        const std::wstring &Message, TStrings *Buttons = NULL,
+    static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
+    int Message(unsigned int Flags, const std::wstring Title,
+        const std::wstring Message, TStrings *Buttons = NULL,
         TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
     int MaxMenuItemLength();
-    int Menu(unsigned int Flags, const std::wstring &Title,
-        const std::wstring &Bottom, TStrings *Items, const int *BreakKeys,
+    int Menu(unsigned int Flags, const std::wstring Title,
+        const std::wstring Bottom, TStrings *Items, const int *BreakKeys,
         int &BreakCode);
-    int Menu(unsigned int Flags, const std::wstring &Title,
-        const std::wstring &Bottom, TStrings *Items);
-    int Menu(unsigned int Flags, const std::wstring &Title,
-        const std::wstring &Bottom, const FarMenuItem *Items, int Count,
+    int Menu(unsigned int Flags, const std::wstring Title,
+        const std::wstring Bottom, TStrings *Items);
+    int Menu(unsigned int Flags, const std::wstring Title,
+        const std::wstring Bottom, const FarMenuItem *Items, int Count,
         const int *BreakKeys, int &BreakCode);
-    bool InputBox(const std::wstring &Title, const std::wstring &Prompt,
-        std::wstring &Text, unsigned long Flags, const std::wstring &HistoryName = L"",
+    bool InputBox(const std::wstring Title, const std::wstring Prompt,
+        std::wstring &Text, unsigned long Flags, const std::wstring HistoryName = L"",
         int MaxLen = 255, farinputboxvalidate_slot_type *OnValidate = NULL);
     std::wstring GetMsg(int MsgId);
     void SaveScreen(HANDLE &Screen);
     void RestoreScreen(HANDLE &Screen);
     bool CheckForEsc();
-    bool Viewer(const std::wstring &FileName, unsigned int Flags,
+    bool Viewer(const std::wstring FileName, unsigned int Flags,
         std::wstring Title = L"");
-    bool Editor(const std::wstring &FileName, unsigned int Flags,
+    bool Editor(const std::wstring FileName, unsigned int Flags,
         std::wstring Title = L"");
 
     int FarAdvControl(int Command, void *Param = NULL);
@@ -156,10 +156,10 @@ public:
     DWORD FarControl(int Command, int Param1, LONG_PTR Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
     int FarEditorControl(int Command, void *Param);
     unsigned int FarSystemSettings();
-    void Text(int X, int Y, int Color, const std::wstring &Str);
+    void Text(int X, int Y, int Color, const std::wstring Str);
     void FlushText();
-    void WriteConsole(const std::wstring &Str);
-    void FarCopyToClipboard(const std::wstring &Str);
+    void WriteConsole(const std::wstring Str);
+    void FarCopyToClipboard(const std::wstring Str);
     void FarCopyToClipboard(TStrings *Strings);
     int FarVersion();
     std::wstring FormatFarVersion(int Version);
@@ -167,9 +167,9 @@ public:
     int InputRecordToKey(const INPUT_RECORD *Rec);
     TFarEditorInfo *EditorInfo();
 
-    void ShowConsoleTitle(const std::wstring &Title);
+    void ShowConsoleTitle(const std::wstring Title);
     void ClearConsoleTitle();
-    void UpdateConsoleTitle(const std::wstring &Title);
+    void UpdateConsoleTitle(const std::wstring Title);
     void UpdateConsoleTitleProgress(short Progress);
     void ShowTerminalScreen();
     void SaveTerminalScreen();
@@ -222,10 +222,10 @@ protected:
     void ResetCachedInfo();
     int MaxLength(TStrings *Strings);
     int FarMessage(unsigned int Flags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
+        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
         TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-        const std::wstring &Title, const std::wstring &Message, TStrings *Buttons,
+        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
         TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
@@ -287,7 +287,7 @@ protected:
     virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
-    virtual bool SetDirectoryEx(const std::wstring &Dir, int OpMode);
+    virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
     virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
     virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
     virtual int GetFilesEx(TObjectList *PanelItems, bool Move,
@@ -333,11 +333,11 @@ class TFarPanelModes : public TObject
 {
     friend class TCustomFarFileSystem;
 public:
-    void SetPanelMode(int Mode, const std::wstring &ColumnTypes = L"",
-        const std::wstring &ColumnWidths = L"", TStrings *ColumnTitles = NULL,
+    void SetPanelMode(int Mode, const std::wstring ColumnTypes = L"",
+        const std::wstring ColumnWidths = L"", TStrings *ColumnTitles = NULL,
         bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-        bool CaseConversion = true, const std::wstring &StatusColumnTypes = L"",
-        const std::wstring &StatusColumnWidths = L"");
+        bool CaseConversion = true, const std::wstring StatusColumnTypes = L"",
+        const std::wstring StatusColumnWidths = L"");
 
 private:
     PanelMode FPanelModes[PANEL_MODES_COUNT];
@@ -348,7 +348,7 @@ private:
 
     void FillOpenPluginInfo(struct OpenPluginInfo *Info);
     static void ClearPanelMode(PanelMode &Mode);
-    static int CommaCount(const std::wstring &ColumnTypes);
+    static int CommaCount(const std::wstring ColumnTypes);
 };
 //---------------------------------------------------------------------------
 class TFarKeyBarTitles : public TObject
@@ -359,7 +359,7 @@ public:
     void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
         int FunctionKeyStart, int FunctionKeyEnd = 0);
     void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int FunctionKey,
-        const std::wstring &Title);
+        const std::wstring Title);
 
 private:
     KeyBarTitles FKeyBarTitles;
@@ -422,7 +422,7 @@ private:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-    explicit THintPanelItem(const std::wstring &AHint);
+    explicit THintPanelItem(const std::wstring AHint);
     virtual ~THintPanelItem()
     {}
 
@@ -459,7 +459,7 @@ public:
     std::wstring GetCurrentDirectory();
 
     void ApplySelection();
-    TFarPanelItem *FindFileName(const std::wstring &FileName);
+    TFarPanelItem *FindFileName(const std::wstring FileName);
     TFarPanelItem *FindUserData(void *UserData);
 
 private:
@@ -480,7 +480,7 @@ public:
     virtual ~TFarMenuItems()
     {}
     void AddSeparator(bool Visible = true);
-    virtual int Add(const std::wstring &Text, bool Visible = true);
+    virtual int Add(const std::wstring Text, bool Visible = true);
 
     virtual void Clear();
     virtual void Delete(int Index);
@@ -534,7 +534,7 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(const std::wstring &Text, TStrings *Result, int MaxWidth);
+void FarWrapText(const std::wstring Text, TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------
@@ -571,7 +571,7 @@ inline std::wstring StrToFar(wchar_t *S)
 */
 //---------------------------------------------------------------------------
 
-inline wchar_t *StrToFar(const std::wstring &S)
+inline wchar_t *StrToFar(const std::wstring S)
 {
     // FIXME
     // ::Error(SNotImplemented, 24);

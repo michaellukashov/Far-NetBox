@@ -15,19 +15,19 @@ int NamedObjectSortProc(void * Item1, void * Item2)
   return ::AnsiCompareStr((static_cast<TNamedObject *>(Item1))->GetName(), (static_cast<TNamedObject *>(Item2))->GetName());
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(const std::wstring &AName) :
+TNamedObject::TNamedObject(const std::wstring AName) :
     TPersistent()
 {
   SetName(AName);
 }
 //---------------------------------------------------------------------------
-void TNamedObject::SetName(const std::wstring &value)
+void TNamedObject::SetName(const std::wstring value)
 {
   FHidden = (value.substr(0, TNamedObjectList::HiddenPrefix.size()) == TNamedObjectList::HiddenPrefix);
   FName = value;
 }
 
-int TNamedObject::CompareName(const std::wstring &aName,
+int TNamedObject::CompareName(const std::wstring aName,
   bool CaseSensitive)
 {
   // DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
@@ -96,7 +96,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
   Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject * TNamedObjectList::FindByName(const std::wstring &Name,
+TNamedObject * TNamedObjectList::FindByName(const std::wstring Name,
   bool CaseSensitive)
 {
   for (size_t Index = 0; Index < TObjectList::GetCount(); Index++)

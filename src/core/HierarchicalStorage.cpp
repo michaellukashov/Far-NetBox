@@ -18,7 +18,7 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { FFailed++; }
 //---------------------------------------------------------------------------
-std::wstring MungeStr(const std::wstring &Str)
+std::wstring MungeStr(const std::wstring Str)
 {
   std::string Result2;
   Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
@@ -29,7 +29,7 @@ std::wstring MungeStr(const std::wstring &Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring UnMungeStr(const std::wstring &Str)
+std::wstring UnMungeStr(const std::wstring Str)
 {
   std::string Result2;
   Result2.resize(Str.size() * sizeof(wchar_t) * 3 + 1);
@@ -39,17 +39,17 @@ std::wstring UnMungeStr(const std::wstring &Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring PuttyMungeStr(const std::wstring &Str)
+std::wstring PuttyMungeStr(const std::wstring Str)
 {
   return MungeStr(Str);
 }
 //---------------------------------------------------------------------------
-std::wstring PuttyUnMungeStr(const std::wstring &Str)
+std::wstring PuttyUnMungeStr(const std::wstring Str)
 {
   return UnMungeStr(Str);
 }
 //---------------------------------------------------------------------------
-std::wstring MungeIniName(const std::wstring &Str)
+std::wstring MungeIniName(const std::wstring Str)
 {
   int P = Str.find_first_of(L"=");
   // make this fast for now
@@ -63,7 +63,7 @@ std::wstring MungeIniName(const std::wstring &Str)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring UnMungeIniName(const std::wstring &Str)
+std::wstring UnMungeIniName(const std::wstring Str)
 {
   size_t P = Str.find(L"%3D");
   // make this fast for now
@@ -77,7 +77,7 @@ std::wstring UnMungeIniName(const std::wstring &Str)
   }
 }
 //===========================================================================
-THierarchicalStorage::THierarchicalStorage(const std::wstring &AStorage)
+THierarchicalStorage::THierarchicalStorage(const std::wstring AStorage)
 {
   FStorage = AStorage;
   FKeyHistory = new TStringList();
@@ -112,7 +112,7 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(L"", CanCreate);
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::MungeSubKey(const std::wstring &Key, bool Path)
+std::wstring THierarchicalStorage::MungeSubKey(const std::wstring Key, bool Path)
 {
   std::wstring Result;
   // DEBUG_PRINTF(L"Key = %s, Path = %d", Key.c_str(), Path);
@@ -138,7 +138,7 @@ std::wstring THierarchicalStorage::MungeSubKey(const std::wstring &Key, bool Pat
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::OpenSubKey(const std::wstring &SubKey, bool /*CanCreate*/, bool Path)
+bool THierarchicalStorage::OpenSubKey(const std::wstring SubKey, bool /*CanCreate*/, bool Path)
 {
   // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   FKeyHistory->Add(IncludeTrailingBackslash(GetCurrentSubKey() + MungeSubKey(SubKey, Path)));
@@ -168,7 +168,7 @@ void THierarchicalStorage::ClearSubKeys()
   }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::RecursiveDeleteSubKey(const std::wstring &Key)
+void THierarchicalStorage::RecursiveDeleteSubKey(const std::wstring Key)
 {
   if (OpenSubKey(Key, false))
   {
@@ -193,7 +193,7 @@ bool THierarchicalStorage::HasSubKeys()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::HasSubKey(const std::wstring &SubKey)
+bool THierarchicalStorage::HasSubKey(const std::wstring SubKey)
 {
   bool Result = OpenSubKey(SubKey, false);
   if (Result)
@@ -266,7 +266,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings,
   }
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::ReadString(const std::wstring &Name, const std::wstring &Default)
+std::wstring THierarchicalStorage::ReadString(const std::wstring Name, const std::wstring Default)
 {
   std::wstring Result;
   if (GetMungeStringValues())
@@ -280,7 +280,7 @@ std::wstring THierarchicalStorage::ReadString(const std::wstring &Name, const st
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring &Name)
+std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring Name)
 {
   int Size = BinaryDataSize(Name);
   std::wstring Value(Size, 0);
@@ -288,7 +288,7 @@ std::wstring THierarchicalStorage::ReadBinaryData(const std::wstring &Name)
   return Value;
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteString(const std::wstring &Name, const std::wstring &Value)
+void THierarchicalStorage::WriteString(const std::wstring Name, const std::wstring Value)
 {
   // DEBUG_PRINTF(L"GetMungeStringValues = %d", GetMungeStringValues());
   if (GetMungeStringValues())
@@ -303,13 +303,13 @@ void THierarchicalStorage::WriteString(const std::wstring &Name, const std::wstr
   }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteBinaryData(const std::wstring &Name,
-  const std::wstring &Value)
+void THierarchicalStorage::WriteBinaryData(const std::wstring Name,
+  const std::wstring Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.size());
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::IncludeTrailingBackslash(const std::wstring & S)
+std::wstring THierarchicalStorage::IncludeTrailingBackslash(const std::wstring S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.empty())
@@ -322,7 +322,7 @@ std::wstring THierarchicalStorage::IncludeTrailingBackslash(const std::wstring &
   }
 }
 //---------------------------------------------------------------------------
-std::wstring THierarchicalStorage::ExcludeTrailingBackslash(const std::wstring & S)
+std::wstring THierarchicalStorage::ExcludeTrailingBackslash(const std::wstring S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.empty())
@@ -335,14 +335,14 @@ std::wstring THierarchicalStorage::ExcludeTrailingBackslash(const std::wstring &
   }
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const std::wstring &AStorage) :
+TRegistryStorage::TRegistryStorage(const std::wstring AStorage) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
   Init();
 };
 //---------------------------------------------------------------------------
-TRegistryStorage::TRegistryStorage(const std::wstring &AStorage, HKEY ARootKey) :
+TRegistryStorage::TRegistryStorage(const std::wstring AStorage, HKEY ARootKey) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(NULL)
 {
@@ -428,7 +428,7 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::OpenSubKey(const std::wstring &SubKey, bool CanCreate, bool Path)
+bool TRegistryStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
   // DEBUG_PRINTF(L"SubKey = %s", SubKey.c_str());
   if (FKeyHistory->GetCount() > 0) FRegistry->CloseKey();
@@ -449,7 +449,7 @@ void TRegistryStorage::CloseSubKey()
   }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteSubKey(const std::wstring &SubKey)
+bool TRegistryStorage::DeleteSubKey(const std::wstring SubKey)
 {
   std::wstring K;
   if (FKeyHistory->GetCount() == 0) K = GetStorage() + GetCurrentSubKey();
@@ -471,51 +471,51 @@ void TRegistryStorage::GetValueNames(TStrings* Strings)
   FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteValue(const std::wstring &Name)
+bool TRegistryStorage::DeleteValue(const std::wstring Name)
 {
   return FRegistry->DeleteValue(Name);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::KeyExists(const std::wstring &SubKey)
+bool TRegistryStorage::KeyExists(const std::wstring SubKey)
 {
   std::wstring K = MungeStr(SubKey);
   bool Result = FRegistry->KeyExists(K);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::ValueExists(const std::wstring &Value)
+bool TRegistryStorage::ValueExists(const std::wstring Value)
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::BinaryDataSize(const std::wstring &Name)
+int TRegistryStorage::BinaryDataSize(const std::wstring Name)
 {
   int Result = FRegistry->GetDataSize(Name);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::Readbool(const std::wstring &Name, bool Default)
+bool TRegistryStorage::Readbool(const std::wstring Name, bool Default)
 {
   READ_REGISTRY(Readbool);
 }
 //---------------------------------------------------------------------------
-TDateTime TRegistryStorage::ReadDateTime(const std::wstring &Name, TDateTime Default)
+TDateTime TRegistryStorage::ReadDateTime(const std::wstring Name, TDateTime Default)
 {
   READ_REGISTRY(ReadDateTime);
 }
 //---------------------------------------------------------------------------
-double TRegistryStorage::ReadFloat(const std::wstring &Name, double Default)
+double TRegistryStorage::ReadFloat(const std::wstring Name, double Default)
 {
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::Readint(const std::wstring &Name, int Default)
+int TRegistryStorage::Readint(const std::wstring Name, int Default)
 {
   READ_REGISTRY(Readint);
 }
 //---------------------------------------------------------------------------
-__int64 TRegistryStorage::ReadInt64(const std::wstring &Name, __int64 Default)
+__int64 TRegistryStorage::ReadInt64(const std::wstring Name, __int64 Default)
 {
   __int64 Result = Default;
   if (FRegistry->ValueExists(Name))
@@ -532,12 +532,12 @@ __int64 TRegistryStorage::ReadInt64(const std::wstring &Name, __int64 Default)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TRegistryStorage::ReadStringRaw(const std::wstring &Name, const std::wstring &Default)
+std::wstring TRegistryStorage::ReadStringRaw(const std::wstring Name, const std::wstring Default)
 {
   READ_REGISTRY(ReadString);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::ReadBinaryData(const std::wstring &Name,
+int TRegistryStorage::ReadBinaryData(const std::wstring Name,
   void * Buffer, int Size)
 {
   int Result;
@@ -560,34 +560,34 @@ int TRegistryStorage::ReadBinaryData(const std::wstring &Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::Writebool(const std::wstring &Name, bool Value)
+void TRegistryStorage::Writebool(const std::wstring Name, bool Value)
 {
   WRITE_REGISTRY(Writebool);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteDateTime(const std::wstring &Name, TDateTime Value)
+void TRegistryStorage::WriteDateTime(const std::wstring Name, TDateTime Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteFloat(const std::wstring &Name, double Value)
+void TRegistryStorage::WriteFloat(const std::wstring Name, double Value)
 {
   WRITE_REGISTRY(WriteFloat);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteStringRaw(const std::wstring &Name, const std::wstring &Value)
+void TRegistryStorage::WriteStringRaw(const std::wstring Name, const std::wstring Value)
 {
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::Writeint(const std::wstring &Name, int Value)
+void TRegistryStorage::Writeint(const std::wstring Name, int Value)
 {
   // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
   WRITE_REGISTRY(Writeint);
   // DEBUG_PRINTF(L"GetFailed = %d", GetFailed());
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteInt64(const std::wstring &Name, __int64 Value)
+void TRegistryStorage::WriteInt64(const std::wstring Name, __int64 Value)
 {
   try
   {
@@ -599,7 +599,7 @@ void TRegistryStorage::WriteInt64(const std::wstring &Name, __int64 Value)
   }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBinaryData(const std::wstring &Name,
+void TRegistryStorage::WriteBinaryData(const std::wstring Name,
   const void * Buffer, int Size)
 {
   try

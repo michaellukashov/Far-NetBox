@@ -33,7 +33,7 @@ public:
   virtual int GetMinFarVersion();
 
   virtual void HandleException(const std::exception * E, int OpMode = 0);
-  int MoreMessageDialog(const std::wstring &Str, TStrings * MoreMessages,
+  int MoreMessageDialog(const std::wstring Str, TStrings * MoreMessages,
     TQueryType Type, int Answers, const TMessageParams * Params = NULL);
   void ShowExtendedException(const std::exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
@@ -51,7 +51,7 @@ protected:
   virtual int ProcessEditorEventEx(int Event, void * Param);
   virtual int ProcessEditorInputEx(const INPUT_RECORD * Rec);
   virtual void OldFar();
-  bool CopyParamDialog(const std::wstring &Caption, TCopyParamType & CopyParam,
+  bool CopyParamDialog(const std::wstring Caption, TCopyParamType & CopyParam,
     int CopyParamAttrs);
   void MessageClick(void * Token, int Result, bool & Close);
 
@@ -68,7 +68,7 @@ protected:
   void AboutDialog();
 
 private:
-  bool ImportSessions(const std::wstring &RegistryStorageKey, int &imported);
+  bool ImportSessions(const std::wstring RegistryStorageKey, int &imported);
 
 private:
   bool FInitialized;

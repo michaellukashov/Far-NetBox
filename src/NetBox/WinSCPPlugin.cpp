@@ -102,7 +102,7 @@ void TWinSCPPlugin::GetPluginInfoEx(long unsigned & Flags,
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 //---------------------------------------------------------------------------
-bool TWinSCPPlugin::ImportSessions(const std::wstring &RegistryStorageKey,
+bool TWinSCPPlugin::ImportSessions(const std::wstring RegistryStorageKey,
     int &imported)
 {
     // DEBUG_PRINTF(L"begin");
@@ -652,7 +652,7 @@ void TWinSCPPlugin::MessageClick(void * Token, int Result, bool & Close)
   }
 }
 //---------------------------------------------------------------------------
-int TWinSCPPlugin::MoreMessageDialog(const std::wstring &Str,
+int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
   TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {

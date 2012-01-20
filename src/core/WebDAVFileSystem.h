@@ -23,54 +23,54 @@ public:
   virtual void Close();
   virtual bool GetActive();
   virtual void Idle();
-  virtual std::wstring AbsolutePath(const std::wstring &Path, bool Local);
-  virtual void AnyCommand(const std::wstring &Command,
+  virtual std::wstring AbsolutePath(const std::wstring Path, bool Local);
+  virtual void AnyCommand(const std::wstring Command,
     const captureoutput_slot_type *OutputEvent);
-  virtual void ChangeDirectory(const std::wstring &Directory);
-  virtual void CachedChangeDirectory(const std::wstring &Directory);
+  virtual void ChangeDirectory(const std::wstring Directory);
+  virtual void CachedChangeDirectory(const std::wstring Directory);
   virtual void AnnounceFileListOperation();
-  virtual void ChangeFileProperties(const std::wstring &FileName,
+  virtual void ChangeFileProperties(const std::wstring FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
   virtual bool LoadFilesProperties(TStrings * FileList);
-  virtual void CalculateFilesChecksum(const std::wstring &Alg,
+  virtual void CalculateFilesChecksum(const std::wstring Alg,
     TStrings * FileList, TStrings * Checksums,
     calculatedchecksum_slot_type *OnCalculatedChecksum);
   virtual void CopyToLocal(TStrings * FilesToCopy,
-    const std::wstring &TargetDir, const TCopyParamType * CopyParam,
+    const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
   virtual void CopyToRemote(TStrings * FilesToCopy,
-    const std::wstring &TargetDir, const TCopyParamType * CopyParam,
+    const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CreateDirectory(const std::wstring &DirName);
-  virtual void CreateLink(const std::wstring &FileName, const std::wstring &PointTo, bool Symbolic);
-  virtual void DeleteFile(const std::wstring &FileName,
+  virtual void CreateDirectory(const std::wstring DirName);
+  virtual void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
+  virtual void DeleteFile(const std::wstring FileName,
     const TRemoteFile * File, int Params, TRmSessionAction & Action);
-  virtual void CustomCommandOnFile(const std::wstring &FileName,
-    const TRemoteFile * File, const std::wstring &Command, int Params, const captureoutput_slot_type &OutputEvent);
+  virtual void CustomCommandOnFile(const std::wstring FileName,
+    const TRemoteFile * File, const std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
   virtual void DoStartup();
   virtual void HomeDirectory();
   virtual bool IsCapable(int Capability) const;
   virtual void LookupUsersGroups();
   virtual void ReadCurrentDirectory();
   virtual void ReadDirectory(TRemoteFileList * FileList);
-  virtual void ReadFile(const std::wstring &FileName,
+  virtual void ReadFile(const std::wstring FileName,
     TRemoteFile *& File);
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& File);
-  virtual void RenameFile(const std::wstring &FileName,
-    const std::wstring &NewName);
-  virtual void CopyFile(const std::wstring &FileName,
-    const std::wstring &NewName);
-  virtual std::wstring FileUrl(const std::wstring &FileName);
+  virtual void RenameFile(const std::wstring FileName,
+    const std::wstring NewName);
+  virtual void CopyFile(const std::wstring FileName,
+    const std::wstring NewName);
+  virtual std::wstring FileUrl(const std::wstring FileName);
   virtual TStrings * GetFixedPaths();
-  virtual void SpaceAvailable(const std::wstring &Path,
+  virtual void SpaceAvailable(const std::wstring Path,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo();
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
-  virtual bool TemporaryTransferFile(const std::wstring &FileName);
+  virtual bool TemporaryTransferFile(const std::wstring FileName);
   virtual bool GetStoredCredentialsTried();
   virtual std::wstring GetUserName();
 
@@ -89,25 +89,25 @@ protected:
   std::wstring ActualCurrentDirectory();
   void Discard();
 
-  void Sink(const std::wstring &FileName,
-    const TRemoteFile * File, const std::wstring &TargetDir,
+  void Sink(const std::wstring FileName,
+    const TRemoteFile * File, const std::wstring TargetDir,
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags,
     TDownloadSessionAction & Action);
-  void SinkRobust(const std::wstring &FileName,
-    const TRemoteFile * File, const std::wstring &TargetDir,
+  void SinkRobust(const std::wstring FileName,
+    const TRemoteFile * File, const std::wstring TargetDir,
     const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void SinkFile(const std::wstring &FileName, const TRemoteFile * File, void * Param);
-  void SourceRobust(const std::wstring &FileName,
-    const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
+  void SinkFile(const std::wstring FileName, const TRemoteFile * File, void * Param);
+  void SourceRobust(const std::wstring FileName,
+    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void Source(const std::wstring &FileName,
-    const std::wstring &TargetDir, const TCopyParamType * CopyParam, int Params,
+  void Source(const std::wstring FileName,
+    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, unsigned int Flags,
     TUploadSessionAction & Action);
-  void DirectorySource(const std::wstring &DirectoryName,
-    const std::wstring &TargetDir, int Attrs, const TCopyParamType * CopyParam,
+  void DirectorySource(const std::wstring DirectoryName,
+    const std::wstring TargetDir, int Attrs, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
   bool ConfirmOverwrite(std::wstring & FileName,
     TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
@@ -117,11 +117,11 @@ protected:
   void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
   void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
   void ResetCaches();
-  void CaptureOutput(const std::wstring &Str);
+  void CaptureOutput(const std::wstring Str);
   void DoReadDirectory(TRemoteFileList *FileList);
-  void DoChangeDirectory(const std::wstring &Directory);
-  void FileTransfer(const std::wstring &FileName, const std::wstring &LocalFile,
-    const std::wstring &RemoteFile, const std::wstring &RemotePath, bool Get,
+  void DoChangeDirectory(const std::wstring Directory);
+  void FileTransfer(const std::wstring FileName, const std::wstring LocalFile,
+    const std::wstring RemoteFile, const std::wstring RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
 
@@ -178,12 +178,12 @@ private:
   int m_ProgressPercent; ///< Progress percent value
   TWebDAVFileSystem *Self;
 
-  void CustomReadFile(const std::wstring &FileName,
+  void CustomReadFile(const std::wstring FileName,
     TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  static std::wstring DelimitStr(const std::wstring &Str);
-  TRemoteFile * CreateRemoteFile(const std::wstring &ListingStr,
+  static std::wstring DelimitStr(const std::wstring Str);
+  TRemoteFile * CreateRemoteFile(const std::wstring ListingStr,
     TRemoteFile * LinkedByFile = NULL);
-  void CaptureOutput(const std::wstring &AddedLine, bool StdError);
+  void CaptureOutput(const std::wstring AddedLine, bool StdError);
 
 private:
   enum
@@ -200,7 +200,7 @@ private:
 private:
     virtual bool CheckExisting(const wchar_t *path, const ItemType type, bool &isExist, std::wstring &errorInfo);
     virtual bool MakeDirectory(const wchar_t *path, std::wstring &errorInfo);
-    virtual bool GetList(const std::wstring &Directory, std::wstring &errorInfo);
+    virtual bool GetList(const std::wstring Directory, std::wstring &errorInfo);
     virtual bool GetFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
     virtual bool PutFile(const wchar_t *remotePath, const wchar_t *localPath, const unsigned __int64 fileSize, std::wstring &errorInfo);
     virtual bool Rename(const wchar_t *srcPath, const wchar_t *dstPath, const ItemType type, std::wstring &errorInfo);

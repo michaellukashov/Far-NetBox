@@ -34,7 +34,7 @@ unsigned char SimpleDecryptNextChar(std::string &Str)
   else return 0x00;
 }
 //---------------------------------------------------------------------------
-std::wstring EncryptPassword(const std::wstring &Password, const std::wstring &Key, int /* Algorithm */)
+std::wstring EncryptPassword(const std::wstring Password, const std::wstring Key, int /* Algorithm */)
 {
   std::string Result("");
   size_t Shift = 0;
@@ -58,7 +58,7 @@ std::wstring EncryptPassword(const std::wstring &Password, const std::wstring &K
   return ::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
-std::wstring DecryptPassword(const std::wstring &Password, const std::wstring &Key, int /* Algorithm */)
+std::wstring DecryptPassword(const std::wstring Password, const std::wstring Key, int /* Algorithm */)
 {
   std::string Result("");
   int Index;
@@ -86,7 +86,7 @@ std::wstring DecryptPassword(const std::wstring &Password, const std::wstring &K
   return ::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
-std::wstring SetExternalEncryptedPassword(const std::wstring &Password)
+std::wstring SetExternalEncryptedPassword(const std::wstring Password)
 {
   std::string Result;
   Result += SimpleEncryptChar((char)PWALG_SIMPLE_FLAG);
@@ -95,7 +95,7 @@ std::wstring SetExternalEncryptedPassword(const std::wstring &Password)
   return ::MB2W(Result.c_str());
 }
 //---------------------------------------------------------------------------
-bool GetExternalEncryptedPassword(const std::wstring &Encrypted, std::wstring & Password)
+bool GetExternalEncryptedPassword(const std::wstring Encrypted, std::wstring & Password)
 {
   std::string Encrypted2 = ::W2MB(Encrypted.c_str());
   bool Result =
