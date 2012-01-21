@@ -130,7 +130,7 @@ bool TWinSCPPlugin::ImportSessions(const std::wstring RegistryStorageKey,
         } BOOST_SCOPE_EXIT_END
         ImportStorage->GetSubKeyNames(SubKeyNames);
         // DEBUG_PRINTF(L"SubKeyNames->GetCount = %d", SubKeyNames->GetCount());
-        for (int i = 0; i < SubKeyNames->GetCount(); i++)
+        for (size_t i = 0; i < SubKeyNames->GetCount(); i++)
         {
             // DEBUG_PRINTF(L"SubKeyNames->GetString(%d) = %s", i, SubKeyNames->GetString(i).c_str());
             TSessionData *ExportData = new TSessionData(SubKeyNames->GetString(i));

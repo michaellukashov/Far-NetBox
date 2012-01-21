@@ -45,10 +45,10 @@ std::wstring EncryptPassword(const std::wstring Password, const std::wstring Key
   Shift = (Password2.size() < PWALG_SIMPLE_MAXLEN) ?
     static_cast<unsigned char>(random(PWALG_SIMPLE_MAXLEN - Password2.size())) : 0;
   // DEBUG_PRINTF(L"Shift = %d", Shift);
-  Result += SimpleEncryptChar(static_cast<char>(PWALG_SIMPLE_FLAG)); // Flag
-  Result += SimpleEncryptChar(static_cast<char>(PWALG_SIMPLE_INTERNAL)); // Dummy
-  Result += SimpleEncryptChar(static_cast<char>(Password2.size()));
-  Result += SimpleEncryptChar(static_cast<char>(Shift));
+  Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_FLAG)); // Flag
+  Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_INTERNAL)); // Dummy
+  Result += SimpleEncryptChar(static_cast<unsigned char>(Password2.size()));
+  Result += SimpleEncryptChar(static_cast<unsigned char>(Shift));
   for (Index = 0; Index < Shift; Index++)
     Result += SimpleEncryptChar(static_cast<unsigned char>(random(256)));
   for (Index = 0; Index < Password2.size(); Index++)
@@ -89,8 +89,8 @@ std::wstring DecryptPassword(const std::wstring Password, const std::wstring Key
 std::wstring SetExternalEncryptedPassword(const std::wstring Password)
 {
   std::string Result;
-  Result += SimpleEncryptChar((char)PWALG_SIMPLE_FLAG);
-  Result += SimpleEncryptChar((char)PWALG_SIMPLE_EXTERNAL);
+  Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_FLAG));
+  Result += SimpleEncryptChar(static_cast<unsigned char>(PWALG_SIMPLE_EXTERNAL));
   Result += ::W2MB(StrToHex(Password).c_str());
   return ::MB2W(Result.c_str());
 }
