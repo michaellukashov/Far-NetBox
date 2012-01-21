@@ -793,13 +793,13 @@ public:
     wchar_t Byte[3];
     memset(Byte, '\0', sizeof(Byte));
     size_t Index = 0;
-    unsigned int Length = 0;
+    size_t Length = 0;
     while (Index < Dump.size())
     {
-      char C = Dump[Index];
-      if (((C >= '0') && (C <= '9')) || ((C >= 'A') && (C <= 'Z')))
+      wchar_t C = Dump[Index];
+      if (((C >= L'0') && (C <= L'9')) || ((C >= L'A') && (C <= L'Z')))
       {
-        if (Byte[0] == '\0')
+        if (Byte[0] == L'\0')
         {
           Byte[0] = C;
         }

@@ -746,7 +746,7 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) :
 TRemoteFile::~TRemoteFile()
 {
   delete FRights;
-  // delete FLinkedFile;
+  delete FLinkedFile;
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
@@ -905,7 +905,7 @@ void TRemoteFile::SetLinkedFile(TRemoteFile * value)
 {
   if (FLinkedFile != value)
   {
-    // if (FLinkedFile) delete FLinkedFile;
+    if (FLinkedFile) delete FLinkedFile;
     FLinkedFile = value;
   }
 }
@@ -1254,7 +1254,7 @@ void TRemoteFile::FindLinkedFile()
 {
   assert(GetTerminal() && GetIsSymLink());
 
-  // if (FLinkedFile) delete FLinkedFile;
+  if (FLinkedFile) delete FLinkedFile;
   FLinkedFile = NULL;
 
   FCyclicLink = false;
@@ -1392,7 +1392,7 @@ TRemoteFileList::TRemoteFileList() :
   TObjectList()
 {
     FTimestamp = Now();
-    SetOwnsObjects(false);
+    SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------------
 void TRemoteFileList::AddFile(TRemoteFile * File)
@@ -1481,12 +1481,12 @@ void TRemoteDirectory::Clear()
 {
   if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
-    // delete FThisDirectory;
+    delete FThisDirectory;
     FThisDirectory = NULL;
   }
   if (GetParentDirectory() && !GetIncludeParentDirectory())
   {
-    // delete FParentDirectory;
+    delete FParentDirectory;
     FParentDirectory = NULL;
   }
 
@@ -1617,7 +1617,7 @@ void TRemoteDirectoryCache::Clear()
     } BOOST_SCOPE_EXIT_END
     for (size_t Index = 0; Index < GetCount(); Index++)
     {
-      // delete (TRemoteFileList *)GetObject(Index);
+      delete (TRemoteFileList *)GetObject(Index);
       PutObject(Index, NULL);
     }
   }
@@ -1718,7 +1718,7 @@ void TRemoteDirectoryCache::DoClearFileList(const std::wstring Directory, bool S
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Delete(int Index)
 {
-  // delete (TRemoteFileList *)GetObject(Index);
+  delete (TRemoteFileList *)GetObject(Index);
   TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------

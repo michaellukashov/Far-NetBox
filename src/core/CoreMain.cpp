@@ -46,7 +46,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 void CoreInitialize()
 {
   // Randomize();
-  srand (time(NULL));
+  srand(static_cast<size_t>(time(NULL)));
   CryptographyInitialize();
 
   // configuration needs to be created and loaded before putty is initialized,

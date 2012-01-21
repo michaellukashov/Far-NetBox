@@ -1063,7 +1063,7 @@ private:
 //---------------------------------------------------------------------------
 std::wstring ReplaceCopyright(const std::wstring S)
 {
-  return ::StringReplace(S, L"©", L"(c)");
+  return ::StringReplace(S, L"ï¿½", L"(c)");
 }
 //---------------------------------------------------------------------------
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
@@ -7310,7 +7310,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
         Redraw();
         UpdateControls();
         if ((KeyCode == VK_INSERT) &&
-            (Index < ListBox->GetItems()->GetCount() - 1))
+            (Index < static_cast<int>(ListBox->GetItems()->GetCount()) - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
         }
@@ -8170,7 +8170,7 @@ void TQueueDialog::RefreshQueue()
     size_t TopIndex = QueueListBox->GetItems()->GetTopIndex();
     size_t Index = TopIndex;
 
-    int ILine = 0;
+    size_t ILine = 0;
     while ((Index > ILine) &&
            (QueueListBox->GetItems()->GetObject(Index) ==
               QueueListBox->GetItems()->GetObject(Index - ILine - 1)))

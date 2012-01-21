@@ -1028,7 +1028,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * FilesToCopy,
   std::wstring FileName, FileNameOnly;
   std::wstring TargetDir = AbsolutePath(ATargetDir, false);
   std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
-  int Index = 0;
+  size_t Index = 0;
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
@@ -1361,7 +1361,7 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * FilesToCopy,
     Params &= ~cpAppend;
     std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
-    int Index = 0;
+    size_t Index = 0;
     while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
     {
         std::wstring FileName = FilesToCopy->GetString(Index);
@@ -2608,11 +2608,11 @@ bool TWebDAVFileSystem::GetList(const std::wstring Directory, std::wstring &erro
         wdavItems.push_back(item);
     }
 
-    unsigned int Count = static_cast<int>(wdavItems.size());
+    size_t Count = wdavItems.size();
     if (Count)
     {
         Entries.resize(Count);
-        for (int i = 0; i < Count; ++i)
+        for (size_t i = 0; i < Count; ++i)
         {
             TListDataEntry &Dest = Entries[i];
             WebDAVItem &item = wdavItems[i];

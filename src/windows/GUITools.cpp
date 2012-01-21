@@ -41,9 +41,10 @@ bool FindFile(std::wstring &Path)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool FileExistsEx(std::wstring &Path)
+bool FileExistsEx(const std::wstring Path)
 {
-  return FindFile(Path);
+  std::wstring path = Path;
+  return FindFile(path);
 }
 //---------------------------------------------------------------------------
 void OpenSessionInPutty(const std::wstring PuttyPath,

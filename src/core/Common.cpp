@@ -1398,14 +1398,11 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
 //---------------------------------------------------------------------------
 TDateTime ConvertTimestampToUTC(TDateTime DateTime)
 {
-
-  TDateTimeParams * Params = GetDateTimeParams();
-  ::Error(SNotImplemented, 54);
-  // FIXME
-  // DateTime += Params->CurrentDifference;
-  // DateTime +=
-    // (IsDateInDST(DateTime) ?
-      // Params->DaylightDifference : Params->StandardDifference);
+  TDateTimeParams *Params = GetDateTimeParams();
+  DateTime = DateTime + Params->CurrentDifference;
+  DateTime = DateTime +
+    (IsDateInDST(DateTime) ?
+      Params->DaylightDifference : Params->StandardDifference);
 
   return DateTime;
 }
