@@ -61,19 +61,13 @@ HOW TO BUILD FROM SOURCE
         call bjam variant=debug link=static threading=multi runtime-debugging=on stage -j3
         cp -R libs/boost/libs/signals/build/stage/* libs/boost/stage/
 
-3.  Compile gc-7.2 library:
-
-        cd libs/gc-7.2alpha6
-        cmake -G "Visual Studio 10"
-        call devenv gc.sln /Build "Debug|Win32" /USEENV /Project "gcmt-lib"
-    
-4. Compile openssl:
+3. Compile openssl:
 
         cd libs/openssl
         call src/NetBox/scripts/build_openssl.bat x86
         call src/NetBox/scripts/build_openssl.bat x64
 
-5. Compile NetBox plugin:
+4. Compile NetBox plugin:
 
         cmd /c %VS100COMNTOOLS%\vsvars32.bat && devenv NetBox.sln /Build "Debug|Win32" /USEENV /Project "NetBox"
 
