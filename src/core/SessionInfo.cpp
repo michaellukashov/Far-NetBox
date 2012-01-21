@@ -56,7 +56,7 @@ std::wstring XmlEscape(std::wstring Str)
   return Str;
 }
 //---------------------------------------------------------------------------
-std::wstring XmlTimestamp(const TDateTime & DateTime)
+std::wstring XmlTimestamp(const TDateTime DateTime)
 {
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 }
@@ -224,7 +224,7 @@ public:
     Parameter(L"permissions", Rights.GetText());
   }
 
-  void Modification(const TDateTime & DateTime)
+  void Modification(const TDateTime DateTime)
   {
     Parameter(L"modification", XmlTimestamp(DateTime));
   }
