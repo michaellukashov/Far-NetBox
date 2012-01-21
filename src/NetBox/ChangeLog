@@ -4,6 +4,7 @@ NetBox 2.0.6 21.01.2012
   * Session properties: Add new option "Login type: Anonymous/Normal"
   * Bugfix: AppVerifier reported error: "Critical section is already initialized".
   * Bugfix: FTP: error while trying to remove directory from root directory
+  * Bugfix: dialog "Reconnect" did not work properly
   * Bugfix: option "Synchronize browsing" did not work properly
   * Bugfix: option "Transfer on background" did not work properly
 
