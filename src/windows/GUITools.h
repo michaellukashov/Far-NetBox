@@ -23,7 +23,7 @@ typedef boost::signal0<void> processmessages_signal_type;
 typedef processmessages_signal_type::slot_type processmessages_slot_type;
 //---------------------------------------------------------------------------
 bool FindFile(std::wstring &Path);
-bool FileExistsEx(std::wstring &Path);
+bool FileExistsEx(const std::wstring Path);
 bool ExecuteShell(const std::wstring Path, const std::wstring Params);
 bool ExecuteShell(const std::wstring Path, const std::wstring Params,
   HANDLE & Handle);
