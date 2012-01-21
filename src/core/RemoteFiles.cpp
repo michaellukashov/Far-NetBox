@@ -1392,7 +1392,7 @@ TRemoteFileList::TRemoteFileList() :
   TObjectList()
 {
     FTimestamp = Now();
-    SetOwnsObjects(false);
+    SetOwnsObjects(true);
 }
 //---------------------------------------------------------------------------
 void TRemoteFileList::AddFile(TRemoteFile * File)
@@ -1481,12 +1481,12 @@ void TRemoteDirectory::Clear()
 {
   if (GetThisDirectory() && !GetIncludeThisDirectory())
   {
-    // delete FThisDirectory;
+    delete FThisDirectory;
     FThisDirectory = NULL;
   }
   if (GetParentDirectory() && !GetIncludeParentDirectory())
   {
-    // delete FParentDirectory;
+    delete FParentDirectory;
     FParentDirectory = NULL;
   }
 
