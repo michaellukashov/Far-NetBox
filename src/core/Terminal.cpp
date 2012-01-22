@@ -141,7 +141,7 @@ const std::wstring TSynchronizeChecklist::TItem::GetFileName() const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TSynchronizeChecklist::TSynchronizeChecklist() :
-  FList(new TList())
+  FList(new nb::TList())
 {
 }
 //---------------------------------------------------------------------------
@@ -156,7 +156,7 @@ TSynchronizeChecklist::~TSynchronizeChecklist()
 //---------------------------------------------------------------------------
 void TSynchronizeChecklist::Add(TItem * Item)
 {
-  FList->Add(reinterpret_cast<TObject *>(static_cast<void *>(Item)));
+  FList->Add(reinterpret_cast<nb::TObject *>(static_cast<void *>(Item)));
 }
 //---------------------------------------------------------------------------
 int TSynchronizeChecklist::Compare(void * AItem1, void * AItem2)
@@ -278,14 +278,14 @@ public:
   {}
   virtual void Information(const std::wstring Str, bool Status);
   virtual int QueryUser(const std::wstring Query,
-    TStrings * MoreMessages, int Answers, const TQueryParams * Params,
+    nb::TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual int QueryUserException(const std::wstring Query,
     const std::exception * E, int Answers, const TQueryParams * Params,
     TQueryType QueryType);
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const std::wstring Name, const std::wstring Instructions, TStrings * Prompts,
-    TStrings * Results);
+    const std::wstring Name, const std::wstring Instructions, nb::TStrings * Prompts,
+    nb::TStrings * Results);
   virtual void DisplayBanner(const std::wstring Banner);
   virtual void FatalError(const std::exception *E, const std::wstring Msg);
   virtual void HandleExtendedException(const std::exception *E);
@@ -311,7 +311,7 @@ void TTunnelUI::Information(const std::wstring Str, bool Status)
 }
 //---------------------------------------------------------------------------
 int TTunnelUI::QueryUser(const std::wstring Query,
-  TStrings * MoreMessages, int Answers, const TQueryParams * Params,
+  nb::TStrings * MoreMessages, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   int Result;
@@ -343,7 +343,7 @@ int TTunnelUI::QueryUserException(const std::wstring Query,
 }
 //---------------------------------------------------------------------------
 bool TTunnelUI::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const std::wstring Name, const std::wstring Instructions, TStrings *Prompts, TStrings *Results)
+  const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts, nb::TStrings *Results)
 {
   bool Result;
   std::wstring instructions = Instructions;
@@ -429,10 +429,10 @@ TCallbackGuard::~TCallbackGuard()
   delete FFatalError;
 }
 //---------------------------------------------------------------------------
-class ECallbackGuardAbort : public EAbort
+class ECallbackGuardAbort : public nb::EAbort
 {
 public:
-  ECallbackGuardAbort() : EAbort("")
+  ECallbackGuardAbort() : nb::EAbort("")
   {
   }
 };
@@ -480,7 +480,7 @@ void TCallbackGuard::Verify()
 }
 //---------------------------------------------------------------------------
 TTerminal::TTerminal() :
-  TObject(),
+  nb::TObject(),
   TSessionUI()
 {
 }
@@ -604,7 +604,7 @@ std::wstring TTerminal::DecryptPassword(const std::wstring Password)
   {
     Result = Configuration->DecryptPassword(Password, GetSessionData()->GetSessionName());
   }
-  catch (const EAbort &)
+  catch (const nb::EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -801,7 +801,7 @@ void TTerminal::Open()
                   if (!FSecureShell->GetActive() && !FTunnelError.empty())
                   {
                     // the only case where we expect this to happen
-                    assert(E.what() == ::W2MB(LoadStr(UNEXPECTED_CLOSE_ERROR).c_str()).c_str());
+                    assert(E.what() == nb::W2MB(LoadStr(UNEXPECTED_CLOSE_ERROR).c_str()).c_str());
                     FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError.c_str()));
                   }
                   else
@@ -1058,11 +1058,11 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   const std::wstring Name, const std::wstring Instructions, const std::wstring Prompt, bool Echo, int MaxLen, std::wstring &Result)
 {
   bool AResult;
-  TStringList Prompts;
-  TStringList Results;
+  nb::TStringList Prompts;
+  nb::TStringList Results;
   {
-    Prompts.AddObject(Prompt, reinterpret_cast<TObject *>(Echo));
-    Results.AddObject(Result, reinterpret_cast<TObject *>(MaxLen));
+    Prompts.AddObject(Prompt, reinterpret_cast<nb::TObject *>(Echo));
+    Results.AddObject(Result, reinterpret_cast<nb::TObject *>(MaxLen));
 
     AResult = PromptUser(Data, Kind, Name, Instructions, &Prompts, &Results);
 
@@ -1073,7 +1073,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 }
 //---------------------------------------------------------------------------
 bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
-  const std::wstring Name, const std::wstring Instructions, TStrings *Prompts, TStrings *Results)
+  const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts, nb::TStrings *Results)
 {
   // If PromptUser is overriden in descendant class, the overriden version
   // is not called when accessed via TSessionIU interface.
@@ -1082,7 +1082,7 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
 }
 //---------------------------------------------------------------------------
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
-  const std::wstring Name, const std::wstring Instructions, TStrings * Prompts, TStrings * Results)
+  const std::wstring Name, const std::wstring Instructions, nb::TStrings * Prompts, nb::TStrings * Results)
 {
   bool AResult = false;
 
@@ -1113,7 +1113,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 }
 //---------------------------------------------------------------------------
 int TTerminal::QueryUser(const std::wstring Query,
-  TStrings * MoreMessages, int Answers, const TQueryParams * Params,
+  nb::TStrings * MoreMessages, int Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   LogEvent(FORMAT(L"Asking user:\n%s (%s)", Query.c_str(), MoreMessages ? MoreMessages->GetCommaText().c_str() : L""));
@@ -1132,14 +1132,14 @@ int TTerminal::QueryUserException(const std::wstring Query,
   TQueryType QueryType)
 {
   int Result;
-  TStringList MoreMessages;
-  // DEBUG_PRINTF(L"E->what = %s", ::MB2W(E->what()).c_str());
+  nb::TStringList MoreMessages;
+  // DEBUG_PRINTF(L"E->what = %s", nb::MB2W(E->what()).c_str());
 
   if ((E != NULL) && !std::string(E->what()).empty() && !Query.empty())
   {
-    MoreMessages.Add(std::wstring(::MB2W(E->what())));
+    MoreMessages.Add(std::wstring(nb::MB2W(E->what())));
   }
-  Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
+  Result = QueryUser(!Query.empty() ? Query : std::wstring(nb::MB2W(E->what())),
     MoreMessages.GetCount() ? &MoreMessages : NULL,
     Answers, Params, QueryType);
   return Result;
@@ -1150,7 +1150,7 @@ int TTerminal::QueryUserException(const std::wstring Query,
   TQueryType QueryType)
 {
   int Result;
-  TStringList MoreMessages;
+  nb::TStringList MoreMessages;
   if (E != NULL)
   {
     if (E->GetMoreMessages() != NULL)
@@ -1159,10 +1159,10 @@ int TTerminal::QueryUserException(const std::wstring Query,
     }
     else if (!std::string(E->what()).empty() && !Query.empty())
     {
-      MoreMessages.Add(std::wstring(::MB2W(E->what())));
+      MoreMessages.Add(std::wstring(nb::MB2W(E->what())));
     }
   }
-  Result = QueryUser(!Query.empty() ? Query : std::wstring(::MB2W(E->what())),
+  Result = QueryUser(!Query.empty() ? Query : std::wstring(nb::MB2W(E->what())),
     MoreMessages.GetCount() ? &MoreMessages : NULL,
     Answers, Params, QueryType);
   return Result;
@@ -1372,7 +1372,7 @@ bool TTerminal::QueryReopen(std::exception *E, int Params,
 
   if (Result)
   {
-    TDateTime Start = Now();
+    nb::TDateTime Start = nb::Now();
     do
     {
       try
@@ -1385,7 +1385,7 @@ bool TTerminal::QueryReopen(std::exception *E, int Params,
         {
           Result =
             ((Configuration->GetSessionReopenTimeout() == 0) ||
-             (static_cast<int>(static_cast<double>(Now() - Start) * 24*60*60*1000) < Configuration->GetSessionReopenTimeout())) &&
+             (static_cast<int>(static_cast<double>(nb::Now() - Start) * 24*60*60*1000) < Configuration->GetSessionReopenTimeout())) &&
             DoQueryReopen(&E);
         }
         else
@@ -1848,9 +1848,9 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   {
     FatalError(E, Msg);
   }
-  else if (E && ::InheritsFrom<std::exception, EAbort>(E))
+  else if (E && ::InheritsFrom<std::exception, nb::EAbort>(E))
   {
-    // resent EAbort std::exception
+    // resent nb::EAbort std::exception
     ::Abort();
   }
   else if (GetExceptionOnFail())
@@ -2629,7 +2629,7 @@ void TTerminal::AnnounceFileListOperation()
   FFileSystem->AnnounceFileListOperation();
 }
 //---------------------------------------------------------------------------
-bool TTerminal::ProcessFiles(TStrings * FileList,
+bool TTerminal::ProcessFiles(nb::TStrings * FileList,
   TFileOperation Operation, const processfile_slot_type &ProcessFile, void * Param,
   TOperationSide Side)
 {
@@ -2720,7 +2720,7 @@ bool TTerminal::ProcessFiles(TStrings * FileList,
   return Result;
 }
 //---------------------------------------------------------------------------
-TStrings * TTerminal::GetFixedPaths()
+nb::TStrings * TTerminal::GetFixedPaths()
 {
   assert(FFileSystem != NULL);
   return FFileSystem->GetFixedPaths();
@@ -2775,7 +2775,7 @@ void TTerminal::RecycleFile(const std::wstring FileName,
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
-    Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()).c_str());
+    Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", nb::Now()).c_str());
 
     MoveFile(fileName, File, &Params);
   }
@@ -2832,7 +2832,7 @@ void TTerminal::DoDeleteFile(const std::wstring FileName,
   }
 }
 //---------------------------------------------------------------------------
-bool TTerminal::DeleteFiles(TStrings * FilesToDelete, int Params)
+bool TTerminal::DeleteFiles(nb::TStrings * FilesToDelete, int Params)
 {
   // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
@@ -2856,7 +2856,7 @@ void TTerminal::DeleteLocalFile(const std::wstring FileName,
   }
 }
 //---------------------------------------------------------------------------
-bool TTerminal::DeleteLocalFiles(TStrings * FileList, int Params)
+bool TTerminal::DeleteLocalFiles(nb::TStrings * FileList, int Params)
 {
   return ProcessFiles(FileList, foDelete, boost::bind(&TTerminal::DeleteLocalFile, this, _1, _2, _3), &Params, osLocal);
 }
@@ -2917,7 +2917,7 @@ void TTerminal::DoCustomCommandOnFile(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CustomCommandOnFiles(const std::wstring Command,
-  int Params, TStrings * Files, const captureoutput_slot_type &OutputEvent)
+  int Params, nb::TStrings * Files, const captureoutput_slot_type &OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(Command))
   {
@@ -3025,7 +3025,7 @@ void TTerminal::DoChangeFileProperties(const std::wstring FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::ChangeFilesProperties(TStrings * FileList,
+void TTerminal::ChangeFilesProperties(nb::TStrings * FileList,
   const TRemoteProperties *Properties)
 {
   AnnounceFileListOperation();
@@ -3033,7 +3033,7 @@ void TTerminal::ChangeFilesProperties(TStrings * FileList,
       const_cast<void *>(static_cast<const void *>(Properties)));
 }
 //---------------------------------------------------------------------------
-bool TTerminal::LoadFilesProperties(TStrings * FileList)
+bool TTerminal::LoadFilesProperties(nb::TStrings * FileList)
 {
   bool Result =
     GetIsCapable(fcLoadingAdditionalProperties) &&
@@ -3134,7 +3134,7 @@ void TTerminal::DoCalculateDirectorySize(const std::wstring FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::CalculateFilesSize(TStrings * FileList,
+void TTerminal::CalculateFilesSize(nb::TStrings * FileList,
   __int64 & Size, int Params, const TCopyParamType * CopyParam,
   TCalculateSizeStats * Stats)
 {
@@ -3148,7 +3148,7 @@ void TTerminal::CalculateFilesSize(TStrings * FileList,
 }
 //---------------------------------------------------------------------------
 void TTerminal::CalculateFilesChecksum(const std::wstring Alg,
-  TStrings * FileList, TStrings * Checksums,
+  nb::TStrings * FileList, nb::TStrings * Checksums,
   calculatedchecksum_slot_type *OnCalculatedChecksum)
 {
   FFileSystem->CalculateFilesChecksum(Alg, FileList, Checksums, OnCalculatedChecksum);
@@ -3244,7 +3244,7 @@ void TTerminal::MoveFile(const std::wstring FileName,
   ReactOnCommand(fsMoveFile);
 }
 //---------------------------------------------------------------------------
-bool TTerminal::MoveFiles(TStrings * FileList, const std::wstring Target,
+bool TTerminal::MoveFiles(nb::TStrings * FileList, const std::wstring Target,
   const std::wstring FileMask)
 {
   TMoveFileParams Params;
@@ -3347,7 +3347,7 @@ void TTerminal::CopyFile(const std::wstring FileName,
   ReactOnCommand(fsCopyFile);
 }
 //---------------------------------------------------------------------------
-bool TTerminal::CopyFiles(TStrings * FileList, const std::wstring Target,
+bool TTerminal::CopyFiles(nb::TStrings * FileList, const std::wstring Target,
   const std::wstring FileMask)
 {
   TMoveFileParams Params;
@@ -3925,7 +3925,7 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::CalculateLocalFilesSize(TStrings * FileList,
+void TTerminal::CalculateLocalFilesSize(nb::TStrings * FileList,
   __int64 & Size, const TCopyParamType * CopyParam)
 {
   TFileOperationProgressType *OperationProgress = new TFileOperationProgressType(boost::bind(&TTerminal::DoProgress, this, _1, _2),
@@ -3987,7 +3987,7 @@ struct TSynchronizeData
   const synchronizedirectory_slot_type *OnSynchronizeDirectory;
   TSynchronizeOptions * Options;
   int Flags;
-  TStringList * LocalFileList;
+  nb::TStringList * LocalFileList;
   const TCopyParamType * CopyParam;
   TSynchronizeChecklist * Checklist;
 };
@@ -4059,7 +4059,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     bool Found = false;
     WIN32_FIND_DATA SearchRec;
     memset(&SearchRec, 0, sizeof(SearchRec));
-    Data.LocalFileList = new TStringList();
+    Data.LocalFileList = new nb::TStringList();
     Data.LocalFileList->SetSorted(true);
     Data.LocalFileList->SetCaseSensitive(false);
     TFileOperationProgressType *OperationProgress = GetOperationProgress();
@@ -4113,7 +4113,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
             FileData->New = true;
             FileData->Modified = false;
             Data.LocalFileList->AddObject(FileName,
-              reinterpret_cast<TObject*>(FileData));
+              reinterpret_cast<nb::TObject*>(FileData));
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
@@ -4399,10 +4399,10 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
     SyncCopyParam.SetPreserveTime(true);
   }
 
-  TStringList * DownloadList = new TStringList();
-  TStringList * DeleteRemoteList = new TStringList();
-  TStringList * UploadList = new TStringList();
-  TStringList * DeleteLocalList = new TStringList();
+  nb::TStringList * DownloadList = new nb::TStringList();
+  nb::TStringList * DeleteRemoteList = new nb::TStringList();
+  nb::TStringList * UploadList = new nb::TStringList();
+  nb::TStringList * DeleteLocalList = new nb::TStringList();
 
   BeginTransaction();
 
@@ -4454,14 +4454,14 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
                 DownloadList->AddObject(
                   UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) +
                     ChecklistItem->Remote.FileName,
-                  static_cast<TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
+                  static_cast<nb::TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
                 break;
 
               case TSynchronizeChecklist::saUploadUpdate:
                 UploadList->AddObject(
                   IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
                     ChecklistItem->Local.FileName,
-                  static_cast<TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
+                  static_cast<nb::TObject *>(const_cast<void *>(static_cast<const void *>(ChecklistItem))));
                 break;
 
               default:
@@ -4773,7 +4773,7 @@ bool TTerminal::GetStoredCredentialsTried()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
+bool TTerminal::CopyToRemote(nb::TStrings * FilesToCopy,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params)
 {
   assert(FFileSystem);
@@ -4875,7 +4875,7 @@ bool TTerminal::CopyToRemote(TStrings * FilesToCopy,
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
+bool TTerminal::CopyToLocal(nb::TStrings *FilesToCopy,
   const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params)
 {
   assert(FFileSystem);
@@ -4892,7 +4892,7 @@ bool TTerminal::CopyToLocal(TStrings *FilesToCopy,
   } BOOST_SCOPE_EXIT_END
   if (OwnsFileList)
   {
-    FilesToCopy = new TStringList();
+    FilesToCopy = new nb::TStringList();
     FilesToCopy->Assign(GetFiles()->GetSelectedFiles());
   }
 
@@ -5011,8 +5011,8 @@ void TSecondaryTerminal::DirectoryModified(const std::wstring Path,
 }
 //---------------------------------------------------------------------------
 bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
-  TPromptKind Kind, const std::wstring Name, const std::wstring Instructions, TStrings * Prompts,
-  TStrings * Results)
+  TPromptKind Kind, const std::wstring Name, const std::wstring Instructions, nb::TStrings * Prompts,
+  nb::TStrings * Results)
 {
   bool AResult = false;
 
@@ -5055,7 +5055,7 @@ bool TSecondaryTerminal::DoPromptUser(TSessionData * Data,
 }
 //---------------------------------------------------------------------------
 TTerminalList::TTerminalList(TConfiguration * AConfiguration) :
-  TObjectList()
+  nb::TObjectList()
 {
   assert(AConfiguration);
   FConfiguration = AConfiguration;

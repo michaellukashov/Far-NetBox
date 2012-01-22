@@ -175,7 +175,7 @@ THierarchicalStorage * TConfiguration::CreateStorage()
 //---------------------------------------------------------------------------
 void TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(::MB2W(#NAME)), Get##VAR())
+  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(LASTELEM(nb::MB2W(#NAME)), Get##VAR())
   REGCONFIG(true);
   #undef KEYEX
 }
@@ -243,7 +243,7 @@ void TConfiguration::Export(const std::wstring FileName)
 //---------------------------------------------------------------------------
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(::MB2W(#NAME)), Get##VAR()))
+  #define KEYEX(TYPE, VAR, NAME) Set##VAR(Storage->Read ## TYPE(LASTELEM(nb::MB2W(#NAME)), Get##VAR()))
   // #pragma warn -eas
   REGCONFIG(false);
   // #pragma warn +eas
@@ -278,7 +278,7 @@ void TConfiguration::Load()
 void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  TStrings * Names = new TStringList();
+  nb::TStrings * Names = new nb::TStringList();
   {
       BOOST_SCOPE_EXIT ( (&Names) )
       {
@@ -744,7 +744,7 @@ std::wstring TConfiguration::GetFileFileInfoString(const std::wstring Key,
       }
       catch (const std::exception &e)
       {
-        DEBUG_PRINTF(L"Error: %s", ::MB2W(e.what()).c_str());
+        DEBUG_PRINTF(L"Error: %s", nb::MB2W(e.what()).c_str());
         Result = L"";
       }
     }
@@ -1087,12 +1087,12 @@ void TConfiguration::SetShowFtpWelcomeMessage(bool value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void TShortCuts::Add(TShortCut ShortCut)
+void TShortCuts::Add(nb::TShortCut ShortCut)
 {
   FShortCuts.insert(ShortCut);
 }
 //---------------------------------------------------------------------------
-bool TShortCuts::Has(TShortCut ShortCut) const
+bool TShortCuts::Has(nb::TShortCut ShortCut) const
 {
   return (FShortCuts.count(ShortCut) != 0);
 }

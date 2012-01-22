@@ -16,13 +16,13 @@
 class TCriticalSection;
 enum TAutoSwitch { asOn, asOff, asAuto };
 //---------------------------------------------------------------------------
-class TConfiguration : public TObject
+class TConfiguration : public nb::TObject
 {
 private:
   bool FDontSave;
   bool FChanged;
   int FUpdating;
-  notify_signal_type FOnChange;
+  nb::notify_signal_type FOnChange;
 
   void * FApplicationInfo;
   bool FLogging;
@@ -183,8 +183,8 @@ public:
   // __property std::wstring DefaultLogFileName  = { read=GetDefaultLogFileName };
   std::wstring GetDefaultLogFileName();
   // __property TNotifyEvent OnChange = { read = FOnChange, write = FOnChange };
-  const notify_signal_type &GetOnChange() const { return FOnChange; }
-  void SetOnChange(const notify_slot_type &value) { FOnChange.connect(value); }
+  const nb::notify_signal_type &GetOnChange() const { return FOnChange; }
+  void SetOnChange(const nb::notify_slot_type &value) { FOnChange.connect(value); }
   // __property bool ConfirmOverwriting = { read = GetConfirmOverwriting, write = SetConfirmOverwriting};
   virtual bool GetConfirmOverwriting();
   virtual void SetConfirmOverwriting(bool value);
@@ -247,10 +247,10 @@ public:
 class TShortCuts
 {
 public:
-  void Add(TShortCut ShortCut);
-  bool Has(TShortCut ShortCut) const;
+  void Add(nb::TShortCut ShortCut);
+  bool Has(nb::TShortCut ShortCut) const;
 
 private:
-  std::set<TShortCut> FShortCuts;
+  std::set<nb::TShortCut> FShortCuts;
 };
 //---------------------------------------------------------------------------

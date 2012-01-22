@@ -85,7 +85,7 @@ private:
   TIDMap FIDMap;
 };
 //---------------------------------------------------------------------------
-class TRemoteFile : public TPersistent
+class TRemoteFile : public nb::TPersistent
 {
 private:
   TRemoteFileList *FDirectory;
@@ -94,8 +94,8 @@ private:
   __int64 FSize;
   std::wstring FFileName;
   int FINodeBlocks;
-  TDateTime FModification;
-  TDateTime FLastAccess;
+  nb::TDateTime FModification;
+  nb::TDateTime FLastAccess;
   TRemoteToken FGroup;
   int FIconIndex;
   bool FIsSymLink;
@@ -122,7 +122,7 @@ public:
   virtual ~TRemoteFile();
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
-  void ShiftTime(const TDateTime & Difference);
+  void ShiftTime(const nb::TDateTime & Difference);
   void Complete();
 
   // __property int Attr = { read = GetAttr };
@@ -148,9 +148,9 @@ public:
   void SetFileName(const std::wstring value) { FFileName = value; }
   // __property int INodeBlocks = { read = FINodeBlocks };
   int GetINodeBlocks() { return FINodeBlocks; };
-  // __property TDateTime Modification = { read = FModification, write = SetModification };
-  TDateTime GetModification() const { return FModification; }
-  void SetModification(const TDateTime & value);
+  // __property nb::TDateTime Modification = { read = FModification, write = SetModification };
+  nb::TDateTime GetModification() const { return FModification; }
+  void SetModification(const nb::TDateTime & value);
   // __property std::wstring ModificationStr = { read = GetModificationStr };
   std::wstring GetModificationStr();
   // __property std::wstring UserModificationStr = { read = GetUserModificationStr };
@@ -158,9 +158,9 @@ public:
   // __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt value) { FModificationFmt = value; }
-  // __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
-  TDateTime GetLastAccess() const { return FLastAccess; }
-  void SetLastAccess(TDateTime value) { FLastAccess = value; }
+  // __property nb::TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
+  nb::TDateTime GetLastAccess() const { return FLastAccess; }
+  void SetLastAccess(nb::TDateTime value) { FLastAccess = value; }
   // __property bool IsSymLink = { read = FIsSymLink };
   bool GetIsSymLink() const { return FIsSymLink; }
   // __property bool IsDirectory = { read = GetIsDirectory };
@@ -224,7 +224,7 @@ public:
   {}
 };
 //---------------------------------------------------------------------------
-class TRemoteFileList : public TObjectList
+class TRemoteFileList : public nb::TObjectList
 {
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
@@ -232,7 +232,7 @@ friend class TFTPFileSystem;
 friend class TWebDAVFileSystem;
 protected:
   std::wstring FDirectory;
-  TDateTime FTimestamp;
+  nb::TDateTime FTimestamp;
   TRemoteFile * GetParentDirectory();
 
   virtual void Clear();
@@ -258,8 +258,8 @@ public:
   std::wstring GetParentPath();
   // __property __int64 TotalSize = { read = GetTotalSize };
   __int64 GetTotalSize();
-  // __property TDateTime Timestamp = { read = FTimestamp };
-  TDateTime GetTimestamp() { return FTimestamp; }
+  // __property nb::TDateTime Timestamp = { read = FTimestamp };
+  nb::TDateTime GetTimestamp() { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectory : public TRemoteFileList
@@ -271,7 +271,7 @@ private:
   bool FIncludeParentDirectory;
   bool FIncludeThisDirectory;
   TTerminal * FTerminal;
-  TStrings * FSelectedFiles;
+  nb::TStrings * FSelectedFiles;
   TRemoteFile * FParentDirectory;
   TRemoteFile * FThisDirectory;
 protected:
@@ -288,8 +288,8 @@ public:
   // __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   TTerminal *GetTerminal() { return FTerminal; }
   void SetTerminal(TTerminal *value) { FTerminal = value; }
-  // __property TStrings * SelectedFiles  = { read=GetSelectedFiles };
-  TStrings * GetSelectedFiles();
+  // __property nb::TStrings * SelectedFiles  = { read=GetSelectedFiles };
+  nb::TStrings * GetSelectedFiles();
   // __property bool IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
   bool GetIncludeParentDirectory() { return FIncludeParentDirectory; }
   void SetIncludeParentDirectory(bool value);
@@ -305,13 +305,13 @@ public:
 };
 //---------------------------------------------------------------------------
 class TCriticalSection;
-class TRemoteDirectoryCache : private TStringList
+class TRemoteDirectoryCache : private nb::TStringList
 {
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
   bool HasFileList(const std::wstring Directory);
-  bool HasNewerFileList(const std::wstring Directory, TDateTime Timestamp);
+  bool HasNewerFileList(const std::wstring Directory, nb::TDateTime Timestamp);
   bool GetFileList(const std::wstring Directory,
     TRemoteFileList * FileList);
   void AddFileList(TRemoteFileList * FileList);
@@ -328,7 +328,7 @@ private:
   void DoClearFileList(const std::wstring Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
-class TRemoteDirectoryChangesCache : private TStringList
+class TRemoteDirectoryChangesCache : private nb::TStringList
 {
 public:
   explicit TRemoteDirectoryChangesCache(int MaxSize);
@@ -516,7 +516,7 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
 
-  static TRemoteProperties CommonProperties(TStrings * FileList);
+  static TRemoteProperties CommonProperties(nb::TStrings * FileList);
   static TRemoteProperties ChangedProperties(
     const TRemoteProperties & OriginalProperties, TRemoteProperties NewProperties);
 };
@@ -529,8 +529,8 @@ std::wstring UnixExtractFileName(const std::wstring Path);
 std::wstring UnixExtractFileExt(const std::wstring Path);
 bool UnixComparePaths(const std::wstring Path1, const std::wstring Path2);
 bool UnixIsChildPath(const std::wstring Parent, const std::wstring Child);
-bool ExtractCommonPath(TStrings * Files, std::wstring & Path);
-bool UnixExtractCommonPath(TStrings * Files, std::wstring & Path);
+bool ExtractCommonPath(nb::TStrings * Files, std::wstring & Path);
+bool UnixExtractCommonPath(nb::TStrings * Files, std::wstring & Path);
 std::wstring ExtractFileName(const std::wstring Path, bool Unix);
 bool IsUnixRootPath(const std::wstring Path);
 bool IsUnixHiddenFile(const std::wstring Path);
@@ -538,12 +538,12 @@ std::wstring AbsolutePath(const std::wstring Base, const std::wstring Path);
 std::wstring FromUnixPath(const std::wstring Path);
 std::wstring ToUnixPath(const std::wstring Path);
 std::wstring MinimizeName(const std::wstring FileName, size_t MaxLen, bool Unix);
-std::wstring MakeFileList(TStrings * FileList);
-TDateTime ReduceDateTimePrecision(TDateTime DateTime,
+std::wstring MakeFileList(nb::TStrings * FileList);
+nb::TDateTime ReduceDateTimePrecision(nb::TDateTime DateTime,
   TModificationFmt Precision);
 TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-std::wstring UserModificationStr(TDateTime DateTime,
+std::wstring UserModificationStr(nb::TDateTime DateTime,
   TModificationFmt Precision);
 int FakeFileImageIndex(const std::wstring FileName, unsigned long Attrs = 0,
   std::wstring * TypeName = NULL);

@@ -511,7 +511,7 @@ void ScramblePassword(std::wstring & Password)
   Buf[Padding] = (char)('0' + (Len % 10));
   Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
-  std::string pwd = ::W2MB(Password.c_str());
+  std::string pwd = nb::W2MB(Password.c_str());
   strcpy_s(Buf + Padding + 3, sizeof(Buf) - Padding - 3, pwd.c_str());
   char * S = Buf;
   int Last = 31;
@@ -521,14 +521,14 @@ void ScramblePassword(std::wstring & Password)
     *S = ScrambleTable[Last];
     S++;
   }
-  Password = ::MB2W(Buf);
+  Password = nb::MB2W(Buf);
   memset(Buf, 0, Len + SCRAMBLE_LENGTH_EXTENSION);
   delete[] Buf;
 }
 //---------------------------------------------------------------------------
 bool UnscramblePassword(std::wstring & Password)
 {
-  char * S = (char *)::W2MB(Password.c_str()).c_str();
+  char * S = (char *)nb::W2MB(Password.c_str()).c_str();
   int Last = 31;
   while (*S != '\0')
   {
@@ -542,7 +542,7 @@ bool UnscramblePassword(std::wstring & Password)
     S++;
   }
 
-  S = (char *)::W2MB(Password.c_str()).c_str();
+  S = (char *)nb::W2MB(Password.c_str()).c_str();
   while ((*S != '\0') && ((*S < '0') || (*S > '9')))
   {
     S++;

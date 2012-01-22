@@ -92,7 +92,7 @@ bool TFileZillaIntf::GetCurrentPath(char * Path, size_t MaxLen)
     // strcpy_s(nstring, APath);
     // strncpy(Path, APath.GetPath(), MaxLen);
 	CString path = APath.GetPath();
-    strcpy_s(Path, MaxLen, ::W2MB(path.GetBuffer(MaxLen)).c_str());
+    strcpy_s(Path, MaxLen, nb::W2MB(path.GetBuffer(MaxLen)).c_str());
     Path[MaxLen - 1] = '\0';
   }
   return Result;
@@ -294,7 +294,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         ASSERT(FZ_MSG_PARAM(wParam) == 0);
         t_ffam_statusmessage * Status = reinterpret_cast<t_ffam_statusmessage *>(lParam);
         ASSERT(Status->post);
-        Result = HandleStatus(::W2MB(Status->status.GetBuffer(Status->status.GetLength())).c_str(), Status->type);
+        Result = HandleStatus(nb::W2MB(Status->status.GetBuffer(Status->status.GetLength())).c_str(), Status->type);
         delete Status;
       }
 
@@ -309,13 +309,13 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         try
         {
           ASSERT(Data != NULL);
-          strncpy(FileName1, ::W2MB(Data->FileName1.GetBuffer(Data->FileName1.GetLength())).c_str(), sizeof(FileName1));
+          strncpy(FileName1, nb::W2MB(Data->FileName1.GetBuffer(Data->FileName1.GetLength())).c_str(), sizeof(FileName1));
           FileName1[sizeof(FileName1) - 1] = '\0';
           Result = HandleAsynchRequestOverwrite(
             FileName1, sizeof(FileName1),
-			::W2MB(Data->FileName2.GetBuffer(Data->FileName2.GetLength())).c_str(),
-			::W2MB(Data->path1.GetBuffer(Data->path1.GetLength())).c_str(),
-			::W2MB(Data->path2.GetBuffer(Data->path2.GetLength())).c_str(),
+			nb::W2MB(Data->FileName2.GetBuffer(Data->FileName2.GetLength())).c_str(),
+			nb::W2MB(Data->path1.GetBuffer(Data->path1.GetLength())).c_str(),
+			nb::W2MB(Data->path2.GetBuffer(Data->path2.GetLength())).c_str(),
             Data->size1, Data->size2,
             (Data->time1 != NULL) ? Data->time1->GetTime() : 0,
             (Data->time2 != NULL) ? Data->time2->GetTime() : 0,
@@ -406,7 +406,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
         int Num = Directory->num;
         TListDataEntry * pEntries = Num > 0 ? &Entries[0] : NULL;
-        Result = HandleListData(::W2MB(Path.GetBuffer(Path.GetLength())).c_str(), pEntries, Num);
+        Result = HandleListData(nb::W2MB(Path.GetBuffer(Path.GetLength())).c_str(), pEntries, Num);
         delete Directory;
       }
       break;

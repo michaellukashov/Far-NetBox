@@ -134,17 +134,17 @@ public:
   const TCopyParamType * GetCopyParam(int Index) const;
   // __property bool Modified = { read = FModified };
   bool GetModified() { return FModified; }
-  // __property TStrings * NameList = { read = GetNameList };
-  TStrings * GetNameList() const;
+  // __property nb::TStrings * NameList = { read = GetNameList };
+  nb::TStrings * GetNameList() const;
   // __property bool AnyRule = { read = GetAnyRule };
   bool GetAnyRule() const;
 
 private:
   static std::wstring FInvalidChars;
-  TObjectList * FRules;
-  TObjectList * FCopyParams;
-  TStrings * FNames;
-  mutable TStrings * FNameList;
+  nb::TObjectList * FRules;
+  nb::TObjectList * FCopyParams;
+  nb::TStrings * FNames;
+  mutable nb::TStrings * FNameList;
   bool FModified;
 
   void Init();
@@ -157,7 +157,7 @@ private:
 class TGUIConfiguration : public TConfiguration
 {
 private:
-  TStrings * FLocales;
+  nb::TStrings * FLocales;
   std::wstring FLastLocalesExts;
   bool FContinueOnError;
   bool FConfirmCommandSession;
@@ -171,13 +171,13 @@ private:
   int FSynchronizeModeAuto;
   int FSynchronizeMode;
   int FMaxWatchDirectories;
-  TDateTime FIgnoreCancelBeforeFinish;
+  nb::TDateTime FIgnoreCancelBeforeFinish;
   bool FQueueAutoPopup;
   bool FQueueRememberPassword;
   int FQueueTransfersLimit;
   TGUICopyParamType FDefaultCopyParam;
   bool FBeepOnFinish;
-  TDateTime FBeepOnFinishAfter;
+  nb::TDateTime FBeepOnFinishAfter;
   std::wstring FDefaultPuttyPathOnly;
   std::wstring FDefaultPuttyPath;
   bool FSynchronizeBrowsing;
@@ -247,8 +247,8 @@ public:
   void SetLocale(LCID value);
   // __property LCID LocaleSafe = { read = GetLocale, write = SetLocaleSafe };
   void SetLocaleSafe(LCID value);
-  // __property TStrings * Locales = { read = GetLocales };
-  TStrings * GetLocales();
+  // __property nb::TStrings * Locales = { read = GetLocales };
+  nb::TStrings * GetLocales();
   // __property std::wstring PuttyPath = { read = FPuttyPath, write = FPuttyPath };
   std::wstring GetPuttyPath() { return FPuttyPath; }
   void SetPuttyPath(const std::wstring value) { FPuttyPath = value; }
@@ -266,9 +266,9 @@ public:
   // __property std::wstring PuttySession = { read = FPuttySession, write = FPuttySession };
   std::wstring GetPuttySession() { return FPuttySession; }
   void SetPuttySession(std::wstring value) { FPuttySession = value; }
-  // __property TDateTime IgnoreCancelBeforeFinish = { read = FIgnoreCancelBeforeFinish, write = FIgnoreCancelBeforeFinish };
-  TDateTime GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
-  void SetIgnoreCancelBeforeFinish(TDateTime value) { FIgnoreCancelBeforeFinish = value; }
+  // __property nb::TDateTime IgnoreCancelBeforeFinish = { read = FIgnoreCancelBeforeFinish, write = FIgnoreCancelBeforeFinish };
+  nb::TDateTime GetIgnoreCancelBeforeFinish() { return FIgnoreCancelBeforeFinish; }
+  void SetIgnoreCancelBeforeFinish(nb::TDateTime value) { FIgnoreCancelBeforeFinish = value; }
   // __property TGUICopyParamType DefaultCopyParam = { read = FDefaultCopyParam, write = SetDefaultCopyParam };
   TGUICopyParamType &GetDefaultCopyParam() { return FDefaultCopyParam; }
   void SetDefaultCopyParam(const TGUICopyParamType & value);
@@ -278,9 +278,9 @@ public:
   // __property bool SynchronizeBrowsing = { read = FSynchronizeBrowsing, write = FSynchronizeBrowsing };
   bool GetSynchronizeBrowsing() { return FSynchronizeBrowsing; }
   void SetSynchronizeBrowsing(bool value) { FSynchronizeBrowsing = value; }
-  // __property TDateTime BeepOnFinishAfter = { read = FBeepOnFinishAfter, write = FBeepOnFinishAfter };
-  TDateTime GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
-  void SetBeepOnFinishAfter(TDateTime value) { FBeepOnFinishAfter = value; }
+  // __property nb::TDateTime BeepOnFinishAfter = { read = FBeepOnFinishAfter, write = FBeepOnFinishAfter };
+  nb::TDateTime GetBeepOnFinishAfter() { return FBeepOnFinishAfter; }
+  void SetBeepOnFinishAfter(nb::TDateTime value) { FBeepOnFinishAfter = value; }
   // __property const TCopyParamList * CopyParamList = { read = GetCopyParamList, write = SetCopyParamList };
   const TCopyParamList * GetCopyParamList();
   void SetCopyParamList(const TCopyParamList * value);

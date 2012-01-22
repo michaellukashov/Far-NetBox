@@ -40,7 +40,7 @@ inline int StringCmpI(const wchar_t *s1, const wchar_t *s2)
 //---------------------------------------------------------------------------
 void Abort()
 {
-    throw EAbort("");
+    throw nb::EAbort("");
 }
 //---------------------------------------------------------------------------
 void Error(int ErrorID, int data)
@@ -299,10 +299,10 @@ std::wstring ExceptionLogString(const std::exception *E)
   if (::InheritsFrom<std::exception, std::exception>(E))
   {
     std::wstring Msg;
-    Msg = FORMAT(L"(%s) %s", L"exception", ::MB2W(E->what()).c_str());
+    Msg = FORMAT(L"(%s) %s", L"exception", nb::MB2W(E->what()).c_str());
     if (::InheritsFrom<std::exception, ExtException>(E))
     {
-      TStrings * MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
+      nb::TStrings * MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
@@ -315,7 +315,7 @@ std::wstring ExceptionLogString(const std::exception *E)
   {
     // wchar_t Buffer[1024] = {0};
     // FIXME ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
-    return std::wstring(::MB2W(E->what()));
+    return std::wstring(nb::MB2W(E->what()));
   }
 }
 //---------------------------------------------------------------------------
@@ -961,7 +961,7 @@ static const int MSecsPerDay = SecsPerDay * 1000;
 static const int DateDelta = 693594;
 
 //---------------------------------------------------------------------------
-bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
+bool TryEncodeDate(int Year, int Month, int Day, nb::TDateTime &Date)
 {
   const TDayTable *DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
@@ -970,16 +970,16 @@ bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
     for (int I = 1; I <= Month - 1; I++)
         Day += (*DayTable)[I - 1];
     int I = Year - 1;
-    Date = TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
+    Date = nb::TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
     // DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
     return true;
   }
   return false;
 }
 
-TDateTime EncodeDate(int Year, int Month, int Day)
+nb::TDateTime EncodeDate(int Year, int Month, int Day)
 {
-  TDateTime Result;
+  nb::TDateTime Result;
   if (!TryEncodeDate(Year, Month, Day, Result))
   {
     ::ConvertError(SDateEncodeError);
@@ -987,7 +987,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day)
+nb::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day)
 {
   try
   {
@@ -997,10 +997,10 @@ TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int 
   {
     throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.GetMessage().c_str(), Year, Month, Day));
   }
-  return TDateTime();
+  return nb::TDateTime();
 }
 //---------------------------------------------------------------------------
-bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, TDateTime &Time)
+bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, nb::TDateTime &Time)
 {
   bool Result = false;
   // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
@@ -1013,9 +1013,9 @@ bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsign
   return Result;
 }
 
-TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+nb::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
 {
-  TDateTime Result;
+  nb::TDateTime Result;
   if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
   {
     ::ConvertError(STimeEncodeError);
@@ -1024,7 +1024,7 @@ TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsi
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
+nb::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
 {
   try
   {
@@ -1034,20 +1034,20 @@ TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Se
   {
     throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.GetMessage().c_str(), Hour, Min, Sec, MSec));
   }
-  return TDateTime();
+  return nb::TDateTime();
 }
 
-TDateTime StrToDateTime(const std::wstring Value)
+nb::TDateTime StrToDateTime(const std::wstring Value)
 {
     ::Error(SNotImplemented, 145);
-  return TDateTime();
+  return nb::TDateTime();
 }
 
 //---------------------------------------------------------------------------
 // DayOfWeek returns the day of the week of the given date. The result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-unsigned int DayOfWeek(const TDateTime &DateTime)
+unsigned int DayOfWeek(const nb::TDateTime &DateTime)
 {
   return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
@@ -1055,7 +1055,7 @@ unsigned int DayOfWeek(const TDateTime &DateTime)
 //---------------------------------------------------------------------------
 struct TDateTimeParams
 {
-  TDateTime UnixEpoch;
+  nb::TDateTime UnixEpoch;
   double BaseDifference;
   double CurrentDaylightDifference;
   double CurrentDifference;
@@ -1137,11 +1137,11 @@ static TDateTimeParams * GetDateTimeParams()
 }
 //---------------------------------------------------------------------------
 static void EncodeDSTMargin(const SYSTEMTIME &Date, unsigned short Year,
-  TDateTime &Result)
+  nb::TDateTime &Result)
 {
   if (Date.wYear == 0)
   {
-    TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
+    nb::TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
     
     Result = ((Date.wDayOfWeek - ::DayOfWeek(Temp) + 8) % 7) +
       (7 * (Date.wDay - 1));
@@ -1170,12 +1170,12 @@ static void EncodeDSTMargin(const SYSTEMTIME &Date, unsigned short Year,
   // ::Error(SNotImplemented, 46);
 }
 //---------------------------------------------------------------------------
-static bool IsDateInDST(const TDateTime & DateTime)
+static bool IsDateInDST(const nb::TDateTime & DateTime)
 {
   struct TDSTCache
   {
-    TDateTime StandardDate;
-    TDateTime DaylightDate;
+    nb::TDateTime StandardDate;
+    nb::TDateTime DaylightDate;
     unsigned short Year;
     bool Filled;
     bool SummerDST;
@@ -1258,14 +1258,14 @@ bool UsesDaylightHack()
   return GetDateTimeParams()->DaylightHack;
 }
 //---------------------------------------------------------------------------
-TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
+nb::TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
-  TDateTime Result;
+  nb::TDateTime Result;
   // DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
   // ::Error(SNotImplemented, 49);
-  Result = TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
+  Result = nb::TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
 
   if (Params->DaylightHack)
   {
@@ -1302,7 +1302,7 @@ __int64 Round(double Number)
 #define TIME_WIN_TO_POSIX(ft, t) ((t) = (__int64) \
     ((*(LONGLONG*)&(ft)) / (LONGLONG) 10000000 - (LONGLONG) 11644473600))
 //---------------------------------------------------------------------------
-static __int64 DateTimeToUnix(const TDateTime &DateTime)
+static __int64 DateTimeToUnix(const nb::TDateTime &DateTime)
 {
   TDateTimeParams *Params = GetDateTimeParams();
   double value = static_cast<double>(DateTime - Params->UnixEpoch) * 86400;
@@ -1311,7 +1311,7 @@ static __int64 DateTimeToUnix(const TDateTime &DateTime)
   return static_cast<__int64>(intpart) + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
-FILETIME DateTimeToFileTime(const TDateTime &DateTime,
+FILETIME DateTimeToFileTime(const nb::TDateTime &DateTime,
   TDSTMode /*DSTMode*/)
 {
   FILETIME Result;
@@ -1333,7 +1333,7 @@ FILETIME DateTimeToFileTime(const TDateTime &DateTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime FileTimeToDateTime(const FILETIME & FileTime)
+nb::TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
   SYSTEMTIME SysTime;
@@ -1350,7 +1350,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
     FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
     FileTimeToSystemTime(&LocalFileTime, &SysTime);
   }
-  TDateTime Result = SystemTimeToDateTime(SysTime);
+  nb::TDateTime Result = SystemTimeToDateTime(SysTime);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1369,7 +1369,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+      nb::TDateTime DateTime = SystemTimeToDateTime(SystemTime);
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
 
@@ -1387,7 +1387,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
       SYSTEMTIME SystemTime;
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+      nb::TDateTime DateTime = SystemTimeToDateTime(SystemTime);
       Result -= (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
     }
@@ -1396,7 +1396,7 @@ __int64 ConvertTimestampToUnix(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime ConvertTimestampToUTC(TDateTime DateTime)
+nb::TDateTime ConvertTimestampToUTC(nb::TDateTime DateTime)
 {
   TDateTimeParams *Params = GetDateTimeParams();
   DateTime = DateTime + Params->CurrentDifference;
@@ -1414,7 +1414,7 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   if ((FileTime.dwLowDateTime == 0) &&
       (FileTime.dwHighDateTime == 0))
   {
-    Result = DateTimeToUnix(Now());
+    Result = DateTimeToUnix(nb::Now());
   }
   else
   {
@@ -1423,7 +1423,7 @@ __int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime AdjustDateTimeFromUnix(TDateTime &DateTime, TDSTMode DSTMode)
+nb::TDateTime AdjustDateTimeFromUnix(nb::TDateTime &DateTime, TDSTMode DSTMode)
 {
   TDateTimeParams * Params = GetDateTimeParams();
 
@@ -1517,7 +1517,7 @@ std::wstring FixedLenDateTimeFormat(const std::wstring Format)
   return Result;
 }
 //---------------------------------------------------------------------------
-int CompareFileTime(TDateTime T1, TDateTime T2)
+int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2)
 {
   // "FAT" time precision
   // (when one time is seconds-precision and other is millisecond-precision,
@@ -1526,7 +1526,7 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   //  FIXME
   ::Error(SNotImplemented, 57);
   /*
-  static TDateTime TwoSeconds(0, 0, 2, 0);
+  static nb::TDateTime TwoSeconds(0, 0, 2, 0);
   int Result;
   if (T1 == T2)
   {
@@ -1550,11 +1550,11 @@ int CompareFileTime(TDateTime T1, TDateTime T2)
   return 0;
 }
 
-TDateTime Date()
+nb::TDateTime Date()
 {
     SYSTEMTIME t;
     ::GetLocalTime(&t);
-    TDateTime result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
+    nb::TDateTime result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
     return result;
 }
 
@@ -1565,7 +1565,7 @@ void DivMod(const int Dividend, const unsigned int Divisor,
     Remainder = Dividend % Divisor;
 }
 
-bool DecodeDateFully(const TDateTime &DateTime,
+bool DecodeDateFully(const nb::TDateTime &DateTime,
     unsigned int &Year, unsigned int &Month, unsigned int &Day, unsigned int &DOW)
 {
   static const int D1 = 365;
@@ -1635,14 +1635,14 @@ bool DecodeDateFully(const TDateTime &DateTime,
   return Result;
 }
 
-void DecodeDate(const TDateTime &DateTime, unsigned int &Year,
+void DecodeDate(const nb::TDateTime &DateTime, unsigned int &Year,
     unsigned int &Month, unsigned int &Day)
 {
   unsigned int Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const TDateTime &DateTime, unsigned int &Hour,
+void DecodeTime(const nb::TDateTime &DateTime, unsigned int &Hour,
     unsigned int &Min, unsigned int &Sec, unsigned int &MSec)
 {
   unsigned int MinCount, MSecCount;
@@ -1651,7 +1651,7 @@ void DecodeTime(const TDateTime &DateTime, unsigned int &Hour,
   DivMod(MSecCount, 1000, Sec, MSec);
 }
 
-std::wstring FormatDateTime(const std::wstring fmt, TDateTime DateTime)
+std::wstring FormatDateTime(const std::wstring fmt, nb::TDateTime DateTime)
 {
     // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
     // ::Error(SNotImplemented, 59);
@@ -1660,7 +1660,7 @@ std::wstring FormatDateTime(const std::wstring fmt, TDateTime DateTime)
     boost::local_time::local_time_facet *output_facet = new boost::local_time::local_time_facet();
     std::wstringstream ss;
     ss.imbue(std::locale(std::locale::classic(), output_facet));
-    output_facet->format(::W2MB(fmt.c_str()).c_str());
+    output_facet->format(nb::W2MB(fmt.c_str()).c_str());
     // boost::local_time::local_date_time ldt;
     unsigned int Y, M, D;
     DateTime.DecodeDate(Y, M, D);
@@ -1670,17 +1670,17 @@ std::wstring FormatDateTime(const std::wstring fmt, TDateTime DateTime)
     return Result;
 }
 /*
-TDateTime ComposeDateTime(TDateTime Date, TDateTime Time)
+nb::TDateTime ComposeDateTime(nb::TDateTime Date, nb::TDateTime Time)
 {
-  TDateTime Result = Trunc(Date);
+  nb::TDateTime Result = Trunc(Date);
   Result.Set(Time.GetHour(), Time.GetMinute(), Time.GetSecond(), Time.GetMillisecond());
   return Result;
 }
 */
 
-TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
+nb::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
 {
-  TDateTime Result(0.0);
+  nb::TDateTime Result(0.0);
   // ComposeDateTime(DoEncodeDate(SystemTime.Year, SystemTime.Month, SystemTime.Day), DoEncodeTime(SystemTime.Hour, SystemTime.Minute, SystemTime.Second, SystemTime.MilliSecond));
   ::TryEncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, Result);
   return Result;
@@ -2096,13 +2096,13 @@ bool IsExactly2008R2()
 std::wstring IntToStr(int value)
 {
     std::string result = boost::lexical_cast<std::string>(value);
-    return ::MB2W(result.c_str());
+    return nb::MB2W(result.c_str());
 }
 //---------------------------------------------------------------------------
 std::wstring Int64ToStr(__int64 value)
 {
     std::string result = boost::lexical_cast<std::string>(value);
-    return ::MB2W(result.c_str());
+    return nb::MB2W(result.c_str());
 }
 //---------------------------------------------------------------------------
 int StrToInt(const std::wstring value)
@@ -2357,7 +2357,7 @@ double StrToFloatDef(const std::wstring Value, double defval)
     double result = 0.0;
     try
     {
-        result = boost::lexical_cast<double>(::W2MB(Value.c_str()));
+        result = boost::lexical_cast<double>(nb::W2MB(Value.c_str()));
     }
     catch (const boost::bad_lexical_cast &)
     {
@@ -2378,9 +2378,9 @@ std::wstring FormatFloat(const std::wstring Format, double value)
 }
 
 //---------------------------------------------------------------------------
-TTimeStamp DateTimeToTimeStamp(TDateTime DateTime)
+nb::TTimeStamp DateTimeToTimeStamp(nb::TDateTime DateTime)
 {
-    TTimeStamp result = {0, 0};
+    nb::TTimeStamp result = {0, 0};
     double fractpart, intpart;
     fractpart = modf(DateTime, &intpart);
     result.Time = static_cast<int>(fractpart * MSecsPerDay);
@@ -2694,7 +2694,7 @@ std::wstring WrapText(const std::wstring Line, int MaxCol)
 std::wstring TranslateExceptionMessage(const std::exception *E)
 {
     if (E)
-        return ::MB2W(E->what());
+        return nb::MB2W(E->what());
     else
         return std::wstring();
 }

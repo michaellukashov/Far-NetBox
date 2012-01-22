@@ -240,14 +240,14 @@ std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
 }
 //---------------------------------------------------------------------------
 std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-  const std::wstring MultiItemsFormat, TStrings * Items)
+  const std::wstring MultiItemsFormat, nb::TStrings * Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
     Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : std::wstring()));
 }
 //---------------------------------------------------------------------------
 std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
-  const std::wstring MultiFilesFormat, TStrings * Files, bool Remote)
+  const std::wstring MultiFilesFormat, nb::TStrings * Files, bool Remote)
 {
   assert(Files != NULL);
   std::wstring Item;
@@ -296,7 +296,7 @@ std::wstring UniqTempDir(const std::wstring BaseDir, const std::wstring Identity
     }
     else
     {
-      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", nb::Now()));
     };
   }
   while (!Mask && DirectoryExists(TempDir));
@@ -345,7 +345,7 @@ bool DeleteDirectory(const std::wstring DirName)
   return retval;
 }
 //---------------------------------------------------------------------------
-std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, TDateTime DateTime)
+std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, nb::TDateTime DateTime)
 {
   std::wstring Result;
   if (static_cast<int>(DateTime) > 0)
@@ -354,7 +354,7 @@ std::wstring FormatDateTimeSpan(const std::wstring TimeFormat, TDateTime DateTim
   }
   // days are decremented, because when there are to many of them,
   // "integer overflow" error occurs
-  // Result += FormatDateTime(TimeFormat, TDateTime(DateTime - int(DateTime)));
+  // Result += FormatDateTime(TimeFormat, nb::TDateTime(DateTime - int(DateTime)));
   // DEBUG_PRINTF(L"TimeFormat = %s", TimeFormat.c_str());
   unsigned int H, M, S, MS;
   DateTime.DecodeTime(H, M, S, MS);

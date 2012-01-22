@@ -15,7 +15,7 @@ char * EOLToStr(TEOLType EOLType)
 //---------------------------------------------------------------------------
 TFileBuffer::TFileBuffer()
 {
-  FMemory = new TMemoryStream();
+  FMemory = new nb::TMemoryStream();
   FSize = 0;
 }
 //---------------------------------------------------------------------------
@@ -43,7 +43,7 @@ __int64 TFileBuffer::GetPosition() const
   return FMemory->GetPosition();
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::SetMemory(TMemoryStream *value)
+void TFileBuffer::SetMemory(nb::TMemoryStream *value)
 {
   if (FMemory != value)
   {
@@ -52,7 +52,7 @@ void TFileBuffer::SetMemory(TMemoryStream *value)
   }
 }
 //---------------------------------------------------------------------------
-DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
+DWORD TFileBuffer::ReadStream(nb::TStream * Stream, const DWORD Len, bool ForceLen)
 {
   DWORD Result = 0;
   try
@@ -73,18 +73,18 @@ DWORD TFileBuffer::ReadStream(TStream * Stream, const DWORD Len, bool ForceLen)
     {
       SetSize(GetSize() - Len + Result);
     }
-    FMemory->Seek(Len, soFromCurrent);
+    FMemory->Seek(Len, nb::soFromCurrent);
   }
-  catch (const EReadError &)
+  catch (const nb::EReadError &)
   {
     ::RaiseLastOSError();
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-DWORD TFileBuffer::LoadStream(TStream * Stream, const DWORD Len, bool ForceLen)
+DWORD TFileBuffer::LoadStream(nb::TStream * Stream, const DWORD Len, bool ForceLen)
 {
-  FMemory->Seek(0, soFromBeginning);
+  FMemory->Seek(0, nb::soFromBeginning);
   return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
@@ -218,24 +218,24 @@ void TFileBuffer::Delete(int Index, int Len)
   SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::WriteToStream(TStream *Stream, const DWORD Len)
+void TFileBuffer::WriteToStream(nb::TStream *Stream, const DWORD Len)
 {
   try
   {
     // DEBUG_PRINTF(L"before WriteBuffer: GetPosition = %d", GetPosition());
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
     // DEBUG_PRINTF(L"after WriteBuffer");
-    FMemory->Seek(Len, soFromCurrent);
+    FMemory->Seek(Len, nb::soFromCurrent);
     // DEBUG_PRINTF(L"after Seek");
   }
-  catch (const EWriteError &)
+  catch (const nb::EWriteError &)
   {
     ::RaiseLastOSError();
   }
 }
 //---------------------------------------------------------------------------
 TSafeHandleStream::TSafeHandleStream(HANDLE AHandle) :
-  THandleStream(AHandle)
+  nb::THandleStream(AHandle)
 {
     // DEBUG_PRINTF(L"FHandle = %d", FHandle);
 }

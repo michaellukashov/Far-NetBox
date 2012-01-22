@@ -212,7 +212,7 @@ bool TXmlStorage::DeleteSubKey(const std::wstring SubKey)
     return result;
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::GetSubKeyNames(TStrings* Strings)
+void TXmlStorage::GetSubKeyNames(nb::TStrings* Strings)
 {
     for (TiXmlElement *Element = FCurrentElement->FirstChildElement();
         Element != NULL; Element = Element->NextSiblingElement())
@@ -222,7 +222,7 @@ void TXmlStorage::GetSubKeyNames(TStrings* Strings)
     }
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::GetValueNames(TStrings* Strings)
+void TXmlStorage::GetValueNames(nb::TStrings* Strings)
 {
   ::Error(SNotImplemented, 3022);
   // FRegistry->GetValueNames(Strings);
@@ -358,10 +358,10 @@ bool TXmlStorage::Readbool(const std::wstring Name, bool Default)
     }
 }
 //---------------------------------------------------------------------------
-TDateTime TXmlStorage::ReadDateTime(const std::wstring Name, TDateTime Default)
+nb::TDateTime TXmlStorage::ReadDateTime(const std::wstring Name, nb::TDateTime Default)
 {
   double res = ReadFloat(Name, Default.operator double());
-  return TDateTime(res);
+  return nb::TDateTime(res);
 }
 //---------------------------------------------------------------------------
 double TXmlStorage::ReadFloat(const std::wstring Name, double Default)
@@ -398,7 +398,7 @@ void TXmlStorage::Writebool(const std::wstring Name, bool Value)
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteDateTime(const std::wstring Name, TDateTime Value)
+void TXmlStorage::WriteDateTime(const std::wstring Name, nb::TDateTime Value)
 {
   WriteFloat(Name, Value);
 }

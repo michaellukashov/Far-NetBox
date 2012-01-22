@@ -63,9 +63,9 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
     unsigned short port = 0;
     ParseURL(url, &scheme, &hostName, &port, NULL, NULL, NULL, NULL);
 
-    m_TopURL   = ::W2MB(scheme.c_str());
+    m_TopURL   = nb::W2MB(scheme.c_str());
     m_TopURL  += "://";
-    m_TopURL  += ::W2MB(hostName.c_str());
+    m_TopURL  += nb::W2MB(hostName.c_str());
     if (port)
     {
         m_TopURL += ':';
@@ -74,11 +74,11 @@ bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
 
     if (userName)
     {
-        m_UserName = ::W2MB(userName);
+        m_UserName = nb::W2MB(userName);
     }
     if (password)
     {
-        m_Password = ::W2MB(password);
+        m_Password = nb::W2MB(password);
     }
     return true;
 }
@@ -102,7 +102,7 @@ CURLcode CEasyURL::Prepare(const char *path,
     assert(m_CURL);
     assert(!m_Prepared);
     assert(!path || path[0] == L'/');
-    // DEBUG_PRINTF(L"CEasyURL::Prepare: m_TopURL = %s, path = %s", ::MB2W(m_TopURL.c_str()).c_str(), ::MB2W(path).c_str());
+    // DEBUG_PRINTF(L"CEasyURL::Prepare: m_TopURL = %s, path = %s", nb::MB2W(m_TopURL.c_str()).c_str(), nb::MB2W(path).c_str());
     curl_easy_reset(m_CURL);
     m_Output.Type = OutputWriter::None;
     m_Input.Type = InputReader::None;
@@ -158,7 +158,7 @@ CURLcode CEasyURL::Prepare(const char *path,
             default:
                 return CURLE_UNSUPPORTED_PROTOCOL;
         }
-        std::string proxy = ::W2MB(Data->GetProxyHost().c_str());
+        std::string proxy = nb::W2MB(Data->GetProxyHost().c_str());
         unsigned long port = Data->GetProxyPort();
         if (port)
         {
@@ -169,8 +169,8 @@ CURLcode CEasyURL::Prepare(const char *path,
         // CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYPORT, port));
         CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYTYPE, proxy_type));
 
-        std::string login = ::W2MB(Data->GetProxyUsername().c_str());
-        std::string password = ::W2MB(Data->GetProxyPassword().c_str());
+        std::string login = nb::W2MB(Data->GetProxyUsername().c_str());
+        std::string password = nb::W2MB(Data->GetProxyPassword().c_str());
         if (!login.empty())
         {
             CHECK_CUCALL(urlCode, curl_easy_setopt(m_CURL, CURLOPT_PROXYUSERNAME, login.c_str()));
@@ -348,8 +348,8 @@ int CEasyURL::InternalProgress(void *userData, double dltotal, double dlnow, dou
 int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
 {
     std::string str(data, size);
-    // DEBUG_PRINTF(L"data = %s", ::MB2W(str.c_str()).c_str());
-    std::wstring strw = ::MB2W(str.c_str());
+    // DEBUG_PRINTF(L"data = %s", nb::MB2W(str.c_str()).c_str());
+    std::wstring strw = nb::MB2W(str.c_str());
     // PASS *****
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {
@@ -368,7 +368,7 @@ int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
             return 0;
         }
     }
-    // DEBUG_PRINTF(L"str = %s", ::MB2W(str.c_str()).c_str());
+    // DEBUG_PRINTF(L"str = %s", nb::MB2W(str.c_str()).c_str());
     FTerminal->GetLog()->Add(type, strw);
     return 0;
 }

@@ -31,13 +31,13 @@ private:
   bool FActive;
   TSessionInfo FSessionInfo;
   bool FSessionInfoValid;
-  TDateTime FLastDataSent;
+  nb::TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
   const unsigned int * FMinPacketSize;
   const unsigned int * FMaxPacketSize;
   Config * FConfig;
-  notify_signal_type FOnReceive;
+  nb::notify_signal_type FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
@@ -129,8 +129,8 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried();
 
-  void RegisterReceiveHandler(const notify_slot_type &Handler);
-  void UnregisterReceiveHandler(const notify_slot_type &Handler);
+  void RegisterReceiveHandler(const nb::notify_slot_type &Handler);
+  void UnregisterReceiveHandler(const nb::notify_slot_type &Handler);
 
   // interface to PuTTY core
   void UpdateSocket(SOCKET value, bool Startup);
@@ -139,7 +139,7 @@ public:
   bool PromptUser(bool ToServer,
     const std::wstring AName, bool NameRequired,
     const std::wstring Instructions, bool InstructionsRequired,
-    TStrings * Prompts, TStrings * Results);
+    nb::TStrings * Prompts, nb::TStrings * Results);
   void FromBackend(bool IsStdErr, const char * Data, int Length);
   void CWrite(const char * Data, int Length);
   const std::wstring GetStdError();
@@ -158,8 +158,8 @@ public:
   // __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
   captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
-  // __property TDateTime LastDataSent = { read = FLastDataSent };
-  TDateTime GetLastDataSent() { return FLastDataSent; }
+  // __property nb::TDateTime LastDataSent = { read = FLastDataSent };
+  nb::TDateTime GetLastDataSent() { return FLastDataSent; }
   // __property std::wstring LastTunnelError = { read = FLastTunnelError };
   std::wstring GetLastTunnelError() { return FLastTunnelError; }
   // __property std::wstring UserName = { read = FUserName };

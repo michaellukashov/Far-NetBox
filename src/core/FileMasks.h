@@ -110,7 +110,7 @@ std::wstring MaskFileName(const std::wstring FileName, const std::wstring Mask);
 bool IsFileNameMask(const std::wstring Mask);
 std::wstring DelimitFileNameMask(const std::wstring Mask);
 //---------------------------------------------------------------------------
-typedef void (TObject::*TCustomCommandPatternEvent)
+typedef void (nb::TObject::*TCustomCommandPatternEvent)
   (int Index, const std::wstring Pattern, void * Arg, std::wstring & Replacement,
    bool & LastPass);
 //---------------------------------------------------------------------------

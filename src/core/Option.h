@@ -15,7 +15,7 @@ public:
   bool FindSwitch(const std::wstring Switch, std::wstring & Value);
   bool FindSwitch(const std::wstring Switch, int & ParamsStart,
     int & ParamsCount);
-  bool FindSwitch(const std::wstring Switch, TStrings * Params,
+  bool FindSwitch(const std::wstring Switch, nb::TStrings * Params,
     int ParamsMax = -1);
   void ParamsProcessed(int Position, int Count);
   std::wstring SwitchValue(const std::wstring Switch, const std::wstring Default = L"");

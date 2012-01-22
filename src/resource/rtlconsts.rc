@@ -98,7 +98,7 @@ BEGIN
   SConvIllegalFamily, "Illegal family"
   SConvFactorZero, "%s has a factor of zero"
   SConvStrParseError, "Could not parse %s"
-  SFailedToCallConstructor, "TStrings descendant %s failed to call inherited constructor"
+  SFailedToCallConstructor, "nb::TStrings descendant %s failed to call inherited constructor"
 
   sWindowsSocketError, "Windows socket error: %s (%d), on API ""%s"""
   sAsyncSocketError, "Asynchronous socket error %d"

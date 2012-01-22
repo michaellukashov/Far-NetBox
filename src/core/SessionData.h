@@ -112,7 +112,7 @@ private:
   std::wstring FCustomParam1;
   std::wstring FCustomParam2;
   bool FResolveSymlinks;
-  TDateTime FTimeDifference;
+  nb::TDateTime FTimeDifference;
   int FSFTPDownloadQueue;
   int FSFTPUploadQueue;
   int FSFTPListingQueue;
@@ -175,7 +175,7 @@ public:
   void RecryptPasswords();
   bool HasAnyPassword();
   void Remove();
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(nb::TPersistent * Source);
   bool ParseUrl(const std::wstring Url, TOptions * Options,
     TStoredSessionList * StoredSessions, bool & DefaultsOnly,
     std::wstring *FileName, bool *AProtocolDefined);
@@ -255,11 +255,11 @@ public:
   bool GetCanLogin();
   // __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
   bool GetClearAliases() const { return FClearAliases; }
-  // __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
-  void SetPingIntervalDT(TDateTime value);
-  TDateTime GetPingIntervalDT() const;
-  // __property TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
-  TDateTime GetTimeDifference() const { return FTimeDifference; }
+  // __property nb::TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
+  void SetPingIntervalDT(nb::TDateTime value);
+  nb::TDateTime GetPingIntervalDT() const;
+  // __property nb::TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
+  nb::TDateTime GetTimeDifference() const { return FTimeDifference; }
   // __property TPingType PingType = { read = FPingType, write = SetPingType };
   TPingType GetPingType() const { return FPingType; }
   // __property std::wstring SessionName  = { read=GetSessionName };
@@ -311,8 +311,8 @@ public:
   std::wstring GetSftpServer() const { return FSftpServer; }
   // __property int Timeout = { read = FTimeout, write = SetTimeout };
   int GetTimeout() const { return FTimeout; }
-  // __property TDateTime TimeoutDT = { read = GetTimeoutDT };
-  TDateTime GetTimeoutDT();
+  // __property nb::TDateTime TimeoutDT = { read = GetTimeoutDT };
+  nb::TDateTime GetTimeoutDT();
   // __property bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
   bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
   // __property bool IgnoreLsWarnings  = { read=FIgnoreLsWarnings, write=SetIgnoreLsWarnings };
@@ -429,8 +429,8 @@ public:
   std::wstring GetFtpAccount() const { return FFtpAccount; }
   // __property int FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
   int GetFtpPingInterval() const { return FFtpPingInterval; }
-  // __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
-  TDateTime GetFtpPingIntervalDT();
+  // __property nb::TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
+  nb::TDateTime GetFtpPingIntervalDT();
   // __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
   TPingType GetFtpPingType() const { return FFtpPingType; }
   // __property TFtps Ftps = { read = FFtps, write = SetFtps };
@@ -470,7 +470,7 @@ public:
   void SetSshNoUserAuth(bool value);
   void SetPublicKeyFile(const std::wstring value);
 
-  void SetTimeDifference(TDateTime value);
+  void SetTimeDifference(nb::TDateTime value);
   void SetPingType(TPingType value);
   void SetProtocol(TProtocol value);
   void SetFSProtocol(TFSProtocol value);

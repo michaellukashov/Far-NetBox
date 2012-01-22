@@ -72,7 +72,7 @@ struct TFarMessageParams
 {
     TFarMessageParams();
 
-    TStrings *MoreMessages;
+    nb::TStrings *MoreMessages;
     std::wstring CheckBoxLabel;
     bool CheckBox;
     unsigned int Timer;
@@ -85,7 +85,7 @@ struct TFarMessageParams
     void *Token;
 };
 //---------------------------------------------------------------------------
-class TCustomFarPlugin : public TObject
+class TCustomFarPlugin : public nb::TObject
 {
     friend TCustomFarFileSystem;
     friend TFarDialog;
@@ -127,15 +127,15 @@ public:
 
     static wchar_t *DuplicateStr(const std::wstring Str, bool AllowEmpty = false);
     int Message(unsigned int Flags, const std::wstring Title,
-        const std::wstring Message, TStrings *Buttons = NULL,
+        const std::wstring Message, nb::TStrings *Buttons = NULL,
         TFarMessageParams *Params = NULL, bool Oem = false);
     int MaxMessageLines();
     int MaxMenuItemLength();
     int Menu(unsigned int Flags, const std::wstring Title,
-        const std::wstring Bottom, TStrings *Items, const int *BreakKeys,
+        const std::wstring Bottom, nb::TStrings *Items, const int *BreakKeys,
         int &BreakCode);
     int Menu(unsigned int Flags, const std::wstring Title,
-        const std::wstring Bottom, TStrings *Items);
+        const std::wstring Bottom, nb::TStrings *Items);
     int Menu(unsigned int Flags, const std::wstring Title,
         const std::wstring Bottom, const FarMenuItem *Items, int Count,
         const int *BreakKeys, int &BreakCode);
@@ -160,7 +160,7 @@ public:
     void FlushText();
     void WriteConsole(const std::wstring Str);
     void FarCopyToClipboard(const std::wstring Str);
-    void FarCopyToClipboard(TStrings *Strings);
+    void FarCopyToClipboard(nb::TStrings *Strings);
     int FarVersion();
     std::wstring FormatFarVersion(int Version);
     std::wstring TemporaryDir();
@@ -174,7 +174,7 @@ public:
     void ShowTerminalScreen();
     void SaveTerminalScreen();
     void ScrollTerminalScreen(int Rows);
-    TPoint TerminalInfo(TPoint *Size = NULL, TPoint *Cursor = NULL);
+    nb::TPoint TerminalInfo(nb::TPoint *Size = NULL, nb::TPoint *Cursor = NULL);
     unsigned int ConsoleWindowState();
     void ToggleVideoMode();
 
@@ -192,7 +192,7 @@ protected:
     FarStandardFunctions FFarStandardFunctions;
     HINSTANCE FHandle;
     bool FANSIApis;
-    TObjectList *FOpenedPlugins;
+    nb::TObjectList *FOpenedPlugins;
     TFarDialog *FTopDialog;
     HANDLE FConsoleInput;
     HANDLE FConsoleOutput;
@@ -203,13 +203,13 @@ protected:
     bool FOldFar;
     bool FValidFarSystemSettings;
     unsigned int FFarSystemSettings;
-    TPoint FNormalConsoleSize;
+    nb::TPoint FNormalConsoleSize;
     TCustomFarPlugin *Self;
 
     virtual bool HandlesFunction(THandlesFunction Function);
     virtual void GetPluginInfoEx(long unsigned &Flags,
-        TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
-        TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
+        nb::TStrings *DiskMenuStrings, nb::TStrings *PluginMenuStrings,
+        nb::TStrings *PluginConfigStrings, nb::TStrings *CommandPrefixes) = 0;
     virtual TCustomFarFileSystem *OpenPluginEx(int OpenFrom, int Item) = 0;
     virtual bool ImportSessions() = 0;
     virtual bool ConfigureEx(int Item) = 0;
@@ -220,12 +220,12 @@ protected:
     virtual bool IsOldFar();
     virtual void OldFar();
     void ResetCachedInfo();
-    int MaxLength(TStrings *Strings);
+    int MaxLength(nb::TStrings *Strings);
     int FarMessage(unsigned int Flags,
-        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        const std::wstring Title, const std::wstring Message, nb::TStrings *Buttons,
         TFarMessageParams *Params);
     int DialogMessage(unsigned int Flags,
-        const std::wstring Title, const std::wstring Message, TStrings *Buttons,
+        const std::wstring Title, const std::wstring Message, nb::TStrings *Buttons,
         TFarMessageParams *Params);
     void InvalidateOpenPluginInfo();
 
@@ -237,7 +237,7 @@ public:
 #endif
 private:
     PluginInfo FPluginInfo;
-    TStringList *FSavedTitles;
+    nb::TStringList *FSavedTitles;
     std::wstring FCurrentTitle;
     short FCurrentProgress;
 
@@ -247,7 +247,7 @@ private:
     HWND GetConsoleWindow();
 };
 //---------------------------------------------------------------------------
-class TCustomFarFileSystem : public TObject
+class TCustomFarFileSystem : public nb::TObject
 {
     friend TFarPanelInfo;
     friend TCustomFarPlugin;
@@ -283,16 +283,16 @@ protected:
         std::wstring &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
         int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
         std::wstring &ShortcutData) = 0;
-    virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) = 0;
-    virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
+    virtual bool GetFindDataEx(nb::TObjectList *PanelItems, int OpMode) = 0;
+    virtual bool ProcessHostFileEx(nb::TObjectList *PanelItems, int OpMode);
     virtual bool ProcessKeyEx(int Key, unsigned int ControlState);
     virtual bool ProcessEventEx(int Event, void *Param);
     virtual bool SetDirectoryEx(const std::wstring Dir, int OpMode);
     virtual int MakeDirectoryEx(std::wstring &Name, int OpMode);
-    virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
-    virtual int GetFilesEx(TObjectList *PanelItems, bool Move,
+    virtual bool DeleteFilesEx(nb::TObjectList *PanelItems, int OpMode);
+    virtual int GetFilesEx(nb::TObjectList *PanelItems, bool Move,
         std::wstring &DestPath, int OpMode);
-    virtual int PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode);
+    virtual int PutFilesEx(nb::TObjectList *PanelItems, bool Move, int OpMode);
 
     void ResetCachedInfo();
     DWORD FarControl(int Command, int Param1, LONG_PTR Param2);
@@ -323,18 +323,18 @@ private:
     static unsigned int FInstances;
 
     void ClearOpenPluginInfo(OpenPluginInfo &Info);
-    TObjectList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
+    nb::TObjectList *CreatePanelItemList(struct PluginPanelItem *PanelItem,
         int ItemsNumber);
     TFarPanelInfo *GetPanelInfo(int Another);
 };
 //---------------------------------------------------------------------------
 #define PANEL_MODES_COUNT 10
-class TFarPanelModes : public TObject
+class TFarPanelModes : public nb::TObject
 {
     friend class TCustomFarFileSystem;
 public:
     void SetPanelMode(int Mode, const std::wstring ColumnTypes = L"",
-        const std::wstring ColumnWidths = L"", TStrings *ColumnTitles = NULL,
+        const std::wstring ColumnWidths = L"", nb::TStrings *ColumnTitles = NULL,
         bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
         bool CaseConversion = true, const std::wstring StatusColumnTypes = L"",
         const std::wstring StatusColumnWidths = L"");
@@ -351,7 +351,7 @@ private:
     static int CommaCount(const std::wstring ColumnTypes);
 };
 //---------------------------------------------------------------------------
-class TFarKeyBarTitles : public TObject
+class TFarKeyBarTitles : public nb::TObject
 {
     friend class TCustomFarFileSystem;
 public:
@@ -372,7 +372,7 @@ private:
     static void ClearKeyBarTitles(KeyBarTitles &Titles);
 };
 //---------------------------------------------------------------------------
-class TCustomFarPanelItem : public TObject
+class TCustomFarPanelItem : public nb::TObject
 {
     friend class TCustomFarFileSystem;
 public:
@@ -383,7 +383,7 @@ protected:
     virtual void GetData(
         unsigned long &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
-        TDateTime &LastWriteTime, TDateTime &LastAccess,
+        nb::TDateTime &LastWriteTime, nb::TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
         std::wstring &Owner, void *& UserData, int &CustomColumnNumber) = 0;
     virtual std::wstring GetCustomColumnData(int Column);
@@ -411,7 +411,7 @@ protected:
     virtual void GetData(
         unsigned long &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
-        TDateTime &LastWriteTime, TDateTime &LastAccess,
+        nb::TDateTime &LastWriteTime, nb::TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
         std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
     virtual std::wstring GetCustomColumnData(int Column);
@@ -430,7 +430,7 @@ protected:
     virtual void GetData(
         unsigned long &Flags, std::wstring &FileName, __int64 &Size,
         unsigned long &FileAttributes,
-        TDateTime &LastWriteTime, TDateTime &LastAccess,
+        nb::TDateTime &LastWriteTime, nb::TDateTime &LastAccess,
         unsigned long &NumberOfLinks, std::wstring &Description,
         std::wstring &Owner, void *& UserData, int &CustomColumnNumber);
 
@@ -440,20 +440,20 @@ private:
 //---------------------------------------------------------------------------
 enum TFarPanelType { ptFile, ptTree, ptQuickView, ptInfo };
 //---------------------------------------------------------------------------
-class TFarPanelInfo : public TObject
+class TFarPanelInfo : public nb::TObject
 {
 public:
     explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
     virtual ~TFarPanelInfo();
 
-    TObjectList *GetItems();
+    nb::TObjectList *GetItems();
     int GetItemCount();
     int GetSelectedCount();
     TFarPanelItem *GetFocusedItem();
     void SetFocusedItem(TFarPanelItem *value);
     int GetFocusedIndex();
     void SetFocusedIndex(int value);
-    TRect GetBounds();
+    nb::TRect GetBounds();
     TFarPanelType GetType();
     bool GetIsPlugin();
     std::wstring GetCurrentDirectory();
@@ -464,7 +464,7 @@ public:
 
 private:
     PanelInfo *FPanelInfo;
-    TObjectList *FItems;
+    nb::TObjectList *FItems;
     TCustomFarFileSystem *FOwner;
 };
 //---------------------------------------------------------------------------
@@ -473,7 +473,7 @@ enum MENUITEMFLAGS_EX
     // FIXME MIF_HIDDEN = 0x40000000UL,
 };
 //---------------------------------------------------------------------------
-class TFarMenuItems : public TStringList
+class TFarMenuItems : public nb::TStringList
 {
 public:
     explicit TFarMenuItems();
@@ -494,7 +494,7 @@ public:
     void SetChecked(int Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
 
 protected:
-    virtual void PutObject(int Index, TObject *AObject);
+    virtual void PutObject(int Index, nb::TObject *AObject);
 
 private:
     int FItemFocused;
@@ -534,7 +534,7 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(const std::wstring Text, TStrings *Result, int MaxWidth);
+void FarWrapText(const std::wstring Text, nb::TStrings *Result, int MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------

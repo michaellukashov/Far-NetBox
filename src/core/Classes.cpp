@@ -1208,14 +1208,14 @@ public:
 void TStream::ReadBuffer(void *Buffer, __int64 Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
-    throw EReadError(::W2MB(FMTLOAD(SReadError).c_str()).c_str());
+    throw EReadError(nb::W2MB(FMTLOAD(SReadError).c_str()).c_str());
 }
 
 void TStream::WriteBuffer(const void *Buffer, __int64 Count)
 {
   // DEBUG_PRINTF(L"Count = %d", Count);
   if ((Count != 0) && (Write(Buffer, Count) != Count))
-    throw EWriteError(::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
+    throw EWriteError(nb::W2MB(FMTLOAD(SWriteError).c_str()).c_str());
 }
 
 //---------------------------------------------------------------------------
@@ -1273,7 +1273,7 @@ __int64 THandleStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 void THandleStream::SetSize(const __int64 NewSize)
 {
     // __int64 res =
-    Seek(NewSize, soFromBeginning);
+    Seek(NewSize, nb::soFromBeginning);
     // LARGE_INTEGER li;
     // li.QuadPart = size;
     // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
@@ -1316,7 +1316,7 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
 
 __int64 TMemoryStream::Seek(__int64 Offset, __int64 Origin)
 {
-    // return Seek(Offset, soFromCurrent);
+    // return Seek(Offset, nb::soFromCurrent);
     ::Error(SNotImplemented, 1303);
     return 0;
 }
@@ -1325,13 +1325,13 @@ __int64 TMemoryStream::Seek(const __int64 Offset, TSeekOrigin Origin)
 {
   switch (Origin)
   {
-    case soFromBeginning:
+    case nb::soFromBeginning:
         FPosition = Offset;
         break;
-    case soFromCurrent:
+    case nb::soFromCurrent:
         FPosition += Offset;
         break;
-    case soFromEnd:
+    case nb::soFromEnd:
         FPosition = FSize + Offset;
         break;
   }
@@ -1363,7 +1363,7 @@ void TMemoryStream::SetSize(const __int64 NewSize)
   __int64 OldPosition = FPosition;
   SetCapacity(NewSize);
   FSize = NewSize;
-  if (OldPosition > NewSize) Seek(0, soFromEnd);
+  if (OldPosition > NewSize) Seek(0, nb::soFromEnd);
 }
 
 void TMemoryStream::SetCapacity(__int64 NewCapacity)
@@ -1567,7 +1567,7 @@ bool TRegistry::OpenKey(const std::wstring Key, bool CanCreate)
   // DEBUG_PRINTF(L"key = %s, CanCreate = %d", Key.c_str(), CanCreate);
   bool Result = false;
   std::wstring S = Key;
-  bool Relative = ::IsRelative(S);
+  bool Relative = nb::IsRelative(S);
 
   // if (!Relative) S.erase(0, 1); // Delete(S, 1, 1);
   HKEY TempKey = 0;
@@ -1598,7 +1598,7 @@ bool TRegistry::DeleteKey(const std::wstring Key)
 {
   bool Result = false;
   std::wstring S = Key;
-  bool Relative = ::IsRelative(S);
+  bool Relative = nb::IsRelative(S);
   // if not Relative then Delete(S, 1, 1);
   HKEY OldKey = GetCurrentKey();
   HKEY DeleteKey = GetKey(Key);
@@ -1720,7 +1720,7 @@ double TRegistry::ReadFloat(const std::wstring Name)
   int Len = GetData(Name, &Result, sizeof(double), RegData);
   if ((RegData != rdBinary) || (Len != sizeof(double)))
   {
-    ::ReadError(Name);
+    nb::ReadError(Name);
   }
   return Result;
 }
@@ -1734,7 +1734,7 @@ int TRegistry::Readint(const std::wstring Name)
   // DEBUG_PRINTF(L"Result = %d, RegData = %d, rdInteger = %d", Result, RegData, rdInteger);
   if (RegData != rdInteger)
   {
-    ::ReadError(Name);
+    nb::ReadError(Name);
   }
   return Result;
 }
@@ -1811,7 +1811,7 @@ int TRegistry::GetData(const std::wstring Name, void *Buffer,
 void TRegistry::PutData(const std::wstring Name, const void *Buffer,
   int BufSize, TRegDataType RegData)
 {
-  int DataType = ::RegDataToDataType(RegData);
+  int DataType = nb::RegDataToDataType(RegData);
   // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
   if (RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType, 
     reinterpret_cast<const BYTE *>(Buffer), BufSize) != ERROR_SUCCESS)
@@ -1877,7 +1877,7 @@ HKEY TRegistry::GetBaseKey(bool Relative)
 HKEY TRegistry::GetKey(const std::wstring Key)
 {
   std::wstring S = Key;
-  bool Relative = ::IsRelative(S);
+  bool Relative = nb::IsRelative(S);
   // if not Relative then Delete(S, 1, 1);
   HKEY Result = 0;
   RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0, FAccess, &Result);

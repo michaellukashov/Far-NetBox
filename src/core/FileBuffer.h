@@ -8,8 +8,8 @@ enum TEOLType { eolLF /* \n */, eolCRLF /* \r\n */, eolCR /* \r */ };
 const int cpRemoveCtrlZ = 0x01;
 const int cpRemoveBOM =   0x02;
 //---------------------------------------------------------------------------
-class TStream;
-class TMemoryStream;
+class nb::TStream;
+class nb::TMemoryStream;
 //---------------------------------------------------------------------------
 class TFileBuffer
 {
@@ -22,12 +22,12 @@ public:
   void Convert(TEOLType Source, char * Dest, int Params, bool & Token);
   void Insert(int Index, const char * Buf, int Len);
   void Delete(int Index, int Len);
-  DWORD LoadStream(TStream * Stream, const DWORD Len, bool ForceLen);
-  DWORD ReadStream(TStream * Stream, const DWORD Len, bool ForceLen);
-  void WriteToStream(TStream * Stream, const DWORD Len);
-  // __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
-  TMemoryStream *GetMemory() { return FMemory; }
-  void SetMemory(TMemoryStream * value);
+  DWORD LoadStream(nb::TStream * Stream, const DWORD Len, bool ForceLen);
+  DWORD ReadStream(nb::TStream * Stream, const DWORD Len, bool ForceLen);
+  void WriteToStream(nb::TStream * Stream, const DWORD Len);
+  // __property nb::TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
+  nb::TMemoryStream *GetMemory() { return FMemory; }
+  void SetMemory(nb::TMemoryStream * value);
   // __property char * Data = { read=GetData };
   char *GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
   // __property int Size = { read=FSize, write=SetSize };
@@ -38,13 +38,13 @@ public:
   void SetPosition(__int64 value);
 
 private:
-  TMemoryStream *FMemory;
+  nb::TMemoryStream *FMemory;
   __int64 FSize;
 };
 
 //---------------------------------------------------------------------------
 
-class TSafeHandleStream : public THandleStream
+class TSafeHandleStream : public nb::THandleStream
 {
 public:
   TSafeHandleStream(HANDLE AHandle);

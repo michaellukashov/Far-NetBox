@@ -39,15 +39,15 @@ public:
   virtual void ChangeFileProperties(const std::wstring FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual bool LoadFilesProperties(nb::TStrings * FileList);
   virtual void CalculateFilesChecksum(const std::wstring Alg,
-    TStrings * FileList, TStrings * Checksums,
+    nb::TStrings * FileList, nb::TStrings * Checksums,
     calculatedchecksum_slot_type *OnCalculatedChecksum);
-  virtual void CopyToLocal(TStrings * FilesToCopy,
+  virtual void CopyToLocal(nb::TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(TStrings * FilesToCopy,
+  virtual void CopyToRemote(nb::TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -72,7 +72,7 @@ public:
   virtual void CopyFile(const std::wstring FileName,
     const std::wstring NewName);
   virtual std::wstring FileUrl(const std::wstring FileName);
-  virtual TStrings * GetFixedPaths();
+  virtual nb::TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const std::wstring Path,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo();
@@ -107,7 +107,7 @@ protected:
   void GotNonCommandReply(unsigned int Reply);
   void GotReply(unsigned int Reply, unsigned int Flags = 0,
     std::wstring Error = L"", unsigned int * Code = NULL,
-    TStrings ** Response = NULL);
+    nb::TStrings ** Response = NULL);
   void ResetReply();
   void HandleReplyStatus(const std::wstring Response);
   void DoWaitForReply(unsigned int& ReplyToAwait, bool WantLastCode);
@@ -169,8 +169,8 @@ protected:
     const std::wstring RemoteFile, const std::wstring RemotePath, bool Get,
     __int64 Size, int Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
-  TDateTime ConvertLocalTimestamp(time_t Time);
-  TDateTime ConvertRemoteTimestamp(time_t Time, bool HasTime);
+  nb::TDateTime ConvertLocalTimestamp(time_t Time);
+  nb::TDateTime ConvertRemoteTimestamp(time_t Time, bool HasTime);
   void SetLastCode(int Code);
 
   static bool Unquote(std::wstring & Str);
@@ -203,10 +203,10 @@ private:
   int FLastReadDirectoryProgress;
   std::wstring FTimeoutStatus;
   std::wstring FDisconnectStatus;
-  TStrings * FLastResponse;
-  TStrings * FLastError;
+  nb::TStrings * FLastResponse;
+  nb::TStrings * FLastError;
   std::wstring FSystem;
-  TStrings * FFeatures;
+  nb::TStrings * FFeatures;
   std::wstring FCurrentDirectory;
   std::wstring FHomeDirectory;
   TRemoteFileList * FFileList;
@@ -226,7 +226,7 @@ private:
   TAutoSwitch FListAll;
   bool FDoListAll;
   bool FMfmt;
-  TDateTime FLastDataSent;
+  nb::TDateTime FLastDataSent;
   mutable std::wstring FOptionScratch;
   TFTPFileSystem *Self;
 private:
