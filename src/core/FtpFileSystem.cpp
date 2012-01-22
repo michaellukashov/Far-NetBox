@@ -3050,7 +3050,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   else
   {
     FSessionInfo.CertificateFingerprint =
-      StrToHex(std::wstring(reinterpret_cast<const wchar_t *>(Data.Hash), Data.HashLen), false, ':');
+      StrToHex(std::wstring(::MB2W(reinterpret_cast<const char *>(Data.Hash), Data.HashLen)), false, ':');
 
     int VerificationResultStr;
     switch (Data.VerificationResult)
