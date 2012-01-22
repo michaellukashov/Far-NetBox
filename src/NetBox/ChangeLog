@@ -1,3 +1,7 @@
+NetBox 2.0.7 ??.01.2012
+---------------------
+  * Bugfix: FTPS: cetificate info was not verified
+
 NetBox 2.0.6 21.01.2012
 ---------------------
   * Bugfix: FTPS: Far crashes when attempting to connect to FTPS server
