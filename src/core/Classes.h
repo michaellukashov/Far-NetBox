@@ -24,6 +24,8 @@
 
 #pragma warning(pop)
 
+namespace nb {
+
 //---------------------------------------------------------------------------
 extern const std::wstring sLineBreak;
 //---------------------------------------------------------------------------
@@ -690,3 +692,5 @@ public:
     operator int() const;
     bool operator < (const TShortCut &rhs) const;
 };
+
+} // namespace nb

@@ -14,6 +14,8 @@
 
 namespace alg = boost::algorithm;
 
+namespace nb {
+
 //---------------------------------------------------------------------------
 TPersistent::TPersistent()
 {}
@@ -1913,3 +1915,5 @@ bool TShortCut::operator < (const TShortCut &rhs) const
 {
     return false;
 }
+
+} // namespace nb
