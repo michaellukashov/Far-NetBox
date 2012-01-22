@@ -38,20 +38,6 @@ inline int StringCmpI(const wchar_t *s1, const wchar_t *s2)
 }
 
 //---------------------------------------------------------------------------
-void Abort()
-{
-    throw nb::EAbort("");
-}
-//---------------------------------------------------------------------------
-void Error(int ErrorID, int data)
-{
-    DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
-    std::wstring Msg = FMTLOAD(ErrorID, data);
-    // DEBUG_PRINTF(L"Msg = %s", Msg.c_str());
-    throw ExtException(Msg);
-}
-
-//---------------------------------------------------------------------------
 // TCriticalSection
 //---------------------------------------------------------------------------
 TCriticalSection::TCriticalSection()
@@ -334,7 +320,7 @@ std::wstring SystemTemporaryDirectory()
 
 std::wstring SysErrorMessage(int ErrorCode)
 {
-    // ::Error(SNotImplemented, 41); 
+    // nb::Error(SNotImplemented, 41); 
     std::wstring Result;
     // LPTSTR lpszTemp;
     wchar_t Buffer[255];
@@ -1039,7 +1025,7 @@ nb::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned in
 
 nb::TDateTime StrToDateTime(const std::wstring Value)
 {
-    ::Error(SNotImplemented, 145);
+    nb::Error(SNotImplemented, 145);
   return nb::TDateTime();
 }
 
@@ -1167,7 +1153,7 @@ static void EncodeDSTMargin(const SYSTEMTIME &Date, unsigned short Year,
     Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
       EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
   }
-  // ::Error(SNotImplemented, 46);
+  // nb::Error(SNotImplemented, 46);
 }
 //---------------------------------------------------------------------------
 static bool IsDateInDST(const nb::TDateTime & DateTime)
@@ -1264,7 +1250,7 @@ nb::TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 
   nb::TDateTime Result;
   // DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
-  // ::Error(SNotImplemented, 49);
+  // nb::Error(SNotImplemented, 49);
   Result = nb::TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
 
   if (Params->DaylightHack)
@@ -1431,7 +1417,7 @@ nb::TDateTime AdjustDateTimeFromUnix(nb::TDateTime &DateTime, TDSTMode DSTMode)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      // ::Error(SNotImplemented, 55);
+      // nb::Error(SNotImplemented, 55);
       DateTime = DateTime - Params->CurrentDaylightDifference;
     }
 
@@ -1503,7 +1489,7 @@ std::wstring FixedLenDateTimeFormat(const std::wstring Format)
       if (!AsIs && (strchr("dDeEmMhHnNsS", F) != NULL) &&
           ((Index == Result.size()) || (Result[Index + 1] != F)))
       {
-        ::Error(SNotImplemented, 56);
+        nb::Error(SNotImplemented, 56);
         // FIXME Result.insert(Index, F);
       }
 
@@ -1524,7 +1510,7 @@ int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2)
   // we may have times like 12:00:00.000 and 12:00:01.999, which should
   // be treated the same)
   //  FIXME
-  ::Error(SNotImplemented, 57);
+  nb::Error(SNotImplemented, 57);
   /*
   static nb::TDateTime TwoSeconds(0, 0, 2, 0);
   int Result;
@@ -1654,7 +1640,7 @@ void DecodeTime(const nb::TDateTime &DateTime, unsigned int &Hour,
 std::wstring FormatDateTime(const std::wstring fmt, nb::TDateTime DateTime)
 {
     // DEBUG_PRINTF(L"fmt = %s", fmt.c_str());
-    // ::Error(SNotImplemented, 59);
+    // nb::Error(SNotImplemented, 59);
     std::wstring Result;
     // DateTimeToString(Result, fmt, DateTime);
     boost::local_time::local_time_facet *output_facet = new boost::local_time::local_time_facet();
@@ -1937,7 +1923,7 @@ void OemToAnsi(std::wstring & Str)
   {
     // Str.Unique();
     // FIXME OemToChar(Str.c_str(), Str.c_str());
-    ::Error(SNotImplemented, 61);
+    nb::Error(SNotImplemented, 61);
   }
 }
 //---------------------------------------------------------------------------
@@ -1947,7 +1933,7 @@ void AnsiToOem(std::wstring & Str)
   {
     // Str.Unique();
     // FIXME CharToOem(Str.c_str(), Str.c_str());
-    ::Error(SNotImplemented, 62);
+    nb::Error(SNotImplemented, 62);
   }
 }
 //---------------------------------------------------------------------------
@@ -2331,7 +2317,7 @@ int AnsiCompareIC(const std::wstring str1, const std::wstring str2)
 bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 {
     // FIXME
-    ::Error(SNotImplemented, 76);
+    nb::Error(SNotImplemented, 76);
     return false;
 }
 
@@ -2371,7 +2357,7 @@ std::wstring FormatFloat(const std::wstring Format, double value)
     // DEBUG_PRINTF(L"Format = %s", Format.c_str());
     // #,##0 "B"
     // FIXME
-    // ::Error(SNotImplemented, 78);
+    // nb::Error(SNotImplemented, 78);
     std::wstring result(20, 0);
     swprintf_s(&result[0], result.size(), L"%.2f", value);
     return result.c_str();
@@ -2763,7 +2749,7 @@ char *StrNew(const char *str)
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
 {
-    ::Error(SNotImplemented, 31); 
+    nb::Error(SNotImplemented, 31); 
     wchar_t *result = NULL;
     return result;
 }
@@ -2802,7 +2788,7 @@ std::wstring ExpandFileName(const std::wstring FileName)
 
 std::wstring GetUniversalName(std::wstring &FileName)
 {
-    // ::Error(SNotImplemented, 35);
+    // nb::Error(SNotImplemented, 35);
     std::wstring Result = FileName;
     return Result;
 }
@@ -2820,7 +2806,7 @@ std::wstring ExpandUNCFileName(const std::wstring FileName)
 
 __int64 FileSeek(HANDLE file, __int64 offset, __int64 size)
 {
-    ::Error(SNotImplemented, 300);
+    nb::Error(SNotImplemented, 300);
     return 0;
 }
 

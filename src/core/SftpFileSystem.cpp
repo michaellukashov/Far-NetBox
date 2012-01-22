@@ -2780,7 +2780,7 @@ void TSFTPFileSystem::DoStartup()
           std::wstring Versions = VersionsPacket.GetStringW(!FUtfNever);
           if (VersionsPacket.GetNextData() != NULL)
           {
-            Abort();
+            nb::Abort();
           }
           FTerminal->LogEvent(FORMAT(L"SFTP versions supported by the server (VShell format): %s",
             Versions.c_str()));
@@ -3838,7 +3838,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
           {
             OperationProgress->Cancel = csCancel;
           }
-          Abort();
+          nb::Abort();
           break;
       }
     }
@@ -3857,7 +3857,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
       {
         OperationProgress->Cancel = csCancel;
       }
-      Abort();
+      nb::Abort();
     }
   }
   else
@@ -3870,7 +3870,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(std::wstring &FileName,
         {
           OperationProgress->Cancel = csCancel;
         }
-        Abort();
+        nb::Abort();
         break;
 
       case qaNo:
@@ -3902,7 +3902,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
       {
         OperationProgress->Cancel = csCancel;
       }
-      Abort();
+      nb::Abort();
     }
     ResumeTransfer = false;
   }
@@ -3936,7 +3936,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const std::wstring DestFileName,
         {
           OperationProgress->Cancel = csCancel;
         }
-        Abort();
+        nb::Abort();
         break;
     }
   }
@@ -4290,7 +4290,7 @@ void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
           {
             if (OperationProgress->Cancel)
             {
-              Abort();
+              nb::Abort();
             }
           }
 
@@ -5278,7 +5278,7 @@ void TSFTPFileSystem::SFTPSink(const std::wstring FileName,
 
             if (OperationProgress->Cancel == csCancel)
             {
-              Abort();
+              nb::Abort();
             }
           };
 
@@ -5391,7 +5391,7 @@ void TSFTPFileSystem::SFTPSinkFile(const std::wstring FileName,
 
     if (OperationProgress->Cancel)
     {
-      Abort();
+      nb::Abort();
     }
   }
 }

@@ -347,7 +347,7 @@ const TSessionInfo & TWebDAVFileSystem::GetSessionInfo()
 //---------------------------------------------------------------------------
 const TFileSystemInfo & TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-  // ::Error(SNotImplemented, 1009);
+  // nb::Error(SNotImplemented, 1009);
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
@@ -769,7 +769,7 @@ void TWebDAVFileSystem::DeleteFile(const std::wstring FileName,
 void TWebDAVFileSystem::RenameFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  // ::Error(SNotImplemented, 1011);
+  // nb::Error(SNotImplemented, 1011);
   // DEBUG_PRINTF(L"FileName = %s, NewName = %s", FileName.c_str(), NewName.c_str());
   // DEBUG_PRINTF(L"FCurrentDirectory = %s", FCurrentDirectory.c_str());
   std::wstring FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
@@ -790,7 +790,7 @@ void TWebDAVFileSystem::RenameFile(const std::wstring FileName,
 void TWebDAVFileSystem::CopyFile(const std::wstring FileName,
   const std::wstring NewName)
 {
-  ::Error(SNotImplemented, 1012);
+  nb::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CreateDirectory(const std::wstring DirName)
@@ -822,14 +822,14 @@ void TWebDAVFileSystem::CreateDirectory(const std::wstring DirName)
 void TWebDAVFileSystem::CreateLink(const std::wstring FileName,
   const std::wstring PointTo, bool Symbolic)
 {
-  ::Error(SNotImplemented, 1014);
+  nb::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ChangeFileProperties(const std::wstring FileName,
   const TRemoteFile * File, const TRemoteProperties * Properties,
   TChmodSessionAction & Action)
 {
-  ::Error(SNotImplemented, 1006);
+  nb::Error(SNotImplemented, 1006);
   assert(Properties);
 }
 //---------------------------------------------------------------------------
@@ -995,7 +995,7 @@ void TWebDAVFileSystem::CaptureOutput(const std::wstring AddedLine, bool StdErro
 void TWebDAVFileSystem::AnyCommand(const std::wstring Command,
   const captureoutput_slot_type *OutputEvent)
 {
-    ::Error(SNotImplemented, 1008);
+    nb::Error(SNotImplemented, 1008);
 }
 
 //---------------------------------------------------------------------------
@@ -1021,7 +1021,7 @@ void TWebDAVFileSystem::CopyToRemote(nb::TStrings * FilesToCopy,
   int Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
-  // ::Error(SNotImplemented, 1005);
+  // nb::Error(SNotImplemented, 1005);
   assert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
   Params &= ~cpAppend;
@@ -1617,7 +1617,7 @@ void TWebDAVFileSystem::SinkFile(const std::wstring FileName,
 
             if (OperationProgress->Cancel)
             {
-                Abort();
+                nb::Abort();
             }
     }
 }
@@ -2030,7 +2030,7 @@ void TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
       THROW_SKIP_FILE(errorInfo, NULL);
 
     case ftaCancel:
-      Abort();
+      nb::Abort();
       break;
   }
 

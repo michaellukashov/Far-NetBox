@@ -970,7 +970,7 @@ void TFTPFileSystem::FileTransfer(const std::wstring FileName,
       THROW_SKIP_FILE_NULL;
 
     case ftaCancel:
-      Abort();
+      nb::Abort();
       break;
   }
 
@@ -1246,7 +1246,7 @@ void TFTPFileSystem::SinkFile(const std::wstring FileName,
 
     if (OperationProgress->Cancel)
     {
-      Abort();
+      nb::Abort();
     }
   }
 }

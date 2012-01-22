@@ -890,7 +890,7 @@ void TRemoteFile::SetType(char AType)
 {
   FType = AType;
   // Allow even non-standard file types (e.g. 'S')
-  // if (!std::wstring("-DL").find_first_of((char)toupper(FType))) Abort();
+  // if (!std::wstring("-DL").find_first_of((char)toupper(FType))) nb::Abort();
   FIsSymLink = (static_cast<char>(toupper(FType)) == FILETYPE_SYMLINK);
 }
 //---------------------------------------------------------------------------
@@ -1111,7 +1111,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
           // neither standard, not --full-time format
           if (Month == 0)
           {
-            Abort();
+            nb::Abort();
           }
           else
           {
@@ -1125,7 +1125,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
           GETNCOL;
           Day = (unsigned int)StrToInt(Col);
         }
-        if ((Day < 1) || (Day > 31)) Abort();
+        if ((Day < 1) || (Day > 31)) nb::Abort();
 
         // second full-time format
         // ddd mmm dd hh:nn:ss yyyy
@@ -1134,7 +1134,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
           GETCOL;
           if (Col.size() != 8)
           {
-            Abort();
+            nb::Abort();
           }
           Hour = (unsigned int)StrToInt(Col.substr(0, 2));
           Min = (unsigned int)StrToInt(Col.substr(3, 2));
@@ -1170,7 +1170,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
             Hour = (unsigned int)StrToInt(Col.substr(0, P));
             Min = (unsigned int)StrToInt(Col.substr(P + 1, Col.size() - P - 1));
             // DEBUG_PRINTF(L"Hour = %d, Min = %d", Hour, Min);
-            if (Hour > 23 || Hour > 59) Abort();
+            if (Hour > 23 || Hour > 59) nb::Abort();
             // When we don't got year, we assume current year
             // with exception that the date would be in future
             // in this case we assume last year.
@@ -1183,7 +1183,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
           else
           {
             Year = (unsigned int)StrToInt(Col);
-            if (Year > 10000) Abort();
+            if (Year > 10000) nb::Abort();
             // When we don't got time we assume midnight
             Hour = 0; Min = 0; Sec = 0;
             FModificationFmt = mfMDY;
@@ -1223,7 +1223,7 @@ void TRemoteFile::SetListingStr(const std::wstring value)
           }
           else
           {
-            Abort();
+            nb::Abort();
           }
         }
         FFileName = UnixExtractFileName(::Trim(Line));
@@ -1355,7 +1355,7 @@ bool TRemoteFile::GetHaveFullFileName() const
 int TRemoteFile::GetAttr()
 {
   int Result = 0;
-  ::Error(SNotImplemented, 215); 
+  nb::Error(SNotImplemented, 215); 
   if (GetRights()->GetReadOnly()) Result |= 0; // FIXME faReadOnly;
   if (GetIsHidden()) Result |= 0; // FIXME faHidden;
   return Result;
@@ -1565,7 +1565,7 @@ void TRemoteDirectory::SetIncludeParentDirectory(bool value)
     else if (!value && GetParentDirectory())
     {
       assert(IndexOf(GetParentDirectory()) >= 0);
-     ::Error(SNotImplemented, 216); 
+     nb::Error(SNotImplemented, 216); 
       // FIXME Extract(GetParentDirectory());
     }
   }
@@ -1584,7 +1584,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
     else if (!value && GetThisDirectory())
     {
       assert(IndexOf(GetThisDirectory()) >= 0);
-      ::Error(SNotImplemented, 217); 
+      nb::Error(SNotImplemented, 217); 
       // FIXME Extract(GetThisDirectory());
     }
   }

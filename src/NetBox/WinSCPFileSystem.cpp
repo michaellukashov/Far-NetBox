@@ -239,7 +239,7 @@ void TFarInteractiveCustomCommand::Prompt(int /*Index*/,
   if (!FPlugin->InputBox(FPlugin->GetMsg(APPLY_COMMAND_PARAM_TITLE),
         APrompt, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
   {
-    Abort();
+    nb::Abort();
   }
 }
 //---------------------------------------------------------------------------
@@ -370,7 +370,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::HandleException(const std::exception *E, int OpMode)
 {
-  // ::Error(SNotImplemented, 120);
+  // nb::Error(SNotImplemented, 120);
   if ((GetTerminal() != NULL) && ::InheritsFrom<std::exception, EFatal>(E))
   {
     if (!FClosed)
@@ -1716,7 +1716,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
     }
     else
     {
-      Abort();
+      nb::Abort();
     }
   }
 }
@@ -1732,7 +1732,7 @@ void TWinSCPFileSystem::CustomCommandGetParamValue(
   if (!FPlugin->InputBox(GetMsg(APPLY_COMMAND_PARAM_TITLE),
         Name, Value, 0, APPLY_COMMAND_PARAM_HISTORY))
   {
-    Abort();
+    nb::Abort();
   }
 }
 //---------------------------------------------------------------------------
@@ -2278,7 +2278,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                 NewLocalPath = ExcludeTrailingBackslash(ExtractFileDir(ALocalPath));
                 if (NewLocalPath == ALocalPath)
                 {
-                  Abort();
+                  nb::Abort();
                 }
                 ALocalPath = NewLocalPath;
                 FullPrevPath = UnixExtractFilePath(UnixExcludeTrailingBackslash(FullPrevPath));
@@ -2286,7 +2286,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
             }
             else
             {
-              Abort();
+              nb::Abort();
             }
 
             if (!SynchronizeBrowsing(ALocalPath))
@@ -2302,7 +2302,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const std::wstring Dir, int OpMode)
                 {
                   if (!SynchronizeBrowsing(ALocalPath))
                   {
-                    Abort();
+                    nb::Abort();
                   }
                 }
               }
@@ -2640,7 +2640,7 @@ int TWinSCPFileSystem::GetFilesEx(nb::TObjectList * PanelItems, bool Move,
 //---------------------------------------------------------------------------
 void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
 {
-  // ::Error(SNotImplemented, 3001);
+  // nb::Error(SNotImplemented, 3001);
   TExportSessionParam & Param = *static_cast<TExportSessionParam *>(AParam);
 
   THierarchicalStorage *ExportStorage = NULL;
@@ -2960,7 +2960,7 @@ nb::TStrings * TWinSCPFileSystem::CreateFileList(nb::TObjectList * PanelItems,
 
     if (FileList->GetCount() == 0)
     {
-      Abort();
+      nb::Abort();
     }
   }
   catch (...)
@@ -4038,7 +4038,7 @@ void TWinSCPFileSystem::MultipleEdit(const std::wstring Directory,
 
       case qaCancel:
       default:
-        Abort();
+        nb::Abort();
         break;
     }
   }

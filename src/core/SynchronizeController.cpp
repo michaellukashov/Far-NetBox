@@ -185,7 +185,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   if (FSynchronizeMonitor != NULL)
   {
     // FIXME FSynchronizeMonitor->Close();
-    ::Error(SNotImplemented, 258); 
+    nb::Error(SNotImplemented, 258); 
   }
   assert(!FSynchronizeAbort.empty());
   FSynchronizeAbort(NULL, Close);

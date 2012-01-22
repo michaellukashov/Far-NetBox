@@ -5197,7 +5197,7 @@ bool TCopyDialog::CloseQuery()
         else
         {
           DirectoryEdit->SetFocus();
-          Abort();
+          nb::Abort();
         }
       }
     }

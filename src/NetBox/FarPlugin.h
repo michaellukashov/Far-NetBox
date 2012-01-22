@@ -546,7 +546,7 @@ inline std::wstring StrFromFar(wchar_t *S)
 //---------------------------------------------------------------------------
 inline std::wstring StrFromFar(const wchar_t *S)
 {
-    // ::Error(SNotImplemented, 21);
+    // nb::Error(SNotImplemented, 21);
     return std::wstring(S);
 }
 //---------------------------------------------------------------------------

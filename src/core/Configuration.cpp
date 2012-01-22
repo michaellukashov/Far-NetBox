@@ -132,7 +132,7 @@ THierarchicalStorage * TConfiguration::CreateStorage()
   }
   else
   {
-    ::Error(SNotImplemented, 3005);
+    nb::Error(SNotImplemented, 3005);
     return NULL; // new TIniFileStorage(GetIniFileStorageName());
   }
 }
@@ -214,7 +214,7 @@ void TConfiguration::Save(bool All, bool Explicit)
 //---------------------------------------------------------------------------
 void TConfiguration::Export(const std::wstring FileName)
 {
-  ::Error(SNotImplemented, 3004);
+  nb::Error(SNotImplemented, 3004);
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   {
@@ -615,7 +615,7 @@ int TConfiguration::GetCompoundVersion()
 //---------------------------------------------------------------------------
 std::wstring TConfiguration::ModuleFileName()
 {
-  ::Error(SNotImplemented, 204); 
+  nb::Error(SNotImplemented, 204); 
   return L""; // FIXME ParamStr(0);
 }
 //---------------------------------------------------------------------------
@@ -768,7 +768,7 @@ std::wstring TConfiguration::GetRegistryStorageKey()
 //---------------------------------------------------------------------------
 void TConfiguration::SetIniFileStorageName(const std::wstring value)
 {
-  ::Error(SNotImplemented, 3006);
+  nb::Error(SNotImplemented, 3006);
   FIniFileStorageName = value;
   // FStorage = stIniFile;
 }

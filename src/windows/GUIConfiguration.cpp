@@ -842,7 +842,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     if (Internal)
     {
-      ::Error(SNotImplemented, 90);
+      nb::Error(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -924,7 +924,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID value)
 //---------------------------------------------------------------------------
 void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {
-  ::Error(SNotImplemented, 91);
+  nb::Error(SNotImplemented, 91);
   TPasLibModule * MainModule = NULL; // FindModule(0); // FIXME HInstance);
   if (Instance != MainModule->Instance)
   {
@@ -934,7 +934,7 @@ void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 //---------------------------------------------------------------------------
 HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
 {
-  ::Error(SNotImplemented, 92);
+  nb::Error(SNotImplemented, 92);
   if (Instance == NULL)
   {
     Instance = 0; // FIXME HInstance;
@@ -961,7 +961,7 @@ void TGUIConfiguration::SetResourceModule(HANDLE Instance)
 //---------------------------------------------------------------------------
 nb::TStrings * TGUIConfiguration::GetLocales()
 {
-  ::Error(SNotImplemented, 93);
+  nb::Error(SNotImplemented, 93);
   std::wstring LocalesExts;
   nb::TStringList * Exts = new nb::TStringList();
   {

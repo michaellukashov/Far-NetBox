@@ -1941,7 +1941,7 @@ void TSecureShell::AskAlg(const std::wstring AlgType,
 
   if (FUI->QueryUser(Msg, NULL, qaYes | qaNo, NULL, qtWarning) == qaNo)
   {
-    Abort();
+    nb::Abort();
   }
 }
 //---------------------------------------------------------------------------

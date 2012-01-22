@@ -103,7 +103,7 @@ bool TXmlStorage::WriteXml()
 //---------------------------------------------------------------------------
 bool TXmlStorage::Copy(TXmlStorage * Storage)
 {
-  ::Error(SNotImplemented, 3020);
+  nb::Error(SNotImplemented, 3020);
   bool Result = false;
   return Result;
 }
@@ -224,7 +224,7 @@ void TXmlStorage::GetSubKeyNames(nb::TStrings* Strings)
 //---------------------------------------------------------------------------
 void TXmlStorage::GetValueNames(nb::TStrings* Strings)
 {
-  ::Error(SNotImplemented, 3022);
+  nb::Error(SNotImplemented, 3022);
   // FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
@@ -242,7 +242,7 @@ bool TXmlStorage::DeleteValue(const std::wstring Name)
 //---------------------------------------------------------------------------
 bool TXmlStorage::KeyExists(const std::wstring SubKey)
 {
-  ::Error(SNotImplemented, 3024);
+  nb::Error(SNotImplemented, 3024);
   std::wstring K = PuttyMungeStr(SubKey);
   bool Result = false; // FRegistry->KeyExists(K);
   return Result;
@@ -327,7 +327,7 @@ std::wstring TXmlStorage::GetValue(TiXmlElement *Element)
 //---------------------------------------------------------------------------
 bool TXmlStorage::ValueExists(const std::wstring Value)
 {
-    // ::Error(SNotImplemented, 3025);
+    // nb::Error(SNotImplemented, 3025);
     bool result = false;
     TiXmlElement *Element = FindElement(Value);
     if (Element != NULL)
@@ -340,7 +340,7 @@ bool TXmlStorage::ValueExists(const std::wstring Value)
 //---------------------------------------------------------------------------
 int TXmlStorage::BinaryDataSize(const std::wstring Name)
 {
-  ::Error(SNotImplemented, 3026);
+  nb::Error(SNotImplemented, 3026);
   int Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
 }
@@ -388,7 +388,7 @@ std::wstring TXmlStorage::ReadStringRaw(const std::wstring Name, const std::wstr
 int TXmlStorage::ReadBinaryData(const std::wstring Name,
   void * Buffer, int Size)
 {
-  ::Error(SNotImplemented, 3028);
+  nb::Error(SNotImplemented, 3028);
   int Result = 0;
   return Result;
 }

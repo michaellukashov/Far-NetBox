@@ -384,7 +384,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
             {
               PanelSystem->RedrawPanel();
             }
-            Abort();
+            nb::Abort();
           }
           // directory will be set by FAR itself
           Directory = L"";
@@ -394,12 +394,12 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(int OpenFrom, int Item)
         TSessionData * Session = StoredSessions->ParseUrl(Name, NULL, DefaultsOnly);
         if (DefaultsOnly)
         {
-          Abort();
+          nb::Abort();
         }
         if (!Session->GetCanLogin())
         {
           assert(false);
-          Abort();
+          nb::Abort();
         }
         FileSystem->Connect(Session);
         if (!Directory.empty())

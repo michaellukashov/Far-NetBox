@@ -84,6 +84,7 @@ typedef threadmethod_signal_type::slot_type threadmethod_slot_type;
 typedef boost::signal1<void, TObject *> notify_signal_type;
 typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------
+void Abort();
 void Error(int ErrorID, int data);
 //---------------------------------------------------------------------------
 class TObject

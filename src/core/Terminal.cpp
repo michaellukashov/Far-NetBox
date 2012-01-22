@@ -39,7 +39,7 @@
     int Result = CommandError(&E, MESSAGE, qaRetry | qaSkip | qaAbort); \
     switch (Result) { \
       case qaRetry: { REPEAT; } break; \
-      case qaAbort: Abort(); \
+      case qaAbort: nb::Abort(); \
     } \
   }
 //---------------------------------------------------------------------------
@@ -58,7 +58,7 @@
     } \
     switch (Result) { \
       case qaRetry: ACTION.Cancel(); { REPEAT; } break; \
-      case qaAbort: RollbackAction(ACTION, NULL, &E); Abort(); \
+      case qaAbort: RollbackAction(ACTION, NULL, &E); nb::Abort(); \
       case qaSkip:  ACTION.Cancel(); break; \
       default: assert(false); \
     } \
@@ -1851,7 +1851,7 @@ int TTerminal::CommandError(const std::exception * E, const std::wstring Msg,
   else if (E && ::InheritsFrom<std::exception, nb::EAbort>(E))
   {
     // resent nb::EAbort std::exception
-    ::Abort();
+    nb::Abort();
   }
   else if (GetExceptionOnFail())
   {
@@ -2791,7 +2791,7 @@ void TTerminal::DeleteFile(const std::wstring FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foDelete)
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    if (GetOperationProgress()->Cancel != csContinue) nb::Abort();
     GetOperationProgress()->SetFile(fileName);
   }
   int Params = (AParams != NULL) ? *(static_cast<int *>(AParams)) : 0;
@@ -2872,7 +2872,7 @@ void TTerminal::CustomCommandOnFile(const std::wstring FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCustomCommand)
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    if (GetOperationProgress()->Cancel != csContinue) nb::Abort();
     GetOperationProgress()->SetFile(fileName);
   }
   LogEvent(FORMAT(L"Executing custom command \"%s\" (%d) on file \"%s\".",
@@ -2968,7 +2968,7 @@ void TTerminal::ChangeFileProperties(const std::wstring FileName,
   }
   if (GetOperationProgress() && GetOperationProgress()->Operation == foSetProperties)
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    if (GetOperationProgress()->Cancel != csContinue) nb::Abort();
     GetOperationProgress()->SetFile(fileName);
   }
   if (GetLog()->GetLogging())
@@ -3109,7 +3109,7 @@ void TTerminal::CalculateFileSize(const std::wstring FileName,
 
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    if (GetOperationProgress()->Cancel != csContinue) nb::Abort();
     GetOperationProgress()->SetFile(fileName);
   }
 }
@@ -3230,7 +3230,7 @@ void TTerminal::MoveFile(const std::wstring FileName,
       ((GetOperationProgress()->Operation == foRemoteMove) ||
        (GetOperationProgress()->Operation == foDelete)))
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    if (GetOperationProgress()->Cancel != csContinue) nb::Abort();
     GetOperationProgress()->SetFile(FileName);
   }
 
@@ -3334,7 +3334,7 @@ void TTerminal::CopyFile(const std::wstring FileName,
 {
   if (GetOperationProgress() && (GetOperationProgress()->Operation == foRemoteCopy))
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    if (GetOperationProgress()->Cancel != csContinue) nb::Abort();
     GetOperationProgress()->SetFile(FileName);
   }
 
@@ -3843,7 +3843,7 @@ bool TTerminal::AllowLocalFileTransfer(const std::wstring FileName,
       Handle = ::FindFirstFile(FileName.c_str(), &FindData);
       if (Handle == INVALID_HANDLE_VALUE)
       {
-        Abort();
+        nb::Abort();
       }
     )
     ::FindClose(Handle);
@@ -3920,7 +3920,7 @@ void TTerminal::CalculateLocalFileSize(const std::wstring FileName,
 
   if (GetOperationProgress() && GetOperationProgress()->Operation == foCalculateSize)
   {
-    if (GetOperationProgress()->Cancel != csContinue) Abort();
+    if (GetOperationProgress()->Cancel != csContinue) nb::Abort();
     GetOperationProgress()->SetFile(FileName);
   }
 }
@@ -4536,25 +4536,25 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
           if ((DownloadList->GetCount() > 0) &&
               !CopyToLocal(DownloadList, Data.LocalDirectory, &SyncCopyParam, CopyParams))
           {
-            Abort();
+            nb::Abort();
           }
 
           if ((DeleteRemoteList->GetCount() > 0) &&
               !DeleteFiles(DeleteRemoteList))
           {
-            Abort();
+            nb::Abort();
           }
 
           if ((UploadList->GetCount() > 0) &&
               !CopyToRemote(UploadList, Data.RemoteDirectory, &SyncCopyParam, CopyParams))
           {
-            Abort();
+            nb::Abort();
           }
 
           if ((DeleteLocalList->GetCount() > 0) &&
               !DeleteLocalFiles(DeleteLocalList))
           {
-            Abort();
+            nb::Abort();
           }
         }
       }
@@ -4575,7 +4575,7 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
 
     if (!Continue)
     {
-      Abort();
+      nb::Abort();
     }
   }
 }
@@ -4600,7 +4600,7 @@ void TTerminal::SynchronizeLocalTimestamp(const std::wstring /*FileName*/,
     CloseHandle(Handle);
     if (!Result)
     {
-      Abort();
+      nb::Abort();
     }
   );
 }

@@ -801,7 +801,7 @@ void TSCPFileSystem::DetectReturnVar()
         if ((GetOutput()->GetCount() != 1) || str.empty() || (val > 255))
         {
           FTerminal->LogEvent(L"The response is not numerical exit code");
-          Abort();
+          nb::Abort();
         }
       }
       catch (const EFatal &E)
@@ -824,7 +824,7 @@ void TSCPFileSystem::DetectReturnVar()
 
     if (NewReturnVar.empty())
     {
-      Abort();
+      nb::Abort();
     }
       else
     {
