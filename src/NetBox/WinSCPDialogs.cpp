@@ -2866,6 +2866,8 @@ void TSessionDialog::LoginTypeComboChange()
   FLoginTypeIndex = LoginTypeCombo->GetItems()->GetSelected();
   if (GetLoginType() == ltAnonymous)
   {
+    UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
+    PasswordEdit->SetText(L"");
   }
   else if (GetLoginType() == ltNormal)
   {
@@ -2900,11 +2902,6 @@ void TSessionDialog::UpdateControls()
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
-  if (LoginAnonymous)
-  {
-    // UserNameEdit->SetText(CONST_LOGIN_ANONYMOUS);
-    // PasswordEdit->SetText(L"");
-  }
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(FtpProtocol);
