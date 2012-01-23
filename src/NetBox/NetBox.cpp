@@ -5,6 +5,7 @@
 #endif
 
 #include "stdafx.h"
+#include "FarUtil.h"
 #include "EasyURL.h"
 #include "resource.h"
 #include "Common.h"
@@ -37,10 +38,6 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *psi)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
-    curl_global_init(CURL_GLOBAL_ALL);
     FarPlugin->SetStartupInfo(psi);
 }
 
@@ -48,9 +45,6 @@ void WINAPI ExitFARW()
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    curl_global_cleanup();
-    WSACleanup();
-
     FarPlugin->ExitFAR();
 }
 
@@ -220,7 +214,10 @@ void DllProcessAttach(HINSTANCE HInst)
 #ifdef _AFXDLL
     InitExtensionModule(HInst);
 #endif
- // DEBUG_PRINTF(L"DllProcessAttach: end");
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    curl_global_init(CURL_GLOBAL_ALL);
+    // DEBUG_PRINTF(L"DllProcessAttach: end");
 }
 
 //---------------------------------------------------------------------------
@@ -236,6 +233,8 @@ void DllProcessDetach()
 #ifdef _AFXDLL
     TermExtensionModule();
 #endif
+    curl_global_cleanup();
+    WSACleanup();
   }
   // DEBUG_PRINTF(L"DllProcessDetach: end");
 }
