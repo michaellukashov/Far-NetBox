@@ -70,7 +70,6 @@ int WINAPI ConfigureW(int item)
 
 HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
-  // GC_find_leak = 1;
   assert(FarPlugin);
   TFarPluginGuard Guard;
   return FarPlugin->OpenPlugin(openFrom, item);
@@ -81,7 +80,6 @@ void WINAPI ClosePluginW(HANDLE plugin)
     assert(FarPlugin);
     TFarPluginGuard Guard;
     FarPlugin->ClosePlugin(plugin);
-    // GC_gcollect();
 }
 
 void WINAPI GetOpenPluginInfoW(HANDLE plugin, OpenPluginInfo *pluginInfo)
