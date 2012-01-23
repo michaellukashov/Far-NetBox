@@ -532,6 +532,8 @@ public:
   void SetFtps(TFtps value);
   void SetNotUtf(TAutoSwitch value);
   void SetHostKey(const std::wstring value);
+private:
+  std::wstring AdjustHostName(const std::wstring hostName, const std::wstring prefix);
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList

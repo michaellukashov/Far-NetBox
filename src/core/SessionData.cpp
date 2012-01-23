@@ -1699,6 +1699,17 @@ void TSessionData::SetRekeyTime(unsigned int value)
   SET_SESSION_PROPERTY(RekeyTime);
 }
 //---------------------------------------------------------------------
+std::wstring TSessionData::AdjustHostName(const std::wstring hostName, const std::wstring prefix)
+{
+    std::wstring result = hostName;
+    if (::LowerCase(result.substr(0, prefix.size())) == prefix)
+    {
+        result.erase(0, prefix.size());
+    }
+    result = ::ReplaceStrAll(result, L"/", L"_");
+    return result;
+}
+//---------------------------------------------------------------------
 std::wstring TSessionData::GetDefaultSessionName()
 {
   std::wstring hostName = GetHostName();
@@ -1706,22 +1717,44 @@ std::wstring TSessionData::GetDefaultSessionName()
   // DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
   switch (GetFSProtocol())
   {
+    case fsSCPonly:
+    {
+        hostName = AdjustHostName(hostName, L"scp://");
+        break;
+    }
+    case fsSFTP:
+    {
+        hostName = AdjustHostName(hostName, L"sftp://");
+        break;
+    }
+    case fsFTP:
+    {
+        hostName = AdjustHostName(hostName, L"ftp://");
+        break;
+    }
+    case fsFTPS:
+    {
+        hostName = AdjustHostName(hostName, L"ftps://");
+        break;
+    }
     case fsHTTP:
     {
-        if (LowerCase(hostName.substr(0, 7)) == L"http://")
-        {
-            hostName.erase(0, 7);
-        }
-        hostName = ::ReplaceStrAll(hostName, L"/", L"_");
+        hostName = AdjustHostName(hostName, L"http://");
+        // if (LowerCase(hostName.substr(0, 7)) == L"http://")
+        // {
+            // hostName.erase(0, 7);
+        // }
+        // hostName = ::ReplaceStrAll(hostName, L"/", L"_");
         break;
     }
     case fsHTTPS:
     {
-        if (LowerCase(hostName.substr(0, 8)) == L"https://")
-        {
-            hostName.erase(0, 8);
-        }
-        hostName = ::ReplaceStrAll(hostName, L"/", L"_");
+        hostName = AdjustHostName(hostName, L"https://");
+        // if (LowerCase(hostName.substr(0, 8)) == L"https://")
+        // {
+            // hostName.erase(0, 8);
+        // }
+        // hostName = ::ReplaceStrAll(hostName, L"/", L"_");
         break;
     }
     default:
@@ -1764,7 +1797,6 @@ std::wstring TSessionData::GetSessionName()
   {
     Result = GetDefaultSessionName();
   }
-  return Result;
   // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 }
