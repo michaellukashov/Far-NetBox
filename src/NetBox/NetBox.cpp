@@ -204,25 +204,6 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t *fileName, const unsigned char *file
     {
         return INVALID_HANDLE_VALUE;
     }
-    /*
-    PSession session = CSession::Load(fileName);
-    if (!session.get())
-    {
-        return INVALID_HANDLE_VALUE;
-    }
-    PProtocol proto = session->CreateClient();
-    if (!proto.get())
-    {
-        return reinterpret_cast<HANDLE>(-2);
-    }
-    CPanel *panelInstance = new CPanel(false);
-    if (panelInstance->OpenConnection(proto.get()))
-    {
-        proto.release();
-        m_PanelInstances.push_back(panelInstance);
-        return panelInstance;
-    }
-    */
     return reinterpret_cast<HANDLE>(-2);
 }
 
