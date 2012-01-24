@@ -9,7 +9,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 //---------------------------------------------------------------------------
-class TBookmarks : public TObject
+class TBookmarks : public nb::TObject
 {
 public:
   TBookmarks();
@@ -21,22 +21,22 @@ public:
   void Clear();
 
   // __property TBookmarkList * Bookmarks[std::wstring Index] = { read = GetBookmarks, write = SetBookmarks };
-  TBookmarkList * GetBookmark(const std::wstring &Index);
-  void SetBookmark(const std::wstring &Index, TBookmarkList * value);
+  TBookmarkList * GetBookmark(const std::wstring Index);
+  void SetBookmark(const std::wstring Index, TBookmarkList * value);
   // __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * value);
 
 private:
-  TStringList * FBookmarkLists;
+  nb::TStringList * FBookmarkLists;
   std::wstring FSharedKey;
   static std::wstring Keys[];
 
-  void LoadLevel(THierarchicalStorage * Storage, const std::wstring &Key,
+  void LoadLevel(THierarchicalStorage * Storage, const std::wstring Key,
     int Index, TBookmarkList * BookmarkList);
 };
 //---------------------------------------------------------------------------
-class TBookmarkList : public TPersistent
+class TBookmarkList : public nb::TPersistent
 {
 friend class TBookmarks;
 friend class TBookmark;
@@ -50,9 +50,9 @@ public:
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark * Bookmark);
-  TBookmark * FindByName(const std::wstring &Node, const std::wstring &Name);
-  TBookmark * FindByShortCut(TShortCut ShortCut);
-  virtual void Assign(TPersistent * Source);
+  TBookmark * FindByName(const std::wstring Node, const std::wstring Name);
+  TBookmark * FindByShortCut(nb::TShortCut ShortCut);
+  virtual void Assign(nb::TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
   void SaveOptions(THierarchicalStorage * Storage);
   void ShortCuts(TShortCuts & ShortCuts);
@@ -62,8 +62,8 @@ public:
   // __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
   TBookmark * GetBookmark(int Index);
   // __property bool NodeOpened[std::wstring Index] = { read = GetNodeOpened, write = SetNodeOpened };
-  bool GetNodeOpened(const std::wstring &Index);
-  void SetNodeOpened(const std::wstring &Index, bool value);
+  bool GetNodeOpened(const std::wstring Index);
+  void SetNodeOpened(const std::wstring Index, bool value);
 
 protected:
   int IndexOf(TBookmark * Bookmark);
@@ -74,39 +74,39 @@ protected:
   void SetModified(bool value) { FModified = value; }
 
 private:
-  TStringList * FBookmarks;
-  TStringList * FOpenedNodes;
+  nb::TStringList * FBookmarks;
+  nb::TStringList * FOpenedNodes;
   bool FModified;
 };
 //---------------------------------------------------------------------------
-class TBookmark : public TPersistent
+class TBookmark : public nb::TPersistent
 {
 friend class TBookmarkList;
 public:
   TBookmark();
 
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(nb::TPersistent * Source);
 
   // __property std::wstring Name = { read = FName, write = SetName };
   std::wstring GetName() { return FName; }
-  void SetName(const std::wstring &value);
+  void SetName(const std::wstring value);
   // __property std::wstring Local = { read = FLocal, write = SetLocal };
   std::wstring GetLocal() { return FLocal; }
-  void SetLocal(const std::wstring &value);
+  void SetLocal(const std::wstring value);
   // __property std::wstring Remote = { read = FRemote, write = SetRemote };
   std::wstring GetRemote() { return FRemote; }
-  void SetRemote(const std::wstring &value);
+  void SetRemote(const std::wstring value);
   // __property std::wstring Node = { read = FNode, write = SetNode };
   std::wstring GetNode() { return FNode; }
-  void SetNode(const std::wstring &value);
-  // __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
-  TShortCut GetShortCut() { return FShortCut; }
-  void SetShortCut(TShortCut value);
+  void SetNode(const std::wstring value);
+  // __property nb::TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
+  nb::TShortCut GetShortCut() { return FShortCut; }
+  void SetShortCut(nb::TShortCut value);
 
 protected:
   TBookmarkList * FOwner;
 
-  static std::wstring BookmarkKey(const std::wstring &Node, const std::wstring &Name);
+  static std::wstring BookmarkKey(const std::wstring Node, const std::wstring Name);
   // __property std::wstring Key = { read = GetKey };
   std::wstring GetKey();
 
@@ -115,7 +115,7 @@ private:
   std::wstring FLocal;
   std::wstring FRemote;
   std::wstring FNode;
-  TShortCut FShortCut;
+  nb::TShortCut FShortCut;
 
   void Modify(int OldIndex);
 };

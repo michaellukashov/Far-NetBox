@@ -20,16 +20,16 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
 enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-// typedef void (TObject::*TFileOperationProgressEvent)
+// typedef void (nb::TObject::*TFileOperationProgressEvent)
   // (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
 typedef boost::signal2<void, TFileOperationProgressType &, TCancelStatus &> fileoperationprogress_signal_type;
 typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_type;
 
-// typedef void (TObject::*TFileOperationFinished)
+// typedef void (nb::TObject::*TFileOperationFinished)
   // (TFileOperation Operation, TOperationSide Side, bool Temp,
-    // const std::wstring & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    // const std::wstring FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 typedef boost::signal6<void, TFileOperation, TOperationSide, bool,
-    const std::wstring &, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
+    const std::wstring, bool, TOnceDoneOperation &> fileoperationfinished_signal_type;
 typedef fileoperationfinished_signal_type::slot_type fileoperationfinished_slot_type;
 //---------------------------------------------------------------------------
 class TFileOperationProgressType
@@ -38,7 +38,7 @@ private:
   // when it was last time suspended (to calculate suspend time in Resume())
   unsigned int FSuspendTime;
   // when current file was started being transfered
-  TDateTime FFileStartTime;
+  nb::TDateTime FFileStartTime;
   int FFilesFinished;
   fileoperationprogress_signal_type FOnProgress;
   fileoperationfinished_signal_type FOnFinished;
@@ -75,7 +75,7 @@ public:
   TCancelStatus Cancel;
   int Count;
   // when operation started
-  TDateTime StartTime;
+  nb::TDateTime StartTime;
   // bytes transfered
   __int64 TotalTransfered;
   __int64 TotalSkipped;
@@ -99,12 +99,12 @@ public:
   void AddResumed(__int64 ASize);
   void Clear();
   unsigned int CPS();
-  void Finish(const std::wstring &FileName, bool Success,
+  void Finish(const std::wstring FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   unsigned long LocalBlockSize();
   bool IsLocallyDone();
   bool IsTransferDone();
-  void SetFile(const std::wstring &AFileName, bool AFileInProgress = true);
+  void SetFile(const std::wstring AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   int OperationProgress();
   unsigned long TransferBlockSize();
@@ -121,16 +121,16 @@ public:
   void SetTotalSize(__int64 ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, int ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, int ACount, bool ATemp, const std::wstring &ADirectory,
+    TOperationSide ASide, int ACount, bool ATemp, const std::wstring ADirectory,
     unsigned long ACPSLimit);
   void Stop();
   void Suspend();
   // whole operation
-  TDateTime TimeElapsed();
+  nb::TDateTime TimeElapsed();
   // only current file
-  TDateTime TimeExpected();
-  TDateTime TotalTimeExpected();
-  TDateTime TotalTimeLeft();
+  nb::TDateTime TimeExpected();
+  nb::TDateTime TotalTimeExpected();
+  nb::TDateTime TotalTimeLeft();
   int TransferProgress();
   int OverallProgress();
   int TotalTransferProgress();

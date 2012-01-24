@@ -12,13 +12,13 @@
 #include "TextsCore.h"
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
-TBookmarks::TBookmarks() : TObject()
+TBookmarks::TBookmarks() : nb::TObject()
 {
   FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
-  FBookmarkLists = new TStringList();
+  FBookmarkLists = new nb::TStringList();
   FBookmarkLists->SetSorted(true);
   FBookmarkLists->SetCaseSensitive(false);
-  FBookmarkLists->SetDuplicates(dupError);
+  FBookmarkLists->SetDuplicates(nb::dupError);
 }
 //---------------------------------------------------------------------------
 TBookmarks::~TBookmarks()
@@ -44,7 +44,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
   {
     if (Storage->OpenSubKey(Keys[i], false))
     {
-      TStrings * BookmarkKeys = new TStringList();
+      nb::TStrings * BookmarkKeys = new nb::TStringList();
       {
         BOOST_SCOPE_EXIT ( (&BookmarkKeys) )
         {
@@ -81,10 +81,10 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
   ModifyAll(false);
 }
 //---------------------------------------------------------------------------
-void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring &Key,
+void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring Key,
   int Index, TBookmarkList * BookmarkList)
 {
-  TStrings * Names = new TStringList();
+  nb::TStrings * Names = new nb::TStringList();
   {
       BOOST_SCOPE_EXIT ( (&Names) )
       {
@@ -93,7 +93,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring &K
     Storage->GetValueNames(Names);
     std::wstring Name;
     std::wstring Directory;
-    TShortCut ShortCut(0);
+    nb::TShortCut ShortCut(0);
     for (size_t i = 0; i < Names->GetCount(); i++)
     {
       Name = Names->GetString(i);
@@ -105,7 +105,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const std::wstring &K
       else
       {
         Directory = L""; // use only in cased of malformed config
-        ShortCut = TShortCut(Storage->Readint(Name, 0));
+        ShortCut = nb::TShortCut(Storage->Readint(Name, 0));
       }
       TBookmark * Bookmark;
       if (IsNumber(Name))
@@ -239,7 +239,7 @@ void TBookmarks::ModifyAll(bool Modify)
   }
 }
 //---------------------------------------------------------------------------
-TBookmarkList * TBookmarks::GetBookmark(const std::wstring &Index)
+TBookmarkList * TBookmarks::GetBookmark(const std::wstring Index)
 {
   int I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
@@ -252,7 +252,7 @@ TBookmarkList * TBookmarks::GetBookmark(const std::wstring &Index)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmarks::SetBookmark(const std::wstring &Index, TBookmarkList *value)
+void TBookmarks::SetBookmark(const std::wstring Index, TBookmarkList *value)
 {
   int I = FBookmarkLists->IndexOf(Index.c_str());
   if (I >= 0)
@@ -280,12 +280,12 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList * value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TBookmarkList::TBookmarkList(): TPersistent()
+TBookmarkList::TBookmarkList(): nb::TPersistent()
 {
   FModified = false;
-  FBookmarks = new TStringList();
+  FBookmarks = new nb::TStringList();
   FBookmarks->SetCaseSensitive(false);
-  FOpenedNodes = new TStringList();
+  FOpenedNodes = new nb::TStringList();
   FOpenedNodes->SetCaseSensitive(false);
   FOpenedNodes->SetSorted(true);
 }
@@ -307,7 +307,7 @@ void TBookmarkList::Clear()
   FOpenedNodes->Clear();
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::Assign(TPersistent * Source)
+void TBookmarkList::Assign(nb::TPersistent * Source)
 {
   TBookmarkList * SourceList;
   SourceList = reinterpret_cast<TBookmarkList *>(Source);
@@ -325,7 +325,7 @@ void TBookmarkList::Assign(TPersistent * Source)
   }
   else
   {
-    TPersistent::Assign(Source);
+    nb::TPersistent::Assign(Source);
   }
 }
 //---------------------------------------------------------------------------
@@ -416,7 +416,7 @@ void TBookmarkList::KeyChanged(int Index)
   FBookmarks->PutString(Index, Bookmark->GetKey());
 }
 //---------------------------------------------------------------------------
-TBookmark * TBookmarkList::FindByName(const std::wstring &Node, const std::wstring &Name)
+TBookmark * TBookmarkList::FindByName(const std::wstring Node, const std::wstring Name)
 {
   int I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
   TBookmark * Bookmark = I >= 0 ? reinterpret_cast<TBookmark *>(FBookmarks->GetObject(I)) : NULL;
@@ -424,7 +424,7 @@ TBookmark * TBookmarkList::FindByName(const std::wstring &Node, const std::wstri
   return Bookmark;
 }
 //---------------------------------------------------------------------------
-TBookmark * TBookmarkList::FindByShortCut(TShortCut ShortCut)
+TBookmark * TBookmarkList::FindByShortCut(nb::TShortCut ShortCut)
 {
   for (size_t Index = 0; Index < FBookmarks->GetCount(); Index++)
   {
@@ -448,12 +448,12 @@ TBookmark * TBookmarkList::GetBookmark(int Index)
   return Bookmark;
 }
 //---------------------------------------------------------------------------
-bool TBookmarkList::GetNodeOpened(const std::wstring &Index)
+bool TBookmarkList::GetNodeOpened(const std::wstring Index)
 {
   return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::SetNodeOpened(const std::wstring &Index, bool value)
+void TBookmarkList::SetNodeOpened(const std::wstring Index, bool value)
 {
   int I = FOpenedNodes->IndexOf(Index.c_str());
   if ((I >= 0) != value)
@@ -488,7 +488,7 @@ TBookmark::TBookmark()
   FOwner = NULL;
 }
 //---------------------------------------------------------------------------
-void TBookmark::Assign(TPersistent * Source)
+void TBookmark::Assign(nb::TPersistent * Source)
 {
   TBookmark * SourceBookmark;
   SourceBookmark = reinterpret_cast<TBookmark *>(Source);
@@ -502,11 +502,11 @@ void TBookmark::Assign(TPersistent * Source)
   }
   else
   {
-    TPersistent::Assign(Source);
+    nb::TPersistent::Assign(Source);
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetName(const std::wstring &value)
+void TBookmark::SetName(const std::wstring value)
 {
   if (GetName() != value)
   {
@@ -525,7 +525,7 @@ void TBookmark::SetName(const std::wstring &value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetLocal(const std::wstring &value)
+void TBookmark::SetLocal(const std::wstring value)
 {
   if (GetLocal() != value)
   {
@@ -534,7 +534,7 @@ void TBookmark::SetLocal(const std::wstring &value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetRemote(const std::wstring &value)
+void TBookmark::SetRemote(const std::wstring value)
 {
   if (GetRemote() != value)
   {
@@ -543,7 +543,7 @@ void TBookmark::SetRemote(const std::wstring &value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetNode(const std::wstring &value)
+void TBookmark::SetNode(const std::wstring value)
 {
   if (GetNode() != value)
   {
@@ -553,7 +553,7 @@ void TBookmark::SetNode(const std::wstring &value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::SetShortCut(TShortCut value)
+void TBookmark::SetShortCut(nb::TShortCut value)
 {
   if (GetShortCut() != value)
   {
@@ -574,7 +574,7 @@ void TBookmark::Modify(int OldIndex)
   }
 }
 //---------------------------------------------------------------------------
-std::wstring TBookmark::BookmarkKey(const std::wstring &Node, const std::wstring &Name)
+std::wstring TBookmark::BookmarkKey(const std::wstring Node, const std::wstring Name)
 {
   return FORMAT(L"%s\1%s", Node.c_str(), Name.c_str());
 }

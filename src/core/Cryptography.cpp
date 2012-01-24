@@ -378,7 +378,7 @@ static std::wstring AES256Salt()
   return Result;
 }
 //---------------------------------------------------------------------------
-void AES256EncyptWithMAC(const std::wstring &Input, const std::wstring &Password,
+void AES256EncyptWithMAC(const std::wstring Input, const std::wstring Password,
   std::wstring Salt, std::wstring & Output, std::wstring Mac)
 {
   fcrypt_ctx aes;
@@ -396,7 +396,7 @@ void AES256EncyptWithMAC(const std::wstring &Input, const std::wstring &Password
   fcrypt_end((unsigned char *)(Mac.c_str()), &aes);
 }
 //---------------------------------------------------------------------------
-void AES256EncyptWithMAC(const std::wstring &Input, std::wstring &Password,
+void AES256EncyptWithMAC(const std::wstring Input, std::wstring &Password,
   std::wstring & Output)
 {
   std::wstring Salt;
@@ -406,7 +406,7 @@ void AES256EncyptWithMAC(const std::wstring &Input, std::wstring &Password,
   Output = Salt + Encrypted + Mac;
 }
 //---------------------------------------------------------------------------
-bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Password,
+bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
   std::wstring Salt, std::wstring & Output, std::wstring Mac)
 {
   fcrypt_ctx aes;
@@ -423,7 +423,7 @@ bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Passwor
   return (Mac2 == Mac);
 }
 //---------------------------------------------------------------------------
-bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Password,
+bool AES256DecryptWithMAC(const std::wstring Input, const std::wstring Password,
   std::wstring & Output)
 {
   bool Result =
@@ -442,7 +442,7 @@ bool AES256DecryptWithMAC(const std::wstring &Input, const std::wstring &Passwor
   return Result;
 }
 //---------------------------------------------------------------------------
-void AES256CreateVerifier(const std::wstring &Input, std::wstring & Verifier)
+void AES256CreateVerifier(const std::wstring Input, std::wstring & Verifier)
 {
   std::wstring Salt = AES256Salt();
   std::wstring Dummy = AES256Salt();
@@ -454,7 +454,7 @@ void AES256CreateVerifier(const std::wstring &Input, std::wstring & Verifier)
   Verifier = Salt + Dummy + Mac;
 }
 //---------------------------------------------------------------------------
-bool AES256Verify(const std::wstring &Input, const std::wstring &Verifier)
+bool AES256Verify(const std::wstring Input, const std::wstring Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   std::wstring Salt = Verifier.substr(0, SaltLength);
@@ -511,7 +511,7 @@ void ScramblePassword(std::wstring & Password)
   Buf[Padding] = (char)('0' + (Len % 10));
   Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
-  std::string pwd = ::W2MB(Password.c_str());
+  std::string pwd = nb::W2MB(Password.c_str());
   strcpy_s(Buf + Padding + 3, sizeof(Buf) - Padding - 3, pwd.c_str());
   char * S = Buf;
   int Last = 31;
@@ -521,14 +521,14 @@ void ScramblePassword(std::wstring & Password)
     *S = ScrambleTable[Last];
     S++;
   }
-  Password = ::MB2W(Buf);
+  Password = nb::MB2W(Buf);
   memset(Buf, 0, Len + SCRAMBLE_LENGTH_EXTENSION);
   delete[] Buf;
 }
 //---------------------------------------------------------------------------
 bool UnscramblePassword(std::wstring & Password)
 {
-  char * S = (char *)::W2MB(Password.c_str()).c_str();
+  char * S = (char *)nb::W2MB(Password.c_str()).c_str();
   int Last = 31;
   while (*S != '\0')
   {
@@ -542,7 +542,7 @@ bool UnscramblePassword(std::wstring & Password)
     S++;
   }
 
-  S = (char *)::W2MB(Password.c_str()).c_str();
+  S = (char *)nb::W2MB(Password.c_str()).c_str();
   while ((*S != '\0') && ((*S < '0') || (*S > '9')))
   {
     S++;
@@ -550,8 +550,8 @@ bool UnscramblePassword(std::wstring & Password)
   bool Result = false;
   if (strlen(S) >= 3)
   {
-    int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
-    int Total = (((Len + 3) / 17) * 17 + 17);
+    size_t Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
+    size_t Total = (((Len + 3) / 17) * 17 + 17);
     if ((Len >= 0) && (Total == Password.size()) && (Total - (S - (char *)Password.c_str()) - 3 == Len))
     {
       Password.erase(Password.size() - Len, 1);
@@ -588,7 +588,7 @@ size_t PasswordMaxLength()
   return 128;
 }
 //---------------------------------------------------------------------------
-int IsValidPassword(const std::wstring &Password)
+int IsValidPassword(const std::wstring Password)
 {
   if (Password.empty() || (Password.size() > PasswordMaxLength()))
   {

@@ -56,14 +56,14 @@ std::wstring XmlEscape(std::wstring Str)
   return Str;
 }
 //---------------------------------------------------------------------------
-std::wstring XmlTimestamp(const TDateTime & DateTime)
+std::wstring XmlTimestamp(const nb::TDateTime DateTime)
 {
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 }
 //---------------------------------------------------------------------------
 std::wstring XmlTimestamp()
 {
-  return XmlTimestamp(Now());
+  return XmlTimestamp(nb::Now());
 }
 //---------------------------------------------------------------------------
 // #pragma warn -inl
@@ -76,8 +76,8 @@ public:
     FState(Opened),
     FRecursive(false),
     FErrorMessages(NULL),
-    FNames(new TStringList()),
-    FValues(new TStringList()),
+    FNames(new nb::TStringList()),
+    FValues(new nb::TStringList()),
     FFileList(NULL)
   {
     FLog->AddPendingAction(this);
@@ -186,10 +186,10 @@ public:
   void Rollback(const std::exception * E)
   {
     assert(FErrorMessages == NULL);
-    FErrorMessages = new TStringList();
+    FErrorMessages = new nb::TStringList();
     if (E->what() && *E->what())
     {
-      FErrorMessages->Add(::MB2W(E->what()));
+      FErrorMessages->Add(nb::MB2W(E->what()));
     }
     const ExtException * EE = dynamic_cast<const ExtException *>(E);
     if ((EE != NULL) && (EE->GetMoreMessages() != NULL))
@@ -209,12 +209,12 @@ public:
     Close(Cancelled);
   }
 
-  void FileName(const std::wstring & FileName)
+  void FileName(const std::wstring FileName)
   {
     Parameter(L"filename", FileName);
   }
 
-  void Destination(const std::wstring & Destination)
+  void Destination(const std::wstring Destination)
   {
     Parameter(L"destination", Destination);
   }
@@ -224,7 +224,7 @@ public:
     Parameter(L"permissions", Rights.GetText());
   }
 
-  void Modification(const TDateTime & DateTime)
+  void Modification(const nb::TDateTime DateTime)
   {
     Parameter(L"modification", XmlTimestamp(DateTime));
   }
@@ -234,12 +234,12 @@ public:
     FRecursive = true;
   }
 
-  void Command(const std::wstring & Command)
+  void Command(const std::wstring Command)
   {
     Parameter(L"command", Command);
   }
 
-  void AddOutput(const std::wstring &Output, bool StdError)
+  void AddOutput(const std::wstring Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
     int Index = FNames->IndexOf(Name);
@@ -289,7 +289,7 @@ protected:
     }
   }
 
-  void Parameter(const std::wstring & Name, const std::wstring & Value = L"")
+  void Parameter(const std::wstring Name, const std::wstring Value = L"")
   {
     FNames->Add(Name);
     FValues->Add(Value);
@@ -300,9 +300,9 @@ private:
   TLogAction FAction;
   TState FState;
   bool FRecursive;
-  TStrings * FErrorMessages;
-  TStrings * FNames;
-  TStrings * FValues;
+  nb::TStrings * FErrorMessages;
+  nb::TStrings * FNames;
+  nb::TStrings * FValues;
   TRemoteFileList * FFileList;
 };
 // #pragma warn .inl
@@ -373,13 +373,13 @@ TFileSessionAction::TFileSessionAction(TSessionLog * Log, TLogAction Action) :
 };
 //---------------------------------------------------------------------------
 TFileSessionAction::TFileSessionAction(
-    TSessionLog * Log, TLogAction Action, const std::wstring & AFileName) :
+    TSessionLog * Log, TLogAction Action, const std::wstring AFileName) :
   TSessionAction(Log, Action)
 {
   FileName(AFileName);
 };
 //---------------------------------------------------------------------------
-void TFileSessionAction::FileName(const std::wstring & FileName)
+void TFileSessionAction::FileName(const std::wstring FileName)
 {
   if (FRecord != NULL)
   {
@@ -395,12 +395,12 @@ TFileLocationSessionAction::TFileLocationSessionAction(
 };
 //---------------------------------------------------------------------------
 TFileLocationSessionAction::TFileLocationSessionAction(
-    TSessionLog * Log, TLogAction Action, const std::wstring & FileName) :
+    TSessionLog * Log, TLogAction Action, const std::wstring FileName) :
   TFileSessionAction(Log, Action, FileName)
 {
 };
 //---------------------------------------------------------------------------
-void TFileLocationSessionAction::Destination(const std::wstring & Destination)
+void TFileLocationSessionAction::Destination(const std::wstring Destination)
 {
   if (FRecord != NULL)
   {
@@ -422,7 +422,7 @@ TDownloadSessionAction::TDownloadSessionAction(TSessionLog * Log) :
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-    TSessionLog * Log, const std::wstring & FileName) :
+    TSessionLog * Log, const std::wstring FileName) :
   TFileSessionAction(Log, laChmod, FileName)
 {
 }
@@ -436,7 +436,7 @@ void TChmodSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-    TSessionLog * Log, const std::wstring & FileName, const TRights & ARights) :
+    TSessionLog * Log, const std::wstring FileName, const TRights & ARights) :
   TFileSessionAction(Log, laChmod, FileName)
 {
   Rights(ARights);
@@ -451,7 +451,7 @@ void TChmodSessionAction::Rights(const TRights & Rights)
 }
 //---------------------------------------------------------------------------
 TTouchSessionAction::TTouchSessionAction(
-    TSessionLog * Log, const std::wstring & FileName, const TDateTime & Modification) :
+    TSessionLog * Log, const std::wstring FileName, const nb::TDateTime & Modification) :
   TFileSessionAction(Log, laTouch, FileName)
 {
   if (FRecord != NULL)
@@ -461,13 +461,13 @@ TTouchSessionAction::TTouchSessionAction(
 }
 //---------------------------------------------------------------------------
 TMkdirSessionAction::TMkdirSessionAction(
-    TSessionLog * Log, const std::wstring & FileName) :
+    TSessionLog * Log, const std::wstring FileName) :
   TFileSessionAction(Log, laMkdir, FileName)
 {
 }
 //---------------------------------------------------------------------------
 TRmSessionAction::TRmSessionAction(
-    TSessionLog * Log, const std::wstring & FileName) :
+    TSessionLog * Log, const std::wstring FileName) :
   TFileSessionAction(Log, laRm, FileName)
 {
 }
@@ -481,14 +481,14 @@ void TRmSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TMvSessionAction::TMvSessionAction(TSessionLog * Log,
-    const std::wstring &FileName, const std::wstring & ADestination) :
+    const std::wstring FileName, const std::wstring ADestination) :
   TFileLocationSessionAction(Log, laMv, FileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TSessionLog * Log,
-    const std::wstring &Command, const std::wstring & Destination) :
+    const std::wstring Command, const std::wstring Destination) :
   TSessionAction(Log, laCall)
 {
   if (FRecord != NULL)
@@ -498,7 +498,7 @@ TCallSessionAction::TCallSessionAction(TSessionLog * Log,
   }
 }
 //---------------------------------------------------------------------------
-void TCallSessionAction::AddOutput(const std::wstring & Output, bool StdError)
+void TCallSessionAction::AddOutput(const std::wstring Output, bool StdError)
 {
   if (FRecord != NULL)
   {
@@ -507,7 +507,7 @@ void TCallSessionAction::AddOutput(const std::wstring & Output, bool StdError)
 }
 //---------------------------------------------------------------------------
 TLsSessionAction::TLsSessionAction(TSessionLog * Log,
-    const std::wstring &Destination) :
+    const std::wstring Destination) :
   TSessionAction(Log, laLs)
 {
   if (FRecord != NULL)
@@ -527,7 +527,7 @@ void TLsSessionAction::FileList(TRemoteFileList * FileList)
 //---------------------------------------------------------------------------
 TSessionInfo::TSessionInfo()
 {
-  LoginTime = Now();
+  LoginTime = nb::Now();
 }
 //---------------------------------------------------------------------------
 TFileSystemInfo::TFileSystemInfo()
@@ -538,7 +538,7 @@ TFileSystemInfo::TFileSystemInfo()
 const char *LogLineMarks = "<>!.*";
 TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   TConfiguration * Configuration):
-  TStringList()
+  nb::TStringList()
 {
   FCriticalSection = new TCriticalSection;
   FConfiguration = Configuration;
@@ -552,7 +552,7 @@ TSessionLog::TSessionLog(TSessionUI* UI, TSessionData * SessionData,
   FCurrentFileName = L"";
   FLoggingActions = false;
   FClosed = false;
-  FPendingActions = new TList();
+  FPendingActions = new nb::TList();
   Self = this;
 }
 //---------------------------------------------------------------------------
@@ -593,13 +593,13 @@ TLogLineType TSessionLog::GetType(int Index)
   return static_cast<TLogLineType>(reinterpret_cast<int>(ptr));
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring & Line)
+void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring Line)
 {
   assert(FParent != NULL);
   FParent->Add(Type, Line);
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
+void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
 {
   // DEBUG_PRINTF(L"begin: Line = %s", Line.c_str());
   if (FTopIndex < 0)
@@ -607,7 +607,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
     FTopIndex = 0;
   }
 
-  TStringList::AddObject(Line, static_cast<TObject *>(reinterpret_cast<void *>(Type)));
+  nb::TStringList::AddObject(Line, static_cast<nb::TObject *>(reinterpret_cast<void *>(Type)));
 
   FLoggedLines++;
 
@@ -624,23 +624,23 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring &Line)
       {
         SYSTEMTIME t;
         ::GetLocalTime(&t);
-        // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+        // std::wstring Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", nb::Now());
         std::wstring Timestamp = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ",
             t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond, t.wMilliseconds);
         fputc(LogLineMarks[Type], static_cast<FILE *>(FFile));
         // fwrite(Timestamp.c_str(), 1, Timestamp.size() * sizeof(wchar_t), (FILE *)FFile);
-        fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(::W2MB(Timestamp.c_str()).c_str()));
+        fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Timestamp.c_str()).c_str()));
       }
       // use fwrite instead of fprintf to make sure that even
       // non-ascii data (unicode) gets in.
-      fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(::W2MB(Line.c_str()).c_str()));
+      fprintf_s(static_cast<FILE *>(FFile), "%s", const_cast<char *>(nb::W2MB(Line.c_str()).c_str()));
       fputc('\n', static_cast<FILE *>(FFile));
     }
   }
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TSessionLog::DoAdd(TLogLineType Type, const std::wstring &Line,
+void TSessionLog::DoAdd(TLogLineType Type, const std::wstring Line,
   const doaddlog_slot_type &func)
 {
   std::wstring Prefix;
@@ -658,7 +658,7 @@ void TSessionLog::DoAdd(TLogLineType Type, const std::wstring &Line,
   }
 }
 //---------------------------------------------------------------------------
-void TSessionLog::Add(TLogLineType Type, const std::wstring &Line)
+void TSessionLog::Add(TLogLineType Type, const std::wstring Line)
 {
   assert(FConfiguration);
   if (GetLogging() && (FConfiguration->GetLogActions() == (Type == llAction)))
@@ -826,7 +826,7 @@ void TSessionLog::OpenLogFile()
     }
     // FFile = _wfopen(NewFileName.c_str(),
       // FConfiguration->GetLogFileAppend() && !FLoggingActions ? L"a" : L"w");
-    FFile = _fsopen(::W2MB(NewFileName.c_str()).c_str(),
+    FFile = _fsopen(nb::W2MB(NewFileName.c_str()).c_str(),
       FConfiguration->GetLogFileAppend() && !FLoggingActions ? "a" : "w", SH_DENYWR);
     if (FFile)
     {
@@ -939,8 +939,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       // wcscpy(UserName, L"<Failed to retrieve username>");
       strcpy(UserName, "<Failed to retrieve username>");
     }
-    ADF(L"Local account: %s", ::MB2W(UserName).c_str());
-    ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()).c_str());
+    ADF(L"Local account: %s", nb::MB2W(UserName).c_str());
+    ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", nb::Now()).c_str());
     AddSeparator();
     ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
     ADF(L"Host name: %s (Port: %d)", Data->GetHostName().c_str(), Data->GetPortNumber());
@@ -1098,12 +1098,12 @@ void TSessionLog::Clear()
   TGuard Guard(FCriticalSection);
 
   FTopIndex += GetCount();
-  TStringList::Clear();
+  nb::TStringList::Clear();
 }
 //---------------------------------------------------------------------------
 void TSessionLog::AddPendingAction(TSessionActionRecord * Action)
 {
-  FPendingActions->Add(static_cast<TObject *>(static_cast<void *>(Action)));
+  FPendingActions->Add(static_cast<nb::TObject *>(static_cast<void *>(Action)));
 }
 //---------------------------------------------------------------------------
 void TSessionLog::RecordPendingActions()

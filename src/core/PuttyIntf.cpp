@@ -35,11 +35,11 @@ void PuttyInitialize()
 
   std::wstring VersionString = SshVersionString();
   assert(!VersionString.empty() && (VersionString.size() < sizeof(sshver)));
-  std::string vs = ::W2MB(VersionString.c_str());
+  std::string vs = nb::W2MB(VersionString.c_str());
   strcpy_s(sshver, sizeof(sshver), vs.c_str());
   std::wstring AppName = AppNameString();
   assert(!AppName.empty() && (AppName.size() < sizeof(appname_)));
-  std::string _appname = ::W2MB(AppName.c_str());
+  std::string _appname = nb::W2MB(AppName.c_str());
   strcpy_s(appname_, sizeof(appname_), _appname.c_str());
 }
 //---------------------------------------------------------------------------
@@ -128,27 +128,27 @@ int get_userpass_input(prompts_t * p, unsigned char * /*in*/, int /*inlen*/)
   assert(SecureShell != NULL);
 
   int Result;
-  TStringList Prompts;
-  TStringList Results;
+  nb::TStringList Prompts;
+  nb::TStringList Results;
   {
     for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
-      Prompts.AddObject(::MB2W(Prompt->prompt), reinterpret_cast<TObject *>(Prompt->echo));
-      Results.AddObject(L"", reinterpret_cast<TObject *>(Prompt->result_len));
+      Prompts.AddObject(nb::MB2W(Prompt->prompt), reinterpret_cast<nb::TObject *>(Prompt->echo));
+      Results.AddObject(L"", reinterpret_cast<nb::TObject *>(Prompt->result_len));
     }
 
-    if (SecureShell->PromptUser(p->to_server, ::MB2W(p->name), p->name_reqd,
-          ::MB2W(p->instruction), p->instr_reqd, &Prompts, &Results))
+    if (SecureShell->PromptUser(p->to_server, nb::MB2W(p->name), p->name_reqd,
+          nb::MB2W(p->instruction), p->instr_reqd, &Prompts, &Results))
     {
       for (int Index = 0; Index < static_cast<int>(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
-        std::string Str = ::W2MB(Results.GetString(Index).c_str());
+        std::string Str = nb::W2MB(Results.GetString(Index).c_str());
         Prompt->result = _strdup(Str.c_str());
         Prompt->result_len = Str.size();
         Prompt->result[Prompt->result_len] = '\0';
-        // DEBUG_PRINTF(L"Prompt->result = %s", ::MB2W(Prompt->result).c_str());
+        // DEBUG_PRINTF(L"Prompt->result = %s", nb::MB2W(Prompt->result).c_str());
       }
       Result = 1;
     }
@@ -173,7 +173,7 @@ void logevent(void * frontend, const char * string)
   // Frontend maybe NULL here
   if (frontend != NULL)
   {
-    (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(::MB2W(string));
+    (static_cast<TSecureShell *>(frontend))->PuttyLogEvent(nb::MB2W(string));
   }
 }
 //---------------------------------------------------------------------------
@@ -187,7 +187,7 @@ void connection_fatal(void * frontend, char * fmt, ...)
   va_end(Param);
 
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(::MB2W(Buf));
+  (static_cast<TSecureShell *>(frontend))->PuttyFatalError(nb::MB2W(Buf));
 }
 //---------------------------------------------------------------------------
 int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
@@ -195,7 +195,7 @@ int verify_ssh_host_key(void * frontend, char * host, int port, char * keytype,
   void * /*ctx*/)
 {
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(::MB2W(host), port, ::MB2W(keytype), ::MB2W(keystr), ::MB2W(fingerprint));
+  (static_cast<TSecureShell *>(frontend))->VerifyHostKey(nb::MB2W(host), port, nb::MB2W(keytype), nb::MB2W(keystr), nb::MB2W(fingerprint));
 
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
@@ -205,7 +205,7 @@ int askalg(void * frontend, const char * algtype, const char * algname,
   void (* /*callback*/)(void * ctx, int result), void * /*ctx*/)
 {
   assert(frontend != NULL);
-  (static_cast<TSecureShell *>(frontend))->AskAlg(::MB2W(algtype), ::MB2W(algname));
+  (static_cast<TSecureShell *>(frontend))->AskAlg(nb::MB2W(algtype), nb::MB2W(algname));
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
@@ -219,7 +219,7 @@ void old_keyfile_warning(void)
 void display_banner(void * frontend, const char * banner, int size)
 {
   assert(frontend);
-  std::wstring Banner(::MB2W(std::string(banner, size).c_str()).c_str());
+  std::wstring Banner(nb::MB2W(std::string(banner, size).c_str()).c_str());
   (static_cast<TSecureShell *>(frontend))->DisplayBanner(Banner);
 }
 //---------------------------------------------------------------------------
@@ -232,7 +232,7 @@ static void SSHFatalError(const char * Format, va_list Param)
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
   // like 'out of memory' from putty\ssh.c.
-  throw ESshFatal(::MB2W(Buf), NULL);
+  throw ESshFatal(nb::MB2W(Buf), NULL);
 }
 //---------------------------------------------------------------------------
 void fatalbox(char * fmt, ...)
@@ -348,7 +348,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   assert(Key == HKEY_CURRENT_USER);
   USEDPARAM(Key);
 
-  std::wstring RegKey = ::MB2W(SubKey);
+  std::wstring RegKey = nb::MB2W(SubKey);
   int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().size();
   assert(RegKey.substr(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.substr(PuttyKeyLen, RegKey.size() - PuttyKeyLen);
@@ -404,7 +404,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   std::wstring Value;
   if (Storage == NULL)
   {
-    if (std::wstring(::MB2W(ValueName)) == L"RandSeedFile")
+    if (std::wstring(nb::MB2W(ValueName)) == L"RandSeedFile")
     {
       Value = Configuration->GetRandomSeedFileName();
       R = ERROR_SUCCESS;
@@ -417,9 +417,9 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   }
   else
   {
-    if (Storage->ValueExists(::MB2W(ValueName)))
+    if (Storage->ValueExists(nb::MB2W(ValueName)))
     {
-      Value = Storage->ReadStringRaw(::MB2W(ValueName), L"");
+      Value = Storage->ReadStringRaw(nb::MB2W(ValueName), L"");
       R = ERROR_SUCCESS;
     }
     else
@@ -433,7 +433,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     assert(Type != NULL);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    strncpy_s(DataStr, *DataSize, ::W2MB(Value.c_str()).c_str(), *DataSize);
+    strncpy_s(DataStr, *DataSize, nb::W2MB(Value.c_str()).c_str(), *DataSize);
     DataStr[*DataSize - 1] = '\0';
     *DataSize = strlen(DataStr);
   }
@@ -453,7 +453,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long /*R
   if (Storage != NULL)
   {
     std::string Value(reinterpret_cast<const char*>(Data), DataSize - 1);
-    Storage->WriteStringRaw(::MB2W(ValueName), ::MB2W(Value.c_str()));
+    Storage->WriteStringRaw(nb::MB2W(ValueName), nb::MB2W(Value.c_str()));
   }
 
   return ERROR_SUCCESS;
@@ -472,18 +472,18 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType KeyType(const std::wstring &FileName)
+TKeyType KeyType(const std::wstring FileName)
 {
   assert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   assert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
   Filename KeyFile;
-  ASCOPY(KeyFile.path, ::W2MB(FileName.c_str()));
+  ASCOPY(KeyFile.path, nb::W2MB(FileName.c_str()));
   return static_cast<TKeyType>(key_type(&KeyFile));
 }
 //---------------------------------------------------------------------------
 std::wstring KeyTypeName(TKeyType KeyType)
 {
-  return ::MB2W(key_type_to_str(KeyType));
+  return nb::MB2W(key_type_to_str(KeyType));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -512,7 +512,7 @@ extern "C" void UnicodeEmit(void * AParams, long int Output)
 //---------------------------------------------------------------------------
 std::string DecodeUTF(const std::string &UTF)
 {
-  // DEBUG_PRINTF(L"UTF = %s", ::MB2W(UTF.c_str()).c_str());
+  // DEBUG_PRINTF(L"UTF = %s", nb::MB2W(UTF.c_str()).c_str());
   charset_state State;
   char *Str;
   TUnicodeEmitParams Params;
@@ -531,7 +531,7 @@ std::string DecodeUTF(const std::string &UTF)
   }
   Params.Buffer.resize(Params.Pos);
 
-  return ::W2MB(Params.Buffer.c_str());
+  return nb::W2MB(Params.Buffer.c_str());
 }
 //---------------------------------------------------------------------------
 struct TUnicodeEmitParams2
@@ -557,11 +557,11 @@ extern "C" void UnicodeEmit2(void * AParams, long int Output)
   Params->Pos++;
 }
 //---------------------------------------------------------------------------
-std::string EncodeUTF(const std::wstring &Source)
+std::string EncodeUTF(const std::wstring Source)
 {
   // std::wstring::c_bstr() returns NULL for empty strings
   // (as opposite to std::wstring::c_str() which returns "")
-  // DEBUG_PRINTF(L"Source = %s", ::MB2W(Source.c_str()).c_str());
+  // DEBUG_PRINTF(L"Source = %s", nb::MB2W(Source.c_str()).c_str());
   if (Source.empty())
   {
     return "";
@@ -585,14 +585,14 @@ std::string EncodeUTF(const std::wstring &Source)
     }
     Params.Buffer.resize(Params.Pos);
 
-    // return ::W2MB(Params.Buffer.c_str());
+    // return nb::W2MB(Params.Buffer.c_str());
     return Params.Buffer;
   }
 }
 //---------------------------------------------------------------------------
-__int64 ParseSize(const std::wstring &SizeStr)
+__int64 ParseSize(const std::wstring SizeStr)
 {
-  return parse_blocksize(::W2MB(SizeStr.c_str()).c_str());
+  return parse_blocksize(nb::W2MB(SizeStr.c_str()).c_str());
 }
 //---------------------------------------------------------------------------
 bool HasGSSAPI()

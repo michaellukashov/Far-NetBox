@@ -15,19 +15,19 @@ int NamedObjectSortProc(void * Item1, void * Item2)
   return ::AnsiCompareStr((static_cast<TNamedObject *>(Item1))->GetName(), (static_cast<TNamedObject *>(Item2))->GetName());
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(const std::wstring &AName) :
-    TPersistent()
+TNamedObject::TNamedObject(const std::wstring AName) :
+    nb::TPersistent()
 {
   SetName(AName);
 }
 //---------------------------------------------------------------------------
-void TNamedObject::SetName(const std::wstring &value)
+void TNamedObject::SetName(const std::wstring value)
 {
   FHidden = (value.substr(0, TNamedObjectList::HiddenPrefix.size()) == TNamedObjectList::HiddenPrefix);
   FName = value;
 }
 
-int TNamedObject::CompareName(const std::wstring &aName,
+int TNamedObject::CompareName(const std::wstring aName,
   bool CaseSensitive)
 {
   // DEBUG_PRINTF(L"CaseSensitive = %d, Name = %s, aName = %s", CaseSensitive, Name.c_str(), aName.c_str());
@@ -64,7 +64,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 const std::wstring TNamedObjectList::HiddenPrefix = L"_!_";
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList() :
-  TObjectList(),
+  nb::TObjectList(),
   FHiddenCount(0),
   AutoSort(true)
 {
@@ -80,7 +80,7 @@ TNamedObject * TNamedObjectList::AtObject(int Index)
 void TNamedObjectList::Recount()
 {
   size_t i = 0;
-  while ((i < TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(i)))->GetHidden()) i++;
+  while ((i < nb::TObjectList::GetCount()) && (static_cast<TNamedObject *>(GetItem(i)))->GetHidden()) i++;
   FHiddenCount = i;
 }
 //---------------------------------------------------------------------------
@@ -89,17 +89,17 @@ void TNamedObjectList::AlphaSort()
   Sort(NamedObjectSortProc);
 }
 //---------------------------------------------------------------------------
-void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
+void TNamedObjectList::Notify(void *Ptr, nb::TListNotification Action)
 {
-  TObjectList::Notify(Ptr, Action);
-  if (AutoSort && (Action == lnAdded)) AlphaSort();
+  nb::TObjectList::Notify(Ptr, Action);
+  if (AutoSort && (Action == nb::lnAdded)) AlphaSort();
   Recount();
 }
 //---------------------------------------------------------------------------
-TNamedObject * TNamedObjectList::FindByName(const std::wstring &Name,
+TNamedObject * TNamedObjectList::FindByName(const std::wstring Name,
   bool CaseSensitive)
 {
-  for (size_t Index = 0; Index < TObjectList::GetCount(); Index++)
+  for (size_t Index = 0; Index < nb::TObjectList::GetCount(); Index++)
     if (!(static_cast<TNamedObject *>(GetItem(Index)))->CompareName(Name, CaseSensitive))
       return static_cast<TNamedObject *>(GetItem(Index));
   return NULL;
@@ -107,10 +107,10 @@ TNamedObject * TNamedObjectList::FindByName(const std::wstring &Name,
 //---------------------------------------------------------------------------
 void TNamedObjectList::SetCount(size_t value)
 {
-  TObjectList::SetCount(value/*+HiddenCount*/);
+  nb::TObjectList::SetCount(value/*+HiddenCount*/);
 }
 //---------------------------------------------------------------------------
 size_t TNamedObjectList::GetCount()
 {
-  return TObjectList::GetCount() - GetHiddenCount();
+  return nb::TObjectList::GetCount() - GetHiddenCount();
 }

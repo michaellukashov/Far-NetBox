@@ -31,13 +31,13 @@ private:
   bool FActive;
   TSessionInfo FSessionInfo;
   bool FSessionInfoValid;
-  TDateTime FLastDataSent;
+  nb::TDateTime FLastDataSent;
   Backend * FBackend;
   void * FBackendHandle;
   const unsigned int * FMinPacketSize;
   const unsigned int * FMaxPacketSize;
   Config * FConfig;
-  notify_signal_type FOnReceive;
+  nb::notify_signal_type FOnReceive;
   bool FFrozen;
   bool FDataWhileFrozen;
   bool FStoredPasswordTried;
@@ -74,7 +74,7 @@ private:
   void FreeBackend();
   void PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result);
   inline void CaptureOutput(TLogLineType Type,
-    const std::wstring &Line);
+    const std::wstring Line);
   void ResetConnection();
   void ResetSessionInfo();
   void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
@@ -96,11 +96,11 @@ protected:
     size_t Count, std::wstring &Message);
   int TranslateAuthenticationMessage(std::wstring &Message);
   int TranslateErrorMessage(std::wstring &Message);
-  void AddStdError(const std::wstring &Str);
-  void AddStdErrorLine(const std::wstring &Str);
-  void FatalError(const std::exception *E, const std::wstring &Msg);
-  void inline LogEvent(const std::wstring &Str);
-  void FatalError(const std::wstring &Error);
+  void AddStdError(const std::wstring Str);
+  void AddStdErrorLine(const std::wstring Str);
+  void FatalError(const std::exception *E, const std::wstring Msg);
+  void inline LogEvent(const std::wstring Str);
+  void FatalError(const std::wstring Error);
   static void ClearConfig(Config *cfg);
   static void StoreToConfig(TSessionData *Data, Config *cfg, bool Simple);
 
@@ -115,11 +115,11 @@ public:
   bool Peek(char *& Buf, int Len);
   std::wstring ReceiveLine();
   void Send(const char * Buf, int Len);
-  void SendStr(const std::wstring &Str);
+  void SendStr(const std::wstring Str);
   void SendSpecial(int Code);
   void Idle(unsigned int MSec = 0);
   void SendEOF();
-  void SendLine(const std::wstring &Line);
+  void SendLine(const std::wstring Line);
   void SendNull();
 
   const TSessionInfo & GetSessionInfo();
@@ -129,26 +129,26 @@ public:
   void ClearStdError();
   bool GetStoredCredentialsTried();
 
-  void RegisterReceiveHandler(const notify_slot_type &Handler);
-  void UnregisterReceiveHandler(const notify_slot_type &Handler);
+  void RegisterReceiveHandler(const nb::notify_slot_type &Handler);
+  void UnregisterReceiveHandler(const nb::notify_slot_type &Handler);
 
   // interface to PuTTY core
   void UpdateSocket(SOCKET value, bool Startup);
   void UpdatePortFwdSocket(SOCKET value, bool Startup);
-  void PuttyFatalError(const std::wstring &Error);
+  void PuttyFatalError(const std::wstring Error);
   bool PromptUser(bool ToServer,
-    const std::wstring &AName, bool NameRequired,
-    const std::wstring &Instructions, bool InstructionsRequired,
-    TStrings * Prompts, TStrings * Results);
+    const std::wstring AName, bool NameRequired,
+    const std::wstring Instructions, bool InstructionsRequired,
+    nb::TStrings * Prompts, nb::TStrings * Results);
   void FromBackend(bool IsStdErr, const char * Data, int Length);
   void CWrite(const char * Data, int Length);
   const std::wstring GetStdError();
-  void VerifyHostKey(const std::wstring &Host, int Port,
-    const std::wstring &KeyType, const std::wstring &KeyStr, const std::wstring &Fingerprint);
-  void AskAlg(const std::wstring &AlgType, const std::wstring &AlgName);
-  void DisplayBanner(const std::wstring &Banner);
+  void VerifyHostKey(const std::wstring Host, int Port,
+    const std::wstring KeyType, const std::wstring KeyStr, const std::wstring Fingerprint);
+  void AskAlg(const std::wstring AlgType, const std::wstring AlgName);
+  void DisplayBanner(const std::wstring Banner);
   void OldKeyfileWarning();
-  void PuttyLogEvent(const std::wstring &Str);
+  void PuttyLogEvent(const std::wstring Str);
 
   // __property bool Active = { read = FActive, write = SetActive };
   bool GetActive() { return FActive; }
@@ -158,8 +158,8 @@ public:
   // __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
   captureoutput_signal_type &GetOnCaptureOutput() { return FOnCaptureOutput; }
   void SetOnCaptureOutput(const captureoutput_slot_type &value) { FOnCaptureOutput.connect(value); }
-  // __property TDateTime LastDataSent = { read = FLastDataSent };
-  TDateTime GetLastDataSent() { return FLastDataSent; }
+  // __property nb::TDateTime LastDataSent = { read = FLastDataSent };
+  nb::TDateTime GetLastDataSent() { return FLastDataSent; }
   // __property std::wstring LastTunnelError = { read = FLastTunnelError };
   std::wstring GetLastTunnelError() { return FLastTunnelError; }
   // __property std::wstring UserName = { read = FUserName };

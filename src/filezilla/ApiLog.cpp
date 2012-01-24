@@ -89,7 +89,7 @@ void CApiLog::LogMessage(int nMessageType, LPCTSTR pMsgFormat, ...) const
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, text); // (LPCTSTR)::W2MB(text.c_str()).c_str());
+	SendLogMessage(nMessageType, text); // (LPCTSTR)nb::W2MB(text.c_str()).c_str());
 }
 
 void CApiLog::LogMessageRaw(int nMessageType, LPCTSTR pMsg) const
@@ -129,7 +129,7 @@ void CApiLog::LogMessage(int nMessageType, UINT nFormatID, ...) const
 	if (nMessageType>=FZ_LOG_DEBUG)
 		return;
 #endif
-	SendLogMessage(nMessageType, text); // (LPCTSTR)::W2MB(text.c_str()).c_str());
+	SendLogMessage(nMessageType, text); // (LPCTSTR)nb::W2MB(text.c_str()).c_str());
 }
 
 void CApiLog::LogMessage(CString SourceFile, int nSourceLine, void *pInstance, int nMessageType, LPCTSTR pMsgFormat, ...) const

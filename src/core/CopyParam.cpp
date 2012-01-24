@@ -48,7 +48,7 @@ void TCopyParamType::Default()
   SetCPSLimit(0);
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamType::GetInfoStr(const std::wstring &Separator, int Options) const
+std::wstring TCopyParamType::GetInfoStr(const std::wstring Separator, int Options) const
 {
   TCopyParamType Defaults;
   std::wstring Result;
@@ -219,7 +219,7 @@ TCopyParamType & TCopyParamType::operator =(const TCopyParamType & rhp)
   return *this;
 }
 //---------------------------------------------------------------------------
-void TCopyParamType::SetLocalInvalidChars(const std::wstring &value)
+void TCopyParamType::SetLocalInvalidChars(const std::wstring value)
 {
   if (value != GetLocalInvalidChars())
   {
@@ -259,7 +259,7 @@ wchar_t *TCopyParamType::ReplaceChar(std::wstring &FileName, wchar_t *InvalidCha
     return InvalidChar;
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamType::ValidLocalFileName(const std::wstring &FileName) const
+std::wstring TCopyParamType::ValidLocalFileName(const std::wstring FileName) const
 {
   std::wstring fileName = FileName;
   if (GetInvalidCharsReplacement() != NoReplacement)
@@ -307,7 +307,7 @@ std::wstring TCopyParamType::ValidLocalFileName(const std::wstring &FileName) co
   return fileName;
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamType::RestoreChars(const std::wstring &FileName) const
+std::wstring TCopyParamType::RestoreChars(const std::wstring FileName) const
 {
   std::wstring fileName = FileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
@@ -316,7 +316,7 @@ std::wstring TCopyParamType::RestoreChars(const std::wstring &FileName) const
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != NULL)
     {
       size_t Index = InvalidChar - fileName.c_str() + 1;
-      ::Error(SNotImplemented, 206); 
+      nb::Error(SNotImplemented, 206); 
       if ((fileName.size() >= Index + 2) &&
           false // FIXME (fileName.ByteType(Index) == mbSingleByte) &&
           // (fileName.ByteType(Index + 1) == mbSingleByte) &&
@@ -354,7 +354,7 @@ std::wstring TCopyParamType::RestoreChars(const std::wstring &FileName) const
   return fileName;
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamType::ValidLocalPath(const std::wstring &Path) const
+std::wstring TCopyParamType::ValidLocalPath(const std::wstring Path) const
 {
   std::wstring Result;
   std::wstring path = Path;
@@ -370,7 +370,7 @@ std::wstring TCopyParamType::ValidLocalPath(const std::wstring &Path) const
 }
 //---------------------------------------------------------------------------
 // not used yet
-std::wstring TCopyParamType::Untokenize(const std::wstring &FileName)
+std::wstring TCopyParamType::Untokenize(const std::wstring FileName)
 {
   wchar_t *Token;
   std::wstring Result = FileName;
@@ -401,7 +401,7 @@ std::wstring TCopyParamType::Untokenize(const std::wstring &FileName)
   return Result;
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamType::ChangeFileName(const std::wstring &FileName,
+std::wstring TCopyParamType::ChangeFileName(const std::wstring FileName,
   TOperationSide Side, bool FirstLevel) const
 {
   // DEBUG_PRINTF(L"FirstLevel = %d, Side = %d, FileName = %s", FirstLevel, Side, FileName.c_str());
@@ -441,7 +441,7 @@ std::wstring TCopyParamType::ChangeFileName(const std::wstring &FileName,
   return fileName;
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::UseAsciiTransfer(const std::wstring &FileName,
+bool TCopyParamType::UseAsciiTransfer(const std::wstring FileName,
   TOperationSide Side, const TFileMasks::TParams & Params) const
 {
   switch (GetTransferMode()) {
@@ -515,7 +515,7 @@ bool TCopyParamType::AllowAnyTransfer() const
   return GetExcludeFileMask().GetMasks().empty();
 }
 //---------------------------------------------------------------------------
-bool TCopyParamType::AllowTransfer(const std::wstring &FileName,
+bool TCopyParamType::AllowTransfer(const std::wstring FileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params) const
 {
   bool Result = true;
@@ -599,7 +599,7 @@ bool TCopyParamType::operator==(const TCopyParamType & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-unsigned long GetSpeedLimit(const std::wstring & Text)
+unsigned long GetSpeedLimit(const std::wstring Text)
 {
   unsigned long Speed = 0;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))

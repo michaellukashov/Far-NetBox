@@ -19,7 +19,7 @@ const int ccCopyResults = ccUser << 2;
 const int ccSet = 0x80000000;
 //---------------------------------------------------------------------------
 static const unsigned int AdditionaLanguageMask = 0xFFFFFF00;
-static const std::wstring &AdditionaLanguagePrefix(L"XX");
+static const std::wstring AdditionaLanguagePrefix(L"XX");
 //---------------------------------------------------------------------------
 TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
@@ -152,8 +152,8 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-bool TCopyParamRule::Match(const std::wstring & Mask,
-  const std::wstring &Value, bool Path, bool Local) const
+bool TCopyParamRule::Match(const std::wstring Mask,
+  const std::wstring Value, bool Path, bool Local) const
 {
   bool Result;
   if (Mask.empty())
@@ -209,7 +209,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.empty();
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamRule::GetInfoStr(const std::wstring &Separator) const
+std::wstring TCopyParamRule::GetInfoStr(const std::wstring Separator) const
 {
   std::wstring Result;
   #define ADD(FMT, ELEM) \
@@ -233,9 +233,9 @@ TCopyParamList::TCopyParamList()
 //---------------------------------------------------------------------------
 void TCopyParamList::Init()
 {
-  FCopyParams = new TObjectList();
-  FRules = new TObjectList();
-  FNames = new TStringList();
+  FCopyParams = new nb::TObjectList();
+  FRules = new nb::TObjectList();
+  FNames = new nb::TStringList();
   FNameList = NULL;
   FModified = false;
 }
@@ -263,7 +263,7 @@ void TCopyParamList::Modify()
   FModified = true;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::ValidateName(const std::wstring &Name)
+void TCopyParamList::ValidateName(const std::wstring Name)
 {
   if (::LastDelimiter(Name, FInvalidChars) != std::wstring::npos)
   {
@@ -307,7 +307,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::IndexOfName(const std::wstring &Name) const
+int TCopyParamList::IndexOfName(const std::wstring Name) const
 {
   return FNames->IndexOf(Name.c_str());
 }
@@ -334,35 +334,35 @@ void TCopyParamList::Clear()
   FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Add(const std::wstring &Name,
+void TCopyParamList::Add(const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Insert(int Index, const std::wstring &Name,
+void TCopyParamList::Insert(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   // DEBUG_PRINTF(L"begin");
   assert(FNames->IndexOf(Name) < 0);
   FNames->Insert(Index, Name);
   assert(CopyParam != NULL);
-  FCopyParams->Insert(Index, reinterpret_cast<TObject *>(CopyParam));
-  FRules->Insert(Index, reinterpret_cast<TObject *>(Rule));
+  FCopyParams->Insert(Index, reinterpret_cast<nb::TObject *>(CopyParam));
+  FRules->Insert(Index, reinterpret_cast<nb::TObject *>(Rule));
   Modify();
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Change(int Index, const std::wstring &Name,
+void TCopyParamList::Change(int Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
     FNames->PutString(Index, Name);
     delete GetCopyParam(Index);
-    FCopyParams->SetItem(Index, (reinterpret_cast<TObject *>(CopyParam)));
+    FCopyParams->SetItem(Index, (reinterpret_cast<nb::TObject *>(CopyParam)));
     delete GetRule(Index);
-    FRules->SetItem(Index, (reinterpret_cast<TObject *>(Rule)));
+    FRules->SetItem(Index, (reinterpret_cast<nb::TObject *>(Rule)));
     Modify();
   }
   else
@@ -446,8 +446,8 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
       throw;
     }
 
-    FCopyParams->Add(reinterpret_cast<TObject *>(CopyParam));
-    FRules->Add(reinterpret_cast<TObject *>(Rule));
+    FCopyParams->Add(reinterpret_cast<nb::TObject *>(CopyParam));
+    FRules->Add(reinterpret_cast<nb::TObject *>(Rule));
     FNames->Add(Name);
   }
   Reset();
@@ -500,11 +500,11 @@ std::wstring TCopyParamList::GetName(int Index) const
   return FNames->GetString(Index);
 }
 //---------------------------------------------------------------------------
-TStrings * TCopyParamList::GetNameList() const
+nb::TStrings * TCopyParamList::GetNameList() const
 {
   if (FNameList == NULL)
   {
-    FNameList = new TStringList();
+    FNameList = new nb::TStringList();
 
     for (int i = 0; i < GetCount(); i++)
     {
@@ -549,10 +549,10 @@ TGUIConfiguration::TGUIConfiguration() : TConfiguration(),
   FLocale(0)
 {
   FLocale = 0;
-  FLocales = new TStringList();
+  FLocales = new nb::TStringList();
   FLastLocalesExts = L"*";
-  dynamic_cast<TStringList*>(FLocales)->SetSorted(true);
-  dynamic_cast<TStringList*>(FLocales)->SetCaseSensitive(false);
+  dynamic_cast<nb::TStringList*>(FLocales)->SetSorted(true);
+  dynamic_cast<nb::TStringList*>(FLocales)->SetCaseSensitive(false);
   FCopyParamList = new TCopyParamList();
   CoreSetResourceModule(GetResourceModule());
 }
@@ -574,7 +574,7 @@ void TGUIConfiguration::Default()
   FCopyParamListDefaults = true;
   DefaultLocalized();
 
-  FIgnoreCancelBeforeFinish = TDateTime(0, 0, 3, 0);
+  FIgnoreCancelBeforeFinish = nb::TDateTime(0, 0, 3, 0);
   FContinueOnError = false;
   FConfirmCommandSession = true;
   FSynchronizeParams = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
@@ -597,7 +597,7 @@ void TGUIConfiguration::Default()
   FTelnetForFtpInPutty = true;
   FPuttySession = L"WinSCP temporary session";
   FBeepOnFinish = false;
-  FBeepOnFinishAfter = TDateTime(0, 0, 30, 0);
+  FBeepOnFinishAfter = nb::TDateTime(0, 0, 30, 0);
   FSynchronizeBrowsing = false;
   FCopyParamCurrent = L"";
   FKeepUpToDateChangeDelay = 500;
@@ -642,7 +642,7 @@ void TGUIConfiguration::DefaultLocalized()
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-std::wstring TGUIConfiguration::PropertyToKey(const std::wstring &Property)
+std::wstring TGUIConfiguration::PropertyToKey(const std::wstring Property)
 {
   // no longer useful
   size_t P = ::LastDelimiter(Property, L".>");
@@ -689,7 +689,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   TConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(::MB2W(#VAR)), Get##VAR())
+  #define KEY(TYPE, VAR) Storage->Write ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR())
   REGCONFIG(true);
   #undef KEY
 
@@ -728,7 +728,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   TConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(::MB2W(#VAR)), Get##VAR()))
+  #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(PropertyToKey(nb::MB2W(#VAR)), Get##VAR()))
   // #pragma warn -eas
   REGCONFIG(false);
   // #pragma warn +eas
@@ -842,7 +842,7 @@ HANDLE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   {
     if (Internal)
     {
-      ::Error(SNotImplemented, 90);
+      nb::Error(SNotImplemented, 90);
       NewInstance = 0; // FIXME  HInstance;
     }
   }
@@ -924,7 +924,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID value)
 //---------------------------------------------------------------------------
 void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 {
-  ::Error(SNotImplemented, 91);
+  nb::Error(SNotImplemented, 91);
   TPasLibModule * MainModule = NULL; // FindModule(0); // FIXME HInstance);
   if (Instance != MainModule->Instance)
   {
@@ -934,7 +934,7 @@ void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
 //---------------------------------------------------------------------------
 HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE Instance)
 {
-  ::Error(SNotImplemented, 92);
+  nb::Error(SNotImplemented, 92);
   if (Instance == NULL)
   {
     Instance = 0; // FIXME HInstance;
@@ -959,11 +959,11 @@ void TGUIConfiguration::SetResourceModule(HANDLE Instance)
   DefaultLocalized();
 }
 //---------------------------------------------------------------------------
-TStrings * TGUIConfiguration::GetLocales()
+nb::TStrings * TGUIConfiguration::GetLocales()
 {
-  ::Error(SNotImplemented, 93);
+  nb::Error(SNotImplemented, 93);
   std::wstring LocalesExts;
-  TStringList * Exts = new TStringList();
+  nb::TStringList * Exts = new nb::TStringList();
   {
       BOOST_SCOPE_EXIT ( (Exts) )
       {
@@ -1026,7 +1026,7 @@ TStrings * TGUIConfiguration::GetLocales()
 
           if (Ext >= 0)
           {
-            Exts->SetObject(Ext, reinterpret_cast<TObject*>(Locale));
+            Exts->SetObject(Ext, reinterpret_cast<nb::TObject*>(Locale));
           }
           else
           {
@@ -1049,7 +1049,7 @@ TStrings * TGUIConfiguration::GetLocales()
           GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
             LocaleStr, sizeof(LocaleStr));
           Name += LocaleStr;
-          FLocales->AddObject(Name, reinterpret_cast<TObject*>(Locale));
+          FLocales->AddObject(Name, reinterpret_cast<nb::TObject*>(Locale));
         }
         Index++;
       }
@@ -1064,7 +1064,7 @@ TStrings * TGUIConfiguration::GetLocales()
             ChangeFileExt(ModuleFileName(), std::wstring(L".") + Exts->GetString(Index)));
           if (!LangName.empty())
           {
-            FLocales->AddObject(LangName, reinterpret_cast<TObject*>(
+            FLocales->AddObject(LangName, reinterpret_cast<nb::TObject*>(
               AdditionaLanguageMask + Exts->GetString(Index)[3]));
           }
         }
@@ -1129,7 +1129,7 @@ void TGUIConfiguration::SetCopyParamIndex(int value)
   SetCopyParamCurrent(Name);
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamCurrent(const std::wstring &value)
+void TGUIConfiguration::SetCopyParamCurrent(const std::wstring value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1139,7 +1139,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 //---------------------------------------------------------------------------
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring &Name)
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.empty())

@@ -34,7 +34,7 @@ void TFileOperationProgressType::Clear()
   ResumeStatus = rsNotAvailable;
   Count = 0;
   FFilesFinished = 0;
-  StartTime = Now();
+  StartTime = nb::Now();
   Suspended = false;
   FSuspendTime = 0;
   InProgress = false;
@@ -80,7 +80,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int ACount, bool ATemp,
-  const std::wstring &ADirectory, unsigned long ACPSLimit)
+  const std::wstring ADirectory, unsigned long ACPSLimit)
 {
   Clear();
   Operation = AOperation;
@@ -180,7 +180,7 @@ void TFileOperationProgressType::DoProgress()
   }
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::Finish(const std::wstring &FileName,
+void TFileOperationProgressType::Finish(const std::wstring FileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
    assert(InProgress);
@@ -194,12 +194,12 @@ void TFileOperationProgressType::Finish(const std::wstring &FileName,
    DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetFile(const std::wstring &AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(const std::wstring AFileName, bool AFileInProgress)
 {
   FileName = AFileName;
   FileInProgress = AFileInProgress;
   ClearTransfer();
-  FFileStartTime = Now();
+  FFileStartTime = nb::Now();
   DoProgress();
 }
 //---------------------------------------------------------------------------
@@ -393,9 +393,9 @@ void TFileOperationProgressType::SetResumeStatus(TResumeStatus AResumeStatus)
   DoProgress();
 }
 //---------------------------------------------------------------------------
-TDateTime TFileOperationProgressType::TimeElapsed()
+nb::TDateTime TFileOperationProgressType::TimeElapsed()
 {
-  return Now() - StartTime;
+  return nb::Now() - StartTime;
 }
 //---------------------------------------------------------------------------
 unsigned int TFileOperationProgressType::CPS()
@@ -432,43 +432,43 @@ unsigned int TFileOperationProgressType::CPS()
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime TFileOperationProgressType::TimeExpected()
+nb::TDateTime TFileOperationProgressType::TimeExpected()
 {
   unsigned int CurCps = CPS();
   if (CurCps)
-    return TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
+    return nb::TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));
   else
-      return TDateTime(0);
+      return nb::TDateTime(0);
 }
 //---------------------------------------------------------------------------
-TDateTime TFileOperationProgressType::TotalTimeExpected()
+nb::TDateTime TFileOperationProgressType::TotalTimeExpected()
 {
   assert(TotalSizeSet);
   unsigned int CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped))
   {
-    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
+    return nb::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped) / CurCps) /
       (24 * 60 * 60));
   }
   else
   {
-    return TDateTime(0);
+    return nb::TDateTime(0);
   }
 }
 //---------------------------------------------------------------------------
-TDateTime TFileOperationProgressType::TotalTimeLeft()
+nb::TDateTime TFileOperationProgressType::TotalTimeLeft()
 {
   assert(TotalSizeSet);
   unsigned int CurCps = CPS();
   // sanity check
   if ((CurCps > 0) && (TotalSize > TotalSkipped + TotalTransfered))
   {
-    return TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
+    return nb::TDateTime(static_cast<double>(static_cast<double>(TotalSize - TotalSkipped - TotalTransfered) / CurCps) /
       (24 * 60 * 60));
   }
   else
   {
-    return TDateTime(0);
+    return nb::TDateTime(0);
   }
 }

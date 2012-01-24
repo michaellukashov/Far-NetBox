@@ -1478,7 +1478,6 @@ void CAsyncSslSocketLayer::UnloadSSL()
 	if (m_hSslDll2)
 	{
 		FreeLibrary(m_hSslDll2);
-		FreeLibrary(m_hSslDll2);
 	}
 	m_hSslDll1 = NULL;
 	m_hSslDll2 = NULL;

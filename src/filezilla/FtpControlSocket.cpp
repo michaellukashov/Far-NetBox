@@ -1153,7 +1153,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		int sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
         {
-            // DEBUG_PRINTF(L"utf8 = %s", ::MB2W(utf8).c_str());
+            // DEBUG_PRINTF(L"utf8 = %s", nb::MB2W(utf8).c_str());
 			res = CAsyncSocketEx::Send(utf8, strlen(utf8));
         }
 		else
@@ -4207,7 +4207,6 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 		break;
 	case FILETRANSFER_RETRSTOR:
 		pData->transferdata.nTransferStart=pData->transferdata.transfersize-pData->transferdata.transferleft;
-		m_pTransferSocket->m_transferdata=pData->transferdata;
 		// send RETR/STOR command to server
 		if (!m_pTransferSocket)
 		{
@@ -4215,6 +4214,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 			ResetOperation(FZ_REPLY_ERROR);
 			return;
 		}
+		m_pTransferSocket->m_transferdata=pData->transferdata;
 		if ((pData->transferfile.get || !pData->transferdata.bResume) && !pData->bPasv)
 			m_pTransferSocket->SetActive();
 		CString filename;

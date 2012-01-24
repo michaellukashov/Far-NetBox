@@ -8,7 +8,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
-class TSimpleThread : public TObject
+class TSimpleThread : public nb::TObject
 {
 public:
   explicit TSimpleThread();
@@ -60,16 +60,16 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
-// typedef void (TObject::*TQueueListUpdate)
+// typedef void (nb::TObject::*TQueueListUpdate)
   // (TTerminalQueue *Queue);
 typedef boost::signal1<void, TTerminalQueue *> queuelistupdate_signal_type;
 typedef queuelistupdate_signal_type::slot_type queuelistupdate_slot_type;
-// typedef void (TObject::*TQueueItemUpdateEvent)
+// typedef void (nb::TObject::*TQueueItemUpdateEvent)
   // (TTerminalQueue *Queue, TQueueItem *Item);
 typedef boost::signal2<void, TTerminalQueue *, TQueueItem *> queueitemupdate_signal_type;
 typedef queueitemupdate_signal_type::slot_type queueitemupdate_slot_type;
 enum TQueueEvent { qeEmpty, qePendingUserAction };
-// typedef void (TObject::*TQueueEventEvent)
+// typedef void (nb::TObject::*TQueueEventEvent)
   // (TTerminalQueue *Queue, TQueueEvent Event);
 typedef boost::signal2<void, TTerminalQueue *, TQueueEvent> queueevent_signal_type;
 typedef queueevent_signal_type::slot_type queueevent_slot_type;
@@ -127,16 +127,16 @@ protected:
   TTerminal *FTerminal;
   TConfiguration *FConfiguration;
   TSessionData *FSessionData;
-  TList *FItems;
+  nb::TList *FItems;
   int FItemsInProcess;
   TCriticalSection *FItemsSection;
   int FFreeTerminals;
-  TList *FTerminals;
+  nb::TList *FTerminals;
   int FTemporaryTerminals;
   int FOverallTerminals;
   int FTransfersLimit;
-  TDateTime FIdleInterval;
-  TDateTime FLastIdle;
+  nb::TDateTime FIdleInterval;
+  nb::TDateTime FLastIdle;
   TTerminalQueue *Self;
 
   TQueueItem *GetItem(int Index);
@@ -155,12 +155,12 @@ protected:
   void TerminalFinished(TTerminalItem *TerminalItem);
   bool TerminalFree(TTerminalItem *TerminalItem);
 
-  void DoQueryUser(TObject *Sender, const std::wstring &Query,
-    TStrings *MoreMessages, int Answers, const TQueryParams *Params, int & Answer,
+  void DoQueryUser(nb::TObject *Sender, const std::wstring Query,
+    nb::TStrings *MoreMessages, int Answers, const TQueryParams *Params, int & Answer,
     TQueryType Type, void *Arg);
   void DoPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    const std::wstring &Name, const std::wstring &Instructions, TStrings *Prompts,
-    TStrings *Results, bool & Result, void *Arg);
+    const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
+    nb::TStrings *Results, bool & Result, void *Arg);
   void DoShowExtendedException(TTerminal *Terminal,
     const std::exception *E, void *Arg);
   void DoQueueItemUpdate(TQueueItem *Item);
@@ -168,7 +168,7 @@ protected:
   void DoEvent(TQueueEvent Event);
 };
 //---------------------------------------------------------------------------
-class TQueueItem : public TObject
+class TQueueItem : public nb::TObject
 {
 friend class TTerminalQueue;
 friend class TTerminalItem;
@@ -291,7 +291,7 @@ protected:
   void ResetStats();
 
 private:
-  TList *FList;
+  nb::TList *FList;
   int FActiveCount;
 
 };
@@ -314,12 +314,12 @@ class TTransferQueueItem : public TLocatedQueueItem
 {
 public:
   explicit TTransferQueueItem(TTerminal *Terminal,
-    TStrings *FilesToCopy, const std::wstring & TargetDir,
+    nb::TStrings *FilesToCopy, const std::wstring TargetDir,
     const TCopyParamType *CopyParam, int Params, TOperationSide Side);
   virtual ~TTransferQueueItem();
 
 protected:
-  TStrings *FFilesToCopy;
+  nb::TStrings *FFilesToCopy;
   std::wstring FTargetDir;
   TCopyParamType *FCopyParam;
   int FParams;
@@ -329,7 +329,7 @@ class TUploadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TUploadQueueItem(TTerminal *Terminal,
-    TStrings *FilesToCopy, const std::wstring & TargetDir,
+    nb::TStrings *FilesToCopy, const std::wstring TargetDir,
     const TCopyParamType *CopyParam, int Params);
   virtual ~TUploadQueueItem()
   {}
@@ -341,7 +341,7 @@ class TDownloadQueueItem : public TTransferQueueItem
 {
 public:
   explicit TDownloadQueueItem(TTerminal *Terminal,
-    TStrings *FilesToCopy, const std::wstring &TargetDir,
+    nb::TStrings *FilesToCopy, const std::wstring TargetDir,
     const TCopyParamType *CopyParam, int Params);
   virtual ~TDownloadQueueItem()
   {}
