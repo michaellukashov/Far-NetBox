@@ -534,12 +534,14 @@ public:
   void SetHostKey(const std::wstring value);
 private:
   std::wstring AdjustHostName(const std::wstring hostName, const std::wstring prefix);
+  void RemoveProtocolPrefix(std::wstring &hostName);
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
 {
 public:
   TStoredSessionList(bool aReadOnly = false);
+  virtual ~TStoredSessionList();
   void Load(const std::wstring aKey, bool UseDefaults);
   void Load();
   void Save(bool All, bool Explicit);
@@ -557,7 +559,6 @@ public:
   TSessionData *NewSession(const std::wstring SessionName, TSessionData *Session);
   TSessionData *ParseUrl(const std::wstring Url, TOptions *Options, bool &DefaultsOnly,
     std::wstring *FileName = NULL, bool *ProtocolDefined = NULL);
-  virtual ~TStoredSessionList();
   // __property TSessionData * Sessions[int Index]  = { read=AtSession };
   TSessionData *GetSession(int Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
