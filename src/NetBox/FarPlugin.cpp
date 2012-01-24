@@ -2656,6 +2656,7 @@ nb::TObjectList *TFarPanelInfo::GetItems()
         gppi.Size = size;
         FOwner->FarControl(FCTL_GETPANELITEM, Index, static_cast<void *>(&gppi));
         // DEBUG_PRINTF(L"ppi.FileName = %s", ppi->FileName);
+        FItems->Add(static_cast<nb::TObject *>(new TFarPanelItem(ppi)));
     }
     return FItems;
 }
