@@ -1286,6 +1286,7 @@ void TSessionData::SetHostName(const std::wstring value)
   std::wstring val = value;
   if (FHostName != val)
   {
+    RemoveProtocolPrefix(val);
     // HostName is key for password encryption
     std::wstring XPassword = GetPassword();
 
@@ -1710,11 +1711,8 @@ std::wstring TSessionData::AdjustHostName(const std::wstring hostName, const std
     return result;
 }
 //---------------------------------------------------------------------
-std::wstring TSessionData::GetDefaultSessionName()
+void TSessionData::RemoveProtocolPrefix(std::wstring &hostName)
 {
-  std::wstring hostName = GetHostName();
-  std::wstring userName = GetUserName();
-  // DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
   switch (GetFSProtocol())
   {
     case fsSCPonly:
@@ -1752,6 +1750,15 @@ std::wstring TSessionData::GetDefaultSessionName()
         break;
     }
   }
+}
+
+//---------------------------------------------------------------------
+std::wstring TSessionData::GetDefaultSessionName()
+{
+  std::wstring hostName = GetHostName();
+  std::wstring userName = GetUserName();
+  // DEBUG_PRINTF(L"hostName = %s", hostName.c_str());
+  RemoveProtocolPrefix(hostName);
   if (!hostName.empty() && !userName.empty())
   {
     return FORMAT(L"%s@%s", userName.c_str(), hostName.c_str());

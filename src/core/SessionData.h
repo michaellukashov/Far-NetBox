@@ -534,6 +534,7 @@ public:
   void SetHostKey(const std::wstring value);
 private:
   std::wstring AdjustHostName(const std::wstring hostName, const std::wstring prefix);
+  void RemoveProtocolPrefix(std::wstring &hostName);
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList : public TNamedObjectList
