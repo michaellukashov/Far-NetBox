@@ -154,7 +154,7 @@ bool TOptions::FindSwitch(const std::wstring Switch)
 }
 //---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const std::wstring Switch,
-  TStrings * Params, int ParamsMax)
+  nb::TStrings * Params, int ParamsMax)
 {
   std::wstring Value;
   int ParamsStart;

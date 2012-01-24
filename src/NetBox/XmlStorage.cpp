@@ -103,7 +103,7 @@ bool TXmlStorage::WriteXml()
 //---------------------------------------------------------------------------
 bool TXmlStorage::Copy(TXmlStorage * Storage)
 {
-  ::Error(SNotImplemented, 3020);
+  nb::Error(SNotImplemented, 3020);
   bool Result = false;
   return Result;
 }
@@ -212,7 +212,7 @@ bool TXmlStorage::DeleteSubKey(const std::wstring SubKey)
     return result;
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::GetSubKeyNames(TStrings* Strings)
+void TXmlStorage::GetSubKeyNames(nb::TStrings* Strings)
 {
     for (TiXmlElement *Element = FCurrentElement->FirstChildElement();
         Element != NULL; Element = Element->NextSiblingElement())
@@ -222,9 +222,9 @@ void TXmlStorage::GetSubKeyNames(TStrings* Strings)
     }
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::GetValueNames(TStrings* Strings)
+void TXmlStorage::GetValueNames(nb::TStrings* Strings)
 {
-  ::Error(SNotImplemented, 3022);
+  nb::Error(SNotImplemented, 3022);
   // FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
@@ -242,7 +242,7 @@ bool TXmlStorage::DeleteValue(const std::wstring Name)
 //---------------------------------------------------------------------------
 bool TXmlStorage::KeyExists(const std::wstring SubKey)
 {
-  ::Error(SNotImplemented, 3024);
+  nb::Error(SNotImplemented, 3024);
   std::wstring K = PuttyMungeStr(SubKey);
   bool Result = false; // FRegistry->KeyExists(K);
   return Result;
@@ -327,7 +327,7 @@ std::wstring TXmlStorage::GetValue(TiXmlElement *Element)
 //---------------------------------------------------------------------------
 bool TXmlStorage::ValueExists(const std::wstring Value)
 {
-    // ::Error(SNotImplemented, 3025);
+    // nb::Error(SNotImplemented, 3025);
     bool result = false;
     TiXmlElement *Element = FindElement(Value);
     if (Element != NULL)
@@ -340,7 +340,7 @@ bool TXmlStorage::ValueExists(const std::wstring Value)
 //---------------------------------------------------------------------------
 int TXmlStorage::BinaryDataSize(const std::wstring Name)
 {
-  ::Error(SNotImplemented, 3026);
+  nb::Error(SNotImplemented, 3026);
   int Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
 }
@@ -358,10 +358,10 @@ bool TXmlStorage::Readbool(const std::wstring Name, bool Default)
     }
 }
 //---------------------------------------------------------------------------
-TDateTime TXmlStorage::ReadDateTime(const std::wstring Name, TDateTime Default)
+nb::TDateTime TXmlStorage::ReadDateTime(const std::wstring Name, nb::TDateTime Default)
 {
   double res = ReadFloat(Name, Default.operator double());
-  return TDateTime(res);
+  return nb::TDateTime(res);
 }
 //---------------------------------------------------------------------------
 double TXmlStorage::ReadFloat(const std::wstring Name, double Default)
@@ -388,7 +388,7 @@ std::wstring TXmlStorage::ReadStringRaw(const std::wstring Name, const std::wstr
 int TXmlStorage::ReadBinaryData(const std::wstring Name,
   void * Buffer, int Size)
 {
-  ::Error(SNotImplemented, 3028);
+  nb::Error(SNotImplemented, 3028);
   int Result = 0;
   return Result;
 }
@@ -398,7 +398,7 @@ void TXmlStorage::Writebool(const std::wstring Name, bool Value)
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::WriteDateTime(const std::wstring Name, TDateTime Value)
+void TXmlStorage::WriteDateTime(const std::wstring Name, nb::TDateTime Value)
 {
   WriteFloat(Name, Value);
 }

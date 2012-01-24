@@ -12,6 +12,7 @@ libs/openssl/
 libs/libssh2/
 libs/libcurl/
 libs/boost/
+libs/
 dlls/
 ipch/
 *.opensdf
@@ -42,18 +43,3 @@ src/NetBox/NetBox
 *.aps
 *.idc
 
-libs/gc-7.2alpha6/ALL_BUILD.vcxproj
-libs/gc-7.2alpha6/cmake_install.cmake
-libs/gc-7.2alpha6/CMakeCache.txt
-libs/gc-7.2alpha6/CMakeFiles/
-libs/gc-7.2alpha6/cord.vcxproj
-libs/gc-7.2alpha6/gc-lib.vcxproj
-libs/gc-7.2alpha6/gc.sln
-libs/gc-7.2alpha6/gcmt-dll.vcxproj
-libs/gc-7.2alpha6/gcmt-lib.dir/
-libs/gc-7.2alpha6/gcmt-lib.vcxproj
-libs/gc-7.2alpha6/tests/cmake_install.cmake
-libs/gc-7.2alpha6/tests/CMakeFiles/
-libs/gc-7.2alpha6/tests/gctest.vcxproj
-libs/gc-7.2alpha6/Win32/
-libs/gc-7.2alpha6/ZERO_CHECK.vcxproj

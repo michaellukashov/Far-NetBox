@@ -22,7 +22,7 @@ namespace bg = boost::gregorian;
   strncpy(dest, source, sizeof(dest)); \
   dest[sizeof(dest)-1] = '\0'
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = NULL; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(nb::TObject, OBJ)
 #define ASCOPY(dest, source) SCOPY(dest, source.c_str())
 #define FORMAT(S, ...) ::Format(S, __VA_ARGS__)
 #define FMTLOAD(I, ...) ::FmtLoadStr(I, __VA_ARGS__)
@@ -125,36 +125,36 @@ enum TDSTMode
   dstmKeep = 2
 };
 bool UsesDaylightHack();
-TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
-TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
-TDateTime StrToDateTime(const std::wstring Value);
-unsigned int DayOfWeek(const TDateTime &DateTime);
-TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
-FILETIME DateTimeToFileTime(const TDateTime &DateTime, TDSTMode DSTMode);
-TDateTime AdjustDateTimeFromUnix(TDateTime &DateTime, TDSTMode DSTMode);
-void UnifyDateTimePrecision(TDateTime &DateTime1, TDateTime &DateTime2);
-TDateTime FileTimeToDateTime(const FILETIME &FileTime);
+nb::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
+nb::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+nb::TDateTime StrToDateTime(const std::wstring Value);
+unsigned int DayOfWeek(const nb::TDateTime &DateTime);
+nb::TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode);
+FILETIME DateTimeToFileTime(const nb::TDateTime &DateTime, TDSTMode DSTMode);
+nb::TDateTime AdjustDateTimeFromUnix(nb::TDateTime &DateTime, TDSTMode DSTMode);
+void UnifyDateTimePrecision(nb::TDateTime &DateTime1, nb::TDateTime &DateTime2);
+nb::TDateTime FileTimeToDateTime(const FILETIME &FileTime);
 __int64 ConvertTimestampToUnix(const FILETIME &FileTime,
   TDSTMode DSTMode);
-TDateTime ConvertTimestampToUTC(TDateTime DateTime);
+nb::TDateTime ConvertTimestampToUTC(nb::TDateTime DateTime);
 __int64 ConvertTimestampToUnixSafe(const FILETIME &FileTime,
   TDSTMode DSTMode);
 std::wstring FixedLenDateTimeFormat(const std::wstring Format);
-int CompareFileTime(TDateTime T1, TDateTime T2);
+int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2);
 
-TDateTime Date();
-void DecodeDate(const TDateTime &DateTime, unsigned int &Y,
+nb::TDateTime Date();
+void DecodeDate(const nb::TDateTime &DateTime, unsigned int &Y,
     unsigned int &M, unsigned int &D);
-void DecodeTime(const TDateTime &DateTime, unsigned int &H,
+void DecodeTime(const nb::TDateTime &DateTime, unsigned int &H,
     unsigned int &N, unsigned int &S, unsigned int  &MS);
-TDateTime EncodeDateVerbose(unsigned int Y, unsigned int M, unsigned int D);
-TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsigned int MS);
+nb::TDateTime EncodeDateVerbose(unsigned int Y, unsigned int M, unsigned int D);
+nb::TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsigned int MS);
 
-std::wstring FormatDateTime(const std::wstring fmt, TDateTime DateTime);
-TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
+std::wstring FormatDateTime(const std::wstring fmt, nb::TDateTime DateTime);
+nb::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
 
-TDateTime EncodeDate(int Year, int Month, int Day);
-TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
+nb::TDateTime EncodeDate(int Year, int Month, int Day);
+nb::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec);
 
 //---------------------------------------------------------------------------
 class TCriticalSection
@@ -224,11 +224,6 @@ void InitPlatformId();
 #endif
 
 //---------------------------------------------------------------------------
-void Abort();
-//---------------------------------------------------------------------------
-void Error(int ErrorID, int data);
-
-//---------------------------------------------------------------------------
 std::wstring Trim(const std::wstring str);
 std::wstring TrimLeft(const std::wstring str);
 std::wstring TrimRight(const std::wstring str);
@@ -258,7 +253,7 @@ bool AnsiContainsText(const std::wstring str1, const std::wstring str2);
 class EOSError : public std::exception
 {
 public:
-    EOSError(const std::wstring msg, DWORD code) : std::exception(::W2MB(msg.c_str()).c_str()),
+    EOSError(const std::wstring msg, DWORD code) : std::exception(nb::W2MB(msg.c_str()).c_str()),
         ErrorCode(code)
     {
     }
@@ -283,7 +278,7 @@ double StrToFloat(const std::wstring Value);
 double StrToFloatDef(const std::wstring Value, double defval);
 std::wstring FormatFloat(const std::wstring Format, double value);
 //---------------------------------------------------------------------------
-TTimeStamp DateTimeToTimeStamp(TDateTime DateTime);
+nb::TTimeStamp DateTimeToTimeStamp(nb::TDateTime DateTime);
 //---------------------------------------------------------------------------
 
 __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count);

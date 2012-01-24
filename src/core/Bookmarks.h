@@ -9,7 +9,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 //---------------------------------------------------------------------------
-class TBookmarks : public TObject
+class TBookmarks : public nb::TObject
 {
 public:
   TBookmarks();
@@ -28,7 +28,7 @@ public:
   void SetSharedBookmarks(TBookmarkList * value);
 
 private:
-  TStringList * FBookmarkLists;
+  nb::TStringList * FBookmarkLists;
   std::wstring FSharedKey;
   static std::wstring Keys[];
 
@@ -36,7 +36,7 @@ private:
     int Index, TBookmarkList * BookmarkList);
 };
 //---------------------------------------------------------------------------
-class TBookmarkList : public TPersistent
+class TBookmarkList : public nb::TPersistent
 {
 friend class TBookmarks;
 friend class TBookmark;
@@ -51,8 +51,8 @@ public:
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark * Bookmark);
   TBookmark * FindByName(const std::wstring Node, const std::wstring Name);
-  TBookmark * FindByShortCut(TShortCut ShortCut);
-  virtual void Assign(TPersistent * Source);
+  TBookmark * FindByShortCut(nb::TShortCut ShortCut);
+  virtual void Assign(nb::TPersistent * Source);
   void LoadOptions(THierarchicalStorage * Storage);
   void SaveOptions(THierarchicalStorage * Storage);
   void ShortCuts(TShortCuts & ShortCuts);
@@ -74,18 +74,18 @@ protected:
   void SetModified(bool value) { FModified = value; }
 
 private:
-  TStringList * FBookmarks;
-  TStringList * FOpenedNodes;
+  nb::TStringList * FBookmarks;
+  nb::TStringList * FOpenedNodes;
   bool FModified;
 };
 //---------------------------------------------------------------------------
-class TBookmark : public TPersistent
+class TBookmark : public nb::TPersistent
 {
 friend class TBookmarkList;
 public:
   TBookmark();
 
-  virtual void Assign(TPersistent * Source);
+  virtual void Assign(nb::TPersistent * Source);
 
   // __property std::wstring Name = { read = FName, write = SetName };
   std::wstring GetName() { return FName; }
@@ -99,9 +99,9 @@ public:
   // __property std::wstring Node = { read = FNode, write = SetNode };
   std::wstring GetNode() { return FNode; }
   void SetNode(const std::wstring value);
-  // __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
-  TShortCut GetShortCut() { return FShortCut; }
-  void SetShortCut(TShortCut value);
+  // __property nb::TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
+  nb::TShortCut GetShortCut() { return FShortCut; }
+  void SetShortCut(nb::TShortCut value);
 
 protected:
   TBookmarkList * FOwner;
@@ -115,7 +115,7 @@ private:
   std::wstring FLocal;
   std::wstring FRemote;
   std::wstring FNode;
-  TShortCut FShortCut;
+  nb::TShortCut FShortCut;
 
   void Modify(int OldIndex);
 };

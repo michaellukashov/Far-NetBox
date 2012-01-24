@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------
 bool ExceptionMessage(const std::exception *E, std::wstring & Message);
 std::wstring LastSysErrorMessage();
-TStrings *ExceptionToMoreMessages(const std::exception *E);
+nb::TStrings *ExceptionToMoreMessages(const std::exception *E);
 //---------------------------------------------------------------------------
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoShutDown };
 //---------------------------------------------------------------------------
@@ -20,12 +20,12 @@ public:
   // "copy the std::exception", just append message to the end
   explicit ExtException(const std::wstring Msg, const std::exception *E);
   // explicit ExtException(const std::wstring Msg, const std::wstring MoreMessages, const std::wstring HelpKeyword = L"");
-  explicit ExtException(const std::wstring Msg, TStrings *MoreMessages, bool Own);
+  explicit ExtException(const std::wstring Msg, nb::TStrings *MoreMessages, bool Own);
   explicit ExtException(const ExtException &) throw();
   ExtException &operator =(const ExtException &) throw();
   virtual ~ExtException(void) throw();
 
-  TStrings *GetMoreMessages() const { return FMoreMessages; }
+  nb::TStrings *GetMoreMessages() const { return FMoreMessages; }
   std::wstring GetHelpKeyword() const { return FHelpKeyword; }
   const std::wstring GetMessage() const { return FMessage; }
   void SetMessage(const std::wstring value) { FMessage = value; }
@@ -33,7 +33,7 @@ protected:
   void AddMoreMessages(const std::exception *E);
 
 private:
-  TStrings *FMoreMessages;
+  nb::TStrings *FMoreMessages;
   std::wstring FHelpKeyword;
   std::wstring FMessage;
 };

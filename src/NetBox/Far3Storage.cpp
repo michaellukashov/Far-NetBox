@@ -31,7 +31,7 @@ TFar3Storage::~TFar3Storage()
 //---------------------------------------------------------------------------
 bool TFar3Storage::Copy(TFar3Storage * Storage)
 {
-  ::Error(SNotImplemented, 3014);
+  nb::Error(SNotImplemented, 3014);
   bool Result = true;
   return Result;
 }
@@ -128,7 +128,7 @@ bool TFar3Storage::DeleteSubKey(const std::wstring SubKey)
   return false;
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::GetSubKeyNames(TStrings* Strings)
+void TFar3Storage::GetSubKeyNames(nb::TStrings *Strings)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   FarSettingsEnum settings = {0};
@@ -147,10 +147,10 @@ void TFar3Storage::GetSubKeyNames(TStrings* Strings)
   // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::GetValueNames(TStrings* Strings)
+void TFar3Storage::GetValueNames(nb::TStrings * Strings)
 {
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
-  ::Error(SNotImplemented, 3010);
+  nb::Error(SNotImplemented, 3010);
   // DEBUG_PRINTF(L"end, FRoot = %d", FRoot);
 }
 //---------------------------------------------------------------------------
@@ -161,7 +161,7 @@ bool TFar3Storage::DeleteValue(const std::wstring Name)
 //---------------------------------------------------------------------------
 bool TFar3Storage::KeyExists(const std::wstring SubKey)
 {
-  ::Error(SNotImplemented, 3011);
+  nb::Error(SNotImplemented, 3011);
   // DEBUG_PRINTF(L"begin, FRoot = %d", FRoot);
   std::wstring K = PuttyMungeStr(SubKey);
   bool Result = true; // FPluginSettings.KeyExists(K);
@@ -187,9 +187,9 @@ bool TFar3Storage::Readbool(const std::wstring Name, bool Default)
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 //---------------------------------------------------------------------------
-TDateTime TFar3Storage::ReadDateTime(const std::wstring Name, TDateTime Default)
+nb::TDateTime TFar3Storage::ReadDateTime(const std::wstring Name, nb::TDateTime Default)
 {
-  TDateTime Result;
+  nb::TDateTime Result;
   double val = 0.0;
   void *value = reinterpret_cast<void *>(&val);
   size_t sz = sizeof(val);
@@ -241,7 +241,7 @@ void TFar3Storage::Writebool(const std::wstring Name, bool Value)
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 //---------------------------------------------------------------------------
-void TFar3Storage::WriteDateTime(const std::wstring Name, TDateTime Value)
+void TFar3Storage::WriteDateTime(const std::wstring Name, nb::TDateTime Value)
 {
   double val = Value.operator double();
   void *value = reinterpret_cast<void *>(&val);

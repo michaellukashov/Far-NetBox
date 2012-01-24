@@ -5,16 +5,11 @@
 #endif
 
 #include "stdafx.h"
+#include "FarUtil.h"
 #include "EasyURL.h"
 #include "resource.h"
 #include "Common.h"
 #include "version.h"
-
-//---------------------------------------------------------------------------
-#ifdef NETBOX_DEBUG
-// static _CrtMemState s1, s2, s3;
-// static HANDLE hLogFile;
-#endif
 
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
@@ -51,19 +46,7 @@ void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
     if (Info->StructSize != sizeof(PluginStartupInfo))
         return;
     assert(FarPlugin);
-#ifdef NETBOX_DEBUG
-    // _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    // _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-    // hLogFile = CreateFile(L"C:\\NetBoxDebug.txt", FILE_APPEND_DATA, // GENERIC_WRITE,
-      // FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
-      // FILE_ATTRIBUTE_NORMAL, NULL);
-    // _CrtSetReportFile(_CRT_WARN, hLogFile);
-#endif
     TFarPluginGuard Guard;
-
-    WSADATA wsaData;
-    WSAStartup(MAKEWORD(2, 2), &wsaData);
-    curl_global_init(CURL_GLOBAL_ALL);
     FarPlugin->SetStartupInfo(Info);
 }
 
@@ -73,9 +56,6 @@ void WINAPI ExitFARW(const struct ExitInfo *Info)
         return;
     assert(FarPlugin);
     TFarPluginGuard Guard;
-    curl_global_cleanup();
-    WSACleanup();
-
     FarPlugin->ExitFAR();
 }
 
@@ -104,14 +84,6 @@ void WINAPI ClosePanelW(const struct ClosePanelInfo *Info)
     assert(FarPlugin);
     TFarPluginGuard Guard;
     FarPlugin->ClosePanel(Info->hPanel);
-#ifdef NETBOX_DEBUG
-    // _CrtMemCheckpoint(&s2);
-    // if (_CrtMemDifference(&s3, &s1, &s2)) 
-        // _CrtMemDumpStatistics(&s3);
-    // _CrtDumpMemoryLeaks();
-    // CloseHandle(hLogFile);
-#endif
-    // GC_gcollect();
 }
 
 void WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info)
@@ -259,25 +231,6 @@ int WINAPI AnalyseW(const struct AnalyseInfo *Info)
     {
         return FALSE;
     }
-    /*
-    PSession session = CSession::Load(fileName);
-    if (!session.get())
-    {
-        return FALSE;
-    }
-    PProtocol proto = session->CreateClient();
-    if (!proto.get())
-    {
-        return FALSE;
-    }
-    CPanel *panelInstance = new CPanel(false);
-    if (panelInstance->OpenConnection(proto.get()))
-    {
-        proto.release();
-        m_PanelInstances.push_back(panelInstance);
-        return panelInstance;
-    }
-    */
     return FALSE;
 }
 
@@ -306,7 +259,10 @@ void DllProcessAttach(HINSTANCE HInst)
 #ifdef _AFXDLL
     InitExtensionModule(HInst);
 #endif
- // DEBUG_PRINTF(L"DllProcessAttach: end");
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    curl_global_init(CURL_GLOBAL_ALL);
+    // DEBUG_PRINTF(L"DllProcessAttach: end");
 }
 
 //---------------------------------------------------------------------------
@@ -322,6 +278,8 @@ void DllProcessDetach()
 #ifdef _AFXDLL
     TermExtensionModule();
 #endif
+    curl_global_cleanup();
+    WSACleanup();
   }
   // DEBUG_PRINTF(L"DllProcessDetach: end");
 }

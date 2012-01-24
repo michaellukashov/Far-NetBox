@@ -16,7 +16,7 @@ struct TSessionInfo
 {
   TSessionInfo();
 
-  TDateTime LoginTime;
+  nb::TDateTime LoginTime;
   std::wstring ProtocolBaseName;
   std::wstring ProtocolName;
   std::wstring SecurityProtocolName;
@@ -63,14 +63,14 @@ public:
   {}
   virtual void Information(const std::wstring Str, bool Status) = 0;
   virtual int QueryUser(const std::wstring Query,
-    TStrings * MoreMessages, int Answers, const TQueryParams * Params,
+    nb::TStrings * MoreMessages, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual int QueryUserException(const std::wstring Query,
     const std::exception *E, int Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
-    const std::wstring Name, const std::wstring Instructions, TStrings *Prompts,
-    TStrings * Results) = 0;
+    const std::wstring Name, const std::wstring Instructions, nb::TStrings *Prompts,
+    nb::TStrings * Results) = 0;
   virtual void DisplayBanner(const std::wstring Banner) = 0;
   virtual void FatalError(const std::exception * E, const std::wstring Msg) = 0;
   virtual void HandleExtendedException(const std::exception *E) = 0;
@@ -81,11 +81,11 @@ public:
 enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException, llAction };
 enum TLogAction { laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs };
 //---------------------------------------------------------------------------
-// typedef void (TObject::*TCaptureOutputEvent)(
+// typedef void (nb::TObject::*TCaptureOutputEvent)(
   // const std::wstring Str, bool StdError);
 typedef boost::signal2<void, const std::wstring, bool> captureoutput_signal_type;
 typedef captureoutput_signal_type::slot_type captureoutput_slot_type;
-// typedef void (TObject::*TCalculatedChecksumEvent)(
+// typedef void (nb::TObject::*TCalculatedChecksumEvent)(
   // const std::wstring FileName, const std::wstring Alg, const std::wstring Hash);
 typedef boost::signal3<void, const std::wstring, const std::wstring, const std::wstring > calculatedchecksum_signal_type;
 typedef calculatedchecksum_signal_type::slot_type calculatedchecksum_slot_type;
@@ -157,7 +157,7 @@ class TTouchSessionAction : public TFileSessionAction
 {
 public:
   TTouchSessionAction(TSessionLog * Log, const std::wstring FileName,
-    const TDateTime & Modification);
+    const nb::TDateTime & Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
@@ -198,11 +198,11 @@ public:
   void FileList(TRemoteFileList * FileList);
 };
 //---------------------------------------------------------------------------
-// typedef void (TObject::*TDoAddLog)(TLogLineType Type, const std::wstring Line);
+// typedef void (nb::TObject::*TDoAddLog)(TLogLineType Type, const std::wstring Line);
 typedef boost::signal2<void, TLogLineType, const std::wstring > doaddlog_signal_type;
 typedef doaddlog_signal_type::slot_type doaddlog_slot_type;
 //---------------------------------------------------------------------------
-class TSessionLog : protected TStringList
+class TSessionLog : protected nb::TStringList
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;
@@ -233,8 +233,8 @@ public:
   TLogLineType GetType(int Index);
   // __property OnChange;
   // __property TNotifyEvent OnStateChange = { read = FOnStateChange, write = FOnStateChange };
-  const notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
-  void SetOnStateChange(const notify_slot_type &value) { FOnStateChange.connect(value); }
+  const nb::notify_signal_type &GetOnStateChange() const { return FOnStateChange; }
+  void SetOnStateChange(const nb::notify_slot_type &value) { FOnStateChange.connect(value); }
   // __property std::wstring CurrentFileName = { read = FCurrentFileName };
   std::wstring GetCurrentFileName() { return FCurrentFileName; }
   // __property bool LoggingToFile = { read = GetLoggingToFile };
@@ -269,8 +269,8 @@ private:
   std::wstring FName;
   bool FLoggingActions;
   bool FClosed;
-  TList * FPendingActions;
-  notify_signal_type FOnStateChange;
+  nb::TList * FPendingActions;
+  nb::notify_signal_type FOnStateChange;
   TSessionLog *Self;
 
   void DeleteUnnecessary();

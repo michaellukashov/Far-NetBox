@@ -41,21 +41,21 @@ class TFarList;
 struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
-// typedef void (TObject::*TFarKeyEvent)
+// typedef void (nb::TObject::*TFarKeyEvent)
     // (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
 typedef key_signal_type::slot_type key_slot_type;
 
-// typedef void (TObject::*TFarMouseClickEvent) 
+// typedef void (nb::TObject::*TFarMouseClickEvent) 
     // (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
 typedef mouse_click_signal_type::slot_type mouse_click_slot_type;
 
-// typedef void (TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
+// typedef void (nb::TObject::*TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
 typedef boost::signal2<void, TFarDialogItem *, void *> processgroupevent_signal_type;
 typedef processgroupevent_signal_type::slot_type processgroupevent_slot_type;
 //---------------------------------------------------------------------------
-class TFarDialog : public TObject
+class TFarDialog : public nb::TObject
 {
     friend TFarDialogItem;
     friend TFarDialogContainer;
@@ -71,18 +71,18 @@ public:
     void ShowGroup(int Group, bool Show);
     void EnableGroup(int Group, bool Enable);
 
-    TRect GetBounds() const { return FBounds; }
-    void SetBounds(const TRect &value);
-    TRect GetClientRect() const;
+    nb::TRect GetBounds() const { return FBounds; }
+    void SetBounds(const nb::TRect &value);
+    nb::TRect GetClientRect() const;
     std::wstring GetHelpTopic() const { return FHelpTopic; }
     void SetHelpTopic(const std::wstring value);
     FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
     void SetFlags(const FARDIALOGITEMFLAGS value);
     bool GetCentered() const;
     void SetCentered(const bool &value);
-    TPoint GetSize() const;
-    void SetSize(const TPoint &value);
-    TPoint GetClientSize() const;
+    nb::TPoint GetSize() const;
+    void SetSize(const nb::TPoint &value);
+    nb::TPoint GetClientSize() const;
     int GetWidth() const;
     void SetWidth(const int &value);
     size_t GetHeight() const;
@@ -104,7 +104,7 @@ public:
     TFarDialogItem *GetItemFocused() const { return FItemFocused; }
     void SetItemFocused(TFarDialogItem * const &value);
     int GetResult() const { return FResult; }
-    TPoint GetMaxSize();
+    nb::TPoint GetMaxSize();
     
     const key_signal_type &GetOnKey() const { return FOnKey; }
     void SetOnKey(const key_slot_type &value) { FOnKey.connect(value); }
@@ -118,7 +118,7 @@ public:
     TCustomFarPlugin *GetFarPlugin() { return FFarPlugin; }
 
 protected:
-    TObjectList *GetItems() { return FItems; }
+    nb::TObjectList *GetItems() { return FItems; }
 
     void Add(TFarDialogItem *Item);
     void Add(TFarDialogContainer *Container);
@@ -135,7 +135,7 @@ protected:
     void RefreshBounds();
     virtual void Idle();
     void BreakSynchronize();
-    void Synchronize(const threadmethod_slot_type &slot);
+    void Synchronize(const nb::threadmethod_slot_type &slot);
     void Close(TFarButton *Button);
     void ProcessGroup(int Group, const processgroupevent_slot_type &Callback, void *Arg);
     void ShowItem(TFarDialogItem *Item, void *Arg);
@@ -147,12 +147,12 @@ protected:
 
 private:
     TCustomFarPlugin *FFarPlugin;
-    TRect FBounds;
+    nb::TRect FBounds;
     FARDIALOGITEMFLAGS FFlags;
     std::wstring FHelpTopic;
     bool FVisible;
-    TObjectList *FItems;
-    TObjectList *FContainers;
+    nb::TObjectList *FItems;
+    nb::TObjectList *FContainers;
     HANDLE FHandle;
     TFarButton *FDefaultButton;
     TFarBox *FBorderBox;
@@ -168,11 +168,11 @@ private:
     int FResult;
     bool FNeedsSynchronize;
     HANDLE FSynchronizeObjects[2];
-    threadmethod_signal_type FSynchronizeMethod;
+    nb::threadmethod_signal_type FSynchronizeMethod;
     TFarDialog *Self;
 };
 //---------------------------------------------------------------------------
-class TFarDialogContainer : public TObject
+class TFarDialogContainer : public nb::TObject
 {
     friend TFarDialog;
     friend TFarDialogItem;
@@ -200,7 +200,7 @@ protected:
 private:
     int FLeft;
     int FTop;
-    TObjectList *FItems;
+    nb::TObjectList *FItems;
     TFarDialog *FDialog;
     bool FEnabled;
 
@@ -209,15 +209,15 @@ private:
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
 //---------------------------------------------------------------------------
-class TFarDialogItem : public TObject
+class TFarDialogItem : public nb::TObject
 {
     friend TFarDialog;
     friend TFarDialogContainer;
     friend TFarList;
 public:
-    TRect GetBounds() const { return FBounds; }
-    void SetBounds(TRect value);
-    TRect GetActualBounds();
+    nb::TRect GetBounds() const { return FBounds; }
+    void SetBounds(nb::TRect value);
+    nb::TRect GetActualBounds();
     int GetLeft() { return GetCoordinate(0); }
     void SetLeft(int value) { SetCoordinate(0, value); }
     int GetTop() { return GetCoordinate(1); }
@@ -254,8 +254,8 @@ public:
     void SetTag(int value) { FTag = value; }
     TFarDialog *GetDialog() { return FDialog; }
 
-    const notify_signal_type &GetOnExit() const { return FOnExit; }
-    void SetOnExit(const notify_slot_type &value) { FOnExit.connect(value); }
+    const nb::notify_signal_type &GetOnExit() const { return FOnExit; }
+    void SetOnExit(const nb::notify_slot_type &value) { FOnExit.connect(value); }
     const mouse_click_signal_type &GetOnMouseClick() const { return FOnMouseClick; }
     void SetOnMouseClick(const mouse_click_slot_type &value) { FOnMouseClick.connect(value); }
 
@@ -271,7 +271,7 @@ protected:
     FARDIALOGITEMTYPES FDefaultType;
     int FGroup;
     int FTag;
-    notify_signal_type FOnExit;
+    nb::notify_signal_type FOnExit;
     mouse_click_signal_type FOnMouseClick;
 
     explicit TFarDialogItem(TFarDialog *ADialog, FARDIALOGITEMTYPES AType);
@@ -311,7 +311,7 @@ protected:
     virtual bool CloseQuery();
     virtual bool MouseMove(int X, int Y, MOUSE_EVENT_RECORD *Event);
     virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
-    TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
+    nb::TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
     void Text(int X, int Y, const FarColor &Color, const std::wstring Str, bool Oem = false);
     void Redraw();
     virtual bool HotKey(char HotKey);
@@ -331,7 +331,7 @@ protected:
 
 private:
     TFarDialog *FDialog;
-    TRect FBounds;
+    nb::TRect FBounds;
     TFarDialogItem *FEnabledFollow;
     TFarDialogItem *FEnabledDependency;
     TFarDialogItem *FEnabledDependencyNegative;
@@ -516,7 +516,7 @@ class TFarListBox;
 class TFarComboBox;
 class TFarLister;
 //---------------------------------------------------------------------------
-class TFarList : public TStringList
+class TFarList : public nb::TStringList
 {
     friend TFarListBox;
     friend TFarLister;
@@ -526,7 +526,7 @@ public:
     explicit TFarList(TFarDialogItem *ADialogItem = NULL);
     virtual ~TFarList();
 
-    virtual void Assign(TPersistent *Source);
+    virtual void Assign(nb::TPersistent *Source);
 
     int GetSelected();
     void SetSelected(int value);
@@ -575,7 +575,7 @@ public:
     explicit TFarListBox(TFarDialog *ADialog);
     virtual ~TFarListBox();
 
-    void SetItems(TStrings *value);
+    void SetItems(nb::TStrings *value);
 
     bool GetNoAmpersand() { return GetFlag(DIF_LISTNOAMPERSAND); }
     void SetNoAmpersand(bool value) { SetFlag(DIF_LISTNOAMPERSAND, value); }
@@ -640,8 +640,8 @@ public:
     explicit TFarLister(TFarDialog *ADialog);
     virtual ~TFarLister();
 
-    TStrings *GetItems();
-    void SetItems(TStrings *value);
+    nb::TStrings *GetItems();
+    void SetItems(nb::TStrings *value);
     int GetTopIndex() { return FTopIndex; }
     void SetTopIndex(int value);
     bool GetScrollBar();
@@ -651,12 +651,12 @@ protected:
     virtual void DoFocus();
 
 private:
-    TStringList *FItems;
+    nb::TStringList *FItems;
     int FTopIndex;
 
-    void ItemsChange(TObject *Sender);
+    void ItemsChange(nb::TObject *Sender);
 };
 //---------------------------------------------------------------------------
 std::wstring StripHotKey(const std::wstring Text);
-TRect Rect(int Left, int Top, int Right, int Bottom);
+nb::TRect Rect(int Left, int Top, int Right, int Bottom);
 //---------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 
 //---------------------------------------------------------------------------
 class TNamedObjectList;
-class TNamedObject : public TPersistent
+class TNamedObject : public nb::TPersistent
 {
 public:
   TNamedObject(const std::wstring aName);
@@ -15,7 +15,7 @@ public:
   bool GetHidden() { return FHidden; }
   std::wstring GetName() { return FName; }
   void SetName(const std::wstring value);
-  TNamedObject(): TPersistent() {};
+  TNamedObject(): nb::TPersistent() {};
   int CompareName(const std::wstring aName, bool CaseSensitive = false);
   void MakeUniqueIn(TNamedObjectList * List);
 private:
@@ -24,11 +24,11 @@ private:
 };
 
 //---------------------------------------------------------------------------
-class TNamedObjectList : public TObjectList
+class TNamedObjectList : public nb::TObjectList
 {
 private:
   int FHiddenCount;
-  virtual void Notify(void *Ptr, TListNotification Action);
+  virtual void Notify(void *Ptr, nb::TListNotification Action);
 protected:
   void Recount();
 public:

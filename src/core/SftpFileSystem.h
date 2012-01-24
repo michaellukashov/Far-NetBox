@@ -39,15 +39,15 @@ public:
   virtual void ChangeFileProperties(const std::wstring FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(TStrings * FileList);
+  virtual bool LoadFilesProperties(nb::TStrings * FileList);
   virtual void CalculateFilesChecksum(const std::wstring Alg,
-    TStrings * FileList, TStrings * Checksums,
+    nb::TStrings * FileList, nb::TStrings * Checksums,
     calculatedchecksum_slot_type *OnCalculatedChecksum);
-  virtual void CopyToLocal(TStrings * FilesToCopy,
+  virtual void CopyToLocal(nb::TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(TStrings * FilesToCopy,
+  virtual void CopyToRemote(nb::TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation);
@@ -72,7 +72,7 @@ public:
   virtual void CopyFile(const std::wstring FileName,
     const std::wstring NewName);
   virtual std::wstring FileUrl(const std::wstring FileName);
-  virtual TStrings * GetFixedPaths();
+  virtual nb::TStrings * GetFixedPaths();
   virtual void SpaceAvailable(const std::wstring Path,
     TSpaceAvailable & ASpaceAvailable);
   virtual const TSessionInfo & GetSessionInfo();
@@ -90,19 +90,19 @@ protected:
   std::wstring FDirectoryToChangeTo;
   std::wstring FHomeDirectory;
   std::wstring FEOL;
-  TList * FPacketReservations;
+  nb::TList * FPacketReservations;
   std::vector<unsigned int> FPacketNumbers;
   char FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
   bool FAvoidBusy;
-  TStrings * FExtensions;
+  nb::TStrings * FExtensions;
   TSFTPSupport * FSupport;
   bool FUtfStrings;
   bool FUtfNever;
   bool FSignedTS;
   bool FOpenSSH;
-  TStrings * FFixedPaths;
+  nb::TStrings * FFixedPaths;
   unsigned long FMaxPacketSize;
   TSFTPFileSystem *Self;
 
@@ -143,7 +143,7 @@ protected:
   bool SupportsExtension(const std::wstring Extension) const;
   void ResetConnection();
   void DoCalculateFilesChecksum(const std::wstring Alg,
-    TStrings * FileList, TStrings * Checksums,
+    nb::TStrings * FileList, nb::TStrings * Checksums,
     calculatedchecksum_slot_type *OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel);
   void DoDeleteFile(const std::wstring FileName, char Type);

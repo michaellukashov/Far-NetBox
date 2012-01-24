@@ -1153,7 +1153,7 @@ BOOL CFtpControlSocket::Send(CString str, BOOL bUpdateRecvTime)
 		int sendLen = strlen(utf8);
 		if (!m_awaitsReply && !m_sendBuffer)
         {
-            // DEBUG_PRINTF(L"utf8 = %s", ::MB2W(utf8).c_str());
+            // DEBUG_PRINTF(L"utf8 = %s", nb::MB2W(utf8).c_str());
 			res = CAsyncSocketEx::Send(utf8, strlen(utf8));
         }
 		else

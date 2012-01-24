@@ -48,15 +48,15 @@ public:
   virtual void ChangeFileProperties(const std::wstring FileName,
     const TRemoteFile * File, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) = 0;
-  virtual bool LoadFilesProperties(TStrings * FileList) = 0;
+  virtual bool LoadFilesProperties(nb::TStrings * FileList) = 0;
   virtual void CalculateFilesChecksum(const std::wstring Alg,
-    TStrings *FileList, TStrings *Checksums,
+    nb::TStrings *FileList, nb::TStrings *Checksums,
     calculatedchecksum_slot_type *OnCalculatedChecksum) = 0;
-  virtual void CopyToLocal(TStrings * FilesToCopy,
+  virtual void CopyToLocal(nb::TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
-  virtual void CopyToRemote(TStrings * FilesToCopy,
+  virtual void CopyToRemote(nb::TStrings * FilesToCopy,
     const std::wstring TargetDir, const TCopyParamType * CopyParam,
     int Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
@@ -82,7 +82,7 @@ public:
   virtual void CopyFile(const std::wstring FileName,
     const std::wstring NewName) = 0;
   virtual std::wstring FileUrl(const std::wstring FileName) = 0;
-  virtual TStrings * GetFixedPaths() = 0;
+  virtual nb::TStrings * GetFixedPaths() = 0;
   virtual void SpaceAvailable(const std::wstring Path,
     TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo &GetSessionInfo() = 0;

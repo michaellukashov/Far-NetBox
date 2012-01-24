@@ -207,7 +207,7 @@ bool TMask::GetMatches(const std::wstring Str)
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
     const std::wstring Message, int AErrorStart, int AErrorLen) :
-  std::exception(::W2MB(Message.c_str()).c_str())
+  std::exception(nb::W2MB(Message.c_str()).c_str())
 {
   ErrorStart = AErrorStart;
   ErrorLen = AErrorLen;

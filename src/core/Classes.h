@@ -24,6 +24,8 @@
 
 #pragma warning(pop)
 
+namespace nb {
+
 //---------------------------------------------------------------------------
 extern const std::wstring sLineBreak;
 //---------------------------------------------------------------------------
@@ -65,9 +67,8 @@ inline int __cdecl debug_printf2(const char *format, ...)
 }
 
 #ifdef NETBOX_DEBUG
-// #define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: %s:%d %s: "format, ::MB2W(__FILE__).c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
-#define DEBUG_PRINTF(format, ...) debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, ::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
-#define DEBUG_PRINTF2(format, ...) debug_printf2("NetBox: [%s:%d] %s: "format "\n", ::W2MB(ExtractFilename(::MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
+#define DEBUG_PRINTF(format, ...) nb::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(nb::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, nb::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
+#define DEBUG_PRINTF2(format, ...) nb::debug_printf2("NetBox: [%s:%d] %s: "format "\n", nb::W2MB(ExtractFilename(nb::MB2W(__FILE__).c_str(), '\\').c_str()).c_str(), __LINE__, __FUNCTION__, __VA_ARGS__);
 #else
 #define DEBUG_PRINTF(format, ...)
 #define DEBUG_PRINTF2(format, ...)
@@ -83,6 +84,7 @@ typedef threadmethod_signal_type::slot_type threadmethod_slot_type;
 typedef boost::signal1<void, TObject *> notify_signal_type;
 typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------
+void Abort();
 void Error(int ErrorID, int data);
 //---------------------------------------------------------------------------
 class TObject
@@ -350,13 +352,13 @@ public:
     void QuickSort(int L, int R, TStringListSortCompare SCompare);
 
     void LoadFromFile(const std::wstring FileName);
-    const notify_signal_type &GetOnChange() const { return FOnChange; }
-    void SetOnChange(const notify_slot_type &onChange)
+    const nb::notify_signal_type &GetOnChange() const { return FOnChange; }
+    void SetOnChange(const nb::notify_slot_type &onChange)
     {
         FOnChange.connect(onChange);
     }
-    const notify_signal_type &GetOnChanging() const { return FOnChanging; }
-    void SetOnChanging(const notify_slot_type &onChanging)
+    const nb::notify_signal_type &GetOnChanging() const { return FOnChanging; }
+    void SetOnChanging(const nb::notify_slot_type &onChanging)
     {
         FOnChanging.connect(onChanging);
     }
@@ -370,8 +372,8 @@ public:
 private:
     void ExchangeItems(int Index1, int Index2);
 private:
-    notify_signal_type FOnChange;
-    notify_signal_type FOnChanging;
+    nb::notify_signal_type FOnChange;
+    nb::notify_signal_type FOnChanging;
     TStringItemList FList;
     bool FSorted;
     bool FCaseSensitive;
@@ -500,12 +502,12 @@ public:
     void WriteBuffer(const void *Buffer, __int64 Count);
     __int64 CopyFrom(TStream *Source, __int64 Count);
 public:
-    __int64 GetPosition() { return Seek(0, soFromCurrent); }
+    __int64 GetPosition() { return Seek(0, nb::soFromCurrent); }
     __int64 GetSize()
     {
-      __int64 Pos = Seek(0, soFromCurrent);
-      __int64 Result = Seek(0, soFromEnd);
-      Seek(Pos, soFromBeginning);
+      __int64 Pos = Seek(0, nb::soFromCurrent);
+      __int64 Result = Seek(0, nb::soFromEnd);
+      Seek(Pos, nb::soFromBeginning);
       return Result;
     }
     // void SetSize64(const __int64 NewSize);
@@ -513,7 +515,7 @@ public:
     virtual void SetSize(const __int64 NewSize) = 0;
     void SetPosition(const __int64 Pos)
     {
-        Seek(Pos, soFromBeginning);
+        Seek(Pos, nb::soFromBeginning);
     }
 };
 
@@ -690,3 +692,5 @@ public:
     operator int() const;
     bool operator < (const TShortCut &rhs) const;
 };
+
+} // namespace nb

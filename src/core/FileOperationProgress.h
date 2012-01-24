@@ -20,12 +20,12 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 enum TCancelStatus { csContinue = 0, csCancel, csCancelTransfer, csRemoteAbort };
 enum TResumeStatus { rsNotAvailable, rsEnabled, rsDisabled };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-// typedef void (TObject::*TFileOperationProgressEvent)
+// typedef void (nb::TObject::*TFileOperationProgressEvent)
   // (TFileOperationProgressType & ProgressData, TCancelStatus & Cancel);
 typedef boost::signal2<void, TFileOperationProgressType &, TCancelStatus &> fileoperationprogress_signal_type;
 typedef fileoperationprogress_signal_type::slot_type fileoperationprogress_slot_type;
 
-// typedef void (TObject::*TFileOperationFinished)
+// typedef void (nb::TObject::*TFileOperationFinished)
   // (TFileOperation Operation, TOperationSide Side, bool Temp,
     // const std::wstring FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 typedef boost::signal6<void, TFileOperation, TOperationSide, bool,
@@ -38,7 +38,7 @@ private:
   // when it was last time suspended (to calculate suspend time in Resume())
   unsigned int FSuspendTime;
   // when current file was started being transfered
-  TDateTime FFileStartTime;
+  nb::TDateTime FFileStartTime;
   int FFilesFinished;
   fileoperationprogress_signal_type FOnProgress;
   fileoperationfinished_signal_type FOnFinished;
@@ -75,7 +75,7 @@ public:
   TCancelStatus Cancel;
   int Count;
   // when operation started
-  TDateTime StartTime;
+  nb::TDateTime StartTime;
   // bytes transfered
   __int64 TotalTransfered;
   __int64 TotalSkipped;
@@ -126,11 +126,11 @@ public:
   void Stop();
   void Suspend();
   // whole operation
-  TDateTime TimeElapsed();
+  nb::TDateTime TimeElapsed();
   // only current file
-  TDateTime TimeExpected();
-  TDateTime TotalTimeExpected();
-  TDateTime TotalTimeLeft();
+  nb::TDateTime TimeExpected();
+  nb::TDateTime TotalTimeExpected();
+  nb::TDateTime TotalTimeLeft();
   int TransferProgress();
   int OverallProgress();
   int TotalTransferProgress();
