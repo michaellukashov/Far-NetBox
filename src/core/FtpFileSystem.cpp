@@ -1257,7 +1257,8 @@ void TFTPFileSystem::CopyToRemote(nb::TStrings * FilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   assert((FilesToCopy != NULL) && (OperationProgress != NULL));
-
+  DEBUG_PRINTF(L"ATargetDir = %s", ATargetDir.c_str());
+  DEBUG_PRINTF(L"FilesToCopy->GetCount = %d", FilesToCopy->GetCount());
   Params &= ~cpAppend;
   std::wstring FileName, FileNameOnly;
   std::wstring TargetDir = AbsolutePath(ATargetDir, false);
@@ -1470,6 +1471,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
   std::wstring DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
   OperationProgress->SetFile(DirectoryName);
+  DEBUG_PRINTF(L"DirectoryName = %s, DestFullName = %s", DirectoryName.c_str(), DestFullName.c_str());
 
   int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   WIN32_FIND_DATA SearchRec;
@@ -1482,6 +1484,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
     std::wstring path = DirectoryName + L"*.*";
     findHandle = FindFirstFile(path.c_str(),
       &SearchRec);
+    DEBUG_PRINTF(L"path = %s, findHandle = %d", path.c_str(), findHandle);
     FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
   );
 
