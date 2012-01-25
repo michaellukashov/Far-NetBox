@@ -1,5 +1,6 @@
 NetBox 2.0.7 ??.01.2012
 ---------------------
+  * Sessions list: Do not set custom panel mode; Also disable option "Use custom settings for "Detailed" panel mode"
   * Bugfix: Sessions list: F3 on session name in subfolder did not work
   * Bugfix: Remove file attributes check before copying to remote server
   * Bugfix: FAR3: AV when trying to connect using command line
