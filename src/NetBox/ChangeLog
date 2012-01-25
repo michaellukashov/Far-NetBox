@@ -1,5 +1,6 @@
 NetBox 2.0.7 ??.01.2012
 ---------------------
+  * Bugfix: Remove file attributes check before copying to remote server
   * Bugfix: FAR3: AV when trying to connect using command line
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=89214#p89181)
   * Bugfix: AV when trying to show background operations list
