@@ -2095,21 +2095,22 @@ void TCustomFarFileSystem::ResetCachedInfo()
 TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
 {
     // DEBUG_PRINTF(L"Another = %d", Another);
-    if (FPanelInfo[Another] == NULL)
+    bool another = static_cast<bool>(Another);
+    if (FPanelInfo[another] == NULL)
     {
         PanelInfo *Info = new PanelInfo;
         Info->StructSize = sizeof(PanelInfo);
         bool res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(Info),
-            Another == 0 ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
+            !another ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
         if (!res)
         {
             memset(Info, 0, sizeof(*Info));
             assert(false);
         }
         // DEBUG_PRINTF(L"Info = %x", Info);
-        FPanelInfo[Another] = new TFarPanelInfo(Info, Another == 0 ? this : NULL);
+        FPanelInfo[another] = new TFarPanelInfo(Info, !another ? this : NULL);
     }
-    return FPanelInfo[Another];
+    return FPanelInfo[another];
 }
 //---------------------------------------------------------------------------
 DWORD TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int Param1, void *Param2)

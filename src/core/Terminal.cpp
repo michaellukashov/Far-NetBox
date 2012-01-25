@@ -4059,10 +4059,9 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
     Data.LocalFileList->SetCaseSensitive(false);
     TFileOperationProgressType *OperationProgress = GetOperationProgress();
     HANDLE findHandle = 0;
-    int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
       std::wstring path = Data.LocalDirectory + L"*.*";
-      findHandle = FindFirstFile(path.c_str(), /*FindAttrs, */&SearchRec);
+      findHandle = FindFirstFile(path.c_str(), &SearchRec);
       Found = (findHandle != 0);
     );
 
@@ -4112,7 +4111,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           }
 
           FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, LocalDirectory.c_str()),
-            Found = (::FindNextFile(findHandle, &SearchRec) != 0) && ((SearchRec.dwFileAttributes & FindAttrs) != 0);
+            Found = (::FindNextFile(findHandle, &SearchRec) != 0);
           );
         }
       }

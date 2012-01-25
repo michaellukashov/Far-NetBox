@@ -1374,7 +1374,6 @@ void TFTPFileSystem::Source(const std::wstring FileName,
     Action.Cancel();
     DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
       Attrs, CopyParam, Params, OperationProgress, Flags);
-    Action.Cancel();
   }
   else
   {
@@ -1472,18 +1471,14 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
 
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
   HANDLE findHandle = 0;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    // FindOK = (bool)(FindFirst(DirectoryName + "*.*",
-      // FindAttrs, SearchRec) == 0);
     std::wstring path = DirectoryName + L"*.*";
-    findHandle = FindFirstFile(path.c_str(),
-      &SearchRec);
-    FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+    findHandle = FindFirstFile(path.c_str(), &SearchRec);
+    FindOK = (findHandle != 0);
   );
 
   bool CreateDir = true;
@@ -1522,7 +1517,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
       );
     };
   }
