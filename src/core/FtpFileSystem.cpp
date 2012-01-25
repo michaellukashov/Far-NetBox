@@ -1374,7 +1374,6 @@ void TFTPFileSystem::Source(const std::wstring FileName,
     Action.Cancel();
     DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
       Attrs, CopyParam, Params, OperationProgress, Flags);
-    Action.Cancel();
   }
   else
   {
