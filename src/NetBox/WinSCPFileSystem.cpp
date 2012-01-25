@@ -2659,7 +2659,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
     ExportData->Assign(Data);
     ExportData->SetModified(true);
     std::wstring XmlFileName = IncludeTrailingBackslash(Param.DestPath) +
-      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(ExportData->GetName()) + L".netbox";
+      GUIConfiguration->GetDefaultCopyParam().ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
     ExportStorage = new TXmlStorage(XmlFileName, Configuration->GetStoredSessionsSubKey());
     ExportStorage->Init();
     ExportStorage->SetAccessMode(smReadWrite);

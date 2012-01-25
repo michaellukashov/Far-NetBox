@@ -2680,22 +2680,21 @@ long TFarLister::ItemProc(int Msg, void *Param)
             StrToFar(Buf);
             if (AScrollBar)
             {
-                // OEM character set (Ansi does not have the ascii art we need)
                 if (Row == 0)
                 {
-                    Buf += '\x1E';
+                    Buf += L'\x1E';
                 }
                 else if (Row == ScrollBarPos)
                 {
-                    Buf += '\xB2';
+                    Buf += 0x2593; // L'\xB2';
                 }
                 else if (Row == GetHeight() - 1)
                 {
-                    Buf += '\x1F';
+                    Buf += L'\x1F';
                 }
                 else
                 {
-                    Buf += '\xB0';
+                    Buf += 0x2591; // '\xB0';
                 }
             }
             Text(0, Row, Color, Buf, true);

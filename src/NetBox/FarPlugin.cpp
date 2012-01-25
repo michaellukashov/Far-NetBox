@@ -1886,7 +1886,8 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo *Info)
                 FOpenPanelInfo.CurDir = StrToFar(TCustomFarPlugin::DuplicateStr(CurDir));
                 FOpenPanelInfo.Format = StrToFar(TCustomFarPlugin::DuplicateStr(Format));
                 FOpenPanelInfo.PanelTitle = StrToFar(TCustomFarPlugin::DuplicateStr(PanelTitle));
-                FOpenPanelInfo.StartPanelMode=L'4';
+                // FOpenPanelInfo.StartPanelMode=L'4';
+                // PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
                 // Info->StartSortMode = SM_NAME;
                 // Info->StartSortOrder = 0;
 
