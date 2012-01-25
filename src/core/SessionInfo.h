@@ -97,7 +97,7 @@ class TSessionLog;
 class TSessionAction
 {
 public:
-  TSessionAction(TSessionLog * Log, TLogAction Action);
+  explicit TSessionAction(TSessionLog * Log, TLogAction Action);
   ~TSessionAction();
 
   void Restart();
@@ -113,8 +113,8 @@ protected:
 class TFileSessionAction : public TSessionAction
 {
 public:
-  TFileSessionAction(TSessionLog * Log, TLogAction Action);
-  TFileSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring FileName);
+  explicit TFileSessionAction(TSessionLog * Log, TLogAction Action);
+  explicit TFileSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring FileName);
 
   void FileName(const std::wstring FileName);
 };
@@ -122,8 +122,8 @@ public:
 class TFileLocationSessionAction : public TFileSessionAction
 {
 public:
-  TFileLocationSessionAction(TSessionLog * Log, TLogAction Action);
-  TFileLocationSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring FileName);
+  explicit TFileLocationSessionAction(TSessionLog * Log, TLogAction Action);
+  explicit TFileLocationSessionAction(TSessionLog * Log, TLogAction Action, const std::wstring FileName);
 
   void Destination(const std::wstring Destination);
 };
@@ -131,13 +131,13 @@ public:
 class TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
-  TUploadSessionAction(TSessionLog * Log);
+  explicit TUploadSessionAction(TSessionLog * Log);
 };
 //---------------------------------------------------------------------------
 class TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
-  TDownloadSessionAction(TSessionLog * Log);
+  explicit TDownloadSessionAction(TSessionLog * Log);
 };
 //---------------------------------------------------------------------------
 class TRights;
@@ -145,8 +145,8 @@ class TRights;
 class TChmodSessionAction : public TFileSessionAction
 {
 public:
-  TChmodSessionAction(TSessionLog * Log, const std::wstring FileName);
-  TChmodSessionAction(TSessionLog * Log, const std::wstring FileName,
+  explicit TChmodSessionAction(TSessionLog * Log, const std::wstring FileName);
+  explicit TChmodSessionAction(TSessionLog * Log, const std::wstring FileName,
     const TRights & Rights);
 
   void Rights(const TRights & Rights);
@@ -156,20 +156,20 @@ public:
 class TTouchSessionAction : public TFileSessionAction
 {
 public:
-  TTouchSessionAction(TSessionLog * Log, const std::wstring FileName,
+  explicit TTouchSessionAction(TSessionLog * Log, const std::wstring FileName,
     const nb::TDateTime & Modification);
 };
 //---------------------------------------------------------------------------
 class TMkdirSessionAction : public TFileSessionAction
 {
 public:
-  TMkdirSessionAction(TSessionLog * Log, const std::wstring FileName);
+  explicit TMkdirSessionAction(TSessionLog * Log, const std::wstring FileName);
 };
 //---------------------------------------------------------------------------
 class TRmSessionAction : public TFileSessionAction
 {
 public:
-  TRmSessionAction(TSessionLog * Log, const std::wstring FileName);
+  explicit TRmSessionAction(TSessionLog * Log, const std::wstring FileName);
 
   void Recursive();
 };
@@ -177,14 +177,14 @@ public:
 class TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-  TMvSessionAction(TSessionLog * Log, const std::wstring FileName,
+  explicit TMvSessionAction(TSessionLog * Log, const std::wstring FileName,
     const std::wstring Destination);
 };
 //---------------------------------------------------------------------------
 class TCallSessionAction : public TSessionAction
 {
 public:
-  TCallSessionAction(TSessionLog * Log, const std::wstring Command,
+  explicit TCallSessionAction(TSessionLog * Log, const std::wstring Command,
     const std::wstring Destination);
 
   void AddOutput(const std::wstring Output, bool StdError);
@@ -193,7 +193,7 @@ public:
 class TLsSessionAction : public TSessionAction
 {
 public:
-  TLsSessionAction(TSessionLog * Log, const std::wstring Destination);
+  explicit TLsSessionAction(TSessionLog * Log, const std::wstring Destination);
 
   void FileList(TRemoteFileList * FileList);
 };
