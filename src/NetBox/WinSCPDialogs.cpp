@@ -350,6 +350,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
     TFarCheckBox * CustomPanelCheck = new TFarCheckBox(Dialog);
     CustomPanelCheck->SetCaption(GetMsg(CONFIG_PANEL_MODE_CHECK));
+    CustomPanelCheck->SetEnabled(false);
 
     Text = new TFarText(Dialog);
     Text->SetLeft(Text->GetLeft() + 4);

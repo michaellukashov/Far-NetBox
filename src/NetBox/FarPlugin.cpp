@@ -1893,7 +1893,7 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
                 FOpenPluginInfo.CurDir = StrToFar(TCustomFarPlugin::DuplicateStr(CurDir));
                 FOpenPluginInfo.Format = StrToFar(TCustomFarPlugin::DuplicateStr(Format));
                 FOpenPluginInfo.PanelTitle = StrToFar(TCustomFarPlugin::DuplicateStr(PanelTitle));
-                PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
+                // PanelModes->FillOpenPluginInfo(&FOpenPluginInfo);
                 FOpenPluginInfo.StartSortOrder = StartSortOrder;
                 KeyBarTitles->FillOpenPluginInfo(&FOpenPluginInfo);
                 FOpenPluginInfo.ShortcutData = StrToFar(TCustomFarPlugin::DuplicateStr(ShortcutData));
