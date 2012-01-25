@@ -1137,9 +1137,9 @@ void TWebDAVFileSystem::Source(const std::wstring FileName,
   bool Dir = FLAGSET(Attrs, faDirectory);
   if (Dir)
   {
+    Action.Cancel();
     DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
       Attrs, CopyParam, Params, OperationProgress, Flags);
-    Action.Cancel();
   }
   else
   {
