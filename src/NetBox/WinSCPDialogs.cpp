@@ -7076,7 +7076,7 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
   }
 
   int Action = static_cast<int>(ChecklistItem->Action) - 1;
-  assert(Action < LENOF(FActions));
+  assert(Action >= 0 && Action < LENOF(FActions));
   AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteLocal)
