@@ -1471,21 +1471,15 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
   std::wstring DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
   OperationProgress->SetFile(DirectoryName);
-  DEBUG_PRINTF(L"DirectoryName = %s, DestFullName = %s", DirectoryName.c_str(), DestFullName.c_str());
 
-  int FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   WIN32_FIND_DATA SearchRec;
   bool FindOK = false;
   HANDLE findHandle = 0;
 
   FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    // FindOK = (bool)(FindFirst(DirectoryName + "*.*",
-      // FindAttrs, SearchRec) == 0);
     std::wstring path = DirectoryName + L"*.*";
-    findHandle = FindFirstFile(path.c_str(),
-      &SearchRec);
-    DEBUG_PRINTF(L"path = %s, findHandle = %d", path.c_str(), findHandle);
-    FindOK = (findHandle != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+    findHandle = FindFirstFile(path.c_str(), &SearchRec);
+    FindOK = (findHandle != 0);
   );
 
   bool CreateDir = true;
@@ -1524,7 +1518,7 @@ void TFTPFileSystem::DirectorySource(const std::wstring DirectoryName,
       }
 
       FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0) && (SearchRec.dwFileAttributes & FindAttrs);
+        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
       );
     };
   }
