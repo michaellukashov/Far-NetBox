@@ -7876,10 +7876,10 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * File,
 class TQueueDialog : TFarDialog
 {
 public:
-  TQueueDialog(TCustomFarPlugin * AFarPlugin,
-    TWinSCPFileSystem * AFileSystem, bool ClosingPlugin);
+  explicit TQueueDialog(TCustomFarPlugin *AFarPlugin,
+    TWinSCPFileSystem *AFileSystem, bool ClosingPlugin);
 
-  bool Execute(TTerminalQueueStatus * Status);
+  bool Execute(TTerminalQueueStatus *Status);
 
 protected:
   virtual void Change();
@@ -7887,36 +7887,45 @@ protected:
   bool UpdateQueue();
   void LoadQueue();
   void RefreshQueue();
-  bool FillQueueItemLine(std::wstring & Line,
-    TQueueItemProxy * QueueItem, int Index);
-  bool QueueItemNeedsFrequentRefresh(TQueueItemProxy * QueueItem);
+  bool FillQueueItemLine(std::wstring &Line,
+    TQueueItemProxy *QueueItem, int Index);
+  bool QueueItemNeedsFrequentRefresh(TQueueItemProxy *QueueItem);
   void UpdateControls();
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
   virtual bool CloseQuery();
 
 private:
-  TTerminalQueueStatus * FStatus;
-  TWinSCPFileSystem * FFileSystem;
+  TTerminalQueueStatus *FStatus;
+  TWinSCPFileSystem *FFileSystem;
   bool FClosingPlugin;
 
-  TFarListBox * QueueListBox;
-  TFarButton * ShowButton;
-  TFarButton * ExecuteButton;
-  TFarButton * DeleteButton;
-  TFarButton * MoveUpButton;
-  TFarButton * MoveDownButton;
-  TFarButton * CloseButton;
+  TFarListBox *QueueListBox;
+  TFarButton *ShowButton;
+  TFarButton *ExecuteButton;
+  TFarButton *DeleteButton;
+  TFarButton *MoveUpButton;
+  TFarButton *MoveDownButton;
+  TFarButton *CloseButton;
 
-  void OperationButtonClick(TFarButton * Sender, bool & Close);
+  void OperationButtonClick(TFarButton *Sender, bool &Close);
 };
 //---------------------------------------------------------------------------
-TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
-  TWinSCPFileSystem * AFileSystem, bool ClosingPlugin) :
-  TFarDialog(AFarPlugin), FFileSystem(AFileSystem),
+TQueueDialog::TQueueDialog(TCustomFarPlugin *AFarPlugin,
+  TWinSCPFileSystem *AFileSystem, bool ClosingPlugin) :
+  TFarDialog(AFarPlugin),
+  FStatus(NULL),
+  QueueListBox(NULL),
+  ShowButton(NULL),
+  ExecuteButton(NULL),
+  DeleteButton(NULL),
+  MoveUpButton(NULL),
+  MoveDownButton(NULL),
+  CloseButton(NULL),
+  FFileSystem(AFileSystem),
   FClosingPlugin(ClosingPlugin)
 {
-  TFarSeparator * Separator;
-  TFarText * Text;
+  TFarSeparator *Separator = NULL;
+  TFarText *Text = NULL;
 
   SetSize(nb::TPoint(80, 23));
   nb::TRect CRect = GetClientRect();
@@ -7974,7 +7983,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
-  TQueueItemProxy * QueueItem;
+  TQueueItemProxy *QueueItem = NULL;
   if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
@@ -8064,7 +8073,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 //---------------------------------------------------------------------------
 void TQueueDialog::UpdateControls()
 {
-  TQueueItemProxy * QueueItem = NULL;
+  TQueueItemProxy *QueueItem = NULL;
   if (QueueListBox->GetItems()->GetSelected() >= 0)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
@@ -8168,13 +8177,13 @@ void TQueueDialog::RefreshQueue()
       ILine++;
     }
 
-    TQueueItemProxy * PrevQueueItem = NULL;
-    TQueueItemProxy * QueueItem;
+    TQueueItemProxy *PrevQueueItem = NULL;
+    TQueueItemProxy *QueueItem = NULL;
     std::wstring Line;
     while ((Index < QueueListBox->GetItems()->GetCount()) &&
            (Index < TopIndex + QueueListBox->GetHeight()))
     {
-      QueueItem = reinterpret_cast<TQueueItemProxy*>(
+      QueueItem = reinterpret_cast<TQueueItemProxy *>(
         QueueListBox->GetItems()->GetObject(Index));
       assert(QueueItem != NULL);
       if ((PrevQueueItem != NULL) && (QueueItem != PrevQueueItem))
@@ -8214,7 +8223,7 @@ void TQueueDialog::LoadQueue()
         delete List;
       } BOOST_SCOPE_EXIT_END
     std::wstring Line;
-    TQueueItemProxy * QueueItem;
+    TQueueItemProxy * QueueItem = NULL;
     for (size_t Index = 0; Index < FStatus->GetCount(); Index++)
     {
       QueueItem = FStatus->GetItem(Index);
