@@ -1,5 +1,6 @@
 NetBox 2.0.7 ??.01.2012
 ---------------------
+  * SSL core upgraded to OpenSSL 1.0.0g
   * Bugfix: prefix "netbox:" was not handled properly
   * Update documentation
   * Bugfix: Queue dialog: crash when "Suspend" is pressed
@@ -11,7 +12,7 @@ NetBox 2.0.7 ??.01.2012
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=89214#p89181)
   * Bugfix: AV when trying to show background operations list
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=450#p89148)
-  * Bugfix: FTPS: cetificate info was not verified
+  * Bugfix: FTPS: certificate info was not verified
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=435#p88880)
 
 NetBox 2.0.6 21.01.2012
