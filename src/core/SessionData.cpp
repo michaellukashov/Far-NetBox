@@ -943,21 +943,26 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
   int APortNumber = 0;
   TFtps AFtps = ftpsNone;
   std::wstring url = Url;
-  if (LowerCase(url.substr(0, 4)) == L"scp:")
+  if (::LowerCase(url.substr(0, 7)) == L"netbox:")
+  {
+    // Remove "netbox:" prefix
+    url.erase(0, 7);
+  }
+  if (::LowerCase(url.substr(0, 4)) == L"scp:")
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     url.erase(0, 4);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 5)) == L"sftp:")
+  else if (::LowerCase(url.substr(0, 5)) == L"sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     url.erase(0, 5);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 4)) == L"ftp:")
+  else if (::LowerCase(url.substr(0, 4)) == L"ftp:")
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
@@ -965,7 +970,7 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     url.erase(0, 4);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 5)) == L"ftps:")
+  else if (::LowerCase(url.substr(0, 5)) == L"ftps:")
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
@@ -973,14 +978,14 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     url.erase(0, 5);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 5)) == L"http:")
+  else if (::LowerCase(url.substr(0, 5)) == L"http:")
   {
     AFSProtocol = fsHTTP;
     APortNumber = HTTPPortNumber;
     url.erase(0, 5);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 6)) == L"https:")
+  else if (::LowerCase(url.substr(0, 6)) == L"https:")
   {
     AFSProtocol = fsHTTPS;
     APortNumber = HTTPSPortNumber;
@@ -1067,7 +1072,7 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
       {
         HostInfo = ConnectInfo;
       }
-
+      DEBUG_PRINTF(L"UserInfo = %s, HostInfo = %s", UserInfo.c_str(), HostInfo.c_str());
       if ((HostInfo.size() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.find(L"]")) != std::wstring::npos))
       {
         SetHostName(HostInfo.substr(1, P - 2));
@@ -1082,7 +1087,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
         SetHostName(DecodeUrlChars(CutToChar(HostInfo, ':', true)));
       }
 
-      // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.empty())
       {
         SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
