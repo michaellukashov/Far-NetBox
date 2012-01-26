@@ -1,5 +1,7 @@
 NetBox 2.0.7 ??.01.2012
 ---------------------
+  * Bugfix: prefix "netbox:" was not handled properly
+  * Update documentation
   * Bugfix: Queue dialog: crash when "Suspend" is pressed
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=89460#p89460)
   * Sessions list: Do not set custom panel mode; Also disable option "Use custom settings for "Detailed" panel mode"
