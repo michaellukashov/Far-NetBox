@@ -943,6 +943,11 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
   int APortNumber = 0;
   TFtps AFtps = ftpsNone;
   std::wstring url = Url;
+  // Remove "netbox:" prefix
+  if (LowerCase(url.substr(0, 7)) == L"netbox:")
+  {
+    url.erase(0, 7);
+  }
   if (LowerCase(url.substr(0, 4)) == L"scp:")
   {
     AFSProtocol = fsSCPonly;
