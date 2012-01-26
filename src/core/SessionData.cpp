@@ -943,26 +943,26 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
   int APortNumber = 0;
   TFtps AFtps = ftpsNone;
   std::wstring url = Url;
-  // Remove "netbox:" prefix
-  if (LowerCase(url.substr(0, 7)) == L"netbox:")
+  if (::LowerCase(url.substr(0, 7)) == L"netbox:")
   {
+    // Remove "netbox:" prefix
     url.erase(0, 7);
   }
-  if (LowerCase(url.substr(0, 4)) == L"scp:")
+  if (::LowerCase(url.substr(0, 4)) == L"scp:")
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
     url.erase(0, 4);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 5)) == L"sftp:")
+  else if (::LowerCase(url.substr(0, 5)) == L"sftp:")
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
     url.erase(0, 5);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 4)) == L"ftp:")
+  else if (::LowerCase(url.substr(0, 4)) == L"ftp:")
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
@@ -970,7 +970,7 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     url.erase(0, 4);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 5)) == L"ftps:")
+  else if (::LowerCase(url.substr(0, 5)) == L"ftps:")
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
@@ -978,14 +978,14 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
     url.erase(0, 5);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 5)) == L"http:")
+  else if (::LowerCase(url.substr(0, 5)) == L"http:")
   {
     AFSProtocol = fsHTTP;
     APortNumber = HTTPPortNumber;
     url.erase(0, 5);
     ProtocolDefined = true;
   }
-  else if (LowerCase(url.substr(0, 6)) == L"https:")
+  else if (::LowerCase(url.substr(0, 6)) == L"https:")
   {
     AFSProtocol = fsHTTPS;
     APortNumber = HTTPSPortNumber;
