@@ -760,9 +760,10 @@ void TStringList::PutString(int Index, const std::wstring S)
     // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
     if (static_cast<size_t>(Index) < FList.size())
     {
+      TObject *Temp = GetObject(Index);
       TStringItem item;
       item.FString = S;
-      item.FObject = NULL;
+      item.FObject = Temp;
       FList[Index] = item;
     }
     else

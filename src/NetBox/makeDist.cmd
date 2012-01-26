@@ -29,6 +29,7 @@ if exist %PKGDIR% rmdir /S /Q %PKGDIR%
 :: Copy files
 mkdir %PKGDIR%
 call .\makeCopyCommon.cmd %~d0%~p0 %PKGDIR%
+call .\makeCopyCommon.cmd %~d0%~p0\..\.. %PKGDIR%
 if "%PLUGINARCH%" equ "src"    (
     call .\makeCopySources.cmd %~d0%~p0 %PKGDIR%
     mkdir %PKGDIR%\tinyXML
