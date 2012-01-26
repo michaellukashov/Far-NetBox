@@ -1072,7 +1072,7 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
       {
         HostInfo = ConnectInfo;
       }
-
+      DEBUG_PRINTF(L"UserInfo = %s, HostInfo = %s", UserInfo.c_str(), HostInfo.c_str());
       if ((HostInfo.size() >= 2) && (HostInfo[0] == '[') && ((P = HostInfo.find(L"]")) != std::wstring::npos))
       {
         SetHostName(HostInfo.substr(1, P - 2));
@@ -1087,7 +1087,6 @@ bool TSessionData::ParseUrl(const std::wstring Url, TOptions *Options,
         SetHostName(DecodeUrlChars(CutToChar(HostInfo, ':', true)));
       }
 
-      // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.empty())
       {
         SetPortNumber(StrToIntDef(DecodeUrlChars(HostInfo), -1));
