@@ -815,7 +815,7 @@ void TFarDialog::Change()
             {
                 DItem = GetItem(i);
                 DItem->Change();
-                if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) < 0)
+                if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == -1)
                 {
                     NotifiedContainers->Add(DItem->GetContainer());
                 }
@@ -974,14 +974,14 @@ std::wstring TFarDialogContainer::GetMsg(int MsgId)
 //---------------------------------------------------------------------------
 void TFarDialogContainer::Add(TFarDialogItem *Item)
 {
-    assert(FItems->IndexOf(Item) < 0);
+    assert(FItems->IndexOf(Item) == -1);
     Item->SetContainer(this);
     FItems->Add(Item);
 }
 //---------------------------------------------------------------------------
 void TFarDialogContainer::Remove(TFarDialogItem *Item)
 {
-    assert(FItems->IndexOf(Item) >= 0);
+    assert(FItems->IndexOf(Item) != -1);
     Item->SetContainer(NULL);
     FItems->Remove(Item);
     if (FItems->GetCount() == 0)
@@ -1468,7 +1468,7 @@ long TFarDialogItem::SendMessage(int Msg, int Param)
     return GetDialog()->SendMessage(Msg, GetItem(), Param);
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetSelected(int value)
+void TFarDialogItem::SetSelected(size_t value)
 {
     if (GetSelected() != value)
     {
@@ -1489,7 +1489,7 @@ void TFarDialogItem::UpdateSelected(int value)
     }
 }
 //---------------------------------------------------------------------------
-int TFarDialogItem::GetSelected()
+size_t TFarDialogItem::GetSelected()
 {
     return GetDialogItem()->Selected;
 }
@@ -2267,7 +2267,7 @@ void TFarList::Changed()
     }
 }
 //---------------------------------------------------------------------------
-void TFarList::SetSelected(int value)
+void TFarList::SetSelected(size_t value)
 {
     assert(GetDialogItem() != NULL);
     // DEBUG_PRINTF(L"value = %d", value);
@@ -2343,7 +2343,7 @@ int TFarList::GetTopIndex()
     return Result;
 }
 //---------------------------------------------------------------------------
-int TFarList::GetMaxLength()
+size_t TFarList::GetMaxLength()
 {
     size_t Result = 0;
     for (size_t i = 0; i < GetCount(); i++)
@@ -2353,7 +2353,7 @@ int TFarList::GetMaxLength()
             Result = GetString(i).size();
         }
     }
-    return static_cast<int>(Result);
+    return Result;
 }
 //---------------------------------------------------------------------------
 int TFarList::GetVisibleCount()
@@ -2362,9 +2362,9 @@ int TFarList::GetVisibleCount()
     return GetDialogItem()->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2);
 }
 //---------------------------------------------------------------------------
-int TFarList::GetSelectedInt(bool Init)
+size_t TFarList::GetSelectedInt(bool Init)
 {
-    int Result = -1;
+    size_t Result = -1;
     assert(GetDialogItem() != NULL);
     // DEBUG_PRINTF(L"GetCount = %d, Init = %d", GetCount(), Init);
     if (GetCount() == 0)
@@ -2385,13 +2385,13 @@ int TFarList::GetSelectedInt(bool Init)
     return Result;
 }
 //---------------------------------------------------------------------------
-int TFarList::GetSelected()
+size_t TFarList::GetSelected()
 {
     // DEBUG_PRINTF(L"begin");
-    int Result = GetSelectedInt(false);
+    size_t Result = GetSelectedInt(false);
     // DEBUG_PRINTF(L"Result = %d", Result);
 
-    if ((Result < 0) && (GetCount() > 0))
+    if ((Result == -1) && (GetCount() > 0))
     {
         Result = 0;
     }
@@ -2416,12 +2416,12 @@ void TFarList::SetFlags(int Index, unsigned int value)
     }
 }
 //---------------------------------------------------------------------------
-bool TFarList::GetFlag(int Index, int Flag)
+bool TFarList::GetFlag(size_t Index, int Flag)
 {
     return FLAGSET(GetFlags(Index), static_cast<unsigned int>(Flag));
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlag(int Index, int Flag, bool value)
+void TFarList::SetFlag(size_t Index, int Flag, bool value)
 {
     SetFlags(Index, (GetFlags(Index) & ~Flag) | FLAGMASK(value, Flag));
 }

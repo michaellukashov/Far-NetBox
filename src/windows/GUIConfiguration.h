@@ -116,22 +116,22 @@ public:
   void Clear();
   void Add(const std::wstring Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Insert(int Index, const std::wstring Name,
+  void Insert(size_t Index, const std::wstring Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Change(int Index, const std::wstring Name,
+  void Change(size_t Index, const std::wstring Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Move(int CurIndex, int NewIndex);
-  void Delete(int Index);
-  int IndexOfName(const std::wstring Name) const;
+  void Move(size_t CurIndex, size_t NewIndex);
+  void Delete(size_t Index);
+  size_t IndexOfName(const std::wstring Name) const;
 
   // __property int Count = { read = GetCount };
   int GetCount() const;
   // __property std::wstring Names[int Index] = { read = GetName };
-  std::wstring GetName(int Index) const;
+  std::wstring GetName(size_t Index) const;
   // __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
-  const TCopyParamRule * GetRule(int Index) const;
+  const TCopyParamRule * GetRule(size_t Index) const;
   // __property const TCopyParamType * CopyParams[int Index] = { read = GetCopyParam };
-  const TCopyParamType * GetCopyParam(int Index) const;
+  const TCopyParamType * GetCopyParam(size_t Index) const;
   // __property bool Modified = { read = FModified };
   bool GetModified() { return FModified; }
   // __property nb::TStrings * NameList = { read = GetNameList };
@@ -150,7 +150,7 @@ private:
   void Init();
   void Reset();
   void Modify();
-  bool CompareItem(int Index, const TCopyParamType * CopyParam,
+  bool CompareItem(size_t Index, const TCopyParamType * CopyParam,
     const TCopyParamRule * Rule) const;
 };
 //---------------------------------------------------------------------------
@@ -288,8 +288,8 @@ public:
   std::wstring GetCopyParamCurrent() { return FCopyParamCurrent; }
   void SetCopyParamCurrent(const std::wstring value);
   // __property int CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
-  int GetCopyParamIndex();
-  void SetCopyParamIndex(int value);
+  size_t GetCopyParamIndex();
+  void SetCopyParamIndex(size_t value);
   // __property TGUICopyParamType CurrentCopyParam = { read = GetCurrentCopyParam };
   TGUICopyParamType GetCurrentCopyParam();
   // __property TGUICopyParamType CopyParamPreset[std::wstring Name] = { read = GetCopyParamPreset };

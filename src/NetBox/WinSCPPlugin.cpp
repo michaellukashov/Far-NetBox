@@ -656,7 +656,7 @@ int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
   nb::TStrings * MoreMessages, TQueryType Type, int Answers,
   const TMessageParams * Params)
 {
-  int Result;
+  int Result = 0;
   std::wstring str = Str;
   nb::TStrings * ButtonLabels = new nb::TStringList();
   {
@@ -754,9 +754,9 @@ int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
 
     if ((Params != NULL) && (Params->Aliases != NULL))
     {
-      for (int bi = 0; bi < Data.ButtonCount; bi++)
+      for (size_t bi = 0; bi < Data.ButtonCount; bi++)
       {
-        for (unsigned int ai = 0; ai < Params->AliasesCount; ai++)
+        for (size_t ai = 0; ai < Params->AliasesCount; ai++)
         {
           if (static_cast<int>(Params->Aliases[ai].Button) == Data.Buttons[bi])
           {

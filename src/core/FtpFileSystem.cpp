@@ -1153,7 +1153,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
     OperationProgress->SetTransferSize(File->GetSize());
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-    int Attrs;
+    int Attrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       Attrs = FileGetAttr(DestFullName);
       if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
@@ -1262,7 +1262,7 @@ void TFTPFileSystem::CopyToRemote(nb::TStrings * FilesToCopy,
   std::wstring FileName, FileNameOnly;
   std::wstring TargetDir = AbsolutePath(ATargetDir, false);
   std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
-  int Index = 0;
+  size_t Index = 0;
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
@@ -1669,7 +1669,7 @@ void TFTPFileSystem::DoStartup()
       delete PostLoginCommands;
     } BOOST_SCOPE_EXIT_END
     PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
-    for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
+    for (size_t Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
       std::wstring Command = PostLoginCommands->GetString(Index);
       if (!Command.empty())
@@ -2017,7 +2017,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     {
       FFileSystemInfo.AdditionalInfo =
         FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
-      for (int Index = 0; Index < FFeatures->GetCount(); Index++)
+      for (size_t Index = 0; Index < FFeatures->GetCount(); Index++)
       {
         FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
       }

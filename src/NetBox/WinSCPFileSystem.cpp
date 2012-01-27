@@ -535,7 +535,7 @@ bool TWinSCPFileSystem::GetFindDataEx(nb::TObjectList * PanelItems, int OpMode)
           if (Slash != std::wstring::npos)
           {
             Name.resize(Slash);
-            if (ChildPaths->IndexOf(Name.c_str()) < 0)
+            if (ChildPaths->IndexOf(Name.c_str()) == -1)
             {
               PanelItems->Add(static_cast<nb::TObject *>(new TSessionFolderPanelItem(Name)));
               ChildPaths->Add(Name);
@@ -3141,8 +3141,8 @@ void TWinSCPFileSystem::TerminalChangeDirectory(nb::TObject * /*Sender*/)
   if (!FNoProgress)
   {
     std::wstring Directory = FTerminal->GetCurrentDirectory();
-    int Index = FPathHistory->IndexOf(Directory.c_str());
-    if (Index >= 0)
+    size_t Index = FPathHistory->IndexOf(Directory.c_str());
+    if (Index != -1)
     {
       FPathHistory->Delete(Index);
     }
@@ -3353,8 +3353,8 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     {
       assert(FFileList);
       assert(FPanelItems->GetCount() == FFileList->GetCount());
-      int Index = FFileList->IndexOf(FileName.c_str());
-      assert(Index >= 0);
+      size_t Index = FFileList->IndexOf(FileName.c_str());
+      assert(Index != -1);
       PanelItem = static_cast<TFarPanelItem *>(FPanelItems->GetItem(Index));
     }
 
@@ -4123,7 +4123,7 @@ void TWinSCPFileSystem::EditHistory()
 
     const int BreakKeys[] = { VK_F4, 0 };
 
-    int BreakCode;
+    int BreakCode = 0;
     int Result = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(MENU_EDIT_HISTORY), L"", MenuItems, BreakKeys, BreakCode);
 

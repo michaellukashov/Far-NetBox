@@ -157,7 +157,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
           wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
           FPluginInfo.NAME = StringArray; \
           FPluginInfo.NAME ## Number = NAME.GetCount(); \
-          for (size_t Index = 0; Index < static_cast<int>(NAME.GetCount()); Index++) \
+          for (size_t Index = 0; Index < NAME.GetCount(); Index++) \
           { \
             StringArray[Index] = StrToFar(DuplicateStr(NAME.GetString(Index))); \
           } \
@@ -308,7 +308,7 @@ int TCustomFarPlugin::Configure(int Item)
     }
 }
 //---------------------------------------------------------------------------
-void *TCustomFarPlugin::OpenPlugin(int OpenFrom, int Item)
+void *TCustomFarPlugin::OpenPlugin(int OpenFrom, INT_PTR Item)
 {
     try
     {
@@ -353,7 +353,7 @@ void TCustomFarPlugin::ClosePlugin(void *Plugin)
     {
         ResetCachedInfo();
         TCustomFarFileSystem *FileSystem = static_cast<TCustomFarFileSystem *>(Plugin);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
         {
             BOOST_SCOPE_EXIT ( (&Self) (&FileSystem) )
             {
@@ -391,7 +391,7 @@ void TCustomFarPlugin::HandleFileSystemException(
     // panel contents on themselves (like ProcessKey), the instance of filesystem
     // may not exists anymore.
     // Check against object pointer is stupid, but no other idea so far.
-    if (FOpenedPlugins->IndexOf(FileSystem) >= 0)
+    if (FOpenedPlugins->IndexOf(FileSystem) != -1)
     {
         DEBUG_PRINTF(L"before FileSystem->HandleException");
         FileSystem->HandleException(E, OpMode);
@@ -411,7 +411,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -433,7 +433,7 @@ int TCustomFarPlugin::GetFindData(HANDLE Plugin,
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -456,7 +456,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -480,7 +480,7 @@ int TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
         if (HandlesFunction(hfProcessHostFile))
         {
             assert(!FOldFar);
-            assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+            assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             {
                 TGuard Guard(FileSystem->GetCriticalSection());
@@ -510,7 +510,7 @@ int TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
         if (HandlesFunction(hfProcessKey))
         {
             assert(!FOldFar);
-            assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+            assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             {
                 TGuard Guard(FileSystem->GetCriticalSection());
@@ -541,7 +541,7 @@ int TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
         if (HandlesFunction(hfProcessEvent))
         {
             assert(!FOldFar);
-            assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+            assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
             std::wstring Buf;
             if ((Event == FE_CHANGEVIEWMODE) || (Event == FE_COMMAND))
@@ -576,7 +576,7 @@ int TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int OpMode
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -598,7 +598,7 @@ int TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t **Name, int OpM
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -621,7 +621,7 @@ int TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -645,7 +645,7 @@ int TCustomFarPlugin::GetFiles(HANDLE Plugin,
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -669,7 +669,7 @@ int TCustomFarPlugin::PutFiles(HANDLE Plugin,
     {
         ResetCachedInfo();
         assert(!FOldFar);
-        assert(FOpenedPlugins->IndexOf(FileSystem) >= 0);
+        assert(FOpenedPlugins->IndexOf(FileSystem) != -1);
 
         {
             TGuard Guard(FileSystem->GetCriticalSection());
@@ -729,7 +729,7 @@ int TCustomFarPlugin::MaxMenuItemLength()
     return TerminalInfo().x - 13;
 }
 //---------------------------------------------------------------------------
-int TCustomFarPlugin::MaxLength(nb::TStrings *Strings)
+size_t TCustomFarPlugin::MaxLength(nb::TStrings *Strings)
 {
     size_t Result = 0;
     for (size_t Index = 0; Index < Strings->GetCount(); Index++)
@@ -739,7 +739,7 @@ int TCustomFarPlugin::MaxLength(nb::TStrings *Strings)
             Result = Strings->GetString(Index).size();
         }
     }
-    return static_cast<int>(Result);
+    return Result;
 }
 //---------------------------------------------------------------------------
 class TFarMessageDialog : public TFarDialog
@@ -1112,7 +1112,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         for (size_t Index = 0; Index < MessageLines->GetCount(); Index++)
         {
             std::wstring S = MessageLines->GetString(Index);
-            MessageLines->PutString(static_cast<int>(Index), std::wstring(StrToFar(S)));
+            MessageLines->PutString(Index, std::wstring(StrToFar(S)));
             Items[Index] = const_cast<wchar_t *>(MessageLines->GetString(Index).c_str());
         }
 
@@ -1187,7 +1187,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
         {
             delete[] MenuItems;
         } BOOST_SCOPE_EXIT_END
-        int Selected = -1;
+        size_t Selected = -1;
         int Count = 0;
         for (size_t i = 0; i < Items->GetCount(); i++)
         {
@@ -1199,8 +1199,8 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
                 MenuItems[Count].Flags = flags;
                 if (MenuItems[Count].Flags & MIF_SELECTED)
                 {
-                    assert(Selected < 0);
-                    Selected = static_cast<int>(i);
+                    assert(Selected == -1);
+                    Selected = i;
                 }
                 std::wstring Str = StrToFar(Text);
                 MenuItems[Count].Text = TCustomFarPlugin::DuplicateStr(Str);
@@ -1215,7 +1215,7 @@ int TCustomFarPlugin::Menu(unsigned int Flags, const std::wstring Title,
         if (ResultItem >= 0)
         {
             Result = static_cast<int>(MenuItems[ResultItem].UserData);
-            if (Selected >= 0)
+            if (Selected != -1)
             {
                 Items->PutObject(Selected, (nb::TObject *)(int(Items->GetObject(Selected)) & ~MIF_SELECTED));
             }
@@ -2324,9 +2324,9 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
     FReferenced = true;
 }
 //---------------------------------------------------------------------------
-int TFarPanelModes::CommaCount(const std::wstring ColumnTypes)
+size_t TFarPanelModes::CommaCount(const std::wstring ColumnTypes)
 {
-    int Count = 0;
+    size_t Count = 0;
     for (size_t Index = 0; Index < ColumnTypes.size(); Index++)
     {
         if (ColumnTypes[Index] == ',')
@@ -2709,8 +2709,8 @@ TFarPanelItem *TFarPanelInfo::GetFocusedItem()
 void TFarPanelInfo::SetFocusedItem(TFarPanelItem *value)
 {
     nb::TObjectList *Items = GetItems();
-    int Index = Items->IndexOf(static_cast<nb::TObject *>(value));
-    assert(Index >= 0);
+    size_t Index = Items->IndexOf(static_cast<nb::TObject *>(value));
+    assert(Index != -1);
     SetFocusedIndex(Index);
     // delete Items;
 }
@@ -2813,7 +2813,7 @@ void TFarMenuItems::Delete(size_t Index)
     nb::TStringList::Delete(Index);
 }
 //---------------------------------------------------------------------------
-void TFarMenuItems::PutObject(int Index, nb::TObject *AObject)
+void TFarMenuItems::PutObject(size_t Index, nb::TObject *AObject)
 {
     nb::TStringList::PutObject(Index, AObject);
     bool Focused = (reinterpret_cast<size_t>(AObject) & MIF_SEPARATOR) != 0;
@@ -2864,7 +2864,7 @@ void TFarMenuItems::SetItemFocused(int value)
     }
 }
 //---------------------------------------------------------------------------
-void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
+void TFarMenuItems::SetFlag(size_t Index, int Flag, bool Value)
 {
     if (GetFlag(Index, Flag) != Value)
     {
@@ -2881,7 +2881,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
     }
 }
 //---------------------------------------------------------------------------
-bool TFarMenuItems::GetFlag(int Index, int Flag)
+bool TFarMenuItems::GetFlag(size_t Index, int Flag)
 {
     return (reinterpret_cast<size_t>(GetObject(Index)) & Flag) > 0;
 }
@@ -2974,7 +2974,7 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
     */
 }
 //---------------------------------------------------------------------------
-void FarWrapText(const std::wstring Text, nb::TStrings *Result, int MaxWidth)
+void FarWrapText(const std::wstring Text, nb::TStrings *Result, size_t MaxWidth)
 {
     size_t TabSize = 8;
     nb::TStringList Lines;

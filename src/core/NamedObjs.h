@@ -27,7 +27,7 @@ private:
 class TNamedObjectList : public nb::TObjectList
 {
 private:
-  int FHiddenCount;
+  size_t FHiddenCount;
   virtual void Notify(void *Ptr, nb::TListNotification Action);
 protected:
   void Recount();
@@ -39,14 +39,14 @@ public:
 
   TNamedObjectList();
   void AlphaSort();
-  virtual TNamedObject * AtObject(int Index);
+  virtual TNamedObject * AtObject(size_t Index);
   TNamedObject * FindByName(const std::wstring Name, bool CaseSensitive = false);
   // __property int Count = { read = GetCount, write = SetCount };
   size_t GetCount();
   void SetCount(size_t value);
   // __property int HiddenCount = { read = FHiddenCount, write = FHiddenCount };
-  int GetHiddenCount() { return FHiddenCount; }
-  void SetHiddenCount(int value) { FHiddenCount = value; }
+  size_t GetHiddenCount() { return FHiddenCount; }
+  void SetHiddenCount(size_t value) { FHiddenCount = value; }
 };
 //---------------------------------------------------------------------------
 int NamedObjectSortProc(void * Item1, void * Item2);

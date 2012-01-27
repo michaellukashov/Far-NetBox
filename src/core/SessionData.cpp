@@ -2321,7 +2321,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     {
       for (size_t Index = 0; Index < nb::TObjectList::GetCount(); Index++)
       {
-        if (Loaded->IndexOf(GetItem(Index)) < 0)
+        if (Loaded->IndexOf(GetItem(Index)) == -1)
         {
           Delete(Index);
           Index--;
@@ -2516,10 +2516,13 @@ void TStoredSessionList::Cleanup()
   }
 }
 //---------------------------------------------------------------------------
-int TStoredSessionList::IndexOf(TSessionData * Data)
+size_t TStoredSessionList::IndexOf(TSessionData * Data)
 {
   for (size_t Index = 0; Index < GetCount(); Index++)
-    if (Data == GetSession(Index)) return Index;
+  {
+    if (Data == GetSession(Index))
+        return Index;
+  }
   return -1;
 }
 //---------------------------------------------------------------------------

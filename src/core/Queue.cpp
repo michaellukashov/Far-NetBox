@@ -330,8 +330,8 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(static_cast<nb::TObject *>(TerminalItem));
-      assert(Index >= 0);
+      size_t Index = FTerminals->IndexOf(static_cast<nb::TObject *>(TerminalItem));
+      assert(Index != -1);
 
       if (Index < FFreeTerminals)
       {
@@ -364,8 +364,8 @@ bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FTerminals->IndexOf(static_cast<nb::TObject *>(TerminalItem));
-      assert(Index >= 0);
+      size_t Index = FTerminals->IndexOf(static_cast<nb::TObject *>(TerminalItem));
+      assert(Index != -1);
       assert(Index >= FFreeTerminals);
 
       Result = (FTransfersLimit <= 0) || (Index < FTransfersLimit);
@@ -407,7 +407,7 @@ void TTerminalQueue::RetryItem(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->Remove(static_cast<nb::TObject *>(Item));
+      size_t Index = FItems->Remove(static_cast<nb::TObject *>(Item));
       assert(Index < FItemsInProcess);
       USEDPARAM(Index);
       FItemsInProcess--;
@@ -456,7 +456,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item)
   }
 }
 //---------------------------------------------------------------------------
-TQueueItem * TTerminalQueue::GetItem(int Index)
+TQueueItem * TTerminalQueue::GetItem(size_t Index)
 {
   return reinterpret_cast<TQueueItem*>(FItems->GetItem(Index));
 }
@@ -521,7 +521,7 @@ bool TTerminalQueue::ItemGetData(TQueueItem * Item,
   {
     TGuard Guard(FItemsSection);
 
-    Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) >= 0);
+    Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1);
     if (Result)
     {
       Item->GetData(Proxy);
@@ -542,7 +542,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
     {
       TGuard Guard(FItemsSection);
 
-      Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) >= 0) &&
+      Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1) &&
         TQueueItem::IsUserActionStatus(Item->GetStatus());
       if (Result)
       {
@@ -568,9 +568,9 @@ bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
-      int IndexDest = FItems->IndexOf(static_cast<nb::TObject *>(BeforeItem));
-      Result = (Index >= 0) && (IndexDest >= 0) &&
+      size_t Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
+      size_t IndexDest = FItems->IndexOf(static_cast<nb::TObject *>(BeforeItem));
+      Result = (Index != -1) && (IndexDest != -1) &&
         (Item->GetStatus() == TQueueItem::qsPending) &&
         (BeforeItem->GetStatus() == TQueueItem::qsPending);
       if (Result)
@@ -598,8 +598,8 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
-      Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
+      size_t Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
+      Result = (Index != -1) && (Item->GetStatus() == TQueueItem::qsPending) &&
         // prevent double-initiation when "execute" is clicked twice too fast
         (Index >= FItemsInProcess);
       if (Result)
@@ -637,8 +637,8 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
     {
       TGuard Guard(FItemsSection);
 
-      int Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
-      Result = (Index >= 0);
+      size_t Index = FItems->IndexOf(static_cast<nb::TObject *>(Item));
+      Result = (Index != -1);
       if (Result)
       {
         if (Item->GetStatus() == TQueueItem::qsPending)
@@ -674,7 +674,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
     {
       TGuard Guard(FItemsSection);
 
-      Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) >= 0) &&
+      Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1) &&
         ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
          (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
       if (Result)
@@ -707,7 +707,7 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, unsigned long CPSLimit)
   {
     TGuard Guard(FItemsSection);
 
-    Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) >= 0);
+    Result = (FItems->IndexOf(static_cast<nb::TObject *>(Item)) != -1);
     if (Result)
     {
       Item->SetCPSLimit(CPSLimit);
@@ -1475,7 +1475,7 @@ bool TQueueItemProxy::ExecuteNow()
 bool TQueueItemProxy::Move(bool Sooner)
 {
   bool Result = false;
-  int I = GetIndex();
+  size_t I = GetIndex();
   if (Sooner)
   {
     if (I > 0)
@@ -1485,7 +1485,7 @@ bool TQueueItemProxy::Move(bool Sooner)
   }
   else
   {
-    if (I < static_cast<int>(FQueueStatus->GetCount() - 1))
+    if (I < FQueueStatus->GetCount() - 1)
     {
       Result = FQueueStatus->GetItem(I + 1)->Move(this);
     }
@@ -1534,11 +1534,11 @@ bool TQueueItemProxy::SetCPSLimit(unsigned long CPSLimit)
   return FQueue->ItemSetCPSLimit(FQueueItem, CPSLimit);
 }
 //---------------------------------------------------------------------------
-int TQueueItemProxy::GetIndex()
+size_t TQueueItemProxy::GetIndex()
 {
   assert(FQueueStatus != NULL);
-  int Index = FQueueStatus->FList->IndexOf(static_cast<nb::TObject *>(static_cast<void *>(this)));
-  assert(Index >= 0);
+  size_t Index = FQueueStatus->FList->IndexOf(static_cast<nb::TObject *>(static_cast<void *>(this)));
+  assert(Index != -1);
   return Index;
 }
 //---------------------------------------------------------------------------
@@ -1572,7 +1572,7 @@ int TTerminalQueueStatus::GetActiveCount()
   {
     FActiveCount = 0;
 
-    while ((FActiveCount < static_cast<int>(FList->GetCount())) &&
+    while ((FActiveCount < FList->GetCount()) &&
       (GetItem(FActiveCount)->GetStatus() != TQueueItem::qsPending))
     {
       FActiveCount++;
@@ -1601,7 +1601,7 @@ size_t TTerminalQueueStatus::GetCount()
   return FList->GetCount();
 }
 //---------------------------------------------------------------------------
-TQueueItemProxy * TTerminalQueueStatus::GetItem(int Index)
+TQueueItemProxy * TTerminalQueueStatus::GetItem(size_t Index)
 {
   return reinterpret_cast<TQueueItemProxy *>(FList->GetItem(Index));
 }

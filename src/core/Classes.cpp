@@ -22,7 +22,7 @@ void Abort()
     throw nb::EAbort("");
 }
 //---------------------------------------------------------------------------
-void Error(int ErrorID, int data)
+void Error(int ErrorID, size_t data)
 {
     DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
     std::wstring Msg = FMTLOAD(ErrorID, data);
@@ -81,12 +81,12 @@ size_t TList::GetCount() const
 }
 void TList::SetCount(size_t NewCount)
 {
-  if (static_cast<int>(NewCount) < 0)
+  if (NewCount == -1)
     nb::Error(SListCountError, NewCount);
   if (NewCount <= FList.size())
   {
     size_t sz = FList.size();
-    for (int I = sz - 1; I >= static_cast<int>(NewCount); I--)
+    for (size_t I = sz - 1; (I != -1) && (I >= NewCount); I--)
       Delete(I);
   }
   FList.resize(NewCount);
@@ -117,7 +117,7 @@ size_t TList::Add(void *value)
 }
 void *TList::Extract(void *item)
 {
-    if (Remove(item) >= 0)
+    if (Remove(item) != -1)
         return item;
     else
         return NULL;
@@ -179,7 +179,7 @@ size_t TList::IndexOf(void *value) const
       Result++;
     if (Result == FList.size())
       Result = -1;
-    return static_cast<int>(Result);
+    return Result;
 }
 void TList::Clear()
 {
@@ -401,7 +401,7 @@ void TStrings::Assign(TPersistent *Source)
 
 size_t TStrings::Add(const std::wstring S)
 {
-    int Result = GetCount();
+    size_t Result = GetCount();
     Insert(Result, S);
     return Result;
 }
@@ -412,8 +412,8 @@ std::wstring TStrings::GetText()
 std::wstring TStrings::GetTextStr()
 {
     std::wstring Result;
-    int I, L, Size, Count;
-    wchar_t *P;
+    size_t I, L, Size, Count;
+    wchar_t *P = NULL;
     std::wstring S, LB;
 
     Count = GetCount();
@@ -476,9 +476,9 @@ TObject *TStrings::GetObject(size_t Index)
     (void)Index;
     return NULL;
 }
-int TStrings::AddObject(const std::wstring S, TObject *AObject)
+size_t TStrings::AddObject(const std::wstring S, TObject *AObject)
 {
-    int Result = Add(S);
+    size_t Result = Add(S);
     PutObject(Result, AObject);
     return Result;
 }
@@ -517,7 +517,7 @@ void TStrings::SetDuplicates(TDuplicatesEnum value)
 {
     FDuplicates = value;
 }
-void TStrings::Move(int CurIndex, int NewIndex)
+void TStrings::Move(size_t CurIndex, size_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -556,7 +556,7 @@ size_t TStrings::IndexOfName(const std::wstring Name)
     size_t P = ::AnsiPos(S, L'=');
     if ((P != std::wstring::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
     {
-        return static_cast<int>(Index);
+        return Index;
     }
   }
   return -1;
@@ -658,10 +658,10 @@ size_t TStringList::Add(const std::wstring S)
 {
     return AddObject(S, NULL);
 }
-int TStringList::AddObject(const std::wstring S, TObject *AObject)
+size_t TStringList::AddObject(const std::wstring S, TObject *AObject)
 {
   // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
-  int Result = 0;
+  size_t Result = 0;
   if (!GetSorted())
   {
     Result = GetCount();
@@ -684,14 +684,14 @@ int TStringList::AddObject(const std::wstring S, TObject *AObject)
   InsertItem(Result, S, AObject);
   return Result;
 }
-bool TStringList::Find(const std::wstring S, int &Index)
+bool TStringList::Find(const std::wstring S, size_t &Index)
 {
   bool Result = false;
-  int L = 0;
-  int H = GetCount() - 1;
-  while (L <= H)
+  size_t L = 0;
+  size_t H = GetCount() - 1;
+  while ((H != -1) && (L <= H))
   {
-    int I = (L + H) >> 1;
+    size_t I = (L + H) >> 1;
     int C = CompareStrings(FList[I].FString, S);
     if (C < 0)
     {
@@ -716,7 +716,7 @@ bool TStringList::Find(const std::wstring S, int &Index)
 size_t TStringList::IndexOf(const std::wstring S)
 {
   // DEBUG_PRINTF(L"begin");
-  int Result = -1;
+  size_t Result = -1;
   if (!GetSorted())
   {
     Result = parent::IndexOf(S);
@@ -1717,7 +1717,7 @@ double TRegistry::ReadFloat(const std::wstring Name)
 {
   double Result = 0.0;
   TRegDataType RegData;
-  int Len = GetData(Name, &Result, sizeof(double), RegData);
+  size_t Len = GetData(Name, &Result, sizeof(double), RegData);
   if ((RegData != rdBinary) || (Len != sizeof(double)))
   {
     nb::ReadError(Name);
@@ -1750,7 +1750,7 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
 {
   std::wstring Result = L"";
   TRegDataType RegData = rdUnknown;
-  int Len = GetDataSize(Name);
+  size_t Len = GetDataSize(Name);
   if (Len > 0)
   {
     Result.resize(Len);
@@ -1852,7 +1852,7 @@ void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
     WriteBinaryData(Name, &Value, sizeof(Value));
 }
 void TRegistry::WriteBinaryData(const std::wstring Name,
-  const void *Buffer, int BufSize)
+  const void *Buffer, size_t BufSize)
 {
     PutData(Name, Buffer, BufSize, rdBinary);
 }

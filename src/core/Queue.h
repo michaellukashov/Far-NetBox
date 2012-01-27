@@ -139,7 +139,7 @@ protected:
   nb::TDateTime FLastIdle;
   TTerminalQueue *Self;
 
-  TQueueItem *GetItem(int Index);
+  TQueueItem *GetItem(size_t Index);
   bool ItemGetData(TQueueItem *Item, TQueueItemProxy *Proxy);
   bool ItemProcessUserAction(TQueueItem *Item, void *Arg);
   bool ItemMove(TQueueItem *Item, TQueueItem *BeforeItem);
@@ -245,7 +245,7 @@ public:
   // __property bool ProcessingUserAction = { read = FProcessingUserAction };
   bool GetProcessingUserAction() { return FProcessingUserAction; }
   // __property int Index = { read = GetIndex };
-  int GetIndex();
+  size_t GetIndex();
   // __property void *UserData = { read = FUserData, write = FUserData };
   void *GetUserData() { return FUserData; }
   void SetUserData(void *value) { FUserData = value; }
@@ -281,7 +281,7 @@ public:
   // __property int ActiveCount = { read = GetActiveCount };
   int GetActiveCount();
   // __property TQueueItemProxy *Items[int Index] = { read = GetItem };
-  TQueueItemProxy *GetItem(int Index);
+  TQueueItemProxy *GetItem(size_t Index);
 
 protected:
   TTerminalQueueStatus();
@@ -292,7 +292,7 @@ protected:
 
 private:
   nb::TList *FList;
-  int FActiveCount;
+  size_t FActiveCount;
 
 };
 //---------------------------------------------------------------------------

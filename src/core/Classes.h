@@ -85,7 +85,7 @@ typedef boost::signal1<void, TObject *> notify_signal_type;
 typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------
 void Abort();
-void Error(int ErrorID, int data);
+void Error(int ErrorID, size_t data);
 //---------------------------------------------------------------------------
 class TObject
 {
@@ -272,14 +272,14 @@ public:
     virtual void EndUpdate();
     virtual void SetUpdateState(bool Updating);
     virtual TObject *GetObject(size_t Index);
-    int AddObject(const std::wstring S, TObject *AObject);
+    size_t AddObject(const std::wstring S, TObject *AObject);
     virtual void InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
     bool Equals(TStrings *value);
     virtual void Clear() = 0;
     virtual void PutObject(size_t Index, TObject *AObject);
     virtual void PutString(size_t Index, const std::wstring S);
     void SetDuplicates(TDuplicatesEnum value);
-    void Move(int CurIndex, int NewIndex);
+    void Move(size_t CurIndex, size_t NewIndex);
     size_t IndexOf(const std::wstring S);
     virtual size_t IndexOfName(const std::wstring Name);
     const std::wstring GetName(size_t Index);
@@ -334,8 +334,8 @@ public:
     virtual size_t GetCount() const;
     virtual void Clear();
     size_t Add(const std::wstring S);
-    int AddObject(const std::wstring S, TObject *AObject);
-    virtual bool Find(const std::wstring S, int &Index);
+    size_t AddObject(const std::wstring S, TObject *AObject);
+    virtual bool Find(const std::wstring S, size_t &Index);
     size_t IndexOf(const std::wstring S);
     virtual void PutString(size_t Index, const std::wstring S);
     virtual void Delete(size_t Index);
@@ -657,7 +657,7 @@ public:
   void Writeint(const std::wstring Name, int Value);
   void WriteInt64(const std::wstring Name, __int64 Value);
   void WriteBinaryData(const std::wstring Name,
-      const void * Buffer, int Size);
+      const void * Buffer, size_t Size);
 private:
     void ChangeKey(HKEY Value, const std::wstring Path);
     HKEY GetBaseKey(bool Relative);

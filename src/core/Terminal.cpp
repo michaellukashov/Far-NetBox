@@ -4078,7 +4078,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const std::wstring LocalDirectory,
           FileName = SearchRec.cFileName;
           // add dirs for recursive mode or when we are interested in newly
           // added subdirs
-          int FoundIndex;
+          size_t FoundIndex;
           __int64 Size =
             (static_cast<__int64>(SearchRec.nFileSizeHigh) << 32) +
             SearchRec.nFileSizeLow;
@@ -4208,7 +4208,7 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
 {
   TSynchronizeData * Data = static_cast<TSynchronizeData *>(Param);
 
-  int FoundIndex;
+  size_t FoundIndex;
   TFileMasks::TParams MaskParams;
   MaskParams.Size = File->GetSize();
   std::wstring LocalFileName =
@@ -4239,8 +4239,8 @@ void TTerminal::SynchronizeCollectFile(const std::wstring FileName,
       ChecklistItem->Remote.Size = File->GetSize();
 
       bool Modified = false;
-      int LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
-      bool New = (LocalIndex < 0);
+      size_t LocalIndex = Data->LocalFileList->IndexOf(LocalFileName.c_str());
+      bool New = (LocalIndex == -1);
       if (!New)
       {
         TSynchronizeFileData * LocalData =
@@ -5060,7 +5060,7 @@ TTerminal * TTerminalList::NewTerminal(TSessionData * Data)
 //---------------------------------------------------------------------------
 void TTerminalList::FreeTerminal(TTerminal * Terminal)
 {
-  assert(IndexOf(Terminal) >= 0);
+  assert(IndexOf(Terminal) != -1);
   Remove(Terminal);
 }
 //---------------------------------------------------------------------------

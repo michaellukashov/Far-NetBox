@@ -777,7 +777,7 @@ void TCustomCommand::GetToken(
       Len = PatternLen(Index, PatternCmd);
     }
 
-    if (static_cast<int>(Len) < 0)
+    if (Len == -1)
     {
       throw ExtException(FMTLOAD(CUSTOM_COMMAND_UNKNOWN, PatternCmd, Index));
     }
@@ -821,7 +821,7 @@ std::wstring TCustomCommand::Complete(const std::wstring Command,
 
   while (Index < Command.size())
   {
-    size_t Len;
+    size_t Len = 0;
     char PatternCmd;
     GetToken(Command, Index, Len, PatternCmd);
 
@@ -927,7 +927,7 @@ bool TCustomCommand::FindPattern(const std::wstring Command,
 }
 //---------------------------------------------------------------------------
 void TCustomCommand::ValidatePattern(const std::wstring /*Command*/,
-  int /*Index*/, int /*Len*/, char /*PatternCmd*/, void * /*Arg*/)
+  size_t /*Index*/, size_t /*Len*/, char /*PatternCmd*/, void * /*Arg*/)
 {
 }
 //---------------------------------------------------------------------------
@@ -938,15 +938,15 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
   FChildCustomCommand = ChildCustomCommand;
 }
 //---------------------------------------------------------------------------
-void TInteractiveCustomCommand::Prompt(int /*Index*/,
+void TInteractiveCustomCommand::Prompt(size_t /*Index*/,
   const std::wstring /*Prompt*/, std::wstring & Value)
 {
   Value = L"";
 }
 //---------------------------------------------------------------------------
-int TInteractiveCustomCommand::PatternLen(int Index, char PatternCmd)
+size_t TInteractiveCustomCommand::PatternLen(size_t Index, char PatternCmd)
 {
-  int Len;
+  size_t Len = 0;
   switch (PatternCmd)
   {
     case '?':
@@ -960,7 +960,7 @@ int TInteractiveCustomCommand::PatternLen(int Index, char PatternCmd)
   return Len;
 }
 //---------------------------------------------------------------------------
-bool TInteractiveCustomCommand::PatternReplacement(int Index, const std::wstring Pattern,
+bool TInteractiveCustomCommand::PatternReplacement(size_t Index, const std::wstring Pattern,
   std::wstring & Replacement, bool & Delimit)
 {
   bool Result;
@@ -1030,9 +1030,9 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &Data,
   FFileList = FileList;
 }
 //---------------------------------------------------------------------------
-int TFileCustomCommand::PatternLen(int /*Index*/, char PatternCmd)
+size_t TFileCustomCommand::PatternLen(size_t /*Index*/, char PatternCmd)
 {
-  int Len;
+  size_t Len = 0;
   switch (toupper(PatternCmd))
   {
     case '@':
@@ -1050,7 +1050,7 @@ int TFileCustomCommand::PatternLen(int /*Index*/, char PatternCmd)
   return Len;
 }
 //---------------------------------------------------------------------------
-bool TFileCustomCommand::PatternReplacement(int /*Index*/,
+bool TFileCustomCommand::PatternReplacement(size_t /*Index*/,
   const std::wstring Pattern, std::wstring &Replacement, bool &Delimit)
 {
   // keep consistent with TSessionLog::OpenLogFile
@@ -1098,7 +1098,7 @@ void TFileCustomCommand::Validate(const std::wstring Command)
 }
 //---------------------------------------------------------------------------
 void TFileCustomCommand::ValidatePattern(const std::wstring /*Command*/,
-  int Index, int /*Len*/, char PatternCmd, void * Arg)
+  size_t Index, size_t /*Len*/, char PatternCmd, void * Arg)
 {
   int * Found = static_cast<int *>(Arg);
 
