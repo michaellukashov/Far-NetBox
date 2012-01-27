@@ -172,7 +172,7 @@ void TList::Insert(size_t Index, void *Item)
     if (Item != NULL)
       Notify(Item, lnAdded);
 }
-int TList::IndexOf(void *value) const
+size_t TList::IndexOf(void *value) const
 {
     size_t Result = 0;
     while ((Result < FList.size()) && (FList[Result] != value))
@@ -248,7 +248,7 @@ void TObjectList::Insert(size_t Index, TObject *value)
 {
     parent::Insert(Index, value);
 }
-int TObjectList::IndexOf(TObject *value) const
+size_t TObjectList::IndexOf(TObject *value) const
 {
     return parent::IndexOf(value);
 }
@@ -535,7 +535,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
     }
   }
 }
-int TStrings::IndexOf(const std::wstring S)
+size_t TStrings::IndexOf(const std::wstring S)
 {
   // DEBUG_PRINTF(L"begin");
   for (size_t Result = 0; Result < GetCount(); Result++)
@@ -548,7 +548,7 @@ int TStrings::IndexOf(const std::wstring S)
   // DEBUG_PRINTF(L"end");
   return -1;
 }
-int TStrings::IndexOfName(const std::wstring Name)
+size_t TStrings::IndexOfName(const std::wstring Name)
 {
   for (size_t Index = 0; Index < GetCount(); Index++)
   {
@@ -713,7 +713,7 @@ bool TStringList::Find(const std::wstring S, int &Index)
   Index = L;
   return Result;
 }
-int TStringList::IndexOf(const std::wstring S)
+size_t TStringList::IndexOf(const std::wstring S)
 {
   // DEBUG_PRINTF(L"begin");
   int Result = -1;
@@ -737,7 +737,7 @@ void TStringList::PutString(size_t Index, const std::wstring S)
     {
       nb::Error(SSortedListError, 0);
     }
-    if ((Index == -1) || (Index > FList.size())))
+    if ((Index == -1) || (Index > FList.size()))
     {
       nb::Error(SListIndexError, Index);
     }
@@ -848,7 +848,7 @@ void TStringList::LoadFromFile(const std::wstring FileName)
 
 void TStringList::PutObject(size_t Index, TObject *AObject)
 {
-    if ((Index == -1) || (Index >= FList.size())))
+    if ((Index == -1) || (Index >= FList.size()))
     {
       nb::Error(SListIndexError, Index);
     }

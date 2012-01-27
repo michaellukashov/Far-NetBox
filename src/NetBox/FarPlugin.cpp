@@ -2868,7 +2868,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
 {
     if (GetFlag(Index, Flag) != Value)
     {
-        size_t F = static_cast<size_t>(GetObject(Index));
+        size_t F = reinterpret_cast<size_t>(GetObject(Index));
         if (Value)
         {
             F |= Flag;
@@ -2883,7 +2883,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
 //---------------------------------------------------------------------------
 bool TFarMenuItems::GetFlag(int Index, int Flag)
 {
-    return (static_cast<size_t>(GetObject(Index)) & Flag) > 0;
+    return (reinterpret_cast<size_t>(GetObject(Index)) & Flag) > 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

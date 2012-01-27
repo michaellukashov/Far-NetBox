@@ -724,7 +724,7 @@ int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
         } \
         if (NeverAskAgainPending && CANNEVERASK) \
         { \
-          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, (nb::TObject*)true); \
+          ButtonLabels->PutObject(ButtonLabels->GetCount() - 1, (nb::TObject *)true); \
           NeverAskAgainPending = false; \
         } \
       }
