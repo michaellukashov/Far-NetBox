@@ -178,7 +178,7 @@ int TList::IndexOf(void *value) const
     while ((Result < FList.size()) && (FList[Result] != value))
       Result++;
     if (Result == FList.size())
-      Result = static_cast<size_t>(-1);
+      Result = -1;
     return static_cast<int>(Result);
 }
 void TList::Clear()
@@ -550,18 +550,16 @@ int TStrings::IndexOf(const std::wstring S)
 }
 int TStrings::IndexOfName(const std::wstring Name)
 {
-  size_t Result = static_cast<size_t>(-1);
-  for (Result = 0; Result < GetCount(); Result++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
-    std::wstring S = GetString(Result);
+    std::wstring S = GetString(Index);
     size_t P = ::AnsiPos(S, L'=');
     if ((P != std::wstring::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
     {
-        return static_cast<int>(Result);
+        return static_cast<int>(Index);
     }
   }
-  Result = static_cast<size_t>(-1);
-  return static_cast<int>(Result);
+  return -1;
 }
 const std::wstring TStrings::GetName(int Index)
 {
@@ -1307,7 +1305,7 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
     if (Result > 0)
     {
       if (Result > Count) Result = Count;
-      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<int>(Result));
+      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<size_t>(Result));
       FPosition += Result;
       return Result;
     }
@@ -1391,9 +1389,9 @@ void *TMemoryStream::Realloc(__int64 &NewCapacity)
     else
     {
       if (FCapacity == 0)
-        Result = malloc(static_cast<int>(NewCapacity));
+        Result = malloc(static_cast<size_t>(NewCapacity));
       else
-        Result = realloc(FMemory, static_cast<int>(NewCapacity));
+        Result = realloc(FMemory, static_cast<size_t>(NewCapacity));
       if (Result == NULL)
         throw EStreamError(FMTLOAD(SMemoryStreamError));
     }
@@ -1422,7 +1420,7 @@ __int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
         FSize = Pos;
       }
       memmove(static_cast<char *>(FMemory) + FPosition,
-        Buffer, static_cast<int>(Count));
+        Buffer, static_cast<size_t>(Count));
       FPosition = Pos;
       Result = Count;
     }
@@ -1795,7 +1793,7 @@ int TRegistry::ReadBinaryData(const std::wstring Name,
   return Result;
 }
 
-int TRegistry::GetData(const std::wstring Name, void *Buffer,
+size_t TRegistry::GetData(const std::wstring Name, void *Buffer,
   DWORD BufSize, TRegDataType &RegData)
 {
   DWORD DataType = REG_NONE;
@@ -1805,13 +1803,13 @@ int TRegistry::GetData(const std::wstring Name, void *Buffer,
   {
     throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
-  int Result = BufSize;
   RegData = DataTypeToRegData(DataType);
+  size_t Result = BufSize;
   return Result;
 }
 
 void TRegistry::PutData(const std::wstring Name, const void *Buffer,
-  int BufSize, TRegDataType RegData)
+  size_t BufSize, TRegDataType RegData)
 {
   int DataType = nb::RegDataToDataType(RegData);
   // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
@@ -1840,7 +1838,7 @@ void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
 }
 void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
 {
-    PutData(Name, Value.c_str(), static_cast<int>(Value.size() * sizeof(wchar_t)) + 1, rdString);
+    PutData(Name, Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::Writeint(const std::wstring Name, int Value)
 {
