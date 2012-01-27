@@ -125,7 +125,7 @@ public:
   size_t IndexOfName(const std::wstring Name) const;
 
   // __property int Count = { read = GetCount };
-  int GetCount() const;
+  size_t GetCount() const;
   // __property std::wstring Names[int Index] = { read = GetName };
   std::wstring GetName(size_t Index) const;
   // __property const TCopyParamRule * Rules[int Index] = { read = GetRule };

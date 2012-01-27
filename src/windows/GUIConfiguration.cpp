@@ -275,7 +275,7 @@ void TCopyParamList::operator=(const TCopyParamList & rhl)
 {
   Clear();
 
-  for (int Index = 0; Index < rhl.GetCount(); Index++)
+  for (size_t Index = 0; Index < rhl.GetCount(); Index++)
   {
     TCopyParamType * CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
     TCopyParamRule * Rule = NULL;
@@ -385,7 +385,7 @@ void TCopyParamList::Move(size_t CurIndex, size_t NewIndex)
 //---------------------------------------------------------------------------
 void TCopyParamList::Delete(size_t Index)
 {
-  assert((Index >= 0) && (Index < GetCount()));
+  assert((Index != -1) && (Index < GetCount()));
   FNames->Delete(Index);
   delete GetCopyParam(Index);
   FCopyParams->Delete(Index);
@@ -404,7 +404,7 @@ int TCopyParamList::Find(const TCopyParamRuleData & Value) const
     {
       if (GetRule(i)->Matches(Value))
       {
-        Result = i;
+        Result = static_cast<int>(i);
       }
     }
     i++;
@@ -456,7 +456,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int ACount)
 void TCopyParamList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
-  for (int Index = 0; Index < GetCount(); Index++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
@@ -480,7 +480,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
   }
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::GetCount() const
+size_t TCopyParamList::GetCount() const
 {
   return FCopyParams->GetCount();
 }
@@ -506,7 +506,7 @@ nb::TStrings * TCopyParamList::GetNameList() const
   {
     FNameList = new nb::TStringList();
 
-    for (int i = 0; i < GetCount(); i++)
+    for (size_t i = 0; i < GetCount(); i++)
     {
       FNameList->Add(FNames->GetString(i));
     }
@@ -1065,7 +1065,7 @@ nb::TStrings * TGUIConfiguration::GetLocales()
           if (!LangName.empty())
           {
             FLocales->AddObject(LangName, reinterpret_cast<nb::TObject*>(
-              AdditionaLanguageMask + Exts->GetString(Index)[3]));
+              AdditionaLanguageMask + Exts->GetString(Index)[2]));
           }
         }
       }

@@ -386,7 +386,7 @@ std::wstring TXmlStorage::ReadStringRaw(const std::wstring Name, const std::wstr
 }
 //---------------------------------------------------------------------------
 int TXmlStorage::ReadBinaryData(const std::wstring Name,
-  void * Buffer, int Size)
+  void * Buffer, size_t Size)
 {
   nb::Error(SNotImplemented, 3028);
   int Result = 0;
@@ -428,7 +428,7 @@ void TXmlStorage::WriteInt64(const std::wstring Name, __int64 Value)
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::WriteBinaryData(const std::wstring Name,
-  const void * Buffer, int Size)
+  const void * Buffer, size_t Size)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, ::StrToHex(std::wstring(reinterpret_cast<const wchar_t *>(Buffer), Size), true));

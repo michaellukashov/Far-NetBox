@@ -73,7 +73,7 @@ public:
   bool InProgress;
   bool FileInProgress;
   TCancelStatus Cancel;
-  int Count;
+  size_t Count;
   // when operation started
   nb::TDateTime StartTime;
   // bytes transfered

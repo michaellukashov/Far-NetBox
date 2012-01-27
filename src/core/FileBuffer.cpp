@@ -161,7 +161,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, int Params,
   // two character source EOL
   else
   {
-    int Index;
+    size_t Index;
     for (Index = 0; Index < GetSize() - 1; Index++)
     {
       if ((*Ptr == Source[0]) && (*(Ptr+1) == Source[1]))
@@ -205,14 +205,14 @@ void TFileBuffer::Convert(TEOLType Source, char * Dest, int Params,
   Convert(EOLToStr(Source), Dest, Params, Token);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Insert(int Index, const char * Buf, int Len)
+void TFileBuffer::Insert(size_t Index, const char * Buf, size_t Len)
 {
   SetSize(GetSize() + Len);
   memmove(GetData() + Index + Len, GetData() + Index, GetSize() - Index - Len);
   memmove(GetData() + Index, Buf, Len);
 }
 //---------------------------------------------------------------------------
-void TFileBuffer::Delete(int Index, int Len)
+void TFileBuffer::Delete(size_t Index, size_t Len)
 {
   memmove(GetData() + Index, GetData() + Index + Len, GetSize() - Index - Len);
   SetSize(GetSize() - Len);

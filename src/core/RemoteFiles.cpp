@@ -2526,11 +2526,11 @@ TRemoteProperties TRemoteProperties::CommonProperties(nb::TStrings * FileList)
   TRemoteProperties CommonProperties;
   for (size_t Index = 0; Index < FileList->GetCount(); Index++)
   {
-    TRemoteFile * File = (TRemoteFile *)(FileList->GetObject(Index));
+    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObject(Index));
     assert(File);
     if (!Index)
     {
-      CommonProperties.Rights = *(File->GetRights());
+      CommonProperties.Rights.Assign(File->GetRights());
       // previously we allowed undef implicitly for directories,
       // now we do it explicitly in properties dialog and only in combination
       // with "recursive" option

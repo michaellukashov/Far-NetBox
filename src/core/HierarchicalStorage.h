@@ -41,7 +41,7 @@ public:
   virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default) = 0;
   virtual double ReadFloat(const std::wstring Name, double Default) = 0;
   virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default) = 0;
-  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, int Size) = 0;
+  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, size_t Size) = 0;
 
   virtual std::wstring ReadString(const std::wstring Name, const std::wstring Default);
   std::wstring ReadBinaryData(const std::wstring Name);
@@ -52,7 +52,7 @@ public:
   virtual void WriteInt64(const std::wstring Name, __int64 Value) = 0;
   virtual void WriteDateTime(const std::wstring Name, nb::TDateTime Value) = 0;
   virtual void WriteFloat(const std::wstring Name, double Value) = 0;
-  virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, int Size) = 0;
+  virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, size_t Size) = 0;
 
   virtual void WriteString(const std::wstring Name, const std::wstring Value);
   void WriteBinaryData(const std::wstring Name, const std::wstring Value);
@@ -111,7 +111,7 @@ public:
   virtual nb::TDateTime ReadDateTime(const std::wstring Name, nb::TDateTime Default);
   virtual double ReadFloat(const std::wstring Name, double Default);
   virtual std::wstring ReadStringRaw(const std::wstring Name, const std::wstring Default);
-  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, int Size);
+  virtual int ReadBinaryData(const std::wstring Name, void * Buffer, size_t Size);
 
   virtual void Writebool(const std::wstring Name, bool Value);
   virtual void Writeint(const std::wstring Name, int Value);
@@ -119,7 +119,7 @@ public:
   virtual void WriteDateTime(const std::wstring Name, nb::TDateTime Value);
   virtual void WriteFloat(const std::wstring Name, double Value);
   virtual void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-  virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, int Size);
+  virtual void WriteBinaryData(const std::wstring Name, const void * Buffer, size_t Size);
 
   virtual void GetValueNames(nb::TStrings* Strings);
 

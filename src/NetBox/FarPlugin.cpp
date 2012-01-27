@@ -2864,11 +2864,11 @@ void TFarMenuItems::AddSeparator(bool Visible)
     }
 }
 //---------------------------------------------------------------------------
-void TFarMenuItems::SetItemFocused(int value)
+void TFarMenuItems::SetItemFocused(size_t value)
 {
     if (GetItemFocused() != value)
     {
-        if (GetItemFocused() >= 0)
+        if (GetItemFocused() != -1)
         {
             SetFlag(GetItemFocused(), MIF_SELECTED, false);
         }

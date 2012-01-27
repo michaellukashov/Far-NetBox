@@ -20,7 +20,7 @@ bool FindFile(std::wstring &Path)
   bool Result = FileExists(Path);
   if (!Result)
   {
-    int Len = GetEnvironmentVariable(L"PATH", NULL, 0);
+    size_t Len = GetEnvironmentVariable(L"PATH", NULL, 0);
     if (Len > 0)
     {
       // DEBUG_PRINTF(L"Len = %d", Len);
@@ -225,7 +225,7 @@ bool SpecialFolderLocation(int PathID, std::wstring & Path)
 }
 //---------------------------------------------------------------------------
 std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-  const std::wstring MultiItemsFormat, int Count, const std::wstring FirstItem)
+  const std::wstring MultiItemsFormat, size_t Count, const std::wstring FirstItem)
 {
   std::wstring Result;
   if (Count == 1)

@@ -51,7 +51,7 @@ std::wstring PuttyUnMungeStr(const std::wstring Str)
 //---------------------------------------------------------------------------
 std::wstring MungeIniName(const std::wstring Str)
 {
-  int P = Str.find_first_of(L"=");
+  size_t P = Str.find_first_of(L"=");
   // make this fast for now
   if (P > 0)
   {
@@ -379,7 +379,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     while ((Index < Names->GetCount()) && Result)
     {
       std::wstring Name = MungeStr(Names->GetString(Index));
-      unsigned long Size = Buffer.size();
+      DWORD Size = static_cast<DWORD>(Buffer.size());
       unsigned long Type;
       int RegResult;
       do
@@ -539,7 +539,7 @@ std::wstring TRegistryStorage::ReadStringRaw(const std::wstring Name, const std:
 }
 //---------------------------------------------------------------------------
 int TRegistryStorage::ReadBinaryData(const std::wstring Name,
-  void * Buffer, int Size)
+  void * Buffer, size_t Size)
 {
   int Result;
   if (FRegistry->ValueExists(Name))
@@ -601,7 +601,7 @@ void TRegistryStorage::WriteInt64(const std::wstring Name, __int64 Value)
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::WriteBinaryData(const std::wstring Name,
-  const void * Buffer, int Size)
+  const void * Buffer, size_t Size)
 {
   try
   {

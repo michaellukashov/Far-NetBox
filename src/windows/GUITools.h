@@ -35,7 +35,7 @@ void OpenSessionInPutty(const std::wstring PuttyPath,
   TSessionData * SessionData, const std::wstring Password);
 bool SpecialFolderLocation(int PathID, std::wstring &Path);
 std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
-  const std::wstring MultiItemsFormat, int Count, const std::wstring FirstItem);
+  const std::wstring MultiItemsFormat, size_t Count, const std::wstring FirstItem);
 std::wstring ItemsFormatString(const std::wstring SingleItemFormat,
   const std::wstring MultiItemsFormat, nb::TStrings * Items);
 std::wstring FileNameFormatString(const std::wstring SingleFileFormat,
