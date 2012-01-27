@@ -2804,7 +2804,7 @@ void TFarMenuItems::Clear()
     nb::TStringList::Clear();
 }
 //---------------------------------------------------------------------------
-void TFarMenuItems::Delete(int Index)
+void TFarMenuItems::Delete(size_t Index)
 {
     if (Index == FItemFocused)
     {
@@ -2816,7 +2816,7 @@ void TFarMenuItems::Delete(int Index)
 void TFarMenuItems::PutObject(int Index, nb::TObject *AObject)
 {
     nb::TStringList::PutObject(Index, AObject);
-    bool Focused = (reinterpret_cast<int>(AObject) & MIF_SEPARATOR) != 0;
+    bool Focused = (reinterpret_cast<size_t>(AObject) & MIF_SEPARATOR) != 0;
     if ((Index == GetItemFocused()) && !Focused)
     {
         FItemFocused = -1;

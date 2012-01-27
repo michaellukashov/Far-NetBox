@@ -32,7 +32,7 @@ extern const std::wstring sLineBreak;
 std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
-inline int __cdecl debug_printf(const wchar_t *format, ...)
+inline size_t __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
     size_t len = 0;
@@ -49,7 +49,7 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
     return len;
 }
 
-inline int __cdecl debug_printf2(const char *format, ...)
+inline size_t __cdecl debug_printf2(const char *format, ...)
 {
     (void)format;
     size_t len = 0;

@@ -483,7 +483,7 @@ public:
     virtual size_t Add(const std::wstring Text, bool Visible = true);
 
     virtual void Clear();
-    virtual void Delete(int Index);
+    virtual void Delete(size_t Index);
 
     int GetItemFocused() { return FItemFocused; }
     void SetItemFocused(int value);

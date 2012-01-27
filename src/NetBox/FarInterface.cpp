@@ -49,7 +49,7 @@ DWORD WINAPI threadstartroutine(void *Parameter)
     return TSimpleThread::ThreadProc(SimpleThread);
 }
 //---------------------------------------------------------------------------
-int BeginThread(void *SecurityAttributes, DWORD StackSize,
+size_t BeginThread(void *SecurityAttributes, DWORD StackSize,
   void *Parameter, DWORD CreationFlags,
   DWORD &ThreadId)
 {
@@ -59,7 +59,7 @@ int BeginThread(void *SecurityAttributes, DWORD StackSize,
     Parameter,
     CreationFlags, &ThreadId);
   // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
-  return reinterpret_cast<int>(Result);
+  return reinterpret_cast<size_t>(Result);
 }
 
 void EndThread(int ExitCode)
