@@ -59,8 +59,8 @@ public:
   bool HasLocalFileName(const std::wstring Command);
 
 protected:
-  virtual int PatternLen(int Index, char PatternCmd);
-  virtual bool PatternReplacement(int Index, const std::wstring Pattern,
+  virtual size_t PatternLen(size_t Index, char PatternCmd);
+  virtual bool PatternReplacement(size_t Index, const std::wstring Pattern,
     std::wstring & Replacement, bool & Delimit);
   virtual void DelimitReplacement(const std::wstring Replacement, char Quote);
 

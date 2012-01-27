@@ -555,12 +555,12 @@ public:
   void RecryptPasswords();
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
-  int IndexOf(TSessionData * Data);
+  size_t IndexOf(TSessionData * Data);
   TSessionData *NewSession(const std::wstring SessionName, TSessionData *Session);
   TSessionData *ParseUrl(const std::wstring Url, TOptions *Options, bool &DefaultsOnly,
     std::wstring *FileName = NULL, bool *ProtocolDefined = NULL);
   // __property TSessionData * Sessions[int Index]  = { read=AtSession };
-  TSessionData *GetSession(int Index) { return static_cast<TSessionData *>(AtObject(Index)); }
+  TSessionData *GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
   void SetDefaultSettings(TSessionData * value);

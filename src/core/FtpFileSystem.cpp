@@ -991,7 +991,7 @@ void TFTPFileSystem::CopyToLocal(nb::TStrings * FilesToCopy,
   Params &= ~cpAppend;
   std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
 
-  int Index = 0;
+  size_t Index = 0;
   while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
   {
     std::wstring FileName = FilesToCopy->GetString(Index);
@@ -1153,7 +1153,7 @@ void TFTPFileSystem::Sink(const std::wstring FileName,
     OperationProgress->SetTransferSize(File->GetSize());
     OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-    int Attrs;
+    int Attrs = 0;
     FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
       Attrs = FileGetAttr(DestFullName);
       if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
@@ -1262,7 +1262,7 @@ void TFTPFileSystem::CopyToRemote(nb::TStrings * FilesToCopy,
   std::wstring FileName, FileNameOnly;
   std::wstring TargetDir = AbsolutePath(ATargetDir, false);
   std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
-  int Index = 0;
+  size_t Index = 0;
   while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
   {
     bool Success = false;
@@ -1669,7 +1669,7 @@ void TFTPFileSystem::DoStartup()
       delete PostLoginCommands;
     } BOOST_SCOPE_EXIT_END
     PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
-    for (int Index = 0; Index < PostLoginCommands->GetCount(); Index++)
+    for (size_t Index = 0; Index < PostLoginCommands->GetCount(); Index++)
     {
       std::wstring Command = PostLoginCommands->GetString(Index);
       if (!Command.empty())
@@ -1769,7 +1769,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       {
         std::wstring Path = Response->GetText();
 
-        int P = ::Pos(Path, L"\"");
+        size_t P = ::Pos(Path, L"\"");
         if (P == std::wstring::npos)
         {
           // some systems use single quotes, be tolerant
@@ -2017,7 +2017,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     {
       FFileSystemInfo.AdditionalInfo =
         FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
-      for (int Index = 0; Index < FFeatures->GetCount(); Index++)
+      for (size_t Index = 0; Index < FFeatures->GetCount(); Index++)
       {
         FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", FFeatures->GetString(Index).c_str());
       }
@@ -2625,7 +2625,7 @@ void TFTPFileSystem::HandleReplyStatus(const std::wstring Response)
   }
   else
   {
-    int Start = 0;
+    size_t Start = 0;
     // response with code prefix
     if (HasCodePrefix && (FLastCode == Code))
     {
@@ -2708,13 +2708,13 @@ std::wstring TFTPFileSystem::ExtractStatusMessage(std::wstring &Status)
 {
   // CApiLog::LogMessage
   // (note that the formatting may not be present when LogMessageRaw is used)
-  int P1 = ::Pos(Status, L"): ");
+  size_t P1 = ::Pos(Status, L"): ");
   if (P1 != std::wstring::npos)
   {
-    int P2 = ::Pos(Status, L".cpp(");
+    size_t P2 = ::Pos(Status, L".cpp(");
     if ((P2 != std::wstring::npos) && (P2 < P1))
     {
-      int P3 = ::Pos(Status, L"   caller=0x");
+      size_t P3 = ::Pos(Status, L"   caller=0x");
       if ((P3 != std::wstring::npos) && (P3 > P1))
       {
         Status = Status.substr(P1 + 3, P3 - P1 - 3);
@@ -3451,7 +3451,7 @@ bool TFTPFileSystem::Unquote(std::wstring & Str)
   State = INIT;
   assert((Str.size() > 0) && ((Str[0] == '"') || (Str[0] == '\'')));
 
-  int Index = 0;
+  size_t Index = 0;
   wchar_t Quote;
   while (Index < Str.size())
   {

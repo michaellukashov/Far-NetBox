@@ -136,10 +136,10 @@ protected:
   bool FindPattern(const std::wstring Command, char PatternCmd);
 
   virtual void ValidatePattern(const std::wstring Command,
-    int Index, int Len, char PatternCmd, void * Arg);
+    size_t Index, size_t Len, char PatternCmd, void * Arg);
 
-  virtual int PatternLen(int Index, char PatternCmd) = 0;
-  virtual bool PatternReplacement(int Index, const std::wstring Pattern,
+  virtual size_t PatternLen(size_t Index, char PatternCmd) = 0;
+  virtual bool PatternReplacement(size_t Index, const std::wstring Pattern,
     std::wstring & Replacement, bool & Delimit) = 0;
   virtual void DelimitReplacement(std::wstring & Replacement, char Quote);
 };
@@ -150,10 +150,10 @@ public:
   TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(int Index, const std::wstring Prompt,
+  virtual void Prompt(size_t Index, const std::wstring Prompt,
     std::wstring & Value);
-  virtual int PatternLen(int Index, char PatternCmd);
-  virtual bool PatternReplacement(int Index, const std::wstring Pattern,
+  virtual size_t PatternLen(size_t Index, char PatternCmd);
+  virtual bool PatternReplacement(size_t Index, const std::wstring Pattern,
     std::wstring & Replacement, bool & Delimit);
 
 private:
@@ -175,20 +175,20 @@ class TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand();
-  TFileCustomCommand(const TCustomCommandData & Data, const std::wstring Path);
-  TFileCustomCommand(const TCustomCommandData & Data, const std::wstring Path,
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const std::wstring Path);
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const std::wstring Path,
     const std::wstring FileName, const std::wstring FileList);
 
   virtual void Validate(const std::wstring Command);
   virtual void ValidatePattern(const std::wstring Command,
-    int Index, int Len, char PatternCmd, void * Arg);
+    size_t Index, size_t Len, char PatternCmd, void * Arg);
 
   bool IsFileListCommand(const std::wstring Command);
   virtual bool IsFileCommand(const std::wstring Command);
 
 protected:
-  virtual int PatternLen(int Index, char PatternCmd);
-  virtual bool PatternReplacement(int Index, const std::wstring Pattern,
+  virtual size_t PatternLen(size_t Index, char PatternCmd);
+  virtual bool PatternReplacement(size_t Index, const std::wstring Pattern,
     std::wstring & Replacement, bool & Delimit);
 
 private:

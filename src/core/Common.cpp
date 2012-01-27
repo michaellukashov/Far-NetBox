@@ -534,11 +534,11 @@ std::wstring EscapePuttyCommandParam(const std::wstring Param)
 std::wstring ExpandEnvironmentVariables(const std::wstring Str)
 {
   std::wstring Buf;
-  unsigned int Size = 1024;
+  size_t Size = 1024;
 
   Buf.resize(Size);
   // Buf.Unique(); //FIXME
-  unsigned int Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Size);
+  size_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Size);
 
   if (Len > Size)
   {
@@ -701,7 +701,7 @@ bool IsReservedName(const std::wstring FileName)
 {
   std::wstring str = FileName;
   size_t P = str.find_first_of(L".");
-  int Len = (P > 0) ? P - 1 : str.size();
+  size_t Len = (P > 0) ? P - 1 : str.size();
   if ((Len == 3) || (Len == 4))
   {
     if (P > 0)
@@ -712,7 +712,7 @@ bool IsReservedName(const std::wstring FileName)
       L"CON", L"PRN", L"AUX", L"NUL",
       L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
       L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
-    for (int Index = 0; Index < LENOF(Reserved); Index++)
+    for (size_t Index = 0; Index < LENOF(Reserved); Index++)
     {
       if (AnsiSameText(str, Reserved[Index]))
       {
@@ -836,7 +836,7 @@ std::wstring HexToStr(const std::wstring Hex)
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int HexToInt(const std::wstring Hex, int MinChars)
+unsigned int HexToInt(const std::wstring Hex, size_t MinChars)
 {
   static std::wstring Digits = L"0123456789ABCDEF";
   int Result = 0;
@@ -846,7 +846,7 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
     size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
     if (A == std::wstring::npos)
     {
-      if ((MinChars < 0) || (I <= static_cast<size_t>(MinChars)))
+      if ((MinChars == -1) || (I <= MinChars))
       {
         Result = 0;
       }
@@ -860,7 +860,7 @@ unsigned int HexToInt(const std::wstring Hex, int MinChars)
   return Result;
 }
 
-std::wstring IntToHex(unsigned int Int, int MinChars)
+std::wstring IntToHex(unsigned int Int, size_t MinChars)
 {
     std::wstringstream ss;
     ss << std::setfill(L'0') << std::setw(MinChars) << std::hex << Int;
@@ -868,7 +868,7 @@ std::wstring IntToHex(unsigned int Int, int MinChars)
 }
 
 //---------------------------------------------------------------------------
-char HexToChar(const std::wstring Hex, int MinChars)
+char HexToChar(const std::wstring Hex, size_t MinChars)
 {
   return static_cast<char>(HexToInt(Hex, MinChars));
 }
@@ -1808,7 +1808,7 @@ std::wstring LoadStr(int Ident, unsigned int MaxLength)
     assert(hInstance != 0);
 
     Result.resize(MaxLength > 0 ? MaxLength : 255);
-    int Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.size());
+    size_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.size());
     Result.resize(Length);
 
     return Result;
@@ -2548,8 +2548,8 @@ std::wstring Format(const wchar_t *format, va_list args)
     std::wstring result;
     if (format && *format)
     {
-        int len = _vscwprintf(format, args);
-        result.resize(len + 1); // sizeof(wchar_t));
+        size_t len = _vscwprintf(format, args);
+        result.resize(len + 1);
         vswprintf_s(&result[0], len + 1, format, args);
     }
     return result.c_str();
@@ -2564,7 +2564,7 @@ std::wstring FmtLoadStr(int id, ...)
     HINSTANCE hInstance = FarPlugin ? FarPlugin->GetHandle() : GetModuleHandle(0);
     // DEBUG_PRINTF(L"hInstance = %u", hInstance);
     format.resize(255);
-    int Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), format.size());
+    size_t Length = ::LoadString(hInstance, id, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(format.c_str())), format.size());
     format.resize(Length);
     // DEBUG_PRINTF(L"format = %s", format.c_str());
     if (!Length)
@@ -2589,7 +2589,7 @@ std::wstring FmtLoadStr(int id, ...)
         result = lpszTemp;
         ::LocalFree(lpszTemp);
         */
-        int len = _vscwprintf(format.c_str(), args);
+        size_t len = _vscwprintf(format.c_str(), args);
         std::wstring buf(len + sizeof(wchar_t), 0);
         vswprintf_s(&buf[0], buf.size(), format.c_str(), args);
         va_end(args);

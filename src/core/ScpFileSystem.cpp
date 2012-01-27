@@ -309,7 +309,7 @@ nb::TStrings * TCommandSet::CreateCommandList()
     if (!Cmd.empty())
     {
       Cmd = ExtractCommand(Cmd);
-      if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) < 0))
+      if ((Cmd != L"%s") && (CommandList->IndexOf(Cmd.c_str()) == -1))
         CommandList->Add(Cmd);
     }
   }
@@ -1263,7 +1263,7 @@ void TSCPFileSystem::CustomCommandOnFile(const std::wstring FileName,
     TCustomCommandData Data(FTerminal);
     std::wstring Cmd = TRemoteCustomCommand(
       Data, FTerminal->GetCurrentDirectory(), FileName, L"").
-      Complete(Command, true);
+        Complete(Command, true);
 
     AnyCommand(Cmd, &OutputEvent);
   }

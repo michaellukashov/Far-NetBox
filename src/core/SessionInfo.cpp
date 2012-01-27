@@ -242,8 +242,8 @@ public:
   void AddOutput(const std::wstring Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
-    int Index = FNames->IndexOf(Name);
-    if (Index >= 0)
+    size_t Index = FNames->IndexOf(Name);
+    if (Index != -1)
     {
       FValues->PutString(Index, FValues->GetString(Index) + L"\r\n" + Output);
     }

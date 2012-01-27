@@ -32,7 +32,7 @@ extern const std::wstring sLineBreak;
 std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
-inline int __cdecl debug_printf(const wchar_t *format, ...)
+inline size_t __cdecl debug_printf(const wchar_t *format, ...)
 {
     (void)format;
     size_t len = 0;
@@ -49,7 +49,7 @@ inline int __cdecl debug_printf(const wchar_t *format, ...)
     return len;
 }
 
-inline int __cdecl debug_printf2(const char *format, ...)
+inline size_t __cdecl debug_printf2(const char *format, ...)
 {
     (void)format;
     size_t len = 0;
@@ -85,7 +85,7 @@ typedef boost::signal1<void, TObject *> notify_signal_type;
 typedef notify_signal_type::slot_type notify_slot_type;
 //---------------------------------------------------------------------------
 void Abort();
-void Error(int ErrorID, int data);
+void Error(int ErrorID, size_t data);
 //---------------------------------------------------------------------------
 class TObject
 {
@@ -200,11 +200,11 @@ public:
     void SetItem(size_t Index, void *Item);
     size_t Add(void *value);
     void *Extract(void *item);
-    int Remove(void *item);
+    size_t Remove(void *item);
     void Move(size_t CurIndex, size_t NewIndex);
     void Delete(size_t Index);
     virtual void Insert(size_t Index, void *Item);
-    int IndexOf(void *value) const;
+    size_t IndexOf(void *value) const;
     virtual void Clear();
     virtual void Sort(CompareFunc func);
     virtual void Notify(void *Ptr, int Action);
@@ -223,12 +223,12 @@ public:
     TObject * GetItem(size_t Index) const;
     void SetItem(size_t Index, TObject *Value);
     size_t Add(TObject *value);
-    int Remove(TObject *value);
+    size_t Remove(TObject *value);
     void Extract(TObject *value);
     void Move(size_t Index, size_t To);
     void Delete(size_t Index);
     virtual void Insert(size_t Index, TObject *value);
-    int IndexOf(TObject *value) const;
+    size_t IndexOf(TObject *value) const;
     virtual void Clear();
     bool GetOwnsObjects();
     void SetOwnsObjects(bool value);
@@ -271,25 +271,25 @@ public:
     virtual void BeginUpdate();
     virtual void EndUpdate();
     virtual void SetUpdateState(bool Updating);
-    virtual TObject *GetObject(int Index);
-    int AddObject(const std::wstring S, TObject *AObject);
-    virtual void InsertObject(int Index, const std::wstring Key, TObject *AObject);
+    virtual TObject *GetObject(size_t Index);
+    size_t AddObject(const std::wstring S, TObject *AObject);
+    virtual void InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
     bool Equals(TStrings *value);
     virtual void Clear() = 0;
-    virtual void PutObject(int Index, TObject *AObject);
-    virtual void PutString(int Index, const std::wstring S);
+    virtual void PutObject(size_t Index, TObject *AObject);
+    virtual void PutString(size_t Index, const std::wstring S);
     void SetDuplicates(TDuplicatesEnum value);
-    void Move(int CurIndex, int NewIndex);
-    int IndexOf(const std::wstring S);
-    virtual int IndexOfName(const std::wstring Name);
-    const std::wstring GetName(int Index);
+    void Move(size_t CurIndex, size_t NewIndex);
+    size_t IndexOf(const std::wstring S);
+    virtual size_t IndexOfName(const std::wstring Name);
+    const std::wstring GetName(size_t Index);
     std::wstring ExtractName(const std::wstring S);
     const std::wstring GetValue(const std::wstring Name);
     void SetValue(const std::wstring Name, const std::wstring Value);
     std::wstring GetCommaText();
     void AddStrings(TStrings *Strings);
     void Append(const std::wstring value);
-    virtual void Insert(int Index, const std::wstring AString) = 0;
+    virtual void Insert(size_t Index, const std::wstring AString) = 0;
     void SaveToStream(TStream *Stream);
     wchar_t GetDelimiter() const { return FDelimiter; }
     void SetDelimiter(wchar_t value)
@@ -321,12 +321,12 @@ struct TStringItem
 
 class TStringList;
 typedef std::vector<TStringItem> TStringItemList;
-typedef int (TStringListSortCompare)(TStringList *List, int Index1, int Index2);
+typedef int (TStringListSortCompare)(TStringList *List, size_t Index1, size_t Index2);
 
 class TStringList : public TStrings
 {
     typedef TStrings parent;
-    friend int StringListCompareStrings(TStringList *List, int Index1, int Index2);
+    friend int StringListCompareStrings(TStringList *List, size_t Index1, size_t Index2);
 public:
     TStringList();
     virtual ~TStringList();
@@ -334,14 +334,14 @@ public:
     virtual size_t GetCount() const;
     virtual void Clear();
     size_t Add(const std::wstring S);
-    int AddObject(const std::wstring S, TObject *AObject);
-    virtual bool Find(const std::wstring S, int &Index);
-    int IndexOf(const std::wstring S);
-    virtual void PutString(int Index, const std::wstring S);
+    size_t AddObject(const std::wstring S, TObject *AObject);
+    virtual bool Find(const std::wstring S, size_t &Index);
+    size_t IndexOf(const std::wstring S);
+    virtual void PutString(size_t Index, const std::wstring S);
     virtual void Delete(size_t Index);
-    virtual TObject *GetObject(int Index);
-    virtual void InsertObject(int Index, const std::wstring Key, TObject *AObject);
-    void InsertItem(int Index, const std::wstring S, TObject *AObject);
+    virtual TObject *GetObject(size_t Index);
+    virtual void InsertObject(size_t Index, const std::wstring Key, TObject *AObject);
+    void InsertItem(size_t Index, const std::wstring S, TObject *AObject);
     virtual std::wstring GetString(size_t Index) const;
     bool GetCaseSensitive() const;
     void SetCaseSensitive(bool value);
@@ -363,14 +363,16 @@ public:
         FOnChanging.connect(onChanging);
     }
 
-    virtual void PutObject(int Index, TObject *AObject);
+    virtual void PutObject(size_t Index, TObject *AObject);
     virtual void SetUpdateState(bool Updating);
     virtual void Changing();
     virtual void Changed();
-    virtual void Insert(int Index, const std::wstring S);
+    virtual void Insert(size_t Index, const std::wstring S);
     virtual int CompareStrings(const std::wstring S1, const std::wstring S2);
+
 private:
-    void ExchangeItems(int Index1, int Index2);
+    void ExchangeItems(size_t Index1, size_t Index2);
+
 private:
     nb::notify_signal_type FOnChange;
     nb::notify_signal_type FOnChanging;
@@ -655,17 +657,17 @@ public:
   void Writeint(const std::wstring Name, int Value);
   void WriteInt64(const std::wstring Name, __int64 Value);
   void WriteBinaryData(const std::wstring Name,
-      const void * Buffer, int Size);
+      const void * Buffer, size_t Size);
 private:
     void ChangeKey(HKEY Value, const std::wstring Path);
     HKEY GetBaseKey(bool Relative);
     HKEY GetKey(const std::wstring Key);
     void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
     bool GetKeyInfo(TRegKeyInfo &Value);
-    int GetData(const std::wstring Name, void *Buffer,
+    size_t GetData(const std::wstring Name, void *Buffer,
       DWORD BufSize, TRegDataType &RegData);
     void PutData(const std::wstring Name, const void *Buffer,
-      int BufSize, TRegDataType RegData);
+      size_t BufSize, TRegDataType RegData);
 private:
     HKEY FCurrentKey;
 	HKEY FRootKey;

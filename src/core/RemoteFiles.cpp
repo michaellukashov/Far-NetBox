@@ -1559,12 +1559,12 @@ void TRemoteDirectory::SetIncludeParentDirectory(bool value)
     FIncludeParentDirectory = value;
     if (value && GetParentDirectory())
     {
-      assert(IndexOf(GetParentDirectory()) < 0);
+      assert(IndexOf(GetParentDirectory()) == -1);
       Add(GetParentDirectory());
     }
     else if (!value && GetParentDirectory())
     {
-      assert(IndexOf(GetParentDirectory()) >= 0);
+      assert(IndexOf(GetParentDirectory()) != -1);
      nb::Error(SNotImplemented, 216); 
       // FIXME Extract(GetParentDirectory());
     }
@@ -1578,12 +1578,12 @@ void TRemoteDirectory::SetIncludeThisDirectory(bool value)
     FIncludeThisDirectory = value;
     if (value && GetThisDirectory())
     {
-      assert(IndexOf(GetThisDirectory()) < 0);
+      assert(IndexOf(GetThisDirectory()) == -1);
       Add(GetThisDirectory());
     }
     else if (!value && GetThisDirectory())
     {
-      assert(IndexOf(GetThisDirectory()) >= 0);
+      assert(IndexOf(GetThisDirectory()) != -1);
       nb::Error(SNotImplemented, 217); 
       // FIXME Extract(GetThisDirectory());
     }
@@ -1634,8 +1634,8 @@ bool TRemoteDirectoryCache::HasFileList(const std::wstring Directory)
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
-  return (Index >= 0);
+  size_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
+  return (Index != -1);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
@@ -1643,8 +1643,8 @@ bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
-  if (Index >= 0)
+  size_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
+  if (Index != -1)
   {
     TRemoteFileList * FileList = reinterpret_cast<TRemoteFileList *>(GetObject(Index));
     if (FileList->GetTimestamp() <= Timestamp)
@@ -1652,7 +1652,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const std::wstring Directory,
       Index = -1;
     }
   }
-  return (Index >= 0);
+  return (Index != -1);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetFileList(const std::wstring Directory,
@@ -1660,8 +1660,8 @@ bool TRemoteDirectoryCache::GetFileList(const std::wstring Directory,
 {
   TGuard Guard(FSection);
 
-  int Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
-  bool Result = (Index >= 0);
+  size_t Index = IndexOf(UnixExcludeTrailingBackslash(Directory).c_str());
+  bool Result = (Index != -1);
   if (Result)
   {
     assert(GetObject(Index) != NULL);
@@ -1696,16 +1696,16 @@ void TRemoteDirectoryCache::DoClearFileList(const std::wstring Directory, bool S
 {
   std::wstring directory = Directory;
   directory = UnixExcludeTrailingBackslash(directory);
-  int Index = IndexOf(directory.c_str());
-  if (Index >= 0)
+  size_t Index = IndexOf(directory.c_str());
+  if (Index != -1)
   {
     Delete(Index);
   }
   if (SubDirs)
   {
     directory = UnixIncludeTrailingBackslash(directory);
-    Index = GetCount()-1;
-    while (Index >= 0)
+    Index = GetCount() - 1;
+    while (Index != -1)
     {
       if (GetString(Index).substr(0, directory.size()) == directory)
       {
@@ -1742,8 +1742,8 @@ bool TRemoteDirectoryChangesCache::GetIsEmpty() const
 void TRemoteDirectoryChangesCache::SetValue(const std::wstring Name,
   const std::wstring Value)
 {
-  int Index = IndexOfName(Name.c_str());
-  if (Index > 0)
+  size_t Index = IndexOfName(Name.c_str());
+  if (Index != -1)
   {
     Delete(Index);
   }
@@ -1819,7 +1819,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
     Key = L"/";
   }
   // DEBUG_PRINTF(L"Key = %s", Key.c_str());
-  Result = (IndexOfName(Key.c_str()) >= 0);
+  Result = (IndexOfName(Key.c_str()) != -1);
   // DEBUG_PRINTF(L"Result = %d", Result);
   if (Result)
   {

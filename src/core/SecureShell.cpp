@@ -1038,7 +1038,7 @@ int TSecureShell::TranslatePuttyMessage(
   const TPuttyTranslation * Translation, size_t Count, std::wstring &Message)
 {
   int Result = -1;
-  for (unsigned int Index = 0; Index < Count; Index++)
+  for (size_t Index = 0; Index < Count; Index++)
   {
     const char * Original = Translation[Index].Original;
     // DEBUG_PRINTF(L"Original = %s", nb::MB2W(Original).c_str());
@@ -1474,7 +1474,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     noise_ultralight(AEvents.lNetworkEvents);
 
     Events.lNetworkEvents |= AEvents.lNetworkEvents;
-    for (int Index = 0; Index < FD_MAX_EVENTS; Index++)
+    for (size_t Index = 0; Index < FD_MAX_EVENTS; Index++)
     {
       if (AEvents.iErrorCode[Index] != 0)
       {

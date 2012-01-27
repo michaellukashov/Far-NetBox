@@ -71,10 +71,10 @@ TNamedObjectList::TNamedObjectList() :
   AutoSort = true;
 }
 //---------------------------------------------------------------------------
-TNamedObject * TNamedObjectList::AtObject(int Index)
+TNamedObject * TNamedObjectList::AtObject(size_t Index)
 {
     // DEBUG_PRINTF(L"Index = %d, Count = %d, GetHiddenCount = %d", Index, GetCount(), GetHiddenCount());
-  return static_cast<TNamedObject *>(GetItem(Index+GetHiddenCount()));
+  return static_cast<TNamedObject *>(GetItem(Index + GetHiddenCount()));
 }
 //---------------------------------------------------------------------------
 void TNamedObjectList::Recount()

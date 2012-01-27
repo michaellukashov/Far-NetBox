@@ -241,8 +241,8 @@ void TBookmarks::ModifyAll(bool Modify)
 //---------------------------------------------------------------------------
 TBookmarkList * TBookmarks::GetBookmark(const std::wstring Index)
 {
-  int I = FBookmarkLists->IndexOf(Index.c_str());
-  if (I >= 0)
+  size_t I = FBookmarkLists->IndexOf(Index.c_str());
+  if (I != -1)
   {
     return reinterpret_cast<TBookmarkList *>(FBookmarkLists->GetObject(I));
   }
@@ -254,8 +254,8 @@ TBookmarkList * TBookmarks::GetBookmark(const std::wstring Index)
 //---------------------------------------------------------------------------
 void TBookmarks::SetBookmark(const std::wstring Index, TBookmarkList *value)
 {
-  int I = FBookmarkLists->IndexOf(Index.c_str());
-  if (I >= 0)
+  size_t I = FBookmarkLists->IndexOf(Index.c_str());
+  if (I != -1)
   {
     TBookmarkList * BookmarkList;
     BookmarkList = reinterpret_cast<TBookmarkList *>(FBookmarkLists->GetObject(I));
@@ -347,8 +347,8 @@ void TBookmarkList::Add(TBookmark * Bookmark)
 void TBookmarkList::InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark)
 {
   assert(BeforeBookmark);
-  int I = FBookmarks->IndexOf(BeforeBookmark->GetKey().c_str());
-  assert(I >= 0);
+  size_t I = FBookmarks->IndexOf(BeforeBookmark->GetKey().c_str());
+  assert(I != -1);
   Insert(I, Bookmark);
 }
 //---------------------------------------------------------------------------
@@ -356,9 +356,9 @@ void TBookmarkList::MoveTo(TBookmark * ToBookmark,
   TBookmark * Bookmark, bool Before)
 {
   assert(ToBookmark != NULL);
-  int NewIndex = FBookmarks->IndexOf(ToBookmark->GetKey().c_str());
+  size_t NewIndex = FBookmarks->IndexOf(ToBookmark->GetKey().c_str());
   assert(Bookmark != NULL);
-  int OldIndex = FBookmarks->IndexOf(Bookmark->GetKey().c_str());
+  size_t OldIndex = FBookmarks->IndexOf(Bookmark->GetKey().c_str());
   if (Before && (NewIndex > OldIndex))
   {
     // otherwise item is moved after the item in the target index
@@ -372,7 +372,7 @@ void TBookmarkList::MoveTo(TBookmark * ToBookmark,
   FBookmarks->Move(OldIndex, NewIndex);
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::Insert(int Index, TBookmark * Bookmark)
+void TBookmarkList::Insert(size_t Index, TBookmark * Bookmark)
 {
   assert(Bookmark);
   assert(!Bookmark->FOwner);
@@ -380,7 +380,7 @@ void TBookmarkList::Insert(int Index, TBookmark * Bookmark)
 
   FModified = true;
   Bookmark->FOwner = this;
-  if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
+  if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) != -1)
   {
     throw ExtException(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
@@ -391,25 +391,25 @@ void TBookmarkList::Delete(TBookmark * Bookmark)
 {
   assert(Bookmark);
   assert(Bookmark->FOwner == this);
-  int I = IndexOf(Bookmark);
-  assert(I >= 0);
+  size_t I = IndexOf(Bookmark);
+  assert(I != -1);
   FModified = true;
   Bookmark->FOwner = NULL;
   FBookmarks->Delete(I);
   delete Bookmark;
 }
 //---------------------------------------------------------------------------
-int TBookmarkList::IndexOf(TBookmark * Bookmark)
+size_t TBookmarkList::IndexOf(TBookmark * Bookmark)
 {
   return FBookmarks->IndexOf(Bookmark->GetKey().c_str());
 }
 //---------------------------------------------------------------------------
-void TBookmarkList::KeyChanged(int Index)
+void TBookmarkList::KeyChanged(size_t Index)
 {
-  assert(Index < static_cast<int>(GetCount()));
+  assert(Index < GetCount());
   TBookmark * Bookmark = reinterpret_cast<TBookmark *>(FBookmarks->GetObject(Index));
   assert(FBookmarks->GetString(Index) != Bookmark->GetKey());
-  if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) >= 0)
+  if (FBookmarks->IndexOf(Bookmark->GetKey().c_str()) != -1)
   {
     throw ExtException(FMTLOAD(DUPLICATE_BOOKMARK, Bookmark->GetName().c_str()));
   }
@@ -418,8 +418,8 @@ void TBookmarkList::KeyChanged(int Index)
 //---------------------------------------------------------------------------
 TBookmark * TBookmarkList::FindByName(const std::wstring Node, const std::wstring Name)
 {
-  int I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
-  TBookmark * Bookmark = I >= 0 ? reinterpret_cast<TBookmark *>(FBookmarks->GetObject(I)) : NULL;
+  size_t I = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name).c_str());
+  TBookmark * Bookmark = ((I != -1) ? reinterpret_cast<TBookmark *>(FBookmarks->GetObject(I)) : NULL);
   assert(!Bookmark || (Bookmark->GetNode() == Node && Bookmark->GetName() == Name));
   return Bookmark;
 }
@@ -441,7 +441,7 @@ size_t TBookmarkList::GetCount()
   return FBookmarks->GetCount();
 }
 //---------------------------------------------------------------------------
-TBookmark * TBookmarkList::GetBookmark(int Index)
+TBookmark * TBookmarkList::GetBookmark(size_t Index)
 {
   TBookmark * Bookmark = reinterpret_cast<TBookmark *>(FBookmarks->GetObject(Index));
   assert(Bookmark);
@@ -450,13 +450,13 @@ TBookmark * TBookmarkList::GetBookmark(int Index)
 //---------------------------------------------------------------------------
 bool TBookmarkList::GetNodeOpened(const std::wstring Index)
 {
-  return (FOpenedNodes->IndexOf(Index.c_str()) >= 0);
+  return (FOpenedNodes->IndexOf(Index.c_str()) != -1);
 }
 //---------------------------------------------------------------------------
 void TBookmarkList::SetNodeOpened(const std::wstring Index, bool value)
 {
-  int I = FOpenedNodes->IndexOf(Index.c_str());
-  if ((I >= 0) != value)
+  size_t I = FOpenedNodes->IndexOf(Index.c_str());
+  if ((I != -1) != value)
   {
     if (value)
     {
@@ -510,7 +510,7 @@ void TBookmark::SetName(const std::wstring value)
 {
   if (GetName() != value)
   {
-    int OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
+    size_t OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
     std::wstring OldName = FName;
     FName = value;
     try
@@ -547,7 +547,7 @@ void TBookmark::SetNode(const std::wstring value)
 {
   if (GetNode() != value)
   {
-    int OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
+    size_t OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
     FNode = value;
     Modify(OldIndex);
   }
@@ -562,12 +562,12 @@ void TBookmark::SetShortCut(nb::TShortCut value)
   }
 }
 //---------------------------------------------------------------------------
-void TBookmark::Modify(int OldIndex)
+void TBookmark::Modify(size_t OldIndex)
 {
   if (FOwner)
   {
     FOwner->SetModified(true);
-    if (OldIndex >= 0)
+    if (OldIndex != -1)
     {
       FOwner->KeyChanged(OldIndex);
     }

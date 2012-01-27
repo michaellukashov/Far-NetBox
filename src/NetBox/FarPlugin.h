@@ -211,7 +211,7 @@ protected:
     virtual bool IsOldFar();
     virtual void OldFar();
     void ResetCachedInfo();
-    int MaxLength(nb::TStrings *Strings);
+    size_t MaxLength(nb::TStrings *Strings);
     int FarMessage(unsigned int Flags,
         const std::wstring Title, const std::wstring Message, nb::TStrings *Buttons,
         TFarMessageParams *Params);
@@ -335,7 +335,7 @@ private:
     void FillOpenPanelInfo(struct OpenPanelInfo *Info);
     void SetFlag(PANELMODE_FLAGS &Flags, bool value, PANELMODE_FLAGS Flag);
     static void ClearPanelMode(PanelMode &Mode);
-    static int CommaCount(const std::wstring ColumnTypes);
+    static size_t CommaCount(const std::wstring ColumnTypes);
 };
 //---------------------------------------------------------------------------
 class TFarKeyBarTitles : public nb::TObject
@@ -467,27 +467,27 @@ public:
     virtual ~TFarMenuItems()
     {}
     void AddSeparator(bool Visible = true);
-    virtual int Add(const std::wstring Text, bool Visible = true);
+    virtual size_t Add(const std::wstring Text, bool Visible = true);
 
     virtual void Clear();
-    virtual void Delete(int Index);
+    virtual void Delete(size_t Index);
 
     int GetItemFocused() { return FItemFocused; }
     void SetItemFocused(int value);
 
-    bool GetDisabled(int Index) { return GetFlag(Index, MIF_DISABLE); }
-    void SetDisabled(int Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
-    bool GetChecked(int Index) { return GetFlag(Index, MIF_CHECKED); }
-    void SetChecked(int Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
+    bool GetDisabled(size_t Index) { return GetFlag(Index, MIF_DISABLE); }
+    void SetDisabled(size_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
+    bool GetChecked(size_t Index) { return GetFlag(Index, MIF_CHECKED); }
+    void SetChecked(size_t Index, bool value) { SetFlag(Index, MIF_CHECKED, value); }
 
 protected:
-    virtual void PutObject(int Index, nb::TObject *AObject);
+    virtual void PutObject(size_t Index, nb::TObject *AObject);
 
 private:
     int FItemFocused;
 
-    void SetFlag(int Index, int Flag, bool Value);
-    bool GetFlag(int Index, int Flag);
+    void SetFlag(size_t Index, int Flag, bool Value);
+    bool GetFlag(size_t Index, int Flag);
 };
 //---------------------------------------------------------------------------
 class TFarEditorInfo
@@ -521,7 +521,7 @@ private:
     bool FANSIApis;
 };
 //---------------------------------------------------------------------------
-void FarWrapText(const std::wstring Text, nb::TStrings *Result, int MaxWidth);
+void FarWrapText(const std::wstring Text, nb::TStrings *Result, size_t MaxWidth);
 //---------------------------------------------------------------------------
 extern TCustomFarPlugin *FarPlugin;
 //---------------------------------------------------------------------------

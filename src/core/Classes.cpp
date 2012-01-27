@@ -22,7 +22,7 @@ void Abort()
     throw nb::EAbort("");
 }
 //---------------------------------------------------------------------------
-void Error(int ErrorID, int data)
+void Error(int ErrorID, size_t data)
 {
     DEBUG_PRINTF(L"begin: ErrorID = %d, data = %d", ErrorID, data);
     std::wstring Msg = FMTLOAD(ErrorID, data);
@@ -81,23 +81,14 @@ size_t TList::GetCount() const
 }
 void TList::SetCount(size_t NewCount)
 {
-    // FList.resize(value);
-  if (static_cast<int>(NewCount) < 0) //  or (NewCount > MaxListSize) then
+  if (NewCount == -1)
     nb::Error(SListCountError, NewCount);
-  // if (NewCount > FCapacity)
-    // SetCapacity(NewCount);
-  if (NewCount > FList.size())
+  if (NewCount <= FList.size())
   {
-    // FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
-    // FList.resize(NewCount);
-  }
-  else
-  {
-    int sz = FList.size();
-    for (int I = sz - 1; I >= static_cast<int>(NewCount); I--)
+    size_t sz = FList.size();
+    for (size_t I = sz - 1; (I != -1) && (I >= NewCount); I--)
       Delete(I);
   }
-  // FCount := NewCount;
   FList.resize(NewCount);
 }
 
@@ -111,7 +102,7 @@ void *TList::GetItem(size_t Index) const
 }
 void TList::SetItem(size_t Index, void *Item)
 {
-    if (Index >= FList.size())
+    if ((Index == -1) || (Index >= FList.size()))
     {
       nb::Error(SListIndexError, Index);
     }
@@ -126,15 +117,15 @@ size_t TList::Add(void *value)
 }
 void *TList::Extract(void *item)
 {
-    if (Remove(item) >= 0)
+    if (Remove(item) != -1)
         return item;
     else
         return NULL;
 }
-int TList::Remove(void *item)
+size_t TList::Remove(void *item)
 {
-    int Result = IndexOf(item);
-    if (Result >= 0)
+    size_t Result = IndexOf(item);
+    if (Result != -1)
     {
         Delete(Result);
     }
@@ -144,7 +135,7 @@ void TList::Move(size_t CurIndex, size_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if (NewIndex >= FList.size())
+    if ((NewIndex == -1) || (NewIndex >= FList.size()))
     {
       nb::Error(SListIndexError, NewIndex);
     }
@@ -157,7 +148,7 @@ void TList::Move(size_t CurIndex, size_t NewIndex)
 }
 void TList::Delete(size_t Index)
 {
-    if (Index >= FList.size())
+    if ((Index == -1) || (Index >= FList.size()))
     {
       nb::Error(SListIndexError, Index);
     }
@@ -170,12 +161,10 @@ void TList::Delete(size_t Index)
 }
 void TList::Insert(size_t Index, void *Item)
 {
-    if (Index > FList.size())
+    if ((Index == -1) || (Index > FList.size()))
     {
       nb::Error(SListIndexError, Index);
     }
-    // if (FCount == FCapacity)
-      // Grow();
     if (Index <= FList.size())
     {
         FList.insert(FList.begin() + Index, Item);
@@ -183,20 +172,18 @@ void TList::Insert(size_t Index, void *Item)
     if (Item != NULL)
       Notify(Item, lnAdded);
 }
-int TList::IndexOf(void *value) const
+size_t TList::IndexOf(void *value) const
 {
     size_t Result = 0;
     while ((Result < FList.size()) && (FList[Result] != value))
       Result++;
     if (Result == FList.size())
-      Result = static_cast<size_t>(-1);
-    return static_cast<int>(Result);
+      Result = -1;
+    return Result;
 }
 void TList::Clear()
 {
-    // FList.clear();
     SetCount(0);
-    // SetCapacity(0);
 }
 
 void TList::Sort(CompareFunc func)
@@ -241,7 +228,7 @@ size_t TObjectList::Add(TObject *value)
 {
     return parent::Add(value);
 }
-int TObjectList::Remove(TObject *value)
+size_t TObjectList::Remove(TObject *value)
 {
     return parent::Remove(value);
 }
@@ -261,7 +248,7 @@ void TObjectList::Insert(size_t Index, TObject *value)
 {
     parent::Insert(Index, value);
 }
-int TObjectList::IndexOf(TObject *value) const
+size_t TObjectList::IndexOf(TObject *value) const
 {
     return parent::IndexOf(value);
 }
@@ -414,7 +401,7 @@ void TStrings::Assign(TPersistent *Source)
 
 size_t TStrings::Add(const std::wstring S)
 {
-    int Result = GetCount();
+    size_t Result = GetCount();
     Insert(Result, S);
     return Result;
 }
@@ -425,8 +412,8 @@ std::wstring TStrings::GetText()
 std::wstring TStrings::GetTextStr()
 {
     std::wstring Result;
-    int I, L, Size, Count;
-    wchar_t *P;
+    size_t I, L, Size, Count;
+    wchar_t *P = NULL;
     std::wstring S, LB;
 
     Count = GetCount();
@@ -484,18 +471,18 @@ void TStrings::SetUpdateState(bool Updating)
 {
     (void)Updating;
 }
-TObject *TStrings::GetObject(int Index)
+TObject *TStrings::GetObject(size_t Index)
 {
     (void)Index;
     return NULL;
 }
-int TStrings::AddObject(const std::wstring S, TObject *AObject)
+size_t TStrings::AddObject(const std::wstring S, TObject *AObject)
 {
-    int Result = Add(S);
+    size_t Result = Add(S);
     PutObject(Result, AObject);
     return Result;
 }
-void TStrings::InsertObject(int Index, const std::wstring Key, TObject *AObject)
+void TStrings::InsertObject(size_t Index, const std::wstring Key, TObject *AObject)
 {
     Insert(Index, Key);
     PutObject(Index, AObject);
@@ -515,12 +502,12 @@ bool TStrings::Equals(TStrings *Strings)
   Result = true;
   return Result;
 }
-void TStrings::PutObject(int Index, TObject *AObject)
+void TStrings::PutObject(size_t Index, TObject *AObject)
 {
     (void)Index;
     (void)AObject;
 }
-void TStrings::PutString(int Index, const std::wstring S)
+void TStrings::PutString(size_t Index, const std::wstring S)
 {
     TObject *TempObject = GetObject(Index);
     Delete(Index);
@@ -530,7 +517,7 @@ void TStrings::SetDuplicates(TDuplicatesEnum value)
 {
     FDuplicates = value;
 }
-void TStrings::Move(int CurIndex, int NewIndex)
+void TStrings::Move(size_t CurIndex, size_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -548,7 +535,7 @@ void TStrings::Move(int CurIndex, int NewIndex)
     }
   }
 }
-int TStrings::IndexOf(const std::wstring S)
+size_t TStrings::IndexOf(const std::wstring S)
 {
   // DEBUG_PRINTF(L"begin");
   for (size_t Result = 0; Result < GetCount(); Result++)
@@ -561,22 +548,20 @@ int TStrings::IndexOf(const std::wstring S)
   // DEBUG_PRINTF(L"end");
   return -1;
 }
-int TStrings::IndexOfName(const std::wstring Name)
+size_t TStrings::IndexOfName(const std::wstring Name)
 {
-  size_t Result = static_cast<size_t>(-1);
-  for (Result = 0; Result < GetCount(); Result++)
+  for (size_t Index = 0; Index < GetCount(); Index++)
   {
-    std::wstring S = GetString(Result);
+    std::wstring S = GetString(Index);
     size_t P = ::AnsiPos(S, L'=');
     if ((P != std::wstring::npos) && (CompareStrings(S.substr(0, P), Name) == 0))
     {
-        return static_cast<int>(Result);
+        return Index;
     }
   }
-  Result = static_cast<size_t>(-1);
-  return static_cast<int>(Result);
+  return -1;
 }
-const std::wstring TStrings::GetName(int Index)
+const std::wstring TStrings::GetName(size_t Index)
 {
     return ExtractName(GetString(Index));
 }
@@ -640,7 +625,7 @@ void TStrings::SaveToStream(TStream *Stream)
 }
 
 //---------------------------------------------------------------------------
-int StringListCompareStrings(TStringList *List, int Index1, int Index2)
+int StringListCompareStrings(TStringList *List, size_t Index1, size_t Index2)
 {
   int Result = List->CompareStrings(List->FList[Index1].FString,
     List->FList[Index2].FString);
@@ -673,10 +658,10 @@ size_t TStringList::Add(const std::wstring S)
 {
     return AddObject(S, NULL);
 }
-int TStringList::AddObject(const std::wstring S, TObject *AObject)
+size_t TStringList::AddObject(const std::wstring S, TObject *AObject)
 {
   // DEBUG_PRINTF(L"S = %s, Duplicates = %d", S.c_str(), FDuplicates);
-  int Result = 0;
+  size_t Result = 0;
   if (!GetSorted())
   {
     Result = GetCount();
@@ -699,14 +684,14 @@ int TStringList::AddObject(const std::wstring S, TObject *AObject)
   InsertItem(Result, S, AObject);
   return Result;
 }
-bool TStringList::Find(const std::wstring S, int &Index)
+bool TStringList::Find(const std::wstring S, size_t &Index)
 {
   bool Result = false;
-  int L = 0;
-  int H = GetCount() - 1;
-  while (L <= H)
+  size_t L = 0;
+  size_t H = GetCount() - 1;
+  while ((H != -1) && (L <= H))
   {
-    int I = (L + H) >> 1;
+    size_t I = (L + H) >> 1;
     int C = CompareStrings(FList[I].FString, S);
     if (C < 0)
     {
@@ -728,10 +713,10 @@ bool TStringList::Find(const std::wstring S, int &Index)
   Index = L;
   return Result;
 }
-int TStringList::IndexOf(const std::wstring S)
+size_t TStringList::IndexOf(const std::wstring S)
 {
   // DEBUG_PRINTF(L"begin");
-  int Result = -1;
+  size_t Result = -1;
   if (!GetSorted())
   {
     Result = parent::IndexOf(S);
@@ -746,19 +731,19 @@ int TStringList::IndexOf(const std::wstring S)
   // DEBUG_PRINTF(L"end");
   return Result;
 }
-void TStringList::PutString(int Index, const std::wstring S)
+void TStringList::PutString(size_t Index, const std::wstring S)
 {
     if (GetSorted())
     {
       nb::Error(SSortedListError, 0);
     }
-    if ((Index < 0) || (static_cast<size_t>(Index) > FList.size()))
+    if ((Index == -1) || (Index > FList.size()))
     {
       nb::Error(SListIndexError, Index);
     }
     Changing();
     // DEBUG_PRINTF(L"Index = %d, size = %d", Index, FList.size());
-    if (static_cast<size_t>(Index) < FList.size())
+    if (Index < FList.size())
     {
       TObject *Temp = GetObject(Index);
       TStringItem item;
@@ -774,7 +759,7 @@ void TStringList::PutString(int Index, const std::wstring S)
 }
 void TStringList::Delete(size_t Index)
 {
-  if (Index >= FList.size())
+  if ((Index == -1) || (Index >= FList.size()))
   {
     nb::Error(SListIndexError, Index);
   }
@@ -782,29 +767,29 @@ void TStringList::Delete(size_t Index)
   FList.erase(FList.begin() + Index);
   Changed();
 }
-TObject *TStringList::GetObject(int Index)
+TObject *TStringList::GetObject(size_t Index)
 {
-    if ((Index < 0) || (static_cast<size_t>(Index) >= FList.size()))
+    if ((Index == -1) || (Index >= FList.size()))
     {
         nb::Error(SListIndexError, Index);
     }
     return FList[Index].FObject;
 }
-void TStringList::InsertObject(int Index, const std::wstring Key, TObject *AObject)
+void TStringList::InsertObject(size_t Index, const std::wstring Key, TObject *AObject)
 {
     if (GetSorted())
     {
         nb::Error(SSortedListError, 0);
     }
-    if ((Index < 0) || (static_cast<size_t>(Index) > GetCount()))
+    if ((Index == -1) || (Index > GetCount()))
     {
         nb::Error(SListIndexError, Index);
     }
     InsertItem(Index, Key, AObject);
 }
-void TStringList::InsertItem(int Index, const std::wstring S, TObject *AObject)
+void TStringList::InsertItem(size_t Index, const std::wstring S, TObject *AObject)
 {
-    if ((Index < 0) || (static_cast<size_t>(Index) > GetCount()))
+    if ((Index == -1) || (Index > GetCount()))
     {
         nb::Error(SListIndexError, Index);
     }
@@ -819,7 +804,7 @@ void TStringList::InsertItem(int Index, const std::wstring S, TObject *AObject)
 std::wstring TStringList::GetString(size_t Index) const
 {
     // DEBUG_PRINTF(L"Index = %d, FList.size = %d", Index, FList.size());
-    if (Index >= FList.size())
+    if ((Index == -1) || (Index >= FList.size()))
     {
         nb::Error(SListIndexError, Index);
     }
@@ -861,9 +846,9 @@ void TStringList::LoadFromFile(const std::wstring FileName)
     nb::Error(SNotImplemented, 14);
 }
 
-void TStringList::PutObject(int Index, TObject *AObject)
+void TStringList::PutObject(size_t Index, TObject *AObject)
 {
-    if ((Index < 0) || (static_cast<size_t>(Index) >= FList.size()))
+    if ((Index == -1) || (Index >= FList.size()))
     {
       nb::Error(SListIndexError, Index);
     }
@@ -891,9 +876,9 @@ void TStringList::Changed()
     if (GetUpdateCount() == 0)
         FOnChange(this);
 }
-void TStringList::Insert(int Index, const std::wstring S)
+void TStringList::Insert(size_t Index, const std::wstring S)
 {
-  if ((Index < 0) || (static_cast<size_t>(Index) > FList.size()))
+  if ((Index == -1) || (Index > FList.size()))
   {
     nb::Error(SListIndexError, Index);
   }
@@ -946,7 +931,7 @@ void TStringList::QuickSort(int L, int R, TStringListSortCompare SCompare)
   } while (I < R);
 }
 
-void TStringList::ExchangeItems(int Index1, int Index2)
+void TStringList::ExchangeItems(size_t Index1, size_t Index2)
 {
   TStringItem *Item1 = &FList[Index1];
   TStringItem *Item2 = &FList[Index2];
@@ -1320,7 +1305,7 @@ __int64 TMemoryStream::Read(void *Buffer, __int64 Count)
     if (Result > 0)
     {
       if (Result > Count) Result = Count;
-      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<int>(Result));
+      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<size_t>(Result));
       FPosition += Result;
       return Result;
     }
@@ -1404,9 +1389,9 @@ void *TMemoryStream::Realloc(__int64 &NewCapacity)
     else
     {
       if (FCapacity == 0)
-        Result = malloc(static_cast<int>(NewCapacity));
+        Result = malloc(static_cast<size_t>(NewCapacity));
       else
-        Result = realloc(FMemory, static_cast<int>(NewCapacity));
+        Result = realloc(FMemory, static_cast<size_t>(NewCapacity));
       if (Result == NULL)
         throw EStreamError(FMTLOAD(SMemoryStreamError));
     }
@@ -1435,7 +1420,7 @@ __int64 TMemoryStream::Write(const void *Buffer, __int64 Count)
         FSize = Pos;
       }
       memmove(static_cast<char *>(FMemory) + FPosition,
-        Buffer, static_cast<int>(Count));
+        Buffer, static_cast<size_t>(Count));
       FPosition = Pos;
       Result = Count;
     }
@@ -1732,7 +1717,7 @@ double TRegistry::ReadFloat(const std::wstring Name)
 {
   double Result = 0.0;
   TRegDataType RegData;
-  int Len = GetData(Name, &Result, sizeof(double), RegData);
+  size_t Len = GetData(Name, &Result, sizeof(double), RegData);
   if ((RegData != rdBinary) || (Len != sizeof(double)))
   {
     nb::ReadError(Name);
@@ -1765,7 +1750,7 @@ std::wstring TRegistry::ReadString(const std::wstring Name)
 {
   std::wstring Result = L"";
   TRegDataType RegData = rdUnknown;
-  int Len = GetDataSize(Name);
+  size_t Len = GetDataSize(Name);
   if (Len > 0)
   {
     Result.resize(Len);
@@ -1808,7 +1793,7 @@ int TRegistry::ReadBinaryData(const std::wstring Name,
   return Result;
 }
 
-int TRegistry::GetData(const std::wstring Name, void *Buffer,
+size_t TRegistry::GetData(const std::wstring Name, void *Buffer,
   DWORD BufSize, TRegDataType &RegData)
 {
   DWORD DataType = REG_NONE;
@@ -1818,13 +1803,13 @@ int TRegistry::GetData(const std::wstring Name, void *Buffer,
   {
     throw std::exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
-  int Result = BufSize;
   RegData = DataTypeToRegData(DataType);
+  size_t Result = BufSize;
   return Result;
 }
 
 void TRegistry::PutData(const std::wstring Name, const void *Buffer,
-  int BufSize, TRegDataType RegData)
+  size_t BufSize, TRegDataType RegData)
 {
   int DataType = nb::RegDataToDataType(RegData);
   // DEBUG_PRINTF(L"GetCurrentKey = %d, Name = %s, REG_DWORD = %d, DataType = %d, BufSize = %d", GetCurrentKey(), Name.c_str(), REG_DWORD, DataType, BufSize);
@@ -1853,7 +1838,7 @@ void TRegistry::WriteString(const std::wstring Name, const std::wstring Value)
 }
 void TRegistry::WriteStringRaw(const std::wstring Name, const std::wstring Value)
 {
-    PutData(Name, Value.c_str(), static_cast<int>(Value.size() * sizeof(wchar_t)) + 1, rdString);
+    PutData(Name, Value.c_str(), Value.size() * sizeof(wchar_t) + 1, rdString);
 }
 void TRegistry::Writeint(const std::wstring Name, int Value)
 {
@@ -1867,7 +1852,7 @@ void TRegistry::WriteInt64(const std::wstring Name, __int64 Value)
     WriteBinaryData(Name, &Value, sizeof(Value));
 }
 void TRegistry::WriteBinaryData(const std::wstring Name,
-  const void *Buffer, int BufSize)
+  const void *Buffer, size_t BufSize)
 {
     PutData(Name, Buffer, BufSize, rdBinary);
 }

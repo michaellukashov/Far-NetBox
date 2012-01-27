@@ -284,8 +284,8 @@ protected:
     virtual void SetData(const std::wstring value);
     int GetType();
     void SetType(FARDIALOGITEMTYPES value);
-    int GetSelected();
-    void SetSelected(int value);
+    size_t GetSelected();
+    void SetSelected(size_t value);
     TFarDialogContainer *GetContainer() { return FContainer; }
     void SetContainer(TFarDialogContainer *value);
     bool GetFocused();
@@ -415,8 +415,8 @@ public:
     virtual void SetOnAllowChange(const farallowchange_slot_type &value) { FOnAllowChange.connect(value); }
     bool GetChecked() { return TFarDialogItem::GetChecked(); }
     void SetChecked(bool value) { TFarDialogItem::SetChecked(value); }
-    int GetSelected() { return TFarDialogItem::GetSelected(); }
-    void SetSelected(int value) { TFarDialogItem::SetSelected(value); }
+    size_t GetSelected() { return TFarDialogItem::GetSelected(); }
+    void SetSelected(size_t value) { TFarDialogItem::SetSelected(value); }
 
 protected:
     farallowchange_signal_type FOnAllowChange;
@@ -528,11 +528,11 @@ public:
 
     virtual void Assign(nb::TPersistent *Source);
 
-    int GetSelected();
-    void SetSelected(int value);
+    size_t GetSelected();
+    void SetSelected(size_t value);
     int GetTopIndex();
     void SetTopIndex(int value);
-    int GetMaxLength();
+    size_t GetMaxLength();
     int GetVisibleCount();
     FARDIALOGITEMFLAGS GetFlags(int Index);
     void SetFlags(int Index, FARDIALOGITEMFLAGS value);
@@ -561,9 +561,9 @@ private:
     bool FNoDialogUpdate;
     TFarList *Self;
 
-    inline int GetSelectedInt(bool Init);
-    bool GetFlag(int Index, FARDIALOGITEMFLAGS Flag);
-    void SetFlag(int Index, FARDIALOGITEMFLAGS Flag, bool value);
+    inline size_t GetSelectedInt(bool Init);
+    bool GetFlag(size_t Index, FARDIALOGITEMFLAGS Flag);
+    void SetFlag(size_t Index, FARDIALOGITEMFLAGS Flag, bool value);
 };
 //---------------------------------------------------------------------------
 enum TFarListBoxAutoSelect { asOnlyFocus, asAlways, asNever };

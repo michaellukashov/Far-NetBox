@@ -2927,7 +2927,7 @@ void TSessionDialog::UpdateControls()
   SshTab->SetEnabled(SshProtocol);
   CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetSelected() != 0);
   CipherDownButton->SetEnabled(
-    CipherListBox->GetItems()->GetSelected() < static_cast<int>(CipherListBox->GetItems()->GetCount() - 1));
+    CipherListBox->GetItems()->GetSelected() < CipherListBox->GetItems()->GetCount() - 1);
 
   // Authentication tab
   AuthenticatonTab->SetEnabled(SshProtocol);
@@ -2969,7 +2969,7 @@ void TSessionDialog::UpdateControls()
     (BugRekey2Combo->GetItems()->GetSelected() != 2));
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
   KexDownButton->SetEnabled(
-    (KexListBox->GetItems()->GetSelected() < static_cast<int>(KexListBox->GetItems()->GetCount() - 1)));
+    (KexListBox->GetItems()->GetSelected() < KexListBox->GetItems()->GetCount() - 1));
 
   // Bugs tab
   BugsTab->SetEnabled(SshProtocol);
@@ -2992,7 +2992,7 @@ void TSessionDialog::UpdateControls()
   ProxyMethodCombo->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()));
   TFarComboBox * OtherProxyMethodCombo = (!SshProtocol ? SshProxyMethodCombo : FtpProxyMethodCombo);
   OtherProxyMethodCombo->SetVisible(false);
-  if (ProxyMethodCombo->GetItems()->GetSelected() >= static_cast<int>(OtherProxyMethodCombo->GetItems()->GetCount()))
+  if (ProxyMethodCombo->GetItems()->GetSelected() >= OtherProxyMethodCombo->GetItems()->GetCount())
   {
     OtherProxyMethodCombo->GetItems()->SetSelected(pmNone);
   }
@@ -5493,7 +5493,7 @@ public:
   {
   }
 
-  int MaxLen;
+  size_t MaxLen;
 };
 //---------------------------------------------------------------------------
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
@@ -5768,7 +5768,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(nb::TObject * Control,
   if (List != NULL)
   {
     std::wstring S = GetMsg(Label);
-    if (List->MaxLen < static_cast<int>(S.size()))
+    if (List->MaxLen < S.size())
     {
       List->MaxLen = S.size();
     }
@@ -5975,7 +5975,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
   bool Result;
   bool Repeat;
 
-  int ItemFocused = -1;
+  size_t ItemFocused = -1;
 
   do
   {
@@ -6007,7 +6007,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         BookmarkItems->Add(MinimizeName(Path, MaxLength, true));
       }
 
-      int FirstItemFocused = -1;
+      size_t FirstItemFocused = -1;
       nb::TStringList * BookmarkDirectories = new nb::TStringList();
       {
         BOOST_SCOPE_EXIT ( (&BookmarkDirectories) )
@@ -6019,15 +6019,15 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         {
           TBookmark * Bookmark = BookmarkList->GetBookmark(i);
           std::wstring RemoteDirectory = Bookmark->GetRemote();
-          if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) < 0))
+          if (!RemoteDirectory.empty() && (BookmarkDirectories->IndexOf(RemoteDirectory.c_str()) == -1))
           {
-            int Pos;
+            size_t Pos;
             Pos = BookmarkDirectories->Add(RemoteDirectory);
             if (RemoteDirectory == Directory)
             {
               FirstItemFocused = Pos;
             }
-            else if ((FirstItemFocused >= 0) && (FirstItemFocused >= Pos))
+            else if ((FirstItemFocused != -1) && (FirstItemFocused >= Pos))
             {
               FirstItemFocused++;
             }
@@ -6051,7 +6051,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
           BookmarksOffset = BookmarkItems->GetCount();
 
-          if (FirstItemFocused >= 0)
+          if (FirstItemFocused != -1)
           {
             FirstItemFocused += BookmarkItems->GetCount();
           }
@@ -6069,11 +6069,11 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         }
       }
 
-      if (ItemFocused < 0)
+      if (ItemFocused == -1)
       {
         BookmarkItems->SetItemFocused(FirstItemFocused);
       }
-      else if (ItemFocused < static_cast<int>(BookmarkItems->GetCount()))
+      else if (ItemFocused < BookmarkItems->GetCount())
       {
         BookmarkItems->SetItemFocused(ItemFocused);
       }
@@ -7083,8 +7083,8 @@ std::wstring TSynchronizeChecklistDialog::ItemLine(
     }
   }
 
-  int Action = static_cast<int>(ChecklistItem->Action) - 1;
-  assert(Action >= 0 && Action < LENOF(FActions));
+  size_t Action = ChecklistItem->Action - 1;
+  assert((Action != -1) && (Action < LENOF(FActions)));
   AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == TSynchronizeChecklist::saDeleteLocal)
@@ -7289,8 +7289,8 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
     else if ((KeyCode == VK_SPACE) || (KeyCode == VK_INSERT) ||
              (KeyCode == VK_ADD) || (KeyCode == VK_SUBTRACT))
     {
-      int Index = ListBox->GetItems()->GetSelected();
-      if (Index >= 0)
+      size_t Index = ListBox->GetItems()->GetSelected();
+      if (Index != -1)
       {
         if (ListBox->GetItems()->GetChecked(Index) && (KeyCode != VK_ADD))
         {
@@ -7308,7 +7308,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, long KeyCode)
         Redraw();
         UpdateControls();
         if ((KeyCode == VK_INSERT) &&
-            (Index < static_cast<int>(ListBox->GetItems()->GetCount()) - 1))
+            (Index < ListBox->GetItems()->GetCount() - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
         }
@@ -7896,7 +7896,7 @@ protected:
   void LoadQueue();
   void RefreshQueue();
   bool FillQueueItemLine(std::wstring &Line,
-    TQueueItemProxy *QueueItem, int Index);
+    TQueueItemProxy *QueueItem, size_t Index);
   bool QueueItemNeedsFrequentRefresh(TQueueItemProxy *QueueItem);
   void UpdateControls();
   virtual bool Key(TFarDialogItem * Item, long KeyCode);
@@ -7992,7 +7992,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
   TQueueItemProxy *QueueItem = NULL;
-  if (QueueListBox->GetItems()->GetSelected() >= 0)
+  if (QueueListBox->GetItems()->GetSelected() != -1)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
       QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
@@ -8082,7 +8082,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, long KeyCode)
 void TQueueDialog::UpdateControls()
 {
   TQueueItemProxy *QueueItem = NULL;
-  if (QueueListBox->GetItems()->GetSelected() >= 0)
+  if (QueueListBox->GetItems()->GetSelected() != -1)
   {
     QueueItem = reinterpret_cast<TQueueItemProxy *>(
       QueueListBox->GetItems()->GetObject(QueueListBox->GetItems()->GetSelected()));
@@ -8116,7 +8116,7 @@ void TQueueDialog::UpdateControls()
     (QueueItem->GetIndex() > FStatus->GetActiveCount()));
   MoveDownButton->SetEnabled((QueueItem != NULL) &&
     (QueueItem->GetStatus() == TQueueItem::qsPending) &&
-    (QueueItem->GetIndex() < static_cast<int>(FStatus->GetCount() - 1)));
+    (QueueItem->GetIndex() < FStatus->GetCount() - 1));
 }
 //---------------------------------------------------------------------------
 void TQueueDialog::Idle()
@@ -8235,7 +8235,7 @@ void TQueueDialog::LoadQueue()
     for (size_t Index = 0; Index < FStatus->GetCount(); Index++)
     {
       QueueItem = FStatus->GetItem(Index);
-      int ILine = 0;
+      size_t ILine = 0;
       while (FillQueueItemLine(Line, QueueItem, ILine))
       {
         List->AddObject(Line, reinterpret_cast<nb::TObject*>(QueueItem));
@@ -8248,9 +8248,9 @@ void TQueueDialog::LoadQueue()
 }
 //---------------------------------------------------------------------------
 bool TQueueDialog::FillQueueItemLine(std::wstring & Line,
-  TQueueItemProxy * QueueItem, int Index)
+  TQueueItemProxy * QueueItem, size_t Index)
 {
-  int PathMaxLen = 49;
+  size_t PathMaxLen = 49;
 
   if ((Index > 2) ||
       ((Index == 2) && (QueueItem->GetStatus() == TQueueItem::qsPending)))

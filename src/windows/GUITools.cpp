@@ -380,9 +380,9 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
   FLocalFileName = LocalFileName;
 }
 //---------------------------------------------------------------------------
-int TLocalCustomCommand::PatternLen(int Index, char PatternCmd)
+size_t TLocalCustomCommand::PatternLen(size_t Index, char PatternCmd)
 {
-  int Len;
+  size_t Len = 0;
   if (PatternCmd == '^')
   {
     Len = 3;
@@ -394,10 +394,10 @@ int TLocalCustomCommand::PatternLen(int Index, char PatternCmd)
   return Len;
 }
 //---------------------------------------------------------------------------
-bool TLocalCustomCommand::PatternReplacement(int Index,
+bool TLocalCustomCommand::PatternReplacement(size_t Index,
   const std::wstring Pattern, std::wstring &Replacement, bool &Delimit)
 {
-  bool Result;
+  bool Result = false;
   if (Pattern == L"!^!")
   {
     Replacement = FLocalFileName;

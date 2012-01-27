@@ -197,6 +197,8 @@ struct TSFTPSupport
     Loaded = false;
   }
 
+  nb::TStrings * AttribExtensions;
+  nb::TStrings * Extensions;
   unsigned int AttributeMask;
   unsigned int AttributeBits;
   unsigned int OpenFlags;
@@ -204,8 +206,6 @@ struct TSFTPSupport
   unsigned int MaxReadSize;
   unsigned int OpenBlockMasks;
   unsigned int BlockMasks;
-  nb::TStrings * AttribExtensions;
-  nb::TStrings * Extensions;
   bool Loaded;
 };
 //---------------------------------------------------------------------------
@@ -1924,7 +1924,7 @@ bool TSFTPFileSystem::IsCapable(int Capability) const
 //---------------------------------------------------------------------------
 bool TSFTPFileSystem::SupportsExtension(const std::wstring Extension) const
 {
-  return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) >= 0);
+  return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension.c_str()) != -1);
 }
 //---------------------------------------------------------------------------
 inline void TSFTPFileSystem::BusyStart()
@@ -2233,9 +2233,9 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
   TSFTPBusy Busy(this);
 
   int Result = SSH_FX_OK;
-  int Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet));
+  size_t Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet));
 
-  if (Reservation < 0 || Packet->GetCapacity() == 0)
+  if ((Reservation == -1) || (Packet->GetCapacity() == 0))
   {
     bool IsReserved;
     do
@@ -2276,7 +2276,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         }
       }
 
-      if (Reservation < 0 ||
+      if ((Reservation == -1) ||
           Packet->GetMessageNumber() != static_cast<unsigned int>(FPacketNumbers[Reservation]))
       {
         TSFTPPacket * ReservedPacket;
@@ -2297,10 +2297,10 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             {
               FTerminal->LogEvent(L"Discarding reserved response");
               RemoveReservation(Index);
-              if ((Reservation >= 0) && (Reservation > static_cast<int>(Index)))
+              if ((Reservation != -1) && (Reservation > static_cast<int>(Index)))
               {
                 Reservation--;
-                assert(Reservation == static_cast<int>(FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet))));
+                assert(Reservation == FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Packet)));
               }
             }
             break;
@@ -2315,7 +2315,7 @@ int TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
   // but if it raises exception, removal is unnecessarily
   // postponed until the packet is removed
   // (and it have not worked anyway until recent fix to UnreserveResponse)
-  if (Reservation >= 0)
+  if (Reservation != -1)
   {
     assert(Packet->GetMessageNumber() == static_cast<unsigned int>(FPacketNumbers[Reservation]));
     RemoveReservation(Reservation);
@@ -2345,7 +2345,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
 {
   if (Response != NULL)
   {
-    assert(FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response)) < 0);
+    assert(FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response)) == -1);
     // mark response as not received yet
     Response->SetCapacity(0);
     Response->SetReservedBy(this);
@@ -2361,7 +2361,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket * Packet,
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
 {
-  int Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response));
+  size_t Reservation = FPacketReservations->IndexOf(reinterpret_cast<nb::TObject *>(Response));
   if (Response->GetCapacity() != 0)
   {
     // added check for already received packet
@@ -2372,7 +2372,7 @@ void TSFTPFileSystem::UnreserveResponse(TSFTPPacket * Response)
   }
   else
   {
-    if (Reservation >= 0)
+    if (Reservation != -1)
     {
       // we probably do not remove the item at all, because
       // we must remember that the respose was expected, so we skip it

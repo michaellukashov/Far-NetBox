@@ -46,7 +46,7 @@ public:
 
   void Clear();
   void Add(TBookmark * Bookmark);
-  void Insert(int Index, TBookmark * Bookmark);
+  void Insert(size_t Index, TBookmark * Bookmark);
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark * Bookmark);
@@ -60,14 +60,14 @@ public:
   // __property int Count = { read = GetCount };
   size_t GetCount();
   // __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
-  TBookmark * GetBookmark(int Index);
+  TBookmark * GetBookmark(size_t Index);
   // __property bool NodeOpened[std::wstring Index] = { read = GetNodeOpened, write = SetNodeOpened };
   bool GetNodeOpened(const std::wstring Index);
   void SetNodeOpened(const std::wstring Index, bool value);
 
 protected:
-  int IndexOf(TBookmark * Bookmark);
-  void KeyChanged(int Index);
+  size_t IndexOf(TBookmark * Bookmark);
+  void KeyChanged(size_t Index);
 
   // __property bool Modified = { read = FModified, write = FModified };
   bool GetModified() { return FModified; }
@@ -117,7 +117,7 @@ private:
   std::wstring FNode;
   nb::TShortCut FShortCut;
 
-  void Modify(int OldIndex);
+  void Modify(size_t OldIndex);
 };
 //---------------------------------------------------------------------------
 #endif

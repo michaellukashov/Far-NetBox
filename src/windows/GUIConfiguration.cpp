@@ -295,7 +295,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   bool Result = (GetCount() == rhl.GetCount());
   if (Result)
   {
-    int i = 0;
+    size_t i = 0;
     while ((i < GetCount()) && Result)
     {
       Result =
@@ -307,12 +307,12 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-int TCopyParamList::IndexOfName(const std::wstring Name) const
+size_t TCopyParamList::IndexOfName(const std::wstring Name) const
 {
   return FNames->IndexOf(Name.c_str());
 }
 //---------------------------------------------------------------------------
-bool TCopyParamList::CompareItem(int Index,
+bool TCopyParamList::CompareItem(size_t Index,
   const TCopyParamType * CopyParam, const TCopyParamRule * Rule) const
 {
   return
@@ -324,7 +324,7 @@ bool TCopyParamList::CompareItem(int Index,
 //---------------------------------------------------------------------------
 void TCopyParamList::Clear()
 {
-  for (int i = GetCount() - 1; i >= 0; i--)
+  for (size_t i = GetCount() - 1; i != -1; i--)
   {
     FCopyParams->Delete(i);
     FRules->Delete(i);
@@ -340,11 +340,11 @@ void TCopyParamList::Add(const std::wstring Name,
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Insert(int Index, const std::wstring Name,
+void TCopyParamList::Insert(size_t Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   // DEBUG_PRINTF(L"begin");
-  assert(FNames->IndexOf(Name) < 0);
+  assert(FNames->IndexOf(Name) == -1);
   FNames->Insert(Index, Name);
   assert(CopyParam != NULL);
   FCopyParams->Insert(Index, reinterpret_cast<nb::TObject *>(CopyParam));
@@ -353,7 +353,7 @@ void TCopyParamList::Insert(int Index, const std::wstring Name,
   // DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Change(int Index, const std::wstring Name,
+void TCopyParamList::Change(size_t Index, const std::wstring Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -372,7 +372,7 @@ void TCopyParamList::Change(int Index, const std::wstring Name,
   }
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Move(int CurIndex, int NewIndex)
+void TCopyParamList::Move(size_t CurIndex, size_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -383,7 +383,7 @@ void TCopyParamList::Move(int CurIndex, int NewIndex)
   }
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Delete(int Index)
+void TCopyParamList::Delete(size_t Index)
 {
   assert((Index >= 0) && (Index < GetCount()));
   FNames->Delete(Index);
@@ -485,17 +485,17 @@ int TCopyParamList::GetCount() const
   return FCopyParams->GetCount();
 }
 //---------------------------------------------------------------------------
-const TCopyParamRule * TCopyParamList::GetRule(int Index) const
+const TCopyParamRule * TCopyParamList::GetRule(size_t Index) const
 {
   return reinterpret_cast<TCopyParamRule *>(FRules->GetItem(Index));
 }
 //---------------------------------------------------------------------------
-const TCopyParamType * TCopyParamList::GetCopyParam(int Index) const
+const TCopyParamType * TCopyParamList::GetCopyParam(size_t Index) const
 {
   return reinterpret_cast<TCopyParamType *>(FCopyParams->GetItem(Index));
 }
 //---------------------------------------------------------------------------
-std::wstring TCopyParamList::GetName(int Index) const
+std::wstring TCopyParamList::GetName(size_t Index) const
 {
   return FNames->GetString(Index);
 }
@@ -517,7 +517,7 @@ nb::TStrings * TCopyParamList::GetNameList() const
 bool TCopyParamList::GetAnyRule() const
 {
   bool Result = false;
-  int i = 0;
+  size_t i = 0;
   while ((i < GetCount()) && !Result)
   {
     Result = (GetRule(i) != NULL);
@@ -1101,9 +1101,9 @@ void TGUIConfiguration::SetCopyParamList(const TCopyParamList * value)
   }
 }
 //---------------------------------------------------------------------------
-int TGUIConfiguration::GetCopyParamIndex()
+size_t TGUIConfiguration::GetCopyParamIndex()
 {
-  int Result;
+  size_t Result;
   if (FCopyParamCurrent.empty())
   {
     Result = -1;
@@ -1115,10 +1115,10 @@ int TGUIConfiguration::GetCopyParamIndex()
   return Result;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetCopyParamIndex(int value)
+void TGUIConfiguration::SetCopyParamIndex(size_t value)
 {
   std::wstring Name;
-  if (value < 0)
+  if (value == -1)
   {
     Name = L"";
   }
@@ -1144,9 +1144,9 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const std::wstring Name)
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.empty())
   {
-    int Index = FCopyParamList->IndexOfName(Name);
-    assert(Index >= 0);
-    if (Index >= 0)
+    size_t Index = FCopyParamList->IndexOfName(Name);
+    assert(Index != -1);
+    if (Index != -1)
     {
       const TCopyParamType * Preset = FCopyParamList->GetCopyParam(Index);
       assert(Preset != NULL);

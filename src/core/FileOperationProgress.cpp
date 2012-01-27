@@ -73,13 +73,13 @@ void TFileOperationProgressType::ClearTransfer()
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
-  TOperationSide ASide, int ACount)
+  TOperationSide ASide, size_t ACount)
 {
   Start(AOperation, ASide, ACount, false, L"", 0);
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
-  TOperationSide ASide, int ACount, bool ATemp,
+  TOperationSide ASide, size_t ACount, bool ATemp,
   const std::wstring ADirectory, unsigned long ACPSLimit)
 {
   Clear();
