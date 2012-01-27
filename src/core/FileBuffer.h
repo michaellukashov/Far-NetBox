@@ -20,8 +20,8 @@ public:
   void Convert(TEOLType Source, TEOLType Dest, int Params, bool & Token);
   void Convert(char * Source, TEOLType Dest, int Params, bool & Token);
   void Convert(TEOLType Source, char * Dest, int Params, bool & Token);
-  void Insert(int Index, const char * Buf, int Len);
-  void Delete(int Index, int Len);
+  void Insert(size_t Index, const char * Buf, size_t Len);
+  void Delete(size_t Index, size_t Len);
   DWORD LoadStream(nb::TStream * Stream, const DWORD Len, bool ForceLen);
   DWORD ReadStream(nb::TStream * Stream, const DWORD Len, bool ForceLen);
   void WriteToStream(nb::TStream * Stream, const DWORD Len);

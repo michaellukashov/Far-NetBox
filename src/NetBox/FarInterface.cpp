@@ -68,7 +68,7 @@ void EndThread(int ExitCode)
 }
 
 //---------------------------------------------------------------------------
-int StartThread(void *SecurityAttributes, unsigned StackSize,
+size_t StartThread(void *SecurityAttributes, unsigned StackSize,
   void *Parameter, unsigned CreationFlags,
   DWORD &ThreadId)
 {

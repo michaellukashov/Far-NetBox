@@ -485,8 +485,8 @@ public:
     virtual void Clear();
     virtual void Delete(size_t Index);
 
-    int GetItemFocused() { return FItemFocused; }
-    void SetItemFocused(int value);
+    size_t GetItemFocused() { return FItemFocused; }
+    void SetItemFocused(size_t value);
 
     bool GetDisabled(size_t Index) { return GetFlag(Index, MIF_DISABLE); }
     void SetDisabled(size_t Index, bool value) { SetFlag(Index, MIF_DISABLE, value); }
@@ -497,7 +497,7 @@ protected:
     virtual void PutObject(size_t Index, nb::TObject *AObject);
 
 private:
-    int FItemFocused;
+    size_t FItemFocused;
 
     void SetFlag(size_t Index, int Flag, bool Value);
     bool GetFlag(size_t Index, int Flag);

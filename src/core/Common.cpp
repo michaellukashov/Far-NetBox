@@ -2769,7 +2769,7 @@ std::wstring ExtractFileExt(const std::wstring FileName)
 std::wstring get_full_path_name(const std::wstring path)
 {
   std::wstring buf(MAX_PATH, 0);
-  DWORD size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1),
+  size_t size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1),
     reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
   if (size > buf.size())
   {

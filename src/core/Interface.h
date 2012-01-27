@@ -20,7 +20,7 @@ void Busy(bool Start);
 std::wstring AppNameString();
 std::wstring SshVersionString();
 void CopyToClipboard(const std::wstring Text);
-int StartThread(void * SecurityAttributes, unsigned StackSize,
+size_t StartThread(void * SecurityAttributes, unsigned StackSize,
   void *Parameter, unsigned CreationFlags,
   DWORD &ThreadId);
 
