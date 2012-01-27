@@ -2804,7 +2804,7 @@ void TFarMenuItems::Clear()
     nb::TStringList::Clear();
 }
 //---------------------------------------------------------------------------
-void TFarMenuItems::Delete(int Index)
+void TFarMenuItems::Delete(size_t Index)
 {
     if (Index == FItemFocused)
     {
@@ -2816,7 +2816,7 @@ void TFarMenuItems::Delete(int Index)
 void TFarMenuItems::PutObject(int Index, nb::TObject *AObject)
 {
     nb::TStringList::PutObject(Index, AObject);
-    bool Focused = (reinterpret_cast<int>(AObject) & MIF_SEPARATOR) != 0;
+    bool Focused = (reinterpret_cast<size_t>(AObject) & MIF_SEPARATOR) != 0;
     if ((Index == GetItemFocused()) && !Focused)
     {
         FItemFocused = -1;
@@ -2831,9 +2831,9 @@ void TFarMenuItems::PutObject(int Index, nb::TObject *AObject)
     }
 }
 //---------------------------------------------------------------------------
-int TFarMenuItems::Add(const std::wstring Text, bool Visible)
+size_t TFarMenuItems::Add(const std::wstring Text, bool Visible)
 {
-    int Result = nb::TStringList::Add(Text);
+    size_t Result = nb::TStringList::Add(Text);
     if (!Visible)
     {
         SetFlag(GetCount() - 1, MIF_HIDDEN, true);
@@ -2868,7 +2868,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
 {
     if (GetFlag(Index, Flag) != Value)
     {
-        int F = int(GetObject(Index));
+        size_t F = reinterpret_cast<size_t>(GetObject(Index));
         if (Value)
         {
             F |= Flag;
@@ -2883,7 +2883,7 @@ void TFarMenuItems::SetFlag(int Index, int Flag, bool Value)
 //---------------------------------------------------------------------------
 bool TFarMenuItems::GetFlag(int Index, int Flag)
 {
-    return ((int)(GetObject(Index)) & Flag) > 0;
+    return (reinterpret_cast<size_t>(GetObject(Index)) & Flag) > 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -2904,10 +2904,8 @@ int TFarEditorInfo::GetEditorID()
 //---------------------------------------------------------------------------
 std::wstring TFarEditorInfo::GetFileName()
 {
-    std::wstring Result = L""; // FIXME FEditorInfo->GetFileName();
-    // return StrFromFar(Result);
-    
-    const int buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
+    std::wstring Result = L"";
+    size_t buffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, NULL);
     if (buffLen)
     {
         Result.resize(buffLen + 1, 0);
@@ -2978,7 +2976,7 @@ TFarPluginEnvGuard::~TFarPluginEnvGuard()
 //---------------------------------------------------------------------------
 void FarWrapText(const std::wstring Text, nb::TStrings *Result, int MaxWidth)
 {
-    int TabSize = 8;
+    size_t TabSize = 8;
     nb::TStringList Lines;
     Lines.SetText(Text);
     nb::TStringList WrappedLines;

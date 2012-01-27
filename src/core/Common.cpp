@@ -2549,7 +2549,7 @@ std::wstring Format(const wchar_t *format, va_list args)
     if (format && *format)
     {
         int len = _vscwprintf(format, args);
-        result.resize(len + 1); // sizeof(wchar_t));
+        result.resize(len + 1);
         vswprintf_s(&result[0], len + 1, format, args);
     }
     return result.c_str();
