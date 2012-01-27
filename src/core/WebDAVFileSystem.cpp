@@ -2071,7 +2071,7 @@ bool TWebDAVFileSystem::SendPropFindRequest(const wchar_t *dir, std::wstring &re
     slist.Append("Depth: 1");
     slist.Append("Content-Type: text/xml; charset=\"utf-8\"");
     char contentLength[64];
-    sprintf_s(contentLength, "Content-Length: %d", requestDataLen);
+    sprintf_s(contentLength, "Content-Length: %u", requestDataLen);
     slist.Append(contentLength);
     slist.Append("Connection: Keep-Alive");
 

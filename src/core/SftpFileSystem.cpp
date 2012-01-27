@@ -197,6 +197,8 @@ struct TSFTPSupport
     Loaded = false;
   }
 
+  nb::TStrings * AttribExtensions;
+  nb::TStrings * Extensions;
   unsigned int AttributeMask;
   unsigned int AttributeBits;
   unsigned int OpenFlags;
@@ -204,8 +206,6 @@ struct TSFTPSupport
   unsigned int MaxReadSize;
   unsigned int OpenBlockMasks;
   unsigned int BlockMasks;
-  nb::TStrings * AttribExtensions;
-  nb::TStrings * Extensions;
   bool Loaded;
 };
 //---------------------------------------------------------------------------
