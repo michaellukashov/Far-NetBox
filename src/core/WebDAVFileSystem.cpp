@@ -1795,7 +1795,7 @@ bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
     assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
     USEDPARAM(Path);
 
-    for (unsigned int Index = 0; Index < Count; Index++)
+    for (size_t Index = 0; Index < Count; Index++)
     {
       const TListDataEntry * Entry = &Entries[Index];
       TRemoteFile * File = new TRemoteFile();
