@@ -81,23 +81,14 @@ size_t TList::GetCount() const
 }
 void TList::SetCount(size_t NewCount)
 {
-    // FList.resize(value);
-  if (static_cast<int>(NewCount) < 0) //  or (NewCount > MaxListSize) then
+  if (static_cast<int>(NewCount) < 0)
     nb::Error(SListCountError, NewCount);
-  // if (NewCount > FCapacity)
-    // SetCapacity(NewCount);
-  if (NewCount > FList.size())
+  if (NewCount <= FList.size())
   {
-    // FillChar(FList^[FCount], (NewCount - FCount) * SizeOf(Pointer), 0)
-    // FList.resize(NewCount);
-  }
-  else
-  {
-    int sz = FList.size();
+    size_t sz = FList.size();
     for (int I = sz - 1; I >= static_cast<int>(NewCount); I--)
       Delete(I);
   }
-  // FCount := NewCount;
   FList.resize(NewCount);
 }
 
@@ -174,8 +165,6 @@ void TList::Insert(size_t Index, void *Item)
     {
       nb::Error(SListIndexError, Index);
     }
-    // if (FCount == FCapacity)
-      // Grow();
     if (Index <= FList.size())
     {
         FList.insert(FList.begin() + Index, Item);
@@ -194,9 +183,7 @@ int TList::IndexOf(void *value) const
 }
 void TList::Clear()
 {
-    // FList.clear();
     SetCount(0);
-    // SetCapacity(0);
 }
 
 void TList::Sort(CompareFunc func)
