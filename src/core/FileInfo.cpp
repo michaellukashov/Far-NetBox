@@ -245,6 +245,7 @@ std::wstring GetLanguage(unsigned int Language)
 std::wstring GetFileInfoString(void * FileInfo,
   TTranslation Translation, std::wstring StringName)
 {
+  std::wstring Result;
   wchar_t *P = NULL;
   UINT Len;
   // DEBUG_PRINTF(L"StringName = %s", StringName.c_str());
@@ -262,7 +263,10 @@ std::wstring GetFileInfoString(void * FileInfo,
     throw std::exception("Specified file info string not available");
   }
   // c_str() makes sure that returned string has only necessary bytes allocated
-  std::wstring Result = std::wstring(P, Len).c_str();
+  if (P)
+  {
+    Result = std::wstring(P, Len).c_str();
+  }
   // DEBUG_PRINTF(L"Result = %s", Result.c_str());
   return Result;
 };
