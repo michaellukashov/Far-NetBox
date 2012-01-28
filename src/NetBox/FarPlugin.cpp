@@ -2823,7 +2823,7 @@ void TFarMenuItems::PutObject(size_t Index, nb::TObject *AObject)
     }
     if (Focused)
     {
-        if (GetItemFocused() >= 0)
+        if (GetItemFocused() != -1)
         {
             SetFlag(GetItemFocused(), MIF_SELECTED, false);
         }
