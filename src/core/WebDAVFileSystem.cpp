@@ -1520,7 +1520,7 @@ void TWebDAVFileSystem::Sink(const std::wstring FileName,
         OperationProgress->SetTransferSize(File->GetSize());
         OperationProgress->SetLocalSize(OperationProgress->TransferSize);
 
-        int Attrs;
+        int Attrs = -1;
         FILE_OPERATION_LOOP (FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()),
             Attrs = FileGetAttr(DestFullName);
             if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
@@ -1775,7 +1775,7 @@ int TWebDAVFileSystem::GetOptionVal(int OptionID) const
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, unsigned int Count)
+  const TListDataEntry * Entries, size_t Count)
 {
   if (!FActive)
   {

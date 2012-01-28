@@ -56,7 +56,7 @@ const size_t StartupInfoMinSize = 132; // 372;
 const size_t StandardFunctionsMinSize = 228;
 //---------------------------------------------------------------------------
 // typedef void (*TFarMessageTimerEvent)(unsigned int &Result);
-typedef boost::signal1<void, unsigned int &> farmessagetimer_signal_type;
+typedef boost::signal1<void, size_t &> farmessagetimer_signal_type;
 typedef farmessagetimer_signal_type::slot_type farmessagetimer_slot_type;
 // typedef void (*TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 typedef boost::signal3<void, void *, int, bool &> farmessageclick_signal_type;
@@ -70,11 +70,11 @@ struct TFarMessageParams
     nb::TStrings *MoreMessages;
     std::wstring CheckBoxLabel;
     bool CheckBox;
-    unsigned int Timer;
-    unsigned int TimerAnswer;
+    size_t Timer;
+    size_t TimerAnswer;
     farmessagetimer_slot_type *TimerEvent;
-    unsigned int Timeout;
-    unsigned int TimeoutButton;
+    size_t Timeout;
+    size_t TimeoutButton;
     std::wstring TimeoutStr;
     farmessageclick_slot_type *ClickEvent;
     void *Token;
@@ -319,7 +319,7 @@ class TFarPanelModes : public nb::TObject
 {
     friend class TCustomFarFileSystem;
 public:
-    void SetPanelMode(int Mode, const std::wstring ColumnTypes = L"",
+    void SetPanelMode(size_t Mode, const std::wstring ColumnTypes = L"",
         const std::wstring ColumnWidths = L"", nb::TStrings *ColumnTitles = NULL,
         bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
         bool CaseConversion = true, const std::wstring StatusColumnTypes = L"",
@@ -439,7 +439,7 @@ public:
     TFarPanelItem *GetFocusedItem();
     void SetFocusedItem(TFarPanelItem *value);
     int GetFocusedIndex();
-    void SetFocusedIndex(int value);
+    void SetFocusedIndex(size_t value);
     nb::TRect GetBounds();
     TFarPanelType GetType();
     bool GetIsPlugin();

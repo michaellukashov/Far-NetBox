@@ -56,7 +56,7 @@ protected:
   virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
   virtual bool HandleListData(const char * Path, const TListDataEntry * Entries,
-    unsigned int Count);
+    size_t Count);
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);
@@ -115,7 +115,7 @@ bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleListData(const char * Path,
-  const TListDataEntry * Entries, unsigned int Count)
+  const TListDataEntry * Entries, size_t Count)
 {
   return FFileSystem->HandleListData(nb::MB2W(Path).c_str(), Entries, Count);
 }
@@ -3226,7 +3226,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, unsigned int Count)
+  const TListDataEntry * Entries, size_t Count)
 {
   if (!FActive)
   {

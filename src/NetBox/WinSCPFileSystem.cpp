@@ -39,7 +39,7 @@ void TSessionPanelItem::SetPanelModes(TFarPanelModes * PanelModes)
       delete ColumnTitles;
     } BOOST_SCOPE_EXIT_END
     ColumnTitles->Add(FarPlugin->GetMsg(SESSION_NAME_COL_TITLE)); 
-    for (int Index = 0; Index < PANEL_MODES_COUNT; Index++)
+    for (size_t Index = 0; Index < PANEL_MODES_COUNT; Index++)
     {
       PanelModes->SetPanelMode(Index, L"N", L"0", ColumnTitles, false, false, false);
     }
@@ -214,7 +214,7 @@ public:
     TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(int Index, const std::wstring Prompt,
+  virtual void Prompt(size_t Index, const std::wstring Prompt,
     std::wstring & Value);
 
 private:
@@ -228,7 +228,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 //---------------------------------------------------------------------------
-void TFarInteractiveCustomCommand::Prompt(int /*Index*/,
+void TFarInteractiveCustomCommand::Prompt(size_t /*Index*/,
   const std::wstring Prompt, std::wstring & Value)
 {
   std::wstring APrompt = Prompt;
@@ -3532,7 +3532,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
     FQueueItemInvalidated = false;
 
     TQueueItemProxy * QueueItem;
-    for (int Index = 0; Index < FQueueStatus->GetActiveCount(); Index++)
+    for (size_t Index = 0; Index < FQueueStatus->GetActiveCount(); Index++)
     {
       QueueItem = FQueueStatus->GetItem(Index);
       if (QueueItem->GetUserData() != NULL)

@@ -44,8 +44,8 @@ public:
   // __property bool NameValid = { read = GetNameValid };
   bool GetNameValid() const;
   // __property unsigned int ID = { read = FID, write = SetID };
-  unsigned int GetID() const { return FID; }
-  void SetID(unsigned int value);
+  size_t GetID() const { return FID; }
+  void SetID(size_t value);
   // __property bool IDValid = { read = FIDValid };
   bool GetIDValid() const { return FIDValid; }
   // __property bool IsSet  = { read = GetIsSet };
@@ -57,7 +57,7 @@ public:
 
 private:
   std::wstring FName;
-  unsigned int FID;
+  size_t FID;
   bool FIDValid;
 };
 //---------------------------------------------------------------------------
@@ -74,7 +74,7 @@ public:
   void Log(TTerminal * Terminal, const wchar_t * Title);
 
   size_t GetCount() const;
-  const TRemoteToken * GetToken(int Index) const;
+  const TRemoteToken * GetToken(size_t Index) const;
 
 private:
   typedef std::vector<TRemoteToken> TTokens;
@@ -249,7 +249,7 @@ public:
   std::wstring GetDirectory() { return FDirectory; }
   virtual void SetDirectory(const std::wstring value);
   // __property TRemoteFile * Files[int Index] = { read = GetFiles };
-  TRemoteFile *GetFile(int Index);
+  TRemoteFile *GetFile(size_t Index);
   // __property std::wstring FullDirectory  = { read=GetFullDirectory };
   std::wstring GetFullDirectory();
   // __property bool IsRoot = { read = GetIsRoot };
@@ -321,7 +321,7 @@ public:
   // __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const;
 protected:
-  virtual void Delete(int Index);
+  virtual void Delete(size_t Index);
 private:
   TCriticalSection * FSection;
   TRemoteDirectoryCache *Self;
@@ -355,7 +355,7 @@ private:
   void SetValue(const std::wstring Name, const std::wstring Value);
   std::wstring GetValue(const std::wstring Name);
 
-  int FMaxSize;
+  size_t FMaxSize;
 };
 //---------------------------------------------------------------------------
 class TRights

@@ -238,7 +238,7 @@ private:
   TSessionData * FTunnelData;
   TSessionLog * FTunnelLog;
   TTunnelUI * FTunnelUI;
-  size_t FTunnelLocalPortNumber;
+  int FTunnelLocalPortNumber;
   std::wstring FTunnelError;
   queryuser_signal_type FOnQueryUser;
   promptuser_signal_type FOnPromptUser;
@@ -599,7 +599,7 @@ public:
   void RecryptPasswords();
 
   // __property TTerminal * Terminals[int Index]  = { read=GetTerminal };
-  TTerminal * GetTerminal(int Index);
+  TTerminal * GetTerminal(size_t Index);
   // __property int ActiveCount = { read = GetActiveCount };
   int GetActiveCount();
 
@@ -721,7 +721,7 @@ public:
   // __property int Count = { read = GetCount };
   size_t GetCount() const;
   // __property const TItem * Item[int Index] = { read = GetItem };
-  const TItem * GetItem(int Index) const;
+  const TItem * GetItem(size_t Index) const;
 
 protected:
   TSynchronizeChecklist();
@@ -744,7 +744,7 @@ struct TSpaceAvailable
   __int64 UnusedBytesOnDevice;
   __int64 BytesAvailableToUser;
   __int64 UnusedBytesAvailableToUser;
-  unsigned long BytesPerAllocationUnit;
+  size_t BytesPerAllocationUnit;
 };
 //---------------------------------------------------------------------------
 #endif

@@ -16,6 +16,40 @@ namespace alg = boost::algorithm;
 
 namespace nb {
 
+size_t __cdecl debug_printf(const wchar_t *format, ...)
+{
+    (void)format;
+    size_t len = 0;
+#ifdef NETBOX_DEBUG
+    va_list args;
+    va_start(args, format);
+    len = _vscwprintf(format, args);
+    std::wstring buf(len + sizeof(wchar_t), 0);
+    vswprintf_s(&buf[0], buf.size(), format, args);
+
+    va_end(args);
+    OutputDebugStringW(buf.c_str());
+#endif
+    return len;
+}
+
+size_t __cdecl debug_printf2(const char *format, ...)
+{
+    (void)format;
+    size_t len = 0;
+#ifdef NETBOX_DEBUG
+    va_list args;
+    va_start(args, format);
+    len = _vscprintf(format, args);
+    std::string buf(len + sizeof(char), 0);
+    _vsnprintf_s(&buf[0], len, buf.size(), format, args);
+
+    va_end(args);
+    OutputDebugStringA(buf.c_str());
+#endif
+    return len;
+}
+
 //---------------------------------------------------------------------------
 void Abort()
 {

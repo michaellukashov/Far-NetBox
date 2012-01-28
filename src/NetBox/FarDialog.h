@@ -204,7 +204,7 @@ private:
     TFarDialog *FDialog;
     bool FEnabled;
 
-    void SetPosition(int Index, int value);
+    void SetPosition(size_t Index, int value);
 };
 //---------------------------------------------------------------------------
 #define DIF_INVERSE 0x00000001UL
@@ -326,8 +326,8 @@ protected:
     virtual void DoFocus();
     virtual void DoExit();
 
-    char GetColor(int Index);
-    void SetColor(int Index, char value);
+    char GetColor(size_t Index);
+    void SetColor(size_t Index, char value);
 
 private:
     TFarDialog *FDialog;
@@ -344,8 +344,8 @@ private:
     bool FOem;
 
     void UpdateFlags(FARDIALOGITEMFLAGS value);
-    void SetCoordinate(int Index, int value);
-    int GetCoordinate(int Index);
+    void SetCoordinate(size_t Index, int value);
+    int GetCoordinate(size_t Index);
     TFarDialogItem *GetPrevItem();
     void UpdateFocused(bool value);
     void UpdateEnabled();
@@ -474,8 +474,8 @@ protected:
     virtual void Detach();
 
 private:
-    std::wstring GetHistoryMask(int Index);
-    void SetHistoryMask(int Index, const std::wstring value);
+    std::wstring GetHistoryMask(size_t Index);
+    void SetHistoryMask(size_t Index, const std::wstring value);
 };
 //---------------------------------------------------------------------------
 class TFarSeparator : public TFarDialogItem
@@ -531,15 +531,15 @@ public:
     size_t GetSelected();
     void SetSelected(size_t value);
     int GetTopIndex();
-    void SetTopIndex(int value);
+    void SetTopIndex(size_t value);
     size_t GetMaxLength();
     int GetVisibleCount();
-    FARDIALOGITEMFLAGS GetFlags(int Index);
-    void SetFlags(int Index, FARDIALOGITEMFLAGS value);
-    bool GetDisabled(int Index) { return GetFlag(Index, LIF_DISABLE); }
-    void SetDisabled(int Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
-    bool GetChecked(int Index) { return GetFlag(Index, LIF_CHECKED); }
-    void SetChecked(int Index, bool value) { SetFlag(Index, LIF_CHECKED, value); }
+    FARDIALOGITEMFLAGS GetFlags(size_t Index);
+    void SetFlags(size_t Index, FARDIALOGITEMFLAGS value);
+    bool GetDisabled(size_t Index) { return GetFlag(Index, LIF_DISABLE); }
+    void SetDisabled(size_t Index, bool value) { SetFlag(Index, LIF_DISABLE, value); }
+    bool GetChecked(size_t Index) { return GetFlag(Index, LIF_CHECKED); }
+    void SetChecked(size_t Index, bool value) { SetFlag(Index, LIF_CHECKED, value); }
 
 protected:
     virtual void Changed();
@@ -547,9 +547,9 @@ protected:
     virtual void Init();
     void UpdatePosition(int Position);
     int GetPosition();
-    virtual void Put(int Index, const std::wstring S);
-    void SetCurPos(int Position, int TopIndex);
-    void UpdateItem(int Index);
+    virtual void Put(size_t Index, const std::wstring S);
+    void SetCurPos(size_t Position, size_t TopIndex);
+    void UpdateItem(size_t Index);
 
     FarList *GetListItems() { return FListItems; }
     // void SetListItems(FarList *value) { FListItems = value; }
@@ -642,8 +642,8 @@ public:
 
     nb::TStrings *GetItems();
     void SetItems(nb::TStrings *value);
-    int GetTopIndex() { return FTopIndex; }
-    void SetTopIndex(int value);
+    size_t GetTopIndex() { return FTopIndex; }
+    void SetTopIndex(size_t value);
     bool GetScrollBar();
 
 protected:
@@ -652,7 +652,7 @@ protected:
 
 private:
     nb::TStringList *FItems;
-    int FTopIndex;
+    size_t FTopIndex;
 
     void ItemsChange(nb::TObject *Sender);
 };

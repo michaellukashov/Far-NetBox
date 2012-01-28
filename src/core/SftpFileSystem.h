@@ -85,13 +85,13 @@ protected:
   TSecureShell * FSecureShell;
   TFileSystemInfo FFileSystemInfo;
   bool FFileSystemInfoValid;
-  int FVersion;
+  size_t FVersion;
   std::wstring FCurrentDirectory;
   std::wstring FDirectoryToChangeTo;
   std::wstring FHomeDirectory;
   std::wstring FEOL;
   nb::TList * FPacketReservations;
-  std::vector<unsigned int> FPacketNumbers;
+  std::vector<size_t> FPacketNumbers;
   char FPreviousLoggedPacket;
   int FNotLoggedPackets;
   int FBusy;
@@ -103,7 +103,7 @@ protected:
   bool FSignedTS;
   bool FOpenSSH;
   nb::TStrings * FFixedPaths;
-  unsigned long FMaxPacketSize;
+  size_t FMaxPacketSize;
   TSFTPFileSystem *Self;
 
   void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
@@ -115,7 +115,7 @@ protected:
     int AllowStatus = -1);
   virtual std::wstring GetCurrentDirectory();
   std::wstring GetHomeDirectory();
-  unsigned long GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
+  size_t GotStatusPacket(TSFTPPacket * Packet, int AllowStatus);
   bool inline IsAbsolutePath(const std::wstring Path);
   bool RemoteFileExists(const std::wstring FullPath, TRemoteFile ** File = NULL);
   TRemoteFile * LoadFile(TSFTPPacket * Packet,
@@ -132,7 +132,7 @@ protected:
   int ReceivePacket(TSFTPPacket * Packet, int ExpectedType = -1,
     int AllowStatus = -1);
   bool PeekPacket();
-  void RemoveReservation(int Reservation);
+  void RemoveReservation(size_t Reservation);
   void SendPacket(const TSFTPPacket * Packet);
   int ReceiveResponse(const TSFTPPacket * Packet,
     TSFTPPacket * Response, int ExpectedType = -1, int AllowStatus = -1);
@@ -183,13 +183,13 @@ protected:
   char * GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();
-  unsigned long TransferBlockSize(unsigned long Overhead,
+  size_t TransferBlockSize(size_t Overhead,
     TFileOperationProgressType *OperationProgress,
-    unsigned long MinPacketSize = 0,
-    unsigned long MaxPacketSize = 0);
-  unsigned long UploadBlockSize(const std::string &Handle,
+    size_t MinPacketSize = 0,
+    size_t MaxPacketSize = 0);
+  size_t UploadBlockSize(const std::string &Handle,
     TFileOperationProgressType *OperationProgress);
-  unsigned long DownloadBlockSize(
+  size_t DownloadBlockSize(
     TFileOperationProgressType *OperationProgress);
   int PacketLength(char *LenBuf, int ExpectedType);
 

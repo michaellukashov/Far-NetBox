@@ -950,7 +950,7 @@ void TConfiguration::UpdateActualLogProtocol()
   FActualLogProtocol = FLogging ? FLogProtocol : 0;
 }
 //---------------------------------------------------------------------
-void TConfiguration::SetLogProtocol(int value)
+void TConfiguration::SetLogProtocol(size_t value)
 {
   SET_CONFIG_PROPERTY(LogProtocol);
   UpdateActualLogProtocol();

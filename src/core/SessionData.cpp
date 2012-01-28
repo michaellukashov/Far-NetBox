@@ -70,11 +70,11 @@ void TSessionData::Default()
   SetSshProt(ssh2);
   SetSsh2DES(false);
   SetSshNoUserAuth(false);
-  for (int Index = 0; Index < CIPHER_COUNT; Index++)
+  for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
   {
     SetCipher(Index, DefaultCipherList[Index]);
   }
-  for (int Index = 0; Index < KEX_COUNT; Index++)
+  for (size_t Index = 0; Index < KEX_COUNT; Index++)
   {
     SetKex(Index, DefaultKexList[Index]);
   }
@@ -93,7 +93,7 @@ void TSessionData::Default()
   SetProxyDNS(asAuto);
   SetProxyLocalhost(false);
 
-  for (int Index = 0; Index < LENOF(FBugs); Index++)
+  for (size_t Index = 0; Index < LENOF(FBugs); Index++)
   {
     SetBug(static_cast<TSshBug>(Index), asAuto);
   }
@@ -145,7 +145,7 @@ void TSessionData::Default()
   SetSFTPMinPacketSize(0);
   SetSFTPMaxPacketSize(0);
 
-  for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
+  for (size_t Index = 0; Index < LENOF(FSFTPBugs); Index++)
   {
     SetSFTPBug(static_cast<TSftpBug>(Index), asAuto);
   }
@@ -268,7 +268,7 @@ void TSessionData::Assign(nb::TPersistent * Source)
     DUPL(ProxyDNS);
     DUPL(ProxyLocalhost);
 
-    for (int Index = 0; Index < LENOF(FBugs); Index++)
+    for (size_t Index = 0; Index < LENOF(FBugs); Index++)
     {
       // DUPL(Bug[(TSshBug)Index]);
       (static_cast<TSessionData *>(Source))->SetBug(static_cast<TSshBug>(Index),
@@ -284,7 +284,7 @@ void TSessionData::Assign(nb::TPersistent * Source)
     DUPL(SFTPMinPacketSize);
     DUPL(SFTPMaxPacketSize);
 
-    for (int Index = 0; Index < LENOF(FSFTPBugs); Index++)
+    for (size_t Index = 0; Index < LENOF(FSFTPBugs); Index++)
     {
       // DUPL(SFTPBug[(TSftpBug)Index]);
       (static_cast<TSessionData *>(Source))->SetSFTPBug(static_cast<TSftpBug>(Index),
@@ -1474,31 +1474,31 @@ bool TSessionData::GetUsesSsh()
   return (GetFSProtocol() < fsFTP);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetCipher(int Index, TCipher value)
+void TSessionData::SetCipher(size_t Index, TCipher value)
 {
-  assert(Index >= 0 && Index < CIPHER_COUNT);
+  assert(Index != -1 && Index < CIPHER_COUNT);
   SET_SESSION_PROPERTY(Ciphers[Index]);
 }
 //---------------------------------------------------------------------
-TCipher TSessionData::GetCipher(int Index) const
+TCipher TSessionData::GetCipher(size_t Index) const
 {
-  assert(Index >= 0 && Index < CIPHER_COUNT);
+  assert(Index != -1 && Index < CIPHER_COUNT);
   return FCiphers[Index];
 }
 //---------------------------------------------------------------------
 void TSessionData::SetCipherList(const std::wstring value)
 {
   bool Used[CIPHER_COUNT];
-  for (int C = 0; C < CIPHER_COUNT; C++)
+  for (size_t C = 0; C < CIPHER_COUNT; C++)
     Used[C] = false;
 
   std::wstring CipherStr;
-  int Index = 0;
+  size_t Index = 0;
   std::wstring val = value;
   while (!val.empty() && (Index < CIPHER_COUNT))
   {
     CipherStr = CutToChar(val, ',', true);
-    for (int C = 0; C < CIPHER_COUNT; C++)
+    for (size_t C = 0; C < CIPHER_COUNT; C++)
     {
       if (!::AnsiCompareIC(CipherStr, CipherNames[C]))
       {
@@ -1510,7 +1510,7 @@ void TSessionData::SetCipherList(const std::wstring value)
     }
   }
 
-  for (int C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
+  for (size_t C = 0; C < CIPHER_COUNT && Index < CIPHER_COUNT; C++)
   {
     if (!Used[DefaultCipherList[C]]) SetCipher(Index++, DefaultCipherList[C]);
   }
@@ -1519,22 +1519,22 @@ void TSessionData::SetCipherList(const std::wstring value)
 std::wstring TSessionData::GetCipherList() const
 {
   std::wstring Result;
-  for (int Index = 0; Index < CIPHER_COUNT; Index++)
+  for (size_t Index = 0; Index < CIPHER_COUNT; Index++)
   {
     Result += std::wstring(Index ? L"," : L"") + CipherNames[GetCipher(Index)];
   }
   return Result;
 }
 //---------------------------------------------------------------------
-void TSessionData::SetKex(int Index, TKex value)
+void TSessionData::SetKex(size_t Index, TKex value)
 {
-  assert(Index >= 0 && Index < KEX_COUNT);
+  assert(Index != -1 && Index < KEX_COUNT);
   SET_SESSION_PROPERTY(Kex[Index]);
 }
 //---------------------------------------------------------------------
-TKex TSessionData::GetKex(int Index) const
+TKex TSessionData::GetKex(size_t Index) const
 {
-  assert(Index >= 0 && Index < KEX_COUNT);
+  assert(Index != -1 && Index < KEX_COUNT);
   return FKex[Index];
 }
 //---------------------------------------------------------------------
@@ -1544,7 +1544,7 @@ void TSessionData::SetKexList(const std::wstring value)
   for (int K = 0; K < KEX_COUNT; K++) Used[K] = false;
 
   std::wstring KexStr;
-  int Index = 0;
+  size_t Index = 0;
   std::wstring val = value;
   while (!val.empty() && (Index < KEX_COUNT))
   {
@@ -1570,7 +1570,7 @@ void TSessionData::SetKexList(const std::wstring value)
 std::wstring TSessionData::GetKexList() const
 {
   std::wstring Result;
-  for (int Index = 0; Index < KEX_COUNT; Index++)
+  for (size_t Index = 0; Index < KEX_COUNT; Index++)
   {
     Result += std::wstring(Index ? L"," : L"") + KexNames[GetKex(Index)];
   }
@@ -1623,7 +1623,7 @@ void TSessionData::SetFSProtocol(TFSProtocol value)
 //---------------------------------------------------------------------
 std::wstring TSessionData::GetFSProtocolStr()
 {
-  assert(GetFSProtocol() >= 0 && GetFSProtocol() < FSPROTOCOL_COUNT);
+  assert(GetFSProtocol() != -1 && GetFSProtocol() < FSPROTOCOL_COUNT);
   return FSProtocolNames[GetFSProtocol()];
 }
 //---------------------------------------------------------------------------
@@ -1656,7 +1656,7 @@ bool TSessionData::GetDefaultShell()
 void TSessionData::SetProtocolStr(const std::wstring value)
 {
   FProtocol = ptRaw;
-  for (int Index = 0; Index < PROTOCOL_COUNT; Index++)
+  for (size_t Index = 0; Index < PROTOCOL_COUNT; Index++)
   {
     if (::AnsiCompareIC(value, ProtocolNames[Index]) == 0)
     {
@@ -2000,13 +2000,13 @@ void TSessionData::SetFtpProxyLogonType(int value)
 //---------------------------------------------------------------------
 void TSessionData::SetBug(TSshBug Bug, TAutoSwitch value)
 {
-  assert(Bug >= 0 && Bug < LENOF(FBugs));
+  assert(Bug != -1 && Bug < LENOF(FBugs));
   SET_SESSION_PROPERTY(Bugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
-  assert(Bug >= 0 && Bug < LENOF(FBugs));
+  assert(Bug != -1 && Bug < LENOF(FBugs));
   return FBugs[Bug];
 }
 //---------------------------------------------------------------------
@@ -2052,13 +2052,13 @@ void TSessionData::SetSFTPMaxPacketSize(unsigned long value)
 //---------------------------------------------------------------------
 void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch value)
 {
-  assert(Bug >= 0 && Bug < LENOF(FSFTPBugs));
+  assert(Bug != -1 && Bug < LENOF(FSFTPBugs));
   SET_SESSION_PROPERTY(SFTPBugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
-  assert(Bug >= 0 && Bug < LENOF(FSFTPBugs));
+  assert(Bug != -1 && Bug < LENOF(FSFTPBugs));
   return FSFTPBugs[Bug];
 }
 //---------------------------------------------------------------------

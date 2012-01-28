@@ -210,17 +210,17 @@ bool TWinSCPPlugin::ConfigureEx(int /*Item*/)
       {
         delete MenuItems;
       } BOOST_SCOPE_EXIT_END
-    int MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
-    int MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
-    int MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
-    int MTransfer = MenuItems->Add(GetMsg(CONFIG_TRANSFER));
-    int MBackground = MenuItems->Add(GetMsg(CONFIG_BACKGROUND));
-    int MEndurance = MenuItems->Add(GetMsg(CONFIG_ENDURANCE));
-    int MTransferEditor = MenuItems->Add(GetMsg(CONFIG_TRANSFER_EDITOR));
-    int MLogging = MenuItems->Add(GetMsg(CONFIG_LOGGING));
-    int MIntegration = MenuItems->Add(GetMsg(CONFIG_INTEGRATION));
+    size_t MInterface = MenuItems->Add(GetMsg(CONFIG_INTERFACE));
+    size_t MConfirmations = MenuItems->Add(GetMsg(CONFIG_CONFIRMATIONS));
+    size_t MPanel = MenuItems->Add(GetMsg(CONFIG_PANEL));
+    size_t MTransfer = MenuItems->Add(GetMsg(CONFIG_TRANSFER));
+    size_t MBackground = MenuItems->Add(GetMsg(CONFIG_BACKGROUND));
+    size_t MEndurance = MenuItems->Add(GetMsg(CONFIG_ENDURANCE));
+    size_t MTransferEditor = MenuItems->Add(GetMsg(CONFIG_TRANSFER_EDITOR));
+    size_t MLogging = MenuItems->Add(GetMsg(CONFIG_LOGGING));
+    size_t MIntegration = MenuItems->Add(GetMsg(CONFIG_INTEGRATION));
     MenuItems->AddSeparator();
-    int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
+    size_t MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
     int Result;
 
@@ -442,29 +442,29 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     bool FSVisible = FSConnected && FromFileSystem;
     bool AnyFSVisible = (FSConnected || AnotherFSConnected) && FromFileSystem;
 
-    int MAttributes = MenuItems->Add(GetMsg(MENU_COMMANDS_ATTRIBUTES), FSVisible);
-    int MLink = MenuItems->Add(GetMsg(MENU_COMMANDS_LINK), FSVisible);
-    int MApplyCommand = MenuItems->Add(GetMsg(MENU_COMMANDS_APPLY_COMMAND), FSVisible);
-    int MFullSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
-    int MSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
-    int MQueue = MenuItems->Add(GetMsg(MENU_COMMANDS_QUEUE), FSVisible);
-    int MInformation = MenuItems->Add(GetMsg(MENU_COMMANDS_INFORMATION), FSVisible);
-    int MLog = MenuItems->Add(GetMsg(MENU_COMMANDS_LOG), FSVisible);
-    int MClearCaches = MenuItems->Add(GetMsg(MENU_COMMANDS_CLEAR_CACHES), FSVisible);
-    int MPutty = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTY), FSVisible);
-    int MEditHistory = MenuItems->Add(GetMsg(MENU_COMMANDS_EDIT_HISTORY), FSConnected);
+    size_t MAttributes = MenuItems->Add(GetMsg(MENU_COMMANDS_ATTRIBUTES), FSVisible);
+    size_t MLink = MenuItems->Add(GetMsg(MENU_COMMANDS_LINK), FSVisible);
+    size_t MApplyCommand = MenuItems->Add(GetMsg(MENU_COMMANDS_APPLY_COMMAND), FSVisible);
+    size_t MFullSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
+    size_t MSynchronize = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
+    size_t MQueue = MenuItems->Add(GetMsg(MENU_COMMANDS_QUEUE), FSVisible);
+    size_t MInformation = MenuItems->Add(GetMsg(MENU_COMMANDS_INFORMATION), FSVisible);
+    size_t MLog = MenuItems->Add(GetMsg(MENU_COMMANDS_LOG), FSVisible);
+    size_t MClearCaches = MenuItems->Add(GetMsg(MENU_COMMANDS_CLEAR_CACHES), FSVisible);
+    size_t MPutty = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTY), FSVisible);
+    size_t MEditHistory = MenuItems->Add(GetMsg(MENU_COMMANDS_EDIT_HISTORY), FSConnected);
     MenuItems->AddSeparator(FSConnected || FSVisible);
-    int MAddBookmark = MenuItems->Add(GetMsg(MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
-    int MOpenDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
-    int MHomeDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
-    int MSynchronizeBrowsing = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
+    size_t MAddBookmark = MenuItems->Add(GetMsg(MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
+    size_t MOpenDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
+    size_t MHomeDirectory = MenuItems->Add(GetMsg(MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
+    size_t MSynchronizeBrowsing = MenuItems->Add(GetMsg(MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
     MenuItems->AddSeparator(FSVisible);
-    int MPageant = MenuItems->Add(GetMsg(MENU_COMMANDS_PAGEANT), FromFileSystem);
-    int MPuttygen = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTYGEN), FromFileSystem);
+    size_t MPageant = MenuItems->Add(GetMsg(MENU_COMMANDS_PAGEANT), FromFileSystem);
+    size_t MPuttygen = MenuItems->Add(GetMsg(MENU_COMMANDS_PUTTYGEN), FromFileSystem);
     MenuItems->AddSeparator(FromFileSystem);
-    int MImportSessions = MenuItems->Add(GetMsg(MENU_COMMANDS_IMPORT_SESSIONS));
-    int MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
-    int MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
+    size_t MImportSessions = MenuItems->Add(GetMsg(MENU_COMMANDS_IMPORT_SESSIONS));
+    size_t MConfigure = MenuItems->Add(GetMsg(MENU_COMMANDS_CONFIGURE));
+    size_t MAbout = MenuItems->Add(GetMsg(CONFIG_ABOUT));
 
     MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
     MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
@@ -711,7 +711,7 @@ int TWinSCPPlugin::MoreMessageDialog(const std::wstring Str,
     int AAnswers = Answers;
     bool NeverAskAgainCheck = (Params != NULL) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
     bool NeverAskAgainPending = NeverAskAgainCheck;
-    int TimeoutButton = 0;
+    size_t TimeoutButton = 0;
 
     #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
       if (AAnswers & qa ## TYPE) \

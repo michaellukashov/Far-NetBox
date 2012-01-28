@@ -106,10 +106,10 @@ public:
   bool IsTransferDone();
   void SetFile(const std::wstring AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
-  int OperationProgress();
-  unsigned long TransferBlockSize();
-  unsigned long AdjustToCPSLimit(unsigned long Size);
-  static unsigned long StaticBlockSize();
+  size_t OperationProgress();
+  size_t TransferBlockSize();
+  size_t AdjustToCPSLimit(size_t Size);
+  static size_t StaticBlockSize();
   void Reset();
   void Resume();
   void SetLocalSize(__int64 ASize);

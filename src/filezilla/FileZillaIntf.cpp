@@ -404,7 +404,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.LinkTarget = reinterpret_cast<const wchar_t *>(Source.linkTarget.GetBuffer(Source.linkTarget.GetLength()));
         }
 
-        int Num = Directory->num;
+        size_t Num = Directory->num;
         TListDataEntry * pEntries = Num > 0 ? &Entries[0] : NULL;
         Result = HandleListData(nb::W2MB(Path.GetBuffer(Path.GetLength())).c_str(), pEntries, Num);
         delete Directory;
