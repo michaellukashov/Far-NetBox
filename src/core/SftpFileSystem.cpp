@@ -3951,7 +3951,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
   const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int Flags)
 {
-  // DEBUG_PRINTF(L"FileName = %s, TargetDir = %s", FileName.c_str(), TargetDir.c_str());
+  DEBUG_PRINTF(L"FileName = %s, TargetDir = %s", FileName.c_str(), TargetDir.c_str());
   // the same in TFTPFileSystem
   bool Retry;
 
@@ -3992,7 +3992,7 @@ void TSFTPFileSystem::SFTPSourceRobust(const std::wstring FileName,
     }
   }
   while (Retry);
-  // DEBUG_PRINTF(L"end");
+  DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::SFTPSource(const std::wstring FileName,
