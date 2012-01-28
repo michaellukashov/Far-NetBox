@@ -1,5 +1,6 @@
 NetBox 2.0.7 ??.01.2012
 ---------------------
+  * Session properties: UTF-8 encoding for filenames is "On" by default
   * SSL core upgraded to OpenSSL 1.0.0g
   * Bugfix: command-line prefix "netbox:" was not handled properly
   * Update documentation
