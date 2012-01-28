@@ -32,39 +32,8 @@ extern const std::wstring sLineBreak;
 std::wstring MB2W(const char *src, const UINT cp = CP_ACP);
 std::string W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 //---------------------------------------------------------------------------
-inline size_t __cdecl debug_printf(const wchar_t *format, ...)
-{
-    (void)format;
-    size_t len = 0;
-#ifdef NETBOX_DEBUG
-    va_list args;
-    va_start(args, format);
-    len = _vscwprintf(format, args);
-    std::wstring buf(len + sizeof(wchar_t), 0);
-    vswprintf_s(&buf[0], buf.size(), format, args);
-
-    va_end(args);
-    OutputDebugStringW(buf.c_str());
-#endif
-    return len;
-}
-
-inline size_t __cdecl debug_printf2(const char *format, ...)
-{
-    (void)format;
-    size_t len = 0;
-#ifdef NETBOX_DEBUG
-    va_list args;
-    va_start(args, format);
-    len = _vscprintf(format, args);
-    std::string buf(len + sizeof(char), 0);
-    _vsnprintf(&buf[0], buf.size(), format, args);
-
-    va_end(args);
-    OutputDebugStringA(buf.c_str());
-#endif
-    return len;
-}
+size_t __cdecl debug_printf(const wchar_t *format, ...);
+size_t __cdecl debug_printf2(const char *format, ...);
 
 #ifdef NETBOX_DEBUG
 #define DEBUG_PRINTF(format, ...) nb::debug_printf(L"NetBox: [%s:%d] %s: "format L"\n", ExtractFilename(nb::MB2W(__FILE__).c_str(), L'\\').c_str(), __LINE__, nb::MB2W(__FUNCTION__).c_str(), __VA_ARGS__);
