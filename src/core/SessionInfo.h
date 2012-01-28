@@ -226,7 +226,7 @@ public:
   // __property bool Logging = { read = FLogging };
   bool GetLogging() { return FLogging; }
   // __property int BottomIndex = { read = GetBottomIndex };
-  int GetBottomIndex();
+  size_t GetBottomIndex();
   // __property std::wstring Line[int Index]  = { read=GetLine };
   std::wstring GetLine(int Index);
   // __property TLogLineType Type[int Index]  = { read=GetType };
@@ -240,7 +240,7 @@ public:
   // __property bool LoggingToFile = { read = GetLoggingToFile };
   bool GetLoggingToFile();
   // __property int TopIndex = { read = FTopIndex };
-  int GetTopIndex() { return FTopIndex; }
+  size_t GetTopIndex() { return FTopIndex; }
   // __property std::wstring SessionName = { read = GetSessionName };
   std::wstring GetSessionName();
   // __property std::wstring Name = { read = FName, write = FName };
@@ -263,7 +263,7 @@ private:
   std::wstring FCurrentLogFileName;
   std::wstring FCurrentFileName;
   int FLoggedLines;
-  int FTopIndex;
+  size_t FTopIndex;
   TSessionUI * FUI;
   TSessionData * FSessionData;
   std::wstring FName;

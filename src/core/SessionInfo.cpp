@@ -602,7 +602,7 @@ void TSessionLog::DoAddToParent(TLogLineType Type, const std::wstring Line)
 void TSessionLog::DoAddToSelf(TLogLineType Type, const std::wstring Line)
 {
   // DEBUG_PRINTF(L"begin: Line = %s", Line.c_str());
-  if (FTopIndex < 0)
+  if ((int)FTopIndex < 0)
   {
     FTopIndex = 0;
   }
@@ -1082,7 +1082,7 @@ void TSessionLog::AddSeparator()
   Add(llMessage, L"--------------------------------------------------------------------------");
 }
 //---------------------------------------------------------------------------
-int TSessionLog::GetBottomIndex()
+size_t TSessionLog::GetBottomIndex()
 {
   return (GetCount() > 0 ? (GetTopIndex() + GetCount() - 1) : -1);
 }

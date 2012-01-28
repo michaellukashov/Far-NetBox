@@ -2244,7 +2244,7 @@ void TSCPFileSystem::SCPSink(const std::wstring TargetDir,
         Initialized = true;
 
         // First characted distinguish type of control record
-        char Ctrl = Line[0];
+        char Ctrl = static_cast<char>(Line[0]);
         Line.erase(0, 1);
         // DEBUG_PRINTF(L"Line ='%s', Ctrl = '%c'", Line.c_str(), Ctrl);
 

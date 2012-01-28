@@ -31,7 +31,7 @@ private:
   std::wstring FPermanentLogFileName;
   int FLogWindowLines;
   bool FLogFileAppend;
-  int FLogProtocol;
+  size_t FLogProtocol;
   int FActualLogProtocol;
   bool FLogActions;
   bool FPermanentLogActions;
@@ -167,8 +167,8 @@ public:
   bool GetLogFileAppend() { return FLogFileAppend; }
   void SetLogFileAppend(bool value);
   // __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
-  int GetLogProtocol() { return FLogProtocol; }
-  void SetLogProtocol(int value);
+  size_t GetLogProtocol() { return FLogProtocol; }
+  void SetLogProtocol(size_t value);
   // __property int ActualLogProtocol  = { read=FActualLogProtocol };
   int GetActualLogProtocol() { return FActualLogProtocol; }
   // __property bool LogActions  = { read=FLogActions, write=SetLogActions };

@@ -134,10 +134,10 @@ void TFileOperationProgressType::Resume()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-int TFileOperationProgressType::OperationProgress()
+size_t TFileOperationProgressType::OperationProgress()
 {
   assert(Count);
-  int Result = (FFilesFinished * 100)/Count;
+  size_t Result = (FFilesFinished * 100) / Count;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -232,8 +232,8 @@ bool TFileOperationProgressType::IsLocallyDone()
   return (LocallyUsed == LocalSize);
 }
 //---------------------------------------------------------------------------
-unsigned long TFileOperationProgressType::AdjustToCPSLimit(
-  unsigned long Size)
+size_t TFileOperationProgressType::AdjustToCPSLimit(
+  size_t Size)
 {
   if (CPSLimit > 0)
   {
@@ -241,7 +241,7 @@ unsigned long TFileOperationProgressType::AdjustToCPSLimit(
     // we wait until the next second
     do
     {
-      unsigned int Second = (GetTickCount() / 1000);
+      size_t Second = (GetTickCount() / 1000);
 
       if (Second != FLastSecond)
       {
@@ -362,15 +362,16 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
   AddLocallyUsed(ASize);
 }
 //---------------------------------------------------------------------------
-unsigned long TFileOperationProgressType::TransferBlockSize()
+size_t TFileOperationProgressType::TransferBlockSize()
 {
-  unsigned long Result = TRANSFER_BUF_SIZE;
-  if (TransferedSize + Result > TransferSize) Result = static_cast<unsigned long>(TransferSize - TransferedSize);
+  size_t Result = TRANSFER_BUF_SIZE;
+  if (TransferedSize + Result > TransferSize)
+    Result = (TransferSize - TransferedSize);
   Result = AdjustToCPSLimit(Result);
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned long TFileOperationProgressType::StaticBlockSize()
+size_t TFileOperationProgressType::StaticBlockSize()
 {
   return TRANSFER_BUF_SIZE;
 }

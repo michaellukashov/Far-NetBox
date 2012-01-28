@@ -2252,7 +2252,7 @@ TFarPanelModes::~TFarPanelModes()
     }
 }
 //---------------------------------------------------------------------------
-void TFarPanelModes::SetPanelMode(int Mode, const std::wstring ColumnTypes,
+void TFarPanelModes::SetPanelMode(size_t Mode, const std::wstring ColumnTypes,
         const std::wstring ColumnWidths, nb::TStrings *ColumnTitles,
         bool FullScreen, bool DetailedStatus, bool AlignExtensions,
         bool CaseConversion, const std::wstring StatusColumnTypes,
@@ -2720,7 +2720,7 @@ int TFarPanelInfo::GetFocusedIndex()
     return FPanelInfo->CurrentItem;
 }
 //---------------------------------------------------------------------------
-void TFarPanelInfo::SetFocusedIndex(int value)
+void TFarPanelInfo::SetFocusedIndex(size_t value)
 {
     // for "another panel info", there's no owner
     assert(FOwner != NULL);

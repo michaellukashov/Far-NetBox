@@ -47,9 +47,9 @@ private:
   int FWaiting;
   bool FSimple;
 
-  unsigned PendLen;
-  unsigned PendSize;
-  unsigned OutLen;
+  size_t PendLen;
+  size_t PendSize;
+  size_t OutLen;
   char * OutPtr;
   char * Pending;
   TSessionLog * FLog;
@@ -72,7 +72,7 @@ private:
   void WaitForData();
   void Discard();
   void FreeBackend();
-  void PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result);
+  void PoolForData(WSANETWORKEVENTS & Events, size_t &Result);
   inline void CaptureOutput(TLogLineType Type,
     const std::wstring Line);
   void ResetConnection();
@@ -85,7 +85,7 @@ private:
     WSANETWORKEVENTS * Events);
   void UpdateSessionInfo();
   void DispatchSendBuffer(int BufSize);
-  void SendBuffer(unsigned int & Result);
+  void SendBuffer(size_t &Result);
   int TimeoutPrompt(queryparamstimer_slot_type *PoolEvent);
 
 protected:
@@ -111,10 +111,10 @@ public:
   void Open();
   void Close();
   void KeepAlive();
-  int Receive(char * Buf, int Len);
-  bool Peek(char *& Buf, int Len);
+  size_t Receive(char * Buf, size_t Len);
+  bool Peek(char *& Buf, size_t Len);
   std::wstring ReceiveLine();
-  void Send(const char * Buf, int Len);
+  void Send(const char * Buf, size_t Len);
   void SendStr(const std::wstring Str);
   void SendSpecial(int Code);
   void Idle(unsigned int MSec = 0);
@@ -140,8 +140,8 @@ public:
     const std::wstring AName, bool NameRequired,
     const std::wstring Instructions, bool InstructionsRequired,
     nb::TStrings * Prompts, nb::TStrings * Results);
-  void FromBackend(bool IsStdErr, const char * Data, int Length);
-  void CWrite(const char * Data, int Length);
+  void FromBackend(bool IsStdErr, const char * Data, size_t Length);
+  void CWrite(const char * Data, size_t Length);
   const std::wstring GetStdError();
   void VerifyHostKey(const std::wstring Host, int Port,
     const std::wstring KeyType, const std::wstring KeyStr, const std::wstring Fingerprint);

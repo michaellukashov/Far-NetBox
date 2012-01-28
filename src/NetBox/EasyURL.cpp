@@ -356,7 +356,7 @@ int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
         RegExpSearch search = {
             strw.c_str(),
             0,
-            strw.size(),
+            static_cast<int>(strw.size()),
             m_match,
             m_brackets,
             0

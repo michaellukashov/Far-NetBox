@@ -182,7 +182,7 @@ protected:
   virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const char * Path, const TListDataEntry * Entries,
-    unsigned int Count) = 0;
+    size_t Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer) = 0;

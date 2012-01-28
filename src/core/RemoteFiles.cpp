@@ -538,7 +538,7 @@ int TRemoteToken::Compare(const TRemoteToken & rht) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRemoteToken::SetID(unsigned int value)
+void TRemoteToken::SetID(size_t value)
 {
   FID = value;
   FIDValid = true;
@@ -708,7 +708,7 @@ size_t TRemoteTokenList::GetCount() const
   return FTokens.size();
 }
 //---------------------------------------------------------------------------
-const TRemoteToken * TRemoteTokenList::GetToken(int Index) const
+const TRemoteToken * TRemoteTokenList::GetToken(size_t Index) const
 {
   return &FTokens[Index];
 }
@@ -1429,7 +1429,7 @@ std::wstring TRemoteFileList::GetFullDirectory()
   return UnixIncludeTrailingBackslash(GetDirectory());
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TRemoteFileList::GetFile(int Index)
+TRemoteFile * TRemoteFileList::GetFile(size_t Index)
 {
   return static_cast<TRemoteFile *>(GetItem(Index));
 }
@@ -1716,7 +1716,7 @@ void TRemoteDirectoryCache::DoClearFileList(const std::wstring Directory, bool S
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryCache::Delete(int Index)
+void TRemoteDirectoryCache::Delete(size_t Index)
 {
   delete (TRemoteFileList *)GetObject(Index);
   nb::TStringList::Delete(Index);
@@ -1853,7 +1853,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
 void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
 {
   Data = L"A";
-  int ACount = GetCount();
+  size_t ACount = GetCount();
   if (ACount > FMaxSize)
   {
     nb::TStrings * Limited = new nb::TStringList();
@@ -1862,7 +1862,7 @@ void TRemoteDirectoryChangesCache::Serialize(std::wstring & Data)
       {
         delete Limited;
       } BOOST_SCOPE_EXIT_END
-      int Index = ACount - FMaxSize;
+      size_t Index = ACount - FMaxSize;
       while (Index < ACount)
       {
         Limited->Add(GetString(Index));
@@ -2373,7 +2373,7 @@ std::wstring TRights::GetModeStr() const
   std::wstring Result;
   std::wstring SetModeStr, UnsetModeStr;
   TRight Right;
-  int Index;
+  size_t Index;
 
   for (int Group = 0; Group < 3; Group++)
   {

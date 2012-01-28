@@ -123,7 +123,7 @@ protected:
   bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult);
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    unsigned int Count);
+    size_t Count);
   bool HandleTransferStatus(bool Valid, __int64 TransferSize,
     __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
     bool FileTransfer);

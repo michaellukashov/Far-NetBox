@@ -349,7 +349,7 @@ static long OpenWinSCPKey(HKEY Key, const char * SubKey, HKEY * Result, bool Can
   USEDPARAM(Key);
 
   std::wstring RegKey = nb::MB2W(SubKey);
-  int PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().size();
+  size_t PuttyKeyLen = Configuration->GetPuttyRegistryStorageKey().size();
   assert(RegKey.substr(0, PuttyKeyLen) == Configuration->GetPuttyRegistryStorageKey());
   RegKey = RegKey.substr(PuttyKeyLen, RegKey.size() - PuttyKeyLen);
   // DEBUG_PRINTF(L"RegKey = %s", RegKey.c_str());

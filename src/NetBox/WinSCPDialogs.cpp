@@ -266,11 +266,11 @@ void TTabButton::SetTabName(const std::wstring Value)
   if (FTabName != value)
   {
     std::wstring C;
-    int P = ::Pos(value, L"|");
+    size_t P = ::Pos(value, L"|");
     if (P > 0)
     {
       C = value.substr(0, P);
-      value.erase(0, P+1);
+      value.erase(0, P + 1);
     }
     else
     {
@@ -1537,8 +1537,8 @@ protected:
 private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData;
-  int FTransferProtocolIndex;
-  int FLoginTypeIndex;
+  size_t FTransferProtocolIndex;
+  size_t FLoginTypeIndex;
 
   TTabButton * SshTab;
   TTabButton * AuthenticatonTab;
@@ -1658,9 +1658,9 @@ private:
   void SavePing(TSessionData * SessionData);
   int LoginTypeToIndex(TLoginType LoginType);
   int FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback);
-  TFSProtocol IndexToFSProtocol(int Index, bool AllowScpFallback);
+  TFSProtocol IndexToFSProtocol(size_t Index, bool AllowScpFallback);
   TFSProtocol GetFSProtocol();
-  TLoginType IndexToLoginType(int Index);
+  TLoginType IndexToLoginType(size_t Index);
   TLoginType GetLoginType();
   bool VerifyKey(std::wstring FileName, bool TypeOnly);
   void CipherButtonClick(TFarButton * Sender, bool & Close);
@@ -3667,7 +3667,7 @@ TLoginType TSessionDialog::GetLoginType()
   return IndexToLoginType(LoginTypeCombo->GetItems()->GetSelected());
 }
 //---------------------------------------------------------------------------
-TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
+TFSProtocol TSessionDialog::IndexToFSProtocol(size_t Index, bool AllowScpFallback)
 {
   bool InBounds = (Index >= 0) && (Index < LENOF(FSOrder));
   assert(InBounds);
@@ -3683,7 +3683,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(int Index, bool AllowScpFallback)
   return Result;
 }
 //---------------------------------------------------------------------------
-TLoginType TSessionDialog::IndexToLoginType(int Index)
+TLoginType TSessionDialog::IndexToLoginType(size_t Index)
 {
   bool InBounds = (Index >= 0) && (Index <= ltNormal);
   assert(InBounds);
@@ -3790,8 +3790,8 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
   {
-    int Source = KexListBox->GetItems()->GetSelected();
-    int Dest = Source + Sender->GetResult();
+    size_t Source = KexListBox->GetItems()->GetSelected();
+    size_t Dest = Source + Sender->GetResult();
 
     KexListBox->GetItems()->Move(Source, Dest);
     KexListBox->GetItems()->SetSelected(Dest);
@@ -5452,7 +5452,7 @@ protected:
   void ClipboardAddItem(nb::TObject * Control, int Label, std::wstring Value);
   void FeedControls();
   void UpdateControls();
-  TLabelList * CreateLabelArray(int Count);
+  TLabelList * CreateLabelArray(size_t Count);
   virtual void SelectTab(int Tab);
   virtual void Change();
   void SpaceAvailableButtonClick(TFarButton * Sender, bool & Close);
@@ -5609,12 +5609,12 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   OkButton->SetCenterGroup(true);
 }
 //---------------------------------------------------------------------------
-TLabelList * TFileSystemInfoDialog::CreateLabelArray(int Count)
+TLabelList * TFileSystemInfoDialog::CreateLabelArray(size_t Count)
 {
   TLabelList * List = new TLabelList();
   try
   {
-    for (int Index = 0; Index < Count; Index++)
+    for (size_t Index = 0; Index < Count; Index++)
     {
       List->Add(new TFarText(this));
     }
@@ -5989,9 +5989,9 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
           delete Bookmarks;
           delete BookmarkPaths;
         } BOOST_SCOPE_EXIT_END
-      int BookmarksOffset = -1;
+      size_t BookmarksOffset = -1;
 
-      int MaxLength = FPlugin->MaxMenuItemLength();
+      size_t MaxLength = FPlugin->MaxMenuItemLength();
       size_t MaxHistory = 40;
       size_t FirstHistory = 0;
 
@@ -6097,7 +6097,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         assert(BreakCode >= 0 && BreakCode <= 4);
         if ((BreakCode == 0) || (BreakCode == 1))
         {
-          assert(ItemFocused >= 0);
+          assert(ItemFocused != -1);
           if (ItemFocused >= BookmarksOffset)
           {
             TBookmark * Bookmark = static_cast<TBookmark *>(Bookmarks->GetItem(ItemFocused - BookmarksOffset));
@@ -6120,7 +6120,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
           Repeat = true;
         }
       }
-      else if (ItemFocused >= 0)
+      else if (ItemFocused != -1)
       {
         Directory = BookmarkPaths->GetString(ItemFocused);
         if (Directory.empty())
@@ -6130,7 +6130,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
         }
       }
 
-      Result = (BreakCode < 0) && (ItemFocused >= 0);
+      Result = (BreakCode < 0) && (ItemFocused != -1);
     }
   }
   while (Repeat);
@@ -6791,13 +6791,13 @@ private:
   size_t FChecked;
 
   void AdaptSize();
-  int ColumnWidth(int Index);
+  int ColumnWidth(size_t Index);
   void LoadChecklist();
   void RefreshChecklist(bool Scroll);
   void UpdateControls();
   void CheckAll(bool Check);
   std::wstring ItemLine(const TSynchronizeChecklist::TItem * ChecklistItem);
-  void AddColumn(std::wstring & List, std::wstring Value, int Width,
+  void AddColumn(std::wstring & List, std::wstring Value, size_t Column,
     bool Header = false);
   std::wstring FormatSize(__int64 Size, int Column);
 };
@@ -6861,7 +6861,7 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 }
 //---------------------------------------------------------------------------
 void TSynchronizeChecklistDialog::AddColumn(std::wstring & List,
-  std::wstring Value, int Column, bool Header)
+  std::wstring Value, size_t Column, bool Header)
 {
   // OEM character set (Ansi does not have the ascii art we need)
   char Separator = '\xB3';
@@ -6872,7 +6872,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring & List,
   bool LastCol = (Column == FColumns - 1);
   if (Len <= Width)
   {
-    int Added = 0;
+    size_t Added = 0;
     if (Header && (Len < Width))
     {
       Added += (Width - Len) / 2;
@@ -6976,7 +6976,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 
   while (TotalAssigned < Width)
   {
-    int GrowIndex = 0;
+    size_t GrowIndex = 0;
     double MaxMissing = 0.0;
     for (size_t Index = 0; Index < FColumns; Index++)
     {
@@ -7250,8 +7250,8 @@ void TSynchronizeChecklistDialog::VideoModeButtonClick(
 void TSynchronizeChecklistDialog::ListBoxClick(
   TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/)
 {
-  int Index = ListBox->GetItems()->GetSelected();
-  if (Index >= 0)
+  size_t Index = ListBox->GetItems()->GetSelected();
+  if (Index != -1)
   {
     if (ListBox->GetItems()->GetChecked(Index))
     {

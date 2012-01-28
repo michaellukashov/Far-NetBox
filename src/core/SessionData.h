@@ -137,7 +137,7 @@ private:
   std::wstring FTunnelUserName;
   std::wstring FTunnelPassword;
   std::wstring FTunnelPublicKeyFile;
-  size_t FTunnelLocalPortNumber;
+  int FTunnelLocalPortNumber;
   std::wstring FTunnelPortFwd;
   bool FFtpPasvMode;
   bool FFtpForcePasvIp;
@@ -231,12 +231,12 @@ public:
   bool GetSsh2DES() const { return FSsh2DES; }
   // __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
   bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
-  // __property TCipher Cipher[int Index] = { read=GetCipher, write=SetCipher };
-  void SetCipher(int Index, TCipher value);
-  TCipher GetCipher(int Index) const;
-  // __property TKex Kex[int Index] = { read=GetKex, write=SetKex };
-  void SetKex(int Index, TKex value);
-  TKex GetKex(int Index) const;
+  // __property TCipher Cipher[size_t Index] = { read=GetCipher, write=SetCipher };
+  void SetCipher(size_t Index, TCipher value);
+  TCipher GetCipher(size_t Index) const;
+  // __property TKex Kex[size_t Index] = { read=GetKex, write=SetKex };
+  void SetKex(size_t Index, TKex value);
+  TKex GetKex(size_t Index) const;
   // __property std::wstring PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
   const std::wstring GetPublicKeyFile() const { return FPublicKeyFile; }
   // __property TProtocol Protocol  = { read=FProtocol, write=SetProtocol };
@@ -559,7 +559,7 @@ public:
   TSessionData *NewSession(const std::wstring SessionName, TSessionData *Session);
   TSessionData *ParseUrl(const std::wstring Url, TOptions *Options, bool &DefaultsOnly,
     std::wstring *FileName = NULL, bool *ProtocolDefined = NULL);
-  // __property TSessionData * Sessions[int Index]  = { read=AtSession };
+  // __property TSessionData * Sessions[size_t Index]  = { read=AtSession };
   TSessionData *GetSession(size_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
   // __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   TSessionData *GetDefaultSettings() const { return FDefaultSettings; }

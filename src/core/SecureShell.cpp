@@ -655,7 +655,7 @@ void TSecureShell::GotHostKey()
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::CWrite(const char * Data, int Length)
+void TSecureShell::CWrite(const char * Data, size_t Length)
 {
   // some messages to stderr may indicate that something has changed with the
   // session, so reset the session info
@@ -695,7 +695,7 @@ void TSecureShell::UnregisterReceiveHandler(const nb::notify_slot_type &Handler)
   FOnReceive.disconnect_all_slots();
 }
 //---------------------------------------------------------------------------
-void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
+void TSecureShell::FromBackend(bool IsStdErr, const char *Data, size_t Length)
 {
   CheckConnection();
 
@@ -770,7 +770,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const char *Data, int Length)
   }
 }
 //---------------------------------------------------------------------------
-bool TSecureShell::Peek(char *& Buf, int Len)
+bool TSecureShell::Peek(char *& Buf, size_t Len)
 {
   bool Result = (static_cast<int>(PendLen) >= Len);
 
@@ -782,7 +782,7 @@ bool TSecureShell::Peek(char *& Buf, int Len)
   return Result;
 }
 //---------------------------------------------------------------------------
-int TSecureShell::Receive(char * Buf, int Len)
+size_t TSecureShell::Receive(char * Buf, size_t Len)
 {
   CheckConnection();
 
@@ -864,7 +864,7 @@ std::wstring TSecureShell::ReceiveLine()
       }
       EOL = static_cast<bool>(Index && (Pending[Index-1] == '\n'));
       // DEBUG_PRINTF(L"PendLen = %d, Index = %d, EOL = %d, Pending = %s", PendLen, Index, EOL, nb::MB2W(Pending).c_str());
-      int PrevLen = Line.size();
+      size_t PrevLen = Line.size();
       Line.resize(PrevLen + Index);
       Receive(const_cast<char *>(Line.c_str()) + PrevLen, Index);
     }
@@ -925,7 +925,7 @@ int TSecureShell::TimeoutPrompt(queryparamstimer_slot_type *PoolEvent)
   return Answer;
 }
 //---------------------------------------------------------------------------
-void TSecureShell::SendBuffer(unsigned int & Result)
+void TSecureShell::SendBuffer(size_t &Result)
 {
   // for comments see PoolForData
   if (!GetActive())
@@ -995,13 +995,13 @@ void TSecureShell::DispatchSendBuffer(int BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 //---------------------------------------------------------------------------
-void TSecureShell::Send(const char * Buf, int Len)
+void TSecureShell::Send(const char * Buf, size_t Len)
 {
   CheckConnection();
-  int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(Buf), Len);
+  size_t BufSize = FBackend->send(FBackendHandle, const_cast<char *>(Buf), Len);
   if (Configuration->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Sent %u bytes", static_cast<int>(Len)));
+    LogEvent(FORMAT(L"Sent %u bytes", Len));
     LogEvent(FORMAT(L"There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = nb::Now();
@@ -1348,7 +1348,7 @@ void inline TSecureShell::CheckConnection(int Message)
   }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, unsigned int & Result)
+void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, size_t &Result)
 {
   if (!GetActive())
   {
@@ -1395,7 +1395,7 @@ public:
   {
   }
 
-  void PoolForData(unsigned int & Result)
+  void PoolForData(size_t &Result)
   {
     FSecureShell->PoolForData(FEvents, Result);
   }

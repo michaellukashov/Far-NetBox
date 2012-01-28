@@ -836,7 +836,7 @@ long TFarDialog::SendMessage(int Msg, int Param1, int Param2)
     return GetFarPlugin()->GetStartupInfo()->SendDlgMessage(GetHandle(), Msg, Param1, Param2);
 }
 //---------------------------------------------------------------------------
-int TFarDialog::GetSystemColor(unsigned int Index)
+int TFarDialog::GetSystemColor(size_t Index)
 {
     return static_cast<int>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, Index));
 }
@@ -990,7 +990,7 @@ void TFarDialogContainer::Remove(TFarDialogItem *Item)
     }
 }
 //---------------------------------------------------------------------------
-void TFarDialogContainer::SetPosition(int Index, int value)
+void TFarDialogContainer::SetPosition(size_t Index, int value)
 {
     int &Position = Index ? FTop : FLeft;
     if (Position != value)
@@ -1121,12 +1121,12 @@ void TFarDialogItem::UpdateBounds()
     }
 }
 //---------------------------------------------------------------------------
-char TFarDialogItem::GetColor(int Index)
+char TFarDialogItem::GetColor(size_t Index)
 {
     return *((reinterpret_cast<char *>(&FColors)) + Index);
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetColor(int Index, char value)
+void TFarDialogItem::SetColor(size_t Index, char value)
 {
     if (GetColor(Index) != value)
     {
@@ -1232,7 +1232,7 @@ int TFarDialogItem::GetType()
     return GetDialogItem()->Type;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetAlterType(int Index, bool value)
+void TFarDialogItem::SetAlterType(size_t Index, bool value)
 {
     if (GetAlterType(Index) != value)
     {
@@ -1240,12 +1240,12 @@ void TFarDialogItem::SetAlterType(int Index, bool value)
     }
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetAlterType(int Index)
+bool TFarDialogItem::GetAlterType(size_t Index)
 {
     return (GetType() == Index);
 }
 //---------------------------------------------------------------------------
-bool TFarDialogItem::GetFlag(int Index)
+bool TFarDialogItem::GetFlag(size_t Index)
 {
     bool Result = (GetFlags() & (Index & 0xFFFFFF00UL)) != 0;
     if (Index & 0x000000FFUL)
@@ -1255,7 +1255,7 @@ bool TFarDialogItem::GetFlag(int Index)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetFlag(int Index, bool value)
+void TFarDialogItem::SetFlag(size_t Index, bool value)
 {
     if (GetFlag(Index) != value)
     {
@@ -1531,7 +1531,7 @@ void TFarDialogItem::MoveAt(int X, int Y)
     Move(X - GetLeft(), Y - GetTop());
 }
 //---------------------------------------------------------------------------
-void TFarDialogItem::SetCoordinate(int Index, int value)
+void TFarDialogItem::SetCoordinate(size_t Index, int value)
 {
     assert(sizeof(nb::TRect) == sizeof(long) * 4);
     nb::TRect R = GetBounds();
@@ -1541,7 +1541,7 @@ void TFarDialogItem::SetCoordinate(int Index, int value)
     SetBounds(R);
 }
 //---------------------------------------------------------------------------
-int TFarDialogItem::GetCoordinate(int Index)
+int TFarDialogItem::GetCoordinate(size_t Index)
 {
     assert(sizeof(nb::TRect) == sizeof(long) * 4);
     nb::TRect R = GetBounds();
@@ -1997,7 +1997,7 @@ long TFarEdit::ItemProc(int Msg, long Param)
     return TFarDialogItem::ItemProc(Msg, Param);
 }
 //---------------------------------------------------------------------------
-std::wstring TFarEdit::GetHistoryMask(int Index)
+std::wstring TFarEdit::GetHistoryMask(size_t Index)
 {
     std::wstring Result =
         ((Index == 0) && (GetFlags() & DIF_HISTORY)) ||
@@ -2009,7 +2009,7 @@ std::wstring TFarEdit::GetHistoryMask(int Index)
     return Result;
 }
 //---------------------------------------------------------------------------
-void TFarEdit::SetHistoryMask(int Index, const std::wstring value)
+void TFarEdit::SetHistoryMask(size_t Index, const std::wstring value)
 {
     if (GetHistoryMask(Index) != value)
     {
@@ -2162,7 +2162,7 @@ void TFarList::Assign(nb::TPersistent *Source)
     }
 }
 //---------------------------------------------------------------------------
-void TFarList::UpdateItem(int Index)
+void TFarList::UpdateItem(size_t Index)
 {
     FarListItem *ListItem = &FListItems->Items[Index];
     std::wstring value = GetString(Index).c_str();
@@ -2179,7 +2179,7 @@ void TFarList::UpdateItem(int Index)
     GetDialogItem()->SendMessage(DM_LISTUPDATE, reinterpret_cast<int>(&ListUpdate));
 }
 //---------------------------------------------------------------------------
-void TFarList::Put(int Index, const std::wstring S)
+void TFarList::Put(size_t Index, const std::wstring S)
 {
     if ((GetDialogItem() != NULL) && GetDialogItem()->GetDialog()->GetHandle())
     {
@@ -2302,7 +2302,7 @@ void TFarList::UpdatePosition(int Position)
     }
 }
 //---------------------------------------------------------------------------
-void TFarList::SetCurPos(int Position, int TopIndex)
+void TFarList::SetCurPos(size_t Position, size_t TopIndex)
 {
     assert(GetDialogItem() != NULL);
     assert(GetDialogItem()->GetDialog()->GetHandle());
@@ -2312,7 +2312,7 @@ void TFarList::SetCurPos(int Position, int TopIndex)
     GetDialogItem()->SendMessage(DM_LISTSETCURPOS, reinterpret_cast<int>(&ListPos));
 }
 //---------------------------------------------------------------------------
-void TFarList::SetTopIndex(int value)
+void TFarList::SetTopIndex(size_t value)
 {
     if (value != GetTopIndex())
     {
@@ -2399,12 +2399,12 @@ size_t TFarList::GetSelected()
     return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int TFarList::GetFlags(int Index)
+unsigned int TFarList::GetFlags(size_t Index)
 {
     return FListItems->Items[Index].Flags;
 }
 //---------------------------------------------------------------------------
-void TFarList::SetFlags(int Index, unsigned int value)
+void TFarList::SetFlags(size_t Index, unsigned int value)
 {
     if (FListItems->Items[Index].Flags != value)
     {
@@ -2598,7 +2598,7 @@ bool TFarLister::GetScrollBar()
     return (GetItems()->GetCount() > GetHeight());
 }
 //---------------------------------------------------------------------------
-void TFarLister::SetTopIndex(int value)
+void TFarLister::SetTopIndex(size_t value)
 {
     if (GetTopIndex() != value)
     {

@@ -188,7 +188,7 @@ size_t TSynchronizeChecklist::GetCount() const
   return FList->GetCount();
 }
 //---------------------------------------------------------------------------
-const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(int Index) const
+const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(size_t Index) const
 {
   return reinterpret_cast<TItem *>(FList->GetItem(Index));
 }
@@ -4429,7 +4429,7 @@ void TTerminal::SynchronizeApply(TSynchronizeChecklist * Checklist,
       LogEvent(FORMAT(L"Synchronizing local directory '%s' with remote directory '%s', "
         L"params = %d", CurrentLocalDirectory.c_str(), CurrentRemoteDirectory.c_str(), int(Params)));
 
-      int Count = 0;
+      size_t Count = 0;
 
       while ((IIndex < Checklist->GetCount()) &&
              (Checklist->GetItem(IIndex)->Local.Directory == CurrentLocalDirectory) &&
@@ -5071,7 +5071,7 @@ void TTerminalList::FreeAndNullTerminal(TTerminal * & Terminal)
   FreeTerminal(T);
 }
 //---------------------------------------------------------------------------
-TTerminal * TTerminalList::GetTerminal(int Index)
+TTerminal * TTerminalList::GetTerminal(size_t Index)
 {
   return reinterpret_cast<TTerminal *>(GetItem(Index));
 }
