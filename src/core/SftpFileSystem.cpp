@@ -212,24 +212,24 @@ struct TSFTPSupport
 class TSFTPPacket
 {
 public:
-  TSFTPPacket()
+  explicit TSFTPPacket()
   {
     Init();
   }
 
-  TSFTPPacket(const TSFTPPacket & Source)
+  explicit TSFTPPacket(const TSFTPPacket &Source)
   {
     Init();
     *this = Source;
   }
 
-  TSFTPPacket(unsigned char AType)
+  explicit TSFTPPacket(unsigned char AType)
   {
     Init();
     ChangeType(AType);
   }
 
-  TSFTPPacket(const char * Source, unsigned int Len)
+  explicit TSFTPPacket(const char * Source, size_t Len)
   {
     Init();
     FLength = Len;
@@ -237,7 +237,7 @@ public:
     memcpy(GetData(), Source, Len);
   }
 
-  TSFTPPacket(const std::wstring Source)
+  explicit TSFTPPacket(const std::wstring Source)
   {
     Init();
     FLength = Source.size();
@@ -254,7 +254,7 @@ public:
     if (FReservedBy) FReservedBy->UnreserveResponse(this);
   }
 
-  void ChangeType(unsigned char AType)
+  void ChangeType(size_t AType)
   {
     FPosition = 0;
     FLength = 0;
@@ -512,16 +512,16 @@ public:
 
   size_t GetCardinal()
   {
-    size_t Result;
+    size_t Result = 0;
     Need(sizeof(int));
     Result = GET_32BIT(FData + FPosition);
     FPosition += sizeof(int);
     return Result;
   }
 
-  unsigned long GetSmallCardinal()
+  size_t GetSmallCardinal()
   {
-    unsigned long Result;
+    size_t Result = 0;
     Need(2);
     Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     FPosition += 2;
@@ -752,7 +752,7 @@ public:
     }
   }
 
-  char * GetNextData(size_t Size = 0)
+  char *GetNextData(size_t Size = 0)
   {
     if (Size > 0)
     {
@@ -3066,7 +3066,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       ReceiveResponse(&Packet, &Response);
       if (Response.GetType() == SSH_FXP_NAME)
       {
-        TSFTPPacket ListingPacket = Response;
+        TSFTPPacket ListingPacket(Response);
 
         Packet.ChangeType(SSH_FXP_READDIR);
         Packet.AddStringA(Handle);
