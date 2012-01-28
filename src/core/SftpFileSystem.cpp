@@ -223,7 +223,7 @@ public:
     *this = Source;
   }
 
-  explicit TSFTPPacket(unsigned char AType)
+  explicit TSFTPPacket(size_t AType)
   {
     Init();
     ChangeType(AType);
