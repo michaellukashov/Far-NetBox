@@ -1,7 +1,7 @@
 NetBox 2.0.7 ??.01.2012
 ---------------------
   * SSL core upgraded to OpenSSL 1.0.0g
-  * Bugfix: prefix "netbox:" was not handled properly
+  * Bugfix: command-line prefix "netbox:" was not handled properly
   * Update documentation
   * Bugfix: Queue dialog: crash when "Suspend" is pressed
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=89460#p89460)
