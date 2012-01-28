@@ -7695,7 +7695,7 @@ void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
 void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
   bool & /*Close*/)
 {
-  bool Synchronize;
+  bool Synchronize = false;
   bool Continue = true;
   if (SynchronizeSynchronizeCheck->GetSelected() == BSTATE_3STATE)
   {
