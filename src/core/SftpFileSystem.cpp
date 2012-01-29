@@ -345,7 +345,7 @@ public:
 
     void AddProperties(unsigned short *Rights, TRemoteToken *Owner,
                        TRemoteToken *Group, __int64 *MTime, __int64 *ATime,
-                       __int64 *Size, bool IsDirectory, int Version, bool Utf)
+                       __int64 *Size, bool IsDirectory, size_t Version, bool Utf)
     {
         int Flags = 0;
         if (Size != NULL)

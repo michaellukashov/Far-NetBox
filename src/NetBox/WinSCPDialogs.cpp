@@ -4941,7 +4941,7 @@ TCopyParamType TCopyParamsContainer::GetParams()
     if (Result.GetTransferMode() == tmAutomatic)
     {
         Result.GetAsciiFileMask().SetMasks(AsciiFileMaskEdit->GetText());
-        int Start, Length;
+        size_t Start, Length;
         assert(Result.GetAsciiFileMask().GetIsValid(Start, Length));
     }
 
@@ -4977,7 +4977,7 @@ void TCopyParamsContainer::ValidateMaskComboExit(nb::TObject *Sender)
     TFarEdit *Edit = dynamic_cast<TFarEdit *>(Sender);
     assert(Edit != NULL);
     TFileMasks Masks(Edit->GetText());
-    int Start = 0, Length = 0;
+    size_t Start = 0, Length = 0;
     if (!Masks.GetIsValid(Start, Length))
     {
         Edit->SetFocus();

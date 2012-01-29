@@ -84,7 +84,7 @@ private:
     bool EventSelectLoop(unsigned int MSec, bool ReadEventRequired,
                          WSANETWORKEVENTS *Events);
     void UpdateSessionInfo();
-    void DispatchSendBuffer(int BufSize);
+    void DispatchSendBuffer(size_t BufSize);
     void SendBuffer(size_t &Result);
     int TimeoutPrompt(queryparamstimer_slot_type *PoolEvent);
 

@@ -817,7 +817,7 @@ size_t TSecureShell::Receive(char *Buf, size_t Len)
              */
             if (PendLen > 0)
             {
-                unsigned PendUsed = PendLen;
+                size_t PendUsed = PendLen;
                 if (PendUsed > OutLen)
                 {
                     PendUsed = OutLen;
@@ -961,7 +961,7 @@ void TSecureShell::SendBuffer(size_t &Result)
     }
 }
 //---------------------------------------------------------------------------
-void TSecureShell::DispatchSendBuffer(int BufSize)
+void TSecureShell::DispatchSendBuffer(size_t BufSize)
 {
     nb::TDateTime Start = nb::Now();
     do

@@ -62,7 +62,7 @@ public:
                  const std::wstring Path = L"", const TParams *Params = NULL) const;
     bool Matches(const std::wstring FileName, bool Local, bool Directory,
                  const TParams *Params = NULL) const;
-    bool GetIsValid(int &Start, int &Length) const;
+    bool GetIsValid(size_t &Start, size_t &Length) const;
     // __property std::wstring Masks = { read = FStr, write = SetMasks };
     std::wstring GetMasks() const { return FStr; }
     void SetMasks(const std::wstring value);
@@ -99,7 +99,7 @@ private:
     static inline void ReleaseMaskMask(TMaskMask &MaskMask);
     inline void Clear();
     static void Clear(TMasks &Masks);
-    static void TrimEx(std::wstring &Str, int &Start, int &End);
+    static void TrimEx(std::wstring &Str, size_t &Start, size_t &End);
     static bool MatchesMasks(const std::wstring FileName, bool Directory,
                              const std::wstring Path, const TParams *Params, const TMasks &Masks);
     static inline bool MatchesMaskMask(const TMaskMask &MaskMask, const std::wstring Str);

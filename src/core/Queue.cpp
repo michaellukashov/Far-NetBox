@@ -81,7 +81,7 @@ class TTerminalItem : public TSignalThread
     friend class TBackgroundTerminal;
 
 public:
-    explicit TTerminalItem(TTerminalQueue *Queue, int Index);
+    explicit TTerminalItem(TTerminalQueue *Queue, size_t Index);
     virtual ~TTerminalItem();
 
     virtual void Init();
@@ -100,7 +100,7 @@ protected:
     TUserAction *FUserAction;
     bool FCancel;
     bool FPause;
-    int FIndex;
+    size_t FIndex;
     TTerminalItem *Self;
 
     virtual void ProcessEvent();
@@ -432,7 +432,7 @@ void TTerminalQueue::DeleteItem(TQueueItem *Item)
             // does this need to be within guard?
             Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
             size_t Index = FItems->Remove(static_cast<nb::TObject *>(Item));
-            assert(Index < static_cast<size_t>(FItemsInProcess));
+            assert(Index < FItemsInProcess);
             USEDPARAM(Index);
             FItemsInProcess--;
             delete Item;
@@ -760,8 +760,8 @@ void TTerminalQueue::ProcessEvent()
             TGuard Guard(FItemsSection);
 
             if ((FFreeTerminals == 0) &&
-                    ((FTransfersLimit <= 0) ||
-                     (FTerminals->GetCount() < static_cast<size_t>(FTransfersLimit + FTemporaryTerminals))))
+                    (((int)FTransfersLimit <= 0) ||
+                     (FTerminals->GetCount() < FTransfersLimit + FTemporaryTerminals)))
             {
                 FOverallTerminals++;
                 TerminalItem = new TTerminalItem(this, FOverallTerminals);
@@ -843,7 +843,7 @@ void TTerminalQueue::DoShowExtendedException(
     }
 }
 //---------------------------------------------------------------------------
-void TTerminalQueue::SetTransfersLimit(int value)
+void TTerminalQueue::SetTransfersLimit(size_t value)
 {
     if (FTransfersLimit != value)
     {
@@ -921,7 +921,7 @@ bool TBackgroundTerminal::DoQueryReopen(std::exception * /*E*/)
 //---------------------------------------------------------------------------
 // TTerminalItem
 //---------------------------------------------------------------------------
-TTerminalItem::TTerminalItem(TTerminalQueue *Queue, int Index) :
+TTerminalItem::TTerminalItem(TTerminalQueue *Queue, size_t Index) :
     TSignalThread(), FQueue(Queue), FTerminal(NULL), FItem(NULL),
     FCriticalSection(NULL), FUserAction(NULL), FIndex(Index)
 {
@@ -1566,9 +1566,9 @@ void TTerminalQueueStatus::ResetStats()
     FActiveCount = -1;
 }
 //---------------------------------------------------------------------------
-int TTerminalQueueStatus::GetActiveCount()
+size_t TTerminalQueueStatus::GetActiveCount()
 {
-    if (FActiveCount < 0)
+    if ((int)FActiveCount < 0)
     {
         FActiveCount = 0;
 
