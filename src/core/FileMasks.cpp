@@ -540,7 +540,7 @@ bool TFileMasks::Matches(const std::wstring FileName, bool Local,
     return Result;
 }
 //---------------------------------------------------------------------------
-bool TFileMasks::GetIsValid(int &Start, int &Length) const
+bool TFileMasks::GetIsValid(size_t &Start, size_t &Length) const
 {
     if (IsMask(FStr) || FStr.empty())
     {
@@ -614,7 +614,7 @@ void TFileMasks::ReleaseMaskMask(TMaskMask &MaskMask)
     delete MaskMask.Mask;
 }
 //---------------------------------------------------------------------------
-void TFileMasks::TrimEx(std::wstring &Str, int &Start, int &End)
+void TFileMasks::TrimEx(std::wstring &Str, size_t &Start, size_t &End)
 {
     std::wstring Buf = TrimLeft(Str);
     Start += Str.size() - Buf.size();
@@ -665,7 +665,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
         bool Include = true;
         while (NextMaskFrom < Str.size())
         {
-            int MaskStart = NextMaskFrom;
+            size_t MaskStart = NextMaskFrom;
             char NextMaskDelimiter;
             std::wstring MaskStr;
             if (SingleMask)
@@ -679,7 +679,7 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
                 MaskStr = ::CopyToChars(Str, NextMaskFrom, L";,|", false, &NextMaskDelimiter);
                 // DEBUG_PRINTF(L"MaskStr = %s, NextMaskDelimiter = %c", MaskStr.c_str(), NextMaskDelimiter);
             }
-            int MaskEnd = NextMaskFrom - 1;
+            size_t MaskEnd = NextMaskFrom - 1;
 
             TrimEx(MaskStr, MaskStart, MaskEnd);
 
@@ -701,12 +701,12 @@ void TFileMasks::SetStr(const std::wstring Str, bool SingleMask)
                 {
                     // DEBUG_PRINTF(L"NextPartFrom = %d, MaskStr = %s, MaskStr.size = %d", NextPartFrom, MaskStr.c_str(), MaskStr.size());
                     char PartDelimiter = NextPartDelimiter;
-                    int PartFrom = NextPartFrom;
+                    size_t PartFrom = NextPartFrom;
                     std::wstring PartStr = ::CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter);
                     // DEBUG_PRINTF(L"PartStr = %s, NextPartFrom = %d, NextPartDelimiter = %c", PartStr.c_str(), NextPartFrom, NextPartDelimiter);
 
-                    int PartStart = MaskStart + PartFrom - 1;
-                    int PartEnd = MaskStart + NextPartFrom - 2;
+                    size_t PartStart = MaskStart + PartFrom - 1;
+                    size_t PartEnd = MaskStart + NextPartFrom - 2;
 
                     TrimEx(PartStr, PartStart, PartEnd);
 

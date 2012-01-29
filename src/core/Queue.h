@@ -91,8 +91,8 @@ public:
     // __property bool IsEmpty = { read = GetIsEmpty };
     bool GetIsEmpty();
     // __property int TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
-    int GetTransfersLimit() { return FTransfersLimit; }
-    void SetTransfersLimit(int value);
+    size_t GetTransfersLimit() { return FTransfersLimit; }
+    void SetTransfersLimit(size_t value);
     // __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
     queryuser_signal_type &GetOnQueryUser() { return FOnQueryUser; }
     void SetOnQueryUser(const queryuser_slot_type &value) { FOnQueryUser.connect(value); }
@@ -128,13 +128,13 @@ protected:
     TConfiguration *FConfiguration;
     TSessionData *FSessionData;
     nb::TList *FItems;
-    int FItemsInProcess;
+    size_t FItemsInProcess;
     TCriticalSection *FItemsSection;
-    int FFreeTerminals;
+    size_t FFreeTerminals;
     nb::TList *FTerminals;
-    int FTemporaryTerminals;
-    int FOverallTerminals;
-    int FTransfersLimit;
+    size_t FTemporaryTerminals;
+    size_t FOverallTerminals;
+    size_t FTransfersLimit;
     nb::TDateTime FIdleInterval;
     nb::TDateTime FLastIdle;
     TTerminalQueue *Self;
@@ -281,7 +281,7 @@ public:
     // __property int Count = { read = GetCount };
     size_t GetCount();
     // __property int ActiveCount = { read = GetActiveCount };
-    int GetActiveCount();
+    size_t GetActiveCount();
     // __property TQueueItemProxy *Items[int Index] = { read = GetItem };
     TQueueItemProxy *GetItem(size_t Index);
 

@@ -134,11 +134,11 @@ private:
     int FColor;
     bool FTunnel;
     std::wstring FTunnelHostName;
-    int FTunnelPortNumber;
+    size_t FTunnelPortNumber;
     std::wstring FTunnelUserName;
     std::wstring FTunnelPassword;
     std::wstring FTunnelPublicKeyFile;
-    int FTunnelLocalPortNumber;
+    size_t FTunnelLocalPortNumber;
     std::wstring FTunnelPortFwd;
     bool FFtpPasvMode;
     bool FFtpForcePasvIp;
@@ -405,7 +405,7 @@ public:
     // __property std::wstring TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
     std::wstring GetTunnelHostName() const { return FTunnelHostName; }
     // __property int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
-    int GetTunnelPortNumber() const { return FTunnelPortNumber; }
+    size_t GetTunnelPortNumber() const { return FTunnelPortNumber; }
     // __property std::wstring TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
     std::wstring GetTunnelUserName() const { return FTunnelUserName; }
     // __property std::wstring TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
@@ -416,7 +416,7 @@ public:
     // __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
     bool GetTunnelAutoassignLocalPortNumber();
     // __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
-    int GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
+    size_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
     // __property std::wstring TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
     std::wstring GetTunnelPortFwd() const { return FTunnelPortFwd; }
     void SetTunnelPortFwd(const std::wstring value);

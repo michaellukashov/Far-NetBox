@@ -385,7 +385,7 @@ static int fcrypt_end(unsigned char mac[], fcrypt_ctx cx[1])
 //---------------------------------------------------------------------------
 #define PASSWORD_MANAGER_AES_MODE 3
 //---------------------------------------------------------------------------
-static void FillBufferWithRandomData(char *Buf, int Len)
+static void FillBufferWithRandomData(char *Buf, size_t Len)
 {
     while (Len > 0)
     {

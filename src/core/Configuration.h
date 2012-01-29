@@ -32,7 +32,7 @@ private:
     int FLogWindowLines;
     bool FLogFileAppend;
     size_t FLogProtocol;
-    int FActualLogProtocol;
+    size_t FActualLogProtocol;
     bool FLogActions;
     bool FPermanentLogActions;
     bool FConfirmOverwriting;
@@ -170,7 +170,7 @@ public:
     size_t GetLogProtocol() { return FLogProtocol; }
     void SetLogProtocol(size_t value);
     // __property int ActualLogProtocol  = { read=FActualLogProtocol };
-    int GetActualLogProtocol() { return FActualLogProtocol; }
+    size_t GetActualLogProtocol() { return FActualLogProtocol; }
     // __property bool LogActions  = { read=FLogActions, write=SetLogActions };
     bool GetLogActions() { return FLogActions; }
     void SetLogActions(bool value);

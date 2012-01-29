@@ -44,9 +44,9 @@ private:
     fileoperationprogress_signal_type FOnProgress;
     fileoperationfinished_signal_type FOnFinished;
     bool FReset;
-    unsigned int FLastSecond;
-    unsigned long FRemainingCPS;
-    std::vector<unsigned long> FTicks;
+    size_t FLastSecond;
+    size_t FRemainingCPS;
+    std::vector<size_t> FTicks;
     std::vector<__int64> FTotalTransferredThen;
 
 protected:
@@ -99,10 +99,10 @@ public:
     void AddTransfered(__int64 ASize, bool AddToTotals = true);
     void AddResumed(__int64 ASize);
     void Clear();
-    unsigned int CPS();
+    size_t CPS();
     void Finish(const std::wstring FileName, bool Success,
                 TOnceDoneOperation &OnceDoneOperation);
-    unsigned long LocalBlockSize();
+    size_t LocalBlockSize();
     bool IsLocallyDone();
     bool IsTransferDone();
     void SetFile(const std::wstring AFileName, bool AFileInProgress = true);
@@ -123,7 +123,7 @@ public:
     void Start(TFileOperation AOperation, TOperationSide ASide, size_t ACount);
     void Start(TFileOperation AOperation,
                TOperationSide ASide, size_t ACount, bool ATemp, const std::wstring ADirectory,
-               unsigned long ACPSLimit);
+               size_t ACPSLimit);
     void Stop();
     void Suspend();
     // whole operation
@@ -132,9 +132,9 @@ public:
     nb::TDateTime TimeExpected();
     nb::TDateTime TotalTimeExpected();
     nb::TDateTime TotalTimeLeft();
-    int TransferProgress();
-    int OverallProgress();
-    int TotalTransferProgress();
+    size_t TransferProgress();
+    size_t OverallProgress();
+    size_t TotalTransferProgress();
 private:
     TFileOperationProgressType(const TFileOperationProgressType &rhs);
     void operator=(const TFileOperationProgressType &rhs);
