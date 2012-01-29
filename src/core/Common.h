@@ -46,7 +46,7 @@ std::wstring BooleanToEngStr(bool B);
 std::wstring DefaultStr(const std::wstring Str, const std::wstring Default);
 std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim);
 std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstring Chs, bool Trim,
-  char * Delimiter = NULL);
+                         char *Delimiter = NULL);
 std::wstring DelimitStr(const std::wstring Str, const std::wstring Chars);
 std::wstring ShellDelimitStr(const std::wstring Str, char Quote);
 void OemToAnsi(std::wstring &Str);
@@ -60,11 +60,11 @@ std::wstring StripPathQuotes(const std::wstring Path);
 std::wstring AddPathQuotes(const std::wstring Path);
 std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat);
 void SplitCommand(const std::wstring Command, std::wstring &Program,
-  std::wstring &Params, std::wstring &Dir);
+                  std::wstring &Params, std::wstring &Dir);
 std::wstring ExtractProgram(const std::wstring Command);
 std::wstring FormatCommand(const std::wstring Program, const std::wstring Params);
 std::wstring ExpandFileNameCommand(const std::wstring Command,
-  const std::wstring FileName);
+                                   const std::wstring FileName);
 void ReformatFileNameCommand(std::wstring &Command);
 std::wstring EscapePuttyCommandParam(const std::wstring Param);
 std::wstring ExpandEnvironmentVariables(const std::wstring Str);
@@ -107,22 +107,22 @@ bool Is2000();
 bool IsWin7();
 bool IsExactly2008R2();
 struct TPasLibModule;
-TPasLibModule * FindModule(void * Instance);
+TPasLibModule *FindModule(void *Instance);
 __int64 Round(double Number);
 //---------------------------------------------------------------------------
 // typedef void (* TProcessLocalFileEvent)
-  // (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
+// (const std::wstring FileName, const WIN32_FIND_DATA Rec, void * Param);
 typedef boost::signal3<void, const std::wstring, const WIN32_FIND_DATA, void *> processlocalfile_signal_type;
 typedef processlocalfile_signal_type::slot_type processlocalfile_slot_type;
 bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec);
 void ProcessLocalDirectory(const std::wstring DirName,
-  const processlocalfile_slot_type &CallBackFunc, void * Param = NULL, int FindAttrs = -1);
+                           const processlocalfile_slot_type &CallBackFunc, void *Param = NULL, int FindAttrs = -1);
 //---------------------------------------------------------------------------
 enum TDSTMode
 {
-  dstmWin =  0, //
-  dstmUnix = 1, // adjust UTC time to Windows "bug"
-  dstmKeep = 2
+    dstmWin =  0, //
+    dstmUnix = 1, // adjust UTC time to Windows "bug"
+    dstmKeep = 2
 };
 bool UsesDaylightHack();
 nb::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day);
@@ -135,18 +135,18 @@ nb::TDateTime AdjustDateTimeFromUnix(nb::TDateTime &DateTime, TDSTMode DSTMode);
 void UnifyDateTimePrecision(nb::TDateTime &DateTime1, nb::TDateTime &DateTime2);
 nb::TDateTime FileTimeToDateTime(const FILETIME &FileTime);
 __int64 ConvertTimestampToUnix(const FILETIME &FileTime,
-  TDSTMode DSTMode);
+                               TDSTMode DSTMode);
 nb::TDateTime ConvertTimestampToUTC(nb::TDateTime DateTime);
 __int64 ConvertTimestampToUnixSafe(const FILETIME &FileTime,
-  TDSTMode DSTMode);
+                                   TDSTMode DSTMode);
 std::wstring FixedLenDateTimeFormat(const std::wstring Format);
 int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2);
 
 nb::TDateTime Date();
 void DecodeDate(const nb::TDateTime &DateTime, unsigned int &Y,
-    unsigned int &M, unsigned int &D);
+                unsigned int &M, unsigned int &D);
 void DecodeTime(const nb::TDateTime &DateTime, unsigned int &H,
-    unsigned int &N, unsigned int &S, unsigned int  &MS);
+                unsigned int &N, unsigned int &S, unsigned int  &MS);
 nb::TDateTime EncodeDateVerbose(unsigned int Y, unsigned int M, unsigned int D);
 nb::TDateTime EncodeTimeVerbose(unsigned int H, unsigned int N, unsigned int S, unsigned int MS);
 
@@ -160,47 +160,47 @@ nb::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, 
 class TCriticalSection
 {
 public:
-  TCriticalSection();
-  ~TCriticalSection();
+    TCriticalSection();
+    ~TCriticalSection();
 
-  void Enter();
-  void Leave();
+    void Enter();
+    void Leave();
 
-  int GetAcquired() { return FAcquired; }
+    int GetAcquired() { return FAcquired; }
 
 private:
-  CRITICAL_SECTION FSection;
-  int FAcquired;
+    CRITICAL_SECTION FSection;
+    int FAcquired;
 };
 //---------------------------------------------------------------------------
 class TGuard
 {
 public:
-  TGuard(TCriticalSection * ACriticalSection);
-  ~TGuard();
+    TGuard(TCriticalSection *ACriticalSection);
+    ~TGuard();
 
 private:
-  TCriticalSection * FCriticalSection;
+    TCriticalSection *FCriticalSection;
 };
 //---------------------------------------------------------------------------
 class TUnguard
 {
 public:
-  TUnguard(TCriticalSection * ACriticalSection);
-  ~TUnguard();
+    TUnguard(TCriticalSection *ACriticalSection);
+    ~TUnguard();
 
 private:
-  TCriticalSection * FCriticalSection;
+    TCriticalSection *FCriticalSection;
 };
 //---------------------------------------------------------------------------
 // C++B TLibModule is invalid (differs from PAS definition)
 struct TPasLibModule
 {
-  TPasLibModule * Next;
-  void * Instance;
-  void * CodeInstance;
-  void * DataInstance;
-  void * ResInstance;
+    TPasLibModule *Next;
+    void *Instance;
+    void *CodeInstance;
+    void *DataInstance;
+    void *ResInstance;
 };
 //---------------------------------------------------------------------------
 extern int Win32Platform;

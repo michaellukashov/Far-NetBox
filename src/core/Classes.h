@@ -150,12 +150,12 @@ private:
 
 enum TListNotification
 {
-  lnAdded,
-  lnExtracted,
-  lnDeleted,
+    lnAdded,
+    lnExtracted,
+    lnDeleted,
 };
 
-typedef int (CompareFunc)(void * Item1, void * Item2);
+typedef int (CompareFunc)(void *Item1, void *Item2);
 
 class TList : public TObject
 {
@@ -189,7 +189,7 @@ public:
     TObjectList();
     virtual ~TObjectList();
     TObject *operator [](size_t Index) const;
-    TObject * GetItem(size_t Index) const;
+    TObject *GetItem(size_t Index) const;
     void SetItem(size_t Index, TObject *Value);
     size_t Add(TObject *value);
     size_t Remove(TObject *value);
@@ -362,7 +362,7 @@ public:
         FValue = value;
     }
     explicit TDateTime(unsigned int Hour,
-        unsigned int Min, unsigned int Sec, unsigned int MSec);
+                       unsigned int Min, unsigned int Sec, unsigned int MSec);
     TDateTime(const TDateTime &rhs)
     {
         FValue = rhs.FValue;
@@ -403,9 +403,9 @@ public:
         return std::wstring();
     }
     void DecodeDate(unsigned int &Y,
-        unsigned int &M, unsigned int &D);
+                    unsigned int &M, unsigned int &D);
     void DecodeTime(unsigned int &H,
-        unsigned int &N, unsigned int &S, unsigned int &MS);
+                    unsigned int &N, unsigned int &S, unsigned int &MS);
 private:
     double FValue;
 };
@@ -476,10 +476,10 @@ public:
     __int64 GetPosition() { return Seek(0, nb::soFromCurrent); }
     __int64 GetSize()
     {
-      __int64 Pos = Seek(0, nb::soFromCurrent);
-      __int64 Result = Seek(0, nb::soFromEnd);
-      Seek(Pos, nb::soFromBeginning);
-      return Result;
+        __int64 Pos = Seek(0, nb::soFromCurrent);
+        __int64 Result = Seek(0, nb::soFromEnd);
+        Seek(Pos, nb::soFromBeginning);
+        return Result;
     }
     // void SetSize64(const __int64 NewSize);
 public:
@@ -495,19 +495,19 @@ public:
 class THandleStream : public TStream
 {
 public:
-  THandleStream(HANDLE AHandle);
-  virtual ~THandleStream();
-  virtual __int64 Read(void *Buffer, __int64 Count);
-  virtual __int64 Write(const void *Buffer, __int64 Count);
-  virtual __int64 Seek(__int64 Offset, __int64 Origin);
-  virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
+    THandleStream(HANDLE AHandle);
+    virtual ~THandleStream();
+    virtual __int64 Read(void *Buffer, __int64 Count);
+    virtual __int64 Write(const void *Buffer, __int64 Count);
+    virtual __int64 Seek(__int64 Offset, __int64 Origin);
+    virtual __int64 Seek(const __int64 Offset, TSeekOrigin Origin);
 
-  // property Handle: Integer read FHandle;
-  HANDLE GetHandle() { return FHandle; }
+    // property Handle: Integer read FHandle;
+    HANDLE GetHandle() { return FHandle; }
 protected:
     virtual void SetSize(const __int64 NewSize);
 protected:
-  HANDLE FHandle;
+    HANDLE FHandle;
 };
 
 //---------------------------------------------------------------------------
@@ -518,7 +518,7 @@ public:
         std::exception(Msg)
     {}
 };
- 
+
 class EWriteError : public std::exception
 {
 public:
@@ -575,7 +575,7 @@ struct TRegKeyInfo
 };
 
 //---------------------------------------------------------------------------
-enum TRegDataType 
+enum TRegDataType
 {
     rdUnknown, rdString, rdExpandString, rdInteger, rdBinary
 };
@@ -595,8 +595,8 @@ public:
     ~TRegistry();
     void SetAccess(int access);
     void SetRootKey(HKEY ARootKey);
-    void GetValueNames(TStrings * Names);
-    void GetKeyNames(TStrings * Names);
+    void GetValueNames(TStrings *Names);
+    void GetKeyNames(TStrings *Names);
     HKEY GetCurrentKey() const;
     HKEY GetRootKey() const;
     void CloseKey();
@@ -616,17 +616,17 @@ public:
     std::wstring ReadString(const std::wstring Name);
     std::wstring ReadStringRaw(const std::wstring Name);
     int ReadBinaryData(const std::wstring Name,
-      void * Buffer, int Size);
+                       void *Buffer, int Size);
 
-  void Writebool(const std::wstring Name, bool Value);
-  void WriteDateTime(const std::wstring Name, TDateTime &Value);
-  void WriteFloat(const std::wstring Name, double Value);
-  void WriteString(const std::wstring Name, const std::wstring Value);
-  void WriteStringRaw(const std::wstring Name, const std::wstring Value);
-  void Writeint(const std::wstring Name, int Value);
-  void WriteInt64(const std::wstring Name, __int64 Value);
-  void WriteBinaryData(const std::wstring Name,
-      const void * Buffer, size_t Size);
+    void Writebool(const std::wstring Name, bool Value);
+    void WriteDateTime(const std::wstring Name, TDateTime &Value);
+    void WriteFloat(const std::wstring Name, double Value);
+    void WriteString(const std::wstring Name, const std::wstring Value);
+    void WriteStringRaw(const std::wstring Name, const std::wstring Value);
+    void Writeint(const std::wstring Name, int Value);
+    void WriteInt64(const std::wstring Name, __int64 Value);
+    void WriteBinaryData(const std::wstring Name,
+                         const void *Buffer, size_t Size);
 private:
     void ChangeKey(HKEY Value, const std::wstring Path);
     HKEY GetBaseKey(bool Relative);
@@ -634,16 +634,16 @@ private:
     void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
     bool GetKeyInfo(TRegKeyInfo &Value);
     size_t GetData(const std::wstring Name, void *Buffer,
-      DWORD BufSize, TRegDataType &RegData);
+                   DWORD BufSize, TRegDataType &RegData);
     void PutData(const std::wstring Name, const void *Buffer,
-      size_t BufSize, TRegDataType RegData);
+                 size_t BufSize, TRegDataType RegData);
 private:
     HKEY FCurrentKey;
-	HKEY FRootKey;
-	// bool FLazyWrite;
-	std::wstring FCurrentPath;
-	bool FCloseRootKey;
-	unsigned FAccess;
+    HKEY FRootKey;
+    // bool FLazyWrite;
+    std::wstring FCurrentPath;
+    bool FCloseRootKey;
+    unsigned FAccess;
 };
 
 //---------------------------------------------------------------------------

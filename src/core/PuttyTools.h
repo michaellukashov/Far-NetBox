@@ -13,7 +13,7 @@ __int64 ParseSize(const std::wstring SizeStr);
 //---------------------------------------------------------------------------
 bool HasGSSAPI();
 //---------------------------------------------------------------------------
-void AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
-  size_t PasswordLen, const char * Salt);
+void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
+                         size_t PasswordLen, const char *Salt);
 //---------------------------------------------------------------------------
 #endif

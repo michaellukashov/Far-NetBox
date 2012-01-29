@@ -55,333 +55,333 @@ class TSessionData;
 //===========================================================================
 struct TFileTransferData
 {
-  TFileTransferData()
-  {
-    Params = 0;
-    AutoResume = false;
-    OverwriteResult = -1;
-    CopyParam = NULL;
-  }
+    TFileTransferData()
+    {
+        Params = 0;
+        AutoResume = false;
+        OverwriteResult = -1;
+        CopyParam = NULL;
+    }
 
-  std::wstring FileName;
-  int Params;
-  bool AutoResume;
-  int OverwriteResult;
-  const TCopyParamType * CopyParam;
+    std::wstring FileName;
+    int Params;
+    bool AutoResume;
+    int OverwriteResult;
+    const TCopyParamType *CopyParam;
 };
 
 //---------------------------------------------------------------------------
 struct TSinkFileParams
 {
-  std::wstring TargetDir;
-  const TCopyParamType * CopyParam;
-  int Params;
-  TFileOperationProgressType * OperationProgress;
-  bool Skipped;
-  unsigned int Flags;
+    std::wstring TargetDir;
+    const TCopyParamType *CopyParam;
+    int Params;
+    TFileOperationProgressType *OperationProgress;
+    bool Skipped;
+    unsigned int Flags;
 };
 //---------------------------------------------------------------------------
 class TFileListHelper
 {
 public:
-  TFileListHelper(TWebDAVFileSystem * FileSystem, TRemoteFileList * FileList,
-      bool IgnoreFileList) :
-    FFileSystem(FileSystem),
-    FFileList(FFileSystem->FFileList),
-    FIgnoreFileList(FFileSystem->FIgnoreFileList)
-  {
-    FFileSystem->FFileList = FileList;
-    FFileSystem->FIgnoreFileList = IgnoreFileList;
-  }
+    TFileListHelper(TWebDAVFileSystem *FileSystem, TRemoteFileList *FileList,
+                    bool IgnoreFileList) :
+        FFileSystem(FileSystem),
+        FFileList(FFileSystem->FFileList),
+        FIgnoreFileList(FFileSystem->FIgnoreFileList)
+    {
+        FFileSystem->FFileList = FileList;
+        FFileSystem->FIgnoreFileList = IgnoreFileList;
+    }
 
-  ~TFileListHelper()
-  {
-    FFileSystem->FFileList = FFileList;
-    FFileSystem->FIgnoreFileList = FIgnoreFileList;
-  }
+    ~TFileListHelper()
+    {
+        FFileSystem->FFileList = FFileList;
+        FFileSystem->FIgnoreFileList = FIgnoreFileList;
+    }
 
 private:
-  TWebDAVFileSystem * FFileSystem;
-  TRemoteFileList * FFileList;
-  bool FIgnoreFileList;
+    TWebDAVFileSystem *FFileSystem;
+    TRemoteFileList *FFileList;
+    bool FIgnoreFileList;
 };
 
 //===========================================================================
 TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) :
-  TCustomFileSystem(ATerminal),
-  // FSecureShell(NULL),
-  FFileList(NULL),
-  FProcessingCommand(false),
-  FCURLIntf(NULL),
-  FPasswordFailed(false),
-  FActive(false),
-  FWaitingForReply(false),
-  FFileTransferAbort(ftaNone),
-  FIgnoreFileList(false),
-  FFileTransferCancelled(false),
-  FFileTransferResumed(0),
-  FFileTransferPreserveTime(false),
-  FFileTransferCPSLimit(0),
-  FAwaitingProgress(false),
-  FLastReadDirectoryProgress(0),
-  FLastResponse(new nb::TStringList()),
-  FLastError(new nb::TStringList()),
-  FTransferStatusCriticalSection(new TCriticalSection()),
-  FAbortEvent(CreateEvent(NULL, true, false, NULL)),
-  m_ProgressPercent(0),
-  FListAll(asAuto),
-  FDoListAll(false)
+    TCustomFileSystem(ATerminal),
+    // FSecureShell(NULL),
+    FFileList(NULL),
+    FProcessingCommand(false),
+    FCURLIntf(NULL),
+    FPasswordFailed(false),
+    FActive(false),
+    FWaitingForReply(false),
+    FFileTransferAbort(ftaNone),
+    FIgnoreFileList(false),
+    FFileTransferCancelled(false),
+    FFileTransferResumed(0),
+    FFileTransferPreserveTime(false),
+    FFileTransferCPSLimit(0),
+    FAwaitingProgress(false),
+    FLastReadDirectoryProgress(0),
+    FLastResponse(new nb::TStringList()),
+    FLastError(new nb::TStringList()),
+    FTransferStatusCriticalSection(new TCriticalSection()),
+    FAbortEvent(CreateEvent(NULL, true, false, NULL)),
+    m_ProgressPercent(0),
+    FListAll(asAuto),
+    FDoListAll(false)
 {
-  Self = this;
+    Self = this;
 }
 
 void TWebDAVFileSystem::Init(TSecureShell *SecureShell)
 {
-  // FSecureShell = SecureShell;
-  FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
-  FProcessingCommand = false;
+    // FSecureShell = SecureShell;
+    FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
+    FProcessingCommand = false;
 
-  FFileSystemInfo.ProtocolBaseName = 
-    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    FFileSystemInfo.ProtocolBaseName =
+        FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
         CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
-  FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
-  // capabilities of SCP protocol are fixed
-  for (int Index = 0; Index < fcCount; Index++)
-  {
-    FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
-  }
+    FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
+    // capabilities of SCP protocol are fixed
+    for (int Index = 0; Index < fcCount; Index++)
+    {
+        FFileSystemInfo.IsCapable[Index] = IsCapable(static_cast<TFSCapability>(Index));
+    }
 }
 //---------------------------------------------------------------------------
 TWebDAVFileSystem::~TWebDAVFileSystem()
 {
-  delete FLastResponse;
-  FLastResponse = NULL;
-  delete FLastError;
-  FLastError = NULL;
-  delete FTransferStatusCriticalSection;
-  FTransferStatusCriticalSection = NULL;
-  // delete FSecureShell;
-  delete FCURLIntf;
-  FCURLIntf = NULL;
-  CloseHandle(FAbortEvent);
+    delete FLastResponse;
+    FLastResponse = NULL;
+    delete FLastError;
+    FLastError = NULL;
+    delete FTransferStatusCriticalSection;
+    FTransferStatusCriticalSection = NULL;
+    // delete FSecureShell;
+    delete FCURLIntf;
+    FCURLIntf = NULL;
+    CloseHandle(FAbortEvent);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Open()
 {
-  DEBUG_PRINTF(L"begin");
-  // FSecureShell->Open();
+    DEBUG_PRINTF(L"begin");
+    // FSecureShell->Open();
 
-  FCurrentDirectory = L"";
-  FHomeDirectory = L"";
+    FCurrentDirectory = L"";
+    FHomeDirectory = L"";
 
-  TSessionData *Data = FTerminal->GetSessionData();
+    TSessionData *Data = FTerminal->GetSessionData();
 
-  FSessionInfo.LoginTime = nb::Now();
-  FSessionInfo.ProtocolBaseName = 
-    FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+    FSessionInfo.LoginTime = nb::Now();
+    FSessionInfo.ProtocolBaseName =
+        FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
         CONST_HTTP_PROTOCOL_BASE_NAME : CONST_HTTPS_PROTOCOL_BASE_NAME;
-  FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
+    FSessionInfo.ProtocolName = FSessionInfo.ProtocolBaseName;
 
-  FLastDataSent = nb::Now();
+    FLastDataSent = nb::Now();
 
-  // initialize FCURLIntf on the first connect only
-  if (FCURLIntf == NULL)
-  {
-    FCURLIntf = new CEasyURL(FTerminal);
-    FCURLIntf->Init();
-
-    try
+    // initialize FCURLIntf on the first connect only
+    if (FCURLIntf == NULL)
     {
-      TCURLIntf::TLogLevel LogLevel;
-      switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
-      {
-        default:
-        case 0:
-        case 1:
-          LogLevel = TCURLIntf::LOG_WARNING;
-          break;
+        FCURLIntf = new CEasyURL(FTerminal);
+        FCURLIntf->Init();
 
-        case 2:
-          LogLevel = TCURLIntf::LOG_INFO;
-          break;
-      }
-      FCURLIntf->SetDebugLevel(LogLevel);
+        try
+        {
+            TCURLIntf::TLogLevel LogLevel;
+            switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
+            {
+            default:
+            case 0:
+            case 1:
+                LogLevel = TCURLIntf::LOG_WARNING;
+                break;
+
+            case 2:
+                LogLevel = TCURLIntf::LOG_INFO;
+                break;
+            }
+            FCURLIntf->SetDebugLevel(LogLevel);
+        }
+        catch (...)
+        {
+            delete FCURLIntf;
+            FCURLIntf = NULL;
+            throw;
+        }
     }
-    catch (...)
+
+    int ServerType = 0;
+    // int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
+    // int TimeZoneOffset = int(Round(double(Data->GetTimeDifference()) * 24 * 60));
+    int UTF8 = 0;
+    switch (Data->GetNotUtf())
     {
-      delete FCURLIntf;
-      FCURLIntf = NULL;
-      throw;
-    }
-  }
-
-  int ServerType = 0;
-  // int Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
-  // int TimeZoneOffset = int(Round(double(Data->GetTimeDifference()) * 24 * 60));
-  int UTF8 = 0;
-  switch (Data->GetNotUtf())
-  {
     case asOn:
-      UTF8 = 2;
-      break;
+        UTF8 = 2;
+        break;
 
     case asOff:
-      UTF8 = 1;
-      break;
+        UTF8 = 1;
+        break;
 
     case asAuto:
-      UTF8 = 0;
-      break;
-  };
-
-  FPasswordFailed = false;
-  bool PromptedForCredentials = false;
-
-  std::wstring HostName = Data->GetHostName();
-  if (::LowerCase(HostName.substr(0, 7)) == L"http://")
-  {
-      HostName.erase(0, 7);
-  }
-  else if (LowerCase(HostName.substr(0, 8)) == L"https://")
-  {
-      HostName.erase(0, 8);
-  }
-  int Port = Data->GetPortNumber();
-  std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
-    L"http" : L"https";
-  std::wstring UserName = Data->GetUserName();
-  std::wstring Password = Data->GetPassword();
-  std::wstring Account = Data->GetFtpAccount();
-  std::wstring Path = Data->GetRemoteDirectory();
-  std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
-  do
-  {
-    FSystem = L"";
-
-    // TODO: the same for account? it ever used?
-
-    // ask for username if it was not specified in advance, even on retry,
-    // but keep previous one as default,
-    if (0) // Data->GetUserName().empty())
-    {
-      FTerminal->LogEvent(L"Username prompt (no username provided)");
-
-      if (!FPasswordFailed && !PromptedForCredentials)
-      {
-        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
-        PromptedForCredentials = true;
-      }
-
-      if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
-            LoadStr(USERNAME_PROMPT2), true, 0, UserName))
-      {
-        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
-      }
-      else
-      {
-        FUserName = UserName;
-      }
-    }
-
-    // ask for password if it was not specified in advance,
-    // on retry ask always
-    if (0) // (Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
-    {
-      FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
-
-      if (!FPasswordFailed && !PromptedForCredentials)
-      {
-        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
-        PromptedForCredentials = true;
-      }
-
-      // on retry ask for new password
-      Password = L"";
-      if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-            LoadStr(PASSWORD_PROMPT), false, 0, Password))
-      {
-        FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
-      }
-    }
-
-    DEBUG_PRINTF(L"url = %s", url.c_str());
-    FActive = FCURLIntf->Initialize(
-      url.c_str(),
-	  UserName.c_str(),
-      Password.c_str());
-    assert(FActive);
-    FCURLIntf->SetAbortEvent(FAbortEvent);
+        UTF8 = 0;
+        break;
+    };
 
     FPasswordFailed = false;
-  }
-  while (FPasswordFailed);
-  DEBUG_PRINTF(L"end");
+    bool PromptedForCredentials = false;
+
+    std::wstring HostName = Data->GetHostName();
+    if (::LowerCase(HostName.substr(0, 7)) == L"http://")
+    {
+        HostName.erase(0, 7);
+    }
+    else if (LowerCase(HostName.substr(0, 8)) == L"https://")
+    {
+        HostName.erase(0, 8);
+    }
+    int Port = Data->GetPortNumber();
+    std::wstring ProtocolName = FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+                                L"http" : L"https";
+    std::wstring UserName = Data->GetUserName();
+    std::wstring Password = Data->GetPassword();
+    std::wstring Account = Data->GetFtpAccount();
+    std::wstring Path = Data->GetRemoteDirectory();
+    std::wstring url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, Path.c_str());
+    do
+    {
+        FSystem = L"";
+
+        // TODO: the same for account? it ever used?
+
+        // ask for username if it was not specified in advance, even on retry,
+        // but keep previous one as default,
+        if (0) // Data->GetUserName().empty())
+        {
+            FTerminal->LogEvent(L"Username prompt (no username provided)");
+
+            if (!FPasswordFailed && !PromptedForCredentials)
+            {
+                FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+                PromptedForCredentials = true;
+            }
+
+            if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
+                                       LoadStr(USERNAME_PROMPT2), true, 0, UserName))
+            {
+                FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+            }
+            else
+            {
+                FUserName = UserName;
+            }
+        }
+
+        // ask for password if it was not specified in advance,
+        // on retry ask always
+        if (0) // (Data->GetPassword().empty() && !Data->GetPasswordless()) || FPasswordFailed)
+        {
+            FTerminal->LogEvent(L"Password prompt (no password provided or last login attempt failed)");
+
+            if (!FPasswordFailed && !PromptedForCredentials)
+            {
+                FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+                PromptedForCredentials = true;
+            }
+
+            // on retry ask for new password
+            Password = L"";
+            if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+                                       LoadStr(PASSWORD_PROMPT), false, 0, Password))
+            {
+                FTerminal->FatalError(NULL, LoadStr(AUTHENTICATION_FAILED));
+            }
+        }
+
+        DEBUG_PRINTF(L"url = %s", url.c_str());
+        FActive = FCURLIntf->Initialize(
+                      url.c_str(),
+                      UserName.c_str(),
+                      Password.c_str());
+        assert(FActive);
+        FCURLIntf->SetAbortEvent(FAbortEvent);
+
+        FPasswordFailed = false;
+    }
+    while (FPasswordFailed);
+    DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Close()
 {
-  // FSecureShell->Close();
-  assert(FActive);
-  if (FCURLIntf->Close())
-  {
+    // FSecureShell->Close();
     assert(FActive);
-    Discard();
-    FTerminal->Closed();
-  }
-  else
-  {
-    assert(false);
-  }
+    if (FCURLIntf->Close())
+    {
+        assert(FActive);
+        Discard();
+        FTerminal->Closed();
+    }
+    else
+    {
+        assert(false);
+    }
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::GetActive()
 {
-  // return FSecureShell->GetActive();
-  return FActive;
+    // return FSecureShell->GetActive();
+    return FActive;
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & TWebDAVFileSystem::GetSessionInfo()
+const TSessionInfo &TWebDAVFileSystem::GetSessionInfo()
 {
-  return FSessionInfo; // FSecureShell->GetSessionInfo();
+    return FSessionInfo; // FSecureShell->GetSessionInfo();
 }
 //---------------------------------------------------------------------------
-const TFileSystemInfo & TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
+const TFileSystemInfo &TWebDAVFileSystem::GetFileSystemInfo(bool Retrieve)
 {
-  // nb::Error(SNotImplemented, 1009);
-  return FFileSystemInfo;
+    // nb::Error(SNotImplemented, 1009);
+    return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::TemporaryTransferFile(const std::wstring /*FileName*/)
 {
-  return false;
+    return false;
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::GetStoredCredentialsTried()
 {
-  return false; // FSecureShell->GetStoredCredentialsTried();
+    return false; // FSecureShell->GetStoredCredentialsTried();
 }
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::GetUserName()
 {
-  return FUserName;
+    return FUserName;
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Idle()
 {
-  // Keep session alive
-  return;
+    // Keep session alive
+    return;
 }
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::AbsolutePath(const std::wstring Path, bool /*Local*/)
 {
-  return ::AbsolutePath(GetCurrentDirectory(), Path);
+    return ::AbsolutePath(GetCurrentDirectory(), Path);
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::IsCapable(int Capability) const
 {
-  assert(FTerminal);
-  switch (Capability)
-  {
+    assert(FTerminal);
+    switch (Capability)
+    {
     case fcUserGroupListing:
     case fcModeChanging:
     case fcModeChangingUpload:
@@ -393,14 +393,14 @@ bool TWebDAVFileSystem::IsCapable(int Capability) const
     case fcHardLink:
     case fcSymbolicLink:
     case fcResolveSymlink:
-      return false;
+        return false;
     case fcRename:
     case fcRemoteMove:
     case fcRemoteCopy:
-      return true;
+        return true;
 
     case fcTextMode:
-      return FTerminal->GetSessionData()->GetEOLType() != FTerminal->GetConfiguration()->GetLocalEOLType();
+        return FTerminal->GetSessionData()->GetEOLType() != FTerminal->GetConfiguration()->GetLocalEOLType();
 
     case fcNativeTextMode:
     case fcNewerOnlyUpload:
@@ -411,106 +411,106 @@ bool TWebDAVFileSystem::IsCapable(int Capability) const
     case fcCalculatingChecksum:
     case fcSecondaryShell: // has fcShellAnyCommand
     case fcGroupOwnerChangingByID: // by name
-      return false;
+        return false;
 
     default:
-      assert(false);
-      return false;
-  }
+        assert(false);
+        return false;
+    }
 }
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::DelimitStr(const std::wstring Str)
 {
-  std::wstring str = Str;
-  if (!str.empty())
-  {
-    str = ::DelimitStr(str, L"\\`$\"");
-    if (str[0] == L'-') str = L"./" + str;
-  }
-  return str;
+    std::wstring str = Str;
+    if (!str.empty())
+    {
+        str = ::DelimitStr(str, L"\\`$\"");
+        if (str[0] == L'-') { str = L"./" + str; }
+    }
+    return str;
 }
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::ActualCurrentDirectory()
 {
-  return FCurrentDirectory;
+    return FCurrentDirectory;
 }
 
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::EnsureLocation()
 {
-  // if we do not know what's the current directory, do nothing
-  /*
-  if (!FCurrentDirectory.empty())
-  {
-    // Make sure that the FZAPI current working directory,
-    // is actually our working directory.
-    // It may not be because:
-    // 1) We did cached directory change
-    // 2) Listing was requested for non-current directory, which
-    // makes FZAPI change its current directory (and not restoring it back afterwards)
-    if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
+    // if we do not know what's the current directory, do nothing
+    /*
+    if (!FCurrentDirectory.empty())
     {
-      FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
-        FCurrentDirectory.c_str()));
-      DoChangeDirectory(FCurrentDirectory);
-    }
-  }
-  */
-  if (!FCachedDirectoryChange.empty())
-  {
-    FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
-      FCachedDirectoryChange.c_str()));
-    std::wstring Directory = FCachedDirectoryChange;
-    FCachedDirectoryChange = L"";
-    try
-    {
-      ChangeDirectory(Directory);
-    }
-    catch (...)
-    {
-      // when location to cached directory fails, pretend again
-      // location in cached directory
-      // here used to be check (CurrentDirectory != Directory), but it is
-      // false always (currentdirectory is already set to cached directory),
-      // making the condition below useless. check removed.
-      if (FTerminal->GetActive())
+      // Make sure that the FZAPI current working directory,
+      // is actually our working directory.
+      // It may not be because:
+      // 1) We did cached directory change
+      // 2) Listing was requested for non-current directory, which
+      // makes FZAPI change its current directory (and not restoring it back afterwards)
+      if (!UnixComparePaths(ActualCurrentDirectory(), FCurrentDirectory))
       {
-        FCachedDirectoryChange = Directory;
+        FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
+          FCurrentDirectory.c_str()));
+        DoChangeDirectory(FCurrentDirectory);
       }
-      throw;
     }
-  }
+    */
+    if (!FCachedDirectoryChange.empty())
+    {
+        FTerminal->LogEvent(FORMAT(L"Locating to cached directory \"%s\".",
+                                   FCachedDirectoryChange.c_str()));
+        std::wstring Directory = FCachedDirectoryChange;
+        FCachedDirectoryChange = L"";
+        try
+        {
+            ChangeDirectory(Directory);
+        }
+        catch (...)
+        {
+            // when location to cached directory fails, pretend again
+            // location in cached directory
+            // here used to be check (CurrentDirectory != Directory), but it is
+            // false always (currentdirectory is already set to cached directory),
+            // making the condition below useless. check removed.
+            if (FTerminal->GetActive())
+            {
+                FCachedDirectoryChange = Directory;
+            }
+            throw;
+        }
+    }
 }
 
 void TWebDAVFileSystem::Discard()
 {
-  // remove all pending messages, to get complete log
-  // note that we need to retry discard on reconnect, as there still may be another
-  // "disconnect/timeout/..." status messages coming
-  assert(FActive);
-  FActive = false;
+    // remove all pending messages, to get complete log
+    // note that we need to retry discard on reconnect, as there still may be another
+    // "disconnect/timeout/..." status messages coming
+    assert(FActive);
+    FActive = false;
 }
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::GetCurrentDirectory()
 {
-  return FCurrentDirectory;
+    return FCurrentDirectory;
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::DoStartup()
 {
-  DEBUG_PRINTF(L"begin");
-  // DetectReturnVar must succeed,
-  // otherwise session is to be closed.
-  FTerminal->SetExceptionOnFail(true);
-  // if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
-  FTerminal->SetExceptionOnFail(false);
+    DEBUG_PRINTF(L"begin");
+    // DetectReturnVar must succeed,
+    // otherwise session is to be closed.
+    FTerminal->SetExceptionOnFail(true);
+    // if (FTerminal->GetSessionData()->GetDetectReturnVar()) DetectReturnVar();
+    FTerminal->SetExceptionOnFail(false);
 
-  // retrieve initialize working directory to save it as home directory
-  ReadCurrentDirectory();
-  FHomeDirectory = FCurrentDirectory;
-  DEBUG_PRINTF(L"end");
+    // retrieve initialize working directory to save it as home directory
+    ReadCurrentDirectory();
+    FHomeDirectory = FCurrentDirectory;
+    DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -520,41 +520,41 @@ void TWebDAVFileSystem::LookupUsersGroups()
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ReadCurrentDirectory()
 {
-  DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
-  if (FCachedDirectoryChange.empty())
-  {
-    std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
-    std::wstring response;
-    std::wstring errorInfo;
-    bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
-    // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
-    // TODO: cache response
-    if (isExist)
+    DEBUG_PRINTF(L"begin, FCurrentDirectory = %s", FCurrentDirectory.c_str());
+    if (FCachedDirectoryChange.empty())
     {
-        FCurrentDirectory = Path;
+        std::wstring Path = FCurrentDirectory.empty() ? L"/" : FCurrentDirectory;
+        std::wstring response;
+        std::wstring errorInfo;
+        bool isExist = SendPropFindRequest(Path.c_str(), response, errorInfo);
+        // DEBUG_PRINTF(L"responce = %s, errorInfo = %s", response.c_str(), errorInfo.c_str());
+        // TODO: cache response
+        if (isExist)
+        {
+            FCurrentDirectory = Path;
+        }
+        else if (!errorInfo.empty() && !FCurrentDirectory.empty())
+        {
+            FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
+                                                std::wstring(L"Could'n read directory " + FCurrentDirectory).c_str()));
+        }
+        // FCurrentDirectory = Path;
     }
-    else if (!errorInfo.empty() && !FCurrentDirectory.empty())
+    else
     {
-      FTerminal->FatalError(NULL, FMTLOAD(INTERNAL_ERROR, L"webdav#1",
-        std::wstring(L"Could'n read directory " + FCurrentDirectory).c_str()));
+        FCurrentDirectory = FCachedDirectoryChange;
     }
-    // FCurrentDirectory = Path;
-  }
-  else
-  {
-    FCurrentDirectory = FCachedDirectoryChange;
-  }
-  DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
+    DEBUG_PRINTF(L"end, FCurrentDirectory = %s", FCurrentDirectory.c_str());
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::HomeDirectory()
 {
-  // ExecCommand(fsHomeDirectory);
+    // ExecCommand(fsHomeDirectory);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::AnnounceFileListOperation()
 {
-  // noop
+    // noop
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::DoChangeDirectory(const std::wstring Directory)
@@ -563,51 +563,51 @@ void TWebDAVFileSystem::DoChangeDirectory(const std::wstring Directory)
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ChangeDirectory(const std::wstring ADirectory)
 {
-  std::wstring Directory = ADirectory;
-  try
-  {
-    // For changing directory, we do not make paths absolute, instead we
-    // delegate this to the server, hence we sychronize current working
-    // directory with the server and only then we ask for the change with
-    // relative path.
-    // But if synchronization fails, typically because current working directory
-    // no longer exists, we fall back to out own resolution, to give
-    // user chance to leave the non-existing directory.
-    EnsureLocation();
-  }
-  catch (...)
-  {
-    if (FTerminal->GetActive())
+    std::wstring Directory = ADirectory;
+    try
     {
-      Directory = AbsolutePath(Directory, false);
+        // For changing directory, we do not make paths absolute, instead we
+        // delegate this to the server, hence we sychronize current working
+        // directory with the server and only then we ask for the change with
+        // relative path.
+        // But if synchronization fails, typically because current working directory
+        // no longer exists, we fall back to out own resolution, to give
+        // user chance to leave the non-existing directory.
+        EnsureLocation();
     }
-    else
+    catch (...)
     {
-      throw;
+        if (FTerminal->GetActive())
+        {
+            Directory = AbsolutePath(Directory, false);
+        }
+        else
+        {
+            throw;
+        }
     }
-  }
 
-  // DoChangeDirectory(Directory);
-  FCurrentDirectory = AbsolutePath(Directory, false);
+    // DoChangeDirectory(Directory);
+    FCurrentDirectory = AbsolutePath(Directory, false);
 
-  // make next ReadCurrentDirectory retrieve actual server-side current directory
-  // FCurrentDirectory = L"";
-  FCachedDirectoryChange = L"";
+    // make next ReadCurrentDirectory retrieve actual server-side current directory
+    // FCurrentDirectory = L"";
+    FCachedDirectoryChange = L"";
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CachedChangeDirectory(const std::wstring Directory)
 {
-  FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
-  /*
-  FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
-  if (FCurrentDirectory.empty())
-  {
-      FCurrentDirectory = L"/";
-  }
-  */
+    FCachedDirectoryChange = UnixExcludeTrailingBackslash(Directory);
+    /*
+    FCurrentDirectory = UnixExcludeTrailingBackslash(Directory);
+    if (FCurrentDirectory.empty())
+    {
+        FCurrentDirectory = L"/";
+    }
+    */
 }
 
-void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
+void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList *FileList)
 {
     FileList->Clear();
     // add parent directory
@@ -617,7 +617,7 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
 
     TFileListHelper Helper(this, FileList, false);
 
-    // always specify path to list, do not attempt to 
+    // always specify path to list, do not attempt to
     // list "current" dir as:
     // 1) List() lists again the last listed directory, not the current working directory
     // 2) we handle this way the cached directory change
@@ -629,371 +629,373 @@ void TWebDAVFileSystem::DoReadDirectory(TRemoteFileList * FileList)
     FLastDataSent = nb::Now();
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * FileList)
+void TWebDAVFileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
-  DEBUG_PRINTF(L"begin");
-  assert(FileList);
-  bool GotNoFilesForAll = false;
-  bool Repeat = false;
+    DEBUG_PRINTF(L"begin");
+    assert(FileList);
+    bool GotNoFilesForAll = false;
+    bool Repeat = false;
 
-  do
-  {
-    Repeat = false;
-    try
+    do
     {
-      FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
-      DoReadDirectory(FileList);
-
-      // We got no files with "-a", but again no files w/o "-a",
-      // so it was not "-a"'s problem, revert to auto and let it decide the next time
-      if (GotNoFilesForAll && (FileList->GetCount() == 0))
-      {
-        assert(FListAll == asOff);
-        FListAll = asAuto;
-      }
-      else if (FListAll == asAuto)
-      {
-        // some servers take "-a" as a mask and return empty directory listing
-        // (note that it's actually never empty here, there's always at least parent directory,
-        // added explicitly by DoReadDirectory)
-        if ((FileList->GetCount() == 0) ||
-            ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
+        Repeat = false;
+        try
         {
-          Repeat = true;
-          FListAll = asOff;
-          GotNoFilesForAll = true;
-        }
-        else
-        {
-          // reading first directory has succeeded, always use "-a"
-          FListAll = asOn;
-        }
-      }
+            FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
+            DoReadDirectory(FileList);
 
-      // use "-a" even for implicit directory reading by FZAPI?
-      // (e.g. before file transfer)
-      FDoListAll = (FListAll == asOn);
+            // We got no files with "-a", but again no files w/o "-a",
+            // so it was not "-a"'s problem, revert to auto and let it decide the next time
+            if (GotNoFilesForAll && (FileList->GetCount() == 0))
+            {
+                assert(FListAll == asOff);
+                FListAll = asAuto;
+            }
+            else if (FListAll == asAuto)
+            {
+                // some servers take "-a" as a mask and return empty directory listing
+                // (note that it's actually never empty here, there's always at least parent directory,
+                // added explicitly by DoReadDirectory)
+                if ((FileList->GetCount() == 0) ||
+                        ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory()))
+                {
+                    Repeat = true;
+                    FListAll = asOff;
+                    GotNoFilesForAll = true;
+                }
+                else
+                {
+                    // reading first directory has succeeded, always use "-a"
+                    FListAll = asOn;
+                }
+            }
+
+            // use "-a" even for implicit directory reading by FZAPI?
+            // (e.g. before file transfer)
+            FDoListAll = (FListAll == asOn);
+        }
+        catch (...)
+        {
+            FDoListAll = false;
+            // reading the first directory has failed,
+            // further try without "-a" only as the server may not support it
+            if ((FListAll == asAuto) && FTerminal->GetActive())
+            {
+                FListAll = asOff;
+                Repeat = true;
+            }
+            else
+            {
+                throw;
+            }
+        }
     }
-    catch (...)
-    {
-      FDoListAll = false;
-      // reading the first directory has failed,
-      // further try without "-a" only as the server may not support it
-      if ((FListAll == asAuto) && FTerminal->GetActive())
-      {
-        FListAll = asOff;
-        Repeat = true;
-      }
-      else
-      {
-        throw;
-      }
-    }
-  }
-  while (Repeat);
-  DEBUG_PRINTF(L"end");
+    while (Repeat);
+    DEBUG_PRINTF(L"end");
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
-  TRemoteFile *& File)
+void TWebDAVFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
+                                    TRemoteFile *& File)
 {
-  CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
+    CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ReadFile(const std::wstring FileName,
-  TRemoteFile *& File)
+                                 TRemoteFile *& File)
 {
-  CustomReadFile(FileName, File, NULL);
+    CustomReadFile(FileName, File, NULL);
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TWebDAVFileSystem::CreateRemoteFile(
-  const std::wstring ListingStr, TRemoteFile * LinkedByFile)
+TRemoteFile *TWebDAVFileSystem::CreateRemoteFile(
+    const std::wstring ListingStr, TRemoteFile *LinkedByFile)
 {
-  TRemoteFile * File = new TRemoteFile(LinkedByFile);
-  try
-  {
-    File->SetTerminal(FTerminal);
-    File->SetListingStr(ListingStr);
-    File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
-    File->Complete();
-  }
-  catch (...)
-  {
-    delete File;
-    throw;
-  }
+    TRemoteFile *File = new TRemoteFile(LinkedByFile);
+    try
+    {
+        File->SetTerminal(FTerminal);
+        File->SetListingStr(ListingStr);
+        File->ShiftTime(FTerminal->GetSessionData()->GetTimeDifference());
+        File->Complete();
+    }
+    catch (...)
+    {
+        delete File;
+        throw;
+    }
 
-  return File;
+    return File;
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CustomReadFile(const std::wstring FileName,
-  TRemoteFile *& File, TRemoteFile * ALinkedByFile)
+                                       TRemoteFile *& File, TRemoteFile *ALinkedByFile)
 {
-  DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
-  File = NULL;
-  bool isExist = false;
-  std::wstring errorInfo;
-  bool res = CheckExisting(FileName.c_str(), ItemDirectory, isExist, errorInfo);
-  if (res && isExist)
-  {
-    File = new TRemoteFile();
-    File->SetType(FILETYPE_DIRECTORY);
-  }
-  else
-  {
-    isExist = false;
-    errorInfo.clear();
-    bool res = CheckExisting(FileName.c_str(), ItemFile, isExist, errorInfo);
+    DEBUG_PRINTF(L"FileName = %s", FileName.c_str());
+    File = NULL;
+    bool isExist = false;
+    std::wstring errorInfo;
+    bool res = CheckExisting(FileName.c_str(), ItemDirectory, isExist, errorInfo);
     if (res && isExist)
     {
-      File = new TRemoteFile();
+        File = new TRemoteFile();
+        File->SetType(FILETYPE_DIRECTORY);
     }
-  }
+    else
+    {
+        isExist = false;
+        errorInfo.clear();
+        bool res = CheckExisting(FileName.c_str(), ItemFile, isExist, errorInfo);
+        if (res && isExist)
+        {
+            File = new TRemoteFile();
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::DeleteFile(const std::wstring FileName,
-  const TRemoteFile * File, int Params, TRmSessionAction & Action)
+                                   const TRemoteFile *File, int Params, TRmSessionAction &Action)
 {
-  USEDPARAM(File);
-  USEDPARAM(Params);
-  std::wstring FullFileName = File->GetFullFileName();
-  ItemType type = File->GetIsDirectory() ? ItemDirectory : ItemFile;
-  std::wstring errorInfo;
-  bool res = Delete(FullFileName.c_str(), type, errorInfo);
-  if (!res && !errorInfo.empty())
-  {
-    THROW_SKIP_FILE(errorInfo, NULL);
-  }
-}
-//---------------------------------------------------------------------------
-void TWebDAVFileSystem::RenameFile(const std::wstring FileName,
-  const std::wstring NewName)
-{
-  // nb::Error(SNotImplemented, 1011);
-  // DEBUG_PRINTF(L"FileName = %s, NewName = %s", FileName.c_str(), NewName.c_str());
-  // DEBUG_PRINTF(L"FCurrentDirectory = %s", FCurrentDirectory.c_str());
-  std::wstring FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
-  std::wstring errorInfo;
-  ItemType type = ItemFile; // File->GetIsDirectory() ? ItemDirectory : ItemFile;
-  bool res = Rename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
-  if (!res)
-  {
-    ItemType type = ItemDirectory;
-    bool res = Rename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
+    USEDPARAM(File);
+    USEDPARAM(Params);
+    std::wstring FullFileName = File->GetFullFileName();
+    ItemType type = File->GetIsDirectory() ? ItemDirectory : ItemFile;
+    std::wstring errorInfo;
+    bool res = Delete(FullFileName.c_str(), type, errorInfo);
     if (!res && !errorInfo.empty())
     {
         THROW_SKIP_FILE(errorInfo, NULL);
     }
-  }
+}
+//---------------------------------------------------------------------------
+void TWebDAVFileSystem::RenameFile(const std::wstring FileName,
+                                   const std::wstring NewName)
+{
+    // nb::Error(SNotImplemented, 1011);
+    // DEBUG_PRINTF(L"FileName = %s, NewName = %s", FileName.c_str(), NewName.c_str());
+    // DEBUG_PRINTF(L"FCurrentDirectory = %s", FCurrentDirectory.c_str());
+    std::wstring FullFileName = ::UnixIncludeTrailingBackslash(FCurrentDirectory) + FileName;
+    std::wstring errorInfo;
+    ItemType type = ItemFile; // File->GetIsDirectory() ? ItemDirectory : ItemFile;
+    bool res = Rename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
+    if (!res)
+    {
+        ItemType type = ItemDirectory;
+        bool res = Rename(FullFileName.c_str(), NewName.c_str(), type, errorInfo);
+        if (!res && !errorInfo.empty())
+        {
+            THROW_SKIP_FILE(errorInfo, NULL);
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CopyFile(const std::wstring FileName,
-  const std::wstring NewName)
+                                 const std::wstring NewName)
 {
-  nb::Error(SNotImplemented, 1012);
+    nb::Error(SNotImplemented, 1012);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CreateDirectory(const std::wstring DirName)
 {
-  DEBUG_PRINTF(L"FCurrentDirectory = %s, DirName = %s", FCurrentDirectory.c_str(), DirName.c_str());
-  std::wstring errorInfo;
-  bool res = MakeDirectory(DirName.c_str(), errorInfo);
-  if (!res)
-  {
-      std::vector<std::wstring> dirnames;
-      std::wstring delim = L"/";
-      alg::split(dirnames, DirName, alg::is_any_of(delim), alg::token_compress_on);
-      std::wstring curdir;
-      std::wstring dir;
-      BOOST_FOREACH(dir, dirnames)
-      {
-          if (dir.empty())
-            continue;
-          curdir += L"/" + dir;
-          res = MakeDirectory(curdir.c_str(), errorInfo);
-      }
-      if (!res)
-      {
-        THROW_SKIP_FILE(errorInfo, NULL);
-      }
-  }
+    DEBUG_PRINTF(L"FCurrentDirectory = %s, DirName = %s", FCurrentDirectory.c_str(), DirName.c_str());
+    std::wstring errorInfo;
+    bool res = MakeDirectory(DirName.c_str(), errorInfo);
+    if (!res)
+    {
+        std::vector<std::wstring> dirnames;
+        std::wstring delim = L"/";
+        alg::split(dirnames, DirName, alg::is_any_of(delim), alg::token_compress_on);
+        std::wstring curdir;
+        std::wstring dir;
+        BOOST_FOREACH(dir, dirnames)
+        {
+            if (dir.empty())
+            {
+                continue;
+            }
+            curdir += L"/" + dir;
+            res = MakeDirectory(curdir.c_str(), errorInfo);
+        }
+        if (!res)
+        {
+            THROW_SKIP_FILE(errorInfo, NULL);
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CreateLink(const std::wstring FileName,
-  const std::wstring PointTo, bool Symbolic)
+                                   const std::wstring PointTo, bool Symbolic)
 {
-  nb::Error(SNotImplemented, 1014);
+    nb::Error(SNotImplemented, 1014);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ChangeFileProperties(const std::wstring FileName,
-  const TRemoteFile * File, const TRemoteProperties * Properties,
-  TChmodSessionAction & Action)
+        const TRemoteFile *File, const TRemoteProperties *Properties,
+        TChmodSessionAction &Action)
 {
-  nb::Error(SNotImplemented, 1006);
-  assert(Properties);
+    nb::Error(SNotImplemented, 1006);
+    assert(Properties);
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::LoadFilesProperties(nb::TStrings * /*FileList*/ )
 {
-  assert(false);
-  return false;
+    assert(false);
+    return false;
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CalculateFilesChecksum(const std::wstring /*Alg*/,
-  nb::TStrings * /*FileList*/, nb::TStrings * /*Checksums*/,
-  calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
+        nb::TStrings * /*FileList*/, nb::TStrings * /*Checksums*/,
+        calculatedchecksum_slot_type * /*OnCalculatedChecksum*/)
 {
-  assert(false);
+    assert(false);
 }
 //---------------------------------------------------------------------------
-bool TWebDAVFileSystem::ConfirmOverwrite(std::wstring & FileName,
-  TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-  const TOverwriteFileParams * FileParams, int Params, bool AutoResume)
+bool TWebDAVFileSystem::ConfirmOverwrite(std::wstring &FileName,
+        TOverwriteMode &OverwriteMode, TFileOperationProgressType *OperationProgress,
+        const TOverwriteFileParams *FileParams, int Params, bool AutoResume)
 {
-  bool Result;
-  bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
-  // when resuming transfer after interrupted connection,
-  // do nothing (dummy resume) when the files has the same size.
-  // this is workaround for servers that strangely fails just after successful
-  // upload.
-  bool CanResume =
-    (FileParams != NULL) &&
-    (((FileParams->DestSize < FileParams->SourceSize)) ||
-     ((FileParams->DestSize == FileParams->SourceSize) && CanAutoResume));
+    bool Result;
+    bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
+    // when resuming transfer after interrupted connection,
+    // do nothing (dummy resume) when the files has the same size.
+    // this is workaround for servers that strangely fails just after successful
+    // upload.
+    bool CanResume =
+        (FileParams != NULL) &&
+        (((FileParams->DestSize < FileParams->SourceSize)) ||
+         ((FileParams->DestSize == FileParams->SourceSize) && CanAutoResume));
 
-  int Answer;
-  if (CanAutoResume && CanResume)
-  {
-    Answer = qaRetry;
-  }
-  else
-  {
-    // retry = "resume"
-    // all = "yes to newer"
-    // ignore = "rename"
-    int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
-    if (CanResume)
+    int Answer;
+    if (CanAutoResume && CanResume)
     {
-      Answers |= qaRetry;
+        Answer = qaRetry;
     }
-    TQueryButtonAlias Aliases[3];
-    Aliases[0].Button = qaRetry;
-    Aliases[0].Alias = LoadStr(RESUME_BUTTON);
-    Aliases[1].Button = qaAll;
-    Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-    Aliases[2].Button = qaIgnore;
-    Aliases[2].Alias = LoadStr(RENAME_BUTTON);
-    TQueryParams QueryParams(qpNeverAskAgainCheck);
-    QueryParams.Aliases = Aliases;
-    QueryParams.AliasesCount = LENOF(Aliases);
-    SUSPEND_OPERATION
-    (
-      Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
-        Answers, &QueryParams,
-        OperationProgress->Side == osLocal ? osRemote : osLocal,
-        Params, OperationProgress);
-    )
-  }
+    else
+    {
+        // retry = "resume"
+        // all = "yes to newer"
+        // ignore = "rename"
+        int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+        if (CanResume)
+        {
+            Answers |= qaRetry;
+        }
+        TQueryButtonAlias Aliases[3];
+        Aliases[0].Button = qaRetry;
+        Aliases[0].Alias = LoadStr(RESUME_BUTTON);
+        Aliases[1].Button = qaAll;
+        Aliases[1].Alias = LoadStr(YES_TO_NEWER_BUTTON);
+        Aliases[2].Button = qaIgnore;
+        Aliases[2].Alias = LoadStr(RENAME_BUTTON);
+        TQueryParams QueryParams(qpNeverAskAgainCheck);
+        QueryParams.Aliases = Aliases;
+        QueryParams.AliasesCount = LENOF(Aliases);
+        SUSPEND_OPERATION
+        (
+            Answer = FTerminal->ConfirmFileOverwrite(FileName, FileParams,
+                     Answers, &QueryParams,
+                     OperationProgress->Side == osLocal ? osRemote : osLocal,
+                     Params, OperationProgress);
+        )
+    }
 
-  Result = true;
+    Result = true;
 
-  switch (Answer)
-  {
-    // resume
+    switch (Answer)
+    {
+        // resume
     case qaRetry:
-      OverwriteMode = omResume;
-      assert(FileParams != NULL);
-      assert(CanResume);
-      FFileTransferResumed = FileParams->DestSize;
-      break;
+        OverwriteMode = omResume;
+        assert(FileParams != NULL);
+        assert(CanResume);
+        FFileTransferResumed = FileParams->DestSize;
+        break;
 
-    // rename
+        // rename
     case qaIgnore:
-      if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, FileName))
-      {
+        if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
+                                  LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, FileName))
+        {
+            OverwriteMode = omOverwrite;
+        }
+        else
+        {
+            if (!OperationProgress->Cancel)
+            {
+                OperationProgress->Cancel = csCancel;
+            }
+            FFileTransferAbort = ftaCancel;
+            Result = false;
+        }
+        break;
+
+    case qaYes:
         OverwriteMode = omOverwrite;
-      }
-      else
-      {
+        break;
+
+    case qaCancel:
         if (!OperationProgress->Cancel)
         {
-          OperationProgress->Cancel = csCancel;
+            OperationProgress->Cancel = csCancel;
         }
         FFileTransferAbort = ftaCancel;
         Result = false;
-      }
-      break;
-
-    case qaYes:
-      OverwriteMode = omOverwrite;
-      break;
-
-    case qaCancel:
-      if (!OperationProgress->Cancel)
-      {
-        OperationProgress->Cancel = csCancel;
-      }
-      FFileTransferAbort = ftaCancel;
-      Result = false;
-      break;
+        break;
 
     case qaNo:
-      FFileTransferAbort = ftaSkip;
-      Result = false;
-      break;
+        FFileTransferAbort = ftaSkip;
+        Result = false;
+        break;
 
     default:
-      assert(false);
-      Result = false;
-      break;
-  }
-  return Result;
+        assert(false);
+        Result = false;
+        break;
+    }
+    return Result;
 }
 
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CustomCommandOnFile(const std::wstring FileName,
-    const TRemoteFile * File, const std::wstring Command, int Params,
-    const captureoutput_slot_type &OutputEvent)
+        const TRemoteFile *File, const std::wstring Command, int Params,
+        const captureoutput_slot_type &OutputEvent)
 {
-  assert(File);
-  bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
-  if (Dir && (Params & ccRecursive))
-  {
-    TCustomCommandParams AParams(Command, Params, OutputEvent);
-    // AParams.Command = Command;
-    // AParams.Params = Params;
-    // AParams.OutputEvent.connect(OutputEvent);
-    FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
-      &AParams);
-  }
+    assert(File);
+    bool Dir = File->GetIsDirectory() && !File->GetIsSymLink();
+    if (Dir && (Params & ccRecursive))
+    {
+        TCustomCommandParams AParams(Command, Params, OutputEvent);
+        // AParams.Command = Command;
+        // AParams.Params = Params;
+        // AParams.OutputEvent.connect(OutputEvent);
+        FTerminal->ProcessDirectory(FileName, boost::bind(&TTerminal::CustomCommandOnFile, FTerminal, _1, _2, _3),
+                                    &AParams);
+    }
 
-  if (!Dir || (Params & ccApplyToDirectories))
-  {
-    TCustomCommandData Data(FTerminal);
-    std::wstring Cmd = TRemoteCustomCommand(
-      Data, FTerminal->GetCurrentDirectory(), FileName, L"").
-      Complete(Command, true);
+    if (!Dir || (Params & ccApplyToDirectories))
+    {
+        TCustomCommandData Data(FTerminal);
+        std::wstring Cmd = TRemoteCustomCommand(
+                               Data, FTerminal->GetCurrentDirectory(), FileName, L"").
+                           Complete(Command, true);
 
-    // AnyCommand(Cmd, &OutputEvent);
-  }
+        // AnyCommand(Cmd, &OutputEvent);
+    }
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CaptureOutput(const std::wstring AddedLine, bool StdError)
 {
-  int ReturnCode;
-  std::wstring Line = AddedLine;
-  // DEBUG_PRINTF(L"Line = %s", Line.c_str());
-  if (StdError ||
-      !Line.empty())
-  {
-    assert(!FOnCaptureOutput.empty());
-    FOnCaptureOutput(Line, StdError);
-  }
+    int ReturnCode;
+    std::wstring Line = AddedLine;
+    // DEBUG_PRINTF(L"Line = %s", Line.c_str());
+    if (StdError ||
+            !Line.empty())
+    {
+        assert(!FOnCaptureOutput.empty());
+        FOnCaptureOutput(Line, StdError);
+    }
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::AnyCommand(const std::wstring Command,
-  const captureoutput_slot_type *OutputEvent)
+                                   const captureoutput_slot_type *OutputEvent)
 {
     nb::Error(SNotImplemented, 1008);
 }
@@ -1001,358 +1003,358 @@ void TWebDAVFileSystem::AnyCommand(const std::wstring Command,
 //---------------------------------------------------------------------------
 std::wstring TWebDAVFileSystem::FileUrl(const std::wstring FileName)
 {
-  return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
-    L"http" : L"https", FileName);
+    return FTerminal->FileUrl(FTerminal->GetSessionData()->GetFSProtocol() == fsHTTP ?
+                              L"http" : L"https", FileName);
 }
 //---------------------------------------------------------------------------
-nb::TStrings * TWebDAVFileSystem::GetFixedPaths()
+nb::TStrings *TWebDAVFileSystem::GetFixedPaths()
 {
-  return NULL;
+    return NULL;
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::SpaceAvailable(const std::wstring Path,
-  TSpaceAvailable & /*ASpaceAvailable*/)
+                                       TSpaceAvailable & /*ASpaceAvailable*/)
 {
-  assert(false);
+    assert(false);
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::CopyToRemote(nb::TStrings * FilesToCopy,
-  const std::wstring ATargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation & OnceDoneOperation)
+void TWebDAVFileSystem::CopyToRemote(nb::TStrings *FilesToCopy,
+                                     const std::wstring ATargetDir, const TCopyParamType *CopyParam,
+                                     int Params, TFileOperationProgressType *OperationProgress,
+                                     TOnceDoneOperation &OnceDoneOperation)
 {
-  // nb::Error(SNotImplemented, 1005);
-  assert((FilesToCopy != NULL) && (OperationProgress != NULL));
+    // nb::Error(SNotImplemented, 1005);
+    assert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
-  Params &= ~cpAppend;
-  std::wstring FileName, FileNameOnly;
-  std::wstring TargetDir = AbsolutePath(ATargetDir, false);
-  std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
-  size_t Index = 0;
-  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
-  {
-    bool Success = false;
-    FileName = FilesToCopy->GetString(Index);
-    FileNameOnly = ExtractFileName(FileName, false);
-
+    Params &= ~cpAppend;
+    std::wstring FileName, FileNameOnly;
+    std::wstring TargetDir = AbsolutePath(ATargetDir, false);
+    std::wstring FullTargetDir = UnixIncludeTrailingBackslash(TargetDir);
+    size_t Index = 0;
+    while ((Index < FilesToCopy->GetCount()) && !OperationProgress->Cancel)
     {
-      BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
-      {
-        OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-      } BOOST_SCOPE_EXIT_END
-      try
-      {
-        if (FTerminal->GetSessionData()->GetCacheDirectories())
-        {
-          FTerminal->DirectoryModified(TargetDir, false);
+        bool Success = false;
+        FileName = FilesToCopy->GetString(Index);
+        FileNameOnly = ExtractFileName(FileName, false);
 
-          if (::DirectoryExists(::ExtractFilePath(FileName)))
-          {
-            FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
-          }
+        {
+            BOOST_SCOPE_EXIT ( (&OperationProgress) (&FileName) (&Success) (&OnceDoneOperation) )
+            {
+                OperationProgress->Finish(FileName, Success, OnceDoneOperation);
+            } BOOST_SCOPE_EXIT_END
+            try
+            {
+                if (FTerminal->GetSessionData()->GetCacheDirectories())
+                {
+                    FTerminal->DirectoryModified(TargetDir, false);
+
+                    if (::DirectoryExists(::ExtractFilePath(FileName)))
+                    {
+                        FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
+                    }
+                }
+                SourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
+                             tfFirstLevel);
+                Success = true;
+                FLastDataSent = nb::Now();
+            }
+            catch (const EScpSkipFile &E)
+            {
+                DEBUG_PRINTF(L"before FTerminal->HandleException");
+                SUSPEND_OPERATION (
+                    if (!FTerminal->HandleException(&E)) throw;
+                );
+            }
         }
-        SourceRobust(FileName, FullTargetDir, CopyParam, Params, OperationProgress,
-          tfFirstLevel);
-        Success = true;
-        FLastDataSent = nb::Now();
-      }
-      catch (const EScpSkipFile &E)
-      {
-        DEBUG_PRINTF(L"before FTerminal->HandleException");
-        SUSPEND_OPERATION (
-          if (!FTerminal->HandleException(&E)) throw;
-        );
-      }
+        Index++;
     }
-    Index++;
-  }
 }
 
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::SourceRobust(const std::wstring FileName,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+                                     const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+                                     TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
-  bool Retry = false;
+    bool Retry = false;
 
-  TUploadSessionAction Action(FTerminal->GetLog());
+    TUploadSessionAction Action(FTerminal->GetLog());
 
-  do
-  {
-    Retry = false;
-    try
+    do
     {
-      Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
-        Flags, Action);
-    }
-    catch (std::exception &E)
-    {
-      Retry = true;
-      if (FTerminal->GetActive() ||
-          !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
-      {
-        FTerminal->RollbackAction(Action, OperationProgress, &E);
-        throw;
-      }
-    }
+        Retry = false;
+        try
+        {
+            Source(FileName, TargetDir, CopyParam, Params, OperationProgress,
+                   Flags, Action);
+        }
+        catch (std::exception &E)
+        {
+            Retry = true;
+            if (FTerminal->GetActive() ||
+                    !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
+            {
+                FTerminal->RollbackAction(Action, OperationProgress, &E);
+                throw;
+            }
+        }
 
-    if (Retry)
-    {
-      OperationProgress->RollbackTransfer();
-      Action.Restart();
-      // prevent overwrite confirmations
-      // (should not be set for directories!)
-      Params |= cpNoConfirmation;
-      Flags |= tfAutoResume;
+        if (Retry)
+        {
+            OperationProgress->RollbackTransfer();
+            Action.Restart();
+            // prevent overwrite confirmations
+            // (should not be set for directories!)
+            Params |= cpNoConfirmation;
+            Flags |= tfAutoResume;
+        }
     }
-  }
-  while (Retry);
+    while (Retry);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Source(const std::wstring FileName,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags,
-  TUploadSessionAction & Action)
+                               const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+                               TFileOperationProgressType *OperationProgress, unsigned int Flags,
+                               TUploadSessionAction &Action)
 {
-  FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
+    FTerminal->LogEvent(FORMAT(L"File: \"%s\"", FileName.c_str()));
 
-  Action.FileName(ExpandUNCFileName(FileName));
+    Action.FileName(ExpandUNCFileName(FileName));
 
-  OperationProgress->SetFile(FileName, false);
+    OperationProgress->SetFile(FileName, false);
 
-  if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
-  {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
-    THROW_SKIP_FILE_NULL;
-  }
-
-  __int64 Size;
-  int Attrs;
-
-  FTerminal->OpenLocalFile(FileName, GENERIC_READ, &Attrs,
-    NULL, NULL, NULL, NULL, &Size);
-
-  OperationProgress->SetFileInProgress();
-
-  bool Dir = FLAGSET(Attrs, faDirectory);
-  if (Dir)
-  {
-    Action.Cancel();
-    DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
-      Attrs, CopyParam, Params, OperationProgress, Flags);
-  }
-  else
-  {
-    std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
-      osLocal, FLAGSET(Flags, tfFirstLevel));
-
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
-
-    OperationProgress->SetLocalSize(Size);
-
-    // Suppose same data size to transfer as to read
-    // (not true with ASCII transfer)
-    OperationProgress->SetTransferSize(OperationProgress->LocalSize);
-    OperationProgress->TransferingFile = false;
-
-    // Will we use ASCII of BINARY file tranfer?
-    TFileMasks::TParams MaskParams;
-    MaskParams.Size = Size;
-    OperationProgress->SetAsciiTransfer(
-      CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
-    FTerminal->LogEvent(
-      std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
-        L" transfer mode selected.");
-
-    ResetFileTransfer();
-
-    TFileTransferData UserData;
-
-    unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
-
+    if (!FTerminal->AllowLocalFileTransfer(FileName, CopyParam))
     {
-      // ignore file list
-      TFileListHelper Helper(this, NULL, true);
-
-      FFileTransferCPSLimit = OperationProgress->CPSLimit;
-      // not used for uploads anyway
-      FFileTransferPreserveTime = CopyParam->GetPreserveTime();
-      // not used for uploads, but we get new name (if any) back in this field
-      UserData.FileName = DestFileName;
-      UserData.Params = Params;
-      UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
-      UserData.CopyParam = CopyParam;
-      FileTransfer(FileName, FileName, DestFileName,
-        TargetDir, false, Size, TransferType, UserData, OperationProgress);
+        FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName.c_str()));
+        THROW_SKIP_FILE_NULL;
     }
 
-    std::wstring DestFullName = TargetDir + UserData.FileName;
-    // only now, we know the final destination
-    Action.Destination(DestFullName);
+    __int64 Size;
+    int Attrs;
 
-    /* TODO: implement setting datetime
-    // we are not able to tell if setting timestamp succeeded,
-    // so we log it always (if supported)
-    if (FFileTransferPreserveTime && FMfmt)
+    FTerminal->OpenLocalFile(FileName, GENERIC_READ, &Attrs,
+                             NULL, NULL, NULL, NULL, &Size);
+
+    OperationProgress->SetFileInProgress();
+
+    bool Dir = FLAGSET(Attrs, faDirectory);
+    if (Dir)
     {
-      // Inspired by SysUtils::FileAge
-      WIN32_FIND_DATA FindData;
-      HANDLE Handle = FindFirstFile(DestFullName.c_str(), &FindData);
-      if (Handle != INVALID_HANDLE_VALUE)
-      {
-        TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
-          UnixToDateTime(
-            ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
-            dstmUnix));
-        FindClose(Handle);
-      }
+        Action.Cancel();
+        DirectorySource(IncludeTrailingBackslash(FileName), TargetDir,
+                        Attrs, CopyParam, Params, OperationProgress, Flags);
     }
-    */
-  }
-
-  /* TODO : Delete also read-only files. */
-  if (FLAGSET(Params, cpDelete))
-  {
-    if (!Dir)
+    else
     {
-      FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
-        THROWOSIFFALSE(::DeleteFile(FileName));
-      )
-    }
-  }
-  else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
-  {
-    FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
-      THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
-    )
-  }
-}
-//---------------------------------------------------------------------------
-void TWebDAVFileSystem::DirectorySource(const std::wstring DirectoryName,
-  const std::wstring TargetDir, int Attrs, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
-{
-  std::wstring DestDirectoryName = CopyParam->ChangeFileName(
-    ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
-    FLAGSET(Flags, tfFirstLevel));
-  std::wstring DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+        std::wstring DestFileName = CopyParam->ChangeFileName(ExtractFileName(FileName, false),
+                                    osLocal, FLAGSET(Flags, tfFirstLevel));
 
-  OperationProgress->SetFile(DirectoryName);
+        FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", FileName.c_str()));
 
-  WIN32_FIND_DATA SearchRec;
-  bool FindOK = false;
-  HANDLE findHandle = 0;
+        OperationProgress->SetLocalSize(Size);
 
-  FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-    std::wstring path = DirectoryName + L"*.*";
-    findHandle = FindFirstFile(path.c_str(), &SearchRec);
-    FindOK = (findHandle != 0);
-  );
+        // Suppose same data size to transfer as to read
+        // (not true with ASCII transfer)
+        OperationProgress->SetTransferSize(OperationProgress->LocalSize);
+        OperationProgress->TransferingFile = false;
 
-  bool CreateDir = true;
+        // Will we use ASCII of BINARY file tranfer?
+        TFileMasks::TParams MaskParams;
+        MaskParams.Size = Size;
+        OperationProgress->SetAsciiTransfer(
+            CopyParam->UseAsciiTransfer(FileName, osLocal, MaskParams));
+        FTerminal->LogEvent(
+            std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
+            L" transfer mode selected.");
 
-  {
-    BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
-    {
-      ::FindClose(findHandle);
-    } BOOST_SCOPE_EXIT_END
-    while (FindOK && !OperationProgress->Cancel)
-    {
-      std::wstring FileName = DirectoryName + SearchRec.cFileName;
-      try
-      {
-        if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+        ResetFileTransfer();
+
+        TFileTransferData UserData;
+
+        unsigned int TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+
         {
-          SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
-            Flags & ~(tfFirstLevel | tfAutoResume));
-          // if any file got uploaded (i.e. there were any file in the
-          // directory and at least one was not skipped),
-          // do not try to create the directory,
-          // as it should be already created by FZAPI during upload
-          CreateDir = false;
+            // ignore file list
+            TFileListHelper Helper(this, NULL, true);
+
+            FFileTransferCPSLimit = OperationProgress->CPSLimit;
+            // not used for uploads anyway
+            FFileTransferPreserveTime = CopyParam->GetPreserveTime();
+            // not used for uploads, but we get new name (if any) back in this field
+            UserData.FileName = DestFileName;
+            UserData.Params = Params;
+            UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
+            UserData.CopyParam = CopyParam;
+            FileTransfer(FileName, FileName, DestFileName,
+                         TargetDir, false, Size, TransferType, UserData, OperationProgress);
         }
-      }
-      catch (const EScpSkipFile &E)
-      {
-        // If ESkipFile occurs, just log it and continue with next file
-        DEBUG_PRINTF(L"before FTerminal->HandleException");
-        SUSPEND_OPERATION (
-          // here a message to user was displayed, which was not appropriate
-          // when user refused to overwrite the file in subdirectory.
-          // hopefuly it won't be missing in other situations.
-          if (!FTerminal->HandleException(&E)) throw;
-        );
-      }
 
-      FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
-        FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
-      );
-    };
-  }
+        std::wstring DestFullName = TargetDir + UserData.FileName;
+        // only now, we know the final destination
+        Action.Destination(DestFullName);
 
-  if (CreateDir)
-  {
-    TRemoteProperties Properties;
-    if (CopyParam->GetPreserveRights())
-    {
-      Properties.Valid = TValidProperties() << vpRights;
-      Properties.Rights = CopyParam->RemoteFileRights(Attrs);
-    }
-
-    try
-    {
-      FTerminal->SetExceptionOnFail(true);
-      {
-          BOOST_SCOPE_EXIT ( (&Self) )
+        /* TODO: implement setting datetime
+        // we are not able to tell if setting timestamp succeeded,
+        // so we log it always (if supported)
+        if (FFileTransferPreserveTime && FMfmt)
+        {
+          // Inspired by SysUtils::FileAge
+          WIN32_FIND_DATA FindData;
+          HANDLE Handle = FindFirstFile(DestFullName.c_str(), &FindData);
+          if (Handle != INVALID_HANDLE_VALUE)
           {
-            Self->FTerminal->SetExceptionOnFail(false);
-          } BOOST_SCOPE_EXIT_END
-        FTerminal->CreateDirectory(DestFullName, &Properties);
-      }
-    }
-    catch (...)
-    {
-      TRemoteFile * File = NULL;
-      // ignore non-fatal error when the directory already exists
-      std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
-        if (fn.empty())
-        {
-            fn = L"/";
+            TTouchSessionAction TouchAction(FTerminal->GetLog(), DestFullName,
+              UnixToDateTime(
+                ConvertTimestampToUnixSafe(FindData.ftLastWriteTime, dstmUnix),
+                dstmUnix));
+            FindClose(Handle);
+          }
         }
-      bool Rethrow =
-        !FTerminal->GetActive() ||
-        !FTerminal->FileExists(fn, &File) ||
-        !File->GetIsDirectory();
-      delete File;
-      if (Rethrow)
-      {
-        throw;
-      }
+        */
     }
-  }
 
-  /* TODO : Delete also read-only directories. */
-  /* TODO : Show error message on failure. */
-  if (!OperationProgress->Cancel)
-  {
+    /* TODO : Delete also read-only files. */
     if (FLAGSET(Params, cpDelete))
     {
-      RemoveDir(DirectoryName);
+        if (!Dir)
+        {
+            FILE_OPERATION_LOOP (FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName.c_str()),
+                THROWOSIFFALSE(::DeleteFile(FileName));
+            )
+        }
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
-        THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
-      )
+        FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, FileName.c_str()),
+            THROWOSIFFALSE(FileSetAttr(FileName, Attrs & ~faArchive) == 0);
+        )
     }
-  }
+}
+//---------------------------------------------------------------------------
+void TWebDAVFileSystem::DirectorySource(const std::wstring DirectoryName,
+                                        const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
+                                        int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags)
+{
+    std::wstring DestDirectoryName = CopyParam->ChangeFileName(
+                                         ExtractFileName(ExcludeTrailingBackslash(DirectoryName), false), osLocal,
+                                         FLAGSET(Flags, tfFirstLevel));
+    std::wstring DestFullName = UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+
+    OperationProgress->SetFile(DirectoryName);
+
+    WIN32_FIND_DATA SearchRec;
+    bool FindOK = false;
+    HANDLE findHandle = 0;
+
+    FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+        std::wstring path = DirectoryName + L"*.*";
+        findHandle = FindFirstFile(path.c_str(), &SearchRec);
+        FindOK = (findHandle != 0);
+    );
+
+    bool CreateDir = true;
+
+    {
+        BOOST_SCOPE_EXIT ( (&SearchRec) (&findHandle) )
+        {
+            ::FindClose(findHandle);
+        } BOOST_SCOPE_EXIT_END
+        while (FindOK && !OperationProgress->Cancel)
+        {
+            std::wstring FileName = DirectoryName + SearchRec.cFileName;
+            try
+            {
+                if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+                {
+                    SourceRobust(FileName, DestFullName, CopyParam, Params, OperationProgress,
+                                 Flags & ~(tfFirstLevel | tfAutoResume));
+                    // if any file got uploaded (i.e. there were any file in the
+                    // directory and at least one was not skipped),
+                    // do not try to create the directory,
+                    // as it should be already created by FZAPI during upload
+                    CreateDir = false;
+                }
+            }
+            catch (const EScpSkipFile &E)
+            {
+                // If ESkipFile occurs, just log it and continue with next file
+                DEBUG_PRINTF(L"before FTerminal->HandleException");
+                SUSPEND_OPERATION (
+                    // here a message to user was displayed, which was not appropriate
+                    // when user refused to overwrite the file in subdirectory.
+                    // hopefuly it won't be missing in other situations.
+                    if (!FTerminal->HandleException(&E)) throw;
+                );
+            }
+
+            FILE_OPERATION_LOOP (FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()),
+                FindOK = (::FindNextFile(findHandle, &SearchRec) != 0);
+            );
+        };
+    }
+
+    if (CreateDir)
+    {
+        TRemoteProperties Properties;
+        if (CopyParam->GetPreserveRights())
+        {
+            Properties.Valid = TValidProperties() << vpRights;
+            Properties.Rights = CopyParam->RemoteFileRights(Attrs);
+        }
+
+        try
+        {
+            FTerminal->SetExceptionOnFail(true);
+            {
+                BOOST_SCOPE_EXIT ( (&Self) )
+                {
+                    Self->FTerminal->SetExceptionOnFail(false);
+                } BOOST_SCOPE_EXIT_END
+                FTerminal->CreateDirectory(DestFullName, &Properties);
+            }
+        }
+        catch (...)
+        {
+            TRemoteFile *File = NULL;
+            // ignore non-fatal error when the directory already exists
+            std::wstring fn = UnixExcludeTrailingBackslash(DestFullName);
+            if (fn.empty())
+            {
+                fn = L"/";
+            }
+            bool Rethrow =
+                !FTerminal->GetActive() ||
+                !FTerminal->FileExists(fn, &File) ||
+                !File->GetIsDirectory();
+            delete File;
+            if (Rethrow)
+            {
+                throw;
+            }
+        }
+    }
+
+    /* TODO : Delete also read-only directories. */
+    /* TODO : Show error message on failure. */
+    if (!OperationProgress->Cancel)
+    {
+        if (FLAGSET(Params, cpDelete))
+        {
+            RemoveDir(DirectoryName);
+        }
+        else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
+        {
+            FILE_OPERATION_LOOP (FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()),
+                THROWOSIFFALSE(FileSetAttr(DirectoryName, Attrs & ~faArchive) == 0);
+            )
+        }
+    }
 }
 
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::CopyToLocal(nb::TStrings * FilesToCopy,
-  const std::wstring TargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation & OnceDoneOperation)
+void TWebDAVFileSystem::CopyToLocal(nb::TStrings *FilesToCopy,
+                                    const std::wstring TargetDir, const TCopyParamType *CopyParam,
+                                    int Params, TFileOperationProgressType *OperationProgress,
+                                    TOnceDoneOperation &OnceDoneOperation)
 {
     Params &= ~cpAppend;
     std::wstring FullTargetDir = IncludeTrailingBackslash(TargetDir);
@@ -1361,7 +1363,7 @@ void TWebDAVFileSystem::CopyToLocal(nb::TStrings * FilesToCopy,
     while (Index < FilesToCopy->GetCount() && !OperationProgress->Cancel)
     {
         std::wstring FileName = FilesToCopy->GetString(Index);
-        const TRemoteFile * File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
+        const TRemoteFile *File = dynamic_cast<const TRemoteFile *>(FilesToCopy->GetObject(Index));
         bool Success = false;
         FTerminal->SetExceptionOnFail(true);
         {
@@ -1373,7 +1375,7 @@ void TWebDAVFileSystem::CopyToLocal(nb::TStrings * FilesToCopy,
             try
             {
                 SinkRobust(AbsolutePath(FileName, false), File, FullTargetDir, CopyParam, Params,
-                    OperationProgress, tfFirstLevel);
+                           OperationProgress, tfFirstLevel);
                 Success = true;
                 FLastDataSent = nb::Now();
             }
@@ -1390,9 +1392,9 @@ void TWebDAVFileSystem::CopyToLocal(nb::TStrings * FilesToCopy,
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::SinkRobust(const std::wstring FileName,
-    const TRemoteFile * File, const std::wstring TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags)
+                                   const TRemoteFile *File, const std::wstring TargetDir,
+                                   const TCopyParamType *CopyParam, int Params,
+                                   TFileOperationProgressType *OperationProgress, unsigned int Flags)
 {
     // the same in TSFTPFileSystem
     bool Retry;
@@ -1405,13 +1407,13 @@ void TWebDAVFileSystem::SinkRobust(const std::wstring FileName,
         try
         {
             Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress,
-                Flags, Action);
+                 Flags, Action);
         }
         catch (std::exception &E)
         {
             Retry = true;
             if (FTerminal->GetActive() ||
-                !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
+                    !FTerminal->QueryReopen(&E, ropNoReadDirectory, OperationProgress))
             {
                 FTerminal->RollbackAction(Action, OperationProgress, &E);
                 throw;
@@ -1435,10 +1437,10 @@ void TWebDAVFileSystem::SinkRobust(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::Sink(const std::wstring FileName,
-    const TRemoteFile * File, const std::wstring TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TDownloadSessionAction & Action)
+                             const TRemoteFile *File, const std::wstring TargetDir,
+                             const TCopyParamType *CopyParam, int Params,
+                             TFileOperationProgressType *OperationProgress, unsigned int Flags,
+                             TDownloadSessionAction &Action)
 {
     std::wstring OnlyFileName = UnixExtractFileName(FileName);
 
@@ -1459,7 +1461,7 @@ void TWebDAVFileSystem::Sink(const std::wstring FileName,
     OperationProgress->SetFile(OnlyFileName);
 
     std::wstring DestFileName = CopyParam->ChangeFileName(OnlyFileName,
-        osRemote, FLAGSET(Flags, tfFirstLevel));
+                                osRemote, FLAGSET(Flags, tfFirstLevel));
     std::wstring DestFullName = TargetDir + DestFileName;
 
     if (File->GetIsDirectory())
@@ -1514,7 +1516,7 @@ void TWebDAVFileSystem::Sink(const std::wstring FileName,
         OperationProgress->SetAsciiTransfer(
             CopyParam->UseAsciiTransfer(FileName, osRemote, MaskParams));
         FTerminal->LogEvent(std::wstring((OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary")) +
-            L" transfer mode selected.");
+                            L" transfer mode selected.");
 
         // Suppose same data size to transfer as to write
         OperationProgress->SetTransferSize(File->GetSize());
@@ -1527,7 +1529,7 @@ void TWebDAVFileSystem::Sink(const std::wstring FileName,
             {
                 EXCEPTION;
             }
-            );
+        );
 
         OperationProgress->TransferingFile = false; // not set with FTP protocol
 
@@ -1553,7 +1555,7 @@ void TWebDAVFileSystem::Sink(const std::wstring FileName,
             UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
             UserData.CopyParam = CopyParam;
             FileTransfer(FileName, DestFullName, OnlyFileName,
-                FilePath, true, File->GetSize(), TransferType, UserData, OperationProgress);
+                         FilePath, true, File->GetSize(), TransferType, UserData, OperationProgress);
         }
 
         // in case dest filename is changed from overwrite dialog
@@ -1589,454 +1591,454 @@ void TWebDAVFileSystem::Sink(const std::wstring FileName,
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::SinkFile(const std::wstring FileName,
-    const TRemoteFile * File, void * Param)
+                                 const TRemoteFile *File, void *Param)
 {
-    TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
+    TSinkFileParams *Params = static_cast<TSinkFileParams *>(Param);
     assert(Params->OperationProgress);
     try
     {
         SinkRobust(FileName, File, Params->TargetDir, Params->CopyParam,
-            Params->Params, Params->OperationProgress, Params->Flags);
+                   Params->Params, Params->OperationProgress, Params->Flags);
     }
     catch (const EScpSkipFile &E)
     {
-        TFileOperationProgressType * OperationProgress = Params->OperationProgress;
+        TFileOperationProgressType *OperationProgress = Params->OperationProgress;
 
         Params->Skipped = true;
         DEBUG_PRINTF(L"before FTerminal->HandleException");
         SUSPEND_OPERATION (
             if (!FTerminal->HandleException(&E))
-            {
-                throw;
-            }
-            );
+    {
+        throw;
+    }
+    );
 
-            if (OperationProgress->Cancel)
-            {
-                nb::Abort();
-            }
+        if (OperationProgress->Cancel)
+        {
+            nb::Abort();
+        }
     }
 }
 //---------------------------------------------------------------------------
 // from FtpFileSystem
 //---------------------------------------------------------------------------
-const wchar_t * TWebDAVFileSystem::GetOption(int OptionID) const
+const wchar_t *TWebDAVFileSystem::GetOption(int OptionID) const
 {
-  TSessionData * Data = FTerminal->GetSessionData();
+    TSessionData *Data = FTerminal->GetSessionData();
 
-  switch (OptionID)
-  {
+    switch (OptionID)
+    {
     case OPTION_PROXYHOST:
     case OPTION_FWHOST:
-      FOptionScratch = Data->GetProxyHost();
-      break;
+        FOptionScratch = Data->GetProxyHost();
+        break;
 
     case OPTION_PROXYUSER:
     case OPTION_FWUSER:
-      FOptionScratch = Data->GetProxyUsername();
-      break;
+        FOptionScratch = Data->GetProxyUsername();
+        break;
 
     case OPTION_PROXYPASS:
     case OPTION_FWPASS:
-      FOptionScratch = Data->GetProxyPassword();
-      break;
+        FOptionScratch = Data->GetProxyPassword();
+        break;
 
     case OPTION_ANONPWD:
     case OPTION_TRANSFERIP:
     case OPTION_TRANSFERIP6:
-      FOptionScratch = L"";
-      break;
+        FOptionScratch = L"";
+        break;
 
     default:
-      assert(false);
-      FOptionScratch = L"";
-  }
+        assert(false);
+        FOptionScratch = L"";
+    }
 
-  return FOptionScratch.c_str();
+    return FOptionScratch.c_str();
 }
 //---------------------------------------------------------------------------
 int TWebDAVFileSystem::GetOptionVal(int OptionID) const
 {
-  TSessionData * Data = FTerminal->GetSessionData();
-  int Result;
+    TSessionData *Data = FTerminal->GetSessionData();
+    int Result;
 
-  switch (OptionID)
-  {
+    switch (OptionID)
+    {
     case OPTION_PROXYTYPE:
-      switch (Data->GetProxyMethod())
-      {
+        switch (Data->GetProxyMethod())
+        {
         case pmNone:
-          Result = PROXY_NONE;
-          break;
+            Result = PROXY_NONE;
+            break;
 
         case pmSocks4:
-          Result = PROXY_SOCKS4;
-          break;
+            Result = PROXY_SOCKS4;
+            break;
 
         case pmSocks5:
-          Result = PROXY_SOCKS5;
-          break;
+            Result = PROXY_SOCKS5;
+            break;
 
         case pmHTTP:
-          Result = PROXY_HTTP;
-          break;
+            Result = PROXY_HTTP;
+            break;
 
         case pmTelnet:
         case pmCmd:
         default:
-          assert(false);
-          Result = 0; // PROXYTYPE_NOPROXY;
-          break;
-      }
-      break;
+            assert(false);
+            Result = 0; // PROXYTYPE_NOPROXY;
+            break;
+        }
+        break;
 
     case OPTION_PROXYPORT:
     case OPTION_FWPORT:
-      Result = Data->GetProxyPort();
-      break;
+        Result = Data->GetProxyPort();
+        break;
 
     case OPTION_PROXYUSELOGON:
-      Result = !Data->GetProxyUsername().empty();
-      break;
+        Result = !Data->GetProxyUsername().empty();
+        break;
 
     case OPTION_LOGONTYPE:
-      Result = Data->GetFtpProxyLogonType();
-      break;
+        Result = Data->GetFtpProxyLogonType();
+        break;
 
     case OPTION_TIMEOUTLENGTH:
-      Result = Data->GetTimeout();
-      break;
+        Result = Data->GetTimeout();
+        break;
 
     case OPTION_DEBUGSHOWLISTING:
-      // Listing is logged on FZAPI level 5 (what is strangely LOG_APIERROR)
-      Result = (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1);
-      break;
+        // Listing is logged on FZAPI level 5 (what is strangely LOG_APIERROR)
+        Result = (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1);
+        break;
 
     case OPTION_PASV:
-      // should never get here t_server.nPasv being nonzero
-      assert(false);
-      Result = FALSE;
-      break;
+        // should never get here t_server.nPasv being nonzero
+        assert(false);
+        Result = FALSE;
+        break;
 
     case OPTION_PRESERVEDOWNLOADFILETIME:
     case OPTION_MPEXT_PRESERVEUPLOADFILETIME:
-      Result = FFileTransferPreserveTime ? TRUE : FALSE;
-      break;
+        Result = FFileTransferPreserveTime ? TRUE : FALSE;
+        break;
 
     case OPTION_LIMITPORTRANGE:
-      Result = FALSE;
-      break;
+        Result = FALSE;
+        break;
 
     case OPTION_PORTRANGELOW:
     case OPTION_PORTRANGEHIGH:
-      // should never get here OPTION_LIMITPORTRANGE being zero
-      assert(false);
-      Result = 0;
-      break;
+        // should never get here OPTION_LIMITPORTRANGE being zero
+        assert(false);
+        Result = 0;
+        break;
 
     case OPTION_ENABLE_IPV6:
-      Result = ((Data->GetAddressFamily() == afIPv6) ? TRUE : FALSE);
-      break;
+        Result = ((Data->GetAddressFamily() == afIPv6) ? TRUE : FALSE);
+        break;
 
     case OPTION_KEEPALIVE:
-      Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
-      break;
+        Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
+        break;
 
     case OPTION_INTERVALLOW:
     case OPTION_INTERVALHIGH:
-      Result = Data->GetFtpPingInterval();
-      break;
+        Result = Data->GetFtpPingInterval();
+        break;
 
     case OPTION_VMSALLREVISIONS:
-      Result = FALSE;
-      break;
+        Result = FALSE;
+        break;
 
     case OPTION_SPEEDLIMIT_DOWNLOAD_TYPE:
     case OPTION_SPEEDLIMIT_UPLOAD_TYPE:
-      Result = (FFileTransferCPSLimit == 0 ? 0 : 1);
-      break;
+        Result = (FFileTransferCPSLimit == 0 ? 0 : 1);
+        break;
 
     case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
     case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-      Result = (FFileTransferCPSLimit / 1024); // FZAPI expects KiB/s
-      break;
+        Result = (FFileTransferCPSLimit / 1024); // FZAPI expects KiB/s
+        break;
 
     case OPTION_MPEXT_SHOWHIDDEN:
-      Result = (FDoListAll ? TRUE : FALSE);
-      break;
+        Result = (FDoListAll ? TRUE : FALSE);
+        break;
 
     default:
-      assert(false);
-      Result = FALSE;
-      break;
-  }
+        assert(false);
+        Result = FALSE;
+        break;
+    }
 
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
-bool TWebDAVFileSystem::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, size_t Count)
+bool TWebDAVFileSystem::HandleListData(const wchar_t *Path,
+                                       const TListDataEntry *Entries, size_t Count)
 {
-  if (!FActive)
-  {
-    return false;
-  }
-  else if (FIgnoreFileList)
-  {
-    // directory listing provided implicitly by FZAPI during certain operations is ignored
-    assert(FFileList == NULL);
-    return false;
-  }
-  else
-  {
-    assert(FFileList != NULL);
-    // this can actually fail in real life,
-    // when connected to server with case insensitive paths
-    assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
-    USEDPARAM(Path);
-
-    for (size_t Index = 0; Index < Count; Index++)
+    if (!FActive)
     {
-      const TListDataEntry * Entry = &Entries[Index];
-      TRemoteFile * File = new TRemoteFile();
-      try
-      {
-        File->SetTerminal(FTerminal);
-
-        File->SetFileName(std::wstring(Entry->Name));
-        if (wcslen(Entry->Permissions) >= 10)
-        {
-          try
-          {
-            File->GetRights()->SetText(Entry->Permissions + 1);
-          }
-          catch (...)
-          {
-            // ignore permissions errors with FTP
-          }
-        }
-		// FIXME
-		std::wstring own = Entry->OwnerGroup;
-        const wchar_t * Space = wcschr(own.c_str(), ' ');
-        if (Space != NULL)
-        {
-          File->GetOwner().SetName(std::wstring(own.c_str(), Space - own.c_str()));
-          File->GetGroup().SetName(Space + 1);
-        }
-        else
-        {
-          File->GetOwner().SetName(Entry->OwnerGroup);
-        }
-
-        File->SetSize(Entry->Size);
-
-        if (Entry->Link)
-        {
-          File->SetType(FILETYPE_SYMLINK);
-        }
-        else if (Entry->Dir)
-        {
-          File->SetType(FILETYPE_DIRECTORY);
-        }
-        else
-        {
-          File->SetType('-');
-        }
-
-        // ModificationFmt must be set after Modification
-        if (Entry->HasDate)
-        {
-          // should be the same as ConvertRemoteTimestamp
-          nb::TDateTime Modification =
-            EncodeDateVerbose(static_cast<unsigned short>(Entry->Year), static_cast<unsigned short>(Entry->Month),
-              static_cast<unsigned short>(Entry->Day));
-          if (Entry->HasTime)
-          {
-            File->SetModification(Modification +
-              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour), static_cast<unsigned short>(Entry->Minute), 0, 0));
-            // not exact as we got year as well, but it is most probably
-            // guessed by FZAPI anyway
-            File->SetModificationFmt(mfMDHM);
-          }
-          else
-          {
-            File->SetModification(Modification);
-            File->SetModificationFmt(mfMDY);
-          }
-        }
-        else
-        {
-          // With SCP we estimate date to be today, if we have at least time
-
-          File->SetModification(nb::TDateTime(0.0));
-          File->SetModificationFmt(mfNone);
-        }
-        File->SetLastAccess(File->GetModification());
-
-        File->SetLinkTo(Entry->LinkTarget);
-
-        File->Complete();
-      }
-      catch (const std::exception & E)
-      {
-        delete File;
-        std::wstring EntryData =
-          FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-            Entry->Name,
-            Entry->Permissions,
-            Entry->OwnerGroup,
-            IntToStr(Entry->Size).c_str(),
-             int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
-             Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
-        throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
-      }
-
-      FFileList->AddFile(File);
+        return false;
     }
-    return true;
-  }
+    else if (FIgnoreFileList)
+    {
+        // directory listing provided implicitly by FZAPI during certain operations is ignored
+        assert(FFileList == NULL);
+        return false;
+    }
+    else
+    {
+        assert(FFileList != NULL);
+        // this can actually fail in real life,
+        // when connected to server with case insensitive paths
+        assert(UnixComparePaths(AbsolutePath(FFileList->GetDirectory(), false), Path));
+        USEDPARAM(Path);
+
+        for (size_t Index = 0; Index < Count; Index++)
+        {
+            const TListDataEntry *Entry = &Entries[Index];
+            TRemoteFile *File = new TRemoteFile();
+            try
+            {
+                File->SetTerminal(FTerminal);
+
+                File->SetFileName(std::wstring(Entry->Name));
+                if (wcslen(Entry->Permissions) >= 10)
+                {
+                    try
+                    {
+                        File->GetRights()->SetText(Entry->Permissions + 1);
+                    }
+                    catch (...)
+                    {
+                        // ignore permissions errors with FTP
+                    }
+                }
+                // FIXME
+                std::wstring own = Entry->OwnerGroup;
+                const wchar_t *Space = wcschr(own.c_str(), ' ');
+                if (Space != NULL)
+                {
+                    File->GetOwner().SetName(std::wstring(own.c_str(), Space - own.c_str()));
+                    File->GetGroup().SetName(Space + 1);
+                }
+                else
+                {
+                    File->GetOwner().SetName(Entry->OwnerGroup);
+                }
+
+                File->SetSize(Entry->Size);
+
+                if (Entry->Link)
+                {
+                    File->SetType(FILETYPE_SYMLINK);
+                }
+                else if (Entry->Dir)
+                {
+                    File->SetType(FILETYPE_DIRECTORY);
+                }
+                else
+                {
+                    File->SetType('-');
+                }
+
+                // ModificationFmt must be set after Modification
+                if (Entry->HasDate)
+                {
+                    // should be the same as ConvertRemoteTimestamp
+                    nb::TDateTime Modification =
+                        EncodeDateVerbose(static_cast<unsigned short>(Entry->Year), static_cast<unsigned short>(Entry->Month),
+                                          static_cast<unsigned short>(Entry->Day));
+                    if (Entry->HasTime)
+                    {
+                        File->SetModification(Modification +
+                                              EncodeTimeVerbose(static_cast<unsigned short>(Entry->Hour), static_cast<unsigned short>(Entry->Minute), 0, 0));
+                        // not exact as we got year as well, but it is most probably
+                        // guessed by FZAPI anyway
+                        File->SetModificationFmt(mfMDHM);
+                    }
+                    else
+                    {
+                        File->SetModification(Modification);
+                        File->SetModificationFmt(mfMDY);
+                    }
+                }
+                else
+                {
+                    // With SCP we estimate date to be today, if we have at least time
+
+                    File->SetModification(nb::TDateTime(0.0));
+                    File->SetModificationFmt(mfNone);
+                }
+                File->SetLastAccess(File->GetModification());
+
+                File->SetLinkTo(Entry->LinkTarget);
+
+                File->Complete();
+            }
+            catch (const std::exception &E)
+            {
+                delete File;
+                std::wstring EntryData =
+                    FORMAT(L"%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d",
+                           Entry->Name,
+                           Entry->Permissions,
+                           Entry->OwnerGroup,
+                           IntToStr(Entry->Size).c_str(),
+                           int(Entry->Dir), int(Entry->Link), Entry->Year, Entry->Month, Entry->Day,
+                           Entry->Hour, Entry->Minute, int(Entry->HasTime), int(Entry->HasDate));
+                throw ETerminal(FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), &E);
+            }
+
+            FFileList->AddFile(File);
+        }
+        return true;
+    }
 }
 //---------------------------------------------------------------------------
 bool TWebDAVFileSystem::HandleTransferStatus(bool Valid, __int64 TransferSize,
-  __int64 Bytes, int /*Percent*/, int /*TimeElapsed*/, int /*TimeLeft*/, int /*TransferRate*/,
-  bool FileTransfer)
+        __int64 Bytes, int /*Percent*/, int /*TimeElapsed*/, int /*TimeLeft*/, int /*TransferRate*/,
+        bool FileTransfer)
 {
-  if (!FActive)
-  {
-    return false;
-  }
-  else if (!Valid)
-  {
-  }
-  else if (FileTransfer)
-  {
-    FileTransferProgress(TransferSize, Bytes);
-  }
-  else
-  {
-    ReadDirectoryProgress(Bytes);
-  }
-  return true;
+    if (!FActive)
+    {
+        return false;
+    }
+    else if (!Valid)
+    {
+    }
+    else if (FileTransfer)
+    {
+        FileTransferProgress(TransferSize, Bytes);
+    }
+    else
+    {
+        ReadDirectoryProgress(Bytes);
+    }
+    return true;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ResetFileTransfer()
 {
-  FFileTransferAbort = ftaNone;
-  FFileTransferCancelled = false;
-  FFileTransferResumed = 0;
+    FFileTransferAbort = ftaNone;
+    FFileTransferCancelled = false;
+    FFileTransferResumed = 0;
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::ReadDirectoryProgress(__int64 Bytes)
 {
-  // with FTP we do not know exactly how many entries we have received,
-  // instead we know number of bytes received only.
-  // so we report approximation based on average size of entry.
-  int Progress = static_cast<int>(Bytes / 80);
-  if (Progress - FLastReadDirectoryProgress >= 10)
-  {
-    bool Cancel = false;
-    FLastReadDirectoryProgress = Progress;
-    FTerminal->DoReadDirectoryProgress(Progress, Cancel);
-    if (Cancel)
+    // with FTP we do not know exactly how many entries we have received,
+    // instead we know number of bytes received only.
+    // so we report approximation based on average size of entry.
+    int Progress = static_cast<int>(Bytes / 80);
+    if (Progress - FLastReadDirectoryProgress >= 10)
     {
-      FTerminal->DoReadDirectoryProgress(-2, Cancel);
-      // FFileZillaIntf->Cancel();
+        bool Cancel = false;
+        FLastReadDirectoryProgress = Progress;
+        FTerminal->DoReadDirectoryProgress(Progress, Cancel);
+        if (Cancel)
+        {
+            FTerminal->DoReadDirectoryProgress(-2, Cancel);
+            // FFileZillaIntf->Cancel();
+        }
     }
-  }
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::DoFileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+        __int64 Bytes)
 {
-  TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
+    TFileOperationProgressType *OperationProgress = FTerminal->GetOperationProgress();
 
-  OperationProgress->SetTransferSize(TransferSize);
+    OperationProgress->SetTransferSize(TransferSize);
 
-  if (FFileTransferResumed > 0)
-  {
-    OperationProgress->AddResumed(FFileTransferResumed);
-    FFileTransferResumed = 0;
-  }
+    if (FFileTransferResumed > 0)
+    {
+        OperationProgress->AddResumed(FFileTransferResumed);
+        FFileTransferResumed = 0;
+    }
 
-  __int64 Diff = Bytes - OperationProgress->TransferedSize;
-  assert(Diff >= 0);
-  if (Diff >= 0)
-  {
-    OperationProgress->AddTransfered(Diff);
-  }
+    __int64 Diff = Bytes - OperationProgress->TransferedSize;
+    assert(Diff >= 0);
+    if (Diff >= 0)
+    {
+        OperationProgress->AddTransfered(Diff);
+    }
 
-  if (OperationProgress->Cancel == csCancel)
-  {
-    FFileTransferCancelled = true;
-    FFileTransferAbort = ftaCancel;
-    // FFileZillaIntf->Cancel();
-  }
+    if (OperationProgress->Cancel == csCancel)
+    {
+        FFileTransferCancelled = true;
+        FFileTransferAbort = ftaCancel;
+        // FFileZillaIntf->Cancel();
+    }
 
-  if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
-  {
-    FFileTransferCPSLimit = OperationProgress->CPSLimit;
-  }
+    if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
+    {
+        FFileTransferCPSLimit = OperationProgress->CPSLimit;
+    }
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::FileTransferProgress(__int64 TransferSize,
-  __int64 Bytes)
+        __int64 Bytes)
 {
-  TGuard Guard(FTransferStatusCriticalSection);
+    TGuard Guard(FTransferStatusCriticalSection);
 
-  DoFileTransferProgress(TransferSize, Bytes);
+    DoFileTransferProgress(TransferSize, Bytes);
 }
 
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::FileTransfer(const std::wstring FileName,
-  const std::wstring LocalFile, const std::wstring RemoteFile,
-  const std::wstring RemotePath, bool Get, __int64 Size, int Type,
-  TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
+                                     const std::wstring LocalFile, const std::wstring RemoteFile,
+                                     const std::wstring RemotePath, bool Get, __int64 Size, int Type,
+                                     TFileTransferData &UserData, TFileOperationProgressType *OperationProgress)
 {
-  std::wstring errorInfo;
-  FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
-    DEBUG_PRINTF(L"RemoteFile = %s, FileName = %s", RemoteFile.c_str(), FileName.c_str());
-    if (Get)
-    {
-        bool res = GetFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
-        if (!res)
+    std::wstring errorInfo;
+    FILE_OPERATION_LOOP(FMTLOAD(TRANSFER_ERROR, FileName.c_str()),
+        DEBUG_PRINTF(L"RemoteFile = %s, FileName = %s", RemoteFile.c_str(), FileName.c_str());
+        if (Get)
         {
-          FFileTransferAbort = ftaSkip;
-          // FFileTransferAbort = ftaCancel;
-          if (::FileExists(LocalFile))
-          {
-            ::DeleteFile(LocalFile);
-          }
+            bool res = GetFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+            if (!res)
+            {
+                FFileTransferAbort = ftaSkip;
+                // FFileTransferAbort = ftaCancel;
+                if (::FileExists(LocalFile))
+                {
+                    ::DeleteFile(LocalFile);
+                }
+            }
         }
-    }
-    else
-    {
-        bool res = PutFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
-        if (!res)
+        else
         {
-          FFileTransferAbort = ftaSkip;
-          // FFileTransferAbort = ftaCancel;
+            bool res = PutFile((RemotePath + RemoteFile).c_str(), LocalFile.c_str(), Size, errorInfo);
+            if (!res)
+            {
+                FFileTransferAbort = ftaSkip;
+                // FFileTransferAbort = ftaCancel;
+            }
         }
-    }
-  );
+    );
 
-  switch (FFileTransferAbort)
-  {
+    switch (FFileTransferAbort)
+    {
     case ftaSkip:
-      THROW_SKIP_FILE(errorInfo, NULL);
+        THROW_SKIP_FILE(errorInfo, NULL);
 
     case ftaCancel:
-      nb::Abort();
-      break;
-  }
+        nb::Abort();
+        break;
+    }
 
-  if (!FFileTransferCancelled)
-  {
-    // show completion of transfer
-    // call non-guarded variant to avoid deadlock with keepalives
-    // (we are not waiting for reply anymore so keepalives are free to proceed)
-    DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
-  }
+    if (!FFileTransferCancelled)
+    {
+        // show completion of transfer
+        // call non-guarded variant to avoid deadlock with keepalives
+        // (we are not waiting for reply anymore so keepalives are free to proceed)
+        DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
+    }
 }
 
 // from WebDAV
@@ -2394,12 +2396,12 @@ std::string TWebDAVFileSystem::EscapeUTF8URL(const wchar_t *src) const
 }
 
 CURLcode TWebDAVFileSystem::CURLPrepare(const char *webDavPath,
-    const bool handleTimeout /*= true*/)
+                                        const bool handleTimeout /*= true*/)
 {
     CURLcode urlCode = FCURLIntf->Prepare(webDavPath,
-        FTerminal->GetSessionData(),
-        FTerminal->GetConfiguration()->GetActualLogProtocol(),
-        handleTimeout);
+                                          FTerminal->GetSessionData(),
+                                          FTerminal->GetConfiguration()->GetActualLogProtocol(),
+                                          handleTimeout);
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_HTTPAUTH, CURLAUTH_ANY));
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_FOLLOWLOCATION, 1));
     CHECK_CUCALL(urlCode, curl_easy_setopt(FCURLIntf->GetCURL(), CURLOPT_POST301, 1));
