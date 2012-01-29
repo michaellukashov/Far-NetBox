@@ -21,7 +21,7 @@ extern "C"
 #include <proxy.h>
 #include <storage.h>
 
-extern CRITICAL_SECTION noise_section;
+    extern CRITICAL_SECTION noise_section;
 }
 //---------------------------------------------------------------------------
 #endif

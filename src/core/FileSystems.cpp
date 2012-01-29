@@ -5,10 +5,10 @@
 #include "RemoteFiles.h"
 #include "Common.h"
 //---------------------------------------------------------------------------
-TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
-  FTerminal(ATerminal)
+TCustomFileSystem::TCustomFileSystem(TTerminal *ATerminal):
+    FTerminal(ATerminal)
 {
-  assert(FTerminal);
+    assert(FTerminal);
 }
 //---------------------------------------------------------------------------
 TCustomFileSystem::~TCustomFileSystem()
