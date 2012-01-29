@@ -166,7 +166,7 @@ private:
     std::wstring GetInternalStorageKey();
 
 public:
-    TSessionData(const std::wstring aName);
+    explicit TSessionData(const std::wstring aName);
     void Default();
     void NonPersistant();
     void Load(THierarchicalStorage *Storage);
@@ -541,7 +541,7 @@ private:
 class TStoredSessionList : public TNamedObjectList
 {
 public:
-    TStoredSessionList(bool aReadOnly = false);
+    explicit TStoredSessionList(bool aReadOnly = false);
     virtual ~TStoredSessionList();
     void Load(const std::wstring aKey, bool UseDefaults);
     void Load();

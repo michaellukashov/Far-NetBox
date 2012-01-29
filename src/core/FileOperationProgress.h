@@ -143,7 +143,7 @@ private:
 class TSuspendFileOperationProgress
 {
 public:
-    TSuspendFileOperationProgress(TFileOperationProgressType *OperationProgress)
+    explicit TSuspendFileOperationProgress(TFileOperationProgressType *OperationProgress)
     {
         FOperationProgress = OperationProgress;
         if (FOperationProgress != NULL)

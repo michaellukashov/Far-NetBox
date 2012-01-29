@@ -59,7 +59,7 @@ typedef queryparamstimer_signal_type::slot_type queryparamstimer_slot_type;
 
 struct TQueryParams
 {
-    TQueryParams(unsigned int AParams = 0, std::wstring AHelpKeyword = HELP_NONE);
+    explicit TQueryParams(unsigned int AParams = 0, std::wstring AHelpKeyword = HELP_NONE);
 
     const TQueryButtonAlias *Aliases;
     unsigned int AliasesCount;

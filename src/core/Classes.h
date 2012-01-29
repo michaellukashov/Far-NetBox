@@ -495,7 +495,7 @@ public:
 class THandleStream : public TStream
 {
 public:
-    THandleStream(HANDLE AHandle);
+    explicit THandleStream(HANDLE AHandle);
     virtual ~THandleStream();
     virtual __int64 Read(void *Buffer, __int64 Count);
     virtual __int64 Write(const void *Buffer, __int64 Count);

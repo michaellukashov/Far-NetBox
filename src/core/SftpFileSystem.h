@@ -22,7 +22,7 @@ class TSFTPFileSystem : public TCustomFileSystem
     friend class TSFTPCalculateFilesChecksumQueue;
     friend class TSFTPBusy;
 public:
-    TSFTPFileSystem(TTerminal *ATermina);
+    explicit TSFTPFileSystem(TTerminal *ATermina);
     virtual void Init(TSecureShell *SecureShell);
     virtual ~TSFTPFileSystem();
 
