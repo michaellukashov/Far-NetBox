@@ -105,9 +105,9 @@ protected:
     static void StoreToConfig(TSessionData *Data, Config *cfg, bool Simple);
 
 public:
-    TSecureShell(TSessionUI *UI, TSessionData *SessionData,
+    explicit TSecureShell(TSessionUI *UI, TSessionData *SessionData,
                  TSessionLog *Log, TConfiguration *Configuration);
-    ~TSecureShell();
+    virtual ~TSecureShell();
     void Open();
     void Close();
     void KeepAlive();

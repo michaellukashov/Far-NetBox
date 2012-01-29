@@ -30,7 +30,7 @@ const int dfForceDelete = 0x04;
 class TCustomFileSystem
 {
 public:
-    TCustomFileSystem()
+    explicit TCustomFileSystem()
     {}
     virtual void Init()
     {}
@@ -98,7 +98,7 @@ public:
 protected:
     TTerminal *FTerminal;
 
-    TCustomFileSystem(TTerminal *ATerminal);
+    explicit TCustomFileSystem(TTerminal *ATerminal);
 
     static void FindCustomCommandPattern(
         const std::wstring Command, int Index, int &Len, char &PatternCmd);

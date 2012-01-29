@@ -47,7 +47,7 @@ private:
 class TSafeHandleStream : public nb::THandleStream
 {
 public:
-    TSafeHandleStream(HANDLE AHandle);
+    explicit TSafeHandleStream(HANDLE AHandle);
     virtual ~TSafeHandleStream();
     virtual __int64 Read(void *Buffer, __int64 Count);
     virtual __int64 Write(const void *Buffer, __int64 Count);

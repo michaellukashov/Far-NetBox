@@ -176,7 +176,7 @@ private:
 class TGuard
 {
 public:
-    TGuard(TCriticalSection *ACriticalSection);
+    explicit TGuard(TCriticalSection *ACriticalSection);
     ~TGuard();
 
 private:
@@ -186,7 +186,7 @@ private:
 class TUnguard
 {
 public:
-    TUnguard(TCriticalSection *ACriticalSection);
+    explicit TUnguard(TCriticalSection *ACriticalSection);
     ~TUnguard();
 
 private:

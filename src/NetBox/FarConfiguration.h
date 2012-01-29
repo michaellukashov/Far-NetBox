@@ -11,7 +11,7 @@ class TBookmarkList;
 class TFarConfiguration : public TGUIConfiguration
 {
 public:
-    TFarConfiguration(TCustomFarPlugin *APlugin);
+    explicit TFarConfiguration(TCustomFarPlugin *APlugin);
     virtual ~TFarConfiguration();
 
     // __property TCustomFarPlugin * Plugin = { read = FFarPlugin, write = SetPlugin };

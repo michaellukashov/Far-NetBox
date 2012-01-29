@@ -9,7 +9,7 @@
 class EFileMasksException : public std::exception
 {
 public:
-    EFileMasksException(const std::wstring Message, int ErrorStart, int ErrorLen);
+    explicit EFileMasksException(const std::wstring Message, int ErrorStart, int ErrorLen);
     int ErrorStart;
     int ErrorLen;
 };
@@ -48,8 +48,8 @@ public:
 
     TFileMasks();
     TFileMasks(const TFileMasks &Source);
-    TFileMasks(const std::wstring AMasks);
-    ~TFileMasks();
+    explicit TFileMasks(const std::wstring AMasks);
+    virtual ~TFileMasks();
     TFileMasks &operator =(const TFileMasks &rhm);
     TFileMasks &operator =(const std::wstring rhs);
     bool operator ==(const TFileMasks &rhm) const;
@@ -148,7 +148,7 @@ protected:
 class TInteractiveCustomCommand : public TCustomCommand
 {
 public:
-    TInteractiveCustomCommand(TCustomCommand *ChildCustomCommand);
+    explicit TInteractiveCustomCommand(TCustomCommand *ChildCustomCommand);
 
 protected:
     virtual void Prompt(size_t Index, const std::wstring Prompt,
@@ -165,7 +165,7 @@ class TTerminal;
 struct TCustomCommandData
 {
     TCustomCommandData();
-    TCustomCommandData(TTerminal *Terminal);
+    explicit TCustomCommandData(TTerminal *Terminal);
 
     std::wstring HostName;
     std::wstring UserName;

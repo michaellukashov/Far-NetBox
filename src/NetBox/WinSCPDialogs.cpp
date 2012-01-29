@@ -4976,7 +4976,7 @@ void TCopyParamsContainer::ValidateMaskComboExit(nb::TObject *Sender)
 {
     TFarEdit *Edit = dynamic_cast<TFarEdit *>(Sender);
     assert(Edit != NULL);
-    TFileMasks Masks = Edit->GetText();
+    TFileMasks Masks(Edit->GetText());
     int Start = 0, Length = 0;
     if (!Masks.GetIsValid(Start, Length))
     {

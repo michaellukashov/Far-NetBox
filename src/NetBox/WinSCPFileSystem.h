@@ -91,7 +91,7 @@ class TWinSCPFileSystem : public TCustomFarFileSystem
     friend class TKeepaliveThread;
     friend class TQueueDialog;
 public:
-    TWinSCPFileSystem(TCustomFarPlugin *APlugin);
+    explicit TWinSCPFileSystem(TCustomFarPlugin *APlugin);
     virtual void Init(TSecureShell *SecureShell);
     virtual ~TWinSCPFileSystem();
 
