@@ -138,7 +138,7 @@ void TFarDialog::SetBounds(const nb::TRect &value)
     }
 }
 //---------------------------------------------------------------------------
-nb::TRect TFarDialog::GetClientRect() const 
+nb::TRect TFarDialog::GetClientRect() const
 {
     nb::TRect R;
     if (FBorderBox)
@@ -746,10 +746,10 @@ int TFarDialog::ShowModal()
             TFarEnvGuard Guard;
             nb::TRect Bounds = GetBounds();
             HANDLE dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
-                GetFarPlugin()->GetStartupInfo()->ModuleNumber,
-                Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-                StrToFar(AHelpTopic), FDialogItems, GetItemCount(), 0, GetFlags(),
-                DialogProcGeneral, reinterpret_cast<LONG_PTR>(this));
+                             GetFarPlugin()->GetStartupInfo()->ModuleNumber,
+                             Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
+                             StrToFar(AHelpTopic), FDialogItems, GetItemCount(), 0, GetFlags(),
+                             DialogProcGeneral, reinterpret_cast<LONG_PTR>(this));
             BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(dlg);
         }
 
@@ -857,7 +857,7 @@ void TFarDialog::EnableGroup(int Group, bool Enable)
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ProcessGroup(int Group, const processgroupevent_slot_type &Callback,
-        void *Arg)
+                              void *Arg)
 {
     LockChanges();
     {
@@ -888,7 +888,7 @@ void TFarDialog::EnableItem(TFarDialogItem *Item, void *Arg)
     Item->SetEnabled(*static_cast<bool *>(Arg));
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetItemFocused(TFarDialogItem * const &value)
+void TFarDialog::SetItemFocused(TFarDialogItem *const &value)
 {
     if (value != GetItemFocused())
     {
@@ -1063,7 +1063,9 @@ TFarDialogItem::~TFarDialogItem()
 {
     assert(!GetDialog());
     if (GetDialog())
+    {
         delete[] GetDialogItem()->PtrData;
+    }
 }
 //---------------------------------------------------------------------------
 FarDialogItem *TFarDialogItem::GetDialogItem()
@@ -1156,7 +1158,7 @@ void TFarDialogItem::UpdateFlags(unsigned int value)
 nb::TRect TFarDialogItem::GetActualBounds()
 {
     return nb::TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
-                 GetDialogItem()->X2, GetDialogItem()->Y2);
+                     GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
 unsigned int TFarDialogItem::GetFlags()
@@ -1210,7 +1212,9 @@ std::wstring TFarDialogItem::GetData()
     // DEBUG_PRINTF(L"GetDialogItem = %x", GetDialogItem());
     std::wstring Result;
     if (GetDialogItem()->PtrData)
+    {
         Result = GetDialogItem()->PtrData;
+    }
     if (!GetOem())
     {
         StrFromFar(Result);
@@ -1683,7 +1687,7 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
-        MOUSE_EVENT_RECORD *Event)
+                               MOUSE_EVENT_RECORD *Event)
 {
     return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<long>(Event));
 }
@@ -1792,8 +1796,8 @@ std::wstring TFarButton::GetData()
     if ((FBrackets == brTight) || (FBrackets == brSpace))
     {
         bool HasBrackets = (Result.size() >= 2) &&
-            (Result[0] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
-            (Result[Result.size() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
+                           (Result[0] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
+                           (Result[Result.size() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
         assert(HasBrackets);
         if (HasBrackets)
         {
@@ -2379,7 +2383,9 @@ size_t TFarList::GetSelectedInt(bool Init)
     {
         const wchar_t *PtrData = GetDialogItem()->GetDialogItem()->PtrData;
         if (PtrData)
+        {
             Result = IndexOf(PtrData);
+        }
     }
 
     return Result;
@@ -2470,9 +2476,9 @@ long TFarListBox::ItemProc(int Msg, long Param)
     bool Result;
     // FAR WORKAROUND
     // Since 1.70 final, hotkeys do not work when list box has focus.
-    if ((Msg == DN_KEY) && 
-        // (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) >= static_cast<short int>(FAR170)) &&
-        GetDialog()->HotKey(Param))
+    if ((Msg == DN_KEY) &&
+            // (static_cast<short int>(GetDialog()->GetFarPlugin()->FarVersion()) >= static_cast<short int>(FAR170)) &&
+            GetDialog()->HotKey(Param))
     {
         Result = true;
     }
