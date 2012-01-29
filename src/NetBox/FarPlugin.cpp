@@ -1521,7 +1521,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
 //---------------------------------------------------------------------------
 void TCustomFarPlugin::UpdateConsoleTitle(const std::wstring Title)
 {
-    assert(!FCurrentTitle.empty());
+    // assert(!FCurrentTitle.empty());
     FCurrentTitle = Title;
     UpdateConsoleTitle();
 }
