@@ -47,7 +47,7 @@ CEasyURL::~CEasyURL()
 
 
 bool CEasyURL::Initialize(const wchar_t *url, const wchar_t *userName,
-    const wchar_t *password)
+                          const wchar_t *password)
 {
     assert(m_CURL == NULL);
     assert(url && *url);
@@ -96,8 +96,8 @@ bool CEasyURL::Close()
 
 
 CURLcode CEasyURL::Prepare(const char *path,
-    const TSessionData *Data, int LogLevel,
-    const bool handleTimeout /*= true*/)
+                           const TSessionData *Data, int LogLevel,
+                           const bool handleTimeout /*= true*/)
 {
     assert(m_CURL);
     assert(!m_Prepared);
@@ -140,23 +140,23 @@ CURLcode CEasyURL::Prepare(const char *path,
         int proxy_type = CURLPROXY_HTTP;
         switch (ProxyMethod)
         {
-            case pmHTTP:
-            {
-                proxy_type = CURLPROXY_HTTP;
-                break;
-            }
-            case pmSocks4:
-            {
-                proxy_type = CURLPROXY_SOCKS4;
-                break;
-            }
-            case pmSocks5:
-            {
-                proxy_type = CURLPROXY_SOCKS5;
-                break;
-            }
-            default:
-                return CURLE_UNSUPPORTED_PROTOCOL;
+        case pmHTTP:
+        {
+            proxy_type = CURLPROXY_HTTP;
+            break;
+        }
+        case pmSocks4:
+        {
+            proxy_type = CURLPROXY_SOCKS4;
+            break;
+        }
+        case pmSocks5:
+        {
+            proxy_type = CURLPROXY_SOCKS5;
+            break;
+        }
+        default:
+            return CURLE_UNSUPPORTED_PROTOCOL;
         }
         std::string proxy = nb::W2MB(Data->GetProxyHost().c_str());
         unsigned long port = Data->GetProxyPort();
@@ -353,7 +353,8 @@ int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
     // PASS *****
     if (m_regex != INVALID_HANDLE_VALUE && m_match != NULL)
     {
-        RegExpSearch search = {
+        RegExpSearch search =
+        {
             strw.c_str(),
             0,
             static_cast<int>(strw.size()),
@@ -374,8 +375,8 @@ int CEasyURL::DebugOutput(TLogLineType type, const char *data, size_t size)
 }
 
 int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
-                 char *data, size_t size,
-                 void *userp)
+                            char *data, size_t size,
+                            void *userp)
 {
     CEasyURL *instance = reinterpret_cast<CEasyURL *>(userp);
     assert(instance != NULL);
@@ -384,17 +385,17 @@ int CEasyURL::InternalDebug(CURL *handle, curl_infotype type,
     TLogLineType llType = llOutput;
     switch (type)
     {
-        case CURLINFO_TEXT:
-        case CURLINFO_HEADER_IN:
-        case CURLINFO_DATA_IN:
-        case CURLINFO_SSL_DATA_IN:
-            llType = llInput;
-            break;
-        case CURLINFO_HEADER_OUT:
-        case CURLINFO_DATA_OUT:
-        case CURLINFO_SSL_DATA_OUT:
-            llType = llOutput;
-            break;
+    case CURLINFO_TEXT:
+    case CURLINFO_HEADER_IN:
+    case CURLINFO_DATA_IN:
+    case CURLINFO_SSL_DATA_IN:
+        llType = llInput;
+        break;
+    case CURLINFO_HEADER_OUT:
+    case CURLINFO_DATA_OUT:
+    case CURLINFO_SSL_DATA_OUT:
+        llType = llOutput;
+        break;
     }
     return instance->DebugOutput(llType, data, size);
 }
