@@ -17,10 +17,10 @@ extern TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst);
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
 {
 public:
-  inline TFarPluginGuard() :
-    TGuard(FarPlugin->GetCriticalSection())
-  {
-  }
+    inline TFarPluginGuard() :
+        TGuard(FarPlugin->GetCriticalSection())
+    {
+    }
 };
 
 //---------------------------------------------------------------------------
@@ -64,9 +64,9 @@ int WINAPI ConfigureW(int item)
 
 HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
-  assert(FarPlugin);
-  TFarPluginGuard Guard;
-  return FarPlugin->OpenPlugin(openFrom, item);
+    assert(FarPlugin);
+    TFarPluginGuard Guard;
+    return FarPlugin->OpenPlugin(openFrom, item);
 }
 
 void WINAPI ClosePluginW(HANDLE plugin)
@@ -98,11 +98,11 @@ void WINAPI FreeFindDataW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNu
 }
 
 int WINAPI ProcessHostFileW(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
+  struct PluginPanelItem *PanelItem, int ItemsNumber, int OpMode)
 {
-  assert(FarPlugin);
-  TFarPluginGuard Guard;
-  return FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode);
+    assert(FarPlugin);
+    TFarPluginGuard Guard;
+    return FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode);
 }
 
 int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
@@ -112,7 +112,7 @@ int WINAPI ProcessKeyW(HANDLE plugin, int key, unsigned int controlState)
     return FarPlugin->ProcessKey(plugin, key, controlState);
 }
 
-int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
+int WINAPI ProcessEventW(HANDLE Plugin, int Event, void *Param)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
@@ -166,7 +166,7 @@ int WINAPI PutFilesW(HANDLE plugin, PluginPanelItem *panelItem, int itemsNumber,
     return result;
 }
 
-int WINAPI ProcessEditorEventW(int Event, void * Param)
+int WINAPI ProcessEditorEventW(int Event, void *Param)
 {
     assert(FarPlugin);
     TFarPluginGuard Guard;
@@ -223,38 +223,38 @@ void DllProcessAttach(HINSTANCE HInst)
 //---------------------------------------------------------------------------
 void DllProcessDetach()
 {
-  // DEBUG_PRINTF(L"DllProcessDetach: start");
-  assert(Processes);
-  Processes--;
-  if (!Processes)
-  {
-    assert(FarPlugin);
-    SAFE_DESTROY(FarPlugin);
+    // DEBUG_PRINTF(L"DllProcessDetach: start");
+    assert(Processes);
+    Processes--;
+    if (!Processes)
+    {
+        assert(FarPlugin);
+        SAFE_DESTROY(FarPlugin);
 #ifdef _AFXDLL
-    TermExtensionModule();
+        TermExtensionModule();
 #endif
-    curl_global_cleanup();
-    WSACleanup();
-  }
-  // DEBUG_PRINTF(L"DllProcessDetach: end");
+        curl_global_cleanup();
+        WSACleanup();
+    }
+    // DEBUG_PRINTF(L"DllProcessDetach: end");
 }
 
 //---------------------------------------------------------------------------
 BOOL WINAPI DllMain(HINSTANCE HInst, DWORD Reason, LPVOID /*ptr*/ )
 {
-  // DEBUG_PRINTF(L"DllEntryPoint: start");
-  switch (Reason)
-  {
+    // DEBUG_PRINTF(L"DllEntryPoint: start");
+    switch (Reason)
+    {
     case DLL_PROCESS_ATTACH:
-      DllProcessAttach(HInst);
-      break;
+        DllProcessAttach(HInst);
+        break;
 
     case DLL_PROCESS_DETACH:
-      DllProcessDetach();
-      break;
-  }
-  // DEBUG_PRINTF(L"DllEntryPoint: end");
-  return true;
+        DllProcessDetach();
+        break;
+    }
+    // DEBUG_PRINTF(L"DllEntryPoint: end");
+    return true;
 }
 
 }
