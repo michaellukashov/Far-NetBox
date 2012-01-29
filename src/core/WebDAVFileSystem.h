@@ -12,186 +12,186 @@ class TiXmlElement;
 //---------------------------------------------------------------------------
 class TWebDAVFileSystem : public TCustomFileSystem
 {
-friend class CEasyURL;
-friend class TFileListHelper;
+    friend class CEasyURL;
+    friend class TFileListHelper;
 public:
-  explicit TWebDAVFileSystem(TTerminal *ATerminal);
-  virtual void Init(TSecureShell *SecureShell);
-  virtual ~TWebDAVFileSystem();
+    explicit TWebDAVFileSystem(TTerminal *ATerminal);
+    virtual void Init(TSecureShell *SecureShell);
+    virtual ~TWebDAVFileSystem();
 
-  virtual void Open();
-  virtual void Close();
-  virtual bool GetActive();
-  virtual void Idle();
-  virtual std::wstring AbsolutePath(const std::wstring Path, bool Local);
-  virtual void AnyCommand(const std::wstring Command,
-    const captureoutput_slot_type *OutputEvent);
-  virtual void ChangeDirectory(const std::wstring Directory);
-  virtual void CachedChangeDirectory(const std::wstring Directory);
-  virtual void AnnounceFileListOperation();
-  virtual void ChangeFileProperties(const std::wstring FileName,
-    const TRemoteFile * File, const TRemoteProperties * Properties,
-    TChmodSessionAction & Action);
-  virtual bool LoadFilesProperties(nb::TStrings * FileList);
-  virtual void CalculateFilesChecksum(const std::wstring Alg,
-    nb::TStrings * FileList, nb::TStrings * Checksums,
-    calculatedchecksum_slot_type *OnCalculatedChecksum);
-  virtual void CopyToLocal(nb::TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
-  virtual void CopyToRemote(nb::TStrings * FilesToCopy,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
-  virtual void CreateDirectory(const std::wstring DirName);
-  virtual void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
-  virtual void DeleteFile(const std::wstring FileName,
-    const TRemoteFile * File, int Params, TRmSessionAction & Action);
-  virtual void CustomCommandOnFile(const std::wstring FileName,
-    const TRemoteFile * File, const std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
-  virtual void DoStartup();
-  virtual void HomeDirectory();
-  virtual bool IsCapable(int Capability) const;
-  virtual void LookupUsersGroups();
-  virtual void ReadCurrentDirectory();
-  virtual void ReadDirectory(TRemoteFileList * FileList);
-  virtual void ReadFile(const std::wstring FileName,
-    TRemoteFile *& File);
-  virtual void ReadSymlink(TRemoteFile * SymlinkFile,
-    TRemoteFile *& File);
-  virtual void RenameFile(const std::wstring FileName,
-    const std::wstring NewName);
-  virtual void CopyFile(const std::wstring FileName,
-    const std::wstring NewName);
-  virtual std::wstring FileUrl(const std::wstring FileName);
-  virtual nb::TStrings * GetFixedPaths();
-  virtual void SpaceAvailable(const std::wstring Path,
-    TSpaceAvailable & ASpaceAvailable);
-  virtual const TSessionInfo & GetSessionInfo();
-  virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
-  virtual bool TemporaryTransferFile(const std::wstring FileName);
-  virtual bool GetStoredCredentialsTried();
-  virtual std::wstring GetUserName();
-
-protected:
-  enum TOverwriteMode { omOverwrite, omResume };
-protected:
-
-  bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    size_t Count);
-  bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
-    bool FileTransfer);
-  bool HandleCapabilities(bool Mfmt);
-  bool CheckError(int ReturnCode, const wchar_t * Context);
-  void EnsureLocation();
-  std::wstring ActualCurrentDirectory();
-  void Discard();
-
-  void Sink(const std::wstring FileName,
-    const TRemoteFile * File, const std::wstring TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TDownloadSessionAction & Action);
-  void SinkRobust(const std::wstring FileName,
-    const TRemoteFile * File, const std::wstring TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void SinkFile(const std::wstring FileName, const TRemoteFile * File, void * Param);
-  void SourceRobust(const std::wstring FileName,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  void Source(const std::wstring FileName,
-    const std::wstring TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TUploadSessionAction & Action);
-  void DirectorySource(const std::wstring DirectoryName,
-    const std::wstring TargetDir, int Attrs, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
-  bool ConfirmOverwrite(std::wstring & FileName,
-    TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-    const TOverwriteFileParams * FileParams, int Params, bool AutoResume);
-  void ReadDirectoryProgress(__int64 Bytes);
-  void ResetFileTransfer();
-  void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-  void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
-  void ResetCaches();
-  void CaptureOutput(const std::wstring Str);
-  void DoReadDirectory(TRemoteFileList *FileList);
-  void DoChangeDirectory(const std::wstring Directory);
-  void FileTransfer(const std::wstring FileName, const std::wstring LocalFile,
-    const std::wstring RemoteFile, const std::wstring RemotePath, bool Get,
-    __int64 Size, int Type, TFileTransferData & UserData,
-    TFileOperationProgressType * OperationProgress);
+    virtual void Open();
+    virtual void Close();
+    virtual bool GetActive();
+    virtual void Idle();
+    virtual std::wstring AbsolutePath(const std::wstring Path, bool Local);
+    virtual void AnyCommand(const std::wstring Command,
+                            const captureoutput_slot_type *OutputEvent);
+    virtual void ChangeDirectory(const std::wstring Directory);
+    virtual void CachedChangeDirectory(const std::wstring Directory);
+    virtual void AnnounceFileListOperation();
+    virtual void ChangeFileProperties(const std::wstring FileName,
+                                      const TRemoteFile *File, const TRemoteProperties *Properties,
+                                      TChmodSessionAction &Action);
+    virtual bool LoadFilesProperties(nb::TStrings *FileList);
+    virtual void CalculateFilesChecksum(const std::wstring Alg,
+                                        nb::TStrings *FileList, nb::TStrings *Checksums,
+                                        calculatedchecksum_slot_type *OnCalculatedChecksum);
+    virtual void CopyToLocal(nb::TStrings *FilesToCopy,
+                             const std::wstring TargetDir, const TCopyParamType *CopyParam,
+                             int Params, TFileOperationProgressType *OperationProgress,
+                             TOnceDoneOperation &OnceDoneOperation);
+    virtual void CopyToRemote(nb::TStrings *FilesToCopy,
+                              const std::wstring TargetDir, const TCopyParamType *CopyParam,
+                              int Params, TFileOperationProgressType *OperationProgress,
+                              TOnceDoneOperation &OnceDoneOperation);
+    virtual void CreateDirectory(const std::wstring DirName);
+    virtual void CreateLink(const std::wstring FileName, const std::wstring PointTo, bool Symbolic);
+    virtual void DeleteFile(const std::wstring FileName,
+                            const TRemoteFile *File, int Params, TRmSessionAction &Action);
+    virtual void CustomCommandOnFile(const std::wstring FileName,
+                                     const TRemoteFile *File, const std::wstring Command, int Params, const captureoutput_slot_type &OutputEvent);
+    virtual void DoStartup();
+    virtual void HomeDirectory();
+    virtual bool IsCapable(int Capability) const;
+    virtual void LookupUsersGroups();
+    virtual void ReadCurrentDirectory();
+    virtual void ReadDirectory(TRemoteFileList *FileList);
+    virtual void ReadFile(const std::wstring FileName,
+                          TRemoteFile *& File);
+    virtual void ReadSymlink(TRemoteFile *SymlinkFile,
+                             TRemoteFile *& File);
+    virtual void RenameFile(const std::wstring FileName,
+                            const std::wstring NewName);
+    virtual void CopyFile(const std::wstring FileName,
+                          const std::wstring NewName);
+    virtual std::wstring FileUrl(const std::wstring FileName);
+    virtual nb::TStrings *GetFixedPaths();
+    virtual void SpaceAvailable(const std::wstring Path,
+                                TSpaceAvailable &ASpaceAvailable);
+    virtual const TSessionInfo &GetSessionInfo();
+    virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve);
+    virtual bool TemporaryTransferFile(const std::wstring FileName);
+    virtual bool GetStoredCredentialsTried();
+    virtual std::wstring GetUserName();
 
 protected:
+    enum TOverwriteMode { omOverwrite, omResume };
+protected:
 
-  virtual std::wstring GetCurrentDirectory();
+    bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
+                        size_t Count);
+    bool HandleTransferStatus(bool Valid, __int64 TransferSize,
+                              __int64 Bytes, int Percent, int TimeElapsed, int TimeLeft, int TransferRate,
+                              bool FileTransfer);
+    bool HandleCapabilities(bool Mfmt);
+    bool CheckError(int ReturnCode, const wchar_t *Context);
+    void EnsureLocation();
+    std::wstring ActualCurrentDirectory();
+    void Discard();
+
+    void Sink(const std::wstring FileName,
+              const TRemoteFile *File, const std::wstring TargetDir,
+              const TCopyParamType *CopyParam, int Params,
+              TFileOperationProgressType *OperationProgress, unsigned int Flags,
+              TDownloadSessionAction &Action);
+    void SinkRobust(const std::wstring FileName,
+                    const TRemoteFile *File, const std::wstring TargetDir,
+                    const TCopyParamType *CopyParam, int Params,
+                    TFileOperationProgressType *OperationProgress, unsigned int Flags);
+    void SinkFile(const std::wstring FileName, const TRemoteFile *File, void *Param);
+    void SourceRobust(const std::wstring FileName,
+                      const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+                      TFileOperationProgressType *OperationProgress, unsigned int Flags);
+    void Source(const std::wstring FileName,
+                const std::wstring TargetDir, const TCopyParamType *CopyParam, int Params,
+                TFileOperationProgressType *OperationProgress, unsigned int Flags,
+                TUploadSessionAction &Action);
+    void DirectorySource(const std::wstring DirectoryName,
+                         const std::wstring TargetDir, int Attrs, const TCopyParamType *CopyParam,
+                         int Params, TFileOperationProgressType *OperationProgress, unsigned int Flags);
+    bool ConfirmOverwrite(std::wstring &FileName,
+                          TOverwriteMode &OverwriteMode, TFileOperationProgressType *OperationProgress,
+                          const TOverwriteFileParams *FileParams, int Params, bool AutoResume);
+    void ReadDirectoryProgress(__int64 Bytes);
+    void ResetFileTransfer();
+    void DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
+    void FileTransferProgress(__int64 TransferSize, __int64 Bytes);
+    void ResetCaches();
+    void CaptureOutput(const std::wstring Str);
+    void DoReadDirectory(TRemoteFileList *FileList);
+    void DoChangeDirectory(const std::wstring Directory);
+    void FileTransfer(const std::wstring FileName, const std::wstring LocalFile,
+                      const std::wstring RemoteFile, const std::wstring RemotePath, bool Get,
+                      __int64 Size, int Type, TFileTransferData &UserData,
+                      TFileOperationProgressType *OperationProgress);
 
 protected:
-  const wchar_t *GetOption(int OptionID) const;
-  int GetOptionVal(int OptionID) const;
+
+    virtual std::wstring GetCurrentDirectory();
+
+protected:
+    const wchar_t *GetOption(int OptionID) const;
+    int GetOptionVal(int OptionID) const;
 
 private:
-  enum TCommand
-  {
-    CMD_UNKNOWN,
-    PASS,
-    SYST,
-    FEAT
-  };
+    enum TCommand
+    {
+        CMD_UNKNOWN,
+        PASS,
+        SYST,
+        FEAT
+    };
 
-  // TSecureShell * FSecureShell;
-  TFileSystemInfo FFileSystemInfo;
-  std::wstring FCurrentDirectory;
-  std::wstring FHomeDirectory;
-  TRemoteFileList * FFileList;
-  std::wstring FCachedDirectoryChange;
-  bool FProcessingCommand;
-  int FLsFullTime;
-  captureoutput_signal_type FOnCaptureOutput;
-  TSessionInfo FSessionInfo;
-  std::wstring FUserName;
-  nb::TDateTime FLastDataSent;
-  TCURLIntf * FCURLIntf;
-  bool FPasswordFailed;
-  std::wstring FSystem;
-  bool FActive;
-  bool FWaitingForReply;
-  enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
-  bool FIgnoreFileList;
-  bool FFileTransferCancelled;
-  __int64 FFileTransferResumed;
-  bool FFileTransferPreserveTime;
-  unsigned long FFileTransferCPSLimit;
-  bool FAwaitingProgress;
-  TCommand FLastCommand;
-  int FLastReadDirectoryProgress;
-  nb::TStrings *FLastResponse;
-  nb::TStrings *FLastError;
-  TCriticalSection *FTransferStatusCriticalSection;
-  TAutoSwitch FListAll;
-  bool FDoListAll;
-  mutable std::wstring FOptionScratch;
-  HANDLE FAbortEvent;
-  int m_ProgressPercent; ///< Progress percent value
-  TWebDAVFileSystem *Self;
+    // TSecureShell * FSecureShell;
+    TFileSystemInfo FFileSystemInfo;
+    std::wstring FCurrentDirectory;
+    std::wstring FHomeDirectory;
+    TRemoteFileList *FFileList;
+    std::wstring FCachedDirectoryChange;
+    bool FProcessingCommand;
+    int FLsFullTime;
+    captureoutput_signal_type FOnCaptureOutput;
+    TSessionInfo FSessionInfo;
+    std::wstring FUserName;
+    nb::TDateTime FLastDataSent;
+    TCURLIntf *FCURLIntf;
+    bool FPasswordFailed;
+    std::wstring FSystem;
+    bool FActive;
+    bool FWaitingForReply;
+    enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
+    bool FIgnoreFileList;
+    bool FFileTransferCancelled;
+    __int64 FFileTransferResumed;
+    bool FFileTransferPreserveTime;
+    unsigned long FFileTransferCPSLimit;
+    bool FAwaitingProgress;
+    TCommand FLastCommand;
+    int FLastReadDirectoryProgress;
+    nb::TStrings *FLastResponse;
+    nb::TStrings *FLastError;
+    TCriticalSection *FTransferStatusCriticalSection;
+    TAutoSwitch FListAll;
+    bool FDoListAll;
+    mutable std::wstring FOptionScratch;
+    HANDLE FAbortEvent;
+    int m_ProgressPercent; ///< Progress percent value
+    TWebDAVFileSystem *Self;
 
-  void CustomReadFile(const std::wstring FileName,
-    TRemoteFile *& File, TRemoteFile * ALinkedByFile);
-  static std::wstring DelimitStr(const std::wstring Str);
-  TRemoteFile * CreateRemoteFile(const std::wstring ListingStr,
-    TRemoteFile * LinkedByFile = NULL);
-  void CaptureOutput(const std::wstring AddedLine, bool StdError);
+    void CustomReadFile(const std::wstring FileName,
+                        TRemoteFile *& File, TRemoteFile *ALinkedByFile);
+    static std::wstring DelimitStr(const std::wstring Str);
+    TRemoteFile *CreateRemoteFile(const std::wstring ListingStr,
+                                  TRemoteFile *LinkedByFile = NULL);
+    void CaptureOutput(const std::wstring AddedLine, bool StdError);
 
 private:
-  enum
-  {
-    REPLY_CONNECT =      0x01,
-    REPLY_2XX_CODE =     0x02,
-    REPLY_ALLOW_CANCEL = 0x04
-  };
+    enum
+    {
+        REPLY_CONNECT =      0x01,
+        REPLY_2XX_CODE =     0x02,
+        REPLY_ALLOW_CANCEL = 0x04
+    };
     enum ItemType
     {
         ItemDirectory,
@@ -296,7 +296,7 @@ private:
 protected:
     CURLcode CURLPrepare(const char *webDavPath, const bool handleTimeout = true);
 private:
-  TWebDAVFileSystem(const TWebDAVFileSystem &);
-  void operator=(const TWebDAVFileSystem &);
+    TWebDAVFileSystem(const TWebDAVFileSystem &);
+    void operator=(const TWebDAVFileSystem &);
 };
 

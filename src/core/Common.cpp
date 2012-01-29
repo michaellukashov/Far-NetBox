@@ -42,295 +42,294 @@ inline int StringCmpI(const wchar_t *s1, const wchar_t *s2)
 //---------------------------------------------------------------------------
 TCriticalSection::TCriticalSection()
 {
-  FAcquired = 0;
-  InitializeCriticalSection(&FSection);
+    FAcquired = 0;
+    InitializeCriticalSection(&FSection);
 }
 //---------------------------------------------------------------------------
 TCriticalSection::~TCriticalSection()
 {
-  assert(FAcquired == 0);
-  DeleteCriticalSection(&FSection);
+    assert(FAcquired == 0);
+    DeleteCriticalSection(&FSection);
 }
 //---------------------------------------------------------------------------
 void TCriticalSection::Enter()
 {
-  EnterCriticalSection(&FSection);
-  FAcquired++;
+    EnterCriticalSection(&FSection);
+    FAcquired++;
 }
 //---------------------------------------------------------------------------
 void TCriticalSection::Leave()
 {
-  FAcquired--;
-  LeaveCriticalSection(&FSection);
+    FAcquired--;
+    LeaveCriticalSection(&FSection);
 }
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
-TGuard::TGuard(TCriticalSection * ACriticalSection) :
-  FCriticalSection(ACriticalSection)
+TGuard::TGuard(TCriticalSection *ACriticalSection) :
+    FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != NULL);
-  FCriticalSection->Enter();
+    assert(ACriticalSection != NULL);
+    FCriticalSection->Enter();
 }
 //---------------------------------------------------------------------------
 TGuard::~TGuard()
 {
-  FCriticalSection->Leave();
+    FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
 // TUnguard
 //---------------------------------------------------------------------------
-TUnguard::TUnguard(TCriticalSection * ACriticalSection) :
-  FCriticalSection(ACriticalSection)
+TUnguard::TUnguard(TCriticalSection *ACriticalSection) :
+    FCriticalSection(ACriticalSection)
 {
-  assert(ACriticalSection != NULL);
-  FCriticalSection->Leave();
+    assert(ACriticalSection != NULL);
+    FCriticalSection->Leave();
 }
 //---------------------------------------------------------------------------
 TUnguard::~TUnguard()
 {
-  FCriticalSection->Enter();
+    FCriticalSection->Enter();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 const char EngShortMonthNames[12][4] =
-  {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+{
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
 //---------------------------------------------------------------------------
 std::wstring ReplaceChar(const std::wstring Str, wchar_t A, wchar_t B)
 {
-  std::wstring str = Str;
-  for (size_t Index = 0; Index < str.size(); Index++)
-    if (str[Index] == A) str[Index] = B;
-  return str;
+    std::wstring str = Str;
+    for (size_t Index = 0; Index < str.size(); Index++)
+        if (str[Index] == A) { str[Index] = B; }
+    return str;
 }
 //---------------------------------------------------------------------------
 std::wstring DeleteChar(const std::wstring Str, wchar_t C)
 {
-  size_t P = 0;
-  std::wstring str = Str;
-  while ((P = str.find_first_of(C, 0)) != std::wstring::npos)
-  {
-    str.erase(P, 1);
-  }
-  return str;
+    size_t P = 0;
+    std::wstring str = Str;
+    while ((P = str.find_first_of(C, 0)) != std::wstring::npos)
+    {
+        str.erase(P, 1);
+    }
+    return str;
 }
 //---------------------------------------------------------------------------
 void PackStr(std::wstring &Str)
 {
-  // Following will free unnecessary bytes
-  Str = Str.c_str();
+    // Following will free unnecessary bytes
+    Str = Str.c_str();
 }
 //---------------------------------------------------------------------------
 std::wstring MakeValidFileName(const std::wstring FileName)
 {
-  std::wstring IllegalChars = L":;,=+<>|\"[] \\/?*";
-  std::wstring str = FileName;
-  for (size_t Index = 0; Index < IllegalChars.size(); Index++)
-  {
-    str = ReplaceChar(str, IllegalChars[Index], L'-');
-  }
-  return str;
+    std::wstring IllegalChars = L":;,=+<>|\"[] \\/?*";
+    std::wstring str = FileName;
+    for (size_t Index = 0; Index < IllegalChars.size(); Index++)
+    {
+        str = ReplaceChar(str, IllegalChars[Index], L'-');
+    }
+    return str;
 }
 //---------------------------------------------------------------------------
 std::wstring RootKeyToStr(HKEY RootKey)
 {
-  if (RootKey == HKEY_USERS) return L"HKEY_USERS";
+    if (RootKey == HKEY_USERS) { return L"HKEY_USERS"; }
+    else if (RootKey == HKEY_LOCAL_MACHINE) { return L"HKEY_LOCAL_MACHINE"; }
+    else if (RootKey == HKEY_CURRENT_USER) { return L"HKEY_CURRENT_USER"; }
+    else if (RootKey == HKEY_CLASSES_ROOT) { return L"HKEY_CLASSES_ROOT"; }
+    else if (RootKey == HKEY_CURRENT_CONFIG) { return L"HKEY_CURRENT_CONFIG"; }
+    else if (RootKey == HKEY_DYN_DATA) { return L"HKEY_DYN_DATA"; }
     else
-  if (RootKey == HKEY_LOCAL_MACHINE) return L"HKEY_LOCAL_MACHINE";
-    else
-  if (RootKey == HKEY_CURRENT_USER) return L"HKEY_CURRENT_USER";
-    else
-  if (RootKey == HKEY_CLASSES_ROOT) return L"HKEY_CLASSES_ROOT";
-    else
-  if (RootKey == HKEY_CURRENT_CONFIG) return L"HKEY_CURRENT_CONFIG";
-    else
-  if (RootKey == HKEY_DYN_DATA) return L"HKEY_DYN_DATA";
-    else
-  {  /*Abort(); */return L""; };
+    {  /*Abort(); */return L""; };
 }
 //---------------------------------------------------------------------------
 std::wstring BooleanToEngStr(bool B)
 {
-  if (B)
-  {
-    return L"Yes";
-  }
-  else
-  {
-    return L"No";
-  }
+    if (B)
+    {
+        return L"Yes";
+    }
+    else
+    {
+        return L"No";
+    }
 }
 //---------------------------------------------------------------------------
 std::wstring BooleanToStr(bool B)
 {
-  if (B)
-  {
-    return LoadStr(YES_STR);
-  }
-  else
-  {
-    return LoadStr(NO_STR);
-  }
+    if (B)
+    {
+        return LoadStr(YES_STR);
+    }
+    else
+    {
+        return LoadStr(NO_STR);
+    }
 }
 //---------------------------------------------------------------------------
 std::wstring DefaultStr(const std::wstring Str, const std::wstring Default)
 {
-  if (!Str.empty())
-  {
-    return Str;
-  }
-  else
-  {
-    return Default;
-  }
+    if (!Str.empty())
+    {
+        return Str;
+    }
+    else
+    {
+        return Default;
+    }
 }
 //---------------------------------------------------------------------------
 std::wstring CutToChar(std::wstring &Str, wchar_t Ch, bool Trim)
 {
-  size_t P = Str.find_first_of(Ch, 0);
-  std::wstring Result;
-  // DEBUG_PRINTF(L"P = %d", P);
-  if (P != std::wstring::npos)
-  {
-    Result = Str.substr(0, P);
-    Str.erase(0, P + 1);
-  }
-  else
-  {
-    Result = Str;
-    Str = L"";
-  }
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
-  if (Trim)
-  {
-    Str = TrimLeft(Str);
-    Result = ::Trim(Result);
-  }
-  // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
-  return Result;
+    size_t P = Str.find_first_of(Ch, 0);
+    std::wstring Result;
+    // DEBUG_PRINTF(L"P = %d", P);
+    if (P != std::wstring::npos)
+    {
+        Result = Str.substr(0, P);
+        Str.erase(0, P + 1);
+    }
+    else
+    {
+        Result = Str;
+        Str = L"";
+    }
+    // DEBUG_PRINTF(L"Result = %s", Result.c_str());
+    if (Trim)
+    {
+        Str = TrimLeft(Str);
+        Result = ::Trim(Result);
+    }
+    // DEBUG_PRINTF(L"Str = %s, Result = %s", Str.c_str(), Result.c_str());
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring CopyToChars(const std::wstring Str, size_t &From, const std::wstring Chars,
-    bool Trim, char *Delimiter)
+                         bool Trim, char *Delimiter)
 {
-  size_t P;
-  for (P = From; P < Str.size(); P++)
-  {
-    if (::IsDelimiter(Str, Chars, P))
+    size_t P;
+    for (P = From; P < Str.size(); P++)
     {
-      break;
+        if (::IsDelimiter(Str, Chars, P))
+        {
+            break;
+        }
     }
-  }
-  // DEBUG_PRINTF(L"CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
+    // DEBUG_PRINTF(L"CopyToChars: Str = %s, Chars = %s, From = %d, P = %d", Str.c_str(), Chars.c_str(), From, P);
 
-  std::wstring Result;
-  if (P < Str.size())
-  {
-    if (Delimiter != NULL)
+    std::wstring Result;
+    if (P < Str.size())
     {
-      *Delimiter = static_cast<char>(Str[P]);
+        if (Delimiter != NULL)
+        {
+            *Delimiter = static_cast<char>(Str[P]);
+        }
+        Result = Str.substr(From, P - From);
+        From = P + 1;
     }
-    Result = Str.substr(From, P - From);
-    From = P + 1;
-  }
-  else
-  {
-    if (Delimiter != NULL)
+    else
     {
-      *Delimiter = L'\0';
+        if (Delimiter != NULL)
+        {
+            *Delimiter = L'\0';
+        }
+        Result = Str.substr(From, Str.size() - From + 1);
+        From = P;
     }
-    Result = Str.substr(From, Str.size() - From + 1);
-    From = P;
-  }
-  if (Trim)
-  {
-    Result = ::TrimRight(Result);
-    while ((P < Str.size()) && (Str[P] == L' '))
+    if (Trim)
     {
-      P++;
+        Result = ::TrimRight(Result);
+        while ((P < Str.size()) && (Str[P] == L' '))
+        {
+            P++;
+        }
     }
-  }
-  // DEBUG_PRINTF(L"CopyToChars: Result = %s", Result.c_str());
-  return Result;
+    // DEBUG_PRINTF(L"CopyToChars: Result = %s", Result.c_str());
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring DelimitStr(const std::wstring Str, const std::wstring Chars)
 {
-  std::wstring str = Str;
-  for (size_t i = 0; i < str.size(); i++)
-  {
-    if (::IsDelimiter(str, Chars, i))
+    std::wstring str = Str;
+    for (size_t i = 0; i < str.size(); i++)
     {
-      str.insert(i, L"\\");
-      i++;
+        if (::IsDelimiter(str, Chars, i))
+        {
+            str.insert(i, L"\\");
+            i++;
+        }
     }
-  }
-  return str;
+    return str;
 }
 //---------------------------------------------------------------------------
 std::wstring ShellDelimitStr(const std::wstring Str, char Quote)
 {
-  std::wstring Chars = L"$\\";
-  if (Quote == '"')
-  {
-    Chars += L"`\"";
-  }
-  return DelimitStr(Str, Chars);
+    std::wstring Chars = L"$\\";
+    if (Quote == '"')
+    {
+        Chars += L"`\"";
+    }
+    return DelimitStr(Str, Chars);
 }
 //---------------------------------------------------------------------------
 std::wstring ExceptionLogString(const std::exception *E)
 {
-  assert(E);
-  if (::InheritsFrom<std::exception, std::exception>(E))
-  {
-    std::wstring Msg;
-    Msg = FORMAT(L"(%s) %s", L"exception", nb::MB2W(E->what()).c_str());
-    if (::InheritsFrom<std::exception, ExtException>(E))
+    assert(E);
+    if (::InheritsFrom<std::exception, std::exception>(E))
     {
-      nb::TStrings * MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
-      if (MoreMessages)
-      {
-        Msg += L"\n" +
-          ::StringReplace(MoreMessages->GetText(), L"\r", L""); //, TReplaceFlags() << rfReplaceAll);
-      }
+        std::wstring Msg;
+        Msg = FORMAT(L"(%s) %s", L"exception", nb::MB2W(E->what()).c_str());
+        if (::InheritsFrom<std::exception, ExtException>(E))
+        {
+            nb::TStrings *MoreMessages = dynamic_cast<const ExtException *>(E)->GetMoreMessages();
+            if (MoreMessages)
+            {
+                Msg += L"\n" +
+                       ::StringReplace(MoreMessages->GetText(), L"\r", L""); //, TReplaceFlags() << rfReplaceAll);
+            }
+        }
+        return Msg;
     }
-    return Msg;
-  }
-  else
-  {
-    // wchar_t Buffer[1024] = {0};
-    // FIXME ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
-    return std::wstring(nb::MB2W(E->what()));
-  }
+    else
+    {
+        // wchar_t Buffer[1024] = {0};
+        // FIXME ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, sizeof(Buffer));
+        return std::wstring(nb::MB2W(E->what()));
+    }
 }
 //---------------------------------------------------------------------------
 bool IsNumber(const std::wstring Str)
 {
-  return _wtoi(Str.c_str()) != 0;
+    return _wtoi(Str.c_str()) != 0;
 }
 //---------------------------------------------------------------------------
 std::wstring SystemTemporaryDirectory()
 {
-  std::wstring TempDir;
-  TempDir.resize(MAX_PATH);
-  TempDir.resize(GetTempPath(MAX_PATH, const_cast<wchar_t *>(TempDir.c_str())));
-  return TempDir;
+    std::wstring TempDir;
+    TempDir.resize(MAX_PATH);
+    TempDir.resize(GetTempPath(MAX_PATH, const_cast<wchar_t *>(TempDir.c_str())));
+    return TempDir;
 }
 
 std::wstring SysErrorMessage(int ErrorCode)
 {
-    // nb::Error(SNotImplemented, 41); 
+    // nb::Error(SNotImplemented, 41);
     std::wstring Result;
     // LPTSTR lpszTemp;
     wchar_t Buffer[255];
     int Len = ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
-      static_cast<LPTSTR>(Buffer),
-      sizeof(Buffer), NULL);
-    while ((Len > 0) && ((Buffer[Len - 1] != 0) && 
-      (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
-      Len--;
+                              FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, ErrorCode, 0,
+                              static_cast<LPTSTR>(Buffer),
+                              sizeof(Buffer), NULL);
+    while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
+                         (Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == '.')))
+    {
+        Len--;
+    }
     // SetString(Result, Buffer, Len);
     Result = std::wstring(Buffer, Len);
     return Result;
@@ -339,47 +338,47 @@ std::wstring SysErrorMessage(int ErrorCode)
 //---------------------------------------------------------------------------
 std::wstring GetShellFolderPath(int CSIdl)
 {
-  std::wstring Result;
-  HMODULE Shell32Lib = LoadLibrary(L"SHELL32.DLL");
-  if (Shell32Lib != NULL)
-  {
-    typedef HRESULT (__stdcall *PFNSHGETFOLDERPATH)(HWND, int, HANDLE, DWORD, LPTSTR);
-    PFNSHGETFOLDERPATH SHGetFolderPath = reinterpret_cast<PFNSHGETFOLDERPATH>(
-      GetProcAddress(Shell32Lib, "SHGetFolderPathA"));
-    if (SHGetFolderPath != NULL)
+    std::wstring Result;
+    HMODULE Shell32Lib = LoadLibrary(L"SHELL32.DLL");
+    if (Shell32Lib != NULL)
     {
-      wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-      const int SHGFP_TYPE_CURRENT = 0;
-      if (SUCCEEDED(SHGetFolderPath(NULL, CSIdl, NULL, SHGFP_TYPE_CURRENT, Path)))
-      {
-        Result = Path;
-      }
+        typedef HRESULT (__stdcall *PFNSHGETFOLDERPATH)(HWND, int, HANDLE, DWORD, LPTSTR);
+        PFNSHGETFOLDERPATH SHGetFolderPath = reinterpret_cast<PFNSHGETFOLDERPATH>(
+                GetProcAddress(Shell32Lib, "SHGetFolderPathA"));
+        if (SHGetFolderPath != NULL)
+        {
+            wchar_t Path[2 * MAX_PATH + 10] = L"\0";
+            const int SHGFP_TYPE_CURRENT = 0;
+            if (SUCCEEDED(SHGetFolderPath(NULL, CSIdl, NULL, SHGFP_TYPE_CURRENT, Path)))
+            {
+                Result = Path;
+            }
+        }
     }
-  }
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring StripPathQuotes(const std::wstring Path)
 {
-  if ((Path.size() >= 2) &&
-      (Path[0] == L'\"') && (Path[Path.size() - 1] == L'\"'))
-  {
-    return Path.substr(2, Path.size() - 2);
-  }
-  else
-  {
-    return Path;
-  }
+    if ((Path.size() >= 2) &&
+            (Path[0] == L'\"') && (Path[Path.size() - 1] == L'\"'))
+    {
+        return Path.substr(2, Path.size() - 2);
+    }
+    else
+    {
+        return Path;
+    }
 }
 //---------------------------------------------------------------------------
 std::wstring AddPathQuotes(const std::wstring Path)
 {
-  std::wstring str = StripPathQuotes(Path);
-  if (str.find_first_of(L" ") != std::wstring::npos)
-  {
-    str = L"\"" + str + L"\"";
-  }
-  return str;
+    std::wstring str = StripPathQuotes(Path);
+    if (str.find_first_of(L" ") != std::wstring::npos)
+    {
+        str = L"\"" + str + L"\"";
+    }
+    return str;
 }
 
 std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, const std::wstring ByWhat)
@@ -396,160 +395,160 @@ std::wstring ReplaceStrAll(const std::wstring Str, const std::wstring What, cons
 
 //---------------------------------------------------------------------------
 void SplitCommand(const std::wstring Command, std::wstring &Program,
-  std::wstring &Params, std::wstring &Dir)
+                  std::wstring &Params, std::wstring &Dir)
 {
-  std::wstring cmd = ::Trim(Command);
-  Params = L"";
-  Dir = L"";
-  if (!cmd.empty() && (cmd[0] == L'\"'))
-  {
-    cmd.erase(0, 1);
-    size_t P = cmd.find_first_of(L'"');
-    if (P != std::wstring::npos)
+    std::wstring cmd = ::Trim(Command);
+    Params = L"";
+    Dir = L"";
+    if (!cmd.empty() && (cmd[0] == L'\"'))
     {
-      Program = ::Trim(cmd.substr(0, P));
-      Params = ::Trim(cmd.substr(P + 1, Command.size() - P));
+        cmd.erase(0, 1);
+        size_t P = cmd.find_first_of(L'"');
+        if (P != std::wstring::npos)
+        {
+            Program = ::Trim(cmd.substr(0, P));
+            Params = ::Trim(cmd.substr(P + 1, Command.size() - P));
+        }
+        else
+        {
+            throw ExtException(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + cmd).c_str()));
+        }
     }
     else
     {
-      throw ExtException(FMTLOAD(INVALID_SHELL_COMMAND, (L"\"" + cmd).c_str()));
+        size_t P = cmd.find_first_of(L" ");
+        if (P != std::wstring::npos)
+        {
+            Program = ::Trim(cmd.substr(0, P));
+            Params = ::Trim(cmd.substr(P + 1, cmd.size() - P));
+        }
+        else
+        {
+            Program = cmd;
+        }
     }
-  }
-  else
-  {
-    size_t P = cmd.find_first_of(L" ");
-    if (P != std::wstring::npos)
+    size_t B = Program.find_last_of(L"\\");
+    if (B != std::wstring::npos)
     {
-      Program = ::Trim(cmd.substr(0, P));
-      Params = ::Trim(cmd.substr(P + 1, cmd.size() - P));
+        Dir = ::Trim(Program.substr(0, B));
     }
     else
     {
-      Program = cmd;
+        B = Program.find_last_of(L"/");
+        if (B)
+        {
+            Dir = ::Trim(Program.substr(0, B));
+        }
     }
-  }
-  size_t B = Program.find_last_of(L"\\");
-  if (B != std::wstring::npos)
-  {
-    Dir = ::Trim(Program.substr(0, B));
-  }
-  else
-  {
-    B = Program.find_last_of(L"/");
-    if (B)
-    {
-      Dir = ::Trim(Program.substr(0, B));
-    }
-  }
 }
 //---------------------------------------------------------------------------
 std::wstring ExtractProgram(const std::wstring Command)
 {
-  std::wstring Program;
-  std::wstring Params;
-  std::wstring Dir;
+    std::wstring Program;
+    std::wstring Params;
+    std::wstring Dir;
 
-  SplitCommand(Command, Program, Params, Dir);
+    SplitCommand(Command, Program, Params, Dir);
 
-  return Program;
+    return Program;
 }
 //---------------------------------------------------------------------------
 std::wstring FormatCommand(const std::wstring Program, const std::wstring Params)
 {
-  std::wstring program = ::Trim(Program);
-  std::wstring params = ::Trim(Params);
-  if (!params.empty()) params = L" " + params;
-  if (program.find_first_of(L" ") != std::wstring::npos) program = L"\"" + program + L"\"";
-  return program + params;
+    std::wstring program = ::Trim(Program);
+    std::wstring params = ::Trim(Params);
+    if (!params.empty()) { params = L" " + params; }
+    if (program.find_first_of(L" ") != std::wstring::npos) { program = L"\"" + program + L"\""; }
+    return program + params;
 }
 //---------------------------------------------------------------------------
 const wchar_t ShellCommandFileNamePattern[] = L"!.!";
 //---------------------------------------------------------------------------
-void ReformatFileNameCommand(std::wstring & Command)
+void ReformatFileNameCommand(std::wstring &Command)
 {
-  if (!Command.empty())
-  {
-    std::wstring Program, Params, Dir;
-    SplitCommand(Command, Program, Params, Dir);
-    if (Params.find(ShellCommandFileNamePattern) == 0)
+    if (!Command.empty())
     {
-      Params = Params + (Params.empty() ? L"" : L" ") + ShellCommandFileNamePattern;
+        std::wstring Program, Params, Dir;
+        SplitCommand(Command, Program, Params, Dir);
+        if (Params.find(ShellCommandFileNamePattern) == 0)
+        {
+            Params = Params + (Params.empty() ? L"" : L" ") + ShellCommandFileNamePattern;
+        }
+        Command = FormatCommand(Program, Params);
     }
-    Command = FormatCommand(Program, Params);
-  }
 }
 //---------------------------------------------------------------------------
 std::wstring ExpandFileNameCommand(const std::wstring Command,
-  const std::wstring FileName)
+                                   const std::wstring FileName)
 {
-  return ReplaceStrAll(Command, ShellCommandFileNamePattern,
-    AddPathQuotes(FileName));
+    return ReplaceStrAll(Command, ShellCommandFileNamePattern,
+                         AddPathQuotes(FileName));
 }
 //---------------------------------------------------------------------------
 std::wstring EscapePuttyCommandParam(const std::wstring Param)
 {
-  bool Space = false;
-  std::wstring str = Param;
+    bool Space = false;
+    std::wstring str = Param;
 
-  for (size_t i = 0; i < str.size(); i++)
-  {
-    switch (str[i])
+    for (size_t i = 0; i < str.size(); i++)
     {
-      case L'"':
-        str.insert(i, L"\\");
-        i++;
-        break;
-
-      case L' ':
-        Space = true;
-        break;
-
-      case L'\\':
-        size_t i2 = i;
-        while ((i2 < str.size()) && (str[i2] == L'\\'))
+        switch (str[i])
         {
-          i2++;
-        }
-        if ((i2 < str.size()) && (str[i2] == L'"'))
-        {
-          while (str[i] == L'\\')
-          {
+        case L'"':
             str.insert(i, L"\\");
-            i += 2;
-          }
-          i--;
+            i++;
+            break;
+
+        case L' ':
+            Space = true;
+            break;
+
+        case L'\\':
+            size_t i2 = i;
+            while ((i2 < str.size()) && (str[i2] == L'\\'))
+            {
+                i2++;
+            }
+            if ((i2 < str.size()) && (str[i2] == L'"'))
+            {
+                while (str[i] == L'\\')
+                {
+                    str.insert(i, L"\\");
+                    i += 2;
+                }
+                i--;
+            }
+            break;
         }
-        break;
     }
-  }
 
-  if (Space)
-  {
-    str = L"\"" + str + L'"';
-  }
+    if (Space)
+    {
+        str = L"\"" + str + L'"';
+    }
 
-  return str;
+    return str;
 }
 //---------------------------------------------------------------------------
 std::wstring ExpandEnvironmentVariables(const std::wstring Str)
 {
-  std::wstring Buf;
-  size_t Size = 1024;
+    std::wstring Buf;
+    size_t Size = 1024;
 
-  Buf.resize(Size);
-  // Buf.Unique(); //FIXME
-  size_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Size);
+    Buf.resize(Size);
+    // Buf.Unique(); //FIXME
+    size_t Len = ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Size);
 
-  if (Len > Size)
-  {
-    Buf.resize(Len);
-    // Buf.Unique();
-    ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Len);
-  }
+    if (Len > Size)
+    {
+        Buf.resize(Len);
+        // Buf.Unique();
+        ExpandEnvironmentStrings(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), Len);
+    }
 
-  PackStr(Buf);
+    PackStr(Buf);
 
-  return Buf;
+    return Buf;
 }
 //---------------------------------------------------------------------------
 std::wstring ExtractShortPathName(const std::wstring Path1)
@@ -558,13 +557,13 @@ std::wstring ExtractShortPathName(const std::wstring Path1)
 }
 
 std::wstring ExtractDirectory(const std::wstring path, wchar_t delimiter)
-  //
-  // Returns everything, including the trailing path separator, except the filename
-  // part of the path.
-  //
-  // "/foo/bar/baz.txt" --> "/foo/bar/"
+//
+// Returns everything, including the trailing path separator, except the filename
+// part of the path.
+//
+// "/foo/bar/baz.txt" --> "/foo/bar/"
 {
-  return path.substr(0,path.find_last_of(delimiter) + 1);
+    return path.substr(0,path.find_last_of(delimiter) + 1);
 }
 
 std::wstring ExtractFilename(const std::wstring path, wchar_t delimiter)
@@ -587,33 +586,35 @@ std::wstring ExtractFileExtension(const std::wstring path, wchar_t delimiter)
     std::wstring filename = ExtractFilename(path, delimiter);
     std::wstring::size_type n = filename.find_last_of('.');
     if (n != std::wstring::npos)
+    {
         return filename.substr(n);
+    }
     return std::wstring();
 }
 
 std::wstring ChangeFileExtension(const std::wstring path, const std::wstring ext, wchar_t delimiter)
-  //
-  // Modifies the filename's extension. The period is considered part
-  // of the extension.
-  //
-  // "/foo/bar/baz.txt", ".dat" --> "/foo/bar/baz.dat"
-  // "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
-  // "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
-  //
+//
+// Modifies the filename's extension. The period is considered part
+// of the extension.
+//
+// "/foo/bar/baz.txt", ".dat" --> "/foo/bar/baz.dat"
+// "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
+// "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
+//
 {
-  std::wstring filename = ExtractFilename(path, delimiter);
-  return ExtractDirectory(path, delimiter)
-       + filename.substr(0, filename.find_last_of('.'))
-       + ext;
+    std::wstring filename = ExtractFilename(path, delimiter);
+    return ExtractDirectory(path, delimiter)
+           + filename.substr(0, filename.find_last_of('.'))
+           + ext;
 }
-  
+
 //---------------------------------------------------------------------------
 
 std::wstring ExcludeTrailingBackslash(const std::wstring str)
 {
     std::wstring result = str;
     if ((str.size() > 0) && ((str[str.size() - 1] == L'/') ||
-        (str[str.size() - 1] == L'\\')))
+                             (str[str.size() - 1] == L'\\')))
     {
         result.resize(result.size() - 1);
     }
@@ -624,7 +625,7 @@ std::wstring IncludeTrailingBackslash(const std::wstring str)
 {
     std::wstring result = str;
     if ((str.size() == 0) || ((str[str.size() - 1] != L'/') &&
-        (str[str.size() - 1] != L'\\')))
+                              (str[str.size() - 1] != L'\\')))
     {
         result += L'\\';
     }
@@ -639,11 +640,11 @@ std::wstring ExtractFileDir(const std::wstring str)
     // it used to return Path when no slash was found
     if (Pos != std::wstring::npos)
     {
-      result = str.substr(0, Pos + 1);
+        result = str.substr(0, Pos + 1);
     }
     else
     {
-      result = (Pos == 0) ? std::wstring(L"/") : std::wstring();
+        result = (Pos == 0) ? std::wstring(L"/") : std::wstring();
     }
     return result;
 }
@@ -675,189 +676,191 @@ std::wstring GetCurrentDir()
 //---------------------------------------------------------------------------
 bool CompareFileName(const std::wstring Path1, const std::wstring Path2)
 {
-  std::wstring ShortPath1 = ExtractShortPathName(Path1);
-  std::wstring ShortPath2 = ExtractShortPathName(Path2);
+    std::wstring ShortPath1 = ExtractShortPathName(Path1);
+    std::wstring ShortPath2 = ExtractShortPathName(Path2);
 
-  bool Result;
-  // ExtractShortPathName returns empty string if file does not exist
-  if (ShortPath1.empty() || ShortPath2.empty())
-  {
-    Result = AnsiSameText(Path1, Path2) == 1;
-  }
-  else
-  {
-    Result = AnsiSameText(ShortPath1, ShortPath2) == 1;
-  }
-  return Result;
+    bool Result;
+    // ExtractShortPathName returns empty string if file does not exist
+    if (ShortPath1.empty() || ShortPath2.empty())
+    {
+        Result = AnsiSameText(Path1, Path2) == 1;
+    }
+    else
+    {
+        Result = AnsiSameText(ShortPath1, ShortPath2) == 1;
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 bool ComparePaths(const std::wstring Path1, const std::wstring Path2)
 {
-  // TODO: ExpandUNCFileName
-  return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2)) == 1;
+    // TODO: ExpandUNCFileName
+    return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2)) == 1;
 }
 //---------------------------------------------------------------------------
 bool IsReservedName(const std::wstring FileName)
 {
-  std::wstring str = FileName;
-  size_t P = str.find_first_of(L".");
-  size_t Len = (P > 0) ? P - 1 : str.size();
-  if ((Len == 3) || (Len == 4))
-  {
-    if (P > 0)
+    std::wstring str = FileName;
+    size_t P = str.find_first_of(L".");
+    size_t Len = (P > 0) ? P - 1 : str.size();
+    if ((Len == 3) || (Len == 4))
     {
-      str.resize(P - 1);
+        if (P > 0)
+        {
+            str.resize(P - 1);
+        }
+        static std::wstring Reserved[] =
+        {
+            L"CON", L"PRN", L"AUX", L"NUL",
+            L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
+            L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9"
+        };
+        for (size_t Index = 0; Index < LENOF(Reserved); Index++)
+        {
+            if (AnsiSameText(str, Reserved[Index]))
+            {
+                return true;
+            }
+        }
     }
-    static std::wstring Reserved[] = {
-      L"CON", L"PRN", L"AUX", L"NUL",
-      L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
-      L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9" };
-    for (size_t Index = 0; Index < LENOF(Reserved); Index++)
-    {
-      if (AnsiSameText(str, Reserved[Index]))
-      {
-        return true;
-      }
-    }
-  }
-  return false;
+    return false;
 }
 //---------------------------------------------------------------------------
 std::wstring DisplayableStr(const std::wstring Str)
 {
-  bool Displayable = true;
-  size_t Index = 0;
-  while ((Index < Str.size()) && Displayable)
-  {
-    if ((Str[Index] < L'\32') &&
-        (Str[Index] != L'\n') && (Str[Index] != L'\r') && (Str[Index] != L'\t') && (Str[Index] != L'\b'))
+    bool Displayable = true;
+    size_t Index = 0;
+    while ((Index < Str.size()) && Displayable)
     {
-      Displayable = false;
+        if ((Str[Index] < L'\32') &&
+                (Str[Index] != L'\n') && (Str[Index] != L'\r') && (Str[Index] != L'\t') && (Str[Index] != L'\b'))
+        {
+            Displayable = false;
+        }
+        Index++;
     }
-    Index++;
-  }
 
-  std::wstring Result;
-  if (Displayable)
-  {
-    Result = L"\"";
-    for (size_t Index = 0; Index < Str.size(); Index++)
+    std::wstring Result;
+    if (Displayable)
     {
-      switch (Str[Index])
-      {
-        case L'\n':
-          Result += L"\\n";
-          break;
+        Result = L"\"";
+        for (size_t Index = 0; Index < Str.size(); Index++)
+        {
+            switch (Str[Index])
+            {
+            case L'\n':
+                Result += L"\\n";
+                break;
 
-        case L'\r':
-          Result += L"\\r";
-          break;
+            case L'\r':
+                Result += L"\\r";
+                break;
 
-        case L'\t':
-          Result += L"\\t";
-          break;
+            case L'\t':
+                Result += L"\\t";
+                break;
 
-        case L'\b':
-          Result += L"\\b";
-          break;
+            case L'\b':
+                Result += L"\\b";
+                break;
 
-        case L'\\':
-          Result += L"\\\\";
-          break;
+            case L'\\':
+                Result += L"\\\\";
+                break;
 
-        case L'"':
-          Result += L"\\\"";
-          break;
+            case L'"':
+                Result += L"\\\"";
+                break;
 
-        default:
-          Result += Str[Index];
-          break;
-      }
+            default:
+                Result += Str[Index];
+                break;
+            }
+        }
+        Result += L"\"";
     }
-    Result += L"\"";
-  }
-  else
-  {
-    Result = L"0x" + StrToHex(Str);
-  }
-  return Result;
+    else
+    {
+        Result = L"0x" + StrToHex(Str);
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring CharToHex(char Ch, bool UpperCase)
 {
-  static char UpperDigits[] = "0123456789ABCDEF";
-  static char LowerDigits[] = "0123456789abcdef";
+    static char UpperDigits[] = "0123456789ABCDEF";
+    static char LowerDigits[] = "0123456789abcdef";
 
-  const char * Digits = (UpperCase ? UpperDigits : LowerDigits);
-  std::wstring Result;
-  Result.resize(2);
-  Result[0] = Digits[(static_cast<unsigned char>(Ch) & 0xF0) >> 4];
-  Result[1] = Digits[static_cast<unsigned char>(Ch) & 0x0F];
-  return Result;
+    const char *Digits = (UpperCase ? UpperDigits : LowerDigits);
+    std::wstring Result;
+    Result.resize(2);
+    Result[0] = Digits[(static_cast<unsigned char>(Ch) & 0xF0) >> 4];
+    Result[1] = Digits[static_cast<unsigned char>(Ch) & 0x0F];
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring StrToHex(const std::wstring Str, bool UpperCase, char Separator)
 {
-  std::wstring Result;
-  for (size_t i = 0; i < Str.size(); i++)
-  {
-    Result += CharToHex(Str[i], UpperCase);
-    if ((Separator != L'\0') && (i < Str.size()))
+    std::wstring Result;
+    for (size_t i = 0; i < Str.size(); i++)
     {
-      Result += Separator;
+        Result += CharToHex(Str[i], UpperCase);
+        if ((Separator != L'\0') && (i < Str.size()))
+        {
+            Result += Separator;
+        }
     }
-  }
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring HexToStr(const std::wstring Hex)
 {
-  static std::wstring Digits = L"0123456789ABCDEF";
-  std::wstring Result;
-  size_t L, P1, P2;
-  L = Hex.size() - 1;
-  if (L % 2 == 0)
-  {
-    for (size_t i = 0; i < Hex.size(); i += 2)
+    static std::wstring Digits = L"0123456789ABCDEF";
+    std::wstring Result;
+    size_t L, P1, P2;
+    L = Hex.size() - 1;
+    if (L % 2 == 0)
     {
-      P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
-      P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
-      if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
-      {
-        Result = L"";
-        break;
-      }
-      else
-      {
-        Result += static_cast<wchar_t>((P1 - 1) * 16 + P2 - 1);
-      }
+        for (size_t i = 0; i < Hex.size(); i += 2)
+        {
+            P1 = Digits.find_first_of(static_cast<char>(toupper(Hex[i])));
+            P2 = Digits.find_first_of(static_cast<char>(toupper(Hex[i + 1])));
+            if ((P1 == std::wstring::npos) || (P2 == std::wstring::npos))
+            {
+                Result = L"";
+                break;
+            }
+            else
+            {
+                Result += static_cast<wchar_t>((P1 - 1) * 16 + P2 - 1);
+            }
+        }
     }
-  }
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
 unsigned int HexToInt(const std::wstring Hex, size_t MinChars)
 {
-  static std::wstring Digits = L"0123456789ABCDEF";
-  int Result = 0;
-  size_t I = 0;
-  while (I < Hex.size())
-  {
-    size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
-    if (A == std::wstring::npos)
+    static std::wstring Digits = L"0123456789ABCDEF";
+    int Result = 0;
+    size_t I = 0;
+    while (I < Hex.size())
     {
-      if ((MinChars == -1) || (I <= MinChars))
-      {
-        Result = 0;
-      }
-      break;
+        size_t A = Digits.find_first_of(static_cast<wchar_t>(toupper(Hex[I])));
+        if (A == std::wstring::npos)
+        {
+            if ((MinChars == -1) || (I <= MinChars))
+            {
+                Result = 0;
+            }
+            break;
+        }
+
+        Result = (Result * 16) + (static_cast<int>(A) - 1);
+
+        I++;
     }
-
-    Result = (Result * 16) + (static_cast<int>(A) - 1);
-
-    I++;
-  }
-  return Result;
+    return Result;
 }
 
 std::wstring IntToHex(unsigned int Int, size_t MinChars)
@@ -870,7 +873,7 @@ std::wstring IntToHex(unsigned int Int, size_t MinChars)
 //---------------------------------------------------------------------------
 char HexToChar(const std::wstring Hex, size_t MinChars)
 {
-  return static_cast<char>(HexToInt(Hex, MinChars));
+    return static_cast<char>(HexToInt(Hex, MinChars));
 }
 //---------------------------------------------------------------------------
 bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
@@ -882,37 +885,38 @@ bool FileSearchRec(const std::wstring FileName, WIN32_FIND_DATA &Rec)
 }
 //---------------------------------------------------------------------------
 void ProcessLocalDirectory(const std::wstring DirName,
-  const processlocalfile_slot_type &CallBackFunc, void * Param,
-  int FindAttrs)
+                           const processlocalfile_slot_type &CallBackFunc, void *Param,
+                           int FindAttrs)
 {
-  if (FindAttrs < 0)
-  {
-    FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  }
-  WIN32_FIND_DATA SearchRec;
+    if (FindAttrs < 0)
+    {
+        FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+    }
+    WIN32_FIND_DATA SearchRec;
 
-  std::wstring dirName = IncludeTrailingBackslash(DirName);
-  std::wstring FileName = dirName + L"*.*";
-  HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
-  if (h != INVALID_HANDLE_VALUE)
-  {
-    BOOST_SCOPE_EXIT ( (&h) )
+    std::wstring dirName = IncludeTrailingBackslash(DirName);
+    std::wstring FileName = dirName + L"*.*";
+    HANDLE h = ::FindFirstFileW(FileName.c_str(), &SearchRec);
+    if (h != INVALID_HANDLE_VALUE)
     {
-        ::FindClose(h);
-    } BOOST_SCOPE_EXIT_END
-    processlocalfile_signal_type sig;
-    sig.connect(CallBackFunc);
-    do
-    {
-      if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
-      {
-        if ((SearchRec.dwFileAttributes & FindAttrs) != 0)
+        BOOST_SCOPE_EXIT ( (&h) )
         {
-            sig(dirName + SearchRec.cFileName, SearchRec, Param);
+            ::FindClose(h);
+        } BOOST_SCOPE_EXIT_END
+        processlocalfile_signal_type sig;
+        sig.connect(CallBackFunc);
+        do
+        {
+            if ((wcscmp(SearchRec.cFileName, L".") != 0) && (wcscmp(SearchRec.cFileName, L"..") != 0))
+            {
+                if ((SearchRec.dwFileAttributes & FindAttrs) != 0)
+                {
+                    sig(dirName + SearchRec.cFileName, SearchRec, Param);
+                }
+            }
         }
-      }
-    } while (::FindNextFile(h, &SearchRec));
-  }
+        while (::FindNextFile(h, &SearchRec));
+    }
 }
 //---------------------------------------------------------------------------
 class EConvertError : public ExtException
@@ -933,9 +937,10 @@ void ConvertError(int ErrorID)
 
 //---------------------------------------------------------------------------
 typedef int TDayTable[12];
-static const TDayTable MonthDays[] = {
-  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
-  { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
+static const TDayTable MonthDays[] =
+{
+    { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 },
+    { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 }
 };
 
 static const int HoursPerDay = 24;
@@ -949,84 +954,86 @@ static const int DateDelta = 693594;
 //---------------------------------------------------------------------------
 bool TryEncodeDate(int Year, int Month, int Day, nb::TDateTime &Date)
 {
-  const TDayTable *DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
-  if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
-    (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
-  {
-    for (int I = 1; I <= Month - 1; I++)
-        Day += (*DayTable)[I - 1];
-    int I = Year - 1;
-    Date = nb::TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
-    // DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
-    return true;
-  }
-  return false;
+    const TDayTable *DayTable = &MonthDays[bg::gregorian_calendar::is_leap_year(Year)];
+    if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
+            (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
+    {
+        for (int I = 1; I <= Month - 1; I++)
+        {
+            Day += (*DayTable)[I - 1];
+        }
+        int I = Year - 1;
+        Date = nb::TDateTime(I * 365 + I / 4 - I / 100 + I / 400 + Day - DateDelta);
+        // DEBUG_PRINTF(L"Year = %d, Month = %d, Day = %d, Date = %f", Year, Month, Day, Date);
+        return true;
+    }
+    return false;
 }
 
 nb::TDateTime EncodeDate(int Year, int Month, int Day)
 {
-  nb::TDateTime Result;
-  if (!TryEncodeDate(Year, Month, Day, Result))
-  {
-    ::ConvertError(SDateEncodeError);
-  }
-  return Result;
+    nb::TDateTime Result;
+    if (!TryEncodeDate(Year, Month, Day, Result))
+    {
+        ::ConvertError(SDateEncodeError);
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 nb::TDateTime EncodeDateVerbose(unsigned int Year, unsigned int Month, unsigned int Day)
 {
-  try
-  {
-    return EncodeDate(Year, Month, Day);
-  }
-  catch (const EConvertError &E)
-  {
-    throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.GetMessage().c_str(), Year, Month, Day));
-  }
-  return nb::TDateTime();
+    try
+    {
+        return EncodeDate(Year, Month, Day);
+    }
+    catch (const EConvertError &E)
+    {
+        throw EConvertError(FORMAT(L"%s [%04u-%02u-%02u]", E.GetMessage().c_str(), Year, Month, Day));
+    }
+    return nb::TDateTime();
 }
 //---------------------------------------------------------------------------
 bool TryEncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec, nb::TDateTime &Time)
 {
-  bool Result = false;
-  // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
-  if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
-  {
-    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / static_cast<double>(MSecsPerDay);
-    // DEBUG_PRINTF(L"Time = %f", Time);
-    Result = true;
-  }
-  return Result;
+    bool Result = false;
+    // DEBUG_PRINTF(L"Hour = %d, Min = %d, Sec = %d, MSec = %d", Hour, Min, Sec, MSec);
+    if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
+    {
+        Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / static_cast<double>(MSecsPerDay);
+        // DEBUG_PRINTF(L"Time = %f", Time);
+        Result = true;
+    }
+    return Result;
 }
 
 nb::TDateTime EncodeTime(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
 {
-  nb::TDateTime Result;
-  if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
-  {
-    ::ConvertError(STimeEncodeError);
-  }
-  // DEBUG_PRINTF(L"Result = %f", Result);
-  return Result;
+    nb::TDateTime Result;
+    if (!TryEncodeTime(Hour, Min, Sec, MSec, Result))
+    {
+        ::ConvertError(STimeEncodeError);
+    }
+    // DEBUG_PRINTF(L"Result = %f", Result);
+    return Result;
 }
 //---------------------------------------------------------------------------
 nb::TDateTime EncodeTimeVerbose(unsigned int Hour, unsigned int Min, unsigned int Sec, unsigned int MSec)
 {
-  try
-  {
-    return ::EncodeTime(Hour, Min, Sec, MSec);
-  }
-  catch (EConvertError & E)
-  {
-    throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.GetMessage().c_str(), Hour, Min, Sec, MSec));
-  }
-  return nb::TDateTime();
+    try
+    {
+        return ::EncodeTime(Hour, Min, Sec, MSec);
+    }
+    catch (EConvertError &E)
+    {
+        throw EConvertError(FORMAT(L"%s [%02u:%02u:%02u.%04u]", E.GetMessage().c_str(), Hour, Min, Sec, MSec));
+    }
+    return nb::TDateTime();
 }
 
 nb::TDateTime StrToDateTime(const std::wstring Value)
 {
     nb::Error(SNotImplemented, 145);
-  return nb::TDateTime();
+    return nb::TDateTime();
 }
 
 //---------------------------------------------------------------------------
@@ -1035,252 +1042,252 @@ nb::TDateTime StrToDateTime(const std::wstring Value)
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
 unsigned int DayOfWeek(const nb::TDateTime &DateTime)
 {
-  return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
+    return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
 
 //---------------------------------------------------------------------------
 struct TDateTimeParams
 {
-  nb::TDateTime UnixEpoch;
-  double BaseDifference;
-  double CurrentDaylightDifference;
-  double CurrentDifference;
-  double StandardDifference;
-  double DaylightDifference;
-  long BaseDifferenceSec;
-  long CurrentDaylightDifferenceSec;
-  long CurrentDifferenceSec;
-  long StandardDifferenceSec;
-  long DaylightDifferenceSec;
-  SYSTEMTIME StandardDate;
-  SYSTEMTIME DaylightDate;
-  bool DaylightHack;
+    nb::TDateTime UnixEpoch;
+    double BaseDifference;
+    double CurrentDaylightDifference;
+    double CurrentDifference;
+    double StandardDifference;
+    double DaylightDifference;
+    long BaseDifferenceSec;
+    long CurrentDaylightDifferenceSec;
+    long CurrentDifferenceSec;
+    long StandardDifferenceSec;
+    long DaylightDifferenceSec;
+    SYSTEMTIME StandardDate;
+    SYSTEMTIME DaylightDate;
+    bool DaylightHack;
 };
 static bool DateTimeParamsInitialized = false;
 static TDateTimeParams DateTimeParams;
 static TCriticalSection DateTimeParamsSection;
 //---------------------------------------------------------------------------
-static TDateTimeParams * GetDateTimeParams()
+static TDateTimeParams *GetDateTimeParams()
 {
-  if (!DateTimeParamsInitialized)
-  {
-    TGuard Guard(&DateTimeParamsSection);
     if (!DateTimeParamsInitialized)
     {
-      TIME_ZONE_INFORMATION TZI;
-      unsigned long GTZI;
+        TGuard Guard(&DateTimeParamsSection);
+        if (!DateTimeParamsInitialized)
+        {
+            TIME_ZONE_INFORMATION TZI;
+            unsigned long GTZI;
 
-      GTZI = GetTimeZoneInformation(&TZI);
-      switch (GTZI)
-      {
-        case TIME_ZONE_ID_UNKNOWN:
-          DateTimeParams.CurrentDaylightDifferenceSec = 0;
-          break;
+            GTZI = GetTimeZoneInformation(&TZI);
+            switch (GTZI)
+            {
+            case TIME_ZONE_ID_UNKNOWN:
+                DateTimeParams.CurrentDaylightDifferenceSec = 0;
+                break;
 
-        case TIME_ZONE_ID_STANDARD:
-          DateTimeParams.CurrentDaylightDifferenceSec = TZI.StandardBias;
-          break;
+            case TIME_ZONE_ID_STANDARD:
+                DateTimeParams.CurrentDaylightDifferenceSec = TZI.StandardBias;
+                break;
 
-        case TIME_ZONE_ID_DAYLIGHT:
-          DateTimeParams.CurrentDaylightDifferenceSec = TZI.DaylightBias;
-          break;
+            case TIME_ZONE_ID_DAYLIGHT:
+                DateTimeParams.CurrentDaylightDifferenceSec = TZI.DaylightBias;
+                break;
 
-        case TIME_ZONE_ID_INVALID:
-        default:
-          throw std::exception(); // FIXME (TIMEZONE_ERROR);
-      }
-      // Is it same as SysUtils::UnixDateDelta = 25569 ??
-      DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
+            case TIME_ZONE_ID_INVALID:
+            default:
+                throw std::exception(); // FIXME (TIMEZONE_ERROR);
+            }
+            // Is it same as SysUtils::UnixDateDelta = 25569 ??
+            DateTimeParams.UnixEpoch = EncodeDateVerbose(1970, 1, 1);
 
-      DateTimeParams.BaseDifferenceSec = TZI.Bias;
-      DateTimeParams.BaseDifference = static_cast<double>(TZI.Bias) / 1440;
-      DateTimeParams.BaseDifferenceSec *= 60;
+            DateTimeParams.BaseDifferenceSec = TZI.Bias;
+            DateTimeParams.BaseDifference = static_cast<double>(TZI.Bias) / 1440;
+            DateTimeParams.BaseDifferenceSec *= 60;
 
-      DateTimeParams.CurrentDifferenceSec = TZI.Bias +
-        DateTimeParams.CurrentDaylightDifferenceSec;
-      DateTimeParams.CurrentDifference =
-        static_cast<double>(DateTimeParams.CurrentDifferenceSec) / 1440;
-      DateTimeParams.CurrentDifferenceSec *= 60;
+            DateTimeParams.CurrentDifferenceSec = TZI.Bias +
+                                                  DateTimeParams.CurrentDaylightDifferenceSec;
+            DateTimeParams.CurrentDifference =
+                static_cast<double>(DateTimeParams.CurrentDifferenceSec) / 1440;
+            DateTimeParams.CurrentDifferenceSec *= 60;
 
-      DateTimeParams.CurrentDaylightDifference =
-        static_cast<double>(DateTimeParams.CurrentDaylightDifferenceSec) / 1440;
-      DateTimeParams.CurrentDaylightDifferenceSec *= 60;
+            DateTimeParams.CurrentDaylightDifference =
+                static_cast<double>(DateTimeParams.CurrentDaylightDifferenceSec) / 1440;
+            DateTimeParams.CurrentDaylightDifferenceSec *= 60;
 
-      DateTimeParams.DaylightDifferenceSec = TZI.DaylightBias * 60;
-      DateTimeParams.DaylightDifference = static_cast<double>(TZI.DaylightBias) / 1440;
-      DateTimeParams.StandardDifferenceSec = TZI.StandardBias * 60;
-      DateTimeParams.StandardDifference = static_cast<double>(TZI.StandardBias) / 1440;
+            DateTimeParams.DaylightDifferenceSec = TZI.DaylightBias * 60;
+            DateTimeParams.DaylightDifference = static_cast<double>(TZI.DaylightBias) / 1440;
+            DateTimeParams.StandardDifferenceSec = TZI.StandardBias * 60;
+            DateTimeParams.StandardDifference = static_cast<double>(TZI.StandardBias) / 1440;
 
-      DateTimeParams.StandardDate = TZI.StandardDate;
-      DateTimeParams.DaylightDate = TZI.DaylightDate;
+            DateTimeParams.StandardDate = TZI.StandardDate;
+            DateTimeParams.DaylightDate = TZI.DaylightDate;
 
-      DateTimeParams.DaylightHack = !IsWin7() || IsExactly2008R2();
+            DateTimeParams.DaylightHack = !IsWin7() || IsExactly2008R2();
 
-      DateTimeParamsInitialized = true;
+            DateTimeParamsInitialized = true;
+        }
     }
-  }
-  return &DateTimeParams;
+    return &DateTimeParams;
 }
 //---------------------------------------------------------------------------
 static void EncodeDSTMargin(const SYSTEMTIME &Date, unsigned short Year,
-  nb::TDateTime &Result)
+                            nb::TDateTime &Result)
 {
-  if (Date.wYear == 0)
-  {
-    nb::TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
-    
-    Result = ((Date.wDayOfWeek - ::DayOfWeek(Temp) + 8) % 7) +
-      (7 * (Date.wDay - 1));
-    if (Date.wDay == 5)
+    if (Date.wYear == 0)
     {
-      unsigned short Month = static_cast<unsigned short>(Date.wMonth + 1);
-      if (Month > 12)
-      {
-        Month = static_cast<unsigned short>(Month - 12);
-        Year++;
-      }
+        nb::TDateTime Temp = EncodeDateVerbose(Year, Date.wMonth, 1);
 
-      if (Result >= EncodeDateVerbose(Year, Month, 1))
-      {
-        Result = Result - 7;
-      }
+        Result = ((Date.wDayOfWeek - ::DayOfWeek(Temp) + 8) % 7) +
+                 (7 * (Date.wDay - 1));
+        if (Date.wDay == 5)
+        {
+            unsigned short Month = static_cast<unsigned short>(Date.wMonth + 1);
+            if (Month > 12)
+            {
+                Month = static_cast<unsigned short>(Month - 12);
+                Year++;
+            }
+
+            if (Result >= EncodeDateVerbose(Year, Month, 1))
+            {
+                Result = Result - 7;
+            }
+        }
+        Result = Result + EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
+                                            Date.wMilliseconds);
     }
-    Result = Result + EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
-      Date.wMilliseconds);
-  }
-  else
-  {
-    Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
-      EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
-  }
-  // nb::Error(SNotImplemented, 46);
+    else
+    {
+        Result = EncodeDateVerbose(Year, Date.wMonth, Date.wDay) +
+                 EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond, Date.wMilliseconds);
+    }
+    // nb::Error(SNotImplemented, 46);
 }
 //---------------------------------------------------------------------------
-static bool IsDateInDST(const nb::TDateTime & DateTime)
+static bool IsDateInDST(const nb::TDateTime &DateTime)
 {
-  struct TDSTCache
-  {
-    nb::TDateTime StandardDate;
-    nb::TDateTime DaylightDate;
-    unsigned short Year;
-    bool Filled;
-    bool SummerDST;
-  };
-  static TDSTCache DSTCache[10];
-  static int DSTCacheCount = 0;
-  static TCriticalSection Section;
-
-  TDateTimeParams *Params = GetDateTimeParams();
-  bool Result;
-
-  // On some systems it occurs that StandardDate is unset, while
-  // DaylightDate is set. MSDN states that this is invalid and
-  // should be treated as if there is no daylinght saving.
-  // So check both.
-  if ((Params->StandardDate.wMonth == 0) ||
-      (Params->DaylightDate.wMonth == 0))
-  {
-    Result = false;
-  }
-  else
-  {
-    unsigned int Year, Month, Day;
-    ::DecodeDate(DateTime, Year, Month, Day);
-
-    TDSTCache * CurrentCache = &DSTCache[0];
-
-    int CacheIndex = 0;
-    while ((CacheIndex < DSTCacheCount) && (CacheIndex < LENOF(DSTCache)) &&
-      CurrentCache->Filled && (CurrentCache->Year != Year))
+    struct TDSTCache
     {
-      CacheIndex++;
-      CurrentCache++;
-    }
+        nb::TDateTime StandardDate;
+        nb::TDateTime DaylightDate;
+        unsigned short Year;
+        bool Filled;
+        bool SummerDST;
+    };
+    static TDSTCache DSTCache[10];
+    static int DSTCacheCount = 0;
+    static TCriticalSection Section;
 
-    TDSTCache NewCache;
-    if ((CacheIndex < DSTCacheCount) && (CacheIndex < LENOF(DSTCache)) &&
-        CurrentCache->Filled)
+    TDateTimeParams *Params = GetDateTimeParams();
+    bool Result;
+
+    // On some systems it occurs that StandardDate is unset, while
+    // DaylightDate is set. MSDN states that this is invalid and
+    // should be treated as if there is no daylinght saving.
+    // So check both.
+    if ((Params->StandardDate.wMonth == 0) ||
+            (Params->DaylightDate.wMonth == 0))
     {
-      assert(CurrentCache->Year == Year);
+        Result = false;
     }
     else
     {
+        unsigned int Year, Month, Day;
+        ::DecodeDate(DateTime, Year, Month, Day);
 
-      EncodeDSTMargin(Params->StandardDate, Year, NewCache.StandardDate);
-      EncodeDSTMargin(Params->DaylightDate, Year, NewCache.DaylightDate);
-      NewCache.SummerDST = (NewCache.DaylightDate < NewCache.StandardDate);
-      if (DSTCacheCount < LENOF(DSTCache))
-      {
-        TGuard Guard(&Section);
-        if (DSTCacheCount < LENOF(DSTCache))
+        TDSTCache *CurrentCache = &DSTCache[0];
+
+        int CacheIndex = 0;
+        while ((CacheIndex < DSTCacheCount) && (CacheIndex < LENOF(DSTCache)) &&
+                CurrentCache->Filled && (CurrentCache->Year != Year))
         {
-          NewCache.Year = static_cast<unsigned short>(Year);
-          DSTCache[DSTCacheCount] = NewCache;
-          DSTCache[DSTCacheCount].Filled = true;
-          DSTCacheCount++;
+            CacheIndex++;
+            CurrentCache++;
         }
-      }
-      CurrentCache = &NewCache;
-    }
 
-    if (CurrentCache->SummerDST)
-    {
-      Result =
-        (DateTime >= CurrentCache->DaylightDate) &&
-        (DateTime < CurrentCache->StandardDate);
+        TDSTCache NewCache;
+        if ((CacheIndex < DSTCacheCount) && (CacheIndex < LENOF(DSTCache)) &&
+                CurrentCache->Filled)
+        {
+            assert(CurrentCache->Year == Year);
+        }
+        else
+        {
+
+            EncodeDSTMargin(Params->StandardDate, Year, NewCache.StandardDate);
+            EncodeDSTMargin(Params->DaylightDate, Year, NewCache.DaylightDate);
+            NewCache.SummerDST = (NewCache.DaylightDate < NewCache.StandardDate);
+            if (DSTCacheCount < LENOF(DSTCache))
+            {
+                TGuard Guard(&Section);
+                if (DSTCacheCount < LENOF(DSTCache))
+                {
+                    NewCache.Year = static_cast<unsigned short>(Year);
+                    DSTCache[DSTCacheCount] = NewCache;
+                    DSTCache[DSTCacheCount].Filled = true;
+                    DSTCacheCount++;
+                }
+            }
+            CurrentCache = &NewCache;
+        }
+
+        if (CurrentCache->SummerDST)
+        {
+            Result =
+                (DateTime >= CurrentCache->DaylightDate) &&
+                (DateTime < CurrentCache->StandardDate);
+        }
+        else
+        {
+            Result =
+                (DateTime < CurrentCache->StandardDate) ||
+                (DateTime >= CurrentCache->DaylightDate);
+        }
     }
-    else
-    {
-      Result =
-        (DateTime < CurrentCache->StandardDate) ||
-        (DateTime >= CurrentCache->DaylightDate);
-    }
-  }
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
 bool UsesDaylightHack()
 {
-  return GetDateTimeParams()->DaylightHack;
+    return GetDateTimeParams()->DaylightHack;
 }
 //---------------------------------------------------------------------------
 nb::TDateTime UnixToDateTime(__int64 TimeStamp, TDSTMode DSTMode)
 {
-  TDateTimeParams * Params = GetDateTimeParams();
+    TDateTimeParams *Params = GetDateTimeParams();
 
-  nb::TDateTime Result;
-  // DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
-  // nb::Error(SNotImplemented, 49);
-  Result = nb::TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
+    nb::TDateTime Result;
+    // DEBUG_PRINTF(L"TimeStamp = %u, DSTMode = %d", TimeStamp, DSTMode);
+    // nb::Error(SNotImplemented, 49);
+    Result = nb::TDateTime(Params->UnixEpoch + (TimeStamp / 86400.0));
 
-  if (Params->DaylightHack)
-  {
-    if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
+    if (Params->DaylightHack)
     {
-      Result = Result - Params->CurrentDifference;
+        if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
+        {
+            Result = Result - Params->CurrentDifference;
+        }
+        else if (DSTMode == dstmKeep)
+        {
+            Result = Result - Params->BaseDifference;
+        }
     }
-    else if (DSTMode == dstmKeep)
+    else
     {
-      Result = Result - Params->BaseDifference;
+        Result = Result - Params->BaseDifference;
     }
-  }
-  else
-  {
-    Result = Result - Params->BaseDifference;
-  }
-  if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
-  {
-    Result = Result - (IsDateInDST(Result) ?
-      Params->DaylightDifference : Params->StandardDifference);
-  }
-  return Result;
+    if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
+    {
+        Result = Result - (IsDateInDST(Result) ?
+                           Params->DaylightDifference : Params->StandardDifference);
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 __int64 Round(double Number)
 {
-  double Floor = floor(Number);
-  double Ceil = ceil(Number);
-  return ((Number - Floor) > (Ceil - Number)) ? static_cast<__int64>(Ceil) : static_cast<__int64>(Floor);
+    double Floor = floor(Number);
+    double Ceil = ceil(Number);
+    return ((Number - Floor) > (Ceil - Number)) ? static_cast<__int64>(Ceil) : static_cast<__int64>(Floor);
 }
 //---------------------------------------------------------------------------
 #define TIME_POSIX_TO_WIN(t, ft) (*(LONGLONG*)&(ft) = \
@@ -1290,250 +1297,250 @@ __int64 Round(double Number)
 //---------------------------------------------------------------------------
 static __int64 DateTimeToUnix(const nb::TDateTime &DateTime)
 {
-  TDateTimeParams *Params = GetDateTimeParams();
-  double value = static_cast<double>(DateTime - Params->UnixEpoch) * 86400;
-  double intpart;
-  modf(value, &intpart);
-  return static_cast<__int64>(intpart) + Params->CurrentDifferenceSec;
+    TDateTimeParams *Params = GetDateTimeParams();
+    double value = static_cast<double>(DateTime - Params->UnixEpoch) * 86400;
+    double intpart;
+    modf(value, &intpart);
+    return static_cast<__int64>(intpart) + Params->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
 FILETIME DateTimeToFileTime(const nb::TDateTime &DateTime,
-  TDSTMode /*DSTMode*/)
+                            TDSTMode /*DSTMode*/)
 {
-  FILETIME Result;
-  __int64 UnixTimeStamp = DateTimeToUnix(DateTime);
-  // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
+    FILETIME Result;
+    __int64 UnixTimeStamp = DateTimeToUnix(DateTime);
+    // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
 
-  TDateTimeParams *Params = GetDateTimeParams();
-  // DEBUG_PRINTF(L"Params->DaylightHack = %d", Params->DaylightHack);
-  if (!Params->DaylightHack)
-  {
-    UnixTimeStamp += (IsDateInDST(DateTime) ?
-      Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
-    UnixTimeStamp -= Params->CurrentDaylightDifferenceSec;
-  }
-  // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
-  TIME_POSIX_TO_WIN(UnixTimeStamp, Result);
-  // DEBUG_PRINTF(L"Result = %d", Result.dwLowDateTime);
+    TDateTimeParams *Params = GetDateTimeParams();
+    // DEBUG_PRINTF(L"Params->DaylightHack = %d", Params->DaylightHack);
+    if (!Params->DaylightHack)
+    {
+        UnixTimeStamp += (IsDateInDST(DateTime) ?
+                          Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+        UnixTimeStamp -= Params->CurrentDaylightDifferenceSec;
+    }
+    // DEBUG_PRINTF(L"UnixTimeStamp = %d", UnixTimeStamp);
+    TIME_POSIX_TO_WIN(UnixTimeStamp, Result);
+    // DEBUG_PRINTF(L"Result = %d", Result.dwLowDateTime);
 
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
-nb::TDateTime FileTimeToDateTime(const FILETIME & FileTime)
+nb::TDateTime FileTimeToDateTime(const FILETIME &FileTime)
 {
-  // duplicated in DirView.pas
-  SYSTEMTIME SysTime;
-  TDateTimeParams * Params = GetDateTimeParams();
-  if (!Params->DaylightHack)
-  {
-    SYSTEMTIME UniverzalSysTime;
-    FileTimeToSystemTime(&FileTime, &UniverzalSysTime);
-    SystemTimeToTzSpecificLocalTime(NULL, &UniverzalSysTime, &SysTime);
-  }
-  else
-  {
-    FILETIME LocalFileTime;
-    FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-    FileTimeToSystemTime(&LocalFileTime, &SysTime);
-  }
-  nb::TDateTime Result = SystemTimeToDateTime(SysTime);
-  return Result;
+    // duplicated in DirView.pas
+    SYSTEMTIME SysTime;
+    TDateTimeParams *Params = GetDateTimeParams();
+    if (!Params->DaylightHack)
+    {
+        SYSTEMTIME UniverzalSysTime;
+        FileTimeToSystemTime(&FileTime, &UniverzalSysTime);
+        SystemTimeToTzSpecificLocalTime(NULL, &UniverzalSysTime, &SysTime);
+    }
+    else
+    {
+        FILETIME LocalFileTime;
+        FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
+        FileTimeToSystemTime(&LocalFileTime, &SysTime);
+    }
+    nb::TDateTime Result = SystemTimeToDateTime(SysTime);
+    return Result;
 }
 //---------------------------------------------------------------------------
-__int64 ConvertTimestampToUnix(const FILETIME & FileTime,
-  TDSTMode DSTMode)
+__int64 ConvertTimestampToUnix(const FILETIME &FileTime,
+                               TDSTMode DSTMode)
 {
-  __int64 Result;
-  TIME_WIN_TO_POSIX(FileTime, Result);
+    __int64 Result;
+    TIME_WIN_TO_POSIX(FileTime, Result);
 
-  TDateTimeParams * Params = GetDateTimeParams();
-  if (Params->DaylightHack)
-  {
-    if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
+    TDateTimeParams *Params = GetDateTimeParams();
+    if (Params->DaylightHack)
     {
-      FILETIME LocalFileTime;
-      SYSTEMTIME SystemTime;
-      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-      FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      nb::TDateTime DateTime = SystemTimeToDateTime(SystemTime);
-      Result += (IsDateInDST(DateTime) ?
-        Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+        if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
+        {
+            FILETIME LocalFileTime;
+            SYSTEMTIME SystemTime;
+            FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
+            FileTimeToSystemTime(&LocalFileTime, &SystemTime);
+            nb::TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+            Result += (IsDateInDST(DateTime) ?
+                       Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
 
-      if (DSTMode == dstmKeep)
-      {
-        Result -= Params->CurrentDaylightDifferenceSec;
-      }
+            if (DSTMode == dstmKeep)
+            {
+                Result -= Params->CurrentDaylightDifferenceSec;
+            }
+        }
     }
-  }
-  else
-  {
-    if (DSTMode == dstmWin)
+    else
     {
-      FILETIME LocalFileTime;
-      SYSTEMTIME SystemTime;
-      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-      FileTimeToSystemTime(&LocalFileTime, &SystemTime);
-      nb::TDateTime DateTime = SystemTimeToDateTime(SystemTime);
-      Result -= (IsDateInDST(DateTime) ?
-        Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+        if (DSTMode == dstmWin)
+        {
+            FILETIME LocalFileTime;
+            SYSTEMTIME SystemTime;
+            FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
+            FileTimeToSystemTime(&LocalFileTime, &SystemTime);
+            nb::TDateTime DateTime = SystemTimeToDateTime(SystemTime);
+            Result -= (IsDateInDST(DateTime) ?
+                       Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+        }
     }
-  }
 
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
 nb::TDateTime ConvertTimestampToUTC(nb::TDateTime DateTime)
 {
-  TDateTimeParams *Params = GetDateTimeParams();
-  DateTime = DateTime + Params->CurrentDifference;
-  DateTime = DateTime +
-    (IsDateInDST(DateTime) ?
-      Params->DaylightDifference : Params->StandardDifference);
+    TDateTimeParams *Params = GetDateTimeParams();
+    DateTime = DateTime + Params->CurrentDifference;
+    DateTime = DateTime +
+               (IsDateInDST(DateTime) ?
+                Params->DaylightDifference : Params->StandardDifference);
 
-  return DateTime;
+    return DateTime;
 }
 //---------------------------------------------------------------------------
-__int64 ConvertTimestampToUnixSafe(const FILETIME & FileTime,
-  TDSTMode DSTMode)
+__int64 ConvertTimestampToUnixSafe(const FILETIME &FileTime,
+                                   TDSTMode DSTMode)
 {
-  __int64 Result;
-  if ((FileTime.dwLowDateTime == 0) &&
-      (FileTime.dwHighDateTime == 0))
-  {
-    Result = DateTimeToUnix(nb::Now());
-  }
-  else
-  {
-    Result = ConvertTimestampToUnix(FileTime, DSTMode);
-  }
-  return Result;
+    __int64 Result;
+    if ((FileTime.dwLowDateTime == 0) &&
+            (FileTime.dwHighDateTime == 0))
+    {
+        Result = DateTimeToUnix(nb::Now());
+    }
+    else
+    {
+        Result = ConvertTimestampToUnix(FileTime, DSTMode);
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 nb::TDateTime AdjustDateTimeFromUnix(nb::TDateTime &DateTime, TDSTMode DSTMode)
 {
-  TDateTimeParams * Params = GetDateTimeParams();
+    TDateTimeParams *Params = GetDateTimeParams();
 
-  if (Params->DaylightHack)
-  {
-    if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
+    if (Params->DaylightHack)
     {
-      // nb::Error(SNotImplemented, 55);
-      DateTime = DateTime - Params->CurrentDaylightDifference;
-    }
+        if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
+        {
+            // nb::Error(SNotImplemented, 55);
+            DateTime = DateTime - Params->CurrentDaylightDifference;
+        }
 
-    if (!IsDateInDST(DateTime))
-    {
-      if (DSTMode == dstmWin)
-      {
-        DateTime = DateTime - Params->DaylightDifference;
-      }
+        if (!IsDateInDST(DateTime))
+        {
+            if (DSTMode == dstmWin)
+            {
+                DateTime = DateTime - Params->DaylightDifference;
+            }
+        }
+        else
+        {
+            DateTime = DateTime - Params->StandardDifference;
+        }
     }
     else
     {
-      DateTime = DateTime - Params->StandardDifference;
+        if (DSTMode == dstmWin)
+        {
+            if (IsDateInDST(DateTime))
+            {
+                DateTime = DateTime + Params->DaylightDifference;
+            }
+            else
+            {
+                DateTime = DateTime + Params->StandardDifference;
+            }
+        }
     }
-  }
-  else
-  {
-    if (DSTMode == dstmWin)
-    {
-      if (IsDateInDST(DateTime))
-      {
-        DateTime = DateTime + Params->DaylightDifference;
-      }
-      else
-      {
-        DateTime = DateTime + Params->StandardDifference;
-      }
-    }
-  }
 
-  return DateTime;
+    return DateTime;
 }
 //---------------------------------------------------------------------------
 std::wstring FixedLenDateTimeFormat(const std::wstring Format)
 {
-  std::wstring Result = Format;
-  bool AsIs = false;
+    std::wstring Result = Format;
+    bool AsIs = false;
 
-  size_t Index = 0;
-  while (Index < Result.size())
-  {
-    wchar_t F = Result[Index];
-    if ((F == L'\'') || (F == L'\"'))
+    size_t Index = 0;
+    while (Index < Result.size())
     {
-      AsIs = !AsIs;
-      Index++;
-    }
-    else if (!AsIs && ((F == L'a') || (F == L'A')))
-    {
-      if (::LowerCase(Result.substr(Index, 5)) == L"am/pm")
-      {
-        Index += 5;
-      }
-      else if (::LowerCase(Result.substr(Index, 3)) == L"a/p")
-      {
-        Index += 3;
-      }
-      else if (::LowerCase(Result.substr(Index, 4)) == L"ampm")
-      {
-        Index += 4;
-      }
-      else
-      {
-        Index++;
-      }
-    }
-    else
-    {
-      if (!AsIs && (strchr("dDeEmMhHnNsS", F) != NULL) &&
-          ((Index == Result.size()) || (Result[Index + 1] != F)))
-      {
-        nb::Error(SNotImplemented, 56);
-        // FIXME Result.insert(Index, F);
-      }
+        wchar_t F = Result[Index];
+        if ((F == L'\'') || (F == L'\"'))
+        {
+            AsIs = !AsIs;
+            Index++;
+        }
+        else if (!AsIs && ((F == L'a') || (F == L'A')))
+        {
+            if (::LowerCase(Result.substr(Index, 5)) == L"am/pm")
+            {
+                Index += 5;
+            }
+            else if (::LowerCase(Result.substr(Index, 3)) == L"a/p")
+            {
+                Index += 3;
+            }
+            else if (::LowerCase(Result.substr(Index, 4)) == L"ampm")
+            {
+                Index += 4;
+            }
+            else
+            {
+                Index++;
+            }
+        }
+        else
+        {
+            if (!AsIs && (strchr("dDeEmMhHnNsS", F) != NULL) &&
+                    ((Index == Result.size()) || (Result[Index + 1] != F)))
+            {
+                nb::Error(SNotImplemented, 56);
+                // FIXME Result.insert(Index, F);
+            }
 
-      while ((Index <= Result.size()) && (F == Result[Index]))
-      {
-        Index++;
-      }
+            while ((Index <= Result.size()) && (F == Result[Index]))
+            {
+                Index++;
+            }
+        }
     }
-  }
 
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
 int CompareFileTime(nb::TDateTime T1, nb::TDateTime T2)
 {
-  // "FAT" time precision
-  // (when one time is seconds-precision and other is millisecond-precision,
-  // we may have times like 12:00:00.000 and 12:00:01.999, which should
-  // be treated the same)
-  //  FIXME
-  nb::Error(SNotImplemented, 57);
-  /*
-  static nb::TDateTime TwoSeconds(0, 0, 2, 0);
-  int Result;
-  if (T1 == T2)
-  {
-    // just optimalisation
-    Result = 0;
-  }
-  else if ((T1 < T2) && (T2 - T1 >= TwoSeconds))
-  {
-    Result = -1;
-  }
-  else if ((T1 > T2) && (T1 - T2 >= TwoSeconds))
-  {
-    Result = 1;
-  }
-  else
-  {
-    Result = 0;
-  }
-  return Result;
-  */
-  return 0;
+    // "FAT" time precision
+    // (when one time is seconds-precision and other is millisecond-precision,
+    // we may have times like 12:00:00.000 and 12:00:01.999, which should
+    // be treated the same)
+    //  FIXME
+    nb::Error(SNotImplemented, 57);
+    /*
+    static nb::TDateTime TwoSeconds(0, 0, 2, 0);
+    int Result;
+    if (T1 == T2)
+    {
+      // just optimalisation
+      Result = 0;
+    }
+    else if ((T1 < T2) && (T2 - T1 >= TwoSeconds))
+    {
+      Result = -1;
+    }
+    else if ((T1 > T2) && (T1 - T2 >= TwoSeconds))
+    {
+      Result = 1;
+    }
+    else
+    {
+      Result = 0;
+    }
+    return Result;
+    */
+    return 0;
 }
 
 nb::TDateTime Date()
@@ -1545,96 +1552,98 @@ nb::TDateTime Date()
 }
 
 void DivMod(const int Dividend, const unsigned int Divisor,
-  unsigned int &Result, unsigned int &Remainder)
+            unsigned int &Result, unsigned int &Remainder)
 {
     Result = Dividend / Divisor;
     Remainder = Dividend % Divisor;
 }
 
 bool DecodeDateFully(const nb::TDateTime &DateTime,
-    unsigned int &Year, unsigned int &Month, unsigned int &Day, unsigned int &DOW)
+                     unsigned int &Year, unsigned int &Month, unsigned int &Day, unsigned int &DOW)
 {
-  static const int D1 = 365;
-  static const int D4 = D1 * 4 + 1;
-  static const int D100 = D4 * 25 - 1;
-  static const int D400 = D100 * 4 + 1;
-  bool Result = false;
-  int T = DateTimeToTimeStamp(DateTime).Date;
-  // DEBUG_PRINTF(L"DateTime = %f, T = %d", DateTime, T);
-  unsigned int Y = 0;
-  unsigned int M = 0;
-  unsigned int D = 0;
-  unsigned int I = 0;
-  if (T <= 0)
-  {
-    Year = 0;
-    Month = 0;
-    Day = 0;
-    DOW = 0;
-    return false;
-  }
-  else
-  {
-    DOW = T % 7 + 1;
-    T--;
-    Y = 1;
-    while (T >= D400)
+    static const int D1 = 365;
+    static const int D4 = D1 * 4 + 1;
+    static const int D100 = D4 * 25 - 1;
+    static const int D400 = D100 * 4 + 1;
+    bool Result = false;
+    int T = DateTimeToTimeStamp(DateTime).Date;
+    // DEBUG_PRINTF(L"DateTime = %f, T = %d", DateTime, T);
+    unsigned int Y = 0;
+    unsigned int M = 0;
+    unsigned int D = 0;
+    unsigned int I = 0;
+    if (T <= 0)
     {
-      T -= D400;
-      Y += 400;
+        Year = 0;
+        Month = 0;
+        Day = 0;
+        DOW = 0;
+        return false;
     }
-    DivMod(T, D100, I, D);
-    // DEBUG_PRINTF(L"T = %u, D100 = %u, I = %u, D = %u", T, D100, I, D);
-    if (I == 4)
+    else
     {
-      I--;
-      D += D100;
+        DOW = T % 7 + 1;
+        T--;
+        Y = 1;
+        while (T >= D400)
+        {
+            T -= D400;
+            Y += 400;
+        }
+        DivMod(T, D100, I, D);
+        // DEBUG_PRINTF(L"T = %u, D100 = %u, I = %u, D = %u", T, D100, I, D);
+        if (I == 4)
+        {
+            I--;
+            D += D100;
+        }
+        Y += I * 100;
+        DivMod(D, D4, I, D);
+        // DEBUG_PRINTF(L"D4 = %u, I = %u, D = %u", D4, I, D);
+        Y += I * 4;
+        DivMod(D, D1, I, D);
+        // DEBUG_PRINTF(L"D1 = %u, I = %u, D = %u", D1, I, D);
+        if (I == 4)
+        {
+            I--;
+            D += D1;
+        }
+        Y += I;
+        Result = bg::gregorian_calendar::is_leap_year(Y);
+        const TDayTable *DayTable = &MonthDays[Result];
+        M = 1;
+        while (true)
+        {
+            I = (*DayTable)[M - 1];
+            // DEBUG_PRINTF(L"I = %u, D = %u", I, D);
+            if (D < I)
+            {
+                break;
+            }
+            D -= I;
+            M++;
+        }
+        Year = Y;
+        Month = M;
+        Day = D + 1;
     }
-    Y += I * 100;
-    DivMod(D, D4, I, D);
-    // DEBUG_PRINTF(L"D4 = %u, I = %u, D = %u", D4, I, D);
-    Y += I * 4;
-    DivMod(D, D1, I, D);
-    // DEBUG_PRINTF(L"D1 = %u, I = %u, D = %u", D1, I, D);
-    if (I == 4)
-    {
-      I--;
-      D += D1;
-    }
-    Y += I;
-    Result = bg::gregorian_calendar::is_leap_year(Y);
-    const TDayTable *DayTable = &MonthDays[Result];
-    M = 1;
-    while (true)
-    {
-      I = (*DayTable)[M - 1];
-      // DEBUG_PRINTF(L"I = %u, D = %u", I, D);
-      if (D < I)
-        break;
-      D -= I;
-      M++;
-    }
-    Year = Y;
-    Month = M;
-    Day = D + 1;
-  }
-  return Result;
+    return Result;
 }
 
 void DecodeDate(const nb::TDateTime &DateTime, unsigned int &Year,
-    unsigned int &Month, unsigned int &Day)
+                unsigned int &Month, unsigned int &Day)
 {
-  unsigned int Dummy = 0;
-  DecodeDateFully(DateTime, Year, Month, Day, Dummy);
+    unsigned int Dummy = 0;
+    DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
 void DecodeTime(const nb::TDateTime &DateTime, unsigned int &Hour,
-    unsigned int &Min, unsigned int &Sec, unsigned int &MSec)
+                unsigned int &Min, unsigned int &Sec, unsigned int &MSec)
 {
-  unsigned int MinCount, MSecCount;
-  DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
-  DivMod(MinCount, 60, Hour, Min);
-  DivMod(MSecCount, 1000, Sec, MSec);
+    unsigned int MinCount, MSecCount;
+    DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
+    DivMod(MinCount, 60, Hour, Min);
+    DivMod(MSecCount, 1000, Sec, MSec);
 }
 
 std::wstring FormatDateTime(const std::wstring fmt, nb::TDateTime DateTime)
@@ -1666,117 +1675,117 @@ nb::TDateTime ComposeDateTime(nb::TDateTime Date, nb::TDateTime Time)
 
 nb::TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
 {
-  nb::TDateTime Result(0.0);
-  // ComposeDateTime(DoEncodeDate(SystemTime.Year, SystemTime.Month, SystemTime.Day), DoEncodeTime(SystemTime.Hour, SystemTime.Minute, SystemTime.Second, SystemTime.MilliSecond));
-  ::TryEncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, Result);
-  return Result;
+    nb::TDateTime Result(0.0);
+    // ComposeDateTime(DoEncodeDate(SystemTime.Year, SystemTime.Month, SystemTime.Day), DoEncodeTime(SystemTime.Hour, SystemTime.Minute, SystemTime.Second, SystemTime.MilliSecond));
+    ::TryEncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay, Result);
+    return Result;
 }
 
 //---------------------------------------------------------------------------
 bool RecursiveDeleteFile(const std::wstring FileName, bool ToRecycleBin)
 {
-  SHFILEOPSTRUCT Data;
+    SHFILEOPSTRUCT Data;
 
-  memset(&Data, 0, sizeof(Data));
-  Data.hwnd = NULL;
-  Data.wFunc = FO_DELETE;
-  std::wstring FileList(FileName);
-  FileList.resize(FileList.size() + 2);
-  FileList[FileList.size() - 1] = '\0';
-  Data.pFrom = FileList.c_str();
-  Data.pTo = NULL;
-  Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
-    FOF_NOERRORUI | FOF_SILENT;
-  if (ToRecycleBin)
-  {
-    Data.fFlags |= FOF_ALLOWUNDO;
-  }
-  int ErrorCode = SHFileOperation(&Data);
-  bool Result = (ErrorCode == 0);
-  if (!Result)
-  {
-    // according to MSDN, SHFileOperation may return following non-Win32
-    // error codes
-    if (((ErrorCode >= 0x71) && (ErrorCode <= 0x88)) ||
-        (ErrorCode == 0xB7) || (ErrorCode == 0x402) || (ErrorCode == 0x10000) ||
-        (ErrorCode == 0x10074))
+    memset(&Data, 0, sizeof(Data));
+    Data.hwnd = NULL;
+    Data.wFunc = FO_DELETE;
+    std::wstring FileList(FileName);
+    FileList.resize(FileList.size() + 2);
+    FileList[FileList.size() - 1] = '\0';
+    Data.pFrom = FileList.c_str();
+    Data.pTo = NULL;
+    Data.fFlags = FOF_NOCONFIRMATION | FOF_RENAMEONCOLLISION | FOF_NOCONFIRMMKDIR |
+                  FOF_NOERRORUI | FOF_SILENT;
+    if (ToRecycleBin)
     {
-      ErrorCode = 0;
+        Data.fFlags |= FOF_ALLOWUNDO;
     }
-    SetLastError(ErrorCode);
-  }
-  return Result;
+    int ErrorCode = SHFileOperation(&Data);
+    bool Result = (ErrorCode == 0);
+    if (!Result)
+    {
+        // according to MSDN, SHFileOperation may return following non-Win32
+        // error codes
+        if (((ErrorCode >= 0x71) && (ErrorCode <= 0x88)) ||
+                (ErrorCode == 0xB7) || (ErrorCode == 0x402) || (ErrorCode == 0x10000) ||
+                (ErrorCode == 0x10074))
+        {
+            ErrorCode = 0;
+        }
+        SetLastError(ErrorCode);
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 int CancelAnswer(int Answers)
 {
-  int Result;
-  if ((Answers & qaCancel) != 0)
-  {
-    Result = qaCancel;
-  }
-  else if ((Answers & qaNo) != 0)
-  {
-    Result = qaNo;
-  }
-  else if ((Answers & qaAbort) != 0)
-  {
-    Result = qaAbort;
-  }
-  else if ((Answers & qaOK) != 0)
-  {
-    Result = qaOK;
-  }
-  else
-  {
-    assert(false);
-    Result = qaCancel;
-  }
-  return Result;
+    int Result;
+    if ((Answers & qaCancel) != 0)
+    {
+        Result = qaCancel;
+    }
+    else if ((Answers & qaNo) != 0)
+    {
+        Result = qaNo;
+    }
+    else if ((Answers & qaAbort) != 0)
+    {
+        Result = qaAbort;
+    }
+    else if ((Answers & qaOK) != 0)
+    {
+        Result = qaOK;
+    }
+    else
+    {
+        assert(false);
+        Result = qaCancel;
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 int AbortAnswer(int Answers)
 {
-  int Result;
-  if (FLAGSET(Answers, qaAbort))
-  {
-    Result = qaAbort;
-  }
-  else
-  {
-    Result = CancelAnswer(Answers);
-  }
-  return Result;
+    int Result;
+    if (FLAGSET(Answers, qaAbort))
+    {
+        Result = qaAbort;
+    }
+    else
+    {
+        Result = CancelAnswer(Answers);
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 int ContinueAnswer(int Answers)
 {
-  int Result;
-  if (FLAGSET(Answers, qaSkip))
-  {
-    Result = qaSkip;
-  }
-  else if (FLAGSET(Answers, qaIgnore))
-  {
-    Result = qaIgnore;
-  }
-  else if (FLAGSET(Answers, qaYes))
-  {
-    Result = qaYes;
-  }
-  else if (FLAGSET(Answers, qaOK))
-  {
-    Result = qaOK;
-  }
-  else if (FLAGSET(Answers, qaRetry))
-  {
-    Result = qaRetry;
-  }
-  else
-  {
-    Result = CancelAnswer(Answers);
-  }
-  return Result;
+    int Result;
+    if (FLAGSET(Answers, qaSkip))
+    {
+        Result = qaSkip;
+    }
+    else if (FLAGSET(Answers, qaIgnore))
+    {
+        Result = qaIgnore;
+    }
+    else if (FLAGSET(Answers, qaYes))
+    {
+        Result = qaYes;
+    }
+    else if (FLAGSET(Answers, qaOK))
+    {
+        Result = qaOK;
+    }
+    else if (FLAGSET(Answers, qaRetry))
+    {
+        Result = qaRetry;
+    }
+    else
+    {
+        Result = CancelAnswer(Answers);
+    }
+    return Result;
 }
 //---------------------------------------------------------------------------
 /*
@@ -1816,266 +1825,266 @@ std::wstring LoadStr(int Ident, unsigned int MaxLength)
 //---------------------------------------------------------------------------
 std::wstring LoadStrPart(int Ident, int Part)
 {
-  std::wstring Result;
+    std::wstring Result;
 
-  std::wstring Str = LoadStr(Ident);
-  // DEBUG_PRINTF(L"Str = %s", Str.c_str());
+    std::wstring Str = LoadStr(Ident);
+    // DEBUG_PRINTF(L"Str = %s", Str.c_str());
 
-  while (Part > 0)
-  {
-    Result = ::CutToChar(Str, '|', false);
-    Part--;
-  }
-  return Result;
+    while (Part > 0)
+    {
+        Result = ::CutToChar(Str, '|', false);
+        Part--;
+    }
+    return Result;
 }
 
 //---------------------------------------------------------------------------
 std::wstring DecodeUrlChars(const std::wstring S)
 {
-  size_t i = 0;
-  std::wstring str = S;
-  while (i < str.size())
-  {
-    switch (str[i])
+    size_t i = 0;
+    std::wstring str = S;
+    while (i < str.size())
     {
-      case L'+':
-        str[i] = L' ';
-        break;
-
-      case L'%':
-        if (i <= S.size() - 2)
+        switch (str[i])
         {
-          std::wstring C = HexToStr(str.substr(i + 1, 2));
-          if (C.size() == 1)
-          {
-            str[i] = C[1];
-            str.erase(i + 1, 2);
-          }
+        case L'+':
+            str[i] = L' ';
+            break;
+
+        case L'%':
+            if (i <= S.size() - 2)
+            {
+                std::wstring C = HexToStr(str.substr(i + 1, 2));
+                if (C.size() == 1)
+                {
+                    str[i] = C[1];
+                    str.erase(i + 1, 2);
+                }
+            }
+            break;
         }
-        break;
+        i++;
     }
-    i++;
-  }
-  return str;
+    return str;
 }
 //---------------------------------------------------------------------------
 std::wstring DoEncodeUrl(const std::wstring S, const std::wstring Chars)
 {
-  size_t i = 0;
-  std::wstring s = S;
-  while (i < s.size())
-  {
-    if (Chars.find_first_of(s[i]) != std::wstring::npos)
+    size_t i = 0;
+    std::wstring s = S;
+    while (i < s.size())
     {
-      std::wstring H = CharToHex(s[i]);
-      s.insert(i + 1, H);
-      s[i] = L'%';
-      i += H.size();
+        if (Chars.find_first_of(s[i]) != std::wstring::npos)
+        {
+            std::wstring H = CharToHex(s[i]);
+            s.insert(i + 1, H);
+            s[i] = L'%';
+            i += H.size();
+        }
+        i++;
     }
-    i++;
-  }
-  return s;
+    return s;
 }
 //---------------------------------------------------------------------------
 std::wstring EncodeUrlChars(const std::wstring S, const std::wstring Ignore)
 {
-  std::wstring Chars;
-  if (Ignore.find_first_of(L' ') == std::wstring::npos)
-  {
-    Chars += L' ';
-  }
-  if (Ignore.find_first_of(L'/') == std::wstring::npos)
-  {
-    Chars += L'/';
-  }
-  return DoEncodeUrl(S, Chars);
+    std::wstring Chars;
+    if (Ignore.find_first_of(L' ') == std::wstring::npos)
+    {
+        Chars += L' ';
+    }
+    if (Ignore.find_first_of(L'/') == std::wstring::npos)
+    {
+        Chars += L'/';
+    }
+    return DoEncodeUrl(S, Chars);
 }
 //---------------------------------------------------------------------------
 std::wstring NonUrlChars()
 {
-  std::wstring S;
-  for (unsigned int I = 0; I < 256; I++)
-  {
-    char C = static_cast<char>(I);
-    if (((C >= 'a') && (C <= 'z')) ||
-        ((C >= 'A') && (C <= 'Z')) ||
-        ((C >= '0') && (C <= '9')) ||
-        (C == '_') || (C == '-') || (C == '.'))
+    std::wstring S;
+    for (unsigned int I = 0; I < 256; I++)
     {
-      // noop
+        char C = static_cast<char>(I);
+        if (((C >= 'a') && (C <= 'z')) ||
+                ((C >= 'A') && (C <= 'Z')) ||
+                ((C >= '0') && (C <= '9')) ||
+                (C == '_') || (C == '-') || (C == '.'))
+        {
+            // noop
+        }
+        else
+        {
+            S += C;
+        }
     }
-    else
-    {
-      S += C;
-    }
-  }
-  return S;
+    return S;
 }
 //---------------------------------------------------------------------------
 std::wstring EncodeUrlString(const std::wstring S)
 {
-  return DoEncodeUrl(S, NonUrlChars());
+    return DoEncodeUrl(S, NonUrlChars());
 }
 //---------------------------------------------------------------------------
-void OemToAnsi(std::wstring & Str)
+void OemToAnsi(std::wstring &Str)
 {
-  if (!Str.empty())
-  {
-    // Str.Unique();
-    // FIXME OemToChar(Str.c_str(), Str.c_str());
-    nb::Error(SNotImplemented, 61);
-  }
+    if (!Str.empty())
+    {
+        // Str.Unique();
+        // FIXME OemToChar(Str.c_str(), Str.c_str());
+        nb::Error(SNotImplemented, 61);
+    }
 }
 //---------------------------------------------------------------------------
-void AnsiToOem(std::wstring & Str)
+void AnsiToOem(std::wstring &Str)
 {
-  if (!Str.empty())
-  {
-    // Str.Unique();
-    // FIXME CharToOem(Str.c_str(), Str.c_str());
-    nb::Error(SNotImplemented, 62);
-  }
+    if (!Str.empty())
+    {
+        // Str.Unique();
+        // FIXME CharToOem(Str.c_str(), Str.c_str());
+        nb::Error(SNotImplemented, 62);
+    }
 }
 //---------------------------------------------------------------------------
 std::wstring EscapeHotkey(const std::wstring Caption)
 {
-  return ::StringReplace(Caption, L"&", L"&&");
+    return ::StringReplace(Caption, L"&", L"&&");
 }
 //---------------------------------------------------------------------------
 // duplicated in console's Main.cpp
-bool CutToken(std::wstring & Str, std::wstring & Token)
+bool CutToken(std::wstring &Str, std::wstring &Token)
 {
-  bool Result;
+    bool Result;
 
-  Token = L"";
+    Token = L"";
 
-  // inspired by Putty's sftp_getcmd() from PSFTP.C
-  size_t Index = 0;
-  while ((Index < Str.size()) &&
-    ((Str[Index] == L' ') || (Str[Index] == L'\t')))
-  {
-    Index++;
-  }
-
-  if (Index < Str.size())
-  {
-    bool Quoting = false;
-
-    while (Index < Str.size())
+    // inspired by Putty's sftp_getcmd() from PSFTP.C
+    size_t Index = 0;
+    while ((Index < Str.size()) &&
+            ((Str[Index] == L' ') || (Str[Index] == L'\t')))
     {
-      if (!Quoting && ((Str[Index] == L' ') || (Str[Index] == L'\t')))
-      {
-        break;
-      }
-      else if ((Str[Index] == L'"') && (Index + 1 <= Str.size()) &&
-        (Str[Index + 1] == L'"'))
-      {
-        Index += 2;
-        Token += L'"';
-      }
-      else if (Str[Index] == L'"')
-      {
         Index++;
-        Quoting = !Quoting;
-      }
-      else
-      {
-        Token += Str[Index];
-        Index++;
-      }
     }
 
     if (Index < Str.size())
     {
-      Index++;
+        bool Quoting = false;
+
+        while (Index < Str.size())
+        {
+            if (!Quoting && ((Str[Index] == L' ') || (Str[Index] == L'\t')))
+            {
+                break;
+            }
+            else if ((Str[Index] == L'"') && (Index + 1 <= Str.size()) &&
+                     (Str[Index + 1] == L'"'))
+            {
+                Index += 2;
+                Token += L'"';
+            }
+            else if (Str[Index] == L'"')
+            {
+                Index++;
+                Quoting = !Quoting;
+            }
+            else
+            {
+                Token += Str[Index];
+                Index++;
+            }
+        }
+
+        if (Index < Str.size())
+        {
+            Index++;
+        }
+
+        Str = Str.substr(Index, Str.size());
+
+        Result = true;
+    }
+    else
+    {
+        Result = false;
+        Str = L"";
     }
 
-    Str = Str.substr(Index, Str.size());
-
-    Result = true;
-  }
-  else
-  {
-    Result = false;
-    Str = L"";
-  }
-
-  return Result;
+    return Result;
 }
 //---------------------------------------------------------------------------
-void AddToList(std::wstring & List, const std::wstring Value, wchar_t Delimiter)
+void AddToList(std::wstring &List, const std::wstring Value, wchar_t Delimiter)
 {
-  if (!List.empty() && (List[List.size()] != Delimiter))
-  {
-    List += Delimiter;
-  }
-  List += Value;
+    if (!List.empty() && (List[List.size()] != Delimiter))
+    {
+        List += Delimiter;
+    }
+    List += Value;
 }
 //---------------------------------------------------------------------------
 bool Is2000()
 {
-  return (Win32MajorVersion >= 5);
+    return (Win32MajorVersion >= 5);
 }
 //---------------------------------------------------------------------------
 bool IsWin7()
 {
-  return (Win32MajorVersion > 6) ||
-    ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
+    return (Win32MajorVersion > 6) ||
+           ((Win32MajorVersion == 6) && (Win32MinorVersion >= 1));
 }
 //---------------------------------------------------------------------------
 bool IsExactly2008R2()
 {
-  bool Result = false;
-  HMODULE Kernel32 = GetModuleHandle(L"kernel32.dll");
-  // typedef bool BOOL;
-  // typedef unsigned long DWORD;
-  // typedef unsigned long *PDWORD;
-  typedef BOOL (WINAPI *TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-  TGetProductInfo GetProductInfo =
-      reinterpret_cast<TGetProductInfo>(GetProcAddress(Kernel32, "GetProductInfoA"));
-  if (GetProductInfo != NULL)
-  {
-    DWORD Type;
-    GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
-    switch (Type)
+    bool Result = false;
+    HMODULE Kernel32 = GetModuleHandle(L"kernel32.dll");
+    // typedef bool BOOL;
+    // typedef unsigned long DWORD;
+    // typedef unsigned long *PDWORD;
+    typedef BOOL (WINAPI *TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+    TGetProductInfo GetProductInfo =
+        reinterpret_cast<TGetProductInfo>(GetProcAddress(Kernel32, "GetProductInfoA"));
+    if (GetProductInfo != NULL)
     {
-      case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
-      case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
-      case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
-      case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
-      case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
-      case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
-      case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
-      case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
-      case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
-      case 0x002A /*PRODUCT_HYPER*/:
-      case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
-      case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
-      case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
-      case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
-      case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
-      case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
-      case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
-      case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
-      case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
-      case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
-      case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
-      case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
-      case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
-      case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
-      case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
-      case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
-      case 0x0011 /*PRODUCT_WEB_SERVE*/:
-      case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
-        Result = true;
-        break;
+        DWORD Type;
+        GetProductInfo(Win32MajorVersion, Win32MinorVersion, 0, 0, &Type);
+        switch (Type)
+        {
+        case 0x0008 /*PRODUCT_DATACENTER_SERVER*/:
+        case 0x000C /*PRODUCT_DATACENTER_SERVER_CORE}*/:
+        case 0x0027 /*PRODUCT_DATACENTER_SERVER_CORE_V*/:
+        case 0x0025 /*PRODUCT_DATACENTER_SERVER_V*/:
+        case 0x000A /*PRODUCT_ENTERPRISE_SERVE*/:
+        case 0x000E /*PRODUCT_ENTERPRISE_SERVER_COR*/:
+        case 0x0029 /*PRODUCT_ENTERPRISE_SERVER_CORE_*/:
+        case 0x000F /*PRODUCT_ENTERPRISE_SERVER_IA6*/:
+        case 0x0026 /*PRODUCT_ENTERPRISE_SERVER_*/:
+        case 0x002A /*PRODUCT_HYPER*/:
+        case 0x001E /*PRODUCT_MEDIUMBUSINESS_SERVER_MANAGEMEN*/:
+        case 0x0020 /*PRODUCT_MEDIUMBUSINESS_SERVER_MESSAGIN*/:
+        case 0x001F /*PRODUCT_MEDIUMBUSINESS_SERVER_SECURIT*/:
+        case 0x0018 /*PRODUCT_SERVER_FOR_SMALLBUSINES*/:
+        case 0x0023 /*PRODUCT_SERVER_FOR_SMALLBUSINESS_*/:
+        case 0x0021 /*PRODUCT_SERVER_FOUNDATIO*/:
+        case 0x0009 /*PRODUCT_SMALLBUSINESS_SERVE*/:
+        case 0x0038 /*PRODUCT_SOLUTION_EMBEDDEDSERVE*/:
+        case 0x0007 /*PRODUCT_STANDARD_SERVE*/:
+        case 0x000D /*PRODUCT_STANDARD_SERVER_COR*/:
+        case 0x0028 /*PRODUCT_STANDARD_SERVER_CORE_*/:
+        case 0x0024 /*PRODUCT_STANDARD_SERVER_*/:
+        case 0x0017 /*PRODUCT_STORAGE_ENTERPRISE_SERVE*/:
+        case 0x0014 /*PRODUCT_STORAGE_EXPRESS_SERVE*/:
+        case 0x0015 /*PRODUCT_STORAGE_STANDARD_SERVE*/:
+        case 0x0016 /*PRODUCT_STORAGE_WORKGROUP_SERVE*/:
+        case 0x0011 /*PRODUCT_WEB_SERVE*/:
+        case 0x001D /*PRODUCT_WEB_SERVER_COR*/:
+            Result = true;
+            break;
 
-      default:
-        Result = false;
-        break;
+        default:
+            Result = false;
+            break;
+        }
     }
-  }
-  return Result;
+    return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -2095,27 +2104,39 @@ int StrToInt(const std::wstring value)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
+    {
         return Value;
+    }
     else
+    {
         return 0;
+    }
 }
 
 __int64 ToInt(const std::wstring value)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
+    {
         return Value;
+    }
     else
+    {
         return 0;
+    }
 }
 
 int StrToIntDef(const std::wstring value, int defval)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
+    {
         return Value;
+    }
     else
+    {
         return defval;
+    }
 }
 
 __int64 StrToInt64(const std::wstring value)
@@ -2127,9 +2148,13 @@ __int64 StrToInt64Def(const std::wstring value, __int64 defval)
 {
     __int64 Value = 0;
     if (TryStrToInt(value, Value))
+    {
         return Value;
+    }
     else
+    {
         return defval;
+    }
 }
 
 bool TryStrToInt(const std::wstring value, __int64 &Value)
@@ -2183,8 +2208,8 @@ std::wstring TrimLeft(const std::wstring str)
 std::wstring TrimRight(const std::wstring str)
 {
     std::wstring result = str;
-    while (result.size() > 0 && 
-        ((result[result.size() - 1] == ' ') || (result[result.size() - 1] == '\n')))
+    while (result.size() > 0 &&
+            ((result[result.size() - 1] == ' ') || (result[result.size() - 1] == '\n')))
     {
         result.resize(result.size() - 1);
     }
@@ -2265,13 +2290,13 @@ size_t LastDelimiter(const std::wstring str, const std::wstring delim)
 {
     if (str.size())
     {
-      for (size_t i = str.size() - 1; i != std::wstring::npos; --i)
-      {
-        if (::IsDelimiter(str, delim, i))
+        for (size_t i = str.size() - 1; i != std::wstring::npos; --i)
         {
-          return i;
+            if (::IsDelimiter(str, delim, i))
+            {
+                return i;
+            }
         }
-      }
     }
     return std::wstring::npos;
 }
@@ -2323,13 +2348,17 @@ bool AnsiContainsText(const std::wstring str1, const std::wstring str2)
 
 void RaiseLastOSError()
 {
-  int LastError = ::GetLastError();
-  std::wstring ErrorMsg;
-  if (LastError != 0)
-    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
-  else
-    ErrorMsg = FMTLOAD(SUnkOSError);
-  throw EOSError(ErrorMsg, LastError);
+    int LastError = ::GetLastError();
+    std::wstring ErrorMsg;
+    if (LastError != 0)
+    {
+        ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
+    }
+    else
+    {
+        ErrorMsg = FMTLOAD(SUnkOSError);
+    }
+    throw EOSError(ErrorMsg, LastError);
 }
 
 //---------------------------------------------------------------------------
@@ -2379,27 +2408,35 @@ nb::TTimeStamp DateTimeToTimeStamp(nb::TDateTime DateTime)
 
 __int64 FileRead(HANDLE Handle, void *Buffer, __int64 Count)
 {
-  __int64 Result = -1;
-  // DEBUG_PRINTF(L"Handle = %d, Count = %d", Handle, Count);
-  DWORD res = 0;
-  if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &res, NULL))
-    Result = res;
-  else
-    Result = -1;
-  // DEBUG_PRINTF(L"Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
-  return Result;
+    __int64 Result = -1;
+    // DEBUG_PRINTF(L"Handle = %d, Count = %d", Handle, Count);
+    DWORD res = 0;
+    if (::ReadFile(Handle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &res, NULL))
+    {
+        Result = res;
+    }
+    else
+    {
+        Result = -1;
+    }
+    // DEBUG_PRINTF(L"Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
+    return Result;
 }
 
 __int64 FileWrite(HANDLE Handle, const void *Buffer, __int64 Count)
 {
-  __int64 Result = -1;
-  DWORD res = 0;
-  if (::WriteFile(Handle, Buffer, Count, &res, NULL))
-    Result = res;
-  else
-    Result = -1;
-  // DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
-  return Result;
+    __int64 Result = -1;
+    DWORD res = 0;
+    if (::WriteFile(Handle, Buffer, Count, &res, NULL))
+    {
+        Result = res;
+    }
+    else
+    {
+        Result = -1;
+    }
+    // DEBUG_PRINTF(L" Result = %d, Handle = %d, Count = %d", (int)Result, Handle, Count);
+    return Result;
 }
 
 //---------------------------------------------------------------------------
@@ -2419,53 +2456,59 @@ bool DirectoryExists(const std::wstring filename)
 {
     // DEBUG_PRINTF(L"filename = %s", filename.c_str());
     if ((filename == L".") || (filename == L".."))
-      return true;
+    {
+        return true;
+    }
 
     int attr = GetFileAttributes(filename.c_str());
     // DEBUG_PRINTF(L"attr = %d, FILE_ATTRIBUTE_DIRECTORY = %d", attr, FILE_ATTRIBUTE_DIRECTORY);
 
     if ((attr != 0xFFFFFFFF) && FLAGSET(attr, FILE_ATTRIBUTE_DIRECTORY))
-      return true;
+    {
+        return true;
+    }
     return false;
 }
 
 std::wstring FileSearch(const std::wstring FileName, const std::wstring DirectoryList)
 {
-  // DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
-  size_t i;
-  std::wstring Temp;
-  std::wstring Result;
-  Temp = DirectoryList;
-  wchar_t PathSeparator = L'\\';
-  std::wstring PathSeparators = L"/\\";
-  do
-  {
-    i = ::Pos(Temp, PathSeparators);
-    while ((Temp.size() > 0) && (i == 0))
+    // DEBUG_PRINTF(L"FileName = %s, DirectoryList = %s", FileName.c_str(), DirectoryList.c_str());
+    size_t i;
+    std::wstring Temp;
+    std::wstring Result;
+    Temp = DirectoryList;
+    wchar_t PathSeparator = L'\\';
+    std::wstring PathSeparators = L"/\\";
+    do
     {
-      Temp.erase(0, 1);
-      i = ::Pos(Temp, PathSeparators);
+        i = ::Pos(Temp, PathSeparators);
+        while ((Temp.size() > 0) && (i == 0))
+        {
+            Temp.erase(0, 1);
+            i = ::Pos(Temp, PathSeparators);
+        }
+        i = ::Pos(Temp, PathSeparators);
+        if (i != std::wstring::npos)
+        {
+            Result = Temp.substr(0, i - 1);
+            Temp.erase(0, i);
+            // DEBUG_PRINTF(L"Result = %s, Temp = %s", Result.c_str(), Temp.c_str());
+        }
+        else
+        {
+            Result = Temp;
+            Temp = L"";
+        }
+        Result = ::IncludeTrailingBackslash(Result);
+        Result = Result + FileName;
+        if (!::FileExists(Result))
+        {
+            Result = L"";
+        }
     }
-    i = ::Pos(Temp, PathSeparators);
-    if (i != std::wstring::npos)
-    {
-      Result = Temp.substr(0, i - 1);
-      Temp.erase(0, i);
-      // DEBUG_PRINTF(L"Result = %s, Temp = %s", Result.c_str(), Temp.c_str());
-    }
-    else
-    {
-      Result = Temp;
-      Temp = L"";
-    }
-    Result = ::IncludeTrailingBackslash(Result);
-    Result = Result + FileName;
-    if (!::FileExists(Result))
-      Result = L"";
-  }
-  while (!(Temp.size() == 0) || (Result.size() != 0));
-  // DEBUG_PRINTF(L"Result = %s", Result.c_str());
-  return Result;
+    while (!(Temp.size() == 0) || (Result.size() != 0));
+    // DEBUG_PRINTF(L"Result = %s", Result.c_str());
+    return Result;
 }
 
 
@@ -2483,36 +2526,36 @@ int FileSetAttr(const std::wstring filename, int attrs)
 
 bool CreateDir(const std::wstring Dir)
 {
-  // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
-  return ::CreateDirectory(Dir.c_str(), NULL) != 0;
+    // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
+    return ::CreateDirectory(Dir.c_str(), NULL) != 0;
 }
 
 bool RemoveDir(const std::wstring Dir)
 {
-  return ::RemoveDirectory(Dir.c_str()) != 0;
+    return ::RemoveDirectory(Dir.c_str()) != 0;
 }
 
 bool ForceDirectories(const std::wstring Dir)
 {
-  // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
-  bool Result = true;
-  if (Dir.empty())
-  {
-    return false;
-  }
-  std::wstring Dir2 = ExcludeTrailingBackslash(Dir);
-  // DEBUG_PRINTF(L"Dir2 = %s", Dir2.c_str());
-  if ((Dir2.size() < 3) || DirectoryExists(Dir2))
-  {
+    // DEBUG_PRINTF(L"Dir = %s", Dir.c_str());
+    bool Result = true;
+    if (Dir.empty())
+    {
+        return false;
+    }
+    std::wstring Dir2 = ExcludeTrailingBackslash(Dir);
+    // DEBUG_PRINTF(L"Dir2 = %s", Dir2.c_str());
+    if ((Dir2.size() < 3) || DirectoryExists(Dir2))
+    {
+        return Result;
+    }
+    if (ExtractFilePath(Dir2).empty())
+    {
+        return ::CreateDir(Dir2);
+    }
+    Result = ForceDirectories(ExtractFilePath(Dir2)) && CreateDir(Dir2);
+    // DEBUG_PRINTF(L"Result = %d", Result);
     return Result;
-  }
-  if (ExtractFilePath(Dir2).empty())
-  {
-    return ::CreateDir(Dir2);
-  }
-  Result = ForceDirectories(ExtractFilePath(Dir2)) && CreateDir(Dir2);
-  // DEBUG_PRINTF(L"Result = %d", Result);
-  return Result;
 }
 
 bool DeleteFile(const std::wstring File)
@@ -2526,7 +2569,7 @@ bool DeleteFile(const std::wstring File)
 //---------------------------------------------------------------------------
 // bool InheritsFrom(const std::exception &E1, const std::exception &from)
 // {
-    // return false;
+// return false;
 // }
 
 //---------------------------------------------------------------------------
@@ -2603,17 +2646,17 @@ std::wstring WrapText(const std::wstring Line, int MaxCol)
 {
     std::wstring Result = Line;
     /*
-  Col := 1;
-  Pos := 1;
-  LinePos := 1;
-  BreakPos := 0;
-  QuoteChar := ' ';
-  ExistingBreak := False;
-  LineLen := Length(Line);
-  BreakLen := Length(BreakStr);
-  Result := '';
-  while Pos <= LineLen do
-  begin
+    Col := 1;
+    Pos := 1;
+    LinePos := 1;
+    BreakPos := 0;
+    QuoteChar := ' ';
+    ExistingBreak := False;
+    LineLen := Length(Line);
+    BreakLen := Length(BreakStr);
+    Result := '';
+    while Pos <= LineLen do
+    begin
     CurChar := Line[Pos];
     if CurChar in LeadBytes then
     begin
@@ -2670,9 +2713,9 @@ std::wstring WrapText(const std::wstring Line, int MaxCol)
       LinePos := BreakPos;
       ExistingBreak := False;
     end;
-  end;
-  Result := Result + Copy(Line, LinePos, MaxInt);
-  */
+    end;
+    Result := Result + Copy(Line, LinePos, MaxInt);
+    */
     return Result;
 }
 
@@ -2680,9 +2723,13 @@ std::wstring WrapText(const std::wstring Line, int MaxCol)
 std::wstring TranslateExceptionMessage(const std::exception *E)
 {
     if (E)
+    {
         return nb::MB2W(E->what());
+    }
     else
+    {
         return std::wstring();
+    }
 }
 //---------------------------------------------------------------------------
 void AppendWChar(std::wstring &str, const wchar_t ch)
@@ -2719,7 +2766,7 @@ void AppendPathDelimiterA(std::string &str)
 
 //---------------------------------------------------------------------------
 
-std::wstring ExpandEnvVars(const std::wstring& str)
+std::wstring ExpandEnvVars(const std::wstring &str)
 {
     wchar_t buf[MAX_PATH];
     unsigned size = ExpandEnvironmentStringsW(str.c_str(), buf, static_cast<DWORD>(sizeof(buf) - 1));
@@ -2749,7 +2796,7 @@ char *StrNew(const char *str)
 
 wchar_t *AnsiStrScan(const wchar_t *Str, const wchar_t TokenPrefix)
 {
-    nb::Error(SNotImplemented, 31); 
+    nb::Error(SNotImplemented, 31);
     wchar_t *result = NULL;
     return result;
 }
@@ -2768,22 +2815,22 @@ std::wstring ExtractFileExt(const std::wstring FileName)
 
 std::wstring get_full_path_name(const std::wstring path)
 {
-  std::wstring buf(MAX_PATH, 0);
-  size_t size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1),
-    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
-  if (size > buf.size())
-  {
-    buf.resize(size);
-    size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
-  }
-  return std::wstring(buf.c_str(), size);
+    std::wstring buf(MAX_PATH, 0);
+    size_t size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1),
+                                   reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
+    if (size > buf.size())
+    {
+        buf.resize(size);
+        size = GetFullPathNameW(path.c_str(), static_cast<DWORD>(buf.size() - 1), reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(buf.c_str())), NULL);
+    }
+    return std::wstring(buf.c_str(), size);
 }
 
 std::wstring ExpandFileName(const std::wstring FileName)
 {
-  std::wstring Result;
-  Result = get_full_path_name(FileName);
-  return Result;
+    std::wstring Result;
+    Result = get_full_path_name(FileName);
+    return Result;
 }
 
 std::wstring GetUniversalName(std::wstring &FileName)
@@ -2797,9 +2844,9 @@ std::wstring ExpandUNCFileName(const std::wstring FileName)
 {
     std::wstring Result = ExpandFileName(FileName);
     if ((Result.size() >= 3) && (Result[1] == L':') && (::UpCase(Result[0]) >= 'A')
-      && (::UpCase(Result[0]) <= 'Z'))
+            && (::UpCase(Result[0]) <= 'Z'))
     {
-      Result = GetUniversalName(Result);
+        Result = GetUniversalName(Result);
     }
     return Result;
 }
@@ -2812,23 +2859,25 @@ __int64 FileSeek(HANDLE file, __int64 offset, __int64 size)
 
 void InitPlatformId()
 {
-  OSVERSIONINFO OSVersionInfo;
-  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (GetVersionEx(&OSVersionInfo) != 0)
-  {
-      Win32Platform = OSVersionInfo.dwPlatformId;
-      Win32MajorVersion = OSVersionInfo.dwMajorVersion;
-      Win32MinorVersion = OSVersionInfo.dwMinorVersion;
-      Win32BuildNumber = OSVersionInfo.dwBuildNumber;
-      // Win32CSDVersion = OSVersionInfo.szCSDVersion;
-  }
+    OSVERSIONINFO OSVersionInfo;
+    OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+    if (GetVersionEx(&OSVersionInfo) != 0)
+    {
+        Win32Platform = OSVersionInfo.dwPlatformId;
+        Win32MajorVersion = OSVersionInfo.dwMajorVersion;
+        Win32MinorVersion = OSVersionInfo.dwMinorVersion;
+        Win32BuildNumber = OSVersionInfo.dwBuildNumber;
+        // Win32CSDVersion = OSVersionInfo.szCSDVersion;
+    }
 }
 
 //---------------------------------------------------------------------------
 bool Win32Check(bool RetVal)
 {
-  if (!RetVal)
-    RaiseLastOSError();
-  return RetVal;
+    if (!RetVal)
+    {
+        RaiseLastOSError();
+    }
+    return RetVal;
 }
 //---------------------------------------------------------------------------

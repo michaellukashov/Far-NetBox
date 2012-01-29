@@ -11,6 +11,6 @@ int random(int range);
 std::wstring EncryptPassword(const std::wstring Password, const std::wstring Key, int Algorithm = PWALG_SIMPLE);
 std::wstring DecryptPassword(const std::wstring Password, const std::wstring Key, int Algorithm = PWALG_SIMPLE);
 std::wstring SetExternalEncryptedPassword(const std::wstring Password);
-bool GetExternalEncryptedPassword(const std::wstring Encrypted, std::wstring & Password);
+bool GetExternalEncryptedPassword(const std::wstring Encrypted, std::wstring &Password);
 //---------------------------------------------------------------------------
 #endif

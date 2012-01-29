@@ -9,10 +9,10 @@
 
 enum ProxyTypes
 {
-   PROXY_NONE = 0,
-   PROXY_SOCKS4,
-   PROXY_SOCKS5,
-   PROXY_HTTP,
+    PROXY_NONE = 0,
+    PROXY_SOCKS4,
+    PROXY_SOCKS5,
+    PROXY_HTTP,
 };
 
 class TSessionData;
@@ -52,18 +52,18 @@ public:
     {}
     virtual void Init() = 0;
 
-  enum TLogLevel
-  {
-    LOG_STATUS = 0,
-    LOG_ERROR = 1,
-    LOG_COMMAND = 2,
-    LOG_REPLY = 3,
-    LOG_LIST = 4,
-    LOG_APIERROR = 5,
-    LOG_WARNING = 6,
-    LOG_INFO = 7,
-    LOG_DEBUG = 8
-  };
+    enum TLogLevel
+    {
+        LOG_STATUS = 0,
+        LOG_ERROR = 1,
+        LOG_COMMAND = 2,
+        LOG_REPLY = 3,
+        LOG_LIST = 4,
+        LOG_APIERROR = 5,
+        LOG_WARNING = 6,
+        LOG_INFO = 7,
+        LOG_DEBUG = 8
+    };
     /**
      * Initialize easy curl
      * \param url URL to connect
@@ -162,7 +162,7 @@ public:
      * \return false if error
      */
     virtual bool Initialize(const wchar_t *url, const wchar_t *userName,
-    const wchar_t *password);
+        const wchar_t *password);
 
     /**
      * Close curl
@@ -262,11 +262,11 @@ private:
     static int InternalProgress(void *userData, double dltotal, double dlnow, double ultotal, double ulnow);
 
     static int InternalDebug(CURL *handle, curl_infotype type,
-                 char *data, size_t size,
-                 void *userp);
+        char *data, size_t size,
+        void *userp);
 
 private:
-    TTerminal * FTerminal;
+    TTerminal *FTerminal;
     CURL *m_CURL; ///< CURL
     bool m_Prepared; ///< Preapre statement flag
 
@@ -295,11 +295,11 @@ private:
     //! Input reader description
     struct InputReader
     {
-      unsigned __int64 Current;
-      unsigned __int64 Total;
-      CNBFile  *File;
-      int    *Progress;
-      HANDLE AbortEvent;
+        unsigned __int64 Current;
+        unsigned __int64 Total;
+        CNBFile  *File;
+        int    *Progress;
+        HANDLE AbortEvent;
         enum InputReaderType
         {
             None,
