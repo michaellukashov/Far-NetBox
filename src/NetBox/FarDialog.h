@@ -42,12 +42,12 @@ struct FarDialogItem;
 enum TItemPosition { ipNewLine, ipBelow, ipRight };
 //---------------------------------------------------------------------------
 // typedef void (nb::TObject::*TFarKeyEvent)
-    // (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
+// (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 typedef boost::signal4<void, TFarDialog *, TFarDialogItem *, long, bool &> key_signal_type;
 typedef key_signal_type::slot_type key_slot_type;
 
-// typedef void (nb::TObject::*TFarMouseClickEvent) 
-    // (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
+// typedef void (nb::TObject::*TFarMouseClickEvent)
+// (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 typedef boost::signal2<void, TFarDialogItem *, MOUSE_EVENT_RECORD *> mouse_click_signal_type;
 typedef mouse_click_signal_type::slot_type mouse_click_slot_type;
 
@@ -102,10 +102,10 @@ public:
     int GetTag() const { return FTag; }
     void SetTag(const int &value) { FTag = value; }
     TFarDialogItem *GetItemFocused() const { return FItemFocused; }
-    void SetItemFocused(TFarDialogItem * const &value);
+    void SetItemFocused(TFarDialogItem *const &value);
     int GetResult() const { return FResult; }
     nb::TPoint GetMaxSize();
-    
+
     const key_signal_type &GetOnKey() const { return FOnKey; }
     void SetOnKey(const key_slot_type &value) { FOnKey.connect(value); }
 
@@ -398,7 +398,7 @@ private:
 };
 //---------------------------------------------------------------------------
 // typedef void (*TFarAllowChange)(TFarDialogItem *Sender,
-        // long NewState, bool &AllowChange);
+// long NewState, bool &AllowChange);
 typedef boost::signal3<void, TFarDialogItem *, void *, bool &> farallowchange_signal_type;
 typedef farallowchange_signal_type::slot_type farallowchange_slot_type;
 //---------------------------------------------------------------------------

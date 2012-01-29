@@ -138,7 +138,7 @@ void TFarDialog::SetBounds(const nb::TRect &value)
     }
 }
 //---------------------------------------------------------------------------
-nb::TRect TFarDialog::GetClientRect() const 
+nb::TRect TFarDialog::GetClientRect() const
 {
     nb::TRect R;
     if (FBorderBox)
@@ -748,15 +748,11 @@ int TFarDialog::ShowModal()
             TFarEnvGuard Guard;
             nb::TRect Bounds = GetBounds();
             HANDLE dlg = GetFarPlugin()->GetStartupInfo()->DialogInit(
-                &MainGuid, &MainGuid,
-                Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-                StrToFar(AHelpTopic), 
-                FDialogItems,
-                GetItemCount(),
-                0,
-                GetFlags(),
-                DialogProcGeneral,
-                reinterpret_cast<void *>(this));
+                             &MainGuid, &MainGuid,
+                             Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
+                             StrToFar(AHelpTopic), FDialogItems, GetItemCount(), 0, GetFlags(),
+                             DialogProcGeneral,
+                             reinterpret_cast<void *>(this));
            BResult = GetFarPlugin()->GetStartupInfo()->DialogRun(dlg);
         }
 
@@ -869,7 +865,7 @@ void TFarDialog::EnableGroup(int Group, bool Enable)
 }
 //---------------------------------------------------------------------------
 void TFarDialog::ProcessGroup(int Group, const processgroupevent_slot_type &Callback,
-        void *Arg)
+                              void *Arg)
 {
     LockChanges();
     {
@@ -900,7 +896,7 @@ void TFarDialog::EnableItem(TFarDialogItem *Item, void *Arg)
     Item->SetEnabled(*static_cast<bool *>(Arg));
 }
 //---------------------------------------------------------------------------
-void TFarDialog::SetItemFocused(TFarDialogItem * const &value)
+void TFarDialog::SetItemFocused(TFarDialogItem *const &value)
 {
     if (value != GetItemFocused())
     {
@@ -1075,7 +1071,9 @@ TFarDialogItem::~TFarDialogItem()
 {
     assert(!GetDialog());
     if (GetDialog())
+    {
         delete[] GetDialogItem()->Data;
+    }
 }
 //---------------------------------------------------------------------------
 FarDialogItem *TFarDialogItem::GetDialogItem()
@@ -1168,7 +1166,7 @@ void TFarDialogItem::UpdateFlags(FARDIALOGITEMFLAGS value)
 nb::TRect TFarDialogItem::GetActualBounds()
 {
     return nb::TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
-                 GetDialogItem()->X2, GetDialogItem()->Y2);
+                     GetDialogItem()->X2, GetDialogItem()->Y2);
 }
 //---------------------------------------------------------------------------
 FARDIALOGITEMFLAGS TFarDialogItem::GetFlags()
@@ -1222,7 +1220,9 @@ std::wstring TFarDialogItem::GetData()
     // DEBUG_PRINTF(L"GetDialogItem = %x", GetDialogItem());
     std::wstring Result;
     if (GetDialogItem()->Data)
+    {
         Result = GetDialogItem()->Data;
+    }
     if (!GetOem())
     {
         StrFromFar(Result);
@@ -1700,7 +1700,7 @@ bool TFarDialogItem::MouseClick(MOUSE_EVENT_RECORD *Event)
 }
 //---------------------------------------------------------------------------
 bool TFarDialogItem::MouseMove(int /*X*/, int /*Y*/,
-        MOUSE_EVENT_RECORD *Event)
+                               MOUSE_EVENT_RECORD *Event)
 {
     INPUT_RECORD Rec = {0};
     Rec.EventType = MOUSE_EVENT;
@@ -1812,8 +1812,8 @@ std::wstring TFarButton::GetData()
     if ((FBrackets == brTight) || (FBrackets == brSpace))
     {
         bool HasBrackets = (Result.size() >= 2) &&
-            (Result[0] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
-            (Result[Result.size() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
+                           (Result[0] == ((FBrackets == brSpace) ? L' ' : L'[')) &&
+                           (Result[Result.size() - 1] == ((FBrackets == brSpace) ? L' ' : L']'));
         assert(HasBrackets);
         if (HasBrackets)
         {
@@ -2400,7 +2400,9 @@ size_t TFarList::GetSelectedInt(bool Init)
     {
         const wchar_t *Data = GetDialogItem()->GetDialogItem()->Data;
         if (Data)
+        {
             Result = IndexOf(Data);
+        }
     }
 
     return Result;

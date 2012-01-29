@@ -80,8 +80,8 @@ bool TXmlStorage::LoadXml()
     TiXmlElement *Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
     if (Element != NULL)
     {
-      FCurrentElement = FXmlDoc->RootElement();
-      return true;
+        FCurrentElement = FXmlDoc->RootElement();
+        return true;
     }
     return false;
 }
@@ -101,26 +101,26 @@ bool TXmlStorage::WriteXml()
     return (CNBFile::SaveFile(GetStorage().c_str(), xmlContent) == ERROR_SUCCESS);
 }
 //---------------------------------------------------------------------------
-bool TXmlStorage::Copy(TXmlStorage * Storage)
+bool TXmlStorage::Copy(TXmlStorage *Storage)
 {
-  nb::Error(SNotImplemented, 3020);
-  bool Result = false;
-  return Result;
+    nb::Error(SNotImplemented, 3020);
+    bool Result = false;
+    return Result;
 }
 //---------------------------------------------------------------------------
 std::wstring TXmlStorage::GetSource()
 {
-  return GetStorage();
+    return GetStorage();
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::SetAccessMode(TStorageAccessMode value)
 {
-  THierarchicalStorage::SetAccessMode(value);
-  switch (GetAccessMode())
-  {
+    THierarchicalStorage::SetAccessMode(value);
+    switch (GetAccessMode())
+    {
     case smRead:
-      LoadXml();
-      break;
+        LoadXml();
+        break;
 
     case smReadWrite:
     default:
@@ -129,75 +129,75 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode value)
         FCurrentElement = new TiXmlElement(CONST_ROOT_NODE);
         FCurrentElement->SetAttribute(CONST_VERSION_ATTR, CONST_XML_VERSION);
         FXmlDoc->LinkEndChild(FCurrentElement);
-      break;
-  }
+        break;
+    }
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::OpenSubKey(const std::wstring SubKey, bool CanCreate, bool Path)
 {
-  // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
-  TiXmlElement *OldCurrentElement = FCurrentElement;
-  TiXmlElement *Element = NULL;
-  if (Path)
-  {
-    std::wstring subKey = SubKey;
-    assert(subKey.empty() || (subKey[subKey.size() - 1] != '\\'));
-    bool Result = true;
-    while (!subKey.empty())
+    // DEBUG_PRINTF(L"SubKey = %s, CanCreate = %d, Path = %d", SubKey.c_str(), CanCreate, Path);
+    TiXmlElement *OldCurrentElement = FCurrentElement;
+    TiXmlElement *Element = NULL;
+    if (Path)
     {
-      Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
-      // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
-    }
-    return Result;
-  }
-  else
-  {
-      std::string subKey = ToStdString(PuttyMungeStr(SubKey));
-      if (CanCreate)
-      {
-        if (FStoredSessionsOpened)
+        std::wstring subKey = SubKey;
+        assert(subKey.empty() || (subKey[subKey.size() - 1] != '\\'));
+        bool Result = true;
+        while (!subKey.empty())
         {
-            Element = new TiXmlElement(CONST_SESSION_NODE);
-            Element->SetAttribute(CONST_NAME_ATTR, subKey);
+            Result &= OpenSubKey(CutToChar(subKey, L'\\', false), CanCreate, false);
+            // DEBUG_PRINTF(L"SubKey = %s, Result = %d", SubKey.c_str(), Result);
+        }
+        return Result;
+    }
+    else
+    {
+        std::string subKey = ToStdString(PuttyMungeStr(SubKey));
+        if (CanCreate)
+        {
+            if (FStoredSessionsOpened)
+            {
+                Element = new TiXmlElement(CONST_SESSION_NODE);
+                Element->SetAttribute(CONST_NAME_ATTR, subKey);
+            }
+            else
+            {
+                Element = new TiXmlElement(subKey);
+            }
+            FCurrentElement->LinkEndChild(Element);
         }
         else
         {
-            Element = new TiXmlElement(subKey);
+            Element = FindChildElement(subKey);
         }
-        FCurrentElement->LinkEndChild(Element);
-      }
-      else
-      {
-        Element = FindChildElement(subKey);
-      }
-  }
-  bool Result = Element != NULL;
-  if (Result)
-  {
-    Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
+    }
+    bool Result = Element != NULL;
     if (Result)
     {
-        FSubElements.push_back(OldCurrentElement);
-        FCurrentElement = Element;
-        FStoredSessionsOpened = (SubKey == FStoredSessionsSubKey);
+        Result = THierarchicalStorage::OpenSubKey(SubKey, CanCreate, Path);
+        if (Result)
+        {
+            FSubElements.push_back(OldCurrentElement);
+            FCurrentElement = Element;
+            FStoredSessionsOpened = (SubKey == FStoredSessionsSubKey);
+        }
     }
-  }
-  // DEBUG_PRINTF(L"end, Result = %d", Result);
-  return Result;
+    // DEBUG_PRINTF(L"end, Result = %d", Result);
+    return Result;
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::CloseSubKey()
 {
-  THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->GetCount() && FSubElements.size())
-  {
-    FCurrentElement = FSubElements.back();
-    FSubElements.pop_back();
-  }
-  else
-  {
-    FCurrentElement = NULL;
-  }
+    THierarchicalStorage::CloseSubKey();
+    if (FKeyHistory->GetCount() && FSubElements.size())
+    {
+        FCurrentElement = FSubElements.back();
+        FSubElements.pop_back();
+    }
+    else
+    {
+        FCurrentElement = NULL;
+    }
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::DeleteSubKey(const std::wstring SubKey)
@@ -206,46 +206,46 @@ bool TXmlStorage::DeleteSubKey(const std::wstring SubKey)
     TiXmlElement *Element = FindElement(SubKey);
     if (Element != NULL)
     {
-      FCurrentElement->RemoveChild(Element);
-      result = true;
+        FCurrentElement->RemoveChild(Element);
+        result = true;
     }
     return result;
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::GetSubKeyNames(nb::TStrings* Strings)
+void TXmlStorage::GetSubKeyNames(nb::TStrings *Strings)
 {
     for (TiXmlElement *Element = FCurrentElement->FirstChildElement();
-        Element != NULL; Element = Element->NextSiblingElement())
+            Element != NULL; Element = Element->NextSiblingElement())
     {
         std::wstring val = GetValue(Element);
         Strings->Add(PuttyUnMungeStr(val));
     }
 }
 //---------------------------------------------------------------------------
-void TXmlStorage::GetValueNames(nb::TStrings* Strings)
+void TXmlStorage::GetValueNames(nb::TStrings *Strings)
 {
-  nb::Error(SNotImplemented, 3022);
-  // FRegistry->GetValueNames(Strings);
+    nb::Error(SNotImplemented, 3022);
+    // FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::DeleteValue(const std::wstring Name)
 {
-  bool result = false;
-  TiXmlElement *Element = FindElement(Name);
-  if (Element != NULL)
-  {
-    FCurrentElement->RemoveChild(Element);
-    result = true;
-  }
-  return result;
+    bool result = false;
+    TiXmlElement *Element = FindElement(Name);
+    if (Element != NULL)
+    {
+        FCurrentElement->RemoveChild(Element);
+        result = true;
+    }
+    return result;
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::KeyExists(const std::wstring SubKey)
 {
-  nb::Error(SNotImplemented, 3024);
-  std::wstring K = PuttyMungeStr(SubKey);
-  bool Result = false; // FRegistry->KeyExists(K);
-  return Result;
+    nb::Error(SNotImplemented, 3024);
+    std::wstring K = PuttyMungeStr(SubKey);
+    bool Result = false; // FRegistry->KeyExists(K);
+    return Result;
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::RemoveIfExists(const std::wstring Name)
@@ -278,17 +278,17 @@ std::wstring TXmlStorage::GetSubKeyText(const std::wstring Name)
 //---------------------------------------------------------------------------
 TiXmlElement *TXmlStorage::FindElement(const std::wstring Name)
 {
-  for (const TiXmlElement *Element = FCurrentElement->FirstChildElement();
-    Element != NULL; Element = Element->NextSiblingElement())
-  {
-    std::wstring name = ToStdWString(Element->ValueStr());
-    // DEBUG_PRINTF(L"name = %s", name.c_str());
-    if (name == Name)
+    for (const TiXmlElement *Element = FCurrentElement->FirstChildElement();
+            Element != NULL; Element = Element->NextSiblingElement())
     {
-        return const_cast<TiXmlElement *>(Element);
+        std::wstring name = ToStdWString(Element->ValueStr());
+        // DEBUG_PRINTF(L"name = %s", name.c_str());
+        if (name == Name)
+        {
+            return const_cast<TiXmlElement *>(Element);
+        }
     }
-  }
-  return NULL;
+    return NULL;
 }
 //---------------------------------------------------------------------------
 TiXmlElement *TXmlStorage::FindChildElement(const std::string &subKey)
@@ -340,9 +340,9 @@ bool TXmlStorage::ValueExists(const std::wstring Value)
 //---------------------------------------------------------------------------
 int TXmlStorage::BinaryDataSize(const std::wstring Name)
 {
-  nb::Error(SNotImplemented, 3026);
-  int Result = 0; // FRegistry->GetDataSize(Name);
-  return Result;
+    nb::Error(SNotImplemented, 3026);
+    int Result = 0; // FRegistry->GetDataSize(Name);
+    return Result;
 }
 //---------------------------------------------------------------------------
 bool TXmlStorage::Readbool(const std::wstring Name, bool Default)
@@ -360,8 +360,8 @@ bool TXmlStorage::Readbool(const std::wstring Name, bool Default)
 //---------------------------------------------------------------------------
 nb::TDateTime TXmlStorage::ReadDateTime(const std::wstring Name, nb::TDateTime Default)
 {
-  double res = ReadFloat(Name, Default.operator double());
-  return nb::TDateTime(res);
+    double res = ReadFloat(Name, Default.operator double());
+    return nb::TDateTime(res);
 }
 //---------------------------------------------------------------------------
 double TXmlStorage::ReadFloat(const std::wstring Name, double Default)
@@ -386,21 +386,21 @@ std::wstring TXmlStorage::ReadStringRaw(const std::wstring Name, const std::wstr
 }
 //---------------------------------------------------------------------------
 int TXmlStorage::ReadBinaryData(const std::wstring Name,
-  void * Buffer, size_t Size)
+                                void *Buffer, size_t Size)
 {
-  nb::Error(SNotImplemented, 3028);
-  int Result = 0;
-  return Result;
+    nb::Error(SNotImplemented, 3028);
+    int Result = 0;
+    return Result;
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::Writebool(const std::wstring Name, bool Value)
 {
-  WriteString(Name, ::BooleanToEngStr(Value));
+    WriteString(Name, ::BooleanToEngStr(Value));
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::WriteDateTime(const std::wstring Name, nb::TDateTime Value)
 {
-  WriteFloat(Name, Value);
+    WriteFloat(Name, Value);
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::WriteFloat(const std::wstring Name, double Value)
@@ -428,7 +428,7 @@ void TXmlStorage::WriteInt64(const std::wstring Name, __int64 Value)
 }
 //---------------------------------------------------------------------------
 void TXmlStorage::WriteBinaryData(const std::wstring Name,
-  const void * Buffer, size_t Size)
+                                  const void *Buffer, size_t Size)
 {
     RemoveIfExists(Name);
     AddNewElement(Name, ::StrToHex(std::wstring(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
@@ -436,7 +436,7 @@ void TXmlStorage::WriteBinaryData(const std::wstring Name,
 //---------------------------------------------------------------------------
 int TXmlStorage::GetFailed()
 {
-  int Result = FFailed;
-  FFailed = 0;
-  return Result;
+    int Result = FFailed;
+    FFailed = 0;
+    return Result;
 }
