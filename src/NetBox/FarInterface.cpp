@@ -8,38 +8,38 @@
 #include "Queue.h"
 //---------------------------------------------------------------------------
 
-TConfiguration * CreateConfiguration()
+TConfiguration *CreateConfiguration()
 {
-  return new TFarConfiguration(FarPlugin);
+    return new TFarConfiguration(FarPlugin);
 }
 //---------------------------------------------------------------------------
-void ShowExtendedException(const std::exception * E)
+void ShowExtendedException(const std::exception *E)
 {
-  assert(FarPlugin != NULL);
-  TWinSCPPlugin * WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
-  assert(WinSCPPlugin != NULL);
-  WinSCPPlugin->ShowExtendedException(E);
+    assert(FarPlugin != NULL);
+    TWinSCPPlugin *WinSCPPlugin = dynamic_cast<TWinSCPPlugin *>(FarPlugin);
+    assert(WinSCPPlugin != NULL);
+    WinSCPPlugin->ShowExtendedException(E);
 }
 std::wstring AppNameString()
 {
-  return L"NetBox";
+    return L"NetBox";
 }
 
 //---------------------------------------------------------------------------
 std::wstring GetRegistryKey()
 {
-  // return L"Software\\Michael Lukashov\\FarNetBox";
-  return L"Software\\Far2\\Plugins\\NetBox 2";
+    // return L"Software\\Michael Lukashov\\FarNetBox";
+    return L"Software\\Far2\\Plugins\\NetBox 2";
 }
 //---------------------------------------------------------------------------
 void Busy(bool /*Start*/)
 {
-  // nothing
+    // nothing
 }
 //---------------------------------------------------------------------------
 std::wstring SshVersionString()
 {
-  return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
+    return FORMAT(L"NetBox-FAR-release-%s", Configuration->GetVersion().c_str());
 }
 
 //---------------------------------------------------------------------------
@@ -50,34 +50,34 @@ DWORD WINAPI threadstartroutine(void *Parameter)
 }
 //---------------------------------------------------------------------------
 size_t BeginThread(void *SecurityAttributes, DWORD StackSize,
-  void *Parameter, DWORD CreationFlags,
-  DWORD &ThreadId)
+    void *Parameter, DWORD CreationFlags,
+    DWORD &ThreadId)
 {
-  HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-    StackSize,
-    static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
-    Parameter,
-    CreationFlags, &ThreadId);
-  // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
-  return reinterpret_cast<size_t>(Result);
+    HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
+        StackSize,
+        static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
+        Parameter,
+        CreationFlags, &ThreadId);
+    // DEBUG_PRINTF(L"Result = %d, ThreadId = %d", Result, ThreadId);
+    return reinterpret_cast<size_t>(Result);
 }
 
 void EndThread(int ExitCode)
 {
-  ::ExitThread(ExitCode);
+    ::ExitThread(ExitCode);
 }
 
 //---------------------------------------------------------------------------
 size_t StartThread(void *SecurityAttributes, unsigned StackSize,
-  void *Parameter, unsigned CreationFlags,
-  DWORD &ThreadId)
+    void *Parameter, unsigned CreationFlags,
+    DWORD &ThreadId)
 {
-  return BeginThread(SecurityAttributes, StackSize, Parameter,
-    CreationFlags, ThreadId);
+    return BeginThread(SecurityAttributes, StackSize, Parameter,
+        CreationFlags, ThreadId);
 }
 //---------------------------------------------------------------------------
 void CopyToClipboard(const std::wstring Text)
 {
-  assert(FarPlugin != NULL);
-  FarPlugin->FarCopyToClipboard(Text);
+    assert(FarPlugin != NULL);
+    FarPlugin->FarCopyToClipboard(Text);
 }
