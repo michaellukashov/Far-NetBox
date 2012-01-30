@@ -30,7 +30,7 @@ extern "C"
 
     void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
     {
-        if (Info->StructSize != sizeof(GlobalInfo))
+        if (Info->StructSize < sizeof(GlobalInfo))
             return;
         Info->StructSize = sizeof(*Info);
         Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
@@ -43,7 +43,7 @@ extern "C"
 
     void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
     {
-        if (Info->StructSize != sizeof(PluginStartupInfo))
+        if (Info->StructSize < sizeof(PluginStartupInfo))
             return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -52,7 +52,7 @@ extern "C"
 
     void WINAPI ExitFARW(const struct ExitInfo *Info)
     {
-        if (Info->StructSize != sizeof(ExitInfo))
+        if (Info->StructSize < sizeof(ExitInfo))
             return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -61,7 +61,7 @@ extern "C"
 
     void WINAPI GetPluginInfoW(PluginInfo *Info)
     {
-        if (Info->StructSize != sizeof(PluginInfo))
+        if (Info->StructSize < sizeof(PluginInfo))
             return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -70,7 +70,7 @@ extern "C"
 
     int WINAPI ConfigureW(const struct ConfigureInfo *Info)
     {
-        if (Info->StructSize != sizeof(ConfigureInfo))
+        if (Info->StructSize < sizeof(ConfigureInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -79,7 +79,7 @@ extern "C"
 
     void WINAPI ClosePanelW(const struct ClosePanelInfo *Info)
     {
-        if (Info->StructSize != sizeof(ClosePanelInfo))
+        if (Info->StructSize < sizeof(ClosePanelInfo))
            return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -88,7 +88,7 @@ extern "C"
 
     void WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info)
     {
-        if (Info->StructSize != sizeof(OpenPanelInfo))
+        if (Info->StructSize < sizeof(OpenPanelInfo))
             return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -97,7 +97,7 @@ extern "C"
 
     int WINAPI GetFindDataW(struct GetFindDataInfo *Info)
     {
-        if (Info->StructSize != sizeof(GetFindDataInfo))
+        if (Info->StructSize < sizeof(GetFindDataInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -106,7 +106,7 @@ extern "C"
 
     void WINAPI FreeFindDataW(const struct FreeFindDataInfo *Info)
     {
-        if (Info->StructSize != sizeof(FreeFindDataInfo))
+        if (Info->StructSize < sizeof(FreeFindDataInfo))
             return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -115,7 +115,7 @@ extern "C"
 
     int WINAPI ProcessHostFileW(const struct ProcessHostFileInfo *Info)
     {
-        if (Info->StructSize != sizeof(ProcessHostFileInfo))
+        if (Info->StructSize < sizeof(ProcessHostFileInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -142,7 +142,7 @@ extern "C"
     int WINAPI SetDirectoryW(const struct SetDirectoryInfo *Info)
     {
         DEBUG_PRINTF(L"begin, dir = %s", Info->Dir);
-        if (Info->StructSize != sizeof(SetDirectoryInfo))
+        if (Info->StructSize < sizeof(SetDirectoryInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -154,7 +154,7 @@ extern "C"
     int WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info)
     {
         DEBUG_PRINTF(L"begin, name = %s", Info->Name);
-        if (Info->StructSize != sizeof(MakeDirectoryInfo))
+        if (Info->StructSize < sizeof(MakeDirectoryInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -165,7 +165,7 @@ extern "C"
 
     int WINAPI DeleteFilesW(const struct DeleteFilesInfo *Info)
     {
-        if (Info->StructSize != sizeof(DeleteFilesInfo))
+        if (Info->StructSize < sizeof(DeleteFilesInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -174,7 +174,7 @@ extern "C"
 
     int WINAPI GetFilesW(struct GetFilesInfo *Info)
     {
-        if (Info->StructSize != sizeof(GetFilesInfo))
+        if (Info->StructSize < sizeof(GetFilesInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -184,7 +184,7 @@ extern "C"
     int WINAPI PutFilesW(const struct PutFilesInfo *Info)
     {
         DEBUG_PRINTF(L"begin, srcPath = %s", Info->SrcPath);
-        if (Info->StructSize != sizeof(PutFilesInfo))
+        if (Info->StructSize < sizeof(PutFilesInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -195,7 +195,7 @@ extern "C"
 
     int WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo *Info)
     {
-        if (Info->StructSize != sizeof(ProcessEditorEventInfo))
+        if (Info->StructSize < sizeof(ProcessEditorEventInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -204,7 +204,7 @@ extern "C"
 
     int WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo *Info)
     {
-        if (Info->StructSize != sizeof(ProcessEditorInputInfo))
+        if (Info->StructSize < sizeof(ProcessEditorInputInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -213,7 +213,7 @@ extern "C"
 
     int WINAPI AnalyseW(const struct AnalyseInfo *Info)
     {
-        if (Info->StructSize != sizeof(AnalyseInfo))
+        if (Info->StructSize < sizeof(AnalyseInfo))
             return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
@@ -236,7 +236,7 @@ extern "C"
 
     HANDLE WINAPI OpenW(const struct OpenInfo *Info)
     {
-        if (Info->StructSize != sizeof(OpenInfo))
+        if (Info->StructSize < sizeof(OpenInfo))
             return INVALID_HANDLE_VALUE;
         assert(FarPlugin);
         DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
