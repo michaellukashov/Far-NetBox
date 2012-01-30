@@ -30,21 +30,21 @@ extern "C"
 
     void WINAPI GetGlobalInfoW(struct GlobalInfo *Info)
     {
-    if (Info->StructSize != sizeof(GlobalInfo))
-        return;
-    Info->StructSize = sizeof(*Info);
-    Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
-    Info->Version = MAKEFARVERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, PLUGIN_VERSION_BUILD, VS_RELEASE);
-    Info->Guid = MainGuid;
-    Info->Title = PLUGIN_NAME;
-    Info->Description = PLUGIN_DESCR;
-    Info->Author = PLUGIN_AUTHOR;
+        if (Info->StructSize != sizeof(GlobalInfo))
+            return;
+        Info->StructSize = sizeof(*Info);
+        Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
+        Info->Version = MAKEFARVERSION(PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, PLUGIN_VERSION_BUILD, VS_RELEASE);
+        Info->Guid = MainGuid;
+        Info->Title = PLUGIN_NAME;
+        Info->Description = PLUGIN_DESCR;
+        Info->Author = PLUGIN_AUTHOR;
     }
 
     void WINAPI SetStartupInfoW(const struct PluginStartupInfo *Info)
     {
-    if (Info->StructSize != sizeof(PluginStartupInfo))
-        return;
+        if (Info->StructSize != sizeof(PluginStartupInfo))
+            return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
         FarPlugin->SetStartupInfo(Info);
@@ -52,8 +52,8 @@ extern "C"
 
     void WINAPI ExitFARW(const struct ExitInfo *Info)
     {
-    if (Info->StructSize != sizeof(ExitInfo))
-        return;
+        if (Info->StructSize != sizeof(ExitInfo))
+            return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
         FarPlugin->ExitFAR();
@@ -61,8 +61,8 @@ extern "C"
 
     void WINAPI GetPluginInfoW(PluginInfo *Info)
     {
-    if (Info->StructSize != sizeof(PluginInfo))
-        return;
+        if (Info->StructSize != sizeof(PluginInfo))
+            return;
         assert(FarPlugin);
         TFarPluginGuard Guard;
         FarPlugin->GetPluginInfo(Info);
@@ -70,8 +70,8 @@ extern "C"
 
     int WINAPI ConfigureW(const struct ConfigureInfo *Info)
     {
-    if (Info->StructSize != sizeof(ConfigureInfo))
-        return FALSE;
+        if (Info->StructSize != sizeof(ConfigureInfo))
+            return FALSE;
         assert(FarPlugin);
         TFarPluginGuard Guard;
         return FarPlugin->Configure(Info);
@@ -232,18 +232,18 @@ extern "C"
             return FALSE;
         }
         return FALSE;
-}
+    }
 
-HANDLE WINAPI OpenW(const struct OpenInfo *Info)
-{
-    if (Info->StructSize != sizeof(OpenInfo))
-        return INVALID_HANDLE_VALUE;
-    assert(FarPlugin);
-    DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
-    TFarPluginGuard Guard;
-    HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
-    DEBUG_PRINTF(L"NetBox: end, handle = %u", handle);
-    return handle;
+    HANDLE WINAPI OpenW(const struct OpenInfo *Info)
+    {
+        if (Info->StructSize != sizeof(OpenInfo))
+            return INVALID_HANDLE_VALUE;
+        assert(FarPlugin);
+        DEBUG_PRINTF(L"NetBox: OpenW: begin: OpenFrom = %d", Info->OpenFrom);
+        TFarPluginGuard Guard;
+        HANDLE handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
+        DEBUG_PRINTF(L"NetBox: end, handle = %u", handle);
+        return handle;
     }
 
 //---------------------------------------------------------------------------
