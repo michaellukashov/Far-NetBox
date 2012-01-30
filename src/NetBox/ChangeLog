@@ -1,5 +1,7 @@
 NetBox 2.0.7 ??.01.2012
 ---------------------
+  * FAR3: Fixed incompatibility with Far3bis and future Far3 versions
+    (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&p=89491&sid=b111a60c6c3ab17656fb03eba951cdf9#p89457)
   * Session properties: UTF-8 encoding for filenames is "On" by default
   * SSL core upgraded to OpenSSL 1.0.0g
   * Bugfix: command-line prefix "netbox:" was not handled properly
