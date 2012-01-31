@@ -113,7 +113,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
         assert(FStartupInfo.Message != NULL);
 
         memset(&FFarStandardFunctions, 0, sizeof(FFarStandardFunctions));
-        int FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
+        size_t FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
                          static_cast<const char *>(reinterpret_cast<const void *>(Info)));
         if (Info->StructSize > FSFOffset)
         {
@@ -156,7 +156,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
         { \
           wchar_t ** StringArray = new wchar_t *[NAME.GetCount()]; \
           FPluginInfo.NAME = StringArray; \
-          FPluginInfo.NAME ## Number = NAME.GetCount(); \
+          FPluginInfo.NAME ## Number = static_cast<int>(NAME.GetCount()); \
           for (size_t Index = 0; Index < NAME.GetCount(); Index++) \
           { \
             StringArray[Index] = StrToFar(DuplicateStr(NAME.GetString(Index))); \
@@ -796,7 +796,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
             delete MoreMessageLines;
         } BOOST_SCOPE_EXIT_END
         FarWrapText(Message, MessageLines, MaxMessageWidth);
-        int MaxLen = GetFarPlugin()->MaxLength(MessageLines);
+        size_t MaxLen = GetFarPlugin()->MaxLength(MessageLines);
         // DEBUG_PRINTF(L"MaxLen = %d, FParams->MoreMessages = %x", MaxLen, FParams->MoreMessages);
         if (FParams->MoreMessages != NULL)
         {
@@ -808,7 +808,7 @@ void TFarMessageDialog::Init(unsigned int AFlags,
                 MoreMessages.resize(MoreMessages.size() - 1);
             }
             FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
-            int MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
+            size_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
             if (MaxLen < MoreMaxLen)
             {
                 MaxLen = MoreMaxLen;
@@ -1119,7 +1119,7 @@ int TCustomFarPlugin::FarMessage(unsigned int Flags,
         TFarEnvGuard Guard;
         Result = FStartupInfo.Message(FStartupInfo.ModuleNumber,
                                       Flags | FMSG_LEFTALIGN, NULL, Items, static_cast<int>(MessageLines->GetCount()),
-                                      Buttons->GetCount());
+                                      static_cast<int>(Buttons->GetCount()));
     }
 
     return Result;
@@ -1740,7 +1740,7 @@ std::wstring TCustomFarPlugin::TemporaryDir()
     std::wstring Result;
     Result.resize(MAX_PATH);
     TFarEnvGuard Guard;
-    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), Result.size(), NULL);
+    FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), static_cast<DWORD>(Result.size()), NULL);
     PackStr(Result);
     StrFromFar(Result);
     return Result;
@@ -1924,7 +1924,7 @@ int TCustomFarFileSystem::GetFindData(
         {
             *PanelItem = new PluginPanelItem[PanelItems->GetCount()];
             memset(*PanelItem, 0, PanelItems->GetCount() * sizeof(PluginPanelItem));
-            *ItemsNumber = PanelItems->GetCount();
+            *ItemsNumber = static_cast<int>(PanelItems->GetCount());
             for (size_t Index = 0; Index < PanelItems->GetCount(); Index++)
             {
                 static_cast<TCustomFarPanelItem *>(PanelItems->GetItem(Index))->FillPanelItem(
@@ -2094,7 +2094,7 @@ void TCustomFarFileSystem::ResetCachedInfo()
 TFarPanelInfo *TCustomFarFileSystem::GetPanelInfo(int Another)
 {
     // DEBUG_PRINTF(L"Another = %d", Another);
-    bool another = static_cast<bool>(Another);
+    bool another = Another != 0;
     if (FPanelInfo[another] == NULL)
     {
         PanelInfo *Info = new PanelInfo;

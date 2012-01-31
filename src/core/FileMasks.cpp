@@ -380,7 +380,7 @@ TFileMasks::TParams::TParams() :
 //---------------------------------------------------------------------------
 std::wstring TFileMasks::TParams::ToString() const
 {
-    return std::wstring(L"[") + IntToStr(Size) + L"]";
+    return std::wstring(L"[") + IntToStr(static_cast<int>(Size)) + L"]";
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -579,14 +579,14 @@ bool TFileMasks::operator ==(const std::wstring rhs) const
     return (GetMasks() == rhs);
 }
 //---------------------------------------------------------------------------
-void TFileMasks::ThrowError(int Start, int End)
+void TFileMasks::ThrowError(size_t Start, size_t End)
 {
     throw EFileMasksException(
         FMTLOAD(MASK_ERROR, GetMasks().substr(Start, End - Start + 1).c_str()),
         Start, End - Start + 1);
 }
 //---------------------------------------------------------------------------
-void TFileMasks::CreateMaskMask(const std::wstring Mask, int Start, int End,
+void TFileMasks::CreateMaskMask(const std::wstring Mask, size_t Start, size_t End,
                                 bool Ex, TMaskMask &MaskMask)
 {
     try

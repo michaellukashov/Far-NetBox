@@ -278,7 +278,7 @@ size_t TFileOperationProgressType::AdjustToCPSLimit(
 size_t TFileOperationProgressType::LocalBlockSize()
 {
     size_t Result = TRANSFER_BUF_SIZE;
-    if (LocallyUsed + Result > LocalSize)
+    if (LocallyUsed + Result > static_cast<__int64>(LocalSize))
     {
         Result = static_cast<size_t>(LocalSize - LocallyUsed);
     }
@@ -372,7 +372,7 @@ void TFileOperationProgressType::AddResumed(__int64 ASize)
 size_t TFileOperationProgressType::TransferBlockSize()
 {
     size_t Result = TRANSFER_BUF_SIZE;
-    if (TransferedSize + Result > TransferSize)
+    if (TransferedSize + Result > static_cast<__int64>(TransferSize))
     {
         Result = (TransferSize - TransferedSize);
     }
@@ -444,7 +444,7 @@ size_t TFileOperationProgressType::CPS()
 //---------------------------------------------------------------------------
 nb::TDateTime TFileOperationProgressType::TimeExpected()
 {
-    unsigned int CurCps = CPS();
+    size_t CurCps = CPS();
     if (CurCps)
     {
         return nb::TDateTime(static_cast<double>((static_cast<double>(TransferSize - TransferedSize)) / CurCps) / (24 * 60 * 60));

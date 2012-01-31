@@ -368,7 +368,7 @@ public:
     void SetSFTPUploadQueue(int value);
     // __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
     int GetSFTPListingQueue() const { return FSFTPListingQueue; }
-    void SetSFTPListingQueue(int value);
+    void SetSFTPListingQueue(size_t value);
     // __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
     int GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
     // __property unsigned long SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
@@ -502,13 +502,13 @@ public:
     void SetProxyLocalCommand(const std::wstring value);
     void SetProxyDNS(TAutoSwitch value);
     void SetProxyLocalhost(bool value);
-    void SetFtpProxyLogonType(int value);
+    void SetFtpProxyLogonType(size_t value);
     void SetCustomParam1(const std::wstring value);
     void SetCustomParam2(const std::wstring value);
     void SetResolveSymlinks(bool value);
-    void SetSFTPMaxVersion(int value);
-    void SetSFTPMinPacketSize(unsigned long value);
-    void SetSFTPMaxPacketSize(unsigned long value);
+    void SetSFTPMaxVersion(size_t value);
+    void SetSFTPMinPacketSize(size_t value);
+    void SetSFTPMaxPacketSize(size_t value);
     void SetSCPLsFullTime(TAutoSwitch value);
     void SetFtpListAll(TAutoSwitch value);
     void SetDSTMode(TDSTMode value);

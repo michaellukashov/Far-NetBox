@@ -1658,8 +1658,8 @@ private:
 
     void LoadPing(TSessionData *SessionData);
     void SavePing(TSessionData *SessionData);
-    int LoginTypeToIndex(TLoginType LoginType);
-    int FSProtocolToIndex(TFSProtocol FSProtocol, bool &AllowScpFallback);
+    size_t LoginTypeToIndex(TLoginType LoginType);
+    size_t FSProtocolToIndex(TFSProtocol FSProtocol, bool &AllowScpFallback);
     TFSProtocol IndexToFSProtocol(size_t Index, bool AllowScpFallback);
     TFSProtocol GetFSProtocol();
     TLoginType IndexToLoginType(size_t Index);
@@ -3645,12 +3645,12 @@ void TSessionDialog::SavePing(TSessionData *SessionData)
     }
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
+size_t TSessionDialog::LoginTypeToIndex(TLoginType LoginType)
 {
-    return static_cast<int>(LoginType);
+    return static_cast<size_t>(LoginType);
 }
 //---------------------------------------------------------------------------
-int TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
+size_t TSessionDialog::FSProtocolToIndex(TFSProtocol FSProtocol,
                                       bool &AllowScpFallback)
 {
     if (FSProtocol == fsSFTP)
@@ -3794,8 +3794,8 @@ void TSessionDialog::CipherButtonClick(TFarButton *Sender, bool &Close)
 {
     if (Sender->GetEnabled())
     {
-        int Source = CipherListBox->GetItems()->GetSelected();
-        int Dest = Source + Sender->GetResult();
+        size_t Source = CipherListBox->GetItems()->GetSelected();
+        size_t Dest = Source + Sender->GetResult();
 
         CipherListBox->GetItems()->Move(Source, Dest);
         CipherListBox->GetItems()->SetSelected(Dest);
@@ -6886,7 +6886,7 @@ void TSynchronizeChecklistDialog::AddColumn(std::wstring &List,
     // OEM character set (Ansi does not have the ascii art we need)
     char Separator = '\xB3';
     StrToFar(Value);
-    int Len = Value.size();
+    size_t Len = Value.size();
     int Width = FWidths[Column];
     bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
     bool LastCol = (Column == FColumns - 1);

@@ -1817,7 +1817,8 @@ std::wstring LoadStr(int Ident, unsigned int MaxLength)
     assert(hInstance != 0);
 
     Result.resize(MaxLength > 0 ? MaxLength : 255);
-    size_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())), Result.size());
+    size_t Length = ::LoadString(hInstance, Ident, reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Result.c_str())),
+        static_cast<int>(Result.size()));
     Result.resize(Length);
 
     return Result;

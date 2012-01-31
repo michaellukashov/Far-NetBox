@@ -259,7 +259,7 @@ public:
         FPosition = 0;
         FLength = 0;
         SetCapacity (0);
-        FType = AType;
+        FType = static_cast<unsigned char>(AType);
         AddByte(FType);
         if ((FType != static_cast<unsigned char>(-1)) && (FType != SSH_FXP_INIT))
         {

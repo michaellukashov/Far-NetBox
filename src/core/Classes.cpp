@@ -1896,10 +1896,10 @@ std::wstring TRegistry::ReadStringRaw(const std::wstring Name)
     return Result;
 }
 
-int TRegistry::ReadBinaryData(const std::wstring Name,
-                              void *Buffer, int BufSize)
+size_t TRegistry::ReadBinaryData(const std::wstring Name,
+                              void *Buffer, size_t BufSize)
 {
-    int Result = 0;
+    size_t Result = 0;
     TRegDataInfo Info;
     if (GetDataInfo(Name, Info))
     {

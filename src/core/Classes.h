@@ -615,8 +615,8 @@ public:
     __int64 ReadInt64(const std::wstring Name);
     std::wstring ReadString(const std::wstring Name);
     std::wstring ReadStringRaw(const std::wstring Name);
-    int ReadBinaryData(const std::wstring Name,
-                       void *Buffer, int Size);
+    size_t ReadBinaryData(const std::wstring Name,
+                       void *Buffer, size_t Size);
 
     void Writebool(const std::wstring Name, bool Value);
     void WriteDateTime(const std::wstring Name, TDateTime &Value);

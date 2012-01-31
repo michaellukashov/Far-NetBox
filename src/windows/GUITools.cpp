@@ -26,7 +26,7 @@ bool FindFile(std::wstring &Path)
             // DEBUG_PRINTF(L"Len = %d", Len);
             std::wstring Paths;
             Paths.resize(Len - 1);
-            GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), Len);
+            GetEnvironmentVariable(L"PATH", reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Paths.c_str())), static_cast<DWORD>(Len));
             // DEBUG_PRINTF(L"Paths = %s", Paths.c_str());
 
             std::wstring NewPath = FileSearch(ExtractFileName(Path, true), Paths);

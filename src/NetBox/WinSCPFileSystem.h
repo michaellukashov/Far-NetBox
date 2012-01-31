@@ -232,7 +232,7 @@ protected:
     bool SynchronizeBrowsing(const std::wstring NewPath);
     bool IsEditHistoryEmpty();
     void EditHistory();
-    std::wstring ProgressBar(int Percentage, int Width);
+    std::wstring ProgressBar(size_t Percentage, size_t Width);
     bool IsLogging();
     void ShowLog();
 

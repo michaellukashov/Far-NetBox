@@ -1997,7 +1997,7 @@ void TSessionData::SetProxyLocalhost(bool value)
     SET_SESSION_PROPERTY(ProxyLocalhost);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetFtpProxyLogonType(int value)
+void TSessionData::SetFtpProxyLogonType(size_t value)
 {
     SET_SESSION_PROPERTY(FtpProxyLogonType);
 }
@@ -2034,22 +2034,22 @@ void TSessionData::SetSFTPUploadQueue(int value)
     SET_SESSION_PROPERTY(SFTPUploadQueue);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPListingQueue(int value)
+void TSessionData::SetSFTPListingQueue(size_t value)
 {
     SET_SESSION_PROPERTY(SFTPListingQueue);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMaxVersion(int value)
+void TSessionData::SetSFTPMaxVersion(size_t value)
 {
     SET_SESSION_PROPERTY(SFTPMaxVersion);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMinPacketSize(unsigned long value)
+void TSessionData::SetSFTPMinPacketSize(size_t value)
 {
     SET_SESSION_PROPERTY(SFTPMinPacketSize);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetSFTPMaxPacketSize(unsigned long value)
+void TSessionData::SetSFTPMaxPacketSize(size_t value)
 {
     SET_SESSION_PROPERTY(SFTPMaxPacketSize);
 }
