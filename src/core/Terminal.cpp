@@ -2962,7 +2962,7 @@ void TTerminal::CustomCommandOnFiles(const std::wstring Command,
 void TTerminal::ChangeFileProperties(const std::wstring FileName,
                                      const TRemoteFile *File, /*const TRemoteProperties*/ void *Properties)
 {
-    TRemoteProperties *RProperties = static_cast<TRemoteProperties *>(Properties);
+    const TRemoteProperties *RProperties = static_cast<const TRemoteProperties *>(Properties);
     assert(RProperties && !RProperties->Valid.Empty());
     std::wstring fileName = FileName;
 
